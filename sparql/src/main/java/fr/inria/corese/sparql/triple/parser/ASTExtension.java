@@ -1,9 +1,13 @@
 package fr.inria.corese.sparql.triple.parser;
 
-
-import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.ExpType;
+import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.query.Hierarchy;
+import fr.inria.corese.kgram.filter.Extension;
+import fr.inria.corese.sparql.triple.function.script.Function;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import org.slf4j.Logger;
@@ -11,35 +15,79 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Manage extension functions 
- * Expression exp must have executed exp.local() to tag
+ * Function exp must have executed exp.local() to tag
  * local variables
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
-public class ASTExtension {
+public class ASTExtension implements Extension {
 
-    private static Logger logger = LoggerFactory.getLogger(ASTExtension.class);	
-
+    private static Logger logger = LoggerFactory.getLogger(ASTExtension.class);
     static final String NL = System.getProperty("line.separator");
     public static final String TYPE = ExpType.TYPE_METADATA;
     //FunMap map;
-    ASTFunMap[] maps;
+    FunMap[] maps;
     private String name;
-    private Constant pack;
-    ArrayList<Function> funList;
-    int nbfun = 0;
+    private Object pack;
     private boolean compiled = false;
+
+  
+    public class FunMap extends HashMap<String, Function> {
+        
+        // String is metadata such as @before
+        HashMap<String, Function> metadata;
+        
+        FunMap() {
+            metadata = new HashMap<>();
+        }
+        
+        Function getMetadata(String name) {           
+           return metadata.get(name);
+        }
+                    
+        // @before -> f1 ; @after -> f2
+        void setMetadata(Function exp) {
+            Collection<String> list = exp.getMetadataList();
+            if (list != null) {
+                for (String name : list) {
+                    metadata.put(name, exp);
+                }
+            }
+        }
+        
+        void removeNamespace(String namespace) {
+            for (String name : keySet()) {
+                if (name.startsWith(namespace)) {
+                    logger.info("Remove: " + name);
+                    put(name, null);
+                }
+            } 
+            for (String meta : metadata.keySet()) {
+                Function exp = metadata.get(meta);
+                String name = exp.getFunction().getLabel();
+                if (name.startsWith(namespace)) {
+                    logger.info("Remove: " + name);
+                    metadata.put(meta, null);
+                }
+            }               
+        }
+    }
     
-    public class ASTFunMap extends HashMap<String, Function> {}
+    // datatype -> Extension for methods of the datatype
+    HashMap<String, ASTExtension> method;
+    // Embedding extension in case of method
+    private ASTExtension extension;
+    private Hierarchy hierarchy;
+    ArrayList<Function> funList;
+    private boolean debug = false;
 
     public ASTExtension() {
-        //map = new FunMap();
-        maps = new ASTFunMap[11];
+        maps = new FunMap[11];
+        funList = new ArrayList<>();
         for (int i=0; i<maps.length; i++){
-            maps[i] = new ASTFunMap();
+            maps[i] = new FunMap();
         }
-        funList = new ArrayList();
     }
     
     public ASTExtension(String n){
@@ -47,83 +95,128 @@ public class ASTExtension {
         name = n;
     }
     
-    ASTFunMap getMap(Expression exp){
-        return getMap(exp.getArgs().size());
+    FunMap getMap(Expr exp){
+        return getMap(exp.arity());
     }
     
-    ASTFunMap getMap(int n){
+    FunMap getMap(int n){
          if (n >= maps.length){
             return null;
         }
         return maps[n];
     }
     
-    public ASTFunMap[] getMaps(){
+    public FunMap[] getMaps(){
         return maps;
     }
-    
-    public boolean isEmpty(){
-        for (ASTFunMap m : getMaps()){
-            if (! m.isEmpty()){
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    /**
-     * exp = function (ex:name(?x) = exp )
-     * @param exp 
-     */
-    void defineFunction(Function exp){
-        funList.add(exp);
-        define(exp);
-    }
-    
-    public List<Function> getFunList(){
-        return funList;
-    }
-    
+
     /**
      *
-     * exp: function(st:fac(?x) = if (?x = 1, 1, ?x * st:fac(?x - 1)))
+     * exp: st:fac(?x) = if (?x = 1, 1, ?x * st:fac(?x - 1))
      */
     public void define(Function exp) {
-        Expression fun = exp.getFunction(); 
-        ASTFunMap fm = getMap(fun);
-        if (fm == null){
-            logger.error("To many args: " + exp);
-            return;
+        if (exp.getMetadataValues(TYPE) != null){
+            defineMethod(exp);
         }
-        fm.put(defLabel(exp), exp);
-        //fm.put(fun.getLabel(), exp);
+        else {
+            defineFunction(exp);
+        }
+        funList.add(exp);
     }
     
     /**
-     * If function is a method, it is stored with a fake unique label in the hashmap 
-     * to allow overloading (same URI for different datatypes)
-     * The name of the function remains its URI
-     * This is only in this ASTExtension
-     * The Query Extension will manage  specific maps for methods
+     * name is a namespace
      */
-    String defLabel(Function exp){
-        if (exp.getMetadataValues(TYPE) != null){
-            return exp.getFunction().getLabel().concat(Integer.toString(nbfun++));
+    public void removeNamespace(String name) {
+        for (FunMap fm : getMaps()) {
+            fm.removeNamespace(name);
         }
-        return exp.getFunction().getLabel();
+        if (getMethod() != null) {
+            for (ASTExtension ext : getMethod().values()) {
+                ext.removeNamespace(name);
+            }
+        }
+    }
+    
+    void defineFunction(Function exp) {       
+        Term fun = exp.getSignature(); 
+        Function def = get(fun.getLabel(), fun.arity());
+        if  (def != null) {
+            logger.info("Redefine function: " +fun.getLabel());
+            logger.info(def.toString());
+            logger.info(exp.toString());
+        }
+        getMap(fun).put(fun.getLabel(), exp);
+        getMap(fun).setMetadata(exp);
+    }
+    
+    void defineMethodFunction(Function exp) {       
+        Expression fun = exp.getSignature(); 
+        getMap(fun).put(fun.getLabel(), exp);
+    }
+    
+    
+    /**
+     * Record function as method of datatype(s)
+     */
+    void defineMethod(Function exp) {   
+         for (String type : exp.getMetadataValues(TYPE)){
+            getCreateMethodExtension(type).defineMethodFunction(exp);
+         }
+    }
+    
+    /**
+     * Return the Extension that records the methods of type    
+     */
+    ASTExtension getCreateMethodExtension(String type){
+        ASTExtension ext = getMethod().get(type);
+        if (ext == null){
+            ext = new ASTExtension();
+            ext.setExtension(this);
+            getMethod().put(type, ext);
+        }
+        return ext;
+    }
+    
+    ASTExtension getMethodExtension(String type){
+        return getMethod().get(type);
+    }
+    
+    public HashMap<String, ASTExtension> getMethod(){
+        if (method == null){
+            method = new HashMap<>();
+        }
+        return method;
+    }
+    
+    public boolean isMethod() {
+        return getMethod().size() > 0;
     }
     
     public void add(ASTExtension ext){
-        for (ASTFunMap m : ext.getMaps()){
+        for (FunMap m : ext.getMaps()){
             for (Function e : m.values()){
-                if (! isDefined(e.getFunction())){
+                if (! isDefined(e.getSignature())){ 
                     define(e);
                 }
             }
         }
     }
+    
+    /**
+     * Use case: Transformation st:profile exports its functions to transformation
+     * They are declared as public
+     * Hence Interpreter isPublic() is OK.
+     */
+     public void setPublic(boolean b){
+        for (FunMap m : getMaps()){
+            for (Function e : m.values()){
+                e.setPublic(b);
+            }
+        }
+    }
 
-    public boolean isDefined(Expression exp) {
+    public boolean isDefined(Expr exp) {
         return getMap(exp).containsKey(exp.getLabel());
     }
 
@@ -131,18 +224,23 @@ public class ASTExtension {
      * exp: st:fac(?n) values: #[10] actual values of parameters return body of
      * fun
      */
-    public Expression get(Expression exp, Object[] values) {
+    public Function get(Expr exp, Object[] values) {
         return getMap(exp).get(exp.getLabel());
     }
 
-    public Expression get(Expression exp) {
-        Expression def = getMap(exp).get(exp.getLabel());
+    public Function get(Expr exp) {
+        Function def = getMap(exp).get(exp.getLabel());
         return def;
     }
     
-    public Expression get(String label) {
+    public Function get(Expr exp, String name) {
+        Function def = getMap(exp).get(name);
+        return def;
+    }
+    
+    public Function get(String label) {
         for (int i = 0; i<maps.length; i++){
-            Expression exp = get(label, i);
+            Function exp = get(label, i);
             if (exp != null){
                 return exp;
             }
@@ -150,21 +248,59 @@ public class ASTExtension {
         return null;
     }
     
-    public Expression get(String label, int n) {
-        ASTFunMap m = getMap(n);
+    public Function get(String label, int n) {
+        FunMap m = getMap(n);
         if (m == null){
             return null;
         }
         return m.get(label);
     }
     
+    public Function getMetadata(String metadata, int n) {
+        FunMap m = getMap(n);
+        if (m == null){
+            return null;
+        }
+        return m.getMetadata(metadata);
+    }
+    
+    /**
+     * Retrieve a method with label name and param[0] (data)type 
+     * There are two possible Hierarchies: DatatypeHierarchy and ClassHierarchy
+     * ClassHierarchy extends DatatypeHierarchy (for literals only)
+     * By default, return  function if there is no method
+     */    
+    public Function getMethod(String label, DatatypeValue type, Object[] param) {
+        if (getActualHierarchy() != null && param.length > 0) {
+            for (String atype : getActualHierarchy().getSuperTypes((DatatypeValue) param[0],  type)) {
+                ASTExtension ext = getMethodExtension(atype);
+                if (isDebug()) {
+                    System.out.println("Ext: " + atype + " " + ext);
+                }
+                if (ext != null) {
+                    Function exp = ext.get(label, param.length);
+                    if (isDebug()) {
+                        System.out.println("Ext: " + atype + " " + exp);
+                    }
+                    if (exp != null) {
+                        return exp;
+                    }
+                }
+            }
+        }
+        return get(label, param.length);
+    }
+  
+    
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("extension: ");
         sb.append(NL);
-        for (ASTFunMap m : getMaps()){
-            for (Expression exp : m.values()) {
+        for (FunMap m : getMaps()){
+            for (String name : m.keySet()) {
+                Function exp = m.get(name);
+                sb.append("# ").append(name).append(NL);
                 sb.append(exp);
                 sb.append(NL);
                 sb.append(NL);
@@ -172,8 +308,8 @@ public class ASTExtension {
         }
         return sb.toString();
     }
-    
-   /**
+
+    /**
      * @return the name
      */
     public String getName() {
@@ -190,18 +326,79 @@ public class ASTExtension {
     /**
      * @return the pack
      */
-    public Constant getPackage() {
+    public Object getPackage() {
         return pack;
     }
 
     /**
      * @param pack the pack to set
      */
-    public void setPackage(Constant pack) {
+    public void setPackage(Object pack) {
         this.pack = pack;
     }
     
-        /**
+    /**
+     * @return the extension
+     */
+    public ASTExtension getExtension() {
+        return extension;
+    }
+
+    /**
+     * @param extension the extension to set
+     */
+    public void setExtension(ASTExtension extension) {
+        this.extension = extension;
+    }
+    
+      /**
+     * @return the hierarchy
+     */
+    public Hierarchy getActualHierarchy() {
+        if (getExtension() != null){
+            return getExtension().getHierarchy();
+        }
+        return getHierarchy();
+    }
+
+    
+     /**
+     * @return the hierarchy
+     */
+    public Hierarchy getHierarchy() {
+        return hierarchy;
+    }
+
+    /**
+     * @param hierarchy the hierarchy to set
+     */ 
+    public void setHierarchy(Hierarchy hierarchy) {
+        this.hierarchy = hierarchy;
+    }
+    
+     /**
+     * @return the debug
+     */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * @param debug the debug to set
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public List<Function> getFunList(){
+        return funList;
+    }
+    
+    public boolean isEmpty() {
+        return getFunList().isEmpty();
+    }
+
+    /**
      * @return the compiled
      */
     public boolean isCompiled() {
@@ -214,5 +411,23 @@ public class ASTExtension {
     public void setCompiled(boolean compiled) {
         this.compiled = compiled;
     }
-}
+    
 
+    @Override
+    public void define(Expr exp) {
+        if (exp instanceof Function) {
+            define((Function) exp);
+        }
+    }
+    
+    public List<Function> getFunctionList() {
+        ArrayList<Function> list = new ArrayList<>();
+        for (FunMap m : getMaps()){
+            for (Function e : m.values()){
+                list.add(e);
+            }
+        }
+        return list;
+    }
+
+}

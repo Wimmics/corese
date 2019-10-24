@@ -112,8 +112,8 @@ public class Variable extends Atom {
     }
 
     @Override
-    public void toJava(JavaCompiler jc) {
-        jc.toJava(this);
+    public void toJava(JavaCompiler jc, boolean arg) {
+        jc.toJava(this, arg);
     }
 
     @Override

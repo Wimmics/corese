@@ -1236,10 +1236,10 @@ public class ASTQuery
            
     void record(Function fun){
          if (fun.isLambda()){
-             lambdaDefine.defineFunction(fun);
+             lambdaDefine.define(fun);
          }
          else {
-             define.defineFunction(fun);
+             define.define(fun);
          }
     }
            

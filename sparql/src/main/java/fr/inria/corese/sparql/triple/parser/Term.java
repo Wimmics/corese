@@ -843,15 +843,17 @@ public class Term extends Expression {
     public String javaName() {
         String str = NSManager.nstrip(getName());
         if (str.equals(getName()) && getName().contains(":")) {
-            return getName().substring(getName().indexOf(":")+1);
+            //return getName().substring(getName().indexOf(":")+1);
+            return getName().replace(":", "_").replace("-", "_");
         }
         return str;
     }
-
+   
     @Override
-    public void toJava(JavaCompiler jc) {
-        jc.toJava(this);
+    public void toJava(JavaCompiler jc, boolean arg) {
+        jc.toJava(this, arg);
     }
+    
 
     static boolean isNegation(String name) {
         return (name.equals(STNOT) || name.equals(SENOT));

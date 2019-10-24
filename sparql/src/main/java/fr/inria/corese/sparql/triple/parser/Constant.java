@@ -161,8 +161,8 @@ public class Constant extends Atom {
     }
 
     @Override
-    public void toJava(JavaCompiler jc) {
-        jc.toJava(this);
+    public void toJava(JavaCompiler jc, boolean arg) {
+        jc.toJava(this, arg);
     }
     
     public static void setString(boolean b) {

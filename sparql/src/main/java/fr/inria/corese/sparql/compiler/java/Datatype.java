@@ -2,6 +2,7 @@ package fr.inria.corese.sparql.compiler.java;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.RDF;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
@@ -17,18 +18,33 @@ public class Datatype {
     static final String VAR = "_cst_";
     int count = 0;
 
-    StringBuilder sb;
+    StringBuilder sb, sbvar;
     TreeData cache;
     HashMap<String, String> strCache;
+    HashMap<String, String> varCache;
 
     Datatype() {
         sb = new StringBuilder();
+        sbvar = new StringBuilder();
         cache = new TreeData();
         strCache = new HashMap<String, String>();
+        varCache = new HashMap<String, String>();
     }
     
     StringBuilder getStringBuilder(){
         return sb;
+    }
+    
+    StringBuilder getStringBuilderVar(){
+        return sbvar;
+    }
+    
+    void declare(Variable var) {
+        String name = var.getSimpleName();
+        if (!varCache.containsKey(name)) {
+            varCache.put(name, name);
+            sbvar.append("IDatatype ").append(name).append(";").append(NL);
+        }
     }
 
     String toJava(IDatatype dt) {

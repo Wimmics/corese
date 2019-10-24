@@ -5,6 +5,7 @@
 
 package fr.inria.corese.core.transform;
 
+import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
@@ -20,6 +21,8 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import static fr.inria.corese.core.transform.Transformer.STL_IMPORT;
 import static fr.inria.corese.core.transform.Transformer.STL_PROFILE;
+import fr.inria.corese.kgram.filter.Extension;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -187,12 +190,13 @@ public class Loader {
             if (qprofile.getExtension() != null){
                 // share profile function definitions in templates
                 fr.inria.corese.compiler.parser.Transformer tr = fr.inria.corese.compiler.parser.Transformer.create();
-                tr.definePublic(qprofile.getExtension(), qprofile, false);
+                ASTExtension ext = Interpreter.getExtension(qprofile);
+                tr.definePublic(ext, qprofile, false);
                 for (Query t : qe.getTemplates()) {             
-                    t.addExtension(qprofile.getExtension());
+                    addExtension(t, ext);
                 }
                 for (Query t : qe.getNamedTemplates()) {             
-                    t.addExtension(qprofile.getExtension());
+                    addExtension(t, ext);
                 }           
             } 
             
@@ -203,6 +207,19 @@ public class Loader {
                     loadImport(tqe, imp.getExp(0).getLabel());
                 }
             }
+        }
+    }
+    
+    void addExtension(Query q, ASTExtension ext){
+        if (ext == null){
+            return;
+        }
+        if (q.getExtension() == null){
+            q.setExtension(ext);
+        }
+        else {
+            //q.getExtension().add(ext);
+            Interpreter.getExtension(q).add(ext);
         }
     }
    

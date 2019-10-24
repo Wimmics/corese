@@ -1503,7 +1503,8 @@ public class PluginImpl
         ASTQuery ast = getAST((Expression) exp, q);
         Function fun = ast.defExtension(name, name, n);
         q.defineFunction(fun);
-        q.getCreateExtension().define(fun);
+        Extension ext = Interpreter.getCreateExtension(q);
+        ext.define(fun);
         return fun;
     }
     

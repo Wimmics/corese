@@ -2601,12 +2601,12 @@ public class Query extends Exp implements Graphable {
         return extension;
     }
     
-    public Extension getCreateExtension() {
-        if (getExtension() == null){
-            setExtension(new Extension());
-        }
-        return getExtension();
-    }
+//    public Extension getCreateExtension() {
+//        if (getExtension() == null){
+//            setExtension(new Extension());
+//        }
+//        return getExtension();
+//    }
     
     public Extension getActualExtension(){
         return getGlobalQuery().getExtension();
@@ -2659,17 +2659,17 @@ public class Query extends Exp implements Graphable {
         return null;
     }
     
-    public void addExtension(Extension ext){
-        if (ext == null){
-            return;
-        }
-        if (extension == null){
-            extension = ext;
-        }
-        else {
-            extension.add(ext);
-        }
-    }
+//    public void addExtension(Extension ext){
+//        if (ext == null){
+//            return;
+//        }
+//        if (getExtension() == null){
+//            setExtension(ext);
+//        }
+//        else {
+//            getExtension().add(ext);
+//        }
+//    }
 
     @Override
     public Iterable getLoop() { 

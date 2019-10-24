@@ -664,7 +664,7 @@ public class Transformer implements ExpType {
      * isDefine = true means export to Interpreter Use case: Transformation
      * st:profile does not export to Interpreter hence it uses isDefine = false
      */
-    public void definePublic(Extension ext, Query q, boolean isDefine) {
+    public void definePublic(ASTExtension ext, Query q, boolean isDefine) {
         funCompiler.definePublic(ext, q, isDefine);
     }
     

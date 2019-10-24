@@ -166,7 +166,7 @@ public class FunctionCompiler {
         Query imp = transformer.getSPARQLEngine().parseQuery(path);
         if (imp != null && imp.hasDefinition()) {
             // loaded functions are exported in Interpreter  
-            definePublic(imp.getExtension(), imp);
+            definePublic(Interpreter.getExtension(imp), imp);
             return true;
         }
         return false;
@@ -183,21 +183,21 @@ public class FunctionCompiler {
      * Define function into Extension Export into Interpreter
      */
     void define(ASTQuery ast, ASTExtension aext, Query q) {
-        fr.inria.corese.kgram.filter.Extension ext = q.getCreateExtension();
+        ASTExtension ext = Interpreter.getCreateExtension(q);
         DatatypeHierarchy dh = new DatatypeHierarchy();
         if (q.isDebug()) {
             dh.setDebug(true);
         }
         ext.setHierarchy(dh);
         boolean pub = ast.hasMetadata(Metadata.PUBLIC);
-        for (ASTExtension.ASTFunMap m : aext.getMaps()) {
-            for (Function exp : m.values()) {
+       // for (ASTExtension.FunMap m : aext.getMaps()) {
+            for (Function exp : aext.getFunList()) { //m.values()) {
                 ext.define(exp);
                 if (pub || exp.isPublic()) {
                     definePublic(exp, q);
                 }
             }
-        }
+        //}
     }
 
     // TODO: check isSystem() because it is exported
@@ -207,7 +207,7 @@ public class FunctionCompiler {
      * @param ext
      * @param q
      */
-    void definePublic(fr.inria.corese.kgram.filter.Extension ext, Query q) {
+    void definePublic(ASTExtension ext, Query q) {
         definePublic(ext, q, true);
     }
 
@@ -215,14 +215,21 @@ public class FunctionCompiler {
      * isDefine = true means export to Interpreter Use case: Transformation
      * st:profile does not export to Interpreter hence it uses isDefine = false
      */
-    public void definePublic(fr.inria.corese.kgram.filter.Extension ext, Query q, boolean isDefine) {
-        for (fr.inria.corese.kgram.filter.Extension.FunMap m : ext.getMaps()) {
-            for (Expr exp : m.values()) {
-                Function e = (Function) exp;
-                definePublic(e, q, isDefine);
-            }
+     public void definePublic(ASTExtension ext, Query q, boolean isDefine) {
+        for (Expr exp : ext.getFunctionList()) {
+            Function e = (Function) exp;
+            definePublic(e, q, isDefine);
         }
     }
+    
+//    public void definePublic2(fr.inria.corese.kgram.filter.Extension ext, Query q, boolean isDefine) {
+//        for (fr.inria.corese.kgram.filter.Extension.FunMap m : ext.getMaps()) {
+//            for (Expr exp : m.values()) {
+//                Function e = (Function) exp;
+//                definePublic(e, q, isDefine);
+//            }
+//        }
+//    }
 
     void definePublic(Function fun, Query q) {
         definePublic(fun, q, true);

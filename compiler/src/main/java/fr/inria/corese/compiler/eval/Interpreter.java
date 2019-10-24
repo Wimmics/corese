@@ -17,7 +17,6 @@ import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.core.Stack;
 import fr.inria.corese.kgram.event.ResultListener;
-import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.filter.Proxy;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.ComputerProxy;
@@ -28,9 +27,11 @@ import fr.inria.corese.sparql.api.TransformVisitor;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.function.script.Function;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -54,8 +55,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     Eval kgram;
     IDatatype TRUE, FALSE;
     ResultListener listener;
-    //static HashMap<String, Extension> extensions;
-    static Extension extension;
+    static ASTExtension extension;
     int mode = DEFAULT_MODE;
     boolean hasListener = false;
     boolean isDebug = false;
@@ -63,7 +63,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     IDatatype ERROR_VALUE = null;
 
     static {
-        extension = new Extension();
+        extension = createExtension();
     }
 
     public Interpreter(Proxy p) {
@@ -73,6 +73,27 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
         TRUE = proxy.getValue(true);
         FALSE = proxy.getValue(false);
+    }
+    
+    public static ASTExtension createExtension() {
+        return new ASTExtension();
+    }
+    
+    public static ASTExtension getCreateExtension(Query q) {
+        ASTExtension ext = getExtension(q);
+        if (ext == null) {
+            ext = createExtension();
+            q.setExtension(ext);
+        }
+        return ext;
+    }
+    
+    public static ASTExtension getExtension(Environment env) {
+        return (ASTExtension) env.getExtension();
+    }
+    
+    public static ASTExtension getExtension(Query q) {
+        return (ASTExtension) q.getExtension();
     }
 
     @Override
@@ -675,27 +696,22 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public Expr getDefine(Expr exp, Environment env) {
-        Extension ext = env.getExtension();
+    public Function getDefine(Expr exp, Environment env) {
+        ASTExtension ext = getExtension(env);
         if (ext != null) {
-            Expr def = ext.get(exp);
+            Function def = ext.get(exp);
             if (def != null) {
                 return def;
             }
         }
 
-        Expr def = extension.get(exp);
-        if (def != null) {
-            return def;
-        }
-
-        return null;
+        return extension.get(exp);
     }
 
-    public Expr getDefine(Expr exp, Environment env, String name) {
-        Extension ext = env.getExtension();
+    public Function getDefine(Expr exp, Environment env, String name) {
+        ASTExtension ext = getExtension(env);
         if (ext != null) {
-            Expr ee = ext.get(exp, name);
+            Function ee = ext.get(exp, name);
             if (ee != null) {
                 return ee;
             }
@@ -704,24 +720,24 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public Expr getDefine(String name) {
+    public Function getDefine(String name) {
         return extension.get(name);
     }
 
     @Override
-    public Expr getDefineGenerate(Expr exp, Environment env, String name, int n) {
-        Expr fun = getDefine(env, name, n);
+    public Function getDefineGenerate(Expr exp, Environment env, String name, int n) {
+        Function fun = getDefine(env, name, n);
         if (fun == null) {
-            fun = proxy.getDefine(exp, env, name, n);
+            fun = (Function) proxy.getDefine(exp, env, name, n);
         }
         return fun;
     }
 
     @Override
-    public Expr getDefine(Environment env, String name, int n) {
-        Extension ext = env.getExtension();
+    public Function getDefine(Environment env, String name, int n) {
+        ASTExtension ext = getExtension(env);
         if (ext != null) {
-            Expr ee = ext.get(name, n);
+            Function ee = ext.get(name, n);
             if (ee != null) {
                 return ee;
             }
@@ -730,10 +746,10 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
     
     @Override
-    public Expr getDefineMetadata(Environment env, String metadata, int n) {
-        Extension ext = env.getExtension();
+    public Function getDefineMetadata(Environment env, String metadata, int n) {
+        ASTExtension ext = getExtension(env);
         if (ext != null) {
-            Expr ee = ext.getMetadata(metadata, n);
+            Function ee = ext.getMetadata(metadata, n);
             if (ee != null) {
                 return ee;
             }
@@ -745,13 +761,13 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * Retrieve a method with name and type
      */
     @Override
-    public Expr getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] param) {
-        Extension ext = env.getExtension();
+    public Function getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] param) {
+        ASTExtension ext = getExtension(env);
         if (ext != null) {
             if (env.getQuery().isDebug()) {
                 ext.setDebug(true);
             }
-            Expr ee = ext.getMethod(name, type, param);
+            Function ee = ext.getMethod(name, type, param);
             if (ee != null) {
                 return ee;
             }
@@ -759,11 +775,11 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return extension.getMethod(name, type, param);
     }
 
-    public static void define(Expr exp) {
+    public static void define(Function exp) {
         extension.define(exp);
     }
 
-    public static Extension getExtension() {
+    public static ASTExtension getExtension() {
         return extension;
     }
 
@@ -782,7 +798,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 //    }
 
     @Override
-    public Expr getDefineMethod(Environment env, String name, Object type, Object[] values) {
+    public Function getDefineMethod(Environment env, String name, Object type, Object[] values) {
         return getDefineMethod(env, name, (IDatatype) type, (IDatatype[]) values);
     }
 

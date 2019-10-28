@@ -9,6 +9,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.shacl.Shacl;
+import fr.inria.corese.core.shacl.ShaclJava;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.workflow.Data;
 import fr.inria.corese.core.workflow.ShapeWorkflow;
@@ -16,7 +17,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.IOException;
@@ -43,7 +43,7 @@ public class DataShapeTest {
     static String[] names = {
         "core/property"
             , "core/path", "core/node", "core/complex", "core/misc", "core/targets", "core/validation-reports",
-       "sparql/property"
+       //"sparql/property"
             
        //,"sparql/node" ,
        //  "sparql/component"
@@ -282,7 +282,7 @@ public class DataShapeTest {
         IDatatype datadt  = (IDatatype) map.getValue("?data");
         IDatatype shapedt = (IDatatype) map.getValue("?shape");
         
-        Graph greport    = exec2(shapedt.getLabel(), datadt.getLabel());
+        Graph greport    = exec(shapedt.getLabel(), datadt.getLabel());
 
 //        Graph greport = exec(shapedt.getLabel(), datadt.getLabel());
 //        if (greport.size() != ggg.size()) {
@@ -331,7 +331,33 @@ public class DataShapeTest {
         }
     }
     
-    Graph exec(String shape, String data) throws EngineException {
+  
+
+     
+    Graph exec(String shape, String data) throws EngineException, LoadException {
+        return execjava(shape, data);
+    }  
+    
+    // 4.948
+    Graph execds(String shape, String data) throws EngineException, LoadException {
+        Graph g  = load(data);        
+        Graph sh = (data.equals(shape)) ? g : load(shape);  
+        Shacl shacl = new Shacl(g);
+        //shacl.setTrace(true);
+        Graph res = shacl.eval(sh);       
+        return res;
+    }
+    
+    // 4.7
+    Graph execjava(String shape, String data) throws EngineException, LoadException {
+        Graph g = load(data);
+        Graph sh = (data.equals(shape)) ? g : load(shape, g);
+        ShaclJava java = new ShaclJava(g);
+        Graph res = java.eval();
+        return res;
+    }
+    
+    Graph execwf(String shape, String data) throws EngineException {
         ShapeWorkflow wf = new ShapeWorkflow(shape, data, false, lds);
         Data res = wf.process();
         return res.getVisitedGraph();
@@ -340,22 +366,16 @@ public class DataShapeTest {
     
     Graph load(String path) throws LoadException {
         Graph g = Graph.create();
+        load(path, g);
+        return g;
+    }
+    
+    Graph load(String path, Graph g) throws LoadException {
         Load ld = Load.create(g);
         ld.parse(path);
         g.index(); 
         return g;
     }
-    
-    Graph exec2(String shape, String data) throws EngineException, LoadException {
-        Graph g  = load(data);        
-        Graph sh = (data.equals(shape)) ? g : load(shape);  
-        Shacl shacl = new Shacl(g);
-        //shacl.setTrace(true);
-        Graph res = shacl.eval(sh);
-        return res;
-    }
-
-    
     
     void result(Mappings map) {
     }

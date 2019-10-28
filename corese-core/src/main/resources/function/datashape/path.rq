@@ -317,7 +317,7 @@ function sh:uniqueLang (shape, sh, vis, s, p, v){
          
          for (value in nodeLang) {
             let (lan = lang(value)) {
-                xt:set(amap, lan, coalesce(xt:get(amap, lan) + 1, 1))
+                xt:set(amap, lan, coalesce(xt:get(amap, lan), 0) + 1)
             }
          } ;
          
@@ -335,14 +335,20 @@ function sh:uniqueLang (shape, sh, vis, s, p, v){
 
 
 function sh:hasValue (shape, sh, vis, s, p, v) {
-  letdyn (value = v) {
-    let (suc = mapany (lambda(object) { coalesce(object = value, false) }, 
-                    sh:path(shape, s, p))) {
+    let (suc = sh:hasValue(v, sh:path(shape, s, p))) {
         sh:report(sh:hasValue, sh, shape, s, p, v, suc, vis) ;
         return (suc)
     }
-  }
 }
+
+function sh:hasValue (object, list) {
+    for (value in list) {
+        if (coalesce(object = value, false), return(true), true)
+    } ;
+    return (false)
+}
+
+
 
 
 function sh:hasValue (shape, sh, vis, s, p, v, o) {

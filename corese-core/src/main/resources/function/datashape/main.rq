@@ -114,7 +114,8 @@ function sh:start(shape) {
     set(recordmapfail = xt:map());
     coalesce(sh:trace(), sh:trace(!true));
     sh:init();
-    if (shape = xt:graph(), sh:sibling(), xt:focus(shape, sh:sibling()))
+    if (shape = xt:graph(), sh:sibling(), xt:focus(shape, sh:sibling())) ;
+    return (true)
 }
 
 # declare report graph to transformer visitor graph, use case: shape workflow
@@ -147,27 +148,29 @@ function sh:detail() {
 #function sh:test(){ st:get(st:test, true) }
 
 
+function sh:hasConstraint(name, sh) {
+    xt:has(sh:getmap(name), sh)
+}
+
 # get relevant properties of sh  in a table
 function sh:getConstraint(name, sh) {
-    #xt:print("get:", name, sh, xt:get(sh:getmap(name), sh)) ;
     xt:get(sh:getmap(name), sh)
 }
 
 # record relevant properties of sh  in a table
 function sh:setConstraint(name, sh, value) {
-    #xt:print("set:", name, sh, value, xt:size(mapmap), xt:size(sh:getmap(name)));
     xt:set(sh:getmap(name), sh, value)
 }
 
 
 function sh:getmap(name) {
-    coalesce(xt:get(mapmap, name), xt:set(mapmap, name, xt:map()))
+    if (xt:has(mapmap, name), xt:get(mapmap, name), xt:set(mapmap, name, xt:map()))
 }
 
 function sh:getrecordmap(name, suc) {
 if (suc,
-    coalesce(xt:get(recordmapsuc,  name), xt:set(recordmapsuc,  name, xt:map())),
-    coalesce(xt:get(recordmapfail, name), xt:set(recordmapfail, name, xt:map())))
+    if (xt:has(recordmapsuc, name),  xt:get(recordmapsuc, name),  xt:set(recordmapsuc, name, xt:map())),
+    if (xt:has(recordmapfail, name), xt:get(recordmapfail, name), xt:set(recordmapfail, name, xt:map())))   
 }
 
 
@@ -203,19 +206,17 @@ function xsd:boolean sh:report(name,  sh, cst, dt:graph shape, foc, p, o, xsd:bo
     return(true)
 }
 
-
-
 #
 # Additional report
 #
 function sh:record(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis) {
     if (vis) {
         let (amap = sh:getrecordmap(name, suc)) {
-            xt:set(amap, sh, coalesce(xt:get(amap, sh) + 1, 1)) ;
-            xt:set(amap, sh:subtotal, coalesce(xt:get(amap, sh:subtotal) + 1, 1)) 
+            xt:set(amap, sh,          coalesce(xt:get(amap, sh), 0) + 1) ;
+            xt:set(amap, sh:subtotal, coalesce(xt:get(amap, sh:subtotal), 0) + 1)  
         } ;
         let (bmap = sh:getrecordmap(sh:total, suc)) {
-             xt:set(bmap, sh:total, coalesce(xt:get(bmap, sh:total) + 1, 1))
+             xt:set(bmap, sh:total, coalesce(xt:get(bmap, sh:total), 0) + 1)
         }         
     } ;
     return(true)
@@ -268,7 +269,8 @@ function xsd:boolean sh:success(xsd:boolean bb) {
 # insert report element g into report
 function us:insert(dt:graph g, dt:graph report) {
     for ((s p o) in g) {
-        xt:focus(report, xt:insert(s, p, o))
+       #xt:focus(report, xt:insert(s, p, o))
+        xt:insert(report, s, p, o)
     } 
 }
 
@@ -337,12 +339,7 @@ function sh:getMessage(shape, sh, cst) {
 
 
 function sh:tracefinish() {
-    xt:print(xt:turtle(validationReport));
-    let (cc = 0) {
-        for ((key val) in mapmap) {
-                xt:print(set(cc = cc + 1), key, xt:size(val))
-        }
-    }
+    xt:print(xt:turtle(validationReport))
 }
 
 # when suc = false, declare error on node (for future pprint)
@@ -434,7 +431,14 @@ function dt:list sh:def(){
 
 
 function sh:isdefby(name){
-    sh:getConstraint(sh:def, name)
+    sh:checkinit() ;
+    let (amap = sh:getmap(sh:def)) {
+        return (sh:getConstraint(sh:def, name))
+    }
+}
+
+function sh:checkinit() {
+    if (bound(mapmap), true, sh:start(xt:graph()))
 }
 
 

@@ -144,7 +144,7 @@ function sh:cstsparql(shape, sh) {
                 # collect prefix definitions
                 {
                     select ?cst 
-                    (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
+                    (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator=" ") 
                     as ?define) 
                     where {
                         ?cst sh:prefixes/owl:imports*/sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 

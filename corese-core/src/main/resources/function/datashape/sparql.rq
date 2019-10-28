@@ -35,7 +35,7 @@ function sh:sparqlvalid(?shape, ?sh) {
                 # collect prefix definitions
                 {
                     select ?valid 
-                    (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
+                    (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator=" ") 
                     as ?define) 
                     where {
                         ?valid sh:prefixes/owl:imports*/sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 

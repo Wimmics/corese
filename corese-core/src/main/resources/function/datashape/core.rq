@@ -90,8 +90,11 @@ function sh:constraintcore(shape, sh, vis, nodeList) {
 # record relevant properties of sh  in a map
 #
 function sh:getConstraint(name, shape, sh) {
-    coalesce(sh:getConstraint(name, sh), sh:setConstraint(name, sh, funcall(name, shape, sh)))
+    return (if (sh:hasConstraint(name, sh), 
+        sh:getConstraint(name, sh), 
+        sh:setConstraint(name, sh, funcall(name, shape, sh))))
 }
+
 
 function sh:isClosed(shape, sh) {
     sh:getConstraint(sh:isclosedcore, shape, sh)

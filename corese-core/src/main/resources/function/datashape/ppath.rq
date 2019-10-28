@@ -68,8 +68,17 @@ function sh:boolean(oper) {
     oper in (sh:and, sh:or, sh:not)
 }
 
-function sh:usernamespace(oper) {
+function sh:usernamespace2(oper) {
     ! mapany(rq:strstarts, oper, xt:list(rdf:, rdfs:, owl:, sh:))
+}
+
+function sh:usernamespace(oper) {
+    for (pref in xt:list(rdf:, rdfs:, owl:, sh:)) {
+        if (strstarts(pref, pref)) {
+            return (false)
+        }
+    } ;
+    return (true)
 }
 
 #
@@ -132,12 +141,13 @@ function dt:list sh:path(dt:graph shape, s, p){
     sh:path(shape, s, sh:getPath(shape, p), false)
 }
 
-
 #
 # rewrite PP once as a list and record it
 #
 function sh:getPath(dt:graph shape, p){
-   coalesce(sh:getConstraint(sh:path, p), sh:setConstraint(sh:path, p, sh:path(shape, p)))
+   return (if (sh:hasConstraint(sh:path, p), 
+     sh:getConstraint(sh:path, p), 
+     sh:setConstraint(sh:path, p, sh:path(shape, p))))
 }
 
 

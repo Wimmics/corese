@@ -27,27 +27,38 @@ function sh:pattern(shape, node, arg) {
     regex(node, arg)
 }
 
-
 function sh:myand(shape, node, list) {
     # oper = sh:filter ; arg = (name param)
-    letdyn(varshape = shape, varnode = node){
-        mapevery(lambda((oper, exp)) { sh:evalfilter(varshape, varnode, exp) }, list)
-    }
+    for ((oper exp) in list){
+        if (! sh:evalfilter(shape, node, exp)) {
+            return (false)
+        }
+    } ;
+    return (true)
 }
 
 function sh:myor(shape, node, list) {
     # oper = sh:filter ; arg = (name param)
-    letdyn(varshape = shape, varnode = node){
-        mapany(lambda((oper, exp)) { sh:evalfilter(varshape, varnode, exp) }, list)
-    }
+    for ((oper exp) in list){
+        if (sh:evalfilter(shape, node, exp)) {
+            return (true)
+        }
+    } ;
+    return (false)
 }
 
 function sh:mynot(shape, node, list) {
     # oper = sh:filter ; arg = (name param)
-    letdyn(varshape = shape, varnode = node){
-        ! mapany(lambda((oper, exp)) { sh:evalfilter(varshape, varnode, exp) }, list)
-    }
+    for ((oper exp) in list){
+        if (sh:evalfilter(shape, node, exp)) {
+            return (false)
+        }
+    } ;
+    return (true)
 }
+
+
+
 
 
 # ***********************************************
@@ -58,8 +69,8 @@ function sh:mynot(shape, node, list) {
 function dt:list sh:ldpath(?shape, ?s, ?path, ?inv, url) {
     let ((?p ?q) = ?path) {
     if (bound(?q), 
-        sh:myldpath(?s, ?p, ?q), 
-        sh:myldpath(?s, ?p))
+        return(sh:myldpath(?s, ?p, ?q)), 
+        return(sh:myldpath(?s, ?p)))
     }
 }
 
@@ -143,7 +154,7 @@ function dt:list sh:service2(shape, node, arg, inv, url) {
     
     let ((server | path) = arg) {
         xt:print("service:", node, server, arg); 
-        sh:evalpath(shape, node, xt:list(sh:sequence, path), inv, server)
+        return(sh:evalpath(shape, node, xt:list(sh:sequence, path), inv, server))
     }
 }
 

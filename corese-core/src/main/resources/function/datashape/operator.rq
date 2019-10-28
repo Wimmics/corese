@@ -150,11 +150,14 @@ function xsd:boolean sh:class(?shape, ?o, ?c){
 }
 
 
-function xsd:boolean sh:in(dt:graph ?shape, ?o, ?lv) {
-    letdyn (object = o, list = sh:getConstraint(sh:in, shape, lv)) {
-        mapany(lambda(value) { 
-            object = value && ( ! isLiteral(object) || datatype(object) = datatype(value)) }, 
-            list)
+function xsd:boolean sh:in(dt:graph ?shape, ?object, ?lv) {
+    let (list = sh:getConstraint(sh:in, shape, lv)) {
+        for (value in list) { 
+            if (object = value && if (isLiteral(object), datatype(object) = datatype(value), true)) {
+                return (true)
+            } 
+        } ;
+        return (false)
     }
 }
 
@@ -166,10 +169,15 @@ function sh:in(shape, sh) {
 }
 
 
-function xsd:boolean sh:languageIn(dt:graph ?shape, ?o, ?lv){
-   if (isLiteral(o)) {
-        letdyn (object = o, lan = lang(object), list = sh:getConstraint(sh:in, shape, lv)) {
-            return (mapany(lambda(value) { langMatches(lan, value) }, list))
+function xsd:boolean sh:languageIn(dt:graph ?shape, ?object, ?lv){
+   if (isLiteral(object)) {
+        let (lan = lang(object), list = sh:getConstraint(sh:in, shape, lv)) {
+            for (value in list) { 
+                if (langMatches(lan, value)) {
+                    return (true)
+                } 
+            } ;
+            return (false)
         }
     }
     else {

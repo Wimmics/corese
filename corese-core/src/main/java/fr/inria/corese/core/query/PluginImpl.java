@@ -66,6 +66,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
@@ -833,20 +834,25 @@ public class PluginImpl
     }
     
     @Override
-    public IDatatype insert(Environment env, Producer p, IDatatype[] param) {
+    public IDatatype insert(Environment env, Producer p, IDatatype... param) {
         Graph g = getGraph(p);
+        IDatatype first = param[0];
         Edge e;
         if (param.length==3) {
-            e = g.add(param[0], param[1], param[2]);
+            e = g.add(first, param[1], param[2]);
         }
+        else if (first.isPointer() && first.pointerType() == PointerType.GRAPH){
+            Graph gg = (Graph) first.getPointerObject();
+            e = gg.add(param[1], param[2], param[3]);
+        } 
         else {
-            e = g.add(param[0], param[1], param[2], param[3]);
+            e = g.add(first, param[1], param[2], param[3]);
         }
         return (e==null)?FALSE:TRUE;
     }
     
     @Override
-    public IDatatype delete(Environment env, Producer p, IDatatype[] param) {
+    public IDatatype delete(Environment env, Producer p, IDatatype... param) {
         Graph g = getGraph(p);
         List<Edge> le;
         if (param.length == 3) {
@@ -930,7 +936,9 @@ public class PluginImpl
         return count;
     }
     
-    
+    public Graph getGraph() {
+        return (Graph) getProducer().getGraph();
+    }
     
     
     // name of  current named graph 
@@ -1341,9 +1349,9 @@ public class PluginImpl
       
     IDatatype kgram(Environment env, Graph g, String  query, Mapping m) {  
         QueryProcess exec = QueryProcess.create(g, true);
-        exec.setRule(env.getQuery().isRule());
+        exec.setRule((env==null)?false:env.getQuery().isRule());
         try {
-            Mappings map = exec.sparqlQuery(query, m, getDataset(env));
+            Mappings map = exec.sparqlQuery(query, m, (env==null)?null:getDataset(env));
             if (map.getGraph() == null){
                 return DatatypeMap.createObject(map);
             }
@@ -1384,6 +1392,11 @@ public class PluginImpl
         if (ldt.length > 0){
             m = createMapping(getProducer(), ldt, 0);
         }
+        else {
+            m = new Mapping();
+        }
+        // share LDScript global variables
+        m.setBind(getEnvironment().getBind());
         QueryProcess exec = QueryProcess.create(g, true);
         try {   
             Query q = queryCache.get(query.getLabel());
@@ -1400,6 +1413,8 @@ public class PluginImpl
                 return DatatypeMap.createObject(map.getGraph());
             }
         } catch (EngineException e) {
+            System.out.println(e);
+            e.printStackTrace();
             return DatatypeMap.createObject(new Mappings());
         }
     }

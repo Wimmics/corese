@@ -14,9 +14,11 @@ import fr.inria.corese.kgram.api.core.ExprType;
 public class Rewrite {
 
     ASTQuery ast;
+    JavaCompiler jc;
 
-    Rewrite(ASTQuery ast) {
+    Rewrite(ASTQuery ast, JavaCompiler jc) {
         this.ast = ast;
+        this.jc = jc;
     }
 
     Expression process(Expression exp) {
@@ -53,6 +55,9 @@ public class Rewrite {
             switch (exp.oper()) {
                 case ExprType.IF:
                     return ifthenelse(exp);
+                default: if (jc.isReturnable(exp)) {
+                    return Term.function(Processor.RETURN, exp);
+                }
             }
         } else {
             return Term.function(Processor.RETURN, exp);

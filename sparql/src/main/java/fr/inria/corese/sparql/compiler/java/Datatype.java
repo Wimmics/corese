@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.compiler.java;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.Comparator;
@@ -132,9 +133,17 @@ public class Datatype {
     String string(IDatatype dt){
         String var = cache.get(dt);
         if (var == null){
-            var = getVariable(dt, newInstance(dt.stringValue()));
+            var = getVariable(dt, newInstance(clean(dt.stringValue())));
         }
         return var;
+    }
+    
+    String clean(String str) {
+        return str.replace("\\$", "\\\\$").replace("\\\n", " ");
+    }
+    
+    String stringasdt(String str) {
+        return string(DatatypeMap.newInstance(str));
     }
      
      /**

@@ -67,7 +67,7 @@ public class Pattern {
         for (Variable var : stack.getVariables()) {
             if (ast.isSelectVariable(var)) {
                 // SPARQL variable name: "?x"
-                sb.append(", ").append(dtc.string(var.getName()));
+                sb.append(", ").append(dtc.stringasdt(var.getName()));
                 // Java variable name: x
                 sb.append(", ").append(jc.name(var));
             }
@@ -81,7 +81,7 @@ public class Pattern {
     StringBuilder getStackBinding(){
         StringBuilder sb = new StringBuilder();
         for (Variable var : stack.getVariables()){
-            sb.append(", ").append(dtc.string(var.getName()));
+            sb.append(", ").append(dtc.stringasdt(var.getName()));
             sb.append(", ").append(jc.name(var));
         }
         return sb;
@@ -120,7 +120,7 @@ public class Pattern {
         StringBuilder args = getStackBinding();
             
         String str = 
-           String.format("GetGen.gget(kgram(%s%s), %s)", query, args, dtc.string(var));
+           String.format("mapget(kgram(%s%s), %s)", query, args, dtc.stringasdt(var));
          
         append(str);
     }

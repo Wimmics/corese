@@ -33,17 +33,21 @@ public class Rest extends TermEval {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype dt     = getBasicArg(0).eval(eval, b, env, p);
-        IDatatype index  = getBasicArg(1).eval(eval, b, env, p);
+        IDatatype dt    = getBasicArg(0).eval(eval, b, env, p);
+        IDatatype index = getBasicArg(1).eval(eval, b, env, p);
+        if (dt == null || index == null) {
+            return null;
+        }
         IDatatype last   = null;
         if (arity()>2) {
            last   = getBasicArg(2).eval(eval, b, env, p); 
         }
+        return rest(dt, index, last);
         
-        if (dt == null || index == null) {
-            return null;
-        }
-        
+    }
+    
+    public static IDatatype rest(IDatatype dt, IDatatype index, IDatatype last){        
+      
         if (dt.isMap() || dt.pointerType() == EXPRESSION) {
             dt = dt.toList();
         }
@@ -66,7 +70,7 @@ public class Rest extends TermEval {
         return null;
     }
     
-    IDatatype rest(IDatatype dt, IDatatype index) {       
+    static IDatatype rest(IDatatype dt, IDatatype index) {       
         Pointerable res = dt.getPointerObject(); 
         ArrayList<IDatatype> list = new ArrayList<>();
         int i = 0;

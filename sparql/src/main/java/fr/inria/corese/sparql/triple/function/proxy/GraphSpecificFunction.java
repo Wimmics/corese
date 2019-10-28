@@ -136,7 +136,7 @@ public class GraphSpecificFunction extends LDScript {
         
     }
     
-    IDatatype load(GraphProcessor proc, IDatatype[] param) {
+    public IDatatype load(GraphProcessor proc, IDatatype[] param) {
         switch (param.length) {
             case 0: return null;
             case 1:
@@ -192,7 +192,7 @@ public class GraphSpecificFunction extends LDScript {
         }        
     }
     
-    IDatatype edge(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
+    public IDatatype edge(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
         switch (param.length) {
             case 0:
                 return proc.edge(env, p, null, null, null);

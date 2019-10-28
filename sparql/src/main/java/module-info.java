@@ -13,6 +13,7 @@ module fr.inria.corese.sparql {
 	exports fr.inria.corese.sparql.triple.function.script;
 	exports fr.inria.corese.sparql.triple.function.extension;
 	exports fr.inria.corese.sparql.triple.function.term;
+	exports fr.inria.corese.sparql.triple.function.proxy;
 	exports fr.inria.corese.sparql.compiler.java;
 	exports fr.inria.corese.sparql.datatype.function;
 	exports fr.inria.corese.sparql.storage.api;

@@ -1,6 +1,5 @@
 package fr.inria.corese.sparql.compiler.java;
 
-import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -22,7 +21,6 @@ import static fr.inria.corese.kgram.api.core.ExprType.LET;
 import static fr.inria.corese.kgram.api.core.ExprType.RETURN;
 import static fr.inria.corese.kgram.api.core.ExprType.SEQUENCE;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.sparql.triple.function.script.Sequence;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -32,34 +30,31 @@ import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
 /**
- * Java Compiler for LDScript
- * Take an AST as input and compile the LDScript function definitions in Java
- * 
- * @author Olivier Corby, Wimmics INRIA I3S, 2017
+ * Java Compiler for LDScript Take an AST as input and compile the LDScript
+ * function definitions in Java
+ *
+ * @author Olivier Corby, Wimmics INRIA I3S, 2017-2019
  *
  */
 public class JavaCompiler {
-  
+
     private static Logger logger = LoggerFactory.getLogger(JavaCompiler.class);
     static final String NL = System.getProperty("line.separator");
-    String path =
-            "/user/corby/home/NetBeansProjects/corese-github-v4/corese-core/src/main/java/fr/inria/corese/core/extension/";
+    String path
+            = "/user/corby/home/NetBeansProjects/corese-github-v4/corese-core/src/main/java/fr/inria/corese/core/extension/";
     static final String SPACE = " ";
     static final int STEP = 2;
     static final String IDATATYPE = "IDatatype";
-    static final String PROXY_PACKAGE = "fr.inria.corese.kgenv.eval.ProxyImpl";
-    
-    
-    
+    static final String PROXY_PACKAGE = "fr.inria.corese.core.extension.Core";
+
     public static final String VAR_EXIST = "?_b";
     public String pack = "fr.inria.corese.core.extension";
-    
-    
+
     int margin = 0;
     int count = 0;
     int level = 0;
     String name = "Extension";
-    
+
     StringBuilder sb;
     Header head;
     Datatype dtc;
@@ -69,10 +64,9 @@ public class JavaCompiler {
     private Function function;
     // stack of bound variables (function parameter, let)
     Stack stack;
-    
+
     HashMap<String, Boolean> skip;
     HashMap<String, String> functionName;
-    
 
     public JavaCompiler() {
         sb = new StringBuilder();
@@ -83,70 +77,25 @@ public class JavaCompiler {
         functionName = new HashMap<>();
         init();
     }
-    
-    /**
-     * 
-     * target Java class name 
-     */
-     public JavaCompiler(String name) {
-         this();
-         record(name);
-     }
-     
-     /**
-      * name = DataShape or fr.inria.corese.extension.DataShape
-      * extract package name if any
-      */
-     void record(String name){
-         this.name = name;
-         int index = name.lastIndexOf(".");
-         if (index != -1){
-             pack = name.substring(0, index);
-             this.name = name.substring(index+1);
-         }
-         System.out.println("package: " + this.pack);
-         System.out.println("class: " + this.name);
-     }
 
-     void init(){
-        skip.put(NSManager.SHAPE + "class", true);
-        skip.put(NSManager.STL + "default", true);
-        skip.put(NSManager.STL + "aggregate", true);
-        
-        functionName.put("isURI",       "isURINode");
-        functionName.put("isBlank",     "isBlankNode");
-        functionName.put("isLiteral",   "isLiteralNode");
-        
-        functionName.put(Processor.XT_GEN_GET,     "GetGen.gget");
-        functionName.put(Processor.XT_GET,         "Get.get");
-        functionName.put(Processor.XT_EDGES,         "edge");
-        
-        functionName.put(Processor.XT_LIST,         "DatatypeMap.newList");
-        functionName.put(Processor.XT_SIZE,         "DatatypeMap.size");
-        functionName.put(Processor.XT_MEMBER,       "DatatypeMap.member");
-        functionName.put(Processor.XT_FIRST,        "DatatypeMap.first");
-        functionName.put(Processor.XT_REST,         "DatatypeMap.rest");
-        functionName.put(Processor.XT_ADD,          "DatatypeMap.add");
-        functionName.put(Processor.XT_CONS,         "DatatypeMap.cons");
-        functionName.put(Processor.XT_REVERSE,      "DatatypeMap.reverse");
-        functionName.put(Processor.XT_MERGE,        "DatatypeMap.merge");
-       
-        functionName.put(Processor.STRLEN,          "DatatypeMap.strlen");
-        functionName.put(Processor.STRDT,           "DatatypeMap.newInstance");
+    /**
+     *
+     * target Java class name
+     */
+    public JavaCompiler(String name) {
+        this();
+        record(name);
     }
-    
-    boolean skip(String name){
-        Boolean b = skip.get(name);
-        return b != null && b;
-    }
-    
+
+  
+
     @Override
     public String toString() {
         return sb.toString();
     }
 
     /**
-     * Main function to compile  AST functions
+     * Main function to compile AST functions
      */
     public JavaCompiler toJava(ASTQuery ast) throws IOException {
         this.ast = ast;
@@ -157,7 +106,7 @@ public class JavaCompiler {
         trailer();
         return this;
     }
-    
+
     public JavaCompiler toJava(Query q) throws IOException {
         ASTQuery ast = (ASTQuery) q.getAST();
         this.ast = ast;
@@ -168,7 +117,7 @@ public class JavaCompiler {
         trailer();
         return this;
     }
-    
+
     public void toJava(ASTExtension ext) throws IOException {
         for (Function exp : ext.getFunctionList()) {
             //System.out.println(exp);
@@ -178,29 +127,12 @@ public class JavaCompiler {
             }
         }
     }
-    
 
-//    public void toJavaOld(ASTExtension ext) throws IOException {
-//        for (ASTExtension.FunMap m : ext.getMaps()) {
-//            for (Function exp : m.values()) {
-//                System.out.println(exp);
-//                if (! exp.hasMetadata(Metadata.SKIP)){ 
-//                    compile(exp);
-//                    append(NL);
-//                }
-//            }
-//        }
-//    }
-    
-    void path(ASTQuery ast){
-        if (ast.hasMetadata(Metadata.PATH)){
-            path = ast.getMetadata().getValue(Metadata.PATH);
-        }
-        System.out.println("path: " + path);
-    }
-    
+    /**
+     * Write result of compiling in a file
+     */
     public void write() throws IOException {
-         write(path);
+        write(path);
     }
 
     public void write(String path) throws IOException {
@@ -214,15 +146,6 @@ public class JavaCompiler {
         fw.close();
     }
 
-    
-
-    void trailer() {
-        append("}");
-        nl();
-    }
-
-    
-    
     /**
      * Compile one function
      */
@@ -232,20 +155,29 @@ public class JavaCompiler {
         functionDeclaration(exp);
         append(" {");
         incrnl();
-        Rewrite rw = new Rewrite(ast);
+        Rewrite rw = new Rewrite(ast, this);
         Expression body = rw.process(exp.getBody());
         toJava(body);
+        finish(body);
         stack.pop(exp);
         pv(body);
         decrnl();
         append("}");
         nl();
     }
+    
+    
+    
+    
+    
+    
+    
+ 
 
     public void toJava(Expression exp) {
         exp.toJava(this, false);
     }
-    
+
     // arg = true when exp is argument of a function
     public void toJava(Expression exp, boolean arg) {
         exp.toJava(this, arg);
@@ -254,46 +186,49 @@ public class JavaCompiler {
     public void toJava(Variable var, boolean arg) {
         append(name(var));
     }
-  
+
     public void toJava(Constant cst, boolean arg) {
         append(dtc.toJava(cst.getDatatypeValue()));
     }
 
     public void toJava(Term term, boolean arg) {
-        if (term.isExist()){
+        if (term.isExist()) {
             new Pattern(this).exist(term);
-        }
-        else if (term.getName().equals(Processor.SEQUENCE)) {
+        } else if (term.getName().equals(Processor.SEQUENCE)) {
             sequence(term);
         } else if (term.isFunction()) {
             functionCall(term, arg);
         } else {
-            term(term);
+            term(term, arg);
         }
     }
-    
-    public void toJava(Function fun, boolean arg){
+
+    public void toJava(Function fun, boolean arg) {
         append(dtc.string(name(fun)));
     }
-    
+
     public void toJava(Statement term, boolean arg) {
         switch (term.oper()) {
             case ExprType.LET:
                 let(term.getLet());
                 return;
-                
+
             case ExprType.FOR:
                 loop(term.getFor());
                 return;
         }
     }
     
-   
-    String name(Variable var){
-        return var.getSimpleName();
-    }
-  
     
+    
+    
+    
+    
+    
+    
+
+
+
     void functionDeclaration(Function fun) {
         Term term = fun.getSignature();
         append("public").append(SPACE).append(IDATATYPE).append(SPACE);
@@ -309,71 +244,22 @@ public class JavaCompiler {
         }
         append(")");
     }
-    
-    String name(Function fun){
-        if (fun.isLambda()){
+
+    String name(Function fun) {
+        if (fun.isLambda()) {
             return "xt" + fun.getFunction().javaName().replace("-", "_");
         }
         return fun.getFunction().javaName();
     }
 
-     void nl() {
-        append(NL);
-        for (int i = 0; i < margin; i++) {
-            append(SPACE);
-        }
-    }
-
-    void incr() {
-        margin += STEP;
-    }
-
-    void incrnl() {
-        incr();
-        nl();
-    }
-
-    void decrnl() {
-        decr();
-        nl();
-    }
-
-    void decr() {
-        margin -= STEP;
-    }
     
     
-    void pv(Expression exp) {
-        if (isPV(exp)) {
-            pv();
-        }
-    }
     
-    void pv(){
-        append(";");
+    String name(Variable var) {
+        return var.getSimpleName();
     }
 
-    boolean isPV(Expression exp) {
-        if (!exp.isTerm()) {
-            return false;
-        }
-        switch (exp.oper()) {
-            case ExprType.IF:
-            case ExprType.FOR:
-            case ExprType.LET:
-            case ExprType.SEQUENCE:
-
-                return false;
-        }
-        return true;
-    }
-
-    StringBuilder append(String str) {
-        sb.append(str);
-        return sb;
-    }
-    
-    void loop(ForLoop term){
+    void loop(ForLoop term) {
         incrlevel();
         append("for (IDatatype ");
         toJava(term.getVariable());
@@ -389,76 +275,53 @@ public class JavaCompiler {
         append("}");
         decrlevel();
     }
-    
-    void incrlevel() {
-        level++;
-    }
-    
-    void decrlevel() {
-        level--;
-    }
-    
-    int getLevel() {
-        return level;
-    }
-     
+
+ 
+
     void let(Let term) {
-         incrlevel();
-         boolean decr = true;
-         for (Expression exp : term.getDeclaration()) {
-             if (!stack.isBound(term.getVariable(exp))) {
-                 append(IDATATYPE).append(SPACE);
-             }
-             toJava(term.getVariable(exp));
-             append(" = ");
-             toJava(term.getDefinition(exp), true);
-             pv();
-             nl();
-             stack.push(term.getVariable(exp));
-         }
-         
+        incrlevel();
+        boolean decr = true;
+        for (Expression exp : term.getDeclaration()) {
+            if (!stack.isBound(term.getVariable(exp))) {
+                append(IDATATYPE).append(SPACE);
+            }
+            toJava(term.getVariable(exp));
+            append(" = ");
+            toJava(term.getDefinition(exp), true);
+            pv();
+            nl();
+            stack.push(term.getVariable(exp));
+        }
+
         stack.push(term);
-        
+
         if (getCurrent().getBody() == term && isReturnable(term.getBody())) {
             // function body is one let
             sb.append("return ");
-            toJava(term.getBody());
         }
-        else {              
-            toJava(term.getBody());
-        }
-        
+
+        toJava(term.getBody());
+
         stack.pop(term);
-               
+
         pv(term.getBody());
-        
+
         if (decr) {
             decrlevel();
         }
     }
-    
-    boolean isReturnable(Expression exp) {
-        switch (exp.oper()) {
-            case RETURN:
-            case LET:
-            case FOR:
-            case IF:
-            case SEQUENCE:
-                return false;
-        }
-        return true;
-    }
 
-    void term(Term term) {
+
+    void term(Term term, boolean arg) {
         switch (term.oper()) {
             case ExprType.NOT:
-                not(term);
+                not(term, arg);
                 return;
             case ExprType.AND:
-                and(term);
+                and(term, arg);
                 return;
             case ExprType.OR:
-                or(term);
+                or(term, arg);
                 return;
 
             case ExprType.IN:
@@ -489,26 +352,353 @@ public class JavaCompiler {
         append("))");
     }
 
-    void and(Term term) {
+    void and(Term term, boolean arg) {
         append("and(");
-        toJava(term.getArg(0));
+        toJava(term.getArg(0), arg);
         append(", ");
-        toJava(term.getArg(1));
+        toJava(term.getArg(1), arg);
         append(")");
     }
 
-    void or(Term term) {
+    void or(Term term, boolean arg) {
         append("or(");
-        toJava(term.getArg(0));
+        toJava(term.getArg(0), arg);
         append(", ");
-        toJava(term.getArg(1));
+        toJava(term.getArg(1), arg);
         append(")");
     }
 
-    void not(Term term) {
+    void not(Term term, boolean arg) {
         append("not(");
+        toJava(term.getArg(0), arg);
+        append(")");
+    }
+    
+   
+
+    void functionCall(Term term, boolean arg) {
+        switch (term.oper()) {
+            case ExprType.IF:
+                ifthenelse(term, arg);
+                return;
+
+            case ExprType.RETURN:
+                append("return");
+                append(SPACE);
+                toJava(term.getArg(0), true);
+                return;
+
+            case ExprType.HASH:
+                hash(term);
+                return;
+
+            case ExprType.CAST:
+                cast(term);
+                return;
+
+            case ExprType.SET:
+                set(term);
+                return;
+
+            case ExprType.MAP:
+            case ExprType.MAPLIST:
+            case ExprType.MAPMERGE:
+                map(term);
+                return;
+
+            case ExprType.APPLY_TEMPLATES_WITH:
+            case ExprType.APPLY_TEMPLATES_WITH_ALL:
+                template(term);
+                return;
+        }
+
+        call(term);
+    }
+    
+    
+    
+    
+    
+     
+    
+    
+    
+    /**
+     *
+     * map(ex:fun(?x), ?list)
+     */
+    void map(Term term) {
+        if (term.oper() == ExprType.MAPMERGE) {
+            append(getFunctionName(Processor.XT_MERGE)).append("(");
+        }
+
+        append(mapName(term)).append("(");
+
+        int i = 0;
+        for (Expression exp : term.getArgs()) {
+            toJava(exp);
+            if (i++ < term.arity() - 1) {
+                append(", ");
+            }
+        }
+        append(")");
+
+        if (term.oper() == ExprType.MAPMERGE) {
+            append(")");
+        }
+    }
+
+    String javaName(String name) {
+        return NSManager.nstrip(name);
+    }
+
+    String mapName(Term term) {
+        switch (term.oper()) {
+            case ExprType.MAP:
+                return "map";
+            case ExprType.MAPLIST:
+            case ExprType.MAPMERGE:
+                return "maplist";
+        }
+        return "map";
+    }
+
+    void set(Term term) {
+        Variable var = term.getArg(0).getVariable();
+        if (!stack.isBound(var)) {
+            dtc.declare(var);
+        }
+        toJava(var);
+        append(" = ");
+        toJava(term.getArg(1), true);
+    }
+
+    void cast(Term term) {
+        toJava(term.getArg(0));
+        append(".cast(");
+        toJava(term.getCName());
+        append(")");
+    }
+
+    void hash(Term term) {
+        append("hash(");
+        append(dtc.string(term.getModality()));
+        append(", ");
         toJava(term.getArg(0));
         append(")");
+    }
+
+   
+    /**
+     * Generic call
+     */
+    void call(Term term) {
+        Method met = getMethod(term);
+        if (met == null) {
+            funcall(term);
+        } else {
+            methodcall(term, met);
+        }
+    }
+
+    void methodcall(Term term, Method met) {
+        method(term, met.getReturnType() != IDatatype.class);
+    }
+
+   
+
+    Method getMethod(Term term) {
+        if (term.getArgs().isEmpty()) {
+            return null;
+        }
+        try {
+            Class[] sig = new Class[term.getArgs().size() - 1];
+            Arrays.fill(sig, IDatatype.class);
+            //Method meth = IDatatype.class.getMethod(term.getName(), sig);
+            Method meth = IDatatype.class.getMethod(getMethodName(term), sig);
+            return meth;
+        } catch (NoSuchMethodException | SecurityException ex) {
+        }
+        return null;
+    }
+
+
+    void funcall(Term term) {
+        append(getMethodName(term));
+        append("(");
+        int i = 0;
+        for (Expression exp : term.getArgs()) {
+            toJava(exp, true);
+            if (i++ < term.arity() - 1) {
+                append(", ");
+            }
+        }
+        append(")");
+    }
+
+    void method(Term term) {
+        method(term, false);
+    }
+
+    /**
+     * wrap = true : cast method result into IDatatype
+     */
+    void method(Term term, boolean wrap) {
+        if (wrap) {
+            append("DatatypeMap.newInstance(");
+        }
+        toJava(term.getArg(0));
+        append(".");
+        append(getMethodName(term));
+        append("(");
+        int i = 0;
+        for (Expression exp : term.getArgs()) {
+            if (i > 0) {
+                toJava(exp);
+                if (i++ < term.arity() - 1) {
+                    append(", ");
+                }
+            } else {
+                i++;
+            }
+        }
+        append(")");
+        if (wrap) {
+            append(")");
+        }
+    }
+
+    String getMethodName(Term term) {
+        String name = getFunctionName(term.getLabel());
+        if (name == null) {
+            return term.javaName();
+        }
+        return name;
+    }
+
+    String getFunctionName(String name) {
+        return functionName.get(name);
+    }
+    
+    
+    
+    
+
+    void ifthenelse(Term term, boolean arg) {
+        incrlevel();
+        if (arg) {
+            ifexp(term);
+        } else {
+            ifthenelse(term);
+        }
+        decrlevel();
+    }
+
+    void ifexp(Term term) {
+        append("((");
+        toJava(term.getArg(0));
+        append(".booleanValue()");
+        append(") ? ");
+        incrnl();
+        toJava(term.getArg(1), true);
+        decrnl();
+
+        append(" : ");
+
+        incrnl();
+        toJava(term.getArg(2), true);
+        append(")");
+        decrnl();
+    }
+
+    void ifthenelse(Term term) {
+        append("if (");
+        toJava(term.getArg(0), true);
+        append(".booleanValue()");
+        append(") {");
+        incrnl();
+        toStatement(term.getArg(1));
+        pv(term.getArg(1));
+        decrnl();
+        append("}");
+        nl();
+        append("else ");
+        if (term.getArg(2).oper() == ExprType.IF) {
+            ifthenelse(term.getArg(2).getTerm());
+        } else {
+            append("{");
+            incrnl();
+            toStatement(term.getArg(2));
+            pv(term.getArg(2));
+            decrnl();
+            append("}");
+        }
+    }
+
+   
+
+    void toStatement(Expression exp) {
+        if (exp.isConstant() || exp.isVariable()) {
+            append("self(");
+            toJava(exp);
+            append(");");
+        } else {
+            toJava(exp);
+        }
+    }
+
+    void sequence(Term term) {
+        int i = 1;
+        for (Expression exp : term.getArgs()) {
+            if (getLevel() == 0 && i++ == term.arity()) {
+                if (isReturnable(exp)) {
+                    // function call
+                    sb.append("return ");
+                }
+            }
+
+            toJava(exp);
+            pv(exp);
+            nl();
+        }
+    }
+    
+    
+    
+    /*
+     * st:apply-templates-with(trans, var)
+     */
+    void template(Term term) {
+        append("getPluginTransform().transform(");
+        append(dtc.newInstance(isAll(term)));
+        for (Expression exp : term.getArgs()) {
+            append(", ");
+            toJava(exp);
+        }
+        append(")");
+    }
+
+    boolean isAll(Term term) {
+        switch (term.oper()) {
+            case ExprType.APPLY_TEMPLATES_ALL:
+            case ExprType.APPLY_TEMPLATES_WITH_ALL:
+                return true;
+        }
+        return false;
+    }
+
+    
+    
+    boolean isReturnable(Expression exp) {
+        switch (exp.oper()) {
+            case RETURN:
+            case LET:
+            case FOR:
+            case IF:
+            case SEQUENCE:
+                return false;
+        }
+        return true;
     }
 
     String getTermName(Term term) {
@@ -540,326 +730,171 @@ public class JavaCompiler {
             case ExprType.OR:
                 return "||";
 
-
         }
         return "undef";
     }
 
-    void functionCall(Term term, boolean arg) {
-        switch (term.oper()) {
-            case ExprType.IF:
-                ifthenelse(term, arg);
-                return;
-
-            case ExprType.RETURN:
-                append("return");
-                append(SPACE);
-                toJava(term.getArg(0), true);
-                return;
-
-            case ExprType.HASH:
-                hash(term);
-                return;
-                
-            case ExprType.CAST:
-                cast(term);
-                return;
-                
-            case ExprType.SET:
-                set(term);
-                return;
-                
-            case ExprType.MAP:
-            case ExprType.MAPLIST:
-            case ExprType.MAPMERGE:
-                map(term);
-                return;
-                
-            case ExprType.APPLY_TEMPLATES_WITH:
-            case ExprType.APPLY_TEMPLATES_WITH_ALL:
-                template(term);
-                return;
-                
-        }
-
-        call(term);
-    }
-    
     String getExistVar() {
         return VAR_EXIST + count++;
     }
+
     
     
     /**
-     * 
-     * map(ex:fun(?x), ?list)
+     * name = DataShape or fr.inria.corese.core.extension.DataShape extract
+     * package name if any
      */
-    void map(Term term){
-        if (term.oper() == ExprType.MAPMERGE){
-            append(getFunctionName(Processor.XT_MERGE)).append("(");
+    void record(String name) {
+        this.name = name;
+        int index = name.lastIndexOf(".");
+        if (index != -1) {
+            pack = name.substring(0, index);
+            this.name = name.substring(index + 1);
         }
-        
-        append(mapName(term)).append("(");
-        
-        int i = 0;
-        for (Expression exp : term.getArgs()) {
-            toJava(exp);                
-            if (i++ < term.arity() - 1) {
-                append(", ");
-            }
-        }
-        append(")");
-        
-        if (term.oper() == ExprType.MAPMERGE){
-            append(")");
-        }
-    }
-    
-    String javaName(String name){
-        return NSManager.nstrip(name);
+        System.out.println("package: " + this.pack);
+        System.out.println("class: " + this.name);
     }
 
-    String mapName(Term term){
-        switch(term.oper()){
-            case ExprType.MAP: return "map";
-            case ExprType.MAPLIST: 
-            case ExprType.MAPMERGE: return "maplist";
-        }
-        return "map";
-    }
-    
-    void set(Term term) {
-        Variable var = term.getArg(0).getVariable();
-        if (! stack.isBound(var)) {
-            dtc.declare(var);
-        }
-        toJava(var);
-        append(" = ");
-        toJava(term.getArg(1), true);
+    void init() {
+        skip.put(NSManager.SHAPE + "class", true);
+        skip.put(NSManager.STL + "default", true);
+        skip.put(NSManager.STL + "aggregate", true);
+
+        functionName.put("isURI", "isURINode");
+        functionName.put("isBlank", "isBlankNode");
+        functionName.put("isLiteral", "isLiteralNode");
+
+        functionName.put(Processor.XT_GEN_GET, "GetGen.gget");
+        functionName.put(Processor.XT_GET, "Get.get");
+        functionName.put(Processor.XT_EDGES, "edge");
+
+        functionName.put(Processor.XT_LIST, "DatatypeMap.newList");
+        functionName.put(Processor.XT_SIZE, "DatatypeMap.size");
+        functionName.put(Processor.XT_MEMBER, "DatatypeMap.member");
+        functionName.put(Processor.XT_FIRST, "DatatypeMap.first");
+        functionName.put(Processor.XT_REST, "DatatypeMap.rest");
+        functionName.put(Processor.XT_ADD, "DatatypeMap.add");
+        functionName.put(Processor.XT_CONS, "DatatypeMap.cons");
+        functionName.put(Processor.XT_REVERSE, "DatatypeMap.reverse");
+        functionName.put(Processor.XT_MERGE, "DatatypeMap.merge");
+
+        functionName.put(Processor.STRLEN, "DatatypeMap.strlen");
+        functionName.put(Processor.STRDT, "DatatypeMap.newInstance");
     }
 
-        
-    void cast(Term term){
-        toJava(term.getArg(0));
-        append(".cast(");
-        toJava(term.getCName()); 
-        append(")");
-    }
-    
-
-    void hash(Term term) {
-        append("hash(");
-        append(dtc.string(term.getModality()));
-        append(", ");
-        toJava(term.getArg(0));
-        append(")");
+    boolean skip(String name) {
+        Boolean b = skip.get(name);
+        return b != null && b;
     }
 
-    boolean isMethod(Term term) {
-        String oper = term.getLabel();
-        try {
-            ClassLoader cl = getClass().getClassLoader();
-            Class c = cl.loadClass(PROXY_PACKAGE);
-            Class<IDatatype>[] aclasses = new Class[term.getArity()];
-            for (int i = 0; i < aclasses.length; i++) {
-                aclasses[i] = IDatatype.class;
-            }
-            c.getMethod(oper, aclasses);
-
-            return true;
-
-        } catch (ClassNotFoundException e) {
-            logger.error(e.getMessage());
-        } catch (SecurityException e) {
-        } catch (NoSuchMethodException e) {
-            logger.error(e.getMessage());
-        } catch (IllegalArgumentException e) {
+    void path(ASTQuery ast) {
+        if (ast.hasMetadata(Metadata.PATH)) {
+            path = ast.getMetadata().getValue(Metadata.PATH);
         }
-        return false;
+        System.out.println("path: " + path);
     }
 
-    void call(Term term) {
-        if (isDatatypeMethod(term)) {
-            method(term);
-            return;
-        }
-//        else if (term.getLongName().startsWith(NSManager.STL)){
-//            // st:get() -> pt.get()
-//            append("getPluginTransform().");
-//        }
-        funcall(term);
-    }
-    
-    boolean isDatatypeMethod(Term term){
-        return getMethod(term) != null;
-    }
-    
-    Method getMethod(Term term) {
-        if (term.getArgs().isEmpty()){
-            return null;
-        }
-        try {
-            Class[] sig = new Class[term.getArgs().size()-1];
-            Arrays.fill(sig, IDatatype.class);
-            Method meth = IDatatype.class.getMethod(term.getName(), sig);
-            return meth;
-        } catch (NoSuchMethodException | SecurityException ex) {
-        }
-        return null;
-    }
-    
-    boolean isBooleanMethod(Term term) {
-        Method met = getMethod(term);
-        return met != null && met.getReturnType() == boolean.class;
-    }
-    
-    /*
-     * st:apply-templates-with(trans, var)
-     */
-    void template(Term term){       
-       append("getPluginTransform().transform(");
-       append(dtc.newInstance(isAll(term)));
-       for (Expression exp : term.getArgs()) {
-           append(", ");
-           toJava(exp);            
-       }
-       append(")");
-    }
-    
-    boolean isAll(Term term){
-        switch (term.oper()){
-            case ExprType.APPLY_TEMPLATES_ALL:
-            case ExprType.APPLY_TEMPLATES_WITH_ALL: return true;               
-       } 
-        return false;
-    }
-    
-    void funcall(Term term){
-        //append(term.javaName());
-        append(getMethodName(term));
-        append("(");
-        int i = 0;
-        for (Expression exp : term.getArgs()) {
-            toJava(exp, true);
-            if (i++ < term.arity() - 1) {
-                append(", ");
-            }
-        }
-        append(")");
-    }
-    
-    void method(Term term) {
-        toJava(term.getArg(0));
-        append(".");
-        append(getMethodName(term));
-        append("(");
-        int i = 0;
-        for (Expression exp : term.getArgs()) {
-            if (i > 0) {
-                toJava(exp);
-                if (i++ < term.arity() - 1) {
-                    append(", ");
-                }
-            }
-            else {
-                i++;
-            }
-        }
-        append(")");
-    }
-    
-    String getMethodName(Term term) {
-        String name = getFunctionName(term.getLabel());
-        if (name == null) {
-            return term.javaName();
-        }
-        return name;
-    }
-    
-    String getFunctionName(String name) {
-        return functionName.get(name);
-    }
-
-    void ifthenelse(Term term, boolean arg) {
-        incrlevel();
-        if (arg) {
-            ifexp(term);
-        }
-        else {
-            ifthenelse(term);
-        }
-        decrlevel();
-    }
-    
-    void ifexp(Term term) {
-        append("((");
-        toJava(term.getArg(0));
-        append(".booleanValue()");
-        append(") ? ");
-        incrnl();
-        toJava(term.getArg(1), true);
-        decrnl();
-        
-        append(" : ");
-
-        incrnl();
-        toJava(term.getArg(2), true);
-        append(")");
-        decrnl();
-    }
-    
-    
-    void ifthenelse(Term term) {
-        append("if (");
-        toJava(term.getArg(0));
-        append(".booleanValue()");
-        append(") {");
-        incrnl();
-        toStatement(term.getArg(1));
-        pv(term.getArg(1));
-        decrnl();
+    void trailer() {
         append("}");
         nl();
-        append("else ");
-        if (term.getArg(2).oper() == ExprType.IF) {
-            ifthenelse(term.getArg(2).getTerm());
-        } else {
-            append("{");
-            incrnl();           
-            toStatement(term.getArg(2));
-            pv(term.getArg(2));
-            decrnl();
-            append("}");
-        }
     }
 
-    void toStatement(Expression exp) {
-        if (exp.isConstant() || exp.isVariable()) {
-            append("self(");
-            toJava(exp);
-            append(");");
-        } else {
-            toJava(exp);
-        }
-    }
-
-    void sequence(Term term) {
-        int i = 1;
-        for (Expression exp : term.getArgs()) {
-            if (getLevel() == 0 && i++ == term.arity()) {
-                if (isReturnable(exp)) {
-                    // function call
-                    sb.append("return ");
+    void finish(Expression body) {
+        switch (body.oper()) {
+            case FOR:
+                append(NL).append("return TRUE;");
+                break;
+            case SEQUENCE:
+                Expression last = body.getArg(body.arity() - 1);
+                if (last.oper() == FOR) {
+                    append(NL).append("return TRUE;");
                 }
-            }
-                       
-            toJava(exp);
-            pv(exp);
-            nl();
+                break;
         }
     }
     
-     /**
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    
+    void incrlevel() {
+        level++;
+    }
+
+    void decrlevel() {
+        level--;
+    }
+
+    int getLevel() {
+        return level;
+    }
+    
+    void nl() {
+        append(NL);
+        for (int i = 0; i < margin; i++) {
+            append(SPACE);
+        }
+    }
+
+    void incr() {
+        margin += STEP;
+    }
+
+    void incrnl() {
+        incr();
+        nl();
+    }
+
+    void decrnl() {
+        decr();
+        nl();
+    }
+
+    void decr() {
+        margin -= STEP;
+    }
+
+    void pv(Expression exp) {
+        if (isPV(exp)) {
+            pv();
+        }
+    }
+
+    void pv() {
+        append(";");
+    }
+
+    boolean isPV(Expression exp) {
+        if (!exp.isTerm()) {
+            return false;
+        }
+        switch (exp.oper()) {
+            case ExprType.IF:
+            case ExprType.FOR:
+            case ExprType.LET:
+            case ExprType.SEQUENCE:
+
+                return false;
+        }
+        return true;
+    }
+
+    StringBuilder append(String str) {
+        sb.append(str);
+        return sb;
+    }
+
+    /**
      * @return the function
      */
     public Function getFunction() {

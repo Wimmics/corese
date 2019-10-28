@@ -83,7 +83,7 @@ public class GetGen extends TermEval {
         } 
         return getResult(dt.get(ind.intValue()));
     }
-    
+       
     static IDatatype getResult(IDatatype dt){
         if (dt == null){
             return UNDEF;

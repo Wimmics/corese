@@ -71,6 +71,8 @@ public class Memory extends PointerObject implements Environment {
     private ApproximateSearchEnv appxSearchEnv;
     boolean debug = DEBUG_DEFAULT;
 
+    public Memory() {}
+    
     public Memory(Matcher m, Evaluator e) {
         match = m;
         eval = e;

@@ -80,7 +80,7 @@ public class Mapping
     private Eval eval;
     boolean debug = DEBUG_DEFAULT;
 
-    Mapping() {
+    public Mapping() {
         this.qEdges = emptyEdge;;
         this.edges = emptyEntity;
         init(emptyNode, emptyNode);

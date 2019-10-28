@@ -292,7 +292,7 @@ public class Query extends Exp implements Graphable {
 
     private String service;
 	
-	Query(){
+	public Query(){
         super(QUERY);
 		from 		= new ArrayList<Node>();
 		named 		= new ArrayList<Node>();

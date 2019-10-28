@@ -399,6 +399,7 @@ public class Mappings extends PointerObject
     }
 
     @Override
+    // PRAGMA: Do **not** take var into account
     public Object getValue(String var, int n) {
         if (n >= size()) return null;
         return get(n);

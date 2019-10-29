@@ -109,6 +109,7 @@ function sh:start(shape) {
     st:visit(st:start, st:trace) ;
     # validation report graph
     set(validationReport = query(construct where {})) ;
+    set(bnodeid = bnode()) ;
     set(mapmap = xt:map()) ;
     set(recordmapsuc = xt:map());
     set(recordmapfail = xt:map());
@@ -244,6 +245,9 @@ function sh:value(v){
     return(if (isURI(v) && v = st:null, error(), v))
 }
 
+function sh:isValue(v){
+    return (! (isURI(v) && v = st:null))
+}
 
 function xsd:boolean sh:trace() {
     return (coalesce(shaclTrace, false))
@@ -279,62 +283,66 @@ function us:insert(dt:graph g, dt:graph report) {
 
 #
 # create a validation result  graph
-# stored in the visitor graph
-# get it with st:visitedGraph()
 # sh :  the shape
 # cst : the constraint in case of sh:node
 #
-function xsd:boolean sh:result(?name, ?sh, ?cst, dt:graph ?shape, ?foc, ?p, ?o){
-    let (g = 
-       construct {
-        ?bnode a sh:ValidationReport ; 
-            sh:result ?r ; 
-            sh:conforms false .
+function xsd:boolean sh:result(name, sh, cst, dt:graph shape, foc, path, node){
+    let (res = uuid(),
+        def = coalesce(sh:isdefby(name), name),
+        sev = coalesce(xt:value(shape, sh, sh:severity), sh:Violation),
+        mes = sh:getTheMessage(shape, sh, cst),
+        abnode = sh:bnodeid(),
+        rep = validationReport
+        ) {
         
-        ?r rdf:type sh:ValidationResult ;
-            sh:resultSeverity ?sev ;
-            sh:focusNode ?foc ;
-            sh:focusNodeDetail ?focDetail ;
-            sh:resultPath ?pathDetail ; 
-            #sh:resultPath ?pp ; 
-            #sh:pathDetail ?pathDetail ; 
-            sh:value ?oo ;
-            sh:valueDetail ?valueDetail ;
-            sh:resultMessage ?mes ;
-            sh:sourceConstraintComponent ?def ;
-            sh:sourceShape ?sh
-        } 
-        where { 
-            bind(uuid() as ?r)
-            bind(coalesce(sh:isdefby(?name), ?name) as ?def)
-            bind(coalesce(xt:value(?shape, ?sh, sh:severity), sh:Violation) as ?sev)
-            bind(sh:getMessage(?shape, ?sh, ?cst) as ?m)
-            bind(if (bound(?m), ?m, concat("Fail at: ", sh:createMessage(?shape, ?sh, ?cst))) as ?mes)
-            bind(sh:value(?p) as ?pp)
-            bind(sh:value(?o) as ?oo)            
-            bind(if (bound(?pp), sh:graph(?shape, ?pp), error())  as ?pathDetail)                                       
-            bind(sh:graphbnode(?shape, ?foc) as ?focDetail)
-            bind(if (bound(?oo), sh:graphbnode(?shape, ?oo), error())  as ?valueDetail)
-            bind(sh:bnodeid() as ?bnode)
-        } 
-        values (?name ?sh ?cst ?shape ?foc  ?p ?o) { (UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF UNDEF) }
-        ) 
-    {
-        us:insert(g, validationReport);
-        return(true)
-    }
+       xt:insert(rep, abnode, rdf:type, sh:ValidationReport);
+       xt:insert(rep, abnode, sh:result, res);
+       xt:insert(rep, abnode, sh:conforms, false);
+       
+       xt:insert(rep, res, rdf:type, sh:ValidationResult);
+       xt:insert(rep, res, sh:resultSeverity, sev);
+       xt:insert(rep, res, sh:focusNode, foc);
+       xt:insert(rep, res, sh:resultMessage, mes) ;
+       xt:insert(rep, res, sh:sourceConstraintComponent, def) ;
+       xt:insert(rep, res, sh:sourceShape, sh) ;
+                                              
+       if (sh:isValue(path)) {
+            xt:insert(rep, res, sh:resultPath, sh:graph(shape, path))
+       } ; 
+       if (sh:isValue(node)) {
+            xt:insert(rep, res, sh:value, node) 
+       } ;
+       
+       if (isBlank(node)) {
+            xt:insert(rep, res, sh:valueDetail, sh:graph(shape, node)) 
+       } ;
+       if (isBlank(foc)) {
+            xt:insert(rep, res, sh:focusNodeDetail, sh:graph(shape, foc)) 
+       } 
+    } ;
+    return(true)
+}
+
+
+
+
+function sh:getTheMessage(shape, sh, cst) {
+    coalesce (sh:getMessage(shape, sh, cst), 
+            concat("Fail at: ", sh:createMessage(shape, sh, cst)))
 }
 
 function sh:createMessage(shape, sh, cst) {
-    if (isURI(cst) && cst = st:null, 
-        xt:turtle(shape, sh),  
-        xt:turtle(shape, cst))
+    if (sh:isValue(cst), 
+        xt:turtle(shape, cst),
+        xt:turtle(shape, sh)  
+    )
 }
 
 function sh:getMessage(shape, sh, cst) {
-    if (isURI(cst) && cst = st:null, 
-        xt:value(shape, sh, sh:message),  
-        coalesce(xt:value(shape, cst, sh:message), xt:value(shape, sh, sh:message)))
+    if (sh:isValue(cst), 
+        coalesce(xt:value(shape, cst, sh:message), xt:value(shape, sh, sh:message)),
+        xt:value(shape, sh, sh:message)  
+        )
 }
 
 
@@ -357,6 +365,10 @@ function sh:message(sh){
 }
 
 function sh:bnodeid(){
+    return(bnodeid) 
+}
+
+function sh:bnodeid2(){
     coalesce(bnodeid, set(bnodeid = bnode()))
 }
 

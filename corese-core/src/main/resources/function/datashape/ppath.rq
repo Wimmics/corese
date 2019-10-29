@@ -74,7 +74,7 @@ function sh:usernamespace2(oper) {
 
 function sh:usernamespace(oper) {
     for (pref in xt:list(rdf:, rdfs:, owl:, sh:)) {
-        if (strstarts(pref, pref)) {
+        if (strstarts(oper, pref)) {
             return (false)
         }
     } ;

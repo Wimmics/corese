@@ -369,7 +369,7 @@ public class Transformer implements ExpType {
             String name = ast.getMetadata().getValue(Metadata.COMPILE);
             JavaCompiler jc = new JavaCompiler(name);
             try {
-                jc.toJava(ast);
+                jc.compile(ast);
                 jc.write();
             } catch (IOException ex) {
                 logger.error(ex.getMessage());

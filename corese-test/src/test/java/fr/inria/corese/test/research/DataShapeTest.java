@@ -41,11 +41,16 @@ public class DataShapeTest {
        DataShapeTest.class.getClassLoader().getResource("data/data-shapes/data-shapes-test-suite/tests/").getPath()+"/";
     
     static String[] names = {
-        "core/property"
-            , "core/path", "core/node", "core/complex", "core/misc", "core/targets", "core/validation-reports",
-       //"sparql/property"
+        "core/property",
+             "core/path",
+             "core/node", 
+        "core/complex", 
+        "core/misc", 
+        "core/targets", 
+            "core/validation-reports",
             
-       //,"sparql/node" ,
+       "sparql/property",
+       "sparql/node" ,
        //  "sparql/component"
     };
     static String qm =
@@ -335,10 +340,10 @@ public class DataShapeTest {
 
      
     Graph exec(String shape, String data) throws EngineException, LoadException {
-        return execjava(shape, data);
+        return execds(shape, data);
     }  
     
-    // 4.948
+    // 4.659
     Graph execds(String shape, String data) throws EngineException, LoadException {
         Graph g  = load(data);        
         Graph sh = (data.equals(shape)) ? g : load(shape);  
@@ -418,27 +423,28 @@ public class DataShapeTest {
     }
 
     boolean compare(int i, String mes, Graph g, Mapping w3, Mapping kg, String var, boolean path) {
-        IDatatype dt1 = (IDatatype) w3.getValue(var);
-        IDatatype dt2 = (IDatatype) kg.getValue(var);
-        if (dt1 != null) {
-            if (dt2 == null) {
-                System.out.println(i + mes + dt1 + " " + dt2);
+        IDatatype dtw3 = (IDatatype) w3.getValue(var);
+        IDatatype dtkg = (IDatatype) kg.getValue(var);
+        if (dtw3 != null) {
+            if (dtkg == null) {
+                System.out.println(i + mes + dtw3 + " " + dtkg);
                 return false;
-            } else if (path && dt1.isBlank()) {
+            } else if (path && dtw3.isBlank()) {
                 // in kg report graph,  path is pretty printed and stored in a st:graph custom literal datatype
                 // in such a way that once pretty printed, validation report graph path is a SHACL path
                 // hence here we compare the pretty print of  W3C path with pretty print of kg path
                 Transformer t = Transformer.create(g, Transformer.TURTLE);
-                IDatatype res = t.process(dt1);
-                if (!res.stringValue().equals(dt2.stringValue())) {
+                IDatatype ddw3 = t.process(dtw3);
+                if (!ddw3.stringValue().equals(dtkg.stringValue())) {
                     System.out.println(i + mes);
-                    System.out.println(res.stringValue() + "\n" + dt2.stringValue());
+                    System.out.println("w3c: " + ddw3.stringValue());
+                    System.out.println("kg:  " + dtkg.stringValue() + " " + dtkg.getList());
                     System.out.println("__");
                     return false;
                 }
-            } else //if ((!bn || !p1.isBlank()) && !p1.equals(p2)) {
-            if (!((dt1.isBlank() && dt2.isBlank()) || dt1.equals(dt2))) {
-                System.out.println(i + mes + dt1 + " " + dt2);
+            } else 
+            if (!((dtw3.isBlank() && dtkg.isBlank()) || dtw3.equals(dtkg))) {
+                System.out.println(i + mes + dtw3 + " " + dtkg);
                 return false;
             }
 

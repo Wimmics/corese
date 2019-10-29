@@ -3,6 +3,7 @@ package fr.inria.corese.test.engine;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.shacl.Shacl;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -10,8 +11,11 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.VariableScope;
 import fr.inria.corese.sparql.api.IDatatype;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Assert;
 import static org.junit.Assert.assertEquals;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -20,9 +24,21 @@ import org.junit.Test;
  *
  */
 public class TestFederate {
+    
+    @BeforeClass
+    public static void before() {
+        try {
+            // import SHACL Interpreter
+            new Shacl(Graph.create()).eval();
+        } catch (EngineException ex) {
+            Logger.getLogger(TestFederate.class.getName()).log(Level.SEVERE, null, ex);
+        }
+    }
+    
+    
 
     Mappings process(QueryProcess exec, String q) throws EngineException {
-        System.out.println(q);
+        //System.out.println(q);
         return exec.query(q);
     }
     
@@ -49,10 +65,10 @@ public class TestFederate {
                    + "]"
                    + "}";
         
-         String q = 
-                "select ?r where { "
-                + "bind (us:test() as ?t)"
-                + "bind (xt:shapeGraph() as ?g) "
+         String q =                   
+                  "select ?r where { "
+                + "bind (us:test() as ?t) "
+                + "bind (sh:shacl() as ?g) "
                 + "bind (xt:print(xt:turtle(?g)) as ?p) "
                 + "graph ?g { [] sh:result ?r }"
                 + "}  "
@@ -93,7 +109,7 @@ public class TestFederate {
          String q = 
                 "select ?r where { "
                 + "bind (us:test() as ?t)"
-                + "bind (xt:shapeGraph() as ?g) "
+                + "bind (sh:shacl() as ?g) "
                 + "bind (xt:print(xt:turtle(?g)) as ?p) "
                 + "graph ?g { [] sh:result ?r }"
                 + "}  "
@@ -136,7 +152,7 @@ public class TestFederate {
          String q = 
                 "select ?r where { "
                 + "bind (us:test() as ?t)"
-                + "bind (xt:shapeGraph() as ?g) "
+                + "bind (sh:shacl() as ?g) "
                 + "bind (xt:print(xt:turtle(?g)) as ?p) "
                 + "graph ?g { [] sh:result ?r }"
                 + "}  "
@@ -180,7 +196,7 @@ public class TestFederate {
                 + "}";
         
         String q = "select ?r where { "
-                + "bind (xt:shapeGraph() as ?g) "
+                + "bind (sh:shacl() as ?g) "
                // + "bind (xt:print(xt:turtle(?g)) as ?p) "
                 + "graph ?g { [] sh:result ?r }"
                 + "}  ";
@@ -216,7 +232,7 @@ public class TestFederate {
         
         String q = 
                 "select ?r where { "
-                + "bind (xt:shapeGraph() as ?g) "
+                + "bind (sh:shacl() as ?g) "
                // + "bind (xt:print(xt:turtle(?g)) as ?p) "
                 + "graph ?g { [] sh:result ?r }"
                 + "}  ";
@@ -269,12 +285,12 @@ public class TestFederate {
         QueryProcess exec = QueryProcess.create(g);
 
         String q = "prefix h: <http://www.inria.fr/2015/humans#>"
-               // + "@trace @debug "
+                + "@trace "
                 + "@variable "
                 + "@type  kg:exist "
                 + "@federate "
                 + "<http://fr.dbpedia.org/sparql> "
-                + "<http://corese.inria.fr/sparql>"
+                + "<http://corese.inria.fr/sparql> "
                 + "select * "
                 + "where { "
                 + "?x h:name ?n   "

@@ -8,7 +8,6 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import java.util.HashMap;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -21,7 +20,9 @@ import java.util.logging.Logger;
 public class ShaclJava {
     Graph g;
     
-    static { init(); }
+    static { 
+        init(); 
+    }
     
     static void init() {
         try {

@@ -1346,23 +1346,6 @@ public class PluginImpl
     }
     
     
-      
-    IDatatype kgram(Environment env, Graph g, String  query, Mapping m) {  
-        QueryProcess exec = QueryProcess.create(g, true);
-        exec.setRule((env==null)?false:env.getQuery().isRule());
-        try {
-            Mappings map = exec.sparqlQuery(query, m, (env==null)?null:getDataset(env));
-            if (map.getGraph() == null){
-                return DatatypeMap.createObject(map);
-            }
-            else {
-                return DatatypeMap.createObject(map.getGraph());
-            }
-        } catch (EngineException e) {
-            return DatatypeMap.createObject(new Mappings());
-        }
-    }
-     
     Dataset getDataset(Environment env) {
         Context c = (Context) env.getQuery().getContext();
         if (c != null) {
@@ -1378,6 +1361,22 @@ public class PluginImpl
             return new Dataset(c);
         }
         return null;
+    } 
+    
+    IDatatype kgram(Environment env, Graph g, String  query, Mapping m) {  
+        QueryProcess exec = QueryProcess.create(g, true);
+        exec.setRule((env==null)?false:env.getQuery().isRule());
+        try {
+            Mappings map = exec.sparqlQuery(query, m, (env==null)?null:getDataset(env));
+            if (map.getGraph() == null){
+                return DatatypeMap.createObject(map);
+            }
+            else {
+                return DatatypeMap.createObject(map.getGraph());
+            }
+        } catch (EngineException e) {
+            return DatatypeMap.createObject(new Mappings());
+        }
     }
     
      /**

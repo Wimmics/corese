@@ -12,7 +12,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.core.FunctionEvaluator;
 import fr.inria.corese.sparql.triple.function.extension.IOFunction;
-import fr.inria.corese.sparql.triple.function.extension.Rest;
 import fr.inria.corese.sparql.triple.function.proxy.GraphSpecificFunction;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.lang.reflect.InvocationTargetException;
@@ -60,6 +59,10 @@ public class Core extends PluginImpl implements FunctionEvaluator {
         prefix.put(pref, ns);
     }
     
+    /**
+     * Define prefix namespace for funcall(sh:fun)
+     * because functions are defined as sh_fun()
+     */
     static void defNamespace() {
         prefix = new HashMap<>();
         define("sh", NSManager.SHAPE);
@@ -84,6 +87,12 @@ public class Core extends PluginImpl implements FunctionEvaluator {
     public void setEnvironment(Environment env) {
         super.setEnvironment(env);
     }
+    
+    
+    
+    
+    
+    
 
     /**
      * Mappings map Return value of var in first Mapping Use case: bind (exists
@@ -118,20 +127,11 @@ public class Core extends PluginImpl implements FunctionEvaluator {
     }
 
     IDatatype xt_value(IDatatype g, IDatatype s, IDatatype p) {
-        return value(null, getProducer(), g, s, p, 0);
+        return value(null, getProducer(), g, s, p, 1);
     }
 
     IDatatype xt_value(IDatatype s, IDatatype p) {
-        return value(null, getProducer(), null, s, p, 0);
-    }
-
-    IDatatype xt_set(IDatatype s, IDatatype p, IDatatype o) {
-        IDatatype dt = s.set(p, o);
-        return dt;
-    }
-
-    IDatatype xt_has(IDatatype map, IDatatype key) {
-        return map.has(key);
+        return value(null, getProducer(), null, s, p, 1);
     }
 
     IDatatype xt_objects(IDatatype s, IDatatype p) {
@@ -149,10 +149,6 @@ public class Core extends PluginImpl implements FunctionEvaluator {
             list.add((IDatatype) edge.getNode(n).getDatatypeValue());
         }
         return DatatypeMap.newList(list);
-    }
-
-    IDatatype xt_grest(IDatatype dt, IDatatype index, IDatatype last) {
-        return  Rest.rest(dt, index, last);
     }
 
     IDatatype xt_insert(IDatatype... ldt) {
@@ -182,6 +178,11 @@ public class Core extends PluginImpl implements FunctionEvaluator {
     IDatatype xt_turtle(IDatatype g, IDatatype x) {
         Transformer t = Transformer.create(getGraph(g), Transformer.TURTLE);
         return t.process(x);
+    }
+    
+    @Override
+    public IDatatype strdt(IDatatype dt, IDatatype type) {
+        return DatatypeMap.newInstance(dt.getLabel(), type.getLabel());
     }
 
     void trace(Object... lobj) {
@@ -358,16 +359,12 @@ public class Core extends PluginImpl implements FunctionEvaluator {
         return DatatypeMap.newInstance(str);
     }
 
-    IDatatype xt_map() {
-        return DatatypeMap.map();
-    }
-
     IDatatype xt_validURI(IDatatype dt) {
         return new IOFunction("validURI").validURI(dt);
     }
 
-    IDatatype xt_sparql(IDatatype... dt) {
-        return sparql(null, getProducer(), dt);
+    IDatatype xt_sparql(IDatatype q, IDatatype... dt) {
+        return kgram(q, dt);
     }
 
     IDatatype xt_replace(IDatatype str, IDatatype x, IDatatype y) {

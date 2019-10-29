@@ -471,6 +471,11 @@ public class CoreseDatatype
     public int size() {
         return 0;
     }
+    
+    @Override
+    public IDatatype length() {
+        return DatatypeMap.newInstance(size());
+    }
 
     @Override
     public boolean isUndefined() {
@@ -548,6 +553,7 @@ public class CoreseDatatype
         return false;
     }
     
+    // CoresePointer of LDScript Extension datatype
     @Override
     public boolean isExtension() {
         return false;

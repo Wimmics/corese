@@ -109,7 +109,8 @@ public interface IDatatype
     
 
     int size();
-         
+    IDatatype length();
+    
     @Override boolean isBlank();
     @Override boolean isLiteral();
     @Override boolean isURI();

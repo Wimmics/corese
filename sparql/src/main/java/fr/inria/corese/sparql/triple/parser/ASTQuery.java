@@ -2735,7 +2735,7 @@ public class ASTQuery
     
     public String toJava() throws IOException{
           JavaCompiler jc = new JavaCompiler();
-          jc.toJava(this);
+          jc.compile(this);
           return jc.toString();
     }
     

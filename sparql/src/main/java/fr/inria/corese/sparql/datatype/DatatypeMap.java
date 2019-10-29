@@ -1012,34 +1012,6 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
                 || c == '-' || c == '.' || c == '_' || c == '~';
     }
 
-    // DRAFT
-//    public static IDatatype result(IDatatype dt) {
-//        switch (dt.getCode()) {
-//            // return a copy to prevent side effects with cached IDatatype
-//            // use case: parallel threads
-//            case IDatatype.INTEGER:
-//                if (dt.intValue() < INTMAX) {
-//                    dt = newInstance(dt.intValue());
-//                }
-//                break;
-//
-//            case IDatatype.BOOLEAN:
-//                dt = newInstance(dt.booleanValue());
-//                break;
-//        }
-//        dt.setIndex(IDatatype.RESULT);
-//        return dt;
-//    }
-//
-//    public static boolean isResult(IDatatype dt) {
-//        return dt.getIndex() == IDatatype.RESULT;
-//    }
-//
-//    public static IDatatype getResultValue(IDatatype dt) {
-//        dt.setIndex(IDatatype.VALUE);
-//        return dt;
-//    }
-
     public static boolean isBound(IDatatype dt) {
         return dt != UNBOUND;
     }
@@ -1048,7 +1020,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         if (!dt.isList()) {
             return null;
         }
-        return dt.getList().length();
+        return dt.length();
     }
 
     public static IDatatype first(IDatatype dt) {

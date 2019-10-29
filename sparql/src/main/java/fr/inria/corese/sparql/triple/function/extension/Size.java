@@ -28,14 +28,8 @@ public class Size extends TermEval {
         if (dt == null) {
             return null;
         }
-        if (dt.isList()){
-            return DatatypeMap.size(dt);
-        }
-        if (dt.isMap() || dt.isJSON()) {
-            return DatatypeMap.newInstance(dt.size());
-        }
-        if (dt.isPointer()){
-            return DatatypeMap.newInstance(dt.getPointerObject().size());                    
+        if (dt.isExtension()){
+            return dt.length();                    
         }
         return null;
     }

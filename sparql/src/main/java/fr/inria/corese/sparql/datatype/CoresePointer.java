@@ -118,7 +118,12 @@ public class CoresePointer extends CoreseUndefLiteral {
         }
     }
     
-     @Override
+    @Override
+    public int size() {
+        return getPointerObject().size();
+    }
+    
+    @Override
     public List<IDatatype> getValueList() {   
          if (pobject == null){
             return new ArrayList<>(); 

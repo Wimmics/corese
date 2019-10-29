@@ -15,9 +15,21 @@ import fr.inria.corese.sparql.triple.function.script.Statement;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.ExprType;
+import static fr.inria.corese.kgram.api.core.ExprType.AND;
+import static fr.inria.corese.kgram.api.core.ExprType.DIV;
+import static fr.inria.corese.kgram.api.core.ExprType.EQ;
 import static fr.inria.corese.kgram.api.core.ExprType.FOR;
+import static fr.inria.corese.kgram.api.core.ExprType.GE;
+import static fr.inria.corese.kgram.api.core.ExprType.GT;
 import static fr.inria.corese.kgram.api.core.ExprType.IF;
+import static fr.inria.corese.kgram.api.core.ExprType.LE;
 import static fr.inria.corese.kgram.api.core.ExprType.LET;
+import static fr.inria.corese.kgram.api.core.ExprType.LT;
+import static fr.inria.corese.kgram.api.core.ExprType.MINUS;
+import static fr.inria.corese.kgram.api.core.ExprType.MULT;
+import static fr.inria.corese.kgram.api.core.ExprType.NEQ;
+import static fr.inria.corese.kgram.api.core.ExprType.OR;
+import static fr.inria.corese.kgram.api.core.ExprType.PLUS;
 import static fr.inria.corese.kgram.api.core.ExprType.RETURN;
 import static fr.inria.corese.kgram.api.core.ExprType.SEQUENCE;
 import fr.inria.corese.kgram.core.Query;
@@ -40,15 +52,16 @@ public class JavaCompiler {
 
     private static Logger logger = LoggerFactory.getLogger(JavaCompiler.class);
     static final String NL = System.getProperty("line.separator");
-    String path
-            = "/user/corby/home/NetBeansProjects/corese-github-v4/corese-core/src/main/java/fr/inria/corese/core/extension/";
+    // where to write the Java code
+    private String path =
+      "/user/corby/home/NetBeansProjects/corese-github-v4/" +
+      "corese-core/src/main/java/fr/inria/corese/core/extension/";
     static final String SPACE = " ";
     static final int STEP = 2;
     static final String IDATATYPE = "IDatatype";
-    static final String PROXY_PACKAGE = "fr.inria.corese.core.extension.Core";
 
     public static final String VAR_EXIST = "?_b";
-    public String pack = "fr.inria.corese.core.extension";
+    private String pack = "fr.inria.corese.core.extension";
 
     int margin = 0;
     int count = 0;
@@ -67,6 +80,7 @@ public class JavaCompiler {
 
     HashMap<String, Boolean> skip;
     HashMap<String, String> functionName;
+    HashMap<Integer, String> termName;
 
     public JavaCompiler() {
         sb = new StringBuilder();
@@ -75,6 +89,7 @@ public class JavaCompiler {
         head = new Header(this);
         skip = new HashMap<String, Boolean>();
         functionName = new HashMap<>();
+        termName = new HashMap<>();
         init();
     }
 
@@ -97,28 +112,30 @@ public class JavaCompiler {
     /**
      * Main function to compile AST functions
      */
-    public JavaCompiler toJava(ASTQuery ast) throws IOException {
+    public JavaCompiler compile(ASTQuery ast) throws IOException {
         this.ast = ast;
         path(ast);
-        head.process(pack, name);
-        toJava(ast.getDefine());
-        toJava(ast.getDefineLambda());
+        head.process(getPackage(), name);
+        compile(ast.getDefine());
+        compile(ast.getDefineLambda());
         trailer();
+        write();
         return this;
     }
 
-    public JavaCompiler toJava(Query q) throws IOException {
+    public JavaCompiler compile(Query q) throws IOException {
         ASTQuery ast = (ASTQuery) q.getAST();
         this.ast = ast;
         path(ast);
-        head.process(pack, name);
-        toJava((ASTExtension) q.getExtension());
+        head.process(getPackage(), name);
+        compile((ASTExtension) q.getExtension());
         //toJava(ast.getDefineLambda());
         trailer();
+        write();
         return this;
     }
 
-    public void toJava(ASTExtension ext) throws IOException {
+    public void compile(ASTExtension ext) throws IOException {
         for (Function exp : ext.getFunctionList()) {
             //System.out.println(exp);
             if (!exp.hasMetadata(Metadata.SKIP)) {
@@ -132,7 +149,7 @@ public class JavaCompiler {
      * Write result of compiling in a file
      */
     public void write() throws IOException {
-        write(path);
+        write(getPath());
     }
 
     public void write(String path) throws IOException {
@@ -506,7 +523,9 @@ public class JavaCompiler {
     }
 
    
-
+    /**
+     * Search IDatatype method 
+     */
     Method getMethod(Term term) {
         if (term.getArgs().isEmpty()) {
             return null;
@@ -541,20 +560,21 @@ public class JavaCompiler {
     }
 
     /**
-     * wrap = true : cast method result into IDatatype
+     * Generate an IDatatype method call on first argument of term
+     * wrap = true : cast method call into IDatatype
      */
     void method(Term term, boolean wrap) {
         if (wrap) {
             append("DatatypeMap.newInstance(");
         }
-        toJava(term.getArg(0));
+        toJava(term.getArg(0), true);
         append(".");
         append(getMethodName(term));
         append("(");
         int i = 0;
         for (Expression exp : term.getArgs()) {
             if (i > 0) {
-                toJava(exp);
+                toJava(exp, true);
                 if (i++ < term.arity() - 1) {
                     append(", ");
                 }
@@ -700,38 +720,62 @@ public class JavaCompiler {
         }
         return true;
     }
+    
+    void define(int oper, String name) {
+        termName.put(oper, name);
+    }
+    
+    void defineTermName() {
+        define(EQ, "eq");
+        define(NEQ, "neq");
+        define(LE, "le");
+        define(LT, "lt");
+        define(GT, "gt");
+        define(GE, "ge");
+        
+        define(PLUS, "plus");
+        define(MINUS, "minus");
+        define(MULT, "mult");
+        define(DIV, "div");
+        
+        define(AND, "&&");
+        define(OR, "||");
+    }
+    
+    void defineFunctionName() {
+        functionName.put("isURI", "isURINode");
+        functionName.put("isBlank", "isBlankNode");
+        functionName.put("isLiteral", "isLiteralNode");
+
+        functionName.put(Processor.XT_GEN_REST, "Rest.rest");
+        functionName.put(Processor.XT_GEN_GET, "GetGen.gget");
+        functionName.put(Processor.XT_GET, "Get.get");
+        
+        functionName.put(Processor.XT_EDGES, "edge");
+        functionName.put(Processor.XT_SET, "set");
+        functionName.put(Processor.XT_HAS, "has");
+        functionName.put(Processor.XT_SIZE, "length");
+
+        functionName.put(Processor.XT_MAP, "DatatypeMap.map");
+        functionName.put(Processor.XT_LIST, "DatatypeMap.newList");
+        functionName.put(Processor.XT_MEMBER, "DatatypeMap.member");
+        functionName.put(Processor.XT_FIRST, "DatatypeMap.first");
+        functionName.put(Processor.XT_REST, "DatatypeMap.rest");
+        functionName.put(Processor.XT_ADD, "DatatypeMap.add");
+        functionName.put(Processor.XT_CONS, "DatatypeMap.cons");
+        functionName.put(Processor.XT_REVERSE, "DatatypeMap.reverse");
+        functionName.put(Processor.XT_MERGE, "DatatypeMap.merge");
+
+        functionName.put(Processor.STRLEN, "DatatypeMap.strlen");
+        //functionName.put(Processor.STRDT, "DatatypeMap.newInstance");
+    }
 
     String getTermName(Term term) {
-        switch (term.oper()) {
-            case ExprType.EQ:
-                return "eq";
-            case ExprType.NEQ:
-                return "neq";
-            case ExprType.LE:
-                return "le";
-            case ExprType.LT:
-                return "lt";
-            case ExprType.GE:
-                return "ge";
-            case ExprType.GT:
-                return "gt";
-
-            case ExprType.PLUS:
-                return "plus";
-            case ExprType.MINUS:
-                return "minus";
-            case ExprType.MULT:
-                return "mult";
-            case ExprType.DIV:
-                return "div";
-
-            case ExprType.AND:
-                return "&&";
-            case ExprType.OR:
-                return "||";
-
+        String name = termName.get(term.oper());
+        if (name == null) {
+            return "undef";
         }
-        return "undef";
+        return name;
     }
 
     String getExistVar() {
@@ -748,10 +792,10 @@ public class JavaCompiler {
         this.name = name;
         int index = name.lastIndexOf(".");
         if (index != -1) {
-            pack = name.substring(0, index);
+            setPackage(name.substring(0, index));
             this.name = name.substring(index + 1);
         }
-        System.out.println("package: " + this.pack);
+        System.out.println("package: " + this.getPackage());
         System.out.println("class: " + this.name);
     }
 
@@ -759,27 +803,9 @@ public class JavaCompiler {
         skip.put(NSManager.SHAPE + "class", true);
         skip.put(NSManager.STL + "default", true);
         skip.put(NSManager.STL + "aggregate", true);
-
-        functionName.put("isURI", "isURINode");
-        functionName.put("isBlank", "isBlankNode");
-        functionName.put("isLiteral", "isLiteralNode");
-
-        functionName.put(Processor.XT_GEN_GET, "GetGen.gget");
-        functionName.put(Processor.XT_GET, "Get.get");
-        functionName.put(Processor.XT_EDGES, "edge");
-
-        functionName.put(Processor.XT_LIST, "DatatypeMap.newList");
-        functionName.put(Processor.XT_SIZE, "DatatypeMap.size");
-        functionName.put(Processor.XT_MEMBER, "DatatypeMap.member");
-        functionName.put(Processor.XT_FIRST, "DatatypeMap.first");
-        functionName.put(Processor.XT_REST, "DatatypeMap.rest");
-        functionName.put(Processor.XT_ADD, "DatatypeMap.add");
-        functionName.put(Processor.XT_CONS, "DatatypeMap.cons");
-        functionName.put(Processor.XT_REVERSE, "DatatypeMap.reverse");
-        functionName.put(Processor.XT_MERGE, "DatatypeMap.merge");
-
-        functionName.put(Processor.STRLEN, "DatatypeMap.strlen");
-        functionName.put(Processor.STRDT, "DatatypeMap.newInstance");
+                
+        defineFunctionName();
+        defineTermName();
     }
 
     boolean skip(String name) {
@@ -789,9 +815,9 @@ public class JavaCompiler {
 
     void path(ASTQuery ast) {
         if (ast.hasMetadata(Metadata.PATH)) {
-            path = ast.getMetadata().getValue(Metadata.PATH);
+            setPath(ast.getMetadata().getValue(Metadata.PATH));
         }
-        System.out.println("path: " + path);
+        System.out.println("path: " + getPath());
     }
 
     void trailer() {
@@ -920,5 +946,33 @@ public class JavaCompiler {
      */
     public void setCurrent(Function current) {
         this.current = current;
+    }
+
+    /**
+     * @return the path
+     */
+    public String getPath() {
+        return path;
+    }
+
+    /**
+     * @param path the path to set
+     */
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    /**
+     * @return the pack
+     */
+    public String getPackage() {
+        return pack;
+    }
+
+    /**
+     * @param pack the pack to set
+     */
+    public void setPackage(String pack) {
+        this.pack = pack;
     }
 }

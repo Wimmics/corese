@@ -119,7 +119,7 @@ public class Processor {
         static final String FUN_XT_LAST         = EXT_PREF + "last";       
         static final String FUN_XT_GGET         = EXT_PREF + "gget";
         static final String FUN_XT_GET          = EXT_PREF + "get";
-        private static final String XT_SET      = EXT + "set";
+        public static final String XT_SET      = EXT + "set";
         public static final String XT_CONS      = EXT + "cons";        
         public static final String XT_ADD       = EXT + "add";
         private static final String XT_SWAP     = EXT + "swap";

@@ -42,6 +42,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.compiler.result.XMLResult;
+import fr.inria.corese.core.shacl.Shacl;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -253,6 +254,52 @@ public class TestQuery1 {
         }
 
         return graph;
+    }
+    
+    
+    
+        @Test
+    public void testshacl1() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        ld.parse(data + "test/myshape.ttl");
+        
+        
+        QueryProcess exec = QueryProcess.create(g);
+        String q = "@import <http://ns.inria.fr/sparql-template/function/datashape/main.rq> "
+                + "select ?x where {"
+                + "?x a foaf:Person "
+                + "bind (sh:shaclnode(?x) as ?g) "
+                + "filter (sh:conform(?g))"
+                + "}";
+        
+        Mappings map = exec.query(q);
+        assertEquals(1, map.size());
+    }
+    
+    
+    
+         @Test
+    public void testshacl() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        ld.parse(data + "test/myshape.ttl");
+        
+        Shacl shacl = new Shacl(g);
+        Graph res = shacl.eval();
+        assertEquals(20, res.size());
+        
+        IDatatype dt = DatatypeMap.newResource(NSManager.USER, "test1");
+        res = shacl.shape(dt);
+        assertEquals(11, res.size());
+        
+        IDatatype obj = DatatypeMap.newResource(NSManager.USER, "John");
+        res = shacl.shape(dt, obj);
+        assertEquals(2, res.size());
+        
+        obj = DatatypeMap.newResource(NSManager.USER, "Jim");
+        res = shacl.node(obj);
+        assertEquals(2, res.size());
     }
     
     
@@ -618,6 +665,7 @@ public class TestQuery1 {
                 + "}";
         
         Mappings map = exec.query(q);
+        System.out.println(map);
         assertEquals(2, map.size());
     }
     
@@ -5447,7 +5495,7 @@ public class TestQuery1 {
                 + "[] us:width 3 ; us:length 4"
                 + "}";
 
-        String q = "select * (us:surface(?x) as ?s) where {"
+        String q = "@trace select * (us:surface(?x) as ?s) where {"
                 + "?x us:width ?w "
                 + "}"
                 + "function us:surface(?x){"

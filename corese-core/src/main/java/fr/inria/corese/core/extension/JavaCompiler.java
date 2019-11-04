@@ -10,7 +10,7 @@ import java.io.IOException;
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2019
  */
-public class JavaCompiler extends fr.inria.corese.sparql.compiler.java. JavaCompiler {
+public class JavaCompiler extends fr.inria.corese.sparql.compiler.java.JavaCompiler {
     
     public JavaCompiler(String name) {
         super(name);

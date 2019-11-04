@@ -5,6 +5,7 @@ import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import static fr.inria.corese.sparql.compiler.java.JavaCompiler.SPACE;
+import fr.inria.corese.sparql.triple.parser.ASTPrinter;
 
 /**
  *
@@ -50,12 +51,24 @@ public class Pattern {
     void query(Exp exp){
         ASTQuery ast = exp.get(0).get(0).getQuery();
         ast.validate();
-        String cleanQuery = dtc.string(clean(ast.toString()));
+        String cleanQuery = dtc.string(clean(compile(ast)));
         // args: ast select variables that are bound in stack
         // pass them to kgram as Mapping: kgram(query, "?x", x)
         StringBuilder args = getStackBinding(ast);
         String str = String.format("kgram(%s%s)", cleanQuery, args);        
         append(str);
+    }
+    
+    // let (select where)
+    String compile(ASTQuery ast) {
+        ASTPrinter pr = new ASTPrinter(ast);
+        pr.setCompiler(jc);
+        return pr.toString();
+    }
+    
+    // exists {}
+    String compile(Exp exp) {
+        return exp.toString();
     }
     
     /**
@@ -67,7 +80,7 @@ public class Pattern {
         for (Variable var : stack.getVariables()) {
             if (ast.isSelectVariable(var)) {
                 // SPARQL variable name: "?x"
-                sb.append(", ").append(dtc.stringasdt(var.getName()));
+                sb.append(", ").append(dtc.variable(var.getName()));
                 // Java variable name: x
                 sb.append(", ").append(jc.name(var));
             }
@@ -81,7 +94,7 @@ public class Pattern {
     StringBuilder getStackBinding(){
         StringBuilder sb = new StringBuilder();
         for (Variable var : stack.getVariables()){
-            sb.append(", ").append(dtc.stringasdt(var.getName()));
+            sb.append(", ").append(dtc.variable(var.getName()));
             sb.append(", ").append(jc.name(var));
         }
         return sb;
@@ -115,12 +128,12 @@ public class Pattern {
         String query = dtc.string(
            String.format(
            "select %1$s %2$s where { bind (%3$s as %1$s) } values (%2$s) { (%4$s) }", 
-           var, vars, clean(exp.toString()), undef()));
+           var, vars, clean(compile(exp)), undef()));
         
         StringBuilder args = getStackBinding();
             
         String str = 
-           String.format("mapget(kgram(%s%s), %s)", query, args, dtc.stringasdt(var));
+           String.format("mapget(kgram(%s%s), %s)", query, args, dtc.variable(var));
          
         append(str);
     }

@@ -11,6 +11,8 @@ import java.util.TreeMap;
 
 /**
  *
+ * Generate IDatatype constant and IDatatype variable.
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
@@ -40,6 +42,9 @@ public class Datatype {
         return sbvar;
     }
     
+    /**
+     * Declare Java global variable for LDScript global variable
+     */
     void declare(Variable var) {
         String name = var.getSimpleName();
         if (!varCache.containsKey(name)) {
@@ -48,10 +53,18 @@ public class Datatype {
         }
     }
 
+    /**
+     * Return  IDatatype constant in Java syntax
+     * String generates a constant definition in the header
+     */
     String toJava(IDatatype dt) {
         switch (dt.getCode()) {
+            
             case IDatatype.URI:
                 return resource(dt);
+            case IDatatype.STRING:
+                return string(dt);
+                
             case IDatatype.INTEGER:
                 return genericInteger(dt);
             case IDatatype.DOUBLE:
@@ -62,8 +75,7 @@ public class Datatype {
                 return newInstance(dt.floatValue());
             case IDatatype.BOOLEAN:
                 return newInstance(dt.booleanValue());
-            case IDatatype.STRING:
-                return string(dt);
+            
             case IDatatype.LITERAL:
             case IDatatype.DATE:
             case IDatatype.DATETIME:
@@ -104,10 +116,6 @@ public class Datatype {
         return String.format("DatatypeMap.newList(%s)", sb);
     }
     
-    String getVariable(){
-        return VAR + count++;
-    }
-    
     StringBuilder append(String val){
         return sb.append(val);
     }
@@ -117,7 +125,7 @@ public class Datatype {
     }
     
     /**
-     * Generate a global variable for an URI, return the variable
+     * Generate a constant definition for an URI, return the constant
      */
     String resource(IDatatype dt){
         String var = cache.get(dt);
@@ -128,7 +136,7 @@ public class Datatype {
     }
     
     /**
-     * Generate a global variable for a xsd:string, return the variable
+     * Generate a constant definition for a xsd:string, return the constant
      */
     String string(IDatatype dt){
         String var = cache.get(dt);
@@ -145,6 +153,10 @@ public class Datatype {
     String stringasdt(String str) {
         return string(DatatypeMap.newInstance(str));
     }
+    
+    String variable(String str) {
+        return string(DatatypeMap.newInstance(str));
+    }
      
      /**
      * Generate a global variable for a name (variable name, function name, etc.), return the variable
@@ -159,6 +171,11 @@ public class Datatype {
         }
         return var;
     }
+    
+    String getVariable(){
+        return VAR + count++;
+    }
+    
     
     /**
      * 

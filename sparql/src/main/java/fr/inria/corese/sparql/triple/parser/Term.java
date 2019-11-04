@@ -774,12 +774,8 @@ public class Term extends Expression {
             sb.append(KeywordPP.OPEN_PAREN, SENOT);
             n = 1;
         } else if (isFunction()) {
-            if (!getName().equals(LIST)) {
-                if (getCName() != null) {
-                    getCName().toString(sb);
-                } else {
-                    sb.append(getName());
-                }
+            if (! getName().equals(LIST)) {
+                functionName(sb);
             }
             isope = false;
         }
@@ -820,6 +816,26 @@ public class Term extends Expression {
 
         return sb;
     }
+    
+    void functionName(ASTBuffer sb) {
+        if (sb.hasCompiler()) {
+            // JavaCompiler pretty print query AST to generate Java code
+            // we want Java function name
+            // use case: let(select where) in a function
+            String str = sb.getCompiler().getJavaName(getLongName());
+            if (str != null) {
+                sb.append(str);
+                return;
+            }
+        }
+        
+        if (getCName() != null) {
+            // when function name is prefix:namespace
+            getCName().toString(sb);
+        } else {
+            sb.append(getName());
+        }
+    }
 
     ASTBuffer funExist(ASTBuffer sb) {
         if (isSystem()) {
@@ -839,16 +855,7 @@ public class Term extends Expression {
         sb.append(")");
         return sb;
     }
-    
-    public String javaName() {
-        String str = NSManager.nstrip(getName());
-        if (str.equals(getName()) && getName().contains(":")) {
-            //return getName().substring(getName().indexOf(":")+1);
-            return getName().replace(":", "_").replace("-", "_");
-        }
-        return str;
-    }
-   
+      
     @Override
     public void toJava(JavaCompiler jc, boolean arg) {
         jc.toJava(this, arg);

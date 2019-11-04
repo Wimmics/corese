@@ -16,7 +16,6 @@ import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.NSMANAGER;
-import fr.inria.corese.sparql.datatype.XSD;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -60,7 +59,9 @@ public class NSManager extends ASTObject {
     public static final String SQL = "http://ns.inria.fr/ast/sql#";
     public static final String FOAF = "http://xmlns.com/foaf/0.1/";
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
-    public static final String SHAPE = "http://www.w3.org/ns/shacl#";
+    public static final String SHACL = "http://www.w3.org/ns/shacl#";
+    public static final String SHAPE = SHACL;
+    public static final String SHACL_JAVA = "function://fr.inria.corese.core.extension.SHACL.";
     public static final String DCTERM = "http://purl.org/dc/terms/";
     public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";
     public static final String DBPEDIA = "http://dbpedia.org/resource/";
@@ -255,7 +256,8 @@ public class NSManager extends ASTObject {
         def.put(ExpType.DT, "dt");
         def.put(CUSTOM, "cs");
         def.put(SPARQL, SPARQL_PREF);
-        def.put(SHAPE, "sh");
+        def.put(SHACL, "sh");
+        def.put(SHACL_JAVA, "jsh");
         def.put("http://example.org/ns#", "ex");
         def.put(JAVA, "java");
         def.put(DS, "ds");
@@ -696,9 +698,6 @@ public class NSManager extends ASTObject {
     }
 
     public boolean isUserDefine() {
-//        if (base != null){
-//            return true;
-//        }
         return size() > def.size();
     }
 

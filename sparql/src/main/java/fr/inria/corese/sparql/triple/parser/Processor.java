@@ -463,6 +463,10 @@ public class Processor {
 		term = t;
 	}
         
+        Term getTerm() {
+            return term;
+        }
+        
         public static Processor create(){
             return new Processor();
         }

@@ -1,5 +1,8 @@
 package fr.inria.corese.sparql.triple.function.script;
 
+import fr.inria.corese.kgram.api.core.ExprType;
+import static fr.inria.corese.kgram.api.core.ExprType.QUERY;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_GET;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -225,5 +228,24 @@ public class Let extends Statement {
     
     public List<Expression> getDeclaration() {
         return declaration;
+    }
+    
+    public void removeDeclaration(Expression exp) {
+        getDeclaration().remove(exp);
+        getArgs().remove(exp);
+        if (getExpList() != null) {
+            getExpList().remove(exp);
+        }
+    }
+    
+    /**
+     *  Is it let (select where)
+     */
+    public boolean isLetQuery() {
+        if (isDynamic()) {
+            return false;
+        }
+        Expression exp = getDefinition(getDeclaration().get(0));        
+        return exp.oper() == ExprType.XT_GET && exp.getArg(0).oper() == ExprType.EXIST;
     }
 }

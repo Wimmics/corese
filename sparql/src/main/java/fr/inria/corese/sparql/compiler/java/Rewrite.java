@@ -5,9 +5,11 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.sparql.triple.function.script.Let;
 
 /**
- *
+ * Add return statement if needed
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
@@ -21,6 +23,9 @@ public class Rewrite {
         this.jc = jc;
     }
 
+    /**
+     * exp is the body of a function
+     */
     Expression process(Expression exp) {
         Expression res = rewrite(exp);                      
         res.compile(ast);
@@ -33,21 +38,38 @@ public class Rewrite {
                 case ExprType.IF:
                     return rewriteif(exp);
                 case ExprType.LET:
+                    return let(exp.getLet());
                 case ExprType.FOR:
                 case ExprType.SEQUENCE:
                 case ExprType.RETURN:
                     break;
                     
-                default: return Term.function(Processor.RETURN, exp);
+                default: return doreturn(exp);
             }
         } else {
-            return Term.function(Processor.RETURN, exp);
+            // constant value
+            return doreturn(exp);
         }
         return exp;
     }
+    
+    Let let(Let exp) {
+        if (exp.getBody().oper() == ExprType.IF) {
+            return new Let(exp.getDeclaration(), rewriteif(exp.getBody()), false);
+        }
+        else if (jc.isReturnable(exp.getBody())) {
+            return new Let(exp.getDeclaration(), doreturn(exp.getBody()), false);
+        }
+        return exp;
+    }
+    
+    Expression doreturn(Expression exp) {
+        return Term.function(Processor.RETURN, exp);
+    }
 
     /**
-     * Rewrite the body of a function to conform to Java atom -> return (atom)
+     * Rewrite the body of a if to conform to Java 
+     * atom -> return (atom)
      * if (a, b, c) -> if (a, return(b), return(c))
      */
     Expression rewriteif(Expression exp) {
@@ -55,12 +77,15 @@ public class Rewrite {
             switch (exp.oper()) {
                 case ExprType.IF:
                     return ifthenelse(exp);
+                case ExprType.LET:
+                    return let(exp.getLet());
                 default: if (jc.isReturnable(exp)) {
-                    return Term.function(Processor.RETURN, exp);
+                    return doreturn(exp);
                 }
             }
         } else {
-            return Term.function(Processor.RETURN, exp);
+            // constant value
+            return doreturn(exp);
         }
         return exp;
     }

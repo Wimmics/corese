@@ -20,9 +20,9 @@ public class Query extends Exp {
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
         //sb.append(ast.toString());
-        ASTPrinter pr = new ASTPrinter(ast);
+        ASTPrinter pr = new ASTPrinter(ast, sb);
         pr.setPrefix(false);
-        pr.toString(sb);
+        pr.process();
         return sb;
     }
 

@@ -79,7 +79,7 @@ public class JavaCompiler {
     Stack stack;
 
     HashMap<String, Boolean> skip;
-    HashMap<String, String> functionName;
+    HashMap<String, String> functionName, javaName;
     HashMap<Integer, String> termName;
 
     public JavaCompiler() {
@@ -89,6 +89,7 @@ public class JavaCompiler {
         head = new Header(this);
         skip = new HashMap<String, Boolean>();
         functionName = new HashMap<>();
+        javaName = new HashMap<>();
         termName = new HashMap<>();
         init();
     }
@@ -173,6 +174,7 @@ public class JavaCompiler {
         append(" {");
         incrnl();
         Rewrite rw = new Rewrite(ast, this);
+        // rewrite body may add return statement when necessary
         Expression body = rw.process(exp.getBody());
         toJava(body);
         finish(body);
@@ -220,6 +222,7 @@ public class JavaCompiler {
         }
     }
 
+    // lambda expression
     public void toJava(Function fun, boolean arg) {
         append(dtc.string(name(fun)));
     }
@@ -263,13 +266,17 @@ public class JavaCompiler {
     }
 
     String name(Function fun) {
-        if (fun.isLambda()) {
-            return "xt" + fun.getFunction().javaName().replace("-", "_");
-        }
-        return fun.getFunction().javaName();
+        return javaName(fun.getFunction());
     }
 
-    
+    String javaName(Term term) {
+        String name = term.getName();
+        String str = NSManager.nstrip(name);
+        if (str.equals(name) && name.contains(":")) {
+            return name.replace(":", "_").replace("-", "_");
+        }
+        return str;
+    }
     
     
     String name(Variable var) {
@@ -335,16 +342,12 @@ public class JavaCompiler {
                 not(term, arg);
                 return;
             case ExprType.AND:
-                and(term, arg);
-                return;
             case ExprType.OR:
-                or(term, arg);
+                bool(term, arg);
                 return;
-
             case ExprType.IN:
                 in(term);
                 return;
-
         }
 
         toJava(term.getArg(0));
@@ -357,7 +360,7 @@ public class JavaCompiler {
     void in(Term term) {
         append("in(");
         toJava(term.getArg(0));
-        append(", DatatypeMap.newList(");
+        append(", ").append("DatatypeMap.newList").append("(");
         int i = 0;
         int size = term.getArg(1).arity() - 1;
         for (Expression exp : term.getArg(1).getArgs()) {
@@ -369,16 +372,9 @@ public class JavaCompiler {
         append("))");
     }
 
-    void and(Term term, boolean arg) {
-        append("and(");
-        toJava(term.getArg(0), arg);
-        append(", ");
-        toJava(term.getArg(1), arg);
-        append(")");
-    }
-
-    void or(Term term, boolean arg) {
-        append("or(");
+    void bool(Term term, boolean arg) {
+        String name = (term.oper() == AND) ? "and" : "or";
+        append(name).append("(");
         toJava(term.getArg(0), arg);
         append(", ");
         toJava(term.getArg(1), arg);
@@ -507,17 +503,23 @@ public class JavaCompiler {
 
    
     /**
-     * Generic call
+     * Generic function call
      */
     void call(Term term) {
         Method met = getMethod(term);
         if (met == null) {
+            // function(dt)
             funcall(term);
         } else {
+            // dt.method()
             methodcall(term, met);
         }
     }
 
+    /**
+     * generate dt.method()
+     * 
+     */
     void methodcall(Term term, Method met) {
         method(term, met.getReturnType() != IDatatype.class);
     }
@@ -541,7 +543,9 @@ public class JavaCompiler {
         return null;
     }
 
-
+    /**
+     * Generate a function call
+     */
     void funcall(Term term) {
         append(getMethodName(term));
         append("(");
@@ -556,23 +560,13 @@ public class JavaCompiler {
     }
 
     void method(Term term) {
-        method(term, false);
-    }
-
-    /**
-     * Generate an IDatatype method call on first argument of term
-     * wrap = true : cast method call into IDatatype
-     */
-    void method(Term term, boolean wrap) {
-        if (wrap) {
-            append("DatatypeMap.newInstance(");
-        }
         toJava(term.getArg(0), true);
         append(".");
         append(getMethodName(term));
         append("(");
         int i = 0;
         for (Expression exp : term.getArgs()) {
+            // skip first arg
             if (i > 0) {
                 toJava(exp, true);
                 if (i++ < term.arity() - 1) {
@@ -583,15 +577,29 @@ public class JavaCompiler {
             }
         }
         append(")");
+    }
+
+    /**
+     * Generate an IDatatype method call on first argument of term
+     * dt.method()
+     * wrap = true : cast method call into IDatatype 
+     * because metodh return type is a Java type instead of a IDatatype
+     * DatatypeMap.newInstance(dt.method())
+     */
+    void method(Term term, boolean wrap) {
+        if (wrap) {
+            append("DatatypeMap.newInstance").append("(");
+        }
+        method(term);
         if (wrap) {
             append(")");
         }
     }
 
-    String getMethodName(Term term) {
+    public String getMethodName(Term term) {
         String name = getFunctionName(term.getLabel());
         if (name == null) {
-            return term.javaName();
+            return javaName(term);
         }
         return name;
     }
@@ -740,6 +748,19 @@ public class JavaCompiler {
         
         define(AND, "&&");
         define(OR, "||");
+    }
+    
+    /**
+     * Java name in let (select where) in function
+     * sh:path() -> jc:sh_path() 
+     * 
+     */
+    public void setJavaName(String name, String java) {
+        javaName.put(name, java);
+    }
+    
+    public String getJavaName(String name) {
+        return javaName.get(name);
     }
     
     void defineFunctionName() {

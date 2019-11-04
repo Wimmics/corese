@@ -108,7 +108,6 @@ public class Basic extends Update {
 	}	
 	
 	void prolog(ASTBuffer sb){
-		//getASTUpdate().getASTQuery().getSparqlPrefix(prolog, sb);
                 ASTPrinter pr = new ASTPrinter(getASTUpdate().getASTQuery());
                 pr.getSparqlPrefix(prolog, sb);
 	}

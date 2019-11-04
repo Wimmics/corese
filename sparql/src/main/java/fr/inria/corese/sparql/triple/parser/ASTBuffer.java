@@ -1,5 +1,7 @@
 package fr.inria.corese.sparql.triple.parser;
 
+import fr.inria.corese.sparql.compiler.java.JavaCompiler;
+
 /**
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
@@ -12,6 +14,7 @@ public class ASTBuffer  {
     int count = 0;
     
     StringBuffer sb;
+    private JavaCompiler javacompiler;
     
     public ASTBuffer() {
         sb = new StringBuffer();
@@ -68,6 +71,24 @@ public class ASTBuffer  {
         for (int i=0; i<count; i++) {
             append("  ");
         }
+    }
+
+    /**
+     * @return the javacompiler
+     */
+    public JavaCompiler getCompiler() {
+        return javacompiler;
+    }
+    
+    public boolean hasCompiler() {
+        return getCompiler() != null;
+    }
+
+    /**
+     * @param javacompiler the javacompiler to set
+     */
+    public void setCompiler(JavaCompiler javacompiler) {
+        this.javacompiler = javacompiler;
     }
 
 }

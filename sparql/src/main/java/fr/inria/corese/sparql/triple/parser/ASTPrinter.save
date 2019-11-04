@@ -2,6 +2,12 @@ package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
+import static fr.inria.corese.sparql.triple.cst.KeywordPP.BASE;
+import static fr.inria.corese.sparql.triple.cst.KeywordPP.CLOSE;
+import static fr.inria.corese.sparql.triple.cst.KeywordPP.CORESE_PREFIX;
+import static fr.inria.corese.sparql.triple.cst.KeywordPP.OPEN;
+import static fr.inria.corese.sparql.triple.cst.KeywordPP.PREFIX;
+import static fr.inria.corese.sparql.triple.cst.KeywordPP.SPACE;
 import java.util.List;
 
 /**
@@ -9,34 +15,28 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */
-public class ASTPrinter implements KeywordPP {
+public class ASTPrinter {
 
     ASTQuery ast;
-    private ASTBuffer sb;
     private boolean prefix = true;
     private boolean lambda = false;
     
     public ASTPrinter(ASTQuery a){
         ast = a;
-        setBuffer(new ASTBuffer());
-    }
-    
-    public ASTPrinter(ASTQuery a, ASTBuffer sb){
-        ast = a;
-        setBuffer(sb);
     }
     
     public void setCompiler(JavaCompiler jc) {
-        getBuffer().setCompiler(jc);
+        
     }
     
     @Override
     public String toString() {
-        process();
-        return getBuffer().toString();
+        ASTBuffer sb = new ASTBuffer();
+        toString(sb);
+        return sb.toString();
     }
-    
-    public void process() {
+
+    public ASTBuffer toString(ASTBuffer sb) {
         if (ast.isUpdate()) {
             ast.getUpdate().toString(sb);
         } else {
@@ -45,28 +45,30 @@ public class ASTPrinter implements KeywordPP {
             }
             
             if (ast.isTemplate()) {
-                template();
+                template(sb);
             }
             
-            getSparqlHeader();
+            getSparqlHeader(sb);
                        
             if (!ast.isData() && (!ast.isDescribe() || ast.getBody() != null)) {
                 if (ast.getBody() != null) {
-                    sb.append(WHERE).append(" ");
+                    sb.append(KeywordPP.WHERE).append(" ");
                     ast.getBody().pretty(sb);
                 }
             }
 
             if (!ast.isAsk()) {
                 sb.nl();
-                getSparqlSolutionModifier();
+                getSparqlSolutionModifier(sb);
             }
         }
 
-        getFinal();
+        getFinal(sb);
+
+        return sb;
     }
     
-    void template() {
+    void template(ASTBuffer sb) {
         sb.append("# template").append(" ");
         if (ast.getName() != null) {
             sb.append(ast.getName()).append(" ");
@@ -76,6 +78,10 @@ public class ASTPrinter implements KeywordPP {
         }
         sb.nl();
     }
+
+//    ASTBuffer getSparqlPrefix(ASTBuffer sb) {
+//        return getSparqlPrefix(ast.getPrefixExp(), sb);
+//    }
 
     public ASTBuffer getSparqlPrefix(Exp exp, ASTBuffer sb) {
         for (Exp e : exp.getBody()) {
@@ -106,29 +112,30 @@ public class ASTPrinter implements KeywordPP {
      *
      * @return
      */
-    ASTBuffer getSparqlHeader() {
+    ASTBuffer getSparqlHeader(ASTBuffer sb) {
+        String SPACE = KeywordPP.SPACE;
         List<Constant> from = ast.getFrom();
         List<Constant> named = ast.getNamed();
         List<Variable> select = ast.getSelectVar();
 
         // Select
         if (ast.isSelect()) {
-            sb.append(SELECT).append(SPACE);
+            sb.append(KeywordPP.SELECT).append(SPACE);
 
             if (ast.isDebug()) {
-                sb.append(DEBUG).append(SPACE);
+                sb.append(KeywordPP.DEBUG).append(SPACE);
             }
 
             if (ast.isMore()) {
-                sb.append(MORE).append(SPACE);
+                sb.append(KeywordPP.MORE).append(SPACE);
             }
 
             if (ast.isDistinct()) {
-                sb.append(DISTINCT).append(SPACE);
+                sb.append(KeywordPP.DISTINCT).append(SPACE);
             }
 
             if (ast.isSelectAll()) {
-                sb.append(STAR).append(SPACE);
+                sb.append(KeywordPP.STAR).append(SPACE);
             }
 
             if (select != null && select.size() > 0) {
@@ -144,44 +151,44 @@ public class ASTPrinter implements KeywordPP {
             }
 
         } else if (ast.isAsk()) {
-            sb.append(ASK).append(SPACE);
+            sb.append(KeywordPP.ASK).append(SPACE);
         } else if (ast.isDelete()) {
-            sb.append(DELETE).append(SPACE);
+            sb.append(KeywordPP.DELETE).append(SPACE);
             if (ast.isDeleteData()) {
-                sb.append(DATA).append(SPACE);
+                sb.append(KeywordPP.DATA).append(SPACE);
             }
             ast.getDelete().toString(sb);
 
             if (ast.isInsert()) {
-                sb.append(INSERT).append(SPACE);
+                sb.append(KeywordPP.INSERT).append(SPACE);
                 ast.getInsert().toString(sb);
             }
 
         } else if (ast.isConstruct()) {
             if (ast.isInsert()) {
-                sb.append(INSERT).append(SPACE);
+                sb.append(KeywordPP.INSERT).append(SPACE);
                 if (ast.isInsertData()) {
-                    sb.append(DATA).append(SPACE);
+                    sb.append(KeywordPP.DATA).append(SPACE);
                 }
                 ast.getInsert().toString(sb);
             } else if (ast.getConstruct() != null) {
-                sb.append(CONSTRUCT).append(SPACE);
+                sb.append(KeywordPP.CONSTRUCT).append(SPACE);
                 ast.getConstruct().toString(sb);
             } else if (ast.getInsert() != null) {
-                sb.append(INSERT).append(SPACE);
+                sb.append(KeywordPP.INSERT).append(SPACE);
                 ast.getInsert().toString(sb);
             } else if (ast.getDelete() != null) {
-                sb.append(DELETE).append(SPACE);
+                sb.append(KeywordPP.DELETE).append(SPACE);
                 if (ast.isDeleteData()) {
-                    sb.append(DATA).append(SPACE);
+                    sb.append(KeywordPP.DATA).append(SPACE);
                 }
                 ast.getDelete().toString(sb);
             }
         } else if (ast.isDescribe()) {
-            sb.append(DESCRIBE).append(SPACE);
+            sb.append(KeywordPP.DESCRIBE).append(SPACE);
 
             if (ast.isDescribeAll()) {
-                sb.append(STAR).append(SPACE);
+                sb.append(KeywordPP.STAR).append(SPACE);
             } else if (ast.adescribe != null && ast.adescribe.size() > 0) {
 
                 for (Atom at : ast.adescribe) {
@@ -197,14 +204,14 @@ public class ASTPrinter implements KeywordPP {
 
         // From
         for (Atom name : from) {
-            sb.append(FROM, SPACE);
+            sb.append(KeywordPP.FROM, SPACE);
             name.toString(sb);
             sb.nl();
         }
 
         // From Named
         for (Atom name : named) {
-            sb.append(FROM, SPACE, NAMED, SPACE);
+            sb.append(KeywordPP.FROM, SPACE, KeywordPP.NAMED, SPACE);
             name.toString(sb);
             sb.nl();
         }
@@ -239,12 +246,13 @@ public class ASTPrinter implements KeywordPP {
      * @param parser
      * @return
      */
-    ASTBuffer getSparqlSolutionModifier() {
+    ASTBuffer getSparqlSolutionModifier(ASTBuffer sb) {
+        String SPACE = KeywordPP.SPACE;
         List<Expression> sort = ast.getSort();
         List<Boolean> reverse = ast.getReverse();
 
         if (ast.getGroupBy().size() > 0) {
-            sb.append(GROUPBY).append(SPACE);
+            sb.append(KeywordPP.GROUPBY).append(SPACE);
             for (Expression exp : ast.getGroupBy()) {
                 sb.append(exp.toString()).append(SPACE);
             }
@@ -253,13 +261,13 @@ public class ASTPrinter implements KeywordPP {
 
         if (sort.size() > 0) {
             int i = 0;
-            sb.append(ORDERBY).append(SPACE);
+            sb.append(KeywordPP.ORDERBY).append(SPACE);
 
             for (Expression exp : ast.getOrderBy()) {
 
                 boolean breverse = reverse.get(i++);
                 if (breverse) {
-                    sb.append(DESC, "(");
+                    sb.append(KeywordPP.DESC, "(");
                 }
                 sb.append(exp.toString());
                 if (breverse) {
@@ -271,18 +279,18 @@ public class ASTPrinter implements KeywordPP {
         }
 
         if (ast.getOffset() > 0) {
-            sb.append(OFFSET).append(SPACE).append(ast.getOffset()).append(SPACE);
+            sb.append(KeywordPP.OFFSET).append(SPACE).append(ast.getOffset()).append(SPACE);
         }
 
         if (ast.getMaxResult() != ast.getDefaultMaxResult()) {
-            sb.append(LIMIT).append(SPACE).append(ast.getMaxResult()).append(SPACE);
+            sb.append(KeywordPP.LIMIT).append(SPACE).append(ast.getMaxResult()).append(KeywordPP.SPACE);
         }
 
         if (ast.getHaving() != null) {
-            sb.append(HAVING);
-            sb.append(OPEN_PAREN);
+            sb.append(KeywordPP.HAVING);
+            sb.append(KeywordPP.OPEN_PAREN);
             ast.getHaving().toString(sb);
-            sb.append(CLOSE_PAREN);
+            sb.append(KeywordPP.CLOSE_PAREN);
         }
 
         if (sb.length() > 0) {
@@ -292,7 +300,7 @@ public class ASTPrinter implements KeywordPP {
         return sb;
     }
 
-    void getFinal() {
+    void getFinal(ASTBuffer sb) {
         String SPACE = " ";
 
         if (ast.getValues() != null) {
@@ -300,7 +308,7 @@ public class ASTPrinter implements KeywordPP {
         }
 
         if (ast.getPragma() != null) {
-            sb.append(PRAGMA);
+            sb.append(KeywordPP.PRAGMA);
             sb.append(SPACE);
             ast.getPragma().toString(sb);
         }
@@ -355,20 +363,6 @@ public class ASTPrinter implements KeywordPP {
      */
     public void setLambda(boolean lambda) {
         this.lambda = lambda;
-    }
-
-    /**
-     * @return the sb
-     */
-    public ASTBuffer getBuffer() {
-        return sb;
-    }
-
-    /**
-     * @param sb the sb to set
-     */
-    public void setBuffer(ASTBuffer sb) {
-        this.sb = sb;
     }
     
 

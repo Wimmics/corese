@@ -5,6 +5,7 @@ import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.sparql.triple.function.script.Let;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -30,9 +31,11 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     private List<Variable> list;
     private ASTQuery ast;
     private Function fun;
+    HashMap<Variable, Integer> reference;
 
     ExpressionVisitorVariable() {
         list = new ArrayList<Variable>();
+        reference = new HashMap<>();
     }
     
     // top level exp
@@ -72,6 +75,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     
     void pop(Variable var){
         list.remove(list.size() - 1);
+        reference.remove(var);
     }
     
     boolean reference(Variable var) {
@@ -79,10 +83,23 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         if (decl != null) {
             var.setDeclaration(decl);
             var.setIndex(decl.getIndex());
+            defReference(decl);
             localize(var);
             return true;
         } 
         return false;
+    }
+    
+    void defReference(Variable var) {
+        Integer n = reference.get(var);
+        if (n == null) {
+            n = 0;
+        }
+        reference.put(var, 1 + n);
+    }
+    
+    boolean hasReference(Variable var) {
+        return reference.containsKey(var);
     }
     
     Variable getDefinition(Variable var) {
@@ -247,9 +264,21 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         
         t.getBody().visit(this);
         
+        boolean letquery = t.isLetQuery() && ! isTopLevel;
+        ArrayList<Expression> list = new ArrayList<>();
+       
         for (int i = t.getDeclaration().size() - 1; i>=0; i--) {
             Expression decl = t.getDeclaration().get(i);
-            pop(t.getVariable(decl));
+            Variable var = t.getVariable(decl);
+            if (letquery && !hasReference(var)) {
+                list.add(decl);
+            }
+            pop(var);
+        }
+        
+        for (Expression decl : list) {
+            t.removeDeclaration(decl);
+            //setNbVariable(getNbVariable() - 1);
         }
         
         if (isTopLevel) {

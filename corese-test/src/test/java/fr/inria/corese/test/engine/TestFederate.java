@@ -66,10 +66,11 @@ public class TestFederate {
                    + "}";
         
          String q =                   
-                  "select ?r where { "
+                   "select ?r where { "
                 + "bind (us:test() as ?t) "
-                + "bind (sh:shacl() as ?g) "
-                + "bind (xt:print(xt:turtle(?g)) as ?p) "
+               // + "bind (sh:shacl() as ?gg) "
+                + "bind (jsh:sh_shacl() as ?g) "
+               + "bind (xt:print(xt:turtle(?g)) as ?p) "
                 + "graph ?g { [] sh:result ?r }"
                 + "}  "
                 + "function us:test() {set(traceService=false)}";

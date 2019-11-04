@@ -606,7 +606,25 @@ public class TestQuery1 {
         assertEquals(2046, map.getValue("?a").intValue());
     }
     
-    
+        @Test
+    public void testDynLet44() throws EngineException, LoadException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);        
+        String q = "select (reduce(rq:plus, us:bar(10)) as ?a) where {}" 
+                
+                + "function us:bar(n) {"
+                + "letdyn(select (1 as ?x) where {}) {"
+                + "maplist(us:test, xt:iota(n)) "
+                + "}"
+                + "}"
+                
+                + "function us:test(y) {"
+                + "set(x = 2*x)"
+                + "}"
+                ;        
+        Mappings map = exec.query(q);
+        assertEquals(2046, map.getValue("?a").intValue());
+    }
            @Test
     public void testDynLet5() throws EngineException, LoadException {
         Graph g = Graph.create();

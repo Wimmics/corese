@@ -5,7 +5,7 @@
 # Olivier Corby - Wimmics Inria I3S - 2016-2019
 #
 prefix sh:   <http://www.w3.org/ns/shacl#> 
-
+prefix jc:   <function://fr.inria.corese.core.extension.SHACL>
 
 #
 # SHACL Path Compiler from RDF graph to list expression
@@ -116,10 +116,9 @@ function sh:booleanoper(oper) {
 # Rewrite recursively RDF list ?exp as a list
 #
 function dt:list sh:listsh(dt:graph ?shape, ?exp){
-   let ( 
-        select ?shape ?exp (aggregate(sh:path(?shape, ?e)) as ?l)  
+   let (select ?shape ?exp (aggregate(sh:path(?shape, ?e)) as ?l)  
         where { graph ?shape { ?exp rdf:rest*/rdf:first ?e }}) {
-        return(?l)
+        return (?l)
     }
 }
 

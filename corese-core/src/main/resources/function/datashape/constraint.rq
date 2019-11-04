@@ -9,9 +9,9 @@ prefix msh: <http://ns.inria.fr/shacl/>
 
 function sh:constraint(shape, sh, vis, nodeList) {
     let (b1 = sh:constraint1 (shape, sh, vis, nodeList),
-         b2 = sh:cstsparql   (shape, sh, vis, nodeList),
-         b3 = sh:constraint3 (shape, sh, vis, nodeList),
-         b4 = sh:cstpattern  (shape, sh, vis, nodeList)
+         b2 = sh:constraint2 (shape, sh, vis, nodeList),
+         b3 = sh:cstpattern  (shape, sh, vis, nodeList),
+         b4 = sh:cstsparql   (shape, sh, vis, nodeList)
          ) {
         return (b1 && b2 && b3 && b4)
     }
@@ -27,7 +27,7 @@ function sh:constraint(shape, sh, vis, nodeList) {
 #
 function sh:constraint1 (shape, sh, vis, nodeList) {
     let (res = true) {
-        for ((oper value) in sh:getConstraint(sh:cstgeneric, shape, sh)) {  
+        for ((oper value) in sh:getConstraint(sh:cstgeneric1, shape, sh)) {  
             for (node in dt:list(nodeList)) {    
                 let (suc = coalesce(if (oper = sh:functioncst,  
                     funcall(value, shape, sh, node), 
@@ -60,9 +60,9 @@ function sh:cstsparql (shape, sh, vis, nodeList) {
 }
 
 
-function sh:constraint3 (shape, sh, vis, nodeList) {
+function sh:constraint2 (shape, sh, vis, nodeList) {
     let (res = true) {
-        for ((oper value) in sh:getConstraint(sh:cstgeneric3, shape, sh)) {  
+        for ((oper value) in sh:getConstraint(sh:cstgeneric2, shape, sh)) {  
             for (node in dt:list(nodeList)) {    
                 let (suc = coalesce(funcall(oper, shape, sh, vis, node, value), false)) {
                     if (suc, true, set(res = false))
@@ -123,7 +123,7 @@ function sh:cstgeneric(shape, sh, list) {
     }
 }
 
-function sh:cstgeneric(shape, sh) {
+function sh:cstgeneric1(shape, sh) {
     sh:cstgeneric(shape, sh, xt:list(
                 sh:hasValue, sh:datatype, sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive, sh:minLength, sh:maxLength, sh:nodeKind, sh:node, sh:in, sh:languageIn, 
                 sh:function, sh:functioncst))
@@ -158,7 +158,7 @@ function sh:cstsparql(shape, sh) {
 }
 
 
-function sh:cstgeneric3(shape, sh) {
+function sh:cstgeneric2(shape, sh) {
     sh:cstgeneric(shape, sh, xt:list(sh:class, sh:disjoint, sh:equals))
 }
 

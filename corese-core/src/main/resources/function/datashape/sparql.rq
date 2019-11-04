@@ -24,8 +24,8 @@ function sh:sparqlvalid(?shape, ?sh) {
             where {
             graph ?shape {  
                 ?sh ?oper ?value    
-                filter (! sh:isPredicate(?oper))
-            
+                #filter (! sh:isPredicate(?oper))
+                filter (!  mapany (rq:strstarts, ?oper, xt:list(sh:, rdfs:, owl:, rdf:)))
                 ?cst sh:parameter [ sh:path ?oper ] ;
                     sh:propertyValidator ?valid 
                 ?valid sh:select ?q 

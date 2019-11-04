@@ -16,16 +16,25 @@ prefix sh:   <http://www.w3.org/ns/shacl#>
 #
 function dt:graph sh:shacl() {
    if (sh:trace(), xt:print("shacl:"), true);
-   sh:shacl(xt:graph())
+   sh:java(false);
+   sh:shacl(xt:graph(), sh:focus(xt:graph()))
+}
+
+function dt:graph sh:shacljava() {
+   if (sh:trace(), xt:print("shacl:"), true);
+   sh:java(true);
+   sh:shacl(xt:graph(), sh:focus(xt:graph()))
 }
 
 function dt:graph sh:shacl(dt:graph shape) {
    if (sh:trace(), xt:print("shacl:"), true);
+   sh:java(false);
    sh:shacl(shape, sh:focus(shape))
 }
 
 function dt:graph sh:shaclshape(sh) {
    if (sh:trace(), xt:print("shaclshape:", sh), true);
+   sh:java(false);
    sh:shacl(xt:graph(), sh:focus(xt:graph(), sh))
 }
 
@@ -34,11 +43,13 @@ function dt:graph sh:shaclshape(sh) {
 #
 function dt:graph sh:shaclshape(sh, node) {
    if (sh:trace(), xt:print("shaclshape:", sh, node), true);
+   sh:java(false);
    sh:shacl(xt:graph(), xt:list(xt:list(sh, xt:list(node))))
 }
 
 function dt:graph sh:shaclnode(node) {
    if (sh:trace(), xt:print("shaclnode:", node), true);
+   sh:java(false);
    sh:shacl(xt:graph(), sh:focusnode(xt:graph(), node))
 }
 
@@ -56,6 +67,14 @@ function dt:graph sh:shacl(dt:graph shape, focus) {
 
 function sh:focuslist(dt:graph shape) {
     sh:list(sh:focus(shape))
+}
+
+function sh:java(xsd:boolean bb) {
+    set(java = bb)
+}
+
+function xsd:boolean sh:java() {
+    return (coalesce(java, true))
 }
 
 

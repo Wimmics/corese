@@ -9,6 +9,10 @@ prefix msh: <http://ns.inria.fr/shacl/>
 
 #
 # main function
+# shape: shacl graph
+# sh: current shape
+# vis: true if report is needed
+# nodeList:  list of target nodes of shape sh
 #
 function sh:core(shape, sh, vis, nodeList) {
     let (b1 = sh:pathcore(shape, sh, vis, nodeList),
@@ -58,16 +62,13 @@ function sh:booleancore(shape, sh, vis, nodeList) {
     let (res = true) {
         for ((bool cst) in sh:getConstraint(sh:booleancore, shape, sh)) {
             if (sh:trace(), xt:print("core boolean:", sh, nodeList), true); 
-            let (tmp = coalesce(funcall(msh:fun(bool), shape, sh, cst, vis, nodeList), st:null),
-                 suc = if (isURI(tmp), false, tmp)) {
+            let (suc = coalesce(funcall(msh:fun(bool), shape, sh, cst, vis, nodeList), false)) {
                 if (suc, true, set(res = false))
             }
         } ;
         return (res)
     }
 }
-
-
 
 function sh:constraintcore(shape, sh, vis, nodeList) {
     let (cst = sh:getConstraint(sh:constraintcore, shape, sh)) {

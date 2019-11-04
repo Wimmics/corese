@@ -9,19 +9,26 @@ prefix msh: <http://ns.inria.fr/shacl/>
 
 @import <sparql.rq>
 
-function sh:path(shape, sh, vis, ls, p) {
-    sh:path(shape, sh, vis, ls, p, st:null, false)
+function sh:path(shape, sh, vis, nodeList, p) {
+    sh:path(shape, sh, vis, nodeList, p, st:null, false)
 }
 
-# bound = true -> value is bound
-function sh:path(shape, sh, vis, ls, p, value, isbound) {
-    if (sh:trace(), xt:print("path:", ls, p), true);
-  let (b1 = sh:generic1(shape, sh, vis, ls, p, value, isbound), 
-       b2 = sh:generic2(shape, sh, vis, ls, p, value, isbound), 
-       b3 = sh:generic4(shape, sh, vis, ls, p, value, isbound),
-       b4 = sh:pathpattern(shape, sh, vis, ls, p, value, isbound),
-       b5 = sh:sparqlvalid(shape, sh, vis, ls, p, value, isbound),
-       b6 =      sh:sparql(shape, sh, vis, ls, p, value, isbound)
+#
+# shape: shacl graph
+# sh: current shape
+# vis: true if report is needed
+# nodeList:  list of target nodes of shape sh
+# path: path expression
+# value: value to be checked when isbound=true
+# 
+function sh:path(shape, sh, vis, nodeList, path, value, isbound) {
+    if (sh:trace(), xt:print("path:", nodeList, path), true);
+  let (b1 = sh:path1(shape, sh, vis, nodeList, path, value, isbound), 
+       b2 = sh:path2(shape, sh, vis, nodeList, path, value, isbound), 
+       b3 = sh:path3(shape, sh, vis, nodeList, path, value, isbound),
+       b4 = sh:pathpattern(shape, sh, vis, nodeList, path, value, isbound),
+       b5 = sh:sparqlvalid(shape, sh, vis, nodeList, path, value, isbound),
+       b6 =      sh:sparql(shape, sh, vis, nodeList, path, value, isbound)
        ) {
        return (b1 && b2 && b3 && b4 && b5 && b6)
     }
@@ -34,9 +41,9 @@ function sh:path(shape, sh, vis, ls, p, value, isbound) {
 # p: the path
 # oper=sh:nodeKind ; val=sh:IRI
 #
-function sh:generic1(shape, sh, vis, nodeList, p, value, isbound) {
+function sh:path1(shape, sh, vis, nodeList, p, value, isbound) {
     let (res = true) {
-        for ((oper val) in sh:getConstraint(sh:generic, shape, sh)) {
+        for ((oper val) in sh:getConstraint(sh:path1, shape, sh)) {
             #xt:print("path:", oper, val, p, nodeList);
             for (s in dt:list(nodeList)) {
                 for (o in (if (isbound, xt:list(value), sh:path(shape, s, p)))) {
@@ -59,9 +66,9 @@ function sh:generic1(shape, sh, vis, nodeList, p, value, isbound) {
 }
 
 
-function sh:generic2(shape, sh, vis, nodeList, p, value, isbound) {
+function sh:path2(shape, sh, vis, nodeList, p, value, isbound) {
     let (res = true) {
-        for ((oper val disjoint amin amax) in sh:getConstraint(sh:generic2, shape, sh)) {
+        for ((oper val disjoint amin amax) in sh:getConstraint(sh:path2, shape, sh)) {
             for (s in dt:list(nodeList)) {
                 let (suc = coalesce(                    
                         sh:qualifiedValueShape(shape, sh, vis, s, p, val, disjoint, amin, amax) , 
@@ -77,9 +84,9 @@ function sh:generic2(shape, sh, vis, nodeList, p, value, isbound) {
 }
 
 
-function sh:generic4(shape, sh, vis, nodeList, p, value, isbound) {
+function sh:path3(shape, sh, vis, nodeList, p, value, isbound) {
     let (res = true) {
-        for ((oper val) in sh:getConstraint(sh:generic4, shape, sh)) {
+        for ((oper val) in sh:getConstraint(sh:path3, shape, sh)) {
             for (s in dt:list(nodeList)) {
                 let (suc = coalesce(
                     if (isbound, 
@@ -143,7 +150,7 @@ function sh:sparql(shape, sh, vis, nodeList, p, value, isbound) {
 # they are stored as a list in a map by sh:getConstraint defined in core.rq
 #
 
-function sh:generic(shape, sh) {
+function sh:path1(shape, sh) {
     let (select ?shape ?sh (aggregate(xt:list(?oper, ?val)) as ?list) where {
         graph ?shape { 
         values ?oper { 
@@ -162,7 +169,7 @@ function sh:generic(shape, sh) {
     }
 }
 
-function sh:generic2(shape, sh) {
+function sh:path2(shape, sh) {
     let (select ?shape ?sh 
         (aggregate(xt:list(sh:qualifiedValueShape, ?qsh, 
             coalesce(disjoint, false), coalesce(?min, 0), coalesce(?max, -1))) as ?list) 
@@ -179,7 +186,7 @@ function sh:generic2(shape, sh) {
 }
 
 
-function sh:generic4(shape, sh) {
+function sh:path3(shape, sh) {
     let (select ?shape ?sh (aggregate(xt:list(?oper, ?val)) as ?list) where {
         graph ?shape {  
             values ?oper { 

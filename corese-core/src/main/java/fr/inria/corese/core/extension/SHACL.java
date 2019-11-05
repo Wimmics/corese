@@ -12,12 +12,12 @@ import fr.inria.corese.sparql.triple.function.extension.*;
  * prefix java: <function://fr.inria.corese.core.extension.SHACL> 
  * java:sh_shacl() 
  *
- * Olivier Corby - Wimmics Inria I3S - Sun Nov 03 20:28:52 CET 2019 
+ * Olivier Corby - Wimmics Inria I3S - Tue Nov 05 14:47:37 CET 2019 
  */
 public class SHACL extends Core { 
 
 static final IDatatype _cst_0 = DatatypeMap.newInstance("shacl:");
-static final IDatatype _cst_1 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?qsh ?list \nwhere {\n  select ?qsh (aggregate(xt:list(?sibling, ?path)) as ?list) \n  where {\n    select distinct ?qsh ?sibling ?path \n    where {\n      ?root sh:property _:bn_1 . \n      _:bn_1 sh:qualifiedValueShape ?qsh . \n      ?root sh:property _:bn_2 . \n      _:bn_2 sh:qualifiedValueShape ?sibling . \n      _:bn_2 sh:path ?path . \n      filter (?sibling != ?qsh) \n    }\n    \n  }\n  group by ?qsh \n  \n}\n");
+static final IDatatype _cst_1 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?qsh ?list \nwhere {\n  select ?qsh (aggregate(xt:list(?sibling, ?path)) as ?list) \n  where {\n    select distinct ?qsh ?sibling ?path \n    where {\n      ?root sh:property _:bn_1 . \n      _:bn_1 sh:qualifiedValueShape ?qsh . \n      ?root sh:property _:bn_2 . \n      _:bn_2 sh:qualifiedValueShape ?sibling . \n      _:bn_2 sh:path ?path . \n      filter (?sibling != ?qsh) \n    }\n    \n  }\n  group by ?qsh \n  \n}\n");
 static final IDatatype _cst_2 = DatatypeMap.newInstance("?qsh");
 static final IDatatype _cst_3 = DatatypeMap.newInstance("?list");
 static final IDatatype _cst_4 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sibling");
@@ -89,19 +89,19 @@ static final IDatatype _cst_69 = DatatypeMap.newResource("http://www.w3.org/ns/s
 static final IDatatype _cst_70 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#define");
 static final IDatatype _cst_71 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/trace");
 static final IDatatype _cst_72 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/graph");
-static final IDatatype _cst_73 = DatatypeMap.newInstance("?sh");
-static final IDatatype _cst_74 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nconstruct {_:bn_1 rdf:type sh:ValidationReport . \n_:bn_1 sh:conforms true . }\nwhere {\n  \n}\n");
-static final IDatatype _cst_75 = DatatypeMap.newInstance("shaclnode:");
-static final IDatatype _cst_76 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#def");
-static final IDatatype _cst_77 = DatatypeMap.newInstance("xt_e28d81bf_9054_4f34_ae93_6017e9ae4796");
-static final IDatatype _cst_78 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/null");
-static final IDatatype _cst_79 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#validURI");
-static final IDatatype _cst_80 = DatatypeMap.newInstance("?");
-static final IDatatype _cst_81 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?shape ?sh (aggregate(distinct ?s) as ?list) \nwhere {\n  {{{{graph ?shape {\n    ?sh sh:targetSubjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n  ?s ?p ?o . }\n  union {\n    graph ?shape {\n      ?sh sh:targetObjectsOf ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?x ?p ?s . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetClass ?c . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?c . \n  }}\n  union {\n    graph ?shape {\n      ?sh rdf:type sh:NodeShape . \n      ?sh rdf:type rdfs:Class . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?sh . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetNode ?s . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\ngroup by ?sh \n");
-static final IDatatype _cst_82 = DatatypeMap.newInstance("?shape");
+static final IDatatype _cst_73 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nconstruct {_:bn_1 rdf:type sh:ValidationReport . \n_:bn_1 sh:conforms true . }\nwhere {\n  \n}\n");
+static final IDatatype _cst_74 = DatatypeMap.newInstance("shaclnode:");
+static final IDatatype _cst_75 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#def");
+static final IDatatype _cst_76 = DatatypeMap.newInstance("xt_f3cbbd66_7b55_4c43_871c_327eabf6eb08");
+static final IDatatype _cst_77 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/null");
+static final IDatatype _cst_78 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#validURI");
+static final IDatatype _cst_79 = DatatypeMap.newInstance("?");
+static final IDatatype _cst_80 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?shape ?sh (aggregate(distinct ?s) as ?list) \nwhere {\n  {{{{graph ?shape {\n    ?sh sh:targetSubjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n  ?s ?p ?o . }\n  union {\n    graph ?shape {\n      ?sh sh:targetObjectsOf ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?x ?p ?s . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetClass ?c . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?c . \n  }}\n  union {\n    graph ?shape {\n      ?sh rdf:type sh:NodeShape . \n      ?sh rdf:type rdfs:Class . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?sh . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetNode ?s . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\ngroup by ?sh \n");
+static final IDatatype _cst_81 = DatatypeMap.newInstance("?shape");
+static final IDatatype _cst_82 = DatatypeMap.newInstance("?sh");
 static final IDatatype _cst_83 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/start");
-static final IDatatype _cst_84 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nconstruct {}\nwhere {\n  \n}\n");
-static final IDatatype _cst_85 = DatatypeMap.newInstance("xt_c44f62f6_cc6a_4c4d_b7ad_f2eaa023d588");
+static final IDatatype _cst_84 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nconstruct {}\nwhere {\n  \n}\n");
+static final IDatatype _cst_85 = DatatypeMap.newInstance("xt_3200580f_55a9_40c4_962c_8c8d2eea40ff");
 static final IDatatype _cst_86 = DatatypeMap.newResource("http://www.w3.org/1999/02/22-rdf-syntax-ns#");
 static final IDatatype _cst_87 = DatatypeMap.newResource("http://www.w3.org/2000/01/rdf-schema#");
 static final IDatatype _cst_88 = DatatypeMap.newResource("http://www.w3.org/2002/07/owl#");
@@ -110,166 +110,163 @@ static final IDatatype _cst_90 = DatatypeMap.newInstance("values (?this ");
 static final IDatatype _cst_91 = DatatypeMap.newInstance(") { (UNDEF UNDEF) }");
 static final IDatatype _cst_92 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#service");
 static final IDatatype _cst_93 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#ldpath");
-static final IDatatype _cst_94 = DatatypeMap.newResource("http://ns.inria.fr/shacl/and");
-static final IDatatype _cst_95 = DatatypeMap.newResource("http://ns.inria.fr/shacl/or");
-static final IDatatype _cst_96 = DatatypeMap.newResource("http://ns.inria.fr/shacl/xone");
-static final IDatatype _cst_97 = DatatypeMap.newResource("http://ns.inria.fr/shacl/not");
-static final IDatatype _cst_98 = DatatypeMap.newInstance("shaclshape:");
-static final IDatatype _cst_99 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#message");
+static final IDatatype _cst_94 = DatatypeMap.newResource("http://ns.inria.fr/shacl/not");
+static final IDatatype _cst_95 = DatatypeMap.newResource("http://ns.inria.fr/shacl/boolean");
+static final IDatatype _cst_96 = DatatypeMap.newInstance("shaclshape:");
+static final IDatatype _cst_97 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#message");
+static final IDatatype _cst_98 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#severity");
+static final IDatatype _cst_99 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#Violation");
 static final IDatatype _cst_100 = DatatypeMap.newInstance("");
-static final IDatatype _cst_101 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#severity");
-static final IDatatype _cst_102 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#Violation");
-static final IDatatype _cst_103 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect * \nwhere {\n  graph ?g {\n    ?x sh:conforms ?b . \n  }\n}\n");
-static final IDatatype _cst_104 = DatatypeMap.newInstance("?g");
-static final IDatatype _cst_105 = DatatypeMap.newInstance("?b");
-static final IDatatype _cst_106 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#myand");
-static final IDatatype _cst_107 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#myor");
-static final IDatatype _cst_108 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#mynot");
-static final IDatatype _cst_109 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jc: <function://fr.inria.corese.core.extension.SHACL.>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?s (aggregate(?o) as ?l) \nwhere {\n  ?s ?p ?o . \n}\n");
-static final IDatatype _cst_110 = DatatypeMap.newInstance("?s");
-static final IDatatype _cst_111 = DatatypeMap.newInstance("?l");
-static final IDatatype _cst_112 = DatatypeMap.newInstance("?name");
-static final IDatatype _cst_113 = DatatypeMap.newInstance("?value");
-static final IDatatype _cst_114 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jc: <function://fr.inria.corese.core.extension.SHACL.>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?shape ?exp ?q ?path \nwhere {\n  graph ?shape {\n    ?exp ?q ?path . \n    filter (!((?q in (rdf:first)))) \n  }\n}\n");
-static final IDatatype _cst_115 = DatatypeMap.newInstance("?exp");
-static final IDatatype _cst_116 = DatatypeMap.newInstance("?q");
-static final IDatatype _cst_117 = DatatypeMap.newInstance("?path");
-static final IDatatype _cst_118 = DatatypeMap.newResource("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
-static final IDatatype _cst_119 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sequence");
-static final IDatatype _cst_120 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/nt");
-static final IDatatype _cst_121 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/turtle");
-static final IDatatype _cst_122 = DatatypeMap.newInstance("prefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?g ?s ?p (aggregate(?o) as ?l) \nwhere {\n  graph ?g {\n    ?s ?p ?o . \n  }\n}\n");
-static final IDatatype _cst_123 = DatatypeMap.newInstance("?p");
-static final IDatatype _cst_124 = DatatypeMap.newInstance("ldpath:");
-static final IDatatype _cst_125 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect * (aggregate(xt:list(?bool, ?cst)) as ?list) \nwhere {\n  graph ?shape {\n    values (?bool ){\n      (sh:and )\n      (sh:or )\n      (sh:xone )\n      (sh:not )\n    }\n    ?sh ?bool ?cst . \n  }\n}\n");
-static final IDatatype _cst_126 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?sh ?shape (aggregate(xt:list(?cst, bound(?prop))) as ?list) \nwhere {\n  graph ?shape {\n    ?sh (rdf:rest)*/rdf:first ?cst . \n    optional {\n      ?cst ((sh:property|sh:path)|sh:closed) ?prop . \n    }\n  }\n}\n");
-static final IDatatype _cst_127 = DatatypeMap.newInstance("target:");
-static final IDatatype _cst_128 = DatatypeMap.newInstance("undef");
-static final IDatatype _cst_129 = DatatypeMap.newInstance("?key");
-static final IDatatype _cst_130 = DatatypeMap.newInstance("?val");
-static final IDatatype _cst_131 = DatatypeMap.newInstance(":");
-static final IDatatype _cst_132 = DatatypeMap.newInstance("__");
-static final IDatatype _cst_133 = DatatypeMap.newInstance("select ?_b0 ?shape ?sh  where { bind (exists {graph ?shape {\n    ?sh sh:closed true . \n  }} as ?_b0) } values (?shape ?sh ) { (UNDEF UNDEF ) }");
-static final IDatatype _cst_134 = DatatypeMap.newInstance("?_b0");
-static final IDatatype _cst_135 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect * (aggregate(?val) as ?list) \nwhere {\n  graph ?shape {\n    ?sh (rdf:rest)*/rdf:first ?val . \n  }\n}\n");
-static final IDatatype _cst_136 = DatatypeMap.newInstance("?o");
-static final IDatatype _cst_137 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jc: <function://fr.inria.corese.core.extension.SHACL.>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?shape ?exp (aggregate(jc:sh_path(?shape, ?e)) as ?l) \nwhere {\n  graph ?shape {\n    ?exp (rdf:rest)*/rdf:first ?e . \n  }\n}\n");
-static final IDatatype _cst_138 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?shape ?sh (aggregate(xt:list(?oper, ?val)) as ?list) \nwhere {\n  graph ?shape {\n    values (?oper ){\n      (sh:equals )\n      (sh:disjoint )\n      (sh:and )\n      (sh:or )\n      (sh:xone )\n      (sh:not )\n      (sh:maxCount )\n      (sh:minCount )\n      (sh:hasValue )\n      (sh:uniqueLang )\n      (sh:lessThan )\n      (sh:lessThanOrEquals )\n    }\n    ?sh ?oper ?val . \n    filter if((?oper = sh:uniqueLang), sameTerm(?val, true), true) \n  }\n}\n");
-static final IDatatype _cst_139 = DatatypeMap.newInstance("select ?_b1 ?shape ?sh  where { bind (exists {graph ?shape {\n    values (?sh ){\n      (UNDEF )\n    }\n    filter (!(exists {?sh sh:path ?ppp . })) \n  }} as ?_b1) } values (?shape ?sh ) { (UNDEF UNDEF ) }");
-static final IDatatype _cst_140 = DatatypeMap.newInstance("?_b1");
-static final IDatatype _cst_141 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?shape ?sh (aggregate(xt:list(?oper, ?val)) as ?list) \nwhere {\n  graph ?shape {\n    values (?oper ){\n      (sh:minLength )\n      (sh:maxLength )\n      (sh:datatype )\n      (sh:minInclusive )\n      (sh:minExclusive )\n      (sh:maxInclusive )\n      (sh:maxExclusive )\n      (sh:nodeKind )\n      (sh:class )\n      (sh:in )\n      (sh:languageIn )\n      (sh:node )\n      (sh:property )\n      (sh:function )\n      (sh:functioncst )\n    }\n    ?sh ?oper ?val . \n  }\n}\n");
-static final IDatatype _cst_142 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect * (aggregate(distinct ?p) as ?list) \nwhere {\n  graph ?shape {\n    ?sh sh:closed true . \n    {?sh sh:property _:bn_1 . \n    _:bn_1 sh:path ?p . \n    filter isURI(?p) }\n    union {\n      ?sh sh:ignoredProperties/(rdf:rest)*/rdf:first ?p . \n    }\n  }\n}\n");
-static final IDatatype _cst_143 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jc: <function://fr.inria.corese.core.extension.SHACL.>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?s ?p (aggregate(?o) as ?l) \nwhere {\n  ?s ?p ?o . \n}\n");
-static final IDatatype _cst_144 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?shape ?sh (aggregate(xt:list(sh:qualifiedValueShape, ?qsh, coalesce(?disjoint, false), coalesce(?min, 0), coalesce(?max, -1))) as ?list) \nwhere {\n  graph ?shape {\n    ?sh sh:qualifiedValueShape ?qsh . \n    optional {\n      ?sh sh:qualifiedMinCount ?min . \n    }\n    optional {\n      ?sh sh:qualifiedMaxCount ?max . \n    }\n    optional {\n      ?sh sh:qualifiedValueShapesDisjoint ?disjoint . \n    }\n  }\n}\n");
-static final IDatatype _cst_145 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?shape ?sh ?s (aggregate(distinct ?s) as ?list) \nwhere {\n  values (?sh ){\n    (UNDEF )\n  }\n  {{{{graph ?shape {\n    ?sh sh:targetSubjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n  ?s ?p ?o . }\n  union {\n    graph ?shape {\n      ?sh sh:targetObjectsOf ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?x ?p ?s . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetClass ?c . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?c . \n  }}\n  union {\n    graph ?shape {\n      ?sh rdf:type sh:NodeShape . \n      ?sh rdf:type rdfs:Class . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?sh . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetNode ?s . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\ngroup by ?sh \n");
-static final IDatatype _cst_146 = DatatypeMap.newInstance("predicate service:");
-static final IDatatype _cst_147 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jc: <function://fr.inria.corese.core.extension.SHACL.>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?s ?url (aggregate(?o) as ?l) \nwhere {\n  service ?url {\n    ?s ?p ?o . \n  }\n}\n");
-static final IDatatype _cst_148 = DatatypeMap.newInstance("?url");
-static final IDatatype _cst_149 = DatatypeMap.newInstance("list:");
-static final IDatatype _cst_150 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect * (aggregate(xt:list(?sh, ?p)) as ?list) \nwhere {\n  graph ?shape {\n    ?sh sh:targetObjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n}\n");
-static final IDatatype _cst_151 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?sh ?shape (aggregate(?cst) as ?list) \nwhere {\n  graph ?shape {\n    ?sh (rdf:rest)*/rdf:first ?cst . \n  }\n}\n");
-static final IDatatype _cst_152 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?o ?p (count(*) as ?c) \nwhere {\n  ?s ?p ?o . \n}\n");
-static final IDatatype _cst_153 = DatatypeMap.newInstance("?c");
-static final IDatatype _cst_154 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?shape ?sh (aggregate(xt:list(?exp, coalesce(?flag, st:null))) as ?list) \nwhere {\n  graph ?shape {\n    ?sh sh:pattern ?exp . \n    optional {\n      ?sh sh:flags ?flag . \n    }\n  }\n}\n");
-static final IDatatype _cst_155 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?s ?p (count(*) as ?c) \nwhere {\n  ?s ?p ?o . \n}\n");
-static final IDatatype _cst_156 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/dspprint");
-static final IDatatype _cst_157 = DatatypeMap.newInstance("?var");
-static final IDatatype _cst_158 = DatatypeMap.newInstance("{");
-static final IDatatype _cst_159 = DatatypeMap.newInstance("}");
-static final IDatatype _cst_160 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#path");
-static final IDatatype _cst_161 = DatatypeMap.newResource("http://ns.inria.fr/sparql-extension/graph");
-static final IDatatype _cst_162 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect * (aggregate(xt:list(?cst, ?define, ?q, ?oper, ?value)) as ?list) \nwhere {\n  graph ?shape {\n    ?sh ?oper ?value . \n    filter (!(mapany(lambda(?_fun_var_0, ?_fun_var_1) { \n      rq:strstarts(?_fun_var_0, ?_fun_var_1)\n    }, ?oper, xt:list(sh:, rdfs:, owl:, rdf:)))) \n    ?cst sh:parameter _:bn_1 . \n    _:bn_1 sh:path ?oper . \n    ?cst sh:propertyValidator ?valid . \n    ?valid sh:select ?q . \n    filter (!(exists {?cst sh:deactivated true . })) \n    {select ?valid (group_concat(concat('prefix ', ?pr, ': <', str(?ns), '>'); separator=' ') as ?define) \n    where {\n      ?valid sh:prefixes/(owl:imports)*/sh:declare _:bn_1 . \n      _:bn_1 sh:prefix ?pr . \n      _:bn_1 sh:namespace ?ns . \n    }\n    group by ?valid \n    }\n  }\n}\n");
-static final IDatatype _cst_163 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect * (aggregate(xt:list(coalesce(?cst, ?sh), ?p)) as ?list) \nwhere {\n  graph ?shape {\n    {?sh sh:property ?cst . \n    ?cst sh:path ?p . \n    filter (!(exists {?cst sh:deactivated true . })) }\n    union {\n      ?sh sh:path ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\n");
-static final IDatatype _cst_164 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) \nwhere {\n  values (?s ){\n    (UNDEF )\n  }\n  {{{{graph ?shape {\n    ?sh sh:targetSubjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n  {?s ?p ?o . }\n  union {\n    ?a ?p ?s . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetObjectsOf ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    {?x ?p ?s . }\n    union {\n      ?s ?p ?a . \n    }\n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetClass ?c . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?c . \n  }}\n  union {\n    graph ?shape {\n      ?sh rdf:type sh:NodeShape . \n      ?sh rdf:type rdfs:Class . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?sh . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetNode ?s . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\ngroup by ?sh \n");
-static final IDatatype _cst_165 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#isclosedcore");
-static final IDatatype _cst_166 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?shape ?sh ?s (aggregate(distinct ?s) as ?list) \nwhere {\n  {{{{graph ?shape {\n    ?sh sh:targetSubjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n  ?s ?p ?o . }\n  union {\n    graph ?shape {\n      ?sh sh:targetObjectsOf ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?x ?p ?s . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetClass ?c . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?c . \n  }}\n  union {\n    graph ?shape {\n      ?sh rdf:type sh:NodeShape . \n      ?sh rdf:type rdfs:Class . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?sh . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetNode ?s . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\ngroup by ?sh \n");
-static final IDatatype _cst_167 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jc: <function://fr.inria.corese.core.extension.SHACL.>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?o ?p (aggregate(?s) as ?l) \nwhere {\n  ?s ?p ?o . \n}\n");
-static final IDatatype _cst_168 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#closedcore");
-static final IDatatype _cst_169 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect * (aggregate(xt:list(?cst, ?define, ?q, coalesce(?mes, st:null))) as ?list) \nwhere {\n  graph ?shape {\n    ?sh sh:sparql ?cst . \n    ?cst sh:select ?q . \n    filter (!(exists {?cst sh:deactivated true . })) \n    optional {\n      ?cst sh:message ?mes . \n    }\n    {select ?cst (group_concat(concat('prefix ', ?pr, ': <', str(?ns), '>'); separator=' ') as ?define) \n    where {\n      ?cst sh:prefixes/(owl:imports)*/sh:declare _:bn_1 . \n      _:bn_1 sh:prefix ?pr . \n      _:bn_1 sh:namespace ?ns . \n    }\n    group by ?cst \n    }\n  }\n}\n");
-static final IDatatype _cst_170 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jc: <function://fr.inria.corese.core.extension.SHACL.>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?shape ?exp (aggregate(?e) as ?l) \nwhere {\n  graph ?shape {\n    ?exp (rdf:rest)*/rdf:first ?e . \n  }\n}\n");
-static final IDatatype _cst_171 = DatatypeMap.newInstance("prefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?g ?s ?p ?q (aggregate(?o) as ?l) \nwhere {\n  graph ?g {\n    ?s ?p _:bn_1 . \n    _:bn_1 ?q ?o . \n  }\n}\n");
-static final IDatatype _cst_172 = DatatypeMap.newInstance("?oper");
-static final IDatatype _cst_173 = DatatypeMap.newInstance("?arg");
-static final IDatatype _cst_174 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#filter");
-static final IDatatype _cst_175 = DatatypeMap.newInstance("Fail at: ");
-static final IDatatype _cst_176 = DatatypeMap.newInstance("prefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect * (aggregate(?o) as ?l) \nwhere {\n  service ?uri {\n    ?s ?p ?o . \n  }\n}\n");
-static final IDatatype _cst_177 = DatatypeMap.newInstance("?uri");
-static final IDatatype _cst_178 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?shape ?sh ?list (aggregate(xt:list(?q, ?m)) as ?res) \nwhere {\n  graph ?shape {\n    values (?list ){\n      (UNDEF )\n    }\n    values (?q ){ unnest(?list) }\n    ?sh ?q ?m . \n  }\n}\n");
-static final IDatatype _cst_179 = DatatypeMap.newInstance("?res");
-static final IDatatype _cst_180 = DatatypeMap.newInstance("select ?_b2 ?shape ?o ?c  where { bind (exists {?o rdf:type/(rdfs:subClassOf)* ?c . } as ?_b2) } values (?shape ?o ?c ) { (UNDEF UNDEF UNDEF ) }");
-static final IDatatype _cst_181 = DatatypeMap.newInstance("?_b2");
-static final IDatatype _cst_182 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) \nwhere {\n  values (?shape ?s ?sh ){\n    (UNDEF UNDEF UNDEF )\n  }\n  {{{{graph ?shape {\n    ?sh sh:targetSubjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n  {?s ?p ?o . }\n  union {\n    ?a ?p ?s . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetObjectsOf ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    {?x ?p ?s . }\n    union {\n      ?s ?p ?a . \n    }\n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetClass ?c . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?c . \n  }}\n  union {\n    graph ?shape {\n      ?sh rdf:type sh:NodeShape . \n      ?sh rdf:type rdfs:Class . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?sh . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetNode ?s . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\ngroup by ?sh \n");
-static final IDatatype _cst_183 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jc: <function://fr.inria.corese.core.extension.SHACL.>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?o ?p ?url (aggregate(?s) as ?l) \nwhere {\n  service ?url {\n    ?s ?p ?o . \n  }\n}\n");
-static final IDatatype _cst_184 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#IRI");
-static final IDatatype _cst_185 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNodeOrIRI");
-static final IDatatype _cst_186 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#IRIOrLiteral");
-static final IDatatype _cst_187 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#Literal");
-static final IDatatype _cst_188 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNodeOrLiteral");
-static final IDatatype _cst_189 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNode");
-static final IDatatype _cst_190 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix jc: <function://fr.inria.corese.core.extension.SHACL.>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?s ?p ?url (aggregate(?o) as ?l) \nwhere {\n  service ?url {\n    ?s ?p ?o . \n  }\n}\n");
-static final IDatatype _cst_191 = DatatypeMap.newInstance("prefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix jsh: <function://fr.inria.corese.core.extension.SHACL.>\nselect * (aggregate(?o) as ?l) \nwhere {\n  service ?uri {\n    ?s ?p _:bn_1 . \n    _:bn_1 ?q ?o . \n  }\n}\n");
-static final IDatatype _cst_192 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#cstpattern");
-static final IDatatype _cst_193 = DatatypeMap.newInstance("?flag");
-static final IDatatype _cst_194 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#booleancore");
-static final IDatatype _cst_195 = DatatypeMap.newInstance("?bool");
-static final IDatatype _cst_196 = DatatypeMap.newInstance("?cst");
-static final IDatatype _cst_197 = DatatypeMap.newInstance("core boolean:");
-static final IDatatype _cst_198 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#constraintcore");
-static final IDatatype _cst_199 = DatatypeMap.newInstance("core constraint:");
-static final IDatatype _cst_200 = DatatypeMap.newInstance("core closed:");
-static final IDatatype _cst_201 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#pathcore");
-static final IDatatype _cst_202 = DatatypeMap.newInstance("core path:");
-static final IDatatype _cst_203 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#cstgeneric1");
-static final IDatatype _cst_204 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#cstgeneric2");
-static final IDatatype _cst_205 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedShape");
-static final IDatatype _cst_206 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#cstsparql");
-static final IDatatype _cst_207 = DatatypeMap.newInstance("?define");
-static final IDatatype _cst_208 = DatatypeMap.newInstance("?mes");
-static final IDatatype _cst_209 = DatatypeMap.newInstance("cstsparql:");
-static final IDatatype _cst_210 = DatatypeMap.newInstance("?firstExp");
-static final IDatatype _cst_211 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#coreboolean");
-static final IDatatype _cst_212 = DatatypeMap.newInstance("select ?_b3 ?shape ?sh ?vis ?s ?c  where { bind (exists {?s rdf:type/(rdfs:subClassOf)* ?c . } as ?_b3) } values (?shape ?sh ?vis ?s ?c ) { (UNDEF UNDEF UNDEF UNDEF UNDEF ) }");
-static final IDatatype _cst_213 = DatatypeMap.newInstance("?vis");
-static final IDatatype _cst_214 = DatatypeMap.newInstance("?_b3");
-static final IDatatype _cst_215 = DatatypeMap.newResource("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
-static final IDatatype _cst_216 = DatatypeMap.newInstance("?server");
-static final IDatatype _cst_217 = DatatypeMap.newInstance("service:");
-static final IDatatype _cst_218 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#pathmap");
-static final IDatatype _cst_219 = DatatypeMap.newInstance("?pp");
-static final IDatatype _cst_220 = DatatypeMap.newInstance("?qq");
-static final IDatatype _cst_221 = DatatypeMap.newInstance("service list:");
-static final IDatatype _cst_222 = DatatypeMap.newInstance("xt_a98b3a98_95bc_4624_bf8d_c7d789bc70c3");
-static final IDatatype _cst_223 = DatatypeMap.newInstance("?lan");
-static final IDatatype _cst_224 = DatatypeMap.newInstance("path:");
-static final IDatatype _cst_225 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#path3");
-static final IDatatype _cst_226 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#path1");
-static final IDatatype _cst_227 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#property");
-static final IDatatype _cst_228 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sparqlvalid");
-static final IDatatype _cst_229 = DatatypeMap.newInstance("sparql:");
-static final IDatatype _cst_230 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#path2");
-static final IDatatype _cst_231 = DatatypeMap.newInstance("?disjoint");
-static final IDatatype _cst_232 = DatatypeMap.newInstance("?amin");
-static final IDatatype _cst_233 = DatatypeMap.newInstance("?amax");
-static final IDatatype _cst_234 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#pathboolean");
-static final IDatatype _cst_235 = DatatypeMap.newInstance("?prop");
-static final IDatatype _cst_236 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#ValidationReport");
-static final IDatatype _cst_237 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#result");
-static final IDatatype _cst_238 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#conforms");
-static final IDatatype _cst_239 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#ValidationResult");
-static final IDatatype _cst_240 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#resultSeverity");
-static final IDatatype _cst_241 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#focusNode");
-static final IDatatype _cst_242 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#resultMessage");
-static final IDatatype _cst_243 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sourceConstraintComponent");
-static final IDatatype _cst_244 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sourceShape");
-static final IDatatype _cst_245 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#resultPath");
-static final IDatatype _cst_246 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#value");
-static final IDatatype _cst_247 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#valueDetail");
-static final IDatatype _cst_248 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#focusNodeDetail");
-static final IDatatype _cst_249 = DatatypeMap.newInstance("path sparql:");
-static final IDatatype _cst_250 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#subtotal");
-static final IDatatype _cst_251 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#total");
-static final IDatatype _cst_252 = DatatypeMap.newInstance("$this");
-static final IDatatype _cst_253 = DatatypeMap.newInstance("\\$PATH");
+static final IDatatype _cst_101 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect * \nwhere {\n  graph ?g {\n    ?x sh:conforms ?b . \n  }\n}\n");
+static final IDatatype _cst_102 = DatatypeMap.newInstance("?g");
+static final IDatatype _cst_103 = DatatypeMap.newInstance("?b");
+static final IDatatype _cst_104 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#myand");
+static final IDatatype _cst_105 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#myor");
+static final IDatatype _cst_106 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#mynot");
+static final IDatatype _cst_107 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?s (aggregate(?o) as ?l) \nwhere {\n  ?s ?p ?o . \n}\n");
+static final IDatatype _cst_108 = DatatypeMap.newInstance("?s");
+static final IDatatype _cst_109 = DatatypeMap.newInstance("?l");
+static final IDatatype _cst_110 = DatatypeMap.newInstance("?name");
+static final IDatatype _cst_111 = DatatypeMap.newInstance("?value");
+static final IDatatype _cst_112 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?shape ?exp ?q ?path \nwhere {\n  graph ?shape {\n    ?exp ?q ?path . \n    filter (!((?q in (rdf:first)))) \n  }\n}\n");
+static final IDatatype _cst_113 = DatatypeMap.newInstance("?exp");
+static final IDatatype _cst_114 = DatatypeMap.newInstance("?q");
+static final IDatatype _cst_115 = DatatypeMap.newInstance("?path");
+static final IDatatype _cst_116 = DatatypeMap.newResource("http://www.w3.org/1999/02/22-rdf-syntax-ns#rest");
+static final IDatatype _cst_117 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sequence");
+static final IDatatype _cst_118 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/nt");
+static final IDatatype _cst_119 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/turtle");
+static final IDatatype _cst_120 = DatatypeMap.newInstance("prefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?g ?s ?p (aggregate(?o) as ?l) \nwhere {\n  graph ?g {\n    ?s ?p ?o . \n  }\n}\n");
+static final IDatatype _cst_121 = DatatypeMap.newInstance("?p");
+static final IDatatype _cst_122 = DatatypeMap.newInstance("ldpath:");
+static final IDatatype _cst_123 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect * (aggregate(xt:list(?bool, ?cst)) as ?list) \nwhere {\n  graph ?shape {\n    values (?bool ){\n      (sh:and )\n      (sh:or )\n      (sh:xone )\n      (sh:not )\n    }\n    ?sh ?bool ?cst . \n  }\n}\n");
+static final IDatatype _cst_124 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?cst ?shape (aggregate(?sh) as ?list) \nwhere {\n  graph ?shape {\n    ?cst (rdf:rest)*/rdf:first ?sh . \n  }\n}\n");
+static final IDatatype _cst_125 = DatatypeMap.newInstance("?cst");
+static final IDatatype _cst_126 = DatatypeMap.newInstance("target:");
+static final IDatatype _cst_127 = DatatypeMap.newInstance("undef");
+static final IDatatype _cst_128 = DatatypeMap.newInstance("?key");
+static final IDatatype _cst_129 = DatatypeMap.newInstance("?val");
+static final IDatatype _cst_130 = DatatypeMap.newInstance(":");
+static final IDatatype _cst_131 = DatatypeMap.newInstance("__");
+static final IDatatype _cst_132 = DatatypeMap.newInstance("select ?_b0 ?shape ?sh  where { bind (exists {graph ?shape {\n    ?sh sh:closed true . \n  }} as ?_b0) } values (?shape ?sh ) { (UNDEF UNDEF ) }");
+static final IDatatype _cst_133 = DatatypeMap.newInstance("?_b0");
+static final IDatatype _cst_134 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect * (aggregate(?val) as ?list) \nwhere {\n  graph ?shape {\n    ?sh (rdf:rest)*/rdf:first ?val . \n  }\n}\n");
+static final IDatatype _cst_135 = DatatypeMap.newInstance("?o");
+static final IDatatype _cst_136 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?shape ?exp (aggregate(jsh:sh_path(?shape, ?e)) as ?l) \nwhere {\n  graph ?shape {\n    ?exp (rdf:rest)*/rdf:first ?e . \n  }\n}\n");
+static final IDatatype _cst_137 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?shape ?sh (aggregate(xt:list(?oper, ?val)) as ?list) \nwhere {\n  graph ?shape {\n    values (?oper ){\n      (sh:equals )\n      (sh:disjoint )\n      (sh:and )\n      (sh:or )\n      (sh:xone )\n      (sh:not )\n      (sh:maxCount )\n      (sh:minCount )\n      (sh:hasValue )\n      (sh:uniqueLang )\n      (sh:lessThan )\n      (sh:lessThanOrEquals )\n    }\n    ?sh ?oper ?val . \n    filter if((?oper = sh:uniqueLang), sameTerm(?val, true), true) \n  }\n}\n");
+static final IDatatype _cst_138 = DatatypeMap.newInstance("select ?_b1 ?shape ?sh  where { bind (exists {graph ?shape {\n    values (?sh ){\n      (UNDEF )\n    }\n    filter (!(exists {?sh sh:path ?ppp . })) \n  }} as ?_b1) } values (?shape ?sh ) { (UNDEF UNDEF ) }");
+static final IDatatype _cst_139 = DatatypeMap.newInstance("?_b1");
+static final IDatatype _cst_140 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?shape ?sh (aggregate(xt:list(?oper, ?val)) as ?list) \nwhere {\n  graph ?shape {\n    values (?oper ){\n      (sh:minLength )\n      (sh:maxLength )\n      (sh:datatype )\n      (sh:minInclusive )\n      (sh:minExclusive )\n      (sh:maxInclusive )\n      (sh:maxExclusive )\n      (sh:nodeKind )\n      (sh:class )\n      (sh:in )\n      (sh:languageIn )\n      (sh:node )\n      (sh:property )\n      (sh:function )\n      (sh:functioncst )\n    }\n    ?sh ?oper ?val . \n  }\n}\n");
+static final IDatatype _cst_141 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect * (aggregate(distinct ?p) as ?list) \nwhere {\n  graph ?shape {\n    ?sh sh:closed true . \n    {?sh sh:property _:bn_1 . \n    _:bn_1 sh:path ?p . \n    filter isURI(?p) }\n    union {\n      ?sh sh:ignoredProperties/(rdf:rest)*/rdf:first ?p . \n    }\n  }\n}\n");
+static final IDatatype _cst_142 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?s ?p (aggregate(?o) as ?l) \nwhere {\n  ?s ?p ?o . \n}\n");
+static final IDatatype _cst_143 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?shape ?sh (aggregate(xt:list(sh:qualifiedValueShape, ?qsh, coalesce(?disjoint, false), coalesce(?min, 0), coalesce(?max, -1))) as ?list) \nwhere {\n  graph ?shape {\n    ?sh sh:qualifiedValueShape ?qsh . \n    optional {\n      ?sh sh:qualifiedMinCount ?min . \n    }\n    optional {\n      ?sh sh:qualifiedMaxCount ?max . \n    }\n    optional {\n      ?sh sh:qualifiedValueShapesDisjoint ?disjoint . \n    }\n  }\n}\n");
+static final IDatatype _cst_144 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nselect ?shape ?sh ?s (aggregate(distinct ?s) as ?list) \nwhere {\n  values (?sh ){\n    (UNDEF )\n  }\n  {{{{graph ?shape {\n    ?sh sh:targetSubjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n  ?s ?p ?o . }\n  union {\n    graph ?shape {\n      ?sh sh:targetObjectsOf ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?x ?p ?s . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetClass ?c . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?c . \n  }}\n  union {\n    graph ?shape {\n      ?sh rdf:type sh:NodeShape . \n      ?sh rdf:type rdfs:Class . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?sh . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetNode ?s . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\ngroup by ?sh \n");
+static final IDatatype _cst_145 = DatatypeMap.newInstance("predicate service:");
+static final IDatatype _cst_146 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?s ?url (aggregate(?o) as ?l) \nwhere {\n  service ?url {\n    ?s ?p ?o . \n  }\n}\n");
+static final IDatatype _cst_147 = DatatypeMap.newInstance("?url");
+static final IDatatype _cst_148 = DatatypeMap.newInstance("list:");
+static final IDatatype _cst_149 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect * (aggregate(xt:list(?sh, ?p)) as ?list) \nwhere {\n  graph ?shape {\n    ?sh sh:targetObjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n}\n");
+static final IDatatype _cst_150 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?cst ?shape (aggregate(?sh) as ?list) \nwhere {\n  graph ?shape {\n    ?cst (rdf:rest)*/rdf:first ?sh . \n  }\n}\n");
+static final IDatatype _cst_151 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?o ?p (count(*) as ?c) \nwhere {\n  ?s ?p ?o . \n}\n");
+static final IDatatype _cst_152 = DatatypeMap.newInstance("?c");
+static final IDatatype _cst_153 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?shape ?sh (aggregate(xt:list(?exp, coalesce(?flag, st:null))) as ?list) \nwhere {\n  graph ?shape {\n    ?sh sh:pattern ?exp . \n    optional {\n      ?sh sh:flags ?flag . \n    }\n  }\n}\n");
+static final IDatatype _cst_154 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?s ?p (count(*) as ?c) \nwhere {\n  ?s ?p ?o . \n}\n");
+static final IDatatype _cst_155 = DatatypeMap.newResource("http://ns.inria.fr/sparql-template/dspprint");
+static final IDatatype _cst_156 = DatatypeMap.newInstance("?var");
+static final IDatatype _cst_157 = DatatypeMap.newInstance("{");
+static final IDatatype _cst_158 = DatatypeMap.newInstance("}");
+static final IDatatype _cst_159 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#path");
+static final IDatatype _cst_160 = DatatypeMap.newResource("http://ns.inria.fr/sparql-extension/graph");
+static final IDatatype _cst_161 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect * (aggregate(xt:list(?cst, ?define, ?q, ?oper, ?value)) as ?list) \nwhere {\n  graph ?shape {\n    ?sh ?oper ?value . \n    filter (!(mapany(lambda(?_fun_var_0, ?_fun_var_1) { \n      rq:strstarts(?_fun_var_0, ?_fun_var_1)\n    }, ?oper, xt:list(sh:, rdfs:, owl:, rdf:)))) \n    ?cst sh:parameter _:bn_1 . \n    _:bn_1 sh:path ?oper . \n    ?cst sh:propertyValidator ?valid . \n    ?valid sh:select ?q . \n    filter (!(exists {?cst sh:deactivated true . })) \n    {select ?valid (group_concat(concat('prefix ', ?pr, ': <', str(?ns), '>'); separator=' ') as ?define) \n    where {\n      ?valid sh:prefixes/(owl:imports)*/sh:declare _:bn_1 . \n      _:bn_1 sh:prefix ?pr . \n      _:bn_1 sh:namespace ?ns . \n    }\n    group by ?valid \n    }\n  }\n}\n");
+static final IDatatype _cst_162 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect * (aggregate(xt:list(coalesce(?cst, ?sh), ?p)) as ?list) \nwhere {\n  graph ?shape {\n    {?sh sh:property ?cst . \n    ?cst sh:path ?p . \n    filter (!(exists {?cst sh:deactivated true . })) }\n    union {\n      ?sh sh:path ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\n");
+static final IDatatype _cst_163 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nselect ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) \nwhere {\n  values (?s ){\n    (UNDEF )\n  }\n  {{{{graph ?shape {\n    ?sh sh:targetSubjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n  {?s ?p ?o . }\n  union {\n    ?a ?p ?s . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetObjectsOf ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    {?x ?p ?s . }\n    union {\n      ?s ?p ?a . \n    }\n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetClass ?c . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?c . \n  }}\n  union {\n    graph ?shape {\n      ?sh rdf:type sh:NodeShape . \n      ?sh rdf:type rdfs:Class . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?sh . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetNode ?s . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\ngroup by ?sh \n");
+static final IDatatype _cst_164 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#isclosedcore");
+static final IDatatype _cst_165 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?shape ?sh ?s (aggregate(distinct ?s) as ?list) \nwhere {\n  {{{{graph ?shape {\n    ?sh sh:targetSubjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n  ?s ?p ?o . }\n  union {\n    graph ?shape {\n      ?sh sh:targetObjectsOf ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?x ?p ?s . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetClass ?c . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?c . \n  }}\n  union {\n    graph ?shape {\n      ?sh rdf:type sh:NodeShape . \n      ?sh rdf:type rdfs:Class . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?sh . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetNode ?s . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\ngroup by ?sh \n");
+static final IDatatype _cst_166 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?o ?p (aggregate(?s) as ?l) \nwhere {\n  ?s ?p ?o . \n}\n");
+static final IDatatype _cst_167 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#closedcore");
+static final IDatatype _cst_168 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect * (aggregate(xt:list(?cst, ?define, ?q, coalesce(?mes, st:null))) as ?list) \nwhere {\n  graph ?shape {\n    ?sh sh:sparql ?cst . \n    ?cst sh:select ?q . \n    filter (!(exists {?cst sh:deactivated true . })) \n    optional {\n      ?cst sh:message ?mes . \n    }\n    {select ?cst (group_concat(concat('prefix ', ?pr, ': <', str(?ns), '>'); separator=' ') as ?define) \n    where {\n      ?cst sh:prefixes/(owl:imports)*/sh:declare _:bn_1 . \n      _:bn_1 sh:prefix ?pr . \n      _:bn_1 sh:namespace ?ns . \n    }\n    group by ?cst \n    }\n  }\n}\n");
+static final IDatatype _cst_169 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?shape ?exp (aggregate(?e) as ?l) \nwhere {\n  graph ?shape {\n    ?exp (rdf:rest)*/rdf:first ?e . \n  }\n}\n");
+static final IDatatype _cst_170 = DatatypeMap.newInstance("prefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?g ?s ?p ?q (aggregate(?o) as ?l) \nwhere {\n  graph ?g {\n    ?s ?p _:bn_1 . \n    _:bn_1 ?q ?o . \n  }\n}\n");
+static final IDatatype _cst_171 = DatatypeMap.newInstance("?oper");
+static final IDatatype _cst_172 = DatatypeMap.newInstance("?arg");
+static final IDatatype _cst_173 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#filter");
+static final IDatatype _cst_174 = DatatypeMap.newInstance("Fail at: ");
+static final IDatatype _cst_175 = DatatypeMap.newInstance("prefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect * (aggregate(?o) as ?l) \nwhere {\n  service ?uri {\n    ?s ?p ?o . \n  }\n}\n");
+static final IDatatype _cst_176 = DatatypeMap.newInstance("?uri");
+static final IDatatype _cst_177 = DatatypeMap.newInstance("prefix msh: <http://ns.inria.fr/shacl/>\nprefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect ?shape ?sh ?list (aggregate(xt:list(?q, ?m)) as ?res) \nwhere {\n  graph ?shape {\n    values (?list ){\n      (UNDEF )\n    }\n    values (?q ){ unnest(?list) }\n    ?sh ?q ?m . \n  }\n}\n");
+static final IDatatype _cst_178 = DatatypeMap.newInstance("?res");
+static final IDatatype _cst_179 = DatatypeMap.newInstance("select ?_b2 ?shape ?o ?c  where { bind (exists {?o rdf:type/(rdfs:subClassOf)* ?c . } as ?_b2) } values (?shape ?o ?c ) { (UNDEF UNDEF UNDEF ) }");
+static final IDatatype _cst_180 = DatatypeMap.newInstance("?_b2");
+static final IDatatype _cst_181 = DatatypeMap.newInstance("prefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nselect ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) \nwhere {\n  values (?shape ?s ?sh ){\n    (UNDEF UNDEF UNDEF )\n  }\n  {{{{graph ?shape {\n    ?sh sh:targetSubjectsOf ?p . \n    filter (!(exists {?sh sh:deactivated true . })) \n  }\n  {?s ?p ?o . }\n  union {\n    ?a ?p ?s . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetObjectsOf ?p . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    {?x ?p ?s . }\n    union {\n      ?s ?p ?a . \n    }\n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetClass ?c . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?c . \n  }}\n  union {\n    graph ?shape {\n      ?sh rdf:type sh:NodeShape . \n      ?sh rdf:type rdfs:Class . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n    ?s rdf:type/(rdfs:subClassOf)* ?sh . \n  }}\n  union {\n    graph ?shape {\n      ?sh sh:targetNode ?s . \n      filter (!(exists {?sh sh:deactivated true . })) \n    }\n  }\n}\ngroup by ?sh \n");
+static final IDatatype _cst_182 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?o ?p ?url (aggregate(?s) as ?l) \nwhere {\n  service ?url {\n    ?s ?p ?o . \n  }\n}\n");
+static final IDatatype _cst_183 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#IRI");
+static final IDatatype _cst_184 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNodeOrIRI");
+static final IDatatype _cst_185 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#IRIOrLiteral");
+static final IDatatype _cst_186 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#Literal");
+static final IDatatype _cst_187 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNodeOrLiteral");
+static final IDatatype _cst_188 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#BlankNode");
+static final IDatatype _cst_189 = DatatypeMap.newInstance("prefix owl: <http://www.w3.org/2002/07/owl#>\nprefix cos: <http://www.inria.fr/acacia/corese#>\nprefix xsd: <http://www.w3.org/2001/XMLSchema#>\nprefix rdfs: <http://www.w3.org/2000/01/rdf-schema#>\nprefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nprefix rq: <http://ns.inria.fr/sparql-function/>\nselect ?s ?p ?url (aggregate(?o) as ?l) \nwhere {\n  service ?url {\n    ?s ?p ?o . \n  }\n}\n");
+static final IDatatype _cst_190 = DatatypeMap.newInstance("prefix dt: <http://ns.inria.fr/sparql-datatype/>\nprefix sh: <http://www.w3.org/ns/shacl#>\nprefix us: <http://ns.inria.fr/sparql-extension/user/>\nprefix st: <http://ns.inria.fr/sparql-template/>\nprefix xt: <http://ns.inria.fr/sparql-extension/>\nselect * (aggregate(?o) as ?l) \nwhere {\n  service ?uri {\n    ?s ?p _:bn_1 . \n    _:bn_1 ?q ?o . \n  }\n}\n");
+static final IDatatype _cst_191 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#cstpattern");
+static final IDatatype _cst_192 = DatatypeMap.newInstance("?flag");
+static final IDatatype _cst_193 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#booleancore");
+static final IDatatype _cst_194 = DatatypeMap.newInstance("?bool");
+static final IDatatype _cst_195 = DatatypeMap.newInstance("core boolean:");
+static final IDatatype _cst_196 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#constraintcore");
+static final IDatatype _cst_197 = DatatypeMap.newInstance("core constraint:");
+static final IDatatype _cst_198 = DatatypeMap.newInstance("core closed:");
+static final IDatatype _cst_199 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#pathcore");
+static final IDatatype _cst_200 = DatatypeMap.newInstance("core path:");
+static final IDatatype _cst_201 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#cstgeneric1");
+static final IDatatype _cst_202 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#cstgeneric2");
+static final IDatatype _cst_203 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#qualifiedShape");
+static final IDatatype _cst_204 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#cstsparql");
+static final IDatatype _cst_205 = DatatypeMap.newInstance("?define");
+static final IDatatype _cst_206 = DatatypeMap.newInstance("?mes");
+static final IDatatype _cst_207 = DatatypeMap.newInstance("cstsparql:");
+static final IDatatype _cst_208 = DatatypeMap.newInstance("?firstExp");
+static final IDatatype _cst_209 = DatatypeMap.newInstance("path:");
+static final IDatatype _cst_210 = DatatypeMap.newInstance("path sparql:");
+static final IDatatype _cst_211 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#path3");
+static final IDatatype _cst_212 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#path1");
+static final IDatatype _cst_213 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#property");
+static final IDatatype _cst_214 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sparqlvalid");
+static final IDatatype _cst_215 = DatatypeMap.newInstance("sparql:");
+static final IDatatype _cst_216 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#path2");
+static final IDatatype _cst_217 = DatatypeMap.newInstance("?disjoint");
+static final IDatatype _cst_218 = DatatypeMap.newInstance("?amin");
+static final IDatatype _cst_219 = DatatypeMap.newInstance("?amax");
+static final IDatatype _cst_220 = DatatypeMap.newInstance("select ?_b3 ?shape ?sh ?vis ?s ?c  where { bind (exists {?s rdf:type/(rdfs:subClassOf)* ?c . } as ?_b3) } values (?shape ?sh ?vis ?s ?c ) { (UNDEF UNDEF UNDEF UNDEF UNDEF ) }");
+static final IDatatype _cst_221 = DatatypeMap.newInstance("?vis");
+static final IDatatype _cst_222 = DatatypeMap.newInstance("?_b3");
+static final IDatatype _cst_223 = DatatypeMap.newResource("http://www.w3.org/1999/02/22-rdf-syntax-ns#type");
+static final IDatatype _cst_224 = DatatypeMap.newInstance("?server");
+static final IDatatype _cst_225 = DatatypeMap.newInstance("service:");
+static final IDatatype _cst_226 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#pathmap");
+static final IDatatype _cst_227 = DatatypeMap.newInstance("?pp");
+static final IDatatype _cst_228 = DatatypeMap.newInstance("?qq");
+static final IDatatype _cst_229 = DatatypeMap.newInstance("service list:");
+static final IDatatype _cst_230 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#pathboolean");
+static final IDatatype _cst_231 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#coreboolean");
+static final IDatatype _cst_232 = DatatypeMap.newInstance("xt_e0146007_5cc9_4086_8313_4452b2106d3a");
+static final IDatatype _cst_233 = DatatypeMap.newInstance("?lan");
+static final IDatatype _cst_234 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#ValidationReport");
+static final IDatatype _cst_235 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#result");
+static final IDatatype _cst_236 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#conforms");
+static final IDatatype _cst_237 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#ValidationResult");
+static final IDatatype _cst_238 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#resultSeverity");
+static final IDatatype _cst_239 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#focusNode");
+static final IDatatype _cst_240 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#resultMessage");
+static final IDatatype _cst_241 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sourceConstraintComponent");
+static final IDatatype _cst_242 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#sourceShape");
+static final IDatatype _cst_243 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#resultPath");
+static final IDatatype _cst_244 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#value");
+static final IDatatype _cst_245 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#valueDetail");
+static final IDatatype _cst_246 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#focusNodeDetail");
+static final IDatatype _cst_247 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#subtotal");
+static final IDatatype _cst_248 = DatatypeMap.newResource("http://www.w3.org/ns/shacl#total");
+static final IDatatype _cst_249 = DatatypeMap.newInstance("$this");
+static final IDatatype _cst_250 = DatatypeMap.newInstance("\\$PATH");
 IDatatype traceService;
 IDatatype bnodeid;
 IDatatype java;
@@ -369,19 +366,9 @@ public IDatatype sh_finish() {
   return st_visit(_cst_71, _cst_72, validationReport);
 }
 
-public IDatatype xt_e28d81bf_9054_4f34_ae93_6017e9ae4796(IDatatype _let_1) {
-  IDatatype sh = GetGen.gget(_let_1, _cst_73, DatatypeMap.ZERO);
-  IDatatype list = GetGen.gget(_let_1, _cst_3, DatatypeMap.ONE);
-  return ((and(bound(sh), list.length().gt(DatatypeMap.ZERO)).booleanValue()) ? 
-    DatatypeMap.newList(DatatypeMap.newList(sh, list))
-   : 
-    DatatypeMap.newList())
-  ;
-}
-
 public IDatatype sh_success(IDatatype bb) {
   if (bb.booleanValue()) {
-    IDatatype g = kgram(_cst_74);
+    IDatatype g = kgram(_cst_73);
     us_insert(g, validationReport);
   }
   else {
@@ -402,7 +389,7 @@ public IDatatype sh_validURI(IDatatype url) {
 
 public IDatatype sh_shaclnode(IDatatype node) {
   if (sh_trace().booleanValue()) {
-    xt_print(_cst_75, node);
+    xt_print(_cst_74, node);
   }
   else {
     self(DatatypeMap.TRUE);
@@ -418,17 +405,17 @@ public IDatatype sh_java(IDatatype bb) {
 
 public IDatatype sh_isdefby(IDatatype name) {
   sh_checkinit();
-  IDatatype amap = sh_getmap(_cst_76);
-  return sh_getConstraint(_cst_76, name);
+  IDatatype amap = sh_getmap(_cst_75);
+  return sh_getConstraint(_cst_75, name);
   
 }
 
 public IDatatype sh_list(IDatatype focus) {
-  return DatatypeMap.merge(maplist(_cst_77, focus));
+  return DatatypeMap.merge(maplist(_cst_76, focus));
 }
 
 public IDatatype sh_value(IDatatype v) {
-  return ((and(v.isURINode(), v.eq(_cst_78)).booleanValue()) ? 
+  return ((and(v.isURINode(), v.eq(_cst_77)).booleanValue()) ? 
     error()
    : 
     v)
@@ -440,15 +427,25 @@ public IDatatype sh_trace(IDatatype bb) {
 }
 
 public IDatatype sh_operator(IDatatype oper) {
-  return or(sh_boolean(oper), in(oper, DatatypeMap.newList(_cst_30, _cst_12, _cst_10, _cst_26, _cst_28, _cst_64, _cst_79)));
+  return or(sh_boolean(oper), in(oper, DatatypeMap.newList(_cst_30, _cst_12, _cst_10, _cst_26, _cst_28, _cst_64, _cst_78)));
 }
 
 public IDatatype sh_variable(IDatatype uri) {
-  return concat(_cst_80, xt_strip(uri));
+  return concat(_cst_79, xt_strip(uri));
 }
 
 public IDatatype sh_focus(IDatatype shape) {
-  return kgram(_cst_81, _cst_82, shape);
+  return kgram(_cst_80, _cst_81, shape);
+}
+
+public IDatatype xt_f3cbbd66_7b55_4c43_871c_327eabf6eb08(IDatatype _let_1) {
+  IDatatype sh = GetGen.gget(_let_1, _cst_82, DatatypeMap.ZERO);
+  IDatatype list = GetGen.gget(_let_1, _cst_3, DatatypeMap.ONE);
+  return ((and(bound(sh), list.length().gt(DatatypeMap.ZERO)).booleanValue()) ? 
+    DatatypeMap.newList(DatatypeMap.newList(sh, list))
+   : 
+    DatatypeMap.newList())
+  ;
 }
 
 public IDatatype sh_detail(IDatatype bb) {
@@ -529,23 +526,17 @@ public IDatatype sh_statement(IDatatype oper) {
 }
 
 public IDatatype msh_fun(IDatatype name) {
-  if (name.eq(_cst_46).booleanValue()) {
+  if (name.eq(_cst_44).booleanValue()) {
     return _cst_94;
   }
-  else if (name.eq(_cst_48).booleanValue()) {
-    return _cst_95;
-  }
-  else if (name.eq(_cst_50).booleanValue()) {
-    return _cst_96;
-  }
   else {
-    return _cst_97;
+    return _cst_95;
   }
 }
 
 public IDatatype sh_shaclshape(IDatatype sh) {
   if (sh_trace().booleanValue()) {
-    xt_print(_cst_98, sh);
+    xt_print(_cst_96, sh);
   }
   else {
     self(DatatypeMap.TRUE);
@@ -556,51 +547,51 @@ public IDatatype sh_shaclshape(IDatatype sh) {
 }
 
 public IDatatype sh_message(IDatatype sh) {
-  return xt_value(sh, _cst_99);
-}
-
-public IDatatype xt_a98b3a98_95bc_4624_bf8d_c7d789bc70c3(IDatatype value) {
-  return coalesce(lang(value).neq(_cst_100), DatatypeMap.FALSE);
+  return xt_value(sh, _cst_97);
 }
 
 public IDatatype sh_severity(IDatatype sh) {
-  return coalesce(xt_value(sh, _cst_101), _cst_102);
+  return coalesce(xt_value(sh, _cst_98), _cst_99);
+}
+
+public IDatatype xt_e0146007_5cc9_4086_8313_4452b2106d3a(IDatatype value) {
+  return coalesce(lang(value).neq(_cst_100), DatatypeMap.FALSE);
 }
 
 public IDatatype sh_conform(IDatatype g) {
-  IDatatype _let_0 = Get.get(kgram(_cst_103, _cst_104, g), DatatypeMap.ZERO);
-  IDatatype b = GetGen.gget(_let_0, _cst_105, DatatypeMap.TWO);
+  IDatatype _let_0 = Get.get(kgram(_cst_101, _cst_102, g), DatatypeMap.ZERO);
+  IDatatype b = GetGen.gget(_let_0, _cst_103, DatatypeMap.TWO);
   return b;
 }
 
 public IDatatype sh_booleanoper(IDatatype oper) {
   if (oper.eq(_cst_46).booleanValue()) {
-    return _cst_106;
+    return _cst_104;
   }
   else if (oper.eq(_cst_48).booleanValue()) {
-    return _cst_107;
+    return _cst_105;
   }
   else {
-    return _cst_108;
+    return _cst_106;
   }
 }
 
 public IDatatype sh_star(IDatatype s) {
-  IDatatype _let_4 = Get.get(kgram(_cst_109, _cst_110, s), DatatypeMap.ZERO);
-  IDatatype l = GetGen.gget(_let_4, _cst_111, DatatypeMap.ONE);
+  IDatatype _let_4 = Get.get(kgram(_cst_107, _cst_108, s), DatatypeMap.ZERO);
+  IDatatype l = GetGen.gget(_let_4, _cst_109, DatatypeMap.ONE);
   return l;
 }
 
 public IDatatype sh_define(IDatatype def) {
-  IDatatype name = GetGen.gget(def, _cst_112, DatatypeMap.ZERO);
-  IDatatype value = GetGen.gget(def, _cst_113, DatatypeMap.ONE);
-  sh_setConstraint(_cst_76, name, value);
+  IDatatype name = GetGen.gget(def, _cst_110, DatatypeMap.ZERO);
+  IDatatype value = GetGen.gget(def, _cst_111, DatatypeMap.ONE);
+  sh_setConstraint(_cst_75, name, value);
   return DatatypeMap.TRUE;
   
 }
 
 public IDatatype sh_isValue(IDatatype v) {
-  return not(and(v.isURINode(), v.eq(_cst_78)));
+  return not(and(v.isURINode(), v.eq(_cst_77)));
 }
 
 public IDatatype sh_disjoint(IDatatype l1, IDatatype l2) {
@@ -621,16 +612,16 @@ public IDatatype sh_path(IDatatype shape, IDatatype exp) {
     return exp;
   }
   else {
-    IDatatype _let_0 = Get.get(kgram(_cst_114, _cst_82, shape, _cst_115, exp), DatatypeMap.ZERO);
-    shape = GetGen.gget(_let_0, _cst_82, DatatypeMap.ZERO);
-    exp = GetGen.gget(_let_0, _cst_115, DatatypeMap.ONE);
-    IDatatype q = GetGen.gget(_let_0, _cst_116, DatatypeMap.TWO);
-    IDatatype path = GetGen.gget(_let_0, _cst_117, DatatypeMap.THREE);
+    IDatatype _let_0 = Get.get(kgram(_cst_112, _cst_81, shape, _cst_113, exp), DatatypeMap.ZERO);
+    shape = GetGen.gget(_let_0, _cst_81, DatatypeMap.ZERO);
+    exp = GetGen.gget(_let_0, _cst_113, DatatypeMap.ONE);
+    IDatatype q = GetGen.gget(_let_0, _cst_114, DatatypeMap.TWO);
+    IDatatype path = GetGen.gget(_let_0, _cst_115, DatatypeMap.THREE);
     if (not(bound(q)).booleanValue()) {
       return error();
     }
-    else if (q.eq(_cst_118).booleanValue()) {
-      return DatatypeMap.newList(_cst_119, sh_listsh(shape, exp));
+    else if (q.eq(_cst_116).booleanValue()) {
+      return DatatypeMap.newList(_cst_117, sh_listsh(shape, exp));
     }
     else if (sh_extension(exp, q).booleanValue()) {
       return sh_extension(shape, q, path);
@@ -642,13 +633,13 @@ public IDatatype sh_path(IDatatype shape, IDatatype exp) {
 }
 
 public IDatatype sh_myldpath(IDatatype s, IDatatype p) {
-  IDatatype g = xt_load(s, _cst_120, _cst_121);
-  IDatatype _let_3 = Get.get(kgram(_cst_122, _cst_110, s, _cst_123, p, _cst_104, g), DatatypeMap.ZERO);
-  s = GetGen.gget(_let_3, _cst_110, DatatypeMap.ONE);
-  p = GetGen.gget(_let_3, _cst_123, DatatypeMap.TWO);
-  IDatatype l = GetGen.gget(_let_3, _cst_111, DatatypeMap.THREE);
+  IDatatype g = xt_load(s, _cst_118, _cst_119);
+  IDatatype _let_3 = Get.get(kgram(_cst_120, _cst_108, s, _cst_121, p, _cst_102, g), DatatypeMap.ZERO);
+  s = GetGen.gget(_let_3, _cst_108, DatatypeMap.ONE);
+  p = GetGen.gget(_let_3, _cst_121, DatatypeMap.TWO);
+  IDatatype l = GetGen.gget(_let_3, _cst_109, DatatypeMap.THREE);
   if (us_trace().booleanValue()) {
-    xt_print(_cst_124, s, p, l);
+    xt_print(_cst_122, s, p, l);
   }
   else {
     self(DatatypeMap.FALSE);
@@ -658,7 +649,7 @@ public IDatatype sh_myldpath(IDatatype s, IDatatype p) {
 }
 
 public IDatatype sh_booleancore(IDatatype shape, IDatatype sh) {
-  IDatatype _let_5 = Get.get(kgram(_cst_125, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+  IDatatype _let_5 = Get.get(kgram(_cst_123, _cst_81, shape, _cst_82, sh), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_5, _cst_3, DatatypeMap.ZERO);
   return list;
 }
@@ -667,9 +658,9 @@ public IDatatype sh_predicate(IDatatype s, IDatatype p) {
   return xt_objects(s, p);
 }
 
-public IDatatype sh_pathboolean(IDatatype shape, IDatatype sh) {
-  IDatatype _let_12 = Get.get(kgram(_cst_126, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
-  IDatatype list = GetGen.gget(_let_12, _cst_3, DatatypeMap.TWO);
+public IDatatype sh_pathboolean(IDatatype shape, IDatatype cst) {
+  IDatatype _let_11 = Get.get(kgram(_cst_124, _cst_81, shape, _cst_125, cst), DatatypeMap.ZERO);
+  IDatatype list = GetGen.gget(_let_11, _cst_3, DatatypeMap.TWO);
   return list;
 }
 
@@ -689,10 +680,10 @@ public IDatatype sh_hasValue(IDatatype object, IDatatype list) {
 public IDatatype sh_eval(IDatatype shape, IDatatype focus) {
   IDatatype suc = DatatypeMap.TRUE;
   for (IDatatype _for_3 : focus.getValueList()) {
-    IDatatype sh = GetGen.gget(_for_3, _cst_73, DatatypeMap.ZERO);
+    IDatatype sh = GetGen.gget(_for_3, _cst_82, DatatypeMap.ZERO);
     IDatatype list = GetGen.gget(_for_3, _cst_3, DatatypeMap.ONE);
     if (sh_trace().booleanValue()) {
-      xt_print(_cst_127, coalesce(sh, _cst_128), list.length(), list);
+      xt_print(_cst_126, coalesce(sh, _cst_127), list.length(), list);
     }
     else {
       self(DatatypeMap.TRUE);
@@ -717,15 +708,15 @@ public IDatatype sh_eval(IDatatype shape, IDatatype focus) {
 
 public IDatatype sh_trace(IDatatype shape, IDatatype mapmap) {
   for (IDatatype _for_2 : mapmap.getValueList()) {
-    IDatatype key = GetGen.gget(_for_2, _cst_129, DatatypeMap.ZERO);
-    IDatatype val = GetGen.gget(_for_2, _cst_130, DatatypeMap.ONE);
-    if (key.neq(_cst_76).booleanValue()) {
+    IDatatype key = GetGen.gget(_for_2, _cst_128, DatatypeMap.ZERO);
+    IDatatype val = GetGen.gget(_for_2, _cst_129, DatatypeMap.ONE);
+    if (key.neq(_cst_75).booleanValue()) {
       xt_print(key);
       for (IDatatype _for_1 : val.getValueList()) {
-        IDatatype sh = GetGen.gget(_for_1, _cst_73, DatatypeMap.ZERO);
+        IDatatype sh = GetGen.gget(_for_1, _cst_82, DatatypeMap.ZERO);
         IDatatype list = GetGen.gget(_for_1, _cst_3, DatatypeMap.ONE);
         if (and(DatatypeMap.newInstance(list.isExtension()), list.length().gt(DatatypeMap.ZERO)).booleanValue()) {
-          xt_print(sh, _cst_131, list);
+          xt_print(sh, _cst_130, list);
           if (sh.isBlankNode().booleanValue()) {
             xt_print(xt_turtle(shape, sh));
           }
@@ -738,7 +729,7 @@ public IDatatype sh_trace(IDatatype shape, IDatatype mapmap) {
           self(DatatypeMap.TRUE);
         }
       }
-      xt_print(_cst_132);
+      xt_print(_cst_131);
       
     }
     else {
@@ -750,7 +741,7 @@ public IDatatype sh_trace(IDatatype shape, IDatatype mapmap) {
 }
 
 public IDatatype sh_isclosedcore(IDatatype shape, IDatatype sh) {
-  IDatatype suc = mapget(kgram(_cst_133, _cst_82, shape, _cst_73, sh), _cst_134);
+  IDatatype suc = mapget(kgram(_cst_132, _cst_81, shape, _cst_82, sh), _cst_133);
   return suc;
 }
 
@@ -759,29 +750,25 @@ public IDatatype sh_minCount(IDatatype s, IDatatype m) {
 }
 
 public IDatatype sh_in(IDatatype shape, IDatatype sh) {
-  IDatatype _let_4 = Get.get(kgram(_cst_135, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+  IDatatype _let_4 = Get.get(kgram(_cst_134, _cst_81, shape, _cst_82, sh), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_4, _cst_3, DatatypeMap.ZERO);
   return list;
 }
 
 public IDatatype us_insert(IDatatype g, IDatatype report) {
   for (IDatatype _for_6 : g.getValueList()) {
-    IDatatype s = GetGen.gget(_for_6, _cst_110, DatatypeMap.ZERO);
-    IDatatype p = GetGen.gget(_for_6, _cst_123, DatatypeMap.ONE);
-    IDatatype o = GetGen.gget(_for_6, _cst_136, DatatypeMap.TWO);
+    IDatatype s = GetGen.gget(_for_6, _cst_108, DatatypeMap.ZERO);
+    IDatatype p = GetGen.gget(_for_6, _cst_121, DatatypeMap.ONE);
+    IDatatype o = GetGen.gget(_for_6, _cst_135, DatatypeMap.TWO);
     xt_insert(report, s, p, o);
   }
 return TRUE;
 }
 
 public IDatatype sh_listsh(IDatatype shape, IDatatype exp) {
-  IDatatype _let_1 = Get.get(kgram(_cst_137, _cst_82, shape, _cst_115, exp), DatatypeMap.ZERO);
-  IDatatype l = GetGen.gget(_let_1, _cst_111, DatatypeMap.TWO);
+  IDatatype _let_1 = Get.get(kgram(_cst_136, _cst_81, shape, _cst_113, exp), DatatypeMap.ZERO);
+  IDatatype l = GetGen.gget(_let_1, _cst_109, DatatypeMap.TWO);
   return l;
-}
-
-public IDatatype xt_4aac8747_04cd_4f73_a456_b7939b2627cb(IDatatype _fun_var_0, IDatatype _fun_var_1) {
-  return rq_strstarts(_fun_var_0, _fun_var_1);
 }
 
 public IDatatype sh_getConstraint(IDatatype name, IDatatype sh) {
@@ -789,42 +776,42 @@ public IDatatype sh_getConstraint(IDatatype name, IDatatype sh) {
 }
 
 public IDatatype sh_path3(IDatatype shape, IDatatype sh) {
-  IDatatype _let_7 = Get.get(kgram(_cst_138, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+  IDatatype _let_7 = Get.get(kgram(_cst_137, _cst_81, shape, _cst_82, sh), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_7, _cst_3, DatatypeMap.TWO);
   return list;
 }
 
 public IDatatype sh_constraintcore(IDatatype shape, IDatatype sh) {
-  IDatatype suc = mapget(kgram(_cst_139, _cst_82, shape, _cst_73, sh), _cst_140);
+  IDatatype suc = mapget(kgram(_cst_138, _cst_81, shape, _cst_82, sh), _cst_139);
   return suc;
 }
 
 public IDatatype sh_path1(IDatatype shape, IDatatype sh) {
-  IDatatype _let_5 = Get.get(kgram(_cst_141, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+  IDatatype _let_5 = Get.get(kgram(_cst_140, _cst_81, shape, _cst_82, sh), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_5, _cst_3, DatatypeMap.TWO);
   return list;
 }
 
 public IDatatype sh_closedcore(IDatatype shape, IDatatype sh) {
-  IDatatype _let_3 = Get.get(kgram(_cst_142, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+  IDatatype _let_3 = Get.get(kgram(_cst_141, _cst_81, shape, _cst_82, sh), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_3, _cst_3, DatatypeMap.ZERO);
   return list;
 }
 
 public IDatatype sh_predicate1(IDatatype s, IDatatype p) {
-  IDatatype _let_3 = Get.get(kgram(_cst_143, _cst_110, s, _cst_123, p), DatatypeMap.ZERO);
-  IDatatype l = GetGen.gget(_let_3, _cst_111, DatatypeMap.TWO);
+  IDatatype _let_3 = Get.get(kgram(_cst_142, _cst_108, s, _cst_121, p), DatatypeMap.ZERO);
+  IDatatype l = GetGen.gget(_let_3, _cst_109, DatatypeMap.TWO);
   return l;
 }
 
 public IDatatype sh_path2(IDatatype shape, IDatatype sh) {
-  IDatatype _let_6 = Get.get(kgram(_cst_144, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+  IDatatype _let_6 = Get.get(kgram(_cst_143, _cst_81, shape, _cst_82, sh), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_6, _cst_3, DatatypeMap.TWO);
   return list;
 }
 
 public IDatatype sh_shapeGraph(IDatatype shape, IDatatype sh) {
-  return kgram(_cst_145, _cst_82, shape, _cst_73, sh);
+  return kgram(_cst_144, _cst_81, shape, _cst_82, sh);
 }
 
 public IDatatype sh_shacl(IDatatype shape, IDatatype focus) {
@@ -839,7 +826,7 @@ public IDatatype sh_shacl(IDatatype shape, IDatatype focus) {
 
 public IDatatype sh_starService(IDatatype s, IDatatype url) {
   if (us_trace().booleanValue()) {
-    xt_print(_cst_146, url, s);
+    xt_print(_cst_145, url, s);
   }
   else {
     self(DatatypeMap.TRUE);
@@ -850,10 +837,10 @@ public IDatatype sh_starService(IDatatype s, IDatatype url) {
   else {
     self(DatatypeMap.TRUE);
   }
-  IDatatype _let_7 = Get.get(kgram(_cst_147, _cst_110, s, _cst_148, url), DatatypeMap.ZERO);
-  IDatatype l = GetGen.gget(_let_7, _cst_111, DatatypeMap.TWO);
+  IDatatype _let_7 = Get.get(kgram(_cst_146, _cst_108, s, _cst_147, url), DatatypeMap.ZERO);
+  IDatatype l = GetGen.gget(_let_7, _cst_109, DatatypeMap.TWO);
   if (us_trace().booleanValue()) {
-    xt_print(_cst_149, l);
+    xt_print(_cst_148, l);
   }
   else {
     self(DatatypeMap.TRUE);
@@ -872,16 +859,12 @@ public IDatatype sh_datatype(IDatatype o, IDatatype dt) {
   }
 }
 
-public IDatatype xt_c44f62f6_cc6a_4c4d_b7ad_f2eaa023d588(IDatatype _fun_var_0, IDatatype _fun_var_1) {
-  return rq_strstarts(_fun_var_0, _fun_var_1);
-}
-
 public IDatatype sh_extension(IDatatype exp, IDatatype q) {
   return or(or(sh_statement(q), sh_operator(q)), and(exp.isBlankNode(), sh_usernamespace(q)));
 }
 
 public IDatatype sh_targetObjectsOf(IDatatype shape, IDatatype sh) {
-  IDatatype _let_0 = Get.get(kgram(_cst_150, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+  IDatatype _let_0 = Get.get(kgram(_cst_149, _cst_81, shape, _cst_82, sh), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_0, _cst_3, DatatypeMap.ZERO);
   return list;
 }
@@ -890,8 +873,8 @@ public IDatatype sh_inverse(IDatatype o, IDatatype p) {
   return xt_subjects(p, o);
 }
 
-public IDatatype sh_coreboolean(IDatatype shape, IDatatype sh) {
-  IDatatype _let_6 = Get.get(kgram(_cst_151, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+public IDatatype sh_coreboolean(IDatatype shape, IDatatype cst) {
+  IDatatype _let_6 = Get.get(kgram(_cst_150, _cst_81, shape, _cst_125, cst), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_6, _cst_3, DatatypeMap.TWO);
   return list;
 }
@@ -906,8 +889,8 @@ public IDatatype sh_graphbnode(IDatatype shape, IDatatype var) {
 }
 
 public IDatatype sh_invCount(IDatatype o, IDatatype p) {
-  IDatatype _let_2 = Get.get(kgram(_cst_152, _cst_136, o, _cst_123, p), DatatypeMap.ZERO);
-  IDatatype c = GetGen.gget(_let_2, _cst_153, DatatypeMap.TWO);
+  IDatatype _let_2 = Get.get(kgram(_cst_151, _cst_135, o, _cst_121, p), DatatypeMap.ZERO);
+  IDatatype c = GetGen.gget(_let_2, _cst_152, DatatypeMap.TWO);
   return c;
 }
 
@@ -930,14 +913,14 @@ public IDatatype sh_getrecordmap(IDatatype name, IDatatype suc) {
 
 public IDatatype sh_tracerecord(IDatatype shape, IDatatype mapmap) {
   for (IDatatype _for_5 : mapmap.getValueList()) {
-    IDatatype key = GetGen.gget(_for_5, _cst_129, DatatypeMap.ZERO);
-    IDatatype val = GetGen.gget(_for_5, _cst_130, DatatypeMap.ONE);
-    if (key.neq(_cst_76).booleanValue()) {
+    IDatatype key = GetGen.gget(_for_5, _cst_128, DatatypeMap.ZERO);
+    IDatatype val = GetGen.gget(_for_5, _cst_129, DatatypeMap.ONE);
+    if (key.neq(_cst_75).booleanValue()) {
       xt_print(key);
       for (IDatatype _for_4 : val.getValueList()) {
-        IDatatype sh = GetGen.gget(_for_4, _cst_73, DatatypeMap.ZERO);
-        IDatatype value = GetGen.gget(_for_4, _cst_113, DatatypeMap.ONE);
-        xt_print(sh, _cst_131, value);
+        IDatatype sh = GetGen.gget(_for_4, _cst_82, DatatypeMap.ZERO);
+        IDatatype value = GetGen.gget(_for_4, _cst_111, DatatypeMap.ONE);
+        xt_print(sh, _cst_130, value);
         if (sh.isBlankNode().booleanValue()) {
           xt_print(xt_turtle(shape, sh));
         }
@@ -946,7 +929,7 @@ public IDatatype sh_tracerecord(IDatatype shape, IDatatype mapmap) {
         }
         
       }
-      xt_print(_cst_132);
+      xt_print(_cst_131);
       
     }
     else {
@@ -958,7 +941,7 @@ public IDatatype sh_tracerecord(IDatatype shape, IDatatype mapmap) {
 }
 
 public IDatatype sh_cstpattern(IDatatype shape, IDatatype sh) {
-  IDatatype _let_4 = Get.get(kgram(_cst_154, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+  IDatatype _let_4 = Get.get(kgram(_cst_153, _cst_81, shape, _cst_82, sh), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_4, _cst_3, DatatypeMap.TWO);
   return list;
 }
@@ -975,13 +958,17 @@ public IDatatype sh_cstgeneric1(IDatatype shape, IDatatype sh) {
   return sh_cstgeneric(shape, sh, DatatypeMap.newList(_cst_64, _cst_10, _cst_20, _cst_18, _cst_24, _cst_22, _cst_26, _cst_28, _cst_12, _cst_52, _cst_66, _cst_32, _cst_5, _cst_7));
 }
 
+public IDatatype xt_3200580f_55a9_40c4_962c_8c8d2eea40ff(IDatatype _fun_var_0, IDatatype _fun_var_1) {
+  return rq_strstarts(_fun_var_0, _fun_var_1);
+}
+
 public IDatatype sh_maxCount(IDatatype s, IDatatype m) {
   return s.le(m);
 }
 
 public IDatatype sh_count(IDatatype s, IDatatype p) {
-  IDatatype _let_1 = Get.get(kgram(_cst_155, _cst_110, s, _cst_123, p), DatatypeMap.ZERO);
-  IDatatype c = GetGen.gget(_let_1, _cst_153, DatatypeMap.TWO);
+  IDatatype _let_1 = Get.get(kgram(_cst_154, _cst_108, s, _cst_121, p), DatatypeMap.ZERO);
+  IDatatype c = GetGen.gget(_let_1, _cst_152, DatatypeMap.TWO);
   return c;
 }
 
@@ -990,7 +977,7 @@ public IDatatype sh_display(IDatatype shape, IDatatype p) {
     return st_turtle(p);
   }
   else {
-    return st_apply_templates_with_graph(_cst_156, shape, p);
+    return st_apply_templates_with_graph(_cst_155, shape, p);
   }
 }
 
@@ -999,16 +986,16 @@ public IDatatype sh_hasConstraint(IDatatype name, IDatatype sh) {
 }
 
 public IDatatype sh_focus(IDatatype shape, IDatatype sh) {
-  return kgram(_cst_81, _cst_82, shape, _cst_73, sh);
+  return kgram(_cst_80, _cst_81, shape, _cst_82, sh);
 }
 
 public IDatatype sh_mymessage(IDatatype mes, IDatatype m) {
   for (IDatatype _for_0 : m.getValueList()) {
-    IDatatype var = GetGen.gget(_for_0, _cst_157, DatatypeMap.ZERO);
-    IDatatype val = GetGen.gget(_for_0, _cst_130, DatatypeMap.ONE);
-    IDatatype pat = concat(_cst_158, var, _cst_159);
+    IDatatype var = GetGen.gget(_for_0, _cst_156, DatatypeMap.ZERO);
+    IDatatype val = GetGen.gget(_for_0, _cst_129, DatatypeMap.ONE);
+    IDatatype pat = concat(_cst_157, var, _cst_158);
     if (DatatypeMap.newInstance(mes.contains(pat)).booleanValue()) {
-      mes = xt_replace(mes, pat, concat(_cst_158, val, _cst_159));
+      mes = xt_replace(mes, pat, concat(_cst_157, val, _cst_158));
     }
     else {
       self(DatatypeMap.TRUE);
@@ -1019,16 +1006,16 @@ public IDatatype sh_mymessage(IDatatype mes, IDatatype m) {
 }
 
 public IDatatype sh_getPath(IDatatype shape, IDatatype p) {
-  return ((sh_hasConstraint(_cst_160, p).booleanValue()) ? 
-    sh_getConstraint(_cst_160, p)
+  return ((sh_hasConstraint(_cst_159, p).booleanValue()) ? 
+    sh_getConstraint(_cst_159, p)
    : 
-    sh_setConstraint(_cst_160, p, sh_path(shape, p)))
+    sh_setConstraint(_cst_159, p, sh_path(shape, p)))
   ;
 }
 
 public IDatatype sh_graph(IDatatype shape, IDatatype var) {
   if (var.isBlankNode().booleanValue()) {
-    return strdt(xt_turtle(shape, var), _cst_161);
+    return strdt(xt_turtle(shape, var), _cst_160);
   }
   else {
     return var;
@@ -1036,28 +1023,32 @@ public IDatatype sh_graph(IDatatype shape, IDatatype var) {
 }
 
 public IDatatype sh_sparqlvalid(IDatatype shape, IDatatype sh) {
-  IDatatype _let_1 = Get.get(kgram(_cst_162, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+  IDatatype _let_1 = Get.get(kgram(_cst_161, _cst_81, shape, _cst_82, sh), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_1, _cst_3, DatatypeMap.ZERO);
   return list;
 }
 
 public IDatatype sh_pathcore(IDatatype shape, IDatatype sh) {
-  IDatatype _let_4 = Get.get(kgram(_cst_163, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+  IDatatype _let_4 = Get.get(kgram(_cst_162, _cst_81, shape, _cst_82, sh), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_4, _cst_3, DatatypeMap.ZERO);
   return list;
 }
 
 public IDatatype sh_shapeNode(IDatatype shape, IDatatype s) {
-  return kgram(_cst_164, _cst_82, shape, _cst_110, s);
+  return kgram(_cst_163, _cst_81, shape, _cst_108, s);
 }
 
 public IDatatype sh_isClosed(IDatatype shape, IDatatype sh) {
-  return sh_getConstraint(_cst_165, shape, sh);
+  return sh_getConstraint(_cst_164, shape, sh);
+}
+
+public IDatatype xt_423f92ee_dfe0_496a_a1d6_050662556b1b(IDatatype _fun_var_0, IDatatype _fun_var_1) {
+  return rq_strstarts(_fun_var_0, _fun_var_1);
 }
 
 public IDatatype sh_shaclshape(IDatatype sh, IDatatype node) {
   if (sh_trace().booleanValue()) {
-    xt_print(_cst_98, sh, node);
+    xt_print(_cst_96, sh, node);
   }
   else {
     self(DatatypeMap.TRUE);
@@ -1068,37 +1059,37 @@ public IDatatype sh_shaclshape(IDatatype sh, IDatatype node) {
 }
 
 public IDatatype sh_evalpath(IDatatype node, IDatatype exp) {
-  return sh_evalpath(xt_graph(), node, exp, DatatypeMap.FALSE, _cst_78);
+  return sh_evalpath(xt_graph(), node, exp, DatatypeMap.FALSE, _cst_77);
 }
 
 public IDatatype sh_focusnode(IDatatype shape, IDatatype s) {
-  return kgram(_cst_166, _cst_82, shape, _cst_110, s);
+  return kgram(_cst_165, _cst_81, shape, _cst_108, s);
 }
 
 public IDatatype sh_inverse1(IDatatype o, IDatatype p) {
-  IDatatype _let_5 = Get.get(kgram(_cst_167, _cst_136, o, _cst_123, p), DatatypeMap.ZERO);
-  IDatatype l = GetGen.gget(_let_5, _cst_111, DatatypeMap.TWO);
+  IDatatype _let_5 = Get.get(kgram(_cst_166, _cst_135, o, _cst_121, p), DatatypeMap.ZERO);
+  IDatatype l = GetGen.gget(_let_5, _cst_109, DatatypeMap.TWO);
   return l;
 }
 
 public IDatatype sh_getPredicates(IDatatype shape, IDatatype sh) {
-  return sh_getConstraint(_cst_168, shape, sh);
+  return sh_getConstraint(_cst_167, shape, sh);
 }
 
 public IDatatype sh_cstsparql(IDatatype shape, IDatatype sh) {
-  IDatatype _let_6 = Get.get(kgram(_cst_169, _cst_82, shape, _cst_73, sh), DatatypeMap.ZERO);
+  IDatatype _let_6 = Get.get(kgram(_cst_168, _cst_81, shape, _cst_82, sh), DatatypeMap.ZERO);
   IDatatype list = GetGen.gget(_let_6, _cst_3, DatatypeMap.ZERO);
   return list;
 }
 
 public IDatatype sh_tolist(IDatatype shape, IDatatype exp) {
-  IDatatype _let_2 = Get.get(kgram(_cst_170, _cst_82, shape, _cst_115, exp), DatatypeMap.ZERO);
-  IDatatype l = GetGen.gget(_let_2, _cst_111, DatatypeMap.TWO);
+  IDatatype _let_2 = Get.get(kgram(_cst_169, _cst_81, shape, _cst_113, exp), DatatypeMap.ZERO);
+  IDatatype l = GetGen.gget(_let_2, _cst_109, DatatypeMap.TWO);
   return l;
 }
 
-public IDatatype sh_xone(IDatatype or, IDatatype s, IDatatype shape) {
-  return sh_bool(or, s, shape, DatatypeMap.ONE, DatatypeMap.ZERO).eq(DatatypeMap.ONE);
+public IDatatype sh_xone(IDatatype shape, IDatatype cst, IDatatype s) {
+  return sh_bool(shape, cst, s, DatatypeMap.ONE, DatatypeMap.ZERO).eq(DatatypeMap.ONE);
 }
 
 public IDatatype sh_path(IDatatype shape, IDatatype s, IDatatype p) {
@@ -1106,14 +1097,14 @@ public IDatatype sh_path(IDatatype shape, IDatatype s, IDatatype p) {
 }
 
 public IDatatype sh_myldpath(IDatatype s, IDatatype p, IDatatype q) {
-  IDatatype g = xt_load(s, _cst_120, _cst_120);
-  IDatatype _let_4 = Get.get(kgram(_cst_171, _cst_110, s, _cst_123, p, _cst_116, q, _cst_104, g), DatatypeMap.ZERO);
-  s = GetGen.gget(_let_4, _cst_110, DatatypeMap.ONE);
-  p = GetGen.gget(_let_4, _cst_123, DatatypeMap.TWO);
-  q = GetGen.gget(_let_4, _cst_116, DatatypeMap.THREE);
-  IDatatype l = GetGen.gget(_let_4, _cst_111, DatatypeMap.FOUR);
+  IDatatype g = xt_load(s, _cst_118, _cst_118);
+  IDatatype _let_4 = Get.get(kgram(_cst_170, _cst_108, s, _cst_121, p, _cst_114, q, _cst_102, g), DatatypeMap.ZERO);
+  s = GetGen.gget(_let_4, _cst_108, DatatypeMap.ONE);
+  p = GetGen.gget(_let_4, _cst_121, DatatypeMap.TWO);
+  q = GetGen.gget(_let_4, _cst_114, DatatypeMap.THREE);
+  IDatatype l = GetGen.gget(_let_4, _cst_109, DatatypeMap.FOUR);
   if (us_trace().booleanValue()) {
-    xt_print(_cst_124, s, p, q, l);
+    xt_print(_cst_122, s, p, q, l);
   }
   else {
     self(DatatypeMap.FALSE);
@@ -1132,8 +1123,8 @@ public IDatatype sh_maxInclusive(IDatatype shape, IDatatype o, IDatatype m) {
 
 public IDatatype sh_myand(IDatatype shape, IDatatype node, IDatatype list) {
   for (IDatatype _for_0 : list.getValueList()) {
-    IDatatype oper = GetGen.gget(_for_0, _cst_172, DatatypeMap.ZERO);
-    IDatatype exp = GetGen.gget(_for_0, _cst_115, DatatypeMap.ONE);
+    IDatatype oper = GetGen.gget(_for_0, _cst_171, DatatypeMap.ZERO);
+    IDatatype exp = GetGen.gget(_for_0, _cst_113, DatatypeMap.ONE);
     if (not(sh_evalfilter(shape, node, exp)).booleanValue()) {
       return DatatypeMap.FALSE;
     }
@@ -1160,8 +1151,8 @@ public IDatatype sh_validURI(IDatatype shape, IDatatype url, IDatatype any) {
 
 public IDatatype sh_mynot(IDatatype shape, IDatatype node, IDatatype list) {
   for (IDatatype _for_2 : list.getValueList()) {
-    IDatatype oper = GetGen.gget(_for_2, _cst_172, DatatypeMap.ZERO);
-    IDatatype exp = GetGen.gget(_for_2, _cst_115, DatatypeMap.ONE);
+    IDatatype oper = GetGen.gget(_for_2, _cst_171, DatatypeMap.ZERO);
+    IDatatype exp = GetGen.gget(_for_2, _cst_113, DatatypeMap.ONE);
     if (sh_evalfilter(shape, node, exp).booleanValue()) {
       return DatatypeMap.FALSE;
     }
@@ -1178,8 +1169,8 @@ public IDatatype sh_minInclusive(IDatatype shape, IDatatype o, IDatatype m) {
 }
 
 public IDatatype sh_evalfilter(IDatatype shape, IDatatype node, IDatatype exp) {
-  IDatatype oper = GetGen.gget(exp, _cst_172, DatatypeMap.ZERO);
-  IDatatype arg = GetGen.gget(exp, _cst_173, DatatypeMap.ONE);
+  IDatatype oper = GetGen.gget(exp, _cst_171, DatatypeMap.ZERO);
+  IDatatype arg = GetGen.gget(exp, _cst_172, DatatypeMap.ONE);
   return funcall(oper, shape, node, arg);
 }
 
@@ -1187,8 +1178,8 @@ public IDatatype sh_pattern(IDatatype shape, IDatatype node, IDatatype arg) {
   return regex(node, arg);
 }
 
-public IDatatype sh_or(IDatatype or, IDatatype s, IDatatype shape) {
-  return sh_bool(or, s, shape, DatatypeMap.ONE, DatatypeMap.ZERO).gt(DatatypeMap.ZERO);
+public IDatatype sh_or(IDatatype shape, IDatatype cst, IDatatype s) {
+  return sh_bool(shape, cst, s, DatatypeMap.ONE, DatatypeMap.ZERO).gt(DatatypeMap.ZERO);
 }
 
 public IDatatype sh_maxCount(IDatatype s, IDatatype p, IDatatype m) {
@@ -1197,16 +1188,16 @@ public IDatatype sh_maxCount(IDatatype s, IDatatype p, IDatatype m) {
 
 public IDatatype sh_getMessage(IDatatype shape, IDatatype sh, IDatatype cst) {
   if (sh_isValue(cst).booleanValue()) {
-    return coalesce(xt_value(shape, cst, _cst_99), xt_value(shape, sh, _cst_99));
+    return coalesce(xt_value(shape, cst, _cst_97), xt_value(shape, sh, _cst_97));
   }
   else {
-    return xt_value(shape, sh, _cst_99);
+    return xt_value(shape, sh, _cst_97);
   }
 }
 
 public IDatatype sh_parseBoolean(IDatatype shape, IDatatype oper, IDatatype path) {
   IDatatype list = sh_listsh(shape, path);
-  return DatatypeMap.newList(_cst_174, DatatypeMap.newList(sh_booleanoper(oper), list));
+  return DatatypeMap.newList(_cst_173, DatatypeMap.newList(sh_booleanoper(oper), list));
 }
 
 public IDatatype sh_minExclusive(IDatatype shape, IDatatype o, IDatatype m) {
@@ -1214,11 +1205,11 @@ public IDatatype sh_minExclusive(IDatatype shape, IDatatype o, IDatatype m) {
 }
 
 public IDatatype sh_focus(IDatatype shape, IDatatype sh, IDatatype s) {
-  return kgram(_cst_166, _cst_82, shape, _cst_73, sh, _cst_110, s);
+  return kgram(_cst_165, _cst_81, shape, _cst_82, sh, _cst_108, s);
 }
 
-public IDatatype sh_and(IDatatype and, IDatatype s, IDatatype shape) {
-  return sh_bool(and, s, shape, DatatypeMap.ZERO, DatatypeMap.ONE).eq(DatatypeMap.ZERO);
+public IDatatype sh_and(IDatatype shape, IDatatype cst, IDatatype s) {
+  return sh_bool(shape, cst, s, DatatypeMap.ZERO, DatatypeMap.ONE).eq(DatatypeMap.ZERO);
 }
 
 public IDatatype sh_minCount(IDatatype s, IDatatype p, IDatatype m) {
@@ -1244,12 +1235,12 @@ public IDatatype sh_in(IDatatype shape, IDatatype object, IDatatype lv) {
 }
 
 public IDatatype sh_getTheMessage(IDatatype shape, IDatatype sh, IDatatype cst) {
-  return coalesce(sh_getMessage(shape, sh, cst), concat(_cst_175, sh_createMessage(shape, sh, cst)));
+  return coalesce(sh_getMessage(shape, sh, cst), concat(_cst_174, sh_createMessage(shape, sh, cst)));
 }
 
 public IDatatype sh_myservice(IDatatype uri, IDatatype s, IDatatype p) {
-  IDatatype _let_5 = Get.get(kgram(_cst_176, _cst_177, uri, _cst_110, s, _cst_123, p), DatatypeMap.ZERO);
-  IDatatype l = GetGen.gget(_let_5, _cst_111, DatatypeMap.ZERO);
+  IDatatype _let_5 = Get.get(kgram(_cst_175, _cst_176, uri, _cst_108, s, _cst_121, p), DatatypeMap.ZERO);
+  IDatatype l = GetGen.gget(_let_5, _cst_109, DatatypeMap.ZERO);
   return l;
 }
 
@@ -1266,8 +1257,8 @@ public IDatatype sh_getConstraint(IDatatype name, IDatatype shape, IDatatype sh)
 }
 
 public IDatatype sh_cstgeneric(IDatatype shape, IDatatype sh, IDatatype list) {
-  IDatatype _let_5 = Get.get(kgram(_cst_178, _cst_82, shape, _cst_73, sh, _cst_3, list), DatatypeMap.ZERO);
-  IDatatype res = GetGen.gget(_let_5, _cst_179, DatatypeMap.THREE);
+  IDatatype _let_5 = Get.get(kgram(_cst_177, _cst_81, shape, _cst_82, sh, _cst_3, list), DatatypeMap.ZERO);
+  IDatatype res = GetGen.gget(_let_5, _cst_178, DatatypeMap.THREE);
   return res;
 }
 
@@ -1292,11 +1283,11 @@ public IDatatype sh_languageIn(IDatatype shape, IDatatype object, IDatatype lv) 
 }
 
 public IDatatype sh_class(IDatatype shape, IDatatype o, IDatatype c) {
-  return mapget(kgram(_cst_180, _cst_82, shape, _cst_136, o, _cst_153, c), _cst_181);
+  return mapget(kgram(_cst_179, _cst_81, shape, _cst_135, o, _cst_152, c), _cst_180);
 }
 
 public IDatatype sh_shapeNode(IDatatype shape, IDatatype s, IDatatype sh) {
-  return kgram(_cst_182, _cst_82, shape, _cst_110, s, _cst_73, sh);
+  return kgram(_cst_181, _cst_81, shape, _cst_108, s, _cst_82, sh);
 }
 
 public IDatatype sh_node(IDatatype shape, IDatatype o, IDatatype cst) {
@@ -1331,7 +1322,7 @@ public IDatatype sh_parseOperator(IDatatype shape, IDatatype oper, IDatatype pat
     return sh_parseBoolean(shape, oper, path);
   }
   else {
-    return DatatypeMap.newList(_cst_174, DatatypeMap.newList(oper, path));
+    return DatatypeMap.newList(_cst_173, DatatypeMap.newList(oper, path));
   }
 }
 
@@ -1342,8 +1333,8 @@ public IDatatype sh_inverseService(IDatatype o, IDatatype p, IDatatype url) {
   else {
     self(DatatypeMap.TRUE);
   }
-  IDatatype _let_8 = Get.get(kgram(_cst_183, _cst_136, o, _cst_123, p, _cst_148, url), DatatypeMap.ZERO);
-  IDatatype l = GetGen.gget(_let_8, _cst_111, DatatypeMap.THREE);
+  IDatatype _let_8 = Get.get(kgram(_cst_182, _cst_135, o, _cst_121, p, _cst_147, url), DatatypeMap.ZERO);
+  IDatatype l = GetGen.gget(_let_8, _cst_109, DatatypeMap.THREE);
   return l;
   
 }
@@ -1357,7 +1348,7 @@ public IDatatype sh_minLength(IDatatype shape, IDatatype s, IDatatype m) {
 }
 
 public IDatatype sh_nodeKind(IDatatype shape, IDatatype value, IDatatype kind) {
-  return or(or(and(value.isURINode(), in(kind, DatatypeMap.newList(_cst_184, _cst_185, _cst_186))), and(value.isLiteralNode(), in(kind, DatatypeMap.newList(_cst_187, _cst_188, _cst_186)))), and(value.isBlankNode(), in(kind, DatatypeMap.newList(_cst_189, _cst_185, _cst_188))));
+  return or(or(and(value.isURINode(), in(kind, DatatypeMap.newList(_cst_183, _cst_184, _cst_185))), and(value.isLiteralNode(), in(kind, DatatypeMap.newList(_cst_186, _cst_187, _cst_185)))), and(value.isBlankNode(), in(kind, DatatypeMap.newList(_cst_188, _cst_184, _cst_187))));
 }
 
 public IDatatype sh_property(IDatatype shape, IDatatype o, IDatatype cst) {
@@ -1370,7 +1361,7 @@ public IDatatype sh_maxExclusive(IDatatype shape, IDatatype o, IDatatype m) {
 
 public IDatatype sh_predicateService(IDatatype s, IDatatype p, IDatatype url) {
   if (us_trace().booleanValue()) {
-    xt_print(_cst_146, url, s, p);
+    xt_print(_cst_145, url, s, p);
   }
   else {
     self(DatatypeMap.TRUE);
@@ -1381,10 +1372,10 @@ public IDatatype sh_predicateService(IDatatype s, IDatatype p, IDatatype url) {
   else {
     self(DatatypeMap.TRUE);
   }
-  IDatatype _let_6 = Get.get(kgram(_cst_190, _cst_110, s, _cst_123, p, _cst_148, url), DatatypeMap.ZERO);
-  IDatatype l = GetGen.gget(_let_6, _cst_111, DatatypeMap.THREE);
+  IDatatype _let_6 = Get.get(kgram(_cst_189, _cst_108, s, _cst_121, p, _cst_147, url), DatatypeMap.ZERO);
+  IDatatype l = GetGen.gget(_let_6, _cst_109, DatatypeMap.THREE);
   if (us_trace().booleanValue()) {
-    xt_print(_cst_149, l);
+    xt_print(_cst_148, l);
   }
   else {
     self(DatatypeMap.TRUE);
@@ -1400,8 +1391,8 @@ public IDatatype sh_safe(IDatatype shape, IDatatype sh, IDatatype suc) {
 
 public IDatatype sh_myor(IDatatype shape, IDatatype node, IDatatype list) {
   for (IDatatype _for_1 : list.getValueList()) {
-    IDatatype oper = GetGen.gget(_for_1, _cst_172, DatatypeMap.ZERO);
-    IDatatype exp = GetGen.gget(_for_1, _cst_115, DatatypeMap.ONE);
+    IDatatype oper = GetGen.gget(_for_1, _cst_171, DatatypeMap.ZERO);
+    IDatatype exp = GetGen.gget(_for_1, _cst_113, DatatypeMap.ONE);
     if (sh_evalfilter(shape, node, exp).booleanValue()) {
       return DatatypeMap.TRUE;
     }
@@ -1424,8 +1415,8 @@ public IDatatype sh_createMessage(IDatatype shape, IDatatype sh, IDatatype cst) 
 
 public IDatatype sh_disjoint(IDatatype o, IDatatype shape, IDatatype qsh, IDatatype s) {
   for (IDatatype _for_9 : sh_getConstraint(_cst_4, qsh).getValueList()) {
-    IDatatype sh = GetGen.gget(_for_9, _cst_73, DatatypeMap.ZERO);
-    IDatatype path = GetGen.gget(_for_9, _cst_117, DatatypeMap.ONE);
+    IDatatype sh = GetGen.gget(_for_9, _cst_82, DatatypeMap.ZERO);
+    IDatatype path = GetGen.gget(_for_9, _cst_115, DatatypeMap.ONE);
     if (DatatypeMap.member(o, sh_qualified(shape, sh, s, path)).booleanValue()) {
       return DatatypeMap.FALSE;
     }
@@ -1442,23 +1433,23 @@ public IDatatype sh_hasShape(IDatatype shape, IDatatype sh, IDatatype vis, IData
 }
 
 public IDatatype sh_myservice(IDatatype uri, IDatatype s, IDatatype p, IDatatype q) {
-  IDatatype _let_6 = Get.get(kgram(_cst_191, _cst_177, uri, _cst_110, s, _cst_123, p, _cst_116, q), DatatypeMap.ZERO);
-  IDatatype l = GetGen.gget(_let_6, _cst_111, DatatypeMap.ZERO);
+  IDatatype _let_6 = Get.get(kgram(_cst_190, _cst_176, uri, _cst_108, s, _cst_121, p, _cst_114, q), DatatypeMap.ZERO);
+  IDatatype l = GetGen.gget(_let_6, _cst_109, DatatypeMap.ZERO);
   return l;
 }
 
 public IDatatype sh_cstpattern(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList) {
   IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype _for_3 : sh_getConstraint(_cst_192, shape, sh).getValueList()) {
-    IDatatype oper = GetGen.gget(_for_3, _cst_172, DatatypeMap.ZERO);
-    IDatatype flag = GetGen.gget(_for_3, _cst_193, DatatypeMap.ONE);
+  for (IDatatype _for_3 : sh_getConstraint(_cst_191, shape, sh).getValueList()) {
+    IDatatype oper = GetGen.gget(_for_3, _cst_171, DatatypeMap.ZERO);
+    IDatatype flag = GetGen.gget(_for_3, _cst_192, DatatypeMap.ONE);
     for (IDatatype node : dt_list(nodeList).getValueList()) {
       IDatatype suc = and(not(node.isBlankNode()), coalesce(((flag.isURINode().booleanValue()) ? 
         regex(node, oper)
        : 
         regex(node, oper, flag))
       , DatatypeMap.FALSE));
-      sh_report(_cst_30, sh, shape, node, _cst_78, node, suc, vis);
+      sh_report(_cst_30, sh, shape, node, _cst_77, node, suc, vis);
       if (not(suc).booleanValue()) {
         res = DatatypeMap.FALSE;
       }
@@ -1473,21 +1464,21 @@ public IDatatype sh_cstpattern(IDatatype shape, IDatatype sh, IDatatype vis, IDa
 }
 
 public IDatatype sh_path(IDatatype shape, IDatatype node, IDatatype exp, IDatatype inv) {
-  return sh_evalpath(shape, node, exp, inv, _cst_78);
+  return sh_evalpath(shape, node, exp, inv, _cst_77);
 }
 
 public IDatatype sh_booleancore(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList) {
   IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype _for_2 : sh_getConstraint(_cst_194, shape, sh).getValueList()) {
-    IDatatype bool = GetGen.gget(_for_2, _cst_195, DatatypeMap.ZERO);
-    IDatatype cst = GetGen.gget(_for_2, _cst_196, DatatypeMap.ONE);
+  for (IDatatype _for_2 : sh_getConstraint(_cst_193, shape, sh).getValueList()) {
+    IDatatype bool = GetGen.gget(_for_2, _cst_194, DatatypeMap.ZERO);
+    IDatatype cst = GetGen.gget(_for_2, _cst_125, DatatypeMap.ONE);
     if (sh_trace().booleanValue()) {
-      xt_print(_cst_197, sh, nodeList);
+      xt_print(_cst_195, sh, nodeList);
     }
     else {
       self(DatatypeMap.TRUE);
     }
-    IDatatype suc = coalesce(funcall(msh_fun(bool), shape, sh, cst, vis, nodeList), DatatypeMap.FALSE);
+    IDatatype suc = coalesce(funcall(msh_fun(bool), bool, shape, sh, cst, vis, nodeList), DatatypeMap.FALSE);
     if (suc.booleanValue()) {
       self(DatatypeMap.TRUE);
     }
@@ -1501,10 +1492,10 @@ public IDatatype sh_booleancore(IDatatype shape, IDatatype sh, IDatatype vis, ID
 }
 
 public IDatatype sh_constraintcore(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList) {
-  IDatatype cst = sh_getConstraint(_cst_198, shape, sh);
+  IDatatype cst = sh_getConstraint(_cst_196, shape, sh);
   if (cst.booleanValue()) {
     if (sh_trace().booleanValue()) {
-      xt_print(_cst_199, sh, nodeList);
+      xt_print(_cst_197, sh, nodeList);
     }
     else {
       self(DatatypeMap.TRUE);
@@ -1524,16 +1515,16 @@ public IDatatype sh_closedcore(IDatatype shape, IDatatype sh, IDatatype vis, IDa
     IDatatype anypred = bnode();
     IDatatype predList = sh_getPredicates(shape, sh);
     if (sh_trace().booleanValue()) {
-      xt_print(_cst_200, sh, nodeList);
+      xt_print(_cst_198, sh, nodeList);
     }
     else {
       self(DatatypeMap.TRUE);
     }
     for (IDatatype node : dt_list(nodeList).getValueList()) {
       for (IDatatype _for_0 : edge(node, anypred).getValueList()) {
-        IDatatype s = GetGen.gget(_for_0, _cst_110, DatatypeMap.ZERO);
-        IDatatype p = GetGen.gget(_for_0, _cst_123, DatatypeMap.ONE);
-        IDatatype o = GetGen.gget(_for_0, _cst_136, DatatypeMap.TWO);
+        IDatatype s = GetGen.gget(_for_0, _cst_108, DatatypeMap.ZERO);
+        IDatatype p = GetGen.gget(_for_0, _cst_121, DatatypeMap.ONE);
+        IDatatype o = GetGen.gget(_for_0, _cst_135, DatatypeMap.TWO);
         IDatatype suc = DatatypeMap.member(p, predList);
         if (suc.booleanValue()) {
           self(DatatypeMap.TRUE);
@@ -1556,16 +1547,16 @@ public IDatatype sh_closedcore(IDatatype shape, IDatatype sh, IDatatype vis, IDa
 
 public IDatatype sh_pathcore(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList) {
   IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype _for_1 : sh_getConstraint(_cst_201, shape, sh).getValueList()) {
-    IDatatype cst = GetGen.gget(_for_1, _cst_196, DatatypeMap.ZERO);
-    IDatatype path = GetGen.gget(_for_1, _cst_117, DatatypeMap.ONE);
+  for (IDatatype _for_1 : sh_getConstraint(_cst_199, shape, sh).getValueList()) {
+    IDatatype cst = GetGen.gget(_for_1, _cst_125, DatatypeMap.ZERO);
+    IDatatype path = GetGen.gget(_for_1, _cst_115, DatatypeMap.ONE);
     if (sh_trace().booleanValue()) {
-      xt_print(_cst_202, sh, nodeList);
+      xt_print(_cst_200, sh, nodeList);
     }
     else {
       self(DatatypeMap.TRUE);
     }
-    IDatatype suc = coalesce(sh_path(shape, cst, vis, nodeList, path, _cst_78, DatatypeMap.FALSE), DatatypeMap.FALSE);
+    IDatatype suc = coalesce(sh_path(shape, cst, vis, nodeList, path), DatatypeMap.FALSE);
     if (suc.booleanValue()) {
       self(DatatypeMap.TRUE);
     }
@@ -1580,9 +1571,9 @@ public IDatatype sh_pathcore(IDatatype shape, IDatatype sh, IDatatype vis, IData
 
 public IDatatype sh_constraint1(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList) {
   IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype _for_0 : sh_getConstraint(_cst_203, shape, sh).getValueList()) {
-    IDatatype oper = GetGen.gget(_for_0, _cst_172, DatatypeMap.ZERO);
-    IDatatype value = GetGen.gget(_for_0, _cst_113, DatatypeMap.ONE);
+  for (IDatatype _for_0 : sh_getConstraint(_cst_201, shape, sh).getValueList()) {
+    IDatatype oper = GetGen.gget(_for_0, _cst_171, DatatypeMap.ZERO);
+    IDatatype value = GetGen.gget(_for_0, _cst_111, DatatypeMap.ONE);
     for (IDatatype node : dt_list(nodeList).getValueList()) {
       IDatatype suc = coalesce(((oper.eq(_cst_7).booleanValue()) ? 
         funcall(value, shape, sh, node)
@@ -1592,8 +1583,8 @@ public IDatatype sh_constraint1(IDatatype shape, IDatatype sh, IDatatype vis, ID
       sh_report(oper, sh, ((oper.eq(_cst_52).booleanValue()) ? 
         value
        : 
-        _cst_78)
-      , shape, node, _cst_78, node, suc, vis);
+        _cst_77)
+      , shape, node, _cst_77, node, suc, vis);
       if (suc.booleanValue()) {
         self(DatatypeMap.TRUE);
       }
@@ -1617,9 +1608,9 @@ public IDatatype sh_core(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype
 
 public IDatatype sh_constraint2(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList) {
   IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype _for_2 : sh_getConstraint(_cst_204, shape, sh).getValueList()) {
-    IDatatype oper = GetGen.gget(_for_2, _cst_172, DatatypeMap.ZERO);
-    IDatatype value = GetGen.gget(_for_2, _cst_113, DatatypeMap.ONE);
+  for (IDatatype _for_2 : sh_getConstraint(_cst_202, shape, sh).getValueList()) {
+    IDatatype oper = GetGen.gget(_for_2, _cst_171, DatatypeMap.ZERO);
+    IDatatype value = GetGen.gget(_for_2, _cst_111, DatatypeMap.ONE);
     for (IDatatype node : dt_list(nodeList).getValueList()) {
       IDatatype suc = coalesce(funcall(oper, shape, sh, vis, node, value), DatatypeMap.FALSE);
       if (suc.booleanValue()) {
@@ -1655,19 +1646,19 @@ public IDatatype sh_report(IDatatype name, IDatatype s, IDatatype suc, IDatatype
 
 public IDatatype sh_qualified(IDatatype shape, IDatatype qsh, IDatatype s, IDatatype p) {
   IDatatype list = sh_path(shape, s, p);
-  return mapfindlist(_cst_205, list, DatatypeMap.newList(shape), qsh);
+  return mapfindlist(_cst_203, list, DatatypeMap.newList(shape), qsh);
 }
 
 public IDatatype sh_cstsparql(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList) {
   IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype _for_1 : sh_getConstraint(_cst_206, shape, sh).getValueList()) {
-    IDatatype cst = GetGen.gget(_for_1, _cst_196, DatatypeMap.ZERO);
-    IDatatype define = GetGen.gget(_for_1, _cst_207, DatatypeMap.ONE);
-    IDatatype q = GetGen.gget(_for_1, _cst_116, DatatypeMap.TWO);
-    IDatatype mes = GetGen.gget(_for_1, _cst_208, DatatypeMap.THREE);
+  for (IDatatype _for_1 : sh_getConstraint(_cst_204, shape, sh).getValueList()) {
+    IDatatype cst = GetGen.gget(_for_1, _cst_125, DatatypeMap.ZERO);
+    IDatatype define = GetGen.gget(_for_1, _cst_205, DatatypeMap.ONE);
+    IDatatype q = GetGen.gget(_for_1, _cst_114, DatatypeMap.TWO);
+    IDatatype mes = GetGen.gget(_for_1, _cst_206, DatatypeMap.THREE);
     for (IDatatype node : dt_list(nodeList).getValueList()) {
       if (sh_trace().booleanValue()) {
-        xt_print(_cst_209, node, q);
+        xt_print(_cst_207, node, q);
       }
       else {
         self(DatatypeMap.TRUE);
@@ -1704,8 +1695,8 @@ public IDatatype sh_disjoint(IDatatype shape, IDatatype sh, IDatatype vis, IData
 }
 
 public IDatatype sh_ldpath(IDatatype shape, IDatatype s, IDatatype path, IDatatype inv, IDatatype url) {
-  IDatatype p = GetGen.gget(path, _cst_123, DatatypeMap.ZERO);
-  IDatatype q = GetGen.gget(path, _cst_116, DatatypeMap.ONE);
+  IDatatype p = GetGen.gget(path, _cst_121, DatatypeMap.ZERO);
+  IDatatype q = GetGen.gget(path, _cst_114, DatatypeMap.ONE);
   if (bound(q).booleanValue()) {
     return sh_myldpath(s, p, q);
   }
@@ -1719,19 +1710,28 @@ public IDatatype sh_seqlist(IDatatype shape, IDatatype node, IDatatype expList, 
     return DatatypeMap.newList(node);
   }
   else {
-    IDatatype firstExp = GetGen.gget(expList, _cst_210, DatatypeMap.ZERO);
+    IDatatype firstExp = GetGen.gget(expList, _cst_208, DatatypeMap.ZERO);
     IDatatype restExpList = Rest.rest(expList, DatatypeMap.ONE, DatatypeMap.ZERO);
     IDatatype nodeList = sh_evalpath(shape, node, firstExp, inv, url);
     return sh_seqlistmap(shape, nodeList, restExpList, inv, url);
   }
 }
 
-public IDatatype sh_xone(IDatatype or, IDatatype s, IDatatype p, IDatatype o, IDatatype shape) {
-  return sh_bool(or, s, p, o, shape, DatatypeMap.ONE, DatatypeMap.ZERO).eq(DatatypeMap.ONE);
-}
-
-public IDatatype sh_path(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype p) {
-  return sh_path(shape, sh, vis, nodeList, p, _cst_78, DatatypeMap.FALSE);
+public IDatatype sh_path(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype path) {
+  if (sh_trace().booleanValue()) {
+    xt_print(_cst_209, nodeList, path);
+  }
+  else {
+    self(DatatypeMap.TRUE);
+  }
+  IDatatype b1 = sh_path1(shape, sh, vis, nodeList, path);
+  IDatatype b2 = sh_path2(shape, sh, vis, nodeList, path);
+  IDatatype b3 = sh_path3(shape, sh, vis, nodeList, path);
+  IDatatype b4 = sh_pathpattern(shape, sh, vis, nodeList, path);
+  IDatatype b5 = sh_sparqlvalid(shape, sh, vis, nodeList, path);
+  IDatatype b6 = sh_sparql(shape, sh, vis, nodeList, path);
+  return and(and(and(and(and(b1, b2), b3), b4), b5), b6);
+  
 }
 
 public IDatatype sh_seqlistmap(IDatatype shape, IDatatype nodeList, IDatatype expList, IDatatype inv, IDatatype url) {
@@ -1747,10 +1747,11 @@ public IDatatype sh_pathmap(IDatatype exp, IDatatype shape, IDatatype node, IDat
   return sh_evalpath(shape, node, exp, inv, url);
 }
 
-public IDatatype sh_bool(IDatatype sh, IDatatype s, IDatatype shape, IDatatype suc, IDatatype fail) {
+public IDatatype sh_bool(IDatatype shape, IDatatype cst, IDatatype s, IDatatype suc, IDatatype fail) {
   IDatatype cc = DatatypeMap.ZERO;
-  for (IDatatype cst : sh_getConstraint(_cst_211, shape, sh).getValueList()) {
-    IDatatype res = sh_core(shape, cst, DatatypeMap.FALSE, DatatypeMap.newList(s));
+  IDatatype nodeList = DatatypeMap.newList(s);
+  for (IDatatype sh : cst.getValueList()) {
+    IDatatype res = sh_core(shape, sh, DatatypeMap.FALSE, nodeList);
     cc = cc.plus(((res.booleanValue()) ? 
       suc
      : 
@@ -1775,7 +1776,7 @@ public IDatatype sh_seqlist1(IDatatype shape, IDatatype node, IDatatype expList,
     return DatatypeMap.newList(node);
   }
   else {
-    IDatatype firstExp = GetGen.gget(expList, _cst_210, DatatypeMap.ZERO);
+    IDatatype firstExp = GetGen.gget(expList, _cst_208, DatatypeMap.ZERO);
     IDatatype restExpList = Rest.rest(expList, DatatypeMap.ONE, DatatypeMap.ZERO);
     IDatatype nodelist = sh_evalpath(shape, node, firstExp, inv, url);
     IDatatype res = DatatypeMap.newList();
@@ -1788,7 +1789,7 @@ public IDatatype sh_seqlist1(IDatatype shape, IDatatype node, IDatatype expList,
 }
 
 public IDatatype sh_pathProperty(IDatatype shape, IDatatype node, IDatatype p, IDatatype inv, IDatatype url) {
-  if (url.eq(_cst_78).booleanValue()) {
+  if (url.eq(_cst_77).booleanValue()) {
     if (inv.booleanValue()) {
       return sh_inverse(node, p);
     }
@@ -1810,8 +1811,61 @@ public IDatatype sh_pathProperty(IDatatype shape, IDatatype node, IDatatype p, I
   }
 }
 
-public IDatatype sh_or(IDatatype or, IDatatype s, IDatatype p, IDatatype o, IDatatype shape) {
-  return sh_bool(or, s, p, o, shape, DatatypeMap.ONE, DatatypeMap.ZERO).gt(DatatypeMap.ZERO);
+public IDatatype sh_pathpattern(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype p) {
+  IDatatype res = DatatypeMap.TRUE;
+  for (IDatatype _for_3 : sh_getConstraint(_cst_191, shape, sh).getValueList()) {
+    IDatatype oper = GetGen.gget(_for_3, _cst_171, DatatypeMap.ZERO);
+    IDatatype flag = GetGen.gget(_for_3, _cst_192, DatatypeMap.ONE);
+    for (IDatatype subject : dt_list(nodeList).getValueList()) {
+      for (IDatatype node : sh_path(shape, subject, p).getValueList()) {
+        IDatatype suc = and(not(node.isBlankNode()), coalesce(((flag.isURINode().booleanValue()) ? 
+          regex(node, oper)
+         : 
+          regex(node, oper, flag))
+        , DatatypeMap.FALSE));
+        if (not(suc).booleanValue()) {
+          res = DatatypeMap.FALSE;
+          sh_report(_cst_30, sh, shape, subject, p, node, suc, vis);
+          
+        }
+        else {
+          self(DatatypeMap.TRUE);
+        }
+      }
+    }
+  }
+  return res;
+  
+}
+
+public IDatatype sh_sparql(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype p) {
+  IDatatype suc = DatatypeMap.TRUE;
+  for (IDatatype _for_4 : sh_getConstraint(_cst_204, shape, sh).getValueList()) {
+    IDatatype cst = GetGen.gget(_for_4, _cst_125, DatatypeMap.ZERO);
+    IDatatype define = GetGen.gget(_for_4, _cst_205, DatatypeMap.ONE);
+    IDatatype q = GetGen.gget(_for_4, _cst_114, DatatypeMap.TWO);
+    IDatatype mes = GetGen.gget(_for_4, _cst_206, DatatypeMap.THREE);
+    for (IDatatype node : dt_list(nodeList).getValueList()) {
+      for (IDatatype object : sh_path(shape, node, p).getValueList()) {
+        if (sh_trace().booleanValue()) {
+          xt_print(_cst_210, node, p, object, q);
+        }
+        else {
+          self(DatatypeMap.TRUE);
+        }
+        IDatatype res = sh_mysparql(concat(define, q), sh, cst, shape, node, object, vis, coalesce(mes, _cst_77), bound(mes));
+        if (res.booleanValue()) {
+          self(DatatypeMap.TRUE);
+        }
+        else {
+          suc = DatatypeMap.FALSE;
+        }
+        
+      }
+    }
+  }
+  return suc;
+  
 }
 
 public IDatatype sh_filter(IDatatype shape, IDatatype s, IDatatype path, IDatatype inv, IDatatype url) {
@@ -1823,26 +1877,24 @@ public IDatatype sh_filter(IDatatype shape, IDatatype s, IDatatype path, IDataty
   }
 }
 
-public IDatatype sh_and(IDatatype and, IDatatype s, IDatatype p, IDatatype o, IDatatype shape) {
-  return sh_bool(and, s, p, o, shape, DatatypeMap.ZERO, DatatypeMap.ONE).eq(DatatypeMap.ZERO);
-}
-
 public IDatatype sh_inversePath(IDatatype shape, IDatatype node, IDatatype exp, IDatatype inv, IDatatype url) {
   return sh_evalpath(shape, node, exp, not(inv), url);
 }
 
-public IDatatype msh_not(IDatatype shape, IDatatype sh, IDatatype cst, IDatatype vis, IDatatype ls) {
+public IDatatype sh_path3(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype p) {
   IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype s : dt_list(ls).getValueList()) {
-    IDatatype suc = coalesce(not(sh_core(shape, cst, DatatypeMap.FALSE, s)), DatatypeMap.FALSE);
-    if (suc.booleanValue()) {
-      self(DatatypeMap.TRUE);
+  for (IDatatype _for_2 : sh_getConstraint(_cst_211, shape, sh).getValueList()) {
+    IDatatype oper = GetGen.gget(_for_2, _cst_171, DatatypeMap.ZERO);
+    IDatatype val = GetGen.gget(_for_2, _cst_129, DatatypeMap.ONE);
+    for (IDatatype s : dt_list(nodeList).getValueList()) {
+      IDatatype suc = coalesce(funcall(oper, shape, sh, vis, s, p, val), DatatypeMap.FALSE);
+      if (not(suc).booleanValue()) {
+        res = DatatypeMap.FALSE;
+      }
+      else {
+        self(DatatypeMap.TRUE);
+      }
     }
-    else {
-      res = DatatypeMap.FALSE;
-    }
-    sh_report(_cst_44, sh, shape, s, _cst_78, s, suc, vis);
-    
   }
   return res;
   
@@ -1855,22 +1907,100 @@ public IDatatype sh_equals(IDatatype shape, IDatatype sh, IDatatype vis, IDataty
   return and(b1, b2);
 }
 
-public IDatatype msh_and(IDatatype shape, IDatatype sh, IDatatype bool, IDatatype vis, IDatatype ls) {
-  return msh_boolean(_cst_46, shape, sh, bool, vis, ls);
+public IDatatype sh_path1(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype p) {
+  IDatatype res = DatatypeMap.TRUE;
+  for (IDatatype _for_0 : sh_getConstraint(_cst_212, shape, sh).getValueList()) {
+    IDatatype oper = GetGen.gget(_for_0, _cst_171, DatatypeMap.ZERO);
+    IDatatype val = GetGen.gget(_for_0, _cst_129, DatatypeMap.ONE);
+    for (IDatatype s : dt_list(nodeList).getValueList()) {
+      for (IDatatype o : sh_path(shape, s, p).getValueList()) {
+        IDatatype suc = coalesce(((oper.eq(_cst_7).booleanValue()) ? 
+          funcall(val, shape, sh, s, p, o)
+         : 
+          funcall(oper, shape, o, val))
+        , DatatypeMap.FALSE);
+        if (in(oper, DatatypeMap.newList(_cst_213)).booleanValue()) {
+          self(DatatypeMap.TRUE);
+        }
+        else {
+          sh_report(oper, sh, ((oper.eq(_cst_52).booleanValue()) ? 
+            val
+           : 
+            _cst_77)
+          , shape, s, p, o, suc, vis);
+        }
+        if (not(suc).booleanValue()) {
+          res = DatatypeMap.FALSE;
+        }
+        else {
+          self(DatatypeMap.TRUE);
+        }
+        
+      }
+    }
+  }
+  return res;
+  
+}
+
+public IDatatype sh_sparqlvalid(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype ls, IDatatype p) {
+  IDatatype res = DatatypeMap.TRUE;
+  for (IDatatype _for_0 : sh_getConstraint(_cst_214, shape, sh).getValueList()) {
+    IDatatype cst = GetGen.gget(_for_0, _cst_125, DatatypeMap.ZERO);
+    IDatatype define = GetGen.gget(_for_0, _cst_205, DatatypeMap.ONE);
+    IDatatype q = GetGen.gget(_for_0, _cst_114, DatatypeMap.TWO);
+    IDatatype oper = GetGen.gget(_for_0, _cst_171, DatatypeMap.THREE);
+    IDatatype value = GetGen.gget(_for_0, _cst_111, DatatypeMap.FOUR);
+    xt_print(_cst_215, define, oper, value, q);
+    for (IDatatype s : dt_list(ls).getValueList()) {
+      IDatatype suc = coalesce(sh_sparqlvalidp(shape, sh, cst, define, q, vis, s, p, oper, value), DatatypeMap.FALSE);
+      if (suc.booleanValue()) {
+        self(DatatypeMap.TRUE);
+      }
+      else {
+        res = DatatypeMap.FALSE;
+      }
+    }
+    
+  }
+  return res;
+  
+}
+
+public IDatatype sh_path2(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype p) {
+  IDatatype res = DatatypeMap.TRUE;
+  for (IDatatype _for_1 : sh_getConstraint(_cst_216, shape, sh).getValueList()) {
+    IDatatype oper = GetGen.gget(_for_1, _cst_171, DatatypeMap.ZERO);
+    IDatatype val = GetGen.gget(_for_1, _cst_129, DatatypeMap.ONE);
+    IDatatype disjoint = GetGen.gget(_for_1, _cst_217, DatatypeMap.TWO);
+    IDatatype amin = GetGen.gget(_for_1, _cst_218, DatatypeMap.THREE);
+    IDatatype amax = GetGen.gget(_for_1, _cst_219, DatatypeMap.FOUR);
+    for (IDatatype s : dt_list(nodeList).getValueList()) {
+      IDatatype suc = coalesce(sh_qualifiedValueShape(shape, sh, vis, s, p, val, disjoint, amin, amax), DatatypeMap.FALSE);
+      if (not(suc).booleanValue()) {
+        res = DatatypeMap.FALSE;
+      }
+      else {
+        self(DatatypeMap.TRUE);
+      }
+    }
+  }
+  return res;
+  
 }
 
 public IDatatype sh_class(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype c) {
-  IDatatype suc = mapget(kgram(_cst_212, _cst_82, shape, _cst_73, sh, _cst_213, vis, _cst_110, s, _cst_153, c), _cst_214);
-  sh_report(_cst_8, sh, shape, s, _cst_215, s, suc, vis);
+  IDatatype suc = mapget(kgram(_cst_220, _cst_81, shape, _cst_82, sh, _cst_221, vis, _cst_108, s, _cst_152, c), _cst_222);
+  sh_report(_cst_8, sh, shape, s, _cst_223, s, suc, vis);
   return suc;
   
 }
 
 public IDatatype sh_service2(IDatatype shape, IDatatype node, IDatatype arg, IDatatype inv, IDatatype url) {
-  IDatatype server = GetGen.gget(arg, _cst_216, DatatypeMap.ZERO);
+  IDatatype server = GetGen.gget(arg, _cst_224, DatatypeMap.ZERO);
   IDatatype path = Rest.rest(arg, DatatypeMap.ONE, DatatypeMap.ZERO);
-  xt_print(_cst_217, node, server, arg);
-  return sh_evalpath(shape, node, DatatypeMap.newList(_cst_119, path), inv, server);
+  xt_print(_cst_225, node, server, arg);
+  return sh_evalpath(shape, node, DatatypeMap.newList(_cst_117, path), inv, server);
   
 }
 
@@ -1884,14 +2014,10 @@ public IDatatype sh_zeroOrOnePath(IDatatype shape, IDatatype node, IDatatype exp
   }
 }
 
-public IDatatype msh_xone(IDatatype shape, IDatatype sh, IDatatype bool, IDatatype vis, IDatatype ls) {
-  return msh_boolean(_cst_50, shape, sh, bool, vis, ls);
-}
-
 public IDatatype sh_evalpath(IDatatype shape, IDatatype node, IDatatype exp, IDatatype inv, IDatatype url) {
   if (DatatypeMap.newInstance(exp.isExtension()).booleanValue()) {
-    IDatatype oper = GetGen.gget(exp, _cst_172, DatatypeMap.ZERO);
-    IDatatype path = GetGen.gget(exp, _cst_117, DatatypeMap.ONE);
+    IDatatype oper = GetGen.gget(exp, _cst_171, DatatypeMap.ZERO);
+    IDatatype path = GetGen.gget(exp, _cst_115, DatatypeMap.ONE);
     return funcall(oper, shape, node, path, inv, url);
   }
   else {
@@ -1901,15 +2027,11 @@ public IDatatype sh_evalpath(IDatatype shape, IDatatype node, IDatatype exp, IDa
 
 public IDatatype sh_alternativePath(IDatatype shape, IDatatype node, IDatatype exp, IDatatype inv, IDatatype url) {
   IDatatype expList = Get.get(exp, DatatypeMap.ONE);
-  return DatatypeMap.merge(maplist(_cst_218, expList, DatatypeMap.newList(shape), node, inv, url));
+  return DatatypeMap.merge(maplist(_cst_226, expList, DatatypeMap.newList(shape), node, inv, url));
 }
 
 public IDatatype sh_zeroOrMorePath(IDatatype shape, IDatatype node, IDatatype exp, IDatatype inv, IDatatype url) {
   return sh_rec(shape, node, exp, DatatypeMap.newList(node), inv, url);
-}
-
-public IDatatype msh_or(IDatatype shape, IDatatype sh, IDatatype bool, IDatatype vis, IDatatype ls) {
-  return msh_boolean(_cst_48, shape, sh, bool, vis, ls);
 }
 
 public IDatatype sh_service(IDatatype shape, IDatatype node, IDatatype arg, IDatatype inv, IDatatype url) {
@@ -1919,12 +2041,12 @@ public IDatatype sh_service(IDatatype shape, IDatatype node, IDatatype arg, IDat
   else {
     self(DatatypeMap.TRUE);
   }
-  IDatatype server = GetGen.gget(arg, _cst_216, DatatypeMap.ZERO);
+  IDatatype server = GetGen.gget(arg, _cst_224, DatatypeMap.ZERO);
   IDatatype path = Rest.rest(arg, DatatypeMap.ONE, DatatypeMap.ZERO);
-  IDatatype pp = GetGen.gget(path, _cst_219, DatatypeMap.ZERO);
-  IDatatype qq = GetGen.gget(path, _cst_220, DatatypeMap.ONE);
+  IDatatype pp = GetGen.gget(path, _cst_227, DatatypeMap.ZERO);
+  IDatatype qq = GetGen.gget(path, _cst_228, DatatypeMap.ONE);
   if (us_trace().booleanValue()) {
-    xt_print(_cst_217, server, node, path);
+    xt_print(_cst_225, server, node, path);
   }
   else {
     self(DatatypeMap.TRUE);
@@ -1935,11 +2057,11 @@ public IDatatype sh_service(IDatatype shape, IDatatype node, IDatatype arg, IDat
     ((and(path.length().eq(DatatypeMap.ONE), pp.isURINode()).booleanValue()) ? 
       sh_myservice(server, node, pp)
      : 
-      sh_evalpath(shape, node, DatatypeMap.newList(_cst_119, path), inv, server))
+      sh_evalpath(shape, node, DatatypeMap.newList(_cst_117, path), inv, server))
     )
   ;
   if (us_trace().booleanValue()) {
-    xt_print(_cst_221, list);
+    xt_print(_cst_229, list);
   }
   else {
     self(DatatypeMap.TRUE);
@@ -1967,7 +2089,7 @@ public IDatatype sh_disjoint(IDatatype shape, IDatatype sh, IDatatype vis, IData
 public IDatatype sh_not(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype cst) {
   IDatatype res = DatatypeMap.TRUE;
   for (IDatatype o : sh_path(shape, s, p).getValueList()) {
-    IDatatype suc = not(sh_path(shape, cst, DatatypeMap.FALSE, s, p, o, DatatypeMap.TRUE));
+    IDatatype suc = not(sh_core(shape, cst, DatatypeMap.FALSE, DatatypeMap.newList(o)));
     sh_report(_cst_44, sh, shape, s, p, o, suc, vis);
     res = and(res, suc);
     
@@ -2016,8 +2138,22 @@ public IDatatype sh_rec(IDatatype shape, IDatatype node, IDatatype exp, IDatatyp
   }
 }
 
-public IDatatype sh_xone(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype and) {
-  return msh_boolean(_cst_50, shape, sh, vis, s, p, and);
+public IDatatype sh_xone(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype cst) {
+  IDatatype res = DatatypeMap.TRUE;
+  IDatatype shList = sh_getConstraint(_cst_230, shape, cst);
+  for (IDatatype o : sh_path(shape, s, p).getValueList()) {
+    IDatatype suc = coalesce(sh_xone(shape, shList, o), DatatypeMap.FALSE);
+    if (suc.booleanValue()) {
+      self(DatatypeMap.TRUE);
+    }
+    else {
+      sh_report(_cst_50, sh, shape, s, p, o, suc, vis);
+    }
+    res = and(res, suc);
+    
+  }
+  return res;
+  
 }
 
 public IDatatype sh_equals(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype q) {
@@ -2028,16 +2164,35 @@ public IDatatype sh_equals(IDatatype shape, IDatatype sh, IDatatype vis, IDataty
   return and(b1, b2);
 }
 
-public IDatatype msh_boolean(IDatatype oper, IDatatype shape, IDatatype sh, IDatatype bool, IDatatype vis, IDatatype ls) {
+public IDatatype msh_not(IDatatype oper, IDatatype shape, IDatatype sh, IDatatype cst, IDatatype vis, IDatatype ls) {
   IDatatype res = DatatypeMap.TRUE;
   for (IDatatype s : dt_list(ls).getValueList()) {
-    IDatatype suc = msh_basic(oper, shape, sh, bool, vis, s);
+    IDatatype suc = coalesce(not(sh_core(shape, cst, DatatypeMap.FALSE, s)), DatatypeMap.FALSE);
     if (suc.booleanValue()) {
       self(DatatypeMap.TRUE);
     }
     else {
       res = DatatypeMap.FALSE;
     }
+    sh_report(_cst_44, sh, shape, s, _cst_77, s, suc, vis);
+    
+  }
+  return res;
+  
+}
+
+public IDatatype msh_boolean(IDatatype oper, IDatatype shape, IDatatype sh, IDatatype cst, IDatatype vis, IDatatype ls) {
+  IDatatype res = DatatypeMap.TRUE;
+  for (IDatatype s : dt_list(ls).getValueList()) {
+    IDatatype suc = coalesce(funcall(oper, shape, sh_getConstraint(_cst_231, shape, cst), s), DatatypeMap.FALSE);
+    sh_report(oper, sh, shape, s, _cst_77, s, suc, vis);
+    if (suc.booleanValue()) {
+      self(DatatypeMap.TRUE);
+    }
+    else {
+      res = DatatypeMap.FALSE;
+    }
+    
   }
   return res;
   
@@ -2054,12 +2209,26 @@ public IDatatype sh_hasValue(IDatatype shape, IDatatype sh, IDatatype vis, IData
   
 }
 
-public IDatatype sh_or(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype and) {
-  return msh_boolean(_cst_48, shape, sh, vis, s, p, and);
+public IDatatype sh_or(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype cst) {
+  IDatatype res = DatatypeMap.TRUE;
+  IDatatype shList = sh_getConstraint(_cst_230, shape, cst);
+  for (IDatatype o : sh_path(shape, s, p).getValueList()) {
+    IDatatype suc = coalesce(sh_or(shape, shList, o), DatatypeMap.FALSE);
+    if (suc.booleanValue()) {
+      self(DatatypeMap.TRUE);
+    }
+    else {
+      sh_report(_cst_48, sh, shape, s, p, o, suc, vis);
+    }
+    res = and(res, suc);
+    
+  }
+  return res;
+  
 }
 
 public IDatatype sh_report(IDatatype name, IDatatype sh, IDatatype shape, IDatatype foc, IDatatype suc, IDatatype vis) {
-  return sh_report(name, sh, shape, foc, _cst_78, _cst_78, suc, vis);
+  return sh_report(name, sh, shape, foc, _cst_77, _cst_77, suc, vis);
 }
 
 public IDatatype sh_maxCount(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype m) {
@@ -2070,25 +2239,18 @@ public IDatatype sh_maxCount(IDatatype shape, IDatatype sh, IDatatype vis, IData
   
 }
 
-public IDatatype msh_basic(IDatatype oper, IDatatype shape, IDatatype sh, IDatatype bool, IDatatype vis, IDatatype s) {
-  IDatatype suc = coalesce(funcall(oper, bool, s, shape), DatatypeMap.FALSE);
-  sh_report(oper, sh, shape, s, _cst_78, s, suc, vis);
-  return suc;
-  
-}
-
 public IDatatype sh_uniqueLang(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype v) {
   IDatatype suc = DatatypeMap.TRUE;
   IDatatype amap = DatatypeMap.map();
   IDatatype nodeList = sh_path(shape, s, p);
-  IDatatype nodeLang = mapfindlist(_cst_222, nodeList);
+  IDatatype nodeLang = mapfindlist(_cst_232, nodeList);
   for (IDatatype value : nodeLang.getValueList()) {
     IDatatype lan = lang(value);
     amap.set(lan, coalesce(Get.get(amap, lan), DatatypeMap.ZERO).plus(DatatypeMap.ONE));
   }
   for (IDatatype _for_10 : amap.getValueList()) {
-    IDatatype lan = GetGen.gget(_for_10, _cst_223, DatatypeMap.ZERO);
-    IDatatype value = GetGen.gget(_for_10, _cst_113, DatatypeMap.ONE);
+    IDatatype lan = GetGen.gget(_for_10, _cst_233, DatatypeMap.ZERO);
+    IDatatype value = GetGen.gget(_for_10, _cst_111, DatatypeMap.ONE);
     IDatatype res = value.eq(DatatypeMap.ONE);
     if (res.booleanValue()) {
       self(DatatypeMap.TRUE);
@@ -2103,8 +2265,22 @@ public IDatatype sh_uniqueLang(IDatatype shape, IDatatype sh, IDatatype vis, IDa
   
 }
 
-public IDatatype sh_and(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype and) {
-  return msh_boolean(_cst_46, shape, sh, vis, s, p, and);
+public IDatatype sh_and(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype cst) {
+  IDatatype res = DatatypeMap.TRUE;
+  IDatatype shList = sh_getConstraint(_cst_230, shape, cst);
+  for (IDatatype o : sh_path(shape, s, p).getValueList()) {
+    IDatatype suc = coalesce(sh_and(shape, shList, o), DatatypeMap.FALSE);
+    if (suc.booleanValue()) {
+      self(DatatypeMap.TRUE);
+    }
+    else {
+      sh_report(_cst_46, sh, shape, s, p, o, suc, vis);
+    }
+    res = and(res, suc);
+    
+  }
+  return res;
+  
 }
 
 public IDatatype sh_lessThan(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype q) {
@@ -2135,63 +2311,8 @@ public IDatatype sh_disjoint(IDatatype shape, IDatatype sh, IDatatype vis, IData
   
 }
 
-public IDatatype sh_not(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype cst, IDatatype o) {
-  IDatatype l = sh_path(shape, s, p);
-  if (DatatypeMap.member(o, l).booleanValue()) {
-    IDatatype suc = not(sh_path(shape, cst, DatatypeMap.FALSE, s, p, o, DatatypeMap.TRUE));
-    sh_report(_cst_44, sh, shape, s, p, o, suc, vis);
-    return suc;
-    
-  }
-  else {
-    self(DatatypeMap.TRUE);
-  }
-  return DatatypeMap.TRUE;
-  
-}
-
-public IDatatype sh_xone(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype and, IDatatype o) {
-  return msh_boolean(_cst_50, shape, sh, vis, s, p, and, o);
-}
-
-public IDatatype sh_path(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype path, IDatatype value, IDatatype isbound) {
-  if (sh_trace().booleanValue()) {
-    xt_print(_cst_224, nodeList, path);
-  }
-  else {
-    self(DatatypeMap.TRUE);
-  }
-  IDatatype b1 = sh_path1(shape, sh, vis, nodeList, path, value, isbound);
-  IDatatype b2 = sh_path2(shape, sh, vis, nodeList, path, value, isbound);
-  IDatatype b3 = sh_path3(shape, sh, vis, nodeList, path, value, isbound);
-  IDatatype b4 = sh_pathpattern(shape, sh, vis, nodeList, path, value, isbound);
-  IDatatype b5 = sh_sparqlvalid(shape, sh, vis, nodeList, path, value, isbound);
-  IDatatype b6 = sh_sparql(shape, sh, vis, nodeList, path, value, isbound);
-  return and(and(and(and(and(b1, b2), b3), b4), b5), b6);
-  
-}
-
-public IDatatype sh_path3(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype p, IDatatype value, IDatatype isbound) {
-  IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype _for_2 : sh_getConstraint(_cst_225, shape, sh).getValueList()) {
-    IDatatype oper = GetGen.gget(_for_2, _cst_172, DatatypeMap.ZERO);
-    IDatatype val = GetGen.gget(_for_2, _cst_130, DatatypeMap.ONE);
-    for (IDatatype s : dt_list(nodeList).getValueList()) {
-      IDatatype suc = coalesce(((isbound.booleanValue()) ? 
-        funcall(oper, shape, sh, vis, s, p, val, value)
-       : 
-        funcall(oper, shape, sh, vis, s, p, val))
-      , DatatypeMap.FALSE);
-      if (not(suc).booleanValue()) {
-        res = DatatypeMap.FALSE;
-      }
-      else {
-        self(DatatypeMap.TRUE);
-      }
-    }
-  }
-  return res;
-  
+public IDatatype sh_maxCount(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype m, IDatatype o) {
+  return sh_maxCount(shape, sh, vis, s, p, m);
 }
 
 public IDatatype sh_equals(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype q, IDatatype o) {
@@ -2210,265 +2331,16 @@ public IDatatype sh_equals(IDatatype shape, IDatatype sh, IDatatype vis, IDataty
   return and(b1, b2);
 }
 
-public IDatatype msh_boolean(IDatatype oper, IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype and) {
-  IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype o : sh_path(shape, s, p).getValueList()) {
-    IDatatype suc = coalesce(funcall(oper, and, s, p, o, shape), DatatypeMap.FALSE);
-    if (suc.booleanValue()) {
-      self(DatatypeMap.TRUE);
-    }
-    else {
-      sh_report(oper, sh, shape, s, p, o, suc, vis);
-    }
-    res = and(res, suc);
-    
-  }
-  return res;
-  
-}
-
-public IDatatype sh_path1(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype p, IDatatype value, IDatatype isbound) {
-  IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype _for_0 : sh_getConstraint(_cst_226, shape, sh).getValueList()) {
-    IDatatype oper = GetGen.gget(_for_0, _cst_172, DatatypeMap.ZERO);
-    IDatatype val = GetGen.gget(_for_0, _cst_130, DatatypeMap.ONE);
-    for (IDatatype s : dt_list(nodeList).getValueList()) {
-      for (IDatatype o : ((isbound.booleanValue()) ? 
-        DatatypeMap.newList(value)
-       : 
-        sh_path(shape, s, p))
-      .getValueList()) {
-        IDatatype suc = coalesce(((oper.eq(_cst_7).booleanValue()) ? 
-          funcall(val, shape, sh, s, p, o)
-         : 
-          funcall(oper, shape, o, val))
-        , DatatypeMap.FALSE);
-        if (in(oper, DatatypeMap.newList(_cst_227)).booleanValue()) {
-          self(DatatypeMap.TRUE);
-        }
-        else {
-          sh_report(oper, sh, ((oper.eq(_cst_52).booleanValue()) ? 
-            val
-           : 
-            _cst_78)
-          , shape, s, p, o, suc, vis);
-        }
-        if (not(suc).booleanValue()) {
-          res = DatatypeMap.FALSE;
-        }
-        else {
-          self(DatatypeMap.TRUE);
-        }
-        
-      }
-    }
-  }
-  return res;
-  
-}
-
 public IDatatype sh_lessThanOrEquals(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype q, IDatatype o) {
   return sh_lessThanList(shape, sh, vis, s, p, q, dt_list(o), DatatypeMap.TRUE, _cst_42);
-}
-
-public IDatatype sh_sparqlvalid(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype ls, IDatatype p, IDatatype o, IDatatype isbound) {
-  IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype _for_0 : sh_getConstraint(_cst_228, shape, sh).getValueList()) {
-    IDatatype cst = GetGen.gget(_for_0, _cst_196, DatatypeMap.ZERO);
-    IDatatype define = GetGen.gget(_for_0, _cst_207, DatatypeMap.ONE);
-    IDatatype q = GetGen.gget(_for_0, _cst_116, DatatypeMap.TWO);
-    IDatatype oper = GetGen.gget(_for_0, _cst_172, DatatypeMap.THREE);
-    IDatatype value = GetGen.gget(_for_0, _cst_113, DatatypeMap.FOUR);
-    xt_print(_cst_229, define, oper, value, q);
-    for (IDatatype s : dt_list(ls).getValueList()) {
-      IDatatype suc = coalesce(((isbound.booleanValue()) ? 
-        sh_sparqlvalidp(shape, sh, cst, define, q, vis, s, p, oper, value)
-       : 
-        sh_sparqlvalidp(shape, sh, cst, define, q, vis, s, p, oper, value))
-      , DatatypeMap.FALSE);
-      if (suc.booleanValue()) {
-        self(DatatypeMap.TRUE);
-      }
-      else {
-        res = DatatypeMap.FALSE;
-      }
-    }
-    
-  }
-  return res;
-  
-}
-
-public IDatatype sh_path2(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype p, IDatatype value, IDatatype isbound) {
-  IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype _for_1 : sh_getConstraint(_cst_230, shape, sh).getValueList()) {
-    IDatatype oper = GetGen.gget(_for_1, _cst_172, DatatypeMap.ZERO);
-    IDatatype val = GetGen.gget(_for_1, _cst_130, DatatypeMap.ONE);
-    IDatatype disjoint = GetGen.gget(_for_1, _cst_231, DatatypeMap.TWO);
-    IDatatype amin = GetGen.gget(_for_1, _cst_232, DatatypeMap.THREE);
-    IDatatype amax = GetGen.gget(_for_1, _cst_233, DatatypeMap.FOUR);
-    for (IDatatype s : dt_list(nodeList).getValueList()) {
-      IDatatype suc = coalesce(sh_qualifiedValueShape(shape, sh, vis, s, p, val, disjoint, amin, amax), DatatypeMap.FALSE);
-      if (not(suc).booleanValue()) {
-        res = DatatypeMap.FALSE;
-      }
-      else {
-        self(DatatypeMap.TRUE);
-      }
-    }
-  }
-  return res;
-  
 }
 
 public IDatatype sh_hasValue(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype v, IDatatype o) {
   return sh_hasValue(shape, sh, vis, s, p, v);
 }
 
-public IDatatype sh_bool(IDatatype sh, IDatatype s, IDatatype p, IDatatype o, IDatatype shape, IDatatype suc, IDatatype fail) {
-  IDatatype cc = DatatypeMap.ZERO;
-  for (IDatatype _for_11 : sh_getConstraint(_cst_234, shape, sh).getValueList()) {
-    IDatatype cst = GetGen.gget(_for_11, _cst_196, DatatypeMap.ZERO);
-    IDatatype prop = GetGen.gget(_for_11, _cst_235, DatatypeMap.ONE);
-    IDatatype res = ((prop.booleanValue()) ? 
-      sh_core(shape, cst, DatatypeMap.FALSE, DatatypeMap.newList(o))
-     : 
-      sh_path(shape, cst, DatatypeMap.FALSE, s, p, o, DatatypeMap.TRUE))
-    ;
-    cc = cc.plus(((res.booleanValue()) ? 
-      suc
-     : 
-      fail)
-    );
-  }
-  return cc;
-  
-}
-
-public IDatatype sh_result(IDatatype name, IDatatype sh, IDatatype cst, IDatatype shape, IDatatype foc, IDatatype path, IDatatype node) {
-  IDatatype res = uuid();
-  IDatatype def = coalesce(sh_isdefby(name), name);
-  IDatatype sev = coalesce(xt_value(shape, sh, _cst_101), _cst_102);
-  IDatatype mes = sh_getTheMessage(shape, sh, cst);
-  IDatatype abnode = sh_bnodeid();
-  IDatatype rep = validationReport;
-  xt_insert(rep, abnode, _cst_215, _cst_236);
-  xt_insert(rep, abnode, _cst_237, res);
-  xt_insert(rep, abnode, _cst_238, DatatypeMap.FALSE);
-  xt_insert(rep, res, _cst_215, _cst_239);
-  xt_insert(rep, res, _cst_240, sev);
-  xt_insert(rep, res, _cst_241, foc);
-  xt_insert(rep, res, _cst_242, mes);
-  xt_insert(rep, res, _cst_243, def);
-  xt_insert(rep, res, _cst_244, sh);
-  if (sh_isValue(path).booleanValue()) {
-    xt_insert(rep, res, _cst_245, sh_graph(shape, path));
-  }
-  else {
-    self(DatatypeMap.TRUE);
-  }
-  if (sh_isValue(node).booleanValue()) {
-    xt_insert(rep, res, _cst_246, node);
-  }
-  else {
-    self(DatatypeMap.TRUE);
-  }
-  if (node.isBlankNode().booleanValue()) {
-    xt_insert(rep, res, _cst_247, sh_graph(shape, node));
-  }
-  else {
-    self(DatatypeMap.TRUE);
-  }
-  if (foc.isBlankNode().booleanValue()) {
-    xt_insert(rep, res, _cst_248, sh_graph(shape, foc));
-  }
-  else {
-    self(DatatypeMap.TRUE);
-  }
-  
-  return DatatypeMap.TRUE;
-  
-}
-
-public IDatatype sh_pathpattern(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype p, IDatatype value, IDatatype isbound) {
-  IDatatype res = DatatypeMap.TRUE;
-  for (IDatatype _for_3 : sh_getConstraint(_cst_192, shape, sh).getValueList()) {
-    IDatatype oper = GetGen.gget(_for_3, _cst_172, DatatypeMap.ZERO);
-    IDatatype flag = GetGen.gget(_for_3, _cst_193, DatatypeMap.ONE);
-    for (IDatatype subject : dt_list(nodeList).getValueList()) {
-      for (IDatatype node : ((isbound.booleanValue()) ? 
-        dt_list(value)
-       : 
-        sh_path(shape, subject, p))
-      .getValueList()) {
-        IDatatype suc = and(not(node.isBlankNode()), coalesce(((flag.isURINode().booleanValue()) ? 
-          regex(node, oper)
-         : 
-          regex(node, oper, flag))
-        , DatatypeMap.FALSE));
-        if (not(suc).booleanValue()) {
-          res = DatatypeMap.FALSE;
-          sh_report(_cst_30, sh, shape, subject, p, node, suc, vis);
-          
-        }
-        else {
-          self(DatatypeMap.TRUE);
-        }
-      }
-    }
-  }
-  return res;
-  
-}
-
-public IDatatype sh_or(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype and, IDatatype o) {
-  return msh_boolean(_cst_48, shape, sh, vis, s, p, and, o);
-}
-
-public IDatatype sh_maxCount(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype m, IDatatype o) {
-  return sh_maxCount(shape, sh, vis, s, p, m);
-}
-
-public IDatatype sh_sparql(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype nodeList, IDatatype p, IDatatype value, IDatatype isbound) {
-  IDatatype suc = DatatypeMap.TRUE;
-  for (IDatatype _for_4 : sh_getConstraint(_cst_206, shape, sh).getValueList()) {
-    IDatatype cst = GetGen.gget(_for_4, _cst_196, DatatypeMap.ZERO);
-    IDatatype define = GetGen.gget(_for_4, _cst_207, DatatypeMap.ONE);
-    IDatatype q = GetGen.gget(_for_4, _cst_116, DatatypeMap.TWO);
-    IDatatype mes = GetGen.gget(_for_4, _cst_208, DatatypeMap.THREE);
-    for (IDatatype node : dt_list(nodeList).getValueList()) {
-      for (IDatatype object : ((isbound.booleanValue()) ? 
-        dt_list(value)
-       : 
-        sh_path(shape, node, p))
-      .getValueList()) {
-        if (sh_trace().booleanValue()) {
-          xt_print(_cst_249, node, p, object, q);
-        }
-        else {
-          self(DatatypeMap.TRUE);
-        }
-        IDatatype res = sh_mysparql(concat(define, q), sh, cst, shape, node, object, vis, coalesce(mes, _cst_78), bound(mes));
-        if (res.booleanValue()) {
-          self(DatatypeMap.TRUE);
-        }
-        else {
-          suc = DatatypeMap.FALSE;
-        }
-        
-      }
-    }
-  }
-  return suc;
-  
-}
-
 public IDatatype sh_uniqueLang(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype v, IDatatype o) {
   return sh_uniqueLang(shape, sh, vis, s, p, v);
-}
-
-public IDatatype sh_and(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype and, IDatatype o) {
-  return msh_boolean(_cst_46, shape, sh, vis, s, p, and, o);
 }
 
 public IDatatype sh_lessThan(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype q, IDatatype o) {
@@ -2477,6 +2349,51 @@ public IDatatype sh_lessThan(IDatatype shape, IDatatype sh, IDatatype vis, IData
 
 public IDatatype sh_minCount(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype m, IDatatype o) {
   return sh_minCount(shape, sh, vis, s, p, m);
+}
+
+public IDatatype sh_result(IDatatype name, IDatatype sh, IDatatype cst, IDatatype shape, IDatatype foc, IDatatype path, IDatatype node) {
+  IDatatype res = uuid();
+  IDatatype def = coalesce(sh_isdefby(name), name);
+  IDatatype sev = coalesce(xt_value(shape, sh, _cst_98), _cst_99);
+  IDatatype mes = sh_getTheMessage(shape, sh, cst);
+  IDatatype abnode = sh_bnodeid();
+  IDatatype rep = validationReport;
+  xt_insert(rep, abnode, _cst_223, _cst_234);
+  xt_insert(rep, abnode, _cst_235, res);
+  xt_insert(rep, abnode, _cst_236, DatatypeMap.FALSE);
+  xt_insert(rep, res, _cst_223, _cst_237);
+  xt_insert(rep, res, _cst_238, sev);
+  xt_insert(rep, res, _cst_239, foc);
+  xt_insert(rep, res, _cst_240, mes);
+  xt_insert(rep, res, _cst_241, def);
+  xt_insert(rep, res, _cst_242, sh);
+  if (sh_isValue(path).booleanValue()) {
+    xt_insert(rep, res, _cst_243, sh_graph(shape, path));
+  }
+  else {
+    self(DatatypeMap.TRUE);
+  }
+  if (sh_isValue(node).booleanValue()) {
+    xt_insert(rep, res, _cst_244, node);
+  }
+  else {
+    self(DatatypeMap.TRUE);
+  }
+  if (node.isBlankNode().booleanValue()) {
+    xt_insert(rep, res, _cst_245, sh_graph(shape, node));
+  }
+  else {
+    self(DatatypeMap.TRUE);
+  }
+  if (foc.isBlankNode().booleanValue()) {
+    xt_insert(rep, res, _cst_246, sh_graph(shape, foc));
+  }
+  else {
+    self(DatatypeMap.TRUE);
+  }
+  
+  return DatatypeMap.TRUE;
+  
 }
 
 public IDatatype sh_myequals(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype q, IDatatype l1, IDatatype l2) {
@@ -2492,22 +2409,7 @@ public IDatatype sh_myequals(IDatatype shape, IDatatype sh, IDatatype vis, IData
 }
 
 public IDatatype sh_report(IDatatype name, IDatatype sh, IDatatype shape, IDatatype foc, IDatatype p, IDatatype o, IDatatype suc, IDatatype vis) {
-  return sh_report(name, sh, _cst_78, shape, foc, p, o, suc, vis);
-}
-
-public IDatatype msh_boolean(IDatatype oper, IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype and, IDatatype o) {
-  IDatatype l = sh_path(shape, s, p);
-  if (DatatypeMap.member(o, l).booleanValue()) {
-    IDatatype suc = coalesce(funcall(oper, and, s, p, o, shape), DatatypeMap.FALSE);
-    sh_report(oper, sh, shape, s, p, o, suc, vis);
-    return suc;
-    
-  }
-  else {
-    self(DatatypeMap.TRUE);
-  }
-  return DatatypeMap.TRUE;
-  
+  return sh_report(name, sh, _cst_77, shape, foc, p, o, suc, vis);
 }
 
 public IDatatype sh_equal(IDatatype shape, IDatatype sh, IDatatype vis, IDatatype s, IDatatype p, IDatatype q, IDatatype o, IDatatype l) {
@@ -2544,10 +2446,10 @@ public IDatatype sh_record(IDatatype name, IDatatype sh, IDatatype cst, IDatatyp
   if (vis.booleanValue()) {
     IDatatype amap = sh_getrecordmap(name, suc);
     amap.set(sh, coalesce(Get.get(amap, sh), DatatypeMap.ZERO).plus(DatatypeMap.ONE));
-    amap.set(_cst_250, coalesce(Get.get(amap, _cst_250), DatatypeMap.ZERO).plus(DatatypeMap.ONE));
+    amap.set(_cst_247, coalesce(Get.get(amap, _cst_247), DatatypeMap.ZERO).plus(DatatypeMap.ONE));
     
-    IDatatype bmap = sh_getrecordmap(_cst_251, suc);
-    bmap.set(_cst_251, coalesce(Get.get(bmap, _cst_251), DatatypeMap.ZERO).plus(DatatypeMap.ONE));
+    IDatatype bmap = sh_getrecordmap(_cst_248, suc);
+    bmap.set(_cst_248, coalesce(Get.get(bmap, _cst_248), DatatypeMap.ZERO).plus(DatatypeMap.ONE));
     
   }
   else {
@@ -2572,10 +2474,10 @@ public IDatatype sh_report(IDatatype name, IDatatype sh, IDatatype cst, IDatatyp
 }
 
 public IDatatype sh_mysparql(IDatatype q, IDatatype sh, IDatatype cst, IDatatype shape, IDatatype focus, IDatatype val, IDatatype vis, IDatatype mes, IDatatype hasmes) {
-  IDatatype maps = xt_sparql(q, _cst_252, val);
+  IDatatype maps = xt_sparql(q, _cst_249, val);
   for (IDatatype m : maps.getValueList()) {
-    IDatatype path = GetGen.gget(m, _cst_117, DatatypeMap.ZERO);
-    IDatatype value = GetGen.gget(m, _cst_113, DatatypeMap.ONE);
+    IDatatype path = GetGen.gget(m, _cst_115, DatatypeMap.ZERO);
+    IDatatype value = GetGen.gget(m, _cst_111, DatatypeMap.ONE);
     if (hasmes.booleanValue()) {
       IDatatype mmes = sh_mymessage(mes, m);
       sh_report(_cst_68, sh, shape, focus, path, value, DatatypeMap.FALSE, vis);
@@ -2610,9 +2512,9 @@ public IDatatype sh_qualifiedValueShape(IDatatype shape, IDatatype sh, IDatatype
 public IDatatype sh_sparqlvalidp(IDatatype shape, IDatatype sh, IDatatype cst, IDatatype define, IDatatype q, IDatatype vis, IDatatype s, IDatatype p, IDatatype oper, IDatatype obj) {
   IDatatype res = DatatypeMap.TRUE;
   IDatatype var = sh_variable(oper);
-  IDatatype qq = concat(define, replace(q, _cst_253, sh_display(shape, p)), sh_values(var));
-  for (IDatatype _for_2 : xt_sparql(qq, _cst_252, s, var, obj).getValueList()) {
-    IDatatype value = GetGen.gget(_for_2, _cst_113, DatatypeMap.ZERO);
+  IDatatype qq = concat(define, replace(q, _cst_250, sh_display(shape, p)), sh_values(var));
+  for (IDatatype _for_2 : xt_sparql(qq, _cst_249, s, var, obj).getValueList()) {
+    IDatatype value = GetGen.gget(_for_2, _cst_111, DatatypeMap.ZERO);
     IDatatype suc = DatatypeMap.FALSE;
     res = DatatypeMap.FALSE;
     sh_report(cst, sh, cst, shape, s, p, value, suc, vis);

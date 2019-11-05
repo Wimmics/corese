@@ -1,14 +1,12 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 
-function sh:sparqlvalid (shape, sh, vis, ls, p, o, isbound) {
+function sh:sparqlvalid (shape, sh, vis, ls, p) {
     let (res = true) {
         for ((cst define q oper value) in sh:getConstraint(sh:sparqlvalid, shape, sh)) {  
             xt:print("sparql:", define, oper, value, q);
             for (s in dt:list(ls)) {
                 let (suc = coalesce(
-                    if (isbound, 
                         sh:sparqlvalidp(shape, sh, cst, define, q, vis, s, p, oper, value),
-                        sh:sparqlvalidp(shape, sh, cst, define, q, vis, s, p, oper, value)),
                         false) ) {
                         if (suc, true, set(res = false))
                     }

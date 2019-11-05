@@ -49,7 +49,7 @@ function sh:pathcore(shape, sh, vis, nodeList) {
     let (res = true) {
         for ((cst path) in sh:getConstraint(sh:pathcore, shape, sh)) {
             if (sh:trace(), xt:print("core path:", sh, nodeList), true); 
-            let (suc = coalesce(sh:path(shape, cst, vis, nodeList, path, st:null, false), false)) {
+            let (suc = coalesce(sh:path(shape, cst, vis, nodeList, path), false)) {
                 if (suc, true, set(res = false))
             }
         } ;
@@ -62,7 +62,7 @@ function sh:booleancore(shape, sh, vis, nodeList) {
     let (res = true) {
         for ((bool cst) in sh:getConstraint(sh:booleancore, shape, sh)) {
             if (sh:trace(), xt:print("core boolean:", sh, nodeList), true); 
-            let (suc = coalesce(funcall(msh:fun(bool), shape, sh, cst, vis, nodeList), false)) {
+            let (suc = coalesce(funcall(msh:fun(bool), bool, shape, sh, cst, vis, nodeList), false)) {
                 if (suc, true, set(res = false))
             }
         } ;
@@ -163,18 +163,12 @@ function sh:booleancore(shape, sh) {
 
 
 
-
-
-
 function msh:fun(name) {
-    if (name = sh:and,  msh:and,
-    if (name = sh:or,   msh:or, 
-    if (name = sh:xone, msh:xone,
-    msh:not)))
+    if (name = sh:not, msh:not, msh:boolean)
 }
 
-# TODO: check coalesce()
-function msh:not (shape, sh, cst, vis, ls) {
+
+function msh:not (oper, shape, sh, cst, vis, ls) {
         let (res = true) {
             for (s in dt:list(ls)) {
                 let (suc = coalesce(! sh:core(shape, cst, false, s), false)) {
@@ -187,25 +181,12 @@ function msh:not (shape, sh, cst, vis, ls) {
 }
 
 
-
-function msh:and (shape, sh, bool, vis, ls) {
-    msh:boolean(sh:and, shape, sh, bool, vis, ls)
-}
-
-function msh:or (shape, sh, bool, vis, ls) {
-    msh:boolean(sh:or, shape, sh, bool, vis, ls)
-}
-
-function msh:xone (shape, sh, bool, vis, ls) {
-    msh:boolean(sh:xone, shape, sh, bool, vis, ls)
-}
-
-
-# oper = sh:and | sh:or 
-function msh:boolean (oper, shape, sh, bool, vis, ls) {
+# oper = sh:and | sh:or | sh:xone
+function msh:boolean (oper, shape, sh, cst, vis, ls) {
     let (res = true) {
         for (s in dt:list(ls)) {
-            let (suc = msh:basic (oper, shape, sh, bool, vis, s)) {
+            let (suc = coalesce(funcall(oper, shape, sh:getConstraint(sh:coreboolean, shape, cst), s), false)) {
+                sh:report(oper, sh, shape, s, st:null, s, suc, vis);
                 if (suc, true, set (res = false))
             }
         } ;
@@ -213,38 +194,26 @@ function msh:boolean (oper, shape, sh, bool, vis, ls) {
     }
 }
 
-function msh:basic (oper, shape, sh, bool, vis, s) {
-    let (suc = coalesce(funcall(oper, bool, s, shape), false)){
-        sh:report(oper, sh, shape, s, st:null, s, suc, vis);
-        return (suc)
-    }
-}
 
-
-
-
-# used by core
 # count fail
-function xsd:boolean sh:and(and, s, dt:graph shape){
-    (sh:bool(and, s, shape, 0, 1) = 0)
+function xsd:boolean sh:and(shape, cst, s){
+    (sh:bool(shape, cst, s, 0, 1) = 0)
 }
 
-# used by core
 # count success
-function xsd:boolean sh:or(or, s, dt:graph shape){
-    (sh:bool(or, s, shape, 1, 0) > 0)
+function xsd:boolean sh:or(shape, cst, s){
+    (sh:bool(shape, cst, s, 1, 0) > 0)
 }
 
-# used by core
 # count success
-function xsd:boolean sh:xone(or, s, dt:graph shape){
-    (sh:bool(or, s, shape, 1, 0) = 1)
+function xsd:boolean sh:xone(shape, cst, s){
+    (sh:bool(shape, cst, s, 1, 0) = 1)
 }
 
-function xsd:integer sh:bool(sh:NodeShape ?sh, ?s, dt:graph ?shape, xsd:integer ?suc, xsd:integer ?fail){
-   let (cc = 0) {
-        for (cst in sh:getConstraint(sh:coreboolean, shape, sh)) {
-            let (res = sh:core(shape, cst, false, xt:list(s))) 
+function xsd:integer sh:bool(shape, cst, s, xsd:integer suc, xsd:integer fail){
+   let (cc = 0, nodeList = xt:list(s)) {
+        for (sh in cst) {
+            let (res = sh:core(shape, sh, false, nodeList)) 
             {
                  set (cc = cc +  if (res, suc, fail))  
             }
@@ -254,12 +223,12 @@ function xsd:integer sh:bool(sh:NodeShape ?sh, ?s, dt:graph ?shape, xsd:integer 
 }
 
 
-function sh:coreboolean(shape, sh) {
+function sh:coreboolean(shape, cst) {
      let ( 
-        SELECT ?sh  ?shape (aggregate(?cst) as ?list)
+        SELECT ?cst  ?shape (aggregate(?sh) as ?list)
 		WHERE {
             graph ?shape { 
-                ?sh rdf:rest*/rdf:first ?cst
+                ?cst rdf:rest*/rdf:first ?sh
             } } ) {  
             return (list)
         }

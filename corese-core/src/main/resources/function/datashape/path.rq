@@ -9,9 +9,6 @@ prefix msh: <http://ns.inria.fr/shacl/>
 
 @import <sparql.rq>
 
-function sh:path(shape, sh, vis, nodeList, p) {
-    sh:path(shape, sh, vis, nodeList, p, st:null, false)
-}
 
 #
 # shape: shacl graph
@@ -19,16 +16,15 @@ function sh:path(shape, sh, vis, nodeList, p) {
 # vis: true if report is needed
 # nodeList:  list of target nodes of shape sh
 # path: path expression
-# value: value to be checked when isbound=true
 # 
-function sh:path(shape, sh, vis, nodeList, path, value, isbound) {
+function sh:path(shape, sh, vis, nodeList, path) {
     if (sh:trace(), xt:print("path:", nodeList, path), true);
-  let (b1 = sh:path1(shape, sh, vis, nodeList, path, value, isbound), 
-       b2 = sh:path2(shape, sh, vis, nodeList, path, value, isbound), 
-       b3 = sh:path3(shape, sh, vis, nodeList, path, value, isbound),
-       b4 = sh:pathpattern(shape, sh, vis, nodeList, path, value, isbound),
-       b5 = sh:sparqlvalid(shape, sh, vis, nodeList, path, value, isbound),
-       b6 =      sh:sparql(shape, sh, vis, nodeList, path, value, isbound)
+  let (b1 = sh:path1(shape, sh, vis, nodeList, path), 
+       b2 = sh:path2(shape, sh, vis, nodeList, path), 
+       b3 = sh:path3(shape, sh, vis, nodeList, path),
+       b4 = sh:pathpattern(shape, sh, vis, nodeList, path),
+       b5 = sh:sparqlvalid(shape, sh, vis, nodeList, path),
+       b6 =      sh:sparql(shape, sh, vis, nodeList, path)
        ) {
        return (b1 && b2 && b3 && b4 && b5 && b6)
     }
@@ -36,17 +32,16 @@ function sh:path(shape, sh, vis, nodeList, path, value, isbound) {
 
 
 #
-# bound = true -> value is bound
 # nodeList: target node list or target node (when inside boolean operator)
 # p: the path
 # oper=sh:nodeKind ; val=sh:IRI
 #
-function sh:path1(shape, sh, vis, nodeList, p, value, isbound) {
+function sh:path1(shape, sh, vis, nodeList, p) {
     let (res = true) {
         for ((oper val) in sh:getConstraint(sh:path1, shape, sh)) {
             #xt:print("path:", oper, val, p, nodeList);
             for (s in dt:list(nodeList)) {
-                for (o in (if (isbound, xt:list(value), sh:path(shape, s, p)))) {
+                for (o in sh:path(shape, s, p)) {
                     let (suc = coalesce(
                         if (oper = sh:functioncst, 
                                 funcall(val, shape, sh, s, p, o), 
@@ -66,7 +61,7 @@ function sh:path1(shape, sh, vis, nodeList, p, value, isbound) {
 }
 
 
-function sh:path2(shape, sh, vis, nodeList, p, value, isbound) {
+function sh:path2(shape, sh, vis, nodeList, p) {
     let (res = true) {
         for ((oper val disjoint amin amax) in sh:getConstraint(sh:path2, shape, sh)) {
             for (s in dt:list(nodeList)) {
@@ -84,14 +79,11 @@ function sh:path2(shape, sh, vis, nodeList, p, value, isbound) {
 }
 
 
-function sh:path3(shape, sh, vis, nodeList, p, value, isbound) {
+function sh:path3(shape, sh, vis, nodeList, p) {
     let (res = true) {
         for ((oper val) in sh:getConstraint(sh:path3, shape, sh)) {
             for (s in dt:list(nodeList)) {
-                let (suc = coalesce(
-                    if (isbound, 
-                        funcall(oper, shape, sh, vis, s, p, val, value),
-                        funcall(oper, shape, sh, vis, s, p, val) ) , false)) {
+                let (suc = coalesce(funcall(oper, shape, sh, vis, s, p, val),   false)) {
                     if (! suc) {
                         set(res = false) 
                     }
@@ -103,11 +95,11 @@ function sh:path3(shape, sh, vis, nodeList, p, value, isbound) {
 }
 
 # sh:cstpattern defined in constraint.rq
-function sh:pathpattern (shape, sh, vis, nodeList, p, value, isbound) {
+function sh:pathpattern (shape, sh, vis, nodeList, p) {
     let (res = true) {
         for ((oper flag) in sh:getConstraint(sh:cstpattern, shape, sh)) {  
             for (subject in dt:list(nodeList)) { 
-                for (node in if (isbound, dt:list(value), sh:path(shape, subject, p))) {
+                for (node in sh:path(shape, subject, p)) {
                     let (suc = !isBlank(node) && coalesce(
                             if (isURI(flag), regex(node, oper), regex(node, oper, flag)),
                             false)) {    
@@ -125,11 +117,11 @@ function sh:pathpattern (shape, sh, vis, nodeList, p, value, isbound) {
 
 
 # sh:cstsparql defined in constraint.rq
-function sh:sparql(shape, sh, vis, nodeList, p, value, isbound) {
+function sh:sparql(shape, sh, vis, nodeList, p) {
     let (suc = true) {
         for ((cst define q mes) in sh:getConstraint(sh:cstsparql, shape, sh)) {  
             for (node in dt:list(nodeList)) {
-                for (object in if (isbound, dt:list(value), sh:path(shape, node, p))) { 
+                for (object in sh:path(shape, node, p)) { 
                         if (sh:trace(), xt:print("path sparql:", node, p, object, q), true);
                         let (res = sh:mysparql(concat(define, q), sh, cst, shape, node, object, vis, 
                             coalesce(mes, st:null), bound(mes))) {
@@ -190,7 +182,8 @@ function sh:path3(shape, sh) {
     let (select ?shape ?sh (aggregate(xt:list(?oper, ?val)) as ?list) where {
         graph ?shape {  
             values ?oper { 
-                sh:equals sh:disjoint sh:and sh:or sh:xone sh:not
+                sh:equals sh:disjoint 
+                sh:and sh:or sh:xone sh:not
                 sh:maxCount sh:minCount
                 sh:hasValue sh:uniqueLang sh:lessThan sh:lessThanOrEquals
             }
@@ -465,12 +458,14 @@ function sh:equal (shape, sh, vis, s, p, q, o, l) {
 
 
 
-
+#
+# Boolean operators 
+#
 
 function sh:not (shape, sh, vis, s, p, cst) {
     let (res = true) {
         for (o in sh:path(shape, s, p)) {
-            let (suc = ! sh:path(shape, cst, false, s, p, o, true)) {
+            let (suc = ! sh:core(shape, cst, false, xt:list(o))) { 
                 sh:report(sh:not, sh, shape, s, p, o, suc, vis);
                 set (res = res && suc)
             }
@@ -479,24 +474,40 @@ function sh:not (shape, sh, vis, s, p, cst) {
     }
 }
 
-
-function sh:and (shape, sh, vis, s, p, and) {
-    msh:boolean (sh:and, shape, sh, vis, s, p, and)
-}
-
-function sh:or (shape, sh, vis, s, p, and) {
-    msh:boolean (sh:or, shape, sh, vis, s, p, and)
-}
-
-function sh:xone (shape, sh, vis, s, p, and) {
-    msh:boolean (sh:xone, shape, sh, vis, s, p, and)
-}
-
-function msh:boolean (oper, shape, sh, vis, s, p, and) {
-    let (res = true) {
+#
+# basic sh:and sh:or sh:xone defined in core.rq
+# cst is the bnode start list of shapes of boolean shape sh
+# sh sh:and cst where cst = (sh1 .. shn)
+#
+function sh:and (shape, sh, vis, s, p, cst) {
+    let (res = true, shList = sh:getConstraint(sh:pathboolean, shape, cst)) {
         for (o in sh:path(shape, s, p)) {
-            let (suc = coalesce(funcall(oper, and, s, p, o, shape), false)) { 
-                if (suc, true, sh:report(oper, sh, shape, s, p, o, suc, vis));
+            let (suc = coalesce(sh:and(shape, shList, o), false)) { 
+                if (suc, true, sh:report(sh:and, sh, shape, s, p, o, suc, vis));
+                set (res = res && suc)
+            }
+        };
+        return (res)
+    }
+}
+
+function sh:or (shape, sh, vis, s, p, cst) {
+    let (res = true, shList = sh:getConstraint(sh:pathboolean, shape, cst)) {
+        for (o in sh:path(shape, s, p)) {
+            let (suc = coalesce(sh:or(shape, shList, o), false)) { 
+                if (suc, true, sh:report(sh:or, sh, shape, s, p, o, suc, vis));
+                set (res = res && suc)
+            }
+        };
+        return (res)
+    }
+}
+
+function sh:xone (shape, sh, vis, s, p, cst) {
+    let (res = true, shList = sh:getConstraint(sh:pathboolean, shape, cst)) {
+        for (o in sh:path(shape, s, p)) {
+            let (suc = coalesce(sh:xone(shape, shList, o), false)) { 
+                if (suc, true, sh:report(sh:xone, sh, shape, s, p, o, suc, vis));
                 set (res = res && suc)
             }
         };
@@ -505,89 +516,25 @@ function msh:boolean (oper, shape, sh, vis, s, p, and) {
 }
 
 
-function sh:not (shape, sh, vis, s, p, cst, o) {
-    let (l = sh:path(shape, s, p)) {
-        if (xt:member(o, l)) {
-            let (suc = ! sh:path(shape, cst, false, s, p, o, true)) {
-                sh:report(sh:not, sh, shape, s, p, o, suc, vis);
-                return(suc)
-            }
-        } ;
-        return (true)
-    }
-}
 
 
-function sh:and (shape, sh, vis, s, p, and, o) {
-    msh:boolean (sh:and, shape, sh, vis, s, p, and, o)
-}
-
-function sh:or (shape, sh, vis, s, p, and, o) {
-    msh:boolean (sh:or, shape, sh, vis, s, p, and, o)
-}
-
-function sh:xone (shape, sh, vis, s, p, and, o) {
-    msh:boolean (sh:xone, shape, sh, vis, s, p, and, o)
-}
-
-function msh:boolean (oper, shape, sh, vis, s, p, and, o) {
-    let (l = sh:path(shape, s, p)) {
-        if (xt:member(o, l)) {
-            let (suc = coalesce(funcall(oper, and, s, p, o, shape), false)) { 
-                sh:report(oper, sh, shape, s, p, o, suc, vis);
-                return (suc)
-            }
-        };
-        return (true)
-    }
-}
-
-
-
-
-
-# used by predicate/path 
-# count failure
-function xsd:boolean sh:and(and, s, p, o, dt:graph shape){
-    (sh:bool(and, s, p, o, shape, 0, 1) = 0)
-}
-
-# used by predicate/path 
-# count success
-function xsd:boolean sh:or(or, s, p, o, dt:graph shape){
-    (sh:bool(or, s, p, o, shape, 1, 0)  > 0)
-}
-
-# used by predicate/path 
-# count success
-function xsd:boolean sh:xone(or, s, p, o, dt:graph shape){
-    (sh:bool(or, s, p, o, shape, 1, 0)  = 1)
-}
-
-function xsd:integer sh:bool(sh:NodeShape ?sh, ?s, ?p, ?o, dt:graph ?shape, xsd:integer ?suc, xsd:integer ?fail) {
-   let (cc = 0) {
-        for ((cst prop) in sh:getConstraint(sh:pathboolean, shape, sh)) {
-            let (res = if (prop, sh:core(shape, cst, false, xt:list(o)),
-                                 sh:path(shape, cst, false, s, p, o, true))) 
-            {
-                 set (cc = cc +  if (res, suc, fail))  
-            }
-        } ;
-        return (cc)
-    }
-}
-
-function sh:pathboolean(shape, sh) {
+#
+# cst is the bnode start of the list of shapes of the boolean operator
+# and (sh1 .. shn) ; cst = (sh1 .. shn)
+# Return the list of shapes of the boolean operator
+# boolean prop = true if the constraint is a sh:property shape
+#
+function sh:pathboolean(shape, cst) {
      let ( 
-        SELECT ?sh  ?shape (aggregate(xt:list(?cst, bound(?prop))) as ?list)
+        SELECT ?cst  ?shape (aggregate(?sh) as ?list)
 		WHERE {
             graph ?shape { 
-                ?sh rdf:rest*/rdf:first ?cst
-				optional { ?cst sh:property|sh:path|sh:closed ?prop }
+                ?cst rdf:rest*/rdf:first ?sh
             } } ) { 
             return (list)
         }
 }
+
 
 
 

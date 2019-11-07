@@ -130,8 +130,8 @@ function sh:start(shape) {
     set(validationReport = query(construct where {})) ;
     set(bnodeid = bnode()) ;
     set(mapmap = xt:map()) ;
-    set(recordmapsuc = xt:map());
-    set(recordmapfail = xt:map());
+    set(recordmapsuc  = coalesce(recordmapsuc,  xt:map()));
+    set(recordmapfail = coalesce(recordmapfail, xt:map()));
     coalesce(sh:trace(), sh:trace(!true));
     sh:init();
     if (shape = xt:graph(), sh:sibling(), xt:focus(shape, sh:sibling())) ;

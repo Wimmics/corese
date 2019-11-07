@@ -56,6 +56,7 @@ public class CoreseMap extends CoreseExtension {
         return map;
     }
     
+    @Override
     public Map<IDatatype, IDatatype> getMap() {
         return map;
     }

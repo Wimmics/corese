@@ -9,6 +9,7 @@ import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.Loopable;
 import fr.inria.corese.kgram.api.core.PointerType;
 import java.util.List;
+import java.util.Map;
 
 /**
  * This is an interface for all Corese datatypes.<br />
@@ -95,7 +96,12 @@ public interface IDatatype
     List<IDatatype> getValueList();
     IDatatype getValue(String var, int n);
     IDatatype toList();
-    IDatatypeList getList();  
+    IDatatypeList getList();
+    
+    default Map<IDatatype, IDatatype> getMap() {
+        return null;
+    }
+    
     default IDatatype member(IDatatype elem) {
         return null;
     }

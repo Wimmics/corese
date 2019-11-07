@@ -63,11 +63,18 @@ public class Shacl {
         setShacl(g);
     }
     
-    Binding input() {
+    public Binding input() {
         if (getInput() == null) {
             setInput(Binding.create());
         }
         return getInput();
+    }
+    
+    public Binding output() {
+        if (getBind() == null) {
+            setBind(Binding.create());
+        }
+        return getBind();
     }
     
     /**
@@ -135,7 +142,7 @@ public class Shacl {
      * Display list of constraints that have been evaluated
      */
     public void trace() throws EngineException {
-        IDatatype dt = getBind().getVariable(MAPMAP_VAR);
+        IDatatype dt = getVariable(MAPMAP_VAR);
         trace(dt);
     }
     
@@ -143,13 +150,15 @@ public class Shacl {
      * Display additional information about evaluation
      */
     public void tracerecord() throws EngineException {
-        IDatatype suc  = getBind().getVariable(TRACEMAPSUC_VAR);
-        IDatatype fail = getBind().getVariable(TRACEMAPFAIL_VAR);
+        IDatatype suc  = getVariable(TRACEMAPSUC_VAR);
+        IDatatype fail = getVariable(TRACEMAPFAIL_VAR);
         tracerecord(suc);
         tracerecord(fail);
     }  
 
-
+    public IDatatype getVariable(String name) {
+        return getBind().getVariable(name);
+    }
     
     // _________________________________________________
     

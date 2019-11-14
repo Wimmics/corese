@@ -21,19 +21,23 @@ public class Shacl {
 
     
     static final Logger logger = Logger.getLogger(Shacl.class.getName());
+    static final String SH = NSManager.SHACL;
+    private static final String TRACE_VAR  = "?shaclTrace";
     public static final String TRACEMAPSUC_VAR = "?recordmapsuc";
     public static final String TRACEMAPFAIL_VAR = "?recordmapfail";
     public static final String MAPMAP_VAR = "?mapmap";
-    private static final String TRACE_VAR  = "?shaclTrace";
-
-    static final String SHACL   = NSManager.SHAPE+"shacl";
-    static final String SHAPE   = NSManager.SHAPE+"shaclshape";
-    static final String NODE    = NSManager.SHAPE+"shaclnode";
-    static final String FOCUS   = NSManager.SHAPE+"focuslist";
-    static final String CONFORM = NSManager.SHAPE+"conforms";
-    static final String TRACE   = NSManager.SHAPE+"trace";
-    static final String TRACERECORD   = NSManager.SHAPE+"tracerecord";
-    static final String DEF     = NSManager.SHAPE+"def";
+    public static final String SETUP_VAR  = "?setup";
+    public static final String SETUP_DETAIL = SH + "detail";
+    public static final String SETUP_TYPE   = SH + "type";
+    
+    static final String SHACL   = SH+"shacl";
+    static final String SHAPE   = SH+"shaclshape";
+    static final String NODE    = SH+"shaclnode";
+    static final String FOCUS   = SH+"focuslist";
+    static final String CONFORM = SH+"conforms";
+    static final String TRACE   = SH+"trace";
+    static final String TRACERECORD   = SH+"tracerecord";
+    static final String DEF     = SH+"def";
     
     private Graph graph;
     private Graph shacl;

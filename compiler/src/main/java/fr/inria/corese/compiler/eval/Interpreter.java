@@ -439,16 +439,17 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         Node gNode = env.getGraphNode();
         Eval currentEval = getEval(env);               
         Mappings map = null;
+        
+        // in case of // evaluation of a pattern
+        synchronized (exp) {
+            if (exp.isSystem()) {
+                // system generated for LDScript nested query 
+                // e.g. for (?m in select where) {}
+                // is compiled with internal system exists 
+                // for (?m in exists {select where}){}
+                Exp sub = pat.get(0).get(0);
 
-        if (exp.isSystem()) {
-            // system generated for LDScript nested query 
-            // e.g. for (?m in select where) {}
-            // is compiled with internal system exists 
-            // for (?m in exists {select where}){}
-            Exp sub = pat.get(0).get(0);
-
-            if (sub.isQuery()) {
-                //synchronized (sub) {
+                if (sub.isQuery()) {
                     Query qq = sub.getQuery();
                     qq.setFun(true);
                     if (qq.isConstruct() || qq.isUpdate()) {
@@ -467,24 +468,20 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                             return null;
                         }
                         map = eval.subEval(qq, gNode, Stack.create(sub), 0);
-                        // PB: below, memory is initialized with outer query, not with qq
-//                    eval.setSubEval(false);
-//                    map = eval.query(gNode==null?null:qq.getGraphNode(gNode), gNode==null?null:env.getNode(gNode), qq);
                     }
-               // }
+                } else {
+                    // never happen
+                    return null;
+                }
             } else {
-                // never happen
-                //map = eval.subEval(q, gNode, Stack.create(pat), 0);
-                return null;
+                // SPARQL exists {}
+                Eval eval = createEval(currentEval, exp, env, p);
+                if (eval == null) {
+                    return null;
+                }
+                eval.setLimit(1);
+                map = eval.subEval(q, gNode, Stack.create(pat), 0);
             }
-        } else {
-            // SPARQL exists {}
-            Eval eval = createEval(currentEval, exp, env, p);
-            if (eval == null) {
-                return null;
-            }
-            eval.setLimit(1);
-            map = eval.subEval(q, gNode, Stack.create(pat), 0);
         }
 
         boolean b = map.size() > 0;

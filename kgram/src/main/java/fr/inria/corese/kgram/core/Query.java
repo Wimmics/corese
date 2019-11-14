@@ -1302,6 +1302,8 @@ public class Query extends Exp implements Graphable {
         for (Query q : getQueries()) {
             q.complete(prod);
         }
+        
+        getSelect();
     }
 
     /**

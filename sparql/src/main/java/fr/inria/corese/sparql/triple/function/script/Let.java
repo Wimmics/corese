@@ -1,8 +1,6 @@
 package fr.inria.corese.sparql.triple.function.script;
 
 import fr.inria.corese.kgram.api.core.ExprType;
-import static fr.inria.corese.kgram.api.core.ExprType.QUERY;
-import static fr.inria.corese.kgram.api.core.ExprType.XT_GET;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -134,11 +132,20 @@ public class Let extends Statement {
         b.allocation(this);
         int i = -1; // -1 because pop before current i
         for (Expression decl : getDeclaration()) {
-            IDatatype val = getDefinition(decl).eval(eval, b, env, p);
+            Expression exp = getDefinition(decl);
+            IDatatype val = exp.eval(eval, b, env, p);
             if (val == null) {
-                // pop when i >= 0 ; when i = -1 there is nothing to pop
-                desallocate(b, i);
-                return null;
+                switch (exp.oper())  {
+                    case ExprType.XT_GEN_GET:
+                        // let (select * where {}) with no solution
+                        // access to variables do not raise an error
+                        // they can be trapped by bound()
+                        break;
+                    // pop when i >= 0 ; when i = -1 there is nothing to pop
+                    default:
+                        desallocate(b, i);
+                        return null;
+                }
             } else if (val == DatatypeMap.UNBOUND) {
                 val = null;
             }

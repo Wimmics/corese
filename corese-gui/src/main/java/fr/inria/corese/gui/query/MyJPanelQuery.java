@@ -753,6 +753,10 @@ public final class MyJPanelQuery extends JPanel {
             i++;
         }
     }
+    
+    public void display(String text) {
+        textAreaXMLResult.append(text);
+    }
 
     private ActionListener createListener(final MainFrame coreseFrame, final boolean isTrace) {
 

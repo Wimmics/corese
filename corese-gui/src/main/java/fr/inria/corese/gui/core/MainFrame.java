@@ -76,9 +76,10 @@ public class MainFrame extends JFrame implements ActionListener {
     /**
      *
      */
+    static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-10-16";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-11-11";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -492,7 +493,7 @@ public class MainFrame extends JFrame implements ActionListener {
         itrig = defItem("Trig", DEFAULT_TRIG_QUERY);
         ispin = defItem("SPIN", DEFAULT_SPIN_QUERY);
         iowl = defItem("OWL", DEFAULT_OWL_QUERY);
-        itypecheck = defItem("Shape", DEFAULT_TYPECHECK_QUERY);
+        itypecheck = defItem("SHACL", DEFAULT_TYPECHECK_QUERY);
 
         loadAndRunRule = new JMenuItem("Load&Run Rule");
         loadAndRunRule.addActionListener(this);
@@ -1713,6 +1714,17 @@ public class MainFrame extends JFrame implements ActionListener {
         coreseFrame.setStyleSheet();
         coreseFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MyJPanelListener.listLoadedFiles.setCellRenderer(new MyCellRenderer());
-
+        singleton = coreseFrame;
+    }
+    
+    public void show(String text) {
+        getPanel().display(text);
+    }
+    
+    public static void display(String text) {
+        if (singleton != null) {
+            singleton.appendMsg(text);
+            singleton.appendMsg("\n");
+        }
     }
 }

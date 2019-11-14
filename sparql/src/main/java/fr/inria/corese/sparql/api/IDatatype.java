@@ -261,40 +261,20 @@ public interface IDatatype
             throws CoreseDatatypeException;
     
     IDatatype eq(IDatatype dt);
-    IDatatype neq(IDatatype dt);
+    IDatatype ne(IDatatype dt);
     IDatatype ge(IDatatype dt);
     IDatatype gt(IDatatype dt);
     IDatatype lt(IDatatype dt);
     IDatatype le(IDatatype dt);
+    IDatatype neq(IDatatype dt);
     
-    /**
-     *
-     * @param iod
-     * @return iod.getValue() + this.getValue()
-     */
-    IDatatype plus(IDatatype iod);
-
-    /**
-     *
-     * @param iod
-     * @return iod.getValue() - this.getValue()
-     */
-    IDatatype minus(IDatatype iod);
-    IDatatype minus(long val);
-
-    /**
-     *
-     * @param iod
-     * @return iod.getValue() * this.getValue()
-     */
-    IDatatype mult(IDatatype iod);
-
-    /**
-     *
-     * @param iod
-     * @return iod.getValue() / this.getValue()
-     */
-    IDatatype div(IDatatype iod);
+   
+    IDatatype plus(IDatatype dt);   
+    IDatatype minus(IDatatype dt);
+    IDatatype mult(IDatatype dt);    
+    IDatatype divis(IDatatype dt);
+    IDatatype div(IDatatype dt);
+    IDatatype minus(long val);    
 
     /**
      * ************************************************************************

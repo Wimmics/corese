@@ -623,6 +623,7 @@ public class Processor {
 		defoper("!", 	ExprType.NOT);
 		defoper(Term.STAR, ExprType.STAR);
 				
+		defoper("safe", ExprType.SAFE);
 		defoper(BOUND, ExprType.BOUND);
 		defoper(COUNT, 	ExprType.COUNT);
 		defoper(MIN, 	ExprType.MIN);

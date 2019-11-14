@@ -215,6 +215,7 @@ public class Term extends Expression {
             case ExprType.IF:
                 return new IfThenElseTerm(name);
             case ExprType.BOUND:
+            case ExprType.SAFE:
                 return new Bound(name);
             case ExprType.COALESCE:
                 return new Coalesce(name);

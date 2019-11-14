@@ -19,6 +19,8 @@ import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Super class for Java extension function class 
@@ -49,6 +51,7 @@ public class Core extends PluginImpl implements FunctionEvaluator {
     
     public Core() {
         functionName = new HashMap<>();
+        defFunction();
     }
     
     static HashMap<String, String> getPrefix() {
@@ -76,6 +79,10 @@ public class Core extends PluginImpl implements FunctionEvaluator {
             Arrays.fill(sig, IDatatype.class);
             signature[i] = sig;
         }
+    }
+    
+    void defFunction() {
+        functionName.put(NSManager.EXT+"member", "member");
     }
 
     @Override
@@ -229,11 +236,31 @@ public class Core extends PluginImpl implements FunctionEvaluator {
             System.out.println(i++ + " " + map.get(key));
         }
     }
+   
+   public IDatatype safe(IDatatype dt) {
+       return (dt == null) ? FALSE : TRUE;
+   }
 
-
+   // rq:gt -> gt
+   String datatypeName(String name) {
+       if (name.startsWith(NSManager.SPARQL)) {
+           return name.substring(NSManager.SPARQL.length());
+       }
+       return null;
+   }
+   
     @Override
     public IDatatype funcall(IDatatype fun, IDatatype... ldt) {
-        String name = javaName(fun);
+        String name = datatypeName(fun.getLabel());
+        if (ldt.length>0 && name != null) {
+            try {
+                IDatatype res = funcalldt(name, ldt);
+                return res;
+            } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+                // continue
+            }
+        }
+        name = javaName(fun);
         try {
             Method m = this.getClass().getMethod(name, signature(ldt.length));
             return (IDatatype) m.invoke(this, ldt);
@@ -244,6 +271,23 @@ public class Core extends PluginImpl implements FunctionEvaluator {
             trace(ldt);
         }
         return null;
+    }
+    
+    /**
+     * funcall(rq:gt, x, y) -> x.gt(y)
+     */
+    public IDatatype funcalldt(String name, IDatatype... ldt) 
+            throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
+        IDatatype[] param = new IDatatype[ldt.length-1];
+        for (int i = 0; i<param.length; i++) {
+            param[i] = ldt[i+1];
+        }
+        Method m = ldt[0].getClass().getMethod(name, signature(param.length));
+        return (IDatatype) m.invoke(ldt[0], param);
+    }
+    
+    public IDatatype apply(IDatatype fun, IDatatype dt) {
+        return funcall(fun, DatatypeMap.toArray(dt));
     }
 
     Class[] signature(int n) {

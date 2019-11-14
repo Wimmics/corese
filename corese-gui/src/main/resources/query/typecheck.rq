@@ -1,8 +1,14 @@
-# shape for shape
+# SHACL Interpreter
+ 
+@public @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq>
 template {
    xt:turtle(?g)
 }
 where {
-   #bind (xt:transformer(st:ds, true) as ?d)
-   bind (xt:shapeGraph(<http://www.w3.org/ns/shacl-shacl>) as ?g)
+   #bind (sh:trace(true) as ?d)
+   #bind (sh:shaclshape(shapeNode) as ?g)
+   #bind (sh:shaclshape(shapeNode, targetNode) as ?g)
+   #bind (sh:shaclnode(targetNode) as ?g)
+   #bind (sh:setup(sh:callback, us:callback) as ?b1)
+   bind (sh:shacl() as ?g)
 }

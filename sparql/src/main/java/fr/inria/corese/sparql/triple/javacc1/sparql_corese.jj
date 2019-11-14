@@ -2142,6 +2142,7 @@ Expression BuiltInCall(Exp stack) : { ExpressionList el; Expression exp1 = null,
         | t1 = <IS_BLANK> | t1 = <IS_LITERAL> 
         | t1 = <IS_NUMERIC> 
         | t1 = <IS_EXTENSION> 
+        | t1 = <IS_SAFE>
         | t1 = <IS_UNDEFINED>
         | t1 = <IS_WELLFORMED>
         | t1 = <STRLEN> | t1 = <UCASE> | t1 = <LCASE> | t1 = <ENCODE_FOR_URI>
@@ -2958,6 +2959,7 @@ TOKEN [IGNORE_CASE] :
 | <IS_LITERAL: "isLiteral" >
 | <IS_NUMERIC: "isNumeric">
 | <IS_EXTENSION: "isExtension">
+| <IS_SAFE: "safe">
 | <IS_UNDEFINED: "isUndefined">
 | <IS_WELLFORMED: "isWellFormed">
 

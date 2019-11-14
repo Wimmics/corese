@@ -148,17 +148,8 @@ function sh:pathcore(shape, sh) {
 
 
 function sh:booleancore(shape, sh) {
-    let (select * (aggregate(xt:list(?bool, ?cst)) as ?list) where {
-        graph ?shape {  
-            values ?bool { sh:and sh:or sh:xone sh:not } 
-            ?sh ?bool ?cst
-        }
-    } ) {
-        return (?list)
-    }
+    sh:getGenericShape(shape, sh, sh:getShape(sh:boolean))
 }
-
-
 
 
 

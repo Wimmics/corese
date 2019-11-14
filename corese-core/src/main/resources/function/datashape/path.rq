@@ -23,7 +23,7 @@ function sh:path(shape, sh, vis, nodeList, path) {
        b2 = sh:path2(shape, sh, vis, nodeList, path), 
        b3 = sh:path3(shape, sh, vis, nodeList, path),
        b4 = sh:pathpattern(shape, sh, vis, nodeList, path),
-       b5 = sh:sparqlvalid(shape, sh, vis, nodeList, path),
+       b5 = sh:pathextension(shape, sh, vis, nodeList, path),
        b6 =      sh:sparql(shape, sh, vis, nodeList, path)
        ) {
        return (b1 && b2 && b3 && b4 && b5 && b6)
@@ -32,7 +32,7 @@ function sh:path(shape, sh, vis, nodeList, path) {
 
 
 #
-# nodeList: target node list or target node (when inside boolean operator)
+# nodeList: target node list 
 # p: the path
 # oper=sh:nodeKind ; val=sh:IRI
 #
@@ -43,11 +43,7 @@ function sh:path1(shape, sh, vis, nodeList, p) {
             for (s in dt:list(nodeList)) {
                 for (o in sh:path(shape, s, p)) {
                     for ((oper val) in cstList) {
-                        let (suc = coalesce(
-                                if (oper = sh:functioncst, 
-                                        funcall(val, shape, sh, s, p, o), 
-                                        funcall(oper, shape, o, val)), 
-                                false)) {
+                        let (suc = coalesce(funcall(oper, shape, o, val), false)) {
                                 if (oper in (sh:property), true, 
                                         sh:report(oper, sh, if (oper = sh:node, val, st:null), shape, s, p, o, suc, vis)) ;
                                 if (! suc) {
@@ -62,14 +58,37 @@ function sh:path1(shape, sh, vis, nodeList, p) {
     }
 }
 
+# sh:function 
+function sh:pathextension(shape, sh, vis, nodeList, p) {
+    let (res = true, cstList = sh:getConstraint(sh:pathextension, shape, sh)) {
+        if (xt:size(cstList) > 0) {
+            #xt:print("path:", oper, val, p, nodeList);
+            for (s in dt:list(nodeList)) {
+                for (o in sh:path(shape, s, p)) {
+                    for ((oper name value) in cstList) {
+                        let (suc = coalesce(
+                                if (oper = sh:functioncst, funcall(name, shape, sh, s, p, o), 
+                                if (bound(value), funcall(oper, name, o, value), 
+                                funcall(oper, name, o))), 
+                                false)) {
+                                sh:report(oper, sh, name, shape, s, p, o, suc, vis) ;
+                                if (! suc) {
+                                    set(res = false) 
+                                }
+                            }
+                        }
+                }
+            }
+        } ;
+        return (res)
+    }
+}
 
 function sh:path2(shape, sh, vis, nodeList, p) {
     let (res = true) {
-        for ((oper val disjoint amin amax) in sh:getConstraint(sh:path2, shape, sh)) {
+        for ((oper val) in sh:getConstraint(sh:path2, shape, sh)) {
             for (s in dt:list(nodeList)) {
-                let (suc = coalesce(                    
-                        sh:qualifiedValueShape(shape, sh, vis, s, p, val, disjoint, amin, amax) , 
-                        false) ) {
+                let (suc = coalesce(funcall(oper, shape, sh, vis, s, p, val),   false)) {
                     if (! suc) {
                         set(res = false) 
                     }
@@ -83,9 +102,11 @@ function sh:path2(shape, sh, vis, nodeList, p) {
 
 function sh:path3(shape, sh, vis, nodeList, p) {
     let (res = true) {
-        for ((oper val) in sh:getConstraint(sh:path3, shape, sh)) {
+        for ((oper val disjoint amin amax) in sh:getConstraint(sh:path3, shape, sh)) {
             for (s in dt:list(nodeList)) {
-                let (suc = coalesce(funcall(oper, shape, sh, vis, s, p, val),   false)) {
+                let (suc = coalesce(                    
+                        sh:qualifiedValueShape(shape, sh, vis, s, p, val, disjoint, amin, amax) , 
+                        false) ) {
                     if (! suc) {
                         set(res = false) 
                     }
@@ -118,52 +139,43 @@ function sh:pathpattern (shape, sh, vis, nodeList, p) {
 }
 
 
-# sh:cstsparql defined in constraint.rq
-function sh:sparql(shape, sh, vis, nodeList, p) {
-    let (suc = true) {
-        for ((cst define q mes) in sh:getConstraint(sh:cstsparql, shape, sh)) {  
-            for (node in dt:list(nodeList)) {
-                for (object in sh:path(shape, node, p)) { 
-                        if (sh:trace(), xt:print("path sparql:", node, p, object, q), true);
-                        let (res = sh:mysparql(concat(define, q), sh, cst, shape, node, object, vis, 
-                            coalesce(mes, st:null), bound(mes))) {
-                            if (res, true, set(suc = false))
-                        } 
-                    } 
-                }
-        } ;
-        return (suc)
-    }
-}
+
 
 
 # *******************************************
+
 
 #
 # Retrieve properties of constraint sh using a query, do it once
 # they are stored as a list in a map by sh:getConstraint defined in core.rq
 #
 
-function sh:path1(shape, sh) {
-    let (select ?shape ?sh (aggregate(xt:list(?oper, ?val)) as ?list) where {
-        graph ?shape { 
-        values ?oper { 
-                sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive sh:maxInclusive sh:maxExclusive 
-                sh:nodeKind sh:class 
-                sh:in sh:languageIn sh:node sh:property
-                # extension with LDScript function that returns xsd:boolean. sh:functioncst has more parameters (see sh:validURI function/datashape/operator.rq) 
-                sh:function sh:functioncst
-        }
-        ?sh ?oper ?val 
-        }
-        } 
-        
-    ) {
+function sh:getPathShape(shape, sh, shapeList) {
+    let (select ?shape ?sh ?shapeList (aggregate(xt:list(?oper, ?val)) as ?list) where {
+            graph ?shape { 
+                values ?shapeList {UNDEF}
+                values ?oper { unnest(?shapeList) }
+                ?sh ?oper ?val 
+            filter if (?oper = sh:uniqueLang, sameTerm(?val, true), true)
+            }
+        } ) {
         return(list)
     }
 }
 
+function sh:pathextension(shape, sh) {
+    sh:getShapeExtension(shape, sh, sh:getShape(sh:pathextension))
+}
+        
+function sh:path1(shape, sh) {
+    sh:getPathShape(shape, sh, sh:getShape(sh:path1))
+}
+
 function sh:path2(shape, sh) {
+    sh:getPathShape(shape, sh, sh:getShape(sh:path2))
+}
+
+function sh:path3(shape, sh) {
     let (select ?shape ?sh 
         (aggregate(xt:list(sh:qualifiedValueShape, ?qsh, 
             coalesce(disjoint, false), coalesce(?min, 0), coalesce(?max, -1))) as ?list) 
@@ -174,24 +186,6 @@ function sh:path2(shape, sh) {
                 optional { ?sh sh:qualifiedMaxCount ?max }
                 optional { ?sh sh:qualifiedValueShapesDisjoint ?disjoint }
             }
-        } ) {
-        return(list)
-    }
-}
-
-
-function sh:path3(shape, sh) {
-    let (select ?shape ?sh (aggregate(xt:list(?oper, ?val)) as ?list) where {
-        graph ?shape {  
-            values ?oper { 
-                sh:equals sh:disjoint 
-                sh:and sh:or sh:xone sh:not
-                sh:maxCount sh:minCount
-                sh:hasValue sh:uniqueLang sh:lessThan sh:lessThanOrEquals
-            }
-            ?sh ?oper ?val  
-            filter if (?oper = sh:uniqueLang, sameTerm(?val, true), true)
-        }
         } ) {
         return(list)
     }

@@ -8,56 +8,103 @@ prefix sh:   <http://www.w3.org/ns/shacl#>
 
 
 #
-# SPARQL constraint
-# focus is the focus node, val is the value of focus to be tested
-# for constraint: they are the same, for path: focus=subject ; val=object
-# Query MUST return variables: ?this ?path ?value
+# Extension
 #
-function sh:mysparql(q, sh, cst, shape, focus, val, vis, mes, hasmes) {
-    let (maps = xt:sparql(q, "$this", val)) {
-      #  if (xt:size(maps) > 0, xt:print("sparql:", maps), true);
-        for (m in maps) {
-            let ((path value) = m) {
-                if (hasmes) {
-                    let (mmes = sh:mymessage(mes, m)) {
-                        # xt:print(mmes);
-                        # suc = false
-                        sh:report(sh:sparql, sh, shape, focus, path, value, false, vis)
-                    }
-                }
-                else {
-                    # suc = false
-                    sh:report(sh:sparql, sh, shape, focus, path, value, false, vis)
-                }
-            }
-        } ;
-        # results are errors
-        return (xt:size(maps) = 0)
+
+# evaluator for sh:function [ sh:name sh:compute ; sh:value (rq:gt h:age (rq:mult 2 h:shoesize)) ]
+# exp = (rq:gt h:age (rq:mult 2 h:shoesize))
+# node = target node
+# if property node is missing, coalesce return true
+#
+function sh:evaluate(node, exp) {
+    coalesce(sh:compute(node, exp), true)
+}
+
+# exp = (rq:gt (h:age (rq:mult (2 h:shoesize))))
+# URI : return value of property of node
+# (rq:self (URI)) return URI
+# (rq:self) return node
+# 
+function sh:compute(node, exp) {
+    if (isExtension(exp)) {
+        let ((oper param) = exp) {
+            if (xt:has(mapfun, oper), 
+                funcall(xt:get(mapfun, oper), node, param), 
+                sh:compute(node, oper, param))
+        } 
+    }
+    else if (isURI(exp)) {
+        xt:value(node, exp)
+    }
+    else {
+        exp
+    }
+}
+
+function sh:defun(name, value) {
+    xt:set(mapfun, name, value)
+}
+
+function sh:defun() {
+    sh:defun(rq:or, sh:or);
+    sh:defun(rq:if, sh:if);
+    sh:defun(rq:coalesce, sh:coalesce);
+    sh:defun(rq:self, sh:self);
+    sh:defun(rq:list, sh:list) ;
+    sh:defun(rq:exist, sh:exist)
+}
+
+function sh:compute(node, oper, param) {
+     apply(oper, maplist(lambda(ee, node) { sh:compute(node, ee) }, param, node))
+}
+
+# param = (URI)
+function sh:exist(node, param) {
+    return (safe(xt:value(node, xt:get(param, 0))))
+}
+
+function sh:list(node, param) {
+     param
+}
+
+function sh:self(node, param) {
+     if (xt:size(param) = 0, node, xt:get(param, 0))
+}
+
+function sh:coalesce(node, param) {
+    if (xt:size(param) = 0) {
+        error()
+    }
+    else {
+        let ((exp | rest) = param) {
+            coalesce(sh:compute(node, exp), sh:coalesce(node, rest))
+        }
+    }
+}
+
+function sh:if(node, param) {
+    let ((test e1 e2) = param) {
+        if (sh:compute(node, test), sh:compute(node, e1), sh:compute(node, e2))
+    }
+}
+
+function sh:or(node, param) {
+    let ((e1 e2) = param) {
+        return(sh:compute(node, e1) || sh:compute(node, e2))
     }
 }
 
 
-# replace {?var} by {val} in message
-function sh:mymessage(xsd:string mes, dt:mapping m) {
-    for ((var val) in m) {
-        let (pat = concat('{', var, '}')) {
-            if (contains(mes, pat), set(mes = xt:replace(mes, pat, concat('{', val, '}'))), true)
-        }
-    } ;
-    return(mes)
-}
-
-
-
-
-function sh:function(shape, node, name) {
+function sh:function(name, node) {
     funcall(name, node)
 } 
 
+function sh:function(name, node, value) {
+    funcall(name, node, value)
+} 
 
 function sh:validURI(url) {
     let (value = xt:validURI(url)) {
-       # xt:print(url, value) ;
         return (value)
     }
 }
@@ -70,12 +117,15 @@ function sh:validURI(shape, url, any) {
 
 function sh:validURI(shape, sh, subject, path, url) {
     let (value = xt:validURI(url)) {
-      #  xt:print("validate URL:", subject, path, url, value) ;
-#        xt:print("cst:", xt:focus(shape, xt:turtle(sh)));
         return (value)
     }
 }
 
+
+
+#
+# Std 
+#
 
 function sh:count(s, p){
   let (select ?s ?p (count(*) as ?c) where { ?s ?p ?o })
@@ -146,7 +196,12 @@ function xsd:boolean sh:hasValue(shape, s, v) {
 }
 
 function xsd:boolean sh:class(?shape, ?o, ?c){
-  exists { ?o rdf:type/rdfs:subClassOf* ?c }
+    if (sh:isetup(sh:type), sh:type(?shape, ?o, ?c), 
+        exists { ?o rdf:type/rdfs:subClassOf* ?c })
+}
+
+function xsd:boolean sh:type(?shape, ?o, ?c){
+    exists { ?o rdf:type ?c }
 }
 
 
@@ -189,7 +244,7 @@ function xsd:boolean sh:languageIn(dt:graph ?shape, ?object, ?lv){
 # by default, generate no report for sh:node constraints
 # if sh:detail() generate report for sh:node constraints
 function xsd:boolean sh:node(dt:graph shape, o, cst){
-    sh:core(shape, cst, sh:detail(), o)
+    sh:core(shape, cst, sh:isetup(sh:detail), o)
 }
 
 function xsd:boolean sh:property(dt:graph shape, o, cst){

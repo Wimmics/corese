@@ -61,7 +61,7 @@ function dt:graph sh:shacl(dt:graph shape, focus) {
     let (suc = sh:eval(shape, focus)) {
         sh:success(suc);
         sh:finish() ;
-        return (validationReport)
+        return (sh:validationReport())
     }
 }
 
@@ -126,22 +126,65 @@ function sh:eval(shape, focus) {
 function sh:start(shape) {
     # transformer visitor for legacy
     st:visit(st:start, st:trace) ;
+    sh:shaclGraph(shape);
+    sh:initvariable();
+    sh:init();
+    sh:defShape();
+    sh:defun();
+    if (shape = xt:graph(), sh:sibling(), xt:focus(shape, sh:sibling())) ;
+    return (true)
+}
+
+function sh:shaclGraph(shacl) {
+    set(shaclGraph = shacl)
+}
+
+function sh:shaclGraph() {
+    return (shaclGraph) 
+}
+
+function sh:initvariable() {
     # validation report graph
     set(validationReport = query(construct where {})) ;
     set(bnodeid = bnode()) ;
     set(mapmap = xt:map()) ;
+    set(mapshape = coalesce(mapshape, xt:map())) ;
     set(recordmapsuc  = coalesce(recordmapsuc,  xt:map()));
     set(recordmapfail = coalesce(recordmapfail, xt:map()));
-    coalesce(sh:trace(), sh:trace(!true));
-    sh:init();
-    if (shape = xt:graph(), sh:sibling(), xt:focus(shape, sh:sibling())) ;
-    return (true)
+    set(mapfun = xt:map());
+    sh:setup() ; 
+    coalesce(sh:trace(), sh:trace(!true))
+}
+
+function sh:setup() {
+    set(setup = coalesce(setup, xt:map()))
+}
+
+function sh:setup(name, value) {
+    xt:set(sh:setup(), name, value)
+}
+
+function sh:setup(name) {
+    xt:get(setup, name)
+}
+
+function sh:hasetup(name) {
+    return (xt:has(setup, name))
+}
+
+function sh:isetup(name) {
+    #xt:print("setup:", name, coalesce(xt:get(setup, name), false)) ;
+    coalesce(xt:get(setup, name), false)
+}
+
+function sh:validationReport() {
+    return (validationReport)
 }
 
 # declare report graph to transformer visitor graph, use case: shape workflow
 function sh:finish() {
     #sh:tracefinish();
-    st:visit(st:trace, st:graph, validationReport) 
+    st:visit(st:trace, st:graph, sh:validationReport()) 
 }
 
 
@@ -150,23 +193,87 @@ function xsd:boolean sh:hasShape(dt:graph shape, sh:NodeShape sh, xsd:boolean vi
 }
 
 
-
-
-
-
-
-# when true, generate validation report for sh:node constraints and one report for sh:node 
-# otherwise, generate only one report for sh:node (default)
-function sh:detail(xsd:boolean bb) {
-    set(detailShapeMode = bb)
+function sh:defShape() {
+    sh:setShape(sh:path1, sh:defShapePath1()) ;
+    sh:setShape(sh:path2, sh:defShapePath2()) ;
+    sh:setShape(sh:pathextension, sh:defShapePathExtension()) ;
+    sh:setShape(sh:node1, sh:defShapeNode1()) ;
+    sh:setShape(sh:node2, sh:defShapeNode2()) ;
+    sh:setShape(sh:nodeextension, sh:defShapeNodeExtension()) ;
+    sh:setShape(sh:boolean, sh:defShapeBoolean()) 
 }
 
-function sh:detail() {
-    return (bound(detailShapeMode) && detailShapeMode)
+
+# funcall(oper, shape, o, val)
+function sh:defShapePath1() {
+    let (alist = @(sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive       
+            sh:maxInclusive sh:maxExclusive sh:nodeKind sh:in sh:languageIn sh:node 
+            sh:class sh:property
+            sh:type)) {        
+        alist 
+    }
 }
 
-#function sh:test(){ st:get(st:test, true) }
+# funcall(oper, shape, sh, vis, s, p, val)
+function sh:defShapePath2() {
+    let (alist = @(sh:equals sh:disjoint 
+            sh:and sh:or sh:xone sh:not
+            sh:maxCount sh:minCount
+            sh:hasValue sh:uniqueLang sh:lessThan sh:lessThanOrEquals)) {
+        alist 
+    }
+}
 
+# funcall(oper, shape, o, val)
+function sh:defShapePathExtension() {
+    let (alist = @(sh:evaluate sh:compute sh:function sh:functioncst)) {        
+        alist 
+    }
+}
+
+function sh:defShapeNodeExtension() {
+    let (alist = @(sh:evaluate sh:compute sh:function sh:functioncst)) {        
+        alist 
+    }
+}
+
+function sh:defShapeNode1() {
+    let (alist = @(sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive 
+            sh:maxInclusive sh:maxExclusive sh:nodeKind sh:in sh:languageIn sh:node 
+            sh:hasValue )) {
+        alist
+    }
+}
+
+function sh:defShapeNode2() {
+    let (alist = @(sh:class sh:equals sh:disjoint 
+            sh:type )) {
+        alist
+    }
+}
+
+function sh:defShapeBoolean() {
+    let (alist = @(sh:and sh:or sh:xone sh:not)) {
+        alist
+    }
+}
+
+# sh:path1 = (sh:minLength sh:maxLength ...)
+function sh:getShape(name) {
+    xt:get(mapshape, name)
+}
+
+function sh:setShape(name, list) {
+    if (xt:has(mapshape, name), 
+        xt:set(mapshape, name, xt:merge(xt:get(mapshape, name), list)), 
+        xt:set(mapshape, name, list))
+}
+
+# user api
+function sh:defShape(name, value) {
+    set (mapshape = coalesce(mapshape, xt:map())) ;
+    sh:setShape(name, dt:list(value)) 
+}
 
 function sh:hasConstraint(name, sh) {
     xt:has(sh:getmap(name), sh)
@@ -231,6 +338,7 @@ function xsd:boolean sh:report(name,  sh, cst, dt:graph shape, foc, p, o, xsd:bo
 #
 function sh:record(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis) {
     if (vis) {
+        sh:userreport(name,  sh, cst, shape, foc, p, o, suc);
         let (amap = sh:getrecordmap(name, suc)) {
             xt:set(amap, sh,          coalesce(xt:get(amap, sh), 0) + 1) ;
             xt:set(amap, sh:subtotal, coalesce(xt:get(amap, sh:subtotal), 0) + 1)  
@@ -240,6 +348,13 @@ function sh:record(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc, x
         }         
     } ;
     return(true)
+}
+
+function sh:userreport(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc) {
+    if (suc, true, 
+    if (sh:hasetup(sh:callback), 
+        funcall(sh:setup(sh:callback), shape, sh, cst, name, foc, p, o), 
+        true) )
 }
 
 function sh:tracerecord(shape, mapmap) {
@@ -283,7 +398,7 @@ function xsd:boolean sh:success(xsd:boolean bb) {
             construct { [] a sh:ValidationReport ; sh:conforms true }
             where { }
             ) {
-            us:insert(g, validationReport)
+            us:insert(g, sh:validationReport())
         }
     } ;
     return (true)
@@ -311,7 +426,7 @@ function xsd:boolean sh:result(name, sh, cst, dt:graph shape, foc, path, node){
         sev = coalesce(xt:value(shape, sh, sh:severity), sh:Violation),
         mes = sh:getTheMessage(shape, sh, cst),
         abnode = sh:bnodeid(),
-        rep = validationReport
+        rep = sh:validationReport()
         ) {
         
        xt:insert(rep, abnode, rdf:type, sh:ValidationReport);
@@ -366,7 +481,7 @@ function sh:getMessage(shape, sh, cst) {
 
 
 function sh:tracefinish() {
-    xt:print(xt:turtle(validationReport))
+    xt:print(xt:turtle(sh:validationReport()))
 }
 
 # when suc = false, declare error on node (for future pprint)

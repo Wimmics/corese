@@ -11,9 +11,10 @@ function sh:constraint(shape, sh, vis, nodeList) {
     let (b1 = sh:constraint1 (shape, sh, vis, nodeList),
          b2 = sh:constraint2 (shape, sh, vis, nodeList),
          b3 = sh:cstpattern  (shape, sh, vis, nodeList),
-         b4 = sh:cstsparql   (shape, sh, vis, nodeList)
+         b4 = sh:nodeextension  (shape, sh, vis, nodeList),
+         b5 = sh:cstsparql   (shape, sh, vis, nodeList)
          ) {
-        return (b1 && b2 && b3 && b4)
+        return (b1 && b2 && b3 && b4 && b5)
     }
 }
 
@@ -29,9 +30,7 @@ function sh:constraint1 (shape, sh, vis, nodeList) {
     let (res = true) {
         for ((oper value) in sh:getConstraint(sh:cstgeneric1, shape, sh)) {  
             for (node in dt:list(nodeList)) {    
-                let (suc = coalesce(if (oper = sh:functioncst,  
-                    funcall(value, shape, sh, node), 
-                    funcall(oper, shape, node, value)), false)) {
+                let (suc = coalesce(funcall(oper, shape, node, value), false)) {
                         sh:report(oper, sh, if (oper = sh:node, value, st:null), shape, node, st:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
                     }
@@ -41,18 +40,17 @@ function sh:constraint1 (shape, sh, vis, nodeList) {
     }
 }
 
-
-function sh:cstsparql (shape, sh, vis, nodeList) {
-   let (res = true) {
-        for ((cst define q mes) in sh:getConstraint(sh:cstsparql, shape, sh)) {  
-            for (node in dt:list(nodeList)) {   
-                if (sh:trace(), xt:print("cstsparql:", node, q), true);
+# oper = sh:function
+function sh:nodeextension (shape, sh, vis, nodeList) {
+    let (res = true) {
+        for ((oper name value) in sh:getConstraint(sh:nodeextension, shape, sh)) {  
+            for (node in dt:list(nodeList)) {    
                 let (suc = coalesce(
-                    sh:mysparql(concat(define, q), sh, cst, shape, node, node, vis, 
-                        mes, isLiteral(mes)),
-                    false)) {
-                    if (suc, true, set(res = false))
-                }
+                        if (bound(value), funcall(oper, name, node, value), funcall(oper, name, node)),
+                        false)) {
+                        sh:report(oper, sh, name, shape, node, st:null, node, suc, vis) ;
+                        if (suc, true, set(res = false))
+                    }
             }
         } ;
         return (res)
@@ -111,61 +109,105 @@ function sh:cstpattern(shape, sh) {
 }
 
 
-function sh:cstgeneric(shape, sh, list) {
-    let (select ?shape ?sh ?list (aggregate(xt:list(?q, ?m)) as ?res) where {
+function sh:getGenericShape(shape, sh, list) {
+    let (select ?shape ?sh ?list (aggregate(xt:list(?oper, ?value)) as ?res) where {
         graph ?shape {  
             values ?list {UNDEF}
-            values ?q { unnest(?list) }
-            ?sh ?q ?m    
+            values ?oper { unnest(?list) }
+            ?sh ?oper ?value    
         }
     } ) {
         return(res)
     }
 }
 
-function sh:cstgeneric1(shape, sh) {
-    sh:cstgeneric(shape, sh, xt:list(
-                sh:hasValue, sh:datatype, sh:minInclusive, sh:minExclusive, sh:maxInclusive, sh:maxExclusive, sh:minLength, sh:maxLength, sh:nodeKind, sh:node, sh:in, sh:languageIn, 
-                sh:function, sh:functioncst))
-}
 
-
-
-
-function sh:cstsparql(shape, sh) {
-    let (select * (aggregate (xt:list(cst, define, q, coalesce(mes, st:null))) as ?list)
+# sh:function us:fun
+# sh:function [ sh:name us:fun ; sh:value 50 ]
+# sh:function [ sh:name us:fun ; sh:value (h:age 50) ]
+# sh:evaluate (rq:gt h:age (rq:mult 2 h:shoesize)) -> sh:function [ ... ]
+#
+function sh:getShapeExtension(shape, sh, list) {
+    let (select ?shape ?sh ?list 
+            (aggregate(
+                if (?oper in (sh:evaluate, sh:compute), 
+                    xt:list(sh:function, ?oper, sh:compile(?oper, sh:getValueList(?fun))),
+                if (bound(?name),
+                    if (bound(?arg), xt:list(?oper, ?name, sh:compile(?name, ?arg)), xt:list(?oper, ?name)),
+                    xt:list(?oper, ?fun)))
+            ) as ?res) 
         where {
         graph ?shape {  
-                ?sh sh:sparql ?cst 
-                ?cst sh:select ?q
-                filter not exists { ?cst sh:deactivated true }
-                optional { ?cst sh:message ?mes }
-                
-                # collect prefix definitions
-                {
-                    select ?cst 
-                    (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator=" ") 
-                    as ?define) 
-                    where {
-                        ?cst sh:prefixes/owl:imports*/sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
-                    }
-                    group by ?cst
-                }
-        } }
-        ) {
-        return(list)
+            values ?list {UNDEF}
+            values ?oper { unnest(?list) }
+            ?sh ?oper ?fun  
+            optional { ?fun sh:name ?name 
+                optional { ?fun sh:value ?value 
+                    bind (sh:getValueList(?value) as ?arg)
+                    } }
         }
+    } ) {
+        return(res)
+    }
 }
 
+# (fun x y) -> (fun (x y))
+function sh:compile(name, exp) {
+    if (name in (sh:evaluate, sh:compute), sh:compile(exp), exp)
+}
+
+
+# (fun x1 x2) -> (fun (x1 x2))
+#
+function sh:compile(exp) {
+    if (isExtension(exp)) {
+        if (xt:size(exp) = 0) {
+            return (exp)
+        }
+        else {
+            let ((oper | param) = exp) {
+                xt:list(oper, maplist(sh:compile, param))
+            }
+        }
+    }
+    else {
+        exp
+    }
+}
+
+function sh:getValueList(value) {
+    if (isBlank(value)) {
+       coalesce(sh:reclist(value), value)
+    }
+    else {
+        return(value)
+    }
+}
+
+function sh:reclist(l) {
+  let (select ?l 
+       (aggregate (if (?b, sh:reclist(?e), 
+                   if (?e = rdf:nil, xt:list(), ?e))) as ?list) 
+        where {
+            ?l rdf:rest*/rdf:first ?e
+            bind (exists { ?e rdf:rest ?a } as ?b)
+        } ) {
+    return (list)
+  }
+}
+
+
+function sh:cstgeneric1(shape, sh) {
+    sh:getGenericShape(shape, sh, sh:getShape(sh:node1))
+}
 
 function sh:cstgeneric2(shape, sh) {
-    sh:cstgeneric(shape, sh, xt:list(sh:class, sh:disjoint, sh:equals))
+    sh:getGenericShape(shape, sh, sh:getShape(sh:node2))
 }
 
-
-
-
-
+function sh:nodeextension(shape, sh) {
+    sh:getShapeExtension(shape, sh, sh:getShape(sh:nodeextension))
+}
 
 
 function sh:class (shape, sh, vis, s, ?c) {

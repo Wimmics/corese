@@ -289,6 +289,7 @@ public interface ExprType {
 	public static int DSCALL        = 332;
 	public static int JAVACAST      = 333;
         public static int ISEXTENSION   = 334;
+        public static int SAFE          = 335;
         
         public static int XT_MAPPING     = 400;
         public static int XT_ADD         = 401;

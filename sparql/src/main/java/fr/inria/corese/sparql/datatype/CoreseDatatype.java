@@ -1108,6 +1108,11 @@ public class CoreseDatatype
 
     @Override
     public IDatatype neq(IDatatype dt) {
+        return ne(dt);
+    }
+    
+     @Override
+    public IDatatype ne(IDatatype dt) {
         try {
             return (!this.equalsWE(dt)) ? TRUE : FALSE;
         } catch (CoreseDatatypeException ex) {
@@ -1189,6 +1194,11 @@ public class CoreseDatatype
     @Override
     public IDatatype div(IDatatype iod) {
         return null;
+    }
+    
+    @Override
+    public IDatatype divis(IDatatype iod) {
+        return div(iod);
     }
 
     /**

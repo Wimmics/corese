@@ -2,6 +2,7 @@
 <!DOCTYPE rdf [
    <!ENTITY humans   "http://www.inria.fr/2015/humans"> 
    <!ENTITY rdfs     "http://www.w3.org/2000/01/rdf-schema">
+   <!ENTITY xsd      "http://www.w3.org/2001/XMLSchema#">
     ]>
 
 <rdf:RDF  
@@ -172,6 +173,7 @@
 <rdf:Property rdf:ID="age">
   <label xml:lang="en">age</label>
   <label xml:lang="fr">âge</label>
+  <range rdf:resource="&xsd;integer"/>
   <comment xml:lang="en">complete existence duration.</comment>
   <comment xml:lang="fr">durée complète d'existence.</comment>
 </rdf:Property>

@@ -24,8 +24,9 @@ public class Bound extends TermEval {
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        Node node = env.getNode(getBasicArg(0));
-        if (node == null) {
+       // Node node = env.getNode(getBasicArg(0));
+        IDatatype dt = getBasicArg(0).eval(eval, b, env, p);
+        if (dt == null) {
             return FALSE;
         }
         return TRUE;

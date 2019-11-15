@@ -38,7 +38,6 @@ function sh:path(dt:graph ?shape, ?exp) {
                 ?exp ?q ?path   filter (?q not in (rdf:first))
             }
         } ) {
-          
     if (! bound(?q)) { return(error()) }   
     else if (?q = rdf:rest)    { return(xt:list(sh:sequence, sh:listsh(?shape, ?exp))) }
     else if (sh:extension(?exp, ?q)) { return (sh:extension(?shape, ?q, ?path)) }
@@ -61,7 +60,8 @@ function sh:statement(oper) {
 
 function sh:operator(oper) {
     sh:boolean(oper) || 
-    oper in (sh:pattern, sh:nodeKind, sh:datatype, sh:minLength, sh:maxLength, sh:hasValue, sh:validURI)
+    oper in (sh:pattern, sh:nodeKind, sh:datatype, sh:minLength, sh:maxLength, sh:hasValue, 
+    sh:validURI, sh:function )
 }
 
 function sh:boolean(oper) {
@@ -95,8 +95,24 @@ function sh:extension(shape, oper, path) {
 # oper = sh:pattern ; path = 'http://dbpedia' 
 # return (sh:filter (sh:pattern 'http://dbpedia'))
 function sh:parseOperator(shape, oper, path) {
+    if (oper = sh:function, sh:parseFunction(shape, oper, path),
     if (sh:boolean(oper), sh:parseBoolean(shape, oper, path),
-        xt:list(sh:filter, xt:list(oper, path)))
+        xt:list(sh:filter, xt:list(oper, path))))
+}
+
+# [ sh:function [ us:fun (arg) ] ]
+# [ sh:function us:fun ]
+function sh:parseFunction(shape, oper, fun) {
+    let (select * where {
+        graph ?shape { 
+            [] sh:function ?fun 
+            optional { ?fun ?pred ?param }             
+            bind (coalesce(?pred, ?fun) as ?name)
+            bind (coalesce(?param, xt:list()) as ?value)
+            bind (sh:getValueList(?value) as ?arg)
+        }}){
+        xt:list(sh:function, xt:list(name, arg))
+    }
 }
 
 # [sh:and ([sh:nodeKind sh:IRI] [sh:pattern 'dbpedia']) ]
@@ -138,6 +154,10 @@ function dt:list sh:tolist(dt:graph ?shape, ?exp){
 #
 function dt:list sh:path(dt:graph shape, s, p){    
     sh:path(shape, s, sh:getPath(shape, p), false)
+}
+
+function sh:pathfinder(node, path) {
+    sh:path(sh:shaclGraph(), node, path)
 }
 
 #

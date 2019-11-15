@@ -50,6 +50,17 @@ query (
         ?sh sh:targetNode ?s
         filter not exists { ?sh sh:deactivated true} }
     }
+    
+    union {
+        graph ?shape { 
+            ?sh sh:targetFunction ?fun 
+            optional { ?fun ?oper ?param } 
+            bind (coalesce(?oper, ?fun) as ?name)
+            bind (coalesce(?param, xt:list()) as ?value)
+            bind (sh:getValueList(?value) as ?arg)
+        }
+        values ?s { unnest(funcall(?name, ?arg)) }
+    }
                       
   } 
   group by ?sh 

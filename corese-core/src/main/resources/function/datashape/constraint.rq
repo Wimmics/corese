@@ -122,34 +122,40 @@ function sh:getGenericShape(shape, sh, list) {
 }
 
 
+
+function sh:getShapeExtension(shape, sh, list) {
+    sh:getShapeExtension(shape, sh)
+}
+
+# sh:function [ us:fun (h:age 50) ]
+# sh:function [ us:fun () ]
 # sh:function us:fun
-# sh:function [ sh:name us:fun ; sh:value 50 ]
-# sh:function [ sh:name us:fun ; sh:value (h:age 50) ]
 # sh:evaluate (rq:gt h:age (rq:mult 2 h:shoesize)) -> sh:function [ ... ]
 #
-function sh:getShapeExtension(shape, sh, list) {
-    let (select ?shape ?sh ?list 
+function sh:getShapeExtension(shacl, sh) {
+    let (select ?shacl ?sh 
             (aggregate(
-                if (?oper in (sh:evaluate, sh:compute), 
-                    xt:list(sh:function, ?oper, sh:compile(?oper, sh:getValueList(?fun))),
-                if (bound(?name),
-                    if (bound(?arg), xt:list(?oper, ?name, sh:compile(?name, ?arg)), xt:list(?oper, ?name)),
-                    xt:list(?oper, ?fun)))
+                xt:list(sh:function, ?name, ?arg)
             ) as ?res) 
         where {
-        graph ?shape {  
-            values ?list {UNDEF}
-            values ?oper { unnest(?list) }
-            ?sh ?oper ?fun  
-            optional { ?fun sh:name ?name 
-                optional { ?fun sh:value ?value 
-                    bind (sh:getValueList(?value) as ?arg)
-                    } }
+        graph ?shacl {  
+            {
+                ?sh ?name ?value 
+                filter (?name in (sh:evaluate, sh:compute))
+            }
+            union {
+                ?sh  sh:function ?fun optional { ?fun ?oper ?param } 
+                bind (coalesce(?oper, ?fun) as ?name)
+                bind (coalesce(?param, xt:list()) as ?value)
+            }
+            bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
         }
     } ) {
         return(res)
     }
 }
+
+
 
 # (fun x y) -> (fun (x y))
 function sh:compile(name, exp) {

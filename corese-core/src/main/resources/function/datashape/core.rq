@@ -24,6 +24,11 @@ function sh:core(shape, sh, vis, nodeList) {
     }
 }
 
+# user api
+function sh:eval(sh, node) {
+    sh:core(sh:shaclGraph(), sh, false, dt:list(node))
+}
+
 function sh:closedcore(shape, sh, vis, nodeList) {
     let (res = true) {
         if (sh:isClosed(shape, sh)) {

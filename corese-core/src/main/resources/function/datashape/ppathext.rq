@@ -11,6 +11,15 @@ prefix sh:   <http://www.w3.org/ns/shacl#>
 # PPath interpreter Extension 
 
 
+# function for [sh:function [ us:foo(arg) ]] path element
+# exp = (us:foo (arg))
+function dt:list sh:function(shape, node, exp, inv, url) {
+    let ((name param) = exp) {
+        funcall(name, node, param)
+    }
+}
+
+
 # generic filter function for all filters
 # path = (sh:pattern 'dbpedia')
 function dt:list sh:filter(shape, s, path, inv, url) {

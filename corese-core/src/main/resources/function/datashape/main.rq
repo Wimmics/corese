@@ -58,7 +58,7 @@ function dt:graph sh:shaclnode(node) {
 #
 function dt:graph sh:shacl(dt:graph shape, focus) {
     sh:start(shape) ;
-    let (suc = sh:eval(shape, focus)) {
+    let (suc = sh:shacleval(shape, focus)) {
         sh:success(suc);
         sh:finish() ;
         return (sh:validationReport())
@@ -106,7 +106,7 @@ function sh:trace(shape, mapmap) {
 #
 # focus = mappings or list(sh=nodeShape; list=targetNodeList)
 #
-function sh:eval(shape, focus) {
+function sh:shacleval(shape, focus) {
     let (suc = true) {
         for ((sh list) in focus) {
             if (sh:trace(), 

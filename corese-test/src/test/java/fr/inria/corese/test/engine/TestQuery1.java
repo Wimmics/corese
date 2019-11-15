@@ -1,6 +1,7 @@
 package fr.inria.corese.test.engine;
 
 import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.compiler.parser.NodeImpl;
 import java.io.IOException;
 import java.io.InputStream;
 
@@ -42,7 +43,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.compiler.result.XMLResult;
-import fr.inria.corese.core.shacl.Shacl;
+import fr.inria.corese.core.shacl.*;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -55,6 +56,7 @@ import fr.inria.corese.kgram.event.StatListener;
 import fr.inria.corese.sparql.datatype.CoresePointer;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Variable;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -256,6 +258,249 @@ public class TestQuery1 {
         return graph;
     }
     
+     @Test
+    public void testshaclexp3() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        ld.parse(data + "test/shapeexp2.ttl");
+        
+        String q = "@import <http://ns.inria.fr/sparql-template/function/datashape/main.rq> "
+                + "select * where {}"
+                + "bind (sh:shacl() as ?g)"
+                + "}";
+        
+       Shacl shacl = new Shacl(g);
+       Graph gg = shacl.eval();
+       System.out.println(Transformer.turtle(gg));
+         System.out.println(gg.size());
+        //assertEquals(11, gg.size());
+    }
+    
+    @Test
+    public void testshaclexp2() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        
+        String q = "prefix sh: <http://www.w3.org/ns/shacl#> ."
+                + "prefix h:  <http://www.inria.fr/2015/humans#>"
+                + "prefix i:  <http://www.inria.fr/2015/humans-instances#>"
+                + "@import <http://ns.inria.fr/sparql-template/function/datashape/main.rq> "
+                + "select * where {"
+                + "bind (sh:start(xt:graph()) as ?st)"
+                + "?x  h:age ?a "
+                + "optional { ?x h:trouserssize ?t }"
+                + "optional { ?x h:shirtsize ?s }"
+                + "filter (sh:compute(?x, sh:compile(funcall(?fun)))) "
+                + "}"
+                + "order by ?x "
+                + "values ?fun {UNDEF}"
+                
++ "function us:exp1() {let (exp =  @(rq:lt h:age 25)  ) {exp}}"             
++ "function us:exp2() {let (exp =  @(rq:gt h:shoesize h:shirtsize)  ) {exp}}"                
++ "function us:exp3() {let (exp =  @(rq:or (rq:lt h:trouserssize h:shirtsize) (rq:lt h:age 50) ) ) {exp}}"                 
++ "function us:exp4() {let (exp =  @(rq:if (rq:lt h:age 50) false true)   ) {exp}}"                
++ "function us:exp5() {let (exp =  @(rq:eq (rq:self) (rq:self i:John) )) {exp}}"               
++ "function us:exp6() {let (exp =  @(rq:and (rq:lt h:trouserssize (rq:mult 10 h:shirtsize)) (rq:not (rq:lt h:age 0)) ) ) {exp}}"                  
++ "function us:exp7() {let (exp =  @(rq:coalesce h:undef true ) ) {exp}}"                 
++ "function us:exp8() {let (exp =  @(rq:exist h:age) ) {exp}}"                  
++ "function us:exp9() {let (exp =  @(rq:if (rq:exist h:age) (rq:lt h:age 18) true)) {exp}}"                  
++ "function us:exp10(){let (exp =  @(rq:coalesce  (rq:lt h:age 18) true)) {exp}}"                  
+                ;       
+       Mappings 
+       map = exec.query(q, map("?fun", NSManager.USER+"exp1"));
+       //System.out.println(map);
+       assertEquals(2, map.size());
+       
+       map = exec.query(q, map("?fun", NSManager.USER+"exp2"));
+       //System.out.println(map);
+       assertEquals(1, map.size());
+       
+       map = exec.query(q, map("?fun", NSManager.USER+"exp3"));
+       //System.out.println(map);
+       assertEquals(5, map.size());
+       
+       map = exec.query(q, map("?fun", NSManager.USER+"exp4"));
+       //System.out.println(map);
+       assertEquals(3, map.size());
+       
+       map = exec.query(q, map("?fun", NSManager.USER+"exp5"));
+       //System.out.println(map);
+       assertEquals(1, map.size());
+       
+       map = exec.query(q, map("?fun", NSManager.USER+"exp6"));
+       //System.out.println(map);
+       assertEquals(7, map.size());
+       
+       map = exec.query(q, map("?fun", NSManager.USER+"exp7"));
+       //System.out.println(map);
+       assertEquals(8, map.size());
+       
+       map = exec.query(q, map("?fun", NSManager.USER+"exp8"));
+       //System.out.println(map.size());
+       assertEquals(8, map.size());
+       
+       map = exec.query(q, map("?fun", NSManager.USER+"exp9"));
+       //System.out.println(map);
+       assertEquals(2, map.size());
+       
+       map = exec.query(q, map("?fun", NSManager.USER+"exp10"));
+       //System.out.println(map);
+       assertEquals(2, map.size());
+       
+    }
+    
+    
+    Mapping map(String var, String value) {
+        Node q = NodeImpl.createVariable(var);
+        Node t = NodeImpl.createResource(value);
+        return Mapping.create(q, t);
+    }
+    
+    
+    @Test
+    public void testshaclexp1() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        ld.parse(data + "test/shapeexp1.ttl");
+        
+       Shacl shacl = new Shacl(g);
+       Graph gg = shacl.eval();
+       //System.out.println(Transformer.turtle(gg));
+        assertEquals(11, gg.size());
+    }
+    
+      @Test
+    public void testshacljavaexp2() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        ld.parse(data + "test/shapeexp2.ttl");
+        
+       ShaclJava shacl = new ShaclJava(g);
+       Graph gg = shacl.eval();
+       //System.out.println(Transformer.turtle(gg));
+       assertEquals(2, gg.size());
+    }
+    
+    @Test
+    public void testshaclexp4() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        ld.parse(data + "test/shapeexp3.ttl");        
+       Shacl shacl = new Shacl(g);
+       Graph gg = shacl.eval();
+       //System.out.println(Transformer.turtle(gg));
+        assertEquals(11, gg.size());
+    }
+    
+    @Test
+    public void testshaclexp5() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        ld.parse(data + "test/shapeexp4.ttl");        
+        ld.parse(data + "test/shapeexp4.rq");
+        
+       Shacl shacl = new Shacl(g);
+       Graph gg = shacl.eval();
+       System.out.println(Transformer.turtle(gg));
+        assertEquals(10, gg.size());
+    }
+    
+     @Test
+    public void testshaclexp6() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        ld.parse(data + "test/shapeexp6.ttl");        
+        ld.parse(data + "test/shapeexp6.rq");
+        
+       Shacl shacl = new Shacl(g);
+       Graph gg = shacl.eval();
+       System.out.println(Transformer.turtle(gg));
+       assertEquals(2, gg.size());
+    }
+    
+      @Test
+    public void testshaclexp7() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        ld.parse(data + "test/shapeexp7.ttl");        
+        ld.parse(data + "test/shapeexp7.rq");
+        
+       Shacl shacl = new Shacl(g);
+       Graph gg = shacl.eval();
+       System.out.println(Transformer.turtle(gg));
+       assertEquals(2, gg.size());
+    }
+    
+       @Test
+    public void testshaclexp8() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        ld.parse(data + "test/shapeexp8.ttl");        
+        ld.parse(data + "test/shapeexp8.rq");
+        
+       Shacl shacl = new Shacl(g);
+       Graph gg = shacl.eval();
+       //System.out.println(Transformer.turtle(gg));
+       assertEquals(11, gg.size());
+    }
+    
+        @Test
+    public void testshaclexp9() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        ld.parse(data + "test/shapeexp9.ttl");        
+        ld.parse(data + "test/shapeexp9.rq");
+        
+       Shacl shacl = new Shacl(g);
+       Graph gg = shacl.eval();
+       //System.out.println(Transformer.turtle(gg));
+       assertEquals(11, gg.size());
+    }
+    
+     @Test
+    public void testshacljavaexp1() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        ld.parse(data + "test/shapeexp1.ttl");
+        
+       ShaclJava shacl = new ShaclJava(g);
+       Graph gg = shacl.eval();
+       //System.out.println(Transformer.turtle(gg));
+        assertEquals(11, gg.size());
+    }
     
     
         @Test

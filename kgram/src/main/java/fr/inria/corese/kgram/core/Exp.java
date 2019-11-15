@@ -971,6 +971,7 @@ public class Exp extends PointerObject
         return node;
     }
 
+    @Override
     public Node getNode() {
         return node;
     }
@@ -2312,14 +2313,14 @@ public class Exp extends PointerObject
     public void optional() {
         Exp p = Exp.create(BGP);
         Exp rest = rest();
-        for (Exp exp : rest) {            
+        for (Exp exp : rest) { 
             if (exp.isFilter() && ! rest.simpleBind(exp.getFilter())) {
                 p.add(exp);
                 exp.setPostpone(true);
             } 
             else if (exp.isOptional() || exp.isMinus()) {
                 Exp first = exp.first();                
-                for (Exp e : first) {                    
+                for (Exp e : first) {   
                     if (e.isFilter() && ! first.simpleBind(e.getFilter())) {
                         p.add(e);
                         e.setPostpone(true);
@@ -2361,10 +2362,10 @@ public class Exp extends PointerObject
                     exp.getEdgeVariables(list);
                     break;
                 case BIND: 
-                    getBindVariables(list);
+                    exp.getBindVariables(list);
                     break;
                 case VALUES:
-                    getValuesVariables(list);
+                    exp.getValuesVariables(list);
                     break;
             }
         }

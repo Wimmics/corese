@@ -1,0 +1,8 @@
+prefix sh: <http://www.w3.org/ns/shacl#> .
+
+@public 
+function us:test(node, exp) {
+    let ((shape) = exp) {
+        sh:eval(shape, node)
+    }
+}

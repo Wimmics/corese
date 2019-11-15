@@ -1,0 +1,11 @@
+prefix sh: <http://www.w3.org/ns/shacl#> .
+
+@public 
+function us:test(exp) {
+    let ((class) = exp,
+         select ?class (aggregate(distinct ?s) as ?list) 
+         where { ?s rdf:type ?class }
+    ) {
+            return (list)
+    }
+}

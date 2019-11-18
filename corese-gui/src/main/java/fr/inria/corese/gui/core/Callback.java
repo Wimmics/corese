@@ -9,8 +9,8 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
  */
 public class Callback {
     
-    public IDatatype display(IDatatype name, IDatatype node) {
-        MainFrame.display(String.format("report: %s %s", name.getLabel(), node.getLabel()));
+    public IDatatype display(IDatatype name, IDatatype node, IDatatype suc) {
+        MainFrame.display(String.format("report: %s %s", name.getLabel(), node.getLabel(), suc));
         return DatatypeMap.TRUE;
     }
     

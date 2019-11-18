@@ -676,7 +676,8 @@ public class Processor {
  		defoper(XT_COMPARE,     ExprType.XT_COMPARE);
  		defoper(XT_VISITOR,     ExprType.XT_VISITOR);
                
-                
+                defoper("isFunction",      ExprType.XT_ISFUNCTION);                
+                defoper(EXT+"isFunction",  ExprType.XT_ISFUNCTION);                
 		defoper(JAVACALL,          ExprType.JAVACALL);                
 		defoper(FUNCALL,           ExprType.FUNCALL);                
 		defsysoper(EVAL,           ExprType.EVAL);                

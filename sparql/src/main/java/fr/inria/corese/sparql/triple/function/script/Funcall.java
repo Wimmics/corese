@@ -57,7 +57,7 @@ public class Funcall extends LDScript {
                 // lambda expression, arity is not correct                
             } else if (env.getEval() != null) {
                 env.getEval().getSPARQLEngine().getLinkedFunction(name);
-                function = (Function) eval.getDefineGenerate(this, env, name, n);
+                function = eval.getDefineGenerate(this, env, name, n);
 
                 if (function == null) {
                     logger.error("Undefined function: " + name);

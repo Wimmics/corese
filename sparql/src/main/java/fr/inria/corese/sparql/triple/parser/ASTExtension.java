@@ -189,6 +189,7 @@ public class ASTExtension implements Extension {
         return method;
     }
     
+    @Override
     public boolean isMethod() {
         return getMethod().size() > 0;
     }
@@ -216,6 +217,7 @@ public class ASTExtension implements Extension {
         }
     }
 
+    @Override
     public boolean isDefined(Expr exp) {
         return getMap(exp).containsKey(exp.getLabel());
     }
@@ -223,21 +225,25 @@ public class ASTExtension implements Extension {
     /**
      * exp: st:fac(?n) values: #[10] actual values of parameters return body of
      * fun
+     * @param exp
      */
     public Function get(Expr exp, Object[] values) {
         return getMap(exp).get(exp.getLabel());
     }
 
+    @Override
     public Function get(Expr exp) {
         Function def = getMap(exp).get(exp.getLabel());
         return def;
     }
     
+    @Override
     public Function get(Expr exp, String name) {
         Function def = getMap(exp).get(name);
         return def;
     }
     
+    @Override
     public Function get(String label) {
         for (int i = 0; i<maps.length; i++){
             Function exp = get(label, i);
@@ -248,6 +254,7 @@ public class ASTExtension implements Extension {
         return null;
     }
     
+    @Override
     public Function get(String label, int n) {
         FunMap m = getMap(n);
         if (m == null){
@@ -256,6 +263,7 @@ public class ASTExtension implements Extension {
         return m.get(label);
     }
     
+    @Override
     public Function getMetadata(String metadata, int n) {
         FunMap m = getMap(n);
         if (m == null){
@@ -269,7 +277,8 @@ public class ASTExtension implements Extension {
      * There are two possible Hierarchies: DatatypeHierarchy and ClassHierarchy
      * ClassHierarchy extends DatatypeHierarchy (for literals only)
      * By default, return  function if there is no method
-     */    
+     */  
+    @Override
     public Function getMethod(String label, DatatypeValue type, Object[] param) {
         if (getActualHierarchy() != null && param.length > 0) {
             for (String atype : getActualHierarchy().getSuperTypes((DatatypeValue) param[0],  type)) {

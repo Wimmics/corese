@@ -357,7 +357,9 @@ public class Term extends Expression {
             case ExprType.XT_METHOD_TYPE:
                 return new MethodTypeCall(name);
             case ExprType.EVAL:
-                return new Eval(name);    
+                return new Eval(name);
+            case ExprType.XT_ISFUNCTION:
+                return new FunctionDefined(name);
             case ExprType.APPLY:        
             case ExprType.FUNCALL:
                 return new Funcall(name);

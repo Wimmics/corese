@@ -85,7 +85,7 @@ function xsd:boolean sh:conform(?g) {
 }
 
 
-function sh:trace(shape, mapmap) {
+function sh:show(shape, mapmap) {
         for ((key val) in mapmap) {
             if (key != sh:def) {
                 xt:print(key);
@@ -226,15 +226,13 @@ function sh:defShapePath2() {
 
 # funcall(oper, shape, o, val)
 function sh:defShapePathExtension() {
-    let (alist = @(sh:evaluate sh:compute sh:function sh:functioncst)) {        
+    let (alist = @(sh:evaluate sh:compute sh:trace sh:funeval)) {        
         alist 
     }
 }
 
 function sh:defShapeNodeExtension() {
-    let (alist = @(sh:evaluate sh:compute sh:function sh:functioncst)) {        
-        alist 
-    }
+    sh:defShapePathExtension()
 }
 
 function sh:defShapeNode1() {
@@ -351,10 +349,9 @@ function sh:record(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc, x
 }
 
 function sh:userreport(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc) {
-    if (suc, true, 
     if (sh:hasetup(sh:callback), 
-        funcall(sh:setup(sh:callback), shape, sh, cst, name, foc, p, o), 
-        true) )
+        funcall(sh:setup(sh:callback), shape, sh, cst, name, foc, p, o, suc), 
+        true) 
 }
 
 function sh:tracerecord(shape, mapmap) {

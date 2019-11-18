@@ -58,7 +58,7 @@ function sh:path1(shape, sh, vis, nodeList, p) {
     }
 }
 
-# sh:function 
+# sh:function [ name (value) ]
 function sh:pathextension(shape, sh, vis, nodeList, p) {
     let (res = true, cstList = sh:getConstraint(sh:pathextension, shape, sh)) {
         if (xt:size(cstList) > 0) {
@@ -67,10 +67,10 @@ function sh:pathextension(shape, sh, vis, nodeList, p) {
                 for (o in sh:path(shape, s, p)) {
                     for ((oper name value) in cstList) {
                         let (suc = coalesce(
-                                if (oper = sh:functioncst, funcall(name, shape, sh, s, p, o), 
-                                if (bound(value), funcall(oper, name, o, value), 
-                                funcall(oper, name, o))), 
-                                false)) {
+                             if (xt:isFunction(name, 3),
+                                funcall(name, s, o, value), 
+                                funcall(name, o, value)), 
+                             false)) {
                                 sh:report(oper, sh, name, shape, s, p, o, suc, vis) ;
                                 if (! suc) {
                                     set(res = false) 

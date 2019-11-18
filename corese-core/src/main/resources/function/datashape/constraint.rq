@@ -46,7 +46,7 @@ function sh:nodeextension (shape, sh, vis, nodeList) {
         for ((oper name value) in sh:getConstraint(sh:nodeextension, shape, sh)) {  
             for (node in dt:list(nodeList)) {    
                 let (suc = coalesce(
-                        if (bound(value), funcall(oper, name, node, value), funcall(oper, name, node)),
+                        funcall(name, node, value),
                         false)) {
                         sh:report(oper, sh, name, shape, node, st:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
@@ -123,34 +123,32 @@ function sh:getGenericShape(shape, sh, list) {
 
 
 
-function sh:getShapeExtension(shape, sh, list) {
-    sh:getShapeExtension(shape, sh)
-}
+
 
 # sh:function [ us:fun (h:age 50) ]
 # sh:function [ us:fun () ]
 # sh:function us:fun
 # sh:evaluate (rq:gt h:age (rq:mult 2 h:shoesize)) -> sh:function [ ... ]
 #
-function sh:getShapeExtension(shacl, sh) {
-    let (select ?shacl ?sh 
+function sh:getShapeExtension(shacl, sh, list) {
+    let (select ?shacl ?sh ?list
             (aggregate(
                 xt:list(sh:function, ?name, ?arg)
             ) as ?res) 
         where {
-        graph ?shacl {  
-            {
-                ?sh ?name ?value 
-                filter (?name in (sh:evaluate, sh:compute))
+            graph ?shacl {  
+                {   values ?list {UNDEF}
+                    ?sh ?name ?value 
+                    filter xt:member(?name, ?list)
+                }
+                union { values ?list {UNDEF}
+                    ?sh  sh:function ?fun optional { ?fun ?oper ?param } 
+                    bind (coalesce(?oper, ?fun) as ?name)
+                    bind (coalesce(?param, xt:list()) as ?value)
+                }
+                bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
             }
-            union {
-                ?sh  sh:function ?fun optional { ?fun ?oper ?param } 
-                bind (coalesce(?oper, ?fun) as ?name)
-                bind (coalesce(?param, xt:list()) as ?value)
-            }
-            bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
-        }
-    } ) {
+        } ) {
         return(res)
     }
 }

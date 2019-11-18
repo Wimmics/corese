@@ -11,6 +11,37 @@ prefix sh:   <http://www.w3.org/ns/shacl#>
 # Extension
 #
 
+# sh:trace = sh:eval with trace
+function sh:trace(node, exp) {
+    let ((shape) = exp,
+         suc = sh:eval(shape, node)) {
+        xt:print("trace:", node, xt:turtle(shape), suc) ;
+        return (suc)
+    }
+}
+
+# sh:trace = sh:eval with trace
+function sh:trace(subject, node, exp) {
+    let ((shape) = exp,
+         suc = sh:eval(shape, node)) {
+        xt:print("trace:", subject, node, xt:turtle(shape), suc) ;
+        return (suc)
+    }
+}
+
+# sh:funeval ( [sh:class foaf:Person] )
+# shortcut for 
+# sh:function [ sh:myeval ([sh:class foaf:Person]) ]
+function sh:funeval(node, exp) {
+    let ((shape) = exp,
+         suc = sh:eval(shape, node)) {
+        return (suc)
+    }
+}
+
+
+#
+
 # evaluator for sh:function [ sh:name sh:compute ; sh:value (rq:gt h:age (rq:mult 2 h:shoesize)) ]
 # exp = (rq:gt h:age (rq:mult 2 h:shoesize))
 # node = target node

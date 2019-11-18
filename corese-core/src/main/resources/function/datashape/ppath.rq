@@ -156,7 +156,7 @@ function dt:list sh:path(dt:graph shape, s, p){
     sh:path(shape, s, sh:getPath(shape, p), false)
 }
 
-function sh:pathfinder(node, path) {
+function sh:pathfinder(path, node) {
     sh:path(sh:shaclGraph(), node, path)
 }
 

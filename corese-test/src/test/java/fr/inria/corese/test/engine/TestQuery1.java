@@ -419,7 +419,7 @@ public class TestQuery1 {
         
        Shacl shacl = new Shacl(g);
        Graph gg = shacl.eval();
-       System.out.println(Transformer.turtle(gg));
+       //System.out.println(Transformer.turtle(gg));
         assertEquals(10, gg.size());
     }
     
@@ -435,7 +435,7 @@ public class TestQuery1 {
         
        Shacl shacl = new Shacl(g);
        Graph gg = shacl.eval();
-       System.out.println(Transformer.turtle(gg));
+       //System.out.println(Transformer.turtle(gg));
        assertEquals(2, gg.size());
     }
     
@@ -451,7 +451,7 @@ public class TestQuery1 {
         
        Shacl shacl = new Shacl(g);
        Graph gg = shacl.eval();
-       System.out.println(Transformer.turtle(gg));
+       //System.out.println(Transformer.turtle(gg));
        assertEquals(2, gg.size());
     }
     

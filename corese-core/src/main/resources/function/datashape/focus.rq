@@ -4,7 +4,8 @@
 # Olivier Corby - Wimmics Inria I3S - 2016-2019
 #
 
-prefix sh: <http://www.w3.org/ns/shacl#> 
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix xsh: <http://www.w3.org/ns/shacl#> 
 
 #
 # Return mappings of (sh=shape; list=target node list)
@@ -53,7 +54,7 @@ query (
     
     union {
         graph ?shape { 
-            ?sh sh:targetFunction ?fun 
+            ?sh xsh:targetFunction ?fun 
             optional { ?fun ?oper ?param } 
             bind (coalesce(?oper, ?fun) as ?name)
             bind (coalesce(?param, xt:list()) as ?value)

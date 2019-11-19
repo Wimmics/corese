@@ -5,6 +5,7 @@
 # Olivier Corby - Wimmics Inria I3S - 2016-2019
 #
 prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
 prefix jc:   <function://fr.inria.corese.core.extension.SHACL>
 
 #
@@ -20,7 +21,7 @@ prefix jc:   <function://fr.inria.corese.core.extension.SHACL>
 # URI may be URI of a subpath such as:
 # [sh:path ex:parent] .
 # ex:parent sh:alternativePath (ex:father ex:mother)
-# sh:path (ai:location [ sh:service (<http://dbpedia.org/sparql> rdf:type ) )
+# sh:path (ai:location [ xsh:service (<http://dbpedia.org/sparql> rdf:type ) )
 
 @import <ppathext.rq>
 
@@ -34,7 +35,7 @@ function sh:path(dt:graph ?shape, ?exp) {
                # values ?q { 
                #     rdf:rest sh:inversePath sh:alternativePath 
                #     sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath  
-               #     sh:service sh:ldpath }
+               #     xsh:service xsh:ldpath }
                 ?exp ?q ?path   filter (?q not in (rdf:first))
             }
         } ) {
@@ -55,13 +56,13 @@ function sh:extension(exp, q) {
 }
 
 function sh:statement(oper) {
-    oper in (sh:service, sh:ldpath)
+    oper in (xsh:service, xsh:ldpath)
 }
 
 function sh:operator(oper) {
     sh:boolean(oper) || 
     oper in (sh:pattern, sh:nodeKind, sh:datatype, sh:minLength, sh:maxLength, sh:hasValue, 
-    sh:validURI, sh:function )
+    sh:validURI, xsh:function )
 }
 
 function sh:boolean(oper) {
@@ -73,7 +74,7 @@ function sh:usernamespace2(oper) {
 }
 
 function sh:usernamespace(oper) {
-    for (pref in xt:list(rdf:, rdfs:, owl:, sh:)) {
+    for (pref in xt:list(rdf:, rdfs:, owl:, sh:, xsh:)) {
         if (strstarts(oper, pref)) {
             return (false)
         }
@@ -87,7 +88,7 @@ function sh:usernamespace(oper) {
 function sh:extension(shape, oper, path) {
          if (sh:statement(oper))     { return(xt:list(oper,   sh:listsh(shape, path))) }
     else if (sh:operator(oper))      { return(sh:parseOperator(shape, oper, path)) }
-    else if (sh:usernamespace(oper)) { return(xt:list(sh:service, xt:cons(oper, sh:listsh(shape, path)))) }
+    else if (sh:usernamespace(oper)) { return(xt:list(xsh:service, xt:cons(oper, sh:listsh(shape, path)))) }
 }
 
 
@@ -95,23 +96,23 @@ function sh:extension(shape, oper, path) {
 # oper = sh:pattern ; path = 'http://dbpedia' 
 # return (sh:filter (sh:pattern 'http://dbpedia'))
 function sh:parseOperator(shape, oper, path) {
-    if (oper = sh:function, sh:parseFunction(shape, oper, path),
+    if (oper = xsh:function, sh:parseFunction(shape, oper, path),
     if (sh:boolean(oper), sh:parseBoolean(shape, oper, path),
         xt:list(sh:filter, xt:list(oper, path))))
 }
 
-# [ sh:function [ us:fun (arg) ] ]
-# [ sh:function us:fun ]
+# [ xsh:function [ us:fun (arg) ] ]
+# [ xsh:function us:fun ]
 function sh:parseFunction(shape, oper, fun) {
     let (select * where {
         graph ?shape { 
-            [] sh:function ?fun 
+            [] xsh:function ?fun 
             optional { ?fun ?pred ?param }             
             bind (coalesce(?pred, ?fun) as ?name)
             bind (coalesce(?param, xt:list()) as ?value)
             bind (sh:getValueList(?value) as ?arg)
         }}){
-        xt:list(sh:function, xt:list(name, arg))
+        xt:list(xsh:function, xt:list(name, arg))
     }
 }
 

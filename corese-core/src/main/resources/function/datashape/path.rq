@@ -5,6 +5,7 @@
 #
 
 prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix xsh: <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
 @import <sparql.rq>
@@ -43,7 +44,9 @@ function sh:path1(shape, sh, vis, nodeList, p) {
             for (s in dt:list(nodeList)) {
                 for (o in sh:path(shape, s, p)) {
                     for ((oper val) in cstList) {
-                        let (suc = coalesce(funcall(oper, shape, o, val), false)) {
+                        let (suc = coalesce(
+                                    funcall(oper, shape, o, val), 
+                                    false)) {
                                 if (oper in (sh:property), true, 
                                         sh:report(oper, sh, if (oper = sh:node, val, st:null), shape, s, p, o, suc, vis)) ;
                                 if (! suc) {
@@ -58,16 +61,17 @@ function sh:path1(shape, sh, vis, nodeList, p) {
     }
 }
 
-# sh:function [ name (value) ]
+
+# xsh:function [ name (value) ]
 function sh:pathextension(shape, sh, vis, nodeList, p) {
     let (res = true, cstList = sh:getConstraint(sh:pathextension, shape, sh)) {
         if (xt:size(cstList) > 0) {
             #xt:print("path:", oper, val, p, nodeList);
             for (s in dt:list(nodeList)) {
                 for (o in sh:path(shape, s, p)) {
-                    for ((oper name value) in cstList) {
+                    for ((oper name value ternary) in cstList) {
                         let (suc = coalesce(
-                             if (xt:isFunction(name, 3),
+                             if (ternary, 
                                 funcall(name, s, o, value), 
                                 funcall(name, o, value)), 
                              false)) {

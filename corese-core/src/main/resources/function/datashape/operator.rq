@@ -5,6 +5,7 @@
 #
 
 prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
 
 
 #
@@ -12,7 +13,7 @@ prefix sh:   <http://www.w3.org/ns/shacl#>
 #
 
 # sh:trace = sh:eval with trace
-function sh:trace(node, exp) {
+function xsh:trace(node, exp) {
     let ((shape) = exp,
          suc = sh:eval(shape, node)) {
         xt:print("trace:", node, xt:turtle(shape), suc) ;
@@ -21,7 +22,7 @@ function sh:trace(node, exp) {
 }
 
 # sh:trace = sh:eval with trace
-function sh:trace(subject, node, exp) {
+function xsh:trace(subject, node, exp) {
     let ((shape) = exp,
          suc = sh:eval(shape, node)) {
         xt:print("trace:", subject, node, xt:turtle(shape), suc) ;
@@ -31,8 +32,8 @@ function sh:trace(subject, node, exp) {
 
 # sh:funeval ( [sh:class foaf:Person] )
 # shortcut for 
-# sh:function [ sh:myeval ([sh:class foaf:Person]) ]
-function sh:funeval(node, exp) {
+# xsh:function [ sh:myeval ([sh:class foaf:Person]) ]
+function xsh:funeval(node, exp) {
     let ((shape) = exp,
          suc = sh:eval(shape, node)) {
         return (suc)
@@ -42,13 +43,13 @@ function sh:funeval(node, exp) {
 
 #
 
-# evaluator for sh:function [ sh:name sh:compute ; sh:value (rq:gt h:age (rq:mult 2 h:shoesize)) ]
+# evaluator for xsh:function [ xsh:compute (rq:gt h:age (rq:mult 2 h:shoesize)) ]
 # exp = (rq:gt h:age (rq:mult 2 h:shoesize))
 # node = target node
 # if property node is missing, coalesce return true
 #
-function sh:evaluate(node, exp) {
-    coalesce(sh:compute(node, exp), true)
+function xsh:evaluate(node, exp) {
+    coalesce(xsh:compute(node, exp), true)
 }
 
 # exp = (rq:gt (h:age (rq:mult (2 h:shoesize))))
@@ -56,12 +57,12 @@ function sh:evaluate(node, exp) {
 # (rq:self (URI)) return URI
 # (rq:self) return node
 # 
-function sh:compute(node, exp) {
+function xsh:compute(node, exp) {
     if (isExtension(exp)) {
         let ((oper param) = exp) {
             if (xt:has(mapfun, oper), 
                 funcall(xt:get(mapfun, oper), node, param), 
-                sh:compute(node, oper, param))
+                xsh:compute(node, oper, param))
         } 
     }
     else if (isURI(exp)) {
@@ -85,8 +86,8 @@ function sh:defun() {
     sh:defun(rq:exist, sh:exist)
 }
 
-function sh:compute(node, oper, param) {
-     apply(oper, maplist(lambda(ee, node) { sh:compute(node, ee) }, param, node))
+function xsh:compute(node, oper, param) {
+     apply(oper, maplist(lambda(ee, node) { xsh:compute(node, ee) }, param, node))
 }
 
 # param = (URI)
@@ -108,29 +109,29 @@ function sh:coalesce(node, param) {
     }
     else {
         let ((exp | rest) = param) {
-            coalesce(sh:compute(node, exp), sh:coalesce(node, rest))
+            coalesce(xsh:compute(node, exp), sh:coalesce(node, rest))
         }
     }
 }
 
 function sh:if(node, param) {
     let ((test e1 e2) = param) {
-        if (sh:compute(node, test), sh:compute(node, e1), sh:compute(node, e2))
+        if (xsh:compute(node, test), sh:compute(node, e1), sh:compute(node, e2))
     }
 }
 
 function sh:or(node, param) {
     let ((e1 e2) = param) {
-        return(sh:compute(node, e1) || sh:compute(node, e2))
+        return(xsh:compute(node, e1) || sh:compute(node, e2))
     }
 }
 
 
-function sh:function(name, node) {
+function xsh:function(name, node) {
     funcall(name, node)
 } 
 
-function sh:function(name, node, value) {
+function xsh:function(name, node, value) {
     funcall(name, node, value)
 } 
 
@@ -227,8 +228,16 @@ function xsd:boolean sh:hasValue(shape, s, v) {
 }
 
 function xsd:boolean sh:class(?shape, ?o, ?c){
-    if (sh:isetup(sh:type), sh:type(?shape, ?o, ?c), 
+    if (sh:isetup(sh:type), sh:type(?o, ?c), 
         exists { ?o rdf:type/rdfs:subClassOf* ?c })
+}
+
+function sh:class(object, class) {
+    exists { ?object rdf:type/rdfs:subClassOf* ?class }
+}
+
+function sh:type(object, class) {
+    exists { ?object rdf:type ?class }
 }
 
 function xsd:boolean sh:type(?shape, ?o, ?c){

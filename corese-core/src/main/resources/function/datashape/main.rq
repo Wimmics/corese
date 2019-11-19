@@ -4,6 +4,7 @@
 # Olivier Corby - Wimmics Inria I3S - 2016-2019
 #
 prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
 
 @import <target.rq> <focus.rq> <ppath.rq> <operator.rq> <path.rq> <core.rq> <constraint.rq>
 
@@ -63,6 +64,10 @@ function dt:graph sh:shacl(dt:graph shape, focus) {
         sh:finish() ;
         return (sh:validationReport())
     }
+}
+
+function sh:focus() {
+    sh:focuslist(xt:graph())
 }
 
 function sh:focuslist(dt:graph shape) {
@@ -226,7 +231,7 @@ function sh:defShapePath2() {
 
 # funcall(oper, shape, o, val)
 function sh:defShapePathExtension() {
-    let (alist = @(sh:evaluate sh:compute sh:trace sh:funeval)) {        
+    let (alist = @(xsh:evaluate xsh:compute xsh:trace xsh:funeval)) {        
         alist 
     }
 }
@@ -531,8 +536,7 @@ function sh:define(def){
 
 function dt:list sh:def(){
     let (list = @(
-        (sh:function        sh:FunctionConstraintComponent)
-        (sh:functioncst     sh:FunctionConstraintComponent)
+        (xsh:function       xsh:FunctionConstraintComponent)
         (sh:class           sh:ClassConstraintComponent)
         (sh:datatype        sh:DatatypeConstraintComponent)
         (sh:nodeKind        sh:NodeKindConstraintComponent)

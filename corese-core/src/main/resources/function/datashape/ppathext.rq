@@ -6,14 +6,15 @@
 #
 
 prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
 
 
 # PPath interpreter Extension 
 
 
-# function for [sh:function [ us:foo(arg) ]] path element
+# function for [xsh:function [ us:foo(arg) ]] path element
 # exp = (us:foo (arg))
-function dt:list sh:function(shape, node, exp, inv, url) {
+function dt:list xsh:function(shape, node, exp, inv, url) {
     let ((name param) = exp) {
         funcall(name, node, param)
     }
@@ -73,9 +74,9 @@ function sh:mynot(shape, node, list) {
 # ***********************************************
 
 
-# sh:path (us:location [ sh:ldpath (rdf:type) ])
+# sh:path (us:location [ xsh:ldpath (rdf:type) ])
 # ?path = (rdf:type)
-function dt:list sh:ldpath(?shape, ?s, ?path, ?inv, url) {
+function dt:list xsh:ldpath(?shape, ?s, ?path, ?inv, url) {
     let ((?p ?q) = ?path) {
     if (bound(?q), 
         return(sh:myldpath(?s, ?p, ?q)), 
@@ -109,7 +110,7 @@ function us:trace() {
 
 
 # ***********************************************
-# sh:service (<uri> rdf:type)
+# xsh:service (<uri> rdf:type)
 
 
 
@@ -120,7 +121,7 @@ function us:trace() {
 # Path p and p/q are processed here. 
 # Other path processed recursively by ppath interpreter with argument url = server URI
 #
-function dt:list sh:service(shape, node, arg, inv, url) {
+function dt:list xsh:service(shape, node, arg, inv, url) {
     #if (us:trace(), xt:print("service1:", node, arg), false);
     if (isBlank(node)) { return (xt:list()) } ;
     let ((server | path) = arg,
@@ -158,7 +159,7 @@ function dt:list sh:myservice(?uri, ?s, ?p, ?q) {
 # (ai:location [ <http://dbpedia.org/sparql> (rdf:type ) ] )
 # ?arg = (<http://dbpedia.org/sparql> rdf:type )
 #
-function dt:list sh:service2(shape, node, arg, inv, url) {
+function dt:list xsh:service2(shape, node, arg, inv, url) {
     #if (us:trace(), xt:print("service1:", node, ?arg), false);
     
     let ((server | path) = arg) {

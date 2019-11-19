@@ -5,6 +5,7 @@
 #
 
 prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix xsh: <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
 function sh:constraint(shape, sh, vis, nodeList) {
@@ -40,7 +41,7 @@ function sh:constraint1 (shape, sh, vis, nodeList) {
     }
 }
 
-# oper = sh:function
+# oper = xsh:function
 function sh:nodeextension (shape, sh, vis, nodeList) {
     let (res = true) {
         for ((oper name value) in sh:getConstraint(sh:nodeextension, shape, sh)) {  
@@ -125,15 +126,15 @@ function sh:getGenericShape(shape, sh, list) {
 
 
 
-# sh:function [ us:fun (h:age 50) ]
-# sh:function [ us:fun () ]
-# sh:function us:fun
-# sh:evaluate (rq:gt h:age (rq:mult 2 h:shoesize)) -> sh:function [ ... ]
+# xsh:function [ us:fun (h:age 50) ]
+# xsh:function [ us:fun () ]
+# xsh:function us:fun
+# xsh:evaluate (rq:gt h:age (rq:mult 2 h:shoesize)) -> xsh:function [ ... ]
 #
 function sh:getShapeExtension(shacl, sh, list) {
     let (select ?shacl ?sh ?list
             (aggregate(
-                xt:list(sh:function, ?name, ?arg)
+                xt:list(xsh:function, ?name, ?arg, ?ternary)
             ) as ?res) 
         where {
             graph ?shacl {  
@@ -142,11 +143,13 @@ function sh:getShapeExtension(shacl, sh, list) {
                     filter xt:member(?name, ?list)
                 }
                 union { values ?list {UNDEF}
-                    ?sh  sh:function ?fun optional { ?fun ?oper ?param } 
+                    ?sh  xsh:function ?fun optional { ?fun ?oper ?param } 
                     bind (coalesce(?oper, ?fun) as ?name)
                     bind (coalesce(?param, xt:list()) as ?value)
                 }
                 bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
+                # used in path.rq
+                bind (xt:isFunction(?name, 3) as ?ternary)
             }
         } ) {
         return(res)
@@ -157,7 +160,7 @@ function sh:getShapeExtension(shacl, sh, list) {
 
 # (fun x y) -> (fun (x y))
 function sh:compile(name, exp) {
-    if (name in (sh:evaluate, sh:compute), sh:compile(exp), exp)
+    if (name in (xsh:evaluate, xsh:compute), sh:compile(exp), exp)
 }
 
 

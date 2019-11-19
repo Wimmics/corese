@@ -256,6 +256,7 @@ public class NSManager extends ASTObject {
         def.put(ExpType.DT, "dt");
         def.put(CUSTOM, "cs");
         def.put(SPARQL, SPARQL_PREF);
+        //def.put(SHACL, "xsh");
         def.put(SHACL, "sh");
         def.put(SHACL_JAVA, "jsh");
         def.put("http://example.org/ns#", "ex");
@@ -270,6 +271,7 @@ public class NSManager extends ASTObject {
         for (String ns : def.keySet()) {
             defNamespace(ns, def.get(ns));
         }
+        defPrefix("xsh", SHACL);
     }
 
     public boolean isSystem(String ns) {

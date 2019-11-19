@@ -67,6 +67,11 @@ public class Shacl {
         setShacl(g);
     }
     
+    public Shacl(Graph g, Graph shacl) {
+        setGraph(g);
+        setShacl(shacl);
+    }
+    
     public Binding input() {
         if (getInput() == null) {
             setInput(Binding.create());
@@ -89,11 +94,50 @@ public class Shacl {
         return this;
     }
     
+    public IDatatype setup() {
+        IDatatype map = input().getVariable(SETUP_VAR);
+        if (map == null) {
+            map = DatatypeMap.map();
+            input().setVariable(SETUP_VAR, map);
+        }
+        return map;
+    }
+    
+    public Shacl setup(String name, boolean b){
+        setup().set(DatatypeMap.newResource(name), (b) ? DatatypeMap.TRUE : DatatypeMap.FALSE);
+        return this;
+    }
+    
+    
+    /**
+     * API aligned with LDScript
+     */
+    
+    public Graph shacl() throws EngineException {
+        return eval();
+    }
+    
+    public Graph shaclshape(IDatatype shape) throws EngineException {
+        return shape(shape);
+    }
+    
+    public Graph shaclshape(IDatatype shape, IDatatype node) throws EngineException {
+        return shape(shape, node);
+    }
+    
+    public Graph shaclnode(IDatatype node) throws EngineException {
+        return node(node);
+    }    
+    
+    /**
+     * Native Java API
+     */
+    
     /**
      * Evaluate shacl shape whole graph
      */
     public Graph eval() throws EngineException {
-        return eval(SHACL, getGraph());
+        return eval(SHACL, getShacl());
     }
     
     public Graph eval(Graph shacl) throws EngineException {

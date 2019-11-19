@@ -17,6 +17,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.IOException;
@@ -24,6 +25,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import org.junit.Test;
@@ -44,13 +46,14 @@ public class DataShapeTest {
         "core/property",
              "core/path",
              "core/node", 
-        "core/complex", 
+        "core/complex", // 1.673
         "core/misc", 
         "core/targets", 
             "core/validation-reports",
             
-       "sparql/property",
-       "sparql/node" ,
+//       "sparql/property",
+//       "sparql/node" ,
+       
        //  "sparql/component"
     };
     static String qm =
@@ -91,6 +94,7 @@ public class DataShapeTest {
             + "select * where {"
             + "?x sh:conforms ?b "
             + "}";
+    static IDatatype dtsuc, dtfail; 
     EarlReport report;
     int count = 0;
     int error = 0;
@@ -144,7 +148,8 @@ public class DataShapeTest {
     }
     
     void testThread() {
-        for (int i = 0; i<1; i++) {
+        for (int i = 0; i<5; i++) {
+            System.out.println("thread:" + i);
             new ShapeThread().start();
         }
     }
@@ -336,24 +341,59 @@ public class DataShapeTest {
         }
     }
     
-  
-
-     
+    
     Graph exec(String shape, String data) throws EngineException, LoadException {
-        return execds(shape, data);
+        return execjava(shape, data);
     }  
     
-    // 4.659
+    // 4.705 4.645
+    // 4.275
     Graph execds(String shape, String data) throws EngineException, LoadException {
         Graph g  = load(data);        
         Graph sh = (data.equals(shape)) ? g : load(shape);  
         Shacl shacl = new Shacl(g);
+        before(shacl);
         //shacl.setTrace(true);
-        Graph res = shacl.eval(sh);       
+        Graph res = shacl.eval(sh);  
+        after(shacl);
+        //trace();
         return res;
     }
     
-    // 4.7
+    void before(Shacl shacl) {
+        if (dtsuc != null) {
+            shacl.input().setVariable(shacl.TRACEMAPSUC_VAR, dtsuc);
+            shacl.input().setVariable(shacl.TRACEMAPFAIL_VAR, dtfail);
+        } 
+        //setup(shacl);
+    }
+    
+    void setup(Shacl shacl){
+        IDatatype map = DatatypeMap.map();
+        map.set(DatatypeMap.newResource(shacl.SETUP_DETAIL), DatatypeMap.TRUE);
+        shacl.input().setVariable(shacl.SETUP_VAR, map);
+    }
+    
+    void after(Shacl shacl) {
+        dtsuc  = shacl.output().getVariable(shacl.TRACEMAPSUC_VAR);
+        dtfail = shacl.output().getVariable(shacl.TRACEMAPFAIL_VAR);
+    }
+    
+    void trace() {
+        trace(dtsuc);
+        trace(dtfail);
+    }
+    
+    void trace(IDatatype dt) {
+        IDatatype key = DatatypeMap.newResource(NSManager.SHACL, "subtotal");
+        for (IDatatype name : dt.getMap().keySet()) {
+            IDatatype val = dt.getMap().get(name);
+            IDatatype count = val.getMap().get(key);
+            System.out.println(name + " " + count);
+        }
+    }
+    
+    // 4.471
     Graph execjava(String shape, String data) throws EngineException, LoadException {
         Graph g = load(data);
         Graph sh = (data.equals(shape)) ? g : load(shape, g);

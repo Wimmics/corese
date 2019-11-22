@@ -231,7 +231,8 @@ function sh:defShapePath2() {
 
 # funcall(oper, shape, o, val)
 function sh:defShapePathExtension() {
-    let (alist = @(xsh:evaluate xsh:compute xsh:trace xsh:funeval)) {        
+    let (alist = @(xsh:evaluate xsh:compute xsh:trace xsh:funeval 
+        xsh:withpath xsh:withoutpath xsh:withshape xsh:withoutshape)) {        
         alist 
     }
 }

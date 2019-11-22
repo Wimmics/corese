@@ -12,6 +12,41 @@ prefix xsh:  <http://www.w3.org/ns/shacl#>
 # PPath interpreter Extension 
 
 
+# extended path for triple
+# [xsh:node xsh:subject] [xsh:triple xsh:predicate]
+# exp = (oper param)
+# oper = xsh:node|xsh:triple ; param = xt:subject|xt:predicate|xt:object
+#
+function dt:list sh:pathtriple(shape, element, exp, inv, url) {
+    let ((oper param) = exp) {
+        funcall(oper, element, param)
+    }
+}
+
+# element = triple 
+# param = xt:graph|xsh:subject|xsh:predicate|xsh:object
+#
+function sh:node(element, param) {
+     xt:list(funcall(param, element))
+}
+
+# element = node 
+#
+function sh:triple(element, param) {
+    if (param = xt:subject,   xt:edges(element, bnode()),
+    if (param = xt:object,    xt:edges(bnode(), bnode(), element),
+    if (param = xt:predicate, xt:edges(element),
+    if (param = xt:graph,     sh:graphtriple(element), 
+    xt:list()))))
+}
+
+# element = node 
+function sh:graphtriple(element) {
+    letdyn (name = element) {
+        mapfindlist(lambda(atriple) { xt:graph(atriple) = name}, xt:edges())
+    }
+}
+
 # function for [xsh:function [ us:foo(arg) ]] path element
 # exp = (us:foo (arg))
 function dt:list xsh:function(shape, node, exp, inv, url) {

@@ -64,11 +64,15 @@ function sh:path1(shape, sh, vis, nodeList, p) {
 
 # xsh:function [ name (value) ]
 function sh:pathextension(shape, sh, vis, nodeList, p) {
+    #xt:print("path");
     let (res = true, cstList = sh:getConstraint(sh:pathextension, shape, sh)) {
         if (xt:size(cstList) > 0) {
-            #xt:print("path:", oper, val, p, nodeList);
+            #xt:print("path:", cstList);
             for (s in dt:list(nodeList)) {
+                #xt:print("path:", s, xt:turtle(p));
+                #xt:print("res:", coalesce(sh:path(shape, s, p), "undef"));
                 for (o in sh:path(shape, s, p)) {
+                    #xt:print("path:", o);
                     for ((oper name value ternary) in cstList) {
                         let (suc = coalesce(
                              if (ternary, 

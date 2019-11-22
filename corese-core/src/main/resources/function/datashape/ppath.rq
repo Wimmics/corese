@@ -26,16 +26,24 @@ prefix jc:   <function://fr.inria.corese.core.extension.SHACL>
 @import <ppathext.rq>
 
 function sh:path(dt:graph ?shape, ?exp) {
-  if (isURI(?exp) || isLiteral(?exp)) { ?exp }
+  if (isURI(exp)) {
+    return (exp)
+  }
+  else if (isExtension(exp)) {
+        # exp is a list
+        letdyn (shacl = shape) {
+            let (list = maplist(lambda(term) { 
+                    sh:path(shacl, term) }, exp)) {
+                return (xt:list(sh:sequence, list))
+            }
+        }
+  }
+  else if (isLiteral(exp)) { 
+     return (exp)
+  }
   else {
-    let ( 
-        select ?shape ?exp ?q ?path  where {
+    let (select ?shape ?exp ?q ?path  where {
             graph ?shape { 
-               # rdf:rest is for a sequence
-               # values ?q { 
-               #     rdf:rest sh:inversePath sh:alternativePath 
-               #     sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath  
-               #     xsh:service xsh:ldpath }
                 ?exp ?q ?path   filter (?q not in (rdf:first))
             }
         } ) {
@@ -60,9 +68,20 @@ function sh:statement(oper) {
 }
 
 function sh:operator(oper) {
-    sh:boolean(oper) || 
+    sh:boolean(oper) 
+    || 
     oper in (sh:pattern, sh:nodeKind, sh:datatype, sh:minLength, sh:maxLength, sh:hasValue, 
-    sh:validURI, xsh:function )
+    sh:validURI)
+    || sh:isTriple(oper)
+    || sh:isFunction(oper)
+}
+
+function sh:isTriple(oper) {
+    oper in (xsh:triple, xsh:node, xsh:subject, xsh:predicate, xsh:object, xsh:graph)
+}
+
+function sh:isFunction(oper) {
+    oper = xsh:function || xt:member(oper, sh:defShapePathExtension())
 }
 
 function sh:boolean(oper) {
@@ -95,15 +114,57 @@ function sh:extension(shape, oper, path) {
 
 # oper = sh:pattern ; path = 'http://dbpedia' 
 # return (sh:filter (sh:pattern 'http://dbpedia'))
+#
 function sh:parseOperator(shape, oper, path) {
-    if (oper = xsh:function, sh:parseFunction(shape, oper, path),
-    if (sh:boolean(oper), sh:parseBoolean(shape, oper, path),
-        xt:list(sh:filter, xt:list(oper, path))))
+    if (sh:isFunction(oper), sh:parseFunction(shape, oper, path),
+    if (sh:isTriple(oper),   sh:parsePathTriple(shape, oper, path),
+    if (sh:boolean(oper),    sh:parseBoolean(shape, oper, path),
+        xt:list(sh:filter, xt:list(oper, path)))))
+}
+
+# extended path for triple
+# [xsh:node xsh:subject] [xsh:triple xsh:predicate]
+# oper = xsh:node|xsh:triple ; path = xsh:subject|xsh:predicate|xsh:object
+# oper and path can be switched
+#
+function sh:parsePathTriple(shape, oper, path) {
+    if (oper in (xsh:node, xsh:triple),
+        xt:list(sh:pathtriple, xt:list(oper, sh:pathfun(path))),
+        xt:list(sh:pathtriple, xt:list(path, sh:pathfun(oper))))
+}
+
+function sh:pathfun(path) {
+    if (path = xsh:subject,   xt:subject,
+    if (path = xsh:object,    xt:object, 
+    if (path = xsh:predicate, xt:predicate,
+    xt:graph)))
 }
 
 # [ xsh:function [ us:fun (arg) ] ]
 # [ xsh:function us:fun ]
+# us:fun (arg) where oper = us:fun ; fun = (arg)
+# 
 function sh:parseFunction(shape, oper, fun) {
+    let (select * where {
+        graph ?shape { 
+            {
+                [] xsh:function ?fun 
+                optional { ?fun ?pred ?param }             
+                bind (coalesce(?pred, ?fun) as ?name)
+                bind (coalesce(?param, xt:list()) as ?value)
+                bind (sh:getValueList(?value) as ?arg)
+            }
+            union {
+                [] ?oper ?fun filter (?oper != xsh:function)
+                bind (?oper as ?name)
+                bind (sh:getValueList(?fun) as ?arg)
+            }
+        }}){
+        xt:list(xsh:function, xt:list(name, arg))
+    }
+}
+
+function sh:parseFunction2(shape, oper, fun) {
     let (select * where {
         graph ?shape { 
             [] xsh:function ?fun 
@@ -153,13 +214,11 @@ function dt:list sh:tolist(dt:graph ?shape, ?exp){
 # ?s is subject, ?p is PP expression
 # ?s = us:John ; ?p = [sh:zeroOrMorePath foaf:knows]
 #
-function dt:list sh:path(dt:graph shape, s, p){    
+function dt:list sh:path(dt:graph shape, s, p){  
+    #xt:print("path:", sh:getPath(shape, p));
     sh:path(shape, s, sh:getPath(shape, p), false)
 }
 
-function sh:pathfinder(path, node) {
-    sh:path(sh:shaclGraph(), node, path)
-}
 
 #
 # rewrite PP once as a list and record it
@@ -169,6 +228,17 @@ function sh:getPath(dt:graph shape, p){
      sh:getConstraint(sh:path, p), 
      sh:setConstraint(sh:path, p, sh:path(shape, p))))
 }
+
+
+# ********************************************************************************************
+
+
+# user api
+function sh:pathfinder(path, node) {
+    sh:path(sh:shaclGraph(), node, path)
+}
+
+
 
 
 # ********************************************************************************************
@@ -321,8 +391,10 @@ function dt:list sh:seqlist(dt:graph shape, node, dt:list expList, xsd:boolean i
 function dt:list sh:seqlistmap(dt:graph shape, nodeList, dt:list expList, xsd:boolean inv, url) {
     let (res = xt:list()) {
         for (next in nodeList) { 
-            # merge removes duplicate nodes
-            set(res = xt:merge(res, sh:seqlist(shape, next, expList, inv, url)))
+            let (list = sh:seqlist(shape, next, expList, inv, url)) {
+                # merge removes duplicate nodes
+                set(res = xt:merge(res, list))
+            }
         } ;
         return (res)
     }
@@ -374,7 +446,7 @@ function dt:list sh:predicate(?s, ?p){
     xt:objects(?s, ?p)
 }
 
-function dt:list sh:predicate1(?s, ?p){
+function dt:list sh:predicate2(?s, ?p){
     let (select ?s ?p (aggregate(?o) as ?l) where  { ?s ?p ?o }){
         return(?l)
     }
@@ -390,7 +462,7 @@ function dt:list sh:inverse(?o, ?p){
     xt:subjects(?p, ?o)
 }
 
-function dt:list sh:inverse1(?o, ?p){
+function dt:list sh:inverse2(?o, ?p){
     let (select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){
         return(?l)
     }

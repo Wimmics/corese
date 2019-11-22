@@ -7,6 +7,16 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix xsh: <http://www.w3.org/ns/shacl#> 
 
+
+
+# targetFunction return triples of predicate 
+function xsh:triple(exp) {
+    let ((predicate) = exp) {
+        xt:edges(predicate)
+    }
+}
+
+
 #
 # Return mappings of (sh=shape; list=target node list)
 #

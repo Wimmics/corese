@@ -130,6 +130,7 @@ function sh:getGenericShape(shape, sh, list) {
 # xsh:function [ us:fun () ]
 # xsh:function us:fun
 # xsh:evaluate (rq:gt h:age (rq:mult 2 h:shoesize)) -> xsh:function [ ... ]
+# list = (sh:evaluate sh:compute ...)
 #
 function sh:getShapeExtension(shacl, sh, list) {
     let (select ?shacl ?sh ?list

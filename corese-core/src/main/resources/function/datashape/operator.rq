@@ -12,6 +12,10 @@ prefix xsh:  <http://www.w3.org/ns/shacl#>
 # Extension
 #
 
+#
+# constraint function return xsd:boolean 
+#
+
 # sh:trace = sh:eval with trace
 function xsh:trace(node, exp) {
     let ((shape) = exp,
@@ -32,11 +36,69 @@ function xsh:trace(subject, node, exp) {
 
 # sh:funeval ( [sh:class foaf:Person] )
 # shortcut for 
-# xsh:function [ sh:myeval ([sh:class foaf:Person]) ]
+# xsh:function [ sh:eval ([sh:class foaf:Person]) ]
 function xsh:funeval(node, exp) {
     let ((shape) = exp,
          suc = sh:eval(shape, node)) {
         return (suc)
+    }
+}
+
+function sh:success(node, exp) {
+    let ((show) = exp) {
+        if (coalesce(show, false), xt:print("success:", node), true);
+        return (true)
+    }
+}
+
+function sh:failure(node, exp) {
+    let ((show) = exp) {
+        if (coalesce(show, false), xt:print("failure:", node), true);
+        return (false)
+    }
+}
+
+
+
+
+#
+# path function return list of node
+#
+
+# sh:path ( [ sh:withpath (rdf:type) ] )
+function xsh:withpath(node, exp) {
+    #xt:print("with path:", exp);
+    if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:withpath", xt:list(exp)), true);
+    let ((path) = exp, 
+         list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node)) {
+        if (xt:size(list) > 0, xt:list(node), xt:list())
+    }
+}
+
+# sh:path ( [ sh:withoutpath (rdf:type) ] )
+function xsh:withoutpath(node, exp) {
+    if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:withoutpath", xt:list(exp)), true);
+    let ((path) = exp, 
+         list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node)) {
+        if (xt:size(list) = 0, xt:list(node), xt:list())
+    }
+}
+
+# sh:path ( [ sh:withshape ([ shape constraint]) ] )
+function xsh:withshape(node, exp) {
+    #xt:print("with shape:", exp);
+    let ((shape) = exp, 
+          suc = sh:eval(shape, node)) {
+        if (suc, xt:list(node), xt:list())
+    }
+}
+
+
+# sh:path ( [ sh:withshape ([ shape constraint]) ] )
+function xsh:withoutshape(node, exp) {
+    let ((shape) = exp, 
+          suc = sh:eval(shape, node)) {
+        if (suc, xt:list(), xt:list(node))
     }
 }
 

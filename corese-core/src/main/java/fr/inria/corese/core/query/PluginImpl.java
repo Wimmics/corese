@@ -958,9 +958,9 @@ public class PluginImpl
      */
     @Override
     public IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) { 
-        if (subj==null || obj==null || subj.isBlank() || obj.isBlank()) {
-            return DatatypeMap.createObject(getDataProducer(env, p, subj, pred, obj));
-        }
+//        if (subj==null || obj==null || subj.isBlank() || obj.isBlank()) {           
+//            return DatatypeMap.createObject(getDataProducer(env, p, subj, pred, obj));
+//        }
         return edgeList(env, p, subj, pred, obj);
     }
     
@@ -988,7 +988,7 @@ public class PluginImpl
     }
           
     DataProducer getDataProducer(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj){
-       return new DataProducer(getGraph(p)).iterate(subj, pred, obj);       
+       return new DataProducer(getGraph(p)).setDuplicate(true).iterate(subj, pred, obj);       
     } 
     
   

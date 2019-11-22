@@ -42,6 +42,7 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
     DataFrom from;
     boolean isNamedGraph;
     private boolean skipEdgeMetadata = false;
+    private boolean duplicate = false;
 
     public DataProducer(Graph g) {
         graph = g;
@@ -330,6 +331,20 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
     boolean same(Node n1, Node n2) {
         return n1.getIndex() == n2.getIndex() && n1.same(n2);
     }
+    
+    @Override
+    public int size() {
+        boolean b = isDuplicate();
+        setDuplicate(false);
+        int i = 0;
+        for (Edge e : this) {
+            if (e != null) {
+                i++;
+            }
+        }
+        setDuplicate(b);
+        return i;
+    }
 
     /**
      * Main function iterate Edges.
@@ -375,9 +390,16 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
             }
                     
             record(edge);
-            return edge;
+            return result(edge);
         }
         return null;
+    }
+    
+    Edge result(Edge edge) {
+        if (isDuplicate()) {
+            return graph.getEdgeFactory().copy(edge);
+        }
+        return edge;
     }
       
     /**
@@ -499,6 +521,21 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
             // use case: filter = from(g1)
             filter = new DataFilterAnd(filter, f);
         }
+    }
+
+    /**
+     * @return the duplicate
+     */
+    public boolean isDuplicate() {
+        return duplicate;
+    }
+
+    /**
+     * @param duplicate the duplicate to set
+     */
+    public DataProducer setDuplicate(boolean duplicate) {
+        this.duplicate = duplicate;
+        return this;
     }
     
 }

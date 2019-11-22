@@ -32,6 +32,72 @@ public class DataShapeExt {
     
         static String data  = Thread.currentThread().getContextClassLoader().getResource("data/").getPath() ;
 
+        
+            @Test
+    public void testshaclext3() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#>"
+                + "insert data {"
+                + "[] a sh:NodeShape ; sh:targetClass h:Person;"
+                + "sh:property ["
+                + "sh:path ([xsh:withoutpath ((rdf:type rdfs:subClassOf rdfs:subClassOf ))]"
+                + "     rdf:type [xsh:withshape([sh:hasValue h:Person])]) ;"
+                + "sh:function [ sh:failure() ] ] "
+                + "}";
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new Shacl(g);
+        Graph gg = shacl.eval();
+       //System.out.println(Transformer.turtle(gg));
+       assertEquals(47, gg.size());
+    }    
+        
+        
+          @Test
+    public void testshaclext2() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "insert data {"
+                + "[] a sh:NodeShape ; sh:targetClass h:Person;"
+                + "sh:property ["
+                + "sh:path ([xsh:withoutpath ((rdf:type rdfs:subClassOf rdfs:subClassOf ))]"
+                + "     rdf:type [xsh:withoutshape([sh:hasValue h:Person])]) ;"
+                + "sh:function [ sh:failure() ] ] "
+                + "}";
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new Shacl(g);
+        Graph gg = shacl.eval();
+       //System.out.println(Transformer.turtle(gg));
+       assertEquals(2, gg.size());
+    }
+        
+      
+         @Test
+    public void testshaclext1() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "insert data {"
+                + "[] a sh:NodeShape ;"
+                + "sh:targetFunction [ xsh:triple(rdfs:range) ] ;"
+                + "sh:property ["
+                + "sh:path ([xsh:subject xsh:node][xsh:predicate xsh:triple ]) ;"
+                + "    sh:minCount 1]"
+                + "}";
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new Shacl(g);
+        Graph gg = shacl.eval();
+        assertEquals(29, gg.size());
+    }
+    
+    Graph init() throws EngineException, LoadException, IOException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Load ld = Load.create(g);
+        ld.parse(data + "test/human1.rdf");
+        ld.parse(data + "test/human2.rdf");
+        ld.parse(data + "test/human.rdfs");
+        return g;
+    }
     
          @Test
     public void testshaclexp3() throws EngineException, LoadException, IOException, TransformerException {
@@ -49,7 +115,7 @@ public class DataShapeExt {
         
        Shacl shacl = new Shacl(g);
        Graph gg = shacl.eval();
-       System.out.println(Transformer.turtle(gg));
+       //System.out.println(Transformer.turtle(gg));
          System.out.println(gg.size());
         //assertEquals(11, gg.size());
     }

@@ -1,4 +1,5 @@
 @prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsh: <http://www.w3.org/ns/shacl#> .
 @prefix h:  <http://www.inria.fr/2015/humans#>
 
 
@@ -6,6 +7,6 @@ us:test1 a sh:NodeShape ;
 sh:targetClass h:Person ;
 sh:property  [
     sh:path h:age ;
-    sh:evaluate (rq:gt (rq:self) 18) 
+    xsh:evaluate (rq:gt (rq:self) 18) 
 ] 
 .

@@ -718,6 +718,7 @@ public class Processor {
 		defoper(XT_TOGRAPH,      ExprType.XT_TOGRAPH);
 		defoper(XT_GRAPH,        ExprType.XT_GRAPH);
 		defoper(XT_SUBJECT,      ExprType.XT_SUBJECT);
+		defoper(EXT+"predicate", ExprType.XT_PROPERTY);
 		defoper(XT_PROPERTY,     ExprType.XT_PROPERTY);
 		defoper(XT_OBJECT,       ExprType.XT_OBJECT);
 		defoper(XT_VALUE,        ExprType.XT_VALUE);                

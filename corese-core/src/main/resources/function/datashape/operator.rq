@@ -14,6 +14,7 @@ prefix xsh:  <http://www.w3.org/ns/shacl#>
 
 #
 # constraint function return xsd:boolean 
+# called by path and constraint funcall as other operators
 #
 
 # sh:trace = sh:eval with trace
@@ -62,30 +63,31 @@ function sh:failure(node, exp) {
 
 
 #
-# path function return list of node
+# path function return list of node 
+# called by xsh:function in ppathext
 #
 
-# sh:path ( [ sh:withpath (rdf:type) ] )
-function xsh:withpath(node, exp) {
+# sh:path ( [ sh:exist (rdf:type) ] )
+function xsh:exist(node, exp) {
     #xt:print("with path:", exp);
-    if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:withpath", xt:list(exp)), true);
+    if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:exist", xt:list(exp)), true);
     let ((path) = exp, 
          list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node)) {
         if (xt:size(list) > 0, xt:list(node), xt:list())
     }
 }
 
-# sh:path ( [ sh:withoutpath (rdf:type) ] )
-function xsh:withoutpath(node, exp) {
-    if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:withoutpath", xt:list(exp)), true);
+# sh:path ( [ sh:notExist (rdf:type) ] )
+function xsh:notExist(node, exp) {
+    if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:notExist", xt:list(exp)), true);
     let ((path) = exp, 
          list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node)) {
         if (xt:size(list) = 0, xt:list(node), xt:list())
     }
 }
 
-# sh:path ( [ sh:withshape ([ shape constraint]) ] )
-function xsh:withshape(node, exp) {
+# sh:path ( [ sh:filter ([ shape constraint]) ] )
+function xsh:filter(node, exp) {
     #xt:print("with shape:", exp);
     let ((shape) = exp, 
           suc = sh:eval(shape, node)) {
@@ -94,8 +96,8 @@ function xsh:withshape(node, exp) {
 }
 
 
-# sh:path ( [ sh:withshape ([ shape constraint]) ] )
-function xsh:withoutshape(node, exp) {
+# sh:path ( [ sh:notFilter ([ shape constraint]) ] )
+function xsh:notFilter(node, exp) {
     let ((shape) = exp, 
           suc = sh:eval(shape, node)) {
         if (suc, xt:list(), xt:list(node))
@@ -103,7 +105,7 @@ function xsh:withoutshape(node, exp) {
 }
 
 
-#
+# Expression interpreter
 
 # evaluator for xsh:function [ xsh:compute (rq:gt h:age (rq:mult 2 h:shoesize)) ]
 # exp = (rq:gt h:age (rq:mult 2 h:shoesize))
@@ -145,7 +147,7 @@ function sh:defun() {
     sh:defun(rq:coalesce, sh:coalesce);
     sh:defun(rq:self, sh:self);
     sh:defun(rq:list, sh:list) ;
-    sh:defun(rq:exist, sh:exist)
+    sh:defun(rq:exist, sh:myexist)
 }
 
 function xsh:compute(node, oper, param) {
@@ -153,7 +155,7 @@ function xsh:compute(node, oper, param) {
 }
 
 # param = (URI)
-function sh:exist(node, param) {
+function sh:myexist(node, param) {
     return (safe(xt:value(node, xt:get(param, 0))))
 }
 
@@ -353,9 +355,6 @@ function xsd:boolean sh:property(dt:graph shape, o, cst){
     sh:core(shape, cst, true, o)
 }
 
-function xsd:boolean sh:qualifiedShape(subject, dt:graph shape, qsh){
-    sh:core(shape, qsh, false, subject)
-}
 
 
 

@@ -7,15 +7,21 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
+
+function sh:core(shape, sh, vis, nodeList) {
+    sh:core(shape, sh, vis, nodeList, false)
+}
+
 #
 # main function
 # shape: shacl graph
 # sh: current shape
 # vis: true if report is needed
 # nodeList:  list of target nodes of shape sh
+# present=true: fail if path is empty (when there is a path)
 #
-function sh:core(shape, sh, vis, nodeList) {
-    let (b1 = sh:pathcore(shape, sh, vis, nodeList),
+function sh:core(shape, sh, vis, nodeList, present) {
+    let (b1 = sh:pathcore(shape, sh, vis, nodeList, present),
          b2 = sh:booleancore(shape, sh, vis, nodeList),
          b3 = sh:constraintcore(shape, sh, vis, nodeList),
          b4 = sh:closedcore(shape, sh, vis, nodeList)         
@@ -50,11 +56,11 @@ function sh:closedcore(shape, sh, vis, nodeList) {
 }
  
 
-function sh:pathcore(shape, sh, vis, nodeList) {
+function sh:pathcore(shape, sh, vis, nodeList, present) {
     let (res = true) {
         for ((cst path) in sh:getConstraint(sh:pathcore, shape, sh)) {
             if (sh:trace(), xt:print("core path:", sh, nodeList), true); 
-            let (suc = coalesce(sh:path(shape, cst, vis, nodeList, path), false)) {
+            let (suc = coalesce(sh:path(shape, cst, vis, nodeList, path, present), false)) {
                 if (suc, true, set(res = false))
             }
         } ;

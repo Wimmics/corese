@@ -40,8 +40,8 @@ public class DataShapeExt {
                 + "insert data {"
                 + "[] a sh:NodeShape ; sh:targetClass h:Person;"
                 + "sh:property ["
-                + "sh:path ([xsh:withoutpath ((rdf:type rdfs:subClassOf rdfs:subClassOf ))]"
-                + "     rdf:type [xsh:withshape([sh:hasValue h:Person])]) ;"
+                + "sh:path ([xsh:notExist ((rdf:type rdfs:subClassOf rdfs:subClassOf ))]"
+                + "     rdf:type [xsh:filter([sh:hasValue h:Person])]) ;"
                 + "sh:function [ sh:failure() ] ] "
                 + "}";
         QueryProcess exec = QueryProcess.create(g);
@@ -59,8 +59,8 @@ public class DataShapeExt {
         String i = "insert data {"
                 + "[] a sh:NodeShape ; sh:targetClass h:Person;"
                 + "sh:property ["
-                + "sh:path ([xsh:withoutpath ((rdf:type rdfs:subClassOf rdfs:subClassOf ))]"
-                + "     rdf:type [xsh:withoutshape([sh:hasValue h:Person])]) ;"
+                + "sh:path ([xsh:notExist ((rdf:type rdfs:subClassOf rdfs:subClassOf ))]"
+                + "     rdf:type [xsh:filter([sh:not [sh:hasValue h:Person]])]) ;"
                 + "sh:function [ sh:failure() ] ] "
                 + "}";
         QueryProcess exec = QueryProcess.create(g);

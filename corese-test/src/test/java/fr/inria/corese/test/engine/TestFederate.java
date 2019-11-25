@@ -4,6 +4,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.shacl.Shacl;
+import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -59,7 +60,7 @@ public class TestFederate {
                    + "sh:property ["
                    + "sh:path (foaf:name [<http://fr.dbpedia.org/sparql> "
                    + "( [sh:inversePath rdfs:label] <http://purl.org/dc/terms/subject> '*' )] "
-                   + "[sh:nodeKind sh:Literal]"
+                   + "[xsh:filter([sh:nodeKind sh:Literal])]"
                    + ");"
                    + "sh:datatype rdf:langString"
                    + "]"
@@ -68,9 +69,9 @@ public class TestFederate {
          String q =                   
                    "select ?r where { "
                 + "bind (us:test() as ?t) "
-               // + "bind (sh:shacl() as ?gg) "
-                + "bind (jsh:sh_shacl() as ?g) "
-               + "bind (xt:print(xt:turtle(?g)) as ?p) "
+                + "bind (sh:shacl() as ?g) "
+               // + "bind (jsh:sh_shacl() as ?g) "
+               //+ "bind (xt:print(xt:turtle(?g)) as ?p) "
                 + "graph ?g { [] sh:result ?r }"
                 + "}  "
                 + "function us:test() {set(traceService=false)}";
@@ -95,11 +96,13 @@ public class TestFederate {
                  + "sh:targetSubjectsOf us:location ;"
                  + "sh:property ["
                  + "sh:path ("
-                 + "us:location [sh:nodeKind sh:IRI]"
+                 + "us:location [xsh:filter([sh:nodeKind sh:IRI])]"
                  + "[sh:alternativePath ("
-                 + "([sh:pattern 'http://fr.dbpedia.org/resource']"               
+                 + "("
+                 + "[xsh:filter([sh:pattern 'http://fr.dbpedia.org/resource'])]"               
                  + "[<http://fr.dbpedia.org/sparql> (rdf:type  rdfs:label) ]  )"
-                 + "([sh:pattern 'http://dbpedia.org/resource']"               
+                 + "("
+                 + "[xsh:filter([sh:pattern 'http://dbpedia.org/resource'])]"               
                  + "[<http://dbpedia.org/sparql> (rdf:type rdfs:label)]  )"
                  + ") ] );"
                  + "sh:datatype rdf:langString "
@@ -138,12 +141,13 @@ public class TestFederate {
                 + "us:shape a sh:NodeShape ;"
                 + "sh:targetSubjectsOf us:location ;"
                 + "sh:property ["
-                + "sh:path (us:location [sh:nodeKind sh:IRI]"
-                + "[sh:or ("
-                + "[sh:not ([sh:pattern 'http://fr.dbpedia.org/resource'])]"
+                + "sh:path (us:location [xsh:filter([sh:nodeKind sh:IRI])]"
+                + "[xsh:filter([sh:or ("
+                + "[sh:not [sh:pattern 'http://fr.dbpedia.org/resource']]"
                 + "[sh:hasValue <http://fr.dbpedia.org/resource/Francee>] "
-                + "[sh:not ([sh:minLength 100])] "
-                + ") ]"
+               // + "[sh:minLength 100] "
+                + "[sh:not [sh:minLength 100]] "
+                + ")])]"
                 + "[<http://fr.dbpedia.org/sparql> (rdf:type rdfs:label)]  "
                 + ");"
                 + "sh:datatype rdf:langString "
@@ -151,17 +155,20 @@ public class TestFederate {
                 + "}" ;
         
          String q = 
-                "select ?r where { "
+                "select ?g ?r where { "
                 + "bind (us:test() as ?t)"
                 + "bind (sh:shacl() as ?g) "
-                + "bind (xt:print(xt:turtle(?g)) as ?p) "
+               // + "bind (xt:print(xt:turtle(?g)) as ?p) "
                 + "graph ?g { [] sh:result ?r }"
                 + "}  "
                 + "function us:test() {set(traceService=false)}";
                        
         exec.query(i);
         Mappings map = exec.query(q);
-         assertEquals(1, map.size());
+//        IDatatype dt = (IDatatype) map.getValue("?g");
+//        Graph g = (Graph) dt.getPointerObject();
+//        System.out.println(Transformer.turtle(g));
+        assertEquals(1, map.size());
     }
 
     
@@ -286,7 +293,7 @@ public class TestFederate {
         QueryProcess exec = QueryProcess.create(g);
 
         String q = "prefix h: <http://www.inria.fr/2015/humans#>"
-                + "@trace "
+               // + "@trace "
                 + "@variable "
                 + "@type  kg:exist "
                 + "@federate "

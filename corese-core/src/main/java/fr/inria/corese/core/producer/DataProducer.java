@@ -101,13 +101,26 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
     } 
      
     /**
-     * if arg is bnode and bnode is in target graph, bnode is considered as bnode of target graph
-     * if arg is bnode and bnode is not in target graph, it is considered as a joker (a variable) in the triple pattern
+     * if arg is bnode: 
+     *  if bnode is in target graph, it is considered as bnode of target graph
+     *  if bnode is not in target graph, it is considered as a joker (a variable) in the triple pattern
      */
     public DataProducer iterate(IDatatype s, IDatatype p, IDatatype o) {
         Node ns = null, np, no = null;
-        if (p == null || p.isBlank()){
+        if (p == null) { 
             np = graph.getTopProperty();
+        }
+        else if (p.isBlank()){
+            // check whether bnode is a graph bnode
+            np = graph.getNode(p);
+            if (np == null) {
+                // not graph bnode, it is a joker
+                np = graph.getTopProperty();
+            }
+            else {
+                // graph bnode, it cannot be a property
+                return empty();
+            }
         }
         else {
             np = graph.getPropertyNode(p);

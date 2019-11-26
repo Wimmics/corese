@@ -12,7 +12,7 @@ function sh:constraint(shape, sh, vis, nodeList) {
     let (b1 = sh:constraint1 (shape, sh, vis, nodeList),
          b2 = sh:constraint2 (shape, sh, vis, nodeList),
          b3 = sh:cstpattern  (shape, sh, vis, nodeList),
-         b4 = sh:nodeextension  (shape, sh, vis, nodeList),
+         b4 = sh:nodeextension(shape, sh, vis, nodeList),
          b5 = sh:cstsparql   (shape, sh, vis, nodeList)
          ) {
         return (b1 && b2 && b3 && b4 && b5)

@@ -123,11 +123,15 @@ function sh:parsePathTriple(shape, oper, path) {
         xt:list(sh:pathtriple, xt:list(path, sh:pathfun(oper))))
 }
 
+# [xsh:node path]
+#
 function sh:pathfun(path) {
     if (path = xsh:subject,   xt:subject,
     if (path = xsh:object,    xt:object, 
     if (path = xsh:predicate, xt:predicate,
-    xt:graph)))
+    if (path = xsh:graph,     xt:graph,
+    if (isBlank(path),        maplist(sh:pathfun, sh:tolist(path)),     
+    xsh:undef)))))
 }
 
 # [ xsh:function [ us:fun (arg) ] ]
@@ -157,7 +161,7 @@ function sh:parseFunction(shape, oper, fun) {
 
 
 #
-# Rewrite recursively RDF list ?exp as a list
+# Rewrite recursively RDF path list ?exp as a list
 #
 function dt:list sh:listsh(dt:graph ?shape, ?exp){
    let (select ?shape ?exp (aggregate(sh:path(?shape, ?e)) as ?l)  
@@ -166,13 +170,18 @@ function dt:list sh:listsh(dt:graph ?shape, ?exp){
     }
 }
 
-function dt:list sh:tolist(dt:graph ?shape, ?exp){
-   let ( 
-        select ?shape ?exp (aggregate(?e) as ?l)  
+function dt:list sh:tolist(exp){
+     sh:tolist(sh:shaclGraph(), exp)   
+}
+
+function dt:list sh:tolist(dt:graph shape, exp){
+   let (select ?shape ?exp (aggregate(?e) as ?l)  
         where { graph ?shape { ?exp rdf:rest*/rdf:first ?e }}) {
         return(?l)
     }
 }
+
+
 
 # ********************************************************************************************
 
@@ -203,7 +212,7 @@ function sh:getPath(dt:graph shape, p){
 
 
 
-# user api
+# user api, evaluate SHACL path in SHACL RDF format
 function sh:pathfinder(path, node) {
     sh:path(sh:shaclGraph(), node, path)
 }
@@ -231,6 +240,7 @@ function dt:list sh:path(dt:graph shape, node, exp, xsd:boolean inv){
 
 #
 # Public extension function to be used out of SHACL
+# evaluate path compiled as dt:list
 #
 function sh:evalpath(node, exp) {
     sh:evalpath(xt:graph(), node, node, exp, false, st:null)

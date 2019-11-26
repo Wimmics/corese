@@ -232,7 +232,7 @@ function sh:defShapePath2() {
 # funcall(oper, shape, o, val)
 function sh:defShapePathExtension() {
     let (alist = @(xsh:evaluate xsh:compute xsh:trace xsh:funeval 
-        xsh:exist xsh:notExist xsh:filter xsh:notFilter)) {        
+        xsh:exist xsh:notExist xsh:filter xsh:notFilter xsh:equal)) {        
         alist 
     }
 }

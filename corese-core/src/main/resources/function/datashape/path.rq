@@ -239,7 +239,28 @@ function sh:sibling() {
 
 # ************** operators
 
+# property shape
+#
 function sh:qualifiedValueShape (shape, sh, vis, s, p, qsh, disjoint, amin, amax) {
+    let (nodeList  = sh:path(shape, s, p)) {
+        #xt:print("qualif1:", s, nodeList);
+        # list = path nodes that match qualified shape
+        let (list = mapfindlist(sh:qualifiedShape, nodeList, xt:list(shape), qsh),
+            qlist = if (coalesce(disjoint, false), 
+                # remove elements that are in sibling shapes
+                mapfindlist(sh:disjoint, list, xt:list(shape), qsh, s), list),
+            suc1 = xt:size(qlist) >= amin, 
+            suc2 = if (amax = -1, true, xt:size(qlist) <= amax)) {
+            
+            #xt:print("qualif3:", s, qlist);
+            sh:report(sh:qualifiedMinCount, sh, shape, s, p, s, suc1, vis) ;
+            sh:report(sh:qualifiedMaxCount, sh, shape, s, p, s, suc2, vis) ;
+            return (suc1 && suc2)
+        }
+    }
+}
+
+function sh:qualifiedValueShape2 (shape, sh, vis, s, p, qsh, disjoint, amin, amax) {
     let (nodeList  = sh:path(shape, s, p)) {
         #xt:print("qualif1:", s, nodeList);
         if (xt:size(nodeList) = 0) {
@@ -262,6 +283,7 @@ function sh:qualifiedValueShape (shape, sh, vis, s, p, qsh, disjoint, amin, amax
         }
     }
 }
+
 
 #
 # qsh = [ sh:path us:genre ; sh:hasValue us:female ]

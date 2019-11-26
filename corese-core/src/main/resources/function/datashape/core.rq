@@ -31,8 +31,8 @@ function sh:core(shape, sh, vis, nodeList, present) {
 }
 
 # user api
-function sh:eval(sh, node) {
-    sh:core(sh:shaclGraph(), sh, false, dt:list(node))
+function sh:eval(shape, node) {
+    sh:core(sh:shaclGraph(), shape, false, dt:list(node))
 }
 
 function sh:closedcore(shape, sh, vis, nodeList) {

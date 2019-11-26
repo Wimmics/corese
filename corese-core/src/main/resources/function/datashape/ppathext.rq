@@ -35,12 +35,22 @@ function sh:triplefun(name) {
 function sh:mynode(subject, element, param) {
     #xt:print("subject:", subject, "element:", element, "param:", param);
     if (isExtension(element), # element : triple
-        xt:list(funcall(param, element)),
+        sh:mynode(element, param),
     if (isExtension(subject), # element: node ; subject: s p o ;  -> compare node with s or o
         if (funcall(param, subject) = element, xt:list(element), xt:list()),
         # subject and element are nodes
     if (subject = element, xt:list(element), xt:list())))   
 }
+
+# element: triple
+# param = xt:subject | .. | (xt:subject xt:object)
+#
+function sh:mynode(element, param) {
+    if (isURI(param), 
+        xt:list(funcall(param, element)),
+        xt:merge(maplist(rq:funcall, param, xt:list(element))))
+}
+
 
 # element = node 
 #
@@ -60,13 +70,17 @@ function sh:graphtriple(element) {
     }
 }
 
+
+
+
+
 # function for [xsh:function [ us:foo(arg) ]] path element
 # exp = (us:foo (arg))
 # function name defined in operator, eg: xsh:exist, xsh:filter
 #
 function dt:list xsh:function(shape, subject, node, exp, inv, url) {
     let ((name param) = exp) {
-        funcall(name, node, param)
+        funcall(name, subject, node, param)
     }
 }
 

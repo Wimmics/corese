@@ -68,7 +68,7 @@ function sh:failure(node, exp) {
 #
 
 # sh:path ( [ sh:exist (rdf:type) ] )
-function xsh:exist(node, exp) {
+function xsh:exist(subject, node, exp) {
     #xt:print("with path:", exp);
     if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:exist", xt:list(exp)), true);
     let ((path) = exp, 
@@ -78,7 +78,7 @@ function xsh:exist(node, exp) {
 }
 
 # sh:path ( [ sh:notExist (rdf:type) ] )
-function xsh:notExist(node, exp) {
+function xsh:notExist(subject, node, exp) {
     if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:notExist", xt:list(exp)), true);
     let ((path) = exp, 
          list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node)) {
@@ -86,8 +86,8 @@ function xsh:notExist(node, exp) {
     }
 }
 
-# sh:path ( [ sh:filter ([ shape constraint]) ] )
-function xsh:filter(node, exp) {
+# sh:path ( [ sh:filter ([shape constraint]) ] )
+function xsh:filter(subject, node, exp) {
     #xt:print("with shape:", exp);
     let ((shape) = exp, 
           suc = sh:eval(shape, node)) {
@@ -96,14 +96,36 @@ function xsh:filter(node, exp) {
 }
 
 
-# sh:path ( [ sh:notFilter ([ shape constraint]) ] )
-function xsh:notFilter(node, exp) {
+# sh:path ( [ sh:notFilter ([shape constraint]) ] )
+function xsh:notFilter(subject, node, exp) {
     let ((shape) = exp, 
           suc = sh:eval(shape, node)) {
         if (suc, xt:list(), xt:list(node))
     }
 }
 
+
+#  [xsh:triple xsh:predicate] [xsh:equal (xsh:subject xsh:object)]
+# exp = (xsh:subject xsh:object)
+#
+function sh:equal(subject, element, exp) {
+    let ((fst snd) = exp) {
+        if (funcall(fst, element) = funcall(snd, element), xt:list(funcall(fst, element)), xt:list())
+    } 
+}
+
+function xsh:subject(atriple) {
+    xt:subject(atriple)
+}
+function xsh:predicate(atriple) {
+    xt:predicate(atriple)
+}
+function xsh:object(atriple) {
+    xt:object(atriple)
+}
+function xsh:graph(atriple) {
+    xt:graph(atriple)
+}
 
 # Expression interpreter
 
@@ -112,7 +134,7 @@ function xsh:notFilter(node, exp) {
 # node = target node
 # if property node is missing, coalesce return true
 #
-function xsh:evaluate(node, exp) {
+function xsh:evaluate(subject, node, exp) {
     coalesce(xsh:compute(node, exp), true)
 }
 
@@ -121,12 +143,17 @@ function xsh:evaluate(node, exp) {
 # (rq:self (URI)) return URI
 # (rq:self) return node
 # 
+function xsh:compute(subject, node, exp) {
+    xsh:compute(node, exp)
+}
+
+
 function xsh:compute(node, exp) {
     if (isExtension(exp)) {
         let ((oper param) = exp) {
             if (xt:has(mapfun, oper), 
                 funcall(xt:get(mapfun, oper), node, param), 
-                xsh:compute(node, oper, param))
+                xsh:mycompute(node, oper, param))
         } 
     }
     else if (isURI(exp)) {
@@ -150,7 +177,7 @@ function sh:defun() {
     sh:defun(rq:exist, sh:myexist)
 }
 
-function xsh:compute(node, oper, param) {
+function xsh:mycompute(node, oper, param) {
      apply(oper, maplist(lambda(ee, node) { xsh:compute(node, ee) }, param, node))
 }
 

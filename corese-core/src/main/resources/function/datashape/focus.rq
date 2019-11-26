@@ -72,6 +72,12 @@ query (
         }
         values ?s { unnest(funcall(?name, ?arg)) }
     }
+    union {
+        graph ?shape { 
+            ?sh xsh:targetTriplesOf ?prop 
+        }
+        values ?s { unnest(xt:edges(?prop)) }
+    }
                       
   } 
   group by ?sh 

@@ -22,6 +22,7 @@ public class Shacl {
     
     static final Logger logger = Logger.getLogger(Shacl.class.getName());
     static final String SH = NSManager.SHACL;
+    private static final String NBRESULT = NSManager.SHACL + "result";
     private static final String TRACE_VAR  = "?shaclTrace";
     public static final String TRACEMAPSUC_VAR = "?recordmapsuc";
     public static final String TRACEMAPFAIL_VAR = "?recordmapfail";
@@ -185,6 +186,14 @@ public class Shacl {
         logger.warning("Validation Report Graph has no conform");
         return true;
     }
+    
+
+    // number of failure in report graph
+    // number of value of property sh:result
+    public int nbResult(Graph g) {
+        return g.size(DatatypeMap.newResource(NBRESULT));
+    }
+    
     
     /**
      * Display list of constraints that have been evaluated

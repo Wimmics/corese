@@ -12,67 +12,6 @@ prefix xsh:  <http://www.w3.org/ns/shacl#>
 # PPath interpreter Extension 
 
 
-# extended path for triple
-# [xsh:node xsh:subject] [xsh:triple xsh:predicate]
-# exp = (oper param)
-# oper = xsh:node|xsh:triple ; param = xt:subject|xt:predicate|xt:object
-#
-function dt:list sh:pathtriple(shape, subject, element, exp, inv, url) {
-    let ((oper param) = exp) {
-        funcall(sh:triplefun(oper), subject, element, param)
-    }
-}
-
-function sh:triplefun(name) {
-    if (name = xsh:triple, sh:triple, sh:mynode)
-}
-
-# element = triple | node
-# param = xt:graph|xsh:subject|xsh:predicate|xsh:object
-# when subject = s p o ; element = node ; param = xt:object
-# -> xt:object(s p o) = node
-#
-function sh:mynode(subject, element, param) {
-    #xt:print("subject:", subject, "element:", element, "param:", param);
-    if (isExtension(element), # element : triple
-        sh:mynode(element, param),
-    if (isExtension(subject), # element: node ; subject: s p o ;  -> compare node with s or o
-        if (funcall(param, subject) = element, xt:list(element), xt:list()),
-        # subject and element are nodes
-    if (subject = element, xt:list(element), xt:list())))   
-}
-
-# element: triple
-# param = xt:subject | .. | (xt:subject xt:object)
-#
-function sh:mynode(element, param) {
-    if (isURI(param), 
-        xt:list(funcall(param, element)),
-        xt:merge(maplist(rq:funcall, param, xt:list(element))))
-}
-
-
-# element = node 
-#
-function sh:triple(subject, element, param) {
-    if (param = xt:subject,   xt:edges(element, bnode()),
-    if (param = xt:object,    xt:edges(bnode(), bnode(), element),
-    if (param = xt:predicate, xt:edges(element),
-    if (param = xt:graph,     sh:graphtriple(element), 
-    xt:list()))))
-}
-
-# element = node 
-#
-function sh:graphtriple(element) {
-    letdyn (name = element) {
-        mapfindlist(lambda(atriple) { xt:graph(atriple) = name}, xt:edges())
-    }
-}
-
-
-
-
 
 # function for [xsh:function [ us:foo(arg) ]] path element
 # exp = (us:foo (arg))
@@ -80,11 +19,13 @@ function sh:graphtriple(element) {
 #
 function dt:list xsh:function(shape, subject, node, exp, inv, url) {
     let ((name param) = exp) {
-        funcall(name, subject, node, param)
+        funcall(sh:funame(name), subject, node, param)
     }
 }
 
-
+function sh:funame(name) {
+    if (name = xsh:node, xsh:mynode, name)
+}
 
 
 

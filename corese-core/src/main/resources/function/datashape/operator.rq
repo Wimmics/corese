@@ -45,16 +45,35 @@ function xsh:funeval(node, exp) {
     }
 }
 
+function sh:pretty(node) {
+    if (isBlank(node), xt:turtle(node), st:turtle(node))
+}
+
+function sh:success(subject, node, exp) {
+    let ((show) = exp) {
+        if (coalesce(show, false), xt:print("success:", sh:pretty(subject), sh:pretty(node)), true);
+        return (true)
+    }
+}
+
+function sh:failure(subject, node, exp) {
+    let ((show) = exp) {
+        if (coalesce(show, false), xt:print("failure:", sh:pretty(subject), sh:pretty(node)), true);
+        return (false)
+    }
+}
+
+
 function sh:success(node, exp) {
     let ((show) = exp) {
-        if (coalesce(show, false), xt:print("success:", node), true);
+        if (coalesce(show, false), xt:print("success:", sh:pretty(node)), true);
         return (true)
     }
 }
 
 function sh:failure(node, exp) {
     let ((show) = exp) {
-        if (coalesce(show, false), xt:print("failure:", node), true);
+        if (coalesce(show, false), xt:print("failure:", sh:pretty(node)), true);
         return (false)
     }
 }
@@ -105,14 +124,132 @@ function xsh:notFilter(subject, node, exp) {
 }
 
 
+# element : node
+# [xsh:triple (xsh:predicate)]
+# exp = (xsh:predicate)
+#
+function sh:triple(subject, element, exp) {
+    let ((param) = exp) {
+        funcall(param, subject, element, exp, param)
+    }
+}
+
+#
+# return triples with node as subject|predicate|object|graph
+# [xsh:triple(xsh:subject)] | [xsh:triple(xsh:subject rdf:type)]
+#
+function xsh:subject(subject, node, exp, param) {
+    let ((name predicate) = exp) {
+        xt:edges(node, coalesce(predicate, bnode()))
+    }
+}
+function xsh:predicate(subject, node, exp, param) {
+    xt:edges(node)
+}
+function xsh:object(subject, node, exp, param) {
+    let ((name predicate) = exp) {
+        xt:edges(bnode(), coalesce(predicate, bnode()), node)
+    }
+}
+# TODO: fix it
+function xsh:graph(subject, node, exp, param) {
+    letdyn (name = node) {
+        mapfindlist(lambda(atriple) { xt:graph(atriple) = name}, xt:edges())
+    }
+}
+
+
+# [xsh:predicate(rdf:type)]
+# filter triple with  subject|predicate|object|graph = exp
+#
+function xsh:subject(subject, atriple, exp) {
+    let ((param) = exp) {
+        if (xt:subject(atriple) = param, xt:list(atriple), xt:list())
+    }
+}
+function xsh:predicate(subject, atriple, exp) {
+    let ((param) = exp) {
+        if (xt:predicate(atriple) = param, xt:list(atriple), xt:list())
+    }
+}
+function xsh:object(subject, atriple, exp) {
+    let ((param) = exp) {
+        if (xt:object(atriple) = param, xt:list(atriple), xt:list())
+    }
+}
+function xsh:graph(subject, atriple, exp) {
+    let ((param) = exp) {
+        if (xt:graph(atriple) = param, xt:list(atriple), xt:list())
+    }
+}
+
+
+# element = triple | node
+# [xsh:node (xsh:subject)]
+# exp = (xsh:graph|xsh:subject|xsh:predicate|xsh:object)
+# when subject = s p o ; element = node ; param = xt:object
+# -> xt:object(s p o) = node
+#
+function sh:mynode(subject, element, exp) {
+    #xt:print("subject:", subject, "element:", element, "exp:", exp);
+    if (isExtension(element), # element : triple
+        sh:mynode(element, exp),
+    if (isExtension(subject), # element: node ; subject: s p o ;  -> compare node with s or o
+        let ((param) = exp) { if (funcall(param, subject) = element, xt:list(element), xt:list())},
+        # subject and element are nodes
+    if (subject = element, xt:list(element), xt:list())))   
+}
+
+
+# TODO: fix it
+# element: triple
+# param = xsh:subject | .. | (xsh:subject xsh:object)
+#
+function sh:mynode(element, exp) {
+    let ((param) = exp) {
+        if (isURI(param), 
+            xt:list(funcall(param, element)),
+            xt:merge(maplist(rq:funcall, exp, xt:list(element))))
+    }
+}
+
+
+
+
+
 #  [xsh:triple xsh:predicate] [xsh:equal (xsh:subject xsh:object)]
 # exp = (xsh:subject xsh:object)
 #
 function sh:equal(subject, element, exp) {
     let ((fst snd) = exp) {
-        if (funcall(fst, element) = funcall(snd, element), xt:list(funcall(fst, element)), xt:list())
+        if (funcall(fst, subject, element) = funcall(snd, subject, element), 
+            xt:list(element), xt:list())
     } 
 }
+
+function sh:notEqual(subject, element, exp) {
+    let ((fst snd) = exp) {
+        if (funcall(fst, subject, element) != funcall(snd, subject, element), 
+            xt:list(element), xt:list())
+    } 
+}
+
+function xsh:source(subject, atriple) {
+    subject
+}
+function xsh:subject(subject, atriple) {
+    xt:subject(atriple)
+}
+function xsh:predicate(subject, atriple) {
+    xt:predicate(atriple)
+}
+function xsh:object(subject, atriple) {
+    xt:object(atriple)
+}
+function xsh:graph(subject, atriple) {
+    xt:graph(atriple)
+}
+
 
 function xsh:subject(atriple) {
     xt:subject(atriple)

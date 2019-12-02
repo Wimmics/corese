@@ -229,10 +229,14 @@ function sh:defShapePath2() {
     }
 }
 
-# funcall(oper, shape, o, val)
+# path step as function
+# [xsh:exist (exp)] ::= [xsh:function [xsh:exist(exp)]]
+#
 function sh:defShapePathExtension() {
     let (alist = @(xsh:evaluate xsh:compute xsh:trace xsh:funeval 
-        xsh:exist xsh:notExist xsh:filter xsh:notFilter xsh:equal)) {        
+        xsh:exist xsh:notExist xsh:filter xsh:notFilter 
+        xsh:equal xsh:triple xsh:node xsh:subject xsh:predicate xsh:object xsh:graph
+        )) {        
         alist 
     }
 }
@@ -444,17 +448,17 @@ function xsd:boolean sh:result(name, sh, cst, dt:graph shape, foc, path, node){
        xt:insert(rep, res, sh:sourceShape, sh) ;
                                               
        if (sh:isValue(path)) {
-            xt:insert(rep, res, sh:resultPath, sh:graph(shape, path))
+            xt:insert(rep, res, sh:resultPath, sh:graphdt(shape, path))
        } ; 
        if (sh:isValue(node)) {
             xt:insert(rep, res, sh:value, node) 
        } ;
        
        if (isBlank(node)) {
-            xt:insert(rep, res, sh:valueDetail, sh:graph(shape, node)) 
+            xt:insert(rep, res, sh:valueDetail, sh:graphdt(shape, node)) 
        } ;
        if (isBlank(foc)) {
-            xt:insert(rep, res, sh:focusNodeDetail, sh:graph(shape, foc)) 
+            xt:insert(rep, res, sh:focusNodeDetail, sh:graphdt(shape, foc)) 
        } 
     } ;
     return(true)
@@ -511,7 +515,7 @@ function sh:bnodeid2(){
 
 
 # trick datatype for st:turtle transformation to pprint a graph in Turtle format
-function sh:graph(shape, var){
+function sh:graphdt(shape, var){
 if (isBlank(var), 
     return(strdt(xt:turtle(shape, var), xt:graph)), 
     var)
@@ -519,7 +523,7 @@ if (isBlank(var),
 
 function sh:graphbnode(shape, var){
     if (isBlank(var),  
-        return(sh:graph(shape, var)),
+        return(sh:graphdt(shape, var)),
         return(error()))
 }
 

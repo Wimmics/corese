@@ -44,7 +44,7 @@ function sh:path(dt:graph ?shape, ?exp) {
   else {
     let (select ?shape ?exp ?q ?path  where {
             graph ?shape { 
-                ?exp ?q ?path   filter (?q not in (rdf:first))
+                ?exp ?q ?path   filter (?q not in (rdf:first, owl:sameAs))
             }
         } ) {
     if (! bound(?q)) 
@@ -71,11 +71,13 @@ function sh:statement(oper) {
 }
 
 function sh:operator(oper) {
-    sh:isTriple(oper) || sh:isFunction(oper)
+    #sh:isTriple(oper) || 
+    sh:isFunction(oper)
 }
 
 function sh:isTriple(oper) {
-    oper in (xsh:triple, xsh:node, xsh:subject, xsh:predicate, xsh:object, xsh:graph)
+    oper in (
+    xsh:triple, xsh:node, xsh:subject, xsh:predicate, xsh:object, xsh:graph)
 }
 
 function sh:isFunction(oper) {
@@ -109,7 +111,7 @@ function sh:extension(shape, oper, path) {
 #
 function sh:parseOperator(shape, oper, path) {
     if (sh:isFunction(oper), sh:parseFunction(shape, oper, path),
-    if (sh:isTriple(oper),   sh:parsePathTriple(shape, oper, path), xt:list()))
+    xt:list())
 }
 
 # extended path for triple
@@ -143,16 +145,18 @@ function sh:parseFunction(shape, oper, fun) {
         graph ?shape { 
             {
                 [] xsh:function ?fun 
-                optional { ?fun ?pred ?param }             
+                optional { ?fun ?pred ?param filter (?pred != owl:sameAs) }             
                 bind (coalesce(?pred, ?fun) as ?name)
                 bind (coalesce(?param, xt:list()) as ?value)
                 bind (sh:getValueList(?value) as ?arg)
             }
             union {
-                [] ?oper ?fun filter (?oper != xsh:function)
+                [] ?oper ?fun 
+                filter (?oper not in (owl:sameAs, xsh:function))
                 bind (?oper as ?name)
                 bind (sh:getValueList(?fun) as ?arg)
             }
+            filter xt:isFunction(name, 3) 
         }}){
         xt:list(xsh:function, xt:list(name, arg))
     }
@@ -407,7 +411,7 @@ function dt:list sh:pathProperty(shape, subject, node, p, xsd:boolean inv, url){
             return (sh:star(node)) 
         }
         else {
-            return(sh:predicate(node, p))    
+            return(sh:property(node, p))    
         }
 
     }
@@ -422,7 +426,7 @@ function dt:list sh:pathProperty(shape, subject, node, p, xsd:boolean inv, url){
         }
 }
 
-function dt:list sh:predicate(?s, ?p){
+function dt:list sh:property(?s, ?p){
     xt:objects(?s, ?p)
 }
 

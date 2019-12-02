@@ -150,7 +150,9 @@ function sh:getShapeExtension(shacl, sh, list) {
                 }
                 bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
                 # used in path.rq
+                bind (xt:isFunction(?name, 2) as ?binary)
                 bind (xt:isFunction(?name, 3) as ?ternary)
+                filter (?binary || ?ternary) # function is defined
             }
         } ) {
         return(res)

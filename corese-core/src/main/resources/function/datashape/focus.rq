@@ -26,18 +26,44 @@ query (
    where { 
   
     {graph ?shape {
-        ?sh sh:targetSubjectsOf ?p 			
+        ?sh sh:targetSubjectsOf ?p 	filter isURI(?p)			
         filter not exists { ?sh sh:deactivated true} }
-     ?s ?p ?o 	
-     }
+        
+     ?s ?p ?o}
     
     union
     
     {graph ?shape {
-        ?sh sh:targetObjectsOf ?p 				
+        ?sh sh:targetSubjectsOf ?p filter isBlank(?p)
+        filter not exists { ?p xsh:graph ?g }
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s ?q ?o}
+     
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p filter isBlank(?p)			
+        filter not exists { ?sh sh:deactivated true } 
+        ?p xsh:graph ?g  optional { ?p xsh:predicate ?q } }
+        
+     graph ?g { ?s ?q ?o } }
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p filter isURI(?p)				
         filter not exists { ?sh sh:deactivated true} }
         
      ?x ?p ?s}
+     
+     union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p filter isBlank(?p)			
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?x ?q ?s}
     
     union 
     
@@ -65,7 +91,7 @@ query (
     union {
         graph ?shape { 
             ?sh xsh:targetFunction ?fun 
-            optional { ?fun ?oper ?param } 
+            optional { ?fun ?oper ?param filter (?oper != owl:sameAs) } 
             bind (coalesce(?oper, ?fun) as ?name)
             bind (coalesce(?param, xt:list()) as ?value)
             bind (sh:getValueList(?value) as ?arg)
@@ -76,7 +102,7 @@ query (
         graph ?shape { 
             ?sh xsh:targetTriplesOf ?prop 
         }
-        values ?s { unnest(xt:edges(?prop)) }
+        values ?s { unnest(xt:edges(if (isBlank(?prop), bnode(), ?prop))) }
     }
                       
   } 

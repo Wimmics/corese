@@ -71,6 +71,7 @@ import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Access;
 import java.util.logging.Level;
 
@@ -1512,12 +1513,12 @@ public class PluginImpl
     public Expr getDefine(Expr exp, Environment env, String name, int n){
         if (Processor.getOper(name) == ExprType.UNDEF){
             return null;            
-        }
+        }       
         Query q = env.getQuery().getGlobalQuery();
         ASTQuery ast = getAST((Expression) exp, q);
         Function fun = ast.defExtension(name, name, n);
         q.defineFunction(fun);
-        Extension ext = Interpreter.getCreateExtension(q);
+        ASTExtension ext = Interpreter.getCreateExtension(q);
         ext.define(fun);
         return fun;
     }

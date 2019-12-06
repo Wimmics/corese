@@ -5,6 +5,7 @@ import fr.inria.corese.core.Graph;
 import java.util.ArrayList;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.api.IDatatype;
 
 /**
  * from, from named dataset for edge iteration

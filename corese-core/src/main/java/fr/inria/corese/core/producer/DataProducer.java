@@ -267,6 +267,11 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
         return this;
     }
     
+    public DataProducer from(IDatatype dt) {
+        Node g = graph.getNode(dt, false, false);
+        return (g==null)?this:from(g);
+    }
+    
     
     public DataProducer from(List<Node> list, Node source) {
         if (source == null){

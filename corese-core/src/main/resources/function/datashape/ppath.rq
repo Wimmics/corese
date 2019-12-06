@@ -148,13 +148,13 @@ function sh:parseFunction(shape, oper, fun) {
                 optional { ?fun ?pred ?param filter (?pred != owl:sameAs) }             
                 bind (coalesce(?pred, ?fun) as ?name)
                 bind (coalesce(?param, xt:list()) as ?value)
-                bind (sh:getValueList(?value) as ?arg)
+                bind (sh:getExtValueList(?value) as ?arg)
             }
             union {
                 [] ?oper ?fun 
                 filter (?oper not in (owl:sameAs, xsh:function))
                 bind (?oper as ?name)
-                bind (sh:getValueList(?fun) as ?arg)
+                bind (sh:getExtValueList(?fun) as ?arg)
             }
             filter xt:isFunction(name, 3) 
         }}){
@@ -162,7 +162,14 @@ function sh:parseFunction(shape, oper, fun) {
     }
 }
 
-
+function sh:getExtValueList(value) {
+    if (isBlank(value)) {
+       coalesce(sh:reclist(value), value)
+    }
+    else {
+        return(xt:list(value))
+    }
+}
 
 #
 # Rewrite recursively RDF path list ?exp as a list

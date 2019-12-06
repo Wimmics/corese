@@ -11,11 +11,10 @@ prefix msh: <http://ns.inria.fr/shacl/>
 function sh:constraint(shape, sh, vis, nodeList) {
     let (b1 = sh:constraint1 (shape, sh, vis, nodeList),
          b2 = sh:constraint2 (shape, sh, vis, nodeList),
-         b3 = sh:cstpattern  (shape, sh, vis, nodeList),
          b4 = sh:nodeextension(shape, sh, vis, nodeList),
          b5 = sh:cstsparql   (shape, sh, vis, nodeList)
          ) {
-        return (b1 && b2 && b3 && b4 && b5)
+        return (b1 && b2 && b4 && b5)
     }
 }
 
@@ -41,11 +40,12 @@ function sh:constraint1 (shape, sh, vis, nodeList) {
     }
 }
 
+
 # oper = xsh:function
 function sh:nodeextension (shape, sh, vis, nodeList) {
     let (res = true) {
         for ((oper name value) in sh:getConstraint(sh:nodeextension, shape, sh)) {  
-            for (node in dt:list(nodeList)) {    
+            for (node in dt:list(nodeList)) {  
                 let (suc = coalesce(
                         funcall(name, node, value),
                         false)) {
@@ -72,50 +72,18 @@ function sh:constraint2 (shape, sh, vis, nodeList) {
     }
 }
 
-function sh:cstpattern (shape, sh, vis, nodeList) {
-    let (res = true) {
-        for ((oper flag) in sh:getConstraint(sh:cstpattern, shape, sh)) {  
-            for (node in dt:list(nodeList)) { 
-                let (suc = !isBlank(node) && coalesce(
-                        if (isURI(flag), regex(node, oper), regex(node, oper, flag)),
-                        false)) {    
-                    sh:report(sh:pattern, sh, shape, node, st:null, node, suc, vis);
-                    if (!suc) {
-                        set(res = false) 
-                    }
-                }
-            }
-        } ;
-        return (res)
-    }
-}
-
-
-
-
-#
-# Retrieve properties of constraints, thay are stored in a map by getConstraint
-#
-# 
-
-function sh:cstpattern(shape, sh) {
-    let (select ?shape ?sh (aggregate(xt:list(?exp, coalesce(?flag, st:null))) as ?list) where {
-        graph ?shape {  
-            ?sh sh:pattern ?exp   
-            optional { ?sh sh:flags ?flag } 
-        }
-    } ) {
-        return(list)
-    }
-}
-
 
 function sh:getGenericShape(shape, sh, list) {
-    let (select ?shape ?sh ?list (aggregate(xt:list(?oper, ?value)) as ?res) where {
+    let (select ?shape ?sh ?list 
+        (aggregate(xt:list(?oper, ?arg)) as ?res) 
+        where {
         graph ?shape {  
             values ?list {UNDEF}
             values ?oper { unnest(?list) }
-            ?sh ?oper ?value    
+            ?sh ?oper ?value  
+            optional { ?sh sh:flags ?flag }
+            bind (if (?oper = sh:pattern, coalesce(xt:list(?value, ?flag), xt:list(?value)), ?value)
+            as ?arg)
         }
     } ) {
         return(res)
@@ -148,6 +116,8 @@ function sh:getShapeExtension(shacl, sh, list) {
                     bind (coalesce(?oper, ?fun) as ?name)
                     bind (coalesce(?param, xt:list()) as ?value)
                 }
+                # in this context, sh:node is not a function, it is a std SHACL constraint
+                filter (?name != sh:node) 
                 bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
                 # used in path.rq
                 bind (xt:isFunction(?name, 2) as ?binary)

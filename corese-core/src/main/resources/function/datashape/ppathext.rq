@@ -30,7 +30,7 @@ function sh:funame(name) {
 
 
 
-function sh:pattern(shape, node, arg) {
+function sh:patternOld(shape, node, arg) {
     regex(node, arg)
 }
 

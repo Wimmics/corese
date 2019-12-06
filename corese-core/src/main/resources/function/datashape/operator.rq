@@ -51,14 +51,14 @@ function sh:pretty(node) {
 
 function sh:success(subject, node, exp) {
     let ((show) = exp) {
-        if (coalesce(show, false), xt:print("success:", sh:pretty(subject), sh:pretty(node)), true);
+        if (coalesce(show, false), xt:print("success:", sh:pretty(node), sh:pretty(subject)), true);
         return (true)
     }
 }
 
 function sh:failure(subject, node, exp) {
     let ((show) = exp) {
-        if (coalesce(show, false), xt:print("failure:", sh:pretty(subject), sh:pretty(node)), true);
+        if (coalesce(show, false), xt:print("failure:", sh:pretty(node), sh:pretty(subject)), true);
         return (false)
     }
 }
@@ -151,65 +151,79 @@ function xsh:object(subject, node, exp, param) {
         xt:edges(bnode(), coalesce(predicate, bnode()), node)
     }
 }
-# TODO: fix it
 function xsh:graph(subject, node, exp, param) {
-    letdyn (name = node) {
-        mapfindlist(lambda(atriple) { xt:graph(atriple) = name}, xt:edges())
+    let ((name predicate) = exp) {
+        xt:edges(bnode(), coalesce(predicate, bnode()), bnode(), node)
     }
+}
+# xsh:subject & xsh:object : adjacent edges
+function xsh:node(subject, node, exp, param) {
+    xt:merge(
+        xsh:subject(subject, node, exp, param), 
+        xsh:object(subject, node, exp, param))
+}
+
+#
+# exp = (rdf: rdfs:)
+# test if node matches with regex
+#
+function sh:match(node, exp) {
+    mapany(rq:regex, node, exp)
 }
 
 
-# [xsh:predicate(rdf:type)]
+# triple [xsh:predicate(rdf:type)]
 # filter triple with  subject|predicate|object|graph = exp
 #
 function xsh:subject(subject, atriple, exp) {
     let ((param) = exp) {
-        if (xt:subject(atriple) = param, xt:list(atriple), xt:list())
+        if (sh:match(xt:subject(atriple), exp), xt:list(atriple), xt:list())
     }
 }
-function xsh:predicate(subject, atriple, exp) {
-    let ((param) = exp) {
-        if (xt:predicate(atriple) = param, xt:list(atriple), xt:list())
-    }
+function xsh:predicate(subject, element, exp) {
+    if (isExtension(element),
+        xsh:predicateTriple(subject, element, exp),
+        xsh:predicateNode(subject, element, exp))
 }
 function xsh:object(subject, atriple, exp) {
     let ((param) = exp) {
-        if (xt:object(atriple) = param, xt:list(atriple), xt:list())
+        if (sh:match(xt:object(atriple), exp), xt:list(atriple), xt:list())
     }
 }
 function xsh:graph(subject, atriple, exp) {
     let ((param) = exp) {
-        if (xt:graph(atriple) = param, xt:list(atriple), xt:list())
+        if (sh:match(xt:graph(atriple), exp), xt:list(atriple), xt:list())
+    }
+}
+
+# filter triple with [xsh:predicate (rdf:type)]
+#
+function xsh:predicateTriple(subject, atriple, exp) {
+    let ((param) = exp) {
+        if (sh:match(xt:predicate(atriple), exp), xt:list(atriple), xt:list())
+    }
+}
+
+#
+# node [xsh:predicate(xsh:subject)]
+# return predicate nodes of triples where node is the subject 
+#
+function xsh:predicateNode(subject, node, exp) {
+    let (list = xsh:triple(subject, node, exp)) {
+        xt:merge(maplist(xt:predicate, list))
     }
 }
 
 
-# element = triple | node
+# element = triple 
 # [xsh:node (xsh:subject)]
 # exp = (xsh:graph|xsh:subject|xsh:predicate|xsh:object)
-# when subject = s p o ; element = node ; param = xt:object
-# -> xt:object(s p o) = node
 #
 function sh:mynode(subject, element, exp) {
-    #xt:print("subject:", subject, "element:", element, "exp:", exp);
-    if (isExtension(element), # element : triple
-        sh:mynode(element, exp),
-    if (isExtension(subject), # element: node ; subject: s p o ;  -> compare node with s or o
-        let ((param) = exp) { if (funcall(param, subject) = element, xt:list(element), xt:list())},
-        # subject and element are nodes
-    if (subject = element, xt:list(element), xt:list())))   
-}
-
-
-# TODO: fix it
-# element: triple
-# param = xsh:subject | .. | (xsh:subject xsh:object)
-#
-function sh:mynode(element, exp) {
-    let ((param) = exp) {
-        if (isURI(param), 
-            xt:list(funcall(param, element)),
-            xt:merge(maplist(rq:funcall, exp, xt:list(element))))
+   let ((param) = exp) {
+        if (xt:size(exp) = 1, 
+            funcall(param, element),
+            reduce(xt:merge, maplist(rq:funcall, exp, xt:list(element))))
     }
 }
 
@@ -217,23 +231,45 @@ function sh:mynode(element, exp) {
 
 
 
-#  [xsh:triple xsh:predicate] [xsh:equal (xsh:subject xsh:object)]
-# exp = (xsh:subject xsh:object)
+function xsh:subject(atriple) {
+    xt:list(xt:subject(atriple))
+}
+function xsh:predicate(atriple) {
+    xt:list(xt:predicate(atriple))
+}
+function xsh:object(atriple) {
+    xt:list(xt:object(atriple))
+}
+function xsh:graph(atriple) {
+    xt:list(xt:graph(atriple))
+}
+function xsh:node(atriple) {
+    if (xt:subject(atriple) = xt:object(atriple), xt:list(xt:subject(atriple)),
+        xt:list(xt:subject(atriple), xt:object(atriple)))
+}
+
+
+
+# node triple    [xsh:equal (xsh:subject xsh:object)] [xsh:equal (xsh:object xsh:source)] 
+# triple node    [xsh:equal (xsh:subject)] 
+# node node      [xsh:equal (xsh:source)]
 #
-function sh:equal(subject, element, exp) {
+function sh:equal(source, element, exp) {
     let ((fst snd) = exp) {
-        if (funcall(fst, subject, element) = funcall(snd, subject, element), 
-            xt:list(element), xt:list())
-    } 
+        if (if (isExtension(element), # source: node, element: triple
+                 funcall(fst, source, element) = funcall(snd, source, element), 
+            if (isExtension(source),  # source: triple ; element: node 
+                funcall(fst, source, element) = element, 
+            # source: node ; element: node 
+            source = element)), 
+        
+        xt:list(element), xt:list())   
+    }
 }
 
-function sh:notEqual(subject, element, exp) {
-    let ((fst snd) = exp) {
-        if (funcall(fst, subject, element) != funcall(snd, subject, element), 
-            xt:list(element), xt:list())
-    } 
-}
 
+# xsh:equal()
+#
 function xsh:source(subject, atriple) {
     subject
 }
@@ -250,18 +286,17 @@ function xsh:graph(subject, atriple) {
     xt:graph(atriple)
 }
 
-
-function xsh:subject(atriple) {
-    xt:subject(atriple)
-}
-function xsh:predicate(atriple) {
-    xt:predicate(atriple)
-}
-function xsh:object(atriple) {
-    xt:object(atriple)
-}
-function xsh:graph(atriple) {
-    xt:graph(atriple)
+function sh:notEqual(source, element, exp) {
+    let ((fst snd) = exp) {
+        if (if (isExtension(element), # source: node, element: triple
+                 funcall(fst, source, element) != funcall(snd, source, element), 
+            if (isExtension(source),  # source: triple ; element: node 
+                funcall(fst, source, element) != element, 
+            # source: node ; element: node 
+            source != element)), 
+        
+        xt:list(element), xt:list())   
+    }
 }
 
 # Expression interpreter
@@ -383,8 +418,11 @@ function sh:validURI(shape, sh, subject, path, url) {
 
 
 
+
+
+
 #
-# Std 
+# SHACL std operators
 #
 
 function sh:count(s, p){
@@ -403,6 +441,13 @@ function sh:minCount(s, p, m){
 
 function sh:maxCount(s, p, m){
     sh:count(s, p) <= m
+}
+
+function sh:pattern(shape, node, exp) {
+    let ((arg flag) = exp) {
+        !isBlank(node) && 
+        if (bound(flag), regex(node, arg, flag), regex(node, arg))
+    }
 }
 
 function xsd:boolean sh:nodeKind(dt:graph shape, value, dt:uri kind){

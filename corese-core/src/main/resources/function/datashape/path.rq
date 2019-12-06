@@ -22,18 +22,17 @@ function sh:path(shape, sh, vis, nodeList, path) {
 # vis: true if report is needed
 # nodeList:  list of target nodes of shape sh
 # path: path expression
-# present=true: fail when path is empty
+# present=true: fail when path is empty, use case: qualified value shape
 # 
 function sh:path(shape, sh, vis, nodeList, path, present) {
     if (sh:trace(), xt:print("path:", nodeList, path), true);
    let (b1 = sh:path1(shape, sh, vis, nodeList, path, present), 
        b2 = sh:path2(shape, sh, vis, nodeList, path), 
        b3 = sh:path3(shape, sh, vis, nodeList, path),
-       b4 = sh:pathpattern(shape, sh, vis, nodeList, path, present),
        b5 = sh:pathextension(shape, sh, vis, nodeList, path),
        b6 =      sh:sparql(shape, sh, vis, nodeList, path)
        ) {
-       return (b1 && b2 && b3 && b4 && b5 && b6)
+       return (b1 && b2 && b3 && b5 && b6)
     }
 }
 
@@ -117,7 +116,7 @@ function sh:path2(shape, sh, vis, nodeList, p) {
     }
 }
 
-
+# qualified value shape
 function sh:path3(shape, sh, vis, nodeList, p) {
     let (res = true) {
         for ((oper val disjoint amin amax) in sh:getConstraint(sh:path3, shape, sh)) {
@@ -135,29 +134,7 @@ function sh:path3(shape, sh, vis, nodeList, p) {
     }
 }
 
-# sh:cstpattern defined in constraint.rq
-function sh:pathpattern (shape, sh, vis, nodeList, p, present) {
-    let (res = true) {
-        for ((oper flag) in sh:getConstraint(sh:cstpattern, shape, sh)) {  
-            for (subject in dt:list(nodeList)) { 
-                let (targetList = sh:path(shape, subject, p)) {
-                    if (present && xt:size(targetList) = 0, return(false), true);
-                    for (node in targetList) {
-                        let (suc = !isBlank(node) && coalesce(
-                                if (isURI(flag), regex(node, oper), regex(node, oper, flag)),
-                                false)) {    
-                            if (!suc) {
-                                set(res = false) ;
-                                sh:report(sh:pattern, sh, shape, subject, p, node, suc, vis)
-                            }
-                        }
-                    }
-                }
-            }
-        } ;
-        return (res)
-    }
-}
+
 
 
 
@@ -172,12 +149,17 @@ function sh:pathpattern (shape, sh, vis, nodeList, p, present) {
 #
 
 function sh:getPathShape(shape, sh, shapeList) {
-    let (select ?shape ?sh ?shapeList (aggregate(xt:list(?oper, ?val)) as ?list) where {
+    let (select ?shape ?sh ?shapeList 
+    (aggregate(xt:list(?oper, ?arg)) as ?list) 
+    where {
             graph ?shape { 
                 values ?shapeList {UNDEF}
                 values ?oper { unnest(?shapeList) }
                 ?sh ?oper ?val 
-            filter if (?oper = sh:uniqueLang, sameTerm(?val, true), true)
+                optional { ?sh sh:flags ?flag }
+                bind (if (?oper = sh:pattern, coalesce(xt:list(?val, ?flag), xt:list(?val)), ?val)
+                as ?arg)
+                filter if (?oper = sh:uniqueLang, sameTerm(?val, true), true)
             }
         } ) {
         return(list)
@@ -288,7 +270,8 @@ function sh:qualifiedValueShape2 (shape, sh, vis, s, p, qsh, disjoint, amin, ama
 #
 # qsh = [ sh:path us:genre ; sh:hasValue us:female ]
 # check shape qsh on subject
-# absence of us:genre return false in this case because we count the number of occurrences
+# absence of us:genre return false because we will count the number of nodes
+# that *verify* the shape
 #
 function xsd:boolean sh:qualifiedShape(subject, dt:graph shape, qsh){
     #xt:print("qualif2:", subject, xt:turtle(qsh));

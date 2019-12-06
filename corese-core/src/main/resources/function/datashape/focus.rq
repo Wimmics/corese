@@ -101,9 +101,20 @@ query (
     union {
         graph ?shape { 
             ?sh xsh:targetTriplesOf ?prop 
+            filter not exists { ?sh xsh:targetGraph ?g }
         }
         values ?s { unnest(xt:edges(if (isBlank(?prop), bnode(), ?prop))) }
     }
+    union {
+        graph ?shape { 
+            ?sh xsh:targetTriplesOf ?prop .
+            ?sh xsh:targetGraph ?g
+        }
+        graph ?g {
+            values ?prop {UNDEF}
+            values ?s { unnest(xt:edges(if (isBlank(?prop), bnode(), ?prop))) }
+        }
+    }    
                       
   } 
   group by ?sh 

@@ -49,7 +49,7 @@ public class DataShapeTest {
         "core/complex", // 1.673
         "core/misc", 
         "core/targets", 
-            "core/validation-reports",
+        "core/validation-reports",
             
 //       "sparql/property",
 //       "sparql/node" ,
@@ -277,11 +277,11 @@ public class DataShapeTest {
     }
 
     void file(String file) throws EngineException, LoadException {
-//        if (file.contains("datatype-001.ttl")) { // || file.contains("and-001")){
+//        if (file.contains("pattern")) { // || file.contains("and-001")){
 //            //ok
 //        }
 //        else {
-//            //return;
+//            return;
 //        }
 
         Graph g = Graph.create();
@@ -343,7 +343,7 @@ public class DataShapeTest {
     
     
     Graph exec(String shape, String data) throws EngineException, LoadException {
-        return execjava(shape, data);
+        return execds(shape, data);
     }  
     
     // 4.705 4.645

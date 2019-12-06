@@ -47,6 +47,81 @@ public class DataShapeExt {
             re.process();
         }
     }
+    
+    
+       // path on graph
+    @Test
+    public void testshaclext6() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#>"
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#>"
+                + "insert data {"
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetNode i:Laura, i:Gaston ;"
+                + "sh:property ["
+                + "sh:path ([xsh:triple xsh:subject][xsh:node xsh:graph]"
+                + "[xsh:triple (xsh:graph rdf:type)] [xsh:object h:Person]);"
+                //+ "xsh:function [xsh:success(true)];"
+                + "sh:minCount 4"
+                + "]"
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new MyShacl(g);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(0, shacl.nbResult(gg));
+    }
+    
+     // path on graph
+    @Test
+    public void testshaclext5() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#>"
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#>"
+                + "insert data {"
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetNode i:Laura, i:Gaston ;"
+                + "sh:property ["
+                + "sh:path ([xsh:triple xsh:subject][xsh:node xsh:graph]);"
+                //+ "xsh:function [xsh:success(true)];"
+                + "sh:minCount 2"
+                + "]"
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new MyShacl(g);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(1, shacl.nbResult(gg));
+    }
+    
+    
+    // path on predicates
+    @Test
+    public void testshaclext4() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#>"
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#>"
+                + "insert data {"
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetNode i:Gaston ;"
+                + "sh:property ["
+                + "    sh:path ([xsh:triple xsh:subject]"
+                + "        [sh:zeroOrMorePath ([xsh:node xsh:object] [xsh:triple xsh:subject] )] "
+                + "        [xsh:node xsh:predicate] );"
+                + "    sh:pattern h:]"
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new MyShacl(g);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(6, shacl.nbResult(gg));
+    }
 
     @Test
     public void testshaclext3() throws EngineException, LoadException, IOException, TransformerException {
@@ -78,6 +153,7 @@ public class DataShapeExt {
                 + "     rdf:type [xsh:filter([sh:not [sh:hasValue h:Person]])]) ;"
                 + "sh:function [ sh:failure() ] ] "
                 + "}";
+        
         QueryProcess exec = QueryProcess.create(g);
         exec.query(i);
         Shacl shacl = new MyShacl(g);
@@ -93,7 +169,7 @@ public class DataShapeExt {
                 + "[] a sh:NodeShape ;"
                 + "sh:targetTriplesOf rdfs:range  ;"
                 + "sh:property ["
-                + "sh:path ([xsh:node (xsh:subject) ][xsh:triple (xsh:predicate)  ]) ;"
+                + "sh:path ([xsh:node xsh:subject ][xsh:triple xsh:predicate  ]) ;"
                 + "    sh:minCount 1]"
                 + "}";
         QueryProcess exec = QueryProcess.create(g);
@@ -104,6 +180,78 @@ public class DataShapeExt {
         //System.out.println(Transformer.turtle(gg));
         assertEquals(3, nbResult(gg));
     }
+    
+     @Test
+    public void testshaclext0() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#>"
+                + "insert data {"
+                + "[] a sh:NodeShape ;"
+                + "sh:targetSubjectsOf rdfs:domain ;"
+                + "sh:property ["
+                + "    sh:path ([xsh:triple xsh:predicate] "
+                + "        [xsh:notEqual (xsh:source xsh:predicate)]"
+                + ");"
+                + "sh:maxCount 0"
+                + "]"
+                + "}";
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new Shacl(g);
+        //shacl.setTrace(true);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(0, nbResult(gg));
+    }
+    
+    @Test
+     public void testshaclext00() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#>"
+                + "insert data {"
+                + "rdf:type rdf:type rdf:Property "
+                + "[] a sh:NodeShape ;"
+                + "sh:targetNode rdf:type ;"
+                + "sh:property ["
+                + "    sh:path ( [xsh:triple xsh:predicate]"
+                + "        [xsh:equal (xsh:subject xsh:predicate)]"
+                + ");"
+                + "sh:minCount 1"
+                + "]"
+                + "}";
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new Shacl(g);
+        //shacl.setTrace(true);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(0, nbResult(gg));
+    }
+     
+      @Test
+     public void testshaclext000() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#>"
+                + "insert data {"
+                + "us:n1 us:test us:n2, us:n1 "
+                + "[] a sh:NodeShape ;"
+                + "sh:targetSubjectsOf us:test ;"
+                + "sh:property ["
+                + "    sh:path ( us:test [xsh:equal (xsh:source)]"
+                + ");"
+                + "sh:minCount 1"
+                + "]"
+                + "}";
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new Shacl(g);
+        //shacl.setTrace(true);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(0, nbResult(gg));
+    }
+     
+    
 
     Graph init() throws EngineException, LoadException, IOException {
         Graph g = Graph.create();

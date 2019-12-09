@@ -49,6 +49,88 @@ public class DataShapeExt {
     }
     
     
+     @Test
+    public void testfrom1() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(q1());
+        Shacl shacl = new Shacl(g); Graph gg = shacl.eval();
+        assertEquals(2, shacl.nbResult(gg));
+        
+        g = Graph.create();        
+        exec = QueryProcess.create(g);
+        exec.query(q2());
+        shacl = new Shacl(g);  gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(2, shacl.nbResult(gg));
+    }
+    
+     String q2() {
+        String i = "insert data {"
+                + "graph us:g1 { us:Person rdfs:subClassOf us:Human  }"
+                + "graph us:g2 { us:John a us:Person . us:Person rdfs:subClassOf us:Animal "
+                + "us:Person owl:equivalentClass us:Human}"
+                
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetNode us:John ;"
+                + "sh:property ["
+                + "sh:path ([xsh:from (us:g1 us:g2 )] "
+                + "[xsh:triple xsh:subject] [xsh:triple (xsh:subject [] us:Human)] [xsh:node xsh:predicate]"
+                + ");"
+                + "xsh:function[xsh:failure()]"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+    
+    String q1() {
+        String i = "insert data {"
+                + "graph us:g1 { us:Person rdfs:subClassOf us:Human }"
+                + "graph us:g2 { us:John a us:Person us:Person rdfs:subClassOf us:Animal}"
+                
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetNode us:John ;"
+                + "sh:property ["
+                + "sh:path ([xsh:from (us:g1 us:g2 )] "
+                + "rdf:type rdfs:subClassOf);"
+                + "xsh:function[xsh:failure()]"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+        // path on predicate
+    @Test
+    public void testshaclext7() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                +"insert data {"
+                + "us:test a sh:NodeShape ;"
+                + "xsh:targetNode i:Laura ;"
+                + "sh:property ["
+                + "    sh:path ([sh:oneOrMorePath [xsh:triple xsh:subject]]"
+                + "[xsh:node xsh:predicate]"
+                + "[xsh:filter ([sh:pattern h:])]"
+                + "[xsh:notExist (rdfs:range)]"
+                + ")"
+                + ";"
+
+                + "xsh:failure()"
+                + "]"
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new MyShacl(g);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(6, shacl.nbResult(gg));
+    }
+    
+    
+    
        // path on graph
     @Test
     public void testshaclext6() throws EngineException, LoadException, IOException, TransformerException {
@@ -109,10 +191,12 @@ public class DataShapeExt {
                 + "[] a sh:NodeShape ;"
                 + "xsh:targetNode i:Gaston ;"
                 + "sh:property ["
-                + "    sh:path ([xsh:triple xsh:subject]"
-                + "        [sh:zeroOrMorePath ([xsh:node xsh:object] [xsh:triple xsh:subject] )] "
-                + "        [xsh:node xsh:predicate] );"
-                + "    sh:pattern h:]"
+                + "    sh:path ("
+                + "    [sh:oneOrMorePath [xsh:triple xsh:subject] ] "
+                + "    [xsh:node xsh:predicate] );"
+                + "  sh:pattern h:;"
+                + "xsh:success()"
+                + "]"
                 + "}";
         
         QueryProcess exec = QueryProcess.create(g);
@@ -141,6 +225,7 @@ public class DataShapeExt {
         //System.out.println(Transformer.turtle(gg));
         assertEquals(47, gg.size());
     }
+    
 
     @Test
     public void testshaclext2() throws EngineException, LoadException, IOException, TransformerException {

@@ -978,7 +978,7 @@ public class PluginImpl
     // iterator may return null value at the end
     IDatatype edgeList(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
         DataProducer dp = getDataProducer(env, p, subj, pred, obj);
-        if (graph != null) {
+        if (graph != null && (! graph.isList() || graph.size() > 0)) {
             dp.from(graph);
         }
         else if (env != null && env.getGraphNode() != null) {

@@ -253,6 +253,7 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
         return from;
     }
     
+    // node list must be sorted
     public DataProducer from(List<Node> list) {  
         if (list != null && ! list.isEmpty()){
             getCreateDataFrom().from(list);
@@ -268,8 +269,26 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
     }
     
     public DataProducer from(IDatatype dt) {
+        if (dt.isList()) {
+            dt.getList().sort();
+            return fromList(dt.getValueList());
+        }
         Node g = graph.getNode(dt, false, false);
         return (g==null)?this:from(g);
+    }
+    
+    public DataProducer fromList(List<IDatatype> list) {  
+        if (list != null && ! list.isEmpty()){
+            ArrayList<Node> nodeList = new ArrayList<>();
+            for (IDatatype dt : list) {
+                Node node = graph.getNode(dt, false, false);
+                if (node != null) {
+                    nodeList.add(node);
+                }
+            }
+            from(nodeList);
+        }
+        return this;
     }
     
     

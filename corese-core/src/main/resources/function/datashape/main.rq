@@ -237,6 +237,7 @@ function sh:defShapePathExtension() {
         xsh:exist xsh:notExist xsh:filter xsh:notFilter 
         xsh:equal xsh:notEqual 
         xsh:triple xsh:node xsh:subject xsh:predicate xsh:object xsh:graph
+        xsh:from xsh:success xsh:failure
         )) {        
         alist 
     }

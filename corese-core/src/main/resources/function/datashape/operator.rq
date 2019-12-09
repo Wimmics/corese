@@ -129,38 +129,47 @@ function xsh:notFilter(subject, node, exp) {
 # exp = (xsh:predicate)
 #
 function sh:triple(subject, element, exp) {
+    sh:triple(xt:list(), subject, element, exp)
+}
+
+# when current element is a triple, consider the object node as current node
+# two consecutive triples join by default on object of first triple 
+#
+function sh:triple(focus, source, element, exp) {
     let ((param) = exp) {
-        funcall(param, subject, element, exp, param)
+        funcall(param, focus, source, 
+            if (isExtension(element), xt:object(element), element), exp)
     }
 }
 
 #
-# return triples with node as subject|predicate|object|graph
+# return triples with node as source|predicate|object|graph
 # [xsh:triple(xsh:subject)] | [xsh:triple(xsh:subject rdf:type)]
 #
-function xsh:subject(subject, node, exp, param) {
-    let ((name predicate) = exp) {
-        xt:edges(node, coalesce(predicate, bnode()))
+function xsh:subject(focus, source, node, exp) {
+    let ((name predicate value) = exp) {
+        xt:edges(node, coalesce(if (isBlank(predicate), bnode(), predicate), bnode()), coalesce(value, bnode()), focus)
     }
 }
-function xsh:predicate(subject, node, exp, param) {
-    xt:edges(node)
+function xsh:predicate(focus, source, node, exp) {
+    if (xt:size(focus) = 0, xt:edges(node),
+        xt:edges(bnode(), node, bnode(), focus))
 }
-function xsh:object(subject, node, exp, param) {
+function xsh:object(focus, source, node, exp) {
     let ((name predicate) = exp) {
-        xt:edges(bnode(), coalesce(predicate, bnode()), node)
+        xt:edges(bnode(), coalesce(predicate, bnode()), node, focus)
     }
 }
-function xsh:graph(subject, node, exp, param) {
+function xsh:graph(focus, source, node, exp) {
     let ((name predicate) = exp) {
         xt:edges(bnode(), coalesce(predicate, bnode()), bnode(), node)
     }
 }
 # xsh:subject & xsh:object : adjacent edges
-function xsh:node(subject, node, exp, param) {
+function xsh:node(focus, source, node, exp) {
     xt:merge(
-        xsh:subject(subject, node, exp, param), 
-        xsh:object(subject, node, exp, param))
+        xsh:subject(focus, source, node, exp), 
+         xsh:object(focus, source, node, exp))
 }
 
 #
@@ -175,22 +184,22 @@ function sh:match(node, exp) {
 # triple [xsh:predicate(rdf:type)]
 # filter triple with  subject|predicate|object|graph = exp
 #
-function xsh:subject(subject, atriple, exp) {
+function xsh:subject(source, atriple, exp) {
     let ((param) = exp) {
         if (sh:match(xt:subject(atriple), exp), xt:list(atriple), xt:list())
     }
 }
-function xsh:predicate(subject, element, exp) {
+function xsh:mypredicate(focus, source, element, exp) {
     if (isExtension(element),
-        xsh:predicateTriple(subject, element, exp),
-        xsh:predicateNode(subject, element, exp))
+        xsh:predicateTriple(source, element, exp),
+        xsh:predicateNode(focus, source, element, exp))
 }
-function xsh:object(subject, atriple, exp) {
+function xsh:object(source, atriple, exp) {
     let ((param) = exp) {
         if (sh:match(xt:object(atriple), exp), xt:list(atriple), xt:list())
     }
 }
-function xsh:graph(subject, atriple, exp) {
+function xsh:graph(source, atriple, exp) {
     let ((param) = exp) {
         if (sh:match(xt:graph(atriple), exp), xt:list(atriple), xt:list())
     }
@@ -198,7 +207,7 @@ function xsh:graph(subject, atriple, exp) {
 
 # filter triple with [xsh:predicate (rdf:type)]
 #
-function xsh:predicateTriple(subject, atriple, exp) {
+function xsh:predicateTriple(source, atriple, exp) {
     let ((param) = exp) {
         if (sh:match(xt:predicate(atriple), exp), xt:list(atriple), xt:list())
     }
@@ -208,8 +217,8 @@ function xsh:predicateTriple(subject, atriple, exp) {
 # node [xsh:predicate(xsh:subject)]
 # return predicate nodes of triples where node is the subject 
 #
-function xsh:predicateNode(subject, node, exp) {
-    let (list = xsh:triple(subject, node, exp)) {
+function xsh:predicateNode(focus, source, node, exp) {
+    let (list = xsh:triple(focus, source, node, exp)) {
         xt:merge(maplist(xt:predicate, list))
     }
 }
@@ -219,7 +228,7 @@ function xsh:predicateNode(subject, node, exp) {
 # [xsh:node (xsh:subject)]
 # exp = (xsh:graph|xsh:subject|xsh:predicate|xsh:object)
 #
-function sh:mynode(subject, element, exp) {
+function sh:mynode(source, element, exp) {
    let ((param) = exp) {
         if (xt:size(exp) = 1, 
             funcall(param, element),

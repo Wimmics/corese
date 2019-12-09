@@ -16,21 +16,26 @@ prefix xsh:  <http://www.w3.org/ns/shacl#>
 # function for [xsh:function [ us:foo(arg) ]] path element
 # exp = (us:foo (arg))
 # function name defined in operator, eg: xsh:exist, xsh:filter
+# focus = from(us:g1 us:g2) may be empty
 #
-function dt:list xsh:function(shape, subject, node, exp, inv, url) {
+function dt:list xsh:function(focus, subject, node, exp, inv, url) {
     let ((name param) = exp) {
-        funcall(sh:funame(name), subject, node, param)
+        if (name in (xsh:triple, xsh:predicate), 
+            funcall(sh:funame(name), focus, subject, node, param),
+            funcall(sh:funame(name), subject, node, param))
     }
 }
 
 function sh:funame(name) {
-    if (name = xsh:node, xsh:mynode, name)
+    if (name = xsh:node, xsh:mynode, 
+    if (name = xsh:predicate, xsh:mypredicate, 
+    name))
 }
 
 
 
 
-function sh:patternOld(shape, node, arg) {
+function sh:patternOld(focus, node, arg) {
     regex(node, arg)
 }
 
@@ -40,7 +45,7 @@ function sh:patternOld(shape, node, arg) {
 
 # sh:path (us:location [ xsh:ldpath (rdf:type) ])
 # ?path = (rdf:type)
-function dt:list xsh:ldpath(?shape, subject, ?s, ?path, ?inv, url) {
+function dt:list xsh:ldpath(focus, subject, ?s, ?path, ?inv, url) {
     let ((?p ?q) = ?path) {
     if (bound(?q), 
         return(sh:myldpath(?s, ?p, ?q)), 
@@ -85,7 +90,7 @@ function us:trace() {
 # Path p and p/q are processed here. 
 # Other path processed recursively by ppath interpreter with argument url = server URI
 #
-function dt:list xsh:service(shape, subject, node, arg, inv, url) {
+function dt:list xsh:service(focus, subject, node, arg, inv, url) {
     #if (us:trace(), xt:print("service1:", node, arg), false);
     if (isBlank(node)) { return (xt:list()) } ;
     let ((server | path) = arg,
@@ -96,7 +101,7 @@ function dt:list xsh:service(shape, subject, node, arg, inv, url) {
                     sh:myservice(server, node, pp, qq), 
                 if (xt:size(path) = 1 && isURI(pp), 
                     sh:myservice(server, node, pp),
-                sh:evalpath(shape, subject, node, xt:list(sh:sequence, path), inv, server)))) 
+                sh:evalpath(focus, subject, node, xt:list(sh:sequence, path), inv, server)))) 
             {
             if (us:trace()) {xt:print("service list:", list) } ;
             return (list)
@@ -123,12 +128,12 @@ function dt:list sh:myservice(?uri, ?s, ?p, ?q) {
 # (ai:location [ <http://dbpedia.org/sparql> (rdf:type ) ] )
 # ?arg = (<http://dbpedia.org/sparql> rdf:type )
 #
-function dt:list xsh:service2(shape, subject, node, arg, inv, url) {
+function dt:list xsh:service2(focus, subject, node, arg, inv, url) {
     #if (us:trace(), xt:print("service1:", node, ?arg), false);
     
     let ((server | path) = arg) {
         xt:print("service:", node, server, arg); 
-        return(sh:evalpath(shape, subject, node, xt:list(sh:sequence, path), inv, server))
+        return(sh:evalpath(focus, subject, node, xt:list(sh:sequence, path), inv, server))
     }
 }
 

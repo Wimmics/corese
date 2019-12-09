@@ -60,7 +60,8 @@ public class Funcall extends LDScript {
                 function = eval.getDefineGenerate(this, env, name, n);
 
                 if (function == null) {
-                    logger.error("Undefined function: " + name);
+                    logger.error("Undefined function: " + name + " arity: " + n);
+                    logger.error(this.toString());
                 }
             }
         }

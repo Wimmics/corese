@@ -200,8 +200,10 @@ public class GraphSpecificFunction extends LDScript {
                 return proc.edge(env, p, null, param[0], null);
             case 2:
                 return proc.edge(env, p, param[0], param[1], null);
-            default:
+            case 3 :
                 return proc.edge(env, p, param[0], param[1], param[2]);
+            default:                
+                return proc.edge(env, p, param[0], param[1], param[2], param[3]);
         }
     }
     

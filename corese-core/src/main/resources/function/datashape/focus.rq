@@ -114,7 +114,16 @@ query (
             values ?prop {UNDEF}
             values ?s { unnest(xt:edges(if (isBlank(?prop), bnode(), ?prop))) }
         }
-    }    
+    } 
+    union {
+        select distinct ?sh ?s {
+            graph ?shape { 
+                ?sh xsh:targetPredicatesOf ?ns .
+            }
+            ?n ?s ?o  filter if (isBlank(?ns), true, regex(?s, ?ns))
+        }
+        
+    }
                       
   } 
   group by ?sh 

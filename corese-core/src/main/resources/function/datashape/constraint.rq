@@ -80,9 +80,12 @@ function sh:getGenericShape(shape, sh, list) {
         graph ?shape {  
             values ?list {UNDEF}
             values ?oper { unnest(?list) }
-            ?sh ?oper ?value  
+            ?sh ?oper ?val 
             optional { ?sh sh:flags ?flag }
-            bind (if (?oper = sh:pattern, coalesce(xt:list(?value, ?flag), xt:list(?value)), ?value)
+            bind (
+                if (?oper = sh:pattern,   coalesce(xt:list(?val, ?flag), xt:list(?val)),
+                if (?oper = sh:patternIn, sh:getValueList(?val),
+                ?val))            
             as ?arg)
         }
     } ) {

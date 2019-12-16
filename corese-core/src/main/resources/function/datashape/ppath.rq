@@ -71,14 +71,9 @@ function sh:statement(oper) {
 }
 
 function sh:operator(oper) {
-    #sh:isTriple(oper) || 
     sh:isFunction(oper)
 }
 
-function sh:isTriple(oper) {
-    oper in (
-    xsh:triple, xsh:node, xsh:subject, xsh:predicate, xsh:object, xsh:graph)
-}
 
 function sh:isFunction(oper) {
     oper = xsh:function || xt:member(oper, sh:defShapePathExtension())
@@ -120,7 +115,7 @@ function sh:parseOperator(shape, oper, path) {
 # oper and path can be switched
 #
 function sh:parsePathTriple(shape, oper, path) {
-    if (oper in (xsh:node, xsh:triple),
+    if (oper in (xsh:nodePath, xsh:triplePath),
         xt:list(sh:pathtriple, xt:list(oper, sh:pathfun(path))),
         xt:list(sh:pathtriple, xt:list(path, sh:pathfun(oper))))
 }
@@ -156,11 +151,90 @@ function sh:parseFunction(shape, oper, fun) {
                 bind (?oper as ?name)
                 bind (sh:getExtValueList(?fun) as ?arg)
             }
-            filter (name in (xsh:predicate, xsh:from) || xt:isFunction(name, 3)) 
+            filter (xt:member(name, sh:defShapePathExtension()) || xt:isFunction(name, 3)) 
         }}){
-        xt:list(xsh:function, xt:list(name, arg))
+        sh:defineFunction(name, arg)
     }
 }
+
+
+function sh:defineFunction(name, arg) {
+    if (name = xsh:triplePath, 
+        sh:defineFunctionTriple(name, arg),
+        sh:funpath(name, arg))
+}
+
+function sh:funpath(name, arg) {
+    xt:list(xsh:function, xt:list(name, arg))
+}
+
+# xsh:tripleExtension((xsh:preceding xsh:subject)) OR xsh:triplePath(xsh:subject)  
+#
+function sh:getFunctionTriple(name, arg) {
+    if (mapany(sh:isExtensionTriple, arg),
+        sh:tripleExtension, sh:triplePath)
+}
+
+# xsh:tripleExtension((xsh:preceding xsh:subject)) OR xsh:triplePath(xsh:subject)  
+#
+function sh:getFunctionTripleBasic(name, arg) {
+    let ((subject predicate object) = arg) {
+        if (coalesce(sh:isExtensionTriple(subject) || sh:isExtensionTriple(object), false),
+            sh:tripleExtension, sh:triplePath)
+    }
+}
+
+# node = (xsh:preceding xsh:subject) || (xsh:exist (exp))
+#
+function sh:isExtensionTriple(node) {
+    isExtension(node)
+}
+
+# predicate is a nested constraint
+#
+function sh:isNestedPredicate(name, arg) {
+    let ((subject predicate) = arg) {
+       coalesce(sh:isExtensionTriple(predicate) && xt:first(predicate) = sh:exist, false)
+    }
+}
+
+# name = xsh:triplePath
+#
+function sh:defineFunctionTriple(name, arg) {
+    if (sh:isNestedPredicate(name, arg),
+        # predicate nested constraint = (xsh:exist (subPropertyOf* hasAncestor))
+        sh:nest(name, arg),
+        sh:funpath(sh:getFunctionTriple(name, arg), arg))
+}
+
+
+
+#
+# predicate is a nested constraint: subPropertyOf* hasAncestor
+# name = xsh:triplePath ; 
+# arg = (xsh:subject (xsh:exist ( [sh:zeroOrMorePath rdfs:subPropertyOf] [xsh:object h:hasAncestor])))
+# predicate =  (xsh:exist ( [sh:zeroOrMorePath rdfs:subPropertyOf] [xsh:object h:hasAncestor]))
+# compile and move nested constraint after xsh:triplePath
+# compiled as:
+#  (xsh:triplePath (xsh:subject)) 
+#  (xsh:exist ((xsh:nodePath xsh:predicate)(rdfs:subPropertyOf*)(xsh:object h:hasAncestor)))
+#
+function sh:nest(name, arg) {
+    let ((subject predicate object) = arg, 
+          aname   = sh:getFunctionTripleBasic(name, arg),
+          atriple = sh:funpath(aname, xt:list(subject, bnode(), coalesce(object, bnode()))),
+          proj    = sh:funpath(xsh:nodePath,   xt:list(xsh:predicate)),
+          pred    = sh:path(sh:shaclGraph(),   xt:first(xt:rest(predicate))),
+          nest    = xt:first(xt:rest(pred)),
+          test    = xt:cons(proj, nest),
+          path    = xt:list(sh:sequence, test)
+          ) {
+          # record exist path has already compiled
+          sh:setConstraint(sh:path, path, path);
+        xt:list(sh:sequence, xt:list(atriple, sh:funpath(xsh:exist, xt:list(path))))
+    }
+}
+
 
 function sh:getExtValueList(value) {
     if (isBlank(value)) {
@@ -224,10 +298,13 @@ function sh:getPath(dt:graph shape, p){
 
 # user api, evaluate SHACL path in SHACL RDF format
 function sh:pathfinder(path, node) {
-    sh:path(sh:shaclGraph(), node, path)
+    sh:evalpath(node, sh:getPath(sh:shaclGraph(), path))
 }
 
-
+function sh:pathfinder(path, node, subject) {
+    #xt:print("path finder:", sh:getPath(sh:shaclGraph(), path));
+    sh:evalpath(subject, node, sh:getPath(sh:shaclGraph(), path))
+}
 
 
 # ********************************************************************************************
@@ -256,7 +333,9 @@ function sh:evalpath(node, exp) {
 }
 
 
-
+function sh:evalpath(subject, node, exp) {
+    sh:evalpath(xt:list(), subject, node, exp, false, st:null)
+}
 
 
 # url = st:null || server URL

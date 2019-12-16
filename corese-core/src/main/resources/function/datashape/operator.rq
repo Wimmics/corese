@@ -78,7 +78,12 @@ function sh:failure(node, exp) {
     }
 }
 
-
+function sh:display(subject, nodeList, exp) {
+    let ((show) = exp) {
+        if (coalesce(show, false), xt:print("display:", sh:pretty(subject), nodeList), true);
+        return (true)
+    }
+}
 
 
 #
@@ -91,7 +96,7 @@ function xsh:exist(subject, node, exp) {
     #xt:print("with path:", exp);
     if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:exist", xt:list(exp)), true);
     let ((path) = exp, 
-         list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node)) {
+         list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node, subject)) {
         if (xt:size(list) > 0, xt:list(node), xt:list())
     }
 }
@@ -100,7 +105,7 @@ function xsh:exist(subject, node, exp) {
 function xsh:notExist(subject, node, exp) {
     if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:notExist", xt:list(exp)), true);
     let ((path) = exp, 
-         list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node)) {
+         list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node, subject)) {
         if (xt:size(list) = 0, xt:list(node), xt:list())
     }
 }
@@ -127,15 +132,12 @@ function xsh:notFilter(subject, node, exp) {
 # element : node
 # [xsh:triple (xsh:predicate)]
 # exp = (xsh:predicate)
+# param = xsh:predicate
 #
-function sh:triple(subject, element, exp) {
-    sh:triple(xt:list(), subject, element, exp)
-}
-
 # when current element is a triple, consider the object node as current node
 # two consecutive triples join by default on object of first triple 
 #
-function sh:triple(focus, source, element, exp) {
+function sh:triplePath(focus, source, element, exp) {
     let ((param) = exp) {
         funcall(param, focus, source, 
             if (isExtension(element), xt:object(element), element), exp)
@@ -173,6 +175,42 @@ function xsh:node(focus, source, node, exp) {
 }
 
 #
+# variant of xsh:triple where
+# exp   = ((xsh:preceding xsh:object) [] (xsh:source xsh:subject))
+#
+function sh:tripleExtension(focus, source, element, exp) {
+    let ((subject predicate object agraph) = exp) {
+        xt:edges(
+            sh:position(subject, source, element), 
+            coalesce(sh:position(predicate, source, element), bnode()),
+            coalesce(sh:position(object,    source, element), bnode()),
+            coalesce(sh:position(agraph,    source, element), focus))
+            #focus)
+    }
+}
+
+# param = (xsh:preceding xsh:object) | bnode | URI | Literal
+# position = xsh:object
+# 
+function sh:position(param, source, element) {
+    if (isExtension(param)) {
+        let ((oper position) = param, 
+            value = funcall(position, if (oper = xsh:source, source, element))) {
+            xt:get(value, 0)
+        }
+    }
+    else if (isBlank(param)) {
+        bnode()
+    }
+    else {
+        param
+    }
+}
+
+
+
+
+#
 # exp = (rdf: rdfs:)
 # test if node matches with regex
 #
@@ -185,40 +223,32 @@ function sh:match(node, exp) {
 # filter triple with  subject|predicate|object|graph = exp
 #
 function xsh:subject(source, atriple, exp) {
-    let ((param) = exp) {
         if (sh:match(xt:subject(atriple), exp), xt:list(atriple), xt:list())
-    }
 }
-function xsh:mypredicate(focus, source, element, exp) {
-    if (isExtension(element),
-        xsh:predicateTriple(source, element, exp),
-        xsh:predicateNode(focus, source, element, exp))
+function xsh:predicate(source, atriple, exp) {
+        if (sh:match(xt:predicate(atriple), exp), xt:list(atriple), xt:list())
 }
-function xsh:object(source, atriple, exp) {
-    let ((param) = exp) {
-        if (sh:match(xt:object(atriple), exp), xt:list(atriple), xt:list())
-    }
+# filter triple or node
+function xsh:object(source, element, exp) {
+        if (sh:match(if (isExtension(element), xt:object(element), element), exp), 
+            xt:list(element), xt:list())
 }
 function xsh:graph(source, atriple, exp) {
-    let ((param) = exp) {
         if (sh:match(xt:graph(atriple), exp), xt:list(atriple), xt:list())
-    }
 }
-
-# filter triple with [xsh:predicate (rdf:type)]
-#
-function xsh:predicateTriple(source, atriple, exp) {
-    let ((param) = exp) {
-        if (sh:match(xt:predicate(atriple), exp), xt:list(atriple), xt:list())
-    }
+# filter node and triple
+function xsh:mynode(source, element, exp) {
+    if (isExtension(element),
+        xsh:subject(source, element, exp) || xsh:object(source, element, exp),
+        mapany(rq:regex, element, exp))
 }
 
 #
 # node [xsh:predicate(xsh:subject)]
 # return predicate nodes of triples where node is the subject 
 #
-function xsh:predicateNode(focus, source, node, exp) {
-    let (list = xsh:triple(focus, source, node, exp)) {
+function xsh:predicatePath(focus, source, node, exp) {
+    let (list = xsh:triplePath(focus, source, node, exp)) {
         xt:merge(maplist(xt:predicate, list))
     }
 }
@@ -228,7 +258,7 @@ function xsh:predicateNode(focus, source, node, exp) {
 # [xsh:node (xsh:subject)]
 # exp = (xsh:graph|xsh:subject|xsh:predicate|xsh:object)
 #
-function sh:mynode(source, element, exp) {
+function sh:nodePath(source, element, exp) {
    let ((param) = exp) {
         if (xt:size(exp) = 1, 
             funcall(param, element),
@@ -268,7 +298,7 @@ function sh:equal(source, element, exp) {
         if (if (isExtension(element), # source: node, element: triple
                  funcall(fst, source, element) = funcall(snd, source, element), 
             if (isExtension(source),  # source: triple ; element: node 
-                funcall(fst, source, element) = element, 
+                funcall(fst, source, source) = element, 
             # source: node ; element: node 
             source = element)), 
         
@@ -458,6 +488,11 @@ function sh:pattern(shape, node, exp) {
         if (bound(flag), regex(node, arg, flag), regex(node, arg))
     }
 }
+
+function sh:patternIn(shape, node, exp) {
+    !isBlank(node) && mapany(rq:regex, node, exp)
+}
+
 
 function xsd:boolean sh:nodeKind(dt:graph shape, value, dt:uri kind){
     (isURI(value)     && kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||

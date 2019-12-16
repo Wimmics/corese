@@ -73,27 +73,29 @@ function sh:path1(shape, sh, vis, nodeList, p, present) {
 
 # xsh:function [ name (value) ]
 function sh:pathextension(shape, sh, vis, nodeList, p) {
-    #xt:print("path");
     let (res = true, cstList = sh:getConstraint(sh:pathextension, shape, sh)) {
         if (xt:size(cstList) > 0) {
-            #xt:print("path:", cstList);
             for (s in dt:list(nodeList)) {
-                #xt:print("path:", s, xt:turtle(p));
-                #xt:print("res:", coalesce(sh:path(shape, s, p), "undef"));
-                for (o in sh:path(shape, s, p)) {
-                    #xt:print("path:", o);
+                let (targetList = sh:path(shape, s, p)) {
                     for ((oper name value ternary) in cstList) {
-                        let (suc = coalesce(
-                             if (ternary, 
-                                funcall(name, s, o, value), 
-                                funcall(name, o, value)), 
-                             false)) {
-                                sh:report(oper, sh, name, shape, s, p, o, suc, vis) ;
-                                if (! suc) {
-                                    set(res = false) 
+                        if (name = sh:display) {
+                            funcall(name, s, targetList, value)
+                        }
+                        else {
+                            for (o in targetList) {
+                                let (suc = coalesce(
+                                    if (ternary, 
+                                        funcall(name, s, o, value), 
+                                        funcall(name, o, value)), 
+                                        false)) {
+                                        sh:report(oper, sh, name, shape, s, p, o, suc, vis) ;
+                                        if (! suc) {
+                                            set(res = false) 
+                                    }
                                 }
                             }
                         }
+                    }
                 }
             }
         } ;
@@ -157,7 +159,10 @@ function sh:getPathShape(shape, sh, shapeList) {
                 values ?oper { unnest(?shapeList) }
                 ?sh ?oper ?val 
                 optional { ?sh sh:flags ?flag }
-                bind (if (?oper = sh:pattern, coalesce(xt:list(?val, ?flag), xt:list(?val)), ?val)
+                bind (
+                    if (?oper = sh:pattern,   coalesce(xt:list(?val, ?flag), xt:list(?val)),
+                    if (?oper = sh:patternIn, sh:getValueList(?val),
+                    ?val))
                 as ?arg)
                 filter if (?oper = sh:uniqueLang, sameTerm(?val, true), true)
             }
@@ -165,6 +170,7 @@ function sh:getPathShape(shape, sh, shapeList) {
         return(list)
     }
 }
+
 
 function sh:pathextension(shape, sh) {
     sh:getShapeExtension(shape, sh, sh:getShape(sh:pathextension))

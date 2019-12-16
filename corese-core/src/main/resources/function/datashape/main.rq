@@ -213,7 +213,7 @@ function sh:defShape() {
 function sh:defShapePath1() {
     let (alist = @(sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive       
             sh:maxInclusive sh:maxExclusive sh:nodeKind sh:in sh:languageIn sh:node 
-            sh:class sh:property sh:pattern
+            sh:class sh:property sh:pattern sh:patternIn
             sh:type)) {        
         alist 
     }
@@ -236,8 +236,10 @@ function sh:defShapePathExtension() {
     let (alist = @(xsh:evaluate xsh:compute xsh:trace xsh:funeval 
         xsh:exist xsh:notExist xsh:filter xsh:notFilter 
         xsh:equal xsh:notEqual 
-        xsh:triple xsh:node xsh:subject xsh:predicate xsh:object xsh:graph
-        xsh:from xsh:success xsh:failure
+        xsh:predicatePath xsh:triplePath xsh:nodePath
+        xsh:node xsh:subject xsh:predicate xsh:object xsh:graph
+        xsh:from 
+        xsh:success xsh:failure xsh:display
         )) {        
         alist 
     }
@@ -247,7 +249,7 @@ function sh:defShapeNodeExtension() {
     let (alist = @(xsh:evaluate xsh:compute xsh:trace xsh:funeval 
         xsh:exist xsh:notExist xsh:filter xsh:notFilter 
         xsh:equal xsh:notEqual 
-        xsh:triple xsh:subject xsh:predicate xsh:object xsh:graph
+        xsh:triplePath xsh:subject xsh:predicate xsh:object xsh:graph
         # xsh:node sh:node [constraint ] is not a function, it is std SHACL
         )) {        
         alist 
@@ -257,7 +259,7 @@ function sh:defShapeNodeExtension() {
 function sh:defShapeNode1() {
     let (alist = @(sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive 
             sh:maxInclusive sh:maxExclusive sh:nodeKind sh:in sh:languageIn sh:node 
-            sh:hasValue sh:pattern)) {
+            sh:hasValue sh:pattern sh:patternIn)) {
         alist
     }
 }

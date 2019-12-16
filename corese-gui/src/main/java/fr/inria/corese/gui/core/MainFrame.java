@@ -79,7 +79,7 @@ public class MainFrame extends JFrame implements ActionListener {
     static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-11-11";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-12-25";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -128,8 +128,9 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem iselect, iselecttuple, igraph, iconstruct, iask, idescribe,
             iserviceCorese, iserviceDBpedia, ifederate,
             iinsert, iinsertdata, idelete, ideleteinsert,
-            iturtle, in3, irdfxml, ijson, itrig, ispin, iowl, itypecheck,
+            iturtle, in3, irdfxml, ijson, itrig, ispin, iowl, 
             ientailment, irule, isystem, iprovenance, iindex, ifunction, ical;
+    private JMenuItem itypecheck, ipredicate, ipredicatepath;
     HashMap<Object, String> itable;
     private JCheckBox checkBoxQuery;
     private JCheckBox checkBoxRule;
@@ -493,8 +494,11 @@ public class MainFrame extends JFrame implements ActionListener {
         itrig = defItem("Trig", DEFAULT_TRIG_QUERY);
         ispin = defItem("SPIN", DEFAULT_SPIN_QUERY);
         iowl = defItem("OWL", DEFAULT_OWL_QUERY);
-        itypecheck = defItem("SHACL", DEFAULT_TYPECHECK_QUERY);
-
+        
+        itypecheck = defItem("Engine",   "shacl/typecheck.rq");
+        ipredicate = defItem("Predicate", "shacl/predicate.rq");
+        ipredicatepath = defItem("Predicate Path", "shacl/predicatepath.rq");
+        
         loadAndRunRule = new JMenuItem("Load&Run Rule");
         loadAndRunRule.addActionListener(this);
         cut = new JMenuItem("Cut");
@@ -577,6 +581,7 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu debugMenu = new JMenu("Debug");
         JMenu queryMenu = new JMenu("Query");
         JMenu templateMenu = new JMenu("Template");
+        JMenu shaclMenu = new JMenu("SHACL");
         JMenu explainMenu = new JMenu("Explain");
         JMenu aboutMenu = new JMenu("?");
 
@@ -624,8 +629,10 @@ public class MainFrame extends JFrame implements ActionListener {
         templateMenu.add(itrig);
         templateMenu.add(iowl);
         templateMenu.add(ispin);
-
-        templateMenu.add(itypecheck);
+        
+        shaclMenu.add(ipredicate);
+        shaclMenu.add(ipredicatepath);
+        shaclMenu.add(itypecheck);
 
         editMenu.add(undo);
         editMenu.add(redo);
@@ -839,6 +846,7 @@ public class MainFrame extends JFrame implements ActionListener {
         menuBar.add(debugMenu);
         menuBar.add(queryMenu);
         menuBar.add(templateMenu);
+        menuBar.add(shaclMenu);
         menuBar.add(explainMenu);
         menuBar.add(aboutMenu);
 

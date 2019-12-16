@@ -1,0 +1,16 @@
+#
+# Extended SHACL: select predicates of instances
+#
+insert data {
+
+[] a sh:NodeShape ;
+sh:targetClass sh:NodeShape ;
+sh:property [
+    sh:path (
+        [xsh:predicatePath xsh:subject]
+    ) ;
+    sh:patternIn (sh: rdf:)
+]
+.
+
+}

@@ -1,0 +1,43 @@
+#
+# Extended SHACL: 
+#
+insert data {
+foaf:knows rdfs:domain foaf:Person ;
+rdfs:range foaf:Person .
+us:John foaf:knows us:Jack, us:Jim .
+us:Jack a foaf:Person .
+
+[] a sh:NodeShape ;
+sh:targetTriplesOf rdfs:domain ; # p domain d
+sh:property [
+    sh:path (
+        [xsh:triplePath ([] (xsh:source xsh:subject) )]  # s p o      
+        [xsh:nodePath xsh:subject] # s
+    ) ;
+    xsh:function[us:domain()]
+] .
+
+[] a sh:NodeShape ;
+sh:targetTriplesOf rdfs:range ; # p range r
+sh:property [
+    sh:path (
+        [xsh:triplePath ([] (xsh:source xsh:subject) )]  # s p o      
+        [xsh:nodePath xsh:object] # o
+    ) ;
+    xsh:function[us:range()]
+] .
+
+}
+
+@public 
+function us:domain(source, node, exp) {
+    sh:class(node, xt:object(source))
+}
+
+@public 
+function us:range(source, node, exp) {
+    let (range = xt:object(source)) {
+        if (regex(range, xsd:), sh:datatype(node, range),
+            sh:class(node, range))
+    }
+}

@@ -1,0 +1,18 @@
+#
+#  Type checking for rdfs:domain
+#
+insert data {
+us:test a sh:NodeShape ;
+xsh:targetTriplesOf rdfs:domain ;                   # p domain d                         
+sh:property[
+sh:path (
+    [xsh:triplePath ([] (xsh:source xsh:subject) )] # s p o
+    [xsh:nodePath xsh:subject]                      # s
+    [xsh:notExist ((
+        [xsh:triplePath (xsh:subject rdf:type )]    # s rdf:type t
+        [xsh:nodePath xsh:object]                   # t
+        [sh:zeroOrMorePath rdfs:subClassOf]         # t rdfs:subClassOf* u
+        [xsh:equal (xsh:object)]                    # u = d
+    ))]   );
+xsh:failure() 
+}

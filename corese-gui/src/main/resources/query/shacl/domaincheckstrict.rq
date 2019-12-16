@@ -1,0 +1,17 @@
+#
+# Strict type checking for rdfs:domain
+#
+insert data {
+us:test a sh:NodeShape ;
+xsh:targetTriplesOf rdfs:domain ;       # p domain d                       
+sh:property[
+sh:path (
+    [xsh:triplePath ([] (xsh:source xsh:subject) )] # s p o
+    [xsh:notExist (
+        [xsh:triplePath ((xsh:preceding xsh:subject) rdf:type (xsh:source xsh:object))] # s rdf:type d
+    )]
+    [xsh:nodePath xsh:subject]
+    );
+xsh:failure() 
+]
+}

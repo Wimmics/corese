@@ -8,8 +8,8 @@ prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix msh: <http://ns.inria.fr/shacl/>
 
 
-function sh:core(shape, sh, vis, nodeList) {
-    sh:core(shape, sh, vis, nodeList, false)
+function sh:core(sh, vis, nodeList) {
+    sh:core(sh, vis, nodeList, false)
 }
 
 #
@@ -20,11 +20,11 @@ function sh:core(shape, sh, vis, nodeList) {
 # nodeList:  list of target nodes of shape sh
 # present=true: fail if path is empty (when there is a path)
 #
-function sh:core(shape, sh, vis, nodeList, present) {
-    let (b1 = sh:pathcore(shape, sh, vis, nodeList, present),
-         b2 = sh:booleancore(shape, sh, vis, nodeList),
-         b3 = sh:constraintcore(shape, sh, vis, nodeList),
-         b4 = sh:closedcore(shape, sh, vis, nodeList)         
+function sh:core(sh, vis, nodeList, present) {
+    let (b1 = sh:pathcore(sh, vis, nodeList, present),
+         b2 = sh:booleancore(sh, vis, nodeList),
+         b3 = sh:constraintcore(sh, vis, nodeList),
+         b4 = sh:closedcore(sh, vis, nodeList)         
          ) {
         return (b1 && b2 && b3 && b4)
     }
@@ -32,20 +32,20 @@ function sh:core(shape, sh, vis, nodeList, present) {
 
 # user api
 function sh:eval(shape, node) {
-    sh:core(sh:shaclGraph(), shape, false, dt:list(node))
+    sh:core(shape, false, dt:list(node))
 }
 
-function sh:closedcore(shape, sh, vis, nodeList) {
+function sh:closedcore(sh, vis, nodeList) {
     let (res = true) {
-        if (sh:isClosed(shape, sh)) {
-            let (anypred = bnode(), predList = sh:getPredicates(shape, sh)) {
+        if (sh:isClosed(sh)) {
+            let (anypred = bnode(), predList = sh:getPredicates(sh)) {
                 #xt:print("closed:", predList, nodeList);
                 if (sh:trace(), xt:print("core closed:", sh, nodeList), true); 
                 for (node in dt:list(nodeList)) {
                     for ((s p o) in xt:edges(node, anypred)) {
                         let (suc = xt:member(p, predList)) {
                             if (suc, true, set(res = false));
-                            sh:report(sh:closed, sh, shape, s, p, o, suc, vis)
+                            sh:report(sh:closed, sh, s, p, o, suc, vis)
                         }
                     }
                 }
@@ -56,11 +56,11 @@ function sh:closedcore(shape, sh, vis, nodeList) {
 }
  
 
-function sh:pathcore(shape, sh, vis, nodeList, present) {
+function sh:pathcore(sh, vis, nodeList, present) {
     let (res = true) {
-        for ((cst path) in sh:getConstraint(sh:pathcore, shape, sh)) {
+        for ((cst path) in sh:getShapeConstraint(sh:pathcore, sh)) {
             if (sh:trace(), xt:print("core path:", sh, nodeList), true); 
-            let (suc = coalesce(sh:path(shape, cst, vis, nodeList, path, present), false)) {
+            let (suc = coalesce(sh:path(cst, vis, nodeList, path, present), false)) {
                 if (suc, true, set(res = false))
             }
         } ;
@@ -69,11 +69,11 @@ function sh:pathcore(shape, sh, vis, nodeList, present) {
 }
 
 
-function sh:booleancore(shape, sh, vis, nodeList) {
+function sh:booleancore(sh, vis, nodeList) {
     let (res = true) {
-        for ((bool cst) in sh:getConstraint(sh:booleancore, shape, sh)) {
+        for ((bool cst) in sh:getShapeConstraint(sh:booleancore,  sh)) {
             if (sh:trace(), xt:print("core boolean:", sh, nodeList), true); 
-            let (suc = coalesce(funcall(msh:fun(bool), bool, shape, sh, cst, vis, nodeList), false)) {
+            let (suc = coalesce(funcall(msh:fun(bool), bool, sh, cst, vis, nodeList), false)) {
                 if (suc, true, set(res = false))
             }
         } ;
@@ -81,11 +81,11 @@ function sh:booleancore(shape, sh, vis, nodeList) {
     }
 }
 
-function sh:constraintcore(shape, sh, vis, nodeList) {
-    let (cst = sh:getConstraint(sh:constraintcore, shape, sh)) {
+function sh:constraintcore(sh, vis, nodeList) {
+    let (cst = sh:getShapeConstraint(sh:constraintcore, sh)) {
         if (cst) {
             if (sh:trace(), xt:print("core constraint:", sh, nodeList), true); 
-            let (suc = sh:constraint(shape, sh, vis, nodeList)) {
+            let (suc = sh:constraint(sh, vis, nodeList)) {
                 return (suc)
             }
         }
@@ -101,19 +101,22 @@ function sh:constraintcore(shape, sh, vis, nodeList) {
 #
 # record relevant properties of sh  in a map
 #
-function sh:getConstraint(name, shape, sh) {
+function sh:getShapeConstraint(name, sh) {
     return (if (sh:hasConstraint(name, sh), 
         sh:getConstraint(name, sh), 
-        sh:setConstraint(name, sh, funcall(name, shape, sh))))
+        sh:setConstraint(name, sh, funcall(name, sh:shaclGraph(), sh))))
 }
 
-
-function sh:isClosed(shape, sh) {
-    sh:getConstraint(sh:isclosedcore, shape, sh)
+function sh:getConstraint(name, shape, sh) {
+    sh:getShapeConstraint(name,  sh)
 }
 
-function sh:getPredicates(shape, sh) {
-    sh:getConstraint(sh:closedcore, shape, sh)
+function sh:isClosed(sh) {
+    sh:getShapeConstraint(sh:isclosedcore, sh)
+}
+
+function sh:getPredicates(sh) {
+    sh:getShapeConstraint(sh:closedcore, sh)
 }
 
 function sh:isclosedcore(shape, sh) {
@@ -170,12 +173,12 @@ function msh:fun(name) {
 }
 
 
-function msh:not (oper, shape, sh, cst, vis, ls) {
+function msh:not (oper, sh, cst, vis, ls) {
         let (res = true) {
             for (s in dt:list(ls)) {
-                let (suc = coalesce(! sh:core(shape, cst, false, s), false)) {
+                let (suc = coalesce(! sh:core(cst, false, s), false)) {
                     if (suc, true, set(res = false));
-                    sh:report(sh:not, sh, shape, s, st:null, s,  suc, vis)
+                    sh:report(sh:not, sh, s, st:null, s,  suc, vis)
                 }
             };
             return (res)
@@ -184,11 +187,11 @@ function msh:not (oper, shape, sh, cst, vis, ls) {
 
 
 # oper = sh:and | sh:or | sh:xone
-function msh:boolean (oper, shape, sh, cst, vis, ls) {
+function msh:boolean (oper, sh, cst, vis, ls) {
     let (res = true) {
         for (s in dt:list(ls)) {
-            let (suc = coalesce(funcall(oper, shape, sh:getConstraint(sh:coreboolean, shape, cst), s), false)) {
-                sh:report(oper, sh, shape, s, st:null, s, suc, vis);
+            let (suc = coalesce(funcall(oper, sh:getShapeConstraint(sh:coreboolean, cst), s), false)) {
+                sh:report(oper, sh, s, st:null, s, suc, vis);
                 if (suc, true, set (res = false))
             }
         } ;
@@ -198,24 +201,24 @@ function msh:boolean (oper, shape, sh, cst, vis, ls) {
 
 
 # count fail
-function xsd:boolean sh:and(shape, cst, s){
-    (sh:bool(shape, cst, s, 0, 1) = 0)
+function xsd:boolean sh:and(cst, s){
+    (sh:bool(cst, s, 0, 1) = 0)
 }
 
 # count success
-function xsd:boolean sh:or(shape, cst, s){
-    (sh:bool(shape, cst, s, 1, 0) > 0)
+function xsd:boolean sh:or(cst, s){
+    (sh:bool(cst, s, 1, 0) > 0)
 }
 
 # count success
-function xsd:boolean sh:xone(shape, cst, s){
-    (sh:bool(shape, cst, s, 1, 0) = 1)
+function xsd:boolean sh:xone(cst, s){
+    (sh:bool(cst, s, 1, 0) = 1)
 }
 
-function xsd:integer sh:bool(shape, cst, s, xsd:integer suc, xsd:integer fail){
+function xsd:integer sh:bool(cst, s, xsd:integer suc, xsd:integer fail){
    let (cc = 0, nodeList = xt:list(s)) {
         for (sh in cst) {
-            let (res = sh:core(shape, sh, false, nodeList)) 
+            let (res = sh:core(sh, false, nodeList)) 
             {
                  set (cc = cc +  if (res, suc, fail))  
             }

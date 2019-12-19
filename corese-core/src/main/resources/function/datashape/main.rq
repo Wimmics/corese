@@ -117,7 +117,7 @@ function sh:shacleval(shape, focus) {
             if (sh:trace(), 
                 xt:print("target:", coalesce(sh, "undef"), xt:size(list), list), true);
             if (bound(sh) && xt:size(list) > 0) {
-                let (res = sh:core(shape, sh, true, list)) {
+                let (res = sh:core(sh, true, list)) {
                     if (res, true, set(suc = false))
                 }
             }
@@ -194,7 +194,7 @@ function sh:finish() {
 
 
 function xsd:boolean sh:hasShape(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, ls) {
-    sh:core(shape, sh, vis, ls)
+    sh:core(sh, vis, ls)
 }
 
 
@@ -335,18 +335,18 @@ function xsd:boolean sh:report(name, s, xsd:boolean suc, xsd:boolean vis) {
 # suc is success/failure of the shape
 # vis true means generate a ValidationResult
 #
-function xsd:boolean sh:report(name,  sh, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis){
-    sh:report(name, sh, st:null, shape, foc, p, o, suc, vis)
+function xsd:boolean sh:report(name,  sh, foc, p, o, xsd:boolean suc, xsd:boolean vis){
+    sh:report(name, sh, st:null, foc, p, o, suc, vis)
 }
 
-function xsd:boolean sh:report(name, sh:NodeShape sh, dt:graph shape, foc, xsd:boolean suc, xsd:boolean vis){
-    sh:report(name, sh, shape, foc, st:null, st:null, suc, vis)
+function xsd:boolean sh:report(name, sh:NodeShape sh, foc, xsd:boolean suc, xsd:boolean vis){
+    sh:report(name, sh, foc, st:null, st:null, suc, vis)
 }
 
-function xsd:boolean sh:report(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis){
-    sh:record(name,  sh, cst, shape, foc, p, o, suc, vis);
+function xsd:boolean sh:report(name,  sh, cst, foc, p, o, xsd:boolean suc, xsd:boolean vis){
+    sh:record(name,  sh, cst, sh:shaclGraph(), foc, p, o, suc, vis);
     if (vis && ! suc) { 
-        sh:result(name, sh, cst, shape, foc,  p, o) ;
+        sh:result(name, sh, cst, sh:shaclGraph(), foc,  p, o) ;
         sh:visit(name, foc, suc)
     } ;
     return(true)

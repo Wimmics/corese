@@ -159,12 +159,12 @@ function xsh:predicate(focus, source, node, exp) {
 }
 function xsh:object(focus, source, node, exp) {
     let ((name predicate) = exp) {
-        xt:edges(bnode(), coalesce(predicate, bnode()), node, focus)
+        xt:edges(bnode(), coalesce(if (isBlank(predicate), bnode(), predicate), bnode()), node, focus)
     }
 }
 function xsh:graph(focus, source, node, exp) {
     let ((name predicate) = exp) {
-        xt:edges(bnode(), coalesce(predicate, bnode()), bnode(), node)
+        xt:edges(bnode(), coalesce(if (isBlank(predicate), bnode(), predicate), bnode()), bnode(), node)
     }
 }
 # xsh:subject & xsh:object : adjacent edges
@@ -380,7 +380,7 @@ function sh:defun(name, value) {
 }
 
 function sh:defun() {
-    sh:defun(rq:or, sh:or);
+    sh:defun(rq:or, sh:myor);
     sh:defun(rq:if, sh:if);
     sh:defun(rq:coalesce, sh:coalesce);
     sh:defun(rq:self, sh:self);
@@ -422,7 +422,7 @@ function sh:if(node, param) {
     }
 }
 
-function sh:or(node, param) {
+function sh:myor(node, param) {
     let ((e1 e2) = param) {
         return(xsh:compute(node, e1) || sh:compute(node, e2))
     }
@@ -443,13 +443,13 @@ function sh:validURI(url) {
     }
 }
 
-function sh:validURI(shape, url, any) {
+function sh:validURI( url, any) {
     let (value = xt:validURI(url)) {
         return (value)
     }
 }
 
-function sh:validURI(shape, sh, subject, path, url) {
+function sh:validURI( sh, subject, path, url) {
     let (value = xt:validURI(url)) {
         return (value)
     }
@@ -482,51 +482,48 @@ function sh:maxCount(s, p, m){
     sh:count(s, p) <= m
 }
 
-function sh:pattern(shape, node, exp) {
+function sh:pattern( node, exp) {
     let ((arg flag) = exp) {
         !isBlank(node) && 
         if (bound(flag), regex(node, arg, flag), regex(node, arg))
     }
 }
 
-function sh:patternIn(shape, node, exp) {
+function sh:patternIn( node, exp) {
     !isBlank(node) && mapany(rq:regex, node, exp)
 }
 
 
-function xsd:boolean sh:nodeKind(dt:graph shape, value, dt:uri kind){
+function xsd:boolean sh:nodeKind(dt:graph  value, dt:uri kind){
     (isURI(value)     && kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||
     (isLiteral(value) && kind IN ( sh:Literal, sh:BlankNodeOrLiteral, sh:IRIOrLiteral ) ) ||
     (isBlank(value)   && kind IN ( sh:BlankNode, sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral ) )  
 }
 
-function xsd:boolean sh:minLength(dt:graph shape, s, m){
+function xsd:boolean sh:minLength(dt:graph  s, m){
     ! isBlank(s) && coalesce(strlen(s) >= m, false) 
 }
 
-function xsd:boolean sh:maxLength(shape, s, m){
+function xsd:boolean sh:maxLength( s, m){
     ! isBlank(s) && coalesce(strlen(s) <= m, false) 
 }
 
-function xsd:boolean sh:minInclusive(shape, o, m){
+function xsd:boolean sh:minInclusive( o, m){
     o >= m
 }
 
-function xsd:boolean sh:minExclusive(shape, o, m){
+function xsd:boolean sh:minExclusive( o, m){
     o > m
 }
 
-function xsd:boolean sh:maxInclusive(shape, o, m){
+function xsd:boolean sh:maxInclusive( o, m){
     o <= m
 }
 
-function xsd:boolean sh:maxExclusive(shape, o, m){
+function xsd:boolean sh:maxExclusive( o, m){
     o < m
 }
 
-function xsd:boolean sh:datatype(shape, o, dt){
-    sh:datatype(o, dt)
-}
 
 function xsd:boolean sh:datatype(o, dt){
     if (isLiteral(o), return(datatype(o) = dt && isWellFormed(o)), false)
@@ -540,11 +537,11 @@ function xsd:boolean sh:maxCount(s, m){
     s <= m
 }
 
-function xsd:boolean sh:hasValue(shape, s, v) {
+function xsd:boolean sh:hasValue( s, v) {
     s = v
 }
 
-function xsd:boolean sh:class(?shape, ?o, ?c){
+function xsd:boolean sh:myclass(?o, ?c){
     if (sh:isetup(sh:type), sh:type(?o, ?c), 
         exists { ?o rdf:type/rdfs:subClassOf* ?c })
 }
@@ -557,13 +554,10 @@ function sh:type(object, class) {
     exists { ?object rdf:type ?class }
 }
 
-function xsd:boolean sh:type(?shape, ?o, ?c){
-    exists { ?o rdf:type ?c }
-}
 
 
-function xsd:boolean sh:in(dt:graph ?shape, ?object, ?lv) {
-    let (list = sh:getConstraint(sh:in, shape, lv)) {
+function xsd:boolean sh:in(?object, ?lv) {
+    let (list = sh:getShapeConstraint(sh:incst, lv)) {
         for (value in list) { 
             if (object = value && if (isLiteral(object), datatype(object) = datatype(value), true)) {
                 return (true)
@@ -573,7 +567,7 @@ function xsd:boolean sh:in(dt:graph ?shape, ?object, ?lv) {
     }
 }
 
-function sh:in(shape, sh) {
+function sh:incst(shape, sh) {
     let (select * (aggregate(?val) as ?list)
          where { graph ?shape { ?sh rdf:rest*/rdf:first ?val } } ) {
          return(list)
@@ -581,9 +575,9 @@ function sh:in(shape, sh) {
 }
 
 
-function xsd:boolean sh:languageIn(dt:graph ?shape, ?object, ?lv){
+function xsd:boolean sh:languageIn(?object, ?lv){
    if (isLiteral(object)) {
-        let (lan = lang(object), list = sh:getConstraint(sh:in, shape, lv)) {
+        let (lan = lang(object), list = sh:getShapeConstraint(sh:incst, lv)) {
             for (value in list) { 
                 if (langMatches(lan, value)) {
                     return (true)
@@ -600,12 +594,12 @@ function xsd:boolean sh:languageIn(dt:graph ?shape, ?object, ?lv){
 
 # by default, generate no report for sh:node constraints
 # if sh:detail() generate report for sh:node constraints
-function xsd:boolean sh:node(dt:graph shape, o, cst){
-    sh:core(shape, cst, sh:isetup(sh:detail), o)
+function xsd:boolean sh:node(o, cst){
+    sh:core(cst, sh:isetup(sh:detail), o)
 }
 
-function xsd:boolean sh:property(dt:graph shape, o, cst){
-    sh:core(shape, cst, true, o)
+function xsd:boolean sh:property(o, cst){
+    sh:core(cst, true, o)
 }
 
 

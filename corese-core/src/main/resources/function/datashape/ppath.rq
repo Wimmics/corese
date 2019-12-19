@@ -194,7 +194,7 @@ function sh:isExtensionTriple(node) {
 #
 function sh:isNestedPredicate(name, arg) {
     let ((subject predicate) = arg) {
-       coalesce(sh:isExtensionTriple(predicate) && xt:first(predicate) = sh:exist, false)
+       coalesce(sh:isExtensionTriple(predicate) && xt:first(predicate) in  (xsh:exist, xsh:filter), false)
     }
 }
 
@@ -212,25 +212,27 @@ function sh:defineFunctionTriple(name, arg) {
 #
 # predicate is a nested constraint: subPropertyOf* hasAncestor
 # name = xsh:triplePath ; 
-# arg = (xsh:subject (xsh:exist ( [sh:zeroOrMorePath rdfs:subPropertyOf] [xsh:object h:hasAncestor])))
-# predicate =  (xsh:exist ( [sh:zeroOrMorePath rdfs:subPropertyOf] [xsh:object h:hasAncestor]))
+# arg = (xsh:subject (xsh:exist ([sh:zeroOrMorePath rdfs:subPropertyOf] [xsh:object h:hasAncestor])))
+# predicate = (xsh:exist  ([sh:zeroOrMorePath rdfs:subPropertyOf] [xsh:object h:hasAncestor]))
+# predicate = (xsh:filter ([sh:pattern rdf:]))
 # compile and move nested constraint after xsh:triplePath
 # compiled as:
 #  (xsh:triplePath (xsh:subject)) 
-#  (xsh:exist ((xsh:nodePath xsh:predicate)(rdfs:subPropertyOf*)(xsh:object h:hasAncestor)))
+#  (xsh:exist  ((xsh:nodePath xsh:predicate)(rdfs:subPropertyOf*)(xsh:object h:hasAncestor)))
 #
 function sh:nest(name, arg) {
     let ((subject predicate object) = arg, 
+          (oper value) = predicate,
+          exist   = (oper = xsh:exist),
           aname   = sh:getFunctionTripleBasic(name, arg),
           atriple = sh:funpath(aname, xt:list(subject, bnode(), coalesce(object, bnode()))),
           proj    = sh:funpath(xsh:nodePath,   xt:list(xsh:predicate)),
-          pred    = sh:path(sh:shaclGraph(),   xt:first(xt:rest(predicate))),
-          nest    = xt:first(xt:rest(pred)),
-          test    = xt:cons(proj, nest),
+          pred    = if (exist, sh:path(sh:shaclGraph(), value), value),
+          test    = if (exist, xt:cons(proj, xt:get(pred, 1)), xt:list(proj, sh:funpath(oper, value))),
           path    = xt:list(sh:sequence, test)
           ) {
-          # record exist path has already compiled
-          sh:setConstraint(sh:path, path, path);
+        # record exist path has already compiled
+        sh:setConstraint(sh:path, path, path);
         xt:list(sh:sequence, xt:list(atriple, sh:funpath(xsh:exist, xt:list(path))))
     }
 }
@@ -279,6 +281,18 @@ function dt:list sh:tolist(dt:graph shape, exp){
 # ?s is subject, ?p is PP expression
 # ?s = us:John ; ?p = [sh:zeroOrMorePath foaf:knows]
 #
+function dt:list sh:ppath(s, p){  
+    sh:path(sh:shaclGraph(), s, sh:getPPath(p), false)
+}
+#
+# rewrite PP once as a list and record it
+#
+function sh:getPPath(p){
+   return (if (sh:hasConstraint(sh:path, p), 
+     sh:getConstraint(sh:path, p), 
+     sh:setConstraint(sh:path, p, sh:path(sh:shaclGraph(), p))))
+}
+
 function dt:list sh:path(dt:graph shape, s, p){  
     #xt:print("path:", sh:getPath(shape, p));
     sh:path(shape, s, sh:getPath(shape, p), false)

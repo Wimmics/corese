@@ -8,11 +8,11 @@ prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix xsh: <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
-function sh:constraint(shape, sh, vis, nodeList) {
-    let (b1 = sh:constraint1 (shape, sh, vis, nodeList),
-         b2 = sh:constraint2 (shape, sh, vis, nodeList),
-         b4 = sh:nodeextension(shape, sh, vis, nodeList),
-         b5 = sh:cstsparql   (shape, sh, vis, nodeList)
+function sh:constraint(sh, vis, nodeList) {
+    let (b1 = sh:constraint1 (sh, vis, nodeList),
+         b2 = sh:constraint2 (sh, vis, nodeList),
+         b4 = sh:nodeextension(sh, vis, nodeList),
+         b5 = sh:cstsparql   (sh, vis, nodeList)
          ) {
         return (b1 && b2 && b4 && b5)
     }
@@ -26,12 +26,12 @@ function sh:constraint(shape, sh, vis, nodeList) {
 # nodeList is either a list of nodes or a single node
 # sh:report generates a validation report in case of error
 #
-function sh:constraint1 (shape, sh, vis, nodeList) {
+function sh:constraint1 (sh, vis, nodeList) {
     let (res = true) {
-        for ((oper value) in sh:getConstraint(sh:cstgeneric1, shape, sh)) {  
+        for ((oper value) in sh:getShapeConstraint(sh:cstgeneric1, sh)) {  
             for (node in dt:list(nodeList)) {    
-                let (suc = coalesce(funcall(oper, shape, node, value), false)) {
-                        sh:report(oper, sh, if (oper = sh:node, value, st:null), shape, node, st:null, node, suc, vis) ;
+                let (suc = coalesce(funcall(oper, node, value), false)) {
+                        sh:report(oper, sh, if (oper = sh:node, value, st:null),  node, st:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
                     }
             }
@@ -42,14 +42,14 @@ function sh:constraint1 (shape, sh, vis, nodeList) {
 
 
 # oper = xsh:function
-function sh:nodeextension (shape, sh, vis, nodeList) {
+function sh:nodeextension (sh, vis, nodeList) {
     let (res = true) {
-        for ((oper name value) in sh:getConstraint(sh:nodeextension, shape, sh)) {  
+        for ((oper name value) in sh:getShapeConstraint(sh:nodeextension, sh)) {  
             for (node in dt:list(nodeList)) {  
                 let (suc = coalesce(
                         funcall(name, node, value),
                         false)) {
-                        sh:report(oper, sh, name, shape, node, st:null, node, suc, vis) ;
+                        sh:report(oper, sh, name, node, st:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
                     }
             }
@@ -59,11 +59,11 @@ function sh:nodeextension (shape, sh, vis, nodeList) {
 }
 
 
-function sh:constraint2 (shape, sh, vis, nodeList) {
+function sh:constraint2 (sh, vis, nodeList) {
     let (res = true) {
-        for ((oper value) in sh:getConstraint(sh:cstgeneric2, shape, sh)) {  
+        for ((oper value) in sh:getShapeConstraint(sh:cstgeneric2, sh)) {  
             for (node in dt:list(nodeList)) {    
-                let (suc = coalesce(funcall(oper, shape, sh, vis, node, value), false)) {
+                let (suc = coalesce(funcall(oper, sh, vis, node, value), false)) {
                     if (suc, true, set(res = false))
                 }
             }
@@ -193,42 +193,42 @@ function sh:nodeextension(shape, sh) {
 }
 
 
-function sh:class (shape, sh, vis, s, ?c) {
+function sh:class (sh, vis, s, ?c) {
     let (suc = exists { ?s rdf:type/rdfs:subClassOf* ?c } ) {
-        sh:report(sh:class, sh, shape,  s, rdf:type, s, suc, vis) ;
+        sh:report(sh:class, sh, s, rdf:type, s, suc, vis) ;
         return (suc)
     }
 }
 
 
-function sh:disjoint (shape, sh, vis, s, p) {
-    let (l = sh:path(shape, s, p), suc = ! xt:member(s, l)) {
-        sh:report(sh:disjoint, sh, shape, s, p, s, suc, vis) ;
+function sh:disjoint (sh, vis, s, p) {
+    let (l = sh:ppath(s, p), suc = ! xt:member(s, l)) {
+        sh:report(sh:disjoint, sh, s, p, s, suc, vis) ;
         return (suc)
     }
 }
 
-function sh:equals (shape, sh, vis, s, p) {
-    let (l  = sh:path(shape, s, p),
-         b1 = sh:equals1(shape, sh, vis, s, p, l),
-         b2 = sh:equals2(shape, sh, vis, s, p, l)) {
+function sh:equals (sh, vis, s, p) {
+    let (l  = sh:ppath(s, p),
+         b1 = sh:equals1(sh, vis, s, p, l),
+         b2 = sh:equals2(sh, vis, s, p, l)) {
             return (b1 && b2)
     }
 }
 
 
-function sh:equals1 (shape, sh, vis, s, p, l) {
+function sh:equals1 (sh, vis, s, p, l) {
     let (suc = xt:member(s, l)) {
-        sh:report(sh:equals, sh, shape, s, p, s, suc, vis);
+        sh:report(sh:equals, sh, s, p, s, suc, vis);
         return (suc)
     }
 }
 
-function sh:equals2 (shape, sh, vis, s, p, l) {
+function sh:equals2 (sh, vis, s, p, l) {
     let (res = true) {
         for (m in l) {
             let (suc = s = m) {
-                sh:report(sh:equals, sh, shape, s, p, m, suc, vis);
+                sh:report(sh:equals, sh, s, p, m, suc, vis);
                 set (res = res && suc)
             }
         } ;

@@ -1,19 +1,20 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 
-function sh:sparql(shape, sh, vis, nodeList, p) {
-    let (b1 = sh:sparqlbasic(shape, sh, vis, nodeList, p),
-         b2 = sh:sparqlvalid(shape, sh, vis, nodeList, p)) {
+
+function sh:sparql(sh, vis, nodeList, p) {
+    let (b1 = sh:sparqlbasic(sh, vis, nodeList, p),
+         b2 = sh:sparqlvalid(sh, vis, nodeList, p)) {
             return (b1 && b2)
     }
 }
 
-function sh:sparqlbasic(shape, sh, vis, nodeList, p) {
+function sh:sparqlbasic(sh, vis, nodeList, p) {
     let (suc = true) {
-        for ((cst define q mes) in sh:getConstraint(sh:cstsparql, shape, sh)) {  
+        for ((cst define q mes) in sh:getShapeConstraint(sh:cstsparql, sh)) {  
             for (node in dt:list(nodeList)) {
-                for (object in sh:path(shape, node, p)) { 
+                for (object in sh:ppath(node, p)) { 
                         if (sh:trace(), xt:print("path sparql:", node, p, object, q), true);
-                        let (res = sh:mysparql(concat(define, q), sh, cst, shape, node, object, vis, 
+                        let (res = sh:mysparql(concat(define, q), sh, cst, node, object, vis, 
                             coalesce(mes, st:null), bound(mes))) {
                             if (res, true, set(suc = false))
                         } 
@@ -24,13 +25,13 @@ function sh:sparqlbasic(shape, sh, vis, nodeList, p) {
     }
 }
 
-function sh:sparqlvalid (shape, sh, vis, nodeList, p) {
+function sh:sparqlvalid (sh, vis, nodeList, p) {
     let (res = true) {
-        for ((cst define q oper value) in sh:getConstraint(sh:sparqlvalid, shape, sh)) {  
+        for ((cst define q oper value) in sh:getShapeConstraint(sh:sparqlvalid,  sh)) {  
             xt:print("sparql:", define, oper, value, q);
             for (s in dt:list(nodeList)) {
                 let (suc = coalesce(
-                        sh:sparqlvalidp(shape, sh, cst, define, q, vis, s, p, oper, value),
+                        sh:sparqlvalidp(sh, cst, define, q, vis, s, p, oper, value),
                         false) ) {
                         if (suc, true, set(res = false))
                     }
@@ -40,13 +41,13 @@ function sh:sparqlvalid (shape, sh, vis, nodeList, p) {
     }
 }
 
-function sh:cstsparql (shape, sh, vis, nodeList) {
+function sh:cstsparql (sh, vis, nodeList) {
    let (res = true) {
-        for ((cst define q mes) in sh:getConstraint(sh:cstsparql, shape, sh)) {  
+        for ((cst define q mes) in sh:getShapeConstraint(sh:cstsparql, sh)) {  
             for (node in dt:list(nodeList)) {   
                 if (sh:trace(), xt:print("cstsparql:", node, q), true);
                 let (suc = coalesce(
-                    sh:mysparql(concat(define, q), sh, cst, shape, node, node, vis, 
+                    sh:mysparql(concat(define, q), sh, cst, node, node, vis, 
                         mes, isLiteral(mes)),
                     false)) {
                     if (suc, true, set(res = false))
@@ -63,7 +64,7 @@ function sh:cstsparql (shape, sh, vis, nodeList) {
 # for constraint: they are the same, for path: focus=subject ; val=object
 # Query MUST return variables: ?this ?path ?value
 #
-function sh:mysparql(q, sh, cst, shape, focus, val, vis, mes, hasmes) {
+function sh:mysparql(q, sh, cst, focus, val, vis, mes, hasmes) {
     let (maps = xt:sparql(q, "$this", val)) {
       #  if (xt:size(maps) > 0, xt:print("sparql:", maps), true);
         for (m in maps) {
@@ -72,12 +73,12 @@ function sh:mysparql(q, sh, cst, shape, focus, val, vis, mes, hasmes) {
                     let (mmes = sh:mymessage(mes, m)) {
                         # xt:print(mmes);
                         # suc = false
-                        sh:report(sh:sparql, sh, shape, focus, path, value, false, vis)
+                        sh:report(sh:sparql, sh, focus, path, value, false, vis)
                     }
                 }
                 else {
                     # suc = false
-                    sh:report(sh:sparql, sh, shape, focus, path, value, false, vis)
+                    sh:report(sh:sparql, sh, focus, path, value, false, vis)
                 }
             }
         } ;
@@ -158,14 +159,14 @@ function sh:sparqlvalid(?shape, ?sh) {
 }
 
 
-function sh:sparqlvalidp (shape, sh, cst, define, q, vis, s, p, oper, obj) {
+function sh:sparqlvalidp (sh, cst, define, q, vis, s, p, oper, obj) {
     let (res = true, var = sh:variable(oper),
-         qq = concat(define, replace(q, "\\$PATH", sh:display(shape, p)), sh:values(var))) {
+         qq = concat(define, replace(q, "\\$PATH", sh:display(sh:shaclGraph(), p)), sh:values(var))) {
         for ((value) in xt:sparql(qq, "$this", s, var, obj)) { 
             # SPARQL query returns solutions that fail
             let (suc = false) {
                 set (res = false);
-                sh:report(cst, sh, cst, shape, s, p, value, suc, vis)
+                sh:report(cst, sh, cst, s, p, value, suc, vis)
             }
         } ;
         return (res)

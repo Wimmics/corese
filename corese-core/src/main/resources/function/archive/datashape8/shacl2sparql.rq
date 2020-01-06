@@ -1,0 +1,63 @@
+#
+# SHACL to SPARQL path pretty printer
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+# 
+# path = URI | bnode
+# bnode : [sh:zeroOrOnePath exp ] | (exp1 .. expn)
+#
+function sh:path(path) {
+    if (isURI(path)) {
+        return (xt:turtle(path))
+    }
+    else {
+        let (select * where { ?path ?oper ?val filter (?oper not in (rdf:first)) } ) {
+            return (if (oper = rdf:rest, sh:sequencePath(path), funcall(oper, val)))
+        }
+    }
+}
+
+function sh:paren(path) {
+    if (isURI(path), sh:path(path), concat("(", sh:path(path), ")"))
+}
+
+function sh:oneOrMorePath(path) {
+     concat(sh:paren(path), "+")
+}
+
+function sh:zeroOrOnePath(path) {
+     concat(sh:paren(path), "?")
+}    
+
+function sh:zeroOrMorePath(path) {
+     concat(sh:paren(path), "*")
+}    
+
+function sh:inversePath(path) {
+     concat("^", sh:paren(path))
+}
+
+# path = list(e1 .. en)
+function sh:alternativePath(path) {
+    sh:reduce(path, "|")
+}
+
+# path = (e1 .. en)
+function sh:sequencePath(path) {
+    sh:reduce(path, "/")
+}
+
+function sh:reduce(path, sep) {
+    letdyn (astr = sep) {
+         reduce(lambda(x, y) { concat(x, astr, y) }, 
+            maplist(sh:path, sh:list(path)))
+    }
+}
+
+function sh:list(path) {
+    let (select path (aggregate(?exp) as ?list) 
+         where { ?path rdf:rest*/rdf:first ?exp } ) {
+         return (list)
+    }
+}

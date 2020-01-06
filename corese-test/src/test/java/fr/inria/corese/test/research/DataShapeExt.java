@@ -49,7 +49,7 @@ public class DataShapeExt {
     }
     
     
-     @Test
+       @Test
     public void testfrom1() throws EngineException, LoadException, IOException, TransformerException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
@@ -65,26 +65,7 @@ public class DataShapeExt {
         assertEquals(2, shacl.nbResult(gg));
     }
     
-     String q2() {
-        String i = "insert data {"
-                + "graph us:g1 { us:Person rdfs:subClassOf us:Human  }"
-                + "graph us:g2 { us:John a us:Person . us:Person rdfs:subClassOf us:Animal "
-                + "us:Person owl:equivalentClass us:Human}"
-                
-                + "[] a sh:NodeShape ;"
-                + "xsh:targetNode us:John ;"
-                + "sh:property ["
-                + "sh:path ([xsh:from (us:g1 us:g2 )] "
-                + "[xsh:triple xsh:subject] [xsh:triple (xsh:subject [] us:Human)] [xsh:node xsh:predicate]"
-                + ");"
-                + "xsh:function[xsh:failure()]"
-                + "]"
-                + "}";
-        return i;
-    }
-    
-    
-    String q1() {
+      String q1() {
         String i = "insert data {"
                 + "graph us:g1 { us:Person rdfs:subClassOf us:Human }"
                 + "graph us:g2 { us:John a us:Person us:Person rdfs:subClassOf us:Animal}"
@@ -100,6 +81,432 @@ public class DataShapeExt {
         return i;
     }
     
+    
+     String q2() {
+        String i = "insert data {"
+                + "graph us:g1 { us:Person rdfs:subClassOf us:Human  }"
+                + "graph us:g2 { us:John a us:Person . us:Person rdfs:subClassOf us:Animal "
+                + "us:Person owl:equivalentClass us:Human}"
+                
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetNode us:John ;"
+                + "sh:property ["
+                + "sh:path ([xsh:from (us:g1 us:g2 )] "
+                + "[xsh:triplePath xsh:subject] [xsh:triplePath (xsh:subject [] us:Human)] [xsh:nodePath xsh:predicate]"
+                + ");"
+                + "xsh:function[xsh:failure()]"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+    Graph myshacl(String i, String q) throws EngineException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        exec.query(q);
+        Shacl shacl = new Shacl(g); 
+        Graph gg = shacl.eval();    
+        return gg;
+    }  
+    
+     @Test
+    public void testpp1() throws EngineException, LoadException, IOException, TransformerException {
+        Shacl shacl = new Shacl(Graph.create());
+        
+         Graph gg = myshacl(gg(), qp1());
+         assertEquals(7, shacl.nbResult(gg));
+
+         gg = myshacl(gg(), qp2());
+         assertEquals(5, shacl.nbResult(gg));
+
+         gg = myshacl(gg(), qp3());
+         assertEquals(3, shacl.nbResult(gg));
+
+         gg = myshacl(gg(), qp4());
+         assertEquals(6, shacl.nbResult(gg));
+
+         gg = myshacl(gg(), qp5());
+         assertEquals(3, shacl.nbResult(gg));
+
+         gg = myshacl(gg(), qp6());
+         assertEquals(3, shacl.nbResult(gg));
+
+         gg = myshacl(gg(), qp7());
+         assertEquals(3, shacl.nbResult(gg));
+
+         gg = myshacl(gg(), qp8());
+         assertEquals(0, shacl.nbResult(gg));
+
+         gg = myshacl(gg(), qp9());
+         assertEquals(3, shacl.nbResult(gg));
+
+         gg = myshacl(gg(), qp10());
+         assertEquals(5, shacl.nbResult(gg));
+         //System.out.println(Transformer.turtle(gg));
+
+    }
+    
+    String qp10() {
+        String i = "insert data {"
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path ("
+                + "[xsh:triplePath ( [](xsh:preceding xsh:predicate) (xsh:source xsh:object))]"
+                + ");"
+               // + "xsh:display(true);"
+                + "xsh:failure()"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+        String qp9() {
+        String i = "insert data {"               
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path ("
+                + "[xsh:triplePath (us:Jack [][] (xsh:preceding xsh:graph))]"
+                + ");"
+               // + "xsh:display(true);"
+                + "xsh:failure()"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+       String qp8() {
+        String i = "insert data {"               
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path ("
+                + "[xsh:triplePath (us:James (xsh:preceding xsh:predicate))]"
+                + ");"
+               // + "xsh:display(true);"
+                + "xsh:failure()"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+       String qp7() {
+        String i = "insert data {"               
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path ("
+                + "[xsh:triplePath ((xsh:preceding xsh:predicate))]"
+                + "[xsh:triplePath ([] rdfs:member (xsh:preceding xsh:graph))]"
+                + ");"
+                //+ "xsh:display(true);"
+                + "xsh:failure()"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+     String qp6() {
+        String i = "insert data {"               
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path ([xsh:triplePath ([] rdfs:member (xsh:preceding xsh:graph))]);"
+                //+ "xsh:display(true);"
+                + "xsh:failure()"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+    String qp5() {
+        String i = "insert data {"               
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path ([xsh:triplePath ((xsh:preceding xsh:predicate))]);"
+                //+ "xsh:display(true);"
+                + "xsh:failure()"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+     String qp4() {
+        String i = "insert data {"               
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path ([xsh:triplePath ([] (xsh:preceding xsh:predicate)  us:Jim)]);"
+               // + "xsh:display(true);"
+                + "xsh:failure()"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+ 
+    
+      String qp3() {
+        String i = "insert data {"               
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path ([xsh:triplePath ((xsh:preceding xsh:subject) [] us:Jim)]);"
+               // + "xsh:display(true);"
+                + "xsh:failure()"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+     String qp2() {
+        String i = "insert data {"               
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path ([xsh:triplePath ((xsh:preceding xsh:subject) (xsh:preceding xsh:predicate))]);"
+                //+ "xsh:display(true);"
+                + "xsh:failure()"
+                + "]"
+                + "}";
+        return i;
+    }
+    
+     String qp1() {
+        String i = "insert data {"               
+                + "[] a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path ([xsh:triplePath ((xsh:preceding xsh:subject))]);"
+                + "xsh:failure()]"
+                + "}";
+        return i;
+    }
+     
+     String gg() {
+        String i = "insert data {"
+                + "us:John foaf:knows us:Jack, us:Jim "
+                + "us:Jack foaf:knows us:Jim "
+                + "foaf:knows rdfs:domain foaf:Person "
+                + "foaf:knownBy owl:inverseOf foaf:nows "                
+                + "kg:default a rdf:Graph "
+                + "us:John rdfs:member kg:default "
+                + "}";
+        return i;
+    }
+    
+    
+  
+    
+         //  predicates of the schema used on the predicates of a resource 
+    //@Test
+    public void testshaclext13() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                + "insert data {"                            
+                + "[] us:prop us:test "
+                + "us:test a sh:NodeShape ;"
+                + "xsh:targetNode h:Person ;"
+                + "rdfs:label 'test' ;"                             
+                + "sh:property ["
+                + "sh:path ([sh:oneOrMorePath [xsh:predicatePath xsh:node]] "
+                + "[xsh:filter ([sh:patternIn ( rdf: rdfs:) ])]"
+                + ");"
+                + "sh:display(true)"
+                + "]"
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new MyShacl(g);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        //assertEquals(2, shacl.nbResult(gg));
+    }
+    
+    
+    
+        // path on predicate
+    @Test
+    public void testshaclext12() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                + "insert data {"                            
+                + "[] us:prop us:test "
+                + "us:test a sh:NodeShape ;"
+                + "xsh:targetClass sh:NodeShape ;"
+                + "rdfs:label 'test' ;"                             
+                + "sh:property ["
+                + "sh:path ([xsh:predicatePath xsh:node] );"
+                + "sh:patternIn ( sh: rdf:)"
+                + "]"
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new MyShacl(g);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(2, shacl.nbResult(gg));
+    }
+    
+    @Test
+    public void testshaclext111() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                +"insert data {"                              
+                + "us:test a sh:NodeShape ;"
+                + "xsh:targetTriplesOf rdfs:domain ;"                             
+                + "sh:property["
+                + "sh:path ("
+                + "[xsh:triplePath ([] (xsh:source xsh:subject) )] "
+                + "[xsh:nodePath xsh:subject] "
+                + "[xsh:notExist (("
+                + "[xsh:triplePath (xsh:subject rdf:type )] "
+                + "[xsh:nodePath xsh:object]"
+                + "[sh:zeroOrMorePath rdfs:subClassOf] "
+                + "[xsh:equal (xsh:object)]"
+                + "))] "
+                + ");"
+                + "xsh:failure() ;"
+               // + "xsh:display(true)"
+                + "]"
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new MyShacl(g);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(0, shacl.nbResult(gg));
+    }
+    
+      // path on position
+    @Test
+    public void testshaclext11() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = init();
+              
+        String i = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                +"insert data {"                              
+                + "us:test a sh:NodeShape ;"
+                + "xsh:targetTriplesOf rdfs:domain ;"                             
+                + "sh:property["
+                + "sh:path ("
+                + "[xsh:triplePath ([] (xsh:source xsh:subject) )] "
+                + "[xsh:notExist (("
+                + "[xsh:triplePath ((xsh:preceding xsh:subject) rdf:type (xsh:source xsh:object))] "
+                + "))] "
+                + ");"
+                + "xsh:failure() ;"
+                //+ "xsh:display(true)"
+                + "]"
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new MyShacl(g);
+        Graph gg = shacl.eval();
+       // System.out.println(Transformer.turtle(gg));
+        assertEquals(14, shacl.nbResult(gg));
+    }
+    
+     // path on position
+    @Test
+    public void testshaclext10() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                +"insert data {"
+                + "us:John a foaf:Person ; foaf:knows us:Jack, us:Jim "
+                + "us:Jack a foaf:Person ; foaf:knows us:Jim "
+                
+                + "us:test a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"                             
+                + "sh:property["
+                + "sh:path ("
+                + "[xsh:triplePath ((xsh:preceding xsh:object) (xsh:source xsh:predicate)  )]  "
+                + "[xsh:triplePath ((xsh:source xsh:subject)   (xsh:source xsh:predicate) (xsh:preceding xsh:object) )]  "
+                + ");"
+                + "sh:minCount 1"
+                + "]"
+
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new MyShacl(g);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(2, shacl.nbResult(gg));
+    }
+    
+    // path on position
+    @Test
+    public void testshaclext9() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                +"insert data {"
+                + "us:John a foaf:Person ; foaf:knows us:Jack, us:Jim "
+                + "us:Jack a foaf:Person ; foaf:knows us:John "
+                
+                + "us:test a sh:NodeShape ;"
+                + "xsh:targetTriplesOf foaf:knows ;"                             
+                + "sh:property["
+                + "sh:path "
+                + "[xsh:triplePath ((xsh:preceding xsh:object) (xsh:source xsh:predicate) (xsh:source xsh:subject) )]  "
+                + ";"
+                + "sh:minCount 1"
+                + "]"
+
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new MyShacl(g);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(1, shacl.nbResult(gg));
+    }
+    
+    
+    // path on position
+    @Test
+    public void testshaclext8() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        String i = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                +"insert data {"
+                + "us:John a foaf:Person ; foaf:knows us:Jack, us:Jim "
+                + "us:Jack a foaf:Person ; foaf:knows us:John "
+                
+                + "us:test a sh:NodeShape ;"
+                + "xsh:targetClass foaf:Person ;"
+                + "sh:property ["
+                + "sh:path ("
+                + "[xsh:triplePath (xsh:subject foaf:knows)] "
+                + "[xsh:notExist( [xsh:triplePath ((xsh:preceding xsh:object) (xsh:preceding xsh:predicate) (xsh:preceding xsh:subject) )]) ]  "
+                + ");"
+
+                + "xsh:failure()"
+                + "]"
+                + "}";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Shacl shacl = new MyShacl(g);
+        Graph gg = shacl.eval();
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(1, shacl.nbResult(gg));
+    }
+    
         // path on predicate
     @Test
     public void testshaclext7() throws EngineException, LoadException, IOException, TransformerException {
@@ -110,8 +517,8 @@ public class DataShapeExt {
                 + "us:test a sh:NodeShape ;"
                 + "xsh:targetNode i:Laura ;"
                 + "sh:property ["
-                + "    sh:path ([sh:oneOrMorePath [xsh:triple xsh:subject]]"
-                + "[xsh:node xsh:predicate]"
+                + "    sh:path ([sh:oneOrMorePath [xsh:triplePath xsh:subject]]"
+                + "[xsh:nodePath xsh:predicate]"
                 + "[xsh:filter ([sh:pattern h:])]"
                 + "[xsh:notExist (rdfs:range)]"
                 + ")"
@@ -141,8 +548,8 @@ public class DataShapeExt {
                 + "[] a sh:NodeShape ;"
                 + "xsh:targetNode i:Laura, i:Gaston ;"
                 + "sh:property ["
-                + "sh:path ([xsh:triple xsh:subject][xsh:node xsh:graph]"
-                + "[xsh:triple (xsh:graph rdf:type)] [xsh:object h:Person]);"
+                + "sh:path ([xsh:triplePath xsh:subject][xsh:nodePath xsh:graph]"
+                + "[xsh:triplePath (xsh:graph rdf:type)] [xsh:object h:Person]);"
                 //+ "xsh:function [xsh:success(true)];"
                 + "sh:minCount 4"
                 + "]"
@@ -166,7 +573,7 @@ public class DataShapeExt {
                 + "[] a sh:NodeShape ;"
                 + "xsh:targetNode i:Laura, i:Gaston ;"
                 + "sh:property ["
-                + "sh:path ([xsh:triple xsh:subject][xsh:node xsh:graph]);"
+                + "sh:path ([xsh:triplePath xsh:subject][xsh:nodePath xsh:graph]);"
                 //+ "xsh:function [xsh:success(true)];"
                 + "sh:minCount 2"
                 + "]"
@@ -192,8 +599,8 @@ public class DataShapeExt {
                 + "xsh:targetNode i:Gaston ;"
                 + "sh:property ["
                 + "    sh:path ("
-                + "    [sh:oneOrMorePath [xsh:triple xsh:subject] ] "
-                + "    [xsh:node xsh:predicate] );"
+                + "    [sh:oneOrMorePath [xsh:triplePath xsh:subject] ] "
+                + "    [xsh:nodePath xsh:predicate] );"
                 + "  sh:pattern h:;"
                 + "xsh:success()"
                 + "]"
@@ -254,7 +661,7 @@ public class DataShapeExt {
                 + "[] a sh:NodeShape ;"
                 + "sh:targetTriplesOf rdfs:range  ;"
                 + "sh:property ["
-                + "sh:path ([xsh:node xsh:subject ][xsh:triple xsh:predicate  ]) ;"
+                + "sh:path ([xsh:nodePath xsh:subject ][xsh:triplePath xsh:predicate  ]) ;"
                 + "    sh:minCount 1]"
                 + "}";
         QueryProcess exec = QueryProcess.create(g);
@@ -274,7 +681,7 @@ public class DataShapeExt {
                 + "[] a sh:NodeShape ;"
                 + "sh:targetSubjectsOf rdfs:domain ;"
                 + "sh:property ["
-                + "    sh:path ([xsh:triple xsh:predicate] "
+                + "    sh:path ([xsh:triplePath xsh:predicate] "
                 + "        [xsh:notEqual (xsh:source xsh:predicate)]"
                 + ");"
                 + "sh:maxCount 0"
@@ -298,7 +705,7 @@ public class DataShapeExt {
                 + "[] a sh:NodeShape ;"
                 + "sh:targetNode rdf:type ;"
                 + "sh:property ["
-                + "    sh:path ( [xsh:triple xsh:predicate]"
+                + "    sh:path ( [xsh:triplePath xsh:predicate]"
                 + "        [xsh:equal (xsh:subject xsh:predicate)]"
                 + ");"
                 + "sh:minCount 1"

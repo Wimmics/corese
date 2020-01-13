@@ -1,6 +1,6 @@
 # SHACL Interpreter
  
-@public @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq>
+#@public @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq>
 template {
    xt:turtle(?g)
 }

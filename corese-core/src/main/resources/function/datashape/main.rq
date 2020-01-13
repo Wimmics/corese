@@ -6,7 +6,7 @@
 prefix sh:   <http://www.w3.org/ns/shacl#> 
 prefix xsh:  <http://www.w3.org/ns/shacl#> 
 
-@import <target.rq> <focus.rq> <ppath.rq> <operator.rq> <path.rq> <core.rq> <constraint.rq>
+@import  <api.rq> <focus.rq> <ppathparser.rq> <ppath.rq> <operator.rq> <operatorext.rq> <core.rq>  <path.rq> <constraint.rq>  <target.rq>
 
 
 #
@@ -137,8 +137,18 @@ function sh:start(shape) {
     sh:defShape();
     sh:defun();
     if (shape = xt:graph(), sh:sibling(), xt:focus(shape, sh:sibling())) ;
+    sh:before();
     return (true)
 }
+
+# place holder
+function sh:before() {
+   if (bound(?before) && ?before) {
+      sh:testDefShape()
+   }
+}
+
+
 
 function sh:shaclGraph(shacl) {
     set(shaclGraph = shacl)
@@ -240,6 +250,7 @@ function sh:defShapePathExtension() {
         xsh:node xsh:subject xsh:predicate xsh:object xsh:graph
         xsh:from 
         xsh:success xsh:failure xsh:display
+        xsh:extension
         )) {        
         alist 
     }
@@ -251,6 +262,7 @@ function sh:defShapeNodeExtension() {
         xsh:equal xsh:notEqual 
         xsh:triplePath xsh:subject xsh:predicate xsh:object xsh:graph
         # xsh:node sh:node [constraint ] is not a function, it is std SHACL
+        xsh:success xsh:failure
         )) {        
         alist 
     }
@@ -294,6 +306,15 @@ function sh:defShape(name, value) {
     sh:setShape(name, dt:list(value)) 
 }
 
+#
+# record relevant properties of sh  in a map
+#
+function sh:getShapeConstraint(name, sh) {
+    return (if (sh:hasConstraint(name, sh), 
+        sh:getConstraint(name, sh), 
+        sh:setConstraint(name, sh, funcall(name, sh:shaclGraph(), sh))))
+}
+
 function sh:hasConstraint(name, sh) {
     xt:has(sh:getmap(name), sh)
 }
@@ -305,8 +326,114 @@ function sh:getConstraint(name, sh) {
 
 # record relevant properties of sh  in a table
 function sh:setConstraint(name, sh, value) {
+    #xt:print("setConstraint:", name, sh, value);
     xt:set(sh:getmap(name), sh, value)
 }
+
+function sh:addConstraint(name, sh, value) {
+    #xt:print("addConstraint:", name, sh, value);
+    if (sh:hasConstraint(name, sh), 
+        xt:set(sh:getmap(name), sh, xt:append(sh:getConstraint(name, sh), value)), 
+        xt:set(sh:getmap(name), sh, value))
+}
+
+# user api
+# name = sh:hasValue  ; value = 10 
+# return [xsh:function [xsh:filter ([sh:hasValue 10])]]
+# use case: define new path operator implemented as filter
+# [xsh:nodeAxis URI] -> [xsh:triple (xsh:predicate)] 
+#   [xsh:nodePath xsh:object] [xsh:filter ([sh:hasValue URI])]
+#
+function sh:defFilter(sh) {
+    sh:funpath(xsh:filter, xt:list(sh))
+}
+
+
+# node constraint
+#
+function sh:defConstraint(name, value) {
+    let (sh = bnode()) {
+        sh:defNodeConstraint(sh, name, value)
+    }
+}
+
+function sh:defNodeConstraint(sh, name, value) {
+    let (class = sh:getConstraintClass(name),
+         exp   = sh:parameter(class, name, value)) {
+        sh:setConstraint(sh:constraintcore, sh, true) ;
+        sh:setConstraint(class, sh, exp) ;
+        sh
+    }
+}
+
+
+# path constraint
+# sh:property [sh:path path ; name value]
+# path is a compiled path expression
+# 
+function sh:defPathConstraint(path, name, value) {
+    let (sh = bnode()) {
+        sh:defPathConstraint(sh, path, name, value)
+    }
+}
+
+function sh:defPathConstraint(sh, path, name, value) {
+    #xt:print("defpath:", path, name, value);
+    let (cst = bnode(), class = sh:getPathConstraintClass(name)) {
+        sh:setConstraint(sh:path, path, path);
+        sh:setConstraint(sh:pathcore, sh, xt:list(xt:list(cst, path))) ;
+        sh:setConstraint(class, cst, sh:parameter(class, name, value)) ;
+        sh
+    }
+}
+
+
+function sh:parameter(class, name, value) {
+    if (class in (sh:nodeextension, sh:pathextension), 
+        xt:list(xt:list(xsh:function, name, value, true)),
+        xt:list(xt:list(name, value)))
+}
+
+# sh:cstgeneric1 | sh:cstgeneric2
+function sh:getConstraintClass(name) {
+    if (xt:member(name, sh:getShape(sh:node1)), sh:cstgeneric1, 
+    if (xt:member(name, sh:getShape(sh:node2)), sh:cstgeneric2,
+    sh:nodeextension))
+}
+
+function sh:getPathConstraintClass(name) {
+    if (xt:member(name, sh:getShape(sh:path1)), sh:path1, 
+    if (xt:member(name, sh:getShape(sh:path2)), sh:path2, 
+    if (name = sh:qualifiedValueShape,          sh:path3,
+    sh:pathextension)))
+}
+
+
+
+
+
+function sh:defBoolean(oper, exp) {
+    if (oper = sh:not, sh:defBooleanNot(oper, exp), sh:defBooleanBasic(oper, exp))
+}
+
+function sh:defBooleanNot(oper, exp) {
+    let (sh = bnode()) {
+        sh:setConstraint(sh:booleancore, sh, xt:list(xt:list(oper, exp)));
+        sh
+    }
+}
+
+# expList is a list of compiled  constraints
+#
+function sh:defBooleanBasic(oper, expList) {
+    let (sh = bnode(), bn = bnode()) {
+        sh:setConstraint(sh:booleancore, sh, xt:list(xt:list(oper, bn)));
+        sh:setConstraint(sh:coreboolean, bn, expList);
+        sh
+    }
+}
+
+
 
 
 function sh:getmap(name) {

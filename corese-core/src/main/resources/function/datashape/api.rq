@@ -1,0 +1,249 @@
+#
+# SHACL Interpreter 
+#
+# API for defining shacl shapes by program in complement to shacl graph
+# shape format is a list, lisp-like expression
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2020
+#
+
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
+prefix h:    <http://www.inria.fr/2015/humans#>
+
+# input format is a list, lisp-like expression:
+# (sh:shape us:test (sh:target (sh:targetClass h:Person))
+# (sh:property (sh:path h:hasFriend) (sh:class h:Person))
+# )
+#
+function sh:defShaclShape(exp) {
+    sh:apitrace("defShaclShape:", exp);
+    let ((oper name | list) = exp) {
+        map(sh:defShaclShape, name, list)
+    }
+}
+
+function sh:defShaclShape(name, exp) {
+    sh:apitrace("defShaclShape:", name, exp);
+    let ((oper) = exp) {
+        if (oper = sh:target,   sh:defTarget(name, exp),
+        if (oper = sh:header,   sh:defHeader(name, exp),
+        sh:defShaclShapeConstraint(name, exp)))
+    }
+}
+
+
+function sh:defTarget(name, exp) {
+
+}
+
+function sh:defHeader(name, exp) {
+
+}
+
+# Top level function for defining a shape constraint exp
+#
+function sh:defShaclShapeConstraint(name, exp) {
+    sh:apitrace("defShaclShapeConstraint:", name, exp);
+    let ((oper) = exp) {
+        if (oper = sh:property) {
+            sh:defPropertyShape(name, exp)
+        }
+        else if (oper = sh:node) {
+            sh:defNodeShape(name, exp)
+        }
+        else if (sh:isBoolean(oper)) {
+            sh:defBooleanShape(name, exp)
+        }
+        else {
+            sh:defBasicShape(name, exp)
+        }
+    }
+}
+
+# Boolean Node Shape
+#
+function sh:defBooleanShape(name, exp) {
+    let ((oper) = exp, bn = bnode()) {
+        sh:defConstraint(name, sh:booleancore, oper, bn) ;
+        sh:defBooleanConstraint(bn, sh:coreboolean, exp)
+    }
+}
+
+
+# Basic shape constraint
+# exp = (sh:pattern value)
+#
+function sh:defBasicShape(name, exp) {
+    sh:apitrace("defBasicShape:", name, exp);
+    let ((oper value) = exp,
+         class = sh:getConstraintClass(oper)) {
+        sh:defConstraint(name, class, exp, oper, value)
+    }
+}
+
+# Node Shape sh:node
+# exp = (sh:node (sh:pattern value)) | (sh:node URI)
+#
+function sh:defNodeShape(name, exp) {
+    sh:apitrace("defNodeShape:", name, exp);
+   let ((oper value) = exp,
+        sh = if (isURI(value), value, bnode())) {
+        sh:defConstraint(name, sh:getConstraintClass(oper),     oper, sh) ;
+        sh:defConstraint(name, sh:getPathConstraintClass(oper), oper, sh) ;
+        if (isURI(sh), true, sh:defShaclShapeConstraint(sh, value)) ;
+        return (sh)
+    }
+}
+
+
+# Property Shape
+# exp = (sh:property (sh:path path) ...)
+#
+function sh:defPropertyShape(name, exp) {
+    sh:apitrace("defPropertyShape:", name, exp);
+    let ((oper path | list) = exp,
+         sh = sh:defPropertyPath(name, path)) {
+        for (stmt in list) {
+            sh:defPropertyConstraint(name, sh, stmt)
+        } ;
+        return (sh)
+    }
+}
+
+
+# Define path of property shape
+# exp = (sh:path path)
+#
+function sh:defPropertyPath(name, exp) {
+    sh:apitrace("defPropertyPath:", name, exp);
+    let ((oper path) = exp, 
+         sh = bnode()) {
+        sh:setConstraint(sh:path, path, path);
+        sh:defConstraint(name, sh:pathcore, sh, path) ;
+        return (sh)
+    }
+}
+
+function sh:defPropertyConstraint(name, sh, stmt) {
+    sh:apitrace("defPropertyConstraint:", name, sh, stmt);
+    let ((oper value) = stmt,
+         class = sh:getPathConstraintClass(oper)) {
+        if (oper = sh:property) { 
+            let (bn = bnode()) {
+                sh:defConstraint(sh, class, sh:property, bn) ;
+                sh:defShaclShapeConstraint(bn, stmt)
+            }
+        }
+        else if (oper = sh:node) { 
+            sh:defShaclShapeConstraint(sh, stmt)
+        }
+        else if (sh:isBoolean(oper)) {
+            let (bn = bnode()) {
+                sh:defConstraint(sh, class, oper, bn) ;
+                sh:defBooleanConstraint(bn, sh:pathboolean, stmt)
+            }
+        }
+        # todo: oper = sh:pattern
+        else {
+            sh:defConstraint(sh, class, stmt, oper, value)
+        }
+    }
+}
+
+
+# Boolean shape, Property or Node Shape
+# class = sh:pathboolean | sh:coreboolean
+# exp = (sh:and exp1 .. expn)
+#
+function sh:defBooleanConstraint(name, class, exp) {
+    sh:apitrace("defPropertyConstraint:", name, exp);
+    let ((oper | list) = exp) {
+        if (oper = sh:not) {
+            let ((cst) = list){
+                sh:defShaclShapeConstraint(name, cst)
+            }
+        }
+        else {
+            let (shList = sh:defConstraintList(name, list)) {
+                sh:setConstraint(class, name, shList) 
+            }
+        }
+    } ;
+    return (name)
+}
+
+# Define list of constraints of a boolean operator
+# return list of compiled constraints as a list of fresh bnodes
+#
+function sh:defConstraintList(name, list) {
+    maplist(lambda(cst) { sh:defShaclShapeConstraint(bnode(), cst) }, 
+        list)
+}
+
+function sh:isBoolean(oper) {
+    let (bool = @(sh:not sh:and sh:or sh:xone)) {
+        xt:member(oper, bool)
+    }
+}
+
+
+
+
+function sh:defConstraint(sh, class, oper, value) {
+    sh:defConstraint(sh, class, st:null, oper, value)
+}
+
+# Define a constraint in the input format of the interpreter
+# sh is the ID of the shape, class is the kind of constraint,
+# oper = sh:class ; value = foaf:Person
+# exp  = (sh:class foaf:Person)
+# 
+function sh:defConstraint(sh, class, exp, oper, value) {
+    if (oper = sh:pattern) {
+        let ((op | rest) = exp) {
+            sh:addConstraint(class, sh, sh:parameter(class, oper, rest)) 
+        }
+    }
+    else {
+        if (oper in (sh:in, sh:languageIn)) {
+            sh:setConstraint(sh:incst, value, value)
+        } ;
+        #xt:print(sh:defConstraint, sh, class, oper, value) ;
+        sh:addConstraint(class, sh, sh:parameter(class, oper, value)) 
+    } ;
+    return (sh)
+}
+
+
+
+
+
+function sh:apitrace(mes, arg) {
+    #xt:print(mes, arg)
+}
+
+function sh:apitrace(mes, arg1, arg2) {
+    #xt:print(mes, arg1, arg2)
+}
+
+function sh:apitrace(mes, arg1, arg2, arg3) {
+    #xt:print(mes, arg1, arg2, arg3)
+}
+
+
+function sh:testDefine() {
+    let (shape = @(
+        sh:shape us:test
+        (sh:target (sh:targetClass h:Person))
+        (sh:property (sh:path h:hasFriend) (sh:node (sh:class h:Person)))
+    )) {
+        shape
+    }
+}
+
+function sh:testDefShape() {
+    if (bound(?defshape), 
+        sh:defShaclShape(?defshape),
+        sh:defShaclShape(sh:testDefine()))
+}

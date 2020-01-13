@@ -1,6 +1,5 @@
 #
-# Data Shape Property Path Interpreter
-# PP expressions are searched in graph ?shape 
+# SHACL Property Path Interpreter Extension Function
 #
 # Olivier Corby - Wimmics Inria I3S - 2016-2019
 #
@@ -12,7 +11,8 @@ prefix xsh:  <http://www.w3.org/ns/shacl#>
 # PPath interpreter Extension 
 
 
-
+# Generic extension function, for interpreter extension and user extension
+# Used in path 
 # function for [xsh:function [ us:foo(arg) ]] path element
 # exp = (us:foo (arg))
 # function name defined in operator, eg: xsh:exist, xsh:filter
@@ -27,10 +27,6 @@ function dt:list xsh:function(focus, subject, node, exp, inv, url) {
     }
 }
 
-
-function sh:patternOld(focus, node, arg) {
-    regex(node, arg)
-}
 
 
 # ***********************************************

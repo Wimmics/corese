@@ -44,10 +44,10 @@ function sh:constraint1 (sh, vis, nodeList) {
 # oper = xsh:function
 function sh:nodeextension (sh, vis, nodeList) {
     let (res = true) {
-        for ((oper name value) in sh:getShapeConstraint(sh:nodeextension, sh)) {  
+        for ((oper name value ternary) in sh:getShapeConstraint(sh:nodeextension, sh)) {  
             for (node in dt:list(nodeList)) {  
                 let (suc = coalesce(
-                        funcall(name, node, value),
+                        if (ternary, funcall(name, node, node, value), funcall(name, node, value)),
                         false)) {
                         sh:report(oper, sh, name, node, st:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
@@ -200,6 +200,12 @@ function sh:class (sh, vis, s, ?c) {
     }
 }
 
+function sh:type (sh, vis, s, ?c) {
+    let (suc = exists { ?s rdf:type ?c } ) {
+        sh:report(sh:type, sh, s, rdf:type, s, suc, vis) ;
+        return (suc)
+    }
+}
 
 function sh:disjoint (sh, vis, s, p) {
     let (l = sh:ppath(s, p), suc = ! xt:member(s, l)) {

@@ -70,6 +70,7 @@ function sh:pathcore(sh, vis, nodeList, present) {
 
 
 function sh:booleancore(sh, vis, nodeList) {
+    #xt:print("core boolean:", sh, sh:getShapeConstraint(sh:booleancore,  sh));
     let (res = true) {
         for ((bool cst) in sh:getShapeConstraint(sh:booleancore,  sh)) {
             if (sh:trace(), xt:print("core boolean:", sh, nodeList), true); 
@@ -98,14 +99,7 @@ function sh:constraintcore(sh, vis, nodeList) {
 
 
 
-#
-# record relevant properties of sh  in a map
-#
-function sh:getShapeConstraint(name, sh) {
-    return (if (sh:hasConstraint(name, sh), 
-        sh:getConstraint(name, sh), 
-        sh:setConstraint(name, sh, funcall(name, sh:shaclGraph(), sh))))
-}
+
 
 function sh:getConstraint(name, shape, sh) {
     sh:getShapeConstraint(name,  sh)

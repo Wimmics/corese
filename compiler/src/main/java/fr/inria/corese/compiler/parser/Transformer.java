@@ -22,7 +22,6 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.core.Sorter;
 import fr.inria.corese.kgram.tool.Message;
-import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.visitor.MetadataVisitor;
@@ -570,80 +569,7 @@ public class Transformer implements ExpType {
     }
     
     
-//    /**
-//     * defined functions use case: transformation profile PRAGMA: expressions
-//     * have declared local variables (see ASTQuery Processor)
-//     */
-//    void define(Query q, ASTQuery ast) {
-//        if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
-//            return;
-//        }
-//        if (Access.reject(Feature.FUNCTION_DEFINITION, ast.getLevel())){ //(ast.isUserQuery()) {
-//            System.out.println("Compiler: extension function not available in server mode");
-//            return;
-//        }
-//       
-//        define(ast.getDefine(), q);
-//    }
-//    
-//    void functionCompiler(Query q, ASTQuery ast) {
-//        compileFunction(q, ast);
-//        compileLambda(q, ast);
-//    }
-//    
-//    void compileFunction(Query q, ASTQuery ast) {
-//        compileFunction(q, ast, ast.getDefine());
-//        define(q, ast);
-//    }
-//    
-//    void compileLambda(Query q, ASTQuery ast) {
-//        compileFunction(q, ast, ast.getDefineLambda());      
-//        define(ast.getDefineLambda(), q);
-//    }
-//    
-//    void compileFunction(Query q, ASTQuery ast, ASTExtension ext) {
-//        if (ext.isCompiled()) {
-//            // recursion from subquery in function: do nothing
-//        }
-//        else {
-//            ext.setCompiled(true);
-//            for (Function fun : ext.getFunList()) {
-//                compileFunction(q, ast, fun);
-//            }
-//            ext.setCompiled(false);
-//        }
-//    }
-//    
-//    void compileFunction(Query q, ASTQuery ast, Function fun) {
-//        fun.compile(ast);
-//        compileExist(fun, false);
-//        q.defineFunction(fun);
-//    }
-//
 
-//
-//    void undefinedFunction(Query q, ASTQuery ast) {
-//        for (Expression exp : ast.getUndefined().values()) {
-//            boolean ok = Interpreter.isDefined(exp);
-//            if (ok) { } 
-//            else {
-//                ok = Access.accept(Feature.LINKED_FUNCTION, ast.getLevel()) //!ast.isUserQuery()
-//                        //&& (isLinkedFunction() || ast.hasMetadata(Metadata.IMPORT))
-//                        && importFunction(q, exp);
-//                if (!ok) {
-//                    ast.addError("undefined expression: " + exp);
-//                }
-//            }
-//        }
-//    }
-//     
-//    boolean importFunction(Query q, Expression exp) {
-//        boolean b = getLinkedFunctionBasic(exp.getLabel());
-//        if (b) {
-//            return Interpreter.isDefined(exp);
-//        }
-//        return false;
-//    }
     
     public boolean getLinkedFunction(String label) {
         if (Access.reject(Feature.LINKED_FUNCTION, Level.DEFAULT)) { //(! isLinkedFunction()){

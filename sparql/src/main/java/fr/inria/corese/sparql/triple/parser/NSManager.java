@@ -65,7 +65,9 @@ public class NSManager extends ASTObject {
     public static final String DCTERM = "http://purl.org/dc/terms/";
     public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";
     public static final String DBPEDIA = "http://dbpedia.org/resource/";
-
+    public static final String RESOURCE = "http://ns.inria.fr/corese/";
+    public static final String SHACL_SHACL = RESOURCE+"data/shaclshacl.ttl";
+    
     public static final String COSNS = RDFS.COSNS;
     public static final String COS = RDFS.COS;
     public static final String SWL = ExpType.SWL;

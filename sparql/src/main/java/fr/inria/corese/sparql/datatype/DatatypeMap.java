@@ -485,6 +485,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     public static IDatatype newResource(String ns, String name) {
         return newResource(ns + name);
     }
+    
+    public static IDatatype uri(String ns, String name) {
+        return newResource(ns + name);
+    }
 
     public static IDatatype newDate() {
         try {
@@ -695,7 +699,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return new CoreseList(ldt);
     }
     
-    public static IDatatype newList(Object... ldt) {
+   public static IDatatype newList(Object... ldt) {
         ArrayList<IDatatype> list = new ArrayList<>();
         for (Object obj :  ldt) {
             list.add(getValue(obj));
@@ -1145,7 +1149,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return list;
     }
     
-    public static IDatatype list(IDatatype[] args) {
+    public static IDatatype list(IDatatype... args) {
         ArrayList<IDatatype> val = new ArrayList<IDatatype>(args.length);
         val.addAll(Arrays.asList(args));
         return createList(val);

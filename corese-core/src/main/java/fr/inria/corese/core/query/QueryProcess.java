@@ -74,7 +74,7 @@ public class QueryProcess extends QuerySolver {
     static final String DB_FACTORY  = "fr.inria.corese.tinkerpop.Factory";
     static final String DB_INPUT    = "fr.inria.corese.tinkerpop.dbinput";
     static final String FUNLIB = "/function/";
-
+    public static final String SHACL = "http://ns.inria.fr/sparql-template/function/datashape/main.rq";
     //sort query edges taking cardinality into account
     static boolean isSort = false;
     

@@ -21,7 +21,6 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import static fr.inria.corese.core.transform.Transformer.STL_IMPORT;
 import static fr.inria.corese.core.transform.Transformer.STL_PROFILE;
-import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import java.io.IOException;
 import java.io.InputStream;

@@ -74,6 +74,7 @@ public class Load
     // false: load files into named graphs (name = URI of file) 
     private static boolean DEFAULT_GRAPH = false;
     private static int LIMIT_DEFAULT = Integer.MAX_VALUE;
+    private static final String RESOURCE = NSManager.RESOURCE;
     
     int maxFile = Integer.MAX_VALUE;
     Graph graph;
@@ -490,7 +491,16 @@ public class Load
         InputStream stream = null;
 
         try {
-            if (isURL(path)) {
+            if (path.startsWith(RESOURCE)){
+                // specific URI mean local resource
+                String pname = "/" + NSManager.nsm().strip(path, RESOURCE);
+                stream = Load.class.getResourceAsStream(pname);
+                if (stream == null) {
+                    throw new IOException(path);
+                }
+                read = reader(stream);
+            }
+            else if (isURL(path)) {
                 URL url = new URL(path);
                 URLConnection c = url.openConnection();
                 if (requiredFormat != UNDEF_FORMAT) {

@@ -1,7 +1,6 @@
 package fr.inria.corese.gui.core;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.query.QueryProcess;
 import java.util.HashMap;
 
 /**

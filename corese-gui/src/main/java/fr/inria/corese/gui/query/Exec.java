@@ -25,6 +25,8 @@ public class Exec extends Thread {
 	private static Logger logger = LogManager.getLogger(Exec.class);
         
         static final String qvalidate = "template { st:apply-templates-with(st:spintypecheck) } where {}";
+        static final String qshacl    = "template { xt:turtle(?g) } where { bind (sh:shacl() as ?g) }";
+        
         //static final String qvalidate = "template {st:apply-templates-with('/home/corby/AData/template/spintypecheck/template/')} where {}";
         static final String qgraph = NSManager.STL+"query";
         
@@ -34,6 +36,7 @@ public class Exec extends Thread {
 	MyJPanelQuery panel;
 	boolean debug = false;
         private boolean validate = false;
+        private boolean shacl = false; 
 	QueryExec current;
 	
 	public Exec(MainFrame f,  String q, boolean b){
@@ -95,7 +98,7 @@ public class Exec extends Thread {
 		if (debug) debug(exec);
 		Date d1 = new Date();
 		try {
-			Mappings l_Results = exec.SPARQLQuery(query);
+			Mappings l_Results = exec.SPARQLQuery(isShacl() ? qshacl : query);
 			Date d2 = new Date();
                         System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
 			return l_Results;
@@ -175,6 +178,20 @@ public class Exec extends Thread {
      */
     public void setValidate(boolean validate) {
         this.validate = validate;
+    }
+
+    /**
+     * @return the shacl
+     */
+    public boolean isShacl() {
+        return shacl;
+    }
+
+    /**
+     * @param shacl the shacl to set
+     */
+    public void setShacl(boolean shacl) {
+        this.shacl = shacl;
     }
 
 }

@@ -51,9 +51,11 @@ import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.BufferedReader;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -79,7 +81,7 @@ public class MainFrame extends JFrame implements ActionListener {
     static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2019-12-25";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-01-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -93,6 +95,8 @@ public class MainFrame extends JFrame implements ActionListener {
     // Pour le menu
     private JMenuItem loadRDF;
     private JMenuItem loadRDFs;
+    private JMenuItem loadSHACL;
+    private JMenuItem loadSHACLShape;
     private JMenuItem loadQuery;
     private JMenuItem execWorkflow, loadWorkflow, loadRunWorkflow;
     private JMenuItem loadRule;
@@ -151,6 +155,7 @@ public class MainFrame extends JFrame implements ActionListener {
     protected int selected;
     // Texte dans l'onglet requête
     private String textQuery;
+    private static final String SHACL_SHACL = NSManager.SHACL_SHACL;
     // Texte par défaut dans l'onglet requête
     private static final String DEFAULT_SELECT_QUERY = "select.rq";
     private static final String DEFAULT_TUPLE_QUERY = "selecttuple.rq";
@@ -437,6 +442,14 @@ public class MainFrame extends JFrame implements ActionListener {
         loadRDF = new JMenuItem("3 - Load RDF");
         loadRDF.addActionListener(this);
         loadRDF.setToolTipText("Step 3 : Load RDF file");
+        
+        loadSHACL = new JMenuItem("Load SHACL");
+        loadSHACL.addActionListener(this);
+        loadSHACL.setToolTipText("Load SHACL");
+        
+        loadSHACLShape = new JMenuItem("Load SHACL Shape Validator");
+        loadSHACLShape.addActionListener(this);
+        loadSHACLShape.setToolTipText("Load SHACL Shape Validator");
 
         execWorkflow = new JMenuItem("Process Workflow");
         execWorkflow.addActionListener(this);
@@ -589,6 +602,8 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(loadRDFs);
         fileMenu.add(loadRule);
         fileMenu.add(loadRDF);
+        fileMenu.add(loadSHACL);
+        fileMenu.add(loadSHACLShape);
         fileMenu.add(loadQuery);
         fileMenu.add(loadWorkflow);
         fileMenu.add(loadRunWorkflow);
@@ -630,9 +645,11 @@ public class MainFrame extends JFrame implements ActionListener {
         templateMenu.add(iowl);
         templateMenu.add(ispin);
         
+        
+        //shaclMenu.add(loadSHACLShape);
+        shaclMenu.add(itypecheck);
         shaclMenu.add(ipredicate);
         shaclMenu.add(ipredicatepath);
-        shaclMenu.add(itypecheck);
 
         editMenu.add(undo);
         editMenu.add(redo);
@@ -908,9 +925,13 @@ public class MainFrame extends JFrame implements ActionListener {
         } else if (e.getSource() == loadRule) {
             loadRule();
         } //Appelle la fonction pour le chargement d'un fichier RDF
-        else if (e.getSource() == loadRDF) {
+        else if (e.getSource() == loadRDF || e.getSource() == loadSHACL) {
             loadRDF();
-        } else if (e.getSource() == execWorkflow) {
+        } 
+        else if (e.getSource() == loadSHACLShape) {
+            basicLoad(SHACL_SHACL);
+        } 
+        else if (e.getSource() == execWorkflow) {
             execWorkflow();
         } else if (e.getSource() == loadWorkflow) {
             loadWorkflow(false);
@@ -1321,6 +1342,15 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
     }
+    
+    void basicLoad(String path) {
+        DefaultListModel model = getOngletListener().getModel();
+        if (!model.contains(path)) {
+            model.addElement(path);
+        }
+        appendMsg("Loading " + path + "\n");
+        load(path);
+    }
 
     void execWF(String path) {
         execWF(path, true);
@@ -1584,6 +1614,17 @@ public class MainFrame extends JFrame implements ActionListener {
         if (path != null) {
             execWF(path, false);
         }
+        try {
+            init();
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+    }
+    
+    void init() throws EngineException {
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        System.out.println("Import: SHACL");
+        exec.imports(QueryProcess.SHACL);
     }
 
     void setRDFSEntailment(boolean b) {

@@ -1150,7 +1150,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
     
     public static IDatatype list(IDatatype... args) {
-        ArrayList<IDatatype> val = new ArrayList<IDatatype>(args.length);
+        ArrayList<IDatatype> val = new ArrayList<>(args.length);
         val.addAll(Arrays.asList(args));
         return createList(val);
     }

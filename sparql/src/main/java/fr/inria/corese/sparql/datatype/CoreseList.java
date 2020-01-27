@@ -283,6 +283,25 @@ public class CoreseList extends CoreseExtension implements IDatatypeList {
             return null;
         }
         ArrayList<IDatatype> res = new ArrayList();
+        CoreseList list = new CoreseList(res);
+        for (IDatatype dt : getValues()) {
+            if (!list.contains(dt)) {
+                list.add(dt);
+            }
+        }
+        for (IDatatype dt : dtlist.getValues()) {
+            if (!list.contains(dt)) {
+                list.add(dt);
+            }
+        }
+        return list;
+    }
+    
+    public IDatatype merge2(IDatatype dtlist) {
+        if (!dtlist.isList()) {
+            return null;
+        }
+        ArrayList<IDatatype> res = new ArrayList();
         for (IDatatype dt : list) {
             if (!res.contains(dt)) {
                 res.add(dt);
@@ -294,6 +313,16 @@ public class CoreseList extends CoreseExtension implements IDatatypeList {
             }
         }
         return new CoreseList(res);
+    }
+   
+    @Override
+    public boolean contains(IDatatype dt) {
+        for (IDatatype elem : getValues()) {
+            if (dt.sameTerm(elem)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     // this is a list, possibly list of lists

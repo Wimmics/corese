@@ -50,7 +50,7 @@ public class DataShapeTest {
         "core/misc", 
         "core/targets", 
         "core/validation-reports",
-            
+//            
 //       "sparql/property",
 //       "sparql/node" ,
        
@@ -277,7 +277,8 @@ public class DataShapeTest {
     }
 
     void file(String file) throws EngineException, LoadException {
-//        if (file.contains("pattern")) { // || file.contains("and-001")){
+        //System.out.println("start: " + file);
+//        if (file.contains("severity-002")) { // || file.contains("and-001")){
 //            //ok
 //        }
 //        else {
@@ -325,19 +326,22 @@ public class DataShapeTest {
 //            System.out.println("--");
 //            System.out.println("kgram: \n" + mapkgram);
         }
-        if (mm.size() != 1) {
-            System.out.println("**** " + mm.size() + " reports");
-        }
-
-        if (mapkgram.size() == mapw3c.size()) {
-            boolean suc = compare(file, g, mapw3c, mapkgram);
-            report.result(mapw3c, suc);
-            if (!suc) {
-                error++;
+        
+        if (true) {
+            if (mm.size() != 1) {
+                System.out.println("**** " + mm.size() + " reports");
             }
-        } else {
-            trace(g, greport);
-            report.result(mapw3c, false);
+
+            if (mapkgram.size() == mapw3c.size()) {
+                boolean suc = compare(file, g, mapw3c, mapkgram);
+                report.result(mapw3c, suc);
+                if (!suc) {
+                    error++;
+                }
+            } else {
+                trace(g, greport);
+                report.result(mapw3c, false);
+            }
         }
     }
     
@@ -350,11 +354,13 @@ public class DataShapeTest {
     // 4.275
     Graph execds(String shape, String data) throws EngineException, LoadException {
         Graph g  = load(data);        
-        Graph sh = (data.equals(shape)) ? g : load(shape);  
+        Graph sh = (data.equals(shape)) ? g : load(shape, g);  
         Shacl shacl = new Shacl(g);
         before(shacl);
         //shacl.setTrace(true);
-        Graph res = shacl.eval(sh);  
+        //Graph res = shacl.eval(sh); 
+        //shacl.setup(Shacl.SETUP_DETAIL, true);
+        Graph res = shacl.funeval(); 
         after(shacl);
         //trace();
         return res;

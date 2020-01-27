@@ -20,7 +20,7 @@ prefix msh: <http://ns.inria.fr/shacl/>
 # present=true: fail when path is empty, use case: qualified value shape
 # 
 function sh:path(sh, vis, nodeList, path, present) {
-    if (sh:trace(), xt:print("path:", nodeList, path), true);
+    if (sh:trace(), xt:print("path:", sh, path, nodeList), true);
    let (b1 = sh:path123(sh, vis, nodeList, path, present), 
        #b5 = sh:pathextension(sh, vis, nodeList, path),
        b6 =      sh:sparql(sh, vis, nodeList, path)
@@ -51,8 +51,17 @@ function sh:path123(sh, vis, nodeList, p, present) {
         b3 = xt:size(cstList3) > 0,
         b4 = xt:size(cstList4) > 0) {
         #xt:print("path:",  cstList1);
-        if (b1 || b2 || b3 || b4) {
+        if (! (b1 || b2 || b3 || b4)) {
+            if (sh:trace(), xt:print("path:", sh, "no path constraint"), true)
+        }
+        else {
             #xt:print("path:", nodeList, p);
+            if (sh:trace()) {
+                xt:print("path cst1:", cstList1);
+                xt:print("path cst2:", cstList2);
+                xt:print("path cst3:", cstList3);
+                xt:print("path cst4:", cstList4)
+            } ;
             for (s in dt:list(nodeList)) {
                 let (targetList = sh:ppath(s, p)) {
                     #xt:print("path:", s, p, targetList);
@@ -139,7 +148,7 @@ function sh:getPathShape(shape, sh, shapeList) {
                 optional { ?sh sh:flags ?flag }
                 bind (
                     if (?oper = sh:pattern,   coalesce(xt:list(?val, ?flag), xt:list(?val)),
-                    if (?oper = sh:patternIn, sh:getValueList(?val),
+                    if (sh:isListOperator(?oper), sh:getValueList(?val),
                     ?val))
                 as ?arg)
                 filter if (?oper = sh:uniqueLang, sameTerm(?val, true), true)
@@ -205,7 +214,8 @@ function sh:sibling() {
 
 # ************** operators
 
-# property shape
+# sh: property shape ; qsh: qualified shape
+#
 #
 function sh:qualifiedValueShape (sh, vis, s, p, qsh, disjoint, amin, amax, nodeList) {
         #xt:print("qualif1:", s, nodeList);
@@ -213,7 +223,7 @@ function sh:qualifiedValueShape (sh, vis, s, p, qsh, disjoint, amin, amax, nodeL
         let (list = mapfindlist(sh:qualifiedShape, nodeList,  qsh),
             qlist = if (coalesce(disjoint, false), 
                 # remove elements that are in sibling shapes
-                mapfindlist(sh:disjoint, list,  qsh, s), list),
+                sh:findDisjoint(list, qsh, s), list),
             suc1 = xt:size(qlist) >= amin, 
             suc2 = if (amax = -1, true, xt:size(qlist) <= amax)) {
             
@@ -249,7 +259,9 @@ function sh:qualified(qsh, s, p){
      }
 }
 
-
+function sh:findDisjoint(list,  qsh, s) {
+    mapfindlist(sh:disjoint, list,  qsh, s)
+}
 
 #
 # test disjointness of subject ?s value ?o with ?qsh sibling shapes
@@ -400,6 +412,7 @@ function sh:myequals (sh, vis, s, p, q, l1, l2) {
 #
 
 function sh:not (sh, vis, s, p, cst, nodeList) {
+    #xt:print("not:", sh, cst, s, p, nodeList);
     let (res = true) {
         for (o in nodeList) {
             let (suc = ! sh:core(cst, false, xt:list(o))) { 
@@ -417,8 +430,9 @@ function sh:not (sh, vis, s, p, cst, nodeList) {
 # sh sh:and cst where cst = (sh1 .. shn)
 #
 function sh:and (sh, vis, s, p, cst, nodeList) {
+    #xt:print("and:", sh, cst, s, p, nodeList);
     let (res = true, shList = sh:getShapeConstraint(sh:pathboolean,  cst)) {
-        #xt:print("sh:and", nodeList, shList);
+        if (sh:trace(), xt:print("and:", sh, shList, nodeList), true);
         for (o in nodeList) {
             let (suc = coalesce(sh:and(shList, o), false)) { 
                 if (suc, true, sh:report(sh:and, sh, s, p, o, suc, vis));

@@ -84,7 +84,7 @@ function sh:getGenericShape(shape, sh, list) {
             optional { ?sh sh:flags ?flag }
             bind (
                 if (?oper = sh:pattern,   coalesce(xt:list(?val, ?flag), xt:list(?val)),
-                if (?oper = sh:patternIn, sh:getValueList(?val),
+                if (sh:isListOperator(?oper), sh:getValueList(?val),
                 ?val))            
             as ?arg)
         }
@@ -94,7 +94,9 @@ function sh:getGenericShape(shape, sh, list) {
 }
 
 
-
+function sh:isListOperator(oper) {
+    oper in (sh:patternIn, sh:in, sh:languageIn)
+}
 
 
 # xsh:function [ us:fun (h:age 50) ]

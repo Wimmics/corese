@@ -63,14 +63,21 @@ function sh:path(dt:graph shape, exp) {
         } else if (sh:extension(exp, q)) {
             return (sh:extension(shape, q, path)) 
         } else { 
-            return(xt:list(q, sh:path(shape, path))) 
+            let (res = sh:path(shape, path)) {
+                if (q = sh:alternativePath && xt:size(res) = 2 && xt:get(res, 0) = sh:sequencePath) {
+                    return (xt:list(q, xt:get(res, 1)))
+                }
+                else {
+                    return (xt:list(q, res))
+                }
+            }
         }
     }
   }
 }
 
 function sh:sequence(list) {
-    return (xt:list(sh:sequence, list))
+    return (xt:list(sh:sequencePath, list))
 }
 
 

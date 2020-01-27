@@ -102,8 +102,16 @@ function sh:type(object, class) {
 }
 
 
+function xsd:boolean sh:in(?object, ?list) {
+        for (value in list) { 
+            if (object = value && if (isLiteral(object), datatype(object) = datatype(value), true)) {
+                return (true)
+            } 
+        } ;
+        return (false)
+}
 
-function xsd:boolean sh:in(?object, ?lv) {
+function xsd:boolean sh:in2(?object, ?lv) {
     let (list = sh:getShapeConstraint(sh:incst, lv)) {
         for (value in list) { 
             if (object = value && if (isLiteral(object), datatype(object) = datatype(value), true)) {
@@ -121,8 +129,22 @@ function sh:incst(shape, sh) {
     }
 }
 
-
-function xsd:boolean sh:languageIn(?object, ?lv){
+function xsd:boolean sh:languageIn(?object, ?list){
+   if (isLiteral(object)) {
+        let (lan = lang(object)) {
+            for (value in list) { 
+                if (langMatches(lan, value)) {
+                    return (true)
+                } 
+            } ;
+            return (false)
+        }
+    }
+    else {
+        return (false)
+    }
+}
+function xsd:boolean sh:languageIn2(?object, ?lv){
    if (isLiteral(object)) {
         let (lan = lang(object), list = sh:getShapeConstraint(sh:incst, lv)) {
             for (value in list) { 

@@ -132,10 +132,10 @@ function dt:list sh:inversePath(focus, subject, node, exp, xsd:boolean inv, url)
 
 
 #
-# (sh:sequence (exp .. exp))
+# (sh:sequencePath (exp .. exp))
 # exp = (exp .. exp)
 #
-function dt:list sh:sequence(focus, subject, node, exp, xsd:boolean inv, url){
+function dt:list sh:sequencePath(focus, subject, node, exp, xsd:boolean inv, url){
     if (inv) {
         return(sh:seqlist(focus, subject, node, sh:reverse(exp), inv, url))
     }
@@ -225,7 +225,8 @@ function dt:list sh:seqlistmap(focus, subject, nodeList, dt:list expList, xsd:bo
 
 # p = (sh:alternativePath (exp .. exp))
 function dt:list sh:alternativePath(focus, subject, node, exp, xsd:boolean inv, url){
-    let (expList = xt:get(exp, 1)) {
+    #xt:print("alter:", exp);
+    let (expList = exp) { # xt:get(exp, 1)) {
         return(mapmerge(sh:pathmap, expList, xt:list(focus), subject, node, inv, url))
     }
 }

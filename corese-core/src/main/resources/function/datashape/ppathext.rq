@@ -90,7 +90,7 @@ function dt:list xsh:service(focus, subject, node, arg, inv, url) {
                     sh:myservice(server, node, pp, qq), 
                 if (xt:size(path) = 1 && isURI(pp), 
                     sh:myservice(server, node, pp),
-                sh:evalpath(focus, subject, node, xt:list(sh:sequence, path), inv, server)))) 
+                sh:evalpath(focus, subject, node, sh:sequence(path), inv, server)))) 
             {
             if (us:trace()) {xt:print("service list:", list) } ;
             return (list)
@@ -122,7 +122,7 @@ function dt:list xsh:service2(focus, subject, node, arg, inv, url) {
     
     let ((server | path) = arg) {
         xt:print("service:", node, server, arg); 
-        return(sh:evalpath(focus, subject, node, xt:list(sh:sequence, path), inv, server))
+        return(sh:evalpath(focus, subject, node, sh:sequence(path), inv, server))
     }
 }
 

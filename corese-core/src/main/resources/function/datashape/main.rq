@@ -6,7 +6,7 @@
 prefix sh:   <http://www.w3.org/ns/shacl#> 
 prefix xsh:  <http://www.w3.org/ns/shacl#> 
 
-@import  <api.rq> <focus.rq> <ppathparser.rq> <ppath.rq> <operator.rq> <operatorext.rq> <core.rq>  <path.rq> <constraint.rq>  <target.rq>
+@import  <api/define.rq> <focus.rq> <ppathparser.rq> <ppath.rq> <operator.rq> <operatorext.rq> <core.rq>  <path.rq> <constraint.rq>  <target.rq>
 
 
 #
@@ -129,6 +129,13 @@ function sh:shacleval(shape, focus) {
 
 # start
 function sh:start(shape) {
+    if (coalesce(! donestart, true)) {
+        set(donestart = true) ;
+        sh:dostart(shape)
+    }
+}
+
+function sh:dostart(shape) {
     # transformer visitor for legacy
     st:visit(st:start, st:trace) ;
     sh:shaclGraph(shape);
@@ -143,7 +150,8 @@ function sh:start(shape) {
 
 # place holder
 function sh:before() {
-   if (bound(?before) && ?before) {
+   if (bound(?before) && ?before && coalesce(! done, true)) {
+      set(done = true);
       sh:testDefShape()
    }
 }
@@ -597,7 +605,11 @@ function xsd:boolean sh:result(name, sh, cst, dt:graph shape, foc, path, node){
        } ;
        if (isBlank(foc)) {
             xt:insert(rep, res, sh:focusNodeDetail, sh:graphdt(shape, foc)) 
-       } 
+       };
+       if (isBlank(sh)) {
+            #sh:document(sh);
+            coalesce(xt:insert(rep, res, sh:sourceShapeDetail, sh:getDefinition(sh)), true)
+       }
     } ;
     return(true)
 }
@@ -658,6 +670,37 @@ if (isBlank(var),
     return(strdt(xt:turtle(shape, var), xt:graph)), 
     var)
 }
+
+#
+#
+function sh:document(sh) {
+    xt:print("document:", sh);
+    for ((name amap) in mapmap) {
+        if (xt:has(amap, sh)) {
+            let (value = xt:get(amap, sh)) {
+                if (! isExtension(value) || xt:size(value) > 0, xt:print(sh, value), true) ;
+                coalesce(sh:documentBasic(value), true) ;
+                for (elem in value) {
+                    if (isBlank(elem)) {
+                        sh:document(elem)
+                    }
+                }
+            }
+        }
+    }
+}
+
+function sh:documentBasic(list) {
+    for ((key val) in list) {
+        if (isBlank(key)) {
+            sh:document(key)
+        } ;
+        if (isBlank(val)) {
+            sh:document(val)
+        }
+    } 
+}
+
 
 function sh:graphbnode(shape, var){
     if (isBlank(var),  

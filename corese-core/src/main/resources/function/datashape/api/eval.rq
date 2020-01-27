@@ -1,0 +1,96 @@
+#
+# SHACL Interpreter 
+#
+# API for defining shacl shapes by program in complement to shacl graph
+# shape format is a list, lisp-like expression
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2020
+#
+
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
+
+
+function sh:funeval(shapeList) {
+    #xt:print("funeval:", shapeList);
+    sh:start(xt:graph());
+    sh:defShacl(shapeList) ;
+    let (target = sh:target(shapeList)) {
+        #xt:print("target:", target);
+        sh:shacl(xt:graph(), target)
+    }
+}
+
+#
+# return ((sh (o1 .. on))
+#
+function sh:target(shapeList) {
+    maplist (sh:defTarget, shapeList)
+}
+
+function sh:defTarget(shape) {
+    let (list = xt:list(),
+         (oper name | rest) = shape) {
+        if (coalesce(sh:getConstraint(sh:deactivated, name), false)) {
+            return (xt:list())
+        } ;
+        for (stmt in rest) {
+            let ((oper) = stmt) {
+                if (oper in (sh:targetClass, sh:targetNode, sh:targetSubjectsOf, sh:targetObjectsOf)) {
+                    xt:add(list, funcall(oper, stmt))
+                }
+            }
+        } ;
+        if (xt:size(list) = 0, return (list), 
+            return (xt:list(name, reduce(xt:merge, list))))
+    }
+}
+
+function sh:targetNode(exp) {
+    let ((oper | rest) = exp) {
+        #reduce(xt:merge, maplist(sh:targetNodeElem, rest))
+        rest
+    }
+}
+
+function sh:targetSubjectsOf(exp) {
+    let ((oper | rest) = exp) {
+        reduce(xt:merge, maplist(sh:targetSubjectElem, rest))
+    }
+}
+
+function sh:targetObjectsOf(exp) {
+    let ((oper | rest) = exp) {
+        reduce(xt:merge, maplist(sh:targetObjectElem, rest))
+    }
+}
+
+function sh:targetClass(exp) {
+    let ((oper | rest) = exp) {
+        reduce(xt:merge, maplist(sh:targetClassElem, rest))
+    }
+}
+
+function sh:targetNodeElem(node) {
+    let (select * (aggregate(distinct ?node) as ?list) where { ?x sh:targetNode ?node } ) {
+        ?list
+    }
+}
+
+function sh:targetClassElem(class) {
+    let (select * (aggregate(distinct ?x) as ?list) where { ?x rdf:type/rdfs:subClassOf* ?class } ) {
+        ?list
+    }
+}
+
+function sh:targetSubjectElem(predicate) {
+    let (select * (aggregate(distinct ?x) as ?list) where { ?x ?predicate ?y } ) {
+        ?list
+    }
+}
+
+function sh:targetObjectElem(predicate) {
+    let (select * (aggregate(distinct ?y) as ?list) where { ?x ?predicate ?y } ) {
+        ?list
+    }
+}

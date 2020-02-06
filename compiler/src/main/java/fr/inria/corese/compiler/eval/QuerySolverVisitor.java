@@ -25,6 +25,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.extension.ListSort;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import org.slf4j.Logger;
@@ -86,6 +87,9 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     public static final String AGGREGATE= "@aggregate";
     public static final String HAVING   = "@having";
     public static final String FUNCTION = "@function";
+    public static final String INSERT   = "@insert";
+    public static final String DELETE   = "@delete";
+    public static final String UPDATE   = "@update";
     
     static final String USER = NSManager.USER;
     static final String PRODUCE_METHOD = USER + "produce";
@@ -110,7 +114,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     QuerySolverOverload overload;
   
 
-    QuerySolverVisitor(Eval e) {
+    public QuerySolverVisitor(Eval e) {
         eval = e;
         distinct = new HashMap<>();
         overload = new QuerySolverOverload(this);
@@ -225,6 +229,21 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     @Override
     public IDatatype finish(Mappings map) {
         return callback(eval, FINISH, toArray(map));
+    }
+    
+    @Override
+    public IDatatype insert(Edge edge) {
+        return callback(eval, INSERT, toArray(edge));
+    }
+    
+    @Override
+    public IDatatype delete(Edge edge) {
+        return callback(eval, DELETE, toArray(edge));
+    }
+    
+    @Override
+    public IDatatype update(List<Edge> delete, List<Edge> insert) { 
+        return callback(eval, UPDATE, toArray(toDatatype(delete), toDatatype(insert)));
     }
     
     @Override
@@ -616,7 +635,13 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
    
-    
+    IDatatype toDatatype(List<Edge> list) {
+        ArrayList<IDatatype> res = new ArrayList<>();
+        for (Edge edge : list) {
+            res.add(DatatypeMap.createObject(edge));
+        }
+        return DatatypeMap.newList(res);
+    }
     
     IDatatype[] toArray(Object... lobj) {
         IDatatype[] param = new IDatatype[lobj.length];

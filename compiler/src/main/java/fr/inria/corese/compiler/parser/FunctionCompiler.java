@@ -190,14 +190,16 @@ public class FunctionCompiler {
         }
         ext.setHierarchy(dh);
         boolean pub = ast.hasMetadata(Metadata.PUBLIC);
-       // for (ASTExtension.FunMap m : aext.getMaps()) {
-            for (Function exp : aext.getFunList()) { //m.values()) {
-                ext.define(exp);
-                if (pub || exp.isPublic()) {
-                    definePublic(exp, q);
-                }
+        for (Function exp : aext.getFunList()) { 
+            ext.define(exp);
+            if (pub || exp.isPublic()) {
+                definePublic(exp, q);
             }
-        //}
+            if (exp.hasMetadata(Metadata.UPDATE)) {
+                // @update event function => detail mode for Construct insert/delete
+                q.setDetail(true);
+            }
+        }
     }
 
     // TODO: check isSystem() because it is exported
@@ -221,15 +223,6 @@ public class FunctionCompiler {
             definePublic(e, q, isDefine);
         }
     }
-    
-//    public void definePublic2(fr.inria.corese.kgram.filter.Extension ext, Query q, boolean isDefine) {
-//        for (fr.inria.corese.kgram.filter.Extension.FunMap m : ext.getMaps()) {
-//            for (Expr exp : m.values()) {
-//                Function e = (Function) exp;
-//                definePublic(e, q, isDefine);
-//            }
-//        }
-//    }
 
     void definePublic(Function fun, Query q) {
         definePublic(fun, q, true);

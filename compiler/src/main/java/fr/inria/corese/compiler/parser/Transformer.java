@@ -355,6 +355,9 @@ public class Transformer implements ExpType {
             if (ast.hasMetadata(Metadata.SEQUENCE)) {
                 q.setParallel(false);
             }
+            if (ast.hasMetadata(Metadata.UPDATE)) {
+                q.setDetail(true);
+            }
             if (meta.hasMetadata(Metadata.UNLOCK) || 
                     (meta.getDatatypeValue(Metadata.LOCK) != null
                     && !meta.getDatatypeValue(Metadata.LOCK).booleanValue())) {

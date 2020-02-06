@@ -439,7 +439,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         Node gNode = env.getGraphNode();
         Eval currentEval = getEval(env);               
         Mappings map = null;
-        
+
         // in case of // evaluation of a pattern
         synchronized (exp) {
             if (exp.isSystem()) {

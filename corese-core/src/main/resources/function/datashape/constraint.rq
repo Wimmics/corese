@@ -29,11 +29,16 @@ function sh:constraint(sh, vis, nodeList) {
 function sh:constraint1 (sh, vis, nodeList) {
     let (res = true) {
         for ((oper value) in sh:getShapeConstraint(sh:cstgeneric1, sh)) {  
-            for (node in dt:list(nodeList)) {    
+            for (node in dt:list(nodeList)) {   
+                if (sh:contains(sh, node)) {}
+                else {
+                sh:push(sh, node);
                 let (suc = coalesce(funcall(oper, node, value), false)) {
                         sh:report(oper, sh, if (oper = sh:node, value, st:null),  node, st:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
-                    }
+                }
+                ; sh:pop()
+                }
             }
         } ;
         return (res)

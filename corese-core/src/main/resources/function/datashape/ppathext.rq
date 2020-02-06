@@ -19,7 +19,7 @@ prefix xsh:  <http://www.w3.org/ns/shacl#>
 # focus = from(us:g1 us:g2) may be empty
 #
 function dt:list xsh:function(focus, subject, node, exp, inv, url) {
-   # xt:print("function:", node, exp);
+   #xt:print("function:", node, exp);
     let ((name param) = exp) {
         if (name in (xsh:triplePath, xsh:tripleExtension, xsh:predicatePath), 
             funcall(name, focus, subject, node, param),

@@ -203,9 +203,9 @@ function xsh:notExist(subject, node, exp) {
 
 # sh:path ( [ sh:filter ([shape constraint]) ] )
 function xsh:filter(subject, node, exp) {
-    #xt:print("with shape:", exp);
+    #xt:print("filter shape:", exp);
     let ((shape) = exp, 
-          suc = sh:eval(shape, node)) {
+          suc = sh:localEval(shape, node)) {
         if (suc, xt:list(node), xt:list())
     }
 }
@@ -220,7 +220,20 @@ function xsh:notFilter(subject, node, exp) {
 }
 
 
+function xsh:localEval(shape, node) {
+            #xt:print("eval:", shape, node);
 
+    if (isExtension(shape)) {
+        let (bn = coalesce(sh:getConstraint(sh:defbnode, shape),
+            sh:setConstraint(sh:defbnode, shape, sh:defShaclShapeConstraint(shape)))) {
+            #xt:print("eval:", bn, shape, node);
+        sh:eval(bn, node)    
+        }
+    }
+    else {
+        sh:eval(shape, node)
+    }
+}
 
 
 

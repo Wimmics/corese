@@ -169,6 +169,7 @@ function sh:shaclGraph() {
 function sh:initvariable() {
     # validation report graph
     set(validationReport = query(construct where {})) ;
+    set(stack = xt:list());
     set(bnodeid = bnode()) ;
     set(mapmap = xt:map()) ;
     set(mapshape = coalesce(mapshape, xt:map())) ;
@@ -177,6 +178,21 @@ function sh:initvariable() {
     set(mapfun = xt:map());
     sh:setup() ; 
     coalesce(sh:trace(), sh:trace(!true))
+}
+
+function sh:push(sh, object) {
+    xt:add(stack, xt:list(sh, object))
+}
+
+function sh:pop() {
+    xt:removeindex(stack, xt:size(stack) - 1)
+}
+
+function sh:contains(sh, object) {
+    for ((name value) in stack) {
+        if (name = sh, return(true), true)
+    } ;
+    return (false)
 }
 
 function sh:setup() {
@@ -594,7 +610,7 @@ function xsd:boolean sh:result(name, sh, cst, dt:graph shape, foc, path, node){
        xt:insert(rep, res, sh:sourceShape, sh) ;
                                               
        if (sh:isValue(path)) {
-            xt:insert(rep, res, sh:resultPath, sh:graphdt(shape, path))
+            xt:insert(rep, res, sh:resultPath, sh:prettyNodeOrList(shape, path))
        } ; 
        if (sh:isValue(node)) {
             xt:insert(rep, res, sh:value, node) 
@@ -663,12 +679,17 @@ function sh:bnodeid2(){
     coalesce(bnodeid, set(bnodeid = bnode()))
 }
 
+function sh:prettyNodeOrList(shape, var) {
+    if (isExtension(var),
+        strdt(sh:fun2rdf(var), xt:graph),
+        sh:graphdt(shape, var))
+}
 
 # trick datatype for st:turtle transformation to pprint a graph in Turtle format
 function sh:graphdt(shape, var){
-if (isBlank(var), 
-    return(strdt(xt:turtle(shape, var), xt:graph)), 
-    var)
+    if (isBlank(var), 
+        return(strdt(xt:turtle(shape, var), xt:graph)), 
+        var)
 }
 
 #

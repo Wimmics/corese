@@ -69,14 +69,21 @@ function sh:path123(sh, vis, nodeList, p, present) {
                         # present: special case for qualified value shape
                         if (present && xt:size(targetList) = 0, return(false), true);
                         for (o in targetList) {
+                            if (sh:contains(sh, o)) {}
+                            else 
+                            {
+                            sh:push(sh, o);
                             for ((oper val) in cstList1) {
                                 #xt:print("path", o, oper, val);
                                 let (suc = coalesce(funcall(oper, o, val), false)) {
                                         if (oper in (sh:property), true, 
                                                 sh:report(oper, sh, if (oper = sh:node, val, st:null), s, p, o, suc, vis)) ;
                                         if (! suc, set(res = false), true) 
-                                    }
                                 }
+                            } 
+                            ; sh:pop()
+                            }
+                            
                         }
                     } ;
                     

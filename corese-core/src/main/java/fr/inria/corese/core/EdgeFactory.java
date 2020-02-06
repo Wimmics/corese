@@ -263,10 +263,11 @@ public class EdgeFactory {
      * Piece of code specific to EdgeImpl
      */
     public void setGraph(Edge ent, Node g) {
-        if (ent instanceof EdgeTop) {
-            EdgeTop e = (EdgeTop) ent;
-            e.setGraph(g);
-        }
+        ent.setGraph(g);
+//        if (ent instanceof EdgeTop) {
+//            EdgeTop e = (EdgeTop) ent;
+//            e.setGraph(g);
+//        }
  
     }
     

@@ -253,7 +253,8 @@ public class Construct
                             map.setNbDelete(map.nbDelete() + list.size());
 
                             if (lDelete != null) {
-                                lDelete.addAll(list);
+                                //lDelete.addAll(list);
+                                lDelete.add(ent);
                             }
                         }
 

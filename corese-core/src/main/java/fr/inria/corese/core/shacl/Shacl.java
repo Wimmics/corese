@@ -32,7 +32,7 @@ public class Shacl {
     public static final String SETUP_TYPE   = SH + "type";
     
     static final String FUNEVAL = SH+"funeval";
-    static final String PARSE   = SH+"parse";
+    static final String PARSE   = SH+"funparse";
     
     static final String SHACL   = SH+"shacl";
     static final String SHAPE   = SH+"shaclshape";
@@ -140,7 +140,7 @@ public class Shacl {
     /**
      * Parse shacl RDF graph and return a list expression
      */
-    public IDatatype parse() throws EngineException {
+    public IDatatype funparse() throws EngineException {
         return funcall(PARSE);
     }
     
@@ -156,7 +156,7 @@ public class Shacl {
      * Parse shacl graph as list expression and execute expression
      */
     public Graph funeval() throws EngineException {
-        IDatatype dt = parse();
+        IDatatype dt = funparse();
         return funeval(dt);
     }
     

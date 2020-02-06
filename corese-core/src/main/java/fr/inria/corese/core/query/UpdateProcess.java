@@ -1,6 +1,7 @@
 package fr.inria.corese.core.query;
 
 import fr.inria.corese.core.Event;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.core.Mapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -18,6 +19,8 @@ import fr.inria.corese.sparql.triple.update.Composite;
 import fr.inria.corese.sparql.triple.update.Update;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  * SPARQL 1.1 Update
@@ -112,22 +115,27 @@ public class UpdateProcess {
     }
 
     Mappings process(Query q, Composite ope, Mapping m) {
-
+        ASTQuery ast = null;
         switch (ope.type()) {
 
             case Update.INSERT:
-                return insert(q, ope, m);
+                ast = getInsert(q, ope);
+                break;
 
             case Update.DELETE:
-                return delete(q, ope, m);
+                ast = getDelete(q, ope);
+                break;
 
             case Update.COMPOSITE:
-                return composite(q, ope, m);
+                ast = getComposite(q, ope);
+                break;
 
         }
 
-        return Mappings.create(q);
-
+        if (ast == null) {
+            return Mappings.create(q);
+        }
+        return update(q, ast, m);
     }
 
     /**
@@ -139,7 +147,8 @@ public class UpdateProcess {
 
         //System.out.println("** QP:\n" + m.getBind());
         exec.logStart(query);
-        Query q = exec.compile(ast, ds);
+        Query q = compile(ast);
+        inherit(q, query);
         Mapping mm = m;
         if (m != null && m.size() == 0 && m.getBind() != null) {
             // m contains LDScript binding stack
@@ -150,7 +159,7 @@ public class UpdateProcess {
         // insert using g where
         // if g is external graph, focus on g
         Mappings map = exec.basicQuery(null, q, mm);
-               
+   
         // PRAGMA: update can be both delete & insert
         if (q.isDelete()) {
             manager.delete(q, map, ds);
@@ -161,16 +170,69 @@ public class UpdateProcess {
             manager.insert(q, map, ds);
         }
 
+        visitor(map);
         exec.logFinish(query, map);
 
         return map;
     }
+    
+    Query compile(ASTQuery ast) {
+        Query q = ast.getUpdateQuery();
+        if (q == null) {
+            q = exec.compile(ast, ds);
+            ast.setUpdateQuery(q);
+        }
+        return q;
+    }
+    
+    void inherit(Query update, Query query) {
+        update.setDetail(query.isDetail());
+    }
+    
+    void visitor(Mappings map) {
+        if ((map.getDelete() != null && !map.getDelete().isEmpty()) || 
+            (map.getInsert() != null && !map.getInsert().isEmpty())) {
+            List<Edge> delete = map.getDelete();
+            List<Edge> insert = map.getInsert();
+            if (delete == null) { delete = new ArrayList<>();}
+            if (insert == null) { insert = new ArrayList<>();}
+            exec.getCurrentEval().getVisitor().update(delete, insert);
+        }
+    }
+    
+    ASTQuery getInsert(Query q, Composite ope) {
+        ASTQuery ast = ope.getAST();
+        if (ast == null) {
+            ast = insert(q, ope);
+            ope.setAST(ast);
+        }
+        return ast;
+    }
+    
+    ASTQuery getDelete(Query q, Composite ope) {
+        ASTQuery ast = ope.getAST();
+        if (ast == null) {
+            ast = delete(q, ope);
+            ope.setAST(ast);
+        }
+        return ast;
+    }
+    
+    ASTQuery getComposite(Query q, Composite ope) {
+        ASTQuery ast = ope.getAST();
+        if (ast == null) {
+            ast = composite(q, ope);
+            ope.setAST(ast);
+        }
+        return ast;
+    }
+    
 
     /**
      * insert data {<a> ex:p <b>} Ground pattern (no variable) Processed as a
      * construct query in the target graph
      */
-    Mappings insert(Query q, Composite ope, Mapping m) {
+    ASTQuery insert(Query q, Composite ope) {
 
         ASTQuery ast = createAST(q, ope);
         ast.setInsert(true);
@@ -181,7 +243,7 @@ public class UpdateProcess {
                 logger.debug("** Update: insert not valid: " + exp);
             }
             q.setCorrect(false);
-            return Mappings.create(q);
+            return null; //Mappings.create(q);
         }
 
         if (exp != null) {
@@ -192,8 +254,8 @@ public class UpdateProcess {
 
         // Processed as a construct (add) on target graph
         //return manager.query(q, ast);
-        return update(q, ast, m);
-
+        //return update(q, ast, m);
+        return ast;
     }
 
     /**
@@ -201,7 +263,7 @@ public class UpdateProcess {
      * Construct as a delete query in the target graph
      *
      */
-    Mappings delete(Query q, Composite ope, Mapping m) {
+    ASTQuery delete(Query q, Composite ope) {
 
         ASTQuery ast = createAST(q, ope);
         ast.setDelete(true);
@@ -210,7 +272,7 @@ public class UpdateProcess {
         if (!exp.validateData(ast) || !exp.validateDelete()) {
             q.setCorrect(false);
             q.addError("** Update: delete not valid: ", exp);
-            return Mappings.create(q);
+            return null; //Mappings.create(q);
         }
 
         if (exp != null) {
@@ -219,14 +281,15 @@ public class UpdateProcess {
             ast.setDeleteData(true);
         }
 
-        return update(q, ast, m);
+        //return update(q, ast, m);
+        return ast;
 
     }
 
     /**
      * with delete {pat} insert {pat} using where {pat}
      */
-    Mappings composite(Query q, Composite ope, Mapping m) {
+    ASTQuery composite(Query q, Composite ope) {
 
         // the graph where insert/delete occurs
         Constant src = ope.getWith();
@@ -255,14 +318,15 @@ public class UpdateProcess {
                 if (!exp.validateDelete()) {
                     q.setCorrect(false);
                     q.addError("Error: Blank Node in Delete", "");
-                    return Mappings.create(q);
+                    return null; //Mappings.create(q);
                 }
             }
         }
 
-        Mappings map = update(q, ast, m);
+        //Mappings map = update(q, ast, m);
         //if (isDebug) logger.debug(map);	
-        return map;
+        //return map;
+        return ast;
     }
 
     /**

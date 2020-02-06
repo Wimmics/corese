@@ -480,9 +480,8 @@ public class QueryProcess extends QuerySolver {
         mgr.setVerbose(false);
         method(NSManager.USER + name.toString().toLowerCase(), NSManager.USER + e.toString(), param);
         mgr.setVerbose(b);
-
     }
-    
+        
     // import function definition as public function
     public void imports(String path) throws EngineException {
         String q = "@public @import <%s> select where {}";
@@ -537,7 +536,7 @@ public class QueryProcess extends QuerySolver {
         return (Binding) eval.getMemory().getBind();
     }
     
-    Eval getEval() throws EngineException {
+    public Eval getEval() throws EngineException {
         if (eval == null){
             eval = createEval("select where {}  ", null);
         }
@@ -1067,7 +1066,11 @@ public class QueryProcess extends QuerySolver {
      *
      */
     Mappings update(Query query, Mapping m, Dataset ds) throws EngineException {
-        getEventManager().start(Event.Update, query.getAST());
+        ASTQuery ast = (ASTQuery) query.getAST();
+        getEventManager().start(Event.Update, ast);
+        if (ast.hasMetadata(Metadata.UPDATE)) {
+            getEventManager().setTrackUpdate(true);
+        }
         if (ds != null && ds.isUpdate()) {
             // TODO: check complete() -- W3C test case require += default + entailment + rule
             complete(ds);
@@ -1075,7 +1078,10 @@ public class QueryProcess extends QuerySolver {
         UpdateProcess up = UpdateProcess.create(this, ds);
         up.setDebug(isDebug());
         Mappings map = up.update(query, m);
-        getEventManager().finish(Event.Update, query.getAST());
+        getEventManager().finish(Event.Update, ast);
+        if (ast.hasMetadata(Metadata.UPDATE)) {
+            getEventManager().setTrackUpdate(false);
+        }
         return map;
     }
 

@@ -1,8 +1,14 @@
 package fr.inria.corese.core;
 
+import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.core.index.NodeManager;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.kgram.api.core.DatatypeValue;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -18,6 +24,8 @@ public class EventLogger {
 
     private static Logger logger = LoggerFactory.getLogger(EventLogger.class);
     public static boolean DEFAULT_METHOD = false;
+    static final String INSERT_FUN = NSManager.USER + "insert";
+    static final String DELETE_FUN = NSManager.USER + "delete";
     
     EventManager mgr;
     QueryProcess exec;
@@ -66,10 +74,10 @@ public class EventLogger {
     }
 
     
-    void trace(Event type, Event e, Object o) {
+    void trace(Event type, Event e, Object o, Object o2) {
         if (accept(e)) {
             if (isMethod()){
-                method(type, e, o);
+                method(type, e, o, o2);
             }
             else {
                 message(type, e, o);
@@ -102,7 +110,16 @@ public class EventLogger {
         return (o instanceof String) ? "\n" : " ";
     }
     
-    void method(Event type, Event e, Object o) {
+    void method(Event type, Event e, Object o, Object o2) {
+        if (!true) {
+            methodcall(type, e, o);
+        }  
+        else {
+            funcall(type, e, o, o2);
+        }
+    }
+    
+    void methodcall(Event type, Event e, Object o) {
         try {
             getQueryProcess().event(type, e, o);
         } catch (EngineException ex) {
@@ -110,9 +127,59 @@ public class EventLogger {
         }
     }
     
+    /**
+     * Manage update event with LDScript function
+     * @public us:insert(edge)
+     * @public us:delete(edge)
+     * When insert, o = target edge, o2 = null
+     * When delete, o = target edge, o2 = query edge
+     * Call delete with query edge because target edge has null predicate in the graph Index
+     */
+    void funcall(Event type, Event e, Object o, Object o2) {
+        boolean b = getEventManager().isVerbose();
+        getEventManager().setVerbose(false);
+        try {
+            switch (type) {
+                case Process:
+                    switch (e) {
+                        case Insert:
+                            //funcall(INSERT_FUN, (Edge)o);
+                            insert((Edge)o);
+                            break;
+                        case Delete:
+                            //funcall(DELETE_FUN, (Edge) ((o2 == null) ? o : o2));
+                            delete((Edge)((o2 == null) ? o : o2));
+                            break;
+                    }
+            }
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(EventLogger.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        finally {
+            getEventManager().setVerbose(b);
+        }
+    }
+    
+    IDatatype funcall(String name, Edge edge) throws EngineException {
+        return getQueryProcess().funcall(name, DatatypeMap.createObject(edge));
+    }
+    
+    DatatypeValue insert(Edge edge) throws EngineException {
+        return getQueryProcess().getEval().getVisitor().insert(edge);
+    }
+    
+    DatatypeValue delete(Edge edge) throws EngineException {
+        return getQueryProcess().getEval().getVisitor().delete(edge);
+    }
+    
     QueryProcess getQueryProcess() {
         if (exec == null){
             exec = QueryProcess.create(getEventManager().getGraph());
+            try {
+                exec.getEval().setVisitor(new QuerySolverVisitor(exec.getEval()));
+            } catch (EngineException ex) {
+                java.util.logging.Logger.getLogger(EventLogger.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
         return exec;
     }

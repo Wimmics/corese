@@ -2769,12 +2769,13 @@ public class Graph extends GraphObject implements
 
         if (edge.getGraph() == null) {
             res = deleteAll(edge);
-        } else {
+        } 
+        else {
             Edge ee = basicDelete(edge);
             if (ee != null) {
                 res = new ArrayList<Edge>();
                 res.add(ee);
-                getEventManager().process(Event.Delete, ee);
+                getEventManager().process(Event.Delete, ee, edge);
             }
         }
 
@@ -2799,7 +2800,7 @@ public class Graph extends GraphObject implements
                     }
                     res.add(ent);
                     //setDelete(true);
-                    getEventManager().process(Event.Delete, ent);
+                    getEventManager().process(Event.Delete, ent, edge);
                 }
             }
         }
@@ -2836,20 +2837,24 @@ public class Graph extends GraphObject implements
      */
     List<Edge> deleteAll(Edge edge) {
         ArrayList<Edge> res = null;
-
+        Node graphName = null;
         for (Node graph : getGraphNodes()) {
-            fac.setGraph(edge, graph);
+            //fac.setGraph(edge, graph);
+            edge.setGraph(graph);
             Edge ent = basicDelete(edge);
             if (ent != null) {
                 if (res == null) {
                     res = new ArrayList<Edge>();
                 }
                 res.add(ent);
+                graphName = ent.getGraph();
                 //setDelete(true);
-                getEventManager().process(Event.Delete, ent);
+                getEventManager().process(Event.Delete, ent, edge);
             }
         }
-
+        if (graphName != null) {
+            edge.setGraph(graphName);
+        }
         return res;
     }
 

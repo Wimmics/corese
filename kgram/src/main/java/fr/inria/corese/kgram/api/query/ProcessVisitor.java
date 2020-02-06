@@ -11,6 +11,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.path.Path;
+import java.util.List;
 
 /**
  *
@@ -20,6 +21,10 @@ import fr.inria.corese.kgram.path.Path;
 public interface ProcessVisitor extends Pointerable {
 
     int SLICE_DEFAULT = 20;
+    
+    default void trace(String name) {
+        System.out.println("Visitor event " + name);
+    }
     
     default boolean isShareable() { return false; }
     
@@ -108,6 +113,12 @@ public interface ProcessVisitor extends Pointerable {
     default int compare(Eval eval, int res, DatatypeValue dt1, DatatypeValue dt2) { return res ;}
     
     default DatatypeValue datatype(DatatypeValue type, DatatypeValue sup) { return type ;};
+    
+    default DatatypeValue insert(Edge edge) { return null;}
+    
+    default DatatypeValue delete(Edge edge) { return null;}
+
+    default DatatypeValue update(List<Edge> delete, List<Edge> insert) { return null;}
 
 
 }

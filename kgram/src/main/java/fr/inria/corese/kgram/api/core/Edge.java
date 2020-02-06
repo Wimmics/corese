@@ -85,6 +85,8 @@ public interface Edge extends  Pointerable {
         Node getNode();
         
         Node getGraph();
+        
+        default void setGraph(Node n) {}
     
 	Edge getEdge();	
         

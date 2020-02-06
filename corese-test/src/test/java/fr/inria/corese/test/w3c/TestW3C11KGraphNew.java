@@ -176,7 +176,7 @@ public class TestW3C11KGraphNew {
     @BeforeClass
     public static void setUpClass() throws Exception {
        //before2(); 
-        Graph.setEdgeMetadataDefault(true);
+        //Graph.setEdgeMetadataDefault(true);
     }
 
     @AfterClass
@@ -301,6 +301,21 @@ public class TestW3C11KGraphNew {
 
     @Before
     public void setUp() throws EngineException, MalformedURLException, IOException {
+        //doSetUp();
+    }
+    
+    void doSetUp() {
+        String q = "@public @update "
+                + "function us:myupdate(del, ins) {"
+                + "if (xt:size(del) > 0, xt:print('delete:', del),  true);"
+                + "if (xt:size(ins) > 0, xt:print('insert:', ins),  true)"
+                + "}";
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        try {
+            exec.compile(q);
+        } catch (EngineException ex) {
+            Logger.getLogger(TestW3C11KGraphNew.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
     }
 
     @After
@@ -313,7 +328,7 @@ public class TestW3C11KGraphNew {
         tok = new Testing();
         earl = new Earl(); 
         //QueryProcess.testAlgebra(true);
-        Graph.METADATA_DEFAULT =  true;
+        //Graph.METADATA_DEFAULT =  true;
     }
 
     public static void main(String[] args) {
@@ -462,7 +477,7 @@ public class TestW3C11KGraphNew {
             //Graph.setCompareIndex(true);
             if (version == 1){
                 test1();
-                //testUpdate();
+                testUpdate();
             }
             else {
                 test0(); //25 errorstest
@@ -1072,6 +1087,8 @@ public class TestW3C11KGraphNew {
             }
             else {
                 //System.out.println(query);
+                //exec.setVisitorable(true);
+                //exec.setDetail(true);
                 res = exec.sparql(query, ds, entail);
             }
             //System.out.println("Test: " + res);

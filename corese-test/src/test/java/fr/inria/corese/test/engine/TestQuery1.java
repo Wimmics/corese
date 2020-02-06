@@ -6699,17 +6699,17 @@ public class TestQuery1 {
         Transformer t = Transformer.create(g, Transformer.TURTLE, RDF.RDF);
         String str = t.transform();
        //System.out.println("result:\n" + str);
-        assertEquals(4770, str.length());
+        assertEquals(6202, str.length());
 
         t = Transformer.create(g, Transformer.TURTLE, RDFS.RDFS);
         str = t.transform();
-        ////System.out.println(str);
+        //System.out.println(str);
         assertEquals(3872, str.length());
 
         t = Transformer.create(g, Transformer.TURTLE);
         str = t.transform();
         ////System.out.println(str);
-        assertEquals(8427, str.length());
+        assertEquals(9859, str.length());
     }
 
     @Test
@@ -6727,7 +6727,7 @@ public class TestQuery1 {
         Mappings map = exec.query(t1);
         String str = map.getTemplateStringResult();
         ////System.out.println(str);
-        assertEquals(4770, str.length());
+        assertEquals(6202, str.length());
 
         map = exec.query(t2);
         str = map.getTemplateStringResult();
@@ -6737,7 +6737,7 @@ public class TestQuery1 {
         map = exec.query(t3);
         str = map.getTemplateStringResult();
         ////System.out.println(str);
-        assertEquals(8427, str.length());
+        assertEquals(9859, str.length());
     }
 
     @Test
@@ -6783,7 +6783,7 @@ public class TestQuery1 {
 
         Transformer pp = Transformer.create(g, Transformer.TRIG);
         String str = pp.transform();
-        assertEquals(12748, str.length());
+        assertEquals(14923, str.length());
 
 
     }

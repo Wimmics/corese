@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.update;
 
 import fr.inria.corese.sparql.triple.parser.ASTBuffer;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,6 +34,7 @@ public class Composite extends Update {
     Constant with;
     Dataset ds;
     private Values values;
+    private ASTQuery ast;
 
     Composite(int t) {
         type = t;
@@ -185,6 +187,20 @@ public class Composite extends Update {
      */
     public void setValues(Values values) {
         this.values = values;
+    }
+
+    /**
+     * @return the ast
+     */
+    public ASTQuery getAST() {
+        return ast;
+    }
+
+    /**
+     * @param ast the ast to set
+     */
+    public void setAST(ASTQuery ast) {
+        this.ast = ast;
     }
 
 }

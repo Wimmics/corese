@@ -1129,12 +1129,12 @@ void OffsetClause() : { Token t; }
 
 
 
-Exp GroupGraphPattern() : {Exp stack;}
+Exp GroupGraphPattern() : {Exp stack; Metadata meta = null;}
 {
   { stack = BasicGraphPattern.create(); }
   <LBRACE>  
     (    
-  	  SubQuery(stack) |
+  	  SubQuery(meta, stack) |
   	  GraphPattern(stack) 
   	)
   <RBRACE>
@@ -1208,15 +1208,15 @@ void GraphPatternNotTriples(Exp stack) : {ASTQuery ast; Values values;}
  	| values = Values() { stack.add(values); }
 }
 
-void SubQuery(Exp stack) : {ASTQuery ast; Query q; Exp exp;}
+void SubQuery(Metadata meta, Exp stack) : {ASTQuery ast; Query q; Exp exp;}
 {
  { ast = astq; astq = gast.subCreate(); } 
- exp = SelectQuery(null) 
+ exp = SelectQuery(meta) 
  { astq.setBody(exp); q = Query.create(astq); stack.add(q); astq = ast; } 
 }
 
-Exp SubQueryExp() : { Exp exp; }{
-    { exp = BasicGraphPattern.create(); } SubQuery(exp)
+Exp SubQueryExp(Metadata meta) : { Exp exp; }{
+    { exp = BasicGraphPattern.create(); } SubQuery(meta, exp)
     { return exp; }
 }
 
@@ -1233,19 +1233,19 @@ Exp ServiceExp() : {Exp exp, res; ASTQuery tmp; Query q;} {
     }
 }
 
-Exp SubConstruct() : {ASTQuery ast; Query q; Exp exp;}
+Exp SubConstruct(Metadata meta) : {ASTQuery ast; Query q; Exp exp;}
 {
  { ast = astq; astq = gast.subCreate(); } 
- exp = ConstructQuery(null) 
+ exp  = ConstructQuery(meta) 
  { astq.setBody(exp); q = Query.create(astq); astq = ast; return q;} 
 }
 
-Exp SubUpdate() : {ASTQuery ast; ASTUpdate up, save; Query q; Exp exp;}
+Exp SubUpdate(Metadata meta) : {ASTQuery ast; ASTUpdate up, save; Query q; Exp exp; }
 {
  { ast = astq; save = astu; astu = astu.subCreate(); astq = gast.subCreate(); astq.set(astu); 
    astq.shareForUpdate(gast);
    astq.setBody(BasicGraphPattern.create()); } 
-  UpdateQuery(null) 
+  UpdateQuery(meta) 
  { q = Query.create(astq); astq = ast; astu = save; return q;} 
 }
 
@@ -2226,15 +2226,16 @@ Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; C
   { return term; }
 }
 
-Term QueryExp () : {Expression exp = null; Exp stack; Term term; Exp sub;}
+Term QueryExp () : {Expression exp = null; Exp stack; Term term; Exp sub; Metadata meta = null;}
 {
-   <QUERY> <LPAREN>    
+   <QUERY> <LPAREN>  
+    meta = Annotate()
     (
-    sub = SubQueryExp() 
+    sub = SubQueryExp(meta) 
     |
-    sub = SubConstruct() { sub = BasicGraphPattern.create(sub); }
+    sub = SubConstruct(meta) { sub = BasicGraphPattern.create(sub); }
     |
-    sub = SubUpdate()    { sub = BasicGraphPattern.create(sub); }
+    sub = SubUpdate(meta)    { sub = BasicGraphPattern.create(sub); }
     )
     (  <COMMA>
         { stack = BasicGraphPattern.create(); }
@@ -2266,7 +2267,8 @@ Term IfThenElse (Exp stack) : {Expression test, e1, e2 = null;}
 
 
 Term For (Exp stack) : 
-{boolean isLoop = false; Exp sub; Term t; Expression exp, body ; Variable var = null; ExpressionList arg, el = null; }
+{boolean isLoop = false; Exp sub; Term t; Expression exp, body ; Variable var = null; 
+ExpressionList arg, el = null; Metadata meta = null;}
 {
     (<FOR> | <LOOP> {isLoop = true;})
     <LPAREN> 
@@ -2288,8 +2290,8 @@ Term For (Exp stack) :
         )
 
         |
-
-        sub = SubQueryExp()  { el = new ExpressionList(); exp = astq.term(sub); }
+        meta = Annotate()
+        sub = SubQueryExp(meta)  { el = new ExpressionList(); exp = astq.term(sub); }
      )
     <RPAREN>   
     body = Body(stack)
@@ -2298,16 +2300,17 @@ Term For (Exp stack) :
 }
 
 
-Expression LetForExp() : {Exp sub; Expression exp;}
+Expression LetForExp() : {Exp sub; Expression exp; Metadata meta = null;}
 {
+meta = Annotate()
 (
-    sub = SubQueryExp() { exp = astq.term(sub); }
+    sub = SubQueryExp(meta) { exp = astq.term(sub); }
     |
     sub = ServiceExp()  { exp = astq.term(sub); }
     |
-    sub = SubConstruct() { exp = astq.term(BasicGraphPattern.create(sub)); }
+    sub = SubConstruct(meta) { exp = astq.term(BasicGraphPattern.create(sub)); }
     |
-    sub = SubUpdate()    { exp = astq.term(BasicGraphPattern.create(sub)); }
+    sub = SubUpdate(meta)    { exp = astq.term(BasicGraphPattern.create(sub)); }
     | 
     <AT> exp = CstList() 
 
@@ -2376,7 +2379,7 @@ Term Set (Exp stack) : { Expression exp ; Variable var;}
 
 
 Expression LetDef(Exp stack) : 
-{ Variable var = null;   Expression exp ; ExpressionList el = null; Exp sub; Constant type = null; }
+{ Variable var = null;   Expression exp ; ExpressionList el = null; Exp sub; Constant type = null; Metadata meta = null;}
 {
 ( 
   ( (type = IRIrefConst())? var = Var() 
@@ -2392,7 +2395,8 @@ Expression LetDef(Exp stack) :
 
  |
   // let (select where)
-  sub = SubQueryExp() { el = new ExpressionList(); exp = astq.term(sub); }
+  meta = Annotate()
+  sub = SubQueryExp(meta) { el = new ExpressionList(); exp = astq.term(sub); }
 )			
    { return (el == null) ? astq.defLet(var, type, exp) : astq.defLet(el, exp);  }
  

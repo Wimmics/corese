@@ -127,6 +127,7 @@ public class ASTExtension implements Extension {
     /**
      * name is a namespace
      */
+    @Override
     public void removeNamespace(String name) {
         for (FunMap fm : getMaps()) {
             fm.removeNamespace(name);
@@ -141,7 +142,7 @@ public class ASTExtension implements Extension {
     void defineFunction(Function exp) {       
         Term fun = exp.getSignature(); 
         Function def = get(fun.getLabel(), fun.arity());
-        if  (def != null) {
+        if  (def != null && exp != def) {
             logger.info("Redefine function: " +fun.getLabel());
             logger.info(def.toString());
             logger.info(exp.toString());

@@ -279,6 +279,7 @@ public class ASTQuery
     private List<Atom> serviceList;
     private List<Constant> predicateList;
     private List<Triple> tripleList;
+    private fr.inria.corese.kgram.core.Query updateQuery;
 
     /**
      * @return the defaultDataset
@@ -3685,6 +3686,20 @@ public class ASTQuery
             t.add(e);
         }
         return t;
+    }
+
+    /**
+     * @return the updateQuery
+     */
+    public fr.inria.corese.kgram.core.Query getUpdateQuery() {
+        return updateQuery;
+    }
+
+    /**
+     * @param updateQuery the updateQuery to set
+     */
+    public void setUpdateQuery(fr.inria.corese.kgram.core.Query updateQuery) {
+        this.updateQuery = updateQuery;
     }
     
 }

@@ -64,6 +64,7 @@ public class Metadata extends ASTObject
     public static final int LIMIT     = 45;
     public static final int GRAPH     = 46;
     public static final int FROM      = 47;
+    public static final int UPDATE    = 48;
     
     
     public static final int EVENT   = 50;
@@ -172,6 +173,7 @@ public class Metadata extends ASTObject
         define("@from",     FROM); 
         
         
+        define("@update",    UPDATE);  
         define("@event",    EVENT);  
 //        define(META_BEFORE, BEFORE);  
 //        define(META_AFTER,  AFTER);  

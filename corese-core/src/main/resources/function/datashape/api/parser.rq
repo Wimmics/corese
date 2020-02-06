@@ -11,7 +11,7 @@ prefix pr:  <http://www.w3.org/ns/shacl/parser#>
 #
 # Generate lisp-like abstract syntax from shacl graph
 #
-function sh:parse() {
+function sh:funparse() {
     let (list = xt:list()) {
         for (select distinct ?sh
             where { 
@@ -32,6 +32,12 @@ function sh:parse() {
         return (list)
     }
 }
+
+function sh:parse() {
+    sh:funparse()
+}
+
+
 
 function sh:parse(sh) {
     let (target   = pr:target(sh),
@@ -123,7 +129,8 @@ function pr:propertyWithCst(sh) {
              
             (if (?const = sh:pattern && bound(?flag), xt:list(?const, ?value, ?flag), 
              if (?const in (sh:in, sh:languageIn),    xt:list(?const, sh:reclist(?value)),
-                xt:list(?const, ?value)))
+             if (?const = sh:uniqueLang,              xt:list(?const, sameTerm(?val, true)),
+                xt:list(?const, ?value))))
              as ?elem)
              
             (aggregate (?elem) as ?list)

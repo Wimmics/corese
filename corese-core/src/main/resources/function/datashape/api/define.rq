@@ -11,13 +11,16 @@ prefix sh:   <http://www.w3.org/ns/shacl#>
 prefix xsh:  <http://www.w3.org/ns/shacl#> 
 prefix h:    <http://www.inria.fr/2015/humans#>
 
-@import <eval.rq> <parser.rq> 
+@import <eval.rq> <parser.rq> <fun2rdf.rq>
 
-function sh:defShacl(shapeList) {
+function sh:fundefine(shapeList) {
     sh:startDefine();
     map (sh:defShaclShape, shapeList) 
 }
 
+function sh:defShacl(shapeList) {
+    sh:fundefine(shapeList)
+}
 
 # input format is a list, lisp-like expression:
 # (sh:shape us:test (sh:targetClass h:Person)
@@ -147,6 +150,13 @@ function sh:getPredicateList(exp) {
 
 # Top level function for defining a shape constraint exp
 #
+function sh:defShaclShapeConstraint(exp) {
+    let (bn = bnode()) {
+        sh:defShaclShapeConstraint(bn, exp) ;
+        return (bn)
+    }
+}
+
 function sh:defShaclShapeConstraint(name, exp) {
     sh:apitrace("defShaclShapeConstraint:", name, exp);
     let ((oper value) = exp) {
@@ -270,7 +280,7 @@ function sh:defPropertyShape(name, sh, path, list, exp) {
 function sh:defPropertyPath(name, sh, exp) {
     sh:apitrace("defPropertyPath:", name, exp);
     let ((oper path) = exp) {
-       # sh:define(sh, exp);
+        #if (isExtension(path), xt:print("path:", path, sh:fun2rdf(path)), true) ;
         sh:setConstraint(sh:path, path, path);
         sh:defConstraint(name, sh:pathcore, sh, path) ;
         return (sh)

@@ -1,0 +1,52 @@
+#
+# SHACL to SPARQL path pretty printer
+#
+prefix sh: <http://www.w3.org/ns/shacl#> 
+
+# 
+# path = functional path
+# return Turtle syntax
+#
+function sh:fun2rdf(path) {
+    sh:funpprint(path)
+}
+
+
+function sh:funpprint(path) {
+    if (isURI(path)) {
+        return (xt:turtle(path))
+    }
+    else {
+        let ((oper value) = path) {
+            if (oper = sh:sequencePath) {
+                sh:sequencePath(value)
+            }
+            else if (oper = sh:alternativePath) {
+                sh:alternativePath(value)
+            }
+            else {
+                sh:paren(oper, value)
+            }
+        }
+    }
+}
+
+function sh:paren(oper, value) {
+    concat("[", xt:turtle(oper), " ", sh:funpprint(value), "]")
+}
+
+function sh:alternativePath(path) {
+    concat("[", xt:turtle(sh:alternativePath), " (", sh:funlist2(path), ")]")
+}
+
+function sh:sequencePath(path) {
+    concat("(", sh:funlist(path), ")")
+}
+
+function sh:funlist(list) {
+    reduce(lambda(aa, bb) { concat(aa, "\n", bb) }, maplist(sh:funpprint, list))    
+}
+
+function sh:funlist2(list) {
+    reduce(lambda(aa, bb) { concat(aa, "\n  ", bb) }, maplist(sh:funpprint, list))    
+}

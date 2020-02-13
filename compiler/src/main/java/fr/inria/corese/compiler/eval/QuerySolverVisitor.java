@@ -57,6 +57,8 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     public static final String INIT     = "@init";
     public static final String BEFORE   = "@before";
     public static final String AFTER    = "@after";
+    public static final String BEFORE_UPDATE   = "@beforeUpdate";
+    public static final String AFTER_UPDATE    = "@afterUpdate";
     public static final String START    = "@start";
     public static final String FINISH   = "@finish"; 
     public static final String OVERLOAD = "@overload"; 
@@ -219,6 +221,16 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         }
         // subquery
         return finish(map);
+    }
+    
+    @Override
+    public IDatatype beforeUpdate(Query q) {
+        return callback(eval, BEFORE_UPDATE, toArray(q));
+    }
+
+    @Override
+    public IDatatype afterUpdate(Mappings map) {
+        return callback(eval, AFTER_UPDATE, toArray(map));
     }
     
     @Override
@@ -541,6 +553,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
         }
         trace(ev, metadata, param);
         Function function = (Function) eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
+        //System.out.println("call: " + metadata + " " + function);
         if (function != null) {
             // prevent infinite loop in case where there is a query in the function
             setActive(true);
@@ -683,6 +696,7 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     /**
      * @param active the active to set
      */
+    @Override
     public void setActive(boolean active) {
         this.active = active;
     }

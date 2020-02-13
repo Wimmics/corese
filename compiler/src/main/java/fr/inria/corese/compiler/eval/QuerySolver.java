@@ -26,12 +26,14 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Matcher;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.api.query.Provider;
 import fr.inria.corese.kgram.api.query.SPARQLEngine;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.ProcessVisitorDefault;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.core.Sorter;
 import fr.inria.corese.kgram.event.EventListener;
@@ -328,6 +330,20 @@ public class QuerySolver  implements SPARQLEngine {
             return current;
         }
         
+        public ProcessVisitor getCurrentVisitorBasic() {
+            if (getCurrentEval() == null) {
+                return null;
+            }
+            return getCurrentEval().getVisitor();
+        }
+        
+        public ProcessVisitor getCurrentVisitor() {
+            if (getCurrentEval() == null) {
+                return new ProcessVisitorDefault();
+            }
+            return getCurrentEval().getVisitor();
+        }
+        
         public Binding getBinding() {
             if (getCurrentEval() == null 
                     || getCurrentEval().getEnvironment() == null 
@@ -349,7 +365,19 @@ public class QuerySolver  implements SPARQLEngine {
         
         void tune(Eval kgram, Query q) {
             ASTQuery ast = (ASTQuery) q.getAST();
-            if (ast.hasMetadata(Metadata.EVENT) || isVisitorable()){
+            boolean event = ast.hasMetadata(Metadata.EVENT);
+            tune (kgram, event);
+            if (q.isInitMode()) {
+                kgram.getVisitor().setActive(true);
+            }
+        }
+        
+        void tune(Eval kgram) {
+            tune(kgram, false);
+        }
+        
+        void tune(Eval kgram, boolean isVisitor) {
+            if (isVisitor || isVisitorable()) {
                 kgram.setVisitor(new QuerySolverVisitor(kgram));
             }
         }
@@ -380,7 +408,9 @@ public class QuerySolver  implements SPARQLEngine {
          */
         public Eval createEval(String str, Dataset ds) throws EngineException {
             Query q = compile(str, ds);
-            return createEval(q);
+            Eval eval = createEval(q);
+            tune(eval);
+            return eval;
         }
         
         public Eval createEval(Query q) throws EngineException {

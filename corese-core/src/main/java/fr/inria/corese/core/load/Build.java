@@ -2,6 +2,7 @@ package fr.inria.corese.core.load;
 
 import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
+import java.util.List;
 
 /**
  * Translate an RDF/XML document into a Graph
@@ -18,6 +19,7 @@ public interface Build {
 	 void setSource(String src);
 
 	 void exclude(String ns);
+	 void exclude(List<String> list);
 	
 	 void start();
 	 

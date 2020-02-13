@@ -14,6 +14,7 @@ import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.QueryProcess;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import fr.inria.corese.kgram.api.core.Edge;
@@ -25,7 +26,7 @@ import fr.inria.corese.kgram.api.core.Edge;
  * @author Olivier Corby, INRIA 2012
  *
  */
-public class CreateImpl implements Creator {
+public class CreateImpl extends CreateTriple implements Creator {
 
     private static Logger logger = LoggerFactory.getLogger(CreateImpl.class);
 
@@ -54,9 +55,10 @@ public class CreateImpl implements Creator {
     }
 
     CreateImpl(Graph g, Load ld) {
+        super(g, ld);
         graph = g;
         load = ld;
-        blank = new HashMap<String, String>();
+        blank = new HashMap<>();
         nsm = NSManager.create();
         stack = new Stack();
     }
@@ -64,18 +66,7 @@ public class CreateImpl implements Creator {
     public static CreateImpl create(Graph g, Load ld) {
         return new CreateImpl(g, ld);
     }
-
-    @Override
-    public void start() {
-        graph.getEventManager().start(Event.LoadAPI);
-        //graph.setUpdate(true);
-    }
-
-    @Override
-    public void finish() {
-        graph.getEventManager().finish(Event.LoadAPI);
-    }
-
+ 
     @Override
     public void setLimit(int max) {
         limit = max;
@@ -127,7 +118,7 @@ public class CreateImpl implements Creator {
         }
 
         Edge e = graph.create(source, s, p, o);
-        graph.addEdge(e);
+        add(e);
         parseImport(property, object);
     }
 
@@ -156,7 +147,14 @@ public class CreateImpl implements Creator {
         }
 
         Edge e = graph.create(source, p, list);
-        graph.addEdge(e);
+        add(e);
+    }
+
+    void add(Edge e) {
+        Edge edge = graph.addEdge(e);
+        if (edge != null) {
+            declare(edge);
+        }
     }
 
     @Override
@@ -197,7 +195,7 @@ public class CreateImpl implements Creator {
         }
         return getLiteralBasic(lit);
     }
-    
+
     Node getLiteralBasic(Constant lit) {
         String lang = lit.getLang();
         String datatype = nsm.toNamespace(lit.getDatatype());
@@ -206,7 +204,7 @@ public class CreateImpl implements Creator {
         }
         return graph.addLiteral(lit.getLabel(), datatype, lang);
     }
-    
+
     Node getList(Constant lit) {
         return graph.getNode(lit.getDatatypeValue(), true, true);
     }

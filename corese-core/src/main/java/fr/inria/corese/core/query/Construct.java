@@ -42,6 +42,7 @@ public class Construct
     //IDatatype dtDefaultGraph;
     List<Edge> lInsert, lDelete;
     Dataset ds;
+    private boolean detail = false;
     boolean isDebug = false,
             isDelete = false,
             isRule = false,
@@ -71,11 +72,7 @@ public class Construct
     public static Construct create(Query q) {
         Construct cons = new Construct(q);
         if (q.isDetail()) {
-            if (q.isConstruct()) {
-                cons.setInsertList(new ArrayList<Edge>());
-            } else {
-                cons.setDeleteList(new ArrayList<Edge>());
-            }
+            cons.setDetail(true);
         }
         return cons;
     }
@@ -151,6 +148,9 @@ public class Construct
         if (ds != null && ds.isUpdate()) {
             this.ds = ds;
         }
+        if (isDetail()){
+            setDeleteList(new ArrayList<>());
+        }
         construct(map, null);
     }
 
@@ -158,6 +158,9 @@ public class Construct
         setInsert(true);
         if (ds != null && ds.isUpdate()) {
             this.ds = ds;
+        }
+        if (isDetail()){
+            setInsertList(new ArrayList<>());
         }
         construct(map, null);
     }
@@ -529,5 +532,19 @@ public class Construct
      */
     public void setTest(boolean test) {
         this.test = test;
+    }
+
+    /**
+     * @return the detail
+     */
+    public boolean isDetail() {
+        return detail;
+    }
+
+    /**
+     * @param detail the detail to set
+     */
+    public void setDetail(boolean detail) {
+        this.detail = detail;
     }
 }

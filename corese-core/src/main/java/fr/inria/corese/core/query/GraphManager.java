@@ -18,6 +18,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.core.Mappings;
 
 /**
  *
@@ -36,7 +37,8 @@ public class GraphManager {
     // default loader, by meta protocol to preserve modularity
     static final String LOADER = "fr.inria.corese.kgtool.load.Load";
     private Graph graph;
-    Loader load;
+    Load load;
+    private QueryProcess queryProcess;
 
     public GraphManager(Graph g) {
         graph = g;
@@ -52,7 +54,7 @@ public class GraphManager {
         return graph;
     }
     
-    static Loader getLoader() {
+    static Load getLoader() {
         return new Load();
     }
 
@@ -263,19 +265,14 @@ public class GraphManager {
     
     
     boolean load(Query q, Basic ope) {
-        if (load == null) {
-            logger.error("Load " + ope.getURI() + ": Loader is undefined");
-            return ope.isSilent();
-        }
+        Load load = Load.create(graph);
+        //getQueryProcess().init(q);
+        load.setQueryProcess(getQueryProcess());
         String uri = ope.getURI();
         String src = ope.getTarget();
         graph.logStart(q);
-//        if (graph.size() == 0) {
-//            // graph is empty, optimize loading as if the graph is to be indexed
-//            // because edges are added directly
-//            graph.setIndex(true);
-//        }
         graph.getEventManager().start(Event.LoadUpdate);
+        getQueryProcess().getCurrentVisitor().start(q);
         if (ope.isSilent()) {
             try {
                 load.parse(uri, src);
@@ -309,10 +306,7 @@ public class GraphManager {
                 graph.logFinish(q);
                 return ope.isSilent();
             } finally {
-//                if (graph.isIndex()) {
-//                    graph.index();
-//                }
-                   //graph.prepare();
+                   getQueryProcess().getCurrentVisitor().finish(Mappings.create(q));
                    graph.getEventManager().finish(Event.LoadUpdate);
             }
         }
@@ -393,6 +387,20 @@ public class GraphManager {
 
     boolean isRule(String uri) {
         return uri.equals(Entailment.RULE);
+    }
+
+    /**
+     * @return the queryProcess
+     */
+    public QueryProcess getQueryProcess() {
+        return queryProcess;
+    }
+
+    /**
+     * @param queryProcess the queryProcess to set
+     */
+    public void setQueryProcess(QueryProcess queryProcess) {
+        this.queryProcess = queryProcess;
     }
 
 }

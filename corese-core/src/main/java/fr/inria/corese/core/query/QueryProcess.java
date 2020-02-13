@@ -40,6 +40,8 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.util.Extension;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.kgram.core.ProcessVisitorDefault;
 import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
@@ -115,9 +117,11 @@ public class QueryProcess extends QuerySolver {
         Graph g = getGraph(p);
         if (g != null) {
             // construct 
-            setGraphManager(new GraphManager(g));
+            GraphManager man = new GraphManager(g);
+            man.setQueryProcess(this);
+            setGraphManager(man);
             // update
-            setManager(new ManagerImpl(getGraphManager()));
+            setManager(new ManagerImpl(man));
         }
         // service
         set(ProviderImpl.create(this));
@@ -536,11 +540,47 @@ public class QueryProcess extends QuerySolver {
         return (Binding) eval.getMemory().getBind();
     }
     
+    public Eval getEvalBasic() {
+        return eval;
+    }
+      
+    // Visitor @public functions
     public Eval getEval() throws EngineException {
         if (eval == null){
             eval = createEval("select where {}  ", null);
         }
         return eval;
+    }
+    // Visitor @public functions
+    public ProcessVisitor getVisitor() {
+        try {
+            return getEval().getVisitor();
+        } catch (EngineException ex) {
+            return new ProcessVisitorDefault();
+        }
+    }
+    
+    /** 
+     * @event load rdf:
+     * use case: take care of query @event functions
+     * create current Eval with a ProcessVisitor
+    **/
+    public void init(Query q) {
+        if (getCurrentEval() == null) {
+            q.setInitMode(true);
+            super.query(q);
+            q.setInitMode(false);
+            getCurrentEval().getVisitor().setActive(false);
+        }
+    }
+    
+    @Override
+    public ProcessVisitor getCurrentVisitor() {
+        ProcessVisitor vis = getCurrentVisitorBasic();
+        if (vis == null) {
+            return getVisitor();
+        }
+        return vis;
     }
     
     Function getLinkedFunction(String name,  IDatatype[] param) {
@@ -1058,7 +1098,7 @@ public class QueryProcess extends QuerySolver {
 	 * place where {} clause is computed on this Dataset delete {} clause is
 	 * computed on this Dataset insert {} take place in Entailment.DEFAULT,
 	 * unless there is a graph pattern or a with
-     *
+         *
 	 * This explicit Dataset is introduced because Corese manages the
 	 * default graph as the union of named graphs whereas in some case (W3C
 	 * test case, protocol) there is a specific default graph hence,
@@ -1066,11 +1106,10 @@ public class QueryProcess extends QuerySolver {
      *
      */
     Mappings update(Query query, Mapping m, Dataset ds) throws EngineException {
-        ASTQuery ast = (ASTQuery) query.getAST();
+        ASTQuery ast = getAST(query);
+        init(query);
         getEventManager().start(Event.Update, ast);
-        if (ast.hasMetadata(Metadata.UPDATE)) {
-            getEventManager().setTrackUpdate(true);
-        }
+        getCurrentVisitor().beforeUpdate(query);
         if (ds != null && ds.isUpdate()) {
             // TODO: check complete() -- W3C test case require += default + entailment + rule
             complete(ds);
@@ -1078,10 +1117,8 @@ public class QueryProcess extends QuerySolver {
         UpdateProcess up = UpdateProcess.create(this, ds);
         up.setDebug(isDebug());
         Mappings map = up.update(query, m);
-        getEventManager().finish(Event.Update, ast);
-        if (ast.hasMetadata(Metadata.UPDATE)) {
-            getEventManager().setTrackUpdate(false);
-        }
+        getCurrentVisitor().afterUpdate(map);
+        getEventManager().finish(Event.Update, ast);       
         return map;
     }
 

@@ -196,7 +196,7 @@ public class UpdateProcess {
             List<Edge> insert = map.getInsert();
             if (delete == null) { delete = new ArrayList<>();}
             if (insert == null) { insert = new ArrayList<>();}
-            exec.getCurrentEval().getVisitor().update(delete, insert);
+            exec.getCurrentVisitor().update(delete, insert);
         }
     }
     

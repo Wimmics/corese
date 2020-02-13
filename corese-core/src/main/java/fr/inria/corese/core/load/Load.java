@@ -47,6 +47,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import java.io.ByteArrayInputStream;
 import java.io.FileFilter;
 import java.net.URLConnection;
+import java.util.ArrayList;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
@@ -81,6 +82,7 @@ public class Load
     Log log;
     RuleEngine engine;
     QueryEngine qengine;
+    private QueryProcess queryProcess;
     private SemanticWorkflow workflow;
     HashMap<String, String> loaded;
     LoadPlugin plugin;
@@ -92,6 +94,8 @@ public class Load
     private boolean defaultGraph = DEFAULT_GRAPH;
     int nb = 0;
     private int limit = LIMIT_DEFAULT;
+    ArrayList<String> exclude;
+
     
     /**
      * true means load in default graph when no named graph is given
@@ -101,10 +105,12 @@ public class Load
     }
 
     Load(Graph g) {
+        this();
         set(g);
     }
 
     public Load() {
+        exclude = new ArrayList<>();
     }
 
     public static Load create(Graph g) {
@@ -130,16 +136,16 @@ public class Load
     
     public void setLimit(int max) {
         limit = max;
-        if (build != null) {
-            build.setLimit(limit);
-        }
+//        if (build != null) {
+//            build.setLimit(limit);
+//        }
     }
 
     void set(Graph g) {
         graph = g;
         log = g.getLog();
         loaded = new HashMap<String, String>();
-        build = BuildImpl.create(graph);
+        //build = BuildImpl.create(graph, this);
     }
 
     public void reset() {
@@ -147,7 +153,12 @@ public class Load
     }
 
     public void exclude(String ns) {
-        build.exclude(ns);
+        //build.exclude(ns);
+        getExclude().add(ns);
+    }
+    
+    ArrayList<String> getExclude() {
+        return exclude;
     }
 
     public void setEngine(RuleEngine eng) {
@@ -655,8 +666,11 @@ public class Load
             name = plugin.statSource(name);
             base = plugin.statBase(base);
         }
-        String save = source;
+        String save = getSource();
         source = name;
+        build = BuildImpl.create(graph, this);
+        build.setLimit(limit);
+        build.exclude(getExclude());
         build.setSource(name);
         build.start();
         ARP arp = new ARP();
@@ -789,15 +803,6 @@ public class Load
         load.parse(read);
     }
 
-//    boolean suffix(String path) {
-//        for (String suf : SUFFIX) {
-//            if (path.endsWith(suf)) {
-//                return true;
-//            }
-//        }
-//        return false;
-//    }
-
     @Override
     public void statement(AResource subj, AResource pred, ALiteral lit) {
         build.statement(subj, pred, lit);
@@ -819,8 +824,8 @@ public class Load
             }
 
             Build save = build;
-            build = BuildImpl.create(graph);
-            build.setLimit(save.getLimit());
+//            build = BuildImpl.create(graph, this);
+//            build.setLimit(save.getLimit());
             try {
                 basicImport(uri);
             } catch (LoadException ex) {
@@ -872,7 +877,7 @@ public class Load
     public void setSource(String s) {
         if (s == null) {
             //cur = src;
-            build.setSource(source);
+            build.setSource(getSource());
             return;
         }
 
@@ -880,9 +885,6 @@ public class Load
             s = plugin.dynSource(s);
         }
         build.setSource(s);
-//		if (! cur.getLabel().equals(s)){
-//			cur = build.getGraph(s);
-//		}
     }
 
     @Override
@@ -1063,5 +1065,19 @@ public class Load
      */
     public void setDefaultGraph(boolean defaultGraph) {
         this.defaultGraph = defaultGraph;
+    }
+
+    /**
+     * @return the queryProcess
+     */
+    public QueryProcess getQueryProcess() {
+        return queryProcess;
+    }
+
+    /**
+     * @param queryProcess the queryProcess to set
+     */
+    public void setQueryProcess(QueryProcess queryProcess) {
+        this.queryProcess = queryProcess;
     }
 }

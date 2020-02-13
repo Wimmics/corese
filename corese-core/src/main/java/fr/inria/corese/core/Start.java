@@ -12,7 +12,10 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.shacl.Shacl;
 import fr.inria.corese.core.transform.Transformer;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class Start {
 
@@ -20,6 +23,7 @@ public class Start {
     ArrayList<String> query = new ArrayList<>();
     ArrayList<String> loadquery = new ArrayList<>();
     ArrayList<String> sttl = new ArrayList<>();
+    ArrayList<String> shacl = new ArrayList<>();
     NSManager nsm = NSManager.create();
     boolean debugRule = false;
     boolean rdfs = false;
@@ -74,7 +78,13 @@ public class Start {
                 while (i < args.length && !args[i].startsWith("-")) {
                     sttl.add(expand(args[i++]));
                 }
-            } 
+            }
+            else if (args[i].equals("-shacl")) {
+                i++;
+                while (i < args.length && !args[i].startsWith("-")) {
+                    shacl.add(expand(args[i++]));
+                }
+            }
             else if (args[i].equals("-s") || args[i].equals("-silent")) {
                 i++;
                 display = false;
@@ -134,10 +144,28 @@ public class Start {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+        
+        for (String shape : shacl) {
+            try {
+                shacl(g, shape);
+            } catch (EngineException ex) {
+                Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
         for (String stl : sttl) {
             Transformer t = Transformer.create(g, stl);
             System.out.println(t.transform());
         }
+    }
+    
+    void shacl(Graph g, String shape) throws LoadException, EngineException {
+        Shacl sh = new Shacl(g);
+        Graph gg = Graph.create();
+        Load load = Load.create(gg);
+        load.parse(shape);
+        Graph res = sh.eval(gg);
+        System.out.println("shacl: " + shape);
+        System.out.println(Transformer.turtle(res));
     }
 }

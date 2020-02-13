@@ -165,11 +165,11 @@ public class EventLogger {
     }
     
     DatatypeValue insert(Edge edge) throws EngineException {
-        return getQueryProcess().getEval().getVisitor().insert(edge);
+        return getQueryProcess().getVisitor().insert(edge);
     }
     
     DatatypeValue delete(Edge edge) throws EngineException {
-        return getQueryProcess().getEval().getVisitor().delete(edge);
+        return getQueryProcess().getVisitor().delete(edge);
     }
     
     QueryProcess getQueryProcess() {

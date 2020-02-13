@@ -20,6 +20,7 @@ public interface Computer extends ComputerProxy {
     Function getDefine(Environment env, String name, int n);      
     Function getDefine(Expr exp, Environment env);  
     Function getDefineGenerate(Expr exp, Environment env, String name, int n); 
+    Function getDefineMetadata(Environment env, String metadata, int n);
     Function getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] param);   
     boolean isCompliant();
 }

@@ -360,6 +360,8 @@ public class Term extends Expression {
                 return new Eval(name);
             case ExprType.XT_ISFUNCTION:
                 return new FunctionDefined(name);
+            case ExprType.XT_EVENT:
+                return new EventCall(name);
             case ExprType.APPLY:        
             case ExprType.FUNCALL:
                 return new Funcall(name);

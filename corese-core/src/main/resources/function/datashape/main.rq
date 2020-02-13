@@ -58,10 +58,12 @@ function dt:graph sh:shaclnode(node) {
 # focus = mappings or list(sh=nodeShape; list=targetNodeList)
 #
 function dt:graph sh:shacl(dt:graph shape, focus) {
+    xt:event("@beforeShacl", focus);
     sh:start(shape) ;
     let (suc = sh:shacleval(shape, focus)) {
         sh:success(suc);
         sh:finish() ;
+        xt:event("@afterShacl", sh:validationReport());
         return (sh:validationReport())
     }
 }

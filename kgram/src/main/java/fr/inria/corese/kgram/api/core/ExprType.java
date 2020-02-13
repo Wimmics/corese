@@ -378,6 +378,8 @@ public interface ExprType {
         public static int XT_DATATYPE_VALUE= 482;
         public static int XT_CAST        = 483;
         public static int XT_ISFUNCTION  = 484;
+        public static int XT_EVENT       = 485;
+        
              
         public static int SLICE       = 500;
         public static int EDGE_LEVEL  = 501;

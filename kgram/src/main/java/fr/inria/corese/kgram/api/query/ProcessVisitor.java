@@ -26,6 +26,10 @@ public interface ProcessVisitor extends Pointerable {
         System.out.println("Visitor event " + name);
     }
     
+    default void setActive(boolean b) {}
+    
+    default boolean isActive() {return true;}
+    
     default boolean isShareable() { return false; }
     
     default void setProcessor(Eval e) {}
@@ -35,6 +39,10 @@ public interface ProcessVisitor extends Pointerable {
     default DatatypeValue before(Query q) { return null; }
     
     default DatatypeValue after(Mappings map) { return null; }
+    
+    default DatatypeValue beforeUpdate(Query q) { return null; }
+    
+    default DatatypeValue afterUpdate(Mappings map) { return null; }
     
     default DatatypeValue start(Query q) { return null; }
     

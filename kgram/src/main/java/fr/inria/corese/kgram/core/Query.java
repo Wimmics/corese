@@ -253,6 +253,7 @@ public class Query extends Exp implements Graphable {
             isRule = false, isDetail = false;
     private boolean algebra = false;
     private boolean isMatch = false;
+    private boolean initMode = false;
     private int id = -1;
     private int priority = 100;
     int mode = Matcher.UNDEF;
@@ -2868,6 +2869,20 @@ public class Query extends Exp implements Graphable {
      */
     public void setPriority(int priority) {
         this.priority = priority;
+    }
+
+    /**
+     * @return the initMode
+     */
+    public boolean isInitMode() {
+        return initMode;
+    }
+
+    /**
+     * @param initMode the initMode to set
+     */
+    public void setInitMode(boolean initMode) {
+        this.initMode = initMode;
     }
 
 }

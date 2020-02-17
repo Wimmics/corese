@@ -109,6 +109,10 @@ public class Binding implements Binder {
     public boolean hasBind() {
         return varList.size() > 0 || level.size() > 0;
     }
+    
+    public boolean isEmpty() {
+        return size() == 0 && getGlobalVariableNames().isEmpty();
+    }
 
     int getIndex(Expr var) {
         return currentLevel + var.getIndex();

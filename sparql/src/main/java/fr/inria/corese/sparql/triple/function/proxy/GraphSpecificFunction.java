@@ -51,8 +51,8 @@ public class GraphSpecificFunction extends LDScript {
         if (param == null){
             return null;
         }  
-        
-       GraphProcessor proc = eval.getGraphProcessor();
+
+        GraphProcessor proc = eval.getGraphProcessor();
         
         switch (oper()) {
             case LOAD:

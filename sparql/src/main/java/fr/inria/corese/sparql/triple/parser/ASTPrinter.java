@@ -113,22 +113,22 @@ public class ASTPrinter implements KeywordPP {
 
         // Select
         if (ast.isSelect()) {
-            sb.append(SELECT).append(SPACE);
+            sb.kw(SELECT);
 
             if (ast.isDebug()) {
-                sb.append(DEBUG).append(SPACE);
+                sb.kw(DEBUG);
             }
 
             if (ast.isMore()) {
-                sb.append(MORE).append(SPACE);
+                sb.kw(MORE);
             }
 
             if (ast.isDistinct()) {
-                sb.append(DISTINCT).append(SPACE);
+                sb.kw(DISTINCT);
             }
 
             if (ast.isSelectAll()) {
-                sb.append(STAR).append(SPACE);
+                sb.kw(STAR);
             }
 
             if (select != null && select.size() > 0) {
@@ -144,44 +144,44 @@ public class ASTPrinter implements KeywordPP {
             }
 
         } else if (ast.isAsk()) {
-            sb.append(ASK).append(SPACE);
+            sb.kw(ASK);
         } else if (ast.isDelete()) {
-            sb.append(DELETE).append(SPACE);
+            sb.kw(DELETE);
             if (ast.isDeleteData()) {
-                sb.append(DATA).append(SPACE);
+                sb.kw(DATA);
             }
             ast.getDelete().toString(sb);
 
             if (ast.isInsert()) {
-                sb.append(INSERT).append(SPACE);
+                sb.kw(INSERT);
                 ast.getInsert().toString(sb);
             }
 
         } else if (ast.isConstruct()) {
             if (ast.isInsert()) {
-                sb.append(INSERT).append(SPACE);
+                sb.kw(INSERT);
                 if (ast.isInsertData()) {
-                    sb.append(DATA).append(SPACE);
+                    sb.kw(DATA);
                 }
                 ast.getInsert().toString(sb);
             } else if (ast.getConstruct() != null) {
-                sb.append(CONSTRUCT).append(SPACE);
+                sb.kw(CONSTRUCT);
                 ast.getConstruct().toString(sb);
             } else if (ast.getInsert() != null) {
-                sb.append(INSERT).append(SPACE);
+                sb.kw(INSERT);
                 ast.getInsert().toString(sb);
             } else if (ast.getDelete() != null) {
-                sb.append(DELETE).append(SPACE);
+                sb.kw(DELETE);
                 if (ast.isDeleteData()) {
-                    sb.append(DATA).append(SPACE);
+                    sb.kw(DATA);
                 }
                 ast.getDelete().toString(sb);
             }
         } else if (ast.isDescribe()) {
-            sb.append(DESCRIBE).append(SPACE);
+            sb.kw(DESCRIBE);
 
             if (ast.isDescribeAll()) {
-                sb.append(STAR).append(SPACE);
+                sb.kw(STAR);
             } else if (ast.adescribe != null && ast.adescribe.size() > 0) {
 
                 for (Atom at : ast.adescribe) {
@@ -244,7 +244,7 @@ public class ASTPrinter implements KeywordPP {
         List<Boolean> reverse = ast.getReverse();
 
         if (ast.getGroupBy().size() > 0) {
-            sb.append(GROUPBY).append(SPACE);
+            sb.kw(GROUPBY);
             for (Expression exp : ast.getGroupBy()) {
                 sb.append(exp.toString()).append(SPACE);
             }
@@ -271,11 +271,11 @@ public class ASTPrinter implements KeywordPP {
         }
 
         if (ast.getOffset() > 0) {
-            sb.append(OFFSET).append(SPACE).append(ast.getOffset()).append(SPACE);
+            sb.kw(OFFSET).append(ast.getOffset()).append(SPACE);
         }
 
         if (ast.getMaxResult() != ast.getDefaultMaxResult()) {
-            sb.append(LIMIT).append(SPACE).append(ast.getMaxResult()).append(SPACE);
+            sb.kw(LIMIT).append(ast.getMaxResult()).append(SPACE);
         }
 
         if (ast.getHaving() != null) {
@@ -300,8 +300,7 @@ public class ASTPrinter implements KeywordPP {
         }
 
         if (ast.getPragma() != null) {
-            sb.append(PRAGMA);
-            sb.append(SPACE);
+            sb.kw(PRAGMA);
             ast.getPragma().toString(sb);
         }
 

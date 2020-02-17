@@ -22,11 +22,10 @@ import fr.inria.corese.sparql.triple.printer.SPIN;
 import fr.inria.corese.sparql.triple.update.ASTUpdate;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.kgram.api.core.ExprType;
-import fr.inria.corese.kgram.api.query.Graphable;
+import fr.inria.corese.kgram.api.query.ASTQ;
 import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.IOException;
-import java.util.AbstractList;
 import java.util.Map;
 import java.util.UUID;
 
@@ -46,7 +45,7 @@ import java.util.UUID;
  */
 public class ASTQuery 
         extends ASTObject 
-        implements Keyword, ASTVisitable, Graphable {
+        implements Keyword, ASTVisitable, ASTQ {
    
     /**
      * Use to keep the class version, to be consistent with the interface
@@ -167,7 +166,7 @@ public class ASTQuery
      */
     boolean constructCompiled = false;
     // construct in the std graph:
-    boolean isAdd = false;
+    boolean isInsert = false;
     boolean describeAll = false;
     boolean isBind = false;
     private boolean ldscript = false;
@@ -738,7 +737,7 @@ public class ASTQuery
     }
     
     public String getUpdateTitle() {
-        if (isAdd()) {
+        if (isInsert()) {
             return KeywordPP.INSERT;
         }
         if (isDelete()) {
@@ -2456,18 +2455,6 @@ public class ASTQuery
         this.resultForm = resultForm;
     }
 
-    public boolean isAdd() {
-        return isAdd;
-    }
-
-    public boolean isInsert() {
-        return isAdd;
-    }
-
-    public void setAdd(boolean b) {
-        isAdd = b;
-    }
-
     public void setWhere(boolean b) {
         where = b;
     }
@@ -2633,16 +2620,10 @@ public class ASTQuery
     // TODO: clean
     private void compileConstruct() {
         if (getConstruct() != null) {
-            // kgram:
             setInsert(getConstruct());
             Exp exp = getConstruct();
-            //Env env = new Env(false);
-            // assign graph ?src variable to inner triples
-            // TODO: for backward rules only
-            //exp.setSource(env, null, false);
             setConstruct(exp);
         } else if (getInsert() != null) {
-            // kgram update
             setConstruct(getInsert());
         }
     }
@@ -2715,7 +2696,7 @@ public class ASTQuery
         setDescribeAll(describeAllTemp);
         setBody(bodyExpLocal);
 
-        if (true){ //isKgram()) {
+        if (true){ 
             setInsert(template);
             setConstruct(template);
         }
@@ -2748,16 +2729,12 @@ public class ASTQuery
     
    
 
-     boolean isData() {
+    boolean isData() {
         return isInsertData() || isDeleteData();
     }
 
     
 
-    public void setConstruct(Exp constructExp) {
-        this.setResultForm(QT_CONSTRUCT);
-        this.constructExp = constructExp;
-    }
 
     public void duplicateConstruct(Exp exp) {
         boolean check = checkTriple(exp);
@@ -2795,6 +2772,58 @@ public class ASTQuery
         return true;
     }
     
+    public void setConstruct(Exp constructExp) {
+        this.setResultForm(QT_CONSTRUCT);
+        this.constructExp = constructExp;
+    }
+    
+    public void setDelete(boolean b) {
+        if (b) {
+            setResultForm(QT_DELETE);
+            isDelete = b;
+        }
+    }
+
+    public void setInsert(boolean b) {
+        if (b) {
+            setResultForm(ASTQuery.QT_CONSTRUCT);
+            setAdd(true);
+        }
+    }
+    
+    @Override
+    public boolean isInsert() {
+        return isInsert;
+    }
+    
+    @Override
+    public boolean isUpdateInsert() {
+        return (isInsert() && ! isInsertData()) || (getUpdate()!=null && getUpdate().isInsert());
+    }
+    
+    @Override
+    public boolean isUpdateInsertData() {
+        return isInsertData() || (getUpdate()!=null && getUpdate().isInsertData());
+    }
+    
+    @Override
+    public boolean isUpdateDelete() {
+        return (isDelete() && !  isDeleteData()) || (getUpdate()!=null && getUpdate().isDelete());
+    }
+    
+    @Override
+    public boolean isUpdateDeleteData() {
+        return isDeleteData() || (getUpdate()!=null && getUpdate().isDeleteData());
+    }
+    
+    @Override
+    public boolean isUpdateLoad() {
+        return  (getUpdate()!=null && getUpdate().isLoad());
+    }
+    
+    public void setAdd(boolean b) {
+        isInsert = b;
+    }
 
     public Exp getConstruct() {
         return constructExp;
@@ -3237,32 +3266,22 @@ public class ASTQuery
         return (getResultForm() == QT_ASK);
     }
 
+    @Override
     public boolean isConstruct() {
         return (getResultForm() == QT_CONSTRUCT);
     }
 
+    @Override
     public boolean isSelect() {
         return (getResultForm() == QT_SELECT);
     }
 
+    @Override
     public boolean isUpdate() {
         return (getResultForm() == QT_UPDATE);
     }
 
-    public void setDelete(boolean b) {
-        if (b) {
-            setResultForm(QT_DELETE);
-            isDelete = b;
-        }
-    }
-
-    public void setInsert(boolean b) {
-        if (b) {
-            setResultForm(ASTQuery.QT_CONSTRUCT);
-            setAdd(true);
-        }
-    }
-
+    @Override
     public boolean isDelete() {
         return isDelete;
     }
@@ -3275,13 +3294,13 @@ public class ASTQuery
         return isUpdate() || isInsert() || isDelete();
     }
 
-    public boolean isConstructCompiled() {
-        return constructCompiled;
-    }
-
-    public void setConstructCompiled(boolean constructCompiled) {
-        this.constructCompiled = constructCompiled;
-    }
+//    public boolean isConstructCompiled() {
+//        return constructCompiled;
+//    }
+//
+//    public void setConstructCompiled(boolean constructCompiled) {
+//        this.constructCompiled = constructCompiled;
+//    }
 
     public void setDefaultThreshold(float threshold) {
         DefaultThreshold = threshold;

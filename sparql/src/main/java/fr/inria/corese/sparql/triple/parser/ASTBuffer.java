@@ -10,6 +10,7 @@ import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 public class ASTBuffer  {
     
     static final String NL = System.getProperty("line.separator");
+    static final String SPACE = " ";
     
     int count = 0;
     
@@ -22,6 +23,11 @@ public class ASTBuffer  {
     
     public ASTBuffer append(Object obj) {
         sb.append(obj);
+        return this;
+    }
+    
+     public ASTBuffer kw(String obj) {
+        sb.append(obj).append(SPACE);
         return this;
     }
     

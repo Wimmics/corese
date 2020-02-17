@@ -53,7 +53,53 @@ public class ASTUpdate {
         }
         return sb;
     }
+    
+    public boolean isInsert() {
+        for (Update ast : getUpdates()) {
+            if (ast.isInsert()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean isInsertData() {
+        for (Update ast : getUpdates()) {
+            if (ast.isInsertData()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
 
+    public boolean isDelete() {
+        for (Update ast : getUpdates()) {
+            if (ast.isDelete()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean isDeleteData() {
+        for (Update ast : getUpdates()) {
+            if (ast.isDeleteData()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean isLoad() {
+        for (Update ast : getUpdates()) {
+            if (ast.isLoad()) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public void set(ASTQuery a) {
         ast = a;
     }

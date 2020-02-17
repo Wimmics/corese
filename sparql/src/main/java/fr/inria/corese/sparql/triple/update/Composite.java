@@ -38,7 +38,7 @@ public class Composite extends Update {
 
     Composite(int t) {
         type = t;
-        list = new ArrayList<Composite>();
+        list = new ArrayList<>();
         ds = Dataset.create();
 
     }
@@ -47,7 +47,17 @@ public class Composite extends Update {
         this(t);
         data = d;
     }
-
+    
+    @Override
+    public boolean isComposite() {
+        return true;
+    }
+    
+    @Override
+    public Composite getComposite(){
+        return  this;
+    }
+	
     public static Composite create(int type) {
         return new Composite(type);
     }
@@ -55,6 +65,36 @@ public class Composite extends Update {
     public static Composite create(int type, Exp d) {
         Composite ope = new Composite(type, d);
         return ope;
+    }
+    
+    @Override
+    public boolean isInsert() {      
+        for (Composite cc : getUpdates()) {
+            if (cc.type() == INSERT) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean isDelete() {       
+        for (Composite cc : getUpdates()) {
+            if (cc.type() == DELETE) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    @Override
+    public boolean isInsertData() {
+        return type() == INSERT;
+    }
+    
+    @Override
+    public boolean isDeleteData() {
+        return type() == DELETE;
     }
 
     @Override

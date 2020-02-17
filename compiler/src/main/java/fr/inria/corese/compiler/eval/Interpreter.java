@@ -110,15 +110,10 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     public void setDebug(boolean b) {
         isDebug = b;
     }
-
-//    Eval getEval() {
-//        return kgram;
-//    }
-    
+   
     Eval getEval(Environment env) {
         if (env.getEval() == null) {
             logger.warn("env.getEval() = null");
-           // return getEval();
         }
         return env.getEval();
     }
@@ -455,7 +450,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                     if (qq.isConstruct() || qq.isUpdate()) {
                         // let (?g =  construct where)
                         Mappings m = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
-                        return DatatypeMap.createObject(m.getGraph());
+                        return DatatypeMap.createObject((m.getGraph()==null)?p.getGraph():m.getGraph());
                     }
                     if (qq.getService() != null) {
                         // @federate <uri> let (?m = select where)

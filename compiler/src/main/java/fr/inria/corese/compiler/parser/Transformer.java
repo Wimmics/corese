@@ -284,7 +284,7 @@ public class Transformer implements ExpType {
 
         compiler.setAST(ast);
 
-        if (ast.isConstruct() || ast.isDescribe()) {
+        if (ast.isConstruct() || ast.isDescribe() || ast.isInsert() ) {
             construct(q, ast);
         }
 
@@ -604,8 +604,13 @@ public class Transformer implements ExpType {
         validate(ast.getInsert(), ast);
         Exp cons = compile(ast.getInsert(), false);
         q.setConstruct(cons);
-        q.setConstruct(true);
-
+        if (ast.isInsert()) {
+            q.setInsert(true);
+        }
+        else {
+            q.setConstruct(true);
+        }
+        //q.setConstruct(true);
         q.setConstructNodes(cons.getNodes());
     }
 
@@ -953,12 +958,12 @@ public class Transformer implements ExpType {
      * subquery - once for the global query
      */
     List<Exp> select(Query qCurrent, ASTQuery ast) {
-        List<Exp> select = new ArrayList<Exp>();
+        List<Exp> select = new ArrayList<>();
         // list of query nodes created for variables in filter that need
         // an outer node value
-        List<Node> lNodes = new ArrayList<Node>();
+        List<Node> lNodes = new ArrayList<>();
 
-        if (ast.isSelectAll() || ast.isConstruct()) {
+        if (ast.isSelectAll() || ast.isConstruct() || ast.isInsert()) {
             // select *
             // get nodes from query nodes and edges
             select = qCurrent.getSelectNodesExp();
@@ -1274,14 +1279,15 @@ public class Transformer implements ExpType {
                 break;
 
             case QUERY:
-                if (query.getQuery().isConstruct()) {
-                    exp = constructQuery(query.getQuery());
+                ASTQuery aa = query.getQuery();
+                if (aa.isConstruct()) {
+                    exp = constructQuery(aa);
                 } 
-                else if (query.getQuery().isUpdate()) {
-                    exp = updateQuery(query.getQuery());
+                else if (aa.isUpdate()) {
+                    exp = updateQuery(aa);
                 }
                 else {
-                    exp = compileQuery(query.getQuery());
+                    exp = compileQuery(aa);
                 }
                 break;
 

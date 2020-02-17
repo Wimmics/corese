@@ -330,6 +330,17 @@ public class QuerySolver  implements SPARQLEngine {
             return current;
         }
         
+        /**
+         * LDScript binding stack of current Eval
+         * use case: share global variables
+         */
+        public Binding getCurrentBinding() {
+            if (getCurrentEval() == null) {
+                return null;
+            }
+            return (Binding) getCurrentEval().getEnvironment().getBind();
+        }
+        
         public ProcessVisitor getCurrentVisitorBasic() {
             if (getCurrentEval() == null) {
                 return null;
@@ -359,7 +370,7 @@ public class QuerySolver  implements SPARQLEngine {
             }
         }
         
-        void setEval(Eval e) {
+        public void setEval(Eval e) {
             current = e;
         }
         

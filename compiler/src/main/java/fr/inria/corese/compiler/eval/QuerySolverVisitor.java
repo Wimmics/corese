@@ -59,6 +59,8 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     public static final String AFTER    = "@after";
     public static final String BEFORE_UPDATE   = "@beforeUpdate";
     public static final String AFTER_UPDATE    = "@afterUpdate";
+    public static final String BEFORE_LOAD   = "@beforeLoad";
+    public static final String AFTER_LOAD    = "@afterLoad";    
     public static final String START    = "@start";
     public static final String FINISH   = "@finish"; 
     public static final String OVERLOAD = "@overload"; 
@@ -234,6 +236,16 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     @Override
+    public IDatatype beforeLoad(DatatypeValue path) {
+        return callback(eval, BEFORE_LOAD, toArray(path));
+    }
+
+    @Override
+    public IDatatype afterLoad(DatatypeValue path) {
+        return callback(eval, AFTER_LOAD, toArray(path));
+    }
+    
+    @Override
     public IDatatype start(Query q) {
         return callback(eval, START, toArray(q));
     }
@@ -244,8 +256,8 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     @Override
-    public IDatatype insert(Edge edge) {
-        return callback(eval, INSERT, toArray(edge));
+    public IDatatype insert(DatatypeValue path, Edge edge) {
+        return callback(eval, INSERT, toArray(path, edge));
     }
     
     @Override
@@ -254,8 +266,8 @@ public class QuerySolverVisitor extends PointerObject implements ProcessVisitor 
     }
     
     @Override
-    public IDatatype update(List<Edge> delete, List<Edge> insert) { 
-        return callback(eval, UPDATE, toArray(toDatatype(delete), toDatatype(insert)));
+    public IDatatype update(Query q, List<Edge> delete, List<Edge> insert) { 
+        return callback(eval, UPDATE, toArray(q, toDatatype(delete), toDatatype(insert)));
     }
     
     @Override

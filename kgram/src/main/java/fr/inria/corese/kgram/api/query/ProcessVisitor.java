@@ -44,6 +44,10 @@ public interface ProcessVisitor extends Pointerable {
     
     default DatatypeValue afterUpdate(Mappings map) { return null; }
     
+    default DatatypeValue beforeLoad(DatatypeValue path) { return null; }
+    
+    default DatatypeValue afterLoad(DatatypeValue path) { return null; }
+    
     default DatatypeValue start(Query q) { return null; }
     
     default DatatypeValue finish(Mappings map) { return null; }
@@ -122,11 +126,11 @@ public interface ProcessVisitor extends Pointerable {
     
     default DatatypeValue datatype(DatatypeValue type, DatatypeValue sup) { return type ;};
     
-    default DatatypeValue insert(Edge edge) { return null;}
+    default DatatypeValue insert(DatatypeValue path, Edge edge) { return null;}
     
     default DatatypeValue delete(Edge edge) { return null;}
 
-    default DatatypeValue update(List<Edge> delete, List<Edge> insert) { return null;}
+    default DatatypeValue update(Query q, List<Edge> delete, List<Edge> insert) { return null;}
 
 
 }

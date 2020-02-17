@@ -3,12 +3,9 @@ package fr.inria.corese.kgram.tool;
 import java.util.Map;
 
 import fr.inria.corese.kgram.api.core.Expr;
-import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.kgram.api.query.Evaluator;
-import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;

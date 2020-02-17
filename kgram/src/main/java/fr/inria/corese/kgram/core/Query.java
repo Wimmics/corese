@@ -10,6 +10,7 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.PointerType;
+import fr.inria.corese.kgram.api.query.ASTQ;
 import fr.inria.corese.kgram.api.query.DQPFactory;
 import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.kgram.api.query.Matcher;
@@ -29,89 +30,6 @@ import org.slf4j.LoggerFactory;
  */
 public class Query extends Exp implements Graphable {
 
-    /**
-     * @return the lock
-     */
-    public boolean isLock() {
-        return lock;
-    }
-
-    /**
-     * @param lock the lock to set
-     */
-    public void setLock(boolean lock) {
-        this.lock = lock;
-    }
-
-    /**
-     * @return the parallel
-     */
-    public boolean isParallel() {
-        return parallel;
-    }
-
-    /**
-     * @param parallel the parallel to set
-     */
-    public void setParallel(boolean parallel) {
-        this.parallel = parallel;
-    }
-
-    /**
-     * @return the serviceResult
-     */
-    public boolean isServiceResult() {
-        return serviceResult;
-    }
-
-    /**
-     * @param serviceResult the serviceResult to set
-     */
-    public void setServiceResult(boolean serviceResult) {
-        this.serviceResult = serviceResult;
-    }
-
-    /**
-     * @return the federate
-     */
-    public boolean isFederate() {
-        return federate;
-    }
-
-    /**
-     * @param federate the federate to set
-     */
-    public void setFederate(boolean federate) {
-        this.federate = federate;
-    }
-
-    /**
-     * @return the validate
-     */
-    public boolean isValidate() {
-        return validate;
-    }
-
-    /**
-     * @param validate the validate to set
-     */
-    public void setValidate(boolean validate) {
-        this.validate = validate;
-    }
-
-    /**
-     * @return the algebra
-     */
-    public boolean isAlgebra() {
-        return algebra;
-    }
-
-    /**
-     * @param algebra the algebra to set
-     */
-    public void setAlgebra(boolean algebra) {
-        this.algebra = algebra;
-    }
 
     public static final int QP_T0 = 0; //No QP settings
     public static final int QP_DEFAULT = 1; //Default Corese QP
@@ -186,7 +104,7 @@ public class Query extends Exp implements Graphable {
     private Object graph;
     Query query, outerQuery;
     private ArrayList<Query> subQueryList;
-    Graphable ast;
+    ASTQ ast;
     Object object;
 
     // Transformation profile template
@@ -228,12 +146,14 @@ public class Query extends Exp implements Graphable {
             isTest = false,
             isNew = true,
             // sort edges to be connected
-            isSort = true, isConstruct = false,
-            isDelete = false, isUpdate = false, // true:  path do not loop on node
-            isCheckLoop = false, isPipe = false,
-            isListGroup = false, // select/aggregate/group by SPARQL 1.1 rules
-            // PathFinder list path instead of thread buffer: 50% faster but enumerate all path
-            isListPath = false;
+            isSort = true, isConstruct = false;
+    private boolean isInsert = false;
+    boolean isDelete = false;
+    boolean isUpdate = false;
+    boolean isCheckLoop = false;
+    boolean isPipe = false;
+    boolean isListGroup = false;
+    boolean isListPath = false;
     private boolean parallel = true;
     private boolean validate = false;
     private boolean federate = false;
@@ -418,11 +338,11 @@ public class Query extends Exp implements Graphable {
         object = o;
     }
 
-    public Graphable getAST() {
+    public ASTQ getAST() {
         return ast;
     }
 
-    public void setAST(Graphable o) {
+    public void setAST(ASTQ o) {
         ast = o;
     }
 
@@ -880,7 +800,7 @@ public class Query extends Exp implements Graphable {
     }
     
     public boolean isSelect(){
-        return ! (isConstruct() || isUpdate() || isDelete());
+        return ! (isConstruct() || isUpdate() || isInsert() || isDelete());
     }
 
     public boolean isConstruct() {
@@ -2883,6 +2803,121 @@ public class Query extends Exp implements Graphable {
      */
     public void setInitMode(boolean initMode) {
         this.initMode = initMode;
+    }
+
+    /**
+     * @param isInsert the isInsert to set
+     */
+    public void setInsert(boolean isInsert) {
+        this.isInsert = isInsert;
+    }
+    
+    public boolean isInsert() {
+        return isInsert;
+    }
+    
+    public boolean isUpdateInsert() {
+        return getAST().isUpdateInsert();
+    }
+    
+    public boolean isUpdateDelete() {
+        return getAST().isUpdateDelete();
+    }
+    
+    public boolean isUpdateInsertData() {
+        return getAST().isUpdateInsertData();
+    }
+    
+    public boolean isUpdateDeleteData() {
+        return getAST().isUpdateDeleteData();
+    }
+    
+    public boolean isUpdateLoad() {
+        return getAST().isUpdateLoad();
+    }
+    
+    /**
+     * @return the lock
+     */
+    public boolean isLock() {
+        return lock;
+    }
+
+    /**
+     * @param lock the lock to set
+     */
+    public void setLock(boolean lock) {
+        this.lock = lock;
+    }
+
+    /**
+     * @return the parallel
+     */
+    public boolean isParallel() {
+        return parallel;
+    }
+
+    /**
+     * @param parallel the parallel to set
+     */
+    public void setParallel(boolean parallel) {
+        this.parallel = parallel;
+    }
+
+    /**
+     * @return the serviceResult
+     */
+    public boolean isServiceResult() {
+        return serviceResult;
+    }
+
+    /**
+     * @param serviceResult the serviceResult to set
+     */
+    public void setServiceResult(boolean serviceResult) {
+        this.serviceResult = serviceResult;
+    }
+
+    /**
+     * @return the federate
+     */
+    public boolean isFederate() {
+        return federate;
+    }
+
+    /**
+     * @param federate the federate to set
+     */
+    public void setFederate(boolean federate) {
+        this.federate = federate;
+    }
+
+    /**
+     * @return the validate
+     */
+    public boolean isValidate() {
+        return validate;
+    }
+
+    /**
+     * @param validate the validate to set
+     */
+    public void setValidate(boolean validate) {
+        this.validate = validate;
+    }
+
+    /**
+     * @return the algebra
+     */
+    public boolean isAlgebra() {
+        return algebra;
+    }
+
+    /**
+     * @param algebra the algebra to set
+     */
+    public void setAlgebra(boolean algebra) {
+        this.algebra = algebra;
     }
 
 }

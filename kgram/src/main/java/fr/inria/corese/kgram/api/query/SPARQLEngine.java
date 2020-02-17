@@ -17,4 +17,7 @@ public interface SPARQLEngine {
         
     void getLinkedFunction(String uri);
     
+    // within a lock where query processing has ended and where we can process another query
+    boolean isSynchronized();
+    
 }

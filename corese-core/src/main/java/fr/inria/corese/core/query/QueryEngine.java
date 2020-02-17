@@ -268,7 +268,6 @@ public class QueryEngine implements Engine {
         }
         for (Query q : list) {
 
-            //q.setSynchronized(isWorkflow);
             if (isDebug) {
                 q.setDebug(isDebug);
                 System.out.println(q.getAST());

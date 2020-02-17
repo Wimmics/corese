@@ -870,6 +870,10 @@ public class Graph extends GraphObject implements
     public ReentrantReadWriteLock getLock() {
         return lock;
     }
+    
+    public boolean isLocked() {
+        return getLock().getReadLockCount() > 0 || getLock().isWriteLocked();
+    }
 
     void clearDistance() {
         setClassDistance(null);

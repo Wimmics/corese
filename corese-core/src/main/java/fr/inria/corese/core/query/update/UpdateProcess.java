@@ -1,6 +1,7 @@
-package fr.inria.corese.core.query;
+package fr.inria.corese.core.query.update;
 
 import fr.inria.corese.core.Event;
+import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.core.Mapping;
 import org.slf4j.Logger;
@@ -17,6 +18,8 @@ import fr.inria.corese.sparql.triple.update.ASTUpdate;
 import fr.inria.corese.sparql.triple.update.Basic;
 import fr.inria.corese.sparql.triple.update.Composite;
 import fr.inria.corese.sparql.triple.update.Update;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import java.util.ArrayList;
@@ -138,6 +141,33 @@ public class UpdateProcess {
         return update(q, ast, m);
     }
 
+    
+    /**
+     * Share global variables from LDScript Bind stack
+     */
+    Mapping getMapping(Query q, Mapping m) {
+        Mapping mm = m;
+        if (m != null && m.size() == 0 && m.getBind() != null) {
+            // m contains LDScript binding stack
+            // generate appropriate Mapping for query q from this stack.
+            mm = Mapping.create(q, m.getBind());
+        }
+
+        Binding b = exec.getCurrentBinding();
+        // use case: update query with several subqueries
+        // previous subquery @event function has set global variables 
+        // stored in Binding of previous Eval
+        // share these global variables with current Eval
+        if (b != null && !b.isEmpty()) {
+            // share bind stack in next eval
+            if (mm == null) {
+                mm = new Mapping();
+            }
+            mm.setBind(b);
+        }
+        return mm;
+    }
+
     /**
      * query is the global Query ast is the current update action use case:
      * delete insert data delete insert where In case of data, fake an empty
@@ -149,13 +179,8 @@ public class UpdateProcess {
         exec.logStart(query);
         Query q = compile(ast);
         inherit(q, query);
-        Mapping mm = m;
-        if (m != null && m.size() == 0 && m.getBind() != null) {
-            // m contains LDScript binding stack
-            // generate appropriate Mapping for query q from this stack.
-            mm = Mapping.create(q, m.getBind());
-        }
-        //Mappings map = exec.query(q, mm);
+        Mapping mm = getMapping(q, m);
+        
         // insert using g where
         // if g is external graph, focus on g
         Mappings map = exec.basicQuery(null, q, mm);
@@ -165,12 +190,11 @@ public class UpdateProcess {
             manager.delete(q, map, ds);
         }
 
-        if (q.isConstruct()) {
-            // insert
+        if (q.isInsert()) {
             manager.insert(q, map, ds);
         }
 
-        visitor(map);
+        visitor(q, map);
         exec.logFinish(query, map);
 
         return map;
@@ -180,6 +204,7 @@ public class UpdateProcess {
         Query q = ast.getUpdateQuery();
         if (q == null) {
             q = exec.compile(ast, ds);
+            q.setUpdate(true);
             ast.setUpdateQuery(q);
         }
         return q;
@@ -189,14 +214,14 @@ public class UpdateProcess {
         update.setDetail(query.isDetail());
     }
     
-    void visitor(Mappings map) {
+    void visitor(Query q, Mappings map) {
         if ((map.getDelete() != null && !map.getDelete().isEmpty()) || 
             (map.getInsert() != null && !map.getInsert().isEmpty())) {
             List<Edge> delete = map.getDelete();
             List<Edge> insert = map.getInsert();
             if (delete == null) { delete = new ArrayList<>();}
             if (insert == null) { insert = new ArrayList<>();}
-            exec.getCurrentVisitor().update(delete, insert);
+            exec.update(q, delete, insert);
         }
     }
     

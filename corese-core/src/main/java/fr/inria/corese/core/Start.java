@@ -29,6 +29,7 @@ public class Start {
     boolean rdfs = false;
     boolean owl = false;
     boolean display = true;
+    boolean verbose = false;
 
     /**
      * Corese as command line take path and query as argument load the docs from
@@ -131,13 +132,13 @@ public class Start {
             for (String file : loadquery) {
                 QueryLoad ql = QueryLoad.create();
                 String q = ql.readWE(file);
-                System.out.println(q);
-                System.out.println();
+                if (verbose) {
+                    System.out.println(q);
+                    System.out.println();
+                }
                 Mappings map = exec.query(q);
                 ResultFormat f = ResultFormat.create(map);
-                if (display) {
-                    System.out.println(f);
-                }
+                System.out.println(f);
             }
             
         } catch (EngineException e) {

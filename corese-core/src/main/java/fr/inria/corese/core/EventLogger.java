@@ -165,7 +165,7 @@ public class EventLogger {
     }
     
     DatatypeValue insert(Edge edge) throws EngineException {
-        return getQueryProcess().getVisitor().insert(edge);
+        return DatatypeMap.TRUE;
     }
     
     DatatypeValue delete(Edge edge) throws EngineException {

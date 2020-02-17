@@ -53,6 +53,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphListen;
@@ -793,7 +794,9 @@ public class PluginImpl
         if (dt != null && dt.isPointer() && dt.getPointerObject().pointerType() == GRAPH){
             g = (Graph) dt.getPointerObject().getTripleStore();
         }
-        if (g.getLock().getReadLockCount() > 0 || g.getLock().isWriteLocked()) {
+        if (g.isLocked() && ! env.getEval().getSPARQLEngine().isSynchronized()) {
+            // use case where isSynchronised():
+            // @afterUpdate, QueryProcess isSynchronised(), we can perform entailment
             logger.info("Graph locked, perform entailment on copy");
             g = g.copy();
         }

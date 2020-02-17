@@ -140,6 +140,7 @@ public class SPINProcess {
      
      public Graph toGraph(String spin, Graph g) throws EngineException {
         Load ld = Load.create(g);
+        ld.setEvent(false);
         try {
             ld.parse(new ByteArrayInputStream(spin.getBytes("UTF-8")), Load.TURTLE_FORMAT);
         } catch (LoadException ex) {

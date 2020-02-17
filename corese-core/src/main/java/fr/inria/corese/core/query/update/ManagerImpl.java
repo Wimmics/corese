@@ -1,5 +1,6 @@
-package fr.inria.corese.core.query;
+package fr.inria.corese.core.query.update;
 
+import fr.inria.corese.core.query.Construct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -29,7 +30,7 @@ public class ManagerImpl implements Manager {
     static final int MOVE = 1;
     static final int ADD = 2;
 
-    ManagerImpl(GraphManager gm) {
+    public ManagerImpl(GraphManager gm) {
         this.gm = gm;
         
     }

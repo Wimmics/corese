@@ -39,7 +39,12 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.query.update.GraphManager;
+import fr.inria.corese.core.query.update.Manager;
+import fr.inria.corese.core.query.update.ManagerImpl;
+import fr.inria.corese.core.query.update.UpdateProcess;
 import fr.inria.corese.core.util.Extension;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
 import fr.inria.corese.sparql.api.QueryVisitor;
@@ -85,6 +90,7 @@ public class QueryProcess extends QuerySolver {
     private GraphManager graphManager;
     Transformer transformer;
     Loader load;
+    // fake eval for funcall public function
     Eval eval;
     ReentrantReadWriteLock lock;
     // Producer may perform match locally
@@ -156,7 +162,7 @@ public class QueryProcess extends QuerySolver {
         updateManager = man;
     }
 
-    Manager getManager() {
+    public Manager getManager() {
         return updateManager;
     }
 
@@ -565,13 +571,11 @@ public class QueryProcess extends QuerySolver {
      * use case: take care of query @event functions
      * create current Eval with a ProcessVisitor
     **/
-    public void init(Query q) {
-        if (getCurrentEval() == null) {
-            q.setInitMode(true);
-            super.query(q);
-            q.setInitMode(false);
-            getCurrentEval().getVisitor().setActive(false);
-        }
+    public void init(Query q, Mapping m) {
+        q.setInitMode(true);
+        super.query(q, m);
+        q.setInitMode(false);
+        getCurrentEval().getVisitor().setActive(false);
     }
     
     @Override
@@ -882,18 +886,18 @@ public class QueryProcess extends QuerySolver {
     Mappings synQuery(Node gNode, Query query, Mapping m) {
         Mappings map = null;
         try {
-            readLock(query);
+            syncReadLock(query);
             logStart(query);
             // select from g where
             // if g is an external named graph, create specific Producer(g)
             return basicQuery(gNode, query, m);
         } finally {
-            logFinish(query, map);
-            readUnlock(query);
+            logFinish(query, map);            
+            syncReadUnlock(query);
         }
     }
     
-    Mappings basicQuery(Node gNode, Query q, Mapping m) {
+    public Mappings basicQuery(Node gNode, Query q, Mapping m) {
         return focusFrom(q).query(gNode, q, m);
     }
 
@@ -1028,16 +1032,8 @@ public class QueryProcess extends QuerySolver {
             }
         }
                              
-        try {
-            if (isSynchronized()) { 
-                // if query comes from workflow or from RuleEngine cleaner, 
-                // it is synchronized by graph.init()
-                // and it already has a lock by synQuery/synUpdate 
-                // hence do nothing
-            }
-            else {
-                writeLock(query);
-            }
+        try {                
+            syncWriteLock(query);            
             if (gl != null) {
                 g.addListener(gl);
             }
@@ -1053,12 +1049,7 @@ public class QueryProcess extends QuerySolver {
             if (gl != null) {
                 g.removeListener(gl);
             }
-            if (isSynchronized()) { 
-                // do nothing
-            }
-            else {
-                writeUnlock(query);
-            }
+            syncWriteUnlock(query);
         }
     }
 
@@ -1089,7 +1080,7 @@ public class QueryProcess extends QuerySolver {
         return Mappings.create(q);
     }
     
-    EventManager getEventManager() {
+    public EventManager getEventManager() {
         return getGraph().getEventManager();
     }
 
@@ -1107,9 +1098,14 @@ public class QueryProcess extends QuerySolver {
      */
     Mappings update(Query query, Mapping m, Dataset ds) throws EngineException {
         ASTQuery ast = getAST(query);
-        init(query);
+        init(query, m);
         getEventManager().start(Event.Update, ast);
-        getCurrentVisitor().beforeUpdate(query);
+        // record current eval because 
+        // 1) it may contain event function definitions
+        // 2) it may be changed by update subqueries event function e.g. @start
+        Eval eval = getCurrentEval();
+        beforeUpdate(eval, query, isSynchronized());
+        
         if (ds != null && ds.isUpdate()) {
             // TODO: check complete() -- W3C test case require += default + entailment + rule
             complete(ds);
@@ -1117,9 +1113,47 @@ public class QueryProcess extends QuerySolver {
         UpdateProcess up = UpdateProcess.create(this, ds);
         up.setDebug(isDebug());
         Mappings map = up.update(query, m);
-        getCurrentVisitor().afterUpdate(map);
-        getEventManager().finish(Event.Update, ast);       
+        
+        afterUpdate(eval, map, isSynchronized());
+        getEventManager().finish(Event.Update, ast); 
         return map;
+    }
+    
+    // bypass lock in case method beforeUpdate perform select query
+    void beforeUpdate(Eval eval, Query q, boolean b) {
+        setSynchronized(true);
+        eval.getVisitor().beforeUpdate(q);
+        setSynchronized(b);
+    }
+    
+    void afterUpdate(Eval eval, Mappings m, boolean b) {
+        setSynchronized(true);
+        eval.getVisitor().afterUpdate(m);
+        setSynchronized(b);
+    }
+    
+    /**
+     * Save and restore current eval because function beforeLoad() 
+     * may execute a query and hence create a new eval and change the Visitor
+     */
+    public void beforeLoad(IDatatype dt, boolean b) {
+        setSynchronized(true);
+        Eval eval = getCurrentEval();
+        getCurrentVisitor().beforeLoad(dt);
+        setEval(eval);
+        setSynchronized(b);
+    }
+
+    public void afterLoad(IDatatype dt, boolean b) {
+        setSynchronized(true);
+        Eval eval = getCurrentEval();
+        getCurrentVisitor().afterLoad(dt);
+        setEval(eval);
+        setSynchronized(b);
+    }
+    
+    public void update(Query q, List<Edge> del, List<Edge> ins) {
+        getCurrentVisitor().update(q, del, ins);
     }
 
     void complete(Dataset ds) {
@@ -1216,6 +1250,32 @@ public class QueryProcess extends QuerySolver {
     private Lock getWriteLock() {
         return lock.writeLock();
     }
+    
+    private void syncReadLock(Query q) {
+        if (isSynchronized()) {}
+        else {readLock(q);}
+    }
+
+    private void syncReadUnlock(Query q) {
+        if (isSynchronized()) {}
+        else {readUnlock(q);}
+    }
+    
+    // if query comes from workflow or from RuleEngine cleaner, 
+    // it is synchronized by graph.init()
+    // and it already has a lock by synQuery/synUpdate 
+    // hence do nothing
+    private void syncWriteLock(Query q) {
+        if (isSynchronized()) {
+        } else {
+            writeLock(q);
+        }
+    }
+
+    private void syncWriteUnlock(Query q) {
+        if (isSynchronized()) {}
+        else {writeUnlock(q);}
+    }
 
     private void readLock(Query q) {
         if (q.isLock()){
@@ -1266,13 +1326,13 @@ public class QueryProcess extends QuerySolver {
         return map;
     }
 
-    void logStart(Query query) {
+    public void logStart(Query query) {
         if (getGraph() != null) {
             getGraph().logStart(query);
         }
     }
 
-    void logFinish(Query query, Mappings m) {
+    public void logFinish(Query query, Mappings m) {
         if (getGraph() != null) {
             getGraph().logFinish(query, m);
         }

@@ -58,6 +58,7 @@ public class RDFizer {
       Graph getGraph(String rdf) throws EngineException {
         Graph g = Graph.create();
         Load ld = Load.create(g);
+        ld.setEvent(false);
         try {
             ld.loadString(rdf, Load.TURTLE_FORMAT);
         } catch (LoadException ex) {

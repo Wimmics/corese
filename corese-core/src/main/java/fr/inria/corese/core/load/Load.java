@@ -26,7 +26,6 @@ import fr.com.hp.hpl.jena.rdf.arp.RDFListener;
 import fr.com.hp.hpl.jena.rdf.arp.StatementHandler;
 import fr.inria.corese.sparql.exceptions.QueryLexicalException;
 import fr.inria.corese.sparql.exceptions.QuerySyntaxException;
-import fr.inria.corese.sparql.triple.api.Creator;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.LoadTurtle;
 import fr.inria.corese.sparql.triple.parser.NSManager;
@@ -44,6 +43,9 @@ import fr.inria.corese.core.load.rdfa.CoreseRDFaTripleSink;
 import fr.inria.corese.core.load.sesame.ParserLoaderSesame;
 import fr.inria.corese.core.load.sesame.ParserTripleHandlerSesame;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.io.ByteArrayInputStream;
 import java.io.FileFilter;
 import java.net.URLConnection;
@@ -86,12 +88,13 @@ public class Load
     private SemanticWorkflow workflow;
     HashMap<String, String> loaded;
     LoadPlugin plugin;
-    Build build;
+    BuildImpl build;
     String source;
     boolean debug = !true,
             hasPlugin = false;
     private boolean renameBlankNode = true;
     private boolean defaultGraph = DEFAULT_GRAPH;
+    private boolean event = true;
     int nb = 0;
     private int limit = LIMIT_DEFAULT;
     ArrayList<String> exclude;
@@ -181,7 +184,7 @@ public class Load
         }
     }
 
-    public void setBuild(Build b) {
+    public void setBuild(BuildImpl b) {
         if (b != null) {
             build = b;
         }
@@ -672,6 +675,13 @@ public class Load
         build.setLimit(limit);
         build.exclude(getExclude());
         build.setSource(name);
+        build.setPath(path);
+        IDatatype dt = DatatypeMap.newResource(path);
+        boolean b = true;
+        if (isEvent()) {
+            b = getCreateQueryProcess().isSynchronized();
+        }
+        before(dt, b);
         build.start();
         ARP arp = new ARP();
         try {
@@ -689,17 +699,25 @@ public class Load
             throw LoadException.create(e, arp.getLocator(), path);
         } finally {
             build.finish();
+            after(dt, b);
             source = save;
         }
     }
 
     void loadTurtle(Reader stream, String path, String base, String name) throws LoadException {
 
-        Creator cr = CreateImpl.create(graph, this);
+        CreateImpl cr = CreateImpl.create(graph, this);
         cr.graph(Constant.create(name));
         cr.setRenameBlankNode(renameBlankNode);
         cr.setLimit(limit);
         cr.start();
+        IDatatype dt = DatatypeMap.newResource(path);
+        boolean b = true; 
+        if (isEvent()) {
+            b = getCreateQueryProcess().isSynchronized();
+        }
+        before(dt, b);
+        cr.setPath(path);
         LoadTurtle ld = LoadTurtle.create(stream, cr, base);
         try {
             ld.load();
@@ -708,7 +726,20 @@ public class Load
         } catch (QuerySyntaxException e) {
             throw LoadException.create(e, path);
         } finally {
+            after(dt, b);
             cr.finish();
+        }
+    }
+    
+    void before(IDatatype dt, boolean b) {
+        if (isEvent()) {
+            getCreateQueryProcess().beforeLoad(dt, b);
+        }
+    }
+    
+    void after(IDatatype dt, boolean b) {
+        if (isEvent()) {
+            getCreateQueryProcess().afterLoad(dt, b);
         }
     }
 
@@ -823,7 +854,7 @@ public class Load
                 logger.info("Import: " + uri);
             }
 
-            Build save = build;
+            BuildImpl save = build;
 //            build = BuildImpl.create(graph, this);
 //            build.setLimit(save.getLimit());
             try {
@@ -1066,6 +1097,14 @@ public class Load
     public void setDefaultGraph(boolean defaultGraph) {
         this.defaultGraph = defaultGraph;
     }
+    
+    QueryProcess getCreateQueryProcess() {
+        if (getQueryProcess() == null) {
+            setQueryProcess(QueryProcess.create(graph));
+        }      
+        return getQueryProcess();
+    }
+    
 
     /**
      * @return the queryProcess
@@ -1079,5 +1118,19 @@ public class Load
      */
     public void setQueryProcess(QueryProcess queryProcess) {
         this.queryProcess = queryProcess;
+    }
+
+    /**
+     * @return the event
+     */
+    public boolean isEvent() {
+        return event;
+    }
+
+    /**
+     * @param event the event to set
+     */
+    public void setEvent(boolean event) {
+        this.event = event;
     }
 }

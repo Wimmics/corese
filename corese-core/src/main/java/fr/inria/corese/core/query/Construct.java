@@ -19,6 +19,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Event;
+import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.util.Duplicate;
 import fr.inria.corese.kgram.api.core.Edge;
 

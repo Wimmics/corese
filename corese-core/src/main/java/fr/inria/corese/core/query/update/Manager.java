@@ -1,4 +1,4 @@
-package fr.inria.corese.core.query;
+package fr.inria.corese.core.query.update;
 
 
 import fr.inria.corese.sparql.triple.parser.Dataset;

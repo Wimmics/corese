@@ -1,4 +1,4 @@
-package fr.inria.corese.core.query;
+package fr.inria.corese.core.query.update;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Constant;
@@ -17,8 +17,9 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
  *
@@ -54,7 +55,7 @@ public class GraphManager {
         return graph;
     }
     
-    static Load getLoader() {
+    public static Load getLoader() {
         return new Load();
     }
 
@@ -69,7 +70,7 @@ public class GraphManager {
      * Additional system named graph 
      * Optional
      */
-    GraphManager getNamedGraph(String label) {
+    public GraphManager getNamedGraph(String label) {
         Graph g = graph.getNamedGraph(label);
         if (g != null) {
             return new GraphManager(g);
@@ -77,11 +78,11 @@ public class GraphManager {
         return null;
     }
     
-    Node getDefaultGraphNode(){
+    public Node getDefaultGraphNode(){
         return graph.addDefaultGraphNode();
     }
     
-    boolean isDefaultGraphNode(String name){
+    public boolean isDefaultGraphNode(String name){
         return graph.isDefaultGraphNode(name);
     }
      
@@ -98,7 +99,7 @@ public class GraphManager {
      * If not exist, create a Node, do not add it into the graph
      * gNode is the name of a named graph
      */
-    Node getNode(Node gNode, IDatatype dt) {
+    public Node getNode(Node gNode, IDatatype dt) {
         return graph.getNode(gNode, dt, true, false);
     }
     
@@ -107,7 +108,7 @@ public class GraphManager {
      * If not exist, create a Node, add it into the graph
      * gNode is the name of a named graph
      */
-    Node getCreateNode(Node gNode, IDatatype dt) {
+    public Node getCreateNode(Node gNode, IDatatype dt) {
         return graph.getNode(gNode, dt, true, true);
     }
     
@@ -115,14 +116,14 @@ public class GraphManager {
     /**
      * Before construct/insert/delete starts
      */
-    void start(Event e){
+    public void start(Event e){
         graph.getEventManager().start(e);        
     }
     /**
      * After construct/insert/delete completes 
      * Tell the graph to recompile its Index
      */
-    void finish(Event e) {
+    public void finish(Event e) {
         //graph.prepare();
         graph.getEventManager().finish(e);
     }
@@ -133,7 +134,7 @@ public class GraphManager {
      * edge has no named graph
      * Return the list of deleted edges
      */
-    List<Edge> delete(Edge ent, List<Constant> from) {
+    public List<Edge> delete(Edge ent, List<Constant> from) {
         return graph.delete(ent, from);
     }
 
@@ -141,7 +142,7 @@ public class GraphManager {
      * If Edge have a named graph: delete this occurrence
      * Otherwise: delete all occurrences of edge 
      */
-    List<Edge> delete(Edge ent) {
+    public List<Edge> delete(Edge ent) {
         return graph.delete(ent);
     }
 
@@ -149,7 +150,7 @@ public class GraphManager {
      * Return null if edge already exists in graph
      * and in its named graph
      */
-    Edge insert(Edge ent) {
+    public Edge insert(Edge ent) {
         return graph.addEdge(ent);
     }
 
@@ -157,29 +158,29 @@ public class GraphManager {
      * Test if an edge already exists in the graph, in any named graph
      * Used by RuleEngine only
      */
-    boolean exist(Node property, Node subject, Node object) {
+    public boolean exist(Node property, Node subject, Node object) {
         return graph.exist(property, subject, object);
     }
 
     /**
      * Add a Node as a Vertex in the graph (subject of object of an edge)
      */
-    void add(Node node) {
+    public void add(Node node) {
         graph.add(node);
     }
     
-    void add(Node node, int n) {
+    public void add(Node node, int n) {
         if (graph.isMetadata() && n > 1){
             return;
         }
         graph.add(node);
     }
     
-    void addPropertyNode(Node property) {
+    public void addPropertyNode(Node property) {
         graph.addPropertyNode(property);
     }
 
-    Node addGraphNode(Node source) {
+    public Node addGraphNode(Node source) {
         Node node = graph.getNode(source);
         if (node == null){
             node = source;
@@ -192,11 +193,11 @@ public class GraphManager {
      * Create a candidate edge to be inserted
      * Do not insert it yet, it will be done explicitely by insert().
      */
-    Edge create(Node source, Node subject, Node property, Node object) {
+    public Edge create(Node source, Node subject, Node property, Node object) {
         return graph.create(source, subject, property, object);
     }
     
-    Edge create(Node source, Node property, List<Node> list) {
+    public Edge create(Node source, Node property, List<Node> list) {
         return graph.create(source, property, list);
     }
 
@@ -204,19 +205,19 @@ public class GraphManager {
      * Create a candidate edge to be deleted
      * Do not delete it yet, it will be done explicitely by delete().
      */
-    Edge createDelete(Node source, Node subject, Node property, Node object) {
+    public Edge createDelete(Node source, Node subject, Node property, Node object) {
         return graph.createDelete(source, subject, property, object);
     }
     
-    Edge createDelete(Node source, Node property, List<Node> list) {
+    public Edge createDelete(Node source, Node property, List<Node> list) {
         return graph.createDelete(source, property, list);
     }
 
-    String newBlankID() {
+    public String newBlankID() {
         return graph.newBlankID();
     }
 
-    IDatatype createBlank(String str) {
+    public IDatatype createBlank(String str) {
         return graph.createBlank(str);
     }
     
@@ -269,10 +270,11 @@ public class GraphManager {
         //getQueryProcess().init(q);
         load.setQueryProcess(getQueryProcess());
         String uri = ope.getURI();
+        IDatatype dt = DatatypeMap.newResource(uri);
         String src = ope.getTarget();
         graph.logStart(q);
         graph.getEventManager().start(Event.LoadUpdate);
-        getQueryProcess().getCurrentVisitor().start(q);
+        //getQueryProcess().getCurrentVisitor().beforeLoad(dt);
         if (ope.isSilent()) {
             try {
                 load.parse(uri, src);
@@ -306,7 +308,7 @@ public class GraphManager {
                 graph.logFinish(q);
                 return ope.isSilent();
             } finally {
-                   getQueryProcess().getCurrentVisitor().finish(Mappings.create(q));
+                   //getQueryProcess().getCurrentVisitor().afterLoad(dt);
                    graph.getEventManager().finish(Event.LoadUpdate);
             }
         }

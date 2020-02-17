@@ -6,7 +6,6 @@ import java.util.Hashtable;
 import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
 import java.util.List;

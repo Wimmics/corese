@@ -151,7 +151,7 @@ public class GraphEngine  {
 		//load.setEngine(rengine);
 		load.setEngine(qengine);
 		load.setPlugin(plugin);
-		load.setBuild(build);
+		//load.setBuild(build);
 		return load;
 	}
 	
@@ -159,9 +159,9 @@ public class GraphEngine  {
 		plugin = p;
 	}
 	
-	public void setBuild(Build b){
-		build = b;
-	}
+//	public void setBuild(Build b){
+//		build = b;
+//	}
 	
 	public void load(String path) throws EngineException, LoadException {
 //		if (path.endsWith(BRUL)){

@@ -32,7 +32,7 @@ public class Callback {
     public IDatatype mdisplay(IDatatype... param) {
         StringBuilder sb = new StringBuilder();
         for (IDatatype dt : param) {
-            sb.append(dt).append(" ");
+            sb.append(dt.getLabel()).append(" ");
         }
         MainFrame.display(sb.toString());
         return DatatypeMap.TRUE;

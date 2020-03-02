@@ -727,6 +727,8 @@ public class Processor {
 		defoper(XT_VARIABLES,    ExprType.XT_VARIABLES);
 		defoper(XT_EDGES,        ExprType.XT_EDGES);
                 defoper(EXT+"node",      ExprType.XT_NODE);
+                defoper(EXT+"subjects",  ExprType.XT_SUBJECTS);
+                defoper(EXT+"objects",   ExprType.XT_OBJECTS);
                 defoper(EXT+"vertex",    ExprType.XT_VERTEX);
 		defoper(XT_NAME,         ExprType.XT_NAME);
 		defoper(XT_TRIPLE,       ExprType.XT_TRIPLE);
@@ -972,6 +974,7 @@ public class Processor {
                 defoper(XT_PRETTY, ExprType.XT_PRETTY);  
                 defoper(XT_DISPLAY,ExprType.XT_DISPLAY);  
                 defoper(XT_PRINT,  ExprType.XT_PRINT);                 
+                defoper(EXT+"syntax",  ExprType.XT_SYNTAX);                 
                 defoper(XT_XML,    ExprType.XT_XML);
                 defoper(XT_RDF,    ExprType.XT_RDF);
                 defoper(XT_JSON,   ExprType.XT_JSON);

@@ -553,6 +553,8 @@ public class Term extends Expression {
             case ExprType.APPROXIMATE:
             case ExprType.DEPTH:
             case ExprType.XT_EDGES:
+            case ExprType.XT_SUBJECTS:  
+            case ExprType.XT_OBJECTS:    
             case ExprType.XT_EXISTS: 
             case ExprType.XT_VALUE:                
             case ExprType.XT_INSERT: 
@@ -569,6 +571,7 @@ public class Term extends Expression {
             case ExprType.KGRAM: 
             case ExprType.STL_INDEX: 
             case ExprType.XT_TOGRAPH:
+            case ExprType.XT_SYNTAX:
                 return new GraphSpecificFunction(name);
                 
             case ExprType.XT_VALID_URI:

@@ -14,6 +14,7 @@ public interface GraphProcessor {
     IDatatype load(IDatatype dtfile, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat);
     
     IDatatype write(IDatatype dtfile, IDatatype dt); 
+    IDatatype syntax(IDatatype dtsyntax, IDatatype dtgraph, IDatatype node); 
     
     IDatatype read(IDatatype dt); 
     
@@ -40,7 +41,9 @@ public interface GraphProcessor {
     
     IDatatype value(Environment env,  Producer p, IDatatype graph, IDatatype node, IDatatype predicate, int n);
     IDatatype edge(Environment env,   Producer p, IDatatype subj, IDatatype pred, IDatatype obj);   
-    IDatatype edge(Environment env,   Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph);   
+    IDatatype edge(Environment env,   Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph);
+    IDatatype subjects(Environment env,  Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph);
+    IDatatype objects(Environment env,   Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph);
     IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj);
     IDatatype insert(Environment env, Producer p, IDatatype[] param);
     IDatatype delete(Environment env, Producer p, IDatatype[] param);

@@ -32,6 +32,9 @@ import fr.inria.corese.sparql.triple.function.script.LDScript;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGES;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_INSERT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MINDEGREE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECTS;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_SUBJECTS;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_SYNTAX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
 
 /**
@@ -60,6 +63,9 @@ public class GraphSpecificFunction extends LDScript {
                 
             case WRITE:
                 return proc.write(param[0], param[1]);
+                
+            case XT_SYNTAX:
+                return proc.syntax(param[0], param[1], (param.length==3)?param[2]:null);
                 
             case READ:
                 return proc.read(param[0]);
@@ -93,7 +99,10 @@ public class GraphSpecificFunction extends LDScript {
                 
             case XT_EDGES:
                 return edge(proc, env, p, param);
-                
+            case XT_SUBJECTS:
+                return subjects(proc, env, p, param);
+            case XT_OBJECTS:
+                return objects(proc, env, p, param);                
             case XT_EXISTS:
                 return exists(proc, env, p, param); 
                 
@@ -204,6 +213,36 @@ public class GraphSpecificFunction extends LDScript {
                 return proc.edge(env, p, param[0], param[1], param[2]);
             default:                
                 return proc.edge(env, p, param[0], param[1], param[2], param[3]);
+        }
+    }
+    
+    IDatatype subjects(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
+        switch (param.length) {
+            case 0:
+                return proc.subjects(env, p, null, null, null, null);
+            case 1:
+                return proc.subjects(env, p, null, param[0], null, null);
+            case 2:
+                return proc.subjects(env, p, param[0], param[1], null, null);
+            case 3 :
+                return proc.subjects(env, p, param[0], param[1], param[2], null);
+            default:                
+                return proc.subjects(env, p, param[0], param[1], param[2], param[3]);
+        }
+    }
+    
+    IDatatype objects(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
+        switch (param.length) {
+            case 0:
+                return proc.objects(env, p, null, null, null, null);
+            case 1:
+                return proc.objects(env, p, null, param[0], null, null);
+            case 2:
+                return proc.objects(env, p, param[0], param[1], null, null);
+            case 3 :
+                return proc.objects(env, p, param[0], param[1], param[2], null);
+            default:                
+                return proc.objects(env, p, param[0], param[1], param[2], param[3]);
         }
     }
     

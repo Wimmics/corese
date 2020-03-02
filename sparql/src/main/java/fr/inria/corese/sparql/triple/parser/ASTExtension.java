@@ -270,7 +270,8 @@ public class ASTExtension implements Extension {
         if (m == null){
             return null;
         }
-        return m.getMetadata(metadata);
+        Function f = m.getMetadata(metadata);
+        return f;
     }
     
     /**

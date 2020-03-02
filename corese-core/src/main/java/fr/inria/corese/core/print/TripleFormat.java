@@ -3,7 +3,6 @@ package fr.inria.corese.core.print;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
@@ -66,28 +65,43 @@ public class TripleFormat extends RDFFormat {
     public void setGraph(boolean b) {
         isGraph = b;
     }
+    
+    @Override
+    public String toString() {
+        StringBuilder bb = getStringBuilder();
+        return bb.toString();
+    }
+    
+    public String toString(Node node) {
+        StringBuilder bb = getStringBuilder(node);
+        return bb.toString();
+    }
 
+    @Override
     public StringBuilder getStringBuilder() {
+         return getStringBuilder(null);
+    }
+    
+    public StringBuilder getStringBuilder(Node node) {
         sb = new StringBuilder();
         if (graph == null && map == null) {
             return sb;
         }
-
-        if (isGraph) {
+        
+        if (node != null) {
+            print(null, node);
+        }
+        else if (isGraph) {
             graphNodes();
         } else {
             nodes();
         }
 
         StringBuilder bb = new StringBuilder();
-
         header(bb);
-
         bb.append(NL);
         bb.append(NL);
-
         bb.append(sb);
-
         return bb;
     }
 

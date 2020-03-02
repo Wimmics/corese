@@ -9,7 +9,10 @@ import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.MappingsGraph;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.ResultFormatDef;
 import java.util.HashMap;
 
@@ -93,6 +96,10 @@ public class ResultFormat implements ResultFormatDef {
     static public ResultFormat create(Graph g, int type) {
         return new ResultFormat(g, type);
     }
+    
+    static public ResultFormat create(Graph g, String type) {
+        return new ResultFormat(g, getSyntax(type));
+    }
 
     public static void setDefaultSelectFormat(int i) {
         DEFAULT_SELECT_FORMAT = i;
@@ -124,8 +131,27 @@ public class ResultFormat implements ResultFormatDef {
            return mapToString(); 
         }
     }
+    
+    public String toString(IDatatype dt) {
+        Node node = graph.getNode(dt);
+        if (node == null) {
+            return dt.toString();
+        }
+        return graphToString(node);
+    }
+    
+    static int getSyntax(String syntax) {
+        if (syntax.equals(Transformer.RDFXML)) {
+            return ResultFormat.RDF_XML_FORMAT;           
+        }
+        return ResultFormat.TURTLE_FORMAT; 
+    }
+       
+    String graphToString() {
+        return graphToString(null);
+    }
         
-    String graphToString(){
+    String graphToString(Node node){
         if (type == UNDEF_FORMAT){
             type = getConstructFormat();
         }
@@ -133,7 +159,7 @@ public class ResultFormat implements ResultFormatDef {
             case RDF_XML_FORMAT:
                 return  RDFFormat.create(graph).toString();
             case TURTLE_FORMAT:
-                return TripleFormat.create(graph).toString();
+                return TripleFormat.create(graph).toString(node);
             case JSON_LD_FORMAT:
                 return JSONLDFormat.create(graph).toString();               
         }

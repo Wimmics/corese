@@ -52,6 +52,7 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.print.RDFFormat;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.transform.TemplateVisitor;
@@ -701,6 +702,14 @@ public class PluginImpl
         }
         return dt;
     }
+    
+    @Override
+    public IDatatype syntax(IDatatype syntax, IDatatype graph, IDatatype node) {
+        Graph g = (Graph) graph.getPointerObject();
+        ResultFormat ft = ResultFormat.create(g, syntax.getLabel()); 
+        String str = (node == null)?ft.toString():ft.toString(node);
+        return DatatypeMap.newInstance(str);
+    }
    
     static boolean readWriteAuthorized() {
         //return readWriteAuthorized;
@@ -794,13 +803,16 @@ public class PluginImpl
         if (dt != null && dt.isPointer() && dt.getPointerObject().pointerType() == GRAPH){
             g = (Graph) dt.getPointerObject().getTripleStore();
         }
-        if (g.isLocked() && ! env.getEval().getSPARQLEngine().isSynchronized()) {
+        boolean b = env.getEval().getSPARQLEngine().isSynchronized();
+        if (g.isReadLocked() && ! b) {
             // use case where isSynchronised():
             // @afterUpdate, QueryProcess isSynchronised(), we can perform entailment
             logger.info("Graph locked, perform entailment on copy");
             g = g.copy();
         }
         RuleEngine re = RuleEngine.create(g);
+        re.setSynchronized(b);
+        re.setVisitor(env.getEval().getVisitor());
         re.setProfile(RuleEngine.OWL_RL);
         re.process();
         return DatatypeMap.createObject(g);
@@ -978,8 +990,25 @@ public class PluginImpl
         return DatatypeMap.createObject(getDataProducer(null, getProducer(), subj, pred, obj));  
     }
     
-    // iterator may return null value at the end
     IDatatype edgeList(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
+        DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph);       
+        return dp.getEdges();
+    }
+    
+    @Override
+    public IDatatype subjects(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
+        DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph).setDuplicate(false);
+        return dp.getSubjects();
+    }
+    
+    @Override
+    public IDatatype objects(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
+        DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph).setDuplicate(false);
+        return dp.getObjects();
+    }
+    
+    
+    DataProducer getEdgeProducer(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
         DataProducer dp = getDataProducer(env, p, subj, pred, obj);
         if (graph != null && (! graph.isList() || graph.size() > 0)) {
             dp.from(graph);
@@ -987,13 +1016,7 @@ public class PluginImpl
         else if (env != null && env.getGraphNode() != null) {
             dp.from(env.getGraphNode());
         }
-        ArrayList<IDatatype> list = new ArrayList<>();
-        for (Edge edge : dp) {
-            if (edge != null) {
-                list.add(DatatypeMap.createObject(edge));
-            }
-        }
-        return DatatypeMap.newList(list);
+        return dp;
     }
           
     DataProducer getDataProducer(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj){

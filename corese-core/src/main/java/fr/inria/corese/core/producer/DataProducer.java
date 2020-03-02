@@ -324,6 +324,36 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
         return this;
     }
     
+    public IDatatype getEdges() {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        for (Edge edge : this) {
+            if (edge != null) {
+                list.add(DatatypeMap.createObject(edge));
+            }
+        }
+        return DatatypeMap.newList(list);
+    }
+    
+    public IDatatype getObjects() {
+        return getNodes(1);
+    }
+
+    public IDatatype getSubjects() {
+        return getNodes(0);
+    }
+    
+    public IDatatype getNodes(int n) {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        for (Edge edge : this) {
+            if (edge != null) {
+                list.add((IDatatype) edge.getNode(n).getDatatypeValue());
+            }
+        }
+        return DatatypeMap.newList(list);
+    }
+    
+    
+    
     @Override
     public Iterable getLoop() {
         return this;

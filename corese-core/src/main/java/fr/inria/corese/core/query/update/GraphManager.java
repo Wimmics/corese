@@ -124,8 +124,10 @@ public class GraphManager {
      * Tell the graph to recompile its Index
      */
     public void finish(Event e) {
-        //graph.prepare();
-        graph.getEventManager().finish(e);
+        if (graph.size() > 0) {
+            // index graph
+            graph.getEventManager().finish(e);
+        }
     }
 
     /**

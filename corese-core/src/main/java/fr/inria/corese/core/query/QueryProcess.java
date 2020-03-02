@@ -458,9 +458,15 @@ public class QueryProcess extends QuerySolver {
         return create(p).protectQuery(gNode, query, m, ds);
     }
     
+    /**
+     * Protect LDScript update query wrt select where 
+     *  use case isSynchronized() : 
+     *  @event function call may perform update before or after select query
+     *  example: visitor init()
+     */
     Mappings protectQuery(Node gNode, Query query, Mapping m, Dataset ds) {
         if (query.isUpdate()) {
-            if (lock.getReadLockCount() > 0 && ! isOverwrite()) {
+            if (lock.getReadLockCount() > 0 && ! isOverwrite() && ! isSynchronized()) {               
                 logger.info("Update rejected to avoid deadlock");
                 return Mappings.create(query);
             }

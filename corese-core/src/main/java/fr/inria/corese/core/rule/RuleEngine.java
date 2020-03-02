@@ -1,5 +1,6 @@
 package fr.inria.corese.core.rule;
 
+import fr.inria.corese.compiler.eval.QuerySolverVisitorRule;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.ArrayList;
@@ -27,7 +28,6 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.logic.Closure;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.query.Construct;
-import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
@@ -43,8 +43,9 @@ import java.io.InputStream;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.Date;
-import java.util.HashMap;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import java.util.logging.Level;
 
 /**
  * Forward Rule Engine 
@@ -103,7 +104,9 @@ public class RuleEngine implements Engine, Graphable {
     private boolean isConnect = false;
     private boolean isDuplicate = false;
     private boolean isSkipPath = false;
+    private boolean synchronize = false;
     private Context context;
+    private ProcessVisitor visitor;
     private String base;
     
     public enum Profile {
@@ -184,6 +187,7 @@ public class RuleEngine implements Engine, Graphable {
     void load(String name) throws LoadException {
         Load ld = Load.create(graph);
         ld.setEngine(this);
+        ld.setQueryProcess(getQueryProcess());
         InputStream stream = RuleEngine.class.getResourceAsStream(name);
         ld.parse(stream, Load.RULE_FORMAT);
     }
@@ -314,16 +318,38 @@ public class RuleEngine implements Engine, Graphable {
 
     @Override
     public boolean process() {
-        graph.getEventManager().start(Event.InferenceEngine, getClass().getName());
+        before();
+        int size = graph.size();
+        entail();
+        after();
+        return graph.size() > size;
+    }
+    
+    IDatatype getPath() {
+        String str = getProfile().getPath();
+        if (str == null) {
+            str = "rule base";
+        }
+        return DatatypeMap.newResource(str);
+    }
+    
+    void before() {
+        try {
+            setVisitor(new QuerySolverVisitorRule(getQueryProcess().getEval()));
+            getVisitor().beforeEntailment(getPath());
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+        }
         if (graph == null) {
             set(Graph.create());
         }
-        //OC:
-        //synEntail();
-        int size = graph.size();
-        entail();
+        getQueryProcess().setSynchronized(isSynchronized());
+        graph.getEventManager().start(Event.InferenceEngine, getClass().getName());
+    }
+    
+    void after() {
         graph.getEventManager().finish(Event.InferenceEngine, getClass().getName());
-        return graph.size() > size;
+        getVisitor().afterEntailment(getPath());
     }
     
     /**
@@ -808,7 +834,7 @@ public class RuleEngine implements Engine, Graphable {
             // Producer will take this edge list into account
             qq.setEdgeList(cons.getInsertList());
             qq.setEdgeIndex(rule.getEdgeIndex());
-            cons.setInsertList(new ArrayList<Edge>());
+            cons.setInsertList(new ArrayList<>());
             int size = graph.size();
 
             process(rule, cons);
@@ -836,9 +862,9 @@ public class RuleEngine implements Engine, Graphable {
     
     // process rule
     void process(Rule r, Construct cons) {
-        Query qq = r.getQuery();      
+        Query qq = r.getQuery();  
+        getVisitor().beforeRule(qq);
         Mappings map = exec.query(qq, null);
-
         if (cons.isBuffer()) {
             // cons insert list contains only new edge that do not exist
             graph.addOpt(r.getUniquePredicate(), cons.getInsertList());
@@ -846,6 +872,7 @@ public class RuleEngine implements Engine, Graphable {
             // create edges from Mappings as usual
             cons.insert(map, null);
         }
+        getVisitor().afterRule(qq, cons.isBuffer() ? cons.getInsertList() : map);
     }
     
     
@@ -1189,32 +1216,71 @@ public class RuleEngine implements Engine, Graphable {
         records.add(t);
     }
     
+    @Override
     public void init() {
     }
 
+    @Override
     public void onDelete() {
     }
 
+    @Override
     public void onInsert(Node gNode, Edge edge) {
     }
 
+    @Override
     public void onClear() {
     }
 
+    @Override
     public void setActivate(boolean b) {
         isActivate = b;
     }
 
+    @Override
     public boolean isActivate() {
         return isActivate;
     }
 
+    @Override
     public void remove() {
         graph.clear(Entailment.RULE, true);
         graph.clean();
     }
 
+    @Override
     public int type() {
         return RULE_ENGINE;
+    }
+
+    /**
+     * @return the synchronize
+     */
+    public boolean isSynchronized() {
+        return synchronize;
+    }
+
+    /**
+     * @param synchronize the synchronize to set
+     */
+    public void setSynchronized(boolean synchronize) {
+        this.synchronize = synchronize;
+        if (getQueryProcess() != null) {
+            getQueryProcess().setSynchronized(synchronize);
+        }
+    }
+
+    /**
+     * @return the visitor
+     */
+    public ProcessVisitor getVisitor() {
+        return visitor;
+    }
+
+    /**
+     * @param visitor the visitor to set
+     */
+    public void setVisitor(ProcessVisitor visitor) {
+        this.visitor = visitor;
     }
 }

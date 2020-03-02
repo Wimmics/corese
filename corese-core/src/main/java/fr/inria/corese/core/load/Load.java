@@ -600,13 +600,30 @@ public class Load
 
     void synLoad(Reader stream, String path, String base, String name, int format) throws LoadException {
         try {
-            writeLock().lock();
+            lock();
             parse(stream, path, base, name, format);            
         } finally {
-            writeLock().unlock();
+            unlock();
         }
     }
     
+    
+    void lock() {
+        if (getQueryProcess() != null && getQueryProcess().isSynchronized()) {
+            // already locked
+        }
+        else {
+            writeLock().lock();
+        }
+    }
+    
+    void unlock() {
+        if (getQueryProcess() != null && getQueryProcess().isSynchronized()) {
+            // already locked
+        } else {
+            writeLock().unlock();
+        }
+    }
     
     public void parse(Reader stream, String path, String base, String name, int format)  throws LoadException {
         switch (format) {

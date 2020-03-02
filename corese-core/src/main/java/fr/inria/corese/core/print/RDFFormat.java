@@ -11,7 +11,6 @@ import org.apache.commons.lang.StringEscapeUtils;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -185,6 +184,7 @@ public class RDFFormat {
         return edge.getNode(1);
     }
 
+    @Override
     public String toString() {
         StringBuilder bb = getStringBuilder();
         return bb.toString();
@@ -196,10 +196,6 @@ public class RDFFormat {
         Writer out = new OutputStreamWriter(fos); //, "UTF8");
         out.write(sb.toString());
         out.close();
-//		for (int i = 0; i<sb.length(); i++){
-//			fos.write(sb.charAt(i));
-//		}
-//		fos.close();
     }
 
     public StringBuilder getStringBuilder() {

@@ -860,19 +860,23 @@ public class Graph extends GraphObject implements
     }
 
     public Lock readLock() {
-        return lock.readLock();
+        return getLock().readLock();
     }
 
     public Lock writeLock() {
-        return lock.writeLock();
+        return getLock().writeLock();
     }
 
     public ReentrantReadWriteLock getLock() {
         return lock;
     }
     
+    public boolean isReadLocked() {
+        return getLock().getReadLockCount() > 0 ;
+    }
+    
     public boolean isLocked() {
-        return getLock().getReadLockCount() > 0 || getLock().isWriteLocked();
+        return isReadLocked() || getLock().isWriteLocked();
     }
 
     void clearDistance() {
@@ -1126,7 +1130,6 @@ public class Graph extends GraphObject implements
      * automatically run, use re.process()
      */
     public synchronized void init() {
-        getEventManager().start(Event.InitGraph);
         if (isIndex()) {                    
             index();            
         }

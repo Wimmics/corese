@@ -30,6 +30,7 @@ public class Start {
     boolean owl = false;
     boolean display = true;
     boolean verbose = false;
+    boolean execShacl = false;
 
     /**
      * Corese as command line take path and query as argument load the docs from
@@ -85,6 +86,10 @@ public class Start {
                 while (i < args.length && !args[i].startsWith("-")) {
                     shacl.add(expand(args[i++]));
                 }
+            }
+            else if (args[i].equals("-execshacl")) {
+                execShacl = true;
+                i++;
             }
             else if (args[i].equals("-s") || args[i].equals("-silent")) {
                 i++;
@@ -153,6 +158,15 @@ public class Start {
                 Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+        
+        if (execShacl) {
+            try {
+                execShacl(g);              
+
+            } catch (EngineException ex) {
+                Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
 
         for (String stl : sttl) {
             Transformer t = Transformer.create(g, stl);
@@ -167,6 +181,12 @@ public class Start {
         load.parse(shape);
         Graph res = sh.eval(gg);
         System.out.println("shacl: " + shape);
+        System.out.println(Transformer.turtle(res));
+    }
+    
+    void execShacl(Graph g) throws LoadException, EngineException {
+        Shacl sh = new Shacl(g);       
+        Graph res = sh.eval();
         System.out.println(Transformer.turtle(res));
     }
 }

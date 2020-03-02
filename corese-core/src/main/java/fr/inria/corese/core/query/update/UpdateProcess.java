@@ -3,6 +3,7 @@ package fr.inria.corese.core.query.update;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mapping;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -89,7 +90,7 @@ public class UpdateProcess {
             }
             
             exec.getEventManager().start(Event.UpdateStep, u);
-
+            Eval eval = exec.getCurrentEval();
             if (u.isBasic()) {
                 // load copy ...
                 Basic b = u.getBasic();
@@ -99,7 +100,9 @@ public class UpdateProcess {
                 Composite c = u.getComposite();
                 map = process(q, c, m);
             }
-            
+            // save and restore eval to get initial Visitor with possible @event function
+            // because @event function may execute query and hence reset eval
+            exec.setCurrentEval(eval);
             exec.getEventManager().finish(Event.UpdateStep, u);
 
             if (!suc) {

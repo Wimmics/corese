@@ -1,0 +1,19 @@
+#
+# Constraint extension defined as function
+#
+insert data {
+    us:John foaf:knows us:Jack .
+
+    us:ext a sh:NodeShape ;
+    sh:targetSubjectsOf foaf:knows ;
+    sh:property [
+        sh:path foaf:knows ;
+        xsh:function [ us:test("value") ] 
+    ] .
+}
+
+@public 
+function us:test(source, node, param) {
+    xt:print("source:", st:turtle(source), "node:", st:turtle(node), "param:", param);
+    true
+}

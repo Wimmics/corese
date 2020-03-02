@@ -1,0 +1,19 @@
+#
+# Path extension defined as function
+#
+insert data {
+    us:Jack foaf:age "20" .
+    
+    us:test a sh:NodeShape ;
+    sh:targetSubjectsOf foaf:age ;
+    sh:path (foaf:age [xsh:function [ us:cast(xsd:integer)]]) ;
+    sh:datatype xsd:integer .
+}
+
+@public 
+function us:cast(source, node, param) {
+    let ((fun) = param) {
+        xt:print("cast:", st:turtle(node), funcall(fun, node));
+        xt:list(funcall(fun, node))
+    }
+}

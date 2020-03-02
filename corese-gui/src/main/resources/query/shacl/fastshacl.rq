@@ -2,7 +2,7 @@
  
 #@public @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq>
 template {
-   xt:turtle(?g)
+   xt:size(?g)
 }
 where {
    #bind (sh:trace(true) as ?d)
@@ -10,6 +10,7 @@ where {
    #bind (sh:shaclshape(shapeNode, targetNode) as ?g)
    #bind (sh:shaclnode(targetNode) as ?g)
    #bind (sh:setup(sh:callback, us:callback) as ?b1)
-   #bind (sh:fast(true) as ?fast)
+   bind (sh:fast(true) as ?f)
    bind (sh:shacl() as ?g)
+
 }

@@ -1,0 +1,16 @@
+#
+# Path extension defined as linked data
+#
+insert data {
+    us:Jack us:location <http://fr.dbpedia.org/resource/Antibes> .
+    us:John us:location <http://fr.dbpedia.org/resource/Nowhere> .
+    
+    us:serv a sh:NodeShape ;
+    sh:targetObjectsOf us:location ;
+    sh:property [
+        sh:path [<http://fr.dbpedia.org/sparql> (rdf:type)] ;
+        xsh:display(true);
+        sh:hasValue dbo:Location
+    ] .
+}
+

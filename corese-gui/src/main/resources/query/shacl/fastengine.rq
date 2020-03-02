@@ -1,0 +1,36 @@
+# SHACL Interpreter
+ 
+template {
+   xt:size(?g) st:nl()
+   xt:syntax(st:turtle, ?g)
+}
+where {
+   bind (sh:fast(true) as ?fast)
+   bind (sh:shacl() as ?g)
+}
+
+@beforeShacl
+function us:beforeshacl(focus) {
+    xt:print("@beforeShacl")
+    ;us:myprettyfocus(focus)
+}
+
+@afterShacl
+function us:aftershacl(g) {
+    xt:print("@afterShacl");
+    xt:print("report:", xt:size(g))
+}
+
+function us:myprettyfocus(focus) {
+    xt:print("focus:");
+    if (datatype(focus) = dt:mappings) {
+        for ((sh list) in focus) {
+            xt:print("shape:", sh);
+            xt:print("nodes:", xt:size(list));
+            xt:print()
+        }
+    }
+    else {
+        xt:print(focus)
+    }
+}

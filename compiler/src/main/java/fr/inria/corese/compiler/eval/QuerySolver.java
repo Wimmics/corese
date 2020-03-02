@@ -326,10 +326,6 @@ public class QuerySolver  implements SPARQLEngine {
             }   
         }
         
-        public Eval getCurrentEval() {
-            return current;
-        }
-        
         /**
          * LDScript binding stack of current Eval
          * use case: share global variables
@@ -370,8 +366,16 @@ public class QuerySolver  implements SPARQLEngine {
             }
         }
         
-        public void setEval(Eval e) {
+        public Eval getCurrentEval() {
+            return current;
+        }
+        
+        public void setCurrentEval(Eval e) {
             current = e;
+        }
+        
+        public void setEval(Eval e) {
+            setCurrentEval(e);
         }
         
         void tune(Eval kgram, Query q) {

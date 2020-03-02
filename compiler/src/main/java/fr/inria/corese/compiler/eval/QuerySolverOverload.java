@@ -49,10 +49,10 @@ public class QuerySolverOverload {
     
 
     private boolean overload = true;
-    QuerySolverVisitor visitor;
+    QuerySolverVisitorBasic visitor;
     
     
-    QuerySolverOverload(QuerySolverVisitor vis) {
+    QuerySolverOverload(QuerySolverVisitorBasic vis) {
         visitor = vis;
     }
     

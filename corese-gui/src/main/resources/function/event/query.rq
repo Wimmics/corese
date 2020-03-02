@@ -1,0 +1,35 @@
+#
+# Event Driven Function for SPARQL Query
+# Write @event before query (after prefix)
+#
+prefix fun: <function://fr.inria.corese.gui.core.Callback>
+
+@event 
+select *
+where {
+    # process event for every query and load
+    # bind (xt:tune(xt:visitor, true) as ?t)
+    ?s foaf:name ?o
+}
+
+@init
+function us:init(q) {
+    xt:print("@init")
+    ; fun:display("@init") # display in GUI System panel
+    ; query(load rdf: ; insert data { us:John foaf:name "John" })
+    ; xt:entailment()
+}
+
+@before 
+function us:before(q) {
+    xt:print("@before query")
+    ; fun:display("@before query")
+    ; xt:print("graph size:", xt:size(xt:graph()))
+}
+
+@after  
+function us:after(res) {
+    xt:print("@after query result size: ", xt:size(res))
+    ; fun:display("@after query")
+}
+

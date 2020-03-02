@@ -1,0 +1,26 @@
+prefix rm: <http://ns.inria.fr/sparql-extension/spqr/>
+@event 
+select (rm:digit(?res) as ?ope) (str(?val) as ?rom)  (rm:digit(?val) as ?dig) 
+where {
+  bind ('II'^^us:romain * 'X'^^us:romain + 'V'^^us:romain as ?res) 
+  bind (maplist(us:rom,  xt:iota(7)) as ?list)
+  bind (reduce (lambda(?x, ?y) { ?x + ?y }, ?list) as ?val)
+}
+
+function us:rom(?x) { strdt(rm:romain(?x), us:romain) }
+
+@type us:romain {
+function us:compare(?x, ?y) { if (?x < ?y, -1, if (?x = ?y, 0, 1)) }
+
+function us:eq(?x, ?y)    { (rm:digit(?x) =  rm:digit(?y)) } 
+function us:ne(?x, ?y)    { (rm:digit(?x) != rm:digit(?y)) }
+function us:lt(?x, ?y)    { (rm:digit(?x) <  rm:digit(?y)) }
+function us:le(?x, ?y)    { (rm:digit(?x) <= rm:digit(?y)) }
+function us:gt(?x, ?y)    { (rm:digit(?x) >  rm:digit(?y)) }
+function us:ge(?x, ?y)    { (rm:digit(?x) >= rm:digit(?y)) } 
+
+function us:plus(?x, ?y)  { us:rom(rm:digit(?x) + rm:digit(?y)) }
+function us:mult(?x, ?y)  { us:rom(rm:digit(?x) * rm:digit(?y)) }
+function us:minus(?x, ?y) { us:rom(rm:digit(?x) - rm:digit(?y)) }
+function us:divis(?x, ?y) { us:rom(rm:digit(?x) / rm:digit(?y)) } 
+}

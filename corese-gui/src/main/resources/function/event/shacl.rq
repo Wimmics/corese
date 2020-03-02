@@ -1,0 +1,56 @@
+#
+# Event Driven Function for SHACL
+# Trace shacl evaluation
+#
+
+@public 
+@beforeShacl
+function us:beforeshacl(focus) {
+    xt:print("@beforeShacl");
+    us:prettyfocus(focus)
+}
+
+@public 
+@afterShacl
+function us:aftershacl(g) {
+    xt:print("@afterShacl");
+    xt:print("report:", xt:size(g))
+}
+
+#@public 
+@pathShacl
+function us:shaclpath(sh, nodeList, path, lst1, lst2, lst3, lst4) {
+    xt:print("path:", sh, path);
+    xt:print("node:", xt:size(nodeList));
+    map(us:prettycst, xt:list(lst1, lst2, lst3, lst4));
+    xt:print()
+}
+
+#@public 
+@nodeShacl
+function us:shaclnode(sh, nodeList, lst1, lst2, lst3, lst4) {
+    xt:print("shape:", sh);
+    xt:print("node:", nodeList);
+    map(us:prettycst, xt:list(lst1, lst2, lst3, lst4));
+    xt:print()
+}
+
+@public
+function us:prettycst(lst) {
+    if (xt:size(lst) > 0, xt:print("cst:", lst), true)
+}
+
+@public
+function us:prettyfocus(focus) {
+    xt:print("focus:");
+    if (datatype(focus) = dt:mappings) {
+        for ((sh list) in focus) {
+            xt:print("shape:", sh);
+            xt:print("nodes:", list);
+            xt:print()
+        }
+    }
+    else {
+        xt:print(focus)
+    }
+}

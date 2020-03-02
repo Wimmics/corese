@@ -1,0 +1,74 @@
+#
+# Comparison of extension datatypes with units
+#
+
+@event 
+select ?v ?w where {
+    ?x ?p ?v . ?y ?p ?w  filter (?v = ?w) 
+}
+
+
+@init 
+function us:init(?q){
+    us:data();
+    us:datatype()
+}
+
+function us:datatype() {
+    xt:datatype(us:km, us:length) ;
+    xt:datatype(us:m,  us:length)
+}
+
+function us:data() {
+    query(insert data {
+        us:t0 us:length '2'^^us:km  .  
+        us:t1 us:length '1'^^us:km  .  
+        us:t2 us:length '1000'^^us:m .  
+        us:t3 us:length '1 km'^^us:length
+        us:t4 us:length '1000 m'^^us:length
+    }) 
+}
+
+@type us:length 
+function us:eq(?a, ?b) { 
+    us:convert(?a) = us:convert(?b)
+}
+
+@type us:length 
+function us:ne(?a, ?b) { 
+    us:convert(?a) != us:convert(?b)
+}
+
+@type us:length 
+function us:le(?a, ?b) { 
+    us:convert(?a) <= us:convert(?b)
+}
+
+@type us:length 
+function us:lt(?a, ?b) { 
+    us:convert(?a) < us:convert(?b)
+}
+
+@type us:length 
+function us:ge(?a, ?b) { 
+    us:convert(?a) >= us:convert(?b)
+}
+
+@type us:length 
+function us:gt(?a, ?b) { 
+    us:convert(?a) > us:convert(?b)
+}
+
+function us:convert(?a) {
+    if (datatype(?a) = us:km, 1000 * us:value(?a), 
+    if (datatype(?a) = us:m, us:value(?a),
+    if (datatype(?a) = us:length, us:valueunit(?a), us:value(?a))))
+}
+                                             
+function us:value(?a) {
+    if (contains(?a, ' '), xsd:integer(strbefore(?a, ' ')), xsd:integer(?a))
+}
+                
+function us:valueunit(?a) {
+    if (strafter(?a, ' ') = 'km', 1000 * us:value(?a), us:value(?a))
+}

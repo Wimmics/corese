@@ -1,0 +1,35 @@
+select * where {
+  ?x ?p ?y
+}
+
+
+
+@public @before
+function us:before(q) {
+    xt:print("before", java:getAST(q))
+}
+
+@public @beforeEntailment 
+function us:beforeEntailment (path) {
+	xt:print("before entailment", path)
+}
+
+@public @afterEntailment 
+function us:afterEntailment(path) {
+	xt:print("after entailment", path)
+}
+
+#@public
+@beforeRule
+function us:beforeRule(q) {
+    xt:print("@beforeRule", java:getAST(q))
+}
+
+@public @afterRule
+function us:afterRule(q, res) {
+    if (xt:size(res) > 0 && java:hasMetadata(java:getAST(q), "@test")) {
+        xt:print("@afterRule");
+        xt:print(java:getAST(q));
+        xt:print(xt:size(res), res)
+    }
+}

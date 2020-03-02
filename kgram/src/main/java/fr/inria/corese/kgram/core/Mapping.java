@@ -477,7 +477,11 @@ public class Mapping
             sb.append(qNodes[i]); //.append("[").append(qNodes[i].getIndex()).append("]");
             sb.append(" = ").append(e).append(sep);
             if (e != null && e.getObject() != null && e.getObject() != this) {
-                sb.append(sep).append(e.getObject()).append(sep);
+                if ((e.getObject() instanceof TripleStore)) { 
+                }
+                else {
+                    sb.append(sep).append(e.getObject()).append(sep);
+                }
             } 
             i++;
         }

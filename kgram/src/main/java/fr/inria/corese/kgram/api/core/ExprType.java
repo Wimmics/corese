@@ -379,6 +379,10 @@ public interface ExprType {
         public static int XT_CAST        = 483;
         public static int XT_ISFUNCTION  = 484;
         public static int XT_EVENT       = 485;
+        public static int XT_SUBJECTS    = 486;
+        public static int XT_OBJECTS     = 487;
+        public static int XT_SYNTAX      = 488;
+        
         
              
         public static int SLICE       = 500;

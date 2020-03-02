@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE rdf:RDF [
-   <!ENTITY humans   "http://www.inria.fr/2007/humans.rdfs"> 
+   <!ENTITY humans   "http://www.inria.fr/2015/humans.rdfs"> 
    <!ENTITY xsd      "http://www.w3.org/2001/XMLSchema#"> ]>
  
 <rdf:RDF  

@@ -19,12 +19,13 @@ public class Command extends HashMap<String, String> {
     public static final String REENTRANT        = "-re";
     public static final String RDF_STAR         = "-rdfstar";
         
+    String[] args;
     
     Command (String[] args) {
-        init(args);
+        this.args = args;
     }
     
-    void init(String[] args) {
+    Command init() {
         int i = 0;
         while (i < args.length){
             String str = args[i++];
@@ -63,7 +64,9 @@ public class Command extends HashMap<String, String> {
                     put(str, "true");
                     break;   
             }
-        }
+        }        
+        return this;
     }
+    
 
 }

@@ -4,7 +4,10 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
- *
+ * Display message in Corese GUI
+ * prefix fun: <function://fr.inria.corese.gui.core.Callback>
+ * fun:display("message:", ?x, ?y)
+ * 
  * @author corby
  */
 public class Callback {

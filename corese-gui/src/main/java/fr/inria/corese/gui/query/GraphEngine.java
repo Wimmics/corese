@@ -21,6 +21,7 @@ import fr.inria.corese.core.load.Build;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadPlugin;
+import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import java.util.Date;
 import org.apache.logging.log4j.Logger;
@@ -46,6 +47,7 @@ public class GraphEngine  {
      */
     public void setLinkedFunction(boolean linkedFunction) {
         this.linkedFunction = linkedFunction;
+        Access.setLinkedFunction(linkedFunction);
     }
     private static Logger logger = LogManager.getLogger(GraphEngine.class);
 	static final String BRUL = "brul";

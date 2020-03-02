@@ -81,7 +81,7 @@ public class MainFrame extends JFrame implements ActionListener {
     static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-02-14";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-02-24";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -210,8 +210,9 @@ public class MainFrame extends JFrame implements ActionListener {
      * @param pPropertyPath
      */
     public MainFrame(CaptureOutput aCapturer, String[] args) {
-        super();  
-        cmd = new Command(args);
+        super(); 
+        Access.setMode(Access.Mode.GUI); // before command
+        cmd = new Command(args).init();
         this.setTitle(TITLE);
         this.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         this.setSize(900, 700);
@@ -595,6 +596,7 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu queryMenu = new JMenu("Query");
         JMenu templateMenu = new JMenu("Template");
         JMenu shaclMenu = new JMenu("SHACL");
+        JMenu eventMenu = new JMenu("Event");        
         JMenu explainMenu = new JMenu("Explain");
         JMenu aboutMenu = new JMenu("?");
 
@@ -645,11 +647,19 @@ public class MainFrame extends JFrame implements ActionListener {
         templateMenu.add(iowl);
         templateMenu.add(ispin);
         
-        
-        //shaclMenu.add(loadSHACLShape);
         shaclMenu.add(itypecheck);
+        shaclMenu.add(defItem("Fast Engine", "shacl/fastengine.rq"));
         shaclMenu.add(ipredicate);
         shaclMenu.add(ipredicatepath);
+        shaclMenu.add(defItem("Constraint Function", "shacl/extension.rq"));
+        shaclMenu.add(defItem("Path Function", "shacl/funpath.rq"));
+        shaclMenu.add(defItem("Path Linked Data", "shacl/service.rq"));
+        
+        eventMenu.add(defItemFunction("SPARQL Query",   "event/query.rq"));
+        eventMenu.add(defItemFunction("SPARQL Update",  "event/update.rq"));
+        eventMenu.add(defItemFunction("SHACL",          "event/shacl.rq"));
+        eventMenu.add(defItemFunction("Unit",           "event/unit.rq"));
+        eventMenu.add(defItemFunction("Romain",         "event/romain.rq"));
 
         editMenu.add(undo);
         editMenu.add(redo);
@@ -864,6 +874,7 @@ public class MainFrame extends JFrame implements ActionListener {
         menuBar.add(queryMenu);
         menuBar.add(templateMenu);
         menuBar.add(shaclMenu);
+        menuBar.add(eventMenu);
         menuBar.add(explainMenu);
         menuBar.add(aboutMenu);
 
@@ -890,12 +901,20 @@ public class MainFrame extends JFrame implements ActionListener {
         itable.put(it, query);
         return it;
     }
-
+    
     JMenuItem defItem(String name, String q) {
+        return defItemBasic(QUERY, name, q);
+    }
+    
+    JMenuItem defItemFunction(String name, String q) {
+        return defItemBasic("/function/", name, q);
+    }
+
+    JMenuItem defItemBasic(String root, String name, String q) {
         JMenuItem it = new JMenuItem(name);
         it.addActionListener(this);
         try {
-            String str = read(QUERY + q);
+            String str = read(root + q);
             itable.put(it, str);
         } catch (LoadException ex) {
             LOGGER.error(ex);
@@ -1461,8 +1480,11 @@ public class MainFrame extends JFrame implements ActionListener {
     public void load(String fichier) {
         controler(LOAD);
         try {
+            Date d1 = new Date();
             myCorese.load(fichier);
+            Date d2 = new Date();
             appendMsg(myCapturer.getContent());
+            System.out.println("Load time: " +(d2.getTime() - d1.getTime())/1000.0);
         } catch (EngineException |LoadException e) {
             appendMsg(e.toString());
             e.printStackTrace();
@@ -1609,7 +1631,6 @@ public class MainFrame extends JFrame implements ActionListener {
     }
     
     void process(Command cmd) {
-        Access.setMode(Access.Mode.GUI);
         String path = cmd.get(Command.WORKFLOW);
         if (path != null) {
             execWF(path, false);

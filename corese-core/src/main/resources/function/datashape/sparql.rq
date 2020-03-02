@@ -41,9 +41,9 @@ function sh:sparqlvalid (sh, vis, nodeList, p) {
     }
 }
 
-function sh:cstsparql (sh, vis, nodeList) {
+function sh:cstsparql (sh, vis, nodeList, cstList) {
    let (res = true) {
-        for ((cst define q mes) in sh:getShapeConstraint(sh:cstsparql, sh)) {  
+        for ((cst define q mes) in cstList) {  
             for (node in dt:list(nodeList)) {   
                 if (sh:trace(), xt:print("cstsparql:", node, q), true);
                 let (suc = coalesce(

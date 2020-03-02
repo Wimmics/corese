@@ -143,12 +143,22 @@ function sh:dostart(shape) {
     sh:shaclGraph(shape);
     sh:initvariable();
     sh:init();
+    if (bound(fast), true, sh:fast(false));
     sh:defShape();
     sh:defun();
     if (shape = xt:graph(), sh:sibling(), xt:focus(shape, sh:sibling())) ;
     sh:before();
     return (true)
 }
+
+function sh:fast(bb) {
+    set(fast = bb)
+}
+
+function sh:isFast() {
+    fast
+}
+
 
 # place holder
 function sh:before() {
@@ -569,14 +579,14 @@ function xsd:boolean sh:success(xsd:boolean bb) {
             construct { [] a sh:ValidationReport ; sh:conforms true }
             where { }
             ) {
-            us:insert(g, sh:validationReport())
+            sh:insert(g, sh:validationReport())
         }
     } ;
     return (true)
 }
 
 # insert report element g into report
-function us:insert(dt:graph g, dt:graph report) {
+function sh:insert(dt:graph g, dt:graph report) {
     for ((s p o) in g) {
        #xt:focus(report, xt:insert(s, p, o))
         xt:insert(report, s, p, o)
@@ -584,7 +594,17 @@ function us:insert(dt:graph g, dt:graph report) {
 }
 
 
+function sh:store(gg, sub, pred, obj) {
+    xt:insert(gg, sub, pred, obj)
+}
 
+function sh:store2(gg, sub, pred, obj) {
+    xt:add(gg, xt:list(sub, pred, obj))
+}
+
+function sh:myvalidationReport() {
+    coalesce(tripleList, set(tripleList = xt:list()))
+}
 
 #
 # create a validation result  graph
@@ -600,33 +620,33 @@ function xsd:boolean sh:result(name, sh, cst, dt:graph shape, foc, path, node){
         rep = sh:validationReport()
         ) {
         
-       xt:insert(rep, abnode, rdf:type, sh:ValidationReport);
-       xt:insert(rep, abnode, sh:result, res);
-       xt:insert(rep, abnode, sh:conforms, false);
+       sh:store(rep, abnode, rdf:type, sh:ValidationReport);
+       sh:store(rep, abnode, sh:result, res);
+       sh:store(rep, abnode, sh:conforms, false);
        
-       xt:insert(rep, res, rdf:type, sh:ValidationResult);
-       xt:insert(rep, res, sh:resultSeverity, sev);
-       xt:insert(rep, res, sh:focusNode, foc);
-       xt:insert(rep, res, sh:resultMessage, mes) ;
-       xt:insert(rep, res, sh:sourceConstraintComponent, def) ;
-       xt:insert(rep, res, sh:sourceShape, sh) ;
+       sh:store(rep, res, rdf:type, sh:ValidationResult);
+       sh:store(rep, res, sh:resultSeverity, sev);
+       sh:store(rep, res, sh:focusNode, foc);
+       sh:store(rep, res, sh:resultMessage, mes) ;
+       sh:store(rep, res, sh:sourceConstraintComponent, def) ;
+       sh:store(rep, res, sh:sourceShape, sh) ;
                                               
        if (sh:isValue(path)) {
-            xt:insert(rep, res, sh:resultPath, sh:prettyNodeOrList(shape, path))
+            sh:store(rep, res, sh:resultPath, sh:prettyNodeOrList(shape, path))
        } ; 
        if (sh:isValue(node)) {
-            xt:insert(rep, res, sh:value, node) 
+            sh:store(rep, res, sh:value, node) 
        } ;
        
        if (isBlank(node)) {
-            xt:insert(rep, res, sh:valueDetail, sh:graphdt(shape, node)) 
+            sh:store(rep, res, sh:valueDetail, sh:graphdt(shape, node)) 
        } ;
-       if (isBlank(foc)) {
-            xt:insert(rep, res, sh:focusNodeDetail, sh:graphdt(shape, foc)) 
+       if (isBlank(foc) && ! sh:isFast()) {
+            sh:store(rep, res, sh:focusNodeDetail, sh:graphdt(shape, foc)) 
        };
        if (isBlank(sh)) {
             #sh:document(sh);
-            coalesce(xt:insert(rep, res, sh:sourceShapeDetail, sh:getDefinition(sh)), true)
+            coalesce(sh:store(rep, res, sh:sourceShapeDetail, sh:getDefinition(sh)), true)
        }
     } ;
     return(true)
@@ -690,8 +710,13 @@ function sh:prettyNodeOrList(shape, var) {
 # trick datatype for st:turtle transformation to pprint a graph in Turtle format
 function sh:graphdt(shape, var){
     if (isBlank(var), 
-        return(strdt(xt:turtle(shape, var), xt:graph)), 
+        return(strdt(sh:turtle(shape, var), xt:graph)), 
         var)
+}
+
+function sh:turtle(shape, var) {
+    xt:turtle(shape, var)
+    #xt:syntax(st:turtle, shape, var)
 }
 
 #

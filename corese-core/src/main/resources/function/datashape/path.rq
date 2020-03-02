@@ -62,6 +62,7 @@ function sh:path123(sh, vis, nodeList, p, present) {
                 xt:print("path cst3:", cstList3);
                 xt:print("path cst4:", cstList4)
             } ;
+            xt:event("@pathShacl", sh, nodeList, p, cstList1, cstList2, cstList3, cstList4);
             for (s in dt:list(nodeList)) {
                 let (targetList = sh:ppath(s, p)) {
                     #xt:print("path:", s, p, targetList);
@@ -282,11 +283,6 @@ function sh:disjoint(o, qsh, s){
    } ;
    return (true)
 }
-
-
-
-
-
 
 
 

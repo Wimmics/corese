@@ -9,12 +9,20 @@ prefix xsh: <http://www.w3.org/ns/shacl#>
 prefix msh: <http://ns.inria.fr/shacl/>
 
 function sh:constraint(sh, vis, nodeList) {
-    let (b1 = sh:constraint1 (sh, vis, nodeList),
-         b2 = sh:constraint2 (sh, vis, nodeList),
-         b4 = sh:nodeextension(sh, vis, nodeList),
-         b5 = sh:cstsparql   (sh, vis, nodeList)
-         ) {
+    let (cstList1 = sh:getShapeConstraint(sh:cstgeneric1, sh),
+         cstList2 = sh:getShapeConstraint(sh:cstgeneric2, sh),         
+         cstList3 = sh:getShapeConstraint(sh:cstsparql, sh),         
+         cstList4 = sh:getShapeConstraint(sh:nodeextension, sh)) {
+         if (xt:size(cstList1)>0 || xt:size(cstList2)>0 || xt:size(cstList3)>0 ||xt:size(cstList4)>0) {
+            xt:event("@nodeShacl", sh, nodeList, cstList1, cstList2, cstList3, cstList4)
+         } ;
+         let (
+            b1 = sh:constraint1  (sh, vis, nodeList, cstList1),
+            b2 = sh:constraint2  (sh, vis, nodeList, cstList2),
+            b4 = sh:nodeextension(sh, vis, nodeList, cstList4),
+            b5 = sh:cstsparql    (sh, vis, nodeList, cstList3)) {
         return (b1 && b2 && b4 && b5)
+    }
     }
 }
 
@@ -26,9 +34,9 @@ function sh:constraint(sh, vis, nodeList) {
 # nodeList is either a list of nodes or a single node
 # sh:report generates a validation report in case of error
 #
-function sh:constraint1 (sh, vis, nodeList) {
+function sh:constraint1 (sh, vis, nodeList, cstList) {
     let (res = true) {
-        for ((oper value) in sh:getShapeConstraint(sh:cstgeneric1, sh)) {  
+        for ((oper value) in cstList) {  
             for (node in dt:list(nodeList)) {   
                 if (sh:contains(sh, node)) {}
                 else {
@@ -47,9 +55,9 @@ function sh:constraint1 (sh, vis, nodeList) {
 
 
 # oper = xsh:function
-function sh:nodeextension (sh, vis, nodeList) {
+function sh:nodeextension (sh, vis, nodeList, cstList) {
     let (res = true) {
-        for ((oper name value ternary) in sh:getShapeConstraint(sh:nodeextension, sh)) {  
+        for ((oper name value ternary) in cstList) {  
             for (node in dt:list(nodeList)) {  
                 let (suc = coalesce(
                         if (ternary, funcall(name, node, node, value), funcall(name, node, value)),
@@ -64,9 +72,9 @@ function sh:nodeextension (sh, vis, nodeList) {
 }
 
 
-function sh:constraint2 (sh, vis, nodeList) {
+function sh:constraint2 (sh, vis, nodeList, cstList) {
     let (res = true) {
-        for ((oper value) in sh:getShapeConstraint(sh:cstgeneric2, sh)) {  
+        for ((oper value) in cstList) {  
             for (node in dt:list(nodeList)) {    
                 let (suc = coalesce(funcall(oper, sh, vis, node, value), false)) {
                     if (suc, true, set(res = false))

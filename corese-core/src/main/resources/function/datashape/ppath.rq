@@ -264,7 +264,11 @@ function dt:list sh:pathProperty(focus, subject, node, p, xsd:boolean inv, url){
 }
 
 function dt:list sh:step(focus, node, predicate) {
-    maplist(xt:object, xt:edges(node, predicate, bnode(), focus))
+    xt:objects(node, predicate, bnode(), focus)
+}
+
+function dt:list sh:inverse(focus, node, predicate){
+    xt:subjects(bnode(), predicate, node, focus)
 }
 
 function sh:objects(focus, node, predicate) {
@@ -287,9 +291,7 @@ function dt:list sh:star(?s){
     }
 }
 
-function dt:list sh:inverse(focus, node, predicate){
-    maplist(xt:subject, xt:edges(bnode(), predicate, node, focus))
-}
+
 
 function dt:list sh:inverse2(?o, ?p){
     let (select ?o ?p (aggregate(?s) as ?l) where  { ?s ?p ?o }){

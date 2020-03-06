@@ -1,4 +1,28 @@
+prefix gui: <function://fr.inria.corese.gui.core.Callback>
+
 @public {
+
+function xt:gui(aa) {
+    gui:display(aa)
+}
+function xt:gui(aa, bb) {
+    gui:display(aa, bb)
+}
+function xt:gui(aa, bb, cc) {
+    gui:display(aa, bb, cc)
+}
+function xt:gui(aa, bb, cc, dd) {
+    gui:display(aa, bb, cc, dd)
+}
+function xt:gui(aa, bb, cc, dd, ee) {
+    gui:display(aa, bb, cc, dd, ee)
+}
+
+function xt:xpath(doc, exp) {
+    let (list = xpath(doc, exp)) {
+        coalesce(xt:get(list, 0), list)
+    }
+}
 
 function xt:div(?a, ?b) {  xsd:integer(floor(?a / ?b)) }
 
@@ -34,12 +58,20 @@ function xt:values(?s, ?p) {
     maplist(xt:object, xt:edges(?s, ?p))
 }
 
-function xt:objects(?s, ?p) {
+function xt:myobjects(?s, ?p) {
     maplist(xt:object, xt:edges(?s, ?p))
 }
 
-function xt:subjects(?p, ?o) {
+function xt:myobjects(?p) {
+    maplist(xt:object, xt:edges(?p))
+}
+
+function xt:mysubjects(?p, ?o) {
     maplist(xt:subject, xt:edges(bnode(), ?p, ?o))
+}
+
+function xt:mysubjects(?p) {
+    maplist(xt:subject, xt:edges(?p))
 }
 
 function xt:trace(?s, ?p) {
@@ -62,6 +94,8 @@ function xt:getPublicDatatypeValue() {
      ds:getPublicDatatypeValue(true)
 }
 
-
+function xt:engine() {
+    java:getSPARQLEngine(java:getEval(xt:env()))
+}
 
 }

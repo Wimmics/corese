@@ -81,7 +81,7 @@ public class MainFrame extends JFrame implements ActionListener {
     static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-02-24";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-02-29";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -658,8 +658,11 @@ public class MainFrame extends JFrame implements ActionListener {
         eventMenu.add(defItemFunction("SPARQL Query",   "event/query.rq"));
         eventMenu.add(defItemFunction("SPARQL Update",  "event/update.rq"));
         eventMenu.add(defItemFunction("SHACL",          "event/shacl.rq"));
+        eventMenu.add(defItemFunction("Rule",           "event/rule.rq"));
         eventMenu.add(defItemFunction("Unit",           "event/unit.rq"));
         eventMenu.add(defItemFunction("Romain",         "event/romain.rq"));
+        eventMenu.add(defItemFunction("XML",            "event/xml.rq"));
+        eventMenu.add(defItemFunction("JSON",           "event/json.rq"));
 
         editMenu.add(undo);
         editMenu.add(redo);

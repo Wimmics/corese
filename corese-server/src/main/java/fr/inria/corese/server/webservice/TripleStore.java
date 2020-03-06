@@ -40,32 +40,36 @@ public class TripleStore {
 
     private static Logger logger = LogManager.getLogger(TripleStore.class);
     GraphStore graph = GraphStore.create(false);
-    QueryProcess exec = QueryProcess.create(graph);
-    boolean rdfs = false, owl = false;
+    //QueryProcess exec;// = QueryProcess.create(graph);
+    boolean rdfs = false;
+    boolean owl = false;
+    private boolean match   = false;
+    private boolean protect = false;
     private String name = Manager.DEFAULT;
 
     TripleStore(boolean rdfs, boolean owl) {
        this(rdfs, owl, true);
     }
     
-    // 
+    
     TripleStore(boolean rdfs, boolean owl, boolean b) {
         graph = GraphStore.create(rdfs);
         init(graph);
-        exec  = QueryProcess.create(graph, b);
+        setMatch(b);
+        //exec  = QueryProcess.create(graph, b);
         this.owl = owl;
     }
     
     TripleStore(GraphStore g){
         graph = g;
         init(g);
-        exec = QueryProcess.create(g);
+        setMatch(false);
+        //exec = QueryProcess.create(g);
     }
     
     TripleStore(GraphStore g, boolean b){
         graph = g;
         init(g);
-        //exec = QueryProcess.create(g, b);
     }
     
     void init(GraphStore g){
@@ -75,7 +79,8 @@ public class TripleStore {
     }
     
     void finish(boolean b){
-        exec = QueryProcess.create(graph, true);
+        setMatch(true);
+        //exec = QueryProcess.create(graph, true);
         init(b);
     }
     
@@ -85,6 +90,7 @@ public class TripleStore {
     }
     
     QueryProcess getQueryProcess(){
+        QueryProcess exec = QueryProcess.create(graph, isMatch());
         return exec;
     }
     
@@ -102,23 +108,23 @@ public class TripleStore {
          }
     }
     
-    int getMode(){
-        return exec.getMode();
-    }
+//    int getMode(){
+//        return exec.getMode();
+//    }
     
-    void setMode(int m){
-        exec.setMode(m);                              
-    }
+//    void setMode(int m){
+//        exec.setMode(m);                              
+//    }
     
     void setOWL(boolean b){
         owl = b;
     }
     
     void init(boolean b) {
-
-        if (b){
-            exec.setMode(QueryProcess.PROTECT_SERVER_MODE);
-        }
+        setProtect(b);
+//        if (b){
+//            exec.setMode(QueryProcess.PROTECT_SERVER_MODE);
+//        }
 
         if (rdfs) {
             logger.info("Endpoint successfully reset with RDFS entailments.");
@@ -176,10 +182,38 @@ public class TripleStore {
             c.setRemoteHost(request.getRemoteHost());
         }
         Profile.getEventManager().call(ds.getContext());
-        return exec.query(query, ds);
+        return getQueryProcess().query(query, ds);
     }
 
     Mappings query(String query) throws EngineException{
         return query(query, new Dataset());
+    }
+
+    /**
+     * @return the match
+     */
+    public boolean isMatch() {
+        return match;
+    }
+
+    /**
+     * @param match the match to set
+     */
+    public void setMatch(boolean match) {
+        this.match = match;
+    }
+
+    /**
+     * @return the protect
+     */
+    public boolean isProtect() {
+        return protect;
+    }
+
+    /**
+     * @param protect the protect to set
+     */
+    public void setProtect(boolean protect) {
+        this.protect = protect;
     }
 }

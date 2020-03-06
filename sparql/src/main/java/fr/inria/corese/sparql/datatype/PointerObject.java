@@ -32,4 +32,12 @@ public class PointerObject implements Pointerable {
         return object;
     }
     
+    @Override
+    public Iterable getLoop(){
+        if (object instanceof Iterable) {
+            return (Iterable) object;
+        }
+        return empty;
+    }
+    
 }

@@ -21,6 +21,7 @@ import fr.inria.corese.kgram.api.core.ExpPattern;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import java.util.HashMap;
+import java.util.logging.Level;
 
 public class Processor {
 	private static Logger logger = LoggerFactory.getLogger(Processor.class);
@@ -1418,23 +1419,13 @@ public class Processor {
                     aclasses[i] = IDatatype.class;
                 }
                
-                setProcessor(className.newInstance());
+                setProcessor(className.getDeclaredConstructor().newInstance());
                 setMethod(className.getMethod(methodName, aclasses));
                 setCorrect(true);
-            } catch (ClassNotFoundException e) {
-                e.printStackTrace();
-            } catch (SecurityException e) {
-                e.printStackTrace();
-            } catch (NoSuchMethodException e) {
-                e.printStackTrace();
-            } catch (InstantiationException e) {
-                e.printStackTrace();
-            } catch (IllegalAccessException e) {
-                e.printStackTrace();
-            } catch (IllegalArgumentException e) {
-                // TODO Auto-generated catch block
-                e.printStackTrace();
+            } catch (InvocationTargetException | ClassNotFoundException | SecurityException | NoSuchMethodException | InstantiationException | IllegalAccessException | IllegalArgumentException e) {
+                java.util.logging.Logger.getLogger(Processor.class.getName()).log(Level.SEVERE, null, e);
             }
+           
     }
 	
 	

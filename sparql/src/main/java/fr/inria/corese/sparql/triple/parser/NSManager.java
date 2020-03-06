@@ -62,6 +62,7 @@ public class NSManager extends ASTObject {
     public static final String SHACL = "http://www.w3.org/ns/shacl#";
     public static final String SHAPE = SHACL;
     public static final String SHACL_JAVA = "function://fr.inria.corese.core.extension.SHACL.";
+    public static final String EXT_FUN    = "function://fr.inria.corese.core.extension.Extension.";
     public static final String DCTERM = "http://purl.org/dc/terms/";
     public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";
     public static final String DBPEDIA = "http://dbpedia.org/resource/";
@@ -261,6 +262,7 @@ public class NSManager extends ASTObject {
         //def.put(SHACL, "xsh");
         def.put(SHACL, "sh");
         def.put(SHACL_JAVA, "jsh");
+        def.put(EXT_FUN, "fun");
         def.put("http://example.org/ns#", "ex");
         def.put(JAVA, "java");
         def.put(DS, "ds");

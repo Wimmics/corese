@@ -40,6 +40,7 @@ import java.util.ArrayList;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
+import fr.inria.corese.kgram.core.Eval;
 
 /**
  * Implements evaluator of operators & functions of filter language with
@@ -2045,7 +2046,11 @@ public class ProxyInterpreter implements Proxy,  ExprType {
     public Environment getEnvironment() {
         return environment;
     }
-
+    
+    public Eval getEval() {
+        return getEnvironment().getEval();
+    }
+    
     /**
      * @param environment the environment to set
      */

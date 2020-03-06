@@ -51,6 +51,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     public static final String VERBOSE  = "@verbose";
 
     public static final String SHARE    = "@share";
+    public static final String TRACE    = "@display";
     public static final String INIT     = "@init";
     public static final String BEFORE   = "@before";
     public static final String AFTER    = "@after";
@@ -114,7 +115,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     private boolean verbose = false;
     private boolean function = false;
     
-    Eval eval;
+    private Eval eval;
     Query query;
     ASTQuery ast;
     HashMap <Environment, IDatatype> distinct;
@@ -130,10 +131,10 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
 
     @Override
     public void setProcessor(Eval e) {
-        eval = e;
+        setEval(e);
     }
     
-    
+  
     Hierarchy getHierarchy() {
         return getEnvironment().getExtension().getHierarchy();
     }
@@ -224,30 +225,42 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
   
     
     boolean define(String name, int arity) {
-        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), name, arity);
+        Expr exp = getEval().getEvaluator().getDefineMetadata(getEnvironment(), name, arity);
         return (exp != null);
     }
     
     void trace(Eval ev, String metadata, IDatatype[] param) {
         if (isVerbose()) {
-            logger.info(String.format(metadata));
-            for (IDatatype dt : param){
-                if (dt != null) {
-                    if (dt.isPointer()) { 
-                        if (dt.pointerType() == PointerType.GRAPH) {
-                            System.out.println(dt);
-                        }
-                        else {
-                            System.out.println(dt.getPointerObject());
-                        }
-                    }
-                    else {
-                        System.out.println(dt);
-                    }
-                    System.out.println();
-                }
+            //mytrace(ev, metadata, param);
+            trace(metadata, param);
+        }
+    }
+    
+    void trace(String metadata, IDatatype[] param) {
+        System.out.println(metadata);
+        for (IDatatype dt : param) {
+            if (dt != null) {
+                trace(dt);
+                System.out.println();
             }
         }
+    }
+    
+    void trace(IDatatype dt) {
+        if (dt.isPointer()) {
+            if (dt.pointerType() == PointerType.GRAPH) {
+                System.out.println(dt);
+            } else {
+                System.out.println(dt.getPointerObject());
+            }
+        } else {
+            System.out.println(dt);
+        }
+    }
+    
+    IDatatype mytrace(Eval eval, String metadata, IDatatype[] param) {
+        callbackSimple(eval, TRACE, toArray(metadata));
+        return callbackSimple(eval, TRACE, param);
     }
     
  
@@ -262,7 +275,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
             return null;
         }
         trace(ev, metadata, param);
-        Function function = (Function) eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
+        Function function = (Function) getEval().getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
         if (function != null) {
             // prevent infinite loop in case where there is a query in the function
             setActive(true);
@@ -282,7 +295,11 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
      */
     public IDatatype callbackBasic(Eval ev, String metadata, IDatatype[] param) {       
         trace(ev, metadata, param);
-        Function function = (Function) eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
+        return callbackSimple(ev, metadata, param);
+    }
+    
+    IDatatype callbackSimple(Eval ev, String metadata, IDatatype[] param) {       
+        Function function = (Function) getEval().getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
         if (function != null) {
             return call(function, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
         }
@@ -295,7 +312,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
             return null;
         }
         // function us:compare(?m1, ?m2)
-        Function function = (Function) eval.getEvaluator().getDefineMetadata(getEnvironment(), metadata, 2);
+        Function function = (Function) getEval().getEvaluator().getDefineMetadata(getEnvironment(), metadata, 2);
         if (function != null) {
             // prevent infinite loop in case where there is a query in the function
             setActive(true);
@@ -315,7 +332,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
         if (isRunning()) {
             return null;
         }
-        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
+        Function exp = (Function) getEval().getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
         if (exp != null) {
             setActive(true);
             IDatatype dt = call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
@@ -331,7 +348,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     }  
     
     public IDatatype methodBasic(Eval ev, String name, IDatatype type, IDatatype[] param) {       
-        Function exp = (Function) eval.getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
+        Function exp = (Function) getEval().getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
         if (exp != null) {
             IDatatype dt = call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
             return dt;
@@ -365,7 +382,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
         return DatatypeMap.newList(res);
     }
     
-    IDatatype[] toArray(Object... lobj) {
+    public IDatatype[] toArray(Object... lobj) {
         IDatatype[] param = new IDatatype[lobj.length];
         int i = 0;
         for (Object obj : lobj) {
@@ -375,7 +392,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     }
 
     Environment getEnvironment() {
-        return eval.getEnvironment();
+        return getEval().getEnvironment();
     }
 
        
@@ -468,6 +485,20 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
      */
     public void setFunction(boolean function) {
         this.function = function;
+    }
+
+    /**
+     * @return the eval
+     */
+    public Eval getEval() {
+        return eval;
+    }
+
+    /**
+     * @param eval the eval to set
+     */
+    public void setEval(Eval eval) {
+        this.eval = eval;
     }
     
    

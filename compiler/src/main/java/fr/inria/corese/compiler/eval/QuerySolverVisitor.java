@@ -44,7 +44,7 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
 
     
     @Override
-    public void init(Query q) {
+    public IDatatype init(Query q) {
         // Visitor may be reused by let (?g = construct where)
         if (query == null) {
             query = q;
@@ -53,22 +53,23 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
             initialize();
             execInit(q);
         }
+        return DatatypeMap.TRUE;
     }
     
     void execInit(Query q) {
         // authorize possible update whereas we start select where
-        boolean b = eval.getSPARQLEngine().isSynchronized();
-        eval.getSPARQLEngine().setSynchronized(true);
-        callback(eval, INIT, toArray(q));
-        eval.getSPARQLEngine().setSynchronized(b);
-        eval.getProducer().start(q);
+        boolean b = getEval().getSPARQLEngine().isSynchronized();
+        getEval().getSPARQLEngine().setSynchronized(true);
+        callback(getEval(), INIT, toArray(q));
+        getEval().getSPARQLEngine().setSynchronized(b);
+        getEval().getProducer().start(q);
     }
 
         
     @Override
     public IDatatype before(Query q) {
         if (query == q) {
-            return callback(eval, BEFORE, toArray(q));
+            return callback(getEval(), BEFORE, toArray(q));
         }
         // subquery
         return start(q);
@@ -77,7 +78,7 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
     @Override
     public IDatatype after(Mappings map) {
         if (map.getQuery() == query) {
-            return callback(eval, AFTER, toArray(map));
+            return callback(getEval(), AFTER, toArray(map));
         }
         // subquery
         return finish(map);
@@ -85,52 +86,52 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
     
     @Override
     public IDatatype beforeUpdate(Query q) {
-        return callback(eval, BEFORE_UPDATE, toArray(q));
+        return callback(getEval(), BEFORE_UPDATE, toArray(q));
     }
 
     @Override
     public IDatatype afterUpdate(Mappings map) {
-        return callback(eval, AFTER_UPDATE, toArray(map));
+        return callback(getEval(), AFTER_UPDATE, toArray(map));
     }
     
     @Override
     public IDatatype beforeLoad(DatatypeValue path) {
-        return callback(eval, BEFORE_LOAD, toArray(path));
+        return callback(getEval(), BEFORE_LOAD, toArray(path));
     }
 
     @Override
     public IDatatype afterLoad(DatatypeValue path) {
-        return callback(eval, AFTER_LOAD, toArray(path));
+        return callback(getEval(), AFTER_LOAD, toArray(path));
     }
     
     @Override
     public IDatatype start(Query q) {
-        return callback(eval, START, toArray(q));
+        return callback(getEval(), START, toArray(q));
     }
 
     @Override
     public IDatatype finish(Mappings map) {
-        return callback(eval, FINISH, toArray(map));
+        return callback(getEval(), FINISH, toArray(map));
     }
     
     @Override
     public IDatatype insert(DatatypeValue path, Edge edge) {
-        return callback(eval, INSERT, toArray(path, edge));
+        return callback(getEval(), INSERT, toArray(path, edge));
     }
     
     @Override
     public IDatatype delete(Edge edge) {
-        return callback(eval, DELETE, toArray(edge));
+        return callback(getEval(), DELETE, toArray(edge));
     }
     
     @Override
     public IDatatype update(Query q, List<Edge> delete, List<Edge> insert) { 
-        return callback(eval, UPDATE, toArray(q, toDatatype(delete), toDatatype(insert)));
+        return callback(getEval(), UPDATE, toArray(q, toDatatype(delete), toDatatype(insert)));
     }
     
     @Override
     public IDatatype orderby(Mappings map) {
-        return sort(eval, ORDERBY, toArray(map));
+        return sort(getEval(), ORDERBY, toArray(map));
     }
     
     @Override
@@ -166,13 +167,13 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
     
     @Override
     public boolean limit(Mappings map) {
-        IDatatype dt = callback(eval, LIMIT, toArray(map));
+        IDatatype dt = callback(getEval(), LIMIT, toArray(map));
         return dt == null || dt.booleanValue();
     }
     
     @Override
     public int timeout(Node serv) {
-        IDatatype dt = callback(eval, TIMEOUT, toArray(serv));
+        IDatatype dt = callback(getEval(), TIMEOUT, toArray(serv));
         if (dt == null) {
             return 0;
         }
@@ -181,7 +182,7 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
     
     @Override
     public int slice(Node serv, Mappings map) {
-        IDatatype dt = callback(eval, SLICE, toArray(serv, map));
+        IDatatype dt = callback(getEval(), SLICE, toArray(serv, map));
         if (dt == null) {
             return SLICE_DEFAULT;
         }
@@ -283,7 +284,7 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
     
     @Override
     public boolean filter() {      
-        Expr exp = eval.getEvaluator().getDefineMetadata(getEnvironment(), FILTER, 3);
+        Expr exp = getEval().getEvaluator().getDefineMetadata(getEnvironment(), FILTER, 3);
         return (exp != null);
     } 
     

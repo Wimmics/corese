@@ -41,6 +41,7 @@ import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.sparql.api.Computer;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 
@@ -393,8 +394,14 @@ public class QuerySolver  implements SPARQLEngine {
         
         void tune(Eval kgram, boolean isVisitor) {
             if (isVisitor || isVisitorable()) {
-                kgram.setVisitor(new QuerySolverVisitor(kgram));
+                kgram.setVisitor(createProcessVisitor(kgram));
             }
+            kgram.getVisitor().setDefaultValue(DatatypeMap.TRUE);
+        }
+        
+        // overloaded by QueryProcess
+        public ProcessVisitor createProcessVisitor(Eval eval) {
+            return eval.getVisitor();
         }
               
         void funcall(String fun, IDatatype[] param, Eval kgram) {

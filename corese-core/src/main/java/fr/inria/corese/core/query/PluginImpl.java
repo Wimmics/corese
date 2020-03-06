@@ -103,6 +103,7 @@ public class PluginImpl
     public static final String SILENT   = EXT+"silent";
     public static final String DEBUG    = EXT+"debug";
     public static final String EVENT    = EXT+"event";
+    public static final String VERBOSE  = EXT+"verbose";
     public static final String METHOD   = EXT+"method";
     public static final String EVENT_LOW= EXT+"eventLow";
     public static final String SHOW     = EXT+"show";
@@ -812,7 +813,7 @@ public class PluginImpl
         }
         RuleEngine re = RuleEngine.create(g);
         re.setSynchronized(b);
-        re.setVisitor(env.getEval().getVisitor());
+        //re.setVisitor(env.getEval().getVisitor());
         re.setProfile(RuleEngine.OWL_RL);
         re.process();
         return DatatypeMap.createObject(g);
@@ -1157,6 +1158,9 @@ public class PluginImpl
                 } else {
                     g.removeListener();
                 }
+                break;
+            case VERBOSE:
+                getEventManager(p).setVerbose(dt2.booleanValue());
                 break;
             case DEBUG:
                 switch (dt2.getLabel()) {

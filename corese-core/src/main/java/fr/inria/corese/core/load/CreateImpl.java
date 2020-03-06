@@ -14,7 +14,6 @@ import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.query.QueryProcess;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import fr.inria.corese.kgram.api.core.Edge;
@@ -91,35 +90,28 @@ public class CreateImpl extends CreateTriple implements Creator {
 
     @Override
     public boolean accept(Atom subject, Atom property, Atom object) {
-        if (count > 100000) {
-            graph.getEventManager().process(Event.LoadStep);
-            count = 2;
-        } else {
-            count++;
-        }
-        if (graph.size() < limit) {
-            return true;
-        }
-        return false;
+        return true;
     }
 
     @Override
     public void triple(Atom subject, Atom property, Atom object) {
-        if (source == null) {
-            source = graph.addDefaultGraphNode();
-        }
-        Node s = getSubject(subject);
-        Node p = getProperty(property);
-        Node o;
-        if (object.isLiteral()) {
-            o = getLiteral(property, object.getConstant());
-        } else {
-            o = getNode(object);
-        }
+        if (accept(property.getLabel())) {
+            if (source == null) {
+                source = graph.addDefaultGraphNode();
+            }
+            Node s = getSubject(subject);
+            Node p = getProperty(property);
+            Node o;
+            if (object.isLiteral()) {
+                o = getLiteral(property, object.getConstant());
+            } else {
+                o = getNode(object);
+            }
 
-        Edge e = graph.create(source, s, p, o);
-        add(e);
-        parseImport(property, object);
+            Edge e = graph.create(source, s, p, o);
+            add(e);
+            parseImport(property, object);
+        }
     }
 
     void parseImport(Atom property, Atom object) {

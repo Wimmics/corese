@@ -23,6 +23,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.ProxyInterpreter;
+import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -591,6 +592,11 @@ public class QueryProcess extends QuerySolver {
             return getVisitor();
         }
         return vis;
+    }
+    
+    @Override
+    public ProcessVisitor createProcessVisitor(Eval eval) {
+        return new QuerySolverVisitor(eval);
     }
     
     Function getLinkedFunction(String name,  IDatatype[] param) {

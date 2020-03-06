@@ -1,6 +1,5 @@
 package fr.inria.corese.core.rule;
 
-import fr.inria.corese.compiler.eval.QuerySolverVisitorRule;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.ArrayList;
@@ -38,6 +37,7 @@ import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL;
 import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL_EXT;
 import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL_LITE;
 import static fr.inria.corese.core.rule.RuleEngine.Profile.STDRL;
+import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Collections;
@@ -249,12 +249,17 @@ public class RuleEngine implements Engine, Graphable {
      * Loop on transitive rules
      * Specific Closure code on transitive rules
      */
-     public void setSpeedUp(boolean b) {
+    public void setSpeedUp(boolean b) {
         setOptimize(b);
         setConstructResult(b);
         setOptTransitive(b);
         setFunTransitive(b);
         getQueryProcess().setListPath(b);
+    }
+    
+    public IDatatype setFast(boolean b) {
+        setSpeedUp(b);
+        return DatatypeMap.TRUE;
     }
 
     public void setTrace(boolean b) {
@@ -325,7 +330,7 @@ public class RuleEngine implements Engine, Graphable {
         return graph.size() > size;
     }
     
-    IDatatype getPath() {
+    public IDatatype getPath() {
         String str = getProfile().getPath();
         if (str == null) {
             str = "rule base";
@@ -335,7 +340,7 @@ public class RuleEngine implements Engine, Graphable {
     
     void before() {
         try {
-            setVisitor(new QuerySolverVisitorRule(getQueryProcess().getEval()));
+            setVisitor(new QuerySolverVisitorRule(this, getQueryProcess().getEval()));
             getVisitor().beforeEntailment(getPath());
         } catch (EngineException ex) {
             java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);

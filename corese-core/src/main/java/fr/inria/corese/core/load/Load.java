@@ -727,6 +727,7 @@ public class Load
         cr.graph(Constant.create(name));
         cr.setRenameBlankNode(renameBlankNode);
         cr.setLimit(limit);
+        cr.exclude(getExclude());
         cr.start();
         IDatatype dt = DatatypeMap.newResource(path);
         boolean b = true; 

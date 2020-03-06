@@ -7,18 +7,26 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
  * @author Olivier Corby, INRIA 2020
  */
 public class CreateTriple {
+    static final String STAR = "*";
 
     private QueryProcess queryProcess;
     Load load;
     Graph graph;
     private String path;
     IDatatype dtpath;
+    ArrayList<String> exclude;
+    private boolean skip = false;
+    private int limit = Integer.MAX_VALUE;
+    int count = 1;
+
     
     CreateTriple(){}
 
@@ -26,11 +34,16 @@ public class CreateTriple {
         load = ld;
         queryProcess = load.getQueryProcess();
         graph = g;
+        exclude = new ArrayList<>();
     }
     
     public void start() {
         declare();
         graph.getEventManager().start(Event.LoadAPI);
+    }
+    
+    Graph getGraph() {
+        return graph;
     }
     
     void declare() {
@@ -45,6 +58,45 @@ public class CreateTriple {
         if (getQueryProcess() != null) {
             getQueryProcess().getCurrentVisitor().insert(dtpath, edge);
         }
+    }
+    
+    public void exclude(String ns) {
+        if (ns == null) {
+            exclude.clear();
+        } else if (ns.equals(STAR)) {
+            setSkip(true);
+        } else {
+            exclude.add(ns);
+        }
+    }
+    
+    public void exclude(List<String> list) {
+        for (String name : list) {
+            exclude(name);
+        }
+    }
+
+
+
+    public boolean accept(String pred) {
+        if (count > 100000) {
+            graph.getEventManager().process(Event.LoadStep);
+            count = 2;
+        } else {
+            count++;
+        }
+        if (isSkip() || graph.size() > limit) {
+            return false;
+        }
+        if (exclude.isEmpty()) {
+            return true;
+        }
+        for (String ns : exclude) {
+            if (pred.startsWith(ns)) {
+                return false;
+            }
+        }
+        return true;
     }
 
     /**
@@ -73,6 +125,31 @@ public class CreateTriple {
      */
     public void setPath(String path) {
         this.path = path;
+    }
+
+    /**
+     * @return the skip
+     */
+    public boolean isSkip() {
+        return skip;
+    }
+
+    /**
+     * @param skip the skip to set
+     */
+    public void setSkip(boolean skip) {
+        this.skip = skip;
+    }
+    
+    public int getLimit() {
+        return limit;
+    }
+
+    /**
+     * @param limit the limit to set
+     */
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
 
 }

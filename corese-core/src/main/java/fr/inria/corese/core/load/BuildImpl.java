@@ -18,14 +18,10 @@ import java.util.List;
  */
 public class BuildImpl extends CreateTriple implements Build {
 
-    static final String STAR = "*";
 
     Graph graph;
     Node gnode;
-    ArrayList<String> exclude;
     Hashtable<String, String> blank;
-    boolean skip = false;
-    private int limit = Integer.MAX_VALUE;
 
     private String resource, source;
     private Node node;
@@ -38,7 +34,6 @@ public class BuildImpl extends CreateTriple implements Build {
         super(g, ld);
         graph = g;
         blank = new Hashtable<>();
-        exclude = new ArrayList<>();
         load = ld;
     }
 
@@ -78,49 +73,18 @@ public class BuildImpl extends CreateTriple implements Build {
             gnode = graph.addGraph(src);
         }
     }
-
-    public void setSkip(boolean b) {
-        skip = b;
-    }
-
-    @Override
-    public void exclude(String ns) {
-        if (ns == null) {
-            exclude.clear();
-        } else if (ns.equals(STAR)) {
-            skip = true;
-        } else {
-            exclude.add(ns);
-        }
-    }
     
-    @Override
-    public void exclude(List<String> list) {
-        for (String name : list) {
-            exclude(name);
-        }
-    }
-
     @Override
     public void start() {
         super.start();
         blank.clear();
     }
 
-    public boolean accept(String pred) {
-        if (skip || graph.size() > limit) {
-            return false;
-        }
-        if (exclude.size() == 0) {
-            return true;
-        }
-        for (String ns : exclude) {
-            if (pred.startsWith(ns)) {
-                return false;
-            }
-        }
-        return true;
+    public void setSkip(boolean b) {
+        setSkip(b);
     }
+
+  
 
     public void process(Node gNode, Edge edge) {
         Edge ent = graph.addEdge(edge);
@@ -184,21 +148,7 @@ public class BuildImpl extends CreateTriple implements Build {
         return id;
     }
 
-    /**
-     * @return the limit
-     */
-    @Override
-    public int getLimit() {
-        return limit;
-    }
-
-    /**
-     * @param limit the limit to set
-     */
-    @Override
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
+ 
 
     public int nbBlank() {
         return blank.size();

@@ -1,0 +1,51 @@
+#
+# Create RDF from JSON on the fly
+#
+prefix ex: <http://example.org/>
+
+@event
+select * where {
+    ?s ?p ?o
+}
+
+@init
+function us:init(q) {
+    us:json2rdf()
+}
+
+
+# parse JSON document and create RDF triples
+function us:json2rdf() {
+   let (js = xt:json(us:json())) {
+        for (book in xt:get(js, "book")) {
+            let (name = xt:get(book, "author"),
+                title = xt:get(book, "title")) {
+                    us:create(title, name)
+            }
+        }
+    }
+}
+
+# create triples
+function us:create(title, name) {
+    query (insert { ?uri foaf:name ?name .  [ ex:author ?uri ; ex:title ?title] } 
+    where { 
+        bind (uri(concat(ex:, replace(name, " ", ""))) as ?uri)
+        values (?title ?name) {(undef undef)}
+    } )
+}
+
+
+# JSON document
+function us:json() {
+"""
+{
+"book" :
+[
+    {"title" : 1984,                        "author": "Georges Orwell"},
+    {"title" : "Le Capital au XXIe siècle", "author": "Thomas Piketty"},
+    {"title" : "Capital et idéologie",      "author": "Thomas Piketty"},
+]
+}    
+"""
+}

@@ -1,0 +1,47 @@
+#
+# Create RDF from XML on the fly
+#
+prefix ex: <http://example.org/>
+
+@event
+select * where {
+    ?s ?p ?o
+}
+
+@init
+function us:init(q) {
+    us:xml2rdf()
+}
+
+
+# parse XML document and create RDF triples
+function us:xml2rdf() {
+   let (xml = xt:xml(us:xml())) {
+        for (book in xpath(xml, "/doc/book")) {            
+            us:create(dom:getTextContent(xt:xpath(book, "title")), 
+                dom:getTextContent(xt:xpath(book, "author")))
+        }
+    }
+}
+
+# create triples
+function us:create(title, name) {
+    query (insert { ?uri foaf:name ?name .  [ ex:author ?uri ; ex:title ?title] } 
+    where { 
+        bind (uri(concat(ex:, replace(name, " ", ""))) as ?uri)
+        values (?title ?name) {(undef undef)}
+    } )
+}
+
+
+# XML document
+function us:xml() {
+"""
+<doc>
+<book><title>1984</title><author>Georges Orwell</author></book>
+<book><title>Le Capital au XXIe siècle</title><author>Thomas Piketty</author></book>
+<book><title>Capital et idéologie</title><author>Thomas Piketty</author></book>
+</doc>
+    
+"""
+}

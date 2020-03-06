@@ -19,11 +19,14 @@ function us:beforeUpdate(q) {
 @afterUpdate  
 function us:afterUpdate(res) {
     xt:print("after update", "graph size:", xt:size(xt:graph()))
+    # additional update query to ensure consistency
+    #;query (delete {?x foaf:name ?n} insert {?x rdfs:label ?n} where {?x foaf:name ?n})
 }
 
 @update     
-function us:update(q, del, ins) {
-    xt:print("update insert:", ins)
+function us:update(q, deleteList, insertList) {
+    xt:print("update delete:", deleteList) ;
+    xt:print("update insert:", insertList)
 }
 
 @beforeLoad 
@@ -31,7 +34,7 @@ function us:beforeLoad(path) {
     xt:print("before load:", path, "graph size:", xt:size(xt:graph()))
 }
 
-@insert     
+@insert  # load edge
 function us:insert(path, edge) {
 
 }

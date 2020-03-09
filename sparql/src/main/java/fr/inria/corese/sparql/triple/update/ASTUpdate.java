@@ -126,6 +126,16 @@ public class ASTUpdate {
         }
         return null;
     }
+    
+    public String getGraphNameDeleteInsert() {
+        for (Update up : getUpdates()) {
+            Constant cst = up.getGraphNameDeleteInsert();
+            if (cst != null) {
+                return cst.getLabel();
+            }
+        }
+        return null;
+    }
 
     public void defNamespace(String p, String ns) {
         prolog.defNamespace(p, ns);

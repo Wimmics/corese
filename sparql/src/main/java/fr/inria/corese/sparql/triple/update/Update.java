@@ -85,6 +85,10 @@ public class Update extends TopExp {
     public Constant getGraphName() {
         return null;
     }
+    
+    public Constant getGraphNameDeleteInsert() {
+        return null;
+    }
 
     public boolean isComposite() {
         return false;

@@ -182,10 +182,12 @@ public class Composite extends Update {
         if (getData() != null) {
             return getData().getGraphName();
         }
-        return getGraphNameDeleteInsert();
+        //return getGraphNameDeleteInsert();
+        return null;
     }
     
-    Constant getGraphNameDeleteInsert() {
+    @Override
+    public Constant getGraphNameDeleteInsert() {
         for (Composite c : list) {
             Constant cst = c.getPattern().getGraphName();
             if (cst != null) {

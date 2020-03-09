@@ -72,7 +72,7 @@ public class GraphManager {
      */
     public GraphManager getNamedGraph(String label) {
         Graph g = graph.getNamedGraph(label);
-        if (g != null) {
+        if (g != null && g != graph.getGraph()) {
             return new GraphManager(g);
         }
         return null;

@@ -46,14 +46,14 @@ public class UpdateProcess {
 
     boolean isDebug = false;
 
-    UpdateProcess(QueryProcess e, Dataset ds) {
-        manager = e.getManager();
+    UpdateProcess(QueryProcess e, Manager man, Dataset ds) {
+        manager = man;
         exec = e;
         this.ds = ds;
     }
 
-    public static UpdateProcess create(QueryProcess e, Dataset ds) {
-        UpdateProcess u = new UpdateProcess(e, ds);
+    public static UpdateProcess create(QueryProcess e, Manager man, Dataset ds) {
+        UpdateProcess u = new UpdateProcess(e, man, ds);
         return u;
     }
 

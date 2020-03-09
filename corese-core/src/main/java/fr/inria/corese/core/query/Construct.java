@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Dataset;
-import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.core.Exp;
@@ -170,6 +169,21 @@ public class Construct
         return (isDelete) ? Event.Delete : (isInsert) ? Event.Insert : Event.Construct ;
     }
     
+    // when external named graph, use specific GraphManager
+    void setGraphManager(Exp exp) {
+        if (exp.first().isGraph()) {
+            // draft: graph kg:system { }
+            // in GraphStore
+            Node gNode = exp.first().getGraphName();
+            if (gNode.isConstant()) {
+                GraphManager m = graph.getNamedGraph(gNode.getLabel());
+                if (m != null) {
+                    set(m);
+                }
+            }
+        }
+    }
+    
     public void construct(Mappings map, Environment env) {  
         graph.start(event());
         Exp exp = query.getConstruct();
@@ -177,20 +191,8 @@ public class Construct
             exp = query.getDelete();
         }
 
-        if (exp.first().isGraph()) {
-            // draft: graph kg:system { }
-            // in GraphStore
-            Node gNode = exp.first().getGraphName();
-            if (gNode.isConstant()){
-                GraphManager m = graph.getNamedGraph(gNode.getLabel());
-                if (m != null){
-                    set(m);
-                }
-            }
-        }
-
-
-        //init();
+        // when external named graph, use specific GraphManager
+        setGraphManager(exp);
 
         Node gNode = defaultGraph;
         if (gNode == null) {

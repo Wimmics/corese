@@ -122,14 +122,6 @@ public class QueryProcess extends QuerySolver {
     protected QueryProcess(Producer p, Evaluator e, Matcher m) {
         super(p, e, m);
         Graph g = getGraph(p);
-        if (g != null) {
-            // construct 
-            GraphManager man = new GraphManager(g);
-            man.setQueryProcess(this);
-            setGraphManager(man);
-            // update
-            setManager(new ManagerImpl(man));
-        }
         // service
         set(ProviderImpl.create(this));
         init();
@@ -152,20 +144,8 @@ public class QueryProcess extends QuerySolver {
 
     @Override
     public void initMode() {
-//        switch (getMode()) {
-//            case PROTECT_SERVER_MODE:
-//                Access.protect();
-//                PluginImpl.readWriteAuthorized = false;
-//        }
     }
 
-    public void setManager(Manager man) {
-        updateManager = man;
-    }
-
-    public Manager getManager() {
-        return updateManager;
-    }
 
     public static QueryProcess create() {
         return create(Graph.create());
@@ -344,6 +324,9 @@ public class QueryProcess extends QuerySolver {
                 q.getFrom().clear();
                 if (isOverwrite()) {
                     g.shareNamedGraph(getGraph());
+                }
+                if (isDebug()) {
+                    System.out.println("QP: update external graph name: " + name);
                 }
                 return create(g);
             }
@@ -748,10 +731,6 @@ public class QueryProcess extends QuerySolver {
         return query(ast, null);
     }
 
-//	public Mappings query(ASTQuery ast, List<String> from, List<String> named) {
-//		Dataset ds = Dataset.create(from, named);
-//		return query(ast, ds);
-//	}
     public Mappings query(ASTQuery ast, Dataset ds) {
         if (ds != null) {
             ast.setDefaultDataset(ds);
@@ -926,17 +905,27 @@ public class QueryProcess extends QuerySolver {
             g.log(type, q, m);
         }
     }
+    
+    Context getContext(Query q) {
+        Context c = (Context) q.getContext();
+        if (c == null) {
+            return getAST(q).getContext();
+        }
+        return c;
+    }
 
-    /**
-     * return true if this query is a query submitted by a user on a protected corese server
-     * In this case, Update query is rejected
-     * PROTECT_SERVER_MODE means this QueryProcess is a protected SPARQL endpoint
-     * isUserQuery() = true means this query is submitted by a user on a protected server
-     * and this QueryProcess is a Workflow processor; In this case, function definition is also rejected.
-     */
-//    boolean isProtected(Query q) {
-//        return (getMode() == PROTECT_SERVER_MODE || getAST(q).isUserQuery()); 
-//    }
+    Level getLevel(Query q) {
+        Context c = getContext(q);
+        if (c == null) {
+            return Level.DEFAULT;
+        }
+        return c.getLevel();
+    }
+    
+    
+    
+    
+    
           
     boolean isOverwrite() {
         return overWrite;
@@ -949,15 +938,16 @@ public class QueryProcess extends QuerySolver {
     /**
      * Create a new graph where to perform update
      * Store it as named graph of main dataset
+     * toName = true:  execute whole query on external named graph
+     * toName = false: execute where on std graph, execute insert/delete on external graph
+     * in this case, Construct setGraphManager processes external graph
      */
-    Mappings overWrite(Query query, Mapping m, Dataset ds) throws EngineException {
-        String name = getWithName(query);
-        //System.out.println("Process named graph: " + name);
-                
+    Mappings overWrite(String name, Query query, Mapping m, Dataset ds, boolean toName) throws EngineException {                
         Graph g  = getGraph();
         Graph gg = g.getNamedGraph(name);
         if (gg == null) {
             gg = GraphStore.create();
+            g.setNamedGraph(name, gg);
             gg.setNamedGraph(Context.STL_DATASET, g);
             if (g.isVerbose()) {
                 gg.setVerbose(true);
@@ -965,16 +955,16 @@ public class QueryProcess extends QuerySolver {
         }
         
         gg.shareNamedGraph(g);
-
-        QueryProcess exec = QueryProcess.create(gg);
+        Graph targetGraph = (toName) ? gg : g;
+        QueryProcess exec = QueryProcess.create(targetGraph);
+        // bypass lock if any
         Mappings map = exec.update(query, m, ds); 
         if (gg.isVerbose()) {
-            System.out.println("name: " + name);
+            System.out.println("reentrant named graph: " + name + " " + toName);
             System.out.println(gg.getNames());
             System.out.println(gg);
         }
-        //gg.init();
-        g.setNamedGraph(name, gg);
+        //g.setNamedGraph(name, gg);
         complete(exec.getAST(query).getUpdate(), g);
         return map;
     }
@@ -994,6 +984,17 @@ public class QueryProcess extends QuerySolver {
     
     String getWithName(Query query) {
         String name = getAST(query).getUpdate().getGraphName();
+        if (isDebug()) {
+            System.out.println("QP: update reentrant with graph name: " + name);
+        }
+        return name;
+    }
+    
+    String getDeleteInsertName(Query query) {
+        String name = getAST(query).getUpdate().getGraphNameDeleteInsert();
+        if (isDebug()) {
+            System.out.println("QP: update reentrant del/ins graph name: " + name);
+        }
         return name;
     }
     
@@ -1010,37 +1011,30 @@ public class QueryProcess extends QuerySolver {
         return true;
     }
     
-    Context getContext(Query q) {
-        Context c = (Context) q.getContext();
-        if (c == null) {
-            return getAST(q).getContext();
-        }
-        return c;
-    }
-    
-    Level getLevel(Query q) {
-        Context c = getContext(q);
-        if (c == null) {
-            return Level.DEFAULT;
-        }
-        return c.getLevel();
-    }
-    
     Mappings synUpdate(Query query, Mapping m, Dataset ds) throws EngineException {
         if (Access.reject(Feature.SPARQL_UPDATE, getLevel(query))) { //getAST(query).getLevel())) { //(isProtected(query)) {
             return new Mappings();
         }
         Graph g = getGraph();
         GraphListener gl = (GraphListener) query.getPragma(Pragma.LISTEN);
-        if (isOverwrite()) {           
+        
+        if (isOverwrite()) {  
+            // reentrant mode which enables an update query during a select query
+            // update performed on an external named graph, created the first time
             String name = getWithName(query);
             if (name != null && isExternal(name)) {     
                 // draft: get/create a graph and store it as named graph
                 // with name insert where
                 // insert data { graph name }
                 // drop graph name
-                // old: (lock.getReadLockCount() > 0 || g.getNamedGraph(name) != null) {
-                return overWrite(query, m, ds);
+                return overWrite(name, query, m, ds, true);
+            }
+            name = getDeleteInsertName(query);
+            // insert { graph name {} } where {}
+            // consider name as external graph
+            // eval where {} on std graph
+            if (name != null && isExternal(name)) {
+                return overWrite(name, query, m, ds, false);
             }
         }
                              
@@ -1064,6 +1058,11 @@ public class QueryProcess extends QuerySolver {
             syncWriteUnlock(query);
         }
     }
+    
+    
+    
+    
+    
 
     /**
      * Annotated query with a service send query to server
@@ -1095,6 +1094,12 @@ public class QueryProcess extends QuerySolver {
     public EventManager getEventManager() {
         return getGraph().getEventManager();
     }
+       
+    ManagerImpl createUpdateManager(Graph g) {
+        GraphManager man = new GraphManager(g);
+        man.setQueryProcess(this);
+        return new ManagerImpl(man);
+    }
 
     /**
 	 * from and named (if any) specify the Dataset over which update take
@@ -1122,7 +1127,7 @@ public class QueryProcess extends QuerySolver {
             // TODO: check complete() -- W3C test case require += default + entailment + rule
             complete(ds);
         }
-        UpdateProcess up = UpdateProcess.create(this, ds);
+        UpdateProcess up = UpdateProcess.create(this, createUpdateManager(getGraph()), ds);
         up.setDebug(isDebug());
         Mappings map = up.update(query, m);
         

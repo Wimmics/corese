@@ -9,7 +9,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 
 /**
  *
- * @author corby
+ * @author Olivier Corby, Wimmics INRIA I3S, 2020
  */
 public class QuerySolverVisitorRule extends QuerySolverVisitorBasic {
     

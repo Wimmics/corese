@@ -1535,128 +1535,7 @@ public class Exp extends PointerObject
 
     }
     
-    
-    
-    
-//    void getNodes(List<Node> nodeList, List<Node> selectList, List<Node> existList, 
-//            boolean inSubScope, boolean optional, boolean bind, boolean blank) {
-//
-//        switch (type()) {
-//
-//            case FILTER:
-//                // get exists {} nodes
-//                // draft
-//                getExistNodes(getFilter().getExp(), existList);
-//                break;
-//
-//            case NODE:
-//                add(nodeList, getNode(), blank);
-//                break;
-//
-//            case EDGE:
-//            case PATH:
-//                Edge edge = getEdge();
-//                add(nodeList, edge.getNode(0), blank);
-//                if (edge.getEdgeVariable() != null) {
-//                    add(nodeList, edge.getEdgeVariable(), blank);
-//                }
-//                add(nodeList, edge.getNode(1), blank);
-//                
-//                for (int i = 2; i < edge.nbNode(); i++) {
-//                    add(nodeList, edge.getNode(i), blank);
-//                }
-//                break;
-//                
-//            case XPATH:
-//            case EVAL:
-//                for (int i = 0; i < nbNode(); i++) {
-//                    Node node = getNode(i);
-//                    add(nodeList, node, blank);
-//                }
-//                break;
-//
-//            case ACCEPT:
-//                //use case: join() check connection, need all variables
-//                add(nodeList, getNode());
-//                break;
-//
-//            case VALUES:
-//                for (Node var : getNodeList()) {
-//                    add(nodeList, var);
-//                }
-//                break;
-//
-//            case MINUS:
-//                // second argument does not bind anything: skip it
-//                if (first() != null) {
-//                    first().getNodes(nodeList, selectList, existList, inSubScope, optional, bind, blank);
-//                }
-//                break;
-//                
-//            case OPTIONAL:
-//                first().getNodes(nodeList, selectList, existList, inSubScope, true, bind, blank);
-//                if (! inSubScope){               
-//                    rest().getNodes(nodeList, selectList, existList, inSubScope, true, bind, blank);   
-//                }
-//                break;
-//                
-//            case GRAPH: 
-//                add(nodeList, getGraphName(), blank);
-//                if (size() > 1) {
-//                    rest().getNodes(nodeList, selectList, existList, inSubScope, optional, bind, blank);
-//                }
-//                break;
-//                
-//            case UNION:
-//                if (inSubScope) {
-//                    // in-subscope record nodes that are surely bound
-//                    // record nodes that are bound in both branches of union
-//                    List<Node> left  = first().getInScopeNodes(bind);
-//                    List<Node> right = rest().getInScopeNodes(bind);
-//                    for (Node node : left) {
-//                        if (right.contains(node)) {
-//                            add(nodeList, node);
-//                        }
-//                    }
-//                }
-//                else {
-//                   for (Exp ee : this) {
-//                       ee.getNodes(nodeList, selectList, existList, inSubScope, optional, bind, blank);
-//                   }
-//                }
-//                break;
-//                
-//            case BIND:
-//                //add(selectNodeList, getNode());
-//                if (bind) {
-//                    if (getNodeList() == null) {
-//                        add(nodeList, getNode());
-//                    } else {
-//                        for (Node node : getNodeList()) {
-//                            add(nodeList, node);
-//                        }
-//                    }
-//                }
-//                
-//                break;
-//                           
-//            case QUERY: 
-//                queryNodeList(selectList, inSubScope);
-//                break;
-//               
-//            default:
-//                // BGP, service, union, named graph pattern
-//                for (Exp ee : this) {
-//                    ee.getNodes(nodeList, selectList, existList, inSubScope, optional, bind, blank);
-//                    if (inSubScope && (ee.isMinus() || ee.isOptional() || ee.isUnion() || ee.isGraph())) {
-//                        // skip statements after optional/minus/union for in-subscope nodes
-//                        break;
-//                    }                    
-//                }
-//        }
-//
-//    }
-    
+  
     void queryNodeList(List<Node> selectList, boolean inSubScope) {
         List<Node> subSelectList = getQuery().getSelectNodeList();
         if (inSubScope) {
@@ -1758,22 +1637,6 @@ public class Exp extends PointerObject
         return new ExpHandler(exist, inSubScope, bind, blank);
     }
    
-//    public List<Node> getNodes(boolean exist, boolean inSubScope, boolean bind, boolean blank) {
-//        return getNodes2(exist, inSubScope, bind, blank);
-//    }
-//
-//    /**
-//     * 
-//     * @param exist
-//     * @param inSubScope: in optional, keep variables of left argument only
-//     * @param blank
-//     * @return 
-//     */
-//    public List<Node> getNodes2(boolean exist, boolean inSubScope, boolean bind, boolean blank) {
-//        ExpHandler h = new ExpHandler()
-//                .setExist(exist).setInSubScope(inSubScope).setBind(bind).setBlank(blank).setOptional(false);
-//        return getTheNodes(h);
-//    }
     
     public List<Node> getTheNodes(ExpHandler h){
         getNodes(h);
@@ -1796,32 +1659,7 @@ public class Exp extends PointerObject
         return h.getNodeList();
     }
     
-//    public List<Node> getNodes1(boolean exist, boolean inSubScope, boolean bind, boolean blank) {
-//        List<Node> nodeList         = new ArrayList<Node>();
-//        List<Node> selectNodeList   = new ArrayList<Node>();
-//        List<Node> existNodeList    = new ArrayList<Node>();
-//
-//        getNodes(nodeList, selectNodeList, existNodeList, inSubScope, false, bind, blank);
-//
-//        // add select nodes that are not in lNode
-//        for (Node selectNode : selectNodeList) {
-//            if (!nodeList.contains(selectNode)) {                                                 
-//                nodeList.add(overloadSelectNodeByExistNode(existNodeList, selectNode));
-//            }
-//        }
-//
-//        if (exist) {
-//            // collect exists {} nodes
-//            for (Node existNode : existNodeList) {
-//                if (!nodeList.contains(existNode)) {
-//                    nodeList.add(existNode);
-//                }
-//            }
-//        }
-//        
-//        return nodeList;
-//    }
-    
+  
     /**
     * use case: 
     * select * where { 

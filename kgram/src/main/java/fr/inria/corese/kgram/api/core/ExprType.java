@@ -388,6 +388,7 @@ public interface ExprType {
         public static int SLICE       = 500;
         public static int EDGE_LEVEL  = 501;
         public static int DB          = 502;
+        public static int EDGE_ACCESS = 503;
         
         
         public static int XT_NODE_PROPERTY   = 600;

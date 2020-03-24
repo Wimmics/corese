@@ -1645,6 +1645,16 @@ public class Mappings extends PointerObject
     public List<Node> getNodeList() {
         return nodeList;
     }
+    
+    /**
+     * Generate nodeList for values clause for this Mappings
+     */
+    public List<Node> getNodeListValues() {
+        if (isEmpty()) {
+            return new ArrayList<>();
+        }
+        return get(0).getQueryNodeList();
+    }
 
     /**
      * @param nodeList the nodeList to set

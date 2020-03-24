@@ -64,6 +64,10 @@ public interface Edge extends  Pointerable {
 	 * @return
 	 */
 	int getIndex();
+        
+        // manage access right
+        default byte getLevel() { return -1; }
+        default Edge setLevel(byte b) { return this; }
 	
 	/**
 	 * Query edge must have an index (computed by KGRAM).

@@ -307,6 +307,27 @@ public class Query extends Exp implements Graphable {
         
         return sb;
     }
+    
+    
+    /**
+     * Add values () {} for this Mappings
+     */
+    public void addMappings(Mappings map) {
+        Exp values = createValues(getNodeListValues(map), map);
+        getBody().add(values);
+        setMappings(map);
+    }
+    
+    List<Node> getNodeListValues(Mappings map) {
+        List<Node> list = new ArrayList<>();
+        for (Node qn : map.getNodeListValues()) {
+            Node node = getSelectNode(qn.getLabel());
+            if (node != null) {
+                list.add(node);
+            }
+        }
+        return list;
+    }
 
     public void set(Sorter s) {
         querySorter.setSorter(s);
@@ -2287,8 +2308,9 @@ public class Query extends Exp implements Graphable {
         return isRule() || isRelax();
     }
 
-    public void setDetail(boolean b) {
+    public boolean setDetail(boolean b) {
         isDetail = b;
+        return b;
     }
 
     public boolean isDetail() {

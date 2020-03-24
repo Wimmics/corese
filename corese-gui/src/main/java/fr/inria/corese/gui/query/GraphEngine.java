@@ -22,6 +22,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadPlugin;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import java.util.Date;
 import org.apache.logging.log4j.Logger;
@@ -108,6 +109,11 @@ public class GraphEngine  {
                     case Command.RDF_STAR:
                         Graph.setEdgeMetadataDefault(true);
                         break;
+                    case Command.ACCESS:
+                        AccessRight.setActive(true);
+                        break;
+                            
+                        
                 }
             }
         }

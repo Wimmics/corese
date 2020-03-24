@@ -18,6 +18,7 @@ public class Command extends HashMap<String, String> {
     public static final String WORKFLOW         = "-wf";
     public static final String REENTRANT        = "-re";
     public static final String RDF_STAR         = "-rdfstar";
+    public static final String ACCESS           = "-access";
         
     String[] args;
     

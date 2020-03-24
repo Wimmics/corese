@@ -44,6 +44,9 @@ import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.AccessRightDefinition;
 
 
 
@@ -127,6 +130,8 @@ public class QuerySolver  implements SPARQLEngine {
         private Metadata metadata;
 	
 	static int count = 0;
+       
+        private AccessRight accessRight;
 	
 	static boolean test = true;
         private int planner = QUERY_PLAN;
@@ -141,6 +146,7 @@ public class QuerySolver  implements SPARQLEngine {
 		evaluator = e;
 		matcher = m;
 		setPragma(BasicGraphPattern.create());
+                setAccessRight(new AccessRight());
 	}
 
 	public static QuerySolver create(){
@@ -381,9 +387,13 @@ public class QuerySolver  implements SPARQLEngine {
         
         void tune(Eval kgram, Query q) {
             ASTQuery ast = (ASTQuery) q.getAST();
+            if (AccessRight.isActive()) {
+                ast.setAccessRight(getAccessRight());
+            }
             boolean event = ast.hasMetadata(Metadata.EVENT);
             tune (kgram, event);
             if (q.isInitMode()) {
+                // set visitor sleeping mode during init
                 kgram.getVisitor().setActive(true);
             }
         }
@@ -1007,7 +1017,28 @@ public class QuerySolver  implements SPARQLEngine {
         visitorable = aVisitorable;
     }
 
-   
+    /**
+     * @return the accessRight
+     */
+    public AccessRight getAccessRight() {
+        return accessRight;
+    }
+    
+    public AccessRightDefinition getAccessRightDefinition() {
+        return getAccessRight().getAccessRightDefinition();
+    }
+    public AccessRightDefinition getInsertRightDefinition() {
+        return getAccessRight().getInsertRightDefinition();
+    }
+    public AccessRightDefinition getDeleteRightDefinition() {
+        return getAccessRight().getDeleteRightDefinition();
+    }
 
+    /**
+     * @param accessRight the accessRight to set
+     */
+    public void setAccessRight(AccessRight accessRight) {
+        this.accessRight = accessRight;
+    }
 	
 }

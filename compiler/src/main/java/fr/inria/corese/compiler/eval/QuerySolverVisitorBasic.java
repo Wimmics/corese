@@ -61,6 +61,8 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     public static final String AFTER_LOAD    = "@afterLoad"; 
     public static final String BEFORE_ENTAIL = "@beforeEntailment";
     public static final String AFTER_ENTAIL  = "@afterEntailment";
+    public static final String PREPARE_ENTAIL = "@prepareEntailment";
+    public static final String LOOP_ENTAIL = "@loopEntailment";
     public static final String BEFORE_RULE = "@beforeRule";
     public static final String AFTER_RULE  = "@afterRule";    
     public static final String START    = "@start";
@@ -374,7 +376,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     }
     
    
-    IDatatype toDatatype(List<Edge> list) {
+    public IDatatype toDatatype(List<Edge> list) {
         ArrayList<IDatatype> res = new ArrayList<>();
         for (Edge edge : list) {
             res.add(DatatypeMap.createObject(edge));

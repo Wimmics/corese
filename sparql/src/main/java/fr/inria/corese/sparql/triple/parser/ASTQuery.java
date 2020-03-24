@@ -200,7 +200,6 @@ public class ASTQuery
      */
     float Threshold = 1;
     float DefaultThreshold = 1;
-    //byte access = Cst.ADMIN;
     // predefined ns from server
     String namespaces, base;
     // relax by dd:distance
@@ -279,6 +278,7 @@ public class ASTQuery
     private List<Constant> predicateList;
     private List<Triple> tripleList;
     private fr.inria.corese.kgram.core.Query updateQuery;
+    private AccessRight accessRight;
 
     /**
      * @return the defaultDataset
@@ -460,6 +460,7 @@ public class ASTQuery
         predicateList = new ArrayList<>();
         tripleList = new ArrayList<>();
         visitList = new ArrayList<>();
+        setAccessRight(new AccessRight());
     }
 
     ASTQuery(String query) {
@@ -495,6 +496,7 @@ public class ASTQuery
         ASTQuery ast = create();
         ast.setGlobalAST(this);
         ast.setNSM(getNSM());
+        ast.setAccessRight(getAccessRight());
         return ast;
     }
 
@@ -1279,10 +1281,12 @@ public class ASTQuery
          if (m != null) {
             setMetadata(m);
             annotate(m);
+            // to get @level @access metadata:
+            //initAccessRight();
         }
     }
     
-     public void addMetadata(Metadata m){
+    public void addMetadata(Metadata m){
          if (metadata == null){
             setMetadata(m);
          }
@@ -1296,6 +1300,17 @@ public class ASTQuery
         return metadata;
     }
     
+    /** 
+     * this is a generated update ast
+     * ga is the global update query
+     * share access right
+    */
+    public void shareAccess(ASTQuery ga) {
+        if (AccessRight.isActive()) {
+            setAccessRight(ga.getAccessRight());
+        }
+    }
+        
     public String getMetadataValue(int type) {
         return metadata.getValue(type);
     }
@@ -3719,6 +3734,38 @@ public class ASTQuery
      */
     public void setUpdateQuery(fr.inria.corese.kgram.core.Query updateQuery) {
         this.updateQuery = updateQuery;
+    } 
+    
+    // does not overload annotation
+    public void defReadAccess(byte readAccess) {
+//        if (getReadAccess() == UNDEFINED) {
+//            setReadAccess(readAccess);
+//        }
+    }
+    // does not overload annotation
+    public void defWriteAccess(byte readAccess) {
+//        if (getWriteAccess() == UNDEFINED) {
+//            setWriteAccess(readAccess);
+//        }
+    }
+    
+    public AccessRight getAccess() {
+        return getGlobalAST().getAccessRight();
+    }
+    
+
+    /**
+     * @return the accessRight
+     */
+    public AccessRight getAccessRight() {
+        return accessRight;
+    }
+
+    /**
+     * @param accessRight the accessRight to set
+     */
+    public void setAccessRight(AccessRight accessRight) {
+        this.accessRight = accessRight;
     }
     
 }

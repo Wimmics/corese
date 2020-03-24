@@ -153,6 +153,7 @@ public class ASTPrinter implements KeywordPP {
             ast.getDelete().toString(sb);
 
             if (ast.isInsert()) {
+                sb.nl();
                 sb.kw(INSERT);
                 ast.getInsert().toString(sb);
             }

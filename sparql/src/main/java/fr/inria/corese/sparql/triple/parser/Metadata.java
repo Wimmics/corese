@@ -65,9 +65,10 @@ public class Metadata extends ASTObject
     public static final int GRAPH     = 46;
     public static final int FROM      = 47;
     public static final int UPDATE    = 48;
+
     
     
-    public static final int EVENT   = 50;
+    public static final int EVENT   = 51;
 //    public static final int BEFORE  = 51;
 //    public static final int AFTER   = 52;
 //    public static final int PRODUCE = 53;
@@ -107,6 +108,8 @@ public class Metadata extends ASTObject
     public static final String REWRITE_NAMED        = PREF + "rewriteNamed";
     
     public static final String METHOD = "@method";
+    public static final String ACCESS = "@access";
+    public static final String LEVEL  = "@level";
              
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 
@@ -171,8 +174,7 @@ public class Metadata extends ASTObject
         define("@unlock",   UNLOCK); 
         define("@graph",    GRAPH); 
         define("@from",     FROM); 
-        
-        
+                      
         define("@update",    UPDATE);  
         define("@event",    EVENT);  
 //        define(META_BEFORE, BEFORE);  

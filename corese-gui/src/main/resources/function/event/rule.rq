@@ -4,12 +4,24 @@
 
 @public @beforeEntailment 
 function us:beforeEntailment (re, path) {
-	xt:print("before entailment", path)
+        set(countLoop = 0);
+	xt:print("before entailment:", path, xt:size(xt:graph()))
 }
 
 @public @afterEntailment 
 function us:afterEntailment(re, path) {
-	xt:print("after entailment", path)
+	xt:print("after entailment:", path, xt:size(xt:graph()))
+}
+
+@public @prepareEntailment 
+function us:prepareEntailment(re, q) {
+	xt:print("prepare entailment:", xt:size(xt:graph()));
+        xt:print(q)
+}
+
+@public @loopEntailment 
+function us:loopEntailment(re, path) {
+	xt:print("loop entailment:", set(countLoop = countLoop + 1), xt:size(xt:graph()))
 }
 
 #@public
@@ -24,7 +36,7 @@ function us:afterRule(re, q, res) {
     if (xt:size(res) > 0) { # && java:hasMetadata(java:getAST(q), "@test")) {
         xt:print("@afterRule");
         xt:print(java:getAST(q));
-        xt:print(xt:size(res), res);
+        xt:print("result:", xt:size(res));
         xt:print()
     }
 }

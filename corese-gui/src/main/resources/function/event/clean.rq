@@ -1,0 +1,57 @@
+#
+# clean OWL ontology, remove duplicate statements
+#
+insert {} 
+where {
+    bind (fun:clean() as ?f)
+}
+
+@public @prepareEntailment 
+function us:prepareEntailment(re, q) {
+        xt:print("prepare entailment:", xt:size(xt:graph()));
+        xt:print(q); return(0)
+}
+
+@beforeUpdate
+function us:beforeUpdate(q) {
+    xt:print("@before");
+    java:setDetail(q, true)
+    #;xt:print(java:getAST(q))
+}
+
+@afterUpdate
+function us:afterUpdate(m) {
+    xt:print("@after");
+    if (xt:size(m) > 0) {
+        xt:print(java:getAST(java:getQuery(m)));
+        xt:print("result:", xt:size(m));
+        xt:print()
+    }
+}
+
+@update
+function us:update(q, del, ins) {
+    xt:print("@update:", xt:size(del), xt:size(ins));
+    us:delete(del);
+    xt:print();
+    us:insert(ins)
+}
+
+
+function us:delete(list) {
+    let (num = 0) {
+        for (edge in list) {
+            xt:print("delete:", edge);
+            if (set(num = num + 1) >= 20, return (true), true)
+        }
+    }
+}
+
+function us:insert(list) {
+   let (num = 0) {
+        for (edge in list) {
+            xt:print("insert:", edge);
+            if (set(num = num + 1) >= 4, return (true), true)
+        }
+    }
+}

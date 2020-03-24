@@ -40,9 +40,9 @@ public class EdgeGeneric extends EdgeTop
     
     EdgeGeneric(Node g, Node pred, Node subject, Node object, Node arg1) {
         this(g, pred, subject, object);
-   }
+    }
     
-     EdgeGeneric(Node g, Node p, Node[] args) {
+    EdgeGeneric(Node g, Node p, Node[] args) {
         this(g, p);
     }
      
@@ -55,6 +55,7 @@ public class EdgeGeneric extends EdgeTop
         setNode(0, cur.getNode(0));
         setNode(1, cur.getNode(1));
         setIndex(cur.getIndex());
+        setLevel(cur.getLevel());
         setProvenance(cur.getProvenance());
     }
     

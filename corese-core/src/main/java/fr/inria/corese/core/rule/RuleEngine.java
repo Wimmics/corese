@@ -214,6 +214,7 @@ public class RuleEngine implements Engine, Graphable {
      */
     public void cleanOWL() throws IOException, EngineException{
         Cleaner cl = new Cleaner(graph);
+        cl.setVisitor(getVisitor());
         getEventManager().start(Event.CleanOntology);
         cl.clean(Cleaner.OWL);
         graph.getIndex(1).clean();
@@ -581,6 +582,7 @@ public class RuleEngine implements Engine, Graphable {
 
         while (go) {
             getEventManager().start(Event.InferenceCycle);
+            getVisitor().loopEntailment(getPath());
             skip = 0;
             nbrule = 0;
             tnbres = 0;

@@ -16,6 +16,7 @@ import fr.inria.corese.core.Index;
 import fr.inria.corese.core.Serializer;
 import java.util.HashMap;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 
 /**
  * Table property node -> List<Edge>
@@ -711,7 +712,12 @@ public class EdgeManagerIndexer
         if (i == -1) {
             return null;
         }
-
+        
+        Edge target = list.get(i);
+        if (AccessRight.isActive() && AccessRight.reject(edge.getLevel(), target.getLevel())) {
+            return null;
+        }
+        
         Edge ent = list.remove(i);
         if (getIndex() == 0) {
             graph.setSize(graph.size() - 1);

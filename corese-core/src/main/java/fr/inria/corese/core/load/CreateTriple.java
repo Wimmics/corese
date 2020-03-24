@@ -7,6 +7,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -53,11 +54,33 @@ public class CreateTriple {
     public void finish() {
         graph.getEventManager().finish(Event.LoadAPI);
     }
+    
+    void add(Edge e) {
+        if (AccessRight.isActive()) { 
+            if (! getAccessRight().setInsert(e)) {
+                return ;
+            }
+        }
+        Edge edge = graph.addEdge(e);
+        if (edge != null) {
+            declare(edge);
+        }
+    }
 
     void declare(Edge edge) {
         if (getQueryProcess() != null) {
             getQueryProcess().getCurrentVisitor().insert(dtpath, edge);
         }
+    }
+    
+//    void access(Edge edge) {
+//        if (AccessRight.isActive()) {
+//            getAccessRight().setInsert(edge);
+//        }
+//    }
+    
+    AccessRight getAccessRight() {
+        return load.getAccessRight();
     }
     
     public void exclude(String ns) {

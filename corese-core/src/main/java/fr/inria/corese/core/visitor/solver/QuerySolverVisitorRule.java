@@ -3,9 +3,12 @@ package fr.inria.corese.core.visitor.solver;
 import fr.inria.corese.compiler.eval.QuerySolverVisitorBasic;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
+import java.util.List;
 
 /**
  *
@@ -35,6 +38,35 @@ public class QuerySolverVisitorRule extends QuerySolverVisitorBasic {
         return callback(getEval(), AFTER_ENTAIL, toArray(re, path));
     }
     
+    @Override
+    public IDatatype prepareEntailment(DatatypeValue path) {
+        IDatatype dt = callback(getEval(), PREPARE_ENTAIL, toArray(re, path));
+        return dt;
+    }  
+    
+    @Override
+    public IDatatype beforeUpdate(Query q) {
+        IDatatype dt = callback(getEval(), BEFORE_UPDATE, toArray(q));
+        return dt;
+    } 
+    
+    @Override
+    public IDatatype afterUpdate(Mappings map) {
+        IDatatype dt = callback(getEval(), AFTER_UPDATE, toArray(map));
+        return dt;
+    } 
+    
+    @Override
+    public IDatatype update(Query q, List<Edge> delete, List<Edge> insert) {
+        return callback(getEval(), UPDATE, toArray(q, toDatatype(delete), toDatatype(insert)));
+    } 
+    
+    @Override
+    public IDatatype loopEntailment(DatatypeValue path) {
+        IDatatype dt = callback(getEval(), LOOP_ENTAIL, toArray(re, path));
+        return dt;
+    }      
+      
     @Override
     public IDatatype beforeRule(Query q) {
         IDatatype dt = callback(getEval(), BEFORE_RULE, toArray(re, q));

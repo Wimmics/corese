@@ -3,6 +3,7 @@ package fr.inria.corese.core.query.update;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mapping;
 import org.slf4j.Logger;
@@ -43,6 +44,7 @@ public class UpdateProcess {
     QueryProcess exec;
     Query query;
     Dataset ds;
+    private ProcessVisitor visitor;
 
     boolean isDebug = false;
 
@@ -67,7 +69,8 @@ public class UpdateProcess {
         ASTUpdate astu = ast.getUpdate();
         Mappings map = Mappings.create(q);
         NSManager nsm = null;
-
+        // Visitor was setup by QueryProcessUpdate init(q, m)
+        setVisitor(exec.getCurrentVisitor());
         for (Update u : astu.getUpdates()) {
             if (isDebug) {
                 logger.debug("** Update: " + u);
@@ -98,7 +101,9 @@ public class UpdateProcess {
             } else {
                 // delete insert data where
                 Composite c = u.getComposite();
-                map = process(q, c, m);
+                // pass current binding as parameter
+                // use case: @event function has defined global variable
+                map = process(q, c, m, exec.getCurrentBinding());
             }
             // save and restore eval to get initial Visitor with possible @event function
             // because @event function may execute query and hence reset eval
@@ -120,7 +125,7 @@ public class UpdateProcess {
         isDebug = b;
     }
 
-    Mappings process(Query q, Composite ope, Mapping m) {
+    Mappings process(Query q, Composite ope, Mapping m, Binding b) {
         ASTQuery ast = null;
         switch (ope.type()) {
 
@@ -141,34 +146,53 @@ public class UpdateProcess {
         if (ast == null) {
             return Mappings.create(q);
         }
-        return update(q, ast, m);
+        return update(q, ast, m, b);
     }
 
     
     /**
      * Share global variables from LDScript Bind stack
+     * Binding b is the stack shared by update subqueries and 
+     * @event functions
      */
-    Mapping getMapping(Query q, Mapping m) {
+    Mapping getMapping(Query q, Mapping m, Binding b) {
         Mapping mm = m;
         if (m != null && m.size() == 0 && m.getBind() != null) {
             // m contains LDScript binding stack
             // generate appropriate Mapping for query q from this stack.
+            // use case: query(insert where))
             mm = Mapping.create(q, m.getBind());
         }
 
-        Binding b = exec.getCurrentBinding();
         // use case: update query with several subqueries
         // previous subquery @event function has set global variables 
         // stored in Binding of previous Eval
         // share these global variables with current Eval
-        if (b != null && !b.isEmpty()) {
-            // share bind stack in next eval
-            if (mm == null) {
-                mm = new Mapping();
-            }
-            mm.setBind(b);
+        if (b != null) {            
+            mm = setBind(mm, b);
         }
+        
+        mm = setVisitor(mm, getVisitor());
         return mm;
+    }
+    
+    Mapping setBind(Mapping m, Binding b) {
+        if (m == null) {
+            m = new Mapping();
+        }
+        m.setBind(b);
+        return m;
+    }
+    
+    Mapping setVisitor(Mapping m, ProcessVisitor vis) {
+        if (m == null) {
+            m = new Mapping();
+        }
+        if (m.getBind() == null) {
+            m.setBind(Binding.create());
+        }
+        m.getBind().setVisitor(m.getBind().getVisitor());
+        return m;
     }
 
     /**
@@ -176,16 +200,15 @@ public class UpdateProcess {
      * delete insert data delete insert where In case of data, fake an empty
      * where and process as a where update.
      */
-    Mappings update(Query query, ASTQuery ast, Mapping m) {
+    Mappings update(Query query, ASTQuery ast, Mapping m, Binding b) {
 
         //System.out.println("** QP:\n" + m.getBind());
         exec.logStart(query);
         Query q = compile(ast);
         inherit(q, query);
-        Mapping mm = getMapping(q, m);
+        Mapping mm = getMapping(q, m, b);  
         
-        // insert using g where
-        // if g is external graph, focus on g
+        //System.out.println("UP: " + vis);
         Mappings map = exec.basicQuery(null, q, mm);
    
         // PRAGMA: update can be both delete & insert
@@ -197,7 +220,7 @@ public class UpdateProcess {
             manager.insert(q, map, ds);
         }
 
-        visitor(q, map);
+        visitor(getVisitor(), q, map);
         exec.logFinish(query, map);
 
         return map;
@@ -217,15 +240,22 @@ public class UpdateProcess {
         update.setDetail(query.isDetail());
     }
     
-    void visitor(Query q, Mappings map) {
-        if ((map.getDelete() != null && !map.getDelete().isEmpty()) || 
-            (map.getInsert() != null && !map.getInsert().isEmpty())) {
-            List<Edge> delete = map.getDelete();
-            List<Edge> insert = map.getInsert();
-            if (delete == null) { delete = new ArrayList<>();}
-            if (insert == null) { insert = new ArrayList<>();}
-            exec.update(q, delete, insert);
+    /**
+     * @update function
+     * To get delete & insert list requires q.isDetail() = true
+     * It is done when there is a local @update function
+     * if @update function is @public, annotate query with: @event @update
+     */
+    void visitor(ProcessVisitor vis, Query q, Mappings map) {
+        List<Edge> delete = map.getDelete();
+        List<Edge> insert = map.getInsert();
+        if (delete == null) {
+            delete = new ArrayList<>();
         }
+        if (insert == null) {
+            insert = new ArrayList<>();
+        }
+        vis.update(q, delete, insert);
     }
     
     ASTQuery getInsert(Query q, Composite ope) {
@@ -365,11 +395,12 @@ public class UpdateProcess {
         ASTQuery ast = ASTQuery.create();
         ASTQuery ga = (ASTQuery) q.getAST();
         ast.setNSM(ope.getNSM());
+        
         ast.setPragma(ga.getPragma());
         ast.setPrefixExp(ga.getPrefixExp());
-        //ast.setDefine(ga.getDefine());
         ast.shareFunction(ga);
         ast.setAnnotation(ga.getMetadata());
+        ast.shareAccess(ga);
         ast.setSelectAll(true);
         // where {pat}
         ast.setBody(ope.getBody());
@@ -386,6 +417,20 @@ public class UpdateProcess {
         }
         
         return ast;
+    }
+
+    /**
+     * @return the visitor
+     */
+    public ProcessVisitor getVisitor() {
+        return visitor;
+    }
+
+    /**
+     * @param visitor the visitor to set
+     */
+    public void setVisitor(ProcessVisitor visitor) {
+        this.visitor = visitor;
     }
 
 }

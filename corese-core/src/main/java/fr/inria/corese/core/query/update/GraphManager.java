@@ -20,6 +20,8 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 
 /**
  *
@@ -269,6 +271,10 @@ public class GraphManager {
     
     boolean load(Query q, Basic ope) {
         Load load = Load.create(graph);
+        if (AccessRight.isActive()) {
+            ASTQuery ast = (ASTQuery) q.getAST();
+            load.setAccessRight(ast.getAccess());
+        }
         //getQueryProcess().init(q);
         load.setQueryProcess(getQueryProcess());
         String uri = ope.getURI();

@@ -111,6 +111,7 @@ public class Transformer implements TransformProcessor {
     NSManager nsm;
     QueryProcess exec;
     private Mapping mapping;
+    private Mappings map;
     private Dataset ds;
     Stack stack;
     static Table table;
@@ -188,6 +189,22 @@ public class Transformer implements TransformProcessor {
         imported = new HashMap<>();
         tmap = new TransformerMapping(qp.getGraph());  
         setDebug(p);
+    }
+    
+    void initMap() {
+        Query q = getTemplate(start);
+        if (q == null) {
+            return;
+        }
+        //q.addMappings(map);
+        q.setMappings(getMappings());
+    }
+    
+    public static Transformer create(Graph g, Mappings map, String p) {
+        Transformer t = new Transformer(g, p);
+        t.setMappings(map);
+        t.initMap();
+        return t;
     }
 
     public static Transformer create(Graph g) {
@@ -953,6 +970,10 @@ public class Transformer implements TransformProcessor {
     private List<Query> getTemplateList(String temp) {
         return qe.getTemplateList(temp);
     }
+    
+    public Query getTemplate(String temp) {
+       return qe.getTemplate(temp);
+    }
 
     /**
      * use case: result of st:apply-templates-all() list = list of ?out results
@@ -1577,6 +1598,20 @@ public class Transformer implements TransformProcessor {
      */
     public void setBinding(Binding binding) {
         this.binding = binding;
+    }
+
+    /**
+     * @return the map
+     */
+    public Mappings getMappings() {
+        return map;
+    }
+
+    /**
+     * @param map the map to set
+     */
+    public void setMappings(Mappings map) {
+        this.map = map;
     }
 
 

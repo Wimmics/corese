@@ -34,11 +34,9 @@ public abstract class EdgeBinary extends EdgeTop
         str += getNode(0) + " " + getEdgeNode() + " " + getNode(1);
         return str;
     }
-           
-
+    
     @Override
-    public boolean contains(Node node) {
-        
+    public boolean contains(Node node) {  
         return getNode(0).same(node) || getNode(1).same(node);
     }
 

@@ -1,6 +1,5 @@
 package fr.inria.corese.core.load;
 
-import java.util.ArrayList;
 import java.util.Hashtable;
 
 import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
@@ -8,7 +7,6 @@ import fr.com.hp.hpl.jena.rdf.arp.AResource;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
-import java.util.List;
 
 /**
  * Graph creation Methods are public, Design to be refined
@@ -80,6 +78,7 @@ public class BuildImpl extends CreateTriple implements Build {
         blank.clear();
     }
 
+    @Override
     public void setSkip(boolean b) {
         setSkip(b);
     }
@@ -87,10 +86,7 @@ public class BuildImpl extends CreateTriple implements Build {
   
 
     public void process(Node gNode, Edge edge) {
-        Edge ent = graph.addEdge(edge);
-        if (ent != null) {
-            declare(ent);
-        }
+        add(edge);
     }
 
     public Edge getEdge(Node source, Node subject, Node predicate, Node value) {

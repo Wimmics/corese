@@ -7,6 +7,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 import java.util.ArrayList;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 
 /**
  * Simple filter applied to object or subject of current edge
@@ -24,6 +25,8 @@ public class DataFilter implements ExprType {
     
     private int test;
     int index, other = 1;
+    byte level = AccessRight.DEFAULT;
+    
     private IDatatype value;
     
     DataFilter(){}
@@ -40,6 +43,11 @@ public class DataFilter implements ExprType {
     
     public DataFilter(int test, int index){
        this(test, null, index);
+    }
+    
+     public DataFilter(int test, byte level){
+       this.test = test;
+       this.level = level;
     }
     
     public DataFilter(int test, IDatatype dt){
@@ -111,6 +119,10 @@ public class DataFilter implements ExprType {
             // Rule Engine optimization require edge with index >= index
             case EDGE_LEVEL:
                 return result(ent.getIndex() >= index);
+                
+            case EDGE_ACCESS:
+                //System.out.println("DF access: "  + level + " " + ent.getLevel());
+                return AccessRight.accept(level, ent.getLevel());    
                 
             default:
                 IDatatype dt =  getValue(ent, index);

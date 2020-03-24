@@ -21,7 +21,7 @@ class EdgeManagerIterate implements Iterable<Edge>, Iterator<Edge> {
     int focusNodeIndex;
     int ind, start = 0;
     boolean isList = true;
-    EdgeTop buffer;
+    EdgeGeneric buffer;
 
     EdgeManagerIterate(EdgeManager l) {
         list = l;
@@ -65,7 +65,7 @@ class EdgeManagerIterate implements Iterable<Edge>, Iterator<Edge> {
     /**
      * Fill buffer Edge from internal ent
      */
-    void fill(EdgeTop buf, Edge ent) {
+    void fill(EdgeGeneric buf, Edge ent) {
         buf.setGraph(ent.getGraph());
         buf.replicate(ent);
     }

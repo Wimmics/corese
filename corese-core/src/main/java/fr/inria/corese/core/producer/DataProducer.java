@@ -240,6 +240,11 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
         return  this;
     }
     
+    public DataProducer access(byte n){
+        setFilter(new DataFilter(ExprType.EDGE_ACCESS, n));
+        return  this;
+    }
+    
     public DataProducer named(){
         this.isNamedGraph = true;
         return this;

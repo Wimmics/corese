@@ -34,6 +34,8 @@ import fr.inria.corese.core.producer.DataProducer;
 import fr.inria.corese.core.Index;
 import fr.inria.corese.core.util.ValueCache;
 import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.util.HashMap;
 
 /**
@@ -241,6 +243,7 @@ public class ProducerImpl implements Producer, IProducerQP {
         }
 
         Query q = env.getQuery();
+        ASTQuery ast = (ASTQuery) q.getAST();
 
         int level = -1;
         int n = 0;
@@ -318,7 +321,8 @@ public class ProducerImpl implements Producer, IProducerQP {
             it = graph.getDataStore().getDefault(emptyFrom).iterate(predicate, focusNode, n);
         } else {
             boolean skip = graph.isEdgeMetadata() && edge.nbNode()==2;
-            it = getEdges(gNode, getNode(gNode, env), from, predicate, focusNode, objectNode, n, skip);
+            byte access = ast.getAccess().getWhere();
+            it = getEdges(gNode, getNode(gNode, env), from, predicate, focusNode, objectNode, n, skip, access);
         }
         // in case of local Matcher
         it = localMatch(it, gNode, edge, env);
@@ -330,33 +334,27 @@ public class ProducerImpl implements Producer, IProducerQP {
      * Enumerate candidate edges either from default graph or from named graphs
      */
     public Iterable<Edge> getEdges(Node gNode, Node sNode, List<Node> from,
+            Node predicate, Node focusNode, Node objectNode, int n, boolean skip, byte access) {
+        return dataProducer(gNode, from, sNode, skip, access).iterate(predicate, focusNode, n);
+    }
+    
+    Iterable<Edge> getEdges(Node gNode, Node sNode, List<Node> from,
             Node predicate, Node focusNode, Node objectNode, int n, boolean skip) {
-        return dataProducer(gNode, from, sNode, skip).iterate(predicate, focusNode, n);
+        return dataProducer(gNode, from, sNode, skip, AccessRight.PUBLIC).iterate(predicate, focusNode, n);
     }
 
-    DataProducer dataProducer(Node gNode, List<Node> from, Node sNode, boolean skip) {
+    DataProducer dataProducer(Node gNode, List<Node> from, Node sNode, boolean skip, byte access) {
+        DataProducer dp;
         if (gNode == null) {
-            return graph.getDataStore().getDefault(from).setSkipEdgeMetadata(skip);
+            dp = graph.getDataStore().getDefault(from).setSkipEdgeMetadata(skip);
         } else {
-            return graph.getDataStore().getNamed(from, sNode).setSkipEdgeMetadata(skip);
+            dp = graph.getDataStore().getNamed(from, sNode).setSkipEdgeMetadata(skip);
         }
+        if (AccessRight.isActive()) {
+            dp.access(access);
+        }
+        return dp;
     }
-
-    // draft test: manage DataStore in a cache
-//    Iterable<Edge> getEdges(Edge edge, Node gNode, Node sNode, List<Node> from,
-//            Node predicate, Node focusNode, Node objectNode, int n) {
-//        DataProducer ds;
-//        if (sNode != null) {
-//            ds = dataProducer(gNode, from, sNode);
-//        } else {
-//            ds = cache.get(edge);
-//            if (ds == null) {
-//                ds = dataProducer(gNode, from, sNode);
-//                cache.put(edge, ds);
-//            }
-//        }
-//        return ds.iterate(predicate, focusNode, n);
-//    }
 
     @Override
     public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {

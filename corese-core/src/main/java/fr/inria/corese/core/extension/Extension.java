@@ -3,11 +3,21 @@ package fr.inria.corese.core.extension;
 import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.rule.Cleaner;
+import fr.inria.corese.core.rule.RuleEngine;
+import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
+import fr.inria.corese.kgram.api.query.ASTQ;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
+import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -22,8 +32,39 @@ import java.util.logging.Logger;
  */
 public class Extension extends Core {
     
+
+    
+    
+    // clean OWL ontology: remove duplicate statements
+    public IDatatype clean() {
+        Cleaner clean = new Cleaner(getGraph());
+        clean.setVisitor(new QuerySolverVisitorRule(new RuleEngine(), getEval()));
+        try {
+            clean.clean();
+        } catch (IOException ex) {
+            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (EngineException ex) {
+            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return DatatypeMap.TRUE;
+    }
+    
+    
+ 
     
     public IDatatype mytest() {
+        try {
+            QueryProcess exec = QueryProcess.create(getGraph());
+            System.out.println("before mytest");
+            Mappings map = exec.query("insert { graph us:g1 { [] rdf:value ?v } } where { bind (rand() as ?v) }");
+            System.out.println("after mytest");
+        } catch (EngineException ex) {
+            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return DatatypeMap.TRUE;
+    }
+    
+    public IDatatype mytest2() {
         Service s = new Service("http://localhost:8080/sparql");
         try {
             System.out.println("before mytest");
@@ -75,11 +116,19 @@ public class Extension extends Core {
     }
     
     public IDatatype query() {
-        return cast(getEnvironment().getQuery());
+        return cast(getQuery());
     }
     
     public IDatatype ast() {
-        return cast(getEnvironment().getQuery().getAST());
+        return cast(getAST());
+    }
+    
+    Query getQuery() {
+        return getEnvironment().getQuery();
+    }
+    
+    ASTQuery getAST() {
+        return (ASTQuery) getEnvironment().getQuery().getAST();
     }
     
     IDatatype cast(Object obj) {

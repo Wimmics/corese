@@ -142,12 +142,7 @@ public class CreateImpl extends CreateTriple implements Creator {
         add(e);
     }
 
-    void add(Edge e) {
-        Edge edge = graph.addEdge(e);
-        if (edge != null) {
-            declare(edge);
-        }
-    }
+   
 
     @Override
     public void list(RDFList l) {

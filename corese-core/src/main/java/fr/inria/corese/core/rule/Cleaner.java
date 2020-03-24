@@ -6,7 +6,13 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.kgram.api.core.DatatypeValue;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import java.io.IOException;
+import java.util.Date;
 
 /**
  * Remove redundant bnodes from an RDF/OWL graph
@@ -17,11 +23,13 @@ import java.io.IOException;
 public class Cleaner {
     public static final int OWL = 0;
     static final String data = "/query/clean/";
-    static final String[] queries = {"ui2.rq", "ui3.rq", "ui4.rq", "allsome.rq", "card.rq"};
+    //static final String[] queries = {"ui2.rq", "ui3.rq", "ui4.rq", "allsome.rq", "card.rq"};
+    static final String[] queries = { "allsome.rq", "card.rq", "ui2.rq", "ui3.rq", "ui4.rq"};
     
     Graph graph;
+    private ProcessVisitor visitor;
     
-    Cleaner(Graph g){
+    public Cleaner(Graph g){
         graph = g;
     }
     
@@ -29,9 +37,13 @@ public class Cleaner {
         switch (mode){
             
             case OWL: 
-                clean(graph, queries);
+                clean();
                 break;
         }
+    }
+    
+    public void clean() throws IOException, EngineException {
+        clean(graph, queries);
     }
       
     /**
@@ -39,6 +51,7 @@ public class Cleaner {
      * by same bnode
      */
     void clean(Graph g, String[] lq) throws IOException, EngineException{
+        Date d1 = new Date();
          QueryLoad ql = QueryLoad.create();
          QueryProcess exec = QueryProcess.create(g);
          // escape QueryProcess write lock in case 
@@ -48,9 +61,18 @@ public class Cleaner {
          exec.setSynchronized(true);
          for (String q : lq){
              String qq = ql.getResource(data + q); 
-             exec.query(qq);            
+             //DatatypeValue dt = getVisitor().prepareEntailment(DatatypeMap.newInstance(qq));
+             Mappings map = exec.query(qq, createMapping(getVisitor()));
          }
+         Date d2 = new Date();
+         System.out.println("Clean: " + ((d2.getTime() - d1.getTime()) / 1000.0));
    }
+    
+    Mapping createMapping(ProcessVisitor vis) {
+        Binding b = Binding.create();
+        b.setVisitor(vis);
+        return Mapping.create(b);
+    }
     
       /**
      * Replace duplicate OWL expressions by one of them
@@ -68,6 +90,20 @@ public class Cleaner {
         Mappings m1 = exec.query(unify);        
         Mappings m2 = exec.query(clean);       
         exec.getEvaluator().setMode(Evaluator.NO_CACHE_MODE);
+    }
+
+    /**
+     * @return the visitor
+     */
+    public ProcessVisitor getVisitor() {
+        return visitor;
+    }
+
+    /**
+     * @param visitor the visitor to set
+     */
+    public void setVisitor(ProcessVisitor visitor) {
+        this.visitor = visitor;
     }
 
 }

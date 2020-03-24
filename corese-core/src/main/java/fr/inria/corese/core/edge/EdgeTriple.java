@@ -37,7 +37,7 @@ public class EdgeTriple extends EdgeBinary  {
 		sb.append(object);		
 		sb.append(")");
 		return sb.toString();
-	}
+    }
 
     @Override
     public Node getEdgeNode() {

@@ -21,6 +21,8 @@ import fr.inria.corese.core.Event;
 import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.util.Duplicate;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 
 /**
  * construct where describe where delete where
@@ -37,6 +39,7 @@ public class Construct
     int count = 0, ruleIndex = 0, index = 0;
     String root;
     Query query;
+    ASTQuery ast;
     GraphManager graph;
     Node defaultGraph;
     //IDatatype dtDefaultGraph;
@@ -63,6 +66,7 @@ public class Construct
 
     Construct(Query q) {
         query = q;
+        ast = (ASTQuery) query.getAST();
         table = new HashMap<Node, Node>();
         count = 0;
         //dtDefaultGraph = DatatypeMap.createResource(src);
@@ -138,12 +142,17 @@ public class Construct
     public List<Edge> getDeleteList() {
         return lDelete;
     }
-
+    
     public void construct(Mappings map) {
          construct(map, null);
     }
     
     public void delete(Mappings map, Dataset ds) {
+        if (AccessRight.isActive()) {
+            if (! ast.getAccess().isDelete()){
+                return;
+            } 
+        }
         setDelete(true);
         if (ds != null && ds.isUpdate()) {
             this.ds = ds;
@@ -155,6 +164,11 @@ public class Construct
     }
 
     public void insert(Mappings map, Dataset ds) {
+        if (AccessRight.isActive()) {
+            if (! ast.getAccess().isInsert()){
+                return;
+            } 
+        }
         setInsert(true);
         if (ds != null && ds.isUpdate()) {
             this.ds = ds;
@@ -244,49 +258,61 @@ public class Construct
                     // RuleEngine loop index
                     ent.setIndex(loopIndex);
                     if (isDelete) {
-                        if (isDebug) {
-                            logger.debug("** Delete: " + ent);
+                        boolean accept = true;
+                        if (AccessRight.isActive()) {
+                            accept = ast.getAccess().setDelete(ent);
                         }
-                        List<Edge> list = null;
-                        if (gNode == null && ds != null && ds.hasFrom()) {
-                            // delete in default graph
-                            list = graph.delete(ent, ds.getFrom());
-                        } else {
-                            // delete in all named graph
-                            list = graph.delete(ent);
-                        }
-                        if (list != null) {
-                            map.setNbDelete(map.nbDelete() + list.size());
+                        if (accept) {
+                            if (isDebug) {
+                                logger.debug("** Delete: " + ent);
+                            }
+                            List<Edge> list = null;
+                            if (gNode == null && ds != null && ds.hasFrom()) {
+                                // delete in default graph
+                                list = graph.delete(ent, ds.getFrom());
+                            } else {
+                                // delete in all named graph
+                                list = graph.delete(ent);
+                            }
+                            if (list != null) {
+                                map.setNbDelete(map.nbDelete() + list.size());
 
-                            if (lDelete != null) {
-                                //lDelete.addAll(list);
-                                lDelete.add(ent);
+                                if (lDelete != null) {
+                                    //lDelete.addAll(list);
+                                    lDelete.add(ent);
+                                }
                             }
                         }
 
-                    } else {
+                    } else { // insert/construt
                         if (isDebug) {
                             logger.debug("** Construct: " + ent);
                         }
-                        if (!isBuffer) {
-                            // isBuffer means: bufferise edges in a list 
-                            // that will be processed later by RuleEngine
-                            // otherwise, store edge in graph rigth now
-                            ent = graph.insert(ent);
+                        boolean accept = true;
+                        if (AccessRight.isActive()) {
+                            accept = ast.getAccess().setInsert(ent);
                         }
-                        if (ent != null) {
-                            map.setNbInsert(map.nbInsert() + 1);
-                            if (lInsert != null) {
-                                // buffer where to store edges
-                                lInsert.add(ent);
+                        if (accept) {
+                            if (!isBuffer) {
+                                // isBuffer means: bufferise edges in a list 
+                                // that will be processed later by RuleEngine
+                                // otherwise, store edge in graph rigth now
+                                ent = graph.insert(ent);
                             }
+                            if (ent != null) {
+                                map.setNbInsert(map.nbInsert() + 1);
+                                if (lInsert != null) {
+                                    // buffer where to store edges
+                                    lInsert.add(ent);
+                                }
 
-                            if (isInsert) {
-                                // When insert in new graph g, update dataset named += g
-                                if (ds != null) {
-                                    String name = ent.getGraph().getLabel();
-                                    if (! graph.isDefaultGraphNode(name)) {
-                                        ds.addNamed(name);
+                                if (isInsert) {
+                                    // When insert in new graph g, update dataset named += g
+                                    if (ds != null) {
+                                        String name = ent.getGraph().getLabel();
+                                        if (!graph.isDefaultGraphNode(name)) {
+                                            ds.addNamed(name);
+                                        }
                                     }
                                 }
                             }

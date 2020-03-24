@@ -4,6 +4,7 @@ import fr.inria.corese.core.edge.*;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.logic.Entailment;
+import fr.inria.corese.core.producer.DataFilter;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -88,19 +89,25 @@ public class EdgeFactory {
         if (ent.nbNode() > 2) {
             return ent;
         }
+        Edge edge = ent;
         switch (ent.getGraph().getIndex()){
             // rule edge must store an index
             case Graph.RULE_INDEX: return ent;
             
             case Graph.ENTAIL_INDEX:
-                return EdgeInternalEntail.create(ent);
+                edge = EdgeInternalEntail.create(ent);
+                break;
                 
             case Graph.DEFAULT_INDEX:
-                return EdgeInternalDefault.create(ent);
+                edge = EdgeInternalDefault.create(ent);
+                break;
 
             default: 
-                return EdgeInternal.create(ent);
+                edge =  EdgeInternal.create(ent);
+                break;
         }
+        edge.setLevel(ent.getLevel());
+        return edge;
     }
        
     public EdgeTop createDuplicate(Edge ent) {
@@ -237,14 +244,16 @@ public class EdgeFactory {
     }
     
     public Edge copy(Node node, Node pred, Edge ent) {
+        Edge edge;
         if (ent instanceof EdgeImpl) {
-            EdgeImpl ee = ((EdgeImpl)ent).copy();
-            ee.setGraph(node);
-            return ee;
+            edge = ((EdgeImpl)ent).copy();
+            edge.setGraph(node);
         }  
         else {
-            return create(node, ent.getNode(0), pred,  ent.getNode(1));
+            edge = create(node, ent.getNode(0), pred,  ent.getNode(1));
         }
+        edge.setLevel(ent.getLevel());
+        return edge;
     }
     
     public Edge copy(Edge ent){

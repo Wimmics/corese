@@ -8,6 +8,7 @@ import java.util.ArrayList;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 
 /**
  *
@@ -15,6 +16,7 @@ import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
  *
  */
 public abstract class EdgeTop extends GraphObject implements Edge {
+    private byte level = AccessRight.DEFAULT;
 
     public Edge copy() {
         return create(getGraph(), getNode(0), getEdgeNode(), getNode(1));
@@ -22,6 +24,24 @@ public abstract class EdgeTop extends GraphObject implements Edge {
 
     public static Edge create(Node source, Node subject, Node predicate, Node objet) {
         return null;
+    }
+    
+       // manage access right
+    @Override
+    public byte getLevel() {
+        //return -1;
+        return level;
+    }
+
+    @Override
+    public Edge setLevel(byte b) {
+        level = b;
+        return this;
+    }
+    
+    public Edge setLevel(int b) {
+        level = (byte)b;
+        return this;
     }
     
     @Override

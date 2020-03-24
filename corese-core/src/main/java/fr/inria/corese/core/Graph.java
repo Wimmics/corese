@@ -2780,7 +2780,7 @@ public class Graph extends GraphObject implements
         else {
             Edge ee = basicDelete(edge);
             if (ee != null) {
-                res = new ArrayList<Edge>();
+                res = new ArrayList<>();
                 res.add(ee);
                 getEventManager().process(Event.Delete, ee, edge);
             }
@@ -2803,10 +2803,9 @@ public class Graph extends GraphObject implements
                 Edge ent = basicDelete(edge);
                 if (ent != null) {
                     if (res == null) {
-                        res = new ArrayList<Edge>();
+                        res = new ArrayList<>();
                     }
                     res.add(ent);
-                    //setDelete(true);
                     getEventManager().process(Event.Delete, ent, edge);
                 }
             }
@@ -2831,8 +2830,6 @@ public class Graph extends GraphObject implements
                 logger.debug("delete: " + ie.getIndex() + " " + ent);
             }
             if (ent != null) {
-                //setDelete(true);
-                //getEventManager().process(Event.Delete, ent);
                 res = ent;
             }
         }
@@ -2851,7 +2848,7 @@ public class Graph extends GraphObject implements
             Edge ent = basicDelete(edge);
             if (ent != null) {
                 if (res == null) {
-                    res = new ArrayList<Edge>();
+                    res = new ArrayList<>();
                 }
                 res.add(ent);
                 graphName = ent.getGraph();

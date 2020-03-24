@@ -42,10 +42,11 @@ import fr.inria.corese.core.load.jsonld.JsonldLoader;
 import fr.inria.corese.core.load.rdfa.CoreseRDFaTripleSink;
 import fr.inria.corese.core.load.sesame.ParserLoaderSesame;
 import fr.inria.corese.core.load.sesame.ParserTripleHandlerSesame;
+import fr.inria.corese.core.producer.DataFilter;
 import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.io.ByteArrayInputStream;
 import java.io.FileFilter;
 import java.net.URLConnection;
@@ -97,6 +98,7 @@ public class Load
     private boolean event = true;
     int nb = 0;
     private int limit = LIMIT_DEFAULT;
+    private AccessRight accessRight;
     ArrayList<String> exclude;
 
     
@@ -114,6 +116,7 @@ public class Load
 
     public Load() {
         exclude = new ArrayList<>();
+        setAccessRight(new AccessRight());
     }
 
     public static Load create(Graph g) {
@@ -1151,4 +1154,19 @@ public class Load
     public void setEvent(boolean event) {
         this.event = event;
     }
+
+    /**
+     * @return the accessRight
+     */
+    public AccessRight getAccessRight() {
+        return accessRight;
+    }
+
+    /**
+     * @param accessRight the accessRight to set
+     */
+    public void setAccessRight(AccessRight accessRight) {
+        this.accessRight = accessRight;
+    }
+
 }

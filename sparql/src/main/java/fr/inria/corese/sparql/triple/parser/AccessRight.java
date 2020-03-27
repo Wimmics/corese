@@ -13,24 +13,40 @@ public class AccessRight {
     
     // NONE means no access right 
     public static final byte NONE       =-1;
-    //public static final byte UNDEFINED  = 0;
+    public static final byte UNDEFINED  = 0;
     public static final byte PUBLIC     = 1;
     public static final byte PROTECTED  = 2;
-    public static final byte PRIVATE    = 3;
+    public static final byte RESTRICTED = 3;
+    public static final byte PRIVATE    = 4;
     
     public static final int GT_MODE  = 0;
     public static final int EQ_MODE  = 1;
-    public static final int DEFAULT_MODE = GT_MODE;
+    public static final int BI_MODE  = 2;
     
+    public static final byte ZERO = 0b0000000;
+    // available for access right:
+    public static final byte ONE  = 0b0000001;
+    public static final byte TWO  = 0b0000010;
+    public static final byte THREE= 0b0000100;
+    public static final byte FOUR = 0b0001000;
+    public static final byte FIVE = 0b0010000;
+    public static final byte SIX  = 0b0100000;
+    public static final byte SEVEN= 0b1000000;
     
+    public static final byte[] BINARY = {ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN};
     
-    public static final String NONE_ACCESS       = NSManager.EXT+"node";
+    public static final int DEFAULT_MODE = GT_MODE;  
+    
+    public static final String NONE_ACCESS       = NSManager.EXT+"none";
+    public static final String UNDEFINED_ACCESS  = NSManager.EXT+"undefined";
     public static final String PUBLIC_ACCESS     = NSManager.EXT+"public";
     public static final String PROTECTED_ACCESS  = NSManager.EXT+"protected";
+    public static final String RESTRICTED_ACCESS = NSManager.EXT+"restricted";
     public static final String PRIVATE_ACCESS    = NSManager.EXT+"private";
     
     public static final String GT_ACCESS_MODE    = NSManager.EXT+"gt";
     public static final String EQ_ACCESS_MODE    = NSManager.EXT+"eq";
+    public static final String BI_ACCESS_MODE    = NSManager.EXT+"binary";
 
     
     // REJECTED means do not insert edge
@@ -108,6 +124,8 @@ public class AccessRight {
         switch (mode) {
             case EQ_MODE:
                 return acceptEQ(query, target);
+            case BI_MODE:
+                return acceptBI(query, target);    
             default:
                 return acceptGT(query, target);
         }
@@ -116,10 +134,20 @@ public class AccessRight {
         switch (mode) {
             case EQ_MODE:
                 return rejectEQ(query, target);
+            case BI_MODE:
+                return rejectBI(query, target);
             default:
                 return rejectLT(query, target);
         }
     }
+    
+    // specific test for query = target = 0
+    public static boolean acceptBI(byte query, byte target) {
+        return (query & target) > 0;
+    } 
+    public static boolean rejectBI(byte query, byte target) {
+        return  (query & target) == 0;
+    } 
     
     public static boolean acceptGT(byte query, byte target) {
         return query >= target;
@@ -145,10 +173,12 @@ public class AccessRight {
     
     public void setInsertNS(Edge edge) {
         edge.setLevel(getInsertRightDefinition().getAccess(edge, getInsert()));
+        if (isDebug()) System.out.println(edge.getLevel()+ " " + edge);
     }
-    
+        
     public void setDeleteNS(Edge edge) {
         edge.setLevel(getDeleteRightDefinition().getAccess(edge, getDelete()));
+        if (isDebug()) System.out.println(edge.getLevel() + " " + edge);
     }
     
     /**
@@ -263,25 +293,42 @@ public class AccessRight {
      */
     public byte getLevel(String level) {
         switch (level) {
+            case UNDEFINED_ACCESS:
+                return UNDEFINED;
             case PUBLIC_ACCESS:
                 return PUBLIC;
             case PRIVATE_ACCESS:
                 return PRIVATE;
             case PROTECTED_ACCESS:
                 return PROTECTED;  
+            case RESTRICTED_ACCESS:
+                return RESTRICTED; 
+                
             default:
                 return NONE;
         }
     }
     
+    // level must be a binary number
+    public byte getLevel(int level) {
+        if (level>= 0 && level<Byte.MAX_VALUE) {
+            return (byte)level;
+        }
+        return ZERO;
+    }
+    
     public static void setMode(String mode) {
         switch (mode) {
-            case EQ_ACCESS_MODE: setMode(EQ_MODE); break;
-            default: setMode(GT_MODE); break;
+            case EQ_ACCESS_MODE: eqMode(); break;
+            case BI_ACCESS_MODE: biMode(); break;
+            default: gtMode(); break;
         }
     }
     
     public byte getLevel(IDatatype dt) {
+        if (dt.isNumber()) {
+            return getLevel(dt.intValue());
+        }
         return getLevel(dt.getLabel());
     }
    
@@ -292,6 +339,19 @@ public class AccessRight {
     public static void setMode(int m) {
         mode = m;
     }
+    
+    public static void gtMode() {
+        setMode(GT_MODE);
+    }
+    
+    public static void eqMode() {
+        setMode(EQ_MODE);
+    }
+    
+     public static void biMode() {
+        setMode(BI_MODE);
+    }
+    
 
     /**
      * @return the debug

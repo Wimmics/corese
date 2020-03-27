@@ -14,20 +14,46 @@ import java.util.HashMap;
  */
 public class AccessRightDefinition {
     
-    private HashMap<String, Byte> nodeAccess;
-    private HashMap<String, Byte> graphAccess;
-    private HashMap<String, Byte> predicateAccess;
+    private static AccessRightDefinition singleton;
+    
+    private AccessMap nodeAccess;
+    private AccessMap graphAccess;
+    private AccessMap predicateAccess;
     
     private boolean debug = false;
+    
+    static {
+        setSingleton(new AccessRightDefinition());
+    }
+    
+    public class AccessMap extends HashMap<String, Byte> {
+
+        public void define(String uri, Byte b) {
+            put(uri, b);
+        }
+
+        Byte getAccess(Node node) {
+            if (isEmpty()) {
+                return null;
+            }
+            Byte b = get(node.getLabel());
+            if (b != null) {
+                return b;
+            }
+            String ns = namespace(node);
+            return get(ns);
+        }
+        
+    }
     
     public AccessRightDefinition() {
         init();
     }
     
     void init() {
-        nodeAccess      = new HashMap<>();
-        graphAccess     = new HashMap<>();
-        predicateAccess = new HashMap<>();
+        nodeAccess      = new AccessMap();
+        graphAccess     = new AccessMap();
+        predicateAccess = new AccessMap();
     }
     
     
@@ -41,19 +67,31 @@ public class AccessRightDefinition {
      * res is the URI|namespace access right granted for edge 
      */
     Byte getAccess(Edge edge, byte def) {
-        if (size() > 0) {
-            Byte node   = moreRestricted(getSubject(edge), getObject(edge));
-            Byte access = moreRestricted(getPredicate(edge), getGraph(edge));
-            Byte res    = moreRestricted(node, access);
-            //System.out.println("Def: " + edge + " " + res + " " + def);
-            if (res != null) {
-                return res;
-            }
+        Byte res = getAccessOrDefault(edge);
+        if (res == null) {
+            return def;
         }
-        
-        return def;
+        return res;
     }
     
+    Byte getAccess(Edge edge) {
+        if (size() > 0) {
+            Byte node   = moreRestricted(getSubject(edge),   getObject(edge));
+            Byte access = moreRestricted(getPredicate(edge), getGraph(edge));
+            Byte res    = moreRestricted(node, access);           
+            return res;
+        }
+        return null;
+    }
+    
+    Byte getAccessOrDefault(Edge edge) {
+        Byte res = getAccess(edge);
+        if (res == null) {
+            return getSingleton().getAccess(edge);
+        }
+        return res;
+    }
+
     Byte moreRestricted(Byte b1, Byte b2) {
         if (b1 == null) {
             return b2;
@@ -74,35 +112,25 @@ public class AccessRightDefinition {
         return b1 < b2 ? b1 : b2;
     }
 
-    Byte getAccess(Node node, HashMap<String, Byte> map) {
-        if (map.isEmpty()) {
-            return null;
-        }
-        Byte b = map.get(node.getLabel());
-        if (b != null) {
-            return b;
-        }
-        String ns = namespace(node);
-        return map.get(ns);
-    }
-    
+  
+    // return null when there is no uri access right
     Byte getPredicate(Edge edge) {
-        return getAccess(edge.getPredicate(), getPredicate());
+        return getPredicate().getAccess(edge.getPredicate());
     }
     
     Byte getGraph(Edge edge) {
          if (edge.getGraph() == null) {
             return null;
         }
-        return getAccess(edge.getGraph(), getGraph());
+        return getGraph().getAccess(edge.getGraph());
     }
     
     Byte getSubject(Edge edge) {
-        return getAccess(edge.getNode(0), getNode());
+        return getNode().getAccess(edge.getNode(0));
     }
     
     Byte getObject(Edge edge) {
-        return getAccess(edge.getNode(1), getNode());
+        return getNode().getAccess(edge.getNode(1));
     }
     
    
@@ -114,42 +142,42 @@ public class AccessRightDefinition {
      /**
      * @return the nodeAccess
      */
-    public HashMap<String, Byte> getNode() {
+    public AccessMap getNode() {
         return nodeAccess;
     }
 
     /**
      * @param nodeAccess the nodeAccess to set
      */
-    public void setNode(HashMap<String, Byte> nodeAccess) {
+    public void setNode(AccessMap nodeAccess) {
         this.nodeAccess = nodeAccess;
     }
 
     /**
      * @return the graphAccess
      */
-    public HashMap<String, Byte> getGraph() {
+    public AccessMap getGraph() {
         return graphAccess;
     }
 
     /**
      * @param graphAccess the graphAccess to set
      */
-    public void setGraph(HashMap<String, Byte> graphAccess) {
+    public void setGraph(AccessMap graphAccess) {
         this.graphAccess = graphAccess;
     }
 
     /**
      * @return the predicateAccess
      */
-    public HashMap<String, Byte> getPredicate() {
+    public AccessMap getPredicate() {
         return predicateAccess;
     }
 
     /**
      * @param predicateAccess the predicateAccess to set
      */
-    public void setPredicate(HashMap<String, Byte> predicateAccess) {
+    public void setPredicate(AccessMap predicateAccess) {
         this.predicateAccess = predicateAccess;
     }
 
@@ -165,6 +193,20 @@ public class AccessRightDefinition {
      */
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+
+    /**
+     * @return the singleton
+     */
+    public static AccessRightDefinition getSingleton() {
+        return singleton;
+    }
+
+    /**
+     * @param aSingleton the singleton to set
+     */
+    public static void setSingleton(AccessRightDefinition aSingleton) {
+        singleton = aSingleton;
     }
     
     

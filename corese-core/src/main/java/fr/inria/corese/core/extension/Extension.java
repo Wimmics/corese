@@ -7,7 +7,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.Cleaner;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
-import fr.inria.corese.kgram.api.query.ASTQ;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
@@ -16,7 +16,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.io.IOException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -121,6 +120,14 @@ public class Extension extends Core {
     
     public IDatatype ast() {
         return cast(getAST());
+    }
+    
+    public IDatatype edge(IDatatype n) {
+        Edge[] edges = getEnvironment().getEdges();
+        if (edges == null || edges.length < n.intValue()) {
+            return null;
+        }
+        return cast(edges[n.intValue()]);
     }
     
     Query getQuery() {

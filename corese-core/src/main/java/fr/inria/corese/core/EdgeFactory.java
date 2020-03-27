@@ -127,7 +127,9 @@ public class EdgeFactory {
     public Edge compact(Edge ent){
         switch (ent.getGraph().getIndex()){
             case Graph.RULE_INDEX: 
-                return EdgeInternalRule.create(ent.getNode(0), ent.getNode(1));
+                Edge edge = EdgeInternalRule.create(ent.getNode(0), ent.getNode(1));
+                edge.setLevel(ent.getLevel());
+                return edge;
             default: return ent;
         }
     }

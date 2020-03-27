@@ -1389,4 +1389,8 @@ public class Memory extends PointerObject implements Environment {
         return null;
     }
     
+    public static void recordEdge(boolean b) {
+        IS_EDGE = b;
+    }
+    
 }

@@ -1993,6 +1993,7 @@ public class Graph extends GraphObject implements
         return property.get(label);
     }
 
+    @Override
     public Node getPropertyNode(Node p) {
         return property.get(p.getLabel());
     }

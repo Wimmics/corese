@@ -55,6 +55,7 @@ public class NSManager extends ASTObject {
     public static final String XML = fr.inria.corese.sparql.datatype.RDF.XML;
     public static final String RDF = RDFS.RDF;
     public static final String OWL = RDFS.OWL;
+    public static final String SKOS = "http://www.w3.org/2004/02/skos/core#";
     public static final String SPIN = "http://spinrdf.org/sp#";
     public static final String SQL = "http://ns.inria.fr/ast/sql#";
     public static final String FOAF = "http://xmlns.com/foaf/0.1/";
@@ -236,6 +237,7 @@ public class NSManager extends ASTObject {
         def.put(RDFS.RDFS, RDFS.RDFSPrefix);
         def.put(RDFS.XSD, RDFS.XSDPrefix);
         def.put(RDFS.OWL, RDFS.OWLPrefix);
+        def.put(SKOS, "skos");
 
         def.put(SPIN, SPIN_PREF);
         def.put(FOAF, FOAF_PREF);

@@ -13,7 +13,6 @@ import static fr.inria.corese.kgram.api.core.ExprType.MAPMERGE;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import java.util.ArrayList;
-import java.util.Iterator;
 import java.util.List;
 
 /**

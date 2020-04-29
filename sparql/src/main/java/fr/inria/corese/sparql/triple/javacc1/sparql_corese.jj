@@ -2459,7 +2459,7 @@ Function Function(Metadata global, Metadata local) :
 Function Lambda () : 
 {Exp stack; Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;}
 {
-  <LAMBDA> 
+  (<LAMBDA> | <FUNCTION>)
   { stack = BasicGraphPattern.create(); }
   v = LambdaArgList()
   body = Body(stack)

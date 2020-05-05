@@ -53,6 +53,7 @@ public class Binding implements Binder {
     private static Logger logger = LoggerFactory.getLogger(Binding.class);
     private boolean dynamicCapture = DYNAMIC_CAPTURE_DEFAULT;
     private boolean result;
+    private boolean coalesce = false;
 
     Binding() {
         varList = new ArrayList();
@@ -575,6 +576,20 @@ public class Binding implements Binder {
      */
     public void setDynamicCapture(boolean dynamicCapture) {
         this.dynamicCapture = dynamicCapture;
+    }
+
+    /**
+     * @return the coalesce
+     */
+    public boolean isCoalesce() {
+        return coalesce;
+    }
+
+    /**
+     * @param coalesce the coalesce to set
+     */
+    public void setCoalesce(boolean coalesce) {
+        this.coalesce = coalesce;
     }
     
 }

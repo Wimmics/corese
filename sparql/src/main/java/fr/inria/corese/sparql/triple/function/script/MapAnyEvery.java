@@ -23,8 +23,83 @@ public class MapAnyEvery extends Funcall {
         setArity(2);
     }
 
-    @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    //@Override
+    public IDatatype evalnew(Computer eval, Binding b, Environment env, Producer p) {
+        IDatatype name = getBasicArg(0).eval(eval, b, env, p);
+        IDatatype[] param = evalArguments(eval, b, env, p, 1);
+        if (name == null || param == null) {
+            return null;
+        }
+
+        Function function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), param.length);
+        if (function == null) {
+            return null;
+        }
+
+        /**
+         * every (xt:fun, ?list) every (xt:fun, ?x, ?list) every (xt:fun, ?l1,
+         * ?l2) TODO: when getLoop() it works with only one loop error follow
+         * SPARQ semantics of OR (any) AND (every)
+         *
+         * @return
+         */
+        boolean every = oper() == MAPEVERY;
+        boolean any = oper() == MAPANY;
+        IDatatype iter = null;
+        Iterator<IDatatype> loop = null;
+        boolean isList = false, isLoop = false;
+
+
+        int k = 0;
+        for (IDatatype dt : param) {
+            if (dt.isList() || dt.isLoop()) {
+                iter = dt;
+                break;
+            }
+            else {
+                k++;
+            }
+        }
+        if (iter == null) {
+            return null;
+        }
+        IDatatype[] value = param; // new IDatatype[param.length];
+        boolean error = false, ok = true;
+        
+        for (IDatatype elem : iter) {
+
+            value[k] = elem;
+
+            if (elem != null) {
+                // iterator may return null when it ends
+                IDatatype res = call(eval, b, env, p, function, value);
+
+                if (res == null) {
+                    error = true;
+                } else {
+                    if (every) {
+                        if (!res.booleanValue()) {
+                            return FALSE;
+                        }
+                    } else if (any) {
+                        // any
+                        if (res.booleanValue()) {
+                            return TRUE;
+                        }
+                    }
+                }
+            }
+        }
+        
+        if (error) {
+            return null;
+        }
+        return value(every);
+
+
+    }
+    
+     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         IDatatype name = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);
         if (name == null || param == null) {
@@ -125,4 +200,5 @@ public class MapAnyEvery extends Funcall {
 
 
     }
+    
 }

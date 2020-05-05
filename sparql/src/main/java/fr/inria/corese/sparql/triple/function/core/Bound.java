@@ -4,7 +4,6 @@ import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
-import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 
@@ -24,12 +23,14 @@ public class Bound extends TermEval {
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-       // Node node = env.getNode(getBasicArg(0));
+        boolean save = b.isCoalesce();
+        b.setCoalesce(true);
         IDatatype dt = getBasicArg(0).eval(eval, b, env, p);
+        b.setCoalesce(save);
         if (dt == null) {
             return FALSE;
         }
         return TRUE;
-    }   
-   
+    }
+
 }

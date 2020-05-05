@@ -24,7 +24,10 @@ public class Coalesce extends TermEval {
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         for (Expression arg : getArgs()) {
+            boolean save = b.isCoalesce();
+            b.setCoalesce(true);
             IDatatype dt = arg.eval(eval, b, env, p);
+            b.setCoalesce(save);
             if (dt != null) {
                 return dt;
             }

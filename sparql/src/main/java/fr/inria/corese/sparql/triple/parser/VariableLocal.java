@@ -6,6 +6,8 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -13,6 +15,7 @@ import fr.inria.corese.kgram.api.query.Producer;
  *
  */
 public class VariableLocal extends Variable {
+    private static Logger logger = LoggerFactory.getLogger(VariableLocal.class);
     
     public VariableLocal(String name){
         super(name);
@@ -26,7 +29,11 @@ public class VariableLocal extends Variable {
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
-        return b.get(this);
+        IDatatype val = b.get(this);
+        if (val == null && ! b.isCoalesce()) {
+            logger.error("Undefined variable: " + this);
+        }
+        return val;
     }
     
     @Override

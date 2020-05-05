@@ -29,7 +29,93 @@ public class MapFunction extends Funcall {
         setArity(2);
     }
     
-    @Override
+    //@Override
+    public IDatatype evalnew(Computer eval, Binding b, Environment env, Producer p) {
+        IDatatype name    = getBasicArg(0).eval(eval, b, env, p);
+        IDatatype[] param = evalArguments(eval, b, env, p, 1);
+        if (name == null || param == null) {
+            return null;
+        }
+        Function function = getFunction(eval, env, name, param.length);
+        if (function == null) {
+            return null;
+        }
+                
+        Expr exp = this;
+        boolean maplist     = exp.oper() == MAPLIST; 
+        boolean mapmerge    = exp.oper() == MAPMERGE; 
+        boolean mapappend   = exp.oper() == MAPAPPEND; 
+        boolean mapfindelem = exp.oper() == MAPFIND;
+        boolean mapfindlist = exp.oper() == MAPFINDLIST;
+        boolean mapfind     = mapfindelem || mapfindlist;
+        boolean hasList     = maplist || mapmerge || mapappend;
+
+        Iterable<IDatatype> iter = null;        
+        int k = 0;
+        
+        for (IDatatype dt : param){  
+            if (dt.isList() || dt.isLoop()) {
+                iter = dt;
+                break;
+            }
+            else {
+                k++;
+            }
+        }               
+        if (iter == null){
+            return null;
+        }
+        IDatatype[] value = param; //new IDatatype[param.length];
+        ArrayList<IDatatype> res = (hasList)     ? new ArrayList<>() : null;
+        ArrayList<IDatatype> sub = (mapfindlist) ? new ArrayList<>() : null;
+        
+        for (IDatatype elem : iter){ 
+            value[k] = elem;
+            // call function on value parameter list
+            IDatatype val = call(eval, b, env, p, function, value);  
+            if (val == null){
+                return null;
+            }           
+                       
+            if (hasList) {
+               res.add(val);
+            }
+            else if (mapfindelem && val.booleanValue()) {
+                return elem;
+            } else if (mapfindlist && val.booleanValue()) {
+                // select elem whose predicate is true
+                // mapselect (xt:prime, xt:iota(1, 100))
+                sub.add(elem);
+            }         
+        }
+        
+        if (mapmerge || mapappend){
+            ArrayList<IDatatype> mlist = new ArrayList<>();
+            for (IDatatype dt : res){
+                if (dt.isList()){
+                    for (IDatatype v : dt.getValues()){
+                        add(mlist, v, mapmerge);
+                    }
+                }
+                else {
+                    add(mlist, dt, mapmerge);
+                }
+            }
+            return DatatypeMap.createList(mlist);
+        }
+        else if (maplist){
+            return DatatypeMap.createList(res); 
+        }
+        else if (mapfindlist){
+            return DatatypeMap.createList(sub);
+        }
+        else if (mapfindelem){
+            return null;
+        }
+        return TRUE;
+    }
+    
+    //@Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         IDatatype name    = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);

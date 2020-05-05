@@ -10,7 +10,6 @@ import java.util.List;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.TripleStore;
-import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.event.Event;
@@ -34,7 +33,8 @@ import java.util.Map;
 public class Mappings extends PointerObject
         implements Comparator<Mapping>, Iterable<Mapping> {
  
-    private static final String NL = System.getProperty("line.separator");    
+    private static final String NL = System.getProperty("line.separator");
+    private static final String AGGREGATE_LOCAL = "@local";
     private static final long serialVersionUID = 1L;
     private static int SELECT = -1;
     private static int HAVING = -2;
@@ -778,7 +778,10 @@ public class Mappings extends PointerObject
 
     void finish(Query qq) {
         setNbsolutions(size());
-        if (qq.hasGroupBy() && !qq.isConstruct()) {
+        if (qq.getAST().hasMetadata(AGGREGATE_LOCAL)) {
+            // keep results as is
+        }
+        else if (qq.hasGroupBy() && !qq.isConstruct()) {
             // after group by (and aggregate), leave one Mapping for each group
             // with result of the group
             groupBy();

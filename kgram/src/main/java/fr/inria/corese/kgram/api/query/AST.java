@@ -16,5 +16,7 @@ public interface AST {
     boolean isUpdateDelete(); 
     boolean isUpdateInsertData();
     boolean isUpdateDeleteData();  
-    boolean isUpdateLoad();  
+    boolean isUpdateLoad(); 
+    
+    boolean hasMetadata(String name);
 }

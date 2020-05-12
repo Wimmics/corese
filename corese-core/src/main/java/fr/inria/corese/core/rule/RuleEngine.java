@@ -324,6 +324,7 @@ public class RuleEngine implements Engine, Graphable {
 
     @Override
     public boolean process() {
+        System.out.println("RuleEngine process: " + getPath());
         before();
         int size = graph.size();
         entail();
@@ -775,6 +776,7 @@ public class RuleEngine implements Engine, Graphable {
         cons.set(new GraphManager(graph));
         cons.setLoopIndex(loopIndex);
         cons.setDebug(debug);
+        cons.setVisitor(getVisitor());
 
         if (isConstruct) {
             // kgram Result Listener create edges in list

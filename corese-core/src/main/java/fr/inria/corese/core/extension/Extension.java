@@ -5,6 +5,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.logic.Distance;
+import fr.inria.corese.core.query.Construct;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.Cleaner;
 import fr.inria.corese.core.rule.RuleEngine;
@@ -33,6 +34,13 @@ import java.util.logging.Logger;
  * @author Olivier Corby, Wimmics INRIA I3S, 2020
  */
 public class Extension extends Core {
+    
+    
+    public IDatatype allEntailment(IDatatype dt) {
+        Construct.setAllEntailment(dt.booleanValue());
+        return dt;
+    }
+    
     
      public IDatatype distance(IDatatype dt1, IDatatype dt2) { 
          return distance(dt1, dt2, null);

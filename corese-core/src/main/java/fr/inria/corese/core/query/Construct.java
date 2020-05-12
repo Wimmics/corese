@@ -19,8 +19,10 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.query.update.GraphManager;
+import fr.inria.corese.core.rule.Rule;
 import fr.inria.corese.core.util.Duplicate;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 
@@ -34,6 +36,7 @@ public class Construct
         implements Comparator<Node> {
 
     private static Logger logger = LoggerFactory.getLogger(Construct.class);
+    private static boolean allEntailment = false;
     static final String BLANK = "_:b_";
     static final String DOT = ".";
     int count = 0, ruleIndex = 0, index = 0;
@@ -52,11 +55,12 @@ public class Construct
             isInsert = false,
             isBuffer = false;
     private boolean test = false;
-    Object rule;
+    Rule rule;
     HashMap<Node, Node> table;
     Duplicate duplicate;
     private int loopIndex = -1;
     private Node prov;
+    private ProcessVisitor visitor;
     
 
     Construct(Query q, Dataset ds) {
@@ -116,7 +120,7 @@ public class Construct
         isInsert = b;
     }
 
-    public void setRule(Object r, int n, Node prov) {
+    public void setRule(Rule r, int n, Node prov) {
         isRule = true;
         rule = r;
         root = BLANK + n + DOT;
@@ -224,28 +228,47 @@ public class Construct
         if (lDelete != null) {
             map.setDelete(lDelete);
         }
-
+                
         if (env != null) {
             // construct one solution in env
-            clear();
-            construct(gNode, exp, map, env);
+            process(gNode, exp, map, env);
         } else {
-            for (Mapping m : map) {
-                // each map has its own blank nodes:
-                clear();
-                construct(gNode, exp, map, m);
+            for (Mapping m : map) {       
+                process(gNode, exp, map, m);
             }
         }
 
-        graph.finish(event());
-        
+        graph.finish(event());     
+    }
+    
+    void process(Node gNode, Exp exp, Mappings map, Environment env) {
+        List<Edge> edgeList = null;
+        clear();
+        if (isRule) {
+            edgeList = new ArrayList<>();
+        }
+        construct(gNode, exp, map, env, edgeList);
+        record(edgeList, env.getEdges());
+    }
+    
+    void record(List<Edge> construct, Edge[] where) {
+        if (isRule && ! construct.isEmpty()) {
+            List<Edge> whereList = new ArrayList<>();
+            for (Edge e : where) {
+                whereList.add(e);
+            }
+            if (getVisitor() != null) {
+                getVisitor().entailment(query, construct, whereList);
+            }
+        }
     }
 
     /**
      * Recursive construct of exp with map Able to process construct graph ?g
      * {exp}
+     * env: current solution mapping to be processed
      */
-    void construct(Node gNode, Exp exp, Mappings map, Environment env) {
+    void construct(Node gNode, Exp exp, Mappings map, Environment env, List<Edge> edgeList) {
         if (exp.isGraph()) {
             gNode = exp.getGraphName();
             exp = exp.rest();
@@ -253,7 +276,7 @@ public class Construct
 
         for (Exp ee : exp.getExpList()) {
             if (ee.isEdge()) {
-                Edge ent = construct(gNode, ee.getEdge(), env);
+                Edge ent = construct(gNode, ee.getEdge(), env);              
                 if (ent != null) {
                     // RuleEngine loop index
                     ent.setIndex(loopIndex);
@@ -293,6 +316,9 @@ public class Construct
                             accept = ast.getAccess().setInsert(ent);
                         }
                         if (accept) {
+                            if (isRule && isAllEntailment()) {
+                                edgeList.add(ent);
+                            }
                             if (!isBuffer) {
                                 // isBuffer means: bufferise edges in a list 
                                 // that will be processed later by RuleEngine
@@ -300,6 +326,9 @@ public class Construct
                                 ent = graph.insert(ent);
                             }
                             if (ent != null) {
+                                if (isRule && ! isAllEntailment()) {
+                                    edgeList.add(ent);
+                                }
                                 map.setNbInsert(map.nbInsert() + 1);
                                 if (lInsert != null) {
                                     // buffer where to store edges
@@ -320,7 +349,7 @@ public class Construct
                     }
                 }
             } else {
-                construct(gNode, ee, map, env);
+                construct(gNode, ee, map, env, edgeList);
             }
         }
     }
@@ -575,5 +604,33 @@ public class Construct
      */
     public void setDetail(boolean detail) {
         this.detail = detail;
+    }
+
+    /**
+     * @return the visitor
+     */
+    public ProcessVisitor getVisitor() {
+        return visitor;
+    }
+
+    /**
+     * @param visitor the visitor to set
+     */
+    public void setVisitor(ProcessVisitor visitor) {
+        this.visitor = visitor;
+    }
+
+    /**
+     * @return the allEntailment
+     */
+    public static boolean isAllEntailment() {
+        return allEntailment;
+    }
+
+    /**
+     * @param aAllEntailment the allEntailment to set
+     */
+    public static void setAllEntailment(boolean aAllEntailment) {
+        allEntailment = aAllEntailment;
     }
 }

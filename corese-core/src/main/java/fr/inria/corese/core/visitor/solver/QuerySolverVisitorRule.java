@@ -78,5 +78,11 @@ public class QuerySolverVisitorRule extends QuerySolverVisitorBasic {
     public IDatatype afterRule(Query q, Object res) {
         return callback(getEval(), AFTER_RULE, toArray(re, q, res));
     }
+    
+    @Override
+    public DatatypeValue entailment(Query rule, List<Edge> construct, List<Edge> where) { 
+        return callback(getEval(), ENTAILMENT, toArray(re, rule, toDatatype(construct), toDatatype(where)));
+    }
+
 
 }

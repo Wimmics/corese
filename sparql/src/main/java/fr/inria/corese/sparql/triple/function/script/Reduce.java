@@ -16,6 +16,8 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_APPEND;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MERGE;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.Processor;
 import java.util.List;
 
 /**
@@ -42,7 +44,10 @@ public class Reduce extends Funcall {
             return null;
         }
                 
-        Function function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), 2);
+        Function function = eval.getDefineGenerate(this, env, name.stringValue(), 2);
+        if (function == null) {
+            return null;
+        }
         IDatatype dt = param[0];
         if (! dt.isList()) {
             return null;
@@ -72,8 +77,16 @@ public class Reduce extends Funcall {
         return res;
     }
     
+    int functionOper(Function exp) {
+        Expression body = exp.getBody();
+        if (body.isTerm()) {
+            return body.oper();
+        }
+        return -1;
+    }
+    
     IDatatype neutral(Function exp, IDatatype name, IDatatype dt){
-        switch (exp.oper()){
+        switch (functionOper(exp)){
             case OR:
                 return FALSE;
                 

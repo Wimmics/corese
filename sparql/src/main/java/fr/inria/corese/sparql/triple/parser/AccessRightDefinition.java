@@ -22,6 +22,8 @@ public class AccessRightDefinition {
     
     private boolean debug = false;
     
+    
+    
     static {
         setSingleton(new AccessRightDefinition());
     }
@@ -76,12 +78,29 @@ public class AccessRightDefinition {
     
     Byte getAccess(Edge edge) {
         if (size() > 0) {
-            Byte node   = moreRestricted(getSubject(edge),   getObject(edge));
-            Byte access = moreRestricted(getPredicate(edge), getGraph(edge));
-            Byte res    = moreRestricted(node, access);           
+            Byte node   = combine(getSubject(edge),   getObject(edge));
+            Byte access = combine(getPredicate(edge), getGraph(edge));
+            Byte res    = combine(node, access);           
             return res;
         }
         return null;
+    }
+    
+    Byte combine(Byte b1, Byte b2) {
+        if (AccessRight.getMode() == AccessRight.BI_MODE) {
+            return combineBinary(b1, b2);
+        }
+        return moreRestricted(b1, b2);
+    }
+    
+    Byte combineBinary(Byte b1, Byte b2) {
+        if (b1 == null) {
+            return b2;
+        }
+        if (b2 == null) {
+            return b1;
+        }
+        return (byte)(b1 | b2) ;
     }
     
     Byte getAccessOrDefault(Edge edge) {

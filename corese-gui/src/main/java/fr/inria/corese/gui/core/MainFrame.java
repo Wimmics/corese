@@ -81,12 +81,14 @@ public class MainFrame extends JFrame implements ActionListener {
     static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-03-21";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-05-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
     private ArrayList<Integer> nbreTab = new ArrayList<Integer>();
     private String lCurrentPath = "user/home";
+    private String lCurrentRule = "user/home";
+
     private String lPath;
     private String fileName = "";
     //Variable true ou false pour déterminer le mode Kgram ou Corese
@@ -659,6 +661,8 @@ public class MainFrame extends JFrame implements ActionListener {
         eventMenu.add(defItemFunction("SPARQL Update",  "event/update.rq"));
         eventMenu.add(defItemFunction("SHACL",          "event/shacl.rq"));
         eventMenu.add(defItemFunction("Rule",           "event/rule.rq"));
+        eventMenu.add(defItemFunction("Entailment",     "event/entailment.rq"));
+
         eventMenu.add(defItemFunction("Unit",           "event/unit.rq"));
         eventMenu.add(defItemFunction("Romain",         "event/romain.rq"));
         eventMenu.add(defItemFunction("XML",            "event/xml.rq"));
@@ -1081,10 +1085,13 @@ public class MainFrame extends JFrame implements ActionListener {
                 lPath = f.getAbsolutePath();
                 if (lPath != null) {
                     try {
+                        lCurrentPath = f.getParent(); 
                         myCorese.load(lPath);
                         appendMsg("Loading file from path : " + f.getAbsolutePath() + "\n");
                         appendMsg(myCapturer.getContent() + "\ndone.\n\n");
-                        ongletListener.getModel().addElement(lPath);
+                        // do not record because we do not want that this rule based be reloaded
+                        // when we perform Engine/Reload
+                        //ongletListener.getModel().addElement(lPath);
                         boolean b = myCorese.runRuleEngine();
                         if (b) {
                             appendMsg("\n rules applied... \n" + myCapturer.getContent() + "\ndone.\n");

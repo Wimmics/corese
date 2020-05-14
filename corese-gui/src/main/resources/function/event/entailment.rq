@@ -1,0 +1,99 @@
+#
+# Event functions to trace rule based entailments
+# For each rule application, record the list of triples of 
+# the condition and of the consequent of the application of the rule
+# At the end of the rule engine process, display the list of entailments
+# and save it in a file.
+# Entailments are displayed as named graphs with graph names related with us:where property
+# graph us:construct1 {}  graph us:where1 {}
+# us:construct1 us:where us:where1
+# 
+
+@public
+@beforeEntailment
+function us:beforeEntailment (re, path) {
+    #fun:allEntailment(true);
+    set(entailmentList = xt:list())
+}
+
+
+@public
+@entailment
+# acons:  triples of the construct clause
+# awhere: triples of the where clause
+function us:entailment(re, rul, acons, awhere) {
+    xt:add(entailmentList, xt:list(acons, awhere))
+}
+
+
+@public
+@afterEntailment
+function us:afterEntailment (re, path) {
+    us:exportEntailment()
+}
+
+@public
+function us:exportEntailment() {
+    us:defineNamespace();
+    let (target = us:generateEntailment(entailmentList)) {
+        xt:print(target) ;
+        xt:print("result in: /home/username/entailment.ttl");
+        xt:write("/home/corby/entailment.ttl", target)
+    }
+}
+
+@public
+# return a string with entailments as named graphs
+function us:generateEntailment(entailmentList) {
+    let (ind = 0, list = xt:list()) {
+        for (ent in entailmentList) {
+            let ((acons awhere) = ent) {
+                xt:add(list, us:format(acons, awhere, set(ind = ind + 1)))
+            }
+        } ;
+        let (target = reduce(rq:concat, list)) {
+            return (target)
+        }
+    }
+}
+
+
+
+
+@public
+function us:defineNamespace() {
+    xt:define("h", <http://www.inria.fr/2015/humans#>);
+    xt:define("i", <http://www.inria.fr/2015/humans-instances#>)
+}
+
+@public
+function us:format(acons, awhere, ind) {
+    let (idcons = concat("us:construct", ind), idwhere = concat("us:where", ind)) {
+        concat(
+        us:where(idcons, idwhere),
+        st:format("graph %s {\n%s} \n",   idcons,  us:format(acons)),
+        st:format("graph %s {\n%s} \n\n", idwhere, us:format(awhere)))
+    }
+}
+
+
+@public
+function us:where(idcons, idwhere) {
+    st:format("%s us:where %s . \n\n", idcons, idwhere),
+}
+
+@public
+function us:where(name, idcons, idwhere) {
+    st:format("graph %s {%s us:where %s} \n\n", st:turtle(name), idcons, idwhere),
+}
+
+@public
+function us:format(edgeList) {
+    reduce(rq:concat, 
+        maplist (function((s, p, o)) {
+            st:format("  %s %s %s .\n", st:turtle(s), st:turtle(p), st:turtle(o))
+        }, 
+        edgeList) )
+}
+
+

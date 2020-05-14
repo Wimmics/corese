@@ -16,6 +16,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.util.SPINProcess;
+import fr.inria.corese.sparql.triple.function.core.UUIDFunction;
 import org.slf4j.LoggerFactory;
 
 public class Rule {
@@ -54,6 +55,7 @@ public class Rule {
     public Rule(String n, Query q) {
         query = q;
         name = n;
+        q.setURI(n);
     }
 
     public static Rule create(String n, Query q) {
@@ -62,7 +64,7 @@ public class Rule {
     }
 
     public static Rule create(Query q) {
-        Rule r = new Rule("rule", q);
+        Rule r = new Rule(UUIDFunction.getUUID(), q);
         return r;
     }
     

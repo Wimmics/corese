@@ -45,6 +45,7 @@ import java.util.Comparator;
 import java.util.Date;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.sparql.triple.function.core.UUIDFunction;
 import java.util.logging.Level;
 
 /**
@@ -428,11 +429,11 @@ public class RuleEngine implements Engine, Graphable {
      * Define a construct {} where {} rule
      */
     public Query defRule(String rule) throws EngineException {
-        return defRule(UNKNOWN, rule);
+        return defRule(UUIDFunction.getUUID(), rule);
     }
 
     public void defRule(Query rule) {
-        defRule(Rule.create(UNKNOWN, rule));
+        defRule(Rule.create(UUIDFunction.getUUID(), rule));
     }
     
     public void defRule(Rule rule) {

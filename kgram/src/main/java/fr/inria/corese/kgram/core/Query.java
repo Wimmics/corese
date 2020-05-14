@@ -201,6 +201,7 @@ public class Query extends Exp implements Graphable {
     private Mapping mapping;
     private List<Edge> edgeList;
     private String name;
+    private String uri;
     private String profile;
     private boolean isNumbering;
     private boolean isExtension = false;
@@ -2940,6 +2941,20 @@ public class Query extends Exp implements Graphable {
      */
     public void setAlgebra(boolean algebra) {
         this.algebra = algebra;
+    }
+
+    /**
+     * @return the uri
+     */
+    public String getURI() {
+        return uri;
+    }
+
+    /**
+     * @param uri the uri to set
+     */
+    public void setURI(String uri) {
+        this.uri = uri;
     }
 
 }

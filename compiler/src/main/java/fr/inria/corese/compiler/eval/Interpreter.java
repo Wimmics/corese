@@ -586,22 +586,22 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return def;
     }
 
-    public IDatatype eval(String name, Environment env, Producer p, IDatatype value) {
-        Expr function = getDefine(env, name, (value == null) ? 0 : 1);
-        if (function == null) {
-            return ERROR_VALUE;
-        }
-        return eval(function, env, p, value);
-    }
+//    public IDatatype eval(String name, Environment env, Producer p, IDatatype value) {
+//        Expr function = getDefine(env, name, (value == null) ? 0 : 1);
+//        if (function == null) {
+//            return ERROR_VALUE;
+//        }
+//        return eval(function, env, p, value);
+//    }
 
-    public IDatatype eval(Expr function, Environment env, Producer p, IDatatype value) {
-        if (value == null) {
-            return call(function.getFunction(), env, p, proxy.createParam(0), function);
-        }
-        IDatatype[] values = proxy.createParam(1);
-        values[0] = value;
-        return call(function.getFunction(), env, p, values, function);
-    }
+//    public IDatatype eval(Expr function, Environment env, Producer p, IDatatype value) {
+//        if (value == null) {
+//            return call(function.getFunction(), env, p, proxy.createParam(0), function);
+//        }
+//        IDatatype[] values = proxy.createParam(1);
+//        values[0] = value;
+//        return call(function.getFunction(), env, p, values, function);
+//    }
 
     /**
      * Try to execute a method name in the namespace of the generalized datatype URI
@@ -610,54 +610,54 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * bnode: dt:bnode#name
      * literal: dt:datatype#name or dt:literal#name
      */
-    public IDatatype method(String name, IDatatype type, IDatatype[] param, Environment env, Producer p) {
-        Expr exp = getDefineMethod(env, name, type, param);
-        if (exp == null) {
-            return null;
-        } else {
-            return call(exp.getFunction(), env, p, param, exp);
-        }
-    }
+//    public IDatatype method(String name, IDatatype type, IDatatype[] param, Environment env, Producer p) {
+//        Expr exp = getDefineMethod(env, name, type, param);
+//        if (exp == null) {
+//            return null;
+//        } else {
+//            return call(exp.getFunction(), env, p, param, exp);
+//        }
+//    }
 
     /**
      * Extension function call
      */
-    @Deprecated
-    public IDatatype call(Expr exp, Environment env, Producer p, IDatatype[] values, Expr function) {
-        Expr fun = function.getFunction();
-        env.set(function, fun.getExpList(), values);
-        if (isDebug || function.isDebug()) {
-            System.out.println(exp);
-            System.out.println(env.getBind());
-        }
-        IDatatype res;
-        if (function.isSystem()) {
-            // function contains nested query or exists
-            // use fresh Memory for not to screw Bind & Memory
-            // use case: exists { exists { } }
-            // the inner exists need outer exists BGP to be bound
-            // hence we need a fresh Memory to start
-            Query q = env.getQuery();
-            if (function.isPublic() && env.getQuery() != function.getPattern()) {
-                // function is public and contains query or exists
-                // use function definition global query in order to have Memory 
-                // initialized with the right set of Nodes for the nested query
-                q = (Query) function.getPattern();
-            }
-            res = funEval(function, q, env, p);
-        } else {
-            res = ((Expression) function.getBody()).eval(this, (Binding) env.getBind(), env, p);
-        }
-        env.unset(function, fun.getExpList());
-        if (isDebug || function.isDebug()) {
-            System.out.println(exp + " : " + res);
-        }
-        if (res == ERROR_VALUE) {
-            return res;
-        }
-        // keep this:
-        return proxy.getResultValue(res);
-    }
+//    @Deprecated
+//    public IDatatype call(Expr exp, Environment env, Producer p, IDatatype[] values, Expr function) {
+//        Expr fun = function.getFunction();
+//        env.set(function, fun.getExpList(), values);
+//        if (isDebug || function.isDebug()) {
+//            System.out.println(exp);
+//            System.out.println(env.getBind());
+//        }
+//        IDatatype res;
+//        if (function.isSystem()) {
+//            // function contains nested query or exists
+//            // use fresh Memory for not to screw Bind & Memory
+//            // use case: exists { exists { } }
+//            // the inner exists need outer exists BGP to be bound
+//            // hence we need a fresh Memory to start
+//            Query q = env.getQuery();
+//            if (function.isPublic() && env.getQuery() != function.getPattern()) {
+//                // function is public and contains query or exists
+//                // use function definition global query in order to have Memory 
+//                // initialized with the right set of Nodes for the nested query
+//                q = (Query) function.getPattern();
+//            }
+//            res = funEval(function, q, env, p);
+//        } else {
+//            res = ((Expression) function.getBody()).eval(this, (Binding) env.getBind(), env, p);
+//        }
+//        env.unset(function, fun.getExpList());
+//        if (isDebug || function.isDebug()) {
+//            System.out.println(exp + " : " + res);
+//        }
+//        if (res == ERROR_VALUE) {
+//            return res;
+//        }
+//        // keep this:
+//        return proxy.getResultValue(res);
+//    }
 
     /**
      * Eval a function in new kgram with function's query use case: function
@@ -665,23 +665,23 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      *
      * @param exp function ex:name() {}
      */
-    @Deprecated
-    IDatatype funEval(Expr exp, Query q, Environment env, Producer p) {
-        //System.out.println("FunEval: " + exp.getFunction());
-//        Interpreter in = new Interpreter(proxy);
-//        in.setProducer(p);
-        Eval eval = Eval.create(p, this, getEval(env).getMatcher());
-        eval.setSPARQLEngine(getEval(env).getSPARQLEngine());
-        eval.init(q);
-        eval.getMemory().setBind(env.getBind());
+//    @Deprecated
+//    IDatatype funEval(Expr exp, Query q, Environment env, Producer p) {
+//        //System.out.println("FunEval: " + exp.getFunction());
+////        Interpreter in = new Interpreter(proxy);
+////        in.setProducer(p);
+//        Eval eval = Eval.create(p, this, getEval(env).getMatcher());
+//        eval.setSPARQLEngine(getEval(env).getSPARQLEngine());
+//        eval.init(q);
+//        eval.getMemory().setBind(env.getBind());
+//
+//        return this.eval(exp.getBody(), eval.getMemory(), p);
+//    }
 
-        return this.eval(exp.getBody(), eval.getMemory(), p);
-    }
-
-    @Override
-    public int compare(Environment env, Producer p, Node n1, Node n2) {
-        return proxy.compare(env, p, n1, n2);
-    }
+//    @Override
+//    public int compare(Environment env, Producer p, Node n1, Node n2) {
+//        return proxy.compare(env, p, n1, n2);
+//    }
   
     public static boolean isDefined(Expr exp) {
         return extension.isDefined(exp);

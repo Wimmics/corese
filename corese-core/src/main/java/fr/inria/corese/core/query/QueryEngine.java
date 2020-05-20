@@ -147,8 +147,7 @@ public class QueryEngine implements Engine {
     }
 
     /**
-     * templates share profile function definitions
-     * function st:optimize(){} : run TransformerVisitor to optimize template
+     * templates inherit template st:profile function definitions
      */
     public void profile() {
         Query profile = getTemplate(STL_PROFILE);
@@ -159,15 +158,15 @@ public class QueryEngine implements Engine {
                 fr.inria.corese.compiler.parser.Transformer tr = fr.inria.corese.compiler.parser.Transformer.create();
                 ASTExtension ext = Interpreter.getExtension(profile);
                 tr.definePublic(ext, profile, false);
-                TransformerVisitor tv = new TransformerVisitor(profile.getExtension().get(Transformer.STL_OPTIMIZE) != null);
+                //TransformerVisitor tv = new TransformerVisitor(profile.getExtension().get(Transformer.STL_OPTIMIZE) != null);
                 
                 for (Query t : getTemplates()) {
                     addExtension(t, ext);
-                    tv.visit(t);
+                    //tv.visit(t);
                 }
                 for (Query t : getNamedTemplates()) {
                     addExtension(t, ext);
-                    tv.visit(t);
+                    //tv.visit(t);
                 }
             }
         }

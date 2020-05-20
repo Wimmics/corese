@@ -79,8 +79,9 @@ import java.util.logging.Level;
 
 
 /**
- * Plugin for filter evaluator Compute semantic similarity of classes and
- * solutions for KGRAPH
+ * Plugin for filter evaluator 
+ * Compute semantic similarity of classes and solutions 
+ * Implement graph specific function for LDScript
  *
  * @author Olivier Corby, Edelweiss, INRIA 2011
  *

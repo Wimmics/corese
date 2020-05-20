@@ -55,8 +55,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- * Evaluator of SPARQL query by KGRAM Implement KGRAM as a lightweight version
- * with KGRAPH
+ * Evaluator of SPARQL query by KGRAM 
  *
  * Query and Update are synchronized by a read/write lock on the graph There may
  * be several query in parallel OR only one update In addition, graph.init() is
@@ -90,7 +89,7 @@ public class QueryProcess extends QuerySolver {
     boolean isMatch = false;
 
     static {
-        setJoin(false);
+        //setJoin(false);
         dbmap = new HashMap<>();
         new Extension().process();
     }
@@ -103,13 +102,13 @@ public class QueryProcess extends QuerySolver {
     /**
      * Generate JOIN(A, B) if A and B do not share a variable (in triples)
      */
-    public static void setJoin(boolean b) {
-        if (b) {
-            Query.testJoin = true;
-        } else {
-            Query.testJoin = false;
-        }
-    }
+//    public static void setJoin(boolean b) {
+//        if (b) {
+//            Query.testJoin = true;
+//        } else {
+//            Query.testJoin = false;
+//        }
+//    }
 
     protected QueryProcess(Producer p, Evaluator e, Matcher m) {
         super(p, e, m);
@@ -170,7 +169,11 @@ public class QueryProcess extends QuerySolver {
     }
 
     /**
-     * isMatch = true: Each Producer perform local Matcher.match() on its own
+     * isMatch = true:  ?x a h:Person return one occurrence  for each instance of Person
+     * isMatch = false: ?x a h:Person return all occurrences for each instance of Person 
+     * where the instance has several types which match Person, such as x a h:Man, h:Person
+     * default isMatch = false
+     * In addition, each Producer perform local Matcher.match() on its own
      * graph for subsumption Hence each graph can have its own ontology and
      * return one occurrence of each resource for ?x rdf:type aClass isMatch =
      * false: (default) Global producer perform Matcher.match()
@@ -184,6 +187,9 @@ public class QueryProcess extends QuerySolver {
         }
     }
 
+    /**
+     * When there is a graph database to manage the graph
+     */
     public static QueryProcess dbCreate(Graph g, boolean isMatch, String factory, String db) {
         Producer p = getCreateProducer(g, factory, db);
         QueryProcess exec = QueryProcess.create(p);
@@ -465,211 +471,6 @@ public class QueryProcess extends QuerySolver {
         return null;
     }
 
-    /**
-     * Logger xt:method(us:start, us:Event, event, obj)
-     */
-    public void event(Event name, Event e, Object o) throws EngineException {
-        IDatatype[] param = (o == null) ? param(DatatypeMap.createObject(e))
-                : param(DatatypeMap.createObject(e), DatatypeMap.createObject(o));
-        EventManager mgr = getGraph().getEventManager();
-        boolean b = mgr.isVerbose();
-        mgr.setVerbose(false);
-        method(NSManager.USER + name.toString().toLowerCase(), NSManager.USER + e.toString(), param);
-        mgr.setVerbose(b);
-    }
-
-    // import function definition as public function
-    public void imports(String path) throws EngineException {
-        String q = "@public @import <%s> select where {}";
-        compile(String.format(q, path));
-    }
-
-    IDatatype[] param(IDatatype... ldt) {
-        return ldt;
-    }
-
-    public IDatatype method(String name, String type, IDatatype[] param) throws EngineException {
-        //System.out.println("QP: " + name + " " + type + " " + param[0] + " " + param[1]);
-        Function function = getFunction(name, type, param);
-        //System.out.println("QP: " + function);
-        if (function == null) {
-            return null;
-        }
-        return call(EVENT, function, param, null);
-    }
-
-    /**
-     * Execute LDScript function defined as @public
-     */
-    public IDatatype funcall(String name, IDatatype... param) throws EngineException {
-        return funcall(name, (Context) null, param);
-    }
-
-    public IDatatype funcall(String name, Binding b, IDatatype... param) throws EngineException {
-        return funcall(name, new Context().setBind(b), param);
-    }
-
-    public IDatatype funcall(String name, Context c, IDatatype... param) throws EngineException {
-        Function function = getLinkedFunction(name, param);
-        if (function == null) {
-            return null;
-        }
-        return call(name, function, param, c);
-    }
-
-    IDatatype call(String name, Function function, IDatatype[] param, Context c) throws EngineException {
-        Eval eval = getEval();
-        eval.getMemory().getQuery().setContext(c);
-        if (c != null && c.getBind() != null) {
-            getBind(eval).share(c.getBind());
-        }
-        return new Funcall(name).call((Interpreter) eval.getEvaluator(),
-                getBind(eval),
-                eval.getMemory(), eval.getProducer(), function, param);
-    }
-
-    Binding getBind(Eval eval) {
-        return (Binding) eval.getMemory().getBind();
-    }
-
-    public Eval getEvalBasic() {
-        return eval;
-    }
-
-    // Visitor @public functions
-    public Eval getEval() throws EngineException {
-        if (eval == null) {
-            eval = createEval("select where {}  ", null);
-        }
-        return eval;
-    }
-
-    // Visitor @public functions
-    public ProcessVisitor getVisitor() {
-        try {
-            return getEval().getVisitor();
-        } catch (EngineException ex) {
-            return new ProcessVisitorDefault();
-        }
-    }
-
-    /**
-     * @event update: take care of query @event functions create
-     * current Eval with a ProcessVisitor
-    *
-     */
-    public void init(Query q, Mapping m) {
-        q.setInitMode(true);
-        super.query(q, m);
-        q.setInitMode(false);
-        // set Visitor ready to work (hence, it is not yet active, it is ready to be active)
-        getCurrentEval().getVisitor().setActive(false);
-    }
-
-    @Override
-    public ProcessVisitor getCurrentVisitor() {
-        ProcessVisitor vis = getCurrentVisitorBasic();
-        if (vis == null) {
-            return getVisitor();
-        }
-        return vis;
-    }
-
-    @Override
-    public ProcessVisitor createProcessVisitor(Eval eval) {
-        return new QuerySolverVisitor(eval);
-    }
-
-    Function getLinkedFunction(String name, IDatatype[] param) {
-        Function function = getFunction(name, param);
-        if (function == null) {
-            //setLinkedFunction(true);
-            getLinkedFunctionBasic(name);
-            function = getFunction(name, param);
-        }
-        return function;
-    }
-
-    /**
-     * Search a method
-     *
-     * @public @type us:Event us:start(?e, ?o)
-     */
-    Function getFunction(String name, IDatatype[] param) {
-        return (Function) Interpreter.getExtension().get(name, param.length);
-    }
-
-    Function getFunction(String name, String type, IDatatype[] param) {
-        return (Function) Interpreter.getExtension().getMethod(
-                name, DatatypeMap.newResource(type),
-                param);
-    }
-
-    String basicParse(String path) throws EngineException {
-        QueryLoad ql = QueryLoad.create();
-        String pp = (path.endsWith("/")) ? path.substring(0, path.length() - 1) : path;
-        String str = null;
-        try {
-            if (pp.startsWith(NSManager.STL)) {
-                // @import <function/test.rq> within transformation such as st:turtle
-                // the import uri is st:function/test.rq
-                // consider it as a resource
-                String name = "/" + NSManager.nsm().strip(pp, NSManager.STL);
-                str = ql.getResource(name);
-            } else {
-                str = ql.readWE(pp);
-            }
-            return str;
-        } catch (LoadException | IOException ex) {
-            ex.printStackTrace();
-            logger.error(ex.toString());
-            throw new EngineException(ex);
-        }
-    }
-
-    /**
-     * Parse a function definition document use case: @import <uri>
-     */
-    @Override
-    public ASTQuery parse(String path) throws EngineException {
-        String str = basicParse(path);
-        Transformer t = transformer();
-        t.setBase(path);
-        return t.parse(str);
-    }
-
-    /**
-     * 1- Linked Function 2- owl:imports
-     */
-    @Override
-    public Query parseQuery(String path) {
-        try {
-            String str = basicParse(path);
-            Query q = compile(str, new Dataset().setBase(path));
-            return q;
-        } catch (EngineException ex) {
-            logger.error(ex.getMessage());
-        }
-        return null;
-    }
-
-    @Override
-    public void getLinkedFunction(String label) {
-        getTransformer().getLinkedFunction(label);
-    }
-
-    void getLinkedFunctionBasic(String label) {
-        getTransformer().getLinkedFunctionBasic(label);
-    }
-
-    Transformer getTransformer() {
-        if (transformer == null) {
-            transformer = Transformer.create();
-            transformer.setSPARQLEngine(this);
-            transformer.setLinkedFunction(isLinkedFunction());
-        }
-        return transformer;
-    }
 
     public Mappings qquery(Node gNode, Query q, Mapping map, Dataset ds) {
         try {
@@ -1170,7 +971,217 @@ public class QueryProcess extends QuerySolver {
             p = null;
         }
     }
+    
+    
+    /***************************************************************************
+     * 
+     * Function call and event function
+     * 
+     *************************************************************************/
 
+    
+    /**
+     * Logger xt:method(us:start, us:Event, event, obj)
+     * Use case: event logger
+     * @deprecated
+     */
+    public void event(Event name, Event e, Object o) throws EngineException {
+        IDatatype[] param = (o == null) ? param(DatatypeMap.createObject(e))
+                : param(DatatypeMap.createObject(e), DatatypeMap.createObject(o));
+        EventManager mgr = getGraph().getEventManager();
+        boolean b = mgr.isVerbose();
+        mgr.setVerbose(false);
+        method(NSManager.USER + name.toString().toLowerCase(), NSManager.USER + e.toString(), param);
+        mgr.setVerbose(b);
+    }
+
+    // import function definition as public function
+    public void imports(String path) throws EngineException {
+        String q = "@public @import <%s> select where {}";
+        compile(String.format(q, path));
+    }
+
+    IDatatype[] param(IDatatype... ldt) {
+        return ldt;
+    }
+
+    /**
+     * method call: name of method, name of type
+     */
+    public IDatatype method(String name, String type, IDatatype[] param) throws EngineException {
+        Function function = getFunction(name, type, param);
+        if (function == null) {
+            return null;
+        }
+        return call(EVENT, function, param, null);
+    }
+
+    /**
+     * Execute LDScript function defined as @public
+     */
+    public IDatatype funcall(String name, IDatatype... param) throws EngineException {
+        return funcall(name, (Context) null, param);
+    }
+
+    public IDatatype funcall(String name, Binding b, IDatatype... param) throws EngineException {
+        return funcall(name, new Context().setBind(b), param);
+    }
+
+    public IDatatype funcall(String name, Context c, IDatatype... param) throws EngineException {
+        Function function = getLinkedFunction(name, param);
+        if (function == null) {
+            return null;
+        }
+        return call(name, function, param, c);
+    }
+
+    IDatatype call(String name, Function function, IDatatype[] param, Context c) throws EngineException {
+        Eval eval = getEval();
+        eval.getMemory().getQuery().setContext(c);
+        if (c != null && c.getBind() != null) {
+            getBind(eval).share(c.getBind());
+        }
+        return new Funcall(name).call((Interpreter) eval.getEvaluator(),
+                getBind(eval),
+                eval.getMemory(), eval.getProducer(), function, param);
+    }
+
+    Binding getBind(Eval eval) {
+        return (Binding) eval.getMemory().getBind();
+    }
+
+    // Use case: funcall @public functions
+    public Eval getEval() throws EngineException {
+        if (eval == null) {
+            eval = createEval("select where {}  ", null);
+        }
+        return eval;
+    }
+
+    /**
+     * event @update: take care of query @event functions 
+     * create current Eval with a ProcessVisitor
+    *
+     */
+    public void init(Query q, Mapping m) {
+        q.setInitMode(true);
+        super.query(q, m);
+        q.setInitMode(false);
+        // set Visitor ready to work (hence, it is not yet active, it is ready to be active)
+        getCurrentEval().getVisitor().setActive(false);
+    }
+    
+    // Default Visitor to execute @event functions
+    public ProcessVisitor getVisitor() {
+        try {
+            return getEval().getVisitor();
+        } catch (EngineException ex) {
+            return new ProcessVisitorDefault();
+        }
+    }
+  
+    // Visitor associated to current eval
+    // To execute @event functions
+    public ProcessVisitor getCurrentVisitor() {
+        if (getCurrentEval() == null || getCurrentEval().getVisitor() == null) {
+            return getVisitor();
+        }
+        return getCurrentEval().getVisitor();
+    }
+
+    Function getLinkedFunction(String name, IDatatype[] param) {
+        Function function = getFunction(name, param);
+        if (function == null) {
+            //setLinkedFunction(true);
+            getLinkedFunctionBasic(name);
+            function = getFunction(name, param);
+        }
+        return function;
+    }
+
+    Function getFunction(String name, IDatatype[] param) {
+        return Interpreter.getExtension().get(name, param.length);
+    }
+
+    /**
+     * Search a method
+     *
+     * @public @type us:Event us:start(?e, ?o)
+     */
+    Function getFunction(String name, String type, IDatatype[] param) {
+        return  Interpreter.getExtension().getMethod(
+                name, DatatypeMap.newResource(type),
+                param);
+    }
+
+    String basicParse(String path) throws EngineException {
+        QueryLoad ql = QueryLoad.create();
+        String pp = (path.endsWith("/")) ? path.substring(0, path.length() - 1) : path;
+        String str = null;
+        try {
+            if (pp.startsWith(NSManager.STL)) {
+                // @import <function/test.rq> within transformation such as st:turtle
+                // the import uri is st:function/test.rq
+                // consider it as a resource
+                String name = "/" + NSManager.nsm().strip(pp, NSManager.STL);
+                str = ql.getResource(name);
+            } else {
+                str = ql.readWE(pp);
+            }
+            return str;
+        } catch (LoadException | IOException ex) {
+            ex.printStackTrace();
+            logger.error(ex.toString());
+            throw new EngineException(ex);
+        }
+    }
+
+    /**
+     * Parse a function definition document use case: @import <uri>
+     */
+    @Override
+    public ASTQuery parse(String path) throws EngineException {
+        String str = basicParse(path);
+        Transformer t = transformer();
+        t.setBase(path);
+        return t.parse(str);
+    }
+
+    /**
+     * 1- Linked Function 2- owl:imports
+     */
+    @Override
+    public Query parseQuery(String path) {
+        try {
+            String str = basicParse(path);
+            Query q = compile(str, new Dataset().setBase(path));
+            return q;
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage());
+        }
+        return null;
+    }
+
+    @Override
+    public void getLinkedFunction(String label) {
+        getTransformer().getLinkedFunction(label);
+    }
+
+    void getLinkedFunctionBasic(String label) {
+        getTransformer().getLinkedFunctionBasic(label);
+    }
+
+    Transformer getTransformer() {
+        if (transformer == null) {
+            transformer = Transformer.create();
+            transformer.setSPARQLEngine(this);
+            transformer.setLinkedFunction(isLinkedFunction());
+        }
+        return transformer;
+    }
+    
+    /***********************************************************************/
+    
     /**
      * @return the queryProcessUpdate
      */

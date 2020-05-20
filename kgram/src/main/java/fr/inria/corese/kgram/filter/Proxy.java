@@ -53,7 +53,7 @@ public interface Proxy {
         
         Object getBufferedValue(StringBuilder sb, Environment env);
 
-	int compare(Environment env, Producer p, Node o1, Node o2);
+	//int compare(Environment env, Producer p, Node o1, Node o2);
 
 	// terms = <=
 	Object term(Expr exp, Environment env, Producer p, Object o1, Object o2);

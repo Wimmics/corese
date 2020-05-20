@@ -761,9 +761,9 @@ public class Eval implements ExpType, Plugin {
         results.complete(this);
     }
 
-    int compare(Node n1, Node n2) {
-        return evaluator.compare(memory, producer, n1, n2);
-    }
+//    int compare(Node n1, Node n2) {
+//        return evaluator.compare(memory, producer, n1, n2);
+//    }
 
     private void aggregate() {
         results.aggregate(evaluator, memory, producer);

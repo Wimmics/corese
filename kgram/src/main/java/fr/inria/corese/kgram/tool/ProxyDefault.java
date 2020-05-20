@@ -163,10 +163,10 @@ public class ProxyDefault implements Proxy, ExprType {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
-    public int compare(Environment env, Producer p, Node o1, Node o2) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+//    @Override
+//    public int compare(Environment env, Producer p, Node o1, Node o2) {
+//        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+//    }
 
     @Override
     public Object[] createParam(int n) {

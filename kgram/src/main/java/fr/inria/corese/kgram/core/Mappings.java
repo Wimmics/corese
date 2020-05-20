@@ -646,12 +646,12 @@ public class Mappings extends PointerObject
     }
     
     
-    int comparator2(Node n1, Node n2) {       
-        if (getEval() != null) {
-            return getEval().compare(n1, n2);
-        }
-        return n1.compare(n2);
-    }
+//    int comparator2(Node n1, Node n2) {       
+//        if (getEval() != null) {
+//            return getEval().compare(n1, n2);
+//        }
+//        return n1.compare(n2);
+//    }
 
     @Override
     public int compare(Mapping m1, Mapping m2) {

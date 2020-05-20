@@ -2582,8 +2582,9 @@ Expression Body(Exp stack) : { ExpressionList body = new ExpressionList(); Expre
 {
  <LBRACE> ( <RBRACE> |        
         (exp = Expression(stack) | exp = TemplateExpression(stack)) { body.add(exp); } 
-        ( <SEMICOLON> 
+        ( LOOKAHEAD(2) <SEMICOLON> 
         (exp = Expression(stack) | exp = TemplateExpression(stack)) { body.add(exp); } ) *
+          (<SEMICOLON>)?
             <RBRACE>
         ) 
     { return astq.defineBody(body) ; }

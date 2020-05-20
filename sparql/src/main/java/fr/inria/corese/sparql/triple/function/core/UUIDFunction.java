@@ -39,9 +39,11 @@ public class UUIDFunction extends TermEval {
     }
        
     IDatatype uuid() {
-        UUID uuid = UUID.randomUUID();
-        String str = URN_UUID + uuid;
-        return DatatypeMap.createResource(str);
+        return DatatypeMap.createResource(getUUID());
+    }
+    
+    public static String getUUID() {
+        return URN_UUID + UUID.randomUUID();
     }
 
    

@@ -38,6 +38,8 @@ public interface ProcessVisitor extends Pointerable {
     
     default DatatypeValue defaultValue() {return null;}
     
+    default DatatypeValue init() {return defaultValue();}
+    
     default DatatypeValue init(Query q) {return defaultValue();}
     
     default DatatypeValue before(Query q) { return defaultValue(); }
@@ -59,6 +61,8 @@ public interface ProcessVisitor extends Pointerable {
     default DatatypeValue loopEntailment(DatatypeValue path) { return defaultValue(); }
 
     default DatatypeValue prepareEntailment(DatatypeValue path) { return defaultValue(); }
+    
+    default boolean entailment() { return false; }
     
     default DatatypeValue entailment(Query rule, List<Edge> construct, List<Edge> where) { return defaultValue(); }
 

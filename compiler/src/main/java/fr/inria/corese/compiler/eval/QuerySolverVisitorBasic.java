@@ -227,7 +227,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     
   
     
-    boolean define(String name, int arity) {
+    public boolean define(String name, int arity) {
         Expr exp = getEval().getEvaluator().getDefineMetadata(getEnvironment(), name, arity);
         return (exp != null);
     }

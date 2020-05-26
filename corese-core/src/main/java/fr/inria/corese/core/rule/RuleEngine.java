@@ -78,7 +78,7 @@ public class RuleEngine implements Engine, Graphable {
     Graph graph;
     QueryProcess exec;
     private QueryEngine qengine;
-    List<Rule> rules;
+    private List<Rule> rules;
     List<Record> records;
     private Object spinGraph;
     private Dataset ds;
@@ -344,6 +344,7 @@ public class RuleEngine implements Engine, Graphable {
     void before() {
         try {
             setVisitor(new QuerySolverVisitorRule(this, getQueryProcess().getEval()));
+            getVisitor().init();
             getVisitor().beforeEntailment(getPath());
         } catch (EngineException ex) {
             java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
@@ -404,11 +405,11 @@ public class RuleEngine implements Engine, Graphable {
     }
 
     public void clear() {
-        rules.clear();
+        getRules().clear();
     }
     
     public boolean isEmpty(){
-        return rules.isEmpty();
+        return getRules().isEmpty();
     }
     
     public String getConstraintViolation(){
@@ -429,16 +430,20 @@ public class RuleEngine implements Engine, Graphable {
      * Define a construct {} where {} rule
      */
     public Query defRule(String rule) throws EngineException {
-        return defRule(UUIDFunction.getUUID(), rule);
+        return defRule(getRuleID(), rule);
     }
 
     public void defRule(Query rule) {
-        defRule(Rule.create(UUIDFunction.getUUID(), rule));
+        defRule(Rule.create(getRuleID(), rule));
+    }
+    
+    public static String getRuleID() {
+        return UUIDFunction.getUUID();
     }
     
     public void defRule(Rule rule) {
         declare(rule);
-        rules.add(rule);
+        getRules().add(rule);
     }
 
     public void addRule(String rule) {
@@ -448,6 +453,36 @@ public class RuleEngine implements Engine, Graphable {
             // TODO Auto-generated catch block
             e.printStackTrace();
         }
+    }
+    
+    public IDatatype remove(IDatatype uriList) {
+        List<String> list = new ArrayList<>();
+        for (IDatatype dt : uriList) {
+            list.add(dt.getLabel());
+        }
+        remove(list);
+        return uriList;
+    }
+
+    public void remove(List<String> uriList) {
+        for (int i = 0; i < getRules().size(); ) {
+            Rule r = getRules().get(i);
+            if (r.getQuery().getURI()!=null && match(r.getQuery().getURI(), uriList)) {
+                getRules().remove(i);
+            }  
+            else {
+                i++;
+            }
+        }
+    }
+    
+    boolean match(String name, List<String> uriList) {
+        for (String uri : uriList) {
+            if (name.startsWith(uri)) {
+                return true;
+            }
+        }
+        return false;
     }
 
     public ResultWatcher getResultListener() {
@@ -464,6 +499,9 @@ public class RuleEngine implements Engine, Graphable {
         } else {
             Query qq = exec.compileRule(rule, ds);
             if (qq != null) {
+                if (name == null) {
+                    name = getRuleID();
+                }
                 Rule r = Rule.create(name, qq);
                 defRule(r);
                 return qq;
@@ -474,8 +512,8 @@ public class RuleEngine implements Engine, Graphable {
     
     void declare(Rule r) {
         Query q = r.getQuery();
-        q.setID(rules.size());
-        r.setIndex(rules.size());
+        q.setID(getRules().size());
+        r.setIndex(getRules().size());
         // Provenance Node set to entailed triples
         Node prov = DatatypeMap.createObject(q.getAST().toString(), q, IDatatype.RULE);
         q.setProvenance(prov);
@@ -598,7 +636,7 @@ public class RuleEngine implements Engine, Graphable {
                 rw.setTrace(trace);
             }
             
-            for (Rule rule : rules) {
+            for (Rule rule : getRules()) {
                if (debug) {
                     rule.getQuery().setDebug(true);
                 }
@@ -725,7 +763,7 @@ public class RuleEngine implements Engine, Graphable {
         if (r.isPseudoTransitive()){
             // r = rdf:type ? after pr = rdfs:subClassOf ?
             if (r.getIndex() > 0){
-                Rule pr = rules.get(r.getIndex() - 1);
+                Rule pr = getRules().get(r.getIndex() - 1);
                 if (pr.isClosure()){
                     // rdfs:subClassOf ?
                     return r.isPseudoTransitive(pr);
@@ -736,7 +774,7 @@ public class RuleEngine implements Engine, Graphable {
     }
     
     void cleanRules(){
-        for (Rule r : rules){
+        for (Rule r : getRules()){
             r.clean();
         }
     }
@@ -902,7 +940,7 @@ public class RuleEngine implements Engine, Graphable {
         records = new ArrayList<Record>();
         sort();
         int i = 0;
-        for (Rule r : rules) {
+        for (Rule r : getRules()) {
             init(r);
             r.setIndex(i);
             r.getQuery().setID(i);
@@ -1044,7 +1082,7 @@ public class RuleEngine implements Engine, Graphable {
      */
     public String toRDF() {    
         SPIN sp = SPIN.create();
-        for (Rule r : rules){   
+        for (Rule r : getRules()){   
             sp.init();
             ASTQuery ast = (ASTQuery) r.getAST();
             sp.visit(ast, "kg:r" + r.getIndex()); 
@@ -1184,16 +1222,16 @@ public class RuleEngine implements Engine, Graphable {
      * hence we gain one execution at last loop
      */
     void sort(){
-        for (int i = 0; i < rules.size(); i++){
-            Rule tr = rules.get(i);
+        for (int i = 0; i < getRules().size(); i++){
+            Rule tr = getRules().get(i);
             if (tr.isTransitive()){
-                for (int j = 0; j < rules.size(); j++){
-                    Rule pr = rules.get(j);
+                for (int j = 0; j < getRules().size(); j++){
+                    Rule pr = getRules().get(j);
                     if (pr.isPseudoTransitive(tr)){
-                        rules.remove(tr);
-                        rules.remove(pr);
-                        rules.add(tr);
-                        rules.add(pr);
+                        getRules().remove(tr);
+                        getRules().remove(pr);
+                        getRules().add(tr);
+                        getRules().add(pr);
                         return;
                     }
                 }
@@ -1292,5 +1330,12 @@ public class RuleEngine implements Engine, Graphable {
      */
     public void setVisitor(ProcessVisitor visitor) {
         this.visitor = visitor;
+    }
+
+    /**
+     * @param rules the rules to set
+     */
+    public void setRules(List<Rule> rules) {
+        this.rules = rules;
     }
 }

@@ -8,6 +8,7 @@ import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.List;
 
 /**
@@ -17,6 +18,8 @@ import java.util.List;
 public class QuerySolverVisitorRule extends QuerySolverVisitorBasic {
     
     RuleEngine re;
+    // should rule engine call entailment 
+    private boolean entailment = false;
 
     public QuerySolverVisitorRule(Eval e) {
         super(e);
@@ -25,6 +28,13 @@ public class QuerySolverVisitorRule extends QuerySolverVisitorBasic {
     public QuerySolverVisitorRule(RuleEngine re, Eval e) {
         super(e);
         this.re = re;
+    }
+    
+    @Override
+    public IDatatype init() {
+        setEntailment(define(ENTAILMENT, 4));
+        IDatatype dt = callback(getEval(), INIT, toArray(re));
+        return dt;
     }
 
     @Override
@@ -79,9 +89,29 @@ public class QuerySolverVisitorRule extends QuerySolverVisitorBasic {
         return callback(getEval(), AFTER_RULE, toArray(re, q, res));
     }
     
+    // rule engine call entailment only when ldscript function entailment below this one is defined
+    @Override
+    public boolean entailment() {
+        return isEntailment();
+    }
+    
     @Override
     public DatatypeValue entailment(Query rule, List<Edge> construct, List<Edge> where) { 
         return callback(getEval(), ENTAILMENT, toArray(re, rule, toDatatype(construct), toDatatype(where)));
+    }
+
+    /**
+     * @return the entailment
+     */
+    public boolean isEntailment() {
+        return entailment;
+    }
+
+    /**
+     * @param entailment the entailment to set
+     */
+    public void setEntailment(boolean entailment) {
+        this.entailment = entailment;
     }
 
 

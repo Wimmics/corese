@@ -286,10 +286,10 @@ public class QueryProcessUpdate {
         setSynchronized(b);
     }
 
-    public void update(Query q, List<Edge> del, List<Edge> ins) {
-        //System.out.println("QPU: " + getCurrentVisitor());
-        getCurrentVisitor().update(q, del, ins);
-    } 
+//    public void update(Query q, List<Edge> del, List<Edge> ins) {
+//        //System.out.println("QPU: " + getCurrentVisitor());
+//        getCurrentVisitor().update(q, del, ins);
+//    } 
 
     static boolean isReentrant() {
         return QueryProcess.isReentrant();

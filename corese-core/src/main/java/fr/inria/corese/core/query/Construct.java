@@ -1,5 +1,6 @@
 package fr.inria.corese.core.query;
 
+import fr.inria.corese.core.EdgeFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -252,10 +253,11 @@ public class Construct
     }
     
     void record(List<Edge> construct, Edge[] where) {
-        if (isRule && ! construct.isEmpty()) {
+        if (isRule && ! construct.isEmpty() && getVisitor().entailment()) {
             List<Edge> whereList = new ArrayList<>();
             for (Edge e : where) {
-                whereList.add(e);
+                whereList.add(graph.getGraph().getEdgeFactory().copy(e));
+                //whereList.add(e);
             }
             if (getVisitor() != null) {
                 getVisitor().entailment(query, construct, whereList);

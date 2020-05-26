@@ -20,6 +20,7 @@ import org.xml.sax.SAXException;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.core.rule.RuleEngine;
+import org.w3c.dom.Attr;
 
 /**
  * Rule Loader as construct-where SPARQL Queries Can also load Corese rule
@@ -35,6 +36,7 @@ public class RuleLoad {
     static final String NS2 = "http://ns.inria.fr/edelweiss/2011/rule#";
     static final String NS1 = "http://ns.inria.fr/corese/2008/rule#";
     static final String STL = NSManager.STL;
+    static final String RDF = NSManager.RDF;
     static final String[] NAMESPACE = {NS, STL, NS2, NS1};
     static final String COS = NSManager.COS;
     static final String BODY = "body";
@@ -46,6 +48,9 @@ public class RuleLoad {
     static final String THEN = "then";
     static final String CONST = "construct";
     static final String WHERE = "where";
+    static final String ABOUT = "about";
+    static final String ID = "ID";
+
     RuleEngine engine;
     private String base;
 
@@ -122,7 +127,7 @@ public class RuleLoad {
     
     
 
-    void load1(Document doc) {
+    void load(Document doc) {
 
         NodeList list = null;
         
@@ -140,14 +145,35 @@ public class RuleLoad {
 
         for (int i = 0; i < list.getLength(); i++) {
             Element rule = (Element) list.item(i); 
-            Element body = getElement(rule, NS, BODY);
+            Attr att = rule.getAttributeNodeNS(RDF, ABOUT);
+            if (att == null) {
+                att = rule.getAttributeNodeNS(RDF, ID);
+            }
+            String uri = null;
+            if (att != null) {
+                uri = att.getValue();
+            }
+            Element body = getElement(rule, BODY);
+            if (body == null) {
+                body = getElement(rule, VALUE);
+            }
             String text  = body.getTextContent();
             try {
-                engine.defRule(text);
+                engine.defRule(uri, text);
             } catch (EngineException e) {
                 e.printStackTrace();
             }
         }
+    }
+    
+    Element getElement(Element elem, String name) {
+        for (String ns : NAMESPACE) {
+           Element e = getElement(elem, ns, name);
+           if (e != null) {
+               return e;
+           }
+        }
+        return null;
     }
     
     Element getElement(Element elem, String ns, String name) {
@@ -158,7 +184,7 @@ public class RuleLoad {
         return (Element) list.item(0);
     }
     
-    void load(Document doc) {
+    void load1(Document doc) {
 
         NodeList list = null;
         

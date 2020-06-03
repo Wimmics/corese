@@ -12,7 +12,6 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.RDFList;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
@@ -115,7 +114,7 @@ public class CreateImpl extends CreateTriple implements Creator {
     }
 
     void parseImport(Atom property, Atom object) {
-        if (property.getLongName().equals(Load.IMPORTS)) {
+        if (property.getLongName()!=null && property.getLongName().equals(Load.IMPORTS)) {
             try {
                 load.parseImport(object.getLongName());
             } catch (LoadException ex) {

@@ -1,32 +1,21 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.inria.corese.test.dev.shex;
 
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.lille.shexjava.graph.TCProperty;
 import fr.inria.lille.shexjava.schema.Label;
 import fr.inria.lille.shexjava.schema.ShexSchema;
 import fr.inria.lille.shexjava.schema.abstrsynt.*;
-import fr.inria.lille.shexjava.schema.concrsynt.Constraint;
-import fr.inria.lille.shexjava.schema.concrsynt.DatatypeConstraint;
-import fr.inria.lille.shexjava.schema.concrsynt.FacetNumericConstraint;
-import fr.inria.lille.shexjava.schema.concrsynt.FacetStringConstraint;
-import fr.inria.lille.shexjava.schema.concrsynt.IRIStemConstraint;
-import fr.inria.lille.shexjava.schema.concrsynt.LanguageConstraint;
-import fr.inria.lille.shexjava.schema.concrsynt.LanguageStemConstraint;
-import fr.inria.lille.shexjava.schema.concrsynt.LiteralStemConstraint;
-import fr.inria.lille.shexjava.schema.concrsynt.NodeKindConstraint;
-import fr.inria.lille.shexjava.schema.concrsynt.ValueSetValueConstraint;
+import fr.inria.lille.shexjava.schema.concrsynt.*;
 import fr.inria.lille.shexjava.schema.parsing.GenParser;
+import fr.inria.lille.shexjava.util.Interval;
+import java.math.BigDecimal;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import org.eclipse.rdf4j.model.Value;
-//import org.apache.commons.rdf.api.Graph;
-//import org.apache.commons.rdf.api.IRI;
+
 
 /**
  *
@@ -34,22 +23,28 @@ import org.eclipse.rdf4j.model.Value;
  */
 public class Shex {
     
-    StringBuilder sb;
+    private static final String SH_SHAPE = "sh:NodeShape";    
+    private static final String SH_PATH = "sh:path";
+    private static final String SH_NODE = "sh:node";
+    private static final String SH_PROPERTY = "sh:property";
+    private static final String SH_MINCOUNT = "sh:minCount";
+    private static final String SH_MAXCOUNT = "sh:maxCount";
+    private static final String SH_INVERSEPATH = "sh:inversePath";
+    
+   
+    private StringBuilder sb;
     NSManager nsm =  NSManager.create();
     private Label label;
+    ShexConstraint shexConst;
+    private ShexShacl shacl;
     
-    Shex() {
+    public Shex() {
         sb = new StringBuilder();
+        shacl = new ShexShacl();
+        shexConst = new ShexConstraint(this);
     }
 
-    static String data = Shex.class.getClassLoader().getResource("data/").getPath();
-    static String shex = Shex.class.getClassLoader().getResource("data/shex/").getPath();
-
-    public static void main(String[] args) throws Exception {
-        new Shex().parse(shex + "test1.shex");
-    }
-
-    void parse(String path) throws Exception {
+    public StringBuilder parse(String path) throws Exception {
         Path schemaFile = Paths.get(path);
         List<Path> importDirectories = Collections.emptyList();
 
@@ -57,28 +52,33 @@ public class Shex {
         trace("Reading schema");
         ShexSchema schema = GenParser.parseSchema(schemaFile, importDirectories);
         process(schema);
+        return getShacl().getStringBuilder();
     }
+    
+    
 
-    void process(ShexSchema schema) {
+    public void process(ShexSchema schema) {
         for (Label label : schema.getRules().keySet()) {
             ShapeExpr exp = schema.getRules().get(label);
             trace("");
             trace("main: " + exp.getClass().getName());
             trace("");
             setLabel(label);
+            main(exp);
+        }
+    }
+       
+    void main(ShapeExpr exp) {
+        if (exp instanceof NodeConstraint) {
+           // global NodeConstraint as a shacl shape
+           process(null, (NodeConstraint) exp);
+        }
+        else {
             process(exp);
         }
-        System.out.println("");
-        finish();
-    }
-    
-    void finish() {
-        System.out.println(sb);
     }
 
     void process(ShapeExpr exp) {
-       // trace(exp.getClass().getName());
-
         if (exp instanceof Shape) {
             process((Shape) exp);
         } else if (exp instanceof ShapeExprRef) {
@@ -96,12 +96,16 @@ public class Shex {
         }
     }
     
-     void process(TripleExpr exp) {
-        //trace(exp.getClass().getName());
+    void process(TripleExpr exp) {
+        process(exp, null);
+    }
+
+    void process(TripleExpr exp, Context ct) {
+        //trace(exp);
         if (exp instanceof TripleExprRef) {
             process((TripleExprRef) exp);
         } else if (exp instanceof TripleConstraint) {
-            process((TripleConstraint) exp);
+            process((TripleConstraint) exp, ct);
         } else if (exp instanceof EachOf) {
             process((EachOf) exp);
         } else if (exp instanceof OneOf) {
@@ -122,89 +126,157 @@ public class Shex {
     }
 
     void process(Shape sh) {
-        TripleExpr tr = sh.getTripleExpression();
-        //trace(tr.getClass().getName());
-        sb.append(getPrefixURI(label.stringValue())).append(" a sh:Shape [\n");
-        process(tr);
-        sb.append("] .\n\n");
+        process(sh, new ArrayList<>());
+    }
+  
+    void process(Shape sh, NodeConstraint cst) {
+        ArrayList<NodeConstraint> list = new ArrayList<>();
+        list.add(cst);
+        process(sh, list);
+    }
+
+    void process(Shape sh, ArrayList<NodeConstraint> list) {
+        getShacl().append(getPrefixURI(label.stringValue()));
+        define(" a", SH_SHAPE);
+        for (NodeConstraint cst : list) {
+            process(cst);
+        }
+        if (sh != null) {
+            process(sh.getTripleExpression());
+        }
+        getShacl().nl().nl();
     }
 
    
 
     void process(TripleExprRef exp) {
-        //process(exp.getTripleExp());
         trace("Ref: "+ exp);
     }
 
-    // and or
+    /**
+     * Use case: mix of NodeConstraint ans Shape
+     * Insert node constraint inside the SHACL shape
+     * my:EmployeeShape IRI /^http:\/\/hr\.example\/id#[0-9]+/ {
+     *     foaf:name LITERAL;  
+     *   }
+     */
     void process(ShapeAnd exp) {
-        //trace(exp.getClass().getName());
+        ArrayList<NodeConstraint> cstList = new ArrayList<>();
+        Shape shape = null;
+        
         for (ShapeExpr ee : exp.getSubExpressions()) {
-            process(ee);
+            if (ee instanceof NodeConstraint) {
+                cstList.add((NodeConstraint) ee);
+            }
+            else if (ee instanceof Shape) {
+                shape = (Shape) ee;
+            }
+        }
+        
+        if (shape != null && ! cstList.isEmpty()) {
+            // insert node constraint list inside shape 
+            process(shape, cstList);
+        }
+        else {
+            // process and list 
+            for (ShapeExpr ee : exp.getSubExpressions()) {
+                process(ee);
+            }
         }
     }
 
     void process(ShapeOr exp) {
-        //trace(exp.getClass().getName());
         for (ShapeExpr ee : exp.getSubExpressions()) {
             process(ee);
         }
     }
 
     void process(ShapeNot exp) {
-        //trace(exp.getClass().getName());
         process(exp.getSubExpression());
     }
 
     void process(RepeatedTripleExpression exp) {
-        //trace(exp.getClass().getName());
-        process(exp.getSubExpression());
+        Interval i = exp.getCardinality();
+        process(exp.getSubExpression(), new Context(exp));
     }
 
     void process(EachOf exp) {
-        //trace(exp.getClass().getName());
         for (TripleExpr ee : exp.getSubExpressions()) {
-            //trace(ee.getClass().getName() + " " + ee);
             process(ee);
         }
     }
 
     void process(OneOf exp) {
-        //trace(exp.getClass().getName());
         for (TripleExpr ee : exp.getSubExpressions()) {
-            //trace(ee.getClass().getName() + " " + ee);
             process(ee);
         }
     }
 
-    void process(AbstractNaryTripleExpr abs) {
-        //trace(abs.getClass().getName());
-        for (TripleExpr ee : abs.getSubExpressions()) {
-            //trace(ee.getClass().getName() + " " + ee );
-            process(ee);
-        }
-    }
+//    void process(AbstractNaryTripleExpr abs) {
+//        trace(abs);
+//        for (TripleExpr ee : abs.getSubExpressions()) {
+//            process(ee);
+//        }
+//    }
 
     void process(ShapeExprRef exp) {
-        sb.append("sh:node ").append(getPrefixURI(exp.getLabel().stringValue())).append(";\n");
+        define(SH_NODE, getPrefixURI(exp.getLabel().stringValue()));
     }
     
     
 
-    void process(TripleConstraint tc) {
+    void process(TripleConstraint tc, Context ctx) {
         ShapeExpr exp = tc.getShapeExpr();
-        trace("prop: " + tc.getProperty());
-        //trace(exp.getClass().getName());
-        sb.append("sh:property [\n");
-        sb.append("sh:path ").append(getPrefixURI(tc.getProperty().toString())).append(";\n");
-        process(exp);
-        sb.append("];\n");
+        getShacl().append(SH_PROPERTY).append(" [").nl();
+        process(tc.getProperty());
+        tripleConstraint(exp);
+        if (ctx != null) {
+            process(ctx);
+        }
+        getShacl().append("];").nl();
+    }
+    
+    void process(TCProperty p) {
+        if (p.isForward()) {
+           define(SH_PATH, getPrefixURI(p.getIri().toString()));
+        }
+        else {
+           define(SH_PATH, String.format("[%s %s]", SH_INVERSEPATH, getPrefixURI(p.getIri().toString())));
+        }
+    }
+    
+    
+    void process(Context ct) {
+        if (ct.getRepeatedTripleExp() != null) {
+            insert(ct.getRepeatedTripleExp());
+        }
+    }
+    
+    void insert(RepeatedTripleExpression exp) {
+        define(SH_MINCOUNT, exp.getCardinality().min);
+        define(SH_MAXCOUNT, exp.getCardinality().max);
+    }
+    
+    
+    void tripleConstraint(ShapeExpr exp) {
+        if (exp instanceof NodeConstraint) {
+            processBasic((NodeConstraint) exp);
+        }
+        else {
+            process(exp);
+        }
+    }
+    
+    void processBasic(NodeConstraint node) {
+        for (Constraint cst : node.getConstraints()) {
+            shexConst.process(cst);
+        }
     }
 
     void process(NodeConstraint node) {
-        for (Constraint cst : node.getConstraints()) {
-            process(cst);
-        }
+        sb.append(SH_NODE).append(" [\n");
+        processBasic(node);
+        sb.append("];\n");
     }
 
     String getPrefixURI(String name) {
@@ -215,49 +287,28 @@ public class Shex {
         return prop;
     }
     
-    /************************************************************************
-     * 
-     *  Constraint
+    
+    
+    /****************************************************************************
      * 
      */
-
-    void process(Constraint cst) {
-        if (cst instanceof DatatypeConstraint) {
-            process((DatatypeConstraint) cst);
-        } 
-        else if (cst instanceof ValueSetValueConstraint) {
-            process((ValueSetValueConstraint) cst);
-        } 
-        else if (cst instanceof FacetNumericConstraint) {
-            process((FacetNumericConstraint) cst);
-        } 
-        else if (cst instanceof FacetStringConstraint) {
-            process((FacetStringConstraint) cst);
-        } 
-        else if (cst instanceof IRIStemConstraint) {
-            process((IRIStemConstraint) cst);
-        } 
-        else if (cst instanceof LanguageConstraint) {
-            process((LanguageConstraint) cst);
-        } 
-        else if (cst instanceof LanguageStemConstraint) {
-            process((LanguageStemConstraint) cst);
-        } 
-        else if (cst instanceof LiteralStemConstraint) {
-            process((LiteralStemConstraint) cst);
-        } 
-        else if (cst instanceof NodeKindConstraint) {
-            process((NodeKindConstraint) cst);
-        } 
-        
-        else {
-            trace("undef cst: " + cst.getClass().getName() + " " + cst);
-        }
+    
+    void define(String name, String value) {
+        getShacl().define(name, value).nl();
     }
-
-    void process(DatatypeConstraint cst) {
-        sb.append("sh:datatype ").append(getPrefixURI(cst.getDatatypeIri().toString())).append(";\n");
+    
+    void define(String name, List<String> list) {
+       getShacl().define(name, list).nl();
     }
+    
+    void define(String name, BigDecimal value) {
+        getShacl().define(name, value).nl();
+    }
+    
+    void define(String name, int value) {
+        getShacl().define(name, value).nl();
+    }
+    
     
     String getValue(String value) {
         if (value.startsWith("http://")) {
@@ -266,71 +317,6 @@ public class Shex {
         return value;
     }
 
-    void process(ValueSetValueConstraint cst) {
-        if (cst.getExplicitValues().size() == 1) {            
-            for (Value val : cst.getExplicitValues()) {
-                sb.append("sh:hasValue ").append(getValue(val.stringValue())).append(";\n");
-            }
-        } else {
-            sb.append("sh:in (");
-            for (Value val : cst.getExplicitValues()) {
-                sb.append(getValue(val.stringValue())).append(" ");
-            }
-            sb.append("); \n");
-        }
-    }
-    
-     void process(FacetNumericConstraint cst) {
-        trace("cst: " + cst.getClass().getName() + " " + cst);
-        if (cst.getMaxincl()!= null) {
-            sb.append("sh:maxInclusive ").append(cst.getMaxincl()).append(";\n");
-        }
-    }
-
-    void process(FacetStringConstraint cst) {
-        trace("cst: " + cst.getClass().getName() + " " + cst);
-        cst.getLength();
-    }
-    
-    void process(IRIStemConstraint cst) {
-        trace("cst: " + cst.getClass().getName() + " " + cst);
-        cst.getIriStem();
-    }
-
-    void process(LanguageConstraint cst) {
-        trace("cst: " + cst.getClass().getName() + " " + cst);
-        cst.getLangTag();
-    }
-    
-     void process(LanguageStemConstraint cst) {
-        trace("cst: " + cst.getClass().getName() + " " + cst);
-        cst.getLangStem();
-    }
-
-    void process(LiteralStemConstraint cst) {
-        trace("cst: " + cst.getClass().getName() + " " + cst);
-        cst.getLitStem();
-    }
-    
-    void process(NodeKindConstraint cst) {
-        sb.append("sh:nodeKind ").append(getKind(cst)).append(";\n");
-    }
-    
-    String getKind(NodeKindConstraint cst) {
-        if (cst == NodeKindConstraint.AllIRI) {
-            return "sh:IRI";
-        }
-        if (cst == NodeKindConstraint.AllLiteral) {
-            return "sh:Literal";
-        }
-        if (cst == NodeKindConstraint.AllNonLiteral) {
-            return "sh:IRIOrBlank";
-        }
-        if (cst == NodeKindConstraint.Blank) {
-            return "sh:Blank";
-        }
-        return "sh:Undef";
-    }
 
     /**
      * @return the label
@@ -344,6 +330,21 @@ public class Shex {
      */
     public void setLabel(Label label) {
         this.label = label;
+    }
+
+
+    /**
+     * @return the shacl
+     */
+    public ShexShacl getShacl() {
+        return shacl;
+    }
+
+    /**
+     * @param shacl the shacl to set
+     */
+    public void setShacl(ShexShacl shacl) {
+        this.shacl = shacl;
     }
 
 }

@@ -1,5 +1,7 @@
 package fr.inria.corese.test.dev.shex;
 
+import fr.inria.corese.shex.Shex;
+
 
 /**
  *

@@ -9,7 +9,7 @@ import org.eclipse.rdf4j.model.Value;
 
 /**
  *
- * @author corby
+ * @author Olivier Corby - Inria I3S - 2020
  */
 public class ShexConstraint {
     
@@ -26,12 +26,13 @@ public class ShexConstraint {
     private static final String SH_IRI_OR_BLANK = "sh:BlankNodeOrIRI";
     private static final String SH_LITERAL = "sh:Literal";
     private static final String SH_IRI = "sh:IRI"; 
-    private static final String SH_PATTERN = "sh:pattern";
+    static final String SH_PATTERN = "sh:pattern";
     private static final String SH_MAXLENGTH = "sh:maxLength";
     private static final String SH_MINLENGTH = "sh:minLength";
     private static final String SH_OR = "sh:or";
     private static final String SH_AND = "sh:and";
     private static final String SH_NOT = "sh:not";
+    static final String SH_LANGUAGE_IN = "sh:languageIn";
     
     Shex shex;
     private ShexShacl shacl;
@@ -107,34 +108,55 @@ public class ShexConstraint {
         }
         
         if (!valueList.isEmpty()) {
+            // sh:in (value list)
             ShexShacl fst = new ShexShacl();    
             fst.define(SH_IN, valueList);
             cstList.add(fst);
         }
         
+        ArrayList<LanguageConstraint> langList = new ArrayList<>();
+        
         for (Constraint cc : cst.getConstraintsValue()) {
+            //trace(cc);
             if (cc instanceof IRIStemConstraint) {
                 // ei = regex()
                 cstList.add(process((IRIStemConstraint) cc));
-            } else if (cc instanceof IRIStemRangeConstraint) {
+            } 
+            else if (cc instanceof LiteralStemConstraint) {
+                // ei = regex()
+                cstList.add(process((LiteralStemConstraint) cc));
+            } 
+            else if (cc instanceof StemRangeConstraint) {
                 // ei = (and(regex(), not(ej))
-                cstList.add(process((IRIStemRangeConstraint) cc));
-            } else {
+                cstList.add(process((StemRangeConstraint) cc));
+            } 
+            else if (cc instanceof LanguageConstraint) {
+                langList.add((LanguageConstraint) cc);
+            } 
+            else if (cc instanceof LanguageStemConstraint) {
+                cstList.add(process((LanguageStemConstraint) cc));
+            } 
+            else {
                 System.out.println("Undef Value Set Cst: " + cc);
             }
+        }
+        
+        if (! langList.isEmpty()) {
+            ShexShacl lang = processLanguage(langList);
+            cstList.add(lang);
         }
         
         if (cstList.size() == 1) {
             return cstList.get(0);
         }
-        ShexShacl res = new ShexShacl();
-        res.insert(SH_OR, cstList);
+        ShexShacl res = new ShexShacl()
+                .insert(SH_OR, cstList).append(";").nl();
         return res;
     }
     
     ShexShacl process(IRIStemConstraint cst) {
         ShexShacl shacl = new ShexShacl();
-        shacl.define(SH_PATTERN, String.format("\"^%s\"", cst.getIriStem()));
+        shacl.pattern(cst.getIriStem()).nl();
         return shacl;
     }
     
@@ -144,23 +166,63 @@ public class ShexConstraint {
      * ex:~ - <http://aux.example/terms#med_>~ 
      * and(regex(), not((regex()), not(regex())))
      */
-    ShexShacl process(IRIStemRangeConstraint cst) {
-        ShexShacl stem = new ShexShacl()
-                .define(SH_PATTERN, String.format("\"^%s\"", getStem(cst.getStem())));        
+    ShexShacl process(StemRangeConstraint cst) {
+        ShexShacl stem = new ShexShacl();
+        if (cst instanceof LiteralStemRangeConstraint) {
+            stem.pattern(getStem(cst.getStem())).nl(); 
+        }
+        else {
+            //trace(cst);
+            stem.language(getStem(cst.getStem())).nl();
+        }
         ShexShacl constraint = processBasic(cst.getExclusions());
         ShexShacl exclude = new ShexShacl().insert(SH_NOT, constraint);                        
-        ShexShacl res = new ShexShacl().insert(SH_AND, Arrays.asList(stem, exclude));        
+        ShexShacl res;
+        if (cst.getStem() instanceof WildcardConstraint) {
+            res = exclude;
+        }
+        else {
+            res = new ShexShacl().insert(SH_AND, Arrays.asList(stem, exclude));
+        }        
         return res;
     }
        
     String getStem(Constraint cst) {
-        // remove "IRIstem="
         if (cst instanceof IRIStemConstraint) {
             return ((IRIStemConstraint) cst).getIriStem();
         }
+        else if (cst instanceof LiteralStemConstraint) {
+            return ((LiteralStemConstraint) cst).getLitStem();
+        }
+        else if (cst instanceof LanguageStemConstraint) {
+            return (((LanguageStemConstraint) cst).getLangStem());
+        }
         return cst.toString();
     }
+    
+    
+    ShexShacl process(LiteralStemConstraint cst) {
+        ShexShacl shacl = new ShexShacl();
+        shacl.pattern(cst.getLitStem()).nl();
+        return shacl;
+    }
+    
+    ShexShacl processLanguage(List<LanguageConstraint> list) {
+        return new ShexShacl().language(list);
+    }
+   
+    ShexShacl processLanguage(LanguageConstraint... cst) {
+        return processLanguage(Arrays.asList(cst));
+    }
 
+    ShexShacl process(LanguageStemConstraint cst) {
+        ShexShacl shacl = new ShexShacl();
+        shacl.openList(SH_LANGUAGE_IN);
+        shacl.append(cst.getLangStem());
+        shacl.closeList();
+        return shacl;
+    }
+    
     void process(FacetNumericConstraint cst) {
         if (cst.getMaxincl() != null) {
             define(SH_MAX_INCLUSIVE, cst.getMaxincl());
@@ -168,7 +230,7 @@ public class ShexConstraint {
         if (cst.getMaxexcl() != null) {
             define(SH_MAX_EXCLUSIVE, cst.getMaxexcl());
         }
-        if (cst.getMinexcl() != null) {
+        if (cst.getMinincl() != null) {
             define(SH_MIN_INCLUSIVE, cst.getMinincl());
         }
         if (cst.getMinexcl() != null) {
@@ -180,7 +242,7 @@ public class ShexConstraint {
         cst.getFlags();
 
         if (cst.getPatternString() != null) {
-            define(SH_PATTERN, String.format("\"%s\"", cst.getPatternString()));
+            getShacl().pattern(cst.getPatternString()).nl();
         }
         if (cst.getMinlength() != null) {
             define(SH_MINLENGTH, cst.getMinlength().toString());
@@ -192,21 +254,6 @@ public class ShexConstraint {
             define(SH_MINLENGTH, cst.getLength().toString());
             define(SH_MAXLENGTH, cst.getLength().toString());
         }
-    }
-
-    void process(LanguageConstraint cst) {
-        trace("cst: " + cst.getClass().getName() + " " + cst);
-        cst.getLangTag();
-    }
-
-    void process(LanguageStemConstraint cst) {
-        trace("cst: " + cst.getClass().getName() + " " + cst);
-        cst.getLangStem();
-    }
-
-    void process(LiteralStemConstraint cst) {
-        trace("cst: " + cst.getClass().getName() + " " + cst);
-        cst.getLitStem();
     }
 
     void process(NodeKindConstraint cst) {

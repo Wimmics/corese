@@ -6,7 +6,7 @@ import fr.inria.lille.shexjava.schema.abstrsynt.TripleExpr;
 
 /**
  *
- * @author corby
+ * @author Olivier Corby - Inria I3S - 2020
  */
 public class Context {
     

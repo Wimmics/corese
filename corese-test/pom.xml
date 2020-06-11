@@ -36,10 +36,10 @@
 		 <!--<version>4.1.1-jdk8</version>-->
 		 <!--<type>jar</type>-->
 		</dependency>
-                <dependency>
+<!--                <dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>shex</artifactId>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sparql</artifactId>

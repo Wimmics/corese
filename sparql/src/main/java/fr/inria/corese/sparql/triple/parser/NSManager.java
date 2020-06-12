@@ -61,6 +61,8 @@ public class NSManager extends ASTObject {
     public static final String FOAF = "http://xmlns.com/foaf/0.1/";
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
     public static final String SHACL = "http://www.w3.org/ns/shacl#";
+    public static final String SHACL_PREFIX =  "sh";
+    public static final String SHEX_SHACL = "http://ns.inria.fr/shex/shacl#";
     public static final String SHAPE = SHACL;
     public static final String SHACL_JAVA = "function://fr.inria.corese.core.extension.SHACL.";
     public static final String EXT_FUN    = "function://fr.inria.corese.core.extension.Extension.";
@@ -117,6 +119,7 @@ public class NSManager extends ASTObject {
     static final String pchar = ":";
     int count = 0;
     static final NSManager nsm = create();
+    static final HashMap<String, Boolean> number;
 
     HashMap<String, String> def; // system namespace with prefered prefix
     HashMap<String, Integer> index;  // namespace -> number
@@ -132,6 +135,20 @@ public class NSManager extends ASTObject {
      */
     private String defaultNamespaces = null;
     private boolean record = false;
+    
+    static {
+        number = new HashMap<>();
+        number();
+    }
+    
+    // for pretty printing without ^^datatype
+    static void number() {
+        number.put(fr.inria.corese.sparql.datatype.RDF.xsdinteger, Boolean.TRUE);
+        //number.put(fr.inria.corese.sparql.datatype.RDF.xsdint, Boolean.TRUE);
+        //number.put(fr.inria.corese.sparql.datatype.RDF.xsdfloat, Boolean.TRUE);
+        //number.put(fr.inria.corese.sparql.datatype.RDF.xsddouble, Boolean.TRUE);
+        number.put(fr.inria.corese.sparql.datatype.RDF.xsddecimal, Boolean.TRUE);
+    }
 
     private NSManager() {
         def = new HashMap<String, String>();
@@ -262,7 +279,8 @@ public class NSManager extends ASTObject {
         def.put(CUSTOM, "cs");
         def.put(SPARQL, SPARQL_PREF);
         //def.put(SHACL, "xsh");
-        def.put(SHACL, "sh");
+        def.put(SHACL, SHACL_PREFIX);
+        //def.put(SHEX_SHACL, "shex");
         def.put(SHACL_JAVA, "jsh");
         def.put(EXT_FUN, "fun");
         def.put("http://example.org/ns#", "ex");
@@ -286,6 +304,10 @@ public class NSManager extends ASTObject {
 
     public boolean isNamespace(String ns) {
         return tns.containsKey(ns);
+    }
+    
+    public static boolean isNumber(String ns) {
+        return number.get(ns) != null;
     }
 
     /**

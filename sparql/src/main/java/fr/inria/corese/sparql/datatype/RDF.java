@@ -1,7 +1,7 @@
 package fr.inria.corese.sparql.datatype;
 
 public interface RDF {
-
+    
 	 static final String XML   =  "http://www.w3.org/XML/1998/namespace";
 	 static final String RDF   =  "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
 	 static final String RDFS  =  "http://www.w3.org/2000/01/rdf-schema#";

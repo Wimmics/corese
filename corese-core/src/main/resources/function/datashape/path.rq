@@ -207,8 +207,8 @@ function sh:sibling() {
             where {
                 select distinct ?qsh ?sibling ?path
                 where {
-                    ?root sh:property [ sh:qualifiedValueShape ?qsh ];
-                          sh:property [ sh:qualifiedValueShape ?sibling ; sh:path ?path ]  
+                    ?root sh:property [ sh:qualifiedValueShape ?qsh ], ?sh .
+                    ?sh sh:qualifiedValueShape ?sibling ; sh:path ?path  
                     filter (?sibling != ?qsh)
                 }
             }
@@ -226,16 +226,14 @@ function sh:sibling() {
 #
 #
 function sh:qualifiedValueShape (sh, vis, s, p, qsh, disjoint, amin, amax, nodeList) {
-        #xt:print("qualif1:", s, nodeList);
         # list = path nodes that match qualified shape
         let (list = mapfindlist(sh:qualifiedShape, nodeList,  qsh),
             qlist = if (coalesce(disjoint, false), 
                 # remove elements that are in sibling shapes
-                sh:findDisjoint(list, qsh, s), list),
+                sh:findDisjointList(list, qsh, s, p), list),
             suc1 = xt:size(qlist) >= amin, 
             suc2 = if (amax = -1, true, xt:size(qlist) <= amax)) {
             
-            #xt:print("qualif3:", s, qlist);
             sh:report(sh:qualifiedMinCount, sh, s, p, s, suc1, vis) ;
             sh:report(sh:qualifiedMaxCount, sh, s, p, s, suc2, vis) ;
             return (suc1 && suc2)
@@ -251,9 +249,32 @@ function sh:qualifiedValueShape (sh, vis, s, p, qsh, disjoint, amin, amax, nodeL
 # that *verify* the shape
 #
 function xsd:boolean sh:qualifiedShape(subject,  qsh){
-    #xt:print("qualif2:", subject, xt:turtle(qsh));
     sh:core(qsh, false, subject, true)
 }
+
+
+
+
+#
+# nodeList: list of nodes that match qsh
+# qsh:  qualified value shape with qualifiedValueShapesDisjoint=true
+# return sublist of nodes disjoint with node lists of sibling shapes
+#
+function sh:findDisjointList(nodeList, qsh, subject, currentPath) {
+    #xt:print("qsh1:", subject, nodeList);
+    let (siblingNodeList = xt:list()) {
+        # nodeList of sibling shapes
+        for ((sh, path) in sh:getConstraint(sh:sibling, qsh)){
+            let (target = if (coalesce(currentPath = path, false), nodeList, sh:ppath(subject, path)),
+                 targetQualified =  mapfindlist(sh:qualifiedShape, target,  sh)) {
+                set (siblingNodeList = xt:append(siblingNodeList, targetQualified))
+            }
+        } ;
+        mapfindlist(function(node, list) { ! xt:member(node, list) },
+            nodeList, xt:list(siblingNodeList))
+    }
+}
+
 
 
 #
@@ -267,22 +288,7 @@ function sh:qualified(qsh, s, p){
      }
 }
 
-function sh:findDisjoint(list,  qsh, s) {
-    mapfindlist(sh:disjoint, list,  qsh, s)
-}
 
-#
-# test disjointness of subject ?s value ?o with ?qsh sibling shapes
-# for each sibling shape ?sh, compute ?list of values and test ?o not in ?list
-#
-function sh:disjoint(o, qsh, s){
-   for ((sh, path) in sh:getConstraint(sh:sibling, qsh)){
-        if (xt:member(o, sh:qualified(sh, s, path))){
-            return (false)
-        }        
-   } ;
-   return (true)
-}
 
 
 

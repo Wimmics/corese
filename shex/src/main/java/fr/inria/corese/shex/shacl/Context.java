@@ -4,7 +4,9 @@ import fr.inria.lille.shexjava.schema.abstrsynt.NodeConstraint;
 import fr.inria.lille.shexjava.schema.abstrsynt.RepeatedTripleExpression;
 import fr.inria.lille.shexjava.schema.abstrsynt.Shape;
 import fr.inria.lille.shexjava.schema.abstrsynt.ShapeExpr;
+import fr.inria.lille.shexjava.schema.abstrsynt.TripleExpr;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.List;
 
 /**
@@ -19,6 +21,8 @@ public class Context {
     private ShapeExpr qualifiedExpr;
     // Embedding shape to get EXTRA if any
     private Shape shape;  
+    // qualified expr => sh:qualifiedValueShape
+    private HashMap<TripleExpr, Boolean> qualified;
     
     
     Context(RepeatedTripleExpression e) {
@@ -31,6 +35,25 @@ public class Context {
     
     Context(List<NodeConstraint> list) {
         setNodeConstraintList(list);
+    }
+    
+    boolean isQualified(TripleExpr exp) {
+        if (getQualified() == null) {
+            return false;
+        }
+        Boolean b = getQualified().get(exp);
+        return b != null && b;
+    }
+    
+    HashMap<TripleExpr, Boolean> qualified() {
+        if (getQualified() == null) {
+            setQualified(new HashMap<>());
+        }
+        return getQualified();
+    }
+    
+    void qualify(TripleExpr exp) {
+        qualified().put(exp, true);
     }
     
     int getMin() {
@@ -108,6 +131,20 @@ public class Context {
     public Context setShape(Shape shape) {
         this.shape = shape;
         return this;
+    }
+
+    /**
+     * @return the qualified
+     */
+    public HashMap<TripleExpr, Boolean> getQualified() {
+        return qualified;
+    }
+
+    /**
+     * @param qualified the qualified to set
+     */
+    public void setQualified(HashMap<TripleExpr, Boolean> qualified) {
+        this.qualified = qualified;
     }
     
 }

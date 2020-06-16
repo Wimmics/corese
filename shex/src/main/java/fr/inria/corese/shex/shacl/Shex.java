@@ -98,7 +98,7 @@ public class Shex implements Constant {
     
     
     void process(ShapeExpr exp) {
-        process(exp, null);
+        process(exp, new Context());
     }
 
     /**
@@ -106,14 +106,15 @@ public class Shex implements Constant {
      * @param ct : context for cardinality, qualifiedValueShape, constraint list
      */
     void process(ShapeExpr exp, Context ct) {
+        //trace(exp);
         if (exp instanceof Shape) {
             process((Shape) exp, ct);
         } else if (exp instanceof ShapeExprRef) {
             process((ShapeExprRef) exp);
         } else if (exp instanceof ShapeAnd) {
-            process((ShapeAnd) exp);
+            process((ShapeAnd) exp, ct);
         } else if (exp instanceof ShapeOr) {
-            process((ShapeOr) exp);
+            process((ShapeOr) exp, ct);
         } else if (exp instanceof ShapeNot) {
             process((ShapeNot) exp);
         } else if (exp instanceof NodeConstraint) {
@@ -148,9 +149,7 @@ public class Shex implements Constant {
         }
         
         if (sh != null) {
-            if (ctx == null) {
-                ctx = new Context();
-            }
+            ctx = context(ctx);
             ctx.setShape(sh);
             process(sh.getTripleExpression(), ctx);
         }
@@ -176,7 +175,7 @@ public class Shex implements Constant {
      * the SHACL shape my:EmployeeShape IRI /^http:\/\/hr\.example\/id#[0-9]+/ {
      * foaf:name LITERAL; }
      */
-    void process(ShapeAnd exp) {
+    void process(ShapeAnd exp, Context ct) {
         ArrayList<NodeConstraint> cstList = new ArrayList<>();
         Shape shape = null;
 
@@ -192,25 +191,29 @@ public class Shex implements Constant {
             // insert node constraint list inside shape 
             process(shape, cstList);
         } else {
+            ct = context(ct);
+            new Qualified().create(exp, ct);
+            
             if (getCurrentLabel() != null) {
                 declareShape();
             }
             // process AND list 
             for (ShapeExpr ee : exp.getSubExpressions()) {
-                process(ee);
+                process(ee, ct);
             }
         }
     }
 
-    void process(ShapeOr exp) {
+    void process(ShapeOr exp, Context ct) {
         if (getCurrentLabel() != null) {
             declareShape();
         }
-        
+        //ct = context(ct);
+//        new Qualified().create(exp, ct);
         getShacl().openList(SH_OR);
         
         for (ShapeExpr ee : exp.getSubExpressions()) {
-            traceClass(ee);trace(ee);
+            //traceClass(ee);trace(ee);
             getShacl().openBracket();
             process(ee);
             getShacl().closeBracket().nl();
@@ -242,9 +245,10 @@ public class Shex implements Constant {
     }
 
     void process(TripleExpr exp, Context ct) {
-        //traceClass(exp);
+//        traceClass(exp);
+//        trace(exp);
         if (exp instanceof TripleExprRef) {
-            process((TripleExprRef) exp);
+            process((TripleExprRef) exp, ct);
         } else if (exp instanceof TripleConstraint) {
             process((TripleConstraint) exp, ct);
         } else if (exp instanceof EachOf) {
@@ -266,30 +270,31 @@ public class Shex implements Constant {
         
     }
     
-    void process(TripleExprRef exp) {
+    void process(TripleExprRef exp, Context ct) {
         process(exp.getTripleExp());
     }
     
     void process(RepeatedTripleExpression exp, Context ct) {
-        if (ct == null) {
-            ct = new Context();
-        }
+        ct = context(ct);
+        RepeatedTripleExpression save = ct.getRepeatedExpr();
         process(exp.getSubExpression(), ct.setRepeatedExpr(exp));
+        ct.setRepeatedExpr(save);
     }
-
+    
+    Context context(Context ct) {
+        return (ct == null) ? new Context() : ct;
+    }
     /**
      * several occurrences of same (inverse) property processed as qualifiedValueShape
      */
     void process(EachOf exp, Context ct) {
-        Qualified map        = new Qualified(this).create(exp, true);
-        Qualified mapInverse = new Qualified(this).create(exp, false);
+        ct = context(ct);
+        new Qualified().create(exp, ct);
         
         List<TripleExpr> doneShacl = processShacl(exp);
-        List<TripleExpr> done = map.process(ct.getShape());
-        List<TripleExpr> doneInverse = mapInverse.process(ct.getShape());
 
         for (TripleExpr ee : exp.getSubExpressions()) {
-            if (!doneShacl.contains(ee) && !done.contains(ee) && !doneInverse.contains(ee)) {
+            if (!doneShacl.contains(ee)) { 
                 process(ee, ct);
             }
         }
@@ -317,26 +322,26 @@ public class Shex implements Constant {
         getShacl().openList(SH_ONE);
         for (TripleExpr ee : exp.getSubExpressions()) {
             getShacl().openBracket();
-            process(ee);
+            process(ee, ct);
             getShacl().closeBracket();
         }
         getShacl().closeList();
     }
 
 
-    void process(TripleConstraint tc, Context ctx) {
+    void process(TripleConstraint tc, Context ct) {
+        ct = context(ct);
         if (isExtendShacl() && isShacl(tc.getProperty())) {
             processShacl(tc);
         } 
-        else if (isExtra(tc.getProperty(), ctx)) {
+        else if (isExtra(tc.getProperty(), ct) || ct.isQualified(tc)) {
             // EXTRA ex:p -> sh:qualifiedValueShape to authorize extra occurrences of ex:p
-            processQualify(tc, ctx);
+            processQualify(tc, ct);
         }
         else {
-            processBasic(tc, ctx);
+            processBasic(tc, ct);
         }
     }
-
    
     void processBasic(TripleConstraint tc, Context ctx) {
         getShacl().openBracket(SH_PROPERTY);
@@ -351,7 +356,7 @@ public class Shex implements Constant {
     /**
      * The constraint of the property is sh:qualifiedValueShape [ cst ]
      */
-    void processQualify(TripleConstraint tc, Context ctx) {
+    void processQualify(TripleConstraint tc, Context ct) {
         getShacl().openBracket(SH_PROPERTY);
         process(tc.getProperty());
         
@@ -360,8 +365,8 @@ public class Shex implements Constant {
         tripleConstraint(exp, new Context().setQualifiedExpr(exp));
         getShacl().closeBracketPw().nl();
         
-        define(SH_QUALIFIED_MIN_COUNT, (ctx == null) ? 1 : ctx.getMin());
-        define(SH_QUALIFIED_MAX_COUNT, (ctx == null) ? 1 : ctx.getMax());
+        define(SH_QUALIFIED_MIN_COUNT, (ct == null) ? 1 : ct.getMin());
+        define(SH_QUALIFIED_MAX_COUNT, (ct == null) ? 1 : ct.getMax());
         
         getShacl().closeBracketPw().nl();
     }

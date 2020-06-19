@@ -8,7 +8,7 @@ prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix xsh: <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
-@import <sparql.rq>
+@import <sparql.rq> <qualified.rq>
 
 
 #
@@ -178,117 +178,6 @@ function sh:path1(shape, sh) {
 function sh:path2(shape, sh) {
     sh:getPathShape(shape, sh, sh:getShape(sh:path2))
 }
-
-function sh:path3(shape, sh) {
-    let (select ?shape ?sh 
-        (aggregate(xt:list(sh:qualifiedValueShape, ?qsh, 
-            coalesce(disjoint, false), coalesce(?min, 0), coalesce(?max, -1))) as ?list) 
-        where {
-            graph ?shape {  
-                ?sh sh:qualifiedValueShape ?qsh
-                optional { ?sh sh:qualifiedMinCount ?min }
-                optional { ?sh sh:qualifiedMaxCount ?max }
-                optional { ?sh sh:qualifiedValueShapesDisjoint ?disjoint }
-            }
-        } ) {
-        return(list)
-    }
-}
-
-
-#
-# called when start
-# within xt:focus(?shape, sh:sibling())
-# record sibling qualifiedValueShape in a table
-#
-function sh:sibling() {
-    for (select  ?qsh ?list where {
-            select ?qsh (aggregate(xt:list(?sibling, ?path)) as ?list) 
-            where {
-                select distinct ?qsh ?sibling ?path
-                where {
-                    ?root sh:property [ sh:qualifiedValueShape ?qsh ], ?sh .
-                    ?sh sh:qualifiedValueShape ?sibling ; sh:path ?path  
-                    filter (?sibling != ?qsh)
-                }
-            }
-            group by ?qsh
-        } ) {
-            if (bound(?qsh), sh:setConstraint(sh:sibling, ?qsh, ?list), true) 
-    } ;
-    return (true)
-}
-
-
-# ************** operators
-
-# sh: property shape ; qsh: qualified shape
-#
-#
-function sh:qualifiedValueShape (sh, vis, s, p, qsh, disjoint, amin, amax, nodeList) {
-        # list = path nodes that match qualified shape
-        let (list = mapfindlist(sh:qualifiedShape, nodeList,  qsh),
-            qlist = if (coalesce(disjoint, false), 
-                # remove elements that are in sibling shapes
-                sh:findDisjointList(list, qsh, s, p), list),
-            suc1 = xt:size(qlist) >= amin, 
-            suc2 = if (amax = -1, true, xt:size(qlist) <= amax)) {
-            
-            sh:report(sh:qualifiedMinCount, sh, s, p, s, suc1, vis) ;
-            sh:report(sh:qualifiedMaxCount, sh, s, p, s, suc2, vis) ;
-            return (suc1 && suc2)
-        }
-}
-
-
-
-#
-# qsh = [ sh:path us:genre ; sh:hasValue us:female ]
-# check shape qsh on subject
-# absence of us:genre return false because we will count the number of nodes
-# that *verify* the shape
-#
-function xsd:boolean sh:qualifiedShape(subject,  qsh){
-    sh:core(qsh, false, subject, true)
-}
-
-
-
-
-#
-# nodeList: list of nodes that match qsh
-# qsh:  qualified value shape with qualifiedValueShapesDisjoint=true
-# return sublist of nodes disjoint with node lists of sibling shapes
-#
-function sh:findDisjointList(nodeList, qsh, subject, currentPath) {
-    #xt:print("qsh1:", subject, nodeList);
-    let (siblingNodeList = xt:list()) {
-        # nodeList of sibling shapes
-        for ((sh, path) in sh:getConstraint(sh:sibling, qsh)){
-            let (target = if (coalesce(currentPath = path, false), nodeList, sh:ppath(subject, path)),
-                 targetQualified =  mapfindlist(sh:qualifiedShape, target,  sh)) {
-                set (siblingNodeList = xt:append(siblingNodeList, targetQualified))
-            }
-        } ;
-        mapfindlist(function(node, list) { ! xt:member(node, list) },
-            nodeList, xt:list(siblingNodeList))
-    }
-}
-
-
-
-#
-# Return the list of value nodes that match qualified shape qsh 
-#
-function sh:qualified(qsh, s, p){
-    # nodes of path p
-     let (list = sh:ppath(s, p)) {
-        # nodes of path p that match qualified shape qsh
-        mapfindlist(sh:qualifiedShape, list,  qsh)
-     }
-}
-
-
 
 
 

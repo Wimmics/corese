@@ -619,10 +619,11 @@ function xsd:boolean sh:result(name, sh, cst, dt:graph shape, foc, path, node){
         abnode = sh:bnodeid(),
         rep = sh:validationReport()
         ) {
-        
+
        sh:store(rep, abnode, rdf:type, sh:ValidationReport);
        sh:store(rep, abnode, sh:result, res);
        sh:store(rep, abnode, sh:conforms, false);
+       
        
        sh:store(rep, res, rdf:type, sh:ValidationResult);
        sh:store(rep, res, sh:resultSeverity, sev);

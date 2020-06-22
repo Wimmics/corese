@@ -35,6 +35,7 @@ public class Shacl {
     static final String PARSE   = SH+"funparse";
     
     static final String SHACL   = SH+"shacl";
+    static final String SHEX    = SH+"shex";
     static final String SHAPE   = SH+"shaclshape";
     static final String NODE    = SH+"shaclnode";
     static final String FOCUS   = SH+"focuslist";
@@ -119,6 +120,10 @@ public class Shacl {
     
     public Graph shacl() throws EngineException {
         return eval();
+    }
+    
+    public Graph shex() throws EngineException {
+        return eval(SHEX, getShacl());
     }
     
     public Graph shaclshape(IDatatype shape) throws EngineException {

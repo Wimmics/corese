@@ -144,7 +144,9 @@ public interface IDatatype
      * @return 0 if they are equals, an int > 0 if the datatype is greater than
      * dt2, an int < 0 if the datatype is lesser
      */
-    int compareTo(IDatatype dt2);
+    int compareTo(IDatatype dt);
+    // for TreeMap
+    int mapCompareTo(IDatatype dt);
     
     int compare(IDatatype dt) throws CoreseDatatypeException;
 

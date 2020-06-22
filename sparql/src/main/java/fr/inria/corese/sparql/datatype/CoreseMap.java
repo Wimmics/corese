@@ -134,7 +134,7 @@ public class CoreseMap extends CoreseExtension {
     class TreeDatatype extends TreeMap<IDatatype, IDatatype> {
 
         TreeDatatype() {
-            super((IDatatype t, IDatatype t1) -> t.compareTo(t1));
+            super((IDatatype t, IDatatype t1) -> t.mapCompareTo(t1));
         }
     }
 

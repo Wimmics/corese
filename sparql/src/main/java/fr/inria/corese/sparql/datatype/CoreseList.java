@@ -410,4 +410,12 @@ public class CoreseList extends CoreseExtension implements IDatatypeList {
     public IDatatype member(IDatatype elem) {
         return list.contains(elem) ? TRUE : FALSE;
     }
+    
+    @Override
+    public int mapCompareTo(IDatatype dt) {
+        if (dt.isList()) {
+           return getLabel().compareTo(dt.getLabel());
+        }
+        return super.compareTo(dt);
+    }
 }

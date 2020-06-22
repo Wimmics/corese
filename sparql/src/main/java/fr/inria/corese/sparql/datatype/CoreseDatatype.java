@@ -985,6 +985,12 @@ public class CoreseDatatype
         return number(getLabel().compareTo(d2.getLabel()));
     }
     
+    // for CoreseMap TreeMap
+    @Override
+    public int mapCompareTo(IDatatype dt) {
+        return compareTo(dt);
+    }
+    
     int number(int val) {
         if (val == 0) return 0;
         if (val < 0) return -1;

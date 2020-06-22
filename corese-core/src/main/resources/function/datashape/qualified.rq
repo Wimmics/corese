@@ -60,9 +60,14 @@ function sh:path3(shape, sh) {
 # sh: property shape ; qsh: qualified shape ; nodeList: subject path object node list
 #
 function sh:qualifiedValueShape (sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList) {
-    if (bound(shexshacl) && shexshacl, 
-        sh:partitionValueShape(sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList), true);
+    if (bound(shaclshex) && shaclshex, 
+        sh:partitionValueShape(sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList), 
+        sh:shaclQualifiedValueShape(sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList))
+}
+
         
+        
+function sh:shaclQualifiedValueShape (sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList) {
         # list = node list that match qualified shape
         # qlist = distinct node list when sh:qualifiedValueShapesDisjoint = true
         let (list = mapfindlist(sh:qualifiedShape, nodeList,  qsh),
@@ -115,7 +120,7 @@ function sh:siblingNodeList(qsh, subject, currentPath, nodeList) {
     let (siblingNodeList = xt:list(), cardList = xt:list(),
          cstList = coalesce(sh:getConstraint(sh:sibling, qsh), xt:list())) {
         for ((sh, path, amin, amax) in cstList) {
-            let (target = if (coalesce(currentPath = path, false), nodeList, sh:ppath(subject, path)),
+            let (target = if (coalesce(sh:samePath(currentPath, path), false), nodeList, sh:ppath(subject, path)),
                  targetQualified =  mapfindlist(sh:qualifiedShape, target,  sh)) {
                 xt:add(siblingNodeList, targetQualified) ;
 #                xt:add(cardList, xt:list(amin, amax))
@@ -123,6 +128,10 @@ function sh:siblingNodeList(qsh, subject, currentPath, nodeList) {
         } ;
         return (siblingNodeList)
     }
+}
+
+function sh:samePath(p1, p2) {
+    (isURI(p1) && p1 = p2) || sh:getPPath(p1) = sh:getPPath(p2)
 }
 
 #

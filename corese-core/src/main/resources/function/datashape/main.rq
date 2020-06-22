@@ -21,6 +21,15 @@ function dt:graph sh:shacl() {
    sh:shacl(xt:graph(), sh:focus(xt:graph()))
 }
 
+function dt:graph sh:shex() {
+   sh:shexSemantics(true);
+   sh:shacl()
+}
+
+function sh:shexSemantics(bool) {
+   set(shaclshex=bool);
+}
+
 function dt:graph sh:shacljava() {
    if (sh:trace(), xt:print("shacl:"), true);
    sh:java(true);
@@ -32,6 +41,12 @@ function dt:graph sh:shacl(dt:graph shape) {
    sh:java(false);
    sh:shacl(shape, sh:focus(shape))
 }
+
+function dt:graph sh:shex(dt:graph shape) {
+   sh:shexSemantics(true);
+   sh:shacl(shape) 
+}
+
 
 function dt:graph sh:shaclshape(sh) {
    if (sh:trace(), xt:print("shaclshape:", sh), true);

@@ -7,6 +7,7 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix xsh: <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
+prefix shex: <http://ns.inria.fr/shex/shacl#>
 
 @import  <partition.rq>
 
@@ -18,7 +19,8 @@ prefix msh: <http://ns.inria.fr/shacl/>
 #
 function sh:sibling() {
     for (select  ?qsh ?list where {
-            select ?qsh (aggregate(xt:list(?sibling, ?path, coalesce(?min, 0), coalesce(?max, -1))) as ?list) 
+            select ?qsh 
+            (aggregate(xt:list(?sibling, ?path, coalesce(?min, 0), coalesce(?max, -1))) as ?list) 
             where {
                 select distinct ?qsh ?sibling ?path ?min ?max
                 where {
@@ -41,14 +43,20 @@ function sh:sibling() {
 #
 function sh:path3(shape, sh) {
     let (select ?shape ?sh 
-        (aggregate(xt:list(sh:qualifiedValueShape, ?qsh, 
-            coalesce(disjoint, false), coalesce(?min, 0), coalesce(?max, -1))) as ?list) 
+        (aggregate (xt:list(sh:qualifiedValueShape, ?qsh, 
+            coalesce(disjoint, false), coalesce(?min, 0), coalesce(?max, -1), coalesce(bound(?pp), false))) 
+            as ?list) 
         where {
             graph ?shape {  
-                ?sh sh:qualifiedValueShape ?qsh
+                ?sh sh:qualifiedValueShape ?qsh ; sh:path ?path
                 optional { ?sh sh:qualifiedMinCount ?min }
                 optional { ?sh sh:qualifiedMaxCount ?max }
                 optional { ?sh sh:qualifiedValueShapesDisjoint ?disjoint }
+                # shex: extra value for p authorized with EXTRA p statement
+                optional { ?root sh:property ?sh  
+                    {?root shex:extra ?path bind (?path as ?pp) } 
+                    union { ?path sh:inversePath ?pp . ?root shex:extra ?pp } 
+                }
             }
         } ) {
         return(list)
@@ -56,16 +64,30 @@ function sh:path3(shape, sh) {
 }
 
 
-#
-# sh: property shape ; qsh: qualified shape ; nodeList: subject path object node list
-#
-function sh:qualifiedValueShape (sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList) {
-    if (bound(shaclshex) && shaclshex, 
-        sh:partitionValueShape(sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList), 
-        sh:shaclQualifiedValueShape(sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList))
+function sh:qualifiedValueShape(sh, vis, subject, path, nodeList, cstList) {
+    if (sh:isShex(), 
+        sh:partitionValueShape(sh, vis, subject, path, nodeList, cstList), 
+        sh:shaclQualifiedValueShape(sh, vis, subject, path, nodeList, cstList))
 }
 
-        
+#
+# sh : sh:property [ sh:path path ; sh:qualifiedValueShape qsh ]
+# nodeList : subject path target node list
+# cstList : list(qsh)
+#
+function sh:shaclQualifiedValueShape(sh, vis, subject, path, nodeList, cstList) {
+    let (res = true) {
+        for ((oper qsh disjoint amin amax) in cstList) {
+            let (suc = coalesce(                    
+                sh:shaclQualifiedValueShape(sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList) , 
+                false) ) {
+                if (! suc, set(res = false), true) 
+            }
+        };
+        return (res)
+    }
+}
+
         
 function sh:shaclQualifiedValueShape (sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList) {
         # list = node list that match qualified shape

@@ -66,6 +66,7 @@ function sh:path123(sh, vis, nodeList, p, present) {
             for (s in dt:list(nodeList)) {
                 let (targetList = sh:ppath(s, p)) {
                     #xt:print("path:", s, p, targetList);
+                    
                     if (b1) {
                         # present: special case for qualified value shape
                         if (present && xt:size(targetList) = 0, return(false), true);
@@ -100,12 +101,8 @@ function sh:path123(sh, vis, nodeList, p, present) {
                     } ;
                     
                     if (b3) {
-                        for ((oper val disjoint amin amax) in cstList3) {
-                            let (suc = coalesce(                    
-                                    sh:qualifiedValueShape(sh, vis, s, p, val, disjoint, amin, amax, targetList) , 
-                                    false) ) {
-                               if (! suc, set(res = false), true) 
-                            }
+                        let (suc = sh:qualifiedValueShape(sh, vis, s, p, targetList, cstList3)) {
+                            if (! suc, set (res = false), true)
                         }
                     } ;
                     

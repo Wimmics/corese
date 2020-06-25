@@ -1,5 +1,6 @@
 #
-# SHACL Interpreter 
+# SHACL Shex Interpreter 
+# Implement shex semantics for qualifiedValueShape with a partition of values
 #
 # Olivier Corby - Wimmics Inria I3S - 2016-2020
 #
@@ -7,32 +8,101 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix xsh: <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
+prefix shex: <http://ns.inria.fr/shex/shacl#>
+
+function sh:dsp(x) {
+    if (sh:isdsp(), xt:print(x), true)
+}
+function sh:dsp(x, y) {
+    if (sh:isdsp(), xt:print(x, y), true)
+}
+function sh:dsp(x, y, z) {
+    if (sh:isdsp(), xt:print(x, y, z), true)
+}
+function sh:isdsp() {
+    coalesce(isdsp, false)
+}
+function sh:setdsp(bb) {
+    set(isdsp=bb)
+}
+
+
+#
+# sh : sh:property [ sh:path path ; sh:qualifiedValueShape qsh ]
+# nodeList : subject path target node list
+# cstList : list(qsh)
+# shex semantics: 
+# consider sibling qualifiedValueShape with same path if any, 
+# compute a partition of relevant subset of nodeList that matches cardinality constraint of each sibling qvs
+#
+function sh:partitionValueShape(sh, vis, subject, path, nodeList, cstList) {
+    let (res = true) {
+        for ((oper qsh disjoint amin amax extra) in cstList) {
+            # there is one qvs in cstList
+            let (suc = coalesce(                    
+                sh:partitionValueShape(sh, vis, extra, subject, path, qsh, disjoint, amin, amax, nodeList) , 
+                false) ) {
+                if (! suc, set(res = false), true) 
+            }
+        };
+        return (res)
+    }
+}
 
 
 #
 # sh: property shape ; qsh: qualified shape ; nodeList: subject path object node list
+# extra = true: extra values authorized for subject path  in addition to qualified values
 #
-function sh:partitionValueShape (sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList) {
+function sh:partitionValueShape (sh, vis, extra, subject, path, qsh, disjoint, amin, amax, nodeList) {
         # list = node list that match qualified shape
-        xt:print("shex partition:");
-        xt:print(subject, path, nodeList);
+        sh:dsp("shex partition:");
+        sh:dsp(subject, path, nodeList);
         
         let (list               = mapfindlist(sh:qualifiedShape, nodeList,  qsh),
             (partList cardList) = sh:partitionSiblingNodeList(qsh, subject, path, nodeList),
             candidate   = xt:cons(list, partList),
             cardinality = xt:cons(xt:list(amin, amax), cardList)) {
             
-            let (res = if (sh:checkMinCard(candidate, cardinality), 
-                    sh:partition(candidate, cardinality), 
-                    false)) {
-                xt:print("result:", res);
-                sh:report(sh:shexQualifiedValueShape, sh, subject, path, subject, res, vis) ;
+            let (res = true) {
+                if (! extra) {
+                    # check there is no extra node in nodeList that does not match any qvs
+                    set (res = ! sh:extra(nodeList, candidate));
+                    sh:dsp("extra:", res);
+                } ;
+                if (res) {
+                    if (sh:checkMinCard(candidate, cardinality)) {
+                        sh:dsp("check min:", res);
+                        if (xt:size(candidate) = 1) {
+                            set (res = sh:checkMaxCard(candidate, cardinality));
+                            sh:dsp("check max:", res)
+                        }
+                        else {
+                            set (res = sh:partition(candidate, cardinality)) ;
+                            sh:dsp("partition:", res)
+                        }
+                    }
+                    else {
+                        set (res = false) ;
+                        sh:dsp("check min:", res);
+                    }
+                } ;
+                sh:dsp("result:", res);
+                sh:report(shex:qualifiedValueShape, sh, subject, path, subject, res, vis) ;
                 return (res)
             }
         }
 }
 
-
+# return true if there is  extra node in nodeList wrt candidate
+function sh:extra(nodeList, candidate) {
+    letdyn (list = candidate) {
+        for (node in nodeList) {
+            if (mapany (xt:member, node, list), true, return(true))
+        }
+    } ;
+    return (false)
+}
 
 #
 # return list of sibling shape with same path qualified node list 
@@ -63,8 +133,8 @@ function sh:partitionSiblingNodeList(qsh, subject, currentPath, nodeList) {
 # ((1 2) (2 3)) -> ((1) (2 3)) or ((1 2) (3))
 #
 function sh:partition(partList, cardList) {
-    xt:print("candidate:", partList);
-    xt:print("min max:", cardList);            
+    sh:dsp("candidate:", partList);
+    sh:dsp("min max:", cardList);            
     sh:prepare(partList, cardList);
 }
 
@@ -83,26 +153,24 @@ function sh:partition(partList, cardList) {
 # compute a partition with constraint on amap
 # 
 function sh:prepare(partList, cardList) {
-    let (mapCard  = sh:cardinality(partList, cardList),
-         mapInter = sh:intersection(partList), 
-         mapCand  = sh:processIntersection(mapInter),
-         amap     = sh:mapList(mapCand)) {
-         
-        if (xt:size(partList) = 1) {
-            return (sh:checkMin(amap, mapCard) && sh:checkMax(amap, mapCard))
-        }
-        else {
+        let (mapCard  = sh:cardinality(partList, cardList),
+            mapInter = sh:intersection(partList), 
+            mapCand  = sh:processIntersection(mapInter),
+            amap     = sh:mapList(mapCand)) {
+            
+            sh:show(amap);
+            sh:show(mapCard);
+            
             let (res  = sh:assign(amap, mapCard)) {
                 sh:show (amap);
                 return (res)
             }
         }
-    }
 }
 
 function sh:show(amap) {
     for ((elem list) in amap) {
-        xt:print(elem, list)
+        sh:dsp(elem, list)
     }
 }
 
@@ -110,7 +178,7 @@ function sh:show(amap) {
 # return amap: nodeList -> list of intersections with other nodeLists
 #
 function sh:intersection(partList) {
-    #xt:print("intersection: ", partList);
+    #sh:dsp("intersection: ", partList);
     let (amap = xt:map()) {
         if (xt:size(partList) = 1) {
             xt:set(amap, xt:get(partList, 0), xt:list(maplist(rq:self, xt:get(partList, 0))))
@@ -139,7 +207,7 @@ function sh:intersection(partList) {
 # return map: elem -> map of nodeList where elem member of intersection
 #
 function sh:processIntersection(amap) {
-    xt:print("process intersection");
+    sh:dsp("process intersection");
     let (candMap = xt:map()) {
         for ((nodeList interList) in amap) {
             for (inter in interList) {
@@ -207,7 +275,7 @@ function sh:assign(elemList, i, amap, cardMap) {
 # create map: nodeList -> (min, max)
 #
 function sh:cardinality(partList, cardList) {
-    #xt:print("cardinality");
+    #sh:dsp("cardinality");
     let (amap = xt:map(), i = 0) {
         for (nodeList in partList) {
             xt:set(amap, nodeList, xt:get(cardList, i));
@@ -264,6 +332,22 @@ function sh:checkMinCard(candidate, cardinality) {
     }
 }
 
+
+function sh:checkMaxCard(candidate, cardinality) {
+    let (i = 0) {
+        for (nodeList in candidate) {
+            let (amax = xt:get(xt:get(cardinality, i), 1)) {
+                if (amax >= 0 && xt:size(nodeList) > amax) {
+                    return (false)
+                }
+                else {
+                    set(i = i+1)
+                }
+            }
+        } ;
+        return (true)
+    }
+}
 
 
 function sh:checkMin(amap, cardMap) {

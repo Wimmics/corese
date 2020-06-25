@@ -30,6 +30,10 @@ function sh:shexSemantics(bool) {
    set(shaclshex=bool);
 }
 
+function sh:isShex() {
+    bound(shaclshex) && shaclshex
+}
+
 function dt:graph sh:shacljava() {
    if (sh:trace(), xt:print("shacl:"), true);
    sh:java(true);

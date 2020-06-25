@@ -4,6 +4,7 @@ import fr.inria.lille.shexjava.schema.abstrsynt.NodeConstraint;
 import fr.inria.lille.shexjava.schema.abstrsynt.RepeatedTripleExpression;
 import fr.inria.lille.shexjava.schema.abstrsynt.Shape;
 import fr.inria.lille.shexjava.schema.abstrsynt.ShapeExpr;
+import fr.inria.lille.shexjava.schema.abstrsynt.ShapeNot;
 import fr.inria.lille.shexjava.schema.abstrsynt.TripleExpr;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -19,6 +20,7 @@ public class Context {
     private List<NodeConstraint> nodeConstraintList;
     // process sh:qualifiedValueShape [ qualifiedExpr ]
     private ShapeExpr qualifiedExpr;
+    private ShapeNot notExpr;
     // Embedding shape to get EXTRA if any
     private Shape shape;  
     // qualified expr => sh:qualifiedValueShape
@@ -145,6 +147,21 @@ public class Context {
      */
     public void setQualified(HashMap<TripleExpr, Boolean> qualified) {
         this.qualified = qualified;
+    }
+
+    /**
+     * @return the notExpr
+     */
+    public ShapeNot getNotExpr() {
+        return notExpr;
+    }
+
+    /**
+     * @param notExpr the notExpr to set
+     */
+    public Context setNotExpr(ShapeNot notExpr) {
+        this.notExpr = notExpr;
+        return this;
     }
     
 }

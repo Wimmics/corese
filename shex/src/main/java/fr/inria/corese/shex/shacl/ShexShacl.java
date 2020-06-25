@@ -10,7 +10,8 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.impl.*;
 
 /**
- *
+ * Contains the text of the Shex to Shacl translation
+ * 
  * @author Olivier Corby - Inria I3S - 2020
  */
 public class ShexShacl {
@@ -25,8 +26,9 @@ public class ShexShacl {
     static final String PATH = "[%s %s]";
     static final String STRING = NSManager.XSD+"string";
     static final String NL = System.getProperty("line.separator");
-    static final String title = "# Shacl generated from Shex  ";
+    static final String title = "# Shex to Shacl translation";
     static final String sign  = "# Olivier Corby - Inria I3S - 2020";
+    static final String SHEX  = "shex";
     
     private StringBuilder sb;
     
@@ -44,9 +46,16 @@ public class ShexShacl {
     }
     
     void init() {
-        append(title).append(new Date()).nl();
+        append(title).space().append(new Date()).nl();
         append(sign).nl();
         nl();
+        defprefix(SHEX, Shex.SHEX_SHACL);
+        nl();
+        nl();
+    }
+    
+    void defprefix(String p, String ns) {
+        append(String.format("prefix %s: <%s>", p, ns));
     }
 
     @Override
@@ -110,18 +119,22 @@ public class ShexShacl {
         return this;
     }
     
+    String string(String str) {
+        return String.format("\"%s\"", str);
+    }
+    
     ShexShacl pattern(String value) {
         define(ShexConstraint.SH_PATTERN, 
                 (value.startsWith("^")) ? 
-                        String.format("\"%s\"", clean(value)) :
-                        String.format("\"^%s\"", clean(value)));
+                        string(clean(value)) :
+                        string(clean(value)));
         return this;
     }
     
     ShexShacl language(List<LanguageConstraint> list) {
         openList(ShexConstraint.SH_LANGUAGE_IN);
         for (LanguageConstraint cst : list) {
-            append(String.format("\"%s\"", cst.getLangTag())).space();
+            append(string(cst.getLangTag())).space();
         }
         closeList();
         return this;
@@ -129,7 +142,7 @@ public class ShexShacl {
     
      ShexShacl language(String lang) {
         openList(ShexConstraint.SH_LANGUAGE_IN);
-        append(String.format("\"%s\"",lang));
+        append(string(lang));
         closeList();
         return this;
     }

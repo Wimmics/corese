@@ -22,6 +22,8 @@ public interface Constant {
     static final String SH_QUALIFIED_MIN_COUNT = "sh:qualifiedMinCount";
     static final String SH_QUALIFIED_MAX_COUNT = "sh:qualifiedMaxCount";
     static final String SH_CLOSED = "sh:closed";
+    
+    static final String SHEX_EXTRA = "shex:extra";
 
     static final String SH_DATATYPE = "sh:datatype";
     static final String SH_IN = "sh:in";
@@ -37,6 +39,7 @@ public interface Constant {
     static final String SH_LITERAL = "sh:Literal";
     static final String SH_IRI = "sh:IRI";
     static final String SH_PATTERN = "sh:pattern";
+    static final String SH_FLAGS = "sh:flags";
     static final String SH_MAXLENGTH = "sh:maxLength";
     static final String SH_MINLENGTH = "sh:minLength";
     static final String SH_LANGUAGE_IN = "sh:languageIn";

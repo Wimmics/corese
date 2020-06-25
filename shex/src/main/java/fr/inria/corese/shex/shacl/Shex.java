@@ -90,7 +90,14 @@ public class Shex implements Constant {
         if (exp instanceof NodeConstraint) {
             // global NodeConstraint: translate as a shape
             process(null, (NodeConstraint) exp);
-        } else {
+        } 
+        else if (exp instanceof ShapeNot) {
+            // ex:test NOT exp
+            // NOT is top level ...
+            ShapeNot not = (ShapeNot) exp;
+            process(not.getSubExpression(), new Context().setNotExpr(not));
+        }
+        else {
             process(exp);
         }
         getShacl().end();
@@ -116,7 +123,7 @@ public class Shex implements Constant {
         } else if (exp instanceof ShapeOr) {
             process((ShapeOr) exp, ct);
         } else if (exp instanceof ShapeNot) {
-            process((ShapeNot) exp);
+            process((ShapeNot) exp, ct);
         } else if (exp instanceof NodeConstraint) {
             process((NodeConstraint) exp);
         } else {
@@ -134,24 +141,40 @@ public class Shex implements Constant {
     }
     
     
-    void process(Shape sh, Context ctx) {
+    void process(Shape sh, Context ct) {
         if (getCurrentLabel() != null) {
             declareShape();
             if (sh != null) {
                 processClosed(sh);
             }
+            processExtra(sh);
         }
 
-        if (ctx != null && ctx.getNodeConstraintList() != null) {
-            for (NodeConstraint cst : ctx.getNodeConstraintList()) {
+        if (ct != null && ct.getNodeConstraintList() != null) {
+            for (NodeConstraint cst : ct.getNodeConstraintList()) {
                 process(cst);
             }
         }
         
         if (sh != null) {
-            ctx = context(ctx);
-            ctx.setShape(sh);
-            process(sh.getTripleExpression(), ctx);
+            ct = context(ct);
+            ct.setShape(sh);
+            boolean not = ct.getNotExpr() != null;
+            if (not) {
+                getShacl().openBracket(SH_NOT);
+            }
+            
+            process(sh.getTripleExpression(), ct);
+            
+            if (not) {
+               getShacl().closeBracketPw();
+            }
+        }
+    }
+    
+    void processExtra(Shape sh) {
+        for (TCProperty tc : sh.getExtraProperties()) {
+           define(SHEX_EXTRA, getPrefixURI(tc));
         }
     }
     
@@ -215,15 +238,17 @@ public class Shex implements Constant {
         for (ShapeExpr ee : exp.getSubExpressions()) {
             //traceClass(ee);trace(ee);
             getShacl().openBracket();
-            process(ee);
+            // context use case: OR inside qualifiedValueShape
+            process(ee, ct);
             getShacl().closeBracket().nl();
         }
         getShacl().closeList();
     }
 
-    void process(ShapeNot exp) {
+    void process(ShapeNot exp, Context ct) {
         getShacl().openBracket(SH_NOT);
-        process(exp.getSubExpression());
+        // context use case: NOT inside qualifiedValueShape
+        process(exp.getSubExpression(), ct);
         getShacl().closeBracketPw();
     }
 
@@ -364,12 +389,45 @@ public class Shex implements Constant {
         ShapeExpr exp = tc.getShapeExpr();
         tripleConstraint(exp, new Context().setQualifiedExpr(exp));
         getShacl().closeBracketPw().nl();
-        
-        define(SH_QUALIFIED_MIN_COUNT, (ct == null) ? 1 : ct.getMin());
-        define(SH_QUALIFIED_MAX_COUNT, (ct == null) ? 1 : ct.getMax());
-        
+        cardinalityQualified(ct);
         getShacl().closeBracketPw().nl();
     }
+    
+    void tripleConstraint(ShapeExpr exp) {
+        tripleConstraint(exp, null);
+    }
+
+    void tripleConstraint(ShapeExpr exp, Context ct) {
+        if (exp instanceof NodeConstraint) {
+            processBasic((NodeConstraint) exp);
+        } else if (exp instanceof Shape) {
+            processNested((Shape) exp, ct);
+        } else {
+            process(exp, ct);
+        }
+    }
+
+    void processNested(Shape sh, Context ct) {
+        getShacl().openBracket(SH_NODE);
+        process(sh.getTripleExpression(), ct);
+        getShacl().closeBracketPw().nl();
+    }
+
+    void processBasic(NodeConstraint node) {
+        for (Constraint cst : node.getConstraints()) {
+            shexConst.process(cst);
+        }
+    }
+
+    void process(NodeConstraint node) {
+        getShacl().openBracket(SH_NODE);
+        processBasic(node);
+        getShacl().closeBracketPw().nl();
+    }
+    
+    
+    
+    
     
      /**
      * shex:targetClass [ ex:Person ] considered as shacl sh:targetClass
@@ -425,10 +483,6 @@ public class Shex implements Constant {
         return false;
     }
 
-    void processQualify(TripleConstraint tc) {
-        processQualify(tc, null);
-    }
-
     String getPrefixURI(TCProperty p) {
         return getPrefixURI(p.getIri().toString());
     }
@@ -453,11 +507,11 @@ public class Shex implements Constant {
         } else if (ct.getRepeatedExpr() == null) {
             cardinality(1, 1);
         } else {
-            insert(ct.getRepeatedExpr());
+            cardinality(ct.getRepeatedExpr());
         }
     }
 
-    void insert(RepeatedTripleExpression exp) {
+    void cardinality(RepeatedTripleExpression exp) {
         cardinalityBasic(exp.getCardinality().min, exp.getCardinality().max);
     }
     
@@ -472,42 +526,20 @@ public class Shex implements Constant {
         define(SH_MAXCOUNT, max);
     }
     
-    
-
-    void tripleConstraint(ShapeExpr exp) {
-        tripleConstraint(exp, null);
-    }
-
-    void tripleConstraint(ShapeExpr exp, Context ct) {
-        if (exp instanceof NodeConstraint) {
-            processBasic((NodeConstraint) exp);
-        } else if (exp instanceof Shape) {
-            processNested((Shape) exp, ct);
-        } else {
-            process(exp, ct);
+    void cardinalityQualified(Context ct) {
+        if (ct == null) {
+            cardinalityQualified(1, 1);
+        }
+        else {
+            cardinalityQualified(ct.getMin(), ct.getMax());
         }
     }
-
-    void processNested(Shape sh, Context ct) {
-        getShacl().openBracket(SH_NODE);
-        process(sh.getTripleExpression(), ct);
-        getShacl().closeBracketPw().nl();
-    }
-
-    void processBasic(NodeConstraint node) {
-        for (Constraint cst : node.getConstraints()) {
-            shexConst.process(cst);
-        }
-    }
-
-    void process(NodeConstraint node) {
-        getShacl().openBracket(SH_NODE);
-        processBasic(node);
-        getShacl().closeBracketPw().nl();
-    }
-
     
-
+    void cardinalityQualified(int min, int max) {
+        define(SH_QUALIFIED_MIN_COUNT, min);
+        define(SH_QUALIFIED_MAX_COUNT, max);
+    }
+    
     /**
      * **************************************************************************
      *

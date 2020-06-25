@@ -62,6 +62,10 @@ public class ShexConstraint implements Constant {
         return getShacl().getPrefixURI(val);
     }
     
+    String string(String str) {
+        return String.format("\"%s\"", str);
+    }
+    
     void define(String name, String value) {
         shex.define(name, value);
     }
@@ -166,7 +170,7 @@ public class ShexConstraint implements Constant {
             res = exclude;
         }
         else {
-            res = new ShexShacl().insert(SH_AND, Arrays.asList(stem, exclude));
+            res = new ShexShacl().insert(SH_AND, Arrays.asList(stem, exclude)).pw();
         }        
         return res;
     }
@@ -223,10 +227,11 @@ public class ShexConstraint implements Constant {
     }
 
     void process(FacetStringConstraint cst) {
-        cst.getFlags();
-
         if (cst.getPatternString() != null) {
             getShacl().pattern(cst.getPatternString()).nl();
+            if (cst.getFlags() != null) {
+                define(SH_FLAGS, string(cst.getFlags().toString()));
+            }
         }
         if (cst.getMinlength() != null) {
             define(SH_MINLENGTH, cst.getMinlength().toString());

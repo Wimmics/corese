@@ -8,7 +8,7 @@ prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix xsh: <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
-function sh:constraint(sh, vis, nodeList) {
+function sh:constraint(sh, vis, nodeList, present) {
     let (cstList1 = sh:getShapeConstraint(sh:cstgeneric1, sh),
          cstList2 = sh:getShapeConstraint(sh:cstgeneric2, sh),         
          cstList3 = sh:getShapeConstraint(sh:cstsparql, sh),         
@@ -17,7 +17,7 @@ function sh:constraint(sh, vis, nodeList) {
             xt:event("@nodeShacl", sh, nodeList, cstList1, cstList2, cstList3, cstList4)
          } ;
          let (
-            b1 = sh:constraint1  (sh, vis, nodeList, cstList1),
+            b1 = sh:constraint1  (sh, vis, nodeList, cstList1, present),
             b2 = sh:constraint2  (sh, vis, nodeList, cstList2),
             b4 = sh:nodeextension(sh, vis, nodeList, cstList4),
             b5 = sh:cstsparql    (sh, vis, nodeList, cstList3)) {
@@ -34,14 +34,16 @@ function sh:constraint(sh, vis, nodeList) {
 # nodeList is either a list of nodes or a single node
 # sh:report generates a validation report in case of error
 #
-function sh:constraint1 (sh, vis, nodeList, cstList) {
+function sh:constraint1 (sh, vis, nodeList, cstList, present) {
     let (res = true) {
         for ((oper value) in cstList) {  
             for (node in dt:list(nodeList)) {   
                 if (sh:contains(sh, node)) {}
                 else {
                 sh:push(sh, node);
-                let (suc = coalesce(funcall(oper, node, value), false)) {
+                let (suc = coalesce(
+                        if (oper = sh:node, funcall(oper, node, value, present), funcall(oper, node, value)),
+                        false)) {
                         sh:report(oper, sh, if (oper = sh:node, value, st:null),  node, st:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
                 }

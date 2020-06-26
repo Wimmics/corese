@@ -59,6 +59,7 @@ function sh:path3(shape, sh) {
                 }
             }
         } ) {
+        #xt:print("qualif:", list);
         return(list)
     }
 }

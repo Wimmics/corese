@@ -21,10 +21,10 @@ function sh:core(sh, vis, nodeList) {
 # present=true: fail if path is empty (when there is a path)
 #
 function sh:core(sh, vis, nodeList, present) {
-    if (sh:trace(), xt:print("core:", sh, nodeList), true);
+    if (sh:trace(), xt:print("core:", sh, nodeList, present), true);
     let (b1 = sh:pathcore(sh, vis, nodeList, present),
-         b2 = sh:booleancore(sh, vis, nodeList),
-         b3 = sh:constraintcore(sh, vis, nodeList),
+         b2 = sh:booleancore(sh, vis, nodeList, present),
+         b3 = sh:constraintcore(sh, vis, nodeList, present),
          b4 = sh:closedcore(sh, vis, nodeList)         
          ) {
         return (b1 && b2 && b3 && b4)
@@ -59,7 +59,7 @@ function sh:closedcore(sh, vis, nodeList) {
 
 function sh:pathcore(sh, vis, nodeList, present) {
     let (res = true, cstList = sh:getShapeConstraint(sh:pathcore, sh)) {
-        if (sh:trace(), xt:print("core path:", sh, cstList), true);
+        if (sh:trace(), xt:print("core path:", sh, cstList, present), true);
         for ((cst path) in cstList) {
             if (sh:trace(), xt:print("core path:", sh, nodeList), true); 
             let (suc = coalesce(sh:path(cst, vis, nodeList, path, present), false)) {
@@ -71,12 +71,12 @@ function sh:pathcore(sh, vis, nodeList, present) {
 }
 
 
-function sh:booleancore(sh, vis, nodeList) {
+function sh:booleancore(sh, vis, nodeList, present) {
     #xt:print("core boolean:", sh, sh:getShapeConstraint(sh:booleancore,  sh));
     let (res = true) {
         for ((bool cst) in sh:getShapeConstraint(sh:booleancore,  sh)) {
             if (sh:trace(), xt:print("core boolean:", sh, nodeList), true); 
-            let (suc = coalesce(funcall(msh:fun(bool), bool, sh, cst, vis, nodeList), false)) {
+            let (suc = coalesce(funcall(msh:fun(bool), bool, sh, cst, vis, nodeList, present), false)) {
                 if (suc, true, set(res = false))
             }
         } ;
@@ -84,11 +84,11 @@ function sh:booleancore(sh, vis, nodeList) {
     }
 }
 
-function sh:constraintcore(sh, vis, nodeList) {
+function sh:constraintcore(sh, vis, nodeList, present) {
     let (cst = sh:getShapeConstraint(sh:constraintcore, sh)) {
         if (cst) {
             if (sh:trace(), xt:print("core constraint:", sh, nodeList), true); 
-            let (suc = sh:constraint(sh, vis, nodeList)) {
+            let (suc = sh:constraint(sh, vis, nodeList, present)) {
                 return (suc)
             }
         }
@@ -169,11 +169,11 @@ function msh:fun(name) {
 }
 
 
-function msh:not (oper, sh, cst, vis, ls) {
+function msh:not (oper, sh, cst, vis, ls, present) {
     #xt:print("not:", sh, cst, ls);
         let (res = true) {
             for (s in dt:list(ls)) {
-                let (suc = coalesce(! sh:core(cst, false, s), false)) {
+                let (suc = coalesce(! sh:core(cst, false, s, present), false)) {
                     if (suc, true, set(res = false));
                     sh:report(sh:not, sh, s, st:null, s,  suc, vis)
                 }
@@ -184,10 +184,10 @@ function msh:not (oper, sh, cst, vis, ls) {
 
 
 # oper = sh:and | sh:or | sh:xone
-function msh:boolean (oper, sh, cst, vis, ls) {
+function msh:boolean (oper, sh, cst, vis, ls, present) {
     let (res = true) {
         for (s in dt:list(ls)) {
-            let (suc = coalesce(funcall(oper, sh:getShapeConstraint(sh:coreboolean, cst), s), false)) {
+            let (suc = coalesce(funcall(oper, sh:getShapeConstraint(sh:coreboolean, cst), s, present), false)) {
                 sh:report(oper, sh, s, st:null, s, suc, vis);
                 if (suc, true, set (res = false))
             }
@@ -198,28 +198,27 @@ function msh:boolean (oper, sh, cst, vis, ls) {
 
 
 # count fail
-function xsd:boolean sh:and(cst, s) {
-    (sh:bool(sh:and, cst, s, 0, 1) = 0)
+function xsd:boolean sh:and(cst, s, present) {
+    (sh:bool(sh:and, cst, s, 0, 1, present) = 0)
 }
 
 # count success
-function xsd:boolean sh:or(cst, s) {
-    (sh:bool(sh:or, cst, s, 1, 0) > 0)
+function xsd:boolean sh:or(cst, s, present) {
+    (sh:bool(sh:or, cst, s, 1, 0, present) > 0)
 }
 
 # count success
-function xsd:boolean sh:xone(cst, s) {
-    let (res = sh:bool(sh:xone, cst, s, 1, 0)) {
-        #if (res!=1, xt:print("xone:", xt:turtle(s), res), true);
+function xsd:boolean sh:xone(cst, s, present) {
+    let (res = sh:bool(sh:xone, cst, s, 1, 0, present)) {
         return (res = 1)
     }
 }
 
-function xsd:integer sh:bool(oper, cst, s, xsd:integer suc, xsd:integer fail){
+function xsd:integer sh:bool(oper, cst, s, xsd:integer suc, xsd:integer fail, present){
    let (cc = 0, nodeList = xt:list(s)) {
         for (sh in cst) {
-            let (res = sh:core(sh, false, nodeList)) 
-            {    #if (oper = sh:or, coalesce(xt:print("bool:", sh, sh:getDefinition(sh), s, res), true), true );
+            let (res = sh:core(sh, false, nodeList, present)) 
+            {    
                  set (cc = cc +  if (res, suc, fail))  
             }
         } ;

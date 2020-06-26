@@ -167,6 +167,11 @@ function xsd:boolean sh:node(o, cst){
     sh:core(cst, sh:isetup(sh:detail), o)
 }
 
+function xsd:boolean sh:node(o, cst, present){
+    sh:core(cst, sh:isetup(sh:detail), o, present)
+}
+
+
 function xsd:boolean sh:property(o, cst){
     sh:core(cst, true, o)
 }

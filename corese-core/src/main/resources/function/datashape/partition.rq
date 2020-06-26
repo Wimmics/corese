@@ -20,7 +20,7 @@ function sh:dsp(x, y, z) {
     if (sh:isdsp(), xt:print(x, y, z), true)
 }
 function sh:isdsp() {
-    coalesce(isdsp, false)
+    coalesce(isdsp, false)  #; true
 }
 function sh:setdsp(bb) {
     set(isdsp=bb)
@@ -63,7 +63,8 @@ function sh:partitionValueShape (sh, vis, extra, subject, path, qsh, disjoint, a
             (partList cardList) = sh:partitionSiblingNodeList(qsh, subject, path, nodeList),
             candidate   = xt:cons(list, partList),
             cardinality = xt:cons(xt:list(amin, amax), cardList)) {
-            
+            sh:dsp("first candidate:", list);
+            sh:dsp(xt:turtle(qsh));
             let (res = true) {
                 if (! extra) {
                     # check there is no extra node in nodeList that does not match any qvs

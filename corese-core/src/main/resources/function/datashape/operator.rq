@@ -177,7 +177,9 @@ function xsd:boolean sh:property(o, cst){
 }
 
 
-
+function xsd:boolean sh:property(o, cst, present){
+    sh:core(cst, true, o, present)
+}
 
 
 

@@ -7,7 +7,6 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
-
 function sh:core(sh, vis, nodeList) {
     sh:core(sh, vis, nodeList, false)
 }

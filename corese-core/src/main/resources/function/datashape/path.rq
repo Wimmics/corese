@@ -63,6 +63,7 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
             } ;
             xt:event("@pathShacl", sh, nodeList, p, cstList1, cstList2, cstList3, cstList4);
             for (s in dt:list(nodeList)) {
+                #xt:print(xt:turtle(s));
                 let (targetList = sh:ppath(s, p)) {
                     #xt:print("path:", s, p, targetList, present);
                     
@@ -77,17 +78,20 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
                             for ((oper val) in cstList1) {
                                 #xt:print("path", o, oper, val);
                                 let (suc = coalesce(
-                                            if (oper = sh:node, funcall(oper, o, val, present), funcall(oper, o, val)),
+                                            if (oper in (sh:node, sh:property), 
+                                            funcall(oper, o, val, present), funcall(oper, o, val)),
                                             false)) {
+                                            #xt:print("result:", suc);
                                         if (oper in (sh:property), true, 
                                                 sh:report(oper, sh, if (oper = sh:node, val, st:null), s, p, o, suc, vis)) ;
                                         if (! suc, set(res = false), true) 
                                 }
                             } 
                             ; sh:pop()
-                            }
+                            } ;
                             
-                        }
+                            #xt:print("res1:", sh, s, p, o, res)
+                        } 
                     } ;
                     
                     if (b2) {
@@ -101,13 +105,17 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
                                 if (! suc) {
                                     set(res = false) 
                                 }
-                            }
-                        }
+                            } ;
+                            
+                           # xt:print("res2:", sh, oper, val, s, p, res)
+                        } ;
+                        
                     } ;
                     
                     if (b3) {
                         let (suc = sh:qualifiedValueShape(sh, vis, s, p, targetList, cstList3)) {
-                            if (! suc, set (res = false), true)
+                            if (! suc, set (res = false), true) ;
+                            #xt:print("res3:", sh, s, p, res)
                         }
                     } ;
                     

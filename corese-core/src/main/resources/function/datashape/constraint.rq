@@ -21,6 +21,7 @@ function sh:constraint(sh, vis, nodeList, present) {
             b2 = sh:constraint2  (sh, vis, nodeList, cstList2),
             b4 = sh:nodeextension(sh, vis, nodeList, cstList4),
             b5 = sh:cstsparql    (sh, vis, nodeList, cstList3)) {
+        #xt:print("res:", b1 && b2 && b4 && b5);
         return (b1 && b2 && b4 && b5)
     }
     }
@@ -187,7 +188,8 @@ function sh:getValueList(value) {
 function sh:reclist(l) {
   let (select ?l 
        (aggregate (if (?b, sh:reclist(?e), 
-                   if (?e = rdf:nil, xt:list(), ?e))) as ?list) 
+                   ?e)) as ?list) 
+                   #if (?e = rdf:nil, xt:list(), ?e))) as ?list) 
         where {
             ?l rdf:rest*/rdf:first ?e
             bind (exists { ?e rdf:rest ?a } as ?b)

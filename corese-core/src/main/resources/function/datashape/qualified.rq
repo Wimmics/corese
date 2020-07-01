@@ -64,6 +64,14 @@ function sh:path3(shape, sh) {
     }
 }
 
+# Is this shacl graph a translation of shex  ?
+#
+function sh:shexshacl() {
+    let (shape = sh:shaclGraph(), 
+         suc = exists { graph ?shape { [] shex:shacl true } } ) {
+        return (suc)
+    }
+}
 
 function sh:qualifiedValueShape(sh, vis, subject, path, nodeList, cstList) {
     if (sh:isShex(), 

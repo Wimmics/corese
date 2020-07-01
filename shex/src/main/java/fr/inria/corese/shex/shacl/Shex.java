@@ -146,8 +146,8 @@ public class Shex implements Constant {
             declareShape();
             if (sh != null) {
                 processClosed(sh);
+                processExtra(sh);
             }
-            processExtra(sh);
         }
 
         if (ct != null && ct.getNodeConstraintList() != null) {
@@ -219,6 +219,10 @@ public class Shex implements Constant {
             
             if (getCurrentLabel() != null) {
                 declareShape();
+            }
+            if (shape != null) {
+                processExtra(shape);
+                processClosed(shape);
             }
             // process AND list 
             for (ShapeExpr ee : exp.getSubExpressions()) {
@@ -379,7 +383,7 @@ public class Shex implements Constant {
     }
     
     /**
-     * The constraint of the property is sh:qualifiedValueShape [ cst ]
+     * The property is translated as sh:qualifiedValueShape [ cst ]
      */
     void processQualify(TripleConstraint tc, Context ct) {
         getShacl().openBracket(SH_PROPERTY);
@@ -523,7 +527,9 @@ public class Shex implements Constant {
 
     void cardinalityBasic(int min, int max) {
         define(SH_MINCOUNT, min);
-        define(SH_MAXCOUNT, max);
+        if (max < Integer.MAX_VALUE) {
+            define(SH_MAXCOUNT, max);
+        }
     }
     
     void cardinalityQualified(Context ct) {
@@ -537,7 +543,9 @@ public class Shex implements Constant {
     
     void cardinalityQualified(int min, int max) {
         define(SH_QUALIFIED_MIN_COUNT, min);
-        define(SH_QUALIFIED_MAX_COUNT, max);
+        if (max < Integer.MAX_VALUE) {
+            define(SH_QUALIFIED_MAX_COUNT, max);
+        }
     }
     
     /**

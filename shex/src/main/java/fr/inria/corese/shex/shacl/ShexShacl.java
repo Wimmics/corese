@@ -26,7 +26,7 @@ public class ShexShacl {
     static final String PATH = "[%s %s]";
     static final String STRING = NSManager.XSD+"string";
     static final String NL = System.getProperty("line.separator");
-    static final String title = "# Shex to Shacl translation";
+    static final String title = "# Shex Shacl Translation";
     static final String sign  = "# Olivier Corby - Inria I3S - 2020";
     static final String SHEX  = "shex";
     
@@ -49,13 +49,15 @@ public class ShexShacl {
         append(title).space().append(new Date()).nl();
         append(sign).nl();
         nl();
+        defprefix("sh", NSManager.SHACL);
         defprefix(SHEX, Shex.SHEX_SHACL);
         nl();
-        nl();
+        append("[] shex:shacl true .");
+        nl().nl();        
     }
     
     void defprefix(String p, String ns) {
-        append(String.format("prefix %s: <%s>", p, ns));
+        append(String.format("prefix %s: <%s>", p, ns)).nl();
     }
 
     @Override

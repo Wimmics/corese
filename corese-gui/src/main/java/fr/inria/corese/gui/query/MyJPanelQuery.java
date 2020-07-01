@@ -86,7 +86,7 @@ public final class MyJPanelQuery extends JPanel {
     int maxres = 1000000;
     
     //Boutton du panneau Query
-    private JButton buttonRun, buttonShacl, buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
+    private JButton buttonRun, buttonShacl, buttonShex, buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
     private JButton buttonSearch;
     private JButton buttonRefreshStyle, buttonDefaultStyle;
     //panneau de la newQuery
@@ -147,6 +147,7 @@ public final class MyJPanelQuery extends JPanel {
 
         buttonRun = new JButton();
         buttonShacl = new JButton();
+        buttonShex = new JButton();
         buttonStop = new JButton();
         buttonKill = new JButton();
         buttonValidate = new JButton();
@@ -271,7 +272,8 @@ public final class MyJPanelQuery extends JPanel {
          */
         //Lancer une requête
         buttonRun.setText("Query");
-        buttonShacl.setText("SHACL");
+        buttonShacl.setText("Shacl");
+        buttonShex.setText("Shex");
         buttonStop.setText("Stop");
         buttonKill.setText("Kill");
         buttonValidate.setText("Validate");
@@ -339,6 +341,7 @@ public final class MyJPanelQuery extends JPanel {
         hSeq2.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 257, Short.MAX_VALUE);
         hSeq2.addComponent(buttonRun);
         hSeq2.addComponent(buttonShacl);
+        hSeq2.addComponent(buttonShex);
         hSeq2.addComponent(buttonStop);
         hSeq2.addComponent(buttonKill);
         hSeq2.addComponent(buttonValidate);
@@ -372,6 +375,7 @@ public final class MyJPanelQuery extends JPanel {
 
         vParallel2.addComponent(buttonRun);
         vParallel2.addComponent(buttonShacl);
+        vParallel2.addComponent(buttonShex);
         vParallel2.addComponent(buttonStop);
         vParallel2.addComponent(buttonKill);
         vParallel2.addComponent(buttonValidate);
@@ -448,6 +452,7 @@ public final class MyJPanelQuery extends JPanel {
         
         buttonRun.addActionListener(l_RunListener);
         buttonShacl.addActionListener(l_RunListener);
+        buttonShex.addActionListener(l_RunListener);
         buttonStop.addActionListener(l_RunListener);
         buttonKill.addActionListener(l_RunListener);
         buttonValidate.addActionListener(l_RunListener);
@@ -788,12 +793,14 @@ public final class MyJPanelQuery extends JPanel {
                         String str = spin.toSpin(query);
                         coreseFrame.getPanel().getTextArea().setText(str);
                         tabbedPaneResults.setSelectedIndex(XML_PANEL);
-                    } else if (ev.getSource() == buttonRun || ev.getSource() == buttonValidate || ev.getSource() == buttonShacl) {
+                    } else if (ev.getSource() == buttonRun || ev.getSource() == buttonValidate 
+                            || ev.getSource() == buttonShacl || ev.getSource() == buttonShex) {
                         // buttonRun
                         Exec exec = new Exec(coreseFrame, query, isTrace);
                         setCurrent(exec);
                         exec.setValidate(ev.getSource() == buttonValidate);
-                        exec.setShacl(ev.getSource()    == buttonShacl);
+                        exec.setShacl(ev.getSource()    == buttonShacl || ev.getSource()    == buttonShex);
+                        exec.setShex(ev.getSource()     == buttonShex); //coreseFrame.isShexSemantics());
                         exec.process();
                         //Permet de passer a true toutes les options du trace KGram
                         for (int i = 0; i < coreseFrame.getListCheckbox().size(); i++) {

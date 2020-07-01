@@ -280,7 +280,7 @@ public class NSManager extends ASTObject {
         def.put(SPARQL, SPARQL_PREF);
         //def.put(SHACL, "xsh");
         def.put(SHACL, SHACL_PREFIX);
-        //def.put(SHEX_SHACL, "shex");
+        def.put(SHEX_SHACL, "shex");
         def.put(SHACL_JAVA, "jsh");
         def.put(EXT_FUN, "fun");
         def.put("http://example.org/ns#", "ex");

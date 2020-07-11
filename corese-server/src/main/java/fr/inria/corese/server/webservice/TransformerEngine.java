@@ -124,6 +124,7 @@ public class TransformerEngine {
             // there is a workflow            
             logger.info("Parse workflow: " + swdt.getLabel());
             WorkflowParser parser = new WorkflowParser(wp, profile);
+            parser.setProcessor(new Translator());
             //parser.setDebug(true);
             parser.parse(profile.getNode(swdt));           
             query = getQuery(wp, query);

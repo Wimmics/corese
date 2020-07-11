@@ -44,6 +44,11 @@
 			<artifactId>junit</artifactId>
 			<scope>test</scope>
 		</dependency>
+                <dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>shex</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>corese-core</artifactId>

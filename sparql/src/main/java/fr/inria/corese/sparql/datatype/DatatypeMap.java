@@ -1134,10 +1134,12 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
     
     public static IDatatype remove(IDatatype list, IDatatype elem) {
-        if (!list.isList()) {
-            return null;
+        if (list.isList()) {
+            list.getList().remove(elem);
         }
-        list.getList().remove(elem);
+        else if (list.isMap()){
+            list.getMap().remove(elem);
+        }
         return list;
     }
     

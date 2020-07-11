@@ -217,7 +217,7 @@ function xsd:integer sh:bool(oper, cst, s, xsd:integer suc, xsd:integer fail, pr
    let (cc = 0, nodeList = xt:list(s)) {
         for (sh in cst) {
             let (res = sh:core(sh, false, nodeList, present)) 
-            {    
+            {    #xt:print(oper, nodeList, res);
                  set (cc = cc +  if (res, suc, fail))  
             }
         } ;

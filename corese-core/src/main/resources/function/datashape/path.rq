@@ -141,6 +141,8 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
                 }
             }
         } ;
+        
+        xt:event("@pathShacl", sh, nodeList, p, cstList1, cstList2, cstList3, cstList4, res);
         return (res)
     }
 }

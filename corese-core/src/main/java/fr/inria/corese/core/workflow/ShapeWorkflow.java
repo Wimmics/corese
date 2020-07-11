@@ -45,6 +45,8 @@ public class ShapeWorkflow extends SemanticWorkflow {
     // draft: evaluate shape4shape on the shape
     ShapeWorkflow validator;
     private boolean validate = false;
+    private boolean shex = false;
+    private PreProcessor processor;
     
     public ShapeWorkflow() {}
     
@@ -60,7 +62,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
         create(shape, data, resultFormat, false, -1, test);
     }
     
-     public ShapeWorkflow(String shape, String data, boolean test, boolean lds){
+    public ShapeWorkflow(String shape, String data, boolean test, boolean lds){
         create(shape, data, resultFormat, false, -1, test, lds);
     }
     
@@ -101,7 +103,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
      * @param format : possible RDF input format (may be UNDEF_FORMAT)
      * @param test : false: use compiled datashape sttl, otherwise use uncompiled sttl
      */
-    private void create(String shape, String data, String trans, boolean text, int format, boolean test, boolean lds){
+    public ShapeWorkflow create(String shape, String data, String trans, boolean text, int format, boolean test, boolean lds){
         this.setShape(shape);
         if (trans != null){
             resultFormat = trans;
@@ -110,8 +112,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
         SemanticWorkflow rdfWorkflow   = new SemanticWorkflow();
         SemanticWorkflow shapeWorkflow = new SemanticWorkflow(SHAPE_NAME);
         if (shape != null) {
-            LoadProcess shapeLoader = (text) ?  LoadProcess.createStringLoader(shape, format) : new LoadProcess(shape);
-            shapeWorkflow.add(shapeLoader);
+            loadShape(shapeWorkflow, shape, text, format);
         }
         if (data != null) {
             load = (text) ?  LoadProcess.createStringLoader(data, format) :  new LoadProcess(data);
@@ -135,7 +136,15 @@ public class ShapeWorkflow extends SemanticWorkflow {
                       
         if (test){
             setContext(new Context().export(Context.STL_TEST, DatatypeMap.TRUE));
-        }        
+        }  
+        
+        return this;
+    }
+    
+    void loadShape(SemanticWorkflow shapeWorkflow, String shape, boolean text, int format) {
+        LoadProcess shapeLoader = (text) ? LoadProcess.createStringLoader(shape, format) : new LoadProcess(shape);
+        shapeLoader.setProcessor(getProcessor());
+        shapeWorkflow.add(shapeLoader);
     }
     
     
@@ -328,6 +337,36 @@ public class ShapeWorkflow extends SemanticWorkflow {
      */
     public void setValidate(boolean validate) {
         this.validate = validate;
+    }
+
+    /**
+     * @return the shex
+     */
+    public boolean isShex() {
+        return shex;
+    }
+
+    /**
+     * @param shex the shex to set
+     */
+    public ShapeWorkflow setShex(boolean shex) {
+        this.shex = shex;
+        return this;
+    }
+
+    /**
+     * @return the processor
+     */
+    public PreProcessor getProcessor() {
+        return processor;
+    }
+
+    /**
+     * @param processor the processor to set
+     */
+    public ShapeWorkflow setProcessor(PreProcessor processor) {
+        this.processor = processor;
+        return this;
     }
    
 }

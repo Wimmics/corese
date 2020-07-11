@@ -56,6 +56,7 @@ public class WorkflowParser {
     public static final String PROBE = PREF + "Probe";
     public static final String ASSERT = PREF + "Assert";
     public static final String DATASHAPE = PREF + "Shape";
+    public static final String SHEX = PREF + "Shex";
     public static final String RESULT_FORMAT = PREF + "Result";
     
     public static final String URI = PREF + "uri";
@@ -108,6 +109,7 @@ public class WorkflowParser {
     private boolean debug = !true;
     private SWMap map;
     private Context context;
+    private PreProcessor process;
     
     static final ArrayList<String> topLevel;
     
@@ -415,7 +417,10 @@ public class WorkflowParser {
                  switch (type) {
 
                      case DATASHAPE:
-                         ap = datashape(dt);
+                         ap = datashape(dt, false);
+                         break;
+                     case SHEX:
+                         ap = datashape(dt, true);
                          break;
                      case TRANSFORMATION:
                          ap = transformation(dt);
@@ -501,7 +506,7 @@ public class WorkflowParser {
      /**
       * Special case: may get input from Context     
       */
-    ShapeWorkflow datashape(IDatatype dt) {
+    ShapeWorkflow datashape(IDatatype dt, boolean shex) {
         IDatatype dtest  = getValue(TEST_VALUE, dt);
         boolean test  = (dtest == null) ? false : dtest.booleanValue();
         
@@ -514,7 +519,11 @@ public class WorkflowParser {
         
         ShapeWorkflow ap = null;
         if (true) { //shape != null) { // && uri != null) {
-            ap = new ShapeWorkflow(shape, uri, result, isText, format, test);
+            ap = new ShapeWorkflow().setShex(shex);
+            if (shex) {
+                ap.setProcessor(getProcessor());
+            }
+            ap.create(shape, uri, result, isText, format, test, false);
         }
         return ap;
     }
@@ -864,5 +873,19 @@ public class WorkflowParser {
      */
      void setProcessMap(SWMap processMap) {
         this.map = processMap;
+    }
+
+    /**
+     * @return the process
+     */
+    public PreProcessor getProcessor() {
+        return process;
+    }
+
+    /**
+     * @param process the process to set
+     */
+    public void setProcessor(PreProcessor process) {
+        this.process = process;
     }
 }

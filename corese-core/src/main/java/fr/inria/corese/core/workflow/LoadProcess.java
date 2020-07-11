@@ -7,6 +7,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.util.SPINProcess;
+import java.util.logging.Level;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -26,6 +27,7 @@ public class LoadProcess extends WorkflowProcess {
     int format = Load.UNDEF_FORMAT;
     int requiredFormat = Load.UNDEF_FORMAT;
     private int[] FORMATS =  { Load.TURTLE_FORMAT, Load.RDFXML_FORMAT, Load.JSONLD_FORMAT };
+    private PreProcessor processor;
     
     public LoadProcess(String path){
         this.path = path;
@@ -81,6 +83,9 @@ public class LoadProcess extends WorkflowProcess {
         Load ld = Load.create(g);
         boolean isURL = true;
         try {
+            if (getProcessor() != null) {
+                process();
+            }
             
             if (text != null && ! hasMode()){
                 loadString(ld);
@@ -116,6 +121,18 @@ public class LoadProcess extends WorkflowProcess {
             throw new EngineException(ex);
         }
         return new Data(this, null, g);
+    }
+    
+    /**
+     * Document is Shex, translate it to Shacl
+     */
+    void process() throws LoadException {
+        if (text == null) {
+            QueryLoad ld = QueryLoad.create();
+            text = ld.readWE(path);
+        } 
+        
+        text = getProcessor().translate(text);
     }
     
     /**
@@ -173,6 +190,20 @@ public class LoadProcess extends WorkflowProcess {
      */
     public void setNamed(boolean named) {
         this.named = named;
+    }
+
+    /**
+     * @return the processor
+     */
+    public PreProcessor getProcessor() {
+        return processor;
+    }
+
+    /**
+     * @param processor the processor to set
+     */
+    public void setProcessor(PreProcessor processor) {
+        this.processor = processor;
     }
 
 }

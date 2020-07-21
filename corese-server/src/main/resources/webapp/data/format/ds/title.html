@@ -1,8 +1,5 @@
-<h2>SHACL Validation</h2>
-<p>
-<a href="/data/sttl/datashape.tar.gz">STTL Transformation for SHACL Validation</a>
-</p>
-
+<h2>%6$s Validation</h2>
+<p>%7$s</p>
 
 <div class="col-md-6">
 <div class="panel">
@@ -13,7 +10,7 @@
         <form method='POST' action='%1$s' id='datashape'> <!--   /service/shape    -->
             <label for='uri'>RDF Graph URL: </label>
             <input type='text' id='param' name='param' value ='%2$s' class="form-control custom-control" /><br/>
-            <label for='sel'>SHACL Shape URL: </label><br>
+            <label for='sel'>%6$s Shape URL: </label><br>
             <input type="text" id='sel2'  name='mode'  value='%3$s'   class="form-control"  />               
             <br/>
             <input type='submit' value='Validate' class="btn btn-default" onClick="trans(this.form); return false;">
@@ -43,7 +40,7 @@
             <label for='uri'>RDF Graph Text:</label>
             <textarea  class="form-control custom-control"  rows='8' name='param'>%4$s</textarea>   
             <br/>
-            <label for='sel'>Shape Text: </label><br>
+            <label for='sel'>%6$s Shape Text: </label><br>
             <textarea  class="form-control custom-control"  rows='8' name='mode'>%5$s</textarea>  
             <br/>
             <input type='submit' value='Validate' class="btn btn-default" onClick="trans(this.form); return false;">

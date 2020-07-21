@@ -1,19 +1,24 @@
 prefix sh: <http://www.w3.org/ns/shacl#>
 prefix ft: <http://ns.inria.fr/sparql-template/format/ds/>
+
 template st:title {
     format {
         ft:title.html
         
         st:get(st:service)
         
-        if (! ?text, coalesce(st:get(st:param), ""), "")
-        if (! ?text, coalesce(st:get(st:mode), ""), "")  
+        if (! ?text, coalesce(st:get(st:param), st:get(st:rdf), ""), "")
+        if (! ?text, coalesce(st:get(st:mode),  st:get(st:schema), ""), "")  
         
         if (?text,   coalesce(st:get(st:param), ""), "")
-        if (?text,   coalesce(st:get(st:mode), ""), "")  
+        if (?text,   coalesce(st:get(st:mode), ""), "") 
+        
+        ?title ?comment
     } 
 }
 where {
    bind (st:get(st:format) as ?format)
    bind (bound(?format) as ?text)
+   bind (coalesce(st:get(st:title), "Shacl") as ?title) 
+   bind (coalesce(st:get(st:comment), "")    as ?comment)
 }

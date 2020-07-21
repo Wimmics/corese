@@ -8,12 +8,9 @@ format {
     ft:show.html
 
     st:apply-templates-with-graph(st:hturtle, st:shape)
-    #st:apply-templates-with-graph(st:hturtle, st:visitor)
     st:apply-templates-with-graph(tt:startshape, st:visitor)
     st:apply-templates-with(st:hturtle)
 }
-
-#st:apply-templates-with-graph(<http://ns.inria.fr/sparql-template/d3#frame>, st:shape)
 
 }
 where {

@@ -1,0 +1,13 @@
+prefix xsd: <http://www.w3.org/2001/XMLSchema#>
+prefix shex:<http://ns.inria.fr/shex/shacl#>
+prefix ex:  <http://ex.example/#>
+prefix h:   <http://www.inria.fr/2015/humans#>
+prefix i:   <http://www.inria.fr/2015/humans-instances#>
+
+
+ex:Person  {
+  shex:targetClass [h:Person] ;
+  h:hasFriend {a [h:Man]} ;
+  h:hasFriend {a [h:Woman]} ;
+}
+

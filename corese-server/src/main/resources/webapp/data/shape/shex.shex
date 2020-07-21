@@ -1,0 +1,203 @@
+PREFIX sx: <http://www.w3.org/ns/shex#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+BASE <http://www.w3.org/ns/shex#>
+#BASE <http://example.org/shex#>
+prefix shex: <http://ns.inria.fr/shex/shacl#>
+
+start=@<Schema>
+
+<Schema> CLOSED {
+  shex:targetClass [sx:Schema];
+  a [sx:Schema] ;
+  sx:imports @<IriList1Plus>? ;
+  sx:startActs @<SemActList1Plus>? ;
+  sx:start @<shapeExpr>?;
+  sx:shapes @<shapeExpr>*
+}
+
+<shapeExpr> @<ShapeOr> OR @<ShapeAnd> OR @<ShapeNot> OR @<NodeConstraint> OR @<Shape> OR @<ShapeExternal>
+
+<ShapeOr> CLOSED {
+  a [sx:ShapeOr] ;
+  sx:shapeExprs @<shapeExprList2Plus>
+}
+
+<ShapeAnd> CLOSED {
+  a [sx:ShapeAnd] ;
+  sx:shapeExprs @<shapeExprList2Plus>
+}
+
+<ShapeNot> CLOSED {
+  a [sx:ShapeNot] ;
+  sx:shapeExpr @<shapeExpr>
+}
+
+<NodeConstraint> CLOSED {
+  a [sx:NodeConstraint] ;
+  sx:nodeKind [sx:iri sx:bnode sx:literal sx:nonliteral]?;
+  sx:datatype IRI ? ;
+  &<xsFacets>  ;
+  sx:values @<valueSetValueList1Plus>?
+}
+
+<Shape> CLOSED {
+  a [sx:Shape] ;
+  sx:closed [true false]? ;
+  sx:extra IRI* ;
+  sx:expression @<tripleExpression>? ;
+  sx:semActs @<SemActList1Plus>? ;
+  sx:annotation @<AnnotationList1Plus>? ;
+}
+
+<ShapeExternal> CLOSED {
+  a [sx:ShapeExternal] ;
+}
+
+<SemAct> CLOSED {
+  a [sx:SemAct] ;
+  sx:name IRI ;
+  sx:code xsd:string?
+}
+
+<Annotation> CLOSED {
+  a [sx:Annotation] ;
+  sx:predicate IRI ;
+  sx:object @<objectValue>
+}
+
+#  <@stringFacet> OR <@numericFacet>
+<facet_holder> { # hold labeled productions
+  $<xsFacets> ( &<stringFacet> | &<numericFacet> )* ;
+  $<stringFacet> (
+      sx:length xsd:integer
+    | sx:minlength xsd:integer
+    | sx:maxlength xsd:integer
+    | sx:pattern xsd:string ; sx:flags xsd:string?
+  );
+  $<numericFacet> (
+      sx:mininclusive   @<numericLiteral>
+    | sx:minexclusive   @<numericLiteral>
+    | sx:maxinclusive   @<numericLiteral>
+    | sx:maxexclusive   @<numericLiteral>
+    | sx:totaldigits    xsd:integer
+    | sx:fractiondigits xsd:integer
+  )
+}
+<numericLiteral> xsd:integer OR xsd:decimal OR xsd:double
+
+<valueSetValue> @<objectValue> OR @<IriStem> OR @<IriStemRange>
+                               OR @<LiteralStem> OR @<LiteralStemRange>
+                OR @<Language> OR @<LanguageStem> OR @<LanguageStemRange>
+                
+<objectValue> IRI OR LITERAL # rdf:langString breaks on Annotation.object
+
+<Language> CLOSED { a [sx:Language]; sx:languageTag xsd:string }
+
+<IriStem> CLOSED { a [sx:IriStem]; sx:stem xsd:string }
+
+<IriStemRange> CLOSED {
+  a [sx:IriStemRange];
+  sx:stem xsd:string OR @<Wildcard>;
+  sx:exclusion @<IriStemExclusionList1Plus>
+}
+<LiteralStem> CLOSED { a [sx:LiteralStem]; sx:stem xsd:string }
+<LiteralStemRange> CLOSED {
+  a [sx:LiteralStemRange];
+  sx:stem xsd:string OR @<Wildcard>;
+  sx:exclusion @<LiteralStemExclusionList1Plus>
+}
+<LanguageStem> CLOSED { a [sx:LanguageStem]; sx:stem xsd:string }
+<LanguageStemRange> CLOSED {
+  a [sx:LanguageStemRange];
+  sx:stem xsd:string OR @<Wildcard>;
+  sx:exclusion @<LanguageStemExclusionList1Plus>
+}
+<Wildcard> BNODE CLOSED {
+  a [sx:Wildcard]
+}
+
+<tripleExpression> @<TripleConstraint> OR @<OneOf> OR @<EachOf> OR CLOSED {  }
+
+<OneOf> CLOSED {
+  a [sx:OneOf] ;
+  sx:min xsd:integer? ;
+  sx:max xsd:integer? ;
+  sx:expressions @<tripleExpressionList2Plus> ;
+  sx:semActs @<SemActList1Plus>? ;
+  sx:annotation @<AnnotationList1Plus>?
+}
+
+<EachOf> CLOSED {
+  a [sx:EachOf] ;
+  sx:min xsd:integer? ;
+  sx:max xsd:integer? ;
+  sx:expressions @<tripleExpressionList2Plus> ;
+  sx:semActs @<SemActList1Plus>? ;
+  sx:annotation @<AnnotationList1Plus>?
+}
+
+<tripleExpressionList2Plus> CLOSED {
+  rdf:first @<tripleExpression> ;
+  rdf:rest @<tripleExpressionList1Plus>
+}
+<tripleExpressionList1Plus> CLOSED {
+  rdf:first @<tripleExpression> ;
+  rdf:rest  [rdf:nil] OR @<tripleExpressionList1Plus>
+}
+
+<TripleConstraint> CLOSED {
+  a [sx:TripleConstraint] ;
+  sx:inverse [true false]? ;
+  sx:negated [true false]? ;
+  sx:min xsd:integer? ;
+  sx:max xsd:integer? ;
+  sx:predicate IRI ;
+  sx:valueExpr @<shapeExpr>? ;
+  sx:semActs @<SemActList1Plus>? ;
+  sx:annotation @<AnnotationList1Plus>?
+}
+
+<IriList1Plus> CLOSED {
+  rdf:first IRI ;
+  rdf:rest  [rdf:nil] OR @<IriList1Plus>
+}
+
+<SemActList1Plus> CLOSED {
+  rdf:first @<SemAct> ;
+  rdf:rest  [rdf:nil] OR @<SemActList1Plus>
+}
+
+<shapeExprList2Plus> CLOSED {
+  rdf:first @<shapeExpr> ;
+  rdf:rest  @<shapeExprList1Plus>
+}
+<shapeExprList1Plus> CLOSED {
+  rdf:first @<shapeExpr> ;
+  rdf:rest  [rdf:nil] OR @<shapeExprList1Plus>
+}
+
+<valueSetValueList1Plus> CLOSED {
+  rdf:first @<valueSetValue> ;
+  rdf:rest  [rdf:nil] OR @<valueSetValueList1Plus>
+}
+
+<AnnotationList1Plus> CLOSED {
+  rdf:first @<Annotation> ;
+  rdf:rest  [rdf:nil] OR @<AnnotationList1Plus>
+}
+
+<IriStemExclusionList1Plus> CLOSED {
+  rdf:first IRI OR @<IriStem> ;
+  rdf:rest  [rdf:nil] OR @<IriStemExclusionList1Plus>
+}
+
+<LiteralStemExclusionList1Plus> CLOSED {
+  rdf:first xsd:string OR @<LiteralStem> ;
+  rdf:rest  [rdf:nil] OR @<LiteralStemExclusionList1Plus>
+}
+
+<LanguageStemExclusionList1Plus> CLOSED {
+  rdf:first xsd:string OR @<LanguageStem> ;
+  rdf:rest  [rdf:nil] OR @<LanguageStemExclusionList1Plus>
+}

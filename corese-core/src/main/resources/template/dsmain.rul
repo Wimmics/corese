@@ -28,7 +28,8 @@ template st:start(?shapeGraph) {
 }
 where {
   bind (coalesce(?shapeGraph, st:get(st:shape), st:shape) as ?shape)
-  bind (sh:shacl(?shape) as ?g)
+  bind (coalesce(st:get(st:function), sh:shacl) as ?fun)
+  bind (funcall(?fun, ?shape) as ?g)
 }
 ]]>
 </body>

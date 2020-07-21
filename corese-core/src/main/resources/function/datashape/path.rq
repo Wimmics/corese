@@ -7,6 +7,7 @@
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix xsh: <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
+prefix shex: <http://ns.inria.fr/shex/shacl#>
 
 @import <sparql.rq> <qualified.rq>
 
@@ -41,6 +42,7 @@ function sh:path(sh, vis, nodeList, path, present) {
 function sh:pathBasic(sh, vis, nodeList, p, present) {
     #xt:print("path", sh, p, nodeList);
     let (res = true, 
+        opt      = sh:getShapeConstraint(sh:optional, sh),
         cstList1 = sh:getShapeConstraint(sh:path1, sh),
         cstList2 = sh:getShapeConstraint(sh:path2, sh),
         cstList3 = sh:getShapeConstraint(sh:path3, sh),
@@ -54,6 +56,7 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
             if (sh:trace(), xt:print("path:", sh, "no path constraint"), true)
         }
         else {
+            #xt:print("path:", p, nodeList, opt);
             #xt:print("path:", nodeList, p);
             if (sh:trace()) {
                 xt:print("path cst1:", cstList1);
@@ -62,6 +65,7 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
                 xt:print("path cst4:", cstList4)
             } ;
             xt:event("@pathShacl", sh, nodeList, p, cstList1, cstList2, cstList3, cstList4);
+                        
             for (s in dt:list(nodeList)) {
                 #xt:print(xt:turtle(s));
                 let (targetList = sh:ppath(s, p)) {
@@ -69,7 +73,15 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
                     
                     if (b1) {
                         # present: special case for qualified value shape
-                        if (present && xt:size(targetList) = 0, return(false), true);
+                        if (present && xt:size(targetList) = 0) {
+                            return(false)
+                        } ;
+                        
+                        # use case: shex optional statement
+                        if (opt     && xt:size(targetList) = 0) {
+                            return (true)
+                        } ;
+                        
                         for (o in targetList) {
                             if (sh:contains(sh, o)) {}
                             else 
@@ -93,9 +105,12 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
                             #xt:print("res1:", sh, s, p, o, res)
                         } 
                     } ;
-                    
+                                                           
                     if (b2) {
                         # sh:minCount ...
+                         # use case: shex optional statement
+                        if (opt     && xt:size(targetList) = 0, return (true), true);
+                        
                         for ((oper val) in cstList2) {
                             let (suc = coalesce(
                             if (oper in (sh:and, sh:or, sh:xone, sh:not),  
@@ -113,6 +128,9 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
                     } ;
                     
                     if (b3) {
+                        # use case: shex optional statement
+                        if (opt     && xt:size(targetList) = 0, return (true), true);
+                        
                         let (suc = sh:qualifiedValueShape(sh, vis, s, p, targetList, cstList3)) {
                             if (! suc, set (res = false), true) ;
                             #xt:print("res3:", sh, s, p, res)
@@ -159,7 +177,7 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
 
 function sh:getPathShape(shape, sh, shapeList) {
     let (select ?shape ?sh ?shapeList 
-    (aggregate(xt:list(?oper, ?arg)) as ?list) 
+    (aggregate (xt:list(?oper, ?arg)) as ?list) 
     where {
             graph ?shape { 
                 values ?shapeList {UNDEF}
@@ -176,6 +194,11 @@ function sh:getPathShape(shape, sh, shapeList) {
         } ) {
         return(list)
     }
+}
+
+
+function sh:optional(shape, sh) { 
+    exists { ?sh shex:optional true }
 }
 
 

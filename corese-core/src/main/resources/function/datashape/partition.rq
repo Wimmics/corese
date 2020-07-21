@@ -59,7 +59,8 @@ function sh:partitionValueShape (sh, vis, extra, subject, path, qsh, disjoint, a
         sh:dsp("shex partition:");
         sh:dsp(subject, path, nodeList);
         
-        let (list               = mapfindlist(sh:qualifiedShape, nodeList,  qsh),
+        let (opt = sh:getShapeConstraint(sh:optional, sh),
+            list = mapfindlist(sh:qualifiedShape, nodeList,  qsh),
             (partList cardList) = sh:partitionSiblingNodeList(qsh, subject, path, nodeList),
             candidate   = xt:cons(list, partList),
             cardinality = xt:cons(xt:list(amin, amax), cardList)) {
@@ -75,6 +76,8 @@ function sh:partitionValueShape (sh, vis, extra, subject, path, qsh, disjoint, a
                 }
             } ;
             
+            # use case: shex optional
+            if (opt && xt:size(list) = 0, return(true), true);    
                 
             let (res = sh:partition(candidate, cardinality)) {
                 sh:dsp("partition:", res);
@@ -162,18 +165,18 @@ function sh:prepare(partList, cardList) {
              #   xt:print(elem, list)
              #}  ; 
             
+             # reduce candidates to node lists with transitive intersection with nodeList 
              set (partList = transitiveIntersection);
-             sh:clean(mapInter, transitiveIntersection);
              
-             #xt:print("mapInter2:");
-             #for ((elem list) in mapInter) {
-             #   xt:print(elem, list)
-             #}  ; 
-           
+             # remove node lists without transitive intersection with nodeList
+             sh:clean(mapInter, transitiveIntersection);
             
-            let (checkMinAll = sh:checkMinAll(partList, mapCard),
+            let (
+                # check that every candidate has minimal elements
+                checkMinAll = sh:checkMinAll(partList, mapCard),
                 # remove intersections from partList
                 mapCand  = sh:processIntersection(mapInter),
+                # map of list
                 amap     = sh:mapList(mapCand)) {
                 
                 #sh:dsp("intersection:");
@@ -185,30 +188,39 @@ function sh:prepare(partList, cardList) {
                 sh:show(mapCard);
                 
                 if (checkMin) {
+                    # current nodeList has min elements
                     if (xt:size(mapCand) = 0 || ! xt:has(mapInter, nodeList)) {
-                        # no intersection, check max on current nodeList (other nodeList will be tested later)
+                        # no intersection, check max on current nodeList 
                         let (res = checkMax) {
+                            # current nodeList has max elements ?
                             return (res)
                         }
                     }
                     else if (checkMinAll) {
+                        # compute partition
                         let (res  = sh:assign(amap, mapCard)) {
                             sh:show (amap);
                             return (res)
                         }
                     }
                     else {
-                        # other cst min fail: process in the future
+                        # other cst min fail: process them in future call
                         return (true)
                     }
                 }
                 else {
+                    # current nodeList does not have min elements
                     return (false)
                 }
             }
         }
 }
 
+#
+# mapInter: nodeList -> list of intersections with other node lists
+# transitiveIntersection: list of node list with transitive intersection with current nodeList
+# remove from mapInter entries the node list with no transitive intersection with current nodeList
+#
 function sh:clean(mapInter, transitiveIntersection) {
    let (remove = xt:list()) {
         for ((alist interList) in mapInter) {
@@ -225,7 +237,7 @@ function sh:clean(mapInter, transitiveIntersection) {
 #
 # nodeList: current qualified node list
 # mapInterList: map: nodeList -> list of nodeList with intersection 
-# return sublist of nodeList that transitively have intersection: candidates for one partition
+# return sublist of candidates that transitively have intersection with nodeList
 #
 function sh:transitiveIntersection(nodeList, mapInterList) {
     if (xt:has(mapInterList, nodeList)) {
@@ -253,8 +265,8 @@ function sh:show(amap) {
 }
 
 #
-# amap:     nodeList -> list of nodeList with intersection not empty
 # mapInter: nodeList -> list of intersections with other nodeLists
+# amap:     nodeList -> list of nodeList with intersection not empty
 #
 function sh:intersection(partList) {
     #sh:dsp("intersection: ", partList);
@@ -289,7 +301,10 @@ function sh:intersection(partList) {
 
 
 # amap: nodeList -> list of intersections with other nodeLists
-# return map: elem -> map of nodeList where elem member of intersection
+# return map: elem -> map of all nodeList where elem is member of (elem is member of intersection) 
+# AND remove elem from these nodeList
+# result is a data structure elem -> map of nodeList where elem can be added in one of the nodeList
+# to build a partition.
 #
 function sh:processIntersection(amap) {
     sh:dsp("process intersection");
@@ -308,6 +323,8 @@ function sh:processIntersection(amap) {
 
 # amap:  elem -> map of nodeList
 # return elem -> list of nodeList
+# result is the data structure elem -> list of nodeList where elem can be added in one of the nodeList
+# to build a partition.
 #
 function sh:mapList(amap) {
     let (res = xt:map()) {
@@ -326,10 +343,13 @@ function sh:assign(amap, cardList) {
 }
 
 #
+# The partition algorithm
+#
 # elemList : list of elem
 # i = index of current elem
-# map : elem -> set of nodeList
-# assign each elem into one of the nodeList ; check size(nodeList) >= min <= max 
+# amap : elem -> list of nodeList
+# assign each elem into one of its possible nodeList ; check  min <= size(nodeList) <= max 
+# try every combinaison until one of them succeeds with min and max
 #
 function sh:assign(elemList, i, amap, cardMap) {
     sh:dsp("assign:", i, elemList);

@@ -1,0 +1,18 @@
+#
+# Geolocate resource on a map given lat et long
+#
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+
+template st:glocate {
+
+  st:call-template-with(st:navlab, st:gmap, ?in, ?lat, ?lon, xt:list())
+  
+}
+where {
+ 
+    ?in p:longitude ?lon ;
+        p:latitude  ?lat 
+       
+}
+limit 1

@@ -1,0 +1,14 @@
+#
+# SPARQL Template Transformation 
+# Generate a HTML hypertext navigator on top of Linked Open Data
+# such as dbpedia
+#
+# Olivier Corby - Wimmics INRIA I3S - 2018
+#
+template st:start {
+
+  st:call-template(st:main)
+  
+}
+where {
+}

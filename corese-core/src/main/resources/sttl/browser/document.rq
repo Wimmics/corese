@@ -1,0 +1,27 @@
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navtable/>
+
+template st:test {
+    coalesce(
+    st:format (
+        ft:triple.html,
+        us:display(?p),
+        if (isLiteral(?y), ?y, 
+            st:format(ft:link.html, st:pplink(?y), us:display(?y)))
+    ),
+    st:format (
+        ft:triple.html,
+        us:displayInverse(?q),
+        if (isLiteral(?x), ?x, 
+            st:format(ft:link.html, st:pplink(?x), us:display(?x)))
+    )
+    )
+}
+where {
+    ?in a <http://schema.org/ScholarlyArticle> 
+    {?in ?p ?y} union {?x ?q ?in}
+}
+order by ?in 
+us:sort(coalesce(?p, ?q), coalesce(?y, ?x)) 
+coalesce(?p, q) coalesce(?y, ?x)
+
+

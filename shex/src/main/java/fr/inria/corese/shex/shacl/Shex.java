@@ -7,6 +7,7 @@ import fr.inria.lille.shexjava.schema.ShexSchema;
 import fr.inria.lille.shexjava.schema.abstrsynt.*;
 import fr.inria.lille.shexjava.schema.concrsynt.*;
 import fr.inria.lille.shexjava.schema.parsing.GenParser;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.math.BigDecimal;
@@ -15,9 +16,12 @@ import java.nio.file.Paths;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Set;
 import org.eclipse.rdf4j.model.Value;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Shex to Shacl translator
@@ -25,6 +29,7 @@ import org.eclipse.rdf4j.model.Value;
  * @author Olivier Corby - Inria I3S - 2020
  */
 public class Shex implements Constant {
+    private static Logger logger = LoggerFactory.getLogger(Shex.class);
 
      static final String SH_PREFIX = NSManager.SHACL_PREFIX+":";
      static final String SH = NSManager.SHACL;
@@ -40,6 +45,9 @@ public class Shex implements Constant {
     private boolean extendShacl = false;
     // shex cardinality 
     private boolean cardinality = true;
+    // (A|B) * -> A? B?
+    private boolean expCardinality = false;
+    private boolean optional = false;
     private boolean closed = true;
 
     public Shex() {
@@ -50,10 +58,22 @@ public class Shex implements Constant {
 
     public StringBuilder parse(String path) throws Exception {
         Path schemaFile = Paths.get(path);
-        List<Path> importDirectories = Collections.emptyList();
+        return parse(schemaFile);
+    }
+    
+    public StringBuilder parseString(String str) throws IOException, Exception {        
+        File f = File.createTempFile("tmp", ".shex");
+        f.setWritable(true);
+        FileWriter w = new FileWriter(f);
+        w.write(str);
+        w.flush();
+        w.close();
+        StringBuilder sb = parse(f.toPath());
+        return sb;
+    }
 
-        // load and create the shex schema
-        //trace("Reading schema");
+    public StringBuilder parse(Path schemaFile) throws Exception {
+        List<Path> importDirectories = Collections.emptyList();
         ShexSchema schema = GenParser.parseSchema(schemaFile, importDirectories);
         process(schema);
         return getStringBuilder();
@@ -269,9 +289,9 @@ public class Shex implements Constant {
      * 
      ***********************************************************************/
     
-    void process(TripleExpr exp) {
-        process(exp, null);
-    }
+//    void process(TripleExpr exp) {
+//        process(exp, null);
+//    }
 
     void process(TripleExpr exp, Context ct) {
 //        traceClass(exp);
@@ -280,11 +300,10 @@ public class Shex implements Constant {
             process((TripleExprRef) exp, ct);
         } else if (exp instanceof TripleConstraint) {
             process((TripleConstraint) exp, ct);
-        } else if (exp instanceof EachOf) {
-            process((EachOf) exp, ct);
-        } else if (exp instanceof OneOf) {
-            process((OneOf) exp, ct);
-        } else if (exp instanceof RepeatedTripleExpression) {
+        } else if (exp instanceof AbstractNaryTripleExpr) {
+            // EachOf OneOf
+            process((AbstractNaryTripleExpr) exp, ct);
+        }  else if (exp instanceof RepeatedTripleExpression) {
             process((RepeatedTripleExpression) exp, ct);
         } 
         else if (exp instanceof EmptyTripleExpression) {
@@ -300,10 +319,15 @@ public class Shex implements Constant {
     }
     
     void process(TripleExprRef exp, Context ct) {
-        process(exp.getTripleExp());
+        process(exp.getTripleExp(), ct);
     }
     
     void process(RepeatedTripleExpression exp, Context ct) {
+        if (exp.getSubExpression() instanceof AbstractNaryTripleExpr) {
+            logger.info("Cardinality on: " + 
+                    exp.getSubExpression().getClass().getName());
+            logger.info(exp.toString());
+        }
         ct = context(ct);
         RepeatedTripleExpression save = ct.getRepeatedExpr();
         process(exp.getSubExpression(), ct.setRepeatedExpr(exp));
@@ -313,11 +337,65 @@ public class Shex implements Constant {
     Context context(Context ct) {
         return (ct == null) ? new Context() : ct;
     }
+    
+    
+    // EachOf OneOf
+    void process(AbstractNaryTripleExpr exp, Context ct) {
+        ct = context(ct);
+        if (isExpCardinality()) {
+            processWithCardinality(exp, ct);
+        } else {
+            process(exp, ct, false);
+        }
+    }
+    
+    /**
+     * (A|B)*   -> A? B?
+     * (A|B C)* -> A? B? C?
+     * @pragma: ct != null
+     * 
+     */
+    void processWithCardinality(AbstractNaryTripleExpr exp, Context ct) {
+        boolean processCardinality = ct.isLoop() && (exp instanceof OneOf || ct.isOneOf());
+        process(exp, ct, processCardinality);
+    }      
+    
+    void process(AbstractNaryTripleExpr exp, Context ct, boolean processCardinality) {
+        RepeatedTripleExpression rt = null;
+        boolean inOneOfLoop = false;
+        if (processCardinality) { 
+            inOneOfLoop = ct.isInOneOfLoop();
+            ct.setInOneOfLoop(true);
+        }
+        else {
+            rt = ct.getRepeatedExpr();
+            ct.setRepeatedExpr(null);
+        }
+
+        processBasic(exp, ct);
+
+        if (processCardinality) { 
+            ct.setInOneOfLoop(inOneOfLoop);
+        } 
+        else  {
+            ct.setRepeatedExpr(rt);
+        }
+    }
+    
+    void processBasic(AbstractNaryTripleExpr exp, Context ct) {
+        if (exp instanceof EachOf) {
+            process((EachOf) exp, ct);
+        } else if (exp instanceof OneOf) {
+            process((OneOf) exp, ct);
+        }
+    }
+    
     /**
      * several occurrences of same (inverse) property processed as qualifiedValueShape
      */
     void process(EachOf exp, Context ct) {
         ct = context(ct);
+        // check qualifiedValueShape
         new Qualified().create(exp, ct);
         
         List<TripleExpr> doneShacl = processShacl(exp);
@@ -329,7 +407,111 @@ public class Shex implements Constant {
         }
     } 
     
-    // special case: sh:targetClass considered as shacl statement    
+    void process(OneOf exp, Context ct) {  
+        if (ct != null && ct.isLoop()) {
+            processWithCardinality(exp, ct);
+            if (ct.isPlus()) {
+                exist(exp, ct);
+            }
+        }
+        else {
+            processBasic(exp, ct);
+        }
+    }
+    
+    
+    
+    
+    
+    
+    /**
+     * (A|B) +
+     * check that one of them has property value (for the +)
+     */
+    void exist(OneOf exp, Context ct) {
+        getShacl().openBracket(SH_PROPERTY);
+        getShacl().openBracket(SH_PATH);
+        getShacl().openList(SH_ALTERNATIVEPATH);
+        
+        ct.setBackward(new HashMap<>());
+        ct.setForward(new HashMap<>());
+        
+        for (TripleExpr ee : exp.getSubExpressions()) {
+            exist(ee, ct);
+        }
+        
+        for (String key : ct.getForward().keySet()) {
+            getShacl().append(key).space();
+        }
+        
+        for (String key : ct.getBackward().keySet()) {
+            getShacl().inverse(key).space();
+        }
+        
+        getShacl().closeList();
+        getShacl().closeBracket().pw().nl();
+        
+        getShacl().define(SH_MINCOUNT, 1).nl();
+        
+        getShacl().closeBracket();
+    }
+    
+    void exist(TripleExpr exp, Context ct) {
+        if (exp instanceof TripleConstraint) {
+            exist((TripleConstraint) exp, ct);
+        }
+        else if (exp instanceof RepeatedTripleExpression) {
+            exist((RepeatedTripleExpression) exp, ct);
+        }
+    }
+    
+    void exist(RepeatedTripleExpression exp, Context ct) {
+        exist(exp.getSubExpression(), ct);
+    }
+
+    void exist(TripleConstraint exp, Context ct) {
+        exist(exp.getProperty(), ct);
+    }
+    
+    void exist(TCProperty exp, Context ct) {
+        String p = getPrefixURI(exp);
+        if (exp.isForward()) {
+            ct.getForward().put(p, p);
+        }
+        else {
+            ct.getBackward().put(p, p);
+        }
+    }
+    
+    
+    
+    
+    
+    
+    // (A|B)* -> A? B?
+    void processWithCardinality(OneOf exp, Context ct) {
+        // check qualifiedValueShape
+        new Qualified().create(exp, ct);
+        // process as EachOf with cardinality ?
+        for (TripleExpr ee : exp.getSubExpressions()) {
+            process(ee, ct);
+        }
+    }
+    
+    void processBasic(OneOf exp, Context ct) {
+        getShacl().openList(SH_ONE);
+        for (TripleExpr ee : exp.getSubExpressions()) {
+            getShacl().openBracket();
+            process(ee, ct);
+            getShacl().closeBracket();
+        }
+        getShacl().closeList();
+    }
+    
+    
+    
+    
+        // special case: sh:targetClass considered as shacl statement    
     List<TripleExpr> processShacl(EachOf exp) {
         ArrayList<TripleExpr> done = new ArrayList<>();
         if (isExtendShacl()) {
@@ -347,15 +529,6 @@ public class Shex implements Constant {
         return done;
     }
 
-    void process(OneOf exp, Context ct) {
-        getShacl().openList(SH_ONE);
-        for (TripleExpr ee : exp.getSubExpressions()) {
-            getShacl().openBracket();
-            process(ee, ct);
-            getShacl().closeBracket();
-        }
-        getShacl().closeList();
-    }
 
 
     void process(TripleConstraint tc, Context ct) {
@@ -372,12 +545,12 @@ public class Shex implements Constant {
         }
     }
    
-    void processBasic(TripleConstraint tc, Context ctx) {
+    void processBasic(TripleConstraint tc, Context ct) {
         getShacl().openBracket(SH_PROPERTY);
         process(tc.getProperty());
         
         tripleConstraint(tc.getShapeExpr());
-        cardinality (ctx);
+        cardinality (ct);
         
         getShacl().closeBracketPw().nl();
     }
@@ -506,17 +679,29 @@ public class Shex implements Constant {
     void cardinality(Context ct) {
         if (ct == null) {
             cardinality(1, 1);
-        } else if (ct.isQualified()) {
-            // no cardinality here
-        } else if (ct.getRepeatedExpr() == null) {
+        } 
+        else if (ct.getRepeatedExpr() == null) {
             cardinality(1, 1);
         } else {
-            cardinality(ct.getRepeatedExpr());
+            //cardinality(ct.getRepeatedExpr());
+            contextCardinality(ct);
         }
     }
 
-    void cardinality(RepeatedTripleExpression exp) {
-        cardinalityBasic(exp.getCardinality().min, exp.getCardinality().max);
+//    void cardinality(RepeatedTripleExpression exp) {
+//        cardinalityBasic(exp.getCardinality().min, exp.getCardinality().max);
+//    }
+    
+    void contextCardinality(Context ct) {
+        ct.setOptional(isOptional());
+        cardinalityBasic(ct.getMin(), ct.getMax());
+        optional(ct);
+    }
+    
+    void optional(Context ct) {
+        if (isOptional() && ct.isInOneOfLoop() && ct.getMin() != 0) {
+            define(SHEX_OPTIONAL, "true");
+        }
     }
     
     void cardinality(int min, int max) {
@@ -530,6 +715,7 @@ public class Shex implements Constant {
         if (max < Integer.MAX_VALUE) {
             define(SH_MAXCOUNT, max);
         }
+        
     }
     
     void cardinalityQualified(Context ct) {
@@ -537,7 +723,9 @@ public class Shex implements Constant {
             cardinalityQualified(1, 1);
         }
         else {
+            ct.setOptional(isOptional());
             cardinalityQualified(ct.getMin(), ct.getMax());
+            optional(ct);
         }
     }
     
@@ -675,5 +863,29 @@ public class Shex implements Constant {
         this.closed = closed;
         return this;
     }
+
+    /**
+     * @return the expCardinality
+     */
+    public boolean isExpCardinality() {
+        return expCardinality;
+    }
+
+    /**
+     * @param expCardinality the expCardinality to set
+     */
+    public Shex setExpCardinality(boolean expCardinality) {
+        this.expCardinality = expCardinality;
+        return this;
+    }
+
+    /**
+     * @return the optional
+     */
+    public boolean isOptional() {
+        return isExpCardinality();
+    }
+
+    
 
 }

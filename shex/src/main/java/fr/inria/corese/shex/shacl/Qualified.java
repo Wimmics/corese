@@ -2,6 +2,8 @@ package fr.inria.corese.shex.shacl;
 
 import fr.inria.lille.shexjava.schema.abstrsynt.AbstractNaryShapeExpr;
 import fr.inria.lille.shexjava.schema.abstrsynt.AbstractNaryTripleExpr;
+import fr.inria.lille.shexjava.schema.abstrsynt.EachOf;
+import fr.inria.lille.shexjava.schema.abstrsynt.OneOf;
 import fr.inria.lille.shexjava.schema.abstrsynt.RepeatedTripleExpression;
 import fr.inria.lille.shexjava.schema.abstrsynt.Shape;
 import fr.inria.lille.shexjava.schema.abstrsynt.ShapeExpr;
@@ -78,10 +80,15 @@ public class Qualified extends HashMap<String, List<TripleExpr>> {
         } else if (ee instanceof TripleConstraint) {
             TripleConstraint tc = (TripleConstraint) ee;
             create(tc, ct, forward);
-        } else if (ee instanceof AbstractNaryTripleExpr) {
+        } 
+        else if (ee instanceof EachOf) {
             AbstractNaryTripleExpr abs = (AbstractNaryTripleExpr) ee;
             create(abs, ct, forward);
         }
+//        else if (ee instanceof AbstractNaryTripleExpr) {
+//            AbstractNaryTripleExpr abs = (AbstractNaryTripleExpr) ee;
+//            create(abs, ct, forward);
+//        }
     }
     
     // record TripleConstraint

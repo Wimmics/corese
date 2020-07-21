@@ -78,6 +78,9 @@ public class ShexConstraint implements Constant {
     void define(String name, BigDecimal value) {
         shex.define(name, value);
     }
+    void define(String name, int value) {
+        shex.define(name, value);
+    }
 
     // sh:or(value, regex)
     void process(ValueSetValueConstraint cst) {
@@ -224,6 +227,13 @@ public class ShexConstraint implements Constant {
         if (cst.getMinexcl() != null) {
             define(SH_MIN_EXCLUSIVE, cst.getMinexcl());
         }
+        if (cst.getTotalDigits() != null) {
+            define(SH_MINLENGTH, cst.getTotalDigits());
+            define(SH_MAXLENGTH, cst.getTotalDigits());
+        }
+        
+        // TODO:
+        cst.getFractionDigits();
     }
 
     void process(FacetStringConstraint cst) {

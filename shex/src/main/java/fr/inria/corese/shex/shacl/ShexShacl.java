@@ -52,7 +52,8 @@ public class ShexShacl {
         defprefix("sh", NSManager.SHACL);
         defprefix(SHEX, Shex.SHEX_SHACL);
         nl();
-        append("[] shex:shacl true .");
+        append("[] shex:shacl true ; rdfs:label 'Shex Shacl Translation'; ")
+                .append(String.format("shex:date '%s' .", new Date()));
         nl().nl();        
     }
     
@@ -159,8 +160,12 @@ public class ShexShacl {
     }
     
     ShexShacl defineInverse(String name, String value) {
-        append(name).space()
-                .append(String.format(PATH, SH_INVERSEPATH, value)).pw();
+        append(name).space().inverse(value).pw();
+        return this;
+    }
+    
+    ShexShacl inverse(String value) {
+        append(String.format(PATH, SH_INVERSEPATH, value));
         return this;
     }
     

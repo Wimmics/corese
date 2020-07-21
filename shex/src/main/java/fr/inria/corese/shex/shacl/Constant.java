@@ -14,6 +14,7 @@ public interface Constant {
     static final String SH_MINCOUNT = "sh:minCount";
     static final String SH_MAXCOUNT = "sh:maxCount";
     static final String SH_INVERSEPATH = "sh:inversePath";
+    static final String SH_ALTERNATIVEPATH = "sh:alternativePath";
     static final String SH_ONE = "sh:xone";
     static final String SH_AND = "sh:and";
     static final String SH_OR = "sh:or";
@@ -24,6 +25,7 @@ public interface Constant {
     static final String SH_CLOSED = "sh:closed";
     
     static final String SHEX_EXTRA = "shex:extra";
+    static final String SHEX_OPTIONAL = "shex:optional";
 
     static final String SH_DATATYPE = "sh:datatype";
     static final String SH_IN = "sh:in";

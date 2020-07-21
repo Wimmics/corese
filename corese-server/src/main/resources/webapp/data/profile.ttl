@@ -34,6 +34,31 @@ st:workflow [
 ]
 
 
+st:covid a st:Server ;   
+st:service "covid" ;
+  st:param [ 
+    st:transformations (st:browser) ;
+    st:export true ;
+    st:lang "fr" ;
+    st:import st:dbpediaParam, st:mapParam ;
+    st:endpoint <http://covid19.i3s.unice.fr/sparql>
+  ] ;
+  st:workflow st:covidwf
+  .
+  
+  
+st:covidwf a sw:Workflow ;
+  sw:body ( 
+    [ a sw:Query ;  
+        sw:uri <demo/covid/query/covid.rq> 
+    ]
+    [ a sw:Transformation ; sw:uri st:combine ]
+  )
+.
+
+
+
+
 st:dbpedia a st:Profile ;   
   st:param [ 
     st:transformations (st:navlab d3:frame) ;
@@ -433,6 +458,7 @@ st:content st:humancontent
 .
 
 st:humancontent a sw:Workflow ; sw:body (
+  #  [ a sw:Load ; sw:path <tutorial/human.rdfs>  ; sw:name st:data1 ] 
     [ a sw:Load ; sw:path <tutorial/human1.rdf>  ; sw:name st:data1 ] 
     [ a sw:Load ; sw:path <tutorial/human2.rdf>  ; sw:name st:data2 ] 
     [ a sw:Load ; sw:path <tutorial/pragma.ttl>  ; sw:name st:pragma ]    
@@ -580,7 +606,7 @@ st:tutorialhal a st:Server ;
     
     st:sttl st:combine ; 
     st:transformations (
-        d3:frame navlab:map st:hturtle
+        navlab:map d3:frame st:hturtle
         ) ; 
     st:hyperlink true ; 
     st:number true ;
@@ -588,7 +614,7 @@ st:tutorialhal a st:Server ;
     st:contextlist(st:geo) ;
     st:focus false ;
     st:mapzoom 3 ;
-    st:mapsize "mapmedium" ;
+    st:mapsize "mapmedium" ; # mapmedium maplarge
     st:title "HAL Open Data" ;
     st:lodprofile (
         (<https://aurehal.archives-ouvertes.fr/> st:hal)
@@ -756,11 +782,29 @@ st:cdncontent a sw:Workflow ; sw:body (
 st:shape a st:Server ;
     st:service "shape" ;
     st:workflow st:shape  ;
+    st:param [
+        st:title "Shacl" ;
+        st:function sh:shacl
+    ] ;
 sw:body ( 
     [ a sw:Shape  ]
     [ a sw:Transformation ; sw:uri st:dsresult ]
 ) .
 
+st:shex a st:Server ;
+    st:service "shex" ;
+    st:workflow st:shex  ;
+    st:param [
+        st:title "Shex" ;
+        st:comment "Shex Shacl Translator with Shex parser <a href='http://shexjava.lille.inria.fr/'>http://shexjava.lille.inria.fr</a>" ;
+        st:function sh:shex ;
+        st:schema <shape/human.shex>;
+        st:rdf    <shape/human.ttl>
+    ] ;
+sw:body ( 
+    [ a sw:Shex  ]
+    [ a sw:Transformation ; sw:uri st:dsresult ]
+) .
 
 #
 # Generic type check 
@@ -963,6 +1007,7 @@ sw:body (
 # AI4EU
 #
 [] owl:imports <myprofile.ttl>
+[] owl:imports <covidprofile.ttl>
 #[] owl:imports <phyprofile.ttl>
 
 

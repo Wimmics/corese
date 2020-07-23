@@ -35,6 +35,7 @@ public class Context {
     private HashMap<String, String> backward;
     private boolean optional = false;
     private boolean inOneOfLoop = false;
+    private boolean disjoint = false;
     
     
     Context(RepeatedTripleExpression e) {
@@ -72,62 +73,102 @@ public class Context {
         if (getRepeatedExpr() == null) {
             return 1;
         }
-        if (isInOneOfLoop() && ! isOptional()) {
-            // (A|B)* -> A? B?
-            return 0;
+        if (isInOneOfLoop() && isOneOf()) {
+            // current triple has no card because card is card of surrounding oneOf 
+            return 1;
         }
-        return getRepeatedExpr().getCardinality().min;
+        return getCardinality().min;
     }
     
     int getMax() {
         if (getRepeatedExpr() == null) {
             return 1;
         }
-        if (isInOneOfLoop()) {
-            if (isOptional()) {
-                // (A|B)* -> A? B?
-                if (isLoop()) {
-                    return 1;
-                } // else return real max below
-            }
-            else {
-                 // (A|B)* -> A? B?
-                return 1;
-            }
+        if (isInOneOfLoop() && isOneOf()) {
+            // current triple has no card because card is card of surrounding oneOf 
+            return 1;
         }
-        return getRepeatedExpr().getCardinality().max;
+        return getCardinality().max;
     }
     
-//    public boolean isOneOfStar() {
-//        return getRepeatedExpr() != null
-//                && getRepeatedExpr().getSubExpression() instanceof OneOf
-//                && getRepeatedExpr().getCardinality() == Interval.STAR;
+//    int getMinOld() {
+//        if (getRepeatedExpr() == null) {
+//            return 1;
+//        }
+//        if (isInOneOfLoop()) {
+//            if (isExpCardinality()) {
+//                if (isOneOf()) {
+//                    // current triple has no card because card is card of surrounding oneOf 
+//                    return 1;
+//                } // else current constraint has min; return real min below
+//            } else {
+//                return 0;
+//            }
+//        }
+//        
+//        return getCardinality().min;
 //    }
 //    
+//    int getMaxOld() {
+//        if (getRepeatedExpr() == null) {
+//            return 1;
+//        }
+//        if (isInOneOfLoop()) {
+//            if (isExpCardinality()) {
+//                if (isOneOf()) {
+//                    // current triple has no card because card is card of surrounding oneOf 
+//                    return 1;
+//                }
+//                // else current constraint has max; return real max below
+//            } else {
+//                return 1;
+//            }
+//        }
+//
+//        return getCardinality().max;
+//    }
     
     public boolean isLoop() {
-        return getRepeatedExpr() != null
-                && (getRepeatedExpr().getCardinality() == Interval.STAR
-                ||  getRepeatedExpr().getCardinality() == Interval.PLUS);
+        return getCardinality() != null
+                && (getCardinality() == Interval.STAR
+                ||  getCardinality() == Interval.PLUS);
     }
 
     
     // (A|B)*
     public boolean isStar() {
-        return getRepeatedExpr() != null
-                && getRepeatedExpr().getCardinality() == Interval.STAR;
+        return getCardinality() != null
+                && getCardinality() == Interval.STAR;
+    }
+    
+    public boolean isPositive() {
+        return getCardinality() != null
+                && (getCardinality() == Interval.PLUS ||
+                getCardinality().min>0
+                );
     }
     
     // (A|B)*
     public boolean isPlus() {
-        return getRepeatedExpr() != null
-                && getRepeatedExpr().getCardinality() == Interval.PLUS;
+        return getCardinality() != null
+                && getCardinality() == Interval.PLUS;
     }
     
     // (A|B)*
     public boolean isOneOf() {
         return getRepeatedExpr() != null && 
                 getRepeatedExpr().getSubExpression() instanceof OneOf;
+    }
+    
+    Interval getCardinality() {
+        if (getRepeatedExpr() == null) {
+            return null;
+        }
+        return getRepeatedExpr().getCardinality();
+    }
+    
+    boolean hasCardinality() {
+        return getRepeatedExpr() != null;
     }
 
     /**
@@ -239,14 +280,14 @@ public class Context {
     /**
      * @return the optional
      */
-    public boolean isOptional() {
+    public boolean isExpCardinality() {
         return optional;
     }
 
     /**
      * @param optional the optional to set
      */
-    public void setOptional(boolean optional) {
+    public void setExpCardinality(boolean optional) {
         this.optional = optional;
     }
 
@@ -260,8 +301,9 @@ public class Context {
     /**
      * @param inOneOfStar the inOneOfStar to set
      */
-    public void setInOneOfLoop(boolean inOneOfStar) {
+    public Context setInOneOfLoop(boolean inOneOfStar) {
         this.inOneOfLoop = inOneOfStar;
+        return this;
     }
 
     /**
@@ -290,6 +332,20 @@ public class Context {
      */
     public void setBackward(HashMap<String, String> backward) {
         this.backward = backward;
+    }
+
+    /**
+     * @return the disjoint
+     */
+    public boolean isDisjoint() {
+        return disjoint;
+    }
+
+    /**
+     * @param disjoint the disjoint to set
+     */
+    public void setDisjoint(boolean disjoint) {
+        this.disjoint = disjoint;
     }
     
 }

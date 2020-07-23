@@ -46,7 +46,7 @@ public class Shex implements Constant {
     // shex cardinality 
     private boolean cardinality = true;
     // (A|B) * -> A? B?
-    private boolean expCardinality = false;
+    private boolean expCardinality = true;
     private boolean optional = false;
     private boolean closed = true;
 
@@ -343,31 +343,37 @@ public class Shex implements Constant {
     void process(AbstractNaryTripleExpr exp, Context ct) {
         ct = context(ct);
         if (isExpCardinality()) {
+            // (A|B)* -> A? B?
             processWithCardinality(exp, ct);
         } else {
+            // (A|B)* -> (A|B) -- which is not correct ...
             process(exp, ct, false);
         }
     }
     
     /**
      * (A|B)*   -> A? B?
-     * (A|B C)* -> A? B? C?
-     * @pragma: ct != null
      * 
      */
     void processWithCardinality(AbstractNaryTripleExpr exp, Context ct) {
-        boolean processCardinality = ct.isLoop() && (exp instanceof OneOf || ct.isOneOf());
+        boolean processCardinality = ct.hasCardinality() && 
+                (exp instanceof OneOf || ct.isOneOf());
         process(exp, ct, processCardinality);
     }      
     
+    /**
+     * 
+     * processCardinality = true: handle (A|B)* ; otherwise skip *
+     */
     void process(AbstractNaryTripleExpr exp, Context ct, boolean processCardinality) {
         RepeatedTripleExpression rt = null;
-        boolean inOneOfLoop = false;
+        boolean inOneOfLoop = ct.isInOneOfLoop();
+        
         if (processCardinality) { 
-            inOneOfLoop = ct.isInOneOfLoop();
-            ct.setInOneOfLoop(true);
+            ct.setInOneOfLoop(true); 
         }
         else {
+            // skip cardinality 
             rt = ct.getRepeatedExpr();
             ct.setRepeatedExpr(null);
         }
@@ -408,9 +414,11 @@ public class Shex implements Constant {
     } 
     
     void process(OneOf exp, Context ct) {  
-        if (ct != null && ct.isLoop()) {
+        if (ct.hasCardinality()) { 
+            // (A|B)* -> A? B? with shex:optional true
             processWithCardinality(exp, ct);
-            if (ct.isPlus()) {
+            if (ct.isPositive()) {
+                // additional minCount 1 on properties
                 exist(exp, ct);
             }
         }
@@ -419,8 +427,54 @@ public class Shex implements Constant {
         }
     }
     
+ 
+    // (A|B)* -> A? B?
+    void processWithCardinality(OneOf exp, Context ct) {
+        // check qualifiedValueShape
+        new Qualified().create(exp, ct);
+        // process as EachOf with cardinality ?
+        for (TripleExpr ee : exp.getSubExpressions()) {
+            process(ee, ct);
+        }
+    }
     
+    void processBasic(OneOf exp, Context ct) {
+        new Qualified().create(exp, ct);
+        getShacl().openList(SH_ONE);
+        for (TripleExpr ee : exp.getSubExpressions()) {
+            getShacl().openBracket();
+            process(ee, ct);
+            getShacl().closeBracket();
+        }
+        getShacl().closeList();
+    }
     
+    /**
+     * (A|B){a,b}
+     * ->
+     * shex:count [ shex:constraint (A B) ; shex:minCount a; shex:maxCount b ]
+     * @deprecated
+     */
+    void processCount(OneOf exp, Context ct) {
+        new Qualified().create(exp, ct);
+        
+        getShacl().openBracket(SHEX_COUNT);        
+        getShacl().openList(SHEX_CONSTRAINT);
+        boolean disjoint = ct.isDisjoint();
+        ct.setDisjoint(true);
+        
+        for (TripleExpr ee : exp.getSubExpressions()) {
+            getShacl().openBracket();
+            process(ee, ct);
+            getShacl().closeBracket();
+        }
+        
+        ct.setDisjoint(disjoint);
+        getShacl().closeList();        
+        getShacl().define(SHEX_MINCOUNT, ct.getMin()).nl();
+        getShacl().define(SHEX_MAXCOUNT, ct.getMax()).nl();
+        getShacl().closeBracket().pw().nl();
+    }
     
     
     
@@ -484,31 +538,7 @@ public class Shex implements Constant {
     }
     
     
-    
-    
-    
-    
-    // (A|B)* -> A? B?
-    void processWithCardinality(OneOf exp, Context ct) {
-        // check qualifiedValueShape
-        new Qualified().create(exp, ct);
-        // process as EachOf with cardinality ?
-        for (TripleExpr ee : exp.getSubExpressions()) {
-            process(ee, ct);
-        }
-    }
-    
-    void processBasic(OneOf exp, Context ct) {
-        getShacl().openList(SH_ONE);
-        for (TripleExpr ee : exp.getSubExpressions()) {
-            getShacl().openBracket();
-            process(ee, ct);
-            getShacl().closeBracket();
-        }
-        getShacl().closeList();
-    }
-    
-    
+   
     
     
         // special case: sh:targetClass considered as shacl statement    
@@ -567,7 +597,14 @@ public class Shex implements Constant {
         tripleConstraint(exp, new Context().setQualifiedExpr(exp));
         getShacl().closeBracketPw().nl();
         cardinalityQualified(ct);
+        //disjoint(ct);
         getShacl().closeBracketPw().nl();
+    }
+    
+    void disjoint(Context ct) {
+        if (ct.isDisjoint()) {
+            getShacl().define(SH_QUALIFIED_DISJOINT, "true");
+        }
     }
     
     void tripleConstraint(ShapeExpr exp) {
@@ -680,26 +717,23 @@ public class Shex implements Constant {
         if (ct == null) {
             cardinality(1, 1);
         } 
-        else if (ct.getRepeatedExpr() == null) {
-            cardinality(1, 1);
-        } else {
-            //cardinality(ct.getRepeatedExpr());
+        else if (ct.hasCardinality()) {
             contextCardinality(ct);
+        } else {
+            cardinality(1, 1);
         }
     }
 
-//    void cardinality(RepeatedTripleExpression exp) {
-//        cardinalityBasic(exp.getCardinality().min, exp.getCardinality().max);
-//    }
-    
     void contextCardinality(Context ct) {
-        ct.setOptional(isOptional());
+        ct.setExpCardinality(isExpCardinality());
         cardinalityBasic(ct.getMin(), ct.getMax());
         optional(ct);
     }
     
     void optional(Context ct) {
-        if (isOptional() && ct.isInOneOfLoop() && ct.getMin() != 0) {
+        if (isExpCardinality() && ct.isInOneOfLoop() && ct.getMin() != 0) {
+            // (A|B)* the constraints are optional because of *
+            // shex:optional true : constraint does not fail when there is no property at all
             define(SHEX_OPTIONAL, "true");
         }
     }
@@ -723,7 +757,7 @@ public class Shex implements Constant {
             cardinalityQualified(1, 1);
         }
         else {
-            ct.setOptional(isOptional());
+            ct.setExpCardinality(isExpCardinality());
             cardinalityQualified(ct.getMin(), ct.getMax());
             optional(ct);
         }

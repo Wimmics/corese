@@ -20,13 +20,11 @@ public interface Constant {
     static final String SH_OR = "sh:or";
     static final String SH_NOT = "sh:not";
     static final String SH_QUALIFIED_VALUE_SHAPE = "sh:qualifiedValueShape";
-    static final String SH_QUALIFIED_MIN_COUNT = "sh:qualifiedMinCount";
-    static final String SH_QUALIFIED_MAX_COUNT = "sh:qualifiedMaxCount";
+    static final String SH_QUALIFIED_MIN_COUNT  = "sh:qualifiedMinCount";
+    static final String SH_QUALIFIED_MAX_COUNT  = "sh:qualifiedMaxCount";
+    static final String SH_QUALIFIED_DISJOINT   = "sh:qualifiedValueShapesDisjoint";
     static final String SH_CLOSED = "sh:closed";
     
-    static final String SHEX_EXTRA = "shex:extra";
-    static final String SHEX_OPTIONAL = "shex:optional";
-
     static final String SH_DATATYPE = "sh:datatype";
     static final String SH_IN = "sh:in";
     static final String SH_HAS_VALUE = "sh:hasValue";
@@ -45,5 +43,12 @@ public interface Constant {
     static final String SH_MAXLENGTH = "sh:maxLength";
     static final String SH_MINLENGTH = "sh:minLength";
     static final String SH_LANGUAGE_IN = "sh:languageIn";
+    
+    static final String SHEX_EXTRA      = "shex:extra";
+    static final String SHEX_OPTIONAL   = "shex:optional";
+    static final String SHEX_COUNT      = "shex:count";
+    static final String SHEX_CONSTRAINT = "shex:constraint";
+    static final String SHEX_MINCOUNT   = "shex:minCount";
+    static final String SHEX_MAXCOUNT   = "shex:maxCount";
 
 }

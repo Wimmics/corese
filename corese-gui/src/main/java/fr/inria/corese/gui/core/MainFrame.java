@@ -1562,7 +1562,7 @@ public class MainFrame extends JFrame implements ActionListener {
         if (path != null) {
             Shex shex = new Shex().setExtendShacl(shexExtend)
                     .setClosed(shexClosed)
-                    .setCardinality(shexCard);
+                    .setExpCardinality(shexCard);
             String name = path.replace(".shex", "shex.ttl");
             try {
                 shex.parse(path);

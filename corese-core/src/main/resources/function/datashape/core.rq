@@ -6,6 +6,7 @@
 
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix msh: <http://ns.inria.fr/shacl/>
+prefix shex: <http://ns.inria.fr/shex/shacl#>
 
 function sh:core(sh, vis, nodeList) {
     sh:core(sh, vis, nodeList, false)
@@ -193,17 +194,21 @@ function msh:not (oper, sh, cst, vis, ls, present) {
 }
 
 
-# oper = sh:and | sh:or | sh:xone
+# oper = sh:and | sh:or | sh:xone | shex:count
 function msh:boolean (oper, sh, cst, vis, ls, present) {
     let (res = true) {
         for (s in dt:list(ls)) {
-            let (suc = coalesce(funcall(oper, sh:getShapeConstraint(sh:coreboolean, cst), s, present), false)) {
+            let (suc = coalesce(funcall(oper, sh:getCstList(oper, cst), s, present), false)) {
                 sh:report(oper, sh, s, st:null, s, suc, vis);
                 if (suc, true, set (res = false))
             }
         } ;
         return(res)
     }
+}
+
+function sh:getCstList(oper, cst) {
+    sh:getShapeConstraint(if (oper = shex:count, sh:countboolean, sh:coreboolean), cst)
 }
 
 
@@ -249,6 +254,42 @@ function sh:coreboolean(shape, cst) {
 }
 
 
+
+
+
+
+#
+# count success
+#
+function xsd:boolean shex:count(cst, s, present) {
+    let ((card list) = cst,
+         (amin amax) = card,
+         res = sh:bool(shex:count, list, s, 1, 0, present)) {
+        return (amin <= res && (res <= amax || amax < 0))
+    }
+}
+
+
+
+
+
+#
+# shex:count [ sh:minCount 1 ; sh:maxCount 2 ; sh:constraint (c1 c2 c3) ]
+# similar to xone but here we count the number of success
+#
+function sh:countboolean(shape, cst) {
+     let (SELECT ?cst  ?shape (aggregate(?sh) as ?list)
+        (xt:list (coalesce(?min, 0), coalesce(?max, -1)) as ?card)
+        (xt:list(?card, ?list) as ?res)
+		WHERE {
+            graph ?shape { 
+                ?cst shex:constraint/rdf:rest*/rdf:first ?sh .
+                optional { ?cst shex:minCount ?min }
+                optional { ?cst shex:maxCount ?max }
+        } } ) {  
+            return (res)
+        }
+}
 
 
 

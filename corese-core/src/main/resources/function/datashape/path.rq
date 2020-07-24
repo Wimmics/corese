@@ -405,7 +405,6 @@ function sh:xone (sh, vis, s, p, cst, nodeList, present) {
 # cst is the bnode start of the list of shapes of the boolean operator
 # and (sh1 .. shn) ; cst = (sh1 .. shn)
 # Return the list of shapes of the boolean operator
-# boolean prop = true if the constraint is a sh:property shape
 #
 function sh:pathboolean(shape, cst) {
      let ( 

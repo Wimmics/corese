@@ -5,6 +5,7 @@
 #
 prefix sh:   <http://www.w3.org/ns/shacl#> 
 prefix xsh:  <http://www.w3.org/ns/shacl#> 
+prefix shex: <http://ns.inria.fr/shex/shacl#>
 
 @import  <api/define.rq> <focus.rq> <ppathparser.rq> <ppath.rq> <operator.rq> <operatorext.rq> <core.rq>  <path.rq> <constraint.rq>  <target.rq>
 
@@ -339,7 +340,7 @@ function sh:defShapeNode2() {
 }
 
 function sh:defShapeBoolean() {
-    let (alist = @(sh:and sh:or sh:xone sh:not)) {
+    let (alist = @(sh:and sh:or sh:xone sh:not shex:count )) {
         alist
     }
 }
@@ -818,7 +819,7 @@ function dt:list sh:def(){
         (sh:qualifiedValueShape sh:QualifiedValueShapeConstraintComponent)
         (sh:qualifiedMinCount   sh:QualifiedMinCountConstraintComponent)
         (sh:qualifiedMaxCount   sh:QualifiedMaxCountConstraintComponent)
-        (sh:qualifiedValueShapeDisjoint sh:qualifiedValueShapeDisjointConstraintComponent)
+        (sh:qualifiedValueShapesDisjoint sh:qualifiedValueShapesDisjointConstraintComponent)
         (sh:closed      sh:ClosedConstraintComponent)
         (sh:hasValue    sh:HasValueConstraintComponent)
         (sh:in          sh:InConstraintComponent)

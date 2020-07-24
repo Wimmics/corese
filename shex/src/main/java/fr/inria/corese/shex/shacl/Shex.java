@@ -177,7 +177,7 @@ public class Shex implements Constant {
         }
         
         if (sh != null) {
-            ct = context(ct);
+            //ct = context(ct);
             ct.setShape(sh);
             boolean not = ct.getNotExpr() != null;
             if (not) {
@@ -234,7 +234,7 @@ public class Shex implements Constant {
             // insert node constraint list inside shape 
             process(shape, cstList);
         } else {
-            ct = context(ct);
+            //ct = context(ct);
             new Qualified().create(exp, ct);
             
             if (getCurrentLabel() != null) {
@@ -294,8 +294,7 @@ public class Shex implements Constant {
 //    }
 
     void process(TripleExpr exp, Context ct) {
-//        traceClass(exp);
-//        trace(exp);
+        //traceClass(exp);
         if (exp instanceof TripleExprRef) {
             process((TripleExprRef) exp, ct);
         } else if (exp instanceof TripleConstraint) {
@@ -323,12 +322,12 @@ public class Shex implements Constant {
     }
     
     void process(RepeatedTripleExpression exp, Context ct) {
-        if (exp.getSubExpression() instanceof AbstractNaryTripleExpr) {
-            logger.info("Cardinality on: " + 
-                    exp.getSubExpression().getClass().getName());
-            logger.info(exp.toString());
-        }
-        ct = context(ct);
+//        if (exp.getSubExpression() instanceof AbstractNaryTripleExpr) {
+//            logger.info("Cardinality on: " + 
+//                    exp.getSubExpression().getClass().getName());
+//            logger.info(exp.toString());
+//        }
+        //ct = context(ct);
         RepeatedTripleExpression save = ct.getRepeatedExpr();
         process(exp.getSubExpression(), ct.setRepeatedExpr(exp));
         ct.setRepeatedExpr(save);
@@ -341,7 +340,7 @@ public class Shex implements Constant {
     
     // EachOf OneOf
     void process(AbstractNaryTripleExpr exp, Context ct) {
-        ct = context(ct);
+        //ct = context(ct);
         if (isExpCardinality()) {
             // (A|B)* -> A? B?
             processWithCardinality(exp, ct);
@@ -400,7 +399,7 @@ public class Shex implements Constant {
      * several occurrences of same (inverse) property processed as qualifiedValueShape
      */
     void process(EachOf exp, Context ct) {
-        ct = context(ct);
+        //ct = context(ct);
         // check qualifiedValueShape
         new Qualified().create(exp, ct);
         
@@ -562,7 +561,7 @@ public class Shex implements Constant {
 
 
     void process(TripleConstraint tc, Context ct) {
-        ct = context(ct);
+        //ct = context(ct);
         if (isExtendShacl() && isShacl(tc.getProperty())) {
             processShacl(tc);
         } 
@@ -597,7 +596,6 @@ public class Shex implements Constant {
         tripleConstraint(exp, new Context().setQualifiedExpr(exp));
         getShacl().closeBracketPw().nl();
         cardinalityQualified(ct);
-        //disjoint(ct);
         getShacl().closeBracketPw().nl();
     }
     
@@ -615,9 +613,9 @@ public class Shex implements Constant {
         if (exp instanceof NodeConstraint) {
             processBasic((NodeConstraint) exp);
         } else if (exp instanceof Shape) {
-            processNested((Shape) exp, ct);
+            processNested((Shape) exp, context(ct));
         } else {
-            process(exp, ct);
+            process(exp, context(ct));
         }
     }
 

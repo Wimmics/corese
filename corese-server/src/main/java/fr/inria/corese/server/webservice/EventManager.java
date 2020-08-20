@@ -1,7 +1,7 @@
 package fr.inria.corese.server.webservice;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.CoreseMap;
+import fr.inria.corese.sparql.datatype.extension.CoreseMap;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;

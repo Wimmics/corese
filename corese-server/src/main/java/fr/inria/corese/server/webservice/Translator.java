@@ -26,7 +26,7 @@ public class Translator implements PreProcessor {
     }
     
     String process(String str) throws Exception {
-        Shex shex = new Shex().setExtendShacl(true);
+        Shex shex = new Shex().setExtendShacl(true).setExpCardinality(true);
         StringBuilder sb = shex.parseString(str);
         return sb.toString();
     }

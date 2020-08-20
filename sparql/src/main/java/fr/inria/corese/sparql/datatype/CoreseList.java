@@ -28,10 +28,8 @@ public class CoreseList extends CoreseExtension implements IDatatypeList {
 
     public CoreseList(IDatatype[] dt) {
         super(SEED + count++);
-        list = new ArrayList<IDatatype>(dt.length);
-        for (IDatatype val : dt) {
-            list.add(val);
-        }
+        list = new ArrayList<>(dt.length);
+        list.addAll(Arrays.asList(dt));
     }
 
     public CoreseList(List<IDatatype> vec) {
@@ -411,6 +409,7 @@ public class CoreseList extends CoreseExtension implements IDatatypeList {
         return list.contains(elem) ? TRUE : FALSE;
     }
     
+    // because list has its own compareTo (see above)
     @Override
     public int mapCompareTo(IDatatype dt) {
         if (dt.isList()) {

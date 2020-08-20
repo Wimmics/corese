@@ -1,6 +1,5 @@
 package fr.inria.corese.sparql.triple.function.extension;
 
-import static fr.inria.corese.kgram.api.core.ExprType.XT_ATTRIBUTES;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_JSON;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_RDF;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_XML;
@@ -11,7 +10,6 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.ResultFormatDef;
-import fr.inria.corese.sparql.datatype.CoreseXML;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.function.XPathFun;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -21,7 +19,6 @@ import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.xml.parsers.ParserConfigurationException;
 import org.w3c.dom.Document;
-import org.w3c.dom.Node;
 import org.xml.sax.SAXException;
 
 public class ResultFormater extends TermEval {

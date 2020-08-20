@@ -88,6 +88,7 @@ public interface IDatatype
     boolean isList();
     boolean isMap();
     boolean isJSON();
+    default boolean isXML() {return false;}
     
     
     boolean isLoop();

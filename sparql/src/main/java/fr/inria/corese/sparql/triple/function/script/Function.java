@@ -145,7 +145,7 @@ public class Function extends Statement {
     }
 
     ASTBuffer lambda(ASTBuffer sb) {
-        sb.append("lambda(");
+        sb.append("function(");
         int i = 0;
         for (Expression var : getSignature().getArgs()) {
             if (i++ > 0) {

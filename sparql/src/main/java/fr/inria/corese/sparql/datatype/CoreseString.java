@@ -15,7 +15,7 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
  * @author Olivier Savoie
  */
 
-public class CoreseString extends CoreseStringLiteral { //CoreseStringableImpl{
+public class CoreseString extends CoreseStringLiteral { 
   static int code=STRING;
   static final CoreseURI datatype=new CoreseURI(RDF.xsdstring);
 

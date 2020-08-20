@@ -122,6 +122,11 @@ public class CoreseXML extends CoreseExtension {
     public boolean isLoop() {
         return true;
     }
+    
+    @Override
+    public boolean isXML() {
+        return true;
+    }
 
     @Override
     public Iterable<IDatatype> getLoop() {

@@ -1,10 +1,12 @@
 package fr.inria.corese.sparql.datatype;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
 /**
- *
- * @author corby
+ * Extension datatypes for list, map, xml, json
+ * 
+ * @author Olivier Corby, Wimmics INRIA I3S, 2019
  */
 public class CoreseExtension extends CoreseUndefLiteral {
        
@@ -31,6 +33,17 @@ public class CoreseExtension extends CoreseUndefLiteral {
     public IDatatype display() {
         return DatatypeMap.createUndef(getContent(), getDatatypeURI());
     }
-
+    
+    /**
+     * Corese extension datatypes are comparable even when datatypes are different
+     * list has its own equalsWE
+     */
+    @Override
+    public boolean equalsWE(IDatatype dt) throws CoreseDatatypeException {
+        if (dt.isExtension()) { // && getDatatype().equals(dt.getDatatype())) {
+            return this == dt;
+        }
+        return super.equalsWE(dt);
+    }
     
 }

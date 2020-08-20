@@ -175,6 +175,19 @@ public class CoresePointer extends CoreseUndefLiteral {
     
      @Override
     public boolean equalsWE(IDatatype dt) throws CoreseDatatypeException {
+        if (dt.isPointer()) {
+            if (getPointerObject() == null || dt.getPointerObject() == null) {
+                return getPointerObject() == dt.getPointerObject();
+            }
+            return getPointerObject().equals(dt.getPointerObject());
+        }
+        if (dt.isExtension()) {
+            return false;
+        }
+        return super.equalsWE(dt);
+    }
+    
+    public boolean equalsWE2(IDatatype dt) throws CoreseDatatypeException {
         if (dt.getCode() != UNDEF || getDatatype()!= dt.getDatatype()) {
             return super.equalsWE(dt);
         }

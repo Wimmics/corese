@@ -17,18 +17,19 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
  * <br>
  * This is used for unknown literals that carry their own datatype
  * <br>
+ * subclasses: 
+ * CoreseExtension: list, map, xml, json
+ * CoresePointer:   graph, triple, mappings, etc
+ * Note: the subclasses could be merged
  *
  * @author Olivier Corby
  */
 public class CoreseUndefLiteral extends CoreseStringLiteral {
 
     static final int code = UNDEF;
-    //static final String FUTURE = "Future";
+    static final CoreseUndefLiteral ERROR, UNBOUND;
 
     IDatatype datatype = null;
-//    private Object object;
-//    private boolean isFuture = false;
-    static final CoreseUndefLiteral ERROR, UNBOUND;
 
     static {
         ERROR = new CoreseUndefLiteral("Error", IDatatype.SYSTEM);
@@ -90,7 +91,6 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
 
     @Override
     public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
-
         switch (iod.getCode()) {
             case URI:
             case BLANK:

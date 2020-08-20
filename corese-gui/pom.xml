@@ -10,8 +10,15 @@
 	</parent>
 	<artifactId>corese-gui</artifactId>
 	<name>corese-gui</name>
-
+<!--        <properties>
+            <maven.test.skip>true</maven.test.skip>
+        </properties>-->
 	<dependencies>
+                <dependency>
+			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>shex</artifactId>
+			<version>${project.parent.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>compiler</artifactId>

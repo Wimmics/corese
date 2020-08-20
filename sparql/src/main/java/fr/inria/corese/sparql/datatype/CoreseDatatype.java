@@ -43,8 +43,8 @@ public class CoreseDatatype
     private static Logger logger = LoggerFactory.getLogger(CoreseDatatype.class);
     static final CoreseURI datatype = new CoreseURI(RDF.RDFSRESOURCE);
     static final CoreseString empty = new CoreseString("");
-    static final CoreseBoolean TRUE = CoreseBoolean.TRUE;
-    static final CoreseBoolean FALSE = CoreseBoolean.FALSE;
+    public static final CoreseBoolean TRUE = CoreseBoolean.TRUE;
+    public static final CoreseBoolean FALSE = CoreseBoolean.FALSE;
     static final CoreseDatatypeException failure = new CoreseDatatypeException("Datatype Exception, statically created");
     static final Hashtable<String, IDatatype> lang2dataLang = new Hashtable<String, IDatatype>(); // 'en' -> CoreseString('en')
     static final Hashtable<String, IDatatype> hdt = new Hashtable<String, IDatatype>(); // datatype name -> CoreseURI datatype
@@ -73,6 +73,10 @@ public class CoreseDatatype
         define(IDatatype.STRING,    String.class);
         define(IDatatype.LITERAL,   String.class);
         define(IDatatype.URI,       String.class);
+    }
+    
+    public static NSManager nsm() {
+        return nsm;
     }
     
     static void define(int i, Class c) {
@@ -193,8 +197,8 @@ public class CoreseDatatype
         }
         return dtl;
     }
-
-    static IDatatype getGenericDatatype(String uri) {
+    
+    public static IDatatype getGenericDatatype(String uri) {
         IDatatype dt = hdt.get(uri);
         if (dt == null) {
             dt = new CoreseURI(uri);

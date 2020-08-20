@@ -1,7 +1,7 @@
-package fr.inria.corese.sparql.datatype;
+package fr.inria.corese.sparql.datatype.extension;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import static fr.inria.corese.sparql.datatype.CoreseDatatype.getGenericDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.function.XPathFun;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.IOException;

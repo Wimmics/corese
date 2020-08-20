@@ -1,8 +1,8 @@
-package fr.inria.corese.sparql.datatype;
+package fr.inria.corese.sparql.datatype.extension;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import static fr.inria.corese.sparql.datatype.CoreseDatatype.getGenericDatatype;
-import static fr.inria.corese.sparql.datatype.CoreseDatatype.nsm;
+import fr.inria.corese.sparql.datatype.CoreseInteger;
+import fr.inria.corese.sparql.datatype.CoreseUndefLiteral;
 import java.util.Iterator;
 
 /**
@@ -17,11 +17,11 @@ public class CoreseIterate extends CoreseUndefLiteral implements Iterator<IDatat
     CoreseInteger res;
     CoreseInteger next;
     
-    CoreseIterate(int start, int end){
+    public CoreseIterate(int start, int end){
         this(start, end, (end < start) ? -1 : 1);
     }
     
-    CoreseIterate(int start, int end, int step){
+    public CoreseIterate(int start, int end, int step){
         super("iterator");
         this.start = start;
         this.end = end;
@@ -32,7 +32,7 @@ public class CoreseIterate extends CoreseUndefLiteral implements Iterator<IDatat
     
     @Override
     public String toString() {
-        return String.format("\"(%s,%s,%s)\"^^", start, end, step).concat(nsm.toPrefix(getDatatypeURI()));
+        return String.format("\"(%s,%s,%s)\"^^", start, end, step).concat(nsm().toPrefix(getDatatypeURI()));
     }
     
     @Override

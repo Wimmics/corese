@@ -1,5 +1,7 @@
 package fr.inria.corese.sparql.datatype;
 
+import fr.inria.corese.sparql.datatype.extension.CoreseIterate;
+import fr.inria.corese.sparql.datatype.extension.CoreseUndefFuture;
 import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
 import java.util.Hashtable;
 
@@ -11,6 +13,7 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.sparql.datatype.extension.*;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.UnsupportedEncodingException;
 import java.util.Arrays;
@@ -694,7 +697,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     public static IDatatype createList(IDatatype... ldt) {
         return new CoreseList(ldt);
     }
-
+    
     public static IDatatype newList(IDatatype... ldt) {
         return new CoreseList(ldt);
     }

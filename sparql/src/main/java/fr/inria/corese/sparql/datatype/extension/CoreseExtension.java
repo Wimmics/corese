@@ -1,6 +1,8 @@
-package fr.inria.corese.sparql.datatype;
+package fr.inria.corese.sparql.datatype.extension;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.CoreseUndefLiteral;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
 /**

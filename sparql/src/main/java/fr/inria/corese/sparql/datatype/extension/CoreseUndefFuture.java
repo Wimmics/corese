@@ -1,4 +1,6 @@
-package fr.inria.corese.sparql.datatype;
+package fr.inria.corese.sparql.datatype.extension;
+
+import fr.inria.corese.sparql.datatype.CoreseUndefLiteral;
 
 /**
  *

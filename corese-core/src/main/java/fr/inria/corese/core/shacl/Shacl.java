@@ -15,6 +15,9 @@ import java.util.logging.Logger;
  * API for LDScript SHACL Interpreter
  * Interpreter is defined in corese-core resources/function/datashape
  * 
+ * define LDScript global variable:
+ * shacl.input().setVariable("?var", val).
+ * 
  * @author Olivier Corby, Wimmics, INRIA, 2019
  */
 public class Shacl {

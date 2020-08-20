@@ -55,7 +55,7 @@ public class Mapper {
     Mappings map(List<Node> nodes, IDatatype dt) {
         if (dt.isList()) {
             return map(nodes, dt.getValues());
-        } else if (dt.isMap() || dt.isJSON()) {
+        } else if (dt.isMap() || dt.isJSON() || dt.isXML()) {
             return map(nodes, dt.getValueList());
         } else if (dt.isPointer()) {
             return map(nodes, dt.getPointerObject());

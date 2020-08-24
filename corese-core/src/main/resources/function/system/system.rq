@@ -2,6 +2,15 @@ prefix gui: <function://fr.inria.corese.gui.core.Callback>
 
 @public {
 
+# use case: transformer operate on Mappings
+function xt:solution() {
+   maplist(xt:maptolist, java:getMappings(xt:query()))
+}
+
+function xt:maptolist(mm) {
+   maplist(lambda((var, val)) { xt:list(var, val) }, mm)
+}
+
 function xt:gui(aa) {
     gui:display(aa)
 }

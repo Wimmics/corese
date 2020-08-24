@@ -272,9 +272,9 @@ public class CompilerKgram implements ExpType, Compiler {
         if (exp.getArity() == 2 && exp.getArg(1).isConstant()) {
             Constant cst = (Constant) exp.getArg(1);
             if (exp.getName().equals(">=") || exp.getName().equals("="))
-                return cst.getDatatypeValue().getIntegerValue();
+                return cst.getDatatypeValue().intValue();
             else if (exp.getName().equals(">"))
-                return cst.getDatatypeValue().getIntegerValue() + 1;
+                return cst.getDatatypeValue().intValue() + 1;
         }
         return -1;
     }
@@ -287,9 +287,9 @@ public class CompilerKgram implements ExpType, Compiler {
         if (exp.getArity() == 2 && exp.getArg(1).isConstant()) {
             Constant cst = (Constant) exp.getArg(1);
             if (exp.getName().equals("<=") || exp.getName().equals("="))
-                return cst.getDatatypeValue().getIntegerValue();
+                return cst.getDatatypeValue().intValue();
             else if (exp.getName().equals("<"))
-                return cst.getDatatypeValue().getIntegerValue() - 1;
+                return cst.getDatatypeValue().intValue() - 1;
         }
         return -1;
     }

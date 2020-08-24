@@ -29,16 +29,20 @@ public class EventManager {
     }
     
     void init() {
-        setCountMap(DatatypeMap.map());
-        setDateMap(DatatypeMap.map());
-        setHostMap(DatatypeMap.map());
+        setCountMap(map());
+        setDateMap(map());
+        setHostMap(map());
         
-        CoreseMap globalMap = DatatypeMap.map();
+        CoreseMap globalMap = map();
         DatatypeMap.setPublicDatatypeValue(globalMap);
         
         globalMap.set(count, getCountMap());
         globalMap.set(date,  getDateMap());
         globalMap.set(host,  getHostMap());
+    }
+    
+    CoreseMap map () {
+        return DatatypeMap.map();
     }
     
     /**

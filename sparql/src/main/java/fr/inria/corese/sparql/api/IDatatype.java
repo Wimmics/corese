@@ -1,6 +1,5 @@
 package fr.inria.corese.sparql.api;
 
-import fr.inria.corese.sparql.datatype.ICoresePolymorphDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.ExpType;
@@ -8,6 +7,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.Loopable;
 import fr.inria.corese.kgram.api.core.PointerType;
+import fr.inria.corese.sparql.storage.api.IStorage;
 import java.util.List;
 import java.util.Map;
 
@@ -22,8 +22,9 @@ import java.util.Map;
  * @author Olivier Corby & Olivier Savoie & Virginie Bottollier
  */
 public interface IDatatype
-        extends Iterable<IDatatype>, ICoresePolymorphDatatype, Node, Loopable, DatatypeValue, Comparable {
-    static final int VALUE  = -1;
+        extends Iterable<IDatatype>,  Node, Loopable, DatatypeValue, Comparable {
+
+    static final int VALUE = -1;
     static final int RESULT = -2;
     // use case: cast
     static final int UNDEFINED = -1;
@@ -43,7 +44,7 @@ public interface IDatatype
     static final int LONG = 14;
     static final int INTEGER = 15;
     static final int URI_LITERAL = 16;
-    
+
     // Pseudo codes (target is Integer or String ...)
     static final int DAY = 21;
     static final int MONTH = 22;
@@ -51,91 +52,112 @@ public interface IDatatype
     static final int DURATION = 24;
     static final int DATETIME = 25;
     static final int GENERIC_INTEGER = 26;
-    
-    static final String KGRAM           = ExpType.KGRAM;
-    public static final String RULE     = KGRAM + "Rule";
-    public static final String QUERY    = KGRAM + "Query";
-    public static final String GRAPH    = KGRAM + "Graph";
+
+    static final String KGRAM = ExpType.KGRAM;
+    public static final String RULE = KGRAM + "Rule";
+    public static final String QUERY = KGRAM + "Query";
+    public static final String GRAPH = KGRAM + "Graph";
     public static final String MAPPINGS = KGRAM + "Mappings";
-    
-    public static final String ENTITY_DATATYPE   = ExpType.DT + "entity";
+
+    public static final String ENTITY_DATATYPE = ExpType.DT + "entity";
     public static final String RESOURCE_DATATYPE = ExpType.DT + "resource";
-    public static final String URI_DATATYPE      = ExpType.DT + "uri";
-    public static final String BNODE_DATATYPE    = ExpType.DT + "bnode";
-    public static final String LITERAL_DATATYPE  = ExpType.DT + "literal";
+    public static final String URI_DATATYPE = ExpType.DT + "uri";
+    public static final String BNODE_DATATYPE = ExpType.DT + "bnode";
+    public static final String LITERAL_DATATYPE = ExpType.DT + "literal";
     public static final String STANDARD_DATATYPE = ExpType.DT + "standard";
     public static final String EXTENDED_DATATYPE = ExpType.DT + "extended";
-    public static final String ERROR_DATATYPE    = ExpType.DT + "error";
-    
-    public static final String GRAPH_DATATYPE    = ExpType.DT + "graph";
-    
-    public static final String ITERATE_DATATYPE  = ExpType.DT + "iterate";   
-    public static final String MAP_DATATYPE      = ExpType.DT + "map";   
-    public static final String LIST_DATATYPE     = ExpType.DT + "list";   
-    public static final String JSON_DATATYPE     = ExpType.DT + "json";   
-    public static final String XML_DATATYPE      = ExpType.DT + "xml";   
-    public static final String SYSTEM            = ExpType.DT + "system";
-     
+    public static final String ERROR_DATATYPE = ExpType.DT + "error";
+
+    public static final String GRAPH_DATATYPE = ExpType.DT + "graph";
+
+    public static final String ITERATE_DATATYPE = ExpType.DT + "iterate";
+    public static final String MAP_DATATYPE = ExpType.DT + "map";
+    public static final String LIST_DATATYPE = ExpType.DT + "list";
+    public static final String JSON_DATATYPE = ExpType.DT + "json";
+    public static final String XML_DATATYPE = ExpType.DT + "xml";
+    public static final String SYSTEM = ExpType.DT + "system";
+
     boolean isSkolem();
 
     boolean isXMLLiteral();
-    
+
     boolean isUndefined();
+
     boolean isGeneralized(); // isExtension or isUndefined
-    
+
     boolean isArray();
-    
+
     boolean isList();
+
     boolean isMap();
+
     boolean isJSON();
-    default boolean isXML() {return false;}
-    
-    
+
+    default boolean isXML() {
+        return false;
+    }
+
     boolean isLoop();
 
     List<IDatatype> getValues();
+
     List<IDatatype> getValueList();
+
     IDatatype getValue(String var, int n);
+
     IDatatype toList();
+
     IDatatypeList getList();
-    
+
     default Map<IDatatype, IDatatype> getMap() {
         return null;
     }
-    
+
     default IDatatype member(IDatatype elem) {
         return null;
     }
 
-    
     Iterable getLoop();
+
     IDatatype has(IDatatype dt);
+
     IDatatype get(int n);
+
     IDatatype get(IDatatype name);
+
     IDatatype set(IDatatype name, IDatatype value);
-    
 
     int size();
+
     IDatatype length();
-    
-    @Override boolean isBlank();
-    @Override boolean isLiteral();
-    @Override boolean isURI();
+
+    @Override
+    boolean isBlank();
+
+    @Override
+    boolean isLiteral();
+
+    @Override
+    boolean isURI();
+
     boolean conform(IDatatype dt);
-    
+
     IDatatype isWellFormed();
+
     IDatatype isBlankNode();
+
     IDatatype isLiteralNode();
+
     IDatatype isURINode();
-    
+
     boolean isFuture();
-    
+
     boolean isPointer();
-    
+
     boolean isExtension();
-    
+
     PointerType pointerType();
-    
+
     Pointerable getPointerObject();
 
     /**
@@ -146,9 +168,10 @@ public interface IDatatype
      * dt2, an int < 0 if the datatype is lesser
      */
     int compareTo(IDatatype dt);
+
     // for TreeMap
     int mapCompareTo(IDatatype dt);
-    
+
     int compare(IDatatype dt) throws CoreseDatatypeException;
 
     /**
@@ -159,6 +182,7 @@ public interface IDatatype
      */
     //IDatatype cast(IDatatype target, IDatatype javaType);
     IDatatype cast(IDatatype datatype);
+
     IDatatype cast(String datatype);
 
     /**
@@ -179,16 +203,17 @@ public interface IDatatype
     void setObject(Object obj);
 
     Object getObject();
-    
+
     IDatatype getPublicDatatypeValue();
+
     IDatatype setPublicDatatypeValue(IDatatype dt);
-    
+
     String getContent();
-    
+
     IDatatype display();
-    
+
     void setVariable(boolean b);
-    
+
     void setValue(int n);
 
     /**
@@ -219,7 +244,7 @@ public interface IDatatype
      * type checking
      */
     boolean equalsWE(IDatatype iod) throws CoreseDatatypeException;
-    
+
     /**
      * test the equality (by value) between two instances of datatype class
      *
@@ -232,8 +257,7 @@ public interface IDatatype
     /**
      *
      * @param iod
-     * @return iod.getValue() < this.getValue() @throws Core
-     * seDatatypeException
+     * @return iod.getValue() < this.getValue() @throws Core seDatatypeException
      */
     boolean less(IDatatype iod) throws CoreseDatatypeException;
 
@@ -262,22 +286,32 @@ public interface IDatatype
      */
     boolean greaterOrEqual(IDatatype iod)
             throws CoreseDatatypeException;
-    
+
     IDatatype eq(IDatatype dt);
+
     IDatatype ne(IDatatype dt);
+
     IDatatype ge(IDatatype dt);
+
     IDatatype gt(IDatatype dt);
+
     IDatatype lt(IDatatype dt);
+
     IDatatype le(IDatatype dt);
+
     IDatatype neq(IDatatype dt);
-    
-   
-    IDatatype plus(IDatatype dt);   
+
+    IDatatype plus(IDatatype dt);
+
     IDatatype minus(IDatatype dt);
-    IDatatype mult(IDatatype dt);    
+
+    IDatatype mult(IDatatype dt);
+
     IDatatype divis(IDatatype dt);
+
     IDatatype div(IDatatype dt);
-    IDatatype minus(long val);    
+
+    IDatatype minus(long val);
 
     /**
      * ************************************************************************
@@ -286,7 +320,9 @@ public interface IDatatype
      * @return the datatype of this
      */
     IDatatype datatype();
+
     IDatatype getDatatype();
+
     // IDatatype value of Pointer Object (eg XML TEXT Node as xsd:string)
     IDatatype getObjectDatatypeValue();
 
@@ -312,17 +348,18 @@ public interface IDatatype
     String getID();
 
     StringBuilder getStringBuilder();
+
     void setStringBuilder(StringBuilder s);
 
     /**
      * @return true if this instance class is a number
      */
     boolean isNumber();
-    
+
     boolean isDecimalInteger();
-    
+
     boolean isDate();
-    
+
     boolean isBoolean();
 
     Class getJavaClass();
@@ -350,4 +387,28 @@ public interface IDatatype
 
     @Deprecated
     String getLowerCaseLabel();
+
+    int getCode();
+
+    boolean semiEquals(IDatatype iod); // get rid of @ lang
+
+    boolean hasLang();
+
+    boolean isTrue() throws CoreseDatatypeException;
+
+    boolean isTrueAble();
+
+    void setBlank(boolean b);
+
+    void setDatatype(String uri);
+
+    void setValue(String str);
+
+    void setValue(String str, int id, IStorage pmgr);
+
+    void setValue(IDatatype dt);
+
+    void setLang(String str);
+
+    long getlValue();
 }

@@ -652,7 +652,7 @@ public class CoreseDatatype
 
     @Override
     public String getLowerCaseLabel() {
-        return "";
+        return getLabel().toLowerCase();
     }
 
     @Override
@@ -1229,12 +1229,12 @@ public class CoreseDatatype
 
     @Override
     public double getDoubleValue() {
-        return getdValue();
+        return doubleValue();
     }
 
     @Override
     public int getIntegerValue() {
-        return getiValue();
+        return intValue();
     }
 
     @Override

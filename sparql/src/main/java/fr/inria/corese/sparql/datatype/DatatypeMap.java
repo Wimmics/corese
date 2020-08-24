@@ -674,6 +674,8 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return dt;
     }
     
+    void test() {}
+    
     public static CoreseMap map() {
         return new CoreseMap();
     }

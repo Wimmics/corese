@@ -33,132 +33,123 @@ import org.slf4j.MarkerFactory;
  */
 public abstract class CoreseStringableImpl extends CoreseDatatype {
 
-	/**
-	 * logger from log4j
-	 */
-	private static Logger logger = LoggerFactory.getLogger(CoreseStringableImpl.class);
-	private Marker fatal = MarkerFactory.getMarker("FATAL");
+    /**
+     * logger from log4j
+     */
+    private static Logger logger = LoggerFactory.getLogger(CoreseStringableImpl.class);
+    private Marker fatal = MarkerFactory.getMarker("FATAL");
 
-	static int code = STRINGABLE;
-	public static int count = 0;
-	String value = "";
+    static int code = STRINGABLE;
+    public static int count = 0;
+    String value = "";
 
-	public CoreseStringableImpl() {
-	}
+    public CoreseStringableImpl() {
+    }
 
-	public CoreseStringableImpl(String str) {
-		setValue(str);
-	}
+    public CoreseStringableImpl(String str) {
+        setValue(str);
+    }
 
-	@Override
-	public void setValue(String str) {
-		this.value = str;
-	}
+    @Override
+    public void setValue(String str) {
+        this.value = str;
+    }
 
-	@Override
-	public String getLabel() {
-		return this.value;
-	}
+    @Override
+    public String getLabel() {
+        return this.value;
+    }
 
-	/**
-	 * Cast a literal to a boolean may be allowed: when the value can be
-	 * cast to a float, double, decimal or integer, if this value is 0, then
-	 * return false, else return true
-	 */
-	@Override
-	public IDatatype cast(String target) {
-		if (target.equals(RDF.xsdboolean)) {
-			try {
-				Float f = new Float(getLabel());
-				if (f == 0) {
-					return CoreseBoolean.FALSE;
-				} else if (f == 1) {
-					return CoreseBoolean.TRUE;
-				} else {
-					return null;
-				}
-			} catch (NumberFormatException e) {
-				return super.cast(target);
-			}
-		} else {
-			return super.cast(target);
-		}
-	}
+    /**
+     * Cast a literal to a boolean may be allowed: when the value can be cast to
+     * a float, double, decimal or integer, if this value is 0, then return
+     * false, else return true
+     */
+    @Override
+    public IDatatype cast(String target) {
+        if (target.equals(RDF.xsdboolean)) {
+            try {
+                Float f =  Float.parseFloat(getLabel());
+                if (f == 0) {
+                    return CoreseBoolean.FALSE;
+                } else if (f == 1) {
+                    return CoreseBoolean.TRUE;
+                } else {
+                    return null;
+                }
+            } catch (NumberFormatException e) {
+                return super.cast(target);
+            }
+        } else {
+            return super.cast(target);
+        }
+    }
 
-	@Override
-	public int getCode() {
-		return code;
-	}
+    @Override
+    public int getCode() {
+        return code;
+    }
 
-	@Override
-	public String getLowerCaseLabel() {
-		return getLabel().toLowerCase();
-	}
+    @Override
+    public String getLowerCaseLabel() {
+        return getLabel().toLowerCase();
+    }
 
-	@Override
-	public boolean isNumber() {
-		return false;
-	}
+    @Override
+    public boolean isNumber() {
+        return false;
+    }
 
-	@Override
-	public boolean isTrue() throws CoreseDatatypeException {
-		return booleanValue();
-	}
+    @Override
+    public boolean isTrue() throws CoreseDatatypeException {
+        return booleanValue();
+    }
 
-	@Override
-	public boolean booleanValue() {
-		return getLabel().length() > 0;
-	}
+    @Override
+    public boolean booleanValue() {
+        return getLabel().length() > 0;
+    }
 
-	@Override
-	public boolean isTrueAble() {
-		return true;
-	}
+    @Override
+    public boolean isTrueAble() {
+        return true;
+    }
 
-	@Override
-	public boolean contains(IDatatype iod) {
-		try {
-			return getLowerCaseLabel().indexOf(iod.getLowerCaseLabel()) != -1;
-		} catch (ClassCastException e) {
-			logger.error(fatal, e.getMessage());
-			return false;
-		}
-	}
+    @Override
+    public boolean contains(IDatatype iod) {
+        return getLowerCaseLabel().contains(iod.getLowerCaseLabel());
+    }
 
-	@Override
-	public boolean startsWith(IDatatype iod) {
-		try {
-			return getLabel().startsWith(iod.getLabel());
-		} catch (ClassCastException e) {
-			logger.error(fatal, e.getMessage());
-			return false;
-		}
-	}
+    @Override
+    public boolean startsWith(IDatatype iod) {
+        return getLabel().startsWith(iod.getLabel());
 
-	//optimization
-	public boolean contains(String label) {
-		return getLowerCaseLabel().contains(label.toLowerCase());
-	}
+    }
 
-	public boolean startsWith(String label) {
-		return getLabel().startsWith(label);
-	}
+    //optimization
+    public boolean contains(String label) {
+        return getLowerCaseLabel().contains(label.toLowerCase());
+    }
 
-	@Override
-	public String getNormalizedLabel() {
-		return getLabel();
-	}
+    public boolean startsWith(String label) {
+        return getLabel().startsWith(label);
+    }
 
-	public static String getNormalizedLabel(String label) {
-		return label;
-	}
+    @Override
+    public String getNormalizedLabel() {
+        return getLabel();
+    }
 
-	public boolean equals(String siod) {
-		return getLabel().equals(siod);
-	}
+    public static String getNormalizedLabel(String label) {
+        return label;
+    }
 
-	int intCompare(CoreseStringableImpl icod) {
-		return getLabel().compareTo(icod.getLabel());
-	}
+    public boolean equals(String siod) {
+        return getLabel().equals(siod);
+    }
+
+    int intCompare(CoreseStringableImpl icod) {
+        return getLabel().compareTo(icod.getLabel());
+    }
 
 }

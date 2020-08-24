@@ -281,11 +281,11 @@ public class CoreseDouble extends CoreseNumber {
         return getNormalizedLabel(Double.toString(dvalue));
     }
 
-    public String getNormalizedLabel2() {
-        String label = Double.toString(dvalue);
-        String str = infinity(label);
-        return (str == null) ? label : str;
-    }
+//    public String getNormalizedLabel2() {
+//        String label = Double.toString(dvalue);
+//        String str = infinity(label);
+//        return (str == null) ? label : str;
+//    }
 
     public String getNormalizedLabel(String label) {
         String str = infinity(label);
@@ -304,6 +304,6 @@ public class CoreseDouble extends CoreseNumber {
 
     @Override
     public String getLowerCaseLabel() {
-        return Double.toString(dvalue);
+        return getLabel();
     }
 }

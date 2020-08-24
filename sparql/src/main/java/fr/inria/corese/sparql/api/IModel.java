@@ -16,7 +16,7 @@ package fr.inria.corese.sparql.api;
  * <br />
  * @author Olivier Corby & Olivier Savoie
  */
-
+@Deprecated
 public interface IModel {
 
 	/**

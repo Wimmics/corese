@@ -437,6 +437,11 @@ public class CoreseDate extends CoreseDatatype {
 
     @Override
     public String getNormalizedLabel() {
+        return getLabel();
+    }
+    
+    @Override
+    public String getLabel() {
         return normalizedLabel;
     }
 
@@ -502,7 +507,7 @@ public class CoreseDate extends CoreseDatatype {
         return res;
     }
 
-    public static String getNormalizedLabel(String label) {
+    static String getNormalizedLabel(String label) {
         //if (true) return label;
         CoreseCalendar cal = null;
         try {
@@ -516,7 +521,7 @@ public class CoreseDate extends CoreseDatatype {
 
     @Override
     public String getLowerCaseLabel() {
-        return this.getNormalizedLabel();
+        return getLabel();
     }
 
     @Override

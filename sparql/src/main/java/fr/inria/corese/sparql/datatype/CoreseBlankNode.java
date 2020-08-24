@@ -56,7 +56,6 @@ public class CoreseBlankNode extends CoreseResource {
 		case BLANK: return getLabel().compareTo(iod.getLabel());
 		}
 		throw failure();
-		//return iod.polyCompare(this);
 	}
 		
         @Override

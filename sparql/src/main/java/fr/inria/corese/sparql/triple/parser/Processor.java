@@ -894,9 +894,11 @@ public class Processor {
                 defsysoper(AGGREGATE,       ExprType.AGGREGATE);
 
 		defoper(SIMILAR, ExprType.SIM);
+                defoper(EXT+"similarity", ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);
 		defoper(PSIMILAR, ExprType.PSIM);
 		defoper(ANCESTOR, ExprType.ANCESTOR);
+		defoper(EXT+"ancestor", ExprType.ANCESTOR);
 		defoper(DEPTH,   ExprType.DEPTH);
 		defoper(EXT+"depth",   ExprType.DEPTH);
 		defoper(GRAPH,   ExprType.KG_GRAPH);

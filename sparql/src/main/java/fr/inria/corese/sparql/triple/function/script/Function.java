@@ -95,12 +95,21 @@ public class Function extends Statement {
         return body;
     }
 
+    // retun the URI of the Function
     @Override
     public IDatatype getDatatypeValue() {
-        if (dt != null) {
-            return dt;
+        if (getFunctionDatatypeValue() != null) {
+            return getFunctionDatatypeValue();
         }
         return getSignature().getCName().getDatatypeValue();
+    }
+    
+    public IDatatype getFunctionDatatypeValue() {
+         return dt;
+    }
+    
+    public void setFunctionDatatypeValue(IDatatype dt) {
+        this.dt = dt;
     }
 
     @Override
@@ -346,7 +355,7 @@ public class Function extends Statement {
 
     void defineLambda() {
         setLambda(true);
-        dt = DatatypeMap.createObject(getDatatypeValue().stringValue(), this);
+        setFunctionDatatypeValue(DatatypeMap.createObject(getDatatypeValue().stringValue(), this));
     }
 
     /**

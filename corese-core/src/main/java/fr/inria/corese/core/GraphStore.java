@@ -87,8 +87,9 @@ public class GraphStore extends Graph {
     }
 
     @Override
-    public void setNamedGraph(String name, Graph g) {
+    public GraphStore setNamedGraph(String name, Graph g) {
         getStore().put(name, g);
+        return this;
     }
 
     public Collection<Graph> getNamedGraphs() {

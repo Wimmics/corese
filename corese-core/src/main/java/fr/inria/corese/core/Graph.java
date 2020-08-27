@@ -3428,7 +3428,8 @@ public class Graph extends GraphObject implements
         return null;
     }
 
-    public void setNamedGraph(String name, Graph g) {
+    public Graph setNamedGraph(String name, Graph g) {
+        return this;
     }
 
     public Dataset getDataset() {

@@ -536,8 +536,8 @@ public class PluginImpl
     @Override
     public IDatatype similarity(Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         Graph g = getGraph(p);
-        Node n1 = g.getNode(dt1.getLabel());
-        Node n2 = g.getNode(dt2.getLabel());
+        Node n1 = g.getNode(dt1); //.getLabel());
+        Node n2 = g.getNode(dt2); //.getLabel());
         if (n1 == null || n2 == null) {
             return null;
         }
@@ -548,8 +548,8 @@ public class PluginImpl
     }
 
     IDatatype ancestor(Graph g, IDatatype dt1, IDatatype dt2) {
-        Node n1 = g.getNode(dt1.getLabel());
-        Node n2 = g.getNode(dt2.getLabel());
+        Node n1 = g.getNode(dt1); //.getLabel());
+        Node n2 = g.getNode(dt2); //.getLabel());
         if (n1 == null || n2 == null) {
             return null;
         }

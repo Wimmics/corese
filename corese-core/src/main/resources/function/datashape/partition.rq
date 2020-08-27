@@ -129,8 +129,10 @@ function sh:prepare(partList, cardList) {
     sh:dsp("candidate:", partList);
     sh:dsp("min max:", cardList);            
     let ((suc partListCopy cardListCopy) = sh:partition(partList, cardList)) {
-        return(suc)
-        #if (suc, suc, sh:partition2(partListCopy, cardListCopy))
+        #return(suc)
+        if (suc, suc, 
+        if (coalesce(testPartition, false), sh:partition2(partListCopy, cardListCopy),
+        suc))
     }
 }
 

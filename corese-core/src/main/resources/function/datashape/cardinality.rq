@@ -21,7 +21,7 @@ prefix shex: <http://ns.inria.fr/shex/shacl#>
 function sh:partition2(partList, cardList) {
     let (nb    = xt:size(partList) - 1,
          fst   = maplist (xt:list, xt:iota(0, nb)),
-         ilist = xt:append(fst, sh:indexList(fst, 1, nb, 2))) {
+         ilist = xt:append(fst, sh:indexList(fst, 1, nb, coalesce(nbPartition, 2)))) {
          xt:print("part", partList);
          xt:print("ilist", ilist);
         sh:partition(partList, cardList, ilist)
@@ -38,9 +38,9 @@ function sh:partition(partList, cardList, indexListList) {
     sh:dsp("min max:", cardList);  
     
     for (indexList in indexListList) {
-        xt:print("indexList", indexList);
+        #xt:print("indexList", indexList);
         let  ((list card) = sh:copy(partList, cardList, indexList)) {
-        xt:print("copy list", list);
+            xt:print("copy list", list);
             let ((suc) = sh:partition(list, card)) {
                 if (suc, return (suc), true);
             }

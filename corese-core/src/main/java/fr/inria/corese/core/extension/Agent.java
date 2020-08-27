@@ -1,0 +1,185 @@
+package fr.inria.corese.core.extension;
+
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.rule.RuleEngine;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.function.core.FunctionEvaluator;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+
+/**
+ * 
+ * Agent Java object accessible in LDScript with xt:agent() (see function/system.rq)
+ * It has a singleton, hence each ag:fun() function call is performed on the same object
+ * The singleton can be accessed in LDScript using xt:agent()
+ * 
+ * prefix ag: <function://fr.inria.corese.core.extension.Agent>
+ * 
+ * IDatatype ag:functionName(IDatatype arg)
+ * 
+ * IDatatype java:functionName(xt:agent(), IDatatype arg)
+ * JavaType  java:functionName(xt:agent(), JavaType arg)
+ * .
+ */
+public class Agent implements FunctionEvaluator {
+    
+    static final String NS = NSManager.USER;
+    static final String ENTAILMENT = NS+"entailment";
+    static final String TEST = NS+"test";
+    
+    static Agent singleton;
+    static IDatatype dt;
+    private String name;
+    private Graph graph;
+    private Environment environment;
+    
+    private IDatatype value, uri;
+    
+    static {
+        singleton = new Agent("main");
+        dt = DatatypeMap.createObject(singleton());
+    }
+    
+    public Agent() {
+        this("proxy");
+    }
+    
+    public Agent(String n) {
+        setName(n);
+    }
+    
+    /**
+     * Function singleton() enables ag:fun() SPARQL Extension Function (Extern) 
+     * to be called on the same singleton agent 
+     * otherwise an agent object would be created for each function call.
+     */
+    public static Agent singleton() {
+        return singleton;
+    }
+    
+
+    
+    
+    
+   public IDatatype setURI(IDatatype dt) {
+       uri = dt;
+       return dt;
+   }
+    
+   public IDatatype getURI() {
+        return uri;
+   }
+     
+   public IDatatype message(IDatatype name) {
+       switch (name.getLabel()) {
+           case ENTAILMENT: entailment(); break;
+           case TEST: test(); break;
+       }
+       return name;
+   }
+   
+   public IDatatype message(IDatatype name, IDatatype dt) {
+       switch (name.getLabel()) {
+           case ENTAILMENT: entailment(); break;
+       }
+       return name;
+   }
+    
+   public IDatatype message(IDatatype name, IDatatype... args) {
+       switch (name.getLabel()) {
+           case ENTAILMENT: entailment(); break;
+       }
+       return name;
+   }
+   
+   
+   
+   IDatatype test() {
+       System.out.println("test");
+       return DatatypeMap.TRUE;
+   }
+    
+    
+    void entailment() {
+        getEnvironment().getVisitor();
+        RuleEngine re = RuleEngine.create(graph);
+        re.setProfile(RuleEngine.Profile.OWLRL);
+        re.process();
+    }
+    
+    
+    
+    
+    
+    
+    public static IDatatype getDatatypeValue() {
+        return dt;
+    }
+    
+    
+    /**
+     * @return the name
+     */
+    public String getName() {
+        return name;
+    }
+
+    /**
+     * @param name the name to set
+     */
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    /**
+     * @return the value
+     */
+    public IDatatype getValue() {
+        return value;
+    }
+
+    /**
+     * @param value the value to set
+     */
+    public IDatatype setValue(IDatatype value) {
+        this.value = value;
+        return value;
+    }
+
+    /**
+     * @return the graph
+     */
+    public Graph getGraph() {
+        return graph;
+    }
+
+    /**
+     * @param graph the graph to set
+     */
+    public void setGraph(Graph graph) {
+        this.graph = graph;
+    }
+    
+    @Override
+    public void setProducer(Producer p) {
+        setGraph((Graph) p.getGraph());
+    }
+
+    /**
+     * @return the environment
+     */
+    public Environment getEnvironment() {
+        return environment;
+    }
+
+    /**
+     * @param environment the environment to set
+     */
+    @Override
+    public void setEnvironment(Environment environment) {
+        this.environment = environment;
+    }
+    
+}

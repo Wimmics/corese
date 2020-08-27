@@ -311,10 +311,6 @@ public class Distance {
      * hence the first common ancestor is the deepest
      */
     public Double sdistance(Node c1, Node c2) {
-//		Entailment ee = graph.getEntailment();
-//		if (ee.isSubClassOf(c1, c2) || ee.isSubClassOf(c2, c1)){
-//			return 0.0;
-//		}
         return distance(c1, c2);
     }
 
@@ -373,6 +369,10 @@ public class Distance {
 
     }
 
+    /**
+     * isDist = true  : return distance Double
+     * isDist = false : return common ancestor Node 
+     */
     Object distance(Node n1, Node n2, boolean isDist) {
 
         Table t1 = new Table();

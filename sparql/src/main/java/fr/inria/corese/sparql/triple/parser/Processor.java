@@ -24,7 +24,9 @@ import java.util.HashMap;
 import java.util.logging.Level;
 
 public class Processor {
-	private static Logger logger = LoggerFactory.getLogger(Processor.class);
+	private static Logger logger = LoggerFactory.getLogger(Processor.class); 
+        
+        static Class[] noargs = new Class[0];
 
 	static final String functionPrefix = KeywordPP.CORESE_PREFIX;
         static final String DOM      = NSManager.DOM;
@@ -1421,7 +1423,15 @@ public class Processor {
                     aclasses[i] = IDatatype.class;
                 }
                
-                setProcessor(className.getDeclaredConstructor().newInstance());
+                try {
+                    Method singleton = className.getMethod("singleton", noargs);
+                    setProcessor(singleton.invoke(className));
+                }
+                catch (NoSuchMethodException ex) {}
+                
+                if (getProcessor() == null) {
+                    setProcessor(className.getDeclaredConstructor().newInstance());
+                }
                 setMethod(className.getMethod(methodName, aclasses));
                 setCorrect(true);
             } catch (InvocationTargetException | ClassNotFoundException | SecurityException | NoSuchMethodException | InstantiationException | IllegalAccessException | IllegalArgumentException e) {

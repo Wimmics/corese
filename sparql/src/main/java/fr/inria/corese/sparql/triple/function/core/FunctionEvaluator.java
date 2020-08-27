@@ -9,8 +9,8 @@ import fr.inria.corese.kgram.api.query.Producer;
  */
 public interface FunctionEvaluator {
     
-    void setProducer(Producer p);
+    default void setProducer(Producer p) {}
     
-    void setEnvironment(Environment e);
+    default void setEnvironment(Environment e) {}
     
 }

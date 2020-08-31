@@ -12,8 +12,10 @@ import fr.inria.corese.kgram.api.core.Pointerable;
 public class PointerObject implements Pointerable {
     
     Object object;
-
-    PointerObject(Object obj) {
+    
+    public PointerObject() {}
+    
+    public PointerObject(Object obj) {
         object = obj; 
     }
     
@@ -33,7 +35,7 @@ public class PointerObject implements Pointerable {
     }
     
     @Override
-    public Iterable getLoop(){
+    public Iterable getLoop() {
         if (object instanceof Iterable) {
             return (Iterable) object;
         }

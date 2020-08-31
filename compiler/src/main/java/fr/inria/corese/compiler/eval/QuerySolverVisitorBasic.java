@@ -100,6 +100,11 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     public static final String DELETE   = "@delete";
     public static final String UPDATE   = "@update";
     
+    public static final String BEFORE_REQUEST  = "@beforeRequest";
+    public static final String AFTER_REQUEST   = "@afterRequest";
+
+    
+    
     static final String USER = NSManager.USER;
     static final String PRODUCE_METHOD = USER + "produce";
     

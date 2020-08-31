@@ -68,8 +68,11 @@ public class SPARQLRestAPI {
     private static Profile mprofile;
 
     private final Logger logger = LogManager.getLogger(this.getClass());
+    
+    QuerySolverVisitorServer visitor;
 
     public SPARQLRestAPI() {
+        visitor = new QuerySolverVisitorServer();
     }
 
     QueryProcess getQueryProcess() {
@@ -78,6 +81,10 @@ public class SPARQLRestAPI {
 
     static TripleStore getTripleStore() {
         return store;
+    }
+    
+    QuerySolverVisitorServer getVisitor() {
+        return visitor;
     }
 
     /**
@@ -238,6 +245,9 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris, 
             @QueryParam("named-graph-uri")   List<String> namedGraphUris,
             @QueryParam ("format")           String format) {
+        
+        getVisitor().beforeRequest(request, query);
+        
         try {
             if (logger.isDebugEnabled())
                 logger.debug("Rest Get SPARQL Result XML/plain: " + query);
@@ -250,6 +260,7 @@ public class SPARQLRestAPI {
                 return Response.status(200).header(headerAccept, "*").entity(res).build();                
             }
             String res = getResult(map, format);
+            getVisitor().afterRequest(request, query, map);
             return Response.status(200).header(headerAccept, "*").entity(res).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine", ex);

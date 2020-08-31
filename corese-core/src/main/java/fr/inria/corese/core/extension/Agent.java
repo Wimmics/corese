@@ -2,11 +2,8 @@ package fr.inria.corese.core.extension;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.rule.RuleEngine;
-import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.triple.function.core.FunctionEvaluator;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
@@ -20,20 +17,19 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
  * IDatatype ag:functionName(IDatatype arg)
  * 
  * IDatatype java:functionName(xt:agent(), IDatatype arg)
- * JavaType  java:functionName(xt:agent(), JavaType arg)
+ * IDatatype java:functionName(xt:agent(), JavaType arg)
  * .
  */
-public class Agent implements FunctionEvaluator {
+public class Agent  {
     
     static final String NS = NSManager.USER;
     static final String ENTAILMENT = NS+"entailment";
     static final String TEST = NS+"test";
     
-    static Agent singleton;
-    static IDatatype dt;
+    private static Agent singleton;
+    private static IDatatype dt;
     private String name;
     private Graph graph;
-    private Environment environment;
     
     private IDatatype value, uri;
     
@@ -103,10 +99,11 @@ public class Agent implements FunctionEvaluator {
     
     
     void entailment() {
-        getEnvironment().getVisitor();
-        RuleEngine re = RuleEngine.create(graph);
-        re.setProfile(RuleEngine.Profile.OWLRL);
-        re.process();
+        if (getGraph() != null) {
+            RuleEngine re = RuleEngine.create(graph);
+            re.setProfile(RuleEngine.Profile.OWLRL);
+            re.process();
+        }
     }
     
     
@@ -154,32 +151,10 @@ public class Agent implements FunctionEvaluator {
     public Graph getGraph() {
         return graph;
     }
-
-    /**
-     * @param graph the graph to set
-     */
-    public void setGraph(Graph graph) {
-        this.graph = graph;
-    }
     
-    @Override
-    public void setProducer(Producer p) {
-        setGraph((Graph) p.getGraph());
+    public void setGraph(Graph g) {
+        graph = g;
     }
 
-    /**
-     * @return the environment
-     */
-    public Environment getEnvironment() {
-        return environment;
-    }
-
-    /**
-     * @param environment the environment to set
-     */
-    @Override
-    public void setEnvironment(Environment environment) {
-        this.environment = environment;
-    }
-    
+  
 }

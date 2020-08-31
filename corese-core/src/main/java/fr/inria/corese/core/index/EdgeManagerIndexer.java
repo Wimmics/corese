@@ -329,7 +329,7 @@ public class EdgeManagerIndexer
         }
         Edge internal = internal(edge); 
         EdgeManager el = define(edge.getEdgeNode());
-       
+        //System.out.println("add issort: " + isSort(edge) + " " + edge);
         if (isSort(edge)) {
             // edges are sorted, check presence by dichotomy
             int i = el.getPlace(edge);

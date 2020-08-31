@@ -21,6 +21,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import java.io.IOException;
+import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -35,6 +36,25 @@ import java.util.logging.Logger;
  */
 public class Extension extends Core {
     
+    static Extension singleton;
+    
+    static {
+        singleton = new Extension();
+    }
+    
+//    public static Extension singleton() {
+//        return singleton;
+//    }
+    
+    
+    public IDatatype list(Enumeration en) {
+        IDatatype list = DatatypeMap.list();
+        while (en.hasMoreElements()) {
+            Object name = en.nextElement();
+            list.getList().add(DatatypeMap.castObject(name));
+        }
+        return list;
+    }    
     
     public IDatatype allEntailment(IDatatype dt) {
         Construct.setAllEntailment(dt.booleanValue());

@@ -492,6 +492,14 @@ public class Graph extends GraphObject implements
                     new CompareIndexStrict(): 
                     new CompareIndex());
         }
+        
+        void put(Node node) {
+            put((IDatatype) node.getDatatypeValue(), node);
+        }
+        
+        boolean contains(Node node) {
+            return containsKey((IDatatype) node.getDatatypeValue());
+        }
     }
   
      /**
@@ -1641,6 +1649,27 @@ public class Graph extends GraphObject implements
             n = createNode(TOPREL);
         }
         return n;
+    }
+    
+    /**
+     * predicate = rdfs:subClassOf
+     * return top level classes: those that are object of subClassOf but not subject
+     */
+    public List<Node> getTopLevel(Node predicate) {
+        ArrayList<Node> list = new ArrayList<>();
+        TreeNode subject = new TreeNode(), object = new TreeNode();
+        
+        for (Edge edge : getEdges(predicate)) {
+            subject.put(edge.getNode(0));
+            object.put(edge.getNode(1));
+        }
+        
+        for (Node node : object.values()) {
+            if (! subject.contains(node) && ! list.contains(node)) {
+                list.add(node);
+            }
+        }
+        return list;
     }
 
     public List<Node> getTopProperties() {

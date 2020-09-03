@@ -14,6 +14,7 @@ import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
+import javax.servlet.ServletContext;
 
 /**
  *
@@ -21,12 +22,14 @@ import javax.servlet.http.HttpServletRequest;
  */
 public class QuerySolverVisitorServer extends QuerySolverVisitorBasic {
     
+    static final String MESSAGE = "@message";
+    
     public QuerySolverVisitorServer() {
         super(create());
     }
     
     static Eval create() {
-        QueryProcess exec = QueryProcess.create(Graph.create());
+        QueryProcess exec = QueryProcess.create(SPARQLRestAPI.getTripleStore().getGraph());
         try {
             return exec.getEval();
         } catch (EngineException ex) {
@@ -38,22 +41,23 @@ public class QuerySolverVisitorServer extends QuerySolverVisitorBasic {
     
     
     public IDatatype beforeRequest(HttpServletRequest request, String query) { 
-        test(request);
-        IDatatype dt = callback(getEval(), BEFORE_REQUEST, toArray(new RequestProxy(request), query));
+        IDatatype dt = callback(getEval(), BEFORE_REQUEST, toArray(request, query));
         return dt;
     }
     
     public IDatatype afterRequest(HttpServletRequest request, String query, Mappings map) {
-        IDatatype dt = callback(getEval(), AFTER_REQUEST, toArray(new RequestProxy(request), query, map));
+        IDatatype dt = callback(getEval(), AFTER_REQUEST, toArray(request, query, map));
         return dt;
     }
     
+    public IDatatype message(HttpServletRequest request) { 
+        IDatatype dt = callback(getEval(), MESSAGE, toArray(request));
+        return dt;
+    }
+    
+ 
     void test(HttpServletRequest request) {
-        Enumeration<String> en = request.getParameterNames();
-        while (en.hasMoreElements()) {
-            String name = en.nextElement();
-            System.out.println("param: " + name + " " + request.getParameter(name));
-        }
+        ServletContext cn = request.getServletContext();      
     }
     
     class RequestProxy extends PointerObject {
@@ -83,14 +87,10 @@ public class QuerySolverVisitorServer extends QuerySolverVisitorBasic {
 
         @Override
         public Iterable getLoop() {
-            CoreseMap map = DatatypeMap.map();
-            Enumeration<String> en = request.getHeaderNames();
-            while (en.hasMoreElements()) {
-                String name = en.nextElement();
-                map.getMap().put(DatatypeMap.newInstance(name), DatatypeMap.newInstance(request.getHeader(name)));
-            }
-            return map;
+            return getParam();
         }
+        
+        
     }
     
 }

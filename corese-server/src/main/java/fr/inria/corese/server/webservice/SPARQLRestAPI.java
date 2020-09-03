@@ -238,6 +238,20 @@ public class SPARQLRestAPI {
     // SPARQL QUERY - SELECT and ASK with HTTP GET
     // ----------------------------------------------------
 
+    /**
+     * Visitor call LDScript event @beforeRequest @public function 
+     * profile.ttl must load function definitions, 
+     * e.g. <demo/system/event.rq>
+     * 
+     */
+    void beforeRequest(HttpServletRequest request, String query) {
+        getVisitor().beforeRequest(request, query);
+    }
+    
+    void afterRequest(HttpServletRequest request, String query, Mappings map) {
+        getVisitor().afterRequest(request, query, map);
+    }
+    
     @GET
     @Produces({"application/sparql-results+xml", "application/xml", "text/plain"})
     public Response getTriplesXMLForGet(@javax.ws.rs.core.Context HttpServletRequest request,
@@ -246,7 +260,7 @@ public class SPARQLRestAPI {
             @QueryParam("named-graph-uri")   List<String> namedGraphUris,
             @QueryParam ("format")           String format) {
         
-        getVisitor().beforeRequest(request, query);
+        beforeRequest(request, query);
         
         try {
             if (logger.isDebugEnabled())
@@ -260,7 +274,7 @@ public class SPARQLRestAPI {
                 return Response.status(200).header(headerAccept, "*").entity(res).build();                
             }
             String res = getResult(map, format);
-            getVisitor().afterRequest(request, query, map);
+            afterRequest(request, query, map);
             return Response.status(200).header(headerAccept, "*").entity(res).build();
         } catch (Exception ex) {
             logger.error("Error while querying the remote KGRAM engine", ex);
@@ -432,6 +446,8 @@ public class SPARQLRestAPI {
                 query = message;
             if (logger.isDebugEnabled())
                 logger.debug("Rest Post SPARQL Result XML/plain: " + query);
+        
+            beforeRequest(request, query);
 
             Mappings map = getTripleStore().query(request, query, createDataset(defaultGraphUris, namedGraphUris));
             String res = getResult(map, format);
@@ -459,6 +475,8 @@ public class SPARQLRestAPI {
             if (logger.isDebugEnabled())
                 logger.debug("Rest Post SPARQL Result XML/plain: " + query);
 
+            beforeRequest(request, query);
+            
             Mappings map = getTripleStore().query(request, query, createDataset(defaultGraphUris, namedGraphUris));
             String res = getResult(map, format);
             return Response.status(200).header(headerAccept, "*").entity(res).build();

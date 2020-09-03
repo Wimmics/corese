@@ -4,8 +4,8 @@ import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.Response;
+import fr.inria.corese.sparql.api.IDatatype;
 
 /**
  *
@@ -29,12 +29,14 @@ public class Agent {
     
     @GET
     @Produces({"text/plain"})
-    public Response message(@javax.ws.rs.core.Context HttpServletRequest request,
-            @QueryParam("query") String query) {
+    public Response message(@javax.ws.rs.core.Context HttpServletRequest request) {
         
-        getVisitor().beforeRequest(request, query);
-        
-        return Response.status(200).header(headerAccept, "*").entity(query).build();
+        IDatatype dt = getVisitor().message(request);
+        String mess = "undefined";
+        if (dt != null) {
+            mess = dt.getLabel();
+        }
+        return Response.status(200).header(headerAccept, "*").entity(mess).build();
     }
     
     

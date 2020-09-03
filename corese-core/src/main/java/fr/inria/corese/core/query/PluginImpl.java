@@ -1404,7 +1404,14 @@ public class PluginImpl
         QueryProcess exec = QueryProcess.create(g, true);
         exec.setRule((env==null)?false:env.getQuery().isRule());
         try {
-            Mappings map = exec.sparqlQuery(query, m, (env==null)?null:getDataset(env));
+            Mappings map;
+            if (g.getLock().getReadLockCount() == 0 && ! g.getLock().isWriteLocked()) {
+                // use case: LDScript direct call  
+                map = exec.query(query, m, (env==null)?null:getDataset(env));
+            }
+            else {
+                map = exec.sparqlQuery(query, m, (env==null)?null:getDataset(env));
+            }
             if (map.getGraph() == null){
                 return DatatypeMap.createObject(map);
             }

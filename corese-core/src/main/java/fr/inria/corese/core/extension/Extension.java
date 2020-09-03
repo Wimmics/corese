@@ -46,16 +46,28 @@ public class Extension extends Core {
 //        return singleton;
 //    }
     
-    
-    public IDatatype list(Enumeration en) {
-        IDatatype list = DatatypeMap.list();
-        while (en.hasMoreElements()) {
-            Object name = en.nextElement();
-            list.getList().add(DatatypeMap.castObject(name));
+    public IDatatype parse(IDatatype dt) {
+        QueryProcess exec = QueryProcess.create();
+        try {
+            Query q = exec.compile(dt.getLabel());
+            return DatatypeMap.createObject(q.getAST());
+        } catch (EngineException ex) {
+            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
         }
-        return list;
-    }    
+    }
     
+    
+    public IDatatype list(IDatatype dt) {
+        if (dt.getObject() != null && dt.getObject() instanceof Enumeration) {
+            return DatatypeMap.newList((Enumeration)dt.getObject());
+        }
+        if (dt.getObject() != null && dt.getObject() instanceof Object[]) {
+            return DatatypeMap.newList((Object[])dt.getObject());
+        }
+        return DatatypeMap.list();
+    }  
+          
     public IDatatype allEntailment(IDatatype dt) {
         Construct.setAllEntailment(dt.booleanValue());
         return dt;

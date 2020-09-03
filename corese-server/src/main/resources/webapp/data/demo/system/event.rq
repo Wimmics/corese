@@ -1,0 +1,217 @@
+#
+# Server Event Function
+#
+
+prefix fun: <function://fr.inria.corese.core.extension.Extension>
+prefix ff1:  <http://localhost:8080/data/demo/system/test.rq/>
+prefix ff:  <test.rq/>
+
+@public @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq> 
+
+select * where { }
+
+@public @beforeRequest
+function us:beforeRequest(dt:HttpServletRequest request, q) {
+    xt:print("@beforeRequest");
+    us:trace(request);
+    xt:print(q)
+}
+
+@public @afterRequest
+function us:afterRequest(dt:HttpServletRequest request, q, amap) {
+    xt:print("@afterRequest");
+    xt:print("result:", amap);
+}
+
+
+
+
+@public
+function us:trace(dt:HttpServletRequest request) {
+    for (name in fun:list(java:getHeaderNames(request))) {
+        xt:print("header:", name, "=", java:getHeader(request, name));
+    } ;
+    for (name in fun:list(java:getParameterNames(request))) {
+        xt:print("param:", name, "=", java:getParameter(request, name));
+    } ;
+    xt:print("path:", java:getContextPath(request));
+    xt:print("method:", java:getMethod(request));
+}
+
+
+@public
+function us:tracemore(dt:HttpServletRequest request) {
+    for (name in fun:list(java:getAttributeNames(request))) {
+        xt:print("attribute:", name, "=", java:getAttribute(request, name));
+    } ;
+    for (name in coalesce(fun:list(java:getCookies(request)), xt:list())) {
+        xt:print("cookie:", name);
+    } ;
+    let (cn = java:getServletContext(request)) {
+        for (name in fun:list(java:getAttributeNames(cn))) {
+            xt:print("context:", name, "=", java:getAttribute(cn, name));
+        }
+    }
+}
+
+
+#
+# SPARQL endpoint Agent receive a message: /agent?action=test&param=123
+#
+@public @message
+function us:messenger(dt:HttpServletRequest request) {
+    xt:print("@message");
+    us:processor(request)
+}
+
+#
+# /agent?action=test
+# call function us:test(request)
+#
+@public
+function us:processor(request) {
+    let (name = java:getParameter(request, "action")) {
+        coalesce(funcall (concat(us:, name), request),
+            us:default(request))
+    }
+}
+
+
+
+
+
+
+
+
+
+#
+# agent?action=load&url=uri
+#
+@public 
+function us:load(request) {
+    xt:print("load:", request) ;
+    us:trace(request);
+    let (url = xt:expand(java:getParameter(request, "url"))) {
+        xt:print("load:", url);
+        xt:load(url, xt:graph());
+        return (url)
+    }
+}
+
+
+#
+# agent?action=entailment
+#
+@public 
+function us:entailment(request) {
+    xt:print("entailment:", request) ;
+    xt:entailment();
+    return(request)
+}
+
+
+#
+# agent?action=parse&query=select where
+#
+@public 
+function us:parse(request) {
+    xt:print("parse:", request) ;
+    us:trace(request);
+    let (q    = coalesce(java:getParameter(request, "query"), "select * where {?s ?p ?o} limit 10"),
+         ast  = coalesce(xt:parse(q), "parse error")) {
+        xt:print("ast:", ast);
+        return (ast)
+    }
+}
+
+#
+# agent?action=sparql&query=select where
+#
+@public 
+function us:sparql(request) {
+    xt:print("sparql:", request) ;
+    us:trace(request);
+    let (q  = coalesce(java:getParameter(request, "query"), "select * where {?s ?p ?o} limit 10"),
+         ft = coalesce(java:getParameter(request, "format"), "xml"),
+         amap = xt:sparql(q),
+         res = funcall(us:format(ft), amap)) {
+        xt:print("query:", q);
+        #xt:print("query:", java:getQuery(amap));
+        #xt:print("ast:", xt:ast(java:getQuery(amap)));
+        xt:print(res);
+        return (res)
+    }
+}
+
+#
+# agent?action=shacl
+#
+@public 
+function us:shacl(request) {
+    xt:print("shacl:", request) ;
+    us:trace(request);
+    let (shacl = coalesce(java:getParameter(request, "shacl"), <../../shape/shape4shape.ttl>),
+         rdf   = coalesce(java:getParameter(request, "rdf"),   <../../shape/shacl-test.ttl>),
+         g  = xt:load(shacl),
+         gg = xt:load(rdf, g),
+         res = xt:focus(gg, sh:shacl()), 
+         pp = xt:turtle(res)) {
+          xt:print(pp);
+          return(pp)
+    }
+}
+
+
+#
+# agent?action=tordf
+#
+@public 
+function us:tordf(request) {
+    xt:print("tordf:", request) ;
+    us:trace(request);
+    let (?g = 
+        construct { 
+            ?req ?pred ?value ; ?hpred ?hvalue
+        } 
+        where { 
+            bind (uuid() as ?req)
+            values ?request {undef}
+            
+            values ?name { unnest(fun:list(java:getParameterNames(?request))) }
+            bind  ( uri(concat(us:, ?name)) as  ?pred)
+            bind  ( java:getParameter(?request, ?name) as ?value)
+            
+            values ?hname { unnest(fun:list(java:getHeaderNames(?request))) }
+            bind  ( uri(concat(us:, ?hname)) as  ?hpred)
+            bind  ( java:getHeader(?request, ?hname) as ?hvalue)
+        },
+        res = xt:turtle(?g)) {
+        xt:print(res);
+        return (res)
+    }
+}
+
+@public 
+function us:format(ft) {
+    if (ft = "xml",  xt:xml,
+    if (ft = "json", xt:json,
+    if (ft = "rdf",  xt:rdf,
+    xt:content)))
+}
+
+@public 
+function us:test(request) {
+    xt:print("test:", request) ;
+    # Linked Function ff:foo: run server with option -lf
+    # ff:foo(request)
+}
+
+@public 
+function us:debug(request) {
+    xt:print("debug:", request)
+}
+
+@public 
+function us:default(request) {
+    xt:print("default:", request)
+}

@@ -15,6 +15,7 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 import javax.xml.parsers.ParserConfigurationException;
 
 import org.xml.sax.SAXException;
@@ -34,6 +35,10 @@ public class Service {
 
     boolean isDebug = !true;
     String service;
+    
+    public Service() {
+        clientBuilder = ClientBuilder.newBuilder();
+    }
 
     public Service(String serv) {
         this(serv, ClientBuilder.newBuilder());
@@ -96,6 +101,13 @@ public class Service {
         if (isDebug) {
             System.out.println(res);
         }
+        return res;
+    }
+    
+    public Response get(String uri) {
+        Client client = clientBuilder.build();
+        WebTarget target = client.target(uri);
+        Response res = target.request().get();
         return res;
     }
 

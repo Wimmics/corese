@@ -1,5 +1,11 @@
 #
 # Server Event Function
+# Current graph is SPARQL endpoint graph
+# SPARQLRestAPI getVisitor().beforeRequest(request)
+#
+# Agent 
+# /agent?action=sparql&query=select where
+# getVisitor().message(request)
 #
 
 prefix fun: <function://fr.inria.corese.core.extension.Extension>
@@ -9,6 +15,8 @@ prefix ff:  <test.rq/>
 @public @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq> 
 
 select * where { }
+
+
 
 @public @beforeRequest
 function us:beforeRequest(dt:HttpServletRequest request, q) {
@@ -55,8 +63,14 @@ function us:tracemore(dt:HttpServletRequest request) {
 }
 
 
+
+
+
+
+
 #
 # SPARQL endpoint Agent receive a message: /agent?action=test&param=123
+# getVisitor().message(request)
 #
 @public @message
 function us:messenger(dt:HttpServletRequest request) {
@@ -65,8 +79,8 @@ function us:messenger(dt:HttpServletRequest request) {
 }
 
 #
-# /agent?action=test
-# call function us:test(request)
+# /agent?action=name
+# call function us:name(request)
 #
 @public
 function us:processor(request) {
@@ -79,22 +93,37 @@ function us:processor(request) {
 
 
 
-
-
-
-
-
 #
-# agent?action=load&url=uri
+# agent?action=notify
 #
 @public 
-function us:load(request) {
-    xt:print("load:", request) ;
+function us:notify(request) {
+    #xt:print("notify:", request) ;
+    #us:trace(request);
+    let (subject   = coalesce(java:getParameter(request, "subject"), "undef"), 
+         predicate = coalesce(java:getParameter(request, "predicate"), "undef"), 
+         object    = coalesce(java:getParameter(request, "object") ,"undef")) {
+        xt:print("notify:", subject, predicate, object)
+    } 
+}
+
+
+
+
+#
+# agent?action=namedgraph&url=uri&name=uri
+#
+@public 
+function us:namedgraph(request) {
+    xt:print("namedgraph:", request) ;
     us:trace(request);
-    let (url = xt:expand(java:getParameter(request, "url"))) {
-        xt:print("load:", url);
-        xt:load(url, xt:graph());
-        return (url)
+    let (url  = xt:expand(java:getParameter(request, "url")),
+         name = coalesce(xt:expand(java:getParameter(request, "name")), url),
+         g    = xt:load(url)) {
+        xt:print("load:", name, url);
+        java:start(g);
+        xt:namedgraph(name, g);
+        return (name)
     }
 }
 
@@ -164,6 +193,7 @@ function us:shacl(request) {
 
 #
 # agent?action=tordf
+# draft generate RDF representation of HTTP request
 #
 @public 
 function us:tordf(request) {
@@ -211,7 +241,11 @@ function us:debug(request) {
     xt:print("debug:", request)
 }
 
+#
+# There is no function to process request action
+#
 @public 
 function us:default(request) {
-    xt:print("default:", request)
+    us:trace(request);
+    xt:print("undefined action:", request);
 }

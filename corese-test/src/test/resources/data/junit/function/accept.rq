@@ -1,0 +1,10 @@
+prefix ff:  </user/corby/home/AATest/data/junit/function/accept.rq/>
+prefix rej: </user/corby/home/AATest/data/junit/function/reject.rq/>
+
+@import </user/corby/home/AATest/data/junit/function/reject.rq>
+
+@public
+function ff:test() {
+    xt:print(ff:test);
+    funcall(rej:foo)
+}

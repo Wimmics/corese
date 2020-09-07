@@ -1,0 +1,6 @@
+prefix ff: </user/corby/home/AATest/data/junit/function/reject.rq/>
+
+@public
+function ff:foo() {
+    xt:print(ff:foo)
+}

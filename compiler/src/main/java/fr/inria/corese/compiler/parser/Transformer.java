@@ -575,10 +575,7 @@ public class Transformer implements ExpType {
 
     
     public boolean getLinkedFunction(String label) {
-        if (Access.reject(Feature.LINKED_FUNCTION, Level.DEFAULT)) { //(! isLinkedFunction()){
-            return false;
-        }
-        return funCompiler.getLinkedFunctionBasic(label);
+        return funCompiler.getLinkedFunction(label);
     }
         
     public boolean getLinkedFunctionBasic(String label) {

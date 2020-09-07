@@ -9,6 +9,8 @@ import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.AccessNamespace;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
@@ -17,8 +19,19 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
- *
- * @author corby
+ * @import <url>
+ * dereference URL at compile time
+ * LinkedFunction: 
+ * 1) ff:foo() undefined extension function:         dereference  URL at compile time
+ * 2) funcall (ff:foo) undefined extension function: dereference  URL at runtime 
+ * 
+ * LinkedFunction : Access.setLinkedFunction(true);
+ * whereas @import is granted
+ * 
+ * Accept/reject namespace for import and LinkedFunction:
+ * AccessNamespace.define(namespace, true|false)
+ * 
+ * @author Olivier Corby, INRIA I3S 2020
  */
 public class FunctionCompiler {
 
@@ -96,15 +109,14 @@ public class FunctionCompiler {
         }
     }
     
-    void imports(Query q, ASTQuery ast, Metadata m) {
-        if (Access.accept(Access.Feature.LINKED_FUNCTION, ast.getLevel())) {
-            basicImports(q, ast, m);
-        }
-        else 
-            if (m.hasMetadata(Metadata.IMPORT)){
-            logger.error("Unauthorized import: " + m.getValues(Metadata.IMPORT));
-        }
-    }
+//    void imports(Query q, ASTQuery ast, Metadata m) {
+//        if (acceptLinkedFunction(ast.getLevel())) {
+//            basicImports(q, ast, m);
+//        }
+//        else if (m.hasMetadata(Metadata.IMPORT)){
+//            logger.error("Unauthorized import: " + m.getValues(Metadata.IMPORT));
+//        }
+//    }
     
     void basicImports(Query q, ASTQuery ast, Metadata m) {
         if (m.hasMetadata(Metadata.IMPORT)) {
@@ -118,8 +130,17 @@ public class FunctionCompiler {
             }
         }
     }
-
+    
     void imports(Query q, ASTQuery ast, String path) throws EngineException {
+        if (acceptNamespace(path)) {
+            basicImports(q, ast, path);
+        }
+        else {
+            logger.error("Unauthorized import: " + path);
+        }
+    }
+
+    void basicImports(Query q, ASTQuery ast, String path) throws EngineException {
         if (imported.containsKey(path)) {
             return;
         }
@@ -139,19 +160,46 @@ public class FunctionCompiler {
             boolean ok = Interpreter.isDefined(exp) || q.getExtension().isDefined(exp);
             if (ok) {
             } else {
-                ok = Access.accept(Access.Feature.LINKED_FUNCTION, ast.getLevel())
-                        && importFunction(q, exp);
+                ok = acceptLinkedFunction(ast.getLevel())
+                  && importFunction(q, exp);
                 if (!ok) {
                     ast.addError("Undefined expression: " + exp);
                 }
             }
         }
     }
+    
+    boolean acceptLinkedFunction(Level level) {
+        return Access.accept(Access.Feature.LINKED_FUNCTION, level);
+    }
+    
+    /**
+     * For LinkedFunction and @import
+     */
+    boolean acceptNamespace(String ns) {
+        return AccessNamespace.access(ns);
+    }
 
     boolean importFunction(Query q, Expression exp) {
+        if (acceptNamespace(exp.getLabel())) {
+            return importFunctionBasic(q, exp);
+        }
+        logger.error("Unauthorized import: " + exp.getLabel());
+        return false;
+    }
+
+    
+    boolean importFunctionBasic(Query q, Expression exp) {
         boolean b = getLinkedFunctionBasic(exp.getLabel());
         if (b) {
             return Interpreter.isDefined(exp);
+        }
+        return false;
+    }
+    
+    boolean getLinkedFunction(String label) {
+        if (acceptLinkedFunction(Level.DEFAULT) && acceptNamespace(label)) { 
+            return getLinkedFunctionBasic(label);
         }
         return false;
     }

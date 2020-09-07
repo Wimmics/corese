@@ -1162,6 +1162,11 @@ public class Graph extends GraphObject implements
         
         getEventManager().finish(Event.InitGraph);
     }
+    
+    public IDatatype start() {
+        init();
+        return DatatypeMap.TRUE;
+    }
 
     private void update() {
         getEventManager().setUpdate(false);

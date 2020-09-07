@@ -1093,7 +1093,7 @@ public class QueryProcess extends QuerySolver {
         Function function = getFunction(name, param);
         if (function == null) {
             //setLinkedFunction(true);
-            getLinkedFunctionBasic(name);
+            getLinkedFunction(name);
             function = getFunction(name, param);
         }
         return function;

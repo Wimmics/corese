@@ -24,6 +24,7 @@ import java.io.IOException;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
+import javax.ws.rs.core.Response;
 
 /**
  * Generic Java Extension function public class
@@ -45,6 +46,13 @@ public class Extension extends Core {
 //    public static Extension singleton() {
 //        return singleton;
 //    }
+    
+    public IDatatype httpget(IDatatype uri) {
+        Service s = new Service();
+        Response res = s.get(uri.getLabel());
+        String str = res.readEntity(String.class);
+        return DatatypeMap.newInstance(str);
+    }
     
     public IDatatype parse(IDatatype dt) {
         QueryProcess exec = QueryProcess.create();

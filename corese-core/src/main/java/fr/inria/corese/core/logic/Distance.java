@@ -80,9 +80,11 @@ public class Distance {
 
         // rdfs:Resource or owl:Thing
         topList = new NodeList(top);
-        //topLevel = new ArrayList<>(); 
+        topLevel = new ArrayList<>(); 
         // top level classes which are subClassOf nobody
-        topLevel = graph.getTopLevel(subEntityOf);
+        if (subEntityOf != null) {
+            topLevel = graph.getTopLevel(subEntityOf);
+        }
         table = new Hashtable<>();
         depth = new Hashtable<>();
         sameAs = getGraph().getPropertyNode(OWL.SAMEAS);

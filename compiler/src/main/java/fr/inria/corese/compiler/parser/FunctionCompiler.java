@@ -36,12 +36,12 @@ import org.slf4j.LoggerFactory;
 public class FunctionCompiler {
 
     private static Logger logger = LoggerFactory.getLogger(FunctionCompiler.class);
-    static HashMap<String, String> loaded;
+    private static HashMap<String, String> loaded;
     HashMap<String, String> imported;
     Transformer transformer;
 
     static {
-        loaded = new HashMap<>();
+        setLoaded(new HashMap<>());
     }
 
     FunctionCompiler(Transformer t) {
@@ -206,11 +206,11 @@ public class FunctionCompiler {
 
     boolean getLinkedFunctionBasic(String label) {
         String path = NSManager.namespace(label);
-        if (loaded.containsKey(path)) {
+        if (getLoaded().containsKey(path)) {
             return true;
         }
         logger.info("Load Linked Function: " + label);
-        loaded.put(path, path);
+        getLoaded().put(path, path);
         Query imp = transformer.getSPARQLEngine().parseQuery(path);
         if (imp != null && imp.hasDefinition()) {
             // loaded functions are exported in Interpreter  
@@ -221,10 +221,10 @@ public class FunctionCompiler {
     }
 
     static void removeLinkedFunction() {
-        for (String name : loaded.values()) {
+        for (String name : getLoaded().values()) {
             Interpreter.getExtension().removeNamespace(name);
         }
-        loaded.clear();
+        getLoaded().clear();
     }
 
     /**
@@ -288,6 +288,24 @@ public class FunctionCompiler {
             // export function with exists {} 
             fun.getTerm().setPattern(q);
         }
+    }
+    
+    public static void clean() {
+        getLoaded().clear();;
+    }
+
+    /**
+     * @return the loaded
+     */
+    public static HashMap<String, String> getLoaded() {
+        return loaded;
+    }
+
+    /**
+     * @param aLoaded the loaded to set
+     */
+    public static void setLoaded(HashMap<String, String> aLoaded) {
+        loaded = aLoaded;
     }
 
 }

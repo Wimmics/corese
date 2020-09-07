@@ -1,7 +1,6 @@
 package fr.inria.corese.server.webservice;
 
 import fr.inria.corese.compiler.eval.QuerySolverVisitorBasic;
-import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
@@ -10,6 +9,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.PointerObject;
 import fr.inria.corese.sparql.datatype.extension.CoreseMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.Enumeration;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -17,17 +17,25 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContext;
 
 /**
- *
- * @author corby
+ * Visitor call LDScript event function @beforeRequest for SPARQL endpoint /sparql?query=
+ * Call @message event function 
+ * Current graph is SPARQL endpoint graph
+ * Draft event function in data/demo/system/event.rq
+ * 
+ * @author Olivier Corby, Wimmics INRIA I3S, 2020
  */
 public class QuerySolverVisitorServer extends QuerySolverVisitorBasic {
     
     static final String MESSAGE = "@message";
+    static final String MESSAGE_FUN = NSManager.USER + "messenger";
     
     public QuerySolverVisitorServer() {
         super(create());
     }
     
+    /**
+     * Current graph is SPARQL endpoint graph.
+     */
     static Eval create() {
         QueryProcess exec = QueryProcess.create(SPARQLRestAPI.getTripleStore().getGraph());
         try {
@@ -50,7 +58,14 @@ public class QuerySolverVisitorServer extends QuerySolverVisitorBasic {
         return dt;
     }
     
+    /**
+     * /agent?action=test
+     * funcall @message function us:message(request) {}
+     * Draft event function in webapp/data/demo/system/event.rq
+     * loaded by st:default service content in profile.ttl
+     */
     public IDatatype message(HttpServletRequest request) { 
+        //IDatatype dt = funcall(getEval(), MESSAGE_FUN, toArray(request));
         IDatatype dt = callback(getEval(), MESSAGE, toArray(request));
         return dt;
     }

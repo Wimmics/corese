@@ -8,8 +8,12 @@ import javax.ws.rs.core.Response;
 import fr.inria.corese.sparql.api.IDatatype;
 
 /**
- *
- * @author corby
+ * Agent service enables SPARQL endpoint to answer to http request
+ * /agent?action=trace&param=abc
+ * Request processed by LDScript event function @message
+ * Draft event function in webapp/data/demo/system/event.rq
+ * 
+ * @author Olivier Corby, Wimmics INRIA I3S 2020
  */
 @Path("agent")
 public class Agent {
@@ -26,7 +30,10 @@ public class Agent {
         return visitor;
     }
     
-    
+    /**
+     * HTTP request processed by LDScript event function @message
+     * /agent?action=trace&param=abc
+     */
     @GET
     @Produces({"text/plain"})
     public Response message(@javax.ws.rs.core.Context HttpServletRequest request) {

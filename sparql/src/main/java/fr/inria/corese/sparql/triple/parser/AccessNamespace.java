@@ -49,8 +49,10 @@ public class AccessNamespace {
     public static boolean access(String ns) {
         return singleton().accept(ns);
     }
-
-
+    
+    public static void clean() {
+         singleton().clear();
+    }
     
     public void access(String ns, boolean b) {
         if (b) {

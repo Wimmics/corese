@@ -45,6 +45,10 @@ public class ASTExtension implements Extension {
         Function getMetadata(String name) {           
            return metadata.get(name);
         }
+        
+        HashMap<String, Function> getMetadata() {
+            return metadata;
+        }
                     
         // @before -> f1 ; @after -> f2
         void setMetadata(Function exp) {
@@ -57,20 +61,28 @@ public class ASTExtension implements Extension {
         }
         
         void removeNamespace(String namespace) {
+            ArrayList<String> list = new ArrayList<>();
             for (String name : keySet()) {
                 if (name.startsWith(namespace)) {
-                    logger.info("Remove: " + name);
-                    put(name, null);
+                    logger.info("Remove function: " + name);
+                    list.add(name);
                 }
             } 
+            for (String name : list) {
+                remove(name);
+            }
+            list.clear();
             for (String meta : metadata.keySet()) {
                 Function exp = metadata.get(meta);
                 String name = exp.getFunction().getLabel();
                 if (name.startsWith(namespace)) {
-                    logger.info("Remove: " + name);
-                    metadata.put(meta, null);
+                    logger.info("Remove event: " + meta + " " + name);
+                    list.add(meta);
                 }
-            }               
+            } 
+            for (String name : list) {
+                metadata.remove(name);
+            }
         }
     }
     
@@ -132,6 +144,7 @@ public class ASTExtension implements Extension {
         for (FunMap fm : getMaps()) {
             fm.removeNamespace(name);
         }
+        
         if (getMethod() != null) {
             for (ASTExtension ext : getMethod().values()) {
                 ext.removeNamespace(name);

@@ -38,6 +38,8 @@ public interface ProcessVisitor extends Pointerable {
     
     default DatatypeValue defaultValue() {return null;}
     
+    default DatatypeValue initParam() {return defaultValue();}
+
     default DatatypeValue init() {return defaultValue();}
     
     default DatatypeValue init(Query q) {return defaultValue();}

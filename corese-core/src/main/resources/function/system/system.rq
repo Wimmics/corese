@@ -3,6 +3,25 @@ prefix ag:  <function://fr.inria.corese.core.extension.Agent>
 
 @public {
 
+function xt:httpget(q) {
+    fun:httpget(q)
+}
+
+# return AST of query OR parse function URI
+function xt:parse(q) {
+    fun:parse(q)
+}
+
+function xt:import(url) {
+    fun:imports(url, false)
+}
+
+function xt:import(url, pub) {
+    fun:imports(url, pub)
+}
+
+
+# return singleton Agent
 function xt:agent() {
     ag:getDatatypeValue()
 }

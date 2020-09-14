@@ -48,10 +48,18 @@ public class Extension extends Core {
 //    }
     
     public IDatatype httpget(IDatatype uri) {
-        Service s = new Service();
-        Response res = s.get(uri.getLabel());
-        String str = res.readEntity(String.class);
-        return DatatypeMap.newInstance(str);
+        try {
+            Service s = new Service();
+            Response res = s.get(uri.getLabel());
+            String str = res.readEntity(String.class);
+            return DatatypeMap.newInstance(str);
+        }
+        catch(Exception e) {
+            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, 
+                    e.getMessage() + "\n" + uri.getLabel(), 
+                    "");
+        }
+        return null;
     }
     
     public IDatatype parse(IDatatype dt) {

@@ -95,6 +95,7 @@ public class Processor {
 	public static final String RETURN  = "return";
 	public static final String SEQUENCE  = "sequence";
 	public static final String SET     = "set";
+	public static final String STATIC     = "static";
 	public static final String LET     = "let";
         public static final String FOR             = "for";
 	private static final String MAP     = "map";
@@ -665,6 +666,7 @@ public class Processor {
 		defoper(EXT+SEQUENCE,   ExprType.SEQUENCE);
 		defsysoper(LET,         ExprType.LET);
 		defoper(SET,            ExprType.SET);
+		defoper(STATIC,         ExprType.STATIC);
 		defoper(XT_JSON_OBJECT, ExprType.XT_JSON_OBJECT);
 		defoper(XT_MAP,         ExprType.XT_MAP);
 		defoper(XT_LIST,        ExprType.LIST);

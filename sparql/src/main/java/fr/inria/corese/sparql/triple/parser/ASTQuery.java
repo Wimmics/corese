@@ -1383,9 +1383,20 @@ public class ASTQuery
         exp.add(ee);
         return exp;
     }
+    
+    public Term set(Variable var, Expression exp, boolean stat) {
+        if (stat) {
+            return setStatic(var, exp);
+        }
+        return set(var, exp);
+    }
 
     public Term set(Variable var, Expression exp) {
         return Term.function(Processor.SET, var, exp);
+    }
+    
+    public Term setStatic(Variable var, Expression exp) {
+        return Term.function(Processor.STATIC, var, exp);
     }
 
     /**

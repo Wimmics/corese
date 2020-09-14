@@ -54,6 +54,12 @@ public class Binding implements Binder {
     private boolean dynamicCapture = DYNAMIC_CAPTURE_DEFAULT;
     private boolean result;
     private boolean coalesce = false;
+    
+    private static Binding singleton;
+    
+    static {
+        setSingleton(new Binding());
+    }
 
     Binding() {
         varList = new ArrayList();
@@ -313,7 +319,7 @@ public class Binding implements Binder {
                     }
                 }
                 
-                IDatatype dt = getGlobalVariableValues().get(var.getLabel());
+                IDatatype dt = getGlobalVariable(var.getLabel());
                 if (dt == null) {
 
                     if (isDebug()) {
@@ -370,12 +376,26 @@ public class Binding implements Binder {
         return (level.isEmpty()) ? 0 : getLevel();
     }
     
+    // global variable
     public IDatatype getVariable(String name) {
         return getGlobalVariableValues().get(name);
     }
-   
+    
+    // global variable + static global variable
+    public IDatatype getGlobalVariable(String name) {
+        IDatatype dt = getGlobalVariableValues().get(name);
+        if (dt == null) {
+            return getSingleton().getVariable(name);
+        }
+        return dt;
+    }
+      
     public Binding setVariable(String name, IDatatype val) {
         return bind(new VariableLocal(name), val);
+    }
+    
+    public static Binding setStaticVariable(String name, IDatatype val) {
+        return getSingleton().setVariable(name, val);
     }
     
     public boolean hasVariable() {
@@ -590,6 +610,20 @@ public class Binding implements Binder {
      */
     public void setCoalesce(boolean coalesce) {
         this.coalesce = coalesce;
+    }
+
+    /**
+     * @return the singleton
+     */
+    public static Binding getSingleton() {
+        return singleton;
+    }
+
+    /**
+     * @param aSingleton the singleton to set
+     */
+    public static void setSingleton(Binding aSingleton) {
+        singleton = aSingleton;
     }
     
 }

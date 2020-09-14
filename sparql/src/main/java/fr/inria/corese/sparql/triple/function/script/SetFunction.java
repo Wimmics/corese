@@ -1,5 +1,7 @@
 package fr.inria.corese.sparql.triple.function.script;
 
+import static fr.inria.corese.kgram.api.core.ExprType.SET;
+import static fr.inria.corese.kgram.api.core.ExprType.STATIC;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -26,7 +28,12 @@ public class SetFunction extends LDScript {
         if (val == null) {
             return null;
         }
-        b.bind(this, getBasicArg(0), val);
+        switch (oper()) {
+            case SET: b.bind(this, getBasicArg(0), val);
+            break;
+            case STATIC:
+                Binding.setStaticVariable(getBasicArg(0).getLabel(), val);
+        }
         return val;
     }   
    

@@ -12,6 +12,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.*;
 import fr.inria.corese.compiler.api.QueryVisitor;
+import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.kgram.api.core.*;
@@ -24,6 +25,7 @@ import fr.inria.corese.kgram.core.Sorter;
 import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.compiler.visitor.MetadataVisitor;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
@@ -364,6 +366,11 @@ public class Transformer implements ExpType {
                 q.setLock(false);
             }
         }
+        // @public @update event function ...
+        if (QuerySolver.isVisitorable()
+         && Interpreter.getExtension().getMetadata(QuerySolverVisitor.UPDATE, QuerySolverVisitor.UPDATE_ARITY) != null) {
+            q.setDetail(true);
+        } 
     }
     
     void toJava(ASTQuery ast){

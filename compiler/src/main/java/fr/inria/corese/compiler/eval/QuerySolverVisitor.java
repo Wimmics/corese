@@ -65,7 +65,21 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
         getEval().getProducer().start(q);
     }
 
-        
+    @Override
+    public IDatatype init() {
+        return callback(getEval(), INIT, toArray());        
+    }
+    
+    @Override
+    public IDatatype initParam() {
+        return callback(getEval(), INIT_PARAM, toArray());        
+    }
+    
+    public IDatatype initServer(String uri) {
+        return callback(getEval(), INIT_SERVER, toArray(uri));
+    } 
+
+    
     @Override
     public IDatatype before(Query q) {
         if (query == q) {

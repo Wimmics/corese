@@ -99,7 +99,11 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     public static final String INSERT   = "@insert";
     public static final String DELETE   = "@delete";
     public static final String UPDATE   = "@update";
+    public static final int    UPDATE_ARITY   = 3;
     
+    
+    public static final String INIT_PARAM      = "@initParam";
+    public static final String INIT_SERVER     = "@initServer";
     public static final String BEFORE_REQUEST  = "@beforeRequest";
     public static final String AFTER_REQUEST   = "@afterRequest";
 
@@ -510,6 +514,5 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     public void setEval(Eval eval) {
         this.eval = eval;
     }
-    
-   
+
 }

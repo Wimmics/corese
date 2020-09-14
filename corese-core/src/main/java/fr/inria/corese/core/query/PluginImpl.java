@@ -24,6 +24,7 @@ import fr.inria.corese.compiler.eval.ProxyInterpreter;
 import fr.inria.corese.compiler.parser.NodeImpl;
 import fr.inria.corese.compiler.api.ProxyPlugin;
 import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.compiler.eval.QuerySolverVisitorBasic;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -106,6 +107,7 @@ public class PluginImpl
     public static final String EVENT    = EXT+"event";
     public static final String VERBOSE  = EXT+"verbose";
     public static final String METHOD   = EXT+"method";
+    public static final String EVENT_HIGH = EXT+"events";
     public static final String EVENT_LOW= EXT+"eventLow";
     public static final String SHOW     = EXT+"show";
     public static final String HIDE     = EXT+"hide";
@@ -1179,7 +1181,7 @@ public class PluginImpl
                 }
                 break;
                 
-            case EVENT:
+            case EVENT_HIGH:
                 getEventManager(p).setVerbose(dt2.booleanValue());
                 getGraph(p).setDebugMode(dt2.booleanValue());
                 break;
@@ -1211,6 +1213,9 @@ public class PluginImpl
                 break;
             case VISITOR:
                 QuerySolver.setVisitorable(dt2.booleanValue());
+                break;
+            case EVENT:
+                QuerySolverVisitorBasic.setEvent(dt2.booleanValue());
                 break;
 
             case RDF_STAR:

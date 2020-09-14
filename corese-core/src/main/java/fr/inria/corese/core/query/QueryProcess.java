@@ -997,8 +997,13 @@ public class QueryProcess extends QuerySolver {
 
     // import function definition as public function
     public void imports(String path) throws EngineException {
-        String q = "@public @import <%s> select where {}";
-        compile(String.format(q, path));
+        imports(path, true);
+    }
+    
+    public void imports(String path, boolean pub) throws EngineException {
+        String qp = "@public  @import <%s> select where {}";
+        String ql = "@import <%s> select where {}";
+        compile(String.format((pub)?qp:ql, path));
     }
 
     IDatatype[] param(IDatatype... ldt) {

@@ -63,10 +63,39 @@ public class Extension extends Core {
     }
     
     public IDatatype parse(IDatatype dt) {
+        if (dt.isURI()) {
+            return imports(dt, false);
+        }
+        else {
+            ASTQuery ast = parseQuery(dt.getLabel());
+            if (ast == null) {
+                return null;
+            }
+            return DatatypeMap.createObject(ast);
+        }
+    }
+   
+    public IDatatype imports(IDatatype dt, IDatatype pub) {
+        return imports(dt, pub.booleanValue());
+    }
+    
+    public IDatatype imports(IDatatype dt, boolean pub) {
         QueryProcess exec = QueryProcess.create();
         try {
-            Query q = exec.compile(dt.getLabel());
-            return DatatypeMap.createObject(q.getAST());
+            exec.imports(dt.getLabel(), pub);
+            return DatatypeMap.TRUE;
+        }
+        catch (EngineException ex) {
+            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);
+            return DatatypeMap.FALSE;
+        }
+    }
+    
+    ASTQuery parseQuery(String str) {
+        QueryProcess exec = QueryProcess.create();
+        try {
+            Query q = exec.compile(str);
+            return (ASTQuery) q.getAST();
         } catch (EngineException ex) {
             Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);
             return null;

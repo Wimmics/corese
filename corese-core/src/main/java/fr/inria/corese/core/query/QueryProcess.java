@@ -1020,7 +1020,11 @@ public class QueryProcess extends QuerySolver {
         }
         return call(EVENT, function, param, null);
     }
-
+    
+    public IDatatype callback(String name, IDatatype... param) throws EngineException {
+        return new QuerySolverVisitor(getEval()).callback(getEval(), name, param);
+    }
+    
     /**
      * Execute LDScript function defined as @public
      */

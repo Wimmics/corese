@@ -17,6 +17,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.transform.ContextBuilder;
+import fr.inria.corese.core.util.Parameter;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
@@ -341,10 +342,10 @@ public class Profile {
     void init(String path, String local) {
         try {
             LogManager.getLogger(Profile.class.getName()).warn("Load: " + path);
-            GraphStore g = load(path);
+            GraphStore g = load(path, Parameter.PROFILE_EVENT);
             if (local != null){
             LogManager.getLogger(Profile.class.getName()).warn("Load: " + local);
-                load(g, local);
+                load(g, local, Parameter.PROFILE_EVENT);
             }
             setProfile(g);
             process(g);
@@ -370,13 +371,22 @@ public class Profile {
     }
 
     GraphStore load(String path) throws IOException, LoadException {
+        return load(path, true);
+    }
+    
+    GraphStore load(String path, boolean event) throws IOException, LoadException {
         GraphStore g = GraphStore.create();
-        load(g, path);
+        load(g, path, event);
         return g;
     }
     
     void load(GraphStore g, String path) throws LoadException{
+        load(g, path, true);
+    }
+
+    void load(GraphStore g, String path, boolean event) throws LoadException{
         Load load = Load.create(g);
+        load.setEvent(event);
         load.parse(path, Load.TURTLE_FORMAT);       
     }
 

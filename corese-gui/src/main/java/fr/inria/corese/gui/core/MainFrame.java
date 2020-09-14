@@ -82,7 +82,7 @@ public class MainFrame extends JFrame implements ActionListener {
     static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-07-14";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-09-21";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -203,7 +203,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private boolean shexSemantics = false;
     
     Command cmd;
-
+    
     static {
         // false: load files into named graphs
         // true:  load files into kg:default graph

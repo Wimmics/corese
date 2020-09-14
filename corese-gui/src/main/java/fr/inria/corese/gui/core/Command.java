@@ -19,6 +19,7 @@ public class Command extends HashMap<String, String> {
     public static final String REENTRANT        = "-re";
     public static final String RDF_STAR         = "-rdfstar";
     public static final String ACCESS           = "-access";
+    public static final String PARAM            = "-param";
         
     String[] args;
     
@@ -43,6 +44,11 @@ public class Command extends HashMap<String, String> {
                 case STRING:
                     put(STRING, "true");
                     break;
+                    
+                case PARAM:
+                   put(PARAM, args[i++]);
+                   break; 
+                   
                     
                 case MAX_LOAD:
                    put(MAX_LOAD, args[i++]);

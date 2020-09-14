@@ -2365,16 +2365,16 @@ Term Let (Exp stack) :
       { return astq.let(list, exp, dynamic); }
 }
 
-Term Set (Exp stack) : { Expression exp ; Variable var;}
+Term Set (Exp stack) : { Expression exp ; Variable var; boolean stat = false;}
 {
-        <SET>
+        (<SET> | <STATIC> { stat = true;})
         <LPAREN> 
             var = Var()
             <EQ>
             exp = Expression(stack)            
         <RPAREN>
            
-      { return astq.set(var, exp); }
+      { return astq.set(var, exp, stat); }
 }
 
 
@@ -2883,6 +2883,7 @@ TOKEN [IGNORE_CASE] :
 | < LET: "let">
 | < LETDYN: "letdyn">
 | < SET: "set">
+| < STATIC: "static">
 | < FOR: "for">
 | < LOOP: "loop">
 | < IF: "if">

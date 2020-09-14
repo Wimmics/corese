@@ -1,6 +1,6 @@
 package fr.inria.corese.server.webservice;
 
-import fr.inria.corese.compiler.eval.QuerySolverVisitorBasic;
+import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
@@ -24,7 +24,7 @@ import javax.servlet.ServletContext;
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2020
  */
-public class QuerySolverVisitorServer extends QuerySolverVisitorBasic {
+public class QuerySolverVisitorServer extends QuerySolverVisitor {
     
     static final String MESSAGE = "@message";
     static final String MESSAGE_FUN = NSManager.USER + "messenger";

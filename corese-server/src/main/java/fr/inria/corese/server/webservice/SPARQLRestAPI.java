@@ -72,7 +72,7 @@ public class SPARQLRestAPI {
     QuerySolverVisitorServer visitor;
 
     public SPARQLRestAPI() {
-        visitor = new QuerySolverVisitorServer();
+        setVisitor(new QuerySolverVisitorServer());
     }
 
     QueryProcess getQueryProcess() {
@@ -85,6 +85,10 @@ public class SPARQLRestAPI {
     
     QuerySolverVisitorServer getVisitor() {
         return visitor;
+    }
+    
+    void setVisitor(QuerySolverVisitorServer vis) {
+        visitor = vis;
     }
 
     /**
@@ -113,6 +117,8 @@ public class SPARQLRestAPI {
         }
         store.init(isProtected);
         mprofile.setProtect(isProtected);
+        setVisitor(new QuerySolverVisitorServer());
+        getVisitor().initServer(EmbeddedJettyServer.BASE_URI);
         return Response.status(200).header(headerAccept, "*").entity("Endpoint reset").build();
     }
 

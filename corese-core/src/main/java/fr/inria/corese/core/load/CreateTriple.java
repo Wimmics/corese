@@ -33,7 +33,7 @@ public class CreateTriple {
 
     CreateTriple(Graph g, Load ld) {
         load = ld;
-        queryProcess = load.getQueryProcess();
+        queryProcess = load.getCreateQueryProcess();
         graph = g;
         exclude = new ArrayList<>();
     }
@@ -68,7 +68,7 @@ public class CreateTriple {
     }
 
     void declare(Edge edge) {
-        if (getQueryProcess() != null) {
+        if (load.isEvent() && getQueryProcess() != null) {
             getQueryProcess().getCurrentVisitor().insert(dtpath, edge);
         }
     }

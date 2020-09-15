@@ -40,20 +40,7 @@ import java.util.Set;
 public class Mapping
         extends EnvironmentImpl
         implements Result, Environment, Pointerable {
-
-    /**
-     * @return the targetGraphNode
-     */
-    public Node getNamedGraph() {
-        return targetGraphNode;
-    }
-
-    /**
-     * @param targetGraphNode the targetGraphNode to set
-     */
-    public void setNamedGraph(Node targetGraphNode) {
-        this.targetGraphNode = targetGraphNode;
-    }
+ 
     public static boolean DEBUG_DEFAULT = false; 
     static final Edge[] emptyEdge = new Edge[0];
     static final Edge[] emptyEntity = new Edge[0];
@@ -79,6 +66,8 @@ public class Mapping
     private Node targetGraphNode;
     private Eval eval;
     boolean debug = DEBUG_DEFAULT;
+    
+    private ProcessVisitor visitorParameter;
 
     public Mapping() {
         this.qEdges = emptyEdge;;
@@ -118,9 +107,15 @@ public class Mapping
         return new Mapping();
     }
     
-     public static Mapping create(Binder b) {
+    public static Mapping create(Binder b) {
         Mapping m = new Mapping();
         m.setBind(b);
+        return m;
+    }
+    
+    public static Mapping create(ProcessVisitor vis) {
+        Mapping m = new Mapping();
+        m.setVisitorParameter(vis);
         return m;
     }
 
@@ -1398,6 +1393,9 @@ public class Mapping
     
     @Override
     public ProcessVisitor getVisitor() {
+        if (getEval() == null) {
+            return null;
+        }
         return getEval().getVisitor();
     }
 
@@ -1409,6 +1407,32 @@ public class Mapping
         this.eval = eval;
     }
 
- 
+    /**
+     * @return the targetGraphNode
+     */
+    public Node getNamedGraph() {
+        return targetGraphNode;
+    }
+
+    /**
+     * @param targetGraphNode the targetGraphNode to set
+     */
+    public void setNamedGraph(Node targetGraphNode) {
+        this.targetGraphNode = targetGraphNode;
+    }
+
+    /**
+     * @return the visitorParameter
+     */
+    public ProcessVisitor getVisitorParameter() {
+        return visitorParameter;
+    }
+
+    /**
+     * @param visitorParameter the visitorParameter to set
+     */
+    public void setVisitorParameter(ProcessVisitor visitorParameter) {
+        this.visitorParameter = visitorParameter;
+    }
  
 }

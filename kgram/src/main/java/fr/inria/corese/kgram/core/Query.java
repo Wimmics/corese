@@ -164,8 +164,10 @@ public class Query extends Exp implements Graphable {
     private boolean isStorePath = true;
     // cache PP result in PathFinder
     private boolean isCachePath = false;
+    boolean isCountPath = false;
+    private boolean importFailure = false;
 
-    boolean isCountPath = false,
+    boolean 
             isCorrect = true, isConnect = false,
             // join service send Mappings from first pattern to service
             isMap = true,
@@ -2955,6 +2957,20 @@ public class Query extends Exp implements Graphable {
      */
     public void setURI(String uri) {
         this.uri = uri;
+    }
+
+    /**
+     * @return the importFailure
+     */
+    public boolean isImportFailure() {
+        return importFailure;
+    }
+
+    /**
+     * @param importFailure the importFailure to set
+     */
+    public void setImportFailure(boolean importFailure) {
+        this.importFailure = importFailure;
     }
 
 }

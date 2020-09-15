@@ -109,15 +109,6 @@ public class FunctionCompiler {
         }
     }
     
-//    void imports(Query q, ASTQuery ast, Metadata m) {
-//        if (acceptLinkedFunction(ast.getLevel())) {
-//            basicImports(q, ast, m);
-//        }
-//        else if (m.hasMetadata(Metadata.IMPORT)){
-//            logger.error("Unauthorized import: " + m.getValues(Metadata.IMPORT));
-//        }
-//    }
-    
     void basicImports(Query q, ASTQuery ast, Metadata m) {
         if (m.hasMetadata(Metadata.IMPORT)) {
             for (String path : m.getValues(Metadata.IMPORT)) {
@@ -126,6 +117,8 @@ public class FunctionCompiler {
                 } catch (EngineException ex) {
                     logger.error("Error in import: " + path);
                     logger.error(ex.toString());
+                    q.addError("Error in import: ", path);
+                    q.setImportFailure(true);
                 }
             }
         }

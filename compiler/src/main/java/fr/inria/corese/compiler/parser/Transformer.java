@@ -84,7 +84,7 @@ public class Transformer implements ExpType {
     public static final String FEDERATE = NSManager.KGRAM + "federate";
     int count = 0;
     CompilerFactory fac;
-    FunctionCompiler funCompiler;
+    private FunctionCompiler functionCompiler;
     Compiler compiler;
     private QuerySolver sparql;
     List<QueryVisitor> visit;
@@ -121,7 +121,7 @@ public class Transformer implements ExpType {
         fac = new CompilerFacKgram();
         compiler = fac.newInstance();
         subQueryList = new ArrayList<>();
-        funCompiler = new FunctionCompiler(this);
+        functionCompiler = new FunctionCompiler(this);
     }
 
     Transformer(CompilerFactory f) {
@@ -263,7 +263,7 @@ public class Transformer implements ExpType {
         // compile select filters
         q = transform(q, ast);
         
-        funCompiler.compile(q, ast);
+        getFunctionCompiler().compile(q, ast);
         //functionCompiler(q, ast);
         //compileFunction(q, ast);
         //define(q, ast);        
@@ -409,18 +409,14 @@ public class Transformer implements ExpType {
             for (String name : ast.getMetadata().getValues(Metadata.VISITOR)) {
                 try {
                     Class visClass = Class.forName(name);
-                    Object obj = visClass.newInstance();
+                    Object obj = visClass.getDeclaredConstructor().newInstance();
                     if (obj instanceof QueryVisitor) {
                         add((QueryVisitor) obj);
                     }
                     else {
                         logger.error("Undefined QueryVisitor: " + name);
                     }
-                } catch (ClassNotFoundException ex) {
-                    logger.error("Undefined QueryVisitor: " + name);
-                } catch (InstantiationException ex) {
-                    logger.error("Undefined QueryVisitor: " + name);
-                } catch (IllegalAccessException ex) {
+                } catch (Exception ex) {
                     logger.error("Undefined QueryVisitor: " + name);
                 }
             }
@@ -575,18 +571,20 @@ public class Transformer implements ExpType {
             // TODO: because template st:profile may not have been read yet ...
             return;
         }
-        funCompiler.undefinedFunction(q, ast);
+        getFunctionCompiler().undefinedFunction(q, ast);
     }
     
     
-
+    public void imports(Query q, String path) throws EngineException {
+        getFunctionCompiler().imports(q, (ASTQuery) q.getAST(), path);
+    }
     
     public boolean getLinkedFunction(String label) {
-        return funCompiler.getLinkedFunction(label);
+        return getFunctionCompiler().getLinkedFunction(label);
     }
         
     public boolean getLinkedFunctionBasic(String label) {
-        return funCompiler.getLinkedFunctionBasic(label);
+        return getFunctionCompiler().getLinkedFunctionBasic(label);
     }
     
     public static void removeLinkedFunction() {
@@ -598,7 +596,7 @@ public class Transformer implements ExpType {
      * st:profile does not export to Interpreter hence it uses isDefine = false
      */
     public void definePublic(ASTExtension ext, Query q, boolean isDefine) {
-        funCompiler.definePublic(ext, q, isDefine);
+        getFunctionCompiler().definePublic(ext, q, isDefine);
     }
     
 
@@ -1889,5 +1887,19 @@ public class Transformer implements ExpType {
      */
     public void setServiceList(List<Atom> serviceList) {
         this.serviceList = serviceList;
+    }
+
+    /**
+     * @return the functionCompiler
+     */
+    public FunctionCompiler getFunctionCompiler() {
+        return functionCompiler;
+    }
+
+    /**
+     * @param functionCompiler the functionCompiler to set
+     */
+    public void setFunctionCompiler(FunctionCompiler functionCompiler) {
+        this.functionCompiler = functionCompiler;
     }
 }

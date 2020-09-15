@@ -119,6 +119,9 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
         BGP, JOIN, OPTIONAL, MINUS, UNION, FILTER, SELECT, SERVICE, QUERY, GRAPH, 
         AGGREGATE, HAVING, FUNCTION, ORDERBY, DISTINCT
     };
+    
+    private static boolean event = true;
+    
     private boolean active = false;
     private boolean reentrant = REENTRANT_DEFAULT;
     boolean select = false;
@@ -133,12 +136,14 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     HashMap <Environment, IDatatype> distinct;
     QuerySolverOverload overload;
   
-    QuerySolverVisitorBasic() {}
-    
-    public QuerySolverVisitorBasic(Eval e) {
-        eval = e;
+    public QuerySolverVisitorBasic() {
         distinct = new HashMap<>();
         overload = new QuerySolverOverload(this);
+    }
+    
+    public QuerySolverVisitorBasic(Eval e) {
+        this();
+        eval = e;  
     }
 
     @Override
@@ -283,7 +288,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
      * function execute a query (which would trigger Visitor recursively)
      */
     public IDatatype callback(Eval ev, String metadata, IDatatype[] param) {
-        if (isRunning() || ! accept(metadata)) {
+        if (isRunning() || ! isEvent() || ! accept(metadata)) {
             return null;
         }
         trace(ev, metadata, param);
@@ -513,6 +518,20 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
      */
     public void setEval(Eval eval) {
         this.eval = eval;
+    }
+
+    /**
+     * @return the event
+     */
+    public static boolean isEvent() {
+        return event;
+    }
+
+    /**
+     * @param aEvent the event to set
+     */
+    public static void setEvent(boolean aEvent) {
+        event = aEvent;
     }
 
 }

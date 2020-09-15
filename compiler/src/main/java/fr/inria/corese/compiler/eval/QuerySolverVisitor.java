@@ -35,7 +35,8 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
 
     private static Logger logger = LoggerFactory.getLogger(QuerySolverVisitor.class);
     
- 
+     public QuerySolverVisitor() {}
+
 
     public QuerySolverVisitor(Eval e) {
         super(e);

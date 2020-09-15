@@ -291,7 +291,7 @@ public class QuerySolver implements SPARQLEngine {
 
         events(kgram);
         pragma(kgram, query);
-        tune(kgram, query);
+        tune(kgram, query, m);
 
         before(query);
         Mappings map = kgram.query(gNode, query, m);
@@ -353,13 +353,13 @@ public class QuerySolver implements SPARQLEngine {
         setCurrentEval(e);
     }
 
-    void tune(Eval kgram, Query q) {
+    void tune(Eval kgram, Query q, Mapping m) {
         ASTQuery ast = (ASTQuery) q.getAST();
         if (AccessRight.isActive()) {
             ast.setAccessRight(getAccessRight());
         }
         boolean event = ast.hasMetadata(Metadata.EVENT);
-        tune(kgram, event);
+        tune(kgram, m, event);
         if (q.isInitMode()) {
             // set visitor sleeping mode during init
             kgram.getVisitor().setActive(true);
@@ -367,19 +367,24 @@ public class QuerySolver implements SPARQLEngine {
     }
 
     void tune(Eval kgram) {
-        tune(kgram, false);
+        tune(kgram, null, false);
     }
 
-    void tune(Eval kgram, boolean isVisitor) {
+    void tune(Eval kgram, Mapping m, boolean isVisitor) {
         if (isVisitor || isVisitorable()) {
-            kgram.setVisitor(createProcessVisitor(kgram));
+            if (m != null && m.getVisitorParameter()!= null) {
+                m.getVisitorParameter().setProcessor(kgram);
+                kgram.setVisitor(m.getVisitorParameter());
+            }
+            else {
+                kgram.setVisitor(createProcessVisitor(kgram));
+            }
         }
         kgram.getVisitor().setDefaultValue(DatatypeMap.TRUE);
     }
 
     // overloaded by QueryProcess
     public ProcessVisitor createProcessVisitor(Eval eval) {
-        //return eval.getVisitor();
         return new QuerySolverVisitor(eval);
     }
 

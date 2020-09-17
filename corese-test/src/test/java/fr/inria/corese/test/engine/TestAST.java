@@ -86,11 +86,11 @@ public class TestAST {
 		Triple st = Triple.create( Variable.create("?x"), Variable.create("?p"), Variable.create("?z"));
 
 		Expression f = Term.create("=", Variable.create("?x"), Variable.create("?x"));
-		Triple tf = Triple.create(f);
+		//Triple tf = Triple.create(f);
 
 		Exp sexp1 = BasicGraphPattern.create();
 		sexp1.add(st);
-		sexp1.add(tf);
+		sexp1.add(f);
 
 		sub.setBody(sexp1);
 		Query q = Query.create(sub);

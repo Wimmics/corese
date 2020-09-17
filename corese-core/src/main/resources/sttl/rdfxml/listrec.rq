@@ -18,4 +18,5 @@ format {
 where {
   ?y rdf:first ?f ;
      rdf:rest  ?r
+  filter us:bnvisit(?y)
 }

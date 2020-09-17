@@ -14,6 +14,7 @@ format {
 }
 where {
    bind(
-    if (bound(?in), st:call-template(st:main, ?in), st:call-template(st:main)) 
+    if (bound(?in), st:call-template(st:main, ?in), 
+        concat(st:call-template(st:main), st:call-template(st:main2))) 
    as ?body )
 }

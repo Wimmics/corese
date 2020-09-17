@@ -60,3 +60,7 @@ function st:display(?x){
       }     
     }
 }
+
+function us:bnvisit(dt) {
+    if (isBlank(dt), st:visit(dt), true)
+}

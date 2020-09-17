@@ -10,5 +10,6 @@ format {
 }
 where {
    bind (isBlank(?in) as ?bnode)
+   bind (us:bnvisit(?in) as ?bn)
 }
 

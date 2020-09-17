@@ -3,8 +3,8 @@
 # URI
 # Top level bnodes (not object of a property)
 #
-template st:main(?in) {
-    if (isBlank(?in) && st:visited(?in), "", 
+template st:main2(?in) {
+   if (st:visited(?in), "", 
     if (bound(?t), 
         st:call-template(st:resourcetype, ?in, ?t),
         st:call-template(st:resource, ?in)))
@@ -16,7 +16,8 @@ where {
      bind (st:focus() as ?in)
      ?in ?p ?y
      
-    filter (isURI(?in) || not exists { ?x ?q ?in filter (?x != ?in) } )
+     filter (isBlank(?in) && ! st:visited(?in))
+     
      optional {
         select ?in ?t where {
             ?in a ?t  
@@ -27,4 +28,3 @@ where {
    }
    order by ?in
 }
-

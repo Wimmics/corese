@@ -8,4 +8,5 @@ if (isBlank(?e) && ! st:visited(?e),
 where {
   ?in rdf:rest* ?r 
   ?r  rdf:first ?e
+  filter us:bnvisit(?r)
 }

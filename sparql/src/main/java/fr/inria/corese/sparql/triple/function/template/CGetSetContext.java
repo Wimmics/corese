@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Context;
 
 /**
@@ -45,10 +46,16 @@ public class CGetSetContext extends TemplateFunction {
                     default:
                         return null;
                 }
-                
+              
+                // named context
+                // st:cset(us:name, us:key, us:value)
             case ExprType.STL_CSET:
-                if (param.length == 3) {
-                   return c.cset(param[0], param[1], param[2]);
+                switch(param.length) {
+                    // st:cset(us:name) with one argument -> remove us:name
+                    case 1: c.cremove(param[0]);
+                        return DatatypeMap.TRUE;
+                    case 3:
+                        return c.cset(param[0], param[1], param[2]);
                 }
                                                                      
             default:

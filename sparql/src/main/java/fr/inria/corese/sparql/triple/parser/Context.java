@@ -251,6 +251,14 @@ public class Context extends ASTObject {
         return value;
     }
     
+    // remove named context
+    public IDatatype cremove(IDatatype name) {
+        if (getNamedContext() != null){    
+            getNamedContext().remove(name.getLabel());
+        }
+        return DatatypeMap.TRUE;
+    }
+    
     public Context set(IDatatype name, IDatatype value) {
         return set(name.getLabel(), value);
     }

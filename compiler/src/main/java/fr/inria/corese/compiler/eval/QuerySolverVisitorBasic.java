@@ -107,7 +107,8 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     public static final String BEFORE_REQUEST  = "@beforeRequest";
     public static final String AFTER_REQUEST   = "@afterRequest";
 
-    
+    public static final String BEFORE_TRANSFORMER  = "@beforeTransformer";
+    public static final String AFTER_TRANSFORMER   = "@afterTransformer";
     
     static final String USER = NSManager.USER;
     static final String PRODUCE_METHOD = USER + "produce";
@@ -287,6 +288,10 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
      * set Visitor as inactive during function call to prevent loop and also in case where
      * function execute a query (which would trigger Visitor recursively)
      */
+    public IDatatype callback(String metadata, IDatatype[] param) {
+        return callback(getEval(), metadata, param);
+    }
+    
     public IDatatype callback(Eval ev, String metadata, IDatatype[] param) {
         if (isRunning() || ! isEvent() || ! accept(metadata)) {
             return null;

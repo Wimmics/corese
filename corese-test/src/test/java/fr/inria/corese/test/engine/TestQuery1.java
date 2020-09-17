@@ -110,8 +110,8 @@ public class TestQuery1 {
 
         QueryProcess.testAlgebra(!true);
        
-        QueryProcess.setSolverVisitorName("fr.inria.corese.test.engine.MyVisitor");
-        QueryProcess.setVisitorable(true);
+//        QueryProcess.setSolverVisitorName("fr.inria.corese.test.engine.MyVisitor");
+//        QueryProcess.setVisitorable(true);
     }
     
     

@@ -668,10 +668,21 @@ public class Transformer implements TransformProcessor {
             } else {
                 context.set(STL_START, (String) null);
             }
+            
+            if (isDebug) {
+                System.out.println("transformer start:");
+                System.out.println(qq.getAST()); 
+            }
+            
             Mappings map = exec.query(qq, m);
             save(map);
             query = null;
             IDatatype res = getResult(map);
+            
+            if (isDebug) {
+                System.out.println("transformer result: \n" + map.toString(true));
+                System.out.println(res);
+            }
 
             if (res != null) {
                 if (all) {

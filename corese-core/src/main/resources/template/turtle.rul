@@ -41,9 +41,12 @@ template st:start {
   str(?bnode)
 }
 where {
+  # clean st:bnode table if any
+  bind (st:cset(st:bnode) as ?bn)
   bind (st:set(st:allgraph, true)  as ?s1)
   
   # pprint URI and subject only bnode
+  bind (st:set(st:reference, false) as ?ref1)
   bind (st:call-template(st:main)  as ?main)
   
   # pprint bnode as _:b instead of []

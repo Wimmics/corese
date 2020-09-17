@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 21 13:43:42 CEST 2019
+Thu Sep 17 15:13:59 CEST 2020
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -46,6 +46,7 @@ format {
 }
 where {
    bind (isBlank(?in) as ?bnode)
+   bind (us:bnvisit(?in) as ?bn)
 }
 
 ]]>
@@ -86,7 +87,8 @@ format {
 }
 where {
    bind(
-    if (bound(?in), st:call-template(st:main, ?in), st:call-template(st:main)) 
+    if (bound(?in), st:call-template(st:main, ?in), 
+        concat(st:call-template(st:main), st:call-template(st:main2))) 
    as ?body )
 }
 ]]>
@@ -102,9 +104,10 @@ where {
 # Top level bnodes (not object of a property)
 #
 template st:main(?in) {
-   if (bound(?t), 
+    if (isBlank(?in) && st:visited(?in), "", 
+    if (bound(?t), 
         st:call-template(st:resourcetype, ?in, ?t),
-        st:call-template(st:resource, ?in))
+        st:call-template(st:resource, ?in)))
     
    ; separator = "\n\n"
 }
@@ -113,8 +116,7 @@ where {
      bind (st:focus() as ?in)
      ?in ?p ?y
      
-     filter (isURI(?in) || ! exists { ?x ?q ?in } )
-     
+    filter (isURI(?in) || not exists { ?x ?q ?in filter (?x != ?in) } )
      optional {
         select ?in ?t where {
             ?in a ?t  
@@ -125,6 +127,7 @@ where {
    }
    order by ?in
 }
+
 ]]>
 </body>
 </rule>
@@ -239,6 +242,43 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# select top level terms ?in
+# URI
+# Top level bnodes (not object of a property)
+#
+template st:main2(?in) {
+   if (st:visited(?in), "", 
+    if (bound(?t), 
+        st:call-template(st:resourcetype, ?in, ?t),
+        st:call-template(st:resource, ?in)))
+    
+   ; separator = "\n\n"
+}
+where {
+   select distinct ?in ?t where {
+     bind (st:focus() as ?in)
+     ?in ?p ?y
+     
+     filter (isBlank(?in) && ! st:visited(?in))
+     
+     optional {
+        select ?in ?t where {
+            ?in a ?t  
+            filter (! isBlank(?t))
+        } limit 1
+     }
+     
+   }
+   order by ?in
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
 prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
 prefix ht: <http://ns.inria.fr/sparql-template/format/rdfxmlhtml/>
 
@@ -301,6 +341,10 @@ function st:display(?x){
       }     
     }
 }
+
+function us:bnvisit(dt) {
+    if (isBlank(dt), st:visit(dt), true)
+}
 ]]>
 </body>
 </rule>
@@ -320,6 +364,7 @@ format {
 }
 where {
    bind (isBlank(?in) as ?bnode)
+   bind (us:bnvisit(?in) as ?bn)
 }
 
 ]]>
@@ -362,6 +407,7 @@ if (isBlank(?e) && ! st:visited(?e),
 where {
   ?in rdf:rest* ?r 
   ?r  rdf:first ?e
+  filter us:bnvisit(?r)
 }
 ]]>
 </body>
@@ -416,6 +462,7 @@ format {
 where {
   ?y rdf:first ?f ;
      rdf:rest  ?r
+  filter us:bnvisit(?y)
 }
 ]]>
 </body>

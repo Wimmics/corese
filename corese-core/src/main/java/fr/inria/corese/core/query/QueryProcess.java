@@ -73,6 +73,7 @@ public class QueryProcess extends QuerySolver {
     static final String DB_INPUT = "fr.inria.corese.tinkerpop.dbinput";
     static final String FUNLIB = "/function/";
     public static final String SHACL = "http://ns.inria.fr/sparql-template/function/datashape/main.rq";
+    private static String solverVisitorName = null;    
     //sort query edges taking cardinality into account
     static boolean isSort = false;
 
@@ -403,6 +404,10 @@ public class QueryProcess extends QuerySolver {
 
     public Mappings query(String squery, Binding b) throws EngineException {
         return query(squery, Mapping.create(b), null);
+    }
+    
+    public Mappings query(String squery, ProcessVisitor vis) throws EngineException {
+        return query(squery, Mapping.create(vis), null);
     }
 
     /**
@@ -996,16 +1001,17 @@ public class QueryProcess extends QuerySolver {
     }
 
     // import function definition as public function
-    public void imports(String path) throws EngineException {
-        imports(path, true);
+    public boolean imports(String path) throws EngineException {
+        return imports(path, true);
     }
     
-    public void imports(String path, boolean pub) throws EngineException {
+    public boolean imports(String path, boolean pub) throws EngineException {
         String qp = "@public  @import <%s> select where {}";
         String ql = "@import <%s> select where {}";
-        compile(String.format((pub)?qp:ql, path));
+        Query q = compile(String.format((pub)?qp:ql, path));
+        return ! q.isImportFailure();
     }
-
+    
     IDatatype[] param(IDatatype... ldt) {
         return ldt;
     }
@@ -1097,6 +1103,41 @@ public class QueryProcess extends QuerySolver {
         }
         return getCurrentEval().getVisitor();
     }
+    
+    
+    @Override
+    public ProcessVisitor createProcessVisitor(Eval eval) {
+        if (getSolverVisitorName() == null) {
+            return super.createProcessVisitor(eval);
+        }
+        ProcessVisitor vis = createProcessVisitor(eval, getSolverVisitorName());
+        if (vis == null) {
+            return super.createProcessVisitor(eval);
+        }
+        return vis;
+    }
+
+    
+    public ProcessVisitor createProcessVisitor(Eval eval, String name) {
+        try {
+            Class visClass = Class.forName(name);
+            Object obj = visClass.getDeclaredConstructor(Eval.class).newInstance(eval);
+            if (obj instanceof ProcessVisitor) {
+                return (ProcessVisitor) obj;
+            } else {
+                logger.error("Uncorrect QuerySolverVisitor: " + name);
+            }
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException | 
+                IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            logger.error("Undefined QuerySolverVisitor: " + name);
+        }
+            
+        return null;
+    }
+    
+    
+    
 
     Function getLinkedFunction(String name, IDatatype[] param) {
         Function function = getFunction(name, param);
@@ -1203,5 +1244,19 @@ public class QueryProcess extends QuerySolver {
      */
     public void setQueryProcessUpdate(QueryProcessUpdate queryProcessUpdate) {
         this.queryProcessUpdate = queryProcessUpdate;
+    }
+
+    /**
+     * @return the solverVisitorName
+     */
+    public static String getSolverVisitorName() {
+        return solverVisitorName;
+    }
+
+    /**
+     * @param aSolverVisitorName the solverVisitorName to set
+     */
+    public static void setSolverVisitorName(String aSolverVisitorName) {
+        solverVisitorName = aSolverVisitorName;
     }
 }

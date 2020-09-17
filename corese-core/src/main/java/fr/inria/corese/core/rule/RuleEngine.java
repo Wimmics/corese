@@ -138,6 +138,10 @@ public class RuleEngine implements Engine, Graphable {
     void set(Graph g) {
         graph = g;
     }
+    
+    public Graph getGraphStore() {
+        return graph;
+    }
 
     public void set(QueryProcess p) {
         exec = p;
@@ -343,7 +347,7 @@ public class RuleEngine implements Engine, Graphable {
     
     void before() {
         try {
-            setVisitor(new QuerySolverVisitorRule(this, getQueryProcess().getEval()));
+            setVisitor(QuerySolverVisitorRule.create(this, getQueryProcess().getEval()));
             getVisitor().init();
             getVisitor().beforeEntailment(getPath());
         } catch (EngineException ex) {

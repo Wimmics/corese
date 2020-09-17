@@ -33,12 +33,17 @@ import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.api.TransformProcessor;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.reflect.InvocationTargetException;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -137,6 +142,7 @@ public class Transformer implements TransformProcessor {
     private Binding binding;
     // table accessible using st:set/st:get
     private Context context;
+    private QuerySolverVisitorTransformer eventVisitor;
     private boolean isHide = false;
     public boolean stat = !true;
     private boolean isCheck = false;
@@ -162,6 +168,7 @@ public class Transformer implements TransformProcessor {
     }
     // is there a st:default template
     private boolean hasDefault = false;
+    private boolean starting = true;
 
     Transformer(Graph g, String p) {
         this(QueryProcess.create(g, true), p);
@@ -189,8 +196,14 @@ public class Transformer implements TransformProcessor {
         imported = new HashMap<>();
         tmap = new TransformerMapping(qp.getGraph());  
         setDebug(p);
+        try {
+            setEventVisitor( QuerySolverVisitorTransformer.create(this, qp.getEval()));
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(Transformer.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
+     
     void initMap() {
         Query q = getTemplate(start);
         if (q == null) {
@@ -619,6 +632,8 @@ public class Transformer implements TransformProcessor {
      */
     @Override
     public IDatatype process(String temp, boolean all, String sep, Expr exp, Environment env) {
+        boolean astart = isStarting();
+        beforeTransformer(astart);
         count++;
         query = null;
         ArrayList<Node> nodes = new ArrayList<>();
@@ -662,6 +677,7 @@ public class Transformer implements TransformProcessor {
                 if (all) {
                     nodes.add(map.getTemplateResult());
                 } else {
+                    afterTransformer(astart, res);
                     return res;
                 }
             }
@@ -671,10 +687,27 @@ public class Transformer implements TransformProcessor {
 
         if (all) {
             IDatatype dt2 = result(env, nodes);
+            afterTransformer(astart, dt2);
             return dt2;
         }
-
-        return isBoolean() ? defaultBooleanResult() : EMPTY;
+        
+        IDatatype fin = isBoolean() ? defaultBooleanResult() : EMPTY;
+        afterTransformer(astart, fin);
+        return fin;
+    }
+    
+    void beforeTransformer(boolean astart) {
+        if (astart) {
+            setStarting(false);
+            getEventVisitor().beforeTransformer(getTransformation());
+        }
+    }
+    
+    void afterTransformer(boolean astart, IDatatype dt) {
+        if (astart) {
+            getEventVisitor().afterTransformer(getTransformation(), dt.getLabel());
+            setStarting(true);
+        }
     }
     
     ASTQuery ast(Query q) {
@@ -766,10 +799,15 @@ public class Transformer implements TransformProcessor {
         if (dt == null) {
             return EMPTY;
         }
+        
+        boolean astart = isStarting();
+        beforeTransformer(astart);
 
         if (level() >= levelMax) {
             //return defaut(dt, q);
-            return eval(STL_DEFAULT, dt, (isBoolean() ? defaultBooleanResult() : turtle(dt)), env);
+            IDatatype res =  eval(STL_DEFAULT, dt, (isBoolean() ? defaultBooleanResult() : turtle(dt)), env);
+            afterTransformer(astart, res);
+            return res;
         }
 
         ArrayList<Node> nodes = null;
@@ -858,6 +896,7 @@ public class Transformer implements TransformProcessor {
                         if (start) {
                             stack.pop();
                         }
+                        //afterTransformer(astart, res);
                         return res;
                     }
                 }
@@ -872,6 +911,7 @@ public class Transformer implements TransformProcessor {
             // gather results of several templates
             if (nodes.size() > 0) {
                 IDatatype mres = result(env, nodes);
+                //afterTransformer(astart, mres);
                 return mres;
             }
         }
@@ -880,18 +920,23 @@ public class Transformer implements TransformProcessor {
         if (temp != null) {
             // named template does not match focus node dt
             // try funcall st:defaultNamed(dt)
-            return eval(STL_DEFAULT_NAMED, dt, (isBoolean() ? defaultBooleanResult() : EMPTY), env);
+            IDatatype res = eval(STL_DEFAULT_NAMED, dt, (isBoolean() ? defaultBooleanResult() : EMPTY), env);
+            //afterTransformer(astart, res);
+            return res;
         } else if (isHasDefault()) {
             // apply named template st:default 
             IDatatype res = process(STL_DEFAULT, allTemplates, sep, exp, env, dt, args);
             if (res != EMPTY) {
+                //afterTransformer(astart, res);
                 return res;
             }
         }
 
         // return a default result (may be dt)
         // may be overloaded by function st:default(?x) { st:turtle(?x) }
-        return eval(STL_DEFAULT, dt, (isBoolean() ? defaultBooleanResult() : turtle(dt)), env);
+        IDatatype res = eval(STL_DEFAULT, dt, (isBoolean() ? defaultBooleanResult() : turtle(dt)), env);
+        //afterTransformer(astart, res);        
+        return res;
 
     }
     
@@ -1550,6 +1595,34 @@ public class Transformer implements TransformProcessor {
      */
     public void setMappings(Mappings map) {
         this.map = map;
+    }
+
+    /**
+     * @return the eventVisitor
+     */
+    public QuerySolverVisitorTransformer getEventVisitor() {
+        return eventVisitor;
+    }
+
+    /**
+     * @param eventVisitor the eventVisitor to set
+     */
+    public void setEventVisitor(QuerySolverVisitorTransformer eventVisitor) {
+        this.eventVisitor = eventVisitor;
+    }
+
+    /**
+     * @return the starting
+     */
+    public boolean isStarting() {
+        return starting;
+    }
+
+    /**
+     * @param starting the starting to set
+     */
+    public void setStarting(boolean starting) {
+        this.starting = starting;
     }
 
 

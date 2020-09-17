@@ -82,8 +82,8 @@ public class Extension extends Core {
     public IDatatype imports(IDatatype dt, boolean pub) {
         QueryProcess exec = QueryProcess.create();
         try {
-            exec.imports(dt.getLabel(), pub);
-            return DatatypeMap.TRUE;
+            boolean b = exec.imports(dt.getLabel(), pub);
+            return DatatypeMap.newInstance(b);
         }
         catch (EngineException ex) {
             Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);

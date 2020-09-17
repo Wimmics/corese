@@ -1107,10 +1107,10 @@ public class QueryProcess extends QuerySolver {
     
     @Override
     public ProcessVisitor createProcessVisitor(Eval eval) {
-        if (getSolverVisitorName() == null) {
+        if (getVisitorName() == null) {
             return super.createProcessVisitor(eval);
         }
-        ProcessVisitor vis = createProcessVisitor(eval, getSolverVisitorName());
+        ProcessVisitor vis = createProcessVisitor(eval, getVisitorName());
         if (vis == null) {
             return super.createProcessVisitor(eval);
         }
@@ -1249,14 +1249,15 @@ public class QueryProcess extends QuerySolver {
     /**
      * @return the solverVisitorName
      */
-    public static String getSolverVisitorName() {
+    public static String getVisitorName() {
         return solverVisitorName;
     }
+    
 
     /**
      * @param aSolverVisitorName the solverVisitorName to set
      */
-    public static void setSolverVisitorName(String aSolverVisitorName) {
+    public static void setVisitorName(String aSolverVisitorName) {
         solverVisitorName = aSolverVisitorName;
     }
 }

@@ -6,6 +6,8 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
+import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -38,12 +40,15 @@ public class Parameter {
     private static final String DATA_IMPORT = "?data";
     private static final String NOTIFY = "?notify";
     private static final String PARAM_GRAPH = "?paramGraph";
+    private static final String EVENT_RULE = "?rule";
+    private static final String EVENT_TRANS = "?trans";
+    private static final String EVENT_SOLVER = "?solver";
     
     public static boolean PARAM_EVENT = false;
     public static boolean PROFILE_EVENT = false;
     
     String q = 
-            "select ?event ?profile ?param "
+            "select ?event ?profile ?param ?solver ?rule ?trans "
             + "(aggregate(distinct ?acc) as ?accept) "
             + "(aggregate(distinct ?rej) as ?reject) "
             + "(aggregate(distinct ?fun) as ?function) "
@@ -54,6 +59,10 @@ public class Parameter {
             + "optional { ?ev cos:active  ?event }"
             + "optional { ?ev cos:profile ?profile }"
             + "optional { ?ev cos:param   ?param }"
+            // class name for Visitor
+            + "optional { ?ev cos:solver  ?solver }"
+            + "optional { ?ev cos:rule    ?rule }"
+            + "optional { ?ev cos:transformer ?trans }"
             + "}"
             + "}";
     
@@ -77,6 +86,7 @@ public class Parameter {
     public void process() {
         init();
         Mappings map = getMap(q);
+        System.out.println(map);
         process(map);
         start();
     }
@@ -133,7 +143,16 @@ public class Parameter {
                             break;
                         case PARAM:
                             PARAM_EVENT = value.booleanValue();
-                            break;                                      
+                            break; 
+                        case EVENT_RULE:
+                            QuerySolverVisitorRule.setVisitorName(value.getLabel());
+                            break;
+                        case EVENT_SOLVER:
+                            QueryProcess.setVisitorName(value.getLabel());
+                            break;
+                        case EVENT_TRANS:
+                            QuerySolverVisitorTransformer.setVisitorName(value.getLabel());
+                            break;
                     }
                 }
             }

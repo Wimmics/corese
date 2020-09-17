@@ -117,7 +117,7 @@ public class TestFederate {
                 + "bind (xt:print(xt:turtle(?g)) as ?p) "
                 + "graph ?g { [] sh:result ?r }"
                 + "}  "
-                + "function us:test() {set(traceService=false)}";
+                + "function us:test() {sh:trace(false); set(traceService=false)}";
                        
         exec.query(i);
         Mappings map = exec.query(q);
@@ -240,6 +240,7 @@ public class TestFederate {
         
         String q = 
                 "select ?r where { "
+                + "bind (sh:trace(true) as ?tt)"
                 + "bind (sh:shacl() as ?g) "
                // + "bind (xt:print(xt:turtle(?g)) as ?p) "
                 + "graph ?g { [] sh:result ?r }"

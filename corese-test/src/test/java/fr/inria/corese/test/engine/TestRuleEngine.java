@@ -25,6 +25,7 @@ import fr.inria.corese.core.api.Engine;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.api.IDatatype;
 import java.io.IOException;
 import java.util.Date;
 import org.junit.AfterClass;
@@ -94,6 +95,83 @@ public class TestRuleEngine {
         //g.setStorage(IStorage.STORAGE_FILE, p);
         return g;
     }
+     
+     
+      @Test
+    public void testEnt() throws LoadException, EngineException {
+        Graph g = Graph.create();
+        String q = "select (xt:entailment() as ?g) where {"
+                + "}";
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        IDatatype dt = (IDatatype) map.getValue("?g");
+        Graph gg = (Graph) dt.getObject();
+        assertEquals(14, gg.size());
+    }  
+     
+     
+     
+     
+     @Test
+    public void test57() {
+        Graph graph = createGraph();
+        // QueryProcess.definePrefix("e", "htp://example.org/");
+        QueryProcess exec = QueryProcess.create(graph);
+
+        RuleEngine re = RuleEngine.create(graph);
+
+        String rule =
+                "prefix e: <htp://example.org/>"
+                        + "construct {[a e:Parent; e:term(?x ?y)]}"
+                        + "where     {[a e:Father; e:term(?x ?y)]}";
+
+        String rule2 = "prefix e: <htp://example.org/>" +
+                "construct {[a e:Father;   e:term(?x ?y)]}"
+                + "where     {[a e:Parent;   e:term(?x ?y)]}";
+
+
+        String rule3 = "prefix e: <htp://example.org/>" +
+                "construct {[a e:Parent]}"
+                + "where     {[a e:Father]}";
+
+        String rule4 = "prefix e: <htp://example.org/>" +
+                "construct {[a e:Father]}"
+                + "where     {[a e:Parent]}";
+
+
+        try {
+            re.defRule(rule);
+            re.defRule(rule2);
+        } catch (EngineException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+
+        String init = "prefix e: <htp://example.org/>" + "insert data {"
+                + "[ a e:Father ; e:term(<John> <Jack>) ]"
+                + "}";
+
+        String query = "prefix e: <htp://example.org/>" + "select  * where {"
+                + //"?x foaf:knows ?z " +
+                "[a e:Parent; e:term(?x ?y)]"
+                + "}";
+
+        try {
+            exec.query(init);
+            // re.setDebug(true);
+            re.process();
+            Mappings map = exec.query(query);
+            ////System.out.println(map);
+            assertEquals("Result", 1, map.size());
+
+
+        } catch (EngineException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+
+    }
+ 
        
      
       @Test
@@ -282,7 +360,7 @@ public class TestRuleEngine {
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
 
-        assertEquals(611, map.size());
+        assertEquals(612, map.size());
     }
 
         @Test

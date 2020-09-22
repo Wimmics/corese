@@ -109,6 +109,8 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
 
     public static final String BEFORE_TRANSFORMER  = "@beforeTransformer";
     public static final String AFTER_TRANSFORMER   = "@afterTransformer";
+    public static final String BEFORE_WORKFLOW     = "@beforeWorkflow";
+    public static final String AFTER_WORKFLOW      = "@afterWorkflow";  
     
     static final String USER = NSManager.USER;
     static final String PRODUCE_METHOD = USER + "produce";

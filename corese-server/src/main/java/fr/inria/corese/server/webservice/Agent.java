@@ -22,7 +22,7 @@ public class Agent {
     QuerySolverVisitorServer visitor;
 
     public Agent() {
-        visitor = new QuerySolverVisitorServer();
+        visitor = QuerySolverVisitorServer.create(SPARQLRestAPI.createEval());
     }
 
   

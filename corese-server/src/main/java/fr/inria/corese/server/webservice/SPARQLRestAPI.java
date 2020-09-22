@@ -35,7 +35,10 @@ import fr.inria.corese.core.print.JSONLDFormat;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.TSVFormat;
 import fr.inria.corese.core.print.TripleFormat;
+import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access;
+import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 
 /**
@@ -67,13 +70,27 @@ public class SPARQLRestAPI {
 
     private static Profile mprofile;
 
-    private final Logger logger = LogManager.getLogger(this.getClass());
+    static private final Logger logger = LogManager.getLogger(SPARQLRestAPI.class);
     
     QuerySolverVisitorServer visitor;
 
     public SPARQLRestAPI() {
-        setVisitor(new QuerySolverVisitorServer());
+        setVisitor(QuerySolverVisitorServer.create(createEval()));
     }
+    
+     /**
+     * Current graph is SPARQL endpoint graph.
+     */
+    static Eval createEval() {
+        QueryProcess exec = QueryProcess.create(getTripleStore().getGraph());
+        try {
+            return exec.getEval();
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(QuerySolverVisitorServer.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return null;
+    }
+    
 
     QueryProcess getQueryProcess() {
         return getTripleStore().getQueryProcess();
@@ -117,7 +134,7 @@ public class SPARQLRestAPI {
         }
         store.init(isProtected);
         mprofile.setProtect(isProtected);
-        setVisitor(new QuerySolverVisitorServer());
+        setVisitor( QuerySolverVisitorServer.create(createEval()));
         getVisitor().initServer(EmbeddedJettyServer.BASE_URI);
         return Response.status(200).header(headerAccept, "*").entity("Endpoint reset").build();
     }

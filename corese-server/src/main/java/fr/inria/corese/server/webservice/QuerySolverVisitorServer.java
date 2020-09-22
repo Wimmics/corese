@@ -1,21 +1,22 @@
 package fr.inria.corese.server.webservice;
 
 import fr.inria.corese.compiler.eval.QuerySolverVisitor;
+import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
+import static fr.inria.corese.server.webservice.SPARQLRestAPI.getTripleStore;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.PointerObject;
 import fr.inria.corese.sparql.datatype.extension.CoreseMap;
-import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContext;
-
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 /**
  * Visitor call LDScript event function @beforeRequest for SPARQL endpoint /sparql?query=
  * Call @message event function 
@@ -25,29 +26,24 @@ import javax.servlet.ServletContext;
  * @author Olivier Corby, Wimmics INRIA I3S, 2020
  */
 public class QuerySolverVisitorServer extends QuerySolverVisitor {
+    static private final Logger logger = LogManager.getLogger(QuerySolverVisitorServer.class);
     
     static final String MESSAGE = "@message";
     static final String MESSAGE_FUN = NSManager.USER + "messenger";
     
     public QuerySolverVisitorServer() {
-        super(create());
+        super();
     }
     
-    /**
-     * Current graph is SPARQL endpoint graph.
-     */
-    static Eval create() {
-        QueryProcess exec = QueryProcess.create(SPARQLRestAPI.getTripleStore().getGraph());
-        try {
-            return exec.getEval();
-        } catch (EngineException ex) {
-            Logger.getLogger(QuerySolverVisitorServer.class.getName()).log(Level.SEVERE, null, ex);
-        }
-        return null;
+    public QuerySolverVisitorServer(Eval ev) {
+        super(ev);
     }
     
+    Graph getGraph() {
+        return SPARQLRestAPI.getTripleStore().getGraph();
+    }
     
-    
+   
     public IDatatype beforeRequest(HttpServletRequest request, String query) { 
         IDatatype dt = callback(getEval(), BEFORE_REQUEST, toArray(request, query));
         return dt;
@@ -106,6 +102,39 @@ public class QuerySolverVisitorServer extends QuerySolverVisitor {
         }
         
         
+    }
+    
+    static String getVisitorName() {
+        return QueryProcess.getServerVisitorName();
+    }
+    
+    public static QuerySolverVisitorServer create(Eval eval) {
+        if (getVisitorName() == null) {
+            return new QuerySolverVisitorServer(eval);
+        }
+        QuerySolverVisitorServer vis = create(eval, getVisitorName());
+        if (vis == null) {
+            return new QuerySolverVisitorServer(eval);
+        }
+        return vis;
+    }
+
+    static QuerySolverVisitorServer create(Eval eval, String name) {
+        try {
+            Class visClass = Class.forName(name);
+            Object obj = visClass.getDeclaredConstructor(Eval.class).newInstance(eval);
+            if (obj instanceof QuerySolverVisitorServer) {
+                return (QuerySolverVisitorServer) obj;
+            } else {
+                logger.error("Uncorrect Visitor: " + name);
+            }
+        } catch (ClassNotFoundException | NoSuchMethodException | SecurityException | InstantiationException
+                | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
+            java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            logger.error("Undefined Visitor: " + name);
+        }
+
+        return null;
     }
     
 }

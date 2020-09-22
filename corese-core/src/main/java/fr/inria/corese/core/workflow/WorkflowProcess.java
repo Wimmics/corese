@@ -17,6 +17,7 @@ import static fr.inria.corese.core.workflow.WorkflowParser.RESULT;
 import static fr.inria.corese.core.workflow.WorkflowParser.COLLECT;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -36,6 +37,7 @@ public class WorkflowProcess implements AbstractProcess {
     // Direct Embedding SemanticWorkflow
     private SemanticWorkflow workflow;
     private WorkflowVisitor visitor;
+    private QuerySolverVisitorTransformer workflowVisitor;
     private boolean debug = false;
     // true means return input graph (use case: select where and return graph as is)
     private boolean probe = false;
@@ -167,6 +169,13 @@ public class WorkflowProcess implements AbstractProcess {
     @Override
     public String stringValue(Data data) {
         return "Data";
+    }
+    
+    String getService() {
+        if (getContext() == null || getContext().getService() == null) {
+            return "undefined service";
+        }
+        return getContext().getService();
     }
     
     /**
@@ -587,6 +596,20 @@ public class WorkflowProcess implements AbstractProcess {
             return dt;
         }
         return null;
+    }
+
+    /**
+     * @return the workflowVisitor
+     */
+    public QuerySolverVisitorTransformer getWorkflowVisitor() {
+        return workflowVisitor;
+    }
+
+    /**
+     * @param workflowVisitor the workflowVisitor to set
+     */
+    public void setWorkflowVisitor(QuerySolverVisitorTransformer workflowVisitor) {
+        this.workflowVisitor = workflowVisitor;
     }
 
 }

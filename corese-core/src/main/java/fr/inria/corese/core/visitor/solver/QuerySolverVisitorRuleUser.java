@@ -7,7 +7,9 @@ import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import java.util.HashMap;
 import java.util.List;
+import javax.crypto.AEADBadTagException;
 
 /**
  *
@@ -15,19 +17,58 @@ import java.util.List;
  */
 public class QuerySolverVisitorRuleUser extends QuerySolverVisitorRule {
     
-    public QuerySolverVisitorRuleUser() {}
+    int count = 0;
+    HashMap<Query, Integer> mapInference;
     
-    public QuerySolverVisitorRuleUser(RuleEngine t, Eval e) { super(t, e); }
+    public QuerySolverVisitorRuleUser() {
+        setup();
+    }
     
-     @Override
+    void setup() {
+        mapInference = new HashMap<>();
+    }
+    
+    public QuerySolverVisitorRuleUser(RuleEngine t, Eval e) { 
+        super(t, e); 
+        setup();
+    }
+    
+    @Override
     public IDatatype init() {
         System.out.println("User defined Rule Visitor");
+        mapInference.clear();
         setEntailment(true);
+        count = 0;
+        return DatatypeMap.TRUE;
+    }
+    
+    Integer incr(HashMap<Query, Integer> map, Query q) {
+        Integer nb = map.get(q);
+        if (nb == null) {
+            nb = 0;
+        }
+        nb+=1;
+        map.put(q, nb);
+        return nb;
+    }
+    
+    @Override
+    public IDatatype beforeRule(Query q) {
+        q.setDetail(true);
         return DatatypeMap.TRUE;
     }
     
     @Override
-    public DatatypeValue entailment(Query rule, List<Edge> construct, List<Edge> where) { 
+    public boolean entailment() {
+        return true;
+    }
+    
+    @Override
+    public DatatypeValue entailment(Query q, List<Edge> construct, List<Edge> where) { 
+        incr(mapInference, q);
+        System.out.println("rule: " + q.getID());
+        System.out.println("entailment: " + mapInference.get(q));
+        
         System.out.println("construct: " + construct);
         System.out.println("where:     " + where);
         System.out.println();

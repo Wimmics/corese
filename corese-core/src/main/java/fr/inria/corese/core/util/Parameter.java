@@ -7,7 +7,10 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
+import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRuleUser;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
+import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformerUser;
+import fr.inria.corese.core.visitor.solver.QuerySolverVisitorUser;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -18,6 +21,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessNamespace;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import static fr.inria.corese.sparql.triple.parser.NSManager.COS;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -43,12 +47,18 @@ public class Parameter {
     private static final String EVENT_RULE = "?rule";
     private static final String EVENT_TRANS = "?trans";
     private static final String EVENT_SOLVER = "?solver";
+    private static final String EVENT_SERVER = "?server";
+    
+    
+    private static final String SOLVER_USER = COS+"user";
+    private static final String SOLVER_SERVER_USER = "fr.inria.corese.server.webservice.QuerySolverVisitorServerUser";
+    
     
     public static boolean PARAM_EVENT = false;
     public static boolean PROFILE_EVENT = false;
     
     String q = 
-            "select ?event ?profile ?param ?solver ?rule ?trans "
+            "select ?event ?profile ?param ?solver ?rule ?trans ?server "
             + "(aggregate(distinct ?acc) as ?accept) "
             + "(aggregate(distinct ?rej) as ?reject) "
             + "(aggregate(distinct ?fun) as ?function) "
@@ -61,6 +71,7 @@ public class Parameter {
             + "optional { ?ev cos:param   ?param }"
             // class name for Visitor
             + "optional { ?ev cos:solver  ?solver }"
+            + "optional { ?ev cos:server  ?server }"
             + "optional { ?ev cos:rule    ?rule }"
             + "optional { ?ev cos:transformer ?trans }"
             + "}"
@@ -121,6 +132,7 @@ public class Parameter {
             for (Node var : map.getSelect()) {
                 IDatatype value = (IDatatype) map.getValue(var);
                 if (value != null) {
+                    String label = value.getLabel();
                     System.out.println("param: " + var + " " + value);
                     switch (var.getLabel()) {
                         case LINKED_FUNCTION_ACCEPT:
@@ -145,13 +157,20 @@ public class Parameter {
                             PARAM_EVENT = value.booleanValue();
                             break; 
                         case EVENT_RULE:
-                            QuerySolverVisitorRule.setVisitorName(value.getLabel());
+                            QuerySolverVisitorRule.setVisitorName(label.equals(SOLVER_USER)
+                                    ?QuerySolverVisitorRuleUser.class.getName():label);
                             break;
                         case EVENT_SOLVER:
-                            QueryProcess.setVisitorName(value.getLabel());
+                            QueryProcess.setVisitorName(label.equals(SOLVER_USER)
+                                    ?QuerySolverVisitorUser.class.getName():label);
                             break;
+                        case EVENT_SERVER:
+                            QueryProcess.setServerVisitorName(label.equals(SOLVER_USER)
+                                    ?SOLVER_SERVER_USER:label);
+                            break;                            
                         case EVENT_TRANS:
-                            QuerySolverVisitorTransformer.setVisitorName(value.getLabel());
+                            QuerySolverVisitorTransformer.setVisitorName(label.equals(SOLVER_USER)
+                                    ?QuerySolverVisitorTransformerUser.class.getName():label);
                             break;
                     }
                 }

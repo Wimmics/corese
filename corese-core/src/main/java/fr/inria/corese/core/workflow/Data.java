@@ -8,9 +8,14 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.transform.TemplateVisitor;
+import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -79,6 +84,15 @@ public class Data {
             input.setGraph(getGraph().copy());
         }
         return input;
+    }
+    
+    QuerySolverVisitorTransformer createVisitor() {
+        try {
+            return QuerySolverVisitorTransformer.create(QueryProcess.create(getGraph()).getEval());
+        } catch (EngineException ex) {
+            Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
+            return null;
+        }
     }
 
     

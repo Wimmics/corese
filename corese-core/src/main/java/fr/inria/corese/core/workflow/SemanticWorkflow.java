@@ -188,13 +188,17 @@ public class SemanticWorkflow extends  CompositeProcess {
     
     @Override
     void start(Data data){
+       setWorkflowVisitor(data.createVisitor());
+       getWorkflowVisitor().beforeWorkflow(getCreateContext(), data);
        initLoop();
     }
     
+    
     @Override
     void finish(Data data){
-        
+        getWorkflowVisitor().afterWorkflow(getContext(), data);
     }
+    
     /**
      * run is the effective method that runs the workflow
      */

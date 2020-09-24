@@ -167,7 +167,7 @@ public class Eval implements ExpType, Plugin {
         evaluator = e;
     }
 
-    public Results exec(Query q) {
+    public Results exec(Query q) throws SparqlException {
         Mappings maps = query(q, null);
         return ResultsImpl.create(maps);
     }
@@ -176,15 +176,15 @@ public class Eval implements ExpType, Plugin {
      * Eval KGRAM query and subquery For subquery, this eval is a copy which
      * shares the memory with outer eval
      */
-    public Mappings query(Query q) {
+    public Mappings query(Query q) throws SparqlException {
         return query(null, q, null);
     }
     
-    public Mappings query(Query q, Mapping m) {
+    public Mappings query(Query q, Mapping m) throws SparqlException {
         return query(null, q, m);
     }
     
-    public Mappings query(Node gNode, Query q, Mapping m) {
+    public Mappings query(Node gNode, Query q, Mapping m) throws SparqlException {
         if (hasEvent) {
             send(Event.BEGIN, q);
         }

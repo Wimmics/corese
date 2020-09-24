@@ -91,9 +91,15 @@ public class Checker {
 		Query q = query.get(edge);
 		if (q != null){
 			Eval ee = Eval.create(producer, eval.getEvaluator(), matcher);
-			Mappings map = ee.query(q);
-			define = map.size()>0;
+			Mappings map;
+                    try {
+                        map = ee.query(q);
+                        define = map.size()>0;
 			report(edge, exist, match, define);
+                    } catch (SparqlException ex) {
+                        ex.printStackTrace();
+                    }
+			
 		}
 		else {
 			report(edge, exist, match);

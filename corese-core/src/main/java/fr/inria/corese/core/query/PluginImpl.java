@@ -667,29 +667,28 @@ public class PluginImpl
     
     @Override
     public IDatatype load(IDatatype dt, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat) {
+//        if (!readWriteAuthorized()) {
+//            return null;
+//        }
         Graph g;
-         if (graph == null || graph.pointerType() != GRAPH) {
-             g = Graph.create();
-         }
-         else {
-             g = (Graph) graph.getPointerObject();
-         }
-         Load ld = Load.create(g);
-         try {
-             if (readWriteAuthorized()){
-                 if (requiredFormat == null) {
-                    ld.parse(dt.getLabel(), getFormat(expectedFormat));
-                 }
-                 else {
-                    //System.out.println("PI: " + requiredFormat + " " + getFormat(requiredFormat));
-                    ld.parseWithFormat(dt.getLabel(), getFormat(requiredFormat));
-                 }
-             }
-         } catch (LoadException ex) {
-             logger.error("Load error: " + dt + " "+ ((requiredFormat!=null)?requiredFormat:""));
-             logger.error(ex.getMessage());
-             //ex.printStackTrace();
-         }
+        if (graph == null || graph.pointerType() != GRAPH) {
+            g = Graph.create();
+        } else {
+            g = (Graph) graph.getPointerObject();
+        }
+        Load ld = Load.create(g);
+        try {
+            if (requiredFormat == null) {
+                ld.parse(dt.getLabel(), getFormat(expectedFormat));
+            } else {
+                //System.out.println("PI: " + requiredFormat + " " + getFormat(requiredFormat));
+                ld.parseWithFormat(dt.getLabel(), getFormat(requiredFormat));
+            }
+        } catch (LoadException ex) {
+            logger.error("Load error: " + dt + " " + ((requiredFormat != null) ? requiredFormat : ""));
+            logger.error(ex.getMessage());
+            //ex.printStackTrace();
+        }
         IDatatype res = DatatypeMap.createObject(g);
         return res;
     }
@@ -700,10 +699,11 @@ public class PluginImpl
     
     @Override
     public IDatatype write(IDatatype dtfile, IDatatype dt) {
-        if (readWriteAuthorized()){
-            QueryLoad ql = QueryLoad.create();
-            ql.write(dtfile.getLabel(), dt.getLabel());
-        }
+//        if (!readWriteAuthorized()) {
+//            return null;
+//        }
+        QueryLoad ql = QueryLoad.create();
+        ql.write(dtfile.getLabel(), dt.getLabel());
         return dt;
     }
     
@@ -716,8 +716,7 @@ public class PluginImpl
     }
    
     static boolean readWriteAuthorized() {
-        //return readWriteAuthorized;
-        return Access.provide(Access.Feature.READ_WRITE_JAVA);
+        return Access.provide(Access.Feature.READ_WRITE);
     }
 
     Path getPath(Expr exp, Environment env){
@@ -1317,9 +1316,9 @@ public class PluginImpl
 
     @Deprecated
     IDatatype load(Graph g, Object o) {
-        if (! readWriteAuthorized()){
-            return FALSE;
-        }
+//        if (! readWriteAuthorized()){
+//            return null;
+//        }
         loader(g);
         IDatatype dt = (IDatatype) o;
         try {
@@ -1359,9 +1358,9 @@ public class PluginImpl
      */
     @Override
     public IDatatype sparql(Environment env, Producer p, IDatatype[] param) {
-        if (! readWriteAuthorized()) {
-            return null;
-        }
+//        if (! Access.provide(Access.Feature.SPARQL)) {
+//            return null;
+//        }
         return kgram(env, getGraph(p), param[0].getLabel(), 
                 (param.length == 1) ? null : createMapping(p, param, 1));
     }

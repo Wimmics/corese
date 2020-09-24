@@ -20,6 +20,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import java.io.IOException;
 import java.util.Enumeration;
 import java.util.logging.Level;
@@ -48,6 +49,9 @@ public class Extension extends Core {
 //    }
     
     public IDatatype httpget(IDatatype uri) {
+        if (reject(Feature.READ_WRITE)) {
+            return null;
+        }
         try {
             Service s = new Service();
             Response res = s.get(uri.getLabel());

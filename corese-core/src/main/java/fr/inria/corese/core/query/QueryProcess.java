@@ -602,9 +602,10 @@ public class QueryProcess extends QuerySolver {
     Mappings query(Node gNode, Query q, Mapping m, Dataset ds) throws EngineException {
         ASTQuery ast = getAST(q);
         if (ast.isLDScript()) {
-            if (Access.reject(Feature.LD_SCRIPT)) {
-                logger.info("LDScript rejected");
-                return Mappings.create(q);
+            if (Access.reject(Feature.LD_SCRIPT, getLevel(q))) {
+                logger.info("LDScript unauthorized");
+                throw new EngineException("LDScript unauthorized") ;
+                //return Mappings.create(q);
             }
         }
         m = createMapping(m, ds);
@@ -624,7 +625,9 @@ public class QueryProcess extends QuerySolver {
         if (q.isUpdate() || q.isRule()) {
             log(Log.UPDATE, q);
             if (Access.reject(Access.Feature.SPARQL_UPDATE, getLevel(q))) { 
-                return Mappings.create(q);
+                logger.error("SPARQL Update unauthorized");
+                //return Mappings.create(q);
+                throw new EngineException("SPARQL Update unauthorized") ;
             }
             map = getQueryProcessUpdate().synUpdate(q, m, ds);
             // map is the result of the last Update in q

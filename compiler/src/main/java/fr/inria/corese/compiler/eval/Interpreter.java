@@ -489,14 +489,22 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
     }
 
+    /**
+     * Create a mapping with var = val coming from Bind stack 
+     */
     Mapping getMapping(Environment env, Query q) {
         if (env.hasBind()) {
+            // share variables
             Mapping map = Mapping.create(q, env.getBind());
             // share global variables and ProcessVisitor
             map.setBind(env.getBind());
             return map;
         }
-        return null;
+        else {
+            // share global variables and ProcessVisitor
+            return Mapping.create(env.getBind());
+        }
+        //return null;
     }
   
     /**

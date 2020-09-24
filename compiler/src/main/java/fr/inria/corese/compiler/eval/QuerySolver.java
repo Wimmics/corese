@@ -32,6 +32,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.core.Sorter;
+import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.kgram.event.EventListener;
 import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.event.ResultListener;
@@ -39,6 +40,7 @@ import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.AccessRightDefinition;
+import java.util.logging.Level;
 
 /**
  * Evaluator of SPARQL query by KGRAM Ready to use Package with KGRAM and SPARQL
@@ -294,7 +296,13 @@ public class QuerySolver implements SPARQLEngine {
         tune(kgram, query, m);
 
         before(query);
-        Mappings map = kgram.query(gNode, query, m);
+        Mappings map;
+        try {
+            map = kgram.query(gNode, query, m);
+        } catch (SparqlException ex) {
+            java.util.logging.Logger.getLogger(QuerySolver.class.getName()).log(Level.SEVERE, null, ex);
+            map = Mappings.create(query);
+        }
         //TODO: check memory usage when storing Eval
         map.setEval(kgram);
         after(map);
@@ -410,7 +418,11 @@ public class QuerySolver implements SPARQLEngine {
 
     public Eval createEval(Query q) throws EngineException {
         Eval kgram = makeEval();
-        kgram.query(q);
+        try {
+            kgram.query(q);
+        } catch (SparqlException ex) {
+            java.util.logging.Logger.getLogger(QuerySolver.class.getName()).log(Level.SEVERE, null, ex);
+        }
         return kgram;
     }
 

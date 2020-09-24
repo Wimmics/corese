@@ -73,8 +73,8 @@ public class FunctionCompiler {
         if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
             return;
         }
-        if (Access.reject(Access.Feature.FUNCTION_DEFINITION, ast.getLevel())) { //(ast.isUserQuery()) {
-            System.out.println("Compiler: extension function not available in server mode");
+        if (Access.reject(Access.Feature.FUNCTION_DEFINITION, ast.getLevel())) { 
+            logger.error("Extension function definition unauthorized");
             return;
         }
 

@@ -18,7 +18,6 @@ import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.compiler.api.ProxyPlugin;
 import fr.inria.corese.kgram.api.core.Expr;
-import fr.inria.corese.kgram.api.core.ExprLabel;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
@@ -41,6 +40,8 @@ import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Context;
 
 /**
  * Implements evaluator of operators & functions of filter language with
@@ -97,7 +98,7 @@ public class ProxyInterpreter implements Proxy,  ExprType {
     }
 
     @Override
-    public Evaluator getEvaluator() {
+    public Interpreter getEvaluator() {
         return eval;
     }
     
@@ -2047,6 +2048,14 @@ public class ProxyInterpreter implements Proxy,  ExprType {
      */
     public Environment getEnvironment() {
         return environment;
+    }
+    
+    public Context getContext() {
+        return ((Interpreter)getEval().getEvaluator()).getContext(getEnvironment(), getProducer());
+    }
+    
+    public boolean reject(Access.Feature feature) {
+        return Access.reject(feature, getContext());
     }
     
     public Eval getEval() {

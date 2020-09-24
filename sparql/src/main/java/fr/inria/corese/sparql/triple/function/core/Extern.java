@@ -7,6 +7,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import java.lang.reflect.InvocationTargetException;
 
 /**
@@ -29,6 +30,9 @@ public class Extern extends TermEval {
         if (param == null || ! getProcessor().isCorrect()){
             return null;
         } 
+        if (reject(Feature.JAVA_FUNCTION, eval, env, p)) {
+            return null;
+        }
         Processor proc = getProcessor();
         proc.compile();
         if (proc.getProcessor() instanceof FunctionEvaluator){

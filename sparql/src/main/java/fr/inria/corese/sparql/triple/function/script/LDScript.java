@@ -1,7 +1,12 @@
 package fr.inria.corese.sparql.triple.function.script;
 
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Expression;
 
 /**
@@ -32,5 +37,5 @@ public class LDScript extends TermEval {
         ast.getGlobalAST().setLDScript(true);
         return super.prepare(ast);
     }
-
+    
 }

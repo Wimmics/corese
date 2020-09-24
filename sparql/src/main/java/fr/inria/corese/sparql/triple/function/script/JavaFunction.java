@@ -1,5 +1,9 @@
 package fr.inria.corese.sparql.triple.function.script;
 
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.api.Computer;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 
@@ -16,17 +20,17 @@ public class JavaFunction extends LDScript {
 
     JavaFunction(String name) {
         super(name);
-        switch (name) {
-            case GLOBAL_VALUE: break;
-            default: setReject(Access.reject(Feature.READ_WRITE_JAVA));
-        }
+//        switch (name) {
+//            case GLOBAL_VALUE: break;
+//            default: setReject(Access.reject(Feature.JAVA_FUNCTION));
+//        }
     }
     
     /**
      * @return the reject
      */
-    public boolean isReject() {
-        return reject;
+    public boolean isReject(Computer eval, Environment env, Producer p) {
+        return reject(Feature.JAVA_FUNCTION, eval, env, p);
     }
 
     /**

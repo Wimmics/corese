@@ -98,6 +98,11 @@ public class Context extends ASTObject {
         table = new HashMap();
         export = new HashMap();
     }
+    
+    public Context(Access.Level level) {
+        this();
+        setLevel(level);
+    }
 
     @Override
     public String toString() {        
@@ -112,8 +117,9 @@ public class Context extends ASTObject {
             sb.append(NL);
         }
         if (isUserQuery()) {
-            sb.append("user query: true");
+            sb.append("user query: true").append(NL);
         }
+        sb.append("level: ").append(getLevel()).append(NL);
         return sb.toString();
     }
     
@@ -484,8 +490,9 @@ public class Context extends ASTObject {
         return level;
     }
     
-    public void setLevel(Access.Level l) {
+    public Context setLevel(Access.Level l) {
         level = l;
+        return this;
     }
 
     /**

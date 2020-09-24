@@ -41,7 +41,7 @@ public class Javacall extends JavaFunction {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        if (isReject()) {
+        if (isReject(eval, env, p)) {
             return null;
         }
         IDatatype dt   = getBasicArg(0).eval(eval, b, env, p);

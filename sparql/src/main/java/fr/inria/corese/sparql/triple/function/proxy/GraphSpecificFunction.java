@@ -36,6 +36,8 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SUBJECTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SYNTAX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
+import fr.inria.corese.sparql.triple.parser.Access;
 
 /**
  *
@@ -58,18 +60,14 @@ public class GraphSpecificFunction extends LDScript {
         GraphProcessor proc = eval.getGraphProcessor();
         
         switch (oper()) {
-            case LOAD:
-                return load(proc, param);
-                
-            case WRITE:
-                return proc.write(param[0], param[1]);
-                
-            case XT_SYNTAX:
-                return proc.syntax(param[0], param[1], (param.length==3)?param[2]:null);
-                
+            case LOAD:               
+            case WRITE:               
             case READ:
-                return proc.read(param[0]);
-                
+                return io(eval, b, env, p, param);
+          
+            case XT_SYNTAX:
+                return proc.syntax(param[0], param[1], (param.length == 3) ? param[2] : null);
+
             case SIM:
                 switch (param.length) {
                     case 0:
@@ -134,6 +132,10 @@ public class GraphSpecificFunction extends LDScript {
                 return proc.shape(this, env, p, param);
                 
             case KGRAM:
+                if (reject(Access.Feature.SPARQL, eval, env, p)) {
+                    TermEval.logger.error("SPARQL query unauthorized");
+                    return null;
+                }
                 return proc.sparql(env, p, param);
                 
             case XT_TOGRAPH:
@@ -144,6 +146,38 @@ public class GraphSpecificFunction extends LDScript {
         }
         
     }
+    
+   
+    
+    public IDatatype io(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param) {
+        GraphProcessor proc = eval.getGraphProcessor();
+        switch (oper()) {
+
+            case LOAD:
+                if (reject(Access.Feature.READ_WRITE, eval, env, p)) {
+                    TermEval.logger.error("Load unauthorized");
+                    return null;
+                }
+                return load(proc, param);
+
+            case WRITE:
+                if (reject(Access.Feature.READ_WRITE, eval, env, p)) {
+                    TermEval.logger.error("Write unauthorized");
+                    return null;
+                }
+                return proc.write(param[0], param[1]);
+
+            case READ:
+                if (reject(Access.Feature.READ_WRITE, eval, env, p)) {
+                    TermEval.logger.error("Read unauthorized");
+                    return null;
+                }
+                return proc.read(param[0]);
+                
+            default: return null;
+        }
+    }
+
     
     public IDatatype load(GraphProcessor proc, IDatatype[] param) {
         switch (param.length) {

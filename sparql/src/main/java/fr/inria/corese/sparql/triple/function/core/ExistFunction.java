@@ -7,6 +7,7 @@ import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Expression;
 
 /**
@@ -24,6 +25,13 @@ public class ExistFunction extends TermEval {
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+        if (isSystem()) {
+            // LDScript subquery
+            if (reject(Feature.SPARQL, eval, env, p)) {
+                TermEval.logger.error("SPARQL query unauthorized");
+                return null;
+            }
+        }
         return eval.exist(this, env, p);
     }
     

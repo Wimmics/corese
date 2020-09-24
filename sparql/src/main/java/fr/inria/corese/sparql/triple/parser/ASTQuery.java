@@ -321,6 +321,14 @@ public class ASTQuery
     }
     
     public Level getLevel() {
+        if (getContext() == null) {
+            return Level.DEFAULT;
+        }
+        return getContext().getLevel();
+    }
+
+    
+    public Level getLevel2() {
         if (isUserQuery()) {
             return Level.PUBLIC;
         }

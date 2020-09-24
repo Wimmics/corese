@@ -26,7 +26,7 @@ public class Access {
     // super user is access level for LinkedFunction
     public enum Level     { 
         
-        PUBLIC(1), RESTRICTED(2), PRIVATE(3), SUPER_USER(4) ; 
+        PUBLIC(1), RESTRICTED(2), PRIVATE(3), SUPER_USER(4), DENIED(5) ; 
         
         private int value;
         
@@ -55,8 +55,11 @@ public class Access {
     
     public enum Feature  { 
         FUNCTION_DEFINITION, LINKED_FUNCTION, 
-        READ_WRITE_JAVA, 
-        LD_SCRIPT, SPARQL_UPDATE, 
+        READ_WRITE, JAVA_FUNCTION,
+        LD_SCRIPT, 
+        // sparql query in LDScript
+        SPARQL, 
+        SPARQL_UPDATE, 
     }
     
     class FeatureLevel extends HashMap<Feature, Level> {
@@ -115,6 +118,10 @@ public class Access {
     private FeatureLevel table() {
         return table;
     }
+    
+    public static void deny(Feature feature) {
+        driver().put(feature, DENIED);
+    }
         
     public static void set(Feature feature, Level accessRight) {
         driver().put(feature, accessRight);
@@ -143,6 +150,17 @@ public class Access {
         return DEFAULT.provide(get(feature));
     }
     
+    public static boolean accept(Feature feature, Context c) {
+        if (c == null) {
+            return accept(feature);
+        }
+        return accept(feature, c.getLevel());
+    }
+    
+    public static boolean reject(Feature feature, Context c) {
+        return ! accept(feature, c);
+    }
+    
     public static boolean reject(Feature feature, Level actionLevel) {
         return ! accept(feature, actionLevel);
     }
@@ -151,28 +169,41 @@ public class Access {
         return ! accept(feature);
     }
     
+    
+    public static Level getLevel(Level actionLevel) {        
+        return actionLevel;
+    }
+    
     /**
      * if query is public (it comes from http sparql endpoint)
      *   if server is protect : access level is public (protect the query)
      *   else access is default (it is my query, I want all features)
-     */
-    public static Level getLevel(Level actionLevel) {
-        if (actionLevel == PUBLIC) {
-            if (isProtect()) {
-                return PUBLIC;
-            }
-            return DEFAULT;
-        }
-        return actionLevel;
-    }
+     */    
+//    public static Level getLevel(Level actionLevel) {
+//        if (actionLevel == PUBLIC) {
+//            if (isProtect()) {
+//                return PUBLIC;
+//            }
+//            return DEFAULT;
+//        }
+//        return actionLevel;
+//    }
     
+    /**
+     * Used by server to grant access right to server query (user query or system query)
+     * user = true : user query coming from http request
+     * special = true: grant RESTRICTED access level (better than PUBLIC) 
+     * Return the access right granted to the query 
+     */
     public static Level getQueryAccessLevel(boolean user, boolean special) {
         if (isProtect()) {
             if (user) {
                 if (special) {
+                    // special case: authorize SPARQL_UPDATE (e.g. for tutorial)
                     return Level.RESTRICTED;
                 }
                 else {
+                    // user query has only access to PUBLIC feature
                     return Level.PUBLIC;
                 }
             }
@@ -180,16 +211,23 @@ public class Access {
         return Level.DEFAULT;
     }
     
-    // protect DEFAULT level
+    /**
+     * Run in protected mode, some features are protected
+     *
+     */
     public static void protect() {
         setProtect(true);
-        set(READ_WRITE_JAVA, SUPER_USER);
+        set(READ_WRITE, SUPER_USER);
+        set(JAVA_FUNCTION, SUPER_USER);
+        set(LINKED_FUNCTION, SUPER_USER);
     }
         
+    /**
+     * Available for DEFAULT but not for PUBLIC
+     */
     public static void setLinkedFunction(boolean b) {
         if (b) {
             set(LINKED_FUNCTION, DEFAULT);
-            //System.out.println(singleton);
         }
     }
     
@@ -236,7 +274,7 @@ public class Access {
     }
     
     void init() {
-        // everything is private except:
+        // by default, everything is PRIVATE except:
         set(LINKED_FUNCTION, SUPER_USER);
         set(SPARQL_UPDATE, RESTRICTED);
         set(LD_SCRIPT, PUBLIC);

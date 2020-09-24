@@ -11,6 +11,7 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.VariableLocal;
 import java.util.ArrayList;
@@ -54,6 +55,7 @@ public class Binding implements Binder {
     private boolean dynamicCapture = DYNAMIC_CAPTURE_DEFAULT;
     private boolean result;
     private boolean coalesce = false;
+    private Access.Level accessLevel = Access.Level.DEFAULT;
     
     private static Binding singleton;
     
@@ -484,6 +486,11 @@ public class Binding implements Binder {
     }
     
     public void share(Binding b) {
+        shareGlobalVariable(b);
+        setAccessLevel(b.getAccessLevel());
+    }
+    
+    void shareGlobalVariable(Binding b) {
         setGlobalVariableNames(b.getGlobalVariableNames());
         setGlobalVariableValues(b.getGlobalVariableValues());
     }
@@ -624,6 +631,20 @@ public class Binding implements Binder {
      */
     public static void setSingleton(Binding aSingleton) {
         singleton = aSingleton;
+    }
+
+    /**
+     * @return the accessLevel
+     */
+    public Access.Level getAccessLevel() {
+        return accessLevel;
+    }
+
+    /**
+     * @param accessLevel the accessLevel to set
+     */
+    public void setAccessLevel(Access.Level accessLevel) {
+        this.accessLevel = accessLevel;
     }
     
 }

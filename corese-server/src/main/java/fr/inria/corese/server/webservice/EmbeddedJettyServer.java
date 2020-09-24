@@ -238,7 +238,6 @@ public class EmbeddedJettyServer extends ResourceConfig {
                         
                         if (cmd.hasOption("lf")) {
                             logger.info("Linked Function");
-                            //QuerySolver.setLinkedFunctionDefault(true);
                             // still not available with protect mode
                             Access.setLinkedFunction(true);
                         }

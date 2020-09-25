@@ -237,9 +237,9 @@ public class EmbeddedJettyServer extends ResourceConfig {
                         Access.setMode(Access.Mode.SERVER);
                         
                         if (cmd.hasOption("lf")) {
-                            logger.info("Linked Function");
+                            logger.info("Linked Feature");
                             // still not available with protect mode
-                            Access.setLinkedFunction(true);
+                            Access.setLinkedFeature(true);
                         }
                         if (cmd.hasOption("param")) {
                             String prop = cmd.getOptionValue("param");

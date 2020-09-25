@@ -122,7 +122,7 @@ public class Loader {
         return path;
      }
        
-       /**
+     /**
      * Predefined transformations loaded from Corese resource or ns.inria.fr server
      */
     void load(Load ld, QueryEngine qe, String pp) throws LoadException {
@@ -132,7 +132,7 @@ public class Loader {
         // base for templates
         // use case: format { <format/main.html> ?x }
         qe.setBase(NSManager.toURI(pp));
-        if (nsm.inNamespace(pp, STL)) {
+        if (nsm.isPredefinedTransformation(pp)) {
             // predefined pprinter: st:owl st:spin
             // loaded from Corese resource
             name = nsm.strip(pp, STL);
@@ -199,13 +199,13 @@ public class Loader {
                 }           
             } 
             
-            Expr imp = qprofile.getProfile(STL_IMPORT);
-            if (imp != null) {
-                String uri = imp.getExp(0).getLabel();
-                if (! loaded.containsKey(uri)){
-                    loadImport(tqe, imp.getExp(0).getLabel());
-                }
-            }
+//            Expr imp = qprofile.getProfile(STL_IMPORT);
+//            if (imp != null) {
+//                String uri = imp.getExp(0).getLabel();
+//                if (! loaded.containsKey(uri)){
+//                    loadImport(tqe, imp.getExp(0).getLabel());
+//                }
+//            }
         }
     }
     

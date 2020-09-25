@@ -47,25 +47,7 @@ public class Extension extends Core {
 //    public static Extension singleton() {
 //        return singleton;
 //    }
-    
-    public IDatatype httpget(IDatatype uri) {
-        if (reject(Feature.READ_WRITE)) {
-            return null;
-        }
-        try {
-            Service s = new Service();
-            Response res = s.get(uri.getLabel());
-            String str = res.readEntity(String.class);
-            return DatatypeMap.newInstance(str);
-        }
-        catch(Exception e) {
-            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, 
-                    e.getMessage() + "\n" + uri.getLabel(), 
-                    "");
-        }
-        return null;
-    }
-    
+       
     public IDatatype parse(IDatatype dt) {
         if (dt.isURI()) {
             return imports(dt, false);

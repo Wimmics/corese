@@ -53,6 +53,7 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.RDFFormat;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.update.GraphManager;
@@ -77,6 +78,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Access;
 import java.util.logging.Level;
+import javax.ws.rs.core.Response;
 
 
 /**
@@ -1493,15 +1495,12 @@ public class PluginImpl
     
     @Override
     public IDatatype read(IDatatype dt){
-//        if (! readWriteAuthorized()){
-//            return null;
-//        }
         QueryLoad ql = QueryLoad.create();
         String str = null;
         try {
             str = ql.readWE(dt.getLabel());
         } catch (LoadException ex) {
-            LoggerFactory.getLogger(PluginImpl.class.getName()).error(  "", ex);
+            logger.error(  "", ex);
         }
         if (str == null){
             return null; //str = "";
@@ -1509,7 +1508,21 @@ public class PluginImpl
         return DatatypeMap.newInstance(str);
     }
 
-
+    @Override
+    public IDatatype httpget(IDatatype uri) {
+//        if (reject(Feature.READ_WRITE)) {
+//            return null;
+//        }
+        try {
+            Service s = new Service();
+            Response res = s.get(uri.getLabel());
+            String str = res.readEntity(String.class);
+            return DatatypeMap.newInstance(str);
+        } catch (Exception e) {
+            logger.error(e.getMessage() + "\n" + uri.getLabel(),"");
+        }
+        return null;
+    }
   
     String getLabel(IDatatype dt) {
         if (dt == null) {

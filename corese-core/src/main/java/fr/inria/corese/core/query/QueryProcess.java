@@ -647,14 +647,47 @@ public class QueryProcess extends QuerySolver {
         finish(q, map);
         return map;
     }
-
+    
+    /**
+     * 
+     */
     Mapping createMapping(Mapping m, Dataset ds) {
-        if (m == null) {
-            if (ds != null && ds.getBinding() != null) {
-                m = Mapping.create(ds.getBinding());
+        if (ds != null) {
+            if (ds.getBinding() != null) {
+                if (m == null) {
+                    m = new Mapping();
+                }
+                if (m.getBind() == null) {
+                    m.setBind(ds.getBinding());
+                }
             }
-        } else if (m.getBind() == null && ds != null) {
-            m.setBind(ds.getBinding());
+            if (ds.getContext() != null) {
+                if (m == null) {
+                    m = new Mapping();
+                }
+                Binding b = (Binding) m.getBind();
+                if (b == null) {
+                    b = Binding.create();
+                    m.setBind(b);
+                }
+                b.setAccessLevel(ds.getContext().getLevel());
+            }
+        }
+        return m;
+    }
+    
+
+    Mapping createMapping2(Mapping m, Dataset ds) {
+        if (m == null) {
+            if (ds != null) { 
+                if (ds.getBinding() != null) {
+                    m = Mapping.create(ds.getBinding());
+                }
+            }
+        } else if (m.getBind() == null) { 
+            if (ds != null) {
+                m.setBind(ds.getBinding());
+            }
         }
         return m;
     }
@@ -1229,7 +1262,6 @@ public class QueryProcess extends QuerySolver {
         if (transformer == null) {
             transformer = Transformer.create();
             transformer.setSPARQLEngine(this);
-            transformer.setLinkedFunction(isLinkedFunction());
         }
         return transformer;
     }

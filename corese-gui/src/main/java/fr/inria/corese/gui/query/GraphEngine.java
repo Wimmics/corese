@@ -38,20 +38,8 @@ import org.apache.logging.log4j.LogManager;
  */
 public class GraphEngine {
 
-    /**
-     * @return the linkedFunction
-     */
-    public boolean isLinkedFunction() {
-        return linkedFunction;
-    }
-
-    /**
-     * @param linkedFunction the linkedFunction to set
-     */
-    public void setLinkedFunction(boolean linkedFunction) {
-        this.linkedFunction = linkedFunction;
-        Access.setLinkedFunction(linkedFunction);
-    }
+   
+    
     private static Logger logger = LogManager.getLogger(GraphEngine.class);
     static final String BRUL = "brul";
 
@@ -165,9 +153,6 @@ public class GraphEngine {
         qp.setLoader(loader());
         qp.setListGroup(isListGroup);
         qp.setDebug(isDebug);
-        if (isLinkedFunction()) {
-            qp.setLinkedFunction(true);
-        }
         return qp;
     }
 
@@ -408,6 +393,21 @@ public class GraphEngine {
      */
     public void setVisitor(QuerySolverVisitor visitor) {
         this.visitor = visitor;
+    }
+    
+     /**
+     * @return the linkedFunction
+     */
+    public boolean isLinkedFunction() {
+        return linkedFunction;
+    }
+
+    /**
+     * @param linkedFunction the linkedFunction to set
+     */
+    public void setLinkedFunction(boolean linkedFunction) {
+        this.linkedFunction = linkedFunction;
+        Access.setLinkedFeature(linkedFunction);
     }
 
 }

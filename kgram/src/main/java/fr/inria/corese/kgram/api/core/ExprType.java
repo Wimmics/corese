@@ -383,6 +383,7 @@ public interface ExprType {
         public static int XT_SUBJECTS    = 486;
         public static int XT_OBJECTS     = 487;
         public static int XT_SYNTAX      = 488;
+        public static int XT_HTTP_GET    = 489;
         
         
              

@@ -133,21 +133,6 @@ public class FunctionCompiler {
         }
     }
 
-    void basicImports(Query q, ASTQuery ast, String path) throws EngineException {
-        if (imported.containsKey(path)) {
-            return;
-        }
-        if (ast.isDebug()) {
-            logger.info("Import: " + path);
-        }
-        imported.put(path, path);
-        ASTQuery ast2 = transformer.getSPARQLEngine().parse(path);
-        compile(q, ast, ast2.getDefine());
-        define(ast, ast2.getDefine(), q);
-        compile(q, ast, ast2.getDefineLambda());
-        define(ast, ast2.getDefineLambda(), q);
-    }
-
     void undefinedFunction(Query q, ASTQuery ast) {
         for (Expression exp : ast.getUndefined().values()) {
             boolean ok = Interpreter.isDefined(exp) || q.getExtension().isDefined(exp);
@@ -156,7 +141,7 @@ public class FunctionCompiler {
                 ok = acceptLinkedFunction(ast.getLevel())
                   && importFunction(q, exp);
                 if (!ok) {
-                    ast.addError("Undefined expression: " + exp);
+                    ast.addError("Compiler: Undefined expression: " + exp);
                 }
             }
         }
@@ -196,9 +181,26 @@ public class FunctionCompiler {
         }
         return false;
     }
+    
+    
+    void basicImports(Query q, ASTQuery ast, String path) throws EngineException {
+        if (imported.containsKey(path)) {
+            return;
+        }
+        if (ast.isDebug()) {
+            logger.info("Import: " + path);
+        }
+        imported.put(path, path);
+        ASTQuery ast2 = transformer.getSPARQLEngine().parse(path);
+        compile(q, ast, ast2.getDefine());
+        define(ast, ast2.getDefine(), q);
+        compile(q, ast, ast2.getDefineLambda());
+        define(ast, ast2.getDefineLambda(), q);
+    }
 
     boolean getLinkedFunctionBasic(String label) {
         String path = NSManager.namespace(label);
+        System.out.println(path + " " + getLoaded().containsKey(path));
         if (getLoaded().containsKey(path)) {
             return true;
         }

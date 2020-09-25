@@ -1862,20 +1862,6 @@ public class Transformer implements ExpType {
     }
 
     /**
-     * @return the LoadFunction
-     */
-    public boolean isLinkedFunction() {
-        return isLoadFunction;
-    }
-
-    /**
-     * @param LoadFunction the LoadFunction to set
-     */
-    public void setLinkedFunction(boolean LoadFunction) {
-        this.isLoadFunction = LoadFunction;
-    }
-
-    /**
      * @return the serviceList
      */
     public List<Atom> getServiceList() {

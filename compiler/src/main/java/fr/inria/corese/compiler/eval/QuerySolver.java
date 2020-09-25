@@ -67,7 +67,6 @@ public class QuerySolver implements SPARQLEngine {
     public static boolean BGP_DEFAULT = false;
     public static boolean ALGEBRA_DEFAULT = false;
     private static boolean visitorable = false;
-    private static boolean LINKED_FUNCTION_DEFAULT = false;
 
     static String NAMESPACES;
     private static Metadata defaultMetadata;
@@ -90,7 +89,6 @@ public class QuerySolver implements SPARQLEngine {
             isOptimize = false,
             isSPARQLCompliant = false;
     private boolean isGenerateMain = true;
-    private boolean linkedFunction = LINKED_FUNCTION_DEFAULT;
     private boolean isSynchronized = false;
     private boolean isPathType = false;
     private boolean isStorePath = true;
@@ -528,7 +526,6 @@ public class QuerySolver implements SPARQLEngine {
     }
 
     void setParameter(Transformer transformer) {
-        transformer.setLinkedFunction(isLinkedFunction());
         transformer.setGenerateMain(isGenerateMain());
         transformer.setNamespaces(NAMESPACES);
         transformer.setPragma(getPragma());
@@ -859,24 +856,6 @@ public class QuerySolver implements SPARQLEngine {
 
     public ASTQuery parse(String path) throws EngineException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    /**
-     * @return the loadFunction
-     */
-    public boolean isLinkedFunction() {
-        return linkedFunction;
-    }
-
-    /**
-     * @param loadFunction the loadFunction to set
-     */
-    public void setLinkedFunction(boolean loadFunction) {
-        this.linkedFunction = loadFunction;
-    }
-
-    public static void setLinkedFunctionDefault(boolean b) {
-        LINKED_FUNCTION_DEFAULT = b;
     }
 
     Metadata getActualMetadata() {

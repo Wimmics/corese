@@ -15,7 +15,6 @@ import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.Context;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -146,9 +145,16 @@ public class TermEval extends Term {
         return p.getNode(dt);
     }
      
-    public boolean reject(Access.Feature feature, Computer eval, Environment env, Producer p) {
-        return Access.reject(feature, eval.getContext(env, p));
+    public boolean reject(Access.Feature feature, Computer eval, Binding b, Environment env, Producer p) {
+        return Access.reject(feature, b.getAccessLevel());
     }
-
+    
+    public boolean accept(Access.Feature feature, Computer eval, Binding b, Environment env, Producer p) {
+        return Access.accept(feature, b.getAccessLevel());
+    }
+    
+    public void log(String mess) {
+        logger.error(mess);
+    }
       
 }

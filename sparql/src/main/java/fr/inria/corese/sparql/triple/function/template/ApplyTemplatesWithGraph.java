@@ -6,6 +6,8 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.TransformProcessor;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  *
@@ -24,6 +26,14 @@ public class ApplyTemplatesWithGraph extends TemplateFunction {
      public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         IDatatype[] param = evalArguments(eval, b, env, p, 0);
         if (param == null) {
+            return null;
+        }
+        
+        String uri = param[0].getLabel();
+        
+        if (reject(Access.Feature.LINKED_TRANSFORMATION, eval, b, env, p)
+                && !NSManager.isPredefinedTransformation(uri)) {
+            log("Linked Transformation unauthorized");
             return null;
         }
 

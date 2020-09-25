@@ -27,8 +27,8 @@ public class ExistFunction extends TermEval {
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
         if (isSystem()) {
             // LDScript subquery
-            if (reject(Feature.SPARQL, eval, env, p)) {
-                TermEval.logger.error("SPARQL query unauthorized");
+            if (reject(Feature.SPARQL, eval, b, env, p)) {
+                log("SPARQL query unauthorized");
                 return null;
             }
         }

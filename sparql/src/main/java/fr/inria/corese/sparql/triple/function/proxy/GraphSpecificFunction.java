@@ -30,6 +30,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_TOGRAPH;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.sparql.triple.function.script.LDScript;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGES;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_HTTP_GET;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_INSERT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MINDEGREE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECTS;
@@ -132,8 +133,8 @@ public class GraphSpecificFunction extends LDScript {
                 return proc.shape(this, env, p, param);
                 
             case KGRAM:
-                if (reject(Access.Feature.SPARQL, eval, env, p)) {
-                    TermEval.logger.error("SPARQL query unauthorized");
+                if (reject(Access.Feature.SPARQL, eval, b, env, p)) {
+                    log("SPARQL query unauthorized");
                     return null;
                 }
                 return proc.sparql(env, p, param);
@@ -154,25 +155,32 @@ public class GraphSpecificFunction extends LDScript {
         switch (oper()) {
 
             case LOAD:
-                if (reject(Access.Feature.READ_WRITE, eval, env, p)) {
-                    TermEval.logger.error("Load unauthorized");
+                if (reject(Access.Feature.READ_WRITE, eval, b, env, p)) {
+                    log("Load unauthorized");
                     return null;
                 }
                 return load(proc, param);
 
             case WRITE:
-                if (reject(Access.Feature.READ_WRITE, eval, env, p)) {
-                    TermEval.logger.error("Write unauthorized");
+                if (reject(Access.Feature.READ_WRITE, eval, b, env, p)) {
+                    log("Write unauthorized");
                     return null;
                 }
                 return proc.write(param[0], param[1]);
 
             case READ:
-                if (reject(Access.Feature.READ_WRITE, eval, env, p)) {
-                    TermEval.logger.error("Read unauthorized");
+                if (reject(Access.Feature.READ_WRITE, eval, b, env, p)) {
+                    log("Read unauthorized");
                     return null;
                 }
                 return proc.read(param[0]);
+                
+            case XT_HTTP_GET:
+                if (reject(Access.Feature.READ_WRITE, eval, b, env, p)) {
+                    log("HTTP get unauthorized");
+                    return null;
+                }
+                return proc.httpget(param[0]);    
                 
             default: return null;
         }

@@ -452,7 +452,8 @@ public class Term extends Expression {
 
             case ExprType.DEBUG:
             case ExprType.SLICE:
-            case ExprType.ENV:    
+            case ExprType.ENV:   
+            case ExprType.XT_STACK:
             case ExprType.XT_RESULT:    
             case ExprType.XT_VISITOR:    
             case ExprType.XT_DATATYPE:    
@@ -548,6 +549,7 @@ public class Term extends Expression {
             case ExprType.LOAD:
             case ExprType.WRITE:
             case ExprType.READ:
+            case ExprType.XT_HTTP_GET:
             case ExprType.XT_TUNE:
             case ExprType.SIM:                
             case ExprType.APP_SIM:                

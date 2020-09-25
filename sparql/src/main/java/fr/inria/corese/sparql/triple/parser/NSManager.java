@@ -768,8 +768,12 @@ public class NSManager extends ASTObject {
         }
         return false;
     }
+    
+    public static boolean isPredefinedTransformation(String path) {
+        return inNamespace(path, STL);
+    }
 
-    public boolean inNamespace(String type, String namespace) {
+    public static boolean inNamespace(String type, String namespace) {
         // retourne si un type appartient au namespace
         if (namespace == null) {
             return true;

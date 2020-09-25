@@ -17,6 +17,7 @@ public interface GraphProcessor {
     IDatatype syntax(IDatatype dtsyntax, IDatatype dtgraph, IDatatype node); 
     
     IDatatype read(IDatatype dt); 
+    IDatatype httpget(IDatatype dt); 
     
     IDatatype format(IDatatype[] ldt);
     

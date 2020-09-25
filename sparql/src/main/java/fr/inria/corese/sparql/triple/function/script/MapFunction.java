@@ -36,7 +36,7 @@ public class MapFunction extends Funcall {
         if (name == null || param == null) {
             return null;
         }
-        Function function = getFunction(eval, env, name, param.length);
+        Function function = getFunction(eval, b, env, p, name, param.length);
         if (function == null) {
             return null;
         }
@@ -122,7 +122,7 @@ public class MapFunction extends Funcall {
         if (name == null || param == null) {
             return null;
         }
-        Function function = getFunction(eval, env, name, param.length);
+        Function function = getFunction(eval, b, env, p, name, param.length);
         if (function == null) {
             return null;
         }

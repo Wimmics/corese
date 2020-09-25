@@ -29,8 +29,8 @@ public class JavaFunction extends LDScript {
     /**
      * @return the reject
      */
-    public boolean isReject(Computer eval, Environment env, Producer p) {
-        return reject(Feature.JAVA_FUNCTION, eval, env, p);
+    public boolean isReject(Computer eval, Binding b, Environment env, Producer p) {
+        return reject(Feature.JAVA_FUNCTION, eval, b, env, p);
     }
 
     /**

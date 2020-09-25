@@ -98,6 +98,7 @@ public class Binding implements Binder {
         for (String name : getGlobalVariableNames().keySet()) {
             sb.append(name).append(" = ").append(getGlobalVariableValues().get(name)).append(NL);
         }
+        sb.append("access level: ").append(getAccessLevel()).append(NL);
         return sb.toString();
     }
 

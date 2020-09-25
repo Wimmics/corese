@@ -33,7 +33,8 @@ public class JavaDScall extends JavaFunction {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        if (isReject(eval, env, p)) {
+        if (isReject(eval, b, env, p)) {
+            log("Java function unauthorized");
             return null;
         }
         IDatatype dt   = getBasicArg(0).eval(eval, b, env, p);

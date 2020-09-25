@@ -30,7 +30,7 @@ public class Extern extends TermEval {
         if (param == null || ! getProcessor().isCorrect()){
             return null;
         } 
-        if (reject(Feature.JAVA_FUNCTION, eval, env, p)) {
+        if (reject(Feature.JAVA_FUNCTION, eval, b, env, p)) {
             return null;
         }
         Processor proc = getProcessor();

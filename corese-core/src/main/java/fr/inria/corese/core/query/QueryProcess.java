@@ -1091,12 +1091,16 @@ public class QueryProcess extends QuerySolver {
     IDatatype call(String name, Function function, IDatatype[] param, Context c) throws EngineException {
         Eval eval = getEval();
         eval.getMemory().getQuery().setContext(c);
-        if (c != null && c.getBind() != null) {
-            getBind(eval).share(c.getBind());
+        Binding b = getBind(eval);
+        if (c != null) { 
+            if (c.getBind() != null) {
+                // share global variables
+                b.share(c.getBind());
+            }
+            b.setAccessLevel(c.getLevel());
         }
         return new Funcall(name).call((Interpreter) eval.getEvaluator(),
-                getBind(eval),
-                eval.getMemory(), eval.getProducer(), function, param);
+                b, eval.getMemory(), eval.getProducer(), function, param);
     }
 
     Binding getBind(Eval eval) {

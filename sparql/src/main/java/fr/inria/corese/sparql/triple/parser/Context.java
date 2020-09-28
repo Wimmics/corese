@@ -100,6 +100,10 @@ public class Context extends ASTObject {
         export = new HashMap();
     }
     
+    public static Context create() {
+        return new Context();
+    }
+    
     public Context(Access.Level level) {
         this();
         setLevel(level);
@@ -491,8 +495,9 @@ public class Context extends ASTObject {
         return level;
     }
     
-    public void setLevel(Access.Level l) {
+    public Context setLevel(Access.Level l) {
         level = l;
+        return this;
     }
 
     /**

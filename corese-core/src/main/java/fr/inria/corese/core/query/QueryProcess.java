@@ -671,6 +671,7 @@ public class QueryProcess extends QuerySolver {
                     m.setBind(b);
                 }
                 b.setAccessLevel(ds.getContext().getLevel());
+                b.setDebug(ds.getContext().isDebug());
             }
         }
         return m;

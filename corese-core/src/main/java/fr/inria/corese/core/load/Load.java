@@ -42,7 +42,6 @@ import fr.inria.corese.core.load.jsonld.JsonldLoader;
 import fr.inria.corese.core.load.rdfa.CoreseRDFaTripleSink;
 import fr.inria.corese.core.load.sesame.ParserLoaderSesame;
 import fr.inria.corese.core.load.sesame.ParserTripleHandlerSesame;
-import fr.inria.corese.core.producer.DataFilter;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;

@@ -5,6 +5,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
@@ -602,9 +603,9 @@ public class QueryProcess extends QuerySolver {
     Mappings query(Node gNode, Query q, Mapping m, Dataset ds) throws EngineException {
         ASTQuery ast = getAST(q);
         if (ast.isLDScript()) {
-            if (Access.reject(Feature.LD_SCRIPT, getLevel(q))) {
+            if (Access.reject(Feature.LD_SCRIPT, getLevel(m, q))) {
                 logger.info("LDScript unauthorized");
-                throw new EngineException("LDScript unauthorized") ;
+                throw new SafetyException("LDScript unauthorized") ;
                 //return Mappings.create(q);
             }
         }
@@ -624,10 +625,10 @@ public class QueryProcess extends QuerySolver {
 
         if (q.isUpdate() || q.isRule()) {
             log(Log.UPDATE, q);
-            if (Access.reject(Access.Feature.SPARQL_UPDATE, getLevel(q))) { 
+            if (Access.reject(Access.Feature.SPARQL_UPDATE, getLevel(m, q))) { 
                 logger.error("SPARQL Update unauthorized");
                 //return Mappings.create(q);
-                throw new EngineException("SPARQL Update unauthorized") ;
+                throw new SafetyException("SPARQL Update unauthorized") ;
             }
             map = getQueryProcessUpdate().synUpdate(q, m, ds);
             // map is the result of the last Update in q
@@ -753,7 +754,10 @@ public class QueryProcess extends QuerySolver {
         return c;
     }
 
-    Level getLevel(Query q) {
+    Level getLevel(Mapping m, Query q) {
+        if (m != null && m.getBind() != null) {
+            return ((Binding)m.getBind()).getAccessLevel();
+        }
         Context c = getContext(q);
         if (c == null) {
             return Level.DEFAULT;

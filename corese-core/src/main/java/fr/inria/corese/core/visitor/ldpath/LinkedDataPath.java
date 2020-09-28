@@ -10,6 +10,7 @@ import fr.inria.corese.kgram.core.ProcessVisitorDefault;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Metadata;
@@ -309,7 +310,7 @@ public class LinkedDataPath implements QueryVisitor {
     }
     
     
-    void step(ASTQuery ast, int i, int varIndex) {
+    void step(ASTQuery ast, int i, int varIndex) throws EngineException {
         if (trace) {
             System.out.println(ast);
         }
@@ -335,7 +336,7 @@ public class LinkedDataPath implements QueryVisitor {
      *
      * Results recorded in table ASTQuery -> Mappings
      */
-    void process(ASTQuery ast, int i, int varIndex) throws InterruptedException {
+    void process(ASTQuery ast, int i, int varIndex) throws InterruptedException, EngineException {
         // add: ?s ?p ?v
         ASTQuery ast1 = astq.variable(ast, varIndex);
         if (trace) {

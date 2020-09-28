@@ -5,7 +5,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
@@ -497,12 +497,12 @@ public class QueryProcess extends QuerySolver {
      * RDF Graph g considered as a Query Graph Build a SPARQL BGP with g
      * Generate and eval q KGRAM Query
      */
-    public Mappings query(Graph g) {
+    public Mappings query(Graph g) throws EngineException {
         QueryGraph qg = QueryGraph.create(g);
         return query(qg);
     }
 
-    public Mappings query(QueryGraph qg) {
+    public Mappings query(QueryGraph qg) throws EngineException {
         Query q = qg.getQuery();
         return query(q);
     }
@@ -530,14 +530,14 @@ public class QueryProcess extends QuerySolver {
         return sparqlQueryUpdate(squery, ds, entail);
     }
 
-    public Mappings query(ASTQuery ast) {
+    public Mappings query(ASTQuery ast) throws EngineException {
         if (ast.isUpdate()) {
             return update(ast);
         }
         return query(ast, null);
     }
 
-    public Mappings query(ASTQuery ast, Dataset ds) {
+    public Mappings query(ASTQuery ast, Dataset ds) throws EngineException {
         if (ds != null) {
             ast.setDefaultDataset(ds);
         }
@@ -553,7 +553,7 @@ public class QueryProcess extends QuerySolver {
     /**
      * equivalent of std query(ast) but for update
      */
-    public Mappings update(ASTQuery ast) {
+    public Mappings update(ASTQuery ast) throws EngineException {
         Transformer transformer = transformer();
         Query query = transformer.transform(ast);
         return query(query);
@@ -609,7 +609,7 @@ public class QueryProcess extends QuerySolver {
         if (ast.isLDScript()) {
             if (Access.reject(Feature.LD_SCRIPT, getLevel(m, ds, q))) {
                 logger.info("LDScript unauthorized");
-                throw new SafetyException("LDScript unauthorized") ;
+                throw new EngineException("LDScript unauthorized") ;
                 //return Mappings.create(q);
             }
         }
@@ -632,7 +632,7 @@ public class QueryProcess extends QuerySolver {
             if (Access.reject(Access.Feature.SPARQL_UPDATE, getLevel(m, ds, q))) { 
                 logger.error("SPARQL Update unauthorized");
                 //return Mappings.create(q);
-                throw new SafetyException("SPARQL Update unauthorized") ;
+                throw new EngineException("SPARQL Update unauthorized") ;
             }
             map = getQueryProcessUpdate().synUpdate(q, m, ds);
             // map is the result of the last Update in q

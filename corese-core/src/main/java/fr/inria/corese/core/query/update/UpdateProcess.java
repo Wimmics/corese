@@ -24,6 +24,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -63,7 +64,7 @@ public class UpdateProcess {
      * Process an update sparql query There may be a list of queries return the
      * Mappings of the last update ...
      */
-    public Mappings update(Query q, Mapping m) {
+    public Mappings update(Query q, Mapping m) throws EngineException {
         query = q;
         ASTQuery ast = (ASTQuery) q.getAST();
         ASTUpdate astu = ast.getUpdate();
@@ -125,7 +126,7 @@ public class UpdateProcess {
         isDebug = b;
     }
 
-    Mappings process(Query q, Composite ope, Mapping m, Binding b) {
+    Mappings process(Query q, Composite ope, Mapping m, Binding b) throws EngineException {
         ASTQuery ast = null;
         switch (ope.type()) {
 
@@ -200,7 +201,7 @@ public class UpdateProcess {
      * delete insert data delete insert where In case of data, fake an empty
      * where and process as a where update.
      */
-    Mappings update(Query query, ASTQuery ast, Mapping m, Binding b) {
+    Mappings update(Query query, ASTQuery ast, Mapping m, Binding b) throws EngineException {
 
         //System.out.println("** QP:\n" + m.getBind());
         exec.logStart(query);
@@ -226,7 +227,7 @@ public class UpdateProcess {
         return map;
     }
     
-    Query compile(ASTQuery ast) {
+    Query compile(ASTQuery ast) throws EngineException {
         Query q = ast.getUpdateQuery();
         if (q == null) {
             q = exec.compile(ast, ds);

@@ -3,8 +3,11 @@ package fr.inria.corese.core.visitor.ldpath;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -37,7 +40,11 @@ public class QueryProcessThread extends Thread {
     }
     
     void process() {
-        map = exec.query(ast);
+        try {
+            map = exec.query(ast);
+        } catch (EngineException ex) {
+            Logger.getLogger(QueryProcessThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
     
     Mappings getMappings() {

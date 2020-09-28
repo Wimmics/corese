@@ -35,11 +35,13 @@ import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Level;
 
 /**
  * Implements service expression There may be local QueryProcess for some URI
@@ -144,7 +146,12 @@ public class ProviderImpl implements Provider {
 
         if (exec == null) {
             
-            Mappings map = globalSend(serv, q, exp, lmap, eval);
+            Mappings map = null;
+            try {
+                map = globalSend(serv, q, exp, lmap, eval);
+            } catch (EngineException ex) {
+                java.util.logging.Logger.getLogger(ProviderImpl.class.getName()).log(Level.SEVERE, null, ex);
+            }
             if (map != null) {
                 return map;
             }
@@ -161,9 +168,14 @@ public class ProviderImpl implements Provider {
         }
 
         ASTQuery ast = exec.getAST(q);
-        Mappings map = exec.query(ast);
-
-        return map;
+        Mappings map;
+        try {
+            map = exec.query(ast);
+            return map;
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(ProviderImpl.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return new Mappings();
     }
     
     Graph getGraph(Producer p) {
@@ -173,7 +185,7 @@ public class ProviderImpl implements Provider {
     /**
      * Take Mappings into account when sending service to remote endpoint
      */
-    Mappings globalSend(Node serv, Query q, Exp exp, Mappings map, Eval eval) {
+    Mappings globalSend(Node serv, Query q, Exp exp, Mappings map, Eval eval) throws EngineException {
         CompileService compiler = new CompileService(this);
 
         // share prefix
@@ -210,7 +222,7 @@ public class ProviderImpl implements Provider {
      * When several services, they are evaluated in parallel by default, unless @sequence metadata
      * When several services, return *distinct* Mappings, unless @duplicate metadata.
      */
-    Mappings sliceSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, boolean slice, int length) {
+    Mappings sliceSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, boolean slice, int length) throws EngineException {
         
         List<Node> list = getServerList(exp, map, eval.getEnvironment());
         g.getEventManager().start(Event.Service, list);
@@ -286,7 +298,7 @@ public class ProviderImpl implements Provider {
      * Execute one service with possibly input Mappings map and possibly slicing map into packet of size length
      * Add results into Mappings sol which is empty when entering
      */
-    void process(Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout) {
+    void process(Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout) throws EngineException {
         int size = 0;
         if (slice) {
             while (size < map.size()) {
@@ -419,7 +431,7 @@ public class ProviderImpl implements Provider {
     
    
     @Deprecated
-    Mappings basicSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, int min, int max) {
+    Mappings basicSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, int min, int max) throws EngineException {
         List<Node> list = getServerList(exp, map, eval.getEnvironment());
         g.getEventManager().start(Event.Service, list);
         if (list.size() == 1) { 
@@ -454,7 +466,7 @@ public class ProviderImpl implements Provider {
     /**
      * Send query to sparql endpoint using a POST HTTP query
      */
-    Mappings send(CompileService compiler, Node serv, Query q, Mappings map, Environment env, int start, int limit, int timeout) {
+    Mappings send(CompileService compiler, Node serv, Query q, Mappings map, Environment env, int start, int limit, int timeout) throws EngineException {
         Query gq = q.getGlobalQuery();
         try {
 
@@ -515,7 +527,7 @@ public class ProviderImpl implements Provider {
         return env.getEval().getVisitor().slice(serv, map);
     }
     
-    Mappings eval(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException {
+    Mappings eval(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException, EngineException {
         if (isDB(serv)){
             return db(q, serv);
         }
@@ -529,7 +541,7 @@ public class ProviderImpl implements Provider {
      * service <db:/tmp/human_db> { GP }
      * service overloaded to query a database
      */
-    Mappings db(Query q, Node serv){
+    Mappings db(Query q, Node serv) throws EngineException{
         QueryProcess exec = QueryProcess.dbCreate(Graph.create(), true, QueryProcess.DB_FACTORY, serv.getLabel().substring(DB.length()));
         return exec.query((ASTQuery) q.getAST());
     }

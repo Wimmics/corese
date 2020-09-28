@@ -9,6 +9,7 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.api.QueryGraphVisitor;
 import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 
 /**
@@ -47,7 +48,7 @@ public class QueryGraph implements QueryGraphVisitor {
     /**
      * Compile Graph into a BGP Generate a Query
      */
-    public Query getQuery() {
+    public Query getQuery() throws EngineException {
         Transformer t = Transformer.create();
         ASTQuery ast = ASTQuery.create();
         ast.setSelectAll(true);

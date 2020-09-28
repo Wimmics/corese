@@ -5,6 +5,9 @@ import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -58,7 +61,11 @@ public class ProviderThread extends Thread {
     }
     
     void process() {
-        p.process(q, service, exp, map, sol, eval, c, slice, length, timeout);
+        try {
+            p.process(q, service, exp, map, sol, eval, c, slice, length, timeout);
+        } catch (EngineException ex) {
+            Logger.getLogger(ProviderThread.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
 }

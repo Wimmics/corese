@@ -64,6 +64,7 @@ public class GraphSpecificFunction extends LDScript {
             case LOAD:               
             case WRITE:               
             case READ:
+            case XT_HTTP_GET:
                 return io(eval, b, env, p, param);
           
             case XT_SYNTAX:

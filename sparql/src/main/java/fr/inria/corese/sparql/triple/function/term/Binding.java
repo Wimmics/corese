@@ -12,6 +12,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.VariableLocal;
 import java.util.ArrayList;
@@ -56,6 +57,7 @@ public class Binding implements Binder {
     private boolean result;
     private boolean coalesce = false;
     private Access.Level accessLevel = Access.Level.DEFAULT;
+    private Context context;
     
     private static Binding singleton;
     
@@ -388,7 +390,7 @@ public class Binding implements Binder {
     public IDatatype getGlobalVariable(String name) {
         IDatatype dt = getGlobalVariableValues().get(name);
         if (dt == null) {
-            return getSingleton().getVariable(name);
+            return getStaticVariable(name);
         }
         return dt;
     }
@@ -399,6 +401,10 @@ public class Binding implements Binder {
     
     public static Binding setStaticVariable(String name, IDatatype val) {
         return getSingleton().setVariable(name, val);
+    }
+    
+    public static IDatatype getStaticVariable(String name) {
+        return getSingleton().getVariable(name);
     }
     
     public boolean hasVariable() {
@@ -488,7 +494,12 @@ public class Binding implements Binder {
     
     public void share(Binding b) {
         shareGlobalVariable(b);
+        shareContext(b);
+    }
+    
+    void shareContext(Binding b) {
         setAccessLevel(b.getAccessLevel());
+        setDebug(b.isDebug());
     }
     
     void shareGlobalVariable(Binding b) {
@@ -646,6 +657,20 @@ public class Binding implements Binder {
      */
     public void setAccessLevel(Access.Level accessLevel) {
         this.accessLevel = accessLevel;
+    }
+
+    /**
+     * @return the context
+     */
+    public Context getContext() {
+        return context;
+    }
+
+    /**
+     * @param context the context to set
+     */
+    public void setContext(Context context) {
+        this.context = context;
     }
     
 }

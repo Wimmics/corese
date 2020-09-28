@@ -84,6 +84,7 @@ public class Context extends ASTObject {
     NSManager nsm;
     private Binding bind;
     Access.Level level = Access.Level.DEFAULT;
+    private boolean debug;
     
     private boolean userQuery = false;
    
@@ -490,9 +491,8 @@ public class Context extends ASTObject {
         return level;
     }
     
-    public Context setLevel(Access.Level l) {
+    public void setLevel(Access.Level l) {
         level = l;
-        return this;
     }
 
     /**
@@ -557,6 +557,20 @@ public class Context extends ASTObject {
     public Context setBind(Binding bind) {
         this.bind = bind;
         return this;
+    }
+
+    /**
+     * @return the debug
+     */
+    public boolean isDebug() {
+        return debug;
+    }
+
+    /**
+     * @param debug the debug to set
+     */
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
   
 }

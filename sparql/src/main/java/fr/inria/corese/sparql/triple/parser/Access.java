@@ -56,7 +56,7 @@ public class Access {
     } ;
     
     public enum Feature  { 
-        FUNCTION_DEFINITION, 
+        FUNCTION_DEFINITION, IMPORT_FUNCTION,
         LINKED_FUNCTION, LINKED_TRANSFORMATION,
         READ_WRITE, JAVA_FUNCTION,
         LD_SCRIPT, 
@@ -189,6 +189,7 @@ public class Access {
      */
     public static Level getQueryAccessLevel(boolean user, boolean special) {
         if (isProtect()) {
+            // run in protect mode
             if (user) {
                 if (special) {
                     // special case: authorize SPARQL_UPDATE (e.g. for tutorial)
@@ -203,17 +204,7 @@ public class Access {
         return DEFAULT;
     }
     
-    /**
-     * Run in protected mode, some features are protected
-     *
-     */
-    public static void protect() {
-        setProtect(true);
-        deny(READ_WRITE);
-        deny(JAVA_FUNCTION);
-        deny(LINKED_FUNCTION);
-        deny(LINKED_TRANSFORMATION);
-    }
+
     
     public static void setLinkedFeature(boolean b) {
          setLinkedFunction(b);
@@ -281,12 +272,33 @@ public class Access {
         init();
     }
     
+    /**
+     * default mode:
+     * everything is authorized as DEFAULT except some features
+     * in server mode, user query is PUBLIC
+     * 
+     */
     void init() {
-        // by default, everything is authorized as PRIVATE except:
         deny(LINKED_FUNCTION);
-        deny(LINKED_TRANSFORMATION);
+        // external transformation may contain/import function definition
+        //deny(LINKED_TRANSFORMATION);
         set(SPARQL_UPDATE, RESTRICTED);
         set(LD_SCRIPT, PUBLIC);
+    }
+    
+    /**
+     * protected mode:
+     * some features are protected
+     *
+     */
+    public static void protect() {
+        setProtect(true);
+        deny(READ_WRITE);
+        deny(JAVA_FUNCTION);
+        deny(LINKED_FUNCTION);
+        // external transformation may contain/import function definition
+        deny(LINKED_TRANSFORMATION);
+        // IMPORT_FUNCTION is PRIVATE and user query is PUBLIC
     }
     
       /**

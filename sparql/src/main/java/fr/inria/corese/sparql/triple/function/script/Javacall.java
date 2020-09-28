@@ -52,7 +52,7 @@ public class Javacall extends JavaFunction {
         }
         Object object = dt;
         if (dt.getObject() != null) {
-            object = dt.getObject();
+            object = dt.getObject();           
         }
         
         Object[] values       = new Object[param.length];

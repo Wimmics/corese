@@ -125,7 +125,8 @@ public class FunctionCompiler {
     }
     
     void imports(Query q, ASTQuery ast, String path) throws EngineException {
-        if (acceptNamespace(path)) {
+        if (Access.accept(Access.Feature.IMPORT_FUNCTION, ast.getLevel()) && 
+            acceptNamespace(path)) {
             basicImports(q, ast, path);
         }
         else {
@@ -200,7 +201,6 @@ public class FunctionCompiler {
 
     boolean getLinkedFunctionBasic(String label) {
         String path = NSManager.namespace(label);
-        System.out.println(path + " " + getLoaded().containsKey(path));
         if (getLoaded().containsKey(path)) {
             return true;
         }

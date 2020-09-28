@@ -8,7 +8,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.*;
 import fr.inria.corese.compiler.api.QueryVisitor;
@@ -28,8 +27,7 @@ import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.compiler.visitor.MetadataVisitor;
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.triple.parser.Access.Feature;
-import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -143,7 +141,11 @@ public class Transformer implements ExpType {
      */
     void init() {
         if (Processor.getAST() != null) {
-            Query q = transform(Processor.getAST());
+            try {
+                Query q = transform(Processor.getAST());
+            } catch (EngineException ex) {
+                java.util.logging.Logger.getLogger(Transformer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
         }
     }
 
@@ -179,9 +181,13 @@ public class Transformer implements ExpType {
         return transform(squery, false);
     }
 
+    /**
+     * TODO: throw  EngineException when there are undefined functions ?
+     */
     public Query transform(String squery, boolean isRule) throws EngineException {
         ast = parse(squery, isRule);
         Query q = transform(ast);
+        //System.out.println("Tr: " + ast.getErrors());
         return q;
     }
     
@@ -212,7 +218,7 @@ public class Transformer implements ExpType {
     /**
      * Transform for a (outer) query (not a subquery)
      */
-    public Query transform(ASTQuery ast) {
+    public Query transform(ASTQuery ast) throws EngineException {
         this.ast = ast;
         ast.setSPARQLCompliant(isSPARQLCompliant);
         if (isSPARQLCompliant) {
@@ -282,7 +288,7 @@ public class Transformer implements ExpType {
      /**
      * Also used by QueryGraph to compile RDF Graph as a Query
      */
-    public Query transform(Query q, ASTQuery ast) {
+    public Query transform(Query q, ASTQuery ast) throws EngineException {
 
         compiler.setAST(ast);
 
@@ -602,7 +608,7 @@ public class Transformer implements ExpType {
 
 
 
-    void construct(Query q, ASTQuery ast) {
+    void construct(Query q, ASTQuery ast) throws EngineException {
         validate(ast.getInsert(), ast);
         Exp cons = compile(ast.getInsert(), false);
         q.setConstruct(cons);
@@ -620,7 +626,7 @@ public class Transformer implements ExpType {
      * For query and subquery Generate a new compiler for each (sub) query in
      * order to get fresh new nodes
      */
-    Query compile(ASTQuery ast) {
+    Query compile(ASTQuery ast) throws EngineException {
         Exp ee = compile(ast.getExtBody(), false);
         Query q = Query.create(ee);
         q.setUseBind(isUseBind);
@@ -639,13 +645,13 @@ public class Transformer implements ExpType {
     /**
      * Subquery is a construct where
      */
-    Query constructQuery(ASTQuery ast) {
+    Query constructQuery(ASTQuery ast) throws EngineException {
         Transformer t = Transformer.create();
         t.setAlgebra(isAlgebra());
         return t.transform(ast);
     }
     
-    Query updateQuery(ASTQuery ast) {
+    Query updateQuery(ASTQuery ast) throws EngineException {
         Query q = constructQuery(ast);
         return q;
     }
@@ -654,7 +660,7 @@ public class Transformer implements ExpType {
      * subquery is compiled using a new compiler to get fresh new nodes to
      * prevent type inference on nodes between outer and sub queries
      */
-    Query compileQuery(ASTQuery ast) {
+    Query compileQuery(ASTQuery ast) throws EngineException {
         // new
         Compiler save = compiler;
         compiler = fac.newInstance();
@@ -679,11 +685,11 @@ public class Transformer implements ExpType {
         return q;
     }
 
-    Exp compileBind(ASTQuery ast, Binding b) {
+    Exp compileBind(ASTQuery ast, Binding b) throws EngineException {
         return compileBind(ast, b.getFilter(), b.getVariable());
     }
 
-    Exp compileBind(ASTQuery ast, Expression e, Variable var) {
+    Exp compileBind(ASTQuery ast, Expression e, Variable var) throws EngineException {
         fr.inria.corese.kgram.api.core.Filter f = compileSelect(e, ast);
         Node node = compiler.createNode(var);
         Exp exp = Exp.create(BIND);
@@ -698,7 +704,7 @@ public class Transformer implements ExpType {
     /**
      * Delete/Insert/Construct
      */
-    Exp compile(ASTQuery ast, fr.inria.corese.sparql.triple.parser.Exp exp) {
+    Exp compile(ASTQuery ast, fr.inria.corese.sparql.triple.parser.Exp exp) throws EngineException {
         Compiler save = compiler;
         compiler = fac.newInstance();
         compiler.setAST(ast);
@@ -714,7 +720,7 @@ public class Transformer implements ExpType {
      * Compile service as a subquery if it is a pattern and as a subquery if it
      * already is one
      */
-    Exp compileService(Service service) {
+    Exp compileService(Service service) throws EngineException {
         Node src = compile(service.getServiceName());
         Exp node = Exp.create(NODE, src);
               
@@ -882,11 +888,11 @@ public class Transformer implements ExpType {
         return Mapping.safeCreate(lNode, nodes);
     }
 
-    Exp construct(ASTQuery ast) {
+    Exp construct(ASTQuery ast) throws EngineException {
         return compile(ast, ast.getInsert());
     }
 
-    Exp delete(ASTQuery ast) {
+    Exp delete(ASTQuery ast) throws EngineException {
         return compile(ast, ast.getDelete());
     }
 
@@ -898,7 +904,7 @@ public class Transformer implements ExpType {
         return compiler;
     }
 
-    void complete(Query qCurrent, ASTQuery ast) {
+    void complete(Query qCurrent, ASTQuery ast) throws EngineException {
         qCurrent.collect();
         //qCurrent.setSelectFun(select(qCurrent, ast));
         select(qCurrent, ast);
@@ -933,7 +939,7 @@ public class Transformer implements ExpType {
 
     }
 
-    void path(Query q, ASTQuery ast) {
+    void path(Query q, ASTQuery ast) throws EngineException {
         if (ast.getRegexTest().size() > 0) {
             Node node = compiler.createNode(Variable.create(THIS));
             q.setPathNode(node);
@@ -945,7 +951,7 @@ public class Transformer implements ExpType {
         }
     }
 
-    void having(Query q, ASTQuery ast) {
+    void having(Query q, ASTQuery ast) throws EngineException {
         if (ast.getHaving() != null) {
             //Filter having = compile(ast.getHaving());			
             fr.inria.corese.kgram.api.core.Filter having = compileSelect(ast.getHaving(), ast);
@@ -959,7 +965,7 @@ public class Transformer implements ExpType {
      * node from scratch for ?var This function is called - once for each
      * subquery - once for the global query
      */
-    List<Exp> select(Query qCurrent, ASTQuery ast) {
+    List<Exp> select(Query qCurrent, ASTQuery ast) throws EngineException {
         List<Exp> select = new ArrayList<>();
         // list of query nodes created for variables in filter that need
         // an outer node value
@@ -1038,7 +1044,7 @@ public class Transformer implements ExpType {
         }
     }
 
-    void aggregate(Query qCurrent, Exp exp, Expression ee, List<Exp> list) {
+    void aggregate(Query qCurrent, Exp exp, Expression ee, List<Exp> list) throws EngineException {
         if (exp.isAggregate()) {
             // process  min(?l, groupBy(?x, ?y))
             extendAggregate(qCurrent, exp, ee);
@@ -1070,7 +1076,7 @@ public class Transformer implements ExpType {
     /**
      * min(?l, groupBy(?x, ?y))
      */
-    void extendAggregate(Query qCurrent, Exp exp, Expression ee) {
+    void extendAggregate(Query qCurrent, Exp exp, Expression ee) throws EngineException {
         if (ee.isAggregate() && ee.arity() > 1) {
             Expression g = ee.getArg(ee.arity() - 1);
             if (g.oper() == ExprType.GROUPBY) {
@@ -1169,7 +1175,7 @@ public class Transformer implements ExpType {
         return false;
     }
 
-    List<Exp> orderBy(Query qCurrent, ASTQuery ast) {
+    List<Exp> orderBy(Query qCurrent, ASTQuery ast) throws EngineException {
         List<Exp> order = orderBy(qCurrent, ast.getSort(), ast);
         if (order.size() > 0) {
             int n = 0;
@@ -1181,13 +1187,13 @@ public class Transformer implements ExpType {
         return order;
     }
 
-    List<Exp> groupBy(Query qCurrent, ASTQuery ast) {
+    List<Exp> groupBy(Query qCurrent, ASTQuery ast) throws EngineException {
         List<Exp> list = orderBy(qCurrent, ast.getGroupBy(), ast);
         qCurrent.setConnect(ast.isConnex());
         return list;
     }
 
-    List<Exp> orderBy(Query qCurrent, List<Expression> input, ASTQuery ast) {
+    List<Exp> orderBy(Query qCurrent, List<Expression> input, ASTQuery ast) throws EngineException {
         List<Exp> list = new ArrayList<Exp>();
 
         for (Expression ee : input) {
@@ -1260,11 +1266,11 @@ public class Transformer implements ExpType {
      * Compile AST statements into KGRAM statements Compile triple into Edge,
      * filter into Filter
      */
-    Exp compile(fr.inria.corese.sparql.triple.parser.Exp query, boolean opt) {
+    Exp compile(fr.inria.corese.sparql.triple.parser.Exp query, boolean opt) throws EngineException {
         return compile(query, opt, 0);
     }
 
-    Exp compile(fr.inria.corese.sparql.triple.parser.Exp query, boolean opt, int level) {
+    Exp compile(fr.inria.corese.sparql.triple.parser.Exp query, boolean opt, int level) throws EngineException {
 
         Exp exp = null;
         int type = getType(query);
@@ -1431,7 +1437,7 @@ public class Transformer implements ExpType {
     /**
      * Complete compilation
      */
-    Exp complete(Exp exp, fr.inria.corese.sparql.triple.parser.Exp srcexp, boolean opt) {
+    Exp complete(Exp exp, fr.inria.corese.sparql.triple.parser.Exp srcexp, boolean opt) throws EngineException {
         // complete path (deprecated)
         path(exp);
 
@@ -1456,7 +1462,7 @@ public class Transformer implements ExpType {
     /**
      * graph kg:describe BGP -> bind(kg:describe() as ?g) graph ?g BGP
      */
-    Exp compileGraph(ASTQuery ast, Exp exp, Source srcexp) {
+    Exp compileGraph(ASTQuery ast, Exp exp, Source srcexp) throws EngineException {
         Atom at = srcexp.getSource();
         Atom nat = getSrc(at);
         Exp gr = compileGraph(exp, nat);
@@ -1492,7 +1498,7 @@ public class Transformer implements ExpType {
         return exp;
     }
 
-    Exp compileFilter(Expression ee, boolean opt) {
+    Exp compileFilter(Expression ee, boolean opt) throws EngineException {
         List<fr.inria.corese.kgram.api.core.Filter> qvec = compiler.compileFilter(ee);
         Exp exp;
 
@@ -1517,7 +1523,7 @@ public class Transformer implements ExpType {
     /**
      * Rewrite fun() as ?var in exp Compile exists {}
      */
-    fr.inria.corese.kgram.api.core.Filter compile(Expression exp) {
+    fr.inria.corese.kgram.api.core.Filter compile(Expression exp) throws EngineException {
         fr.inria.corese.kgram.api.core.Filter f = compiler.compile(exp);
         compileExist(f.getExp(), false);
         return f;
@@ -1526,7 +1532,7 @@ public class Transformer implements ExpType {
     /**
      * Do not rewrite fun() as var
      */
-    fr.inria.corese.kgram.api.core.Filter compileSelect(Expression exp, ASTQuery ast) {
+    fr.inria.corese.kgram.api.core.Filter compileSelect(Expression exp, ASTQuery ast) throws EngineException {
         fr.inria.corese.kgram.api.core.Filter f = exp.compile(ast);
         compileExist(f.getExp(), false);
         return f;
@@ -1535,7 +1541,7 @@ public class Transformer implements ExpType {
     /**
      * filter(exist {PAT})
      */
-    void compileExist(Expr exp, boolean opt) {
+    void compileExist(Expr exp, boolean opt) throws EngineException {
         if (exp.oper() == ExprType.EXIST) {
             Term term = (Term) exp;
             Exp pat = compile(term.getExist(), opt);
@@ -1677,8 +1683,13 @@ public class Transformer implements ExpType {
         ASTQuery aa = new Checker(ast).check(tt);
         if (aa != null) {
             Transformer tr = Transformer.create();
-            Query qq = tr.transform(aa);
-            add(edge, qq);
+            Query qq;
+            try {
+                qq = tr.transform(aa);
+                add(edge, qq);
+            } catch (EngineException ex) {
+                java.util.logging.Logger.getLogger(Transformer.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
         }
     }
 

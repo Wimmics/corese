@@ -17,11 +17,13 @@ import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -108,7 +110,11 @@ public class FederateVisitor implements QueryVisitor {
             return;
         }
         rew.setDebug(ast.isDebug());
-        option();
+        try {
+            option();
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(FederateVisitor.class.getName()).log(Level.SEVERE, null, ex);
+        }
         
         if (verbose) {
             System.out.println("\nbefore:");
@@ -185,7 +191,7 @@ public class FederateVisitor implements QueryVisitor {
      * default is false:
      * @type kg:exist kg:verbose
      */
-    void option() {
+    void option() throws EngineException {
         if (ast.hasMetadataValue(Metadata.TYPE, Metadata.VERBOSE)) {
             verbose = true;
         }

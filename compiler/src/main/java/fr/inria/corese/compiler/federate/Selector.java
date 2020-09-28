@@ -13,6 +13,7 @@ import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Optional;
@@ -73,7 +74,7 @@ public class Selector {
      * BUG when service 1.0 & service 1.1 and there are triples in 1.1
      * the triples of 1.0 are considered as absent although they are present as predicate
      */
-    void process() {
+    void process() throws EngineException {
         if (sparql10) {
             process10(getServiceList(true));
             predicateVariable.clear();
@@ -103,7 +104,7 @@ public class Selector {
         return res;
     }
     
-    void process11(List<Constant> list) {
+    void process11(List<Constant> list) throws EngineException {
         if (list.isEmpty()) {
             return;
         }
@@ -135,7 +136,7 @@ public class Selector {
         trace(map, d1, d2);
     }
           
-    void process10(List<Constant> list) {
+    void process10(List<Constant> list) throws EngineException {
         Date d1 = new Date();
         ASTQuery aa = createSelector(list, true);
         Mappings map = exec.basicQuery(aa);

@@ -33,7 +33,9 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.Collection;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -132,16 +134,20 @@ public class XMLResult {
     }
 
     void complete(Mappings map) {
-        ASTQuery ast = ASTQuery.create();
-        ast.setBody(BasicGraphPattern.create());
-        for (Node n : varList) { //getVariables()) {
-            ast.setSelect(new Variable(n.getLabel()));
+        try {
+            ASTQuery ast = ASTQuery.create();
+            ast.setBody(BasicGraphPattern.create());
+            for (Node n : varList) { //getVariables()) {
+                ast.setSelect(new Variable(n.getLabel()));
+            }
+            QuerySolver qs = QuerySolver.create();
+            Query q = qs.compile(ast);
+            q.setServiceResult(true);
+            map.setQuery(q);
+            map.init(q);
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(XMLResult.class.getName()).log(Level.SEVERE, null, ex);
         }
-        QuerySolver qs = QuerySolver.create();
-        Query q = qs.compile(ast);
-        q.setServiceResult(true);
-        map.setQuery(q);
-        map.init(q);
     }
 
     public void init() {

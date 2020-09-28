@@ -8,7 +8,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
@@ -38,6 +37,7 @@ import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.AccessRightDefinition;
 import java.util.logging.Level;
@@ -223,16 +223,16 @@ public class QuerySolver implements SPARQLEngine {
     /**
      * Does not perform construct {} if any it return the Mappings in this case
      */
-    public Mappings basicQuery(ASTQuery ast) {
+    public Mappings basicQuery(ASTQuery ast) throws EngineException {
         return basicQuery(ast, null, null);
     }
 
-    public Mappings basicQuery(ASTQuery ast, Mapping m, Dataset ds) {
+    public Mappings basicQuery(ASTQuery ast, Mapping m, Dataset ds) throws EngineException {
         Query query = compile(ast, ds);
         return query(query, m);
     }
 
-    public Query compile(ASTQuery ast, Dataset ds) {
+    public Query compile(ASTQuery ast, Dataset ds) throws EngineException {
         if (ds != null) {
             ast.setDefaultDataset(ds);
         }
@@ -558,7 +558,7 @@ public class QuerySolver implements SPARQLEngine {
         return transformer;
     }
 
-    public Query compile(ASTQuery ast) {
+    public Query compile(ASTQuery ast) throws EngineException {
         Transformer transformer = transformer();
         setParameter(transformer);
         transformer.setSPARQLCompliant(isSPARQLCompliant);

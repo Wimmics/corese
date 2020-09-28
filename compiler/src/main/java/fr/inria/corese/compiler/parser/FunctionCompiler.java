@@ -5,6 +5,7 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.datatype.DatatypeHierarchy;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -49,18 +50,18 @@ public class FunctionCompiler {
         imported = new HashMap<>();
     }
 
-    void compile(Query q, ASTQuery ast) {
+    void compile(Query q, ASTQuery ast) throws EngineException {
         imports(q, ast);
         compileFunction(q, ast);
         compileLambda(q, ast);
     }
 
-    void compileFunction(Query q, ASTQuery ast) {
+    void compileFunction(Query q, ASTQuery ast) throws EngineException {
         compile(q, ast, ast.getDefine());
         define(q, ast);
     }
 
-    void compileLambda(Query q, ASTQuery ast) {
+    void compileLambda(Query q, ASTQuery ast) throws EngineException {
         compile(q, ast, ast.getDefineLambda());
         define(ast, ast.getDefineLambda(), q);
     }
@@ -69,19 +70,19 @@ public class FunctionCompiler {
      * defined functions use case: transformation profile PRAGMA: expressions
      * have declared local variables (see ASTQuery Processor)
      */
-    void define(Query q, ASTQuery ast) {
+    void define(Query q, ASTQuery ast) throws SafetyException {
         if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
             return;
         }
         if (Access.reject(Access.Feature.FUNCTION_DEFINITION, ast.getLevel())) { 
-            logger.error("Extension function definition unauthorized");
-            return;
+            //logger.error("Extension function definition unauthorized");
+            throw new SafetyException("Extension function definition unauthorized");
         }
 
         define(ast, ast.getDefine(), q);
     }
 
-    void compile(Query q, ASTQuery ast, ASTExtension ext) {
+    void compile(Query q, ASTQuery ast, ASTExtension ext) throws EngineException {
         if (ext.isCompiled()) {
             // recursion from subquery in function: do nothing
         } else {
@@ -93,7 +94,7 @@ public class FunctionCompiler {
         }
     }
 
-    void compile(Query q, ASTQuery ast, Function fun) {
+    void compile(Query q, ASTQuery ast, Function fun) throws EngineException {
         if (fun.getMetadata() != null) {
             basicImports(q, ast, fun.getMetadata());
         }
@@ -103,23 +104,16 @@ public class FunctionCompiler {
     }
 
     // @import <uri> select where 
-    void imports(Query q, ASTQuery ast) {
+    void imports(Query q, ASTQuery ast) throws EngineException {
         if (ast.hasMetadata(Metadata.IMPORT)) {
             basicImports(q, ast, ast.getMetadata());
         }
     }
     
-    void basicImports(Query q, ASTQuery ast, Metadata m) {
+    void basicImports(Query q, ASTQuery ast, Metadata m) throws EngineException {
         if (m.hasMetadata(Metadata.IMPORT)) {
             for (String path : m.getValues(Metadata.IMPORT)) {
-                try {
-                    imports(q, ast, path);
-                } catch (EngineException ex) {
-                    logger.error("Error in import: " + path);
-                    logger.error(ex.toString());
-                    q.addError("Error in import: ", path);
-                    q.setImportFailure(true);
-                }
+                imports(q, ast, path);
             }
         }
     }
@@ -130,7 +124,7 @@ public class FunctionCompiler {
             basicImports(q, ast, path);
         }
         else {
-            logger.error("Unauthorized import: " + path);
+            throw new SafetyException("Unauthorized import: " + path);
         }
     }
 

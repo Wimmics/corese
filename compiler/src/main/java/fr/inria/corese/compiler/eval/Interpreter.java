@@ -240,13 +240,20 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return node;
     }
 
+    /**
+     * Bridge to expression evaluation
+     */
     @Override
     public IDatatype eval(Expr exp, Environment env, Producer p) {
         if (env.getEval() == null) {
             logger.error("Environment getEval() = null in: ");
             logger.info(exp.toString());
         }
-        IDatatype dt = ((Expression) exp).eval(this, (Binding) env.getBind(), env, p);
+        Binding b = (Binding) env.getBind();
+        IDatatype dt = ((Expression) exp).eval(this, b, env, p);
+        if (b.isDebug()) {
+            System.out.println("eval: " + exp + " = " + dt);
+        }
         if (dt == null) {
             DatatypeValue res = env.getVisitor().error(env.getEval(), exp, EMPTY);
             if (res != null) {

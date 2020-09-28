@@ -407,6 +407,10 @@ public class QueryProcess extends QuerySolver {
     public Mappings query(String squery, Binding b) throws EngineException {
         return query(squery, Mapping.create(b), null);
     }
+   
+    public Mappings query(String squery, Context c, Binding b) throws EngineException {
+        return query(squery, Mapping.create(b), Dataset.create(c));
+    }
     
     public Mappings query(String squery, ProcessVisitor vis) throws EngineException {
         return query(squery, Mapping.create(vis), null);
@@ -603,7 +607,7 @@ public class QueryProcess extends QuerySolver {
     Mappings query(Node gNode, Query q, Mapping m, Dataset ds) throws EngineException {
         ASTQuery ast = getAST(q);
         if (ast.isLDScript()) {
-            if (Access.reject(Feature.LD_SCRIPT, getLevel(m, q))) {
+            if (Access.reject(Feature.LD_SCRIPT, getLevel(m, ds, q))) {
                 logger.info("LDScript unauthorized");
                 throw new SafetyException("LDScript unauthorized") ;
                 //return Mappings.create(q);
@@ -625,7 +629,7 @@ public class QueryProcess extends QuerySolver {
 
         if (q.isUpdate() || q.isRule()) {
             log(Log.UPDATE, q);
-            if (Access.reject(Access.Feature.SPARQL_UPDATE, getLevel(m, q))) { 
+            if (Access.reject(Access.Feature.SPARQL_UPDATE, getLevel(m, ds, q))) { 
                 logger.error("SPARQL Update unauthorized");
                 //return Mappings.create(q);
                 throw new SafetyException("SPARQL Update unauthorized") ;
@@ -754,15 +758,24 @@ public class QueryProcess extends QuerySolver {
         return c;
     }
 
-    Level getLevel(Mapping m, Query q) {
+    /**
+     * There may be a Context for access level
+     * There may be a Binding for global variables (which contains access level).
+     */
+    Level getLevel(Mapping m, Dataset ds, Query q) {
+        if (ds != null && ds.getContext() != null) {
+            return  ds.getContext().getLevel();
+        }
         if (m != null && m.getBind() != null) {
-            return ((Binding)m.getBind()).getAccessLevel();
+            return  ((Binding)m.getBind()).getAccessLevel();
         }
-        Context c = getContext(q);
-        if (c == null) {
-            return Level.DEFAULT;
-        }
-        return c.getLevel();
+        return Level.DEFAULT;
+        
+//        Context c = getContext(q);
+//        if (c == null) {
+//            return Level.DEFAULT;
+//        }
+//        return c.getLevel();
     }
 
     static boolean isOverwrite() {

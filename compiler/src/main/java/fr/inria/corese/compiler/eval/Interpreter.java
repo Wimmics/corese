@@ -229,7 +229,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     }
 
-    public IDatatype eval(Expr exp, Environment env) {
+    public IDatatype eval(Expr exp, Environment env) throws EngineException {
         return eval(exp, env, producer);
     }
 
@@ -247,7 +247,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * Bridge to expression evaluation
      */
     //@Override
-    public IDatatype eval(Expr exp, Environment env, Producer p) {
+    public IDatatype eval(Expr exp, Environment env, Producer p) throws EngineException {
         if (env.getEval() == null) {
             logger.error("Environment getEval() = null in: ");
             logger.info(exp.toString());
@@ -276,7 +276,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
 
     @Override
-    public IDatatype function(Expr exp, Environment env, Producer p) {
+    public IDatatype function(Expr exp, Environment env, Producer p) throws EngineException {
         //System.out.println(exp + " " + exp.getClass().getName());
         switch (exp.oper()) {
 
@@ -367,7 +367,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
     }
 
-    IDatatype[] evalArguments(Expr exp, Environment env, Producer p, int start) {
+    IDatatype[] evalArguments(Expr exp, Environment env, Producer p, int start) throws EngineException {
         IDatatype[] args = new IDatatype[exp.arity() - start];
         int i = 0;
         for (int j = start; j < exp.arity(); j++) {
@@ -585,7 +585,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         proxy.finish(producer, env);
     }
 
-    private IDatatype focus(Expr exp, Environment env, Producer p) {
+    private IDatatype focus(Expr exp, Environment env, Producer p) throws EngineException {
         if (exp.arity() < 2) {
             return ERROR_VALUE;
         }

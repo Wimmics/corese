@@ -1730,9 +1730,13 @@ public class ProxyInterpreter implements Proxy,  ExprType {
     private IDatatype sequence(Expr exp, Environment env, Producer p) {
         IDatatype res = TRUE;
         for (Expr e : exp.getExpList()){
-            res =  eval.eval(e, env, p);
-            if (isReturn(res)){
-                return res;
+            try {
+                res =  eval.eval(e, env, p);
+                if (isReturn(res)){
+                    return res;
+                }
+            } catch (EngineException ex) {
+                return null;
             }
         }
         return res;

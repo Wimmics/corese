@@ -914,17 +914,21 @@ public class RuleEngine implements Engine, Graphable {
     
     // process rule
     void process(Rule r, Construct cons) {
-        Query qq = r.getQuery();  
-        getVisitor().beforeRule(qq);
-        Mappings map = exec.query(qq, null);
-        if (cons.isBuffer()) {
-            // cons insert list contains only new edge that do not exist
-            graph.addOpt(r.getUniquePredicate(), cons.getInsertList());
-        } else {
-            // create edges from Mappings as usual
-            cons.insert(map, null);
+        try {
+            Query qq = r.getQuery();
+            getVisitor().beforeRule(qq);
+            Mappings map = exec.query(qq, null);
+            if (cons.isBuffer()) {
+                // cons insert list contains only new edge that do not exist
+                graph.addOpt(r.getUniquePredicate(), cons.getInsertList());
+            } else {
+                // create edges from Mappings as usual
+                cons.insert(map, null);
+            }
+            getVisitor().afterRule(qq, cons.isBuffer() ? cons.getInsertList() : map);
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
         }
-        getVisitor().afterRule(qq, cons.isBuffer() ? cons.getInsertList() : map);
     }
     
     

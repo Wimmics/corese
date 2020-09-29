@@ -718,7 +718,7 @@ public class QueryProcess extends QuerySolver {
         }
     }
 
-    Mappings synQuery(Node gNode, Query query, Mapping m) {
+    Mappings synQuery(Node gNode, Query query, Mapping m) throws EngineException {
         Mappings map = null;
         try {
             syncReadLock(query);
@@ -732,7 +732,7 @@ public class QueryProcess extends QuerySolver {
         }
     }
 
-    public Mappings basicQuery(Node gNode, Query q, Mapping m) {
+    public Mappings basicQuery(Node gNode, Query q, Mapping m) throws EngineException {
         return focusFrom(q).query(gNode, q, m);
     }
 
@@ -1139,7 +1139,11 @@ public class QueryProcess extends QuerySolver {
      */
     public void init(Query q, Mapping m) {
         q.setInitMode(true);
-        super.query(q, m);
+        try {
+            super.query(q, m);
+        } catch (EngineException ex) {
+            java.util.logging.Logger.getLogger(QueryProcess.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
         q.setInitMode(false);
         // set Visitor ready to work (hence, it is not yet active, it is ready to be active)
         getCurrentEval().getVisitor().setActive(false);

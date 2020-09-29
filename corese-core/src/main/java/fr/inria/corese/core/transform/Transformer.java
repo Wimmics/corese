@@ -671,7 +671,13 @@ public class Transformer implements TransformProcessor {
                 System.out.println(qq.getAST()); 
             }
             
-            Mappings map = exec.query(qq, m);
+            Mappings map;
+            try {
+                map = exec.query(qq, m);
+            } catch (EngineException ex) {
+                java.util.logging.Logger.getLogger(Transformer.class.getName()).log(Level.SEVERE, null, ex);
+                map = Mappings.create(qq);
+            }
             save(map);
             query = null;
             IDatatype res = getResult(map);
@@ -887,7 +893,13 @@ public class Transformer implements TransformProcessor {
                     share(bm, env);
                 }
 
-                Mappings map = exec.query(qq, bm);
+                Mappings map;
+                try {
+                    map = exec.query(qq, bm);
+                } catch (EngineException ex) {
+                    java.util.logging.Logger.getLogger(Transformer.class.getName()).log(Level.SEVERE, null, ex);
+                    map = Mappings.create(qq);
+                }
                 save(map);
                 stack.visit(dt);
                 stack.pop();

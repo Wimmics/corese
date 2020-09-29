@@ -15,7 +15,7 @@ public interface Computer extends ComputerProxy {
     
     ComputerEval getComputerEval(Environment env, Producer p, Expr function); 
         
-    IDatatype function(Expr exp, Environment env, Producer p);
+    IDatatype function(Expr exp, Environment env, Producer p) throws EngineException;
     IDatatype exist(Expr exp, Environment env, Producer p) throws EngineException ;
         
     Function getDefine(Environment env, String name, int n);      

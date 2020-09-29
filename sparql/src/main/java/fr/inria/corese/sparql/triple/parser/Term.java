@@ -1899,6 +1899,11 @@ public class Term extends Expression {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        return eval.function((Expr) this, env, p);
+        try {
+         return eval.function((Expr) this, env, p);
+        }
+        catch (EngineException e) {
+            return null;
+        }
     }
 }

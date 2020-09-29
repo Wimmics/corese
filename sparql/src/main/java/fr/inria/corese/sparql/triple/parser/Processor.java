@@ -20,6 +20,7 @@ import fr.inria.corese.sparql.triple.cst.KeywordPP;
 import fr.inria.corese.kgram.api.core.ExpPattern;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.HashMap;
 import java.util.logging.Level;
 
@@ -1060,11 +1061,11 @@ public class Processor {
             define(key, value);
         }
         
-        static void defextoper(String key, int value){
+        static void defextoper(String key, int value) throws EngineException{
             defextoper(key, value, 2);
         }
          
-        static void defextoper(String key, int value, int arity){
+        static void defextoper(String key, int value, int arity) throws EngineException{
             define(key, value);
             defExtension(key, arity);
         }
@@ -1083,7 +1084,7 @@ public class Processor {
 		tname.put(value, key);  
 	}
         
-        static void defExtension(String key, int arity){
+        static void defExtension(String key, int arity) throws EngineException{
             String name = key.toLowerCase();
             if (! key.startsWith("http://")){
                 name = SPARQL + key;

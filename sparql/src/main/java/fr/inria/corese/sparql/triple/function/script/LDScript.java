@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.function.script;
 
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Expression;
@@ -27,7 +28,7 @@ public class LDScript extends TermEval {
     }
     
     @Override
-    public Expression prepare(ASTQuery ast) {
+    public Expression prepare(ASTQuery ast) throws EngineException {
         ast.setLDScript(true);
         ast.getGlobalAST().setLDScript(true);
         return super.prepare(ast);

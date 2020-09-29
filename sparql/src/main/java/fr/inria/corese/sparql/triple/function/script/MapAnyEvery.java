@@ -7,7 +7,10 @@ import static fr.inria.corese.kgram.api.core.ExprType.MAPANY;
 import static fr.inria.corese.kgram.api.core.ExprType.MAPEVERY;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.Iterator;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -31,7 +34,12 @@ public class MapAnyEvery extends Funcall {
             return null;
         }
 
-        Function function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), param.length);
+        Function function = null;
+        try {
+            function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), param.length);
+        } catch (EngineException ex) {
+            log(ex.getMessage());
+        }
         if (function == null) {
             return null;
         }
@@ -106,7 +114,12 @@ public class MapAnyEvery extends Funcall {
             return null;
         }
 
-        Function function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), param.length);
+        Function function = null;
+        try {
+            function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), param.length);
+        } catch (EngineException ex) {
+            log(ex.getMessage());
+        }
         if (function == null) {
             return null;
         }

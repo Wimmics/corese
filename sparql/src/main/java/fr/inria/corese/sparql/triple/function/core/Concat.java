@@ -12,6 +12,7 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -20,6 +21,8 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -130,6 +133,9 @@ public class Concat extends TermEval {
                 list.add(constant(result(env, sb, isString, (ok && lang != null) ? lang : null, true)));
             }
             Expr e = createFunction(Processor.CONCAT, list, env);
+            if (e == null) {
+                return null;
+            }
             IDatatype res = DatatypeMap.createFuture(e);
             return res;
         }
@@ -205,7 +211,12 @@ public class Concat extends TermEval {
 
     Expr createFunction(String name, ArrayList<Expression> args, Environment env) {
         ASTQuery ast = (ASTQuery) env.getQuery().getAST();
-        return ast.createFunction(name, args);
+        try {
+            return ast.createFunction(name, args);
+        } catch (EngineException ex) {
+            log(ex.getMessage());
+            return null;
+        }
     }
 
     /**

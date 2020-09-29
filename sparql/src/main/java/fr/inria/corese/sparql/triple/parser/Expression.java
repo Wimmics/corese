@@ -89,7 +89,7 @@ public class Expression extends TopExp
     /**
      * Every filter/select/bind exp is compiled
      */
-    public Expression compile(ASTQuery ast)  {
+    public Expression compile(ASTQuery ast) throws EngineException {
         prepare(ast);
         local(ast);
         return this;
@@ -114,7 +114,7 @@ public class Expression extends TopExp
         vis.start(this);
     }
 
-    public Expression prepare(ASTQuery ast) {
+    public Expression prepare(ASTQuery ast) throws EngineException {
         return this;
     }
 

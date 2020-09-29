@@ -17,6 +17,7 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import fr.inria.corese.sparql.datatype.RDF;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -130,7 +131,7 @@ public class Function extends Statement {
     }
 
     @Override
-    public Expression compile(ASTQuery ast) {
+    public Expression compile(ASTQuery ast) throws EngineException {
         Expression exp = super.compile(ast);
         if (isTrace()) {
             System.out.println(this);

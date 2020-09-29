@@ -21,6 +21,10 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -1690,7 +1694,7 @@ public class Term extends Expression {
 
     // Exp
     @Override
-    public Expression prepare(ASTQuery ast) {
+    public Expression prepare(ASTQuery ast) throws EngineException {
         if (proc != null) {
             return this;
         }
@@ -1698,6 +1702,8 @@ public class Term extends Expression {
         //proc = new Processor(this);
         proc = processor;
         proc.type(this, ast);
+        
+        checkAccessLevel(ast);
 
         int i = 0;
         for (Expression exp : getArgs()) {
@@ -1714,6 +1720,40 @@ public class Term extends Expression {
         }
         typecheck(ast);
         return this;
+    }
+    
+    void checkAccessLevel(ASTQuery ast) throws EngineException {
+        switch (oper()) {
+            case ExprType.READ:
+            case ExprType.WRITE:
+            case ExprType.XT_HTTP_GET:
+                checkFeature(Feature.READ_WRITE, ast, "Read Write unauthorized");
+                break;
+                
+            case ExprType.JAVACALL:
+            case ExprType.DSCALL:
+            case ExprType.EXTERNAL:
+                checkFeature(Feature.JAVA_FUNCTION, ast, "Java function unauthorized");               
+                break;
+                
+//            case ExprType.APPLY_TEMPLATES_WITH:
+//            case ExprType.CALL_TEMPLATE_WITH: 
+                
+            case ExprType.KGRAM:
+                checkFeature(Feature.SPARQL, ast, "SPARQL query unauthorized");               
+                break;
+                
+        }
+    }
+    
+    void checkFeature(Feature feat, ASTQuery ast, String mess) throws EngineException  {
+        if (reject(feat, ast)) {
+            throw new SafetyException(mess);
+        }
+    }
+    
+    boolean reject(Feature feat, ASTQuery ast) {
+        return Access.reject(feat, ast.getLevel());
     }
 
     @Override

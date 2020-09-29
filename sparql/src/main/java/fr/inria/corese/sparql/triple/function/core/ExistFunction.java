@@ -49,7 +49,7 @@ public class ExistFunction extends TermEval {
     }
     
      @Override
-    public Expression prepare(ASTQuery ast) {
+    public Expression prepare(ASTQuery ast) throws EngineException {
         if (isSystem()) {
             ast.setLDScript(true);
             ast.getGlobalAST().setLDScript(true);

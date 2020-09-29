@@ -8,9 +8,11 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import java.util.List;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +39,14 @@ public class ListSort extends Funcall {
         }
         if (arity() == 2) {
             IDatatype funName = getBasicArg(1).eval(eval, b, env, p);
-            Function function = (funName == null) ? null : (Function) eval.getDefineGenerate(this, env, funName.stringValue(), 2);
+            Function function;
+            try {
+                function = (funName == null) ? null : 
+                        (Function) eval.getDefineGenerate(this, env, funName.stringValue(), 2);
+            } catch (EngineException ex) {
+                log(ex.getMessage());
+                return null;
+            }
             if (function == null) {
                 return DatatypeMap.sort(list);
             }

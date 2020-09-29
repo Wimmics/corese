@@ -33,6 +33,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.PLUS;
 import static fr.inria.corese.kgram.api.core.ExprType.RETURN;
 import static fr.inria.corese.kgram.api.core.ExprType.SEQUENCE;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.Method;
@@ -113,7 +114,7 @@ public class JavaCompiler {
     /**
      * Main function to compile AST functions
      */
-    public JavaCompiler compile(ASTQuery ast) throws IOException {
+    public JavaCompiler compile(ASTQuery ast) throws IOException, EngineException {
         this.ast = ast;
         path(ast);
         head.process(getPackage(), name);
@@ -124,7 +125,7 @@ public class JavaCompiler {
         return this;
     }
 
-    public JavaCompiler compile(Query q) throws IOException {
+    public JavaCompiler compile(Query q) throws IOException, EngineException {
         ASTQuery ast = (ASTQuery) q.getAST();
         this.ast = ast;
         path(ast);
@@ -136,7 +137,7 @@ public class JavaCompiler {
         return this;
     }
 
-    public void compile(ASTExtension ext) throws IOException {
+    public void compile(ASTExtension ext) throws IOException, EngineException {
         for (Function exp : ext.getFunctionList()) {
             //System.out.println(exp);
             if (!exp.hasMetadata(Metadata.SKIP)) {
@@ -167,7 +168,7 @@ public class JavaCompiler {
     /**
      * Compile one function
      */
-    void compile(Function exp) {
+    void compile(Function exp) throws EngineException {
         setCurrent(exp);
         stack.push(exp);
         functionDeclaration(exp);

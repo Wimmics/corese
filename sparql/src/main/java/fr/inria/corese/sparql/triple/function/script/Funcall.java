@@ -10,7 +10,7 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.ComputerEval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access;
 
 /**
@@ -53,7 +53,13 @@ public class Funcall extends LDScript {
     
     Function getFunction(Computer eval, Binding b, Environment env, Producer p, IDatatype dt, int n) {
         String name = dt.stringValue();
-        Function function = (Function) eval.getDefineGenerate(this, env, name, n);
+        Function function = null;
+        try {
+            function = (Function) eval.getDefineGenerate(this, env, name, n);
+        } catch (EngineException ex) {
+            log(ex.getMessage());
+            return null;
+        }
         if (function == null) {
             if (dt.pointerType() == PointerType.EXPRESSION) {
                 // lambda expression, arity is not correct                
@@ -61,7 +67,11 @@ public class Funcall extends LDScript {
             else if (env.getEval() != null) {
                 if (accept(Access.Feature.LINKED_FUNCTION, eval, b, env, p)) {
                     env.getEval().getSPARQLEngine().getLinkedFunction(name);
-                    function = eval.getDefineGenerate(this, env, name, n);
+                    try {
+                        function = eval.getDefineGenerate(this, env, name, n);
+                    } catch (EngineException ex) {
+                        log(ex.getMessage());
+                    }
                 }
                 if (function == null) {
                     logger.error("Undefined function: " + name + " arity: " + n);

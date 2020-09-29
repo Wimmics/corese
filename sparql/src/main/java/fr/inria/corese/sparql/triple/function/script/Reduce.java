@@ -16,9 +16,12 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_APPEND;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MERGE;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * reduce(rq:plus, list)
@@ -44,7 +47,12 @@ public class Reduce extends Funcall {
             return null;
         }
                 
-        Function function = eval.getDefineGenerate(this, env, name.stringValue(), 2);
+        Function function = null;
+        try {
+            function = eval.getDefineGenerate(this, env, name.stringValue(), 2);
+        } catch (EngineException ex) {
+            log(ex.getMessage());
+        }
         if (function == null) {
             return null;
         }
@@ -114,11 +122,16 @@ public class Reduce extends Funcall {
     
     // fun with no arg returns neutral element
     IDatatype neutral(Computer eval, Binding b, Environment env, Producer p, IDatatype name, IDatatype dt) {
-        Function function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), 0);
+        Function function = null;
+        try {
+            function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), 0);
+        } catch (EngineException ex) {
+            log(ex.getMessage());
+        }
         if (function == null) {
             return dt;
         }
-        return call(eval, b, env, p, function);   
+        return call(eval, b, env, p, function);
     }
     
     

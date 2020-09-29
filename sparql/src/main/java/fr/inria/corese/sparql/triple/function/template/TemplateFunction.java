@@ -7,6 +7,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.script.LDScript;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
@@ -35,7 +36,7 @@ public class TemplateFunction extends LDScript {
      * after possible order by:
      * future(format(r1, st:number(), r2)
      */
-    IDatatype future(Computer eval, Binding b, Environment env, Producer p) { 
+    IDatatype future(Computer eval, Binding b, Environment env, Producer p) throws EngineException { 
         ArrayList<Expression> list = new ArrayList<>();
         for (Expression exp : getArgs()) {
             if (isFuture(exp) || exp.isConstant()) {

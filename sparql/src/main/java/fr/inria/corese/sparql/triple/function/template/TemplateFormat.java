@@ -5,6 +5,7 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Processor;
 
@@ -25,7 +26,12 @@ public class TemplateFormat extends TemplateFunction {
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {     
         if (oper() == ExprType.STL_FORMAT && isFuture()) {
-            return future(eval, b, env, p);
+            try {
+                return future(eval, b, env, p);
+            } catch (EngineException ex) {
+                log(ex.getMessage());
+                return null;
+            }
         }
         
         IDatatype[] param = evalArguments(eval, b, env, p, 0);

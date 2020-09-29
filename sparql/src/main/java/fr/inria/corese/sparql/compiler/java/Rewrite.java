@@ -5,6 +5,7 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.script.Let;
 
 /**
@@ -26,7 +27,7 @@ public class Rewrite {
     /**
      * exp is the body of a function
      */
-    Expression process(Expression exp) {
+    Expression process(Expression exp) throws EngineException {
         Expression res = rewrite(exp);                      
         res.compile(ast);
         return res;

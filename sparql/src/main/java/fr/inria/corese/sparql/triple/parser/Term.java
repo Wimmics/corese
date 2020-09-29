@@ -180,7 +180,7 @@ public class Term extends Expression {
     public static Term function(String name, String longName) {
         //Term fun = new Term(name); 
         Term fun = newFunction(name, longName);
-        fun.isFunction = true;
+        fun.setFunction(true);
         return fun;
     }
 

@@ -26,5 +26,12 @@ public class EngineException extends SparqlException {
 //	protected EngineException(Error e) {
 //		super(e);
 //	}
+        
+        public static EngineException cast(SparqlException e) {
+            if (e instanceof EngineException) {
+                return (EngineException) e;
+            }
+            return new EngineException(e);
+        }
 	
 }

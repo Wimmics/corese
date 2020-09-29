@@ -29,6 +29,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.Collection;
 
 /**
@@ -88,7 +89,7 @@ public class Expression extends TopExp
     /**
      * Every filter/select/bind exp is compiled
      */
-    public Expression compile(ASTQuery ast) {
+    public Expression compile(ASTQuery ast)  {
         prepare(ast);
         local(ast);
         return this;
@@ -113,7 +114,7 @@ public class Expression extends TopExp
         vis.start(this);
     }
 
-    Expression prepare(ASTQuery ast) {
+    public Expression prepare(ASTQuery ast) {
         return this;
     }
 

@@ -6,9 +6,12 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Expression;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  *
@@ -32,7 +35,12 @@ public class ExistFunction extends TermEval {
                 return null;
             }
         }
-        return eval.exist(this, env, p);
+        try {
+            return eval.exist(this, env, p);
+        } catch (EngineException ex) {
+            log(ex.getMessage());
+            return null;
+        }
     }
     
     @Override

@@ -1,7 +1,6 @@
 package fr.inria.corese.sparql.triple.function.script;
 
 import fr.inria.corese.kgram.api.core.PointerType;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.Computer;

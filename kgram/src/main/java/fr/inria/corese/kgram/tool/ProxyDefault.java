@@ -133,7 +133,7 @@ public class ProxyDefault implements Proxy, ExprType {
 		return null;
 	}
 
-    @Override
+    //@Override
     public Expr createFunction(String name, List<Object> args, Environment env) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
@@ -198,7 +198,7 @@ public class ProxyDefault implements Proxy, ExprType {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
-    @Override
+   // @Override
     public Expr getDefine(Expr exp, Environment env, String name, int n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }

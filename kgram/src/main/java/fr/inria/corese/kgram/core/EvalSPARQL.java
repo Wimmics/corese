@@ -139,8 +139,12 @@ public class EvalSPARQL {
     
     boolean postpone(Exp exp, Mapping m){
         for (Exp e : exp.getPostpone()){
-            if (! eval.getEvaluator().test(e.getFilter(), m)){
-                return false;
+            try {
+                if (! eval.test(e.getFilter(), m)){
+                    return false;
+                }
+            } catch (SparqlException ex) {
+                    return false;
             }
         }
         return true;
@@ -212,7 +216,12 @@ public class EvalSPARQL {
     
     Mappings basic(Node graph, Producer p, Exp exp, Mapping m) {
         exp.setType(Exp.AND);
-        Mappings map = eval.exec(graph, p, exp, m);
+        Mappings map =null;
+        try {
+            map = eval.exec(graph, p, exp, m);
+        } catch (SparqlException ex) {
+            ex.printStackTrace();
+        }
         exp.setType(Exp.BGP);
         return map;
     }
@@ -233,8 +242,12 @@ public class EvalSPARQL {
     
     private boolean test(Producer p, Exp exp, Mapping m){
         for (Exp f : exp){
-            if (! eval.getEvaluator().test(f.getFilter(), m, p)){
-                return false;
+            try {
+                if (! eval.test(f.getFilter(), m, p)){
+                    return false;
+                }
+            } catch (SparqlException ex) {
+                    return false;
             }
         }
         return true;

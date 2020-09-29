@@ -9,7 +9,7 @@ import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.filter.Proxy;
-
+import fr.inria.corese.kgram.core.SparqlException;
 /**
  * Interface for the connector that evaluates filters
  * 
@@ -40,9 +40,9 @@ public interface Evaluator {
 	 * @param e
 	 * @return
 	 */
-	boolean test(Filter f, Environment e);
+	boolean test(Filter f, Environment e) throws SparqlException;
         
-	boolean test(Filter f, Environment e, Producer p);
+	boolean test(Filter f, Environment e, Producer p) throws SparqlException ;
 
 	/**
 	 * Evaluate a filter and return a Node
@@ -52,11 +52,19 @@ public interface Evaluator {
 	 * @param e
 	 * @return
 	 */
-	Node eval(Filter f, Environment e, Producer p);
-	
-	Object eval(Expr f, Environment e, Producer p);
+	Node eval(Filter f, Environment e, Producer p) throws SparqlException;
         
-        Object eval(Expr f, Environment e, Producer p, Object[] values);
+        /**
+	 * Evaluate an extension function filter and return Mappings
+	 * use case: select sql('select from where') as (?x ?y) where {}
+	 * TODO: should be an interface instead of Mappings
+	 * 	
+	 */
+	Mappings eval(Filter f, Environment e, List<Node> nodes) throws SparqlException;
+	
+	//Object eval(Expr f, Environment e, Producer p);
+        
+        //Object eval(Expr f, Environment e, Producer p, Object[] values);
                         
         //Expr getDefine(Expr exp, Environment env, Producer p, int n);
                               
@@ -82,20 +90,8 @@ public interface Evaluator {
 	 * @param e
 	 * @return
 	 */
-	List<Node> evalList(Filter f, Environment e);
-	
-	/**
-	 * Evaluate an extension function filter and return Mappings
-	 * use case: select sql('select from where') as (?x ?y) where {}
-	 * TODO: should be an interface instead of Mappings
-	 * 
-	 * @param f
-	 * @param e
-	 * @param nodes
-	 * @return
-	 */
-	Mappings eval(Filter f, Environment e, List<Node> nodes);
-        
+	//List<Node> evalList(Filter f, Environment e);
+		        
         void setProducer(Producer p);
         
         void setKGRAM(Eval o);

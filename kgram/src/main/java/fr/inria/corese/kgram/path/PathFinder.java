@@ -19,6 +19,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.tool.EdgeInv;
@@ -590,7 +591,12 @@ public class PathFinder {
      */
     Node getPathNode(Path p) {
         Filter f = query.getGlobalFilter(Query.PATHNODE);
-        Node node = evaluator.eval(f, memory, producer);
+        Node node = null;
+        try {
+            node = evaluator.eval(f, memory, producer);
+        } catch (SparqlException ex) {
+            
+        }
         node.setObject(p);
         return node;
     }
@@ -684,7 +690,12 @@ public class PathFinder {
             //mem.push(varNode, varNode);
             mem.pushPath(varNode, path);
         }
-        boolean test = evaluator.test(filter, mem);
+        boolean test = true;
+        try {
+            test = evaluator.test(filter, mem);
+        } catch (SparqlException ex) {
+            test = false;
+        }
         mem.pop(qNode);
         if (varNode != null) {
             mem.pop(varNode);
@@ -696,7 +707,12 @@ public class PathFinder {
     boolean test(Node node) {
         Node qNode = edge.getNode(index);
         mem.push(qNode, node);
-        boolean test = evaluator.test(filter, mem, producer);
+        boolean test = true;
+        try {
+            test = evaluator.test(filter, mem, producer);
+        } catch (SparqlException ex) {
+            test = false;
+        }
         mem.pop(qNode);
         return test;
     }

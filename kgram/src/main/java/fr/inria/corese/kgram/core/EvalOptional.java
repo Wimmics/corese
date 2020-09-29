@@ -41,7 +41,7 @@ public class EvalOptional {
      * if m1.compatible(m2): merge = m1.merge(m2) if eval(F(merge)) result +=
      * merge ...
      */
-    int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
+    int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
         boolean hasGraph = gNode != null;
         Memory env = eval.getMemory();
@@ -116,7 +116,7 @@ public class EvalOptional {
      * proxyGraphNode is the fake graphNode ?_kgram_ that is a proxy for the
      * named graph ?g
      */
-    boolean filter(Environment memory, Node queryNode, Node gNode, Mapping map, Exp exp) {
+    boolean filter(Environment memory, Node queryNode, Node gNode, Mapping map, Exp exp) throws SparqlException {
         if (exp.isPostpone()) {
             // A optional B
             // filters of B must be evaluated now
@@ -127,7 +127,7 @@ public class EvalOptional {
                 //map.setGraphNode(queryNode);
                 map.setGraphNode(gNode);
                 map.setEval(eval);
-                boolean b = eval.getEvaluator().test(f.getFilter(), map);
+                boolean b = eval.test(f.getFilter(), map);
                 map.setGraphNode(null);
                 if (eval.hasFilter) {
                     b = eval.getVisitor().filter(eval, gNode, f.getFilter().getExp(), b);

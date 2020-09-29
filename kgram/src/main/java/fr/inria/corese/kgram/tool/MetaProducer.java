@@ -16,6 +16,7 @@ import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.core.SparqlException;
 
 /**
  * Meta Producer that manages several Producer Uses a generic MetaIterator that
@@ -223,7 +224,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     }
 
     @Override
-    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
+    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) throws SparqlException {
         Mappings meta = new Mappings();
         for (Producer p : getProducerList()) {
             meta.add(p.getMappings(gNode, from, exp, env));

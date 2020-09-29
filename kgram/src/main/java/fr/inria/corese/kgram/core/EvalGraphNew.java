@@ -22,7 +22,7 @@ public class EvalGraphNew {
         stop = b;
     }
     
-    int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
+    int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
         Node graphNode = exp.getGraphName();
         Node graph     = eval.getNode(p, graphNode);
@@ -77,7 +77,7 @@ public class EvalGraphNew {
         return backtrack;
     }
 
-    private Mappings graphNodes(Producer p, Exp exp, Mappings map, int n) {
+    private Mappings graphNodes(Producer p, Exp exp, Mappings map, int n) throws SparqlException {
         Memory env = eval.getMemory();
         Query qq = eval.getQuery();
         Matcher mm = eval.getMatcher();
@@ -110,7 +110,7 @@ public class EvalGraphNew {
         return res;
     }
 
-    private Mappings graph(Producer p, Node graph, Exp exp, Mappings map, int n) {
+    private Mappings graph(Producer p, Node graph, Exp exp, Mappings map, int n) throws SparqlException {
         int backtrack = n - 1;
         boolean external = false;
         Node graphNode = exp.getGraphName();

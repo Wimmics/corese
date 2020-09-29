@@ -858,8 +858,12 @@ public class Mappings extends PointerObject
         for (Mappings lm : g.getValues()) {
             for (Mapping map : lm) {
                 mem.push(map, -1);
-                if (eval.test(f, mem)) {
-                    add(map);
+                try {
+                    if (eval.test(f, mem)) {
+                        add(map);
+                    }
+                } catch (SparqlException ex) {
+                    ex.printStackTrace();
                 }
                 mem.pop(map);
             }
@@ -873,8 +877,12 @@ public class Mappings extends PointerObject
         ArrayList<Mapping> l = new ArrayList<Mapping>();
         for (Mapping map : getList()) {
             mem.push(map, -1);
-            if (eval.test(f, mem)) {
-                l.add(map);
+            try {
+                if (eval.test(f, mem)) {
+                    l.add(map);
+                }
+            } catch (SparqlException ex) {
+                ex.printStackTrace();
             }
             mem.pop(map);
         }
@@ -912,7 +920,12 @@ public class Mappings extends PointerObject
             }
         }
 
-        Node node = eval.eval(exp.getFilter(), memory, p);
+        Node node;
+        try {
+            node = eval.eval(exp.getFilter(), memory, p);
+        } catch (SparqlException ex) {
+            node = null;
+        }
         memory.pop(firstMap);
         return node;
     }
@@ -931,7 +944,11 @@ public class Mappings extends PointerObject
         boolean res = true;
         Eval ev = memory.getEval();
         if (n == HAVING) {
-            res = eval.test(exp.getFilter(), memory);            
+            try {            
+                res = eval.test(exp.getFilter(), memory);
+            } catch (SparqlException ex) {
+                res = false;
+            }
             if (ev != null) {
                 ev.getVisitor().having(ev, exp.getFilter().getExp(), res);
             }
@@ -946,7 +963,11 @@ public class Mappings extends PointerObject
                 // order by ?count
                 node = memory.getNode(exp.getNode());
             } else {
-                node = eval.eval(exp.getFilter(), memory, p);
+                try {
+                    node = eval.eval(exp.getFilter(), memory, p);
+                } catch (SparqlException ex) {
+                    node = null;
+                }
                 if (ev != null) {
                     ev.getVisitor()
                         .aggregate(ev, exp.getFilter().getExp(), 

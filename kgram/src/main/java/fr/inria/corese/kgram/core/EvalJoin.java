@@ -26,7 +26,7 @@ public class EvalJoin {
      * JOIN(e1, e2) Eval e1, eval e2, generate all joins that are compatible in
      * cartesian product
      */
-    int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) {
+    int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
         Memory env = eval.getMemory();
         Mappings map1 = eval.subEval(p, gNode, gNode, exp.first(), exp, data);
@@ -65,7 +65,7 @@ public class EvalJoin {
         return fst.isBGPAnd() && fst.size() == 1 && fst.get(0).isValues() ;
     }
 
-    private int join(Producer p, Node gNode, Exp exp, Mappings map1, Mappings map2, Stack stack, int n) {
+    private int join(Producer p, Node gNode, Exp exp, Mappings map1, Mappings map2, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
         Memory env = eval.getMemory();
         Node qn1 = null, qn2 = null;
@@ -153,7 +153,7 @@ public class EvalJoin {
         return backtrack;
     }
 
-    int join(Producer p, Node gNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n) {
+    int join(Producer p, Node gNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n) throws SparqlException {
         int backtrack = n - 1;
 
         Node q = map1.getCommonNode(map2);
@@ -246,7 +246,7 @@ public class EvalJoin {
         return backtrack;
     }
 
-    int simpleJoin(Producer p, Node gNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n) {
+    int simpleJoin(Producer p, Node gNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n) throws SparqlException {
         int backtrack = n - 1;
         for (Mapping m1 : map1) {
             if (stop) {

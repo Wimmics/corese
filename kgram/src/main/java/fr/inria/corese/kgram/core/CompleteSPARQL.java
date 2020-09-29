@@ -39,7 +39,7 @@ public class CompleteSPARQL {
      * 
      * @param map 
      */
-    void complete(Producer p, Mappings map){
+    void complete(Producer p, Mappings map) throws SparqlException{
         selectExpression(query, p, map);
         distinct(query, map);
         orderGroup(query, p, map);
@@ -59,7 +59,7 @@ public class CompleteSPARQL {
         }
     }
     
-    Mappings selectExpression(Query q, Producer p, Mappings map) {
+    Mappings selectExpression(Query q, Producer p, Mappings map) throws SparqlException {
         if (query.isSelectExpression()) {
             HashMap bnode = new HashMap();
             for (Mapping m : map) {
@@ -75,7 +75,7 @@ public class CompleteSPARQL {
         return map;
     }
     
-    Mapping selectExpression(Query q, Producer p, Mapping m) {
+    Mapping selectExpression(Query q, Producer p, Mapping m) throws SparqlException {
         ArrayList<Node> ql = new ArrayList<Node>();        
         ArrayList<Node> tl = new ArrayList<Node>();
         
@@ -92,7 +92,7 @@ public class CompleteSPARQL {
                 }
                 else {
                     Node qnode = e.getNode();
-                    Node tnode = eval.getEvaluator().eval(f, m, p);
+                    Node tnode = eval.eval(f, m, p);
                     if (tnode != null) {
                         Node val = m.getNodeValue(qnode);
                         if (val == null) {
@@ -116,7 +116,7 @@ public class CompleteSPARQL {
         return m;
     }
     
-    void orderGroup(Query q, Producer p, Mappings map){
+    void orderGroup(Query q, Producer p, Mappings map) throws SparqlException{
         for (Mapping m : map){
             Node[] snode = new Node[q.getOrderBy().size()];
             Node[] gnode = new Node[q.getGroupBy().size()];
@@ -127,7 +127,7 @@ public class CompleteSPARQL {
         }
     }
     
-    void orderGroup(List<Exp> lExp, Node[] nodes, Producer p, Mapping m) {
+    void orderGroup(List<Exp> lExp, Node[] nodes, Producer p, Mapping m) throws SparqlException {
         int n = 0;
         for (Exp e : lExp) {
             Node qNode = e.getNode();
@@ -137,7 +137,7 @@ public class CompleteSPARQL {
             if (nodes[n] == null) {
                 Filter f = e.getFilter();
                 if (f != null && !e.isAggregate()) {
-                    nodes[n] = eval.getEvaluator().eval(f, m, p);
+                    nodes[n] = eval.eval(f, m, p);
                 }
 
             }

@@ -456,7 +456,11 @@ public class Memory extends PointerObject implements Environment {
                             // do nothing
                         }
                         else {
-                            node = eval.eval(f, this, p);
+                            try {
+                                node = eval.eval(f, this, p);
+                            } catch (SparqlException ex) {
+                                node = null;
+                            }
                             kgram.getVisitor().select(kgram, f.getExp(), node==null?null:node.getDatatypeValue());
                             // bind fun(?x) as ?y
                             boolean success = push(e.getNode(), node);
@@ -563,7 +567,10 @@ public class Memory extends PointerObject implements Environment {
             if (nodes[n] == null) {
                 Filter f = e.getFilter();
                 if (f != null && !e.isAggregate()) {
-                    nodes[n] = eval.eval(f, this, p);
+                    try {
+                        nodes[n] = eval.eval(f, this, p);
+                    } catch (SparqlException ex) {
+                    }
                 }
 
             }

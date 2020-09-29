@@ -146,7 +146,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public Node eval(Filter f, Environment env, Producer p) {
+    public Node eval(Filter f, Environment env, Producer p) throws EngineException {
         Expr exp = f.getExp();
         IDatatype value = eval(exp, env, p);
         if (value == ERROR_VALUE) {
@@ -155,28 +155,28 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return producer.getNode(value);
     }
 
-    @Override
-    public List<Node> evalList(Filter f, Environment env) {
-
-        Expr exp = f.getExp();
-        switch (exp.oper()) {
-
-            default:
-                Object value = eval(exp, env);
-                if (value == ERROR_VALUE) {
-                    return null;
-                }
-                List<Node> lNode = producer.toNodeList(value);
-                return lNode;
-        }
-    }
+//    @Override
+//    public List<Node> evalList(Filter f, Environment env) {
+//
+//        Expr exp = f.getExp();
+//        switch (exp.oper()) {
+//
+//            default:
+//                Object value = eval(exp, env);
+//                if (value == ERROR_VALUE) {
+//                    return null;
+//                }
+//                List<Node> lNode = producer.toNodeList(value);
+//                return lNode;
+//        }
+//    }
 
     /**
      * Functions that return several variables as result such as: sql("select
      * from where") as (?x ?y)
      */
     @Override
-    public Mappings eval(Filter f, Environment env, List<Node> nodes) {
+    public Mappings eval(Filter f, Environment env, List<Node> nodes) throws EngineException {
         Expr exp = f.getExp();
         switch (exp.oper()) {
 
@@ -188,7 +188,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                 exp = exp.getExp(0);
 
             default:
-                Object res = eval(exp, env);
+                IDatatype res = eval(exp, env);
                 if (res == ERROR_VALUE) {
                     return new Mappings();
                 }
@@ -197,12 +197,12 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public boolean test(Filter f, Environment env) {
+    public boolean test(Filter f, Environment env) throws EngineException {
         return test(f, env, producer);
     }
 
     @Override
-    public boolean test(Filter f, Environment env, Producer p) {
+    public boolean test(Filter f, Environment env, Producer p) throws EngineException {
         Expr exp = f.getExp();
         IDatatype value = eval(exp, env, p);
         if (value == ERROR_VALUE) {
@@ -229,7 +229,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     }
 
-    public Object eval(Expr exp, Environment env) {
+    public IDatatype eval(Expr exp, Environment env) {
         return eval(exp, env, producer);
     }
 
@@ -246,7 +246,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     /**
      * Bridge to expression evaluation
      */
-    @Override
+    //@Override
     public IDatatype eval(Expr exp, Environment env, Producer p) {
         if (env.getEval() == null) {
             logger.error("Environment getEval() = null in: ");
@@ -435,6 +435,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      */
     @Override
     public IDatatype exist(Expr exp, Environment env, Producer p) throws EngineException {
+        try {
         if (hasListener) {
             listener.listen(exp);
         }
@@ -466,22 +467,13 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                     Query qq = sub.getQuery();
                     qq.setFun(true);
                     if (qq.isConstruct() || qq.isUpdate()) {
-                        try {
-                            // let (?g =  construct where)
-                            Mappings m = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
-                            return DatatypeMap.createObject((m.getGraph()==null)?p.getGraph():m.getGraph());
-                        } catch (SparqlException ex) {
-                            throw EngineException.cast(ex);
-                        }
+                        Mappings m = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
+                        return DatatypeMap.createObject((m.getGraph()==null)?p.getGraph():m.getGraph());
                     }
                     if (qq.getService() != null) {
-                        try {
-                            // @federate <uri> let (?m = select where)
+                        // @federate <uri> let (?m = select where)
                             Mappings m = currentEval.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
                             return DatatypeMap.createObject(m);
-                        } catch (SparqlException ex) {
-                            throw EngineException.cast(ex);
-                        }
                     } else {
                         // let (?m = select where)
                         Eval eval = createEval(currentEval, exp, env, p);
@@ -512,6 +504,10 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             return DatatypeMap.createObject(map);
         } else {
             return proxy.getValue(b);
+        }
+        }
+        catch (SparqlException e) {
+            throw EngineException.cast(e);
         }
     }
 
@@ -719,7 +715,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * use case:  Eval funcall LDScript function
      * 
      */
-    @Override
+    //@Override
     public IDatatype eval(Expr f, Environment e, Producer p, Object[] values) {
         return eval(f, e, p, (IDatatype[]) values);
     }

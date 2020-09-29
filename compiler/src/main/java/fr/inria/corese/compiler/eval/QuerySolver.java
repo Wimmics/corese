@@ -40,6 +40,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.AccessRightDefinition;
+import fr.inria.corese.sparql.triple.parser.Context;
 import java.util.logging.Level;
 
 /**
@@ -424,21 +425,27 @@ public class QuerySolver implements SPARQLEngine {
         return kgram;
     }
 
+    @Deprecated
     public IDatatype eval(String q) throws EngineException {
-        return eval(q, MAIN_FUN, null);
+        return DatatypeMap.TRUE;
     }
-
-    public IDatatype eval(String q, Dataset ds) throws EngineException {
-        return eval(q, MAIN_FUN, ds);
-    }
-
-    IDatatype eval(String q, String name, Dataset ds) throws EngineException {
-        setGenerateMain(false);
-        Eval kgram = createEval(q, ds);
-        setEval(kgram);
-        IDatatype dt = (IDatatype) kgram.eval(name, new IDatatype[0]);
-        return dt;
-    }
+//
+//    public IDatatype eval(String q, Dataset ds) throws EngineException {
+//        return eval(q, MAIN_FUN, ds);
+//    }
+//
+//    IDatatype eval(String q, String name, Dataset ds) throws EngineException {
+//        setGenerateMain(false);
+//        Eval kgram = createEval(q, ds);
+//        setEval(kgram);
+//        IDatatype dt = funcall(name);
+//        return dt;
+//    }
+//    
+//    // overriden by QueryProcess
+//    public IDatatype funcall(String name, IDatatype... param) throws EngineException {
+//        return null;
+//    }
 
     void init(Query q) {
         // use case: OWL RL kg:sparql(query) in a rule

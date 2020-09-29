@@ -253,32 +253,32 @@ public class QuerySolver implements SPARQLEngine {
         return query(query, map);
     }
 
-    public Mappings eval(Query query) {
+    public Mappings eval(Query query) throws EngineException {
         return query((Node) null, query, null);
     }
 
     @Override
-    public Mappings eval(Query query, Mapping m, Producer p) {
+    public Mappings eval(Query query, Mapping m, Producer p) throws SparqlException {
         return query((Node) null, query, m);
     }
 
     @Override
-    public Mappings eval(Node gNode, Query query, Mapping m, Producer p) {
+    public Mappings eval(Node gNode, Query query, Mapping m, Producer p) throws SparqlException {
         return query(gNode, query, m);
     }
 
-    public Mappings eval(Query query, Mapping m) {
+    public Mappings eval(Query query, Mapping m) throws EngineException {
         return query((Node) null, query, m);
     }
 
     /**
      * Core QueryExec processor
      */
-    public Mappings query(Query query, Mapping m) {
+    public Mappings query(Query query, Mapping m) throws EngineException {
         return query((Node) null, query, m);
     }
 
-    public Mappings query(Node gNode, Query query, Mapping m) {
+    public Mappings query(Node gNode, Query query, Mapping m) throws EngineException {
         init(query);
         debug(query);
 
@@ -419,7 +419,7 @@ public class QuerySolver implements SPARQLEngine {
         try {
             kgram.query(q);
         } catch (SparqlException ex) {
-            java.util.logging.Logger.getLogger(QuerySolver.class.getName()).log(Level.SEVERE, null, ex);
+            throw EngineException.cast(ex);
         }
         return kgram;
     }
@@ -579,7 +579,7 @@ public class QuerySolver implements SPARQLEngine {
         return q;
     }
 
-    public Mappings query(Query query) {
+    public Mappings query(Query query) throws EngineException {
         return query(query, null);
     }
 

@@ -15,6 +15,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.kgram.core.Stack;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.filter.Proxy;
@@ -26,6 +27,7 @@ import fr.inria.corese.sparql.api.TransformProcessor;
 import fr.inria.corese.sparql.api.TransformVisitor;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Context;
@@ -36,6 +38,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * A generic filter Evaluator Values are Java Object Target processing is
@@ -289,7 +292,15 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                 return TRUE;
 
             case EXIST:
-                return exist(exp, env, p);
+            {
+                try {
+                    return exist(exp, env, p);
+                } catch (EngineException ex) {
+                    java.util.logging.Logger.getLogger(Interpreter.class.getName()).log(Level.SEVERE, null, ex);
+                    return null;
+                }
+            }
+
 
 
             case PWEIGHT: {
@@ -423,7 +434,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * query in this case it is tagged as system
      */
     @Override
-    public IDatatype exist(Expr exp, Environment env, Producer p) {
+    public IDatatype exist(Expr exp, Environment env, Producer p) throws EngineException {
         if (hasListener) {
             listener.listen(exp);
         }
@@ -455,14 +466,22 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                     Query qq = sub.getQuery();
                     qq.setFun(true);
                     if (qq.isConstruct() || qq.isUpdate()) {
-                        // let (?g =  construct where)
-                        Mappings m = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
-                        return DatatypeMap.createObject((m.getGraph()==null)?p.getGraph():m.getGraph());
+                        try {
+                            // let (?g =  construct where)
+                            Mappings m = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
+                            return DatatypeMap.createObject((m.getGraph()==null)?p.getGraph():m.getGraph());
+                        } catch (SparqlException ex) {
+                            throw EngineException.cast(ex);
+                        }
                     }
                     if (qq.getService() != null) {
-                        // @federate <uri> let (?m = select where)
-                        Mappings m = currentEval.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
-                        return DatatypeMap.createObject(m);
+                        try {
+                            // @federate <uri> let (?m = select where)
+                            Mappings m = currentEval.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
+                            return DatatypeMap.createObject(m);
+                        } catch (SparqlException ex) {
+                            throw EngineException.cast(ex);
+                        }
                     } else {
                         // let (?m = select where)
                         Eval eval = createEval(currentEval, exp, env, p);

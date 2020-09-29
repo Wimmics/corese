@@ -12,6 +12,7 @@ import fr.inria.corese.core.api.QueryGraphVisitor;
 import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -185,7 +186,10 @@ public class QueryGraphVisitorImpl implements QueryGraphVisitor {
         fr.inria.corese.compiler.parser.EdgeImpl edge = 
                fr.inria.corese.compiler.parser.EdgeImpl.create(var, node, elem);
        Term re = list();
-       re.compile(ast);
+        try {
+            re.compile(ast);
+        } catch (EngineException ex) {
+        }
        Exp exp = Exp.create(Exp.PATH, edge);
        exp.setRegex(re);
        if (isDebug()){

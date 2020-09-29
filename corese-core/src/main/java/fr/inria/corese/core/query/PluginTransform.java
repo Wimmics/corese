@@ -23,6 +23,7 @@ import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.transform.Transformer;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import fr.inria.corese.sparql.api.GraphProcessor;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.io.IOException;
 import java.io.InputStream;
 import java.util.Arrays;
@@ -886,7 +887,7 @@ public class PluginTransform implements ComputerProxy, ExprType {
      /**
      * create concat(str, st:number(), str)
      */
-    public Expr createFunction(String name, List<Object> args, Environment env){
+    public Expr createFunction(String name, List<Object> args, Environment env) throws EngineException{
         Term t = Term.function(name);
         for (Object arg : args){
             if (arg instanceof IDatatype){

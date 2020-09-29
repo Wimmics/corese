@@ -1559,7 +1559,8 @@ public class PluginImpl
      * create concat(str, st:number(), str)
      */
     @Override
-    public Expr createFunction(String name, List<Object> args, Environment env){
+    public Expr createFunction(String name, List<Object> args, Environment env)
+    throws EngineException {
         return pt.createFunction(name, args, env);
     }
     
@@ -1570,7 +1571,7 @@ public class PluginImpl
      * rq:plus -> function rq:plus(x, y){ rq:plus(x, y) }
      */
     @Override
-    public Expr getDefine(Expr exp, Environment env, String name, int n){
+    public Expr getDefine(Expr exp, Environment env, String name, int n) throws EngineException{
         if (Processor.getOper(name) == ExprType.UNDEF){
             return null;            
         }       

@@ -10,6 +10,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
  *
@@ -49,8 +50,8 @@ public class FunctionProcess extends WorkflowProcess {
         if (path != null){
             exec.setDefaultBase(path);
         }
-        IDatatype res = exec.eval(getQuery(), data.dataset(c, ds));  
-        return res;
+        //IDatatype res = exec.eval(getQuery(), data.dataset(c, ds));  
+        return DatatypeMap.TRUE;
     }
 
     /**

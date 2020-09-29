@@ -34,6 +34,7 @@ import fr.inria.corese.core.producer.DataProducer;
 import fr.inria.corese.core.Index;
 import fr.inria.corese.core.util.ValueCache;
 import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
+import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.util.HashMap;
@@ -357,7 +358,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     }
 
     @Override
-    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) {
+    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) throws SparqlException{
         if (env instanceof Memory) {
             if (env.getQuery().isDebug()) {
                 System.out.println("BGP:\n" + exp);

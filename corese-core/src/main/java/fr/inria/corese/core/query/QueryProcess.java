@@ -1089,6 +1089,7 @@ public class QueryProcess extends QuerySolver {
     /**
      * Execute LDScript function defined as @public
      */
+    //@Override
     public IDatatype funcall(String name, IDatatype... param) throws EngineException {
         return funcall(name, (Context) null, param);
     }

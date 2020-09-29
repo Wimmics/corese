@@ -16,6 +16,7 @@ import fr.inria.corese.core.query.QueryProcess;
 
 import org.slf4j.LoggerFactory;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
  * Graph Listener implements callbacks as FunSPARQL functions Manage an Eval
@@ -123,7 +124,8 @@ public class GraphListen implements GraphListener {
      * @param name
      */
     IDatatype exec(String name, IDatatype[] param) {
-        return (IDatatype) eval.eval(name, param);
+        //return (IDatatype) eval.eval(name, param);
+        return DatatypeMap.TRUE;
     }
 
     IDatatype value(Object obj) {

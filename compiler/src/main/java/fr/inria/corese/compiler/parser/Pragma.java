@@ -19,6 +19,7 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.EvalListener;
 import fr.inria.corese.kgram.event.EventListener;
 import fr.inria.corese.kgram.tool.Message;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -165,17 +166,17 @@ public class Pragma {
         parse(g, list);
     }
 
-    public void compile() {
+    public void compile() throws EngineException {
         //System.out.println("** Compile: " + ast.getPragma());
         compile(null, ast.getPragma());
     }
 
-    public void compile(BasicGraphPattern p) {
+    public void compile(BasicGraphPattern p) throws EngineException {
         //System.out.println("** Compile: " + ast.getPragma());
         compile(null, p);
     }
 
-    public void compile(Atom g, fr.inria.corese.sparql.triple.parser.Exp exp) {
+    public void compile(Atom g, fr.inria.corese.sparql.triple.parser.Exp exp) throws EngineException {
 
         for (fr.inria.corese.sparql.triple.parser.Exp pragma : exp.getBody()) {
 
@@ -194,7 +195,7 @@ public class Pragma {
         }
     }
 
-    public void compile(Expression exp) {
+    public void compile(Expression exp) throws EngineException {
         exp.compile(ast);
     }
 

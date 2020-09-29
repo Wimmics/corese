@@ -4,6 +4,7 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Regex;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Expression;
@@ -38,13 +39,13 @@ public interface Compiler {
 
   Collection<Node> getVariables();
 
-  Filter compile(Expression exp);
+  Filter compile(Expression exp) throws EngineException;
 
   Edge compile(Triple t, boolean insertData);
 
-  List<Filter> compileFilter(Expression exp);
+  List<Filter> compileFilter(Expression exp) throws EngineException;
 
-  Regex getRegex(Filter f);
+  Regex getRegex(Filter f) throws EngineException ;
 
   String getMode(Filter f);
 

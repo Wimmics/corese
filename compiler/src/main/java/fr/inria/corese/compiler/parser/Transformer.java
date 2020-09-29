@@ -379,7 +379,7 @@ public class Transformer implements ExpType {
         } 
     }
     
-    void toJava(ASTQuery ast){
+    void toJava(ASTQuery ast) throws EngineException{
         if (ast.hasMetadata(Metadata.COMPILE)){
             String name = ast.getMetadata().getValue(Metadata.COMPILE);
             JavaCompiler jc = new JavaCompiler(name);
@@ -544,7 +544,7 @@ public class Transformer implements ExpType {
         return false;
     }
 
-    private void template(Query q, ASTQuery ast) {
+    private void template(Query q, ASTQuery ast) throws EngineException {
         if (ast.isTemplate()) {
             q.setTemplate(true);
             q.setProfile(ast.getProfile());
@@ -1382,7 +1382,7 @@ public class Transformer implements ExpType {
        return (isBGP()) ? BGP : AND;
     }
     
-    Exp compileEdge(Triple t, boolean opt) {
+    Exp compileEdge(Triple t, boolean opt) throws EngineException {
         Edge r = compiler.compile(t, ast.isInsertData());
         Exp exp = Exp.create(EDGE, r);
 
@@ -1406,7 +1406,7 @@ public class Transformer implements ExpType {
         return exp;
     }
 
-    void path(Triple tt, Exp exp) {
+    void path(Triple tt, Exp exp) throws EngineException {
         exp.setType(PATH);
         Expression regex = tt.getRegex();
         if (regex == null) {
@@ -1422,7 +1422,7 @@ public class Transformer implements ExpType {
      *
      * Generate rdf:type/rdfs:subClassOf*
      */
-    Exp pathType(ASTQuery ast, Triple t) {
+    Exp pathType(ASTQuery ast, Triple t) throws EngineException {
         Expression re = Term.create(Term.RE_SEQ,
                 ast.createQName(RDFS.rdftype),
                 Term.function(Term.STAR, ast.createQName(RDFS.rdfssubclassof)));
@@ -1558,7 +1558,7 @@ public class Transformer implements ExpType {
     /**
      * Assign pathLength($path) <= 10 to its path
      */
-    void path(Exp exp) {
+    void path(Exp exp) throws EngineException {
         for (Exp ee : exp) {
             if (ee.isPath()) {
                 for (Exp ff : exp) {
@@ -1580,7 +1580,7 @@ public class Transformer implements ExpType {
      * Check if filter f concerns path e for regex, mode, min, max store them in
      * Exp e
      */
-    void processPath(Exp exp, Exp ef) {
+    void processPath(Exp exp, Exp ef) throws EngineException {
         fr.inria.corese.kgram.api.core.Filter f = ef.getFilter();
         Edge e = exp.getEdge();
         Node n = e.getEdgeVariable();
@@ -1702,7 +1702,7 @@ public class Transformer implements ExpType {
      * stored in a table, we can have several predefined filters pathNode()
      * generate a blank node for each path (PathFinder)
      */
-    void filters(Query q) {
+    void filters(Query q) throws EngineException {
         ASTQuery ast = (ASTQuery) q.getAST();
 
         Term t = Term.function(Processor.PATHNODE);

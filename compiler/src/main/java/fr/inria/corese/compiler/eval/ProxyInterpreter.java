@@ -40,6 +40,7 @@ import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Context;
 
@@ -1688,14 +1689,15 @@ public class ProxyInterpreter implements Proxy,  ExprType {
         return FALSE;
     }
 
-    @Override
-    public Expr createFunction(String name, List<Object> args, Environment env) {
+    //@Override
+    public Expr createFunction(String name, List<Object> args, Environment env) 
+    throws EngineException{
         return null;    
     }
     
-    @Override
-    public Expr getDefine(Expr exp, Environment env, String name, int n){
-        return plugin.getDefine(exp, env, name, n);
+   // @Override
+    public Expr getDefine(Expr exp, Environment env, String name, int n) throws EngineException {
+        return castPlugin.getDefine(exp, env, name, n);
     }
 
     @Override

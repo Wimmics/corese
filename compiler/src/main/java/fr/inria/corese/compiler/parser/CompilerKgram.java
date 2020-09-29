@@ -7,6 +7,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Regex;
 import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Constant;
@@ -71,13 +72,13 @@ public class CompilerKgram implements ExpType, Compiler {
 
 
     @Override
-    public List<Filter> compileFilter(Expression exp) {
+    public List<Filter> compileFilter(Expression exp) throws EngineException {
         ArrayList<Filter> list = new ArrayList<>();
         compile(exp, list);
         return list;
     }
 
-    void compile(Expression exp, List<Filter> list) {
+    void compile(Expression exp, List<Filter> list) throws EngineException {
         if (exp.isAnd()) {
             for (Expression e : exp.getArgs()) {
                 compile(e, list);
@@ -93,7 +94,7 @@ public class CompilerKgram implements ExpType, Compiler {
      * Generate one filter
      */
     @Override
-    public Filter compile(Expression exp) {
+    public Filter compile(Expression exp) throws EngineException {
         Expression ee = process(exp);
         Expression cpl = ee.process(ast);
         if (cpl == null) {
@@ -246,7 +247,7 @@ public class CompilerKgram implements ExpType, Compiler {
      * **/
 
     @Override
-    public Regex getRegex(Filter f) {
+    public Regex getRegex(Filter f) throws EngineException {
         Expression exp = (Expression) f;
         if (exp.isFunction(Processor.MATCH)) {
             Expression regex = exp.getArg(1);

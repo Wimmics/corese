@@ -607,8 +607,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * function name URI evaluate arg return function definition corresponding
      * to name with arity n.
      */
-    @Override
-    public Expr getDefine(Expr exp, Environment env, Producer p, int n) {
+    //@Override
+    public Expr getDefine(Expr exp, Environment env, Producer p, int n) throws EngineException {
         IDatatype name = eval(exp.getExp(0), env, p);
         if (name == ERROR_VALUE) {
             return null;
@@ -656,7 +656,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public Function getDefineGenerate(Expr exp, Environment env, String name, int n) {
+    public Function getDefineGenerate(Expr exp, Environment env, String name, int n) 
+            throws EngineException{
         Function fun = getDefine(env, name, n);
         if (fun == null) {
             fun = (Function) proxy.getDefine(exp, env, name, n);

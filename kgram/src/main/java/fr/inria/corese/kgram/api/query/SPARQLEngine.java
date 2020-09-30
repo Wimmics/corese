@@ -16,7 +16,7 @@ public interface SPARQLEngine {
     
     Mappings eval(Node gNode, Query q, Mapping m, Producer p) throws SparqlException;
         
-    void getLinkedFunction(String uri);
+    void getLinkedFunction(String uri) throws SparqlException;
     
     // within a lock where query processing has ended and where we can process another query
     boolean isSynchronized();

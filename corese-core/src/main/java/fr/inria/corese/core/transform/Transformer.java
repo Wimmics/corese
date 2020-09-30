@@ -34,6 +34,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
+import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.api.TransformProcessor;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
@@ -1059,7 +1060,13 @@ public class Transformer implements TransformProcessor {
         }
         mem.setResults(map);
         // execute st:aggregate(?out)
-        Node node = map.apply(exec.getEvaluator(), tq.getTemplateGroup(), mem, exec.getProducer());
+        Node node = null;
+        try {
+            node = map.apply(exec.getEvaluator(), tq.getTemplateGroup(), mem, exec.getProducer());
+        } catch (SparqlException ex) {
+            logger.error(ex.getMessage());
+            return EMPTY;
+        }
         return (IDatatype) node.getDatatypeValue();
     }
 
@@ -1182,8 +1189,13 @@ public class Transformer implements TransformProcessor {
             if (ext != null) {
                 Expr function = ext.get(name, (dt == null) ? 0 : 1);
                 if (function != null) {
-                    IDatatype dt1 = new Funcall(name).call((Interpreter) exec.getEvaluator(),
-                            (Binding) env.getBind(), env, exec.getProducer(), (Function) function, param(dt));
+                    IDatatype dt1 = null;
+                    try {
+                        dt1 = new Funcall(name).call((Interpreter) exec.getEvaluator(),
+                                (Binding) env.getBind(), env, exec.getProducer(), (Function) function, param(dt));
+                    } catch (EngineException ex) {
+                        logger.error(ex.getMessage());
+                    }
 
                     return dt1;
                 }

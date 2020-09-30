@@ -585,11 +585,11 @@ public class Transformer implements ExpType {
         getFunctionCompiler().imports(q, (ASTQuery) q.getAST(), path);
     }
     
-    public boolean getLinkedFunction(String label) {
+    public boolean getLinkedFunction(String label) throws EngineException {
         return getFunctionCompiler().getLinkedFunction(label);
     }
         
-    public boolean getLinkedFunctionBasic(String label) {
+    public boolean getLinkedFunctionBasic(String label) throws EngineException {
         return getFunctionCompiler().getLinkedFunctionBasic(label);
     }
     

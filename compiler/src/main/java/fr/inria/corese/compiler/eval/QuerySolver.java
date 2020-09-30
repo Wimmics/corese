@@ -856,7 +856,7 @@ public class QuerySolver implements SPARQLEngine {
         this.isGenerateMain = isGenerateMain;
     }
 
-    public Query parseQuery(String path) {
+    public Query parseQuery(String path) throws EngineException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -957,7 +957,7 @@ public class QuerySolver implements SPARQLEngine {
     }
 
     @Override
-    public void getLinkedFunction(String uri) {
+    public void getLinkedFunction(String uri) throws EngineException {
     }
 
     /**

@@ -8,6 +8,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.exceptions.UndefinedExpressionException;
 import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
@@ -17,6 +18,7 @@ import fr.inria.corese.sparql.triple.parser.AccessNamespace;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.util.ArrayList;
 import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -38,6 +40,7 @@ import org.slf4j.LoggerFactory;
  */
 public class FunctionCompiler {
 
+    private static String NL = System.getProperty("line.separator");
     private static Logger logger = LoggerFactory.getLogger(FunctionCompiler.class);
     private static HashMap<String, String> loaded;
     HashMap<String, String> imported;
@@ -78,7 +81,7 @@ public class FunctionCompiler {
         }
         if (Access.reject(Access.Feature.FUNCTION_DEFINITION, ast.getLevel())) { 
             //logger.error("Extension function definition unauthorized");
-            throw new SafetyException("Extension function definition unauthorized");
+            throw new SafetyException(TermEval.FUNCTION_DEFINITION_MESS);
         }
 
         define(ast, ast.getDefine(), q);
@@ -126,30 +129,43 @@ public class FunctionCompiler {
             basicImports(q, ast, path);
         }
         else {
-            throw new SafetyException("Unauthorized import: " + path);
+            throw new SafetyException(TermEval.IMPORT_MESS);
         }
     }
     
     
     
     
-
+    /**
+     * After compiling query, there are undefined functions
+     * If authorized, load LinkedFunction
+     * If still undefined, throw Undefined Exception
+     */
     void undefinedFunction(Query q, ASTQuery ast) throws EngineException {
+        ArrayList<Expression> list = new ArrayList<>();
+
         for (Expression exp : ast.getUndefined().values()) {
             boolean ok = Interpreter.isDefined(exp) || q.getExtension().isDefined(exp);
             if (ok) {
             } else {
-                ok = acceptLinkedFunction(ast.getLevel())
-                  && acceptNamespace(exp.getLabel());
-                if (ok) {
-                    getLinkedFunctionBasic(q, exp);
+                if (acceptLinkedFunction(ast.getLevel())
+                        && acceptNamespace(exp.getLabel())) {
+                    ok = getLinkedFunctionBasic(q, exp);
                 }
-                else {
-                    //ast.addError("Compiler: Undefined expression: " + exp);
-                    throw new UndefinedExpressionException("Undefined expression: " + exp.toString());
+                if (!ok) {
+                    list.add(exp);
                 }
             }
         }
+
+        if (list.isEmpty()) {
+            return;
+        }
+        StringBuilder sb = new StringBuilder();
+        for (Expression exp : list) {
+            sb.append(exp.toString()).append(NL);
+        }
+        throw new UndefinedExpressionException(TermEval.UNDEFINED_EXPRESSION_MESS + NL + sb.toString());
     }
     
     boolean acceptLinkedFunction(Level level) {
@@ -162,17 +178,8 @@ public class FunctionCompiler {
     boolean acceptNamespace(String ns) {
         return AccessNamespace.access(ns);
     }
-
-//    boolean getLinkedFunction(Query q, Expression exp) {
-//        if (acceptNamespace(exp.getLabel())) {
-//            return getLinkedFunctionBasic(q, exp);
-//        }
-//        logger.error("Unauthorized import: " + exp.getLabel());
-//        return false;
-//    }
-
     
-    boolean getLinkedFunctionBasic(Query q, Expression exp) {
+    boolean getLinkedFunctionBasic(Query q, Expression exp) throws EngineException {
         boolean b = getLinkedFunctionBasic(exp.getLabel());
         if (b) {
             return Interpreter.isDefined(exp);
@@ -180,7 +187,7 @@ public class FunctionCompiler {
         return false;
     }
     
-    boolean getLinkedFunction(String label) {
+    boolean getLinkedFunction(String label) throws EngineException {
         if (acceptLinkedFunction(Level.DEFAULT) && acceptNamespace(label)) { 
             return getLinkedFunctionBasic(label);
         }
@@ -203,7 +210,7 @@ public class FunctionCompiler {
         define(ast, ast2.getDefineLambda(), q);
     }
 
-    boolean getLinkedFunctionBasic(String label) {
+    boolean getLinkedFunctionBasic(String label) throws EngineException {
         String path = NSManager.namespace(label);
         if (getLoaded().containsKey(path)) {
             return true;

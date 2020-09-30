@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -26,7 +27,7 @@ public class Namespace extends TermEval {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype dt = getBasicArg(0).eval(eval, b, env, p);
         if (dt == null) {
             return null;
@@ -49,7 +50,7 @@ public class Namespace extends TermEval {
 
     }
     
-    IDatatype define(IDatatype dt, Computer eval, Binding b, Environment env, Producer p) {
+    IDatatype define(IDatatype dt, Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype dt2 = getBasicArg(1).eval(eval, b, env, p);
         if (dt2 == null) {
             return null;

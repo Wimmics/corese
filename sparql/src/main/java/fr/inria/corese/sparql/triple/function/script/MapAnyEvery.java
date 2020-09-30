@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import static fr.inria.corese.kgram.api.core.ExprType.MAPANY;
 import static fr.inria.corese.kgram.api.core.ExprType.MAPEVERY;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.Iterator;
@@ -27,7 +28,7 @@ public class MapAnyEvery extends Funcall {
     }
 
     //@Override
-    public IDatatype evalnew(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype evalnew(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype name = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);
         if (name == null || param == null) {
@@ -107,7 +108,7 @@ public class MapAnyEvery extends Funcall {
 
     }
     
-     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype name = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);
         if (name == null || param == null) {

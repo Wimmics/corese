@@ -8,6 +8,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 
 /**
@@ -24,7 +25,7 @@ public class ZeroaryFunction extends TermEval {
     }
     
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         switch (oper()){
             case ExprType.RANDOM:   return CoreseDouble.create(Math.random());
             case ExprType.NOW:      return DatatypeMap.newDate();

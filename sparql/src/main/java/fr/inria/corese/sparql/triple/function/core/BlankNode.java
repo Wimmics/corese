@@ -8,6 +8,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import java.util.Map;
 
@@ -27,7 +28,7 @@ public class BlankNode extends TermEval {
     }
     
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         if (arity() == 1){
             return bnode(eval, b, env, p);
         }
@@ -43,7 +44,7 @@ public class BlankNode extends TermEval {
         return count++;
     }
     
-    IDatatype bnode(Computer eval, Binding b, Environment env, Producer p) {
+    IDatatype bnode(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype dt = getBasicArg(0).eval(eval, b, env, p);
         if (dt == null) return null;
         Map<String, DatatypeValue> map = env.getMap();

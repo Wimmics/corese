@@ -6,8 +6,12 @@ import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import static fr.inria.corese.sparql.triple.function.term.TermEval.JAVA_FUNCTION_MESS;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -40,11 +44,8 @@ public class Javacall extends JavaFunction {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        if (isReject(eval, b, env, p)) {
-            log("Java function unauthorized");
-            return null;
-        }
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
+        check(Feature.JAVA_FUNCTION, b, JAVA_FUNCTION_MESS);
         IDatatype dt   = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);  
         if (dt == null || param == null) {

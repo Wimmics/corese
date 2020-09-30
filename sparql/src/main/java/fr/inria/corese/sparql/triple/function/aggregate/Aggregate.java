@@ -8,6 +8,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Group;
 import fr.inria.corese.kgram.core.Mapping;
@@ -50,7 +51,7 @@ public class Aggregate extends LDScript {
     }
              
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         if (isRunning){
             // Use case: recursive query evaluate aggregate within aggregate
             return duplicate().eval(eval, b, env, p);

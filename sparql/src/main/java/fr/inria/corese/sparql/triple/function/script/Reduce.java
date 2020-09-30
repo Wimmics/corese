@@ -15,6 +15,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.PLUS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_APPEND;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MERGE;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Expression;
@@ -40,7 +41,7 @@ public class Reduce extends Funcall {
     }
     
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype name    = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);
         if (name == null || param == null || param.length == 0) {
@@ -121,7 +122,7 @@ public class Reduce extends Funcall {
     }
     
     // fun with no arg returns neutral element
-    IDatatype neutral(Computer eval, Binding b, Environment env, Producer p, IDatatype name, IDatatype dt) {
+    IDatatype neutral(Computer eval, Binding b, Environment env, Producer p, IDatatype name, IDatatype dt) throws EngineException {
         Function function = null;
         try {
             function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), 0);

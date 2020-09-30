@@ -5,6 +5,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_RDF;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_XML;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.Computer;
@@ -31,7 +32,7 @@ public class ResultFormater extends TermEval {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
 
         switch (oper()) {
             case XT_JSON:

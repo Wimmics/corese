@@ -13,8 +13,11 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -27,6 +30,13 @@ public class TermEval extends Term {
     public static Logger logger = LoggerFactory.getLogger(TermEval.class);
     public static final IDatatype TRUE = DatatypeMap.TRUE;
     public static final IDatatype FALSE = DatatypeMap.FALSE;
+    
+    public static final String SPARQL_MESS = "SPARQL query unauthorized";
+    public static final String LOAD_MESS = "Load unauthorized";
+    public static final String READ_MESS = "Read unauthorized";
+    public static final String WRITE_MESS = "Write unauthorized";
+    public static final String JAVA_FUNCTION_MESS = "Java function unauthorized";
+    public static final String LINKED_TRANSFORMATION_MESS = "Linked transformation unauthorized";
     
     
     public TermEval(String name, Expression e1, Expression e2, Expression e3) {
@@ -105,7 +115,7 @@ public class TermEval extends Term {
     }
     
 
-    public IDatatype[] evalArguments(Computer eval, Binding b, Environment env, Producer p, int start) {
+    public IDatatype[] evalArguments(Computer eval, Binding b, Environment env, Producer p, int start) throws EngineException {
         IDatatype[] param = new IDatatype[args.size() - start];
         int i = 0;
         for (int j = start; j < args.size(); j++) {
@@ -145,12 +155,18 @@ public class TermEval extends Term {
         return p.getNode(dt);
     }
      
-    public boolean reject(Access.Feature feature, Computer eval, Binding b, Environment env, Producer p) {
+    public boolean reject(Feature feature, Computer eval, Binding b, Environment env, Producer p) {
         return Access.reject(feature, b.getAccessLevel());
     }
     
-    public boolean accept(Access.Feature feature, Computer eval, Binding b, Environment env, Producer p) {
+    public boolean accept(Feature feature, Computer eval, Binding b, Environment env, Producer p) {
         return Access.accept(feature, b.getAccessLevel());
+    }
+    
+    public void check(Feature feature, Binding b, String mes) throws SafetyException {
+        if (Access.reject(feature, b.getAccessLevel())) {
+            throw new SafetyException(mes);
+        }
     }
     
     public void log(String mess) {

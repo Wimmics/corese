@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.function.template;
 
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -21,7 +22,7 @@ public class TemplateFuture extends TemplateFunction {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {     
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {     
         return DatatypeMap.createFuture(this.getArg(0));
     }   
        

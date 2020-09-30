@@ -22,6 +22,7 @@ import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SHAPE_GRAPH;
@@ -37,8 +38,8 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SUBJECTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SYNTAX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
-import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 
 /**
  *
@@ -52,7 +53,7 @@ public class GraphSpecificFunction extends LDScript {
     }
     
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype[] param = evalArguments(eval, b, env, p, 0);
         if (param == null){
             return null;
@@ -134,10 +135,7 @@ public class GraphSpecificFunction extends LDScript {
                 return proc.shape(this, env, p, param);
                 
             case KGRAM:
-                if (reject(Access.Feature.SPARQL, eval, b, env, p)) {
-                    log("SPARQL query unauthorized");
-                    return null;
-                }
+                check(Feature.SPARQL, b, SPARQL_MESS);
                 return proc.sparql(env, p, param);
                 
             case XT_TOGRAPH:
@@ -151,36 +149,24 @@ public class GraphSpecificFunction extends LDScript {
     
    
     
-    public IDatatype io(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param) {
+    public IDatatype io(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param) throws SafetyException {
         GraphProcessor proc = eval.getGraphProcessor();
         switch (oper()) {
 
             case LOAD:
-                if (reject(Access.Feature.READ_WRITE, eval, b, env, p)) {
-                    log("Load unauthorized");
-                    return null;
-                }
+                check(Feature.READ_WRITE, b, LOAD_MESS);
                 return load(proc, param);
 
             case WRITE:
-                if (reject(Access.Feature.READ_WRITE, eval, b, env, p)) {
-                    log("Write unauthorized");
-                    return null;
-                }
+                check(Feature.READ_WRITE, b, WRITE_MESS);
                 return proc.write(param[0], param[1]);
 
             case READ:
-                if (reject(Access.Feature.READ_WRITE, eval, b, env, p)) {
-                    log("Read unauthorized");
-                    return null;
-                }
+                check(Feature.READ_WRITE, b, READ_MESS);
                 return proc.read(param[0]);
                 
             case XT_HTTP_GET:
-                if (reject(Access.Feature.READ_WRITE, eval, b, env, p)) {
-                    log("HTTP get unauthorized");
-                    return null;
-                }
+                check(Feature.READ_WRITE, b, READ_MESS);
                 return proc.httpget(param[0]);    
                 
             default: return null;

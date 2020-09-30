@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 
 /**
@@ -23,7 +24,7 @@ public class Swap extends TermEval {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype list = getBasicArg(0).eval(eval, b, env, p);
         IDatatype dt1  = getBasicArg(1).eval(eval, b, env, p);
         IDatatype dt2  = getBasicArg(2).eval(eval, b, env, p);

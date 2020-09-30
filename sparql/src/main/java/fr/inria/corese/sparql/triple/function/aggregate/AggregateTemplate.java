@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 
 /**
@@ -29,7 +30,7 @@ public class AggregateTemplate extends Aggregate {
      * 2- st:aggregate = st:group_concat .
      */    
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {  
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {  
         init(eval, b, env, p);
         return super.eval(eval, b, env, p);
     }
@@ -39,7 +40,7 @@ public class AggregateTemplate extends Aggregate {
         proxy.aggregate(dt);
     }
     
-    void init(Computer eval, Binding b, Environment env, Producer p) {
+    void init(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         Function function = (Function) eval.getDefine(this, env);
         if (function == null || ! (function.getBody() instanceof Aggregate) ) {
             // eval st:group_concat

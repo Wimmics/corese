@@ -21,8 +21,6 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -39,7 +37,7 @@ public class Concat extends TermEval {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         if (arity() == 0) {
             return DatatypeMap.EMPTY_STRING;
         }
@@ -51,7 +49,7 @@ public class Concat extends TermEval {
         }
     }
 
-    IDatatype stlconcat(Computer eval, Binding b, Environment env, Producer p) {
+    IDatatype stlconcat(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
 
         StringBuilder sb = new StringBuilder();
         ArrayList<Expression> list = null;
@@ -145,7 +143,7 @@ public class Concat extends TermEval {
 
     
 
-    IDatatype concat(Computer eval, Binding b, Environment env, Producer p) {
+    IDatatype concat(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
 
         StringBuilder sb = new StringBuilder();
         ArrayList<Object> list = null;

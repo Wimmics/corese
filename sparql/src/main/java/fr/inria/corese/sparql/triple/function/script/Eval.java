@@ -2,6 +2,7 @@ package fr.inria.corese.sparql.triple.function.script;
 
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -28,7 +29,7 @@ public class Eval extends LDScript {
      * @error function us:error(?e) { eval(?e) }
      */
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype dt = getBasicArg(0).eval(eval, b, env, p); 
         if (dt == null || dt.pointerType() != PointerType.EXPRESSION) {
             return dt;

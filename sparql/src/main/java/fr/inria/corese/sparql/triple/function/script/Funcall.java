@@ -7,6 +7,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.ComputerEval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -29,7 +30,7 @@ public class Funcall extends LDScript {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype name = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);
         if (name == null || param == null) {
@@ -51,15 +52,10 @@ public class Funcall extends LDScript {
         return call(eval, b, env, p, function, param);
     }
     
-    Function getFunction(Computer eval, Binding b, Environment env, Producer p, IDatatype dt, int n) {
+    Function getFunction(Computer eval, Binding b, Environment env, Producer p, IDatatype dt, int n) throws EngineException {
         String name = dt.stringValue();
-        Function function = null;
-        try {
-            function = (Function) eval.getDefineGenerate(this, env, name, n);
-        } catch (EngineException ex) {
-            log(ex.getMessage());
-            return null;
-        }
+        Function function = (Function) eval.getDefineGenerate(this, env, name, n);
+
         if (function == null) {
             if (dt.pointerType() == PointerType.EXPRESSION) {
                 // lambda expression, arity is not correct                
@@ -67,22 +63,19 @@ public class Funcall extends LDScript {
             else if (env.getEval() != null) {
                 if (accept(Access.Feature.LINKED_FUNCTION, eval, b, env, p)) {
                     env.getEval().getSPARQLEngine().getLinkedFunction(name);
-                    try {
-                        function = eval.getDefineGenerate(this, env, name, n);
-                    } catch (EngineException ex) {
-                        log(ex.getMessage());
-                    }
+                    function = eval.getDefineGenerate(this, env, name, n);
                 }
                 if (function == null) {
-                    logger.error("Undefined function: " + name + " arity: " + n);
-                    logger.error(this.toString());
+                    log("Undefined function: " + name + " arity: " + n);
+                    log(this.toString());
                 }
             }
         }
         return function;
     }
 
-    public IDatatype call(Computer eval, Binding b, Environment env, Producer p, Function function, IDatatype... param) {
+    public IDatatype call(Computer eval, Binding b, Environment env, Producer p, Function function, IDatatype... param) 
+            throws EngineException{
         Expression fun = function.getSignature();
         b.set(function, fun.getExpList(), param);
         IDatatype dt = null;

@@ -23,7 +23,6 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
-import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 
 import java.util.logging.Level;
@@ -1703,7 +1702,7 @@ public class Term extends Expression {
         proc = processor;
         proc.type(this, ast);
         
-        checkAccessLevel(ast);
+        //checkAccessLevel(ast);
 
         int i = 0;
         for (Expression exp : getArgs()) {
@@ -1898,12 +1897,7 @@ public class Term extends Expression {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
-        try {
-         return eval.function((Expr) this, env, p);
-        }
-        catch (EngineException e) {
-            return null;
-        }
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
+        return eval.function((Expr) this, env, p);
     }
 }

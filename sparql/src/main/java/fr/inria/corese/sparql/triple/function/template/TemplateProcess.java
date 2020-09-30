@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.triple.function.script.Extension;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 
 /**
@@ -24,7 +25,7 @@ public class TemplateProcess extends Extension  {
     }
     
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         switch (oper()){
             case ExprType.STL_PROCESS:
                 if (isDefined || eval.getDefine(this, env) != null){

@@ -9,6 +9,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import static fr.inria.corese.kgram.api.core.PointerType.PATH;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 
 /**
@@ -26,7 +27,7 @@ public class PathLength extends TermEval {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype dt = getArg(0).eval(eval, b, env, p);
         if (dt == null || dt.pointerType() != PATH) {
             return null;

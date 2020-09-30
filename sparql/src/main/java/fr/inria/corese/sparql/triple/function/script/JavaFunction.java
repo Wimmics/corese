@@ -4,7 +4,6 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 
 /**
@@ -26,13 +25,6 @@ public class JavaFunction extends LDScript {
 //        }
     }
     
-    /**
-     * @return the reject
-     */
-    public boolean isReject(Computer eval, Binding b, Environment env, Producer p) {
-        return reject(Feature.JAVA_FUNCTION, eval, b, env, p);
-    }
-
     /**
      * @param reject the reject to set
      */

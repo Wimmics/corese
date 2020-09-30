@@ -7,6 +7,7 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import static fr.inria.corese.sparql.triple.function.aggregate.Aggregate.NL;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 
 /**
@@ -30,7 +31,7 @@ public class AggregateGroupConcat extends Aggregate {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         init(eval, b, env, p);
         return super.eval(eval, b, env, p);
     }
@@ -73,11 +74,11 @@ public class AggregateGroupConcat extends Aggregate {
         }
     }
     
-    void init(Computer eval, Binding b, Environment env, Producer prod) {
+    void init(Computer eval, Binding b, Environment env, Producer prod) throws EngineException {
         sep = format(eval, b, env, prod);
     }
 
-    String format(Computer eval, Binding b, Environment env, Producer prod) {
+    String format(Computer eval, Binding b, Environment env, Producer prod) throws EngineException {
         String sep = " ";
         if (getArg() != null) {
             // separator as an evaluable expression: st:nl()

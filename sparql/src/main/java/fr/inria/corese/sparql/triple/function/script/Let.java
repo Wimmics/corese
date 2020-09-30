@@ -9,6 +9,7 @@ import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 import java.util.ArrayList;
@@ -128,7 +129,7 @@ public class Let extends Statement {
     }
 
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         b.allocation(this);
         int i = -1; // -1 because pop before current i
         for (Expression decl : getDeclaration()) {
@@ -181,27 +182,27 @@ public class Let extends Statement {
     
     
      //@Override
-    public IDatatype eval2(Computer eval, Binding b, Environment env, Producer p) {
-        IDatatype val = getDefinition().eval(eval, b, env, p);
-        if (val == null) {
-            return null;
-        } else if (val == DatatypeMap.UNBOUND) {
-            val = null;
-        }
-        Variable var = getVariable();
-        b.set(this, var, val);
-        boolean save = true; 
-        if (isDynamic()) {
-            save = b.isDynamicCapture();
-            b.setDynamicCapture(isDynamic());
-        }
-        IDatatype res = getBody().eval(eval, b, env, p);
-        if (isDynamic()) {
-            b.setDynamicCapture(save);
-        }
-        b.unset(this, var, val);
-        return res;
-    }
+//    public IDatatype eval2(Computer eval, Binding b, Environment env, Producer p) {
+//        IDatatype val = getDefinition().eval(eval, b, env, p);
+//        if (val == null) {
+//            return null;
+//        } else if (val == DatatypeMap.UNBOUND) {
+//            val = null;
+//        }
+//        Variable var = getVariable();
+//        b.set(this, var, val);
+//        boolean save = true; 
+//        if (isDynamic()) {
+//            save = b.isDynamicCapture();
+//            b.setDynamicCapture(isDynamic());
+//        }
+//        IDatatype res = getBody().eval(eval, b, env, p);
+//        if (isDynamic()) {
+//            b.setDynamicCapture(save);
+//        }
+//        b.unset(this, var, val);
+//        return res;
+//    }
     
     @Override
     public void tailRecursion(Function fun) {

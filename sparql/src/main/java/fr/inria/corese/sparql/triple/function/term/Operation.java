@@ -7,6 +7,7 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.function.core.BinaryFunction;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 
 /**
@@ -28,7 +29,7 @@ public class Operation extends BinaryFunction {
     }
          
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype dt1 = getExp1().eval(eval, b, env, p);
         IDatatype dt2 = getExp2().eval(eval, b, env, p);
         if (dt1 == null || dt2 == null) {

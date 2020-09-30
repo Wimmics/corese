@@ -10,8 +10,6 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Expression;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -27,13 +25,10 @@ public class ExistFunction extends TermEval {
     }
     
     @Override
-    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) {
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         if (isSystem()) {
             // LDScript subquery
-            if (reject(Feature.SPARQL, eval, b, env, p)) {
-                log("SPARQL query unauthorized");
-                return null;
-            }
+            check(Feature.SPARQL, b, SPARQL_MESS);
         }
         try {
             return eval.exist(this, env, p);

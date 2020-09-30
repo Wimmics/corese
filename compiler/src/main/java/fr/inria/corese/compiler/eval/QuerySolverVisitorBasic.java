@@ -15,6 +15,7 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -24,6 +25,7 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -381,7 +383,12 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     }
     
     IDatatype call(Function fun, IDatatype[] param, Evaluator eval, Environment env, Producer p) {
-        return new Funcall(fun.getFunction().getLabel()).call((Computer) eval, (Binding) env.getBind(), env, p, fun, param);
+        try {
+            return new Funcall(fun.getFunction().getLabel()).call((Computer) eval, (Binding) env.getBind(), env, p, fun, param);
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage());
+            return null;
+        }
     }
 
 

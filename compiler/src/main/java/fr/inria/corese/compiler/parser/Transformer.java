@@ -569,7 +569,7 @@ public class Transformer implements ExpType {
         }
     }
     
-    void error(Query q, ASTQuery ast) {
+    void error(Query q, ASTQuery ast) throws EngineException {
         if (ast.isFail()) {
             q.setFail(true);
         }

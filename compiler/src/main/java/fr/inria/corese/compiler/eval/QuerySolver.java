@@ -299,8 +299,7 @@ public class QuerySolver implements SPARQLEngine {
         try {
             map = kgram.query(gNode, query, m);
         } catch (SparqlException ex) {
-            java.util.logging.Logger.getLogger(QuerySolver.class.getName()).log(Level.SEVERE, null, ex);
-            map = Mappings.create(query);
+            throw EngineException.cast(ex);
         }
         //TODO: check memory usage when storing Eval
         map.setEval(kgram);
@@ -573,12 +572,12 @@ public class QuerySolver implements SPARQLEngine {
         return query;
     }
 
-    public Mappings filter(Mappings map, String filter) throws EngineException {
-        Query q = compileFilter(filter);
-        Eval kgram = Eval.create(producer, evaluator, matcher);
-        kgram.filter(map, q);
-        return map;
-    }
+//    public Mappings filter(Mappings map, String filter) throws EngineException {
+//        Query q = compileFilter(filter);
+//        Eval kgram = Eval.create(producer, evaluator, matcher);
+//        kgram.filter(map, q);
+//        return map;
+//    }
 
     Query compileFilter(String filter) throws EngineException {
         String str = "select * where {} having(" + filter + ")";

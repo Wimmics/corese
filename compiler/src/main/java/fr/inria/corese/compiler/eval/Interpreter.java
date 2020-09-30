@@ -355,7 +355,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     // called by Eval for system functions (xt:produce()) and xt:main
-    public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] args) {
+    public IDatatype eval(Expr exp, Environment env, Producer p, IDatatype[] args) throws EngineException {
         switch (exp.oper()) {
 
             case UNDEF:
@@ -716,7 +716,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * 
      */
     //@Override
-    public IDatatype eval(Expr f, Environment e, Producer p, Object[] values) {
+    public IDatatype eval(Expr f, Environment e, Producer p, Object[] values) throws EngineException {
         return eval(f, e, p, (IDatatype[]) values);
     }
 

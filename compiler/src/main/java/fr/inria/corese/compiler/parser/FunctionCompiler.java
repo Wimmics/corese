@@ -6,10 +6,12 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.datatype.DatatypeHierarchy;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.exceptions.UndefinedExpressionException;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessNamespace;
 import fr.inria.corese.sparql.triple.parser.Expression;
@@ -119,7 +121,7 @@ public class FunctionCompiler {
     }
     
     void imports(Query q, ASTQuery ast, String path) throws EngineException {
-        if (Access.accept(Access.Feature.IMPORT_FUNCTION, ast.getLevel()) && 
+        if (Access.accept(Feature.IMPORT_FUNCTION, ast.getLevel()) && 
             acceptNamespace(path)) {
             basicImports(q, ast, path);
         }
@@ -127,23 +129,31 @@ public class FunctionCompiler {
             throw new SafetyException("Unauthorized import: " + path);
         }
     }
+    
+    
+    
+    
 
-    void undefinedFunction(Query q, ASTQuery ast) {
+    void undefinedFunction(Query q, ASTQuery ast) throws EngineException {
         for (Expression exp : ast.getUndefined().values()) {
             boolean ok = Interpreter.isDefined(exp) || q.getExtension().isDefined(exp);
             if (ok) {
             } else {
                 ok = acceptLinkedFunction(ast.getLevel())
-                  && importFunction(q, exp);
-                if (!ok) {
-                    ast.addError("Compiler: Undefined expression: " + exp);
+                  && acceptNamespace(exp.getLabel());
+                if (ok) {
+                    getLinkedFunctionBasic(q, exp);
+                }
+                else {
+                    //ast.addError("Compiler: Undefined expression: " + exp);
+                    throw new UndefinedExpressionException("Undefined expression: " + exp.toString());
                 }
             }
         }
     }
     
     boolean acceptLinkedFunction(Level level) {
-        return Access.accept(Access.Feature.LINKED_FUNCTION, level);
+        return Access.accept(Feature.LINKED_FUNCTION, level);
     }
     
     /**
@@ -153,16 +163,16 @@ public class FunctionCompiler {
         return AccessNamespace.access(ns);
     }
 
-    boolean importFunction(Query q, Expression exp) {
-        if (acceptNamespace(exp.getLabel())) {
-            return importFunctionBasic(q, exp);
-        }
-        logger.error("Unauthorized import: " + exp.getLabel());
-        return false;
-    }
+//    boolean getLinkedFunction(Query q, Expression exp) {
+//        if (acceptNamespace(exp.getLabel())) {
+//            return getLinkedFunctionBasic(q, exp);
+//        }
+//        logger.error("Unauthorized import: " + exp.getLabel());
+//        return false;
+//    }
 
     
-    boolean importFunctionBasic(Query q, Expression exp) {
+    boolean getLinkedFunctionBasic(Query q, Expression exp) {
         boolean b = getLinkedFunctionBasic(exp.getLabel());
         if (b) {
             return Interpreter.isDefined(exp);

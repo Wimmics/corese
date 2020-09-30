@@ -1202,7 +1202,7 @@ public class QueryProcess extends QuerySolver {
     
     
 
-    Function getLinkedFunction(String name, IDatatype[] param) {
+    Function getLinkedFunction(String name, IDatatype[] param) throws EngineException {
         Function function = getFunction(name, param);
         if (function == null) {
             //setLinkedFunction(true);
@@ -1264,23 +1264,18 @@ public class QueryProcess extends QuerySolver {
      * 1- Linked Function 2- owl:imports
      */
     @Override
-    public Query parseQuery(String path) {
-        try {
-            String str = basicParse(path);
-            Query q = compile(str, new Dataset().setBase(path));
-            return q;
-        } catch (EngineException ex) {
-            logger.error(ex.getMessage());
-        }
-        return null;
+    public Query parseQuery(String path) throws EngineException {
+        String str = basicParse(path);
+        Query q = compile(str, new Dataset().setBase(path));
+        return q;
     }
 
     @Override
-    public void getLinkedFunction(String label) {
+    public void getLinkedFunction(String label) throws EngineException {
         getTransformer().getLinkedFunction(label);
     }
 
-    void getLinkedFunctionBasic(String label) {
+    void getLinkedFunctionBasic(String label) throws EngineException {
         getTransformer().getLinkedFunctionBasic(label);
     }
 

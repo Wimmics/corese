@@ -45,11 +45,13 @@ import fr.inria.corese.core.load.sesame.ParserTripleHandlerSesame;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.io.ByteArrayInputStream;
 import java.io.FileFilter;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
@@ -899,8 +901,15 @@ public class Load
     void basicImport(String uri) throws LoadException {
         switch (getFormat(uri)) {
             case Loader.QUERY_FORMAT:
-                QueryProcess.create().parseQuery(uri);
+            {
+                try {
+                    QueryProcess.create().parseQuery(uri);
+                } catch (EngineException ex) {
+                    throw new LoadException(ex);
+                }
+            }
                 break;
+
             default: parse(uri);
         }
     }

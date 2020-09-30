@@ -185,6 +185,10 @@ public class Eval implements ExpType, Plugin {
     }
     
     public Mappings query(Node gNode, Query q, Mapping m) throws SparqlException {
+        return queryBasic(gNode, q, m);
+    }
+    
+    Mappings queryBasic(Node gNode, Query q, Mapping m) throws SparqlException {
         if (hasEvent) {
             send(Event.BEGIN, q);
         }
@@ -300,7 +304,7 @@ public class Eval implements ExpType, Plugin {
         return eval(gNode, q);
     }
 
-    public Mappings filter(Mappings map, Query q) {
+    public Mappings filter(Mappings map, Query q) throws SparqlException {
         Query qq = map.getQuery();
         init(qq);
         qq.compile(q.getHaving().getFilter());
@@ -769,11 +773,11 @@ public class Eval implements ExpType, Plugin {
 //        return evaluator.compare(memory, producer, n1, n2);
 //    }
 
-    private void aggregate() {
+    private void aggregate() throws SparqlException {
         results.aggregate(evaluator, memory, producer);
     }
 
-    private void template() {
+    private void template() throws SparqlException {
         results.template(evaluator, memory, producer);
     }
 
@@ -844,7 +848,7 @@ public class Eval implements ExpType, Plugin {
         }
     }
 
-    private int solution(Producer p, int n) {
+    private int solution(Producer p, int n) throws SparqlException {
         int backtrack = n - 1;
         int status = store(p);
         if (status == STOP) {
@@ -2315,7 +2319,7 @@ public class Eval implements ExpType, Plugin {
     /**
      * Store a new result
      */
-    private int store(Producer p) {
+    private int store(Producer p) throws SparqlException {
         boolean store = true;
         if (listener != null) {
             store = listener.process(memory);

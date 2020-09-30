@@ -371,11 +371,11 @@ public class Memory extends PointerObject implements Environment {
     /**
      * Store a new result: take a picture of the stack as a Mapping
      */
-    Mapping store(Query q, Producer p) {
+    Mapping store(Query q, Producer p) throws SparqlException {
         return store(query, p, false, false);
     }
 
-    Mapping store(Query q, Producer p, boolean subEval) {
+    Mapping store(Query q, Producer p, boolean subEval) throws SparqlException {
         return store(query, p, subEval, false);
     }
 
@@ -383,7 +383,7 @@ public class Memory extends PointerObject implements Environment {
      * subEval = true : result of minus() or inpath() in this case we do not
      * need select exp
      */
-    Mapping store(Query q, Producer p, boolean subEval, boolean func) {
+    Mapping store(Query q, Producer p, boolean subEval, boolean func) throws SparqlException {
         boolean complete = ! q.getGlobalQuery().isAlgebra();
         clear();
         int nb = nbNode;
@@ -456,11 +456,7 @@ public class Memory extends PointerObject implements Environment {
                             // do nothing
                         }
                         else {
-                            try {
-                                node = eval.eval(f, this, p);
-                            } catch (SparqlException ex) {
-                                node = null;
-                            }
+                            node = eval.eval(f, this, p);
                             kgram.getVisitor().select(kgram, f.getExp(), node==null?null:node.getDatatypeValue());
                             // bind fun(?x) as ?y
                             boolean success = push(e.getNode(), node);
@@ -550,14 +546,14 @@ public class Memory extends PointerObject implements Environment {
         bnode = m;
     }
 
-    Mapping store(Query q, Mapping map, Producer p) {
+    Mapping store(Query q, Mapping map, Producer p) throws SparqlException {
         Node[] gnode = new Node[q.getGroupBy().size()];
         orderGroup(q.getGroupBy(), gnode, p);
         map.setGroupBy(gnode);
         return map;
     }
 
-    void orderGroup(List<Exp> lExp, Node[] nodes, Producer p) {
+    void orderGroup(List<Exp> lExp, Node[] nodes, Producer p) throws SparqlException {
         int n = 0;
         for (Exp e : lExp) {
             Node qNode = e.getNode();
@@ -567,10 +563,7 @@ public class Memory extends PointerObject implements Environment {
             if (nodes[n] == null) {
                 Filter f = e.getFilter();
                 if (f != null && !e.isAggregate()) {
-                    try {
-                        nodes[n] = eval.eval(f, this, p);
-                    } catch (SparqlException ex) {
-                    }
+                    nodes[n] = eval.eval(f, this, p);
                 }
 
             }

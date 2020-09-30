@@ -37,7 +37,7 @@ public class ApplyTemplatesWith extends TemplateFunction {
         
         if (reject(Access.Feature.LINKED_TRANSFORMATION, eval, b, env, p)
                 && !NSManager.isPredefinedTransformation(uri)) {
-            throw new SafetyException("Linked Transformation unauthorized");
+            throw new SafetyException(LINKED_TRANSFORMATION_MESS);
         }
 
         TransformProcessor trans = eval.getTransformer(env, p, this, param[0], null);

@@ -9,9 +9,11 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.api.ComputerEval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.UndefinedExpressionException;
 import fr.inria.corese.sparql.triple.parser.Access;
 
 /**
@@ -62,16 +64,23 @@ public class Funcall extends LDScript {
             } 
             else if (env.getEval() != null) {
                 if (accept(Access.Feature.LINKED_FUNCTION, eval, b, env, p)) {
-                    env.getEval().getSPARQLEngine().getLinkedFunction(name);
+                    getLinkedFunction(name, env);
                     function = eval.getDefineGenerate(this, env, name, n);
                 }
                 if (function == null) {
-                    log("Undefined function: " + name + " arity: " + n);
-                    log(this.toString());
+                    throw new UndefinedExpressionException(UNDEFINED_EXPRESSION_MESS + ": " + toString());
                 }
             }
         }
         return function;
+    }
+    
+    void getLinkedFunction(String name, Environment env) throws EngineException {
+        try {
+            env.getEval().getSPARQLEngine().getLinkedFunction(name);
+        } catch (SparqlException ex) {
+            throw EngineException.cast(ex);
+        }
     }
 
     public IDatatype call(Computer eval, Binding b, Environment env, Producer p, Function function, IDatatype... param) 

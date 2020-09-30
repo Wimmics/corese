@@ -37,6 +37,9 @@ public class TermEval extends Term {
     public static final String WRITE_MESS = "Write unauthorized";
     public static final String JAVA_FUNCTION_MESS = "Java function unauthorized";
     public static final String LINKED_TRANSFORMATION_MESS = "Linked transformation unauthorized";
+    public static final String FUNCTION_DEFINITION_MESS = "Function definition unauthorized";
+    public static final String IMPORT_MESS = "Import unauthorized";
+    public static final String UNDEFINED_EXPRESSION_MESS = "Undefined expression";
     
     
     public TermEval(String name, Expression e1, Expression e2, Expression e3) {

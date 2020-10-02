@@ -84,6 +84,7 @@
         <module>corese-gui</module>
         <module>corese-test</module>
         <module>compiler</module>
+        <module>shex</module>
     </modules>
 
     <scm>
@@ -118,7 +119,7 @@
         <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
         <sonar.language>java</sonar.language>
         <slf4j.version>1.8.0-beta2</slf4j.version>
-        <surefire.version>2.21.0</surefire.version>
+        <surefire.version>3.0.0-M3</surefire.version>
         <log4j2.version>2.11.0</log4j2.version>
         <sesame.version>4.1.1</sesame.version>
         <jersey.version>2.27</jersey.version>
@@ -136,6 +137,11 @@
                 <groupId>org.testng</groupId>
                 <artifactId>testng</artifactId>
                 <version>6.14.3</version>
+            </dependency>
+            <dependency>
+                <groupId>${project.groupId}</groupId>
+                <artifactId>shex</artifactId>
+                <version>${project.version}</version>
             </dependency>
             <dependency>
                 <groupId>${project.groupId}</groupId>

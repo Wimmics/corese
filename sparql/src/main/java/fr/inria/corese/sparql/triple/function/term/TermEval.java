@@ -37,9 +37,12 @@ public class TermEval extends Term {
     public static final String WRITE_MESS = "Write unauthorized";
     public static final String JAVA_FUNCTION_MESS = "Java function unauthorized";
     public static final String LINKED_TRANSFORMATION_MESS = "Linked transformation unauthorized";
+    public static final String LINKED_FUNCTION_MESS = "Linked function unauthorized";
+    public static final String LINKED_RULE_MESS = "Linked rule unauthorized";
     public static final String FUNCTION_DEFINITION_MESS = "Function definition unauthorized";
     public static final String IMPORT_MESS = "Import unauthorized";
     public static final String UNDEFINED_EXPRESSION_MESS = "Undefined expression";
+    public static final String ENTAILMENT_MESS = "Entailment unauthorized";
     
     
     public TermEval(String name, Expression e1, Expression e2, Expression e3) {
@@ -157,13 +160,24 @@ public class TermEval extends Term {
         }
         return p.getNode(dt);
     }
-     
-    public boolean reject(Feature feature, Computer eval, Binding b, Environment env, Producer p) {
+    
+    public boolean accept(Feature feature, Binding b) {
+        return Access.accept(feature, b.getAccessLevel());
+    }
+    
+    public boolean reject(Feature feature, Binding b) {
         return Access.reject(feature, b.getAccessLevel());
     }
     
-    public boolean accept(Feature feature, Computer eval, Binding b, Environment env, Producer p) {
-        return Access.accept(feature, b.getAccessLevel());
+    public boolean reject(Feature feature, Binding b, String uri) {
+        return Access.reject(feature, b.getAccessLevel(), uri);
+    }
+    
+    public void check(Feature feature, Binding b, String uri, String mes) throws SafetyException {
+        if (Access.reject(feature, b.getAccessLevel(), uri)) {
+            //System.out.println("Level: " + b.getAccessLevel());
+            throw new SafetyException(mes + ": " + uri);
+        }
     }
     
     public void check(Feature feature, Binding b, String mes) throws SafetyException {

@@ -4,6 +4,8 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 /**
  *
@@ -11,7 +13,8 @@ import fr.inria.corese.kgram.core.Mappings;
  */
 public interface GraphProcessor {
     
-    IDatatype load(IDatatype dtfile, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat);
+    IDatatype load(IDatatype dtfile, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat, Level level)
+            throws EngineException;
     
     IDatatype write(IDatatype dtfile, IDatatype dt); 
     IDatatype syntax(IDatatype dtsyntax, IDatatype dtgraph, IDatatype node); 

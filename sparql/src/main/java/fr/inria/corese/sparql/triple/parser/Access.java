@@ -52,17 +52,38 @@ public class Access {
         boolean provide(Level l) {
             return getValue() >= l.getValue();
         }
+        
+        boolean subsume(Level l) {
+            return getValue() >= l.getValue();
+        }
     
     } ;
     
-    public enum Feature  { 
-        FUNCTION_DEFINITION, IMPORT_FUNCTION,
-        LINKED_FUNCTION, LINKED_TRANSFORMATION,
-        READ_WRITE, JAVA_FUNCTION,
-        LD_SCRIPT, 
-        // sparql query in LDScript
-        SPARQL, 
+    public enum Feature  {         
+        // @import <http://myfun.org/fun.rq> ; [] owl:imports <http://myfun.org/fun.rq>
+        IMPORT_FUNCTION,
+        // undefined ex:fun()  -> dereference, parse and compile ex:fun
+        LINKED_FUNCTION, 
+        // transformation and rule that are not predefined
+        LINKED_TRANSFORMATION, 
+        LINKED_RULE,
+        
+
         SPARQL_UPDATE, 
+        
+        // may deny whole LDScript
+        LDSCRIPT, 
+        // function us:test() {}
+        FUNCTION_DEFINITION, 
+        // xt:entailment()
+        LDSCRIPT_ENTAILMENT,        
+        // sparql query in LDScript: xt:sparql, query(select where), let (select where)
+        LDSCRIPT_SPARQL, 
+        // xt:read xt:write xt:http:get xt:load
+        READ_WRITE,
+        // java:fun(xt:stack())
+        JAVA_FUNCTION,
+
     }
     
     class FeatureLevel extends HashMap<Feature, Level> {
@@ -157,19 +178,40 @@ public class Access {
         return DEFAULT.provide(get(feature));
     }
     
-    public static boolean accept(Feature feature, Context c) {
-        if (c == null) {
-            return accept(feature);
-        }
-        return accept(feature, c.getLevel());
-    }
-    
-    public static boolean reject(Feature feature, Context c) {
-        return ! accept(feature, c);
-    }
+//    public static boolean accept(Feature feature, Context c) {
+//        if (c == null) {
+//            return accept(feature);
+//        }
+//        return accept(feature, c.getLevel());
+//    }
+//    
+//    public static boolean reject(Feature feature, Context c) {
+//        return ! accept(feature, c);
+//    }
     
     public static boolean reject(Feature feature, Level actionLevel) {
         return ! accept(feature, actionLevel);
+    }
+    
+    // feature = LINKED_TRANSFORMATION uri=st:turtle
+    // feature = IMPORT_FUNCTION       uri=ex:myfun.rq
+    public static boolean accept(Feature feature, Level actionLevel, String uri) {
+       return accept(feature, actionLevel) && acceptNamespace(feature, actionLevel, uri);
+    }
+    
+    public static boolean reject(Feature feature, Level actionLevel, String uri) {
+        return ! accept(feature, actionLevel, uri);
+    }
+    
+    public static boolean acceptNamespace (Feature feature, Level actionLevel, String uri) {
+        if (actionLevel.provide(DEFAULT)) {
+            // action level >= DEFAULT -> every uri is authorized
+            return true;
+        }
+        else {
+            // action level < DEFAULT -> access to authorized namespace only
+            return NSManager.isPredefinedNamespace(uri);
+        }
     }
     
     public static boolean reject(Feature feature) {
@@ -210,24 +252,24 @@ public class Access {
          setLinkedFunction(b);
          setLinkedTransformation(b);
     }
+    
+    public static void setFeature(Feature feature, boolean b) {
+        if (b) {
+            authorize(feature);
+        } else {
+            deny(feature);
+        }
+    }
         
     /**
      * Available for DEFAULT but not for PUBLIC
      */
     public static void setLinkedFunction(boolean b) {
-        if (b) {
-            authorize(LINKED_FUNCTION);
-        } else {
-            deny(LINKED_FUNCTION);
-        }
+        setFeature(LINKED_FUNCTION, b);
     }
     
     public static void setLinkedTransformation(boolean b) {
-        if (b) {
-            authorize(LINKED_TRANSFORMATION);
-        } else {
-            deny(LINKED_TRANSFORMATION);
-        }
+        setFeature(LINKED_TRANSFORMATION, b);
     }
     
     // everything is forbiden to DEFAULT level
@@ -283,7 +325,7 @@ public class Access {
         // external transformation may contain/import function definition
         //deny(LINKED_TRANSFORMATION);
         set(SPARQL_UPDATE, RESTRICTED);
-        set(LD_SCRIPT, PUBLIC);
+        set(LDSCRIPT, PUBLIC);
     }
     
     /**
@@ -296,9 +338,7 @@ public class Access {
         deny(READ_WRITE);
         deny(JAVA_FUNCTION);
         deny(LINKED_FUNCTION);
-        // external transformation may contain/import function definition
-        deny(LINKED_TRANSFORMATION);
-        // IMPORT_FUNCTION is PRIVATE and user query is PUBLIC
+        // other features are PRIVATE and user query is PUBLIC
     }
     
       /**

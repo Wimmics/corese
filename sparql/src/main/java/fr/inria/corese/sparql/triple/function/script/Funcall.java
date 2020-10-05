@@ -7,7 +7,6 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.api.ComputerEval;
@@ -63,7 +62,7 @@ public class Funcall extends LDScript {
                 // lambda expression, arity is not correct                
             } 
             else if (env.getEval() != null) {
-                if (accept(Access.Feature.LINKED_FUNCTION, eval, b, env, p)) {
+                if (accept(Access.Feature.LINKED_FUNCTION, b)) {
                     getLinkedFunction(name, env);
                     function = eval.getDefineGenerate(this, env, name, n);
                 }

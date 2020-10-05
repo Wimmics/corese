@@ -39,6 +39,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_SUBJECTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SYNTAX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
 import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 
 /**
@@ -128,14 +129,14 @@ public class GraphSpecificFunction extends LDScript {
                 return proc.union(this, env, p, param[0], param[1]);
                 
             case XT_ENTAILMENT:
-                return entailment(proc, env, p, param);
+                return entailment(proc, b, env, p, param);
                 
             case XT_SHAPE_GRAPH:
             case XT_SHAPE_NODE:
                 return proc.shape(this, env, p, param);
                 
             case KGRAM:
-                check(Feature.SPARQL, b, SPARQL_MESS);
+                check(Feature.LDSCRIPT_SPARQL, b, SPARQL_MESS);
                 return proc.sparql(env, p, param);
                 
             case XT_TOGRAPH:
@@ -149,13 +150,13 @@ public class GraphSpecificFunction extends LDScript {
     
    
     
-    public IDatatype io(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param) throws SafetyException {
+    public IDatatype io(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param) throws SafetyException, EngineException {
         GraphProcessor proc = eval.getGraphProcessor();
         switch (oper()) {
 
             case LOAD:
                 check(Feature.READ_WRITE, b, LOAD_MESS);
-                return load(proc, param);
+                return load(proc, b, param);
 
             case WRITE:
                 check(Feature.READ_WRITE, b, WRITE_MESS);
@@ -174,17 +175,17 @@ public class GraphSpecificFunction extends LDScript {
     }
 
     
-    public IDatatype load(GraphProcessor proc, IDatatype[] param) {
+    public IDatatype load(GraphProcessor proc, Binding b, IDatatype[] param) throws EngineException {
         switch (param.length) {
             case 0: return null;
             case 1:
-                return proc.load(param[0], null, null, null);
+                return proc.load(param[0], null, null, null, b.getAccessLevel());
             default:
                 IDatatype dt = param[1];
                 if (dt.pointerType() == PointerType.GRAPH) {
-                    return proc.load(param[0], dt, getParam(param, 2), getParam(param, 3));
+                    return proc.load(param[0], dt, getParam(param, 2), getParam(param, 3), b.getAccessLevel());
                 } else {
-                    return proc.load(param[0], null, dt, getParam(param, 2));
+                    return proc.load(param[0], null, dt, getParam(param, 2), b.getAccessLevel());
                 }
         }
     }
@@ -196,7 +197,8 @@ public class GraphSpecificFunction extends LDScript {
         return null;
     }
     
-    IDatatype entailment(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
+    IDatatype entailment(GraphProcessor proc, Binding b, Environment env, Producer p, IDatatype[] param) throws SafetyException {
+        check(Feature.LDSCRIPT_ENTAILMENT, b, TermEval.ENTAILMENT_MESS);
         switch (param.length) {
             case 0: return proc.entailment(env, p, null);
             default:return proc.entailment(env, p, param[0]);

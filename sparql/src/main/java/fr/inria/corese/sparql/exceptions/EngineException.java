@@ -33,5 +33,12 @@ public class EngineException extends SparqlException {
             }
             return new EngineException(e);
         }
-	
+        
+        public Exception getException() {
+            if (getCause() instanceof Exception) {
+                return (Exception) getCause();
+            }
+            return null;
+        }
+        	
 }

@@ -1739,7 +1739,7 @@ public class Term extends Expression {
 //            case ExprType.CALL_TEMPLATE_WITH: 
                 
             case ExprType.KGRAM:
-                checkFeature(Feature.SPARQL, ast, "SPARQL query unauthorized");               
+                checkFeature(Feature.LDSCRIPT_SPARQL, ast, "SPARQL query unauthorized");               
                 break;
                 
         }

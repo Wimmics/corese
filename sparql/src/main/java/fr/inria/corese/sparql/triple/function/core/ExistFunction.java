@@ -28,7 +28,7 @@ public class ExistFunction extends TermEval {
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         if (isSystem()) {
             // LDScript subquery
-            check(Feature.SPARQL, b, SPARQL_MESS);
+            check(Feature.LDSCRIPT_SPARQL, b, SPARQL_MESS);
         }
         try {
             return eval.exist(this, env, p);

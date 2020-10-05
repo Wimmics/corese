@@ -460,8 +460,15 @@ public class Binding implements Binder {
             return getVar();
         } else {
             // let variables
-            return varList;
+            return getLetVar();
         }
+    }
+    
+    List<Expr> getLetVar() {
+        ArrayList<Expr> list = new ArrayList();
+        list.addAll(varList);
+        addGlobalVariables(list);
+        return list;
     }
 
     /**
@@ -479,12 +486,16 @@ public class Binding implements Binder {
                 list.add(varList.get(i));
             }
         }
+        addGlobalVariables(list);
+        return list;
+    }
+    
+    void addGlobalVariables(List<Expr> list) {
         for (Variable var : getGlobalVariableNames().values()) {
-            if (! list.contains(var)) {
+            if (!list.contains(var)) {
                 list.add(var);
             }
         }
-        return list;
     }
     
     @Override

@@ -288,6 +288,7 @@ public class NSManager extends ASTObject {
         def.put(DS, "ds");
         def.put(CAST, "cast");
         def.put(DOM, "dom");
+        def.put(RESOURCE, "res");
     }
 
     // add default namespaces
@@ -743,7 +744,7 @@ public class NSManager extends ASTObject {
         return nstrip(name);
     }
 
-    public String strip(String name, String ns) {
+    public static String strip(String name, String ns) {
         // remove ns from name
         return name.substring(ns.length());
     }
@@ -769,8 +770,19 @@ public class NSManager extends ASTObject {
         return false;
     }
     
-    public static boolean isPredefinedTransformation(String path) {
-        return inNamespace(path, STL);
+    public static boolean isPredefinedTransformation(String uri) {
+        return inNamespace(uri, STL);
+    }
+    
+    public static boolean isPredefinedNamespace(String uri) {
+        return isResource(uri);
+    }
+    
+    /**
+     * URL denote a resource to be found in the software archive
+     */
+    public static boolean isResource(String uri) {
+        return inNamespace(uri, RESOURCE) || inNamespace(uri, STL);
     }
 
     public static boolean inNamespace(String type, String namespace) {
@@ -780,6 +792,18 @@ public class NSManager extends ASTObject {
         } else {
             return type.startsWith(namespace);
         }
+    }
+    
+    /**
+     * path = http://ns.inria.fr/corese/rule/owl.rul
+     * return directory of resource: /rule/owl.rul
+     */
+    public static String stripResource(String uri) {
+        String ns = RESOURCE; 
+        if (uri.startsWith(STL)) {
+            ns = STL;
+        }
+        return "/" + strip(uri, ns);
     }
 
     public static String namespace(String type) {  //retourne le namespace d'un type

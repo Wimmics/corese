@@ -9,7 +9,6 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.TransformProcessor;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  *
@@ -33,10 +32,7 @@ public class ApplyTemplatesWithGraph extends TemplateFunction {
         
         String uri = param[0].getLabel();
         
-        if (reject(Access.Feature.LINKED_TRANSFORMATION, eval, b, env, p)
-                && !NSManager.isPredefinedTransformation(uri)) {
-            throw new SafetyException(LINKED_TRANSFORMATION_MESS);
-        }
+        check(Access.Feature.LINKED_TRANSFORMATION, b, uri, LINKED_TRANSFORMATION_MESS);
 
         TransformProcessor trans = eval.getTransformer(env, p, this, param[0], param[1]);
 

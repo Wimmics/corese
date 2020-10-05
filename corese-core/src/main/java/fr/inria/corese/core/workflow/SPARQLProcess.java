@@ -18,7 +18,7 @@ import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.util.MappingsGraph;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.util.Date;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -33,14 +33,14 @@ public class SPARQLProcess extends  WorkflowProcess {
     /**
      * @return the level
      */
-    public Access.Level getLevel() {
+    public Level getLevel() {
         return level;
     }
 
     /**
      * @param level the level to set
      */
-    public void setLevel(Access.Level level) {
+    public void setLevel(Level level) {
         this.level = level;
     }
 
@@ -52,8 +52,9 @@ public class SPARQLProcess extends  WorkflowProcess {
     private static final String MODE     = "$mode";
     private static final String PATTERN  = "$pattern";
     private boolean userQuery = false;
-    private Access.Level level = Access.Level.DEFAULT;
-    Access.Level save;
+    private Level level = Level.DEFAULT;
+    Level saveContextLevel = Level.DEFAULT;
+    Level saveBindingLevel;
     private IDatatype param;    
     private IDatatype value;
     private IDatatype option;
@@ -84,9 +85,16 @@ public class SPARQLProcess extends  WorkflowProcess {
         data.getEventManager().start(Event.WorkflowQuery);
         if (getContext() != null) {
             getContext().setUserQuery(isUserQuery());
-            save = getContext().getLevel();
+            saveContextLevel = getContext().getLevel();
             getContext().setLevel(getLevel());
-        }       
+        } 
+        saveBindingLevel = null;
+        if (data.getBinding() == null) {
+            saveBindingLevel = saveContextLevel;
+        }
+        else {
+            saveBindingLevel = data.getBinding().getAccessLevel();        
+        }
     }
     
      @Override
@@ -102,7 +110,13 @@ public class SPARQLProcess extends  WorkflowProcess {
         data.getEventManager().finish(Event.WorkflowQuery);
         if (getContext() != null) {
             getContext().setUserQuery(false);
-            getContext().setLevel(save);
+            getContext().setLevel(saveContextLevel);
+            if (data.getBinding()!=null) {
+                data.getBinding().setAccessLevel(level);
+            }
+        }
+        if (data.getBinding() != null && saveBindingLevel != null) {
+            data.getBinding().setAccessLevel(saveBindingLevel);
         }
     }
     

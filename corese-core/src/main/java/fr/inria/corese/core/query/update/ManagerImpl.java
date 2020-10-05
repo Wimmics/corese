@@ -1,5 +1,6 @@
 package fr.inria.corese.core.query.update;
 
+import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.Construct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -10,6 +11,8 @@ import fr.inria.corese.sparql.triple.update.Update;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 /**
  * SPARQL 1.1 Update
@@ -29,6 +32,8 @@ public class ManagerImpl implements Manager {
     static final int COPY = 0;
     static final int MOVE = 1;
     static final int ADD = 2;
+    
+    private Level level = Level.DEFAULT;
 
     public ManagerImpl(GraphManager gm) {
         this.gm = gm;
@@ -44,7 +49,7 @@ public class ManagerImpl implements Manager {
     } 
 
     @Override
-    public boolean process(Query q, Basic ope, Dataset ds) {
+    public boolean process(Query q, Basic ope, Dataset ds) throws EngineException  {
         String uri = ope.getGraph();
         boolean isDefault = ope.isDefault();
         boolean isNamed = ope.isNamed();
@@ -85,8 +90,8 @@ public class ManagerImpl implements Manager {
 
     }
     
-    boolean load(Query q, Basic ope) {
-        return gm.load(q, ope);
+    boolean load(Query q, Basic ope) throws  EngineException {
+        return gm.load(q, ope, getLevel());
     }
    
     private boolean clear(Basic ope, Dataset ds) {
@@ -221,5 +226,19 @@ public class ManagerImpl implements Manager {
         cons.setDebug(query.isDebug());
         cons.delete(lMap, ds);
         lMap.setGraph(gm.getGraph());
+    }
+
+    /**
+     * @return the level
+     */
+    public Level getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(Level level) {
+        this.level = level;
     }
 }

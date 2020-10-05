@@ -5,6 +5,8 @@ import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.update.Basic;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 
 /**
@@ -16,7 +18,7 @@ import fr.inria.corese.kgram.core.Query;
 public interface Manager {
 
         // basic operations: load, copy, etc.
-	boolean process(Query q, Basic b, Dataset ds);
+	boolean process(Query q, Basic b, Dataset ds) throws EngineException ;
 
         /**
          * For each Mapping
@@ -30,6 +32,8 @@ public interface Manager {
         void delete(Query q, Mappings map, Dataset ds);
 
         void insert(Query q, Mappings map, Dataset ds);
+        
+        void setLevel(Level l);
         	
 
 }

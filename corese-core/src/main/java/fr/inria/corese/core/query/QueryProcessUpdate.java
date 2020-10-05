@@ -10,7 +10,6 @@ import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.query.update.UpdateProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.query.update.ManagerImpl;
-import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mapping;
@@ -24,7 +23,6 @@ import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.update.ASTUpdate;
 import fr.inria.corese.sparql.triple.update.Basic;
 import fr.inria.corese.sparql.triple.update.Update;
-import java.util.List;
 
 /**
  * SPARQL Update

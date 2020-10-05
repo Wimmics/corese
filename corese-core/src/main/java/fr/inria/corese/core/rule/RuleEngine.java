@@ -194,7 +194,7 @@ public class RuleEngine implements Engine, Graphable {
         ld.setEngine(this);
         ld.setQueryProcess(getQueryProcess());
         InputStream stream = RuleEngine.class.getResourceAsStream(name);
-        ld.parse(stream, Load.RULE_FORMAT);
+        ld.parse(stream, NSManager.RESOURCE+name, Load.RULE_FORMAT);
     }
       
     /**

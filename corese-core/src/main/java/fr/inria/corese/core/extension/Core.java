@@ -10,16 +10,17 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.core.FunctionEvaluator;
 import fr.inria.corese.sparql.triple.function.extension.IOFunction;
 import fr.inria.corese.sparql.triple.function.proxy.GraphSpecificFunction;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 /**
@@ -126,7 +127,13 @@ public class Core extends PluginImpl implements FunctionEvaluator {
     }
 
     IDatatype xt_load(IDatatype... dt) {
-        return new GraphSpecificFunction("load").load(this, dt);
+        try {
+            //return new GraphSpecificFunction("load").load(this, dt, null, null, Level.DEFAULT);
+            return load(dt[0], null, null, null, Level.DEFAULT);
+        } catch (SafetyException ex) {
+            logger.error(ex.getMessage());
+        }
+        return null;
     }
 
     IDatatype xt_graph() {

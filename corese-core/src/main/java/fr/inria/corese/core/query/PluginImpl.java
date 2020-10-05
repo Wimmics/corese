@@ -54,7 +54,6 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
-import fr.inria.corese.core.print.RDFFormat;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.transform.TemplateVisitor;
@@ -74,10 +73,11 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
+import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Access;
-import java.util.logging.Level;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import javax.ws.rs.core.Response;
 
 
@@ -337,7 +337,14 @@ public class PluginImpl
                 return test(p, exp, env, dt);
                 
              case LOAD:
-                return load(dt);
+            {
+                try {
+                    return load(dt);
+                } catch (SafetyException ex) {
+                    logger.error(ex.getMessage());
+                }
+            }
+
                  
              case EXTENSION:
                 return ext.extension(p, exp, env, dt); 
@@ -407,7 +414,14 @@ public class PluginImpl
                 }
                 
              case LOAD:
-                return load(dt1, dt2);   
+            {
+                try {
+                    return load(dt1, dt2);
+                } catch (SafetyException ex) {
+                    logger.error(ex.getMessage());
+                }
+            }
+   
 
              case WRITE:                
                 return write(dt1, dt2);   
@@ -485,7 +499,7 @@ public class PluginImpl
             Graph g = sp.toSpinGraph(dt.stringValue());
             return DatatypeMap.createObject(g);
         } catch (EngineException ex) {
-            java.util.logging.Logger.getLogger(PluginImpl.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
         }
         return null;
     }
@@ -659,16 +673,17 @@ public class PluginImpl
     }
 
     
-    IDatatype load(IDatatype dt) {
+    IDatatype load(IDatatype dt) throws SafetyException {
          return load(dt, null);
     }
 
-    public IDatatype load(IDatatype dt, IDatatype format) {
-        return load(dt, null, format, null);
+    public IDatatype load(IDatatype dt, IDatatype format) throws SafetyException {
+        return load(dt, null, format, null, Level.DEFAULT);
     }
     
     @Override
-    public IDatatype load(IDatatype dt, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat) {
+    public IDatatype load(IDatatype dt, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat,
+            Level level) throws SafetyException {
 //        if (!readWriteAuthorized()) {
 //            return null;
 //        }
@@ -679,6 +694,7 @@ public class PluginImpl
             g = (Graph) graph.getPointerObject();
         }
         Load ld = Load.create(g);
+        ld.setLevel(level);
         try {
             if (requiredFormat == null) {
                 ld.parse(dt.getLabel(), getFormat(expectedFormat));
@@ -687,6 +703,9 @@ public class PluginImpl
                 ld.parseWithFormat(dt.getLabel(), getFormat(requiredFormat));
             }
         } catch (LoadException ex) {
+            if (ex.isSafetyException()) {
+                throw ex.getSafetyException();
+            }
             logger.error("Load error: " + dt + " " + ((requiredFormat != null) ? requiredFormat : ""));
             logger.error(ex.getMessage());
             //ex.printStackTrace();
@@ -817,7 +836,6 @@ public class PluginImpl
         }
         RuleEngine re = RuleEngine.create(g);
         re.setSynchronized(b);
-        //re.setVisitor(env.getEval().getVisitor());
         re.setProfile(RuleEngine.OWL_RL);
         re.process();
         return DatatypeMap.createObject(g);

@@ -1,6 +1,7 @@
 package fr.inria.corese.core.query.update;
 
 import fr.inria.corese.core.Event;
+import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
@@ -25,6 +26,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -69,6 +71,7 @@ public class UpdateProcess {
         ASTQuery ast = (ASTQuery) q.getAST();
         ASTUpdate astu = ast.getUpdate();
         Mappings map = Mappings.create(q);
+        manager.setLevel(getLevel(m));
         NSManager nsm = null;
         // Visitor was setup by QueryProcessUpdate init(q, m)
         setVisitor(exec.getCurrentVisitor());
@@ -121,6 +124,13 @@ public class UpdateProcess {
         }
         return map;
     }
+    
+    Level getLevel(Mapping m) {
+        if (m == null || m.getBind() == null) {
+            return Level.DEFAULT;
+        }
+        return ((Binding)m.getBind()).getAccessLevel();
+    }
 
     public void setDebug(boolean b) {
         isDebug = b;
@@ -154,6 +164,7 @@ public class UpdateProcess {
     /**
      * Share global variables from LDScript Bind stack
      * Binding b is the stack shared by update subqueries and 
+     * PRAGMA: m.getBind() = b
      * @event functions
      */
     Mapping getMapping(Query q, Mapping m, Binding b) {

@@ -20,7 +20,9 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 
 /**
@@ -269,8 +271,9 @@ public class GraphManager {
     }
     
     
-    boolean load(Query q, Basic ope) {
+    boolean load(Query q, Basic ope, Level level) throws EngineException {
         Load load = Load.create(graph);
+        load.setLevel(level);
         if (AccessRight.isActive()) {
             ASTQuery ast = (ASTQuery) q.getAST();
             load.setAccessRight(ast.getAccess());
@@ -295,7 +298,9 @@ public class GraphManager {
                 load.parse(uri, src);
                 graph.logFinish(q);
             } catch (LoadException e) {
-                
+                if (e.isSafetyException()) {
+                    throw e.getSafetyException();
+                }
                 boolean error = false;
                 
                 if (load.getFormat(uri) == Loader.UNDEF_FORMAT

@@ -43,9 +43,14 @@ import fr.inria.corese.core.load.rdfa.CoreseRDFaTripleSink;
 import fr.inria.corese.core.load.sesame.ParserLoaderSesame;
 import fr.inria.corese.core.load.sesame.ParserTripleHandlerSesame;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.io.ByteArrayInputStream;
 import java.io.FileFilter;
@@ -101,6 +106,7 @@ public class Load
     private int limit = LIMIT_DEFAULT;
     private AccessRight accessRight;
     ArrayList<String> exclude;
+    private Access.Level level = Access.Level.DEFAULT;
 
     
     /**
@@ -509,13 +515,8 @@ public class Load
         InputStream stream = null;
 
         try {
-            if (path.startsWith(RESOURCE)){
-                // specific URI mean local resource
-                String pname = "/" + NSManager.nsm().strip(path, RESOURCE);
-                stream = Load.class.getResourceAsStream(pname);
-                if (stream == null) {
-                    throw new IOException(path);
-                }
+            if (NSManager.isResource(path)){
+                stream = getResourceStream(path);
                 read = reader(stream);
             }
             else if (isURL(path)) {
@@ -550,13 +551,20 @@ public class Load
         
         synLoad(read, path, base, name, expectedFormat);
 
-        if (stream != null) {
-            try {
-                stream.close();
-            } catch (IOException e) {
-                e.printStackTrace();
-            }
+        close(stream);
+    }
+   
+   
+    /**
+     * http://ns.inria.fr/corese/ means load local resource
+     */ 
+    InputStream getResourceStream(String path) throws LoadException {
+        String pname = NSManager.stripResource(path);
+        InputStream stream = Load.class.getResourceAsStream(pname);
+        if (stream == null) {
+            throw new LoadException(new IOException(path));
         }
+        return stream;
     }
 
     void log(String name) {
@@ -569,6 +577,18 @@ public class Load
     Reader reader(InputStream stream) throws UnsupportedEncodingException {
         return new InputStreamReader(stream);
     }
+    
+    void close(InputStream stream) throws LoadException {
+        if (stream != null) {
+            try {
+                stream.close();
+            } catch (IOException ex) {
+                throw new LoadException(ex);
+            }
+        }
+    }
+
+
 
     void error(Object mes) {
         logger.error(mes.toString());
@@ -814,6 +834,15 @@ public class Load
     }
 
     void loadRule(String path, String name) throws LoadException {
+        if (NSManager.isResource(path)) {
+            loadRuleResource(path, name);
+        } else {
+            loadRulePath(path, name);
+        }
+    }
+    
+    void loadRulePath(String path, String name) throws LoadException {
+        check(Feature.LINKED_RULE, name, TermEval.LINKED_RULE_MESS);
         if (engine == null) {
             engine = RuleEngine.create(graph);
         }
@@ -831,8 +860,27 @@ public class Load
             load.parse(path);
         }
     }
-
+    
+    /**
+     * path = http://ns.inria.fr/corese/rule/owl.rul
+     * Load as resource
+     */
+    void loadRuleResource(String path, String name) throws LoadException {
+        InputStream stream = null;
+        try {
+            stream = getResourceStream(path);
+            Reader read = new InputStreamReader(stream);
+            loadRule(read, name);
+        } catch (LoadException ex) {
+            throw ex;
+        } finally {
+            close(stream);
+        }
+    }
+    
+ 
     public void loadRule(Reader stream, String name) throws LoadException {
+        check(Feature.LINKED_RULE, name, TermEval.LINKED_RULE_MESS);
         if (engine == null) {
             engine = RuleEngine.create(graph);
         }
@@ -841,6 +889,7 @@ public class Load
     }
 
     void loadQuery(String path, String name) throws LoadException {
+        check(Feature.IMPORT_FUNCTION, name, TermEval.IMPORT_MESS);
         if (qengine == null) {
             qengine = QueryEngine.create(graph);
         }
@@ -849,6 +898,7 @@ public class Load
     }
 
     void loadQuery(Reader read, String name) throws LoadException {
+        check(Feature.IMPORT_FUNCTION, name, TermEval.IMPORT_MESS);
         if (qengine == null) {
             qengine = QueryEngine.create(graph);
         }
@@ -898,12 +948,21 @@ public class Load
         }
     }
     
+    
+    void check(Feature feature, String uri, String mes) throws LoadException {
+        if (Access.reject(feature, getLevel(), uri)) {
+            throw new LoadException(new SafetyException(mes + ": " + uri));
+        }
+    }
+    
+    // RDF owl:imports <fun.rq>
     void basicImport(String uri) throws LoadException {
         switch (getFormat(uri)) {
             case Loader.QUERY_FORMAT:
-            {
+            {   
+                check(Feature.IMPORT_FUNCTION, uri, TermEval.IMPORT_MESS);
                 try {
-                    QueryProcess.create().parseQuery(uri);
+                    Query q  = QueryProcess.create().parseQuery(uri);
                 } catch (EngineException ex) {
                     throw new LoadException(ex);
                 }
@@ -1175,6 +1234,20 @@ public class Load
      */
     public void setAccessRight(AccessRight accessRight) {
         this.accessRight = accessRight;
+    }
+
+    /**
+     * @return the level
+     */
+    public Access.Level getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(Access.Level level) {
+        this.level = level;
     }
 
 }

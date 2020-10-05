@@ -917,7 +917,7 @@ public class Transformer implements TransformProcessor {
                         if (start) {
                             stack.pop();
                         }
-                        //afterTransformer(astart, res);
+                        afterTransformer(astart, res);
                         return res;
                     }
                 }
@@ -932,7 +932,7 @@ public class Transformer implements TransformProcessor {
             // gather results of several templates
             if (nodes.size() > 0) {
                 IDatatype mres = result(env, nodes);
-                //afterTransformer(astart, mres);
+                afterTransformer(astart, mres);
                 return mres;
             }
         }
@@ -942,13 +942,13 @@ public class Transformer implements TransformProcessor {
             // named template does not match focus node dt
             // try funcall st:defaultNamed(dt)
             IDatatype res = eval(STL_DEFAULT_NAMED, dt, (isBoolean() ? defaultBooleanResult() : EMPTY), env);
-            //afterTransformer(astart, res);
+            afterTransformer(astart, res);
             return res;
         } else if (isHasDefault()) {
             // apply named template st:default 
             IDatatype res = process(STL_DEFAULT, allTemplates, sep, exp, env, dt, args);
             if (res != EMPTY) {
-                //afterTransformer(astart, res);
+                afterTransformer(astart, res);
                 return res;
             }
         }
@@ -956,7 +956,7 @@ public class Transformer implements TransformProcessor {
         // return a default result (may be dt)
         // may be overloaded by function st:default(?x) { st:turtle(?x) }
         IDatatype res = eval(STL_DEFAULT, dt, (isBoolean() ? defaultBooleanResult() : turtle(dt)), env);
-        //afterTransformer(astart, res);        
+        afterTransformer(astart, res);        
         return res;
 
     }

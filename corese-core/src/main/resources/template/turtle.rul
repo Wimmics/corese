@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 21 13:43:42 CEST 2019
+Thu Sep 17 16:12:54 CEST 2020
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -50,7 +50,7 @@ where {
   bind (st:call-template(st:main)  as ?main)
   
   # pprint bnode as _:b instead of []
-  bind (st:set(st:reference, true) as ?ref)
+  bind (st:set(st:reference, true) as ?ref2)
   
   # pprint other bnodes that are subject and object
   bind (st:call-template(st:bnode) as ?bnode)
@@ -313,7 +313,7 @@ where {
   filter (?r != rdf:nil)
 
   bind (
-  (st:get(st:reference, true)  
+  ((st:get(st:reference, true) && not exists {?e rdf:first ?f})  
     ||
     (isBlank(?e) && 
         (

@@ -1,0 +1,179 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri May 29 14:22:26 CEST 2020
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+#
+# Geolocate resource on a map given lat et long
+#
+prefix p: <http://fr.dbpedia.org/property/>
+prefix o: <http://dbpedia.org/ontology/>
+
+template st:glocate {
+
+  st:call-template-with(st:navlab, st:gmap, ?in, ?lat, ?lon, xt:list())
+  
+}
+where {
+ 
+    ?in p:longitude ?lon ;
+        p:latitude  ?lat 
+       
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL Template Transformation 
+# Generate a HTML hypertext navigator on top of Linked Open Data
+# such as dbpedia
+#
+# Olivier Corby - Wimmics INRIA I3S - 2018
+#
+template st:start {
+
+  st:call-template(st:main)
+  
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navtable/>
+prefix o:   <http://dbpedia.org/ontology/>
+
+template st:main {
+
+    format {
+        ft:frame2.html
+        coalesce(?label, us:display(?uri)) 
+        coalesce(st:get(st:endpoint), "undefined")
+        coalesce(st:format('<img src="%s" />', ?icon), "")
+        st:apply-templates(?uri)
+    }
+    
+    st:call-template(st:glocate, ?uri)
+}
+where {
+    bind (st:focus() as ?uri)
+    optional { ?uri o:thumbnail ?icon }
+    optional { ?uri rdfs:label ?label }
+}
+limit 1
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navtable/>
+
+template st:test {
+    coalesce(
+    st:format (
+        ft:triple.html,
+        us:display(?p),
+        if (isLiteral(?y), ?y, 
+            st:format(ft:link.html, st:pplink(?y), us:display(?y)))
+    ),
+    st:format (
+        ft:triple.html,
+        us:displayInverse(?q),
+        if (isLiteral(?x), ?x, 
+            st:format(ft:link.html, st:pplink(?x), us:display(?x)))
+    )
+    )
+}
+where {
+    ?in a <http://schema.org/ScholarlyArticle> 
+    {?in ?p ?y} union {?x ?q ?in}
+}
+order by ?in 
+us:sort(coalesce(?p, ?q), coalesce(?y, ?x)) 
+coalesce(?p, q) coalesce(?y, ?x)
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:profile {}
+where {}
+
+function us:clean(?str) {
+    replace(?str, "<", "&lt;")
+}
+
+function us:sort(?p, ?v) {
+    if (?p = rdf:type,          0,
+    if (?p = rdfs:label,        1,
+    if (strstarts(?p, rdfs:),   2, 
+    if (strstarts(?p, rdf:),    3, 
+    if (isLiteral(?v),          4, 5)))))
+}
+
+
+function us:display(?t) {
+    us:clean(st:turtle(?t))
+}
+
+function us:displayInverse(?t) {
+    concat("is ", us:display(?t), " of")
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navtable/>
+
+template {
+    coalesce(
+    st:format (
+        ft:triple.html,
+        us:display(?p),
+        if (isLiteral(?y), ?y, 
+            st:format(ft:link.html, st:pplink(?y), us:display(?y)))
+    ),
+    st:format (
+        ft:triple.html,
+        us:displayInverse(?q),
+        if (isLiteral(?x), ?x, 
+            st:format(ft:link.html, st:pplink(?x), us:display(?x)))
+    )
+    )
+}
+where {
+    {?in ?p ?y} union {?x ?q ?in}
+}
+order by ?in us:sort(coalesce(?p, ?q), coalesce(?y, ?x)) coalesce(?p, q) coalesce(?y, ?x)
+
+pragma {st:template st:priority 1000}
+
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

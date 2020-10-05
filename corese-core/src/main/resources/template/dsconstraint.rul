@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Jul 25 11:55:24 CEST 2019
+Fri Oct 11 09:34:41 CEST 2019
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -11,75 +11,8 @@ Thu Jul 25 11:55:24 CEST 2019
 <![CDATA[
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
-template sh:pattern (?shape, ?sh, ?vis, ?s, ?exp) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-  graph ?shape {  
-    ?sh sh:pattern ?exp   
-    optional { ?sh sh:flags ?flag }
-  }
-  bind ( 
-    coalesce(
-        ! isBlank(?s) && 
-        if (bound (?flag), regex(?s, ?exp, ?flag), regex(?s, ?exp)), 
-        false) 
-  as ?suc )
 
-  bind (st:report(sh:pattern, ?sh, ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# SPARQL Based Constraint
-# Evaluate SPARQL query with pre-bind of variable $this with focus nodes
-# SPARQL query returns solutions that fail the Constraint
-#
-prefix sh: <http://www.w3.org/ns/shacl#> 
-template sh:sparql (?shape, ?sh, ?vis, ?s, ?cst) {
-   sh:safe(?shape, ?sh, ?suc)
-}
-where {
-    graph ?shape {  
-        ?sh sh:sparql ?cst 
-        ?cst sh:select ?q
-        filter not exists { ?cst sh:deactivated true }
-        optional { ?cst sh:message ?mes }
-        
-        # collect prefix definitions
-        # TBD: do it once and record it
-        {
-            select ?cst 
-              (group_concat(concat("prefix ", ?pr, ": <", str(?ns), ">") ;  separator="\n") 
-              as ?define) 
-            where {
-                ?cst sh:prefixes/owl:imports*/sh:declare [ sh:prefix ?pr ; sh:namespace ?ns ] 
-            }
-            group by ?cst
-        }
-    }
-    
-    bind (sh:mysparql(concat(?define, ?q), ?sh, ?cst, ?shape, ?s, ?s, ?vis, coalesce(?mes, st:null), bound(?mes)) as ?suc)
-    
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-
-@import <function/datashape/main.rq> <function/datashape/ppath.rq> <function/datashape/operator.rq> <function/datashape/constraint.rq> 
+@import <function/datashape/main.rq>   <function/datashape/constraint.rq> 
 
 
 template st:profile {}
@@ -111,61 +44,11 @@ function st:optimize(shape, sh){
 prefix sh: <http://www.w3.org/ns/shacl#> 
 
 template (?shape, ?sh, ?vis, ?ls) {
-    funcall(?q, ?shape, ?sh, ?vis, ?s, ?m)
+  sh:constraint(?shape, ?sh, ?vis, ?ls)
 }
 where {
-  values (?shape ?sh) { (UNDEF UNDEF) }
   
-  values (?q ?m) { unnest(sh:getConstraint(sh:cstgeneric3, ?shape, ?sh)) }
-  
-  values ?s { unnest(?ls) }
 }
-
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?ls) {
-  sh:safe(?shape, ?sh, ?suc)
-}
-where {
-  values (?shape ?sh) { (UNDEF UNDEF) }
-  
-  values (?q ?m) { unnest(sh:getConstraint(sh:cstgeneric, ?shape, ?sh)) }  
-  
-  values ?s { unnest(?ls) }
-    
-  bind (coalesce(if (?q = sh:functioncst,  funcall(?m, ?shape, ?sh, ?s), funcall(?q, ?shape, ?s, ?m)), false) as ?suc )
-  
-  bind (st:report(?q, ?sh, if (?q = sh:node, ?m, st:null), ?shape, ?s, st:null, ?s, ?suc, ?vis) as ?b)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix sh: <http://www.w3.org/ns/shacl#> 
-
-template (?shape, ?sh, ?vis, ?ls) {
-    st:call-template(?q, ?shape, ?sh, ?vis, ?s, ?m)
-}
-where {
-  values (?shape ?sh) { (UNDEF UNDEF) }
-  
-  values (?q ?m) { unnest(sh:getConstraint(sh:cstgeneric2, ?shape, ?sh)) } 
-  
-  values ?s { unnest(?ls) }
-}
-
 
 ]]>
 </body>

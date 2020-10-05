@@ -29,7 +29,7 @@
 >
 
 
-<rule>
+<rule rdf:about='&owl;Thing'>
 <body>  <!--  cls-thing -->
 CONSTRUCT {
 	owl:Thing a owl:Class .
@@ -45,7 +45,7 @@ WHERE {}
 
 
 
-<rule>
+<rule rdf:about='&owl;differentFrom'>
 <body>  <!--  eq-diff1 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -64,7 +64,7 @@ WHERE {
 
 
 
-<rule>
+<rule rdf:about='&owl;AllDifferent1'>
 <body>  <!--  eq-diff2 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -87,7 +87,7 @@ WHERE {
 
 
 
-<rule>
+<rule rdf:about='&owl;AllDifferent2'>
 <body>  <!--  eq-diff3 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -110,7 +110,7 @@ WHERE {
 
 
 
-<rule>
+<rule  rdf:about='&rdfs;domain'>
 <body>  <!--  prp-dom -->
 CONSTRUCT {
     ?x a ?c .
@@ -124,7 +124,7 @@ WHERE {
 
 
 
-<rule>
+<rule  rdf:about='&rdfs;range'>
 <body>  <!--  prp-rng -->
 CONSTRUCT {
     ?y a ?c .
@@ -136,7 +136,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule  rdf:about='&owl;FunctionalProperty'>
 <body>  <!--  prp-fp -->
 CONSTRUCT {
     ?y1 owl:sameAs ?y2 .
@@ -150,7 +150,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;InverseFunctionalProperty'>
 <body>  <!--  prp-ifp -->
 CONSTRUCT {
     ?x1 owl:sameAs ?x2 .
@@ -164,7 +164,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;IrreflexiveProperty'>
 <body>  <!--  prp-irp -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -180,7 +180,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;SymmetricProperty'>
 <body>  <!--  prp-symp -->
 CONSTRUCT {
     ?y ?p ?x .
@@ -192,7 +192,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule  rdf:about='&owl;AsymmetricProperty'>
 <body>  <!--  prp-asyp -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -211,7 +211,7 @@ WHERE {
 
 
 
-<rule>
+<rule  rdf:about='&owl;TransitiveProperty'>
 <body>  <!--  prp-trp -->
 CONSTRUCT {
     ?x ?p ?z .
@@ -226,22 +226,7 @@ WHERE {
 
 
 
-<rule>
-<body>  <!--  prp-spo1 -->
-CONSTRUCT {
-    ?x ?p2 ?y .
-}
-WHERE {
-    ?p1 rdfs:subPropertyOf ?p2 . filter(?p1 != ?p2)
-    ?x ?p1 ?y .
-}
-
-</body>
-</rule>
-
-
-
-<rule>
+<rule rdf:about='&owl;propertyChainAxiom'>
 <body>   <!--  prp-spo2 -->
 CONSTRUCT {
 	?u ?p ?v .
@@ -258,13 +243,13 @@ WHERE {
 	group by ?p
   }
   filter bound(?p)
-  bind(unnest(kg:sparql(?query)) as (?u, ?v)) 
+  values (?u ?v) { unnest(kg:sparql(?query)) }
 }
 </body>
 </rule>
 
 
-<rule>
+<rule rdf:about='&owl;equivalentProperty1'>
 <body>  <!--   prp  eqp1 -->
 CONSTRUCT {
     ?x ?p2 ?y .
@@ -277,7 +262,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;equivalentProperty2'>
 <body>  <!--   prp  eqp2 -->
 CONSTRUCT {
     ?x ?p1 ?y .
@@ -290,7 +275,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;propertyDisjointWith'>
 <body>  <!--  prp-pdw -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -308,7 +293,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;AllDisjointProperties'>
 <body>  <!--  prp-adp -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -332,7 +317,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;inverseOf1'>
 <body>  <!--  prp-inv1 -->
 CONSTRUCT {
     ?y ?p2 ?x .
@@ -345,7 +330,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;inverseOf2'>
 <body>  <!--  prp-inv2 -->
 CONSTRUCT {
     ?y ?p1 ?x .
@@ -358,7 +343,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;NegativeAssertionProperty1'>
 <body>  <!--  prp-npa1 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -368,16 +353,16 @@ CONSTRUCT {
     _:b0 sp:arg1 ?i1 ; sp:arg2 ?i2 .
 }
 WHERE {
+    ?x owl:targetIndividual ?i2 .
     ?x owl:sourceIndividual ?i1 .
     ?x owl:assertionProperty ?p .
-    ?x owl:targetIndividual ?i2 .
     ?i1 ?p ?i2 .
 }
 
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;NegativeAssertionProperty2'>
 <body>  <!--  prp-npa2 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -387,9 +372,9 @@ CONSTRUCT {
     _:b0 sp:arg1 ?i ; sp:arg2 ?lt .
 }
 WHERE {
+    ?x owl:targetValue ?lt .
     ?x owl:sourceIndividual ?i .
     ?x owl:assertionProperty ?p .
-    ?x owl:targetValue ?lt .
     ?i ?p ?lt .
 }
 
@@ -398,7 +383,7 @@ WHERE {
 
 
 
-<rule>
+<rule rdf:about='&owl;Nothing'>
 <body>  <!--  cls-nothing2 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -414,7 +399,7 @@ WHERE {
 </rule>
 
 
-<rule>
+<rule rdf:about='&owl;intersectionOf1'>
 <body>  <!--  cls-int1 -->
 CONSTRUCT {
 	?y a ?c .
@@ -432,7 +417,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;intersectionOf2'>
 <body>  <!--  cls-int2 -->
 CONSTRUCT {
     ?y a ?ci .
@@ -448,7 +433,7 @@ WHERE {
 
 
 
-<rule>
+<rule rdf:about='&owl;unionOf1'>
 <body>  <!--  cls-uni -->
 CONSTRUCT {
     ?y a ?c .
@@ -464,7 +449,7 @@ WHERE {
 
 
 
-<rule>
+<rule rdf:about='&owl;complementOf'>
 <body>  <!--  cls-com -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -483,7 +468,9 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+
+
+<rule rdf:about='&owl;someValuesFrom1'>
 <body>  <!--  cls-svf1 -->
 CONSTRUCT {
     ?u a ?x .
@@ -498,7 +485,27 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+
+<rule rdf:about='&owl;someValuesFrom2'>
+<body>  <!--  cls-svf1 literal -->
+CONSTRUCT {
+    ?u a ?x .
+}
+WHERE {
+    ?x owl:someValuesFrom ?y .
+    ?x owl:onProperty ?p .
+    filter strstarts(?y, xsd:)
+    ?u ?p ?v .
+    filter isLiteral(?v)
+    filter (datatype(?v) = ?y)
+}
+
+</body>
+</rule>
+
+
+
+<rule rdf:about='&owl;someValuesFrom3'>
 <body>  <!--  cls-svf2 -->
 CONSTRUCT {
     ?u a ?x .
@@ -512,7 +519,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;allValuesFrom'>
 <body>  <!--  cls-avf -->
 CONSTRUCT {
     ?v a ?y .
@@ -527,7 +534,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;hasValue1'>
 <body>  <!--  cls-hv1 -->
 CONSTRUCT {
     ?u ?p ?y .
@@ -541,7 +548,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;hasValue2'>
 <body>  <!--  cls-hv2 -->
 CONSTRUCT {
     ?u a ?x .
@@ -555,7 +562,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;maxCardinality1'>
 <body>  <!--  cls-maxc1 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -575,7 +582,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;maxCardinality2'>
 <body>  <!--  cls-maxc2 -->
 CONSTRUCT {
     ?y1 owl:sameAs ?y2 .
@@ -591,7 +598,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;maxQualifiedCardinality1'>
 <body>  <!--  cls-maxqc1 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -613,7 +620,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;maxQualifiedCardinality2'>
 <body>  <!--  cls-maxqc2 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -634,7 +641,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;maxQualifiedCardinality3'>
 <body>  <!--  cls-maxqc3 -->
 CONSTRUCT {
     ?y1 owl:sameAs ?y2 .
@@ -653,7 +660,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;maxQualifiedCardinality4'>
 <body>  <!--  cls-maxqc4 -->
 CONSTRUCT {
     ?y1 owl:sameAs ?y2 .
@@ -670,7 +677,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;oneOf'>
 <body>  <!--  cls-oo -->
 CONSTRUCT {
     ?yi a ?c .
@@ -692,7 +699,7 @@ WHERE {
 
 
 
-<rule>
+<rule rdf:about='&owl;equivalentClass1'>
 <body>
 CONSTRUCT {
     ?x a ?c2 .
@@ -705,7 +712,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;equivalentClass2'>
 <body>  <!--   cax eqc2  -->
 CONSTRUCT {
     ?x a ?c1 .
@@ -718,7 +725,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;disjointWith'>
 <body>  <!--  cax-dw -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -737,7 +744,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;AllDisjointClasses'>
 <body>  <!--  cax-adc -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -764,7 +771,7 @@ WHERE {
 
 
 
-<rule>
+<rule rdf:about='&owl;Class'>
 <body>  
 CONSTRUCT {
     ?c rdfs:subClassOf ?c .
@@ -779,7 +786,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;equivalentClass3'>
 <body>  <!--   scm eqc1 -->
 CONSTRUCT {
     ?c1 rdfs:subClassOf ?c2 .
@@ -791,7 +798,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;intersectionOf3'>
 <body>  <!--  scm-int -->
 CONSTRUCT {
     ?c rdfs:subClassOf ?ci .
@@ -804,7 +811,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;unionOf2'>
 <body>  <!--  scm-uni -->
 CONSTRUCT {
     ?ci rdfs:subClassOf ?c .
@@ -819,7 +826,7 @@ WHERE {
 
 
 
-<rule>
+<rule rdf:about='&rdfs;subClassOf'>
 <body>  <!--   scm eqc2 -->
 CONSTRUCT {
     ?c1 owl:equivalentClass ?c2 .
@@ -832,7 +839,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;ObjectProperty'>
 <body>  <!--  scm-op -->
 CONSTRUCT {
     ?p rdfs:subPropertyOf ?p .
@@ -845,7 +852,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;DatatypeProperty'>
 <body>  <!--  scm-dp -->
 CONSTRUCT {
     ?p owl:equivalentProperty ?p .
@@ -857,7 +864,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&owl;equivalentProperty'>
 <body>  <!--   scm eqp1 -->
 CONSTRUCT {
     ?p1 rdfs:subPropertyOf ?p2 .
@@ -870,7 +877,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&rdfs;subPropertyOf1'>
 <body>  <!--   scm eqp2  -->
 CONSTRUCT {
     ?p1 owl:equivalentProperty ?p2 .
@@ -883,7 +890,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&rdfs;subPropertyOf2'>
 <body>  <!-- scm-spo    -->
 CONSTRUCT {
     ?p1 rdfs:subPropertyOf ?p3 .
@@ -896,8 +903,20 @@ WHERE {
 </body>
 </rule>
 
+<rule rdf:about='&rdfs;subPropertyOf3'>
+<body>  <!--  prp-spo1 -->
+CONSTRUCT {
+    ?x ?p2 ?y .
+}
+WHERE {
+    ?p1 rdfs:subPropertyOf ?p2 . filter(?p1 != ?p2)
+    ?x ?p1 ?y .
+}
 
-<rule>
+</body>
+</rule>
+
+<rule rdf:about='&rdfs;domain2'>
 <body>  
 CONSTRUCT {
     ?p rdfs:domain ?c2 .
@@ -910,7 +929,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&rdfs;domain3'>
 <body>  
 CONSTRUCT {
     ?p1 rdfs:domain ?c .
@@ -925,7 +944,7 @@ WHERE {
 
 
 
-<rule>
+<rule rdf:about='&rdfs;range2'>
 <body>  
 CONSTRUCT {
     ?p rdfs:range ?c2 .
@@ -940,7 +959,7 @@ WHERE {
 
 
 
-<rule>
+<rule rdf:about='&rdfs;range3'>
 <body>  
 CONSTRUCT {
     ?p1 rdfs:range ?c .
@@ -956,7 +975,7 @@ WHERE {
 
 
 
-<rule>
+<rule rdf:about='&rdfs;subPropertyOf4'>
 <body>  <!--  scm-hv -->
 CONSTRUCT {
     ?c1 rdfs:subClassOf ?c2 .
@@ -972,7 +991,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&rdfs;subClassOf2'>
 <body>  <!--  scm-svf1 -->
 CONSTRUCT  {
     ?c1 rdfs:subClassOf ?c2 .
@@ -989,7 +1008,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&rdfs;subPropertyOf5'>
 <body>  <!--  scm-svf2 -->
 CONSTRUCT {
     ?c1 rdfs:subClassOf ?c2 .
@@ -1005,7 +1024,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&rdfs;subClassOf3'>
 <body>  <!--  scm-avf1 -->
 CONSTRUCT {
     ?c1 rdfs:subClassOf ?c2 .
@@ -1021,7 +1040,7 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+<rule rdf:about='&rdfs;subClassOf4'>
 <body>  <!--  scm-avf2 -->
 CONSTRUCT {
     ?c2 rdfs:subClassOf ?c1 .
@@ -1037,7 +1056,14 @@ WHERE {
 </body>
 </rule>
 
-<rule>
+
+
+
+
+
+
+
+<rule rdf:about='&rdfs;subClassOf5'>
 <body>  
 CONSTRUCT {
     ?c1 rdfs:subClassOf ?c3 .
@@ -1050,8 +1076,8 @@ WHERE {
 </rule>
 
 
-<rule>
-<body>  
+<rule rdf:about='&rdfs;subClassOf6'>
+<body>
 CONSTRUCT {
     ?x a ?c2 .
 }
@@ -1061,6 +1087,9 @@ WHERE {
 }
 </body>
 </rule>
+
+
+
 
 
 </rdf:RDF>

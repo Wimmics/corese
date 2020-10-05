@@ -80,7 +80,7 @@ public class FunctionCompiler {
             return;
         }
         if (Access.reject(Access.Feature.FUNCTION_DEFINITION, ast.getLevel())) { 
-            //logger.error("Extension function definition unauthorized");
+            //logger.error(TermEval.FUNCTION_DEFINITION_MESS);
             throw new SafetyException(TermEval.FUNCTION_DEFINITION_MESS);
         }
 

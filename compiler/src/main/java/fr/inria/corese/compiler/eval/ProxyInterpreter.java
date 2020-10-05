@@ -2060,10 +2060,10 @@ public class ProxyInterpreter implements Proxy,  ExprType {
         return ((Interpreter)getEval().getEvaluator()).getContext(getEnvironment(), getProducer());
     }
     
-    public boolean reject(Access.Feature feature) {
-        return Access.reject(feature, getContext());
-    }
-    
+//    public boolean reject(Access.Feature feature) {
+//        return Access.reject(feature, getContext());
+//    }
+//    
     public Eval getEval() {
         return getEnvironment().getEval();
     }

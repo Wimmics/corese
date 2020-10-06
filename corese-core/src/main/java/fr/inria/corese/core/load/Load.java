@@ -482,7 +482,7 @@ public class Load
             Reader read = reader(stream);
             synLoad(read, path, base, name, format);
         } catch (UnsupportedEncodingException e) {
-            throw new LoadException(e);
+            throw  LoadException.create(e, path);
         }
     }
 
@@ -562,7 +562,7 @@ public class Load
         String pname = NSManager.stripResource(path);
         InputStream stream = Load.class.getResourceAsStream(pname);
         if (stream == null) {
-            throw new LoadException(new IOException(path));
+            throw  LoadException.create(new IOException(path), path);
         }
         return stream;
     }
@@ -617,7 +617,7 @@ public class Load
     public void loadResource(String path, String name, int format) throws LoadException {
         InputStream stream = Load.class.getResourceAsStream(path);
         if (stream == null) {
-            throw new LoadException(new IOException(path));
+            throw  LoadException.create(new IOException(path), path);
         }
         parse(stream, name, format);
     }
@@ -854,10 +854,16 @@ public class Load
             if (rule != null) {
                 engine.addRule(rule);
             }
-        } else {
+        } 
+        else {
             // rule base
             RuleLoad load = RuleLoad.create(engine);
-            load.parse(path);
+            load.setLevel(getLevel());
+            try {
+                load.parse(path);
+            } catch (EngineException ex) {
+                throw  LoadException.create(ex, path);
+            }
         }
     }
     
@@ -881,11 +887,23 @@ public class Load
  
     public void loadRule(Reader stream, String name) throws LoadException {
         check(Feature.LINKED_RULE, name, TermEval.LINKED_RULE_MESS);
+        loadRuleBasic(stream, name);
+    }
+    
+    public void loadRuleBasic(Reader stream, String name) throws LoadException {
         if (engine == null) {
             engine = RuleEngine.create(graph);
         }
         RuleLoad load = RuleLoad.create(engine);
-        load.parse(stream);
+        load.setLevel(getLevel());
+        try {
+            load.parse(stream);
+        } catch (EngineException ex) {
+            if (ex.isSafetyException()) {
+                ex.getSafetyException().setPath(name);
+            }
+            throw  LoadException.create(ex, name);
+        }
     }
 
     void loadQuery(String path, String name) throws LoadException {
@@ -964,7 +982,7 @@ public class Load
                 try {
                     Query q  = QueryProcess.create().parseQuery(uri);
                 } catch (EngineException ex) {
-                    throw new LoadException(ex);
+                    throw  LoadException.create(ex, uri);
                 }
             }
                 break;

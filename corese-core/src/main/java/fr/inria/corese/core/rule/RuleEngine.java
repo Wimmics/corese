@@ -46,7 +46,8 @@ import java.util.Date;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.triple.function.core.UUIDFunction;
-import java.util.logging.Level;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 /**
  * Forward Rule Engine 
@@ -66,6 +67,7 @@ import java.util.logging.Level;
  * Wimmics INRIA I3S, 2014
  */
 public class RuleEngine implements Engine, Graphable {
+   
     static final String NL = System.getProperty("line.separator");
     public static final int OWL_RL_FULL = -1;
     public static final int STD = 0;
@@ -109,6 +111,7 @@ public class RuleEngine implements Engine, Graphable {
     private Context context;
     private ProcessVisitor visitor;
     private String base;
+    private Level level = Level.DEFAULT;
     
     public enum Profile {
         
@@ -351,7 +354,7 @@ public class RuleEngine implements Engine, Graphable {
             getVisitor().init();
             getVisitor().beforeEntailment(getPath());
         } catch (EngineException ex) {
-            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
         }
         if (graph == null) {
             set(Graph.create());
@@ -499,10 +502,17 @@ public class RuleEngine implements Engine, Graphable {
 
     public Query defRule(String name, String rule) throws EngineException {
         if (isTransformation()) {
-            return qengine.defQuery(rule);
+            if (getQueryEngine() == null) {
+                setQueryEngine(QueryEngine.create(getGraphStore()));
+            }
+            getQueryEngine().setLevel(getLevel());
+            return getQueryEngine().defQuery(rule);
         } else {
-            Query qq = exec.compileRule(rule, ds);
+            // compile time access level
+            getCreateDataset().setLevel(getLevel());
+            Query qq = exec.compileRule(rule, getDataset());
             if (qq != null) {
+                cleanContext(qq);
                 if (name == null) {
                     name = getRuleID();
                 }
@@ -512,6 +522,22 @@ public class RuleEngine implements Engine, Graphable {
             }
             return null;
         }
+    }
+    
+    /**
+     * Remove compile time context
+     * Use case: server may have runtime Context
+     */
+    void cleanContext(Query q) {
+        q.setContext(null);
+        ((ASTQuery)q.getAST()).setContext(null);
+    }
+    
+    Dataset getCreateDataset() {
+        if (getDataset() == null) {
+            setDataset(Dataset.create());
+        }
+        return getDataset();
     }
     
     void declare(Rule r) {
@@ -927,7 +953,7 @@ public class RuleEngine implements Engine, Graphable {
             }
             getVisitor().afterRule(qq, cons.isBuffer() ? cons.getInsertList() : map);
         } catch (EngineException ex) {
-            java.util.logging.Logger.getLogger(RuleEngine.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
         }
     }
     
@@ -1345,5 +1371,13 @@ public class RuleEngine implements Engine, Graphable {
      */
     public void setRules(List<Rule> rules) {
         this.rules = rules;
+    }
+    
+    public Level getLevel() {
+        return level;
+    }
+    
+    public void setLevel(Level level) {
+        this.level = level;
     }
 }

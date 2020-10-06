@@ -168,28 +168,30 @@ public class Transformer implements TransformProcessor {
     private boolean hasDefault = false;
     private boolean starting = true;
 
-    Transformer(Graph g, String p) {
-        this(QueryProcess.create(g, true), p);
-    }
-
-    Transformer(Producer prod, String p) {
-        this(QueryProcess.create(prod), p);
-    }
-
-    Transformer(QueryProcess qp, String p) {
-         init(qp, p);
-    }
+//    private Transformer(Graph g, String p) {
+//        this(QueryProcess.create(g, true), p);
+//    }
+//
+//    private Transformer(Producer prod, String p) {
+//        this(QueryProcess.create(prod), p);
+//    }
     
-    void init(QueryProcess qp, String p) {
+    Transformer() {}
+
+//    private Transformer(QueryProcess qp, String p) {
+//         init(qp, p);
+//    }
+    
+    void init(QueryProcess qp, String p) throws LoadException {
         setContext(new Context());
         setTransformation(p);
         set(qp);
         nsm = NSManager.create();
-        transformerMap = new HashMap<String, Transformer>();
+        transformerMap = new HashMap<>();
         init();
         stack = new Stack(this, true);
         EMPTY = DatatypeMap.newLiteral(NULL);
-        tcount = new HashMap<Query, Integer>();
+        tcount = new HashMap<>();
         loaded = new HashMap<>();
         imported = new HashMap<>();
         tmap = new TransformerMapping(qp.getGraph());  
@@ -197,7 +199,7 @@ public class Transformer implements TransformProcessor {
         try {
             setEventVisitor( QuerySolverVisitorTransformer.create(this, qp.getEval()));
         } catch (EngineException ex) {
-            java.util.logging.Logger.getLogger(Transformer.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
         }
     }
     
@@ -207,36 +209,61 @@ public class Transformer implements TransformProcessor {
         if (q == null) {
             return;
         }
-        //q.addMappings(map);
         q.setMappings(getMappings());
     }
+       
+    public static Transformer createWE(QueryProcess qp, String p) throws LoadException {
+        Transformer t = new Transformer();
+        t.init(qp, p);
+        return t;
+    }
     
+    public static Transformer createWE(Graph g, String p) throws LoadException {
+        Transformer t = new Transformer();
+        t.init(QueryProcess.create(g), p);
+        return t;
+    }
+    
+    public static Transformer createWE(Producer prod, String p) throws LoadException {
+        Transformer t = new Transformer();
+        t.init(QueryProcess.create(prod), p);
+        return t;
+    }
+    
+    public static Transformer create(QueryProcess qp, String p) {
+        Transformer t = new Transformer();
+        try {
+            t.init(qp, p);
+        } catch (LoadException ex) {
+            logger.error(ex.getMessage());
+        }
+        return t;
+    }
+    
+    /**
+     * Apply transformation on Mappings 
+     */
     public static Transformer create(Graph g, Mappings map, String p) {
-        Transformer t = new Transformer(g, p);
+        Transformer t = create(g, p);
         t.setMappings(map);
         t.initMap();
         return t;
     }
 
     public static Transformer create(Graph g) {
-        return new Transformer(g, null);
+        return create(g, null);
     }
 
     public static Transformer create(Graph g, String p) {
-        return new Transformer(g, p);
-    }
-
-    public static Transformer create(QueryProcess qp, String p) {
-        return new Transformer(qp, p);
+        return create(QueryProcess.create(g), p);
     }
 
     public static Transformer create(Producer prod, String p) {
-        return new Transformer(prod, p);
+        return create(QueryProcess.create(prod), p);
     }
 
     public static Transformer create(String p) {
-        Graph g = Graph.create();
-        return new Transformer(g, p);
+        return create(Graph.create(), p);
     }
     
     public static String turtle(Graph g) {
@@ -437,7 +464,7 @@ public class Transformer implements TransformProcessor {
         this.isOptimize = isOptimize;
     }
 
-    public void setTemplates(String p) {
+    public void setTemplates(String p) throws LoadException {
         setTransformation(p);
         init();
     }
@@ -491,17 +518,7 @@ public class Transformer implements TransformProcessor {
     }
 
     private void tune(QueryProcess exec) {
-        // do not use Thread in Property Path
-        // compute all path nodes and put them in a list
-        // it is faster
         exec.setListPath(true);
-//        Producer prod = exec.getProducer();
-//        if (prod instanceof ProducerImpl) {
-//            // return value as is for st:apply-templates()
-//            // no need to create a graph node in Producer
-//            ProducerImpl pi = (ProducerImpl) prod;
-//            pi.setSelfValue(true);
-//        }
     }
 
     /**
@@ -676,7 +693,7 @@ public class Transformer implements TransformProcessor {
             try {
                 map = exec.query(qq, m);
             } catch (EngineException ex) {
-                java.util.logging.Logger.getLogger(Transformer.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error(ex.getMessage());
                 map = Mappings.create(qq);
             }
             save(map);
@@ -898,7 +915,7 @@ public class Transformer implements TransformProcessor {
                 try {
                     map = exec.query(qq, bm);
                 } catch (EngineException ex) {
-                    java.util.logging.Logger.getLogger(Transformer.class.getName()).log(Level.SEVERE, null, ex);
+                    logger.error(ex.getMessage());  
                     map = Mappings.create(qq);
                 }
                 save(map);
@@ -1254,11 +1271,12 @@ public class Transformer implements TransformProcessor {
     /**
      * Load templates from directory (.rq) or from a file (.rul)
      */
-    void init() {
+    void init() throws LoadException {
         setOptimize(table.isOptimize(pp));
-        Loader load = new Loader(this);
+        qe = QueryEngine.create(graph); 
+        Loader load = new Loader(this, qe);
         load.setDataset(ds);
-        qe = load.load(getTransformation());
+        load.load(getTransformation());
         // templates share profile functions
         qe.profile();
         // templates share table: transformation -> Transformer

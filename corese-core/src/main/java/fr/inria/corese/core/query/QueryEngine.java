@@ -10,7 +10,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.eval.Interpreter;
@@ -24,9 +23,9 @@ import fr.inria.corese.core.api.Engine;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.transform.Transformer;
 import static fr.inria.corese.core.transform.Transformer.STL_PROFILE;
-import fr.inria.corese.core.transform.TransformerVisitor;
-import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 /**
  * Equivalent of RuleEngine for Query and Template Run a set of query
@@ -49,6 +48,7 @@ public class QueryEngine implements Engine {
             isWorkflow = false;
     private boolean transformation = false;
     private String base;
+    private Level level = Level.DEFAULT;
 
     // focus type -> templates
     QueryEngine(Graph g) {
@@ -75,17 +75,35 @@ public class QueryEngine implements Engine {
             e.printStackTrace();
         }
     }
+    
+    Dataset getCreateDataset() {
+        if (getDataset() == null) {
+            setDataset(Dataset.create());
+        }
+        return getDataset();
+    }
 
     public Query defQuery(String q) throws EngineException {
-        //System.out.println("** QE: \n" + q);
         if (getBase() != null){
             getQueryProcess().setBase(getBase());
-        }
-        Query qq = getQueryProcess().compile(q, ds);
+        }       
+        getCreateDataset().setLevel(getLevel());
+        Query qq = getQueryProcess().compile(q, getDataset());
         if (qq != null) {
+            cleanContext(qq);
             defQuery(qq);
         }
         return qq;
+    }
+    
+    
+    /**
+     * Remove compile time context
+     * Use case: server may have runtime Context
+     */   
+    void cleanContext(Query q) {
+        q.setContext(null);
+        ((ASTQuery)q.getAST()).setContext(null);
     }
 
     public void defQuery(Query q) {
@@ -419,5 +437,19 @@ public class QueryEngine implements Engine {
      */
     public void setBase(String base) {
         this.base = base;
+    }
+
+    /**
+     * @return the level
+     */
+    public Level getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(Level level) {
+        this.level = level;
     }
 }

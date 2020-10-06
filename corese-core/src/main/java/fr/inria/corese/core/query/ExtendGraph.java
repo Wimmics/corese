@@ -87,7 +87,7 @@ public class ExtendGraph {
              case EXT_RECORD:   return record(p, exp, env);
              case EXT_STACK:    return stack(p, exp, env);
              case EXT_VISITED:  return visited(p, exp, env);
-             case EXT_DATASET:  return plugin.getPluginTransform().get(exp, env, p, STL_DATASET);
+             //case EXT_DATASET:  return plugin.getPluginTransform().get(exp, env, p, STL_DATASET);
          }        
          return null;
     }

@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package fr.inria.corese.core.transform;
 
 import fr.inria.corese.compiler.eval.Interpreter;
@@ -53,12 +48,14 @@ public class Loader {
     // Dataset to be set into query templates at compile time
     // Use case: st:apply-templates-graph(st:turtle, stname)
     Dataset ds;
+    QueryEngine qe;
     
-    Loader(Transformer t){
+    Loader(Transformer t, QueryEngine qe){
         graph = t.getGraph();
         nsm = t.getNSM();
         trans = t;
         loaded = new HashMap();
+        this.qe = qe;
     }
     
     
@@ -74,30 +71,24 @@ public class Loader {
      * .rul loaded in RuleEngine
      * Templates are eventually stored in QueryEngine
      */
-     QueryEngine load(String pp) {
-        QueryEngine qe = QueryEngine.create(graph); 
+     QueryEngine load(String pp) throws LoadException {
         RuleEngine re  = RuleEngine.create(graph); 
         // PP as list (not in a thread)
         qe.getQueryProcess().setListPath(true);
         qe.setTransformation(true);
-        re.setQueryEngine(qe);
         qe.setDataset(ds);
+        re.setQueryEngine(qe);
         re.setDataset(ds);
                 
         if (pp == null) {
             // skip;
         } else {
             loaded.put(pp, pp);
+            // TODO: set access level for function definition
             Load ld = Load.create(graph);
             ld.setEngine(qe);
             ld.setEngine(re);           
-            try {
-                //ld.loadWE(pp);
-                load(ld, qe, pp);
-            } catch (LoadException e) {
-                // TODO Auto-generated catch block
-                logger.error("Transformer Load Error: " + pp, e);
-            }
+            load(ld, qe, pp);
         }
           
         return qe;
@@ -156,12 +147,12 @@ public class Loader {
                 throw LoadException.create(ex);
             }
             if (stream == null){
-                throw LoadException.create(new IOException(pp));
+                throw LoadException.create(new IOException(pp), pp);
             }
         }
         // use non synchronized load method because we may be inside a query 
         // with a read lock       
-        ld.loadRule(new InputStreamReader(stream), src);
+        ld.loadRuleBasic(new InputStreamReader(stream), src);
 
     }
     
@@ -229,7 +220,7 @@ public class Loader {
     * 
     */
     @Deprecated
-    void loadImport(QueryEngine tqe, String uri) {
+    void loadImport(QueryEngine tqe, String uri) throws LoadException {
         QueryEngine eng = load(uri);
         profile(tqe, eng);
         include(tqe, eng);

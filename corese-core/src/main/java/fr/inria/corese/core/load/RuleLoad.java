@@ -20,6 +20,7 @@ import org.xml.sax.SAXException;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.core.rule.RuleEngine;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import org.w3c.dom.Attr;
 
 /**
@@ -50,6 +51,7 @@ public class RuleLoad {
     static final String WHERE = "where";
     static final String ABOUT = "about";
     static final String ID = "ID";
+    private Level level = Level.DEFAULT;
 
     RuleEngine engine;
     private String base;
@@ -62,17 +64,17 @@ public class RuleLoad {
         return new RuleLoad(e);
     }
 
-    public void parse(String file) throws LoadException {
+    public void parse(String file) throws LoadException, EngineException {
         Document doc = parsing(file);
         load(doc);
     }
 
-    public void parse(InputStream stream) throws LoadException {
+    public void parse(InputStream stream) throws LoadException, EngineException {
         Document doc = parsing(stream);
         load(doc);
     }
 
-    public void parse(Reader stream) throws LoadException {
+    public void parse(Reader stream) throws LoadException, EngineException {
         Document doc = parsing(stream);
         load(doc);
     }
@@ -85,17 +87,19 @@ public class RuleLoad {
             loadWE(file);
         } catch (LoadException e) {
             logger.error(e.getMessage());
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage());
         }
     }
 
     @Deprecated
-    public void loadWE(String file) throws LoadException {
+    public void loadWE(String file) throws LoadException, EngineException {
         Document doc = parsing(file);
         load(doc);
     }
 
     @Deprecated
-    public void loadWE(InputStream stream) throws LoadException {
+    public void loadWE(InputStream stream) throws LoadException, EngineException {
         Document doc = parsing(stream);
         load(doc);
     }
@@ -106,11 +110,13 @@ public class RuleLoad {
             loadWE(stream);
         } catch (LoadException e) {
             logger.error(e.getMessage());
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage());
         }
     }
 
     @Deprecated
-    public void loadWE(Reader stream) throws LoadException {
+    public void loadWE(Reader stream) throws LoadException, EngineException {
         Document doc = parsing(stream);
         load(doc);
     }
@@ -122,13 +128,15 @@ public class RuleLoad {
             load(doc);
         } catch (LoadException e) {
             logger.error(e.getMessage());
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage());
         }
     }
     
     
 
-    void load(Document doc) {
-
+    void load(Document doc) throws EngineException {
+        engine.setLevel(getLevel());
         NodeList list = null;
         
         for (String ns : NAMESPACE) {
@@ -158,11 +166,7 @@ public class RuleLoad {
                 body = getElement(rule, VALUE);
             }
             String text  = body.getTextContent();
-            try {
-                engine.defRule(uri, text);
-            } catch (EngineException e) {
-                e.printStackTrace();
-            }
+            engine.defRule(uri, text);
         }
     }
     
@@ -294,5 +298,19 @@ public class RuleLoad {
      */
     public void setBase(String base) {
         this.base = base;
+    }
+
+    /**
+     * @return the level
+     */
+    public Level getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(Level level) {
+        this.level = level;
     }
 }

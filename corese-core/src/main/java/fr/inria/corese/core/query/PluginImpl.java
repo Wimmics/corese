@@ -261,7 +261,8 @@ public class PluginImpl
                 return index(env, p);    
                    
             default: 
-                return pt.function(exp, env, p);
+                //return pt.function(exp, env, p);
+                return null;
                 
         }
     }
@@ -369,7 +370,8 @@ public class PluginImpl
                  return entailment(env, p, dt);
                                          
              default:
-                 return pt.function(exp, env, p, dt);
+                 //return pt.function(exp, env, p, dt);
+                 return null;
            
         }
         
@@ -450,7 +452,8 @@ public class PluginImpl
                 return algebra(exp, env, p, dt1, dt2);    
                 
             default:
-                return pt.function(exp, env, p, dt1, dt2);
+                //return pt.function(exp, env, p, dt1, dt2);
+                return null;
         }
 
     }
@@ -487,7 +490,8 @@ public class PluginImpl
                  return sparql(env, p, param);
 
             default: 
-                return pt.eval(exp, env, p, param);  
+                //return pt.eval(exp, env, p, param);  
+                return null;
         }
 
     }
@@ -1556,7 +1560,7 @@ public class PluginImpl
         return null;
     }
 
-    public Transformer getTransformer(Environment env, Producer p) {
+    public Transformer getTransformer(Environment env, Producer p) throws EngineException {
         return pt.getTransformer(env, p);
     } 
     
@@ -1566,7 +1570,8 @@ public class PluginImpl
     
     @Override
     public Expr decode(Expr exp, Environment env, Producer p){
-        return pt.decode(exp, env, p);
+        //return pt.decode(exp, env, p);
+        return null;
     }
 
     public void setPPrinter(String str) {
@@ -1579,7 +1584,8 @@ public class PluginImpl
     @Override
     public Expr createFunction(String name, List<Object> args, Environment env)
     throws EngineException {
-        return pt.createFunction(name, args, env);
+        //return pt.createFunction(name, args, env);
+        return null;
     }
     
     /**

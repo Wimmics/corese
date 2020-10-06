@@ -201,8 +201,9 @@ public class Transformer implements ExpType {
         ast.setDefaultNamespaces(namespaces);
         ast.setDefaultBase(getDefaultBase());
         ast.setSPARQLCompliant(isSPARQLCompliant);
-        if (dataset != null) {
-            ast.setDefaultDataset(dataset);
+        if (getDataset() != null) {
+            // PRAGMA: if Dataset has Context, it becomes ast Context
+            ast.setDefaultDataset(getDataset());
         }
         ParserSparql1.create(ast).parse();
         return ast;

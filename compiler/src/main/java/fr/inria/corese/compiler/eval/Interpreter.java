@@ -731,12 +731,12 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public TransformProcessor getTransformer(Environment env, Producer p) {
+    public TransformProcessor getTransformer(Environment env, Producer p) throws EngineException {
         return getComputerTransform().getTransformer(env, p);
     }
 
     @Override
-    public TransformProcessor getTransformer(Environment env, Producer p, Expr exp, IDatatype uri, IDatatype gname) {
+    public TransformProcessor getTransformer(Environment env, Producer p, Expr exp, IDatatype uri, IDatatype gname) throws EngineException {
         return getComputerTransform().getTransformer(env, p, exp, uri, gname);
     }
 

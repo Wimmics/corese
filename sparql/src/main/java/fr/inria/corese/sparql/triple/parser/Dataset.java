@@ -9,6 +9,7 @@ import java.util.List;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.DATASET;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 /**
  * 
@@ -216,6 +217,20 @@ public class Dataset extends ASTObject {
      */
     public void setContext(Context context) {
         this.context = context;
+    }
+    
+    public void setLevel(Level level) {
+        if (getContext() == null) {
+            setContext(Context.create());
+        }
+        getContext().setLevel(level);
+    }
+    
+    public Level getLevel() {
+        if (getContext() == null) {
+            return Level.DEFAULT;
+        }
+        return getContext().getLevel();
     }
     
     public Dataset set(Context c){

@@ -176,7 +176,7 @@ public class TermEval extends Term {
     public void check(Feature feature, Binding b, String uri, String mes) throws SafetyException {
         if (Access.reject(feature, b.getAccessLevel(), uri)) {
             //System.out.println("Level: " + b.getAccessLevel());
-            throw new SafetyException(mes + ": " + uri);
+            throw new SafetyException(mes, uri);
         }
     }
     

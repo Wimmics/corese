@@ -23,7 +23,7 @@ public class Prefix extends TemplateFunction {
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
-        NSManager nsm = eval.getNSM(env, p);
+        NSManager nsm = eval.getNSM(b, env, p);
         switch (oper()) {
             case ExprType.STL_PREFIX:
                 return DatatypeMap.createObject(nsm);

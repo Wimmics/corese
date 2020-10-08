@@ -27,7 +27,7 @@ public class CGetSetContext extends TemplateFunction {
         if (param == null){
             return null;
         }
-        Context c = eval.getContext(env, p);
+        Context c = eval.getContext(b, env, p);
         
         switch (oper()) {
             

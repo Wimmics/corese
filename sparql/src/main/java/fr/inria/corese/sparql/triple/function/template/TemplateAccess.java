@@ -29,7 +29,7 @@ public class TemplateAccess extends TemplateFunction {
             return null;
         }
         
-        TransformProcessor trans = eval.getTransformer(env, p);
+        TransformProcessor trans = eval.getTransformer(b, env, p);
         
         switch (oper()) {
             case ExprType.STL_NL:

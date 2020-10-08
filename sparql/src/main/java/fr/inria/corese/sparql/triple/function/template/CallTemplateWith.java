@@ -34,7 +34,7 @@ public class CallTemplateWith extends TemplateFunction {
         
         check(Access.Feature.LINKED_TRANSFORMATION, b, uri, LINKED_TRANSFORMATION_MESS);
 
-        TransformProcessor trans = eval.getTransformer(env, p, this, param[0], null);
+        TransformProcessor trans = eval.getTransformer(b, env, p, this, param[0], null);
 
         switch (param.length) {           
             case 2:

@@ -8,6 +8,7 @@ import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.triple.parser.Access;
 
 /**
  *
@@ -15,6 +16,8 @@ import fr.inria.corese.kgram.api.query.Producer;
  *
  */
 public class Coalesce extends TermEval {
+    
+    boolean exception = Access.COALESCE_EXCEPTION;
 
     public Coalesce(){}
 
@@ -27,7 +30,16 @@ public class Coalesce extends TermEval {
         for (Expression arg : getArgs()) {
             boolean save = b.isCoalesce();
             b.setCoalesce(true);
-            IDatatype dt = arg.eval(eval, b, env, p);
+            IDatatype dt = null;
+            try {
+                dt = arg.eval(eval, b, env, p);
+            }
+            catch (EngineException e) {
+                if (exception) {
+                    b.setCoalesce(save);
+                    throw e;
+                }
+            }
             b.setCoalesce(save);
             if (dt != null) {
                 return dt;

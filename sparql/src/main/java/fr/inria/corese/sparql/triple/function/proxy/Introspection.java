@@ -50,7 +50,7 @@ public class Introspection extends LDScript {
                 return DatatypeMap.createObject(ast.getMetadata());
                 
             case XT_CONTEXT:
-                return eval.getContext(env, p).getDatatypeValue();
+                return eval.getContext(b, env, p).getDatatypeValue();
                 
             case XT_FROM:
             case XT_NAMED:

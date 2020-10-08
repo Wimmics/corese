@@ -12,6 +12,15 @@ import java.util.HashMap;
 public class Access {
     
     static final String NL = System.getProperty("line.separator");
+    // throw exception for undefined expression, see FunctionCompiler
+    // false -> SPARQL semantics
+    // true  -> safety check semantics
+    public static boolean UNDEFINED_EXPRESSION_EXCEPTION = false;
+    // throw exception for coalesce  
+    // false -> sparql semantics, coalesce trap error
+    public static boolean COALESCE_EXCEPTION = false;
+    // check namespace for every level 
+    public static boolean CHECK_NAMESPACE = false;
 
     public enum Mode {
         LIBRARY, GUI, SERVER
@@ -30,7 +39,11 @@ public class Access {
         
         private int value;
         
+        // default feature access level 
         public static Level DEFAULT = PRIVATE;
+        // default user access level (by default user have access to features)
+        public static Level USER_DEFAULT = DEFAULT;
+        // user with weak access
         public static Level USER    = PUBLIC;
         public static Level DENY    = DENIED;
         
@@ -60,11 +73,14 @@ public class Access {
     } ;
     
     public enum Feature  {         
-        // @import <http://myfun.org/fun.rq> ; [] owl:imports <http://myfun.org/fun.rq>
+        // @import <http://myfun.org/fun.rq> 
+        // [] owl:imports <http://myfun.org/fun.rq>
+        // load(file.rq)
         IMPORT_FUNCTION,
         // undefined ex:fun()  -> dereference, parse and compile ex:fun
         LINKED_FUNCTION, 
-        // transformation and rule that are not predefined
+        // concern all transformations/rules (predefined and user defined)
+        // if action level is < DEFAULT, authorize predefined transformation/rule only
         LINKED_TRANSFORMATION, 
         LINKED_RULE,
         
@@ -74,7 +90,7 @@ public class Access {
         // may deny whole LDScript
         LDSCRIPT, 
         // function us:test() {}
-        FUNCTION_DEFINITION, 
+        DEFINE_FUNCTION, 
         // xt:entailment()
         LDSCRIPT_ENTAILMENT,        
         // sparql query in LDScript: xt:sparql, query(select where), let (select where)
@@ -193,8 +209,14 @@ public class Access {
         return ! accept(feature, actionLevel);
     }
     
-    // feature = LINKED_TRANSFORMATION uri=st:turtle
-    // feature = IMPORT_FUNCTION       uri=ex:myfun.rq
+    /**
+     * feature = LINKED_TRANSFORMATION uri=st:turtle
+     * feature = IMPORT_FUNCTION       uri=ex:myfun.rq
+     * check uri: 
+     * action level >= DEFAULT -> every uri is authorized
+     * action level < DEFAULT  -> predefined uri is authorized
+     * TODO: specify additional authorized namespaces
+     */
     public static boolean accept(Feature feature, Level actionLevel, String uri) {
        return accept(feature, actionLevel) && acceptNamespace(feature, actionLevel, uri);
     }
@@ -204,14 +226,28 @@ public class Access {
     }
     
     public static boolean acceptNamespace (Feature feature, Level actionLevel, String uri) {
-        if (actionLevel.provide(DEFAULT)) {
+        if (actionLevel.provide(SUPER_USER)) {
+            return true;
+        }
+        else if (CHECK_NAMESPACE) {
+            return accept(uri);
+        }
+        else if (actionLevel.provide(DEFAULT)) {
             // action level >= DEFAULT -> every uri is authorized
             return true;
         }
         else {
             // action level < DEFAULT -> access to authorized namespace only
-            return NSManager.isPredefinedNamespace(uri);
+            return accept(uri);
         }
+    }
+    
+    static boolean accept(String uri) {
+        return NSManager.isPredefinedNamespace(uri) || AccessNamespace.access(uri);
+    }
+    
+    public static void define(String ns, boolean b) {
+        AccessNamespace.define(ns, b);
     }
     
     public static boolean reject(Feature feature) {
@@ -243,7 +279,7 @@ public class Access {
                 }
             }
         }
-        return DEFAULT;
+        return USER_DEFAULT;
     }
     
 

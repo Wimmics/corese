@@ -56,7 +56,7 @@ public class Binding implements Binder {
     private boolean dynamicCapture = DYNAMIC_CAPTURE_DEFAULT;
     private boolean result;
     private boolean coalesce = false;
-    private Access.Level accessLevel = Access.Level.DEFAULT;
+    private Access.Level accessLevel = Access.Level.USER_DEFAULT;
     private Context context;
     
     private static Binding singleton;

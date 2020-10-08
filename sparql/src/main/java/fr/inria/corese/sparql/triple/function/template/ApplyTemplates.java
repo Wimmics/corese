@@ -29,7 +29,7 @@ public class ApplyTemplates extends TemplateFunction {
             return null;
         }
 
-        TransformProcessor trans = eval.getTransformer(env, p, this, null, null);
+        TransformProcessor trans = eval.getTransformer(b, env, p, this, null, null);
 
         switch (param.length) {
             case 0:

@@ -74,7 +74,7 @@ public class AccessNamespace {
         if (reject.match(ns)) {
             return false;
         }
-        if (accept.isEmpty() || accept.match(ns)) {
+        if (accept.match(ns)) {
             return true;
         }
         return false;

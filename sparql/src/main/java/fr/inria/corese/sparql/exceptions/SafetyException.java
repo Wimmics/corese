@@ -17,6 +17,11 @@ public class SafetyException extends EngineException {
         super(mes);
     }
     
+    public SafetyException(String mes, String path) {
+        super(mes);
+        setPath(path);
+    }
+    
     @Override
     public boolean isSafetyException() {
         return true;

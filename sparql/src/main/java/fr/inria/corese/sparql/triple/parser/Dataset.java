@@ -219,16 +219,17 @@ public class Dataset extends ASTObject {
         this.context = context;
     }
     
-    public void setLevel(Level level) {
+    public Dataset setLevel(Level level) {
         if (getContext() == null) {
             setContext(Context.create());
         }
         getContext().setLevel(level);
+        return this;
     }
     
     public Level getLevel() {
         if (getContext() == null) {
-            return Level.DEFAULT;
+            return Level.USER_DEFAULT;
         }
         return getContext().getLevel();
     }

@@ -323,7 +323,7 @@ public class ASTQuery
     
     public Level getLevel() {
         if (getContext() == null) {
-            return Level.DEFAULT;
+            return Level.USER_DEFAULT;
         }
         return getContext().getLevel();
     }
@@ -333,7 +333,7 @@ public class ASTQuery
         if (isUserQuery()) {
             return Level.PUBLIC;
         }
-        return Level.DEFAULT;
+        return Level.USER_DEFAULT;
     }
 
     @Override

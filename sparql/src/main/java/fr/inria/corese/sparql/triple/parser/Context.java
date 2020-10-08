@@ -83,7 +83,7 @@ public class Context extends ASTObject {
     private HashMap<String, Context> context;
     NSManager nsm;
     private Binding bind;
-    Access.Level level = Access.Level.DEFAULT;
+    Access.Level level = Access.Level.USER_DEFAULT;
     private boolean debug;
     
     private boolean userQuery = false;

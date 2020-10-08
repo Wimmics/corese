@@ -34,7 +34,7 @@ public class ApplyTemplatesWithGraph extends TemplateFunction {
         
         check(Access.Feature.LINKED_TRANSFORMATION, b, uri, LINKED_TRANSFORMATION_MESS);
 
-        TransformProcessor trans = eval.getTransformer(env, p, this, param[0], param[1]);
+        TransformProcessor trans = eval.getTransformer(b, env, p, this, param[0], param[1]);
 
         switch (param.length) {
             case 2:

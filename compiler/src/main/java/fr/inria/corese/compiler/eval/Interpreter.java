@@ -731,18 +731,18 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public TransformProcessor getTransformer(Environment env, Producer p) throws EngineException {
-        return getComputerTransform().getTransformer(env, p);
+    public TransformProcessor getTransformer(Binding b, Environment env, Producer p) throws EngineException {
+        return getComputerTransform().getTransformer(b, env, p);
     }
 
     @Override
-    public TransformProcessor getTransformer(Environment env, Producer p, Expr exp, IDatatype uri, IDatatype gname) throws EngineException {
-        return getComputerTransform().getTransformer(env, p, exp, uri, gname);
+    public TransformProcessor getTransformer(Binding b, Environment env, Producer p, Expr exp, IDatatype uri, IDatatype gname) throws EngineException {
+        return getComputerTransform().getTransformer(b, env, p, exp, uri, gname);
     }
 
     @Override
-    public TransformVisitor getVisitor(Environment env, Producer p) {
-        return getComputerTransform().getVisitor(env, p);
+    public TransformVisitor getVisitor(Binding b, Environment env, Producer p) {
+        return getComputerTransform().getVisitor(b, env, p);
     }
     
     @Override
@@ -751,13 +751,13 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public Context getContext(Environment env, Producer p) {
-        return getComputerTransform().getContext(env, p);
+    public Context getContext(Binding b, Environment env, Producer p) {
+        return getComputerTransform().getContext(b, env, p);
     }
 
     @Override
-    public NSManager getNSM(Environment env, Producer p) {
-        return getComputerTransform().getNSM(env, p);
+    public NSManager getNSM(Binding b, Environment env, Producer p) {
+        return getComputerTransform().getNSM(b, env, p);
     }
 
 

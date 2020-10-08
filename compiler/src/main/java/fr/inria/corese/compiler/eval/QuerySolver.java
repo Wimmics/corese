@@ -38,10 +38,9 @@ import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.AccessRightDefinition;
-import fr.inria.corese.sparql.triple.parser.Context;
-import java.util.logging.Level;
 
 /**
  * Evaluator of SPARQL query by KGRAM Ready to use Package with KGRAM and SPARQL
@@ -209,7 +208,7 @@ public class QuerySolver implements SPARQLEngine {
         return defaultBase;
     }
 
-    protected Transformer transformer() {
+   public Transformer transformer() {
         Transformer transformer = Transformer.create();
         transformer.setSPARQLEngine(this);
         if (sort != null) {
@@ -859,8 +858,11 @@ public class QuerySolver implements SPARQLEngine {
     public Query parseQuery(String path) throws EngineException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-
-    public ASTQuery parse(String path) throws EngineException {
+    
+    public Query parseQuery(String path, Level level) throws EngineException {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+    public ASTQuery parse(String path, Level level) throws EngineException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

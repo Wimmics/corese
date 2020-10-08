@@ -578,7 +578,7 @@ public class Transformer implements ExpType {
             // TODO: because template st:profile may not have been read yet ...
             return;
         }
-        getFunctionCompiler().undefinedFunction(q, ast);
+        getFunctionCompiler().undefinedFunction(q, ast, ast.getLevel());
     }
     
     

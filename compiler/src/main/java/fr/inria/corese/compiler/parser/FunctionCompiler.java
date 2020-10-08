@@ -14,7 +14,6 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
-import fr.inria.corese.sparql.triple.parser.AccessNamespace;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
@@ -79,7 +78,7 @@ public class FunctionCompiler {
         if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
             return;
         }
-        if (Access.reject(Access.Feature.FUNCTION_DEFINITION, ast.getLevel())) { 
+        if (Access.reject(Access.Feature.DEFINE_FUNCTION, ast.getLevel())) { 
             //logger.error(TermEval.FUNCTION_DEFINITION_MESS);
             throw new SafetyException(TermEval.FUNCTION_DEFINITION_MESS);
         }
@@ -124,12 +123,11 @@ public class FunctionCompiler {
     }
     
     void imports(Query q, ASTQuery ast, String path) throws EngineException {
-        if (Access.accept(Feature.IMPORT_FUNCTION, ast.getLevel()) && 
-            acceptNamespace(path)) {
+        if (Access.accept(Feature.IMPORT_FUNCTION, ast.getLevel(), path)) {
             basicImports(q, ast, path);
         }
         else {
-            throw new SafetyException(TermEval.IMPORT_MESS);
+            throw new SafetyException(TermEval.IMPORT_MESS, path);
         }
     }
     
@@ -140,17 +138,16 @@ public class FunctionCompiler {
      * After compiling query, there are undefined functions
      * If authorized, load LinkedFunction
      * If still undefined, throw Undefined Exception
-     */
-    void undefinedFunction(Query q, ASTQuery ast) throws EngineException {
+     */     
+    public void undefinedFunction(Query q, ASTQuery ast, Level level) throws EngineException {
         ArrayList<Expression> list = new ArrayList<>();
 
         for (Expression exp : ast.getUndefined().values()) {
             boolean ok = Interpreter.isDefined(exp) || q.getExtension().isDefined(exp);
             if (ok) {
             } else {
-                if (acceptLinkedFunction(ast.getLevel())
-                        && acceptNamespace(exp.getLabel())) {
-                    ok = getLinkedFunctionBasic(q, exp);
+                if (acceptLinkedFunction(level, exp.getLabel())) {
+                    ok = getLinkedFunctionBasic(ast, exp);
                 }
                 if (!ok) {
                     list.add(exp);
@@ -165,22 +162,21 @@ public class FunctionCompiler {
         for (Expression exp : list) {
             sb.append(exp.toString()).append(NL);
         }
-        throw new UndefinedExpressionException(TermEval.UNDEFINED_EXPRESSION_MESS + NL + sb.toString());
+        if (Access.UNDEFINED_EXPRESSION_EXCEPTION) {
+            throw new UndefinedExpressionException(TermEval.UNDEFINED_EXPRESSION_MESS + NL + sb.toString());
+        }
+        else {
+            logger.error(TermEval.UNDEFINED_EXPRESSION_MESS);
+            logger.error(sb.toString());
+        }
     }
     
-    boolean acceptLinkedFunction(Level level) {
-        return Access.accept(Feature.LINKED_FUNCTION, level);
+    boolean acceptLinkedFunction(Level level, String ns) {
+        return Access.accept(Feature.LINKED_FUNCTION, level, ns);
     }
     
-    /**
-     * For LinkedFunction and @import
-     */
-    boolean acceptNamespace(String ns) {
-        return AccessNamespace.access(ns);
-    }
-    
-    boolean getLinkedFunctionBasic(Query q, Expression exp) throws EngineException {
-        boolean b = getLinkedFunctionBasic(exp.getLabel());
+    boolean getLinkedFunctionBasic(ASTQuery ast, Expression exp) throws EngineException {
+        boolean b = getLinkedFunctionBasic(exp.getLabel(), ast.getLevel());
         if (b) {
             return Interpreter.isDefined(exp);
         }
@@ -188,13 +184,13 @@ public class FunctionCompiler {
     }
     
     boolean getLinkedFunction(String label) throws EngineException {
-        if (acceptLinkedFunction(Level.DEFAULT) && acceptNamespace(label)) { 
+        if (acceptLinkedFunction(Level.USER_DEFAULT, label)) { 
             return getLinkedFunctionBasic(label);
         }
         return false;
     }
     
-    
+    // @import <path>
     void basicImports(Query q, ASTQuery ast, String path) throws EngineException {
         if (imported.containsKey(path)) {
             return;
@@ -203,21 +199,25 @@ public class FunctionCompiler {
             logger.info("Import: " + path);
         }
         imported.put(path, path);
-        ASTQuery ast2 = transformer.getSPARQLEngine().parse(path);
+        ASTQuery ast2 = transformer.getSPARQLEngine().parse(path, ast.getLevel());        
         compile(q, ast, ast2.getDefine());
         define(ast, ast2.getDefine(), q);
         compile(q, ast, ast2.getDefineLambda());
         define(ast, ast2.getDefineLambda(), q);
     }
-
+    
     boolean getLinkedFunctionBasic(String label) throws EngineException {
+        return getLinkedFunctionBasic(label, Level.USER_DEFAULT);
+    }
+    
+    boolean getLinkedFunctionBasic(String label, Level level) throws EngineException {
         String path = NSManager.namespace(label);
         if (getLoaded().containsKey(path)) {
             return true;
         }
         logger.info("Load Linked Function: " + label);
         getLoaded().put(path, path);
-        Query imp = transformer.getSPARQLEngine().parseQuery(path);
+        Query imp = transformer.getSPARQLEngine().parseQuery(path, level);
         if (imp != null && imp.hasDefinition()) {
             // loaded functions are exported in Interpreter  
             definePublic(Interpreter.getExtension(imp), imp);

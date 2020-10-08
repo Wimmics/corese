@@ -41,6 +41,7 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Context;
 
@@ -2057,7 +2058,7 @@ public class ProxyInterpreter implements Proxy,  ExprType {
     }
     
     public Context getContext() {
-        return ((Interpreter)getEval().getEvaluator()).getContext(getEnvironment(), getProducer());
+        return ((Interpreter)getEval().getEvaluator()).getContext((Binding) getEnvironment().getBind(), getEnvironment(), getProducer());
     }
     
 //    public boolean reject(Access.Feature feature) {

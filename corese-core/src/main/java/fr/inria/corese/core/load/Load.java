@@ -102,11 +102,12 @@ public class Load
     private boolean renameBlankNode = true;
     private boolean defaultGraph = DEFAULT_GRAPH;
     private boolean event = true;
+    private boolean transformer = false;
     int nb = 0;
     private int limit = LIMIT_DEFAULT;
     private AccessRight accessRight;
     ArrayList<String> exclude;
-    private Access.Level level = Access.Level.DEFAULT;
+    private Access.Level level = Access.Level.USER_DEFAULT;
 
     
     /**
@@ -907,10 +908,20 @@ public class Load
     }
 
     void loadQuery(String path, String name) throws LoadException {
-        check(Feature.IMPORT_FUNCTION, name, TermEval.IMPORT_MESS);
+        if (isTransformer()) {           
+            // use case: when load a transformation in a directory 
+            // each file .rq is loaded by loadQuery
+            // in this case, load is authorized
+            // PRAGMA: it may load function definition
+            // to prevent it: deny DEFINE_FUNCTION
+        }
+        else {
+            check(Feature.IMPORT_FUNCTION, name, TermEval.IMPORT_MESS);
+        }
         if (qengine == null) {
             qengine = QueryEngine.create(graph);
         }
+        qengine.setLevel(getLevel());
         QueryLoad load = QueryLoad.create(qengine);
         load.parse(path);
     }
@@ -920,6 +931,7 @@ public class Load
         if (qengine == null) {
             qengine = QueryEngine.create(graph);
         }
+        qengine.setLevel(getLevel());
         QueryLoad load = QueryLoad.create(qengine);
         load.parse(read);
     }
@@ -969,7 +981,7 @@ public class Load
     
     void check(Feature feature, String uri, String mes) throws LoadException {
         if (Access.reject(feature, getLevel(), uri)) {
-            throw new LoadException(new SafetyException(mes + ": " + uri));
+            throw new LoadException(new SafetyException(mes, uri));
         }
     }
     
@@ -980,7 +992,7 @@ public class Load
             {   
                 check(Feature.IMPORT_FUNCTION, uri, TermEval.IMPORT_MESS);
                 try {
-                    Query q  = QueryProcess.create().parseQuery(uri);
+                    Query q  = QueryProcess.create().parseQuery(uri, getLevel());
                 } catch (EngineException ex) {
                     throw  LoadException.create(ex, uri);
                 }
@@ -1266,6 +1278,20 @@ public class Load
      */
     public void setLevel(Access.Level level) {
         this.level = level;
+    }
+
+    /**
+     * @return the transformer
+     */
+    public boolean isTransformer() {
+        return transformer;
+    }
+
+    /**
+     * @param transformer the transformer to set
+     */
+    public void setTransformer(boolean transformer) {
+        this.transformer = transformer;
     }
 
 }

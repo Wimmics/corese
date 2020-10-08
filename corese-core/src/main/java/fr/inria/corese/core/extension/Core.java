@@ -129,7 +129,7 @@ public class Core extends PluginImpl implements FunctionEvaluator {
     IDatatype xt_load(IDatatype... dt) {
         try {
             //return new GraphSpecificFunction("load").load(this, dt, null, null, Level.DEFAULT);
-            return load(dt[0], null, null, null, Level.DEFAULT);
+            return load(dt[0], null, null, null, Level.USER_DEFAULT);
         } catch (SafetyException ex) {
             logger.error(ex.getMessage());
         }

@@ -39,9 +39,9 @@ import fr.inria.corese.sparql.api.TransformProcessor;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -183,12 +183,15 @@ public class Transformer implements TransformProcessor {
 //    }
     
     void init(QueryProcess qp, String p) throws LoadException {
+        init(qp, p, Level.USER_DEFAULT);
+    }
+    
+    void init(QueryProcess qp, String p, Level level) throws LoadException {
         setContext(new Context());
         setTransformation(p);
         set(qp);
         nsm = NSManager.create();
         transformerMap = new HashMap<>();
-        init();
         stack = new Stack(this, true);
         EMPTY = DatatypeMap.newLiteral(NULL);
         tcount = new HashMap<>();
@@ -201,6 +204,7 @@ public class Transformer implements TransformProcessor {
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
         }
+        init(level);
     }
     
      
@@ -218,15 +222,15 @@ public class Transformer implements TransformProcessor {
         return t;
     }
     
-    public static Transformer createWE(Graph g, String p) throws LoadException {
+    public static Transformer createWE(Graph g, String p, Level level) throws LoadException {
         Transformer t = new Transformer();
-        t.init(QueryProcess.create(g), p);
+        t.init(QueryProcess.create(g), p, level);
         return t;
     }
     
-    public static Transformer createWE(Producer prod, String p) throws LoadException {
+    public static Transformer createWE(Producer prod, String p, Level level) throws LoadException {
         Transformer t = new Transformer();
-        t.init(QueryProcess.create(prod), p);
+        t.init(QueryProcess.create(prod), p, level);
         return t;
     }
     
@@ -282,11 +286,15 @@ public class Transformer implements TransformProcessor {
      * Create Transformer for named graph system named graph, std named grapĥ:
      * use Dataset from name loaded graph
      */
-    public static Transformer create(Graph g, String trans, String name) throws LoadException {
-        return create(g, trans, name, true);
+    public static Transformer createWE(Graph g, String trans, String name) throws LoadException {
+        return createWE(g, trans, name, Level.USER_DEFAULT);
+    }    
+    
+    public static Transformer createWE(Graph g, String trans, String name, Level level) throws LoadException {
+        return createWE(g, trans, name, true, level);
     }
 
-    public static Transformer create(Graph g, String trans, String name, boolean with) throws LoadException {
+    public static Transformer createWE(Graph g, String trans, String name, boolean with, Level level) throws LoadException {
         Dataset ds = null;
         Graph gg = g.getNamedGraph(name);
         if (gg == null) {
@@ -311,7 +319,7 @@ public class Transformer implements TransformProcessor {
 
         Transformer t = Transformer.create(gg);
         t.setDataset(ds);
-        t.setTemplates(trans);
+        t.setTemplates(trans, level);
         return t;
     }
 
@@ -389,6 +397,10 @@ public class Transformer implements TransformProcessor {
         exec = qp;
         tune(exec);
     }
+    
+    QueryProcess getQueryProcess() {
+        return exec;
+    }
 
     void set(Graph g) {
         set(QueryProcess.create(g, true));
@@ -465,8 +477,12 @@ public class Transformer implements TransformProcessor {
     }
 
     public void setTemplates(String p) throws LoadException {
+        setTemplates(p, Level.USER_DEFAULT);
+    }
+    
+    public void setTemplates(String p, Level level) throws LoadException {
         setTransformation(p);
-        init();
+        init(level);
     }
 
     void setTransformation(String p) {
@@ -1272,15 +1288,21 @@ public class Transformer implements TransformProcessor {
      * Load templates from directory (.rq) or from a file (.rul)
      */
     void init() throws LoadException {
+        init(Level.USER_DEFAULT);
+    }
+    
+    void init(Level level) throws LoadException {
         setOptimize(table.isOptimize(pp));
         qe = QueryEngine.create(graph); 
         Loader load = new Loader(this, qe);
         load.setDataset(ds);
+        load.setLevel(level);
         load.load(getTransformation());
         // templates share profile functions
         qe.profile();
         // templates share table: transformation -> Transformer
         complete();
+        checkFunction(level);
         if (isCheck()) {
             check();
         }
@@ -1294,6 +1316,26 @@ public class Transformer implements TransformProcessor {
         }
         qe.sort();
     }
+    
+    void checkFunction(Level level) throws LoadException  {
+        fr.inria.corese.compiler.parser.Transformer tr = getQueryProcess().transformer();
+        for (Query q : getQueryEngine().getTemplates()) {
+           checkFunction(tr, q, level);
+        }
+        for (Query q : getQueryEngine().getNamedTemplates()) {
+           checkFunction(tr, q, level);        
+        }
+    }
+       
+    void checkFunction(fr.inria.corese.compiler.parser.Transformer tr, Query q, Level level) throws LoadException  {
+        try {
+            ASTQuery ast = (ASTQuery) q.getAST();
+            tr.getFunctionCompiler().undefinedFunction(q, ast, level);
+        } catch (EngineException ex) {
+            throw new LoadException(ex);
+        }
+    }
+   
 
     /**
      * *************************************************************

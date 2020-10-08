@@ -52,8 +52,8 @@ public class SPARQLProcess extends  WorkflowProcess {
     private static final String MODE     = "$mode";
     private static final String PATTERN  = "$pattern";
     private boolean userQuery = false;
-    private Level level = Level.DEFAULT;
-    Level saveContextLevel = Level.DEFAULT;
+    private Level level = Level.USER_DEFAULT;
+    Level saveContextLevel = Level.USER_DEFAULT;
     Level saveBindingLevel;
     private IDatatype param;    
     private IDatatype value;

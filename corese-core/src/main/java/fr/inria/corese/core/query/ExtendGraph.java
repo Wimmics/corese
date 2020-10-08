@@ -24,6 +24,7 @@ import java.util.HashMap;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 
 /**
  * Manage extended named graph 
@@ -123,7 +124,7 @@ public class ExtendGraph {
     }
     
     IDatatype visited(Producer p, Expr exp, Environment env) {
-        TemplateVisitor vis = plugin.getVisitor(env, p);
+        TemplateVisitor vis = plugin.getVisitor((Binding)env.getBind(), env, p);
         if (vis == null){
             return null;
         }

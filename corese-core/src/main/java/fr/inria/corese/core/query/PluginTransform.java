@@ -15,12 +15,12 @@ import fr.inria.corese.sparql.api.ComputerProxy;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.IOException;
 import java.io.InputStream;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,13 +46,13 @@ public class PluginTransform implements ComputerProxy {
      * Return or create current transformer (create in case of different graph)
      */
     @Override
-    public Transformer getTransformer(Environment env, Producer p) throws EngineException {
-        return getTransformer(env, p, null, (IDatatype) null, null);
+    public Transformer getTransformer(Binding b, Environment env, Producer p) throws EngineException {
+        return getTransformer(b, env, p, null, (IDatatype) null, null);
     }
 
     @Override
-    public Transformer getTransformer(Environment env, Producer prod, Expr exp, IDatatype uri, IDatatype dtgname) throws EngineException {
-        return getTransformer(env, prod, uri, dtgname, false, isWith(exp));
+    public Transformer getTransformer(Binding b, Environment env, Producer prod, Expr exp, IDatatype uri, IDatatype dtgname) throws EngineException {
+        return getTransformer(b, env, prod, uri, dtgname, false, isWith(exp));
     }
 
     @Override
@@ -61,11 +61,11 @@ public class PluginTransform implements ComputerProxy {
     }
 
     @Override
-    public TemplateVisitor getVisitor(Environment env, Producer p) {
+    public TemplateVisitor getVisitor(Binding b, Environment env, Producer p) {
         TemplateVisitor tv = (TemplateVisitor) env.getQuery().getTemplateVisitor();
         if (tv == null) {
             try {
-                tv = getTransformer(env, p).defVisitor();
+                tv = getTransformer(b, env, p).defVisitor();
             } catch (EngineException ex) {
                 logger.error("getTransformer fails in getVisitor");
                 Transformer t = Transformer.create(Graph.create(), null);
@@ -81,11 +81,11 @@ public class PluginTransform implements ComputerProxy {
      * alone have own Context
      */
     @Override
-    public Context getContext(Environment env, Producer p) {
+    public Context getContext(Binding b, Environment env, Producer p) {
         Context c = getQueryContext(env, p);
         if (c == null) {
             try {
-                c = getTransformerContext(env, p);
+                c = getTransformerContext(b, env, p);
             } catch (EngineException ex) {
                 c = new Context();
             }
@@ -95,7 +95,7 @@ public class PluginTransform implements ComputerProxy {
     }
 
     public Context getContext() {
-        return getContext(getEnvironment(), getProducer());
+        return getContext((Binding)getEnvironment().getBind(), getEnvironment(), getProducer());
     }
 
     Environment getEnvironment() {
@@ -120,16 +120,16 @@ public class PluginTransform implements ComputerProxy {
     /**
      * Context of current Transformer
      */
-    Context getTransformerContext(Environment env, Producer p) throws EngineException {
-        Transformer t = getTransformerCurrent(env, p);
+    Context getTransformerContext(Binding b, Environment env, Producer p) throws EngineException {
+        Transformer t = getTransformerCurrent(b, env, p);
         return t.getContext();
     }
 
     /**
      * Return current transformer (do not create in case of different graph)
      */
-    Transformer getTransformerCurrent(Environment env, Producer p) throws EngineException {
-        return getTransformer(env, p, (IDatatype) null, (IDatatype) null, true, false);
+    Transformer getTransformerCurrent(Binding b, Environment env, Producer p) throws EngineException {
+        return getTransformer(b, env, p, (IDatatype) null, (IDatatype) null, true, false);
     }
 
     /**
@@ -138,7 +138,7 @@ public class PluginTransform implements ComputerProxy {
      * graph use case: graph ?shape { st:cget(sh:def, ?name) } TODO: cache for
      * named graph
      */
-    Transformer getTransformer(Environment env, Producer prod, IDatatype uri, IDatatype dtgname, boolean current, boolean isGraph) 
+    Transformer getTransformer(Binding b, Environment env, Producer prod, IDatatype uri, IDatatype dtgname, boolean current, boolean isGraph) 
             throws EngineException {
         try {
             Query q = env.getQuery();
@@ -156,15 +156,15 @@ public class PluginTransform implements ComputerProxy {
                     // dtgname contains a Graph
                     // use case: let (?g = construct {} where {}){ 
                     // st:apply-templates-with-graph(st:navlab, ?g) }
-                    t = Transformer.createWE((Graph) dtgname.getPointerObject(), transform);
+                    t = Transformer.createWE((Graph) dtgname.getPointerObject(), transform, b.getAccessLevel());
                     complete(q, t, uri);
                 } else {
                     String gname = dtgname.getLabel();
-                    t = Transformer.create((Graph) prod.getGraph(), transform, gname, isGraph);
+                    t = Transformer.createWE((Graph) prod.getGraph(), transform, gname, isGraph, b.getAccessLevel());
                     complete(q, t, uri);
                 }
             } else if (t == null) {
-                t = Transformer.createWE(prod, transform);
+                t = Transformer.createWE(prod, transform, b.getAccessLevel());
                 complete(q, t, uri);
                 q.setTransformer(transform, t);
             } else if (!current) {
@@ -172,7 +172,7 @@ public class PluginTransform implements ComputerProxy {
                 if (g != prod.getGraph()) {
                     // Transformer exist but with another graph
                     // create a new one
-                    t = Transformer.createWE(prod, transform);
+                    t = Transformer.createWE(prod, transform, b.getAccessLevel());
                     complete(q, t, uri);
                 }
             }
@@ -208,10 +208,10 @@ public class PluginTransform implements ComputerProxy {
     }
 
     @Override
-    public NSManager getNSM(Environment env, Producer prod) {
+    public NSManager getNSM(Binding b, Environment env, Producer prod) {
         Transformer p;
         try {
-            p = getTransformer(env, prod);
+            p = getTransformer(b, env, prod);
             return p.getNSM();
         } catch (EngineException ex) {
             logger.error("getTransformer fails in getNSM");

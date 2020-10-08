@@ -682,7 +682,7 @@ public class PluginImpl
     }
 
     public IDatatype load(IDatatype dt, IDatatype format) throws SafetyException {
-        return load(dt, null, format, null, Level.DEFAULT);
+        return load(dt, null, format, null, Level.USER_DEFAULT);
     }
     
     @Override
@@ -1522,7 +1522,8 @@ public class PluginImpl
         try {
             str = ql.readWE(dt.getLabel());
         } catch (LoadException ex) {
-            logger.error(  "", ex);
+            logger.error("Read error");
+            logger.error(ex.getMessage());
         }
         if (str == null){
             return null; //str = "";
@@ -1560,12 +1561,12 @@ public class PluginImpl
         return null;
     }
 
-    public Transformer getTransformer(Environment env, Producer p) throws EngineException {
-        return pt.getTransformer(env, p);
+    public Transformer getTransformer(Binding b, Environment env, Producer p) throws EngineException {
+        return pt.getTransformer(b, env, p);
     } 
     
-    public TemplateVisitor getVisitor(Environment env, Producer p){
-        return pt.getVisitor(env, p);
+    public TemplateVisitor getVisitor(Binding b, Environment env, Producer p){
+        return pt.getVisitor(b, env, p);
     }
     
     @Override

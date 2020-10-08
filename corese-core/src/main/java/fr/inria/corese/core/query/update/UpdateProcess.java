@@ -127,7 +127,7 @@ public class UpdateProcess {
     
     Level getLevel(Mapping m) {
         if (m == null || m.getBind() == null) {
-            return Level.DEFAULT;
+            return Level.USER_DEFAULT;
         }
         return ((Binding)m.getBind()).getAccessLevel();
     }

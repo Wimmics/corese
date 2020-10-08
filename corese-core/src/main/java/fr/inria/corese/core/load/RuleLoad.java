@@ -51,7 +51,7 @@ public class RuleLoad {
     static final String WHERE = "where";
     static final String ABOUT = "about";
     static final String ID = "ID";
-    private Level level = Level.DEFAULT;
+    private Level level = Level.USER_DEFAULT;
 
     RuleEngine engine;
     private String base;

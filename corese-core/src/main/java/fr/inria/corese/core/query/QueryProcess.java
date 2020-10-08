@@ -769,7 +769,7 @@ public class QueryProcess extends QuerySolver {
         if (m != null && m.getBind() != null) {
             return  ((Binding)m.getBind()).getAccessLevel();
         }
-        return Level.DEFAULT;
+        return Level.USER_DEFAULT;
     }
 
     static boolean isOverwrite() {
@@ -1048,19 +1048,7 @@ public class QueryProcess extends QuerySolver {
         method(NSManager.USER + name.toString().toLowerCase(), NSManager.USER + e.toString(), param);
         mgr.setVerbose(b);
     }
-
-    // import function definition as public function
-    public boolean imports(String path) throws EngineException {
-        return imports(path, true);
-    }
-    
-    public boolean imports(String path, boolean pub) throws EngineException {
-        String qp = "@public  @import <%s> select where {}";
-        String ql = "@import <%s> select where {}";
-        Query q = compile(String.format((pub)?qp:ql, path));
-        return ! q.isImportFailure();
-    }
-    
+   
     IDatatype[] param(IDatatype... ldt) {
         return ldt;
     }
@@ -1222,16 +1210,48 @@ public class QueryProcess extends QuerySolver {
                 param);
     }
 
+
+    /**
+     * @import <uri>
+     * use case: FunctionCompiler @import <uri>
+     */
+    @Override
+    public ASTQuery parse(String path, Level level) throws EngineException {
+        String str = basicParse(path);
+        Transformer t = transformer();
+        t.setBase(path);
+        Dataset ds = Dataset.create().setLevel(level);
+        t.setDataset(ds);
+        return t.parse(str);
+    }
+
+    /**
+     * 1- Linked Function 2- owl:imports
+     */
+    @Override
+    public Query parseQuery(String path) throws EngineException {
+        return parseQuery(path, Level.USER_DEFAULT);
+    }    
+    
+    @Override
+    public Query parseQuery(String path, Level level) throws EngineException {
+        String str = basicParse(path);
+        Dataset ds = Dataset.create().setBase(path);
+        ds.setContext(new Context(level));
+        Query q = compile(str, ds);
+        return q;
+    }
+    
     String basicParse(String path) throws EngineException {
         QueryLoad ql = QueryLoad.create();
         String pp = (path.endsWith("/")) ? path.substring(0, path.length() - 1) : path;
         String str = null;
         try {
-            if (pp.startsWith(NSManager.STL)) {
+            if (NSManager.isResource(pp)) { //(pp.startsWith(NSManager.STL)) {
                 // @import <function/test.rq> within transformation such as st:turtle
                 // the import uri is st:function/test.rq
                 // consider it as a resource
-                String name = "/" + NSManager.nsm().strip(pp, NSManager.STL);
+                String name = NSManager.stripResource(pp); //"/" + NSManager.nsm().strip(pp, NSManager.STL);
                 str = ql.getResource(name);
             } else {
                 str = ql.readWE(pp);
@@ -1244,25 +1264,18 @@ public class QueryProcess extends QuerySolver {
         }
     }
 
-    /**
-     * Parse a function definition document use case: @import <uri>
-     */
-    @Override
-    public ASTQuery parse(String path) throws EngineException {
-        String str = basicParse(path);
-        Transformer t = transformer();
-        t.setBase(path);
-        return t.parse(str);
+    
+    // import function definition as public function
+    // use case: Java API to import e.g. shacl interpreter
+    public boolean imports(String path) throws EngineException {
+        return imports(path, true);
     }
-
-    /**
-     * 1- Linked Function 2- owl:imports
-     */
-    @Override
-    public Query parseQuery(String path) throws EngineException {
-        String str = basicParse(path);
-        Query q = compile(str, new Dataset().setBase(path));
-        return q;
+    
+    public boolean imports(String path, boolean pub) throws EngineException {
+        String qp = "@public  @import <%s> select where {}";
+        String ql = "@import <%s> select where {}";
+        Query q = compile(String.format((pub)?qp:ql, path));
+        return ! q.isImportFailure();
     }
 
     @Override

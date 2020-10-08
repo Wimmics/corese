@@ -48,7 +48,7 @@ public class QueryEngine implements Engine {
             isWorkflow = false;
     private boolean transformation = false;
     private String base;
-    private Level level = Level.DEFAULT;
+    private Level level = Level.USER_DEFAULT;
 
     // focus type -> templates
     QueryEngine(Graph g) {
@@ -176,15 +176,12 @@ public class QueryEngine implements Engine {
                 fr.inria.corese.compiler.parser.Transformer tr = fr.inria.corese.compiler.parser.Transformer.create();
                 ASTExtension ext = Interpreter.getExtension(profile);
                 tr.definePublic(ext, profile, false);
-                //TransformerVisitor tv = new TransformerVisitor(profile.getExtension().get(Transformer.STL_OPTIMIZE) != null);
                 
                 for (Query t : getTemplates()) {
                     addExtension(t, ext);
-                    //tv.visit(t);
                 }
                 for (Query t : getNamedTemplates()) {
                     addExtension(t, ext);
-                    //tv.visit(t);
                 }
             }
         }
@@ -340,10 +337,12 @@ public class QueryEngine implements Engine {
         return null;
     }
 
+    @Override
     public void setActivate(boolean b) {
         isActivate = b;
     }
 
+    @Override
     public boolean isActivate() {
         return isActivate;
     }
@@ -351,22 +350,28 @@ public class QueryEngine implements Engine {
     /**
      * This method is called by a workflow where this engine is submitted
      */
+    @Override
     public void init() {
         isWorkflow = true;
     }
 
+    @Override
     public void remove() {
     }
 
+    @Override
     public void onDelete() {
     }
 
+    @Override
     public void onInsert(Node gNode, Edge edge) {
     }
 
+    @Override
     public void onClear() {
     }
 
+    @Override
     public int type() {
         return Engine.QUERY_ENGINE;
     }

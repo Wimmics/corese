@@ -33,7 +33,7 @@ public class ManagerImpl implements Manager {
     static final int MOVE = 1;
     static final int ADD = 2;
     
-    private Level level = Level.DEFAULT;
+    private Level level = Level.USER_DEFAULT;
 
     public ManagerImpl(GraphManager gm) {
         this.gm = gm;

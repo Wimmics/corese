@@ -111,7 +111,7 @@ public class RuleEngine implements Engine, Graphable {
     private Context context;
     private ProcessVisitor visitor;
     private String base;
-    private Level level = Level.DEFAULT;
+    private Level level = Level.USER_DEFAULT;
     
     public enum Profile {
         

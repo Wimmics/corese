@@ -79,12 +79,12 @@ function us:format(acons, awhere, ind) {
 
 @public
 function us:where(idcons, idwhere) {
-    st:format("%s us:where %s . \n\n", idcons, idwhere),
+    st:format("%s us:where %s . \n\n", idcons, idwhere)
 }
 
 @public
 function us:where(name, idcons, idwhere) {
-    st:format("graph %s {%s us:where %s} \n\n", st:turtle(name), idcons, idwhere),
+    st:format("graph %s {%s us:where %s} \n\n", st:turtle(name), idcons, idwhere)
 }
 
 @public

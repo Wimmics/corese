@@ -7,6 +7,10 @@
 @beforeShacl
 function us:beforeshacl(focus) {
     xt:print("@beforeShacl");
+    #sh:shexSemantics(true);
+    #sh:setdsp(true);
+    # additional messages for sh:node elements
+    #sh:setup(sh:detail, true);
     us:prettyfocus(focus)
 }
 
@@ -21,7 +25,7 @@ function us:aftershacl(g) {
 @pathShacl
 function us:shaclpath(sh, nodeList, path, lst1, lst2, lst3, lst4) {
     xt:print("path:", sh, path);
-    xt:print("node:", xt:size(nodeList));
+    xt:print("node:", if (coalesce(xt:size(nodeList) <= 5, true), nodeList, xt:size(nodeList)));
     map(us:prettycst, xt:list(lst1, lst2, lst3, lst4));
     xt:print()
 }

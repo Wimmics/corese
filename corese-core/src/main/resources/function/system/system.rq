@@ -3,9 +3,6 @@ prefix ag:  <function://fr.inria.corese.core.extension.Agent>
 
 @public {
 
-function xt:httpget(q) {
-    fun:httpget(q)
-}
 
 # return AST of query OR parse function URI
 function xt:parse(q) {

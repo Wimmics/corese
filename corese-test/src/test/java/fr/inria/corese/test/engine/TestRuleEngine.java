@@ -26,6 +26,7 @@ import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.Access;
 import java.io.IOException;
 import java.util.Date;
 import org.junit.AfterClass;
@@ -175,15 +176,17 @@ public class TestRuleEngine {
        
      
       @Test
-    public void testOWLRL() throws EngineException, IOException {
+    public void testOWLRL() throws EngineException, IOException, LoadException {
         GraphStore gs = GraphStore.create();
         QueryProcess exec = QueryProcess.create(gs);
         Load ld = Load.create(gs);
+        //ld.setLevel(Access.Level.USER);
         try {
             ld.parse(data + "template/owl/data/primer.owl");
             ld.parse(data + "owlrule/owlrllite.rul");
         } catch (LoadException ex) {
             System.out.println(ex);
+            throw ex;
         }
         RuleEngine re = ld.getRuleEngine();
         Date d1 = new Date();

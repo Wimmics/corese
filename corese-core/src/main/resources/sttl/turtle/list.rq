@@ -16,7 +16,7 @@ where {
   filter (?r != rdf:nil)
 
   bind (
-  (st:get(st:reference, true)  
+  ((st:get(st:reference, true) && not exists {?e rdf:first ?f})  
     ||
     (isBlank(?e) && 
         (

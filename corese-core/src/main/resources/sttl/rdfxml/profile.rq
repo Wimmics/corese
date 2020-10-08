@@ -52,11 +52,11 @@ function st:display(?x){
       if (?profile = st:null){ 
         str(?x) 
       }
-      else if (st:lod(?x) || coalesce(st:getprofile(?x) = st:lod, false) ){
+      else if (st:lod(?x) || coalesce(funcall(st:getprofile, ?x) = st:lod, false) ){
         st:call-template(st:link, str(?x), str(?x))
       }
       else {
-        st:call-template(st:link, coalesce(st:pplink(us:prepare(?x)), us:prepare(?x)), str(?x))
+        st:call-template(st:link, coalesce(funcall(st:pplink, us:prepare(?x)), us:prepare(?x)), str(?x))
       }     
     }
 }

@@ -25,9 +25,9 @@ where {
     group by ?q ?p ?t
   }
 
-  ?b owl:onProperty ?p ;
-     ?q ?t ;
-     a ?tb
+  ?b ?q ?t ; 
+    owl:onProperty ?p ;
+    a ?tb
   
   filter(?b != ?y)
   ?a ?r ?b

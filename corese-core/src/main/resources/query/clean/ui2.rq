@@ -24,9 +24,9 @@ where {
     group by ?ui ?c1 ?c2
   }
   
-  ?b ?ui ?b1
   ?b1 rdf:first ?c1 ; rdf:rest ?b2
   ?b2 rdf:first ?c2 ; rdf:rest rdf:nil
+  ?b ?ui ?b1
   filter(?b != ?y)
   
   ?a ?r ?b

@@ -6,7 +6,7 @@ template st:graph {
   format {
   """graph %s {%s}"""
   
-  xt:turtle(?g)
+  st:turtle(?g)
   box {
        st:apply-templates-with-graph(<http://ns.inria.fr/sparql-template/turtle#main>, ?g) 
     }

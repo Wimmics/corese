@@ -270,15 +270,15 @@ public class Transformer implements TransformProcessor {
         return create(Graph.create(), p);
     }
     
-    public static String turtle(Graph g) {
+    public static String turtle(Graph g) throws EngineException {
         return create(g, TURTLE).transform();
     }
     
-    public static String rdfxml(Graph g) {
+    public static String rdfxml(Graph g) throws EngineException {
         return create(g, RDFXML).transform();
     }
     
-    public static String json(Graph g) {
+    public static String json(Graph g) throws EngineException {
         return create(g, JSON).transform();
     }
 
@@ -323,7 +323,7 @@ public class Transformer implements TransformProcessor {
         return t;
     }
 
-    public String transform() {
+    public String transform() throws EngineException {
         IDatatype dt = process();
         if (dt == null) {
             return null;
@@ -331,7 +331,7 @@ public class Transformer implements TransformProcessor {
         return dt.getLabel();
     }
 
-    public String stransform() {
+    public String stransform() throws EngineException {
         String s = transform();
         if (s == null) {
             return "";
@@ -342,7 +342,7 @@ public class Transformer implements TransformProcessor {
     /**
      * URI of the RDF graph to transform
      */
-    public String transform(String uri) throws LoadException {
+    public String transform(String uri) throws LoadException, EngineException {
         Graph g = Graph.create();
         Load ld = Load.create(g);
         ld.parse(uri);
@@ -350,11 +350,11 @@ public class Transformer implements TransformProcessor {
         return transform();
     }
 
-    public void transform(InputStream in, OutputStream out) throws LoadException, IOException {
+    public void transform(InputStream in, OutputStream out) throws LoadException, IOException, EngineException {
         transform(in, out, Load.TURTLE_FORMAT);
     }
 
-    public void transform(InputStream in, OutputStream out, int format) throws LoadException, IOException {
+    public void transform(InputStream in, OutputStream out, int format) throws LoadException, IOException, EngineException {
         Graph g = Graph.create();
         Load ld = Load.create(g);
         ld.parse(in, format);
@@ -610,11 +610,22 @@ public class Transformer implements TransformProcessor {
 
     @Override
     public String toString() {
-        return transform();
+        try {
+            return transform();
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage());
+            return "";
+        }
     }
 
     public StringBuilder toStringBuilder() {
-        IDatatype dt = process();
+        IDatatype dt;
+        try {
+            dt = process();
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage()); 
+            return new StringBuilder();
+        }
         return dt.getStringBuilder();
     }
 
@@ -642,18 +653,18 @@ public class Transformer implements TransformProcessor {
      * Transform the whole graph (no focus node) Apply template st:start, if any
      * Otherwise, apply the first template that matches without bindings.
      */
-    public IDatatype process() {
+    public IDatatype process() throws EngineException {
         return process(null, false, null, null, null);
     }
     
-    public IDatatype process(Binding b) {
+    public IDatatype process(Binding b) throws EngineException {
         if (b != null) {
             setBinding(b);
         }
         return process(null, false, null, null, (b==null)?null:Mapping.create(b));
     }
 
-    public IDatatype process(String temp) {
+    public IDatatype process(String temp) throws EngineException {
         return process(temp, false, null, null, null);
     }
 
@@ -662,7 +673,8 @@ public class Transformer implements TransformProcessor {
      * st:start template.
      */
     @Override
-    public IDatatype process(String temp, boolean all, String sep, Expr exp, Environment env) {
+    public IDatatype process(String temp, boolean all, String sep, Expr exp, Environment env) 
+    throws EngineException {
         boolean astart = isStarting();
         beforeTransformer(astart);
         count++;
@@ -705,13 +717,7 @@ public class Transformer implements TransformProcessor {
                 System.out.println(qq.getAST()); 
             }
             
-            Mappings map;
-            try {
-                map = exec.query(qq, m);
-            } catch (EngineException ex) {
-                logger.error(ex.getMessage());
-                map = Mappings.create(qq);
-            }
+            Mappings map = exec.query(qq, m);
             save(map);
             query = null;
             IDatatype res = getResult(map);
@@ -795,23 +801,23 @@ public class Transformer implements TransformProcessor {
         return query != null && query.getName() != null && query.getName().equals(STL_START);
     }
 
-    public IDatatype process(Node node) {
+    public IDatatype process(Node node) throws EngineException {
         return process((IDatatype) node.getValue());
     }
 
-    public IDatatype process(IDatatype dt) {
+    public IDatatype process(IDatatype dt) throws EngineException {
         return process(dt, null, null, false, null, null);
     }
 
-    public IDatatype process(IDatatype[] a) {
+    public IDatatype process(IDatatype[] a) throws EngineException {
         return process((a.length > 0) ? a[0] : null, a, null, false, null, null);
     }
 
-    public IDatatype template(String temp, IDatatype dt) {
+    public IDatatype template(String temp, IDatatype dt) throws EngineException {
         return process(dt, null, temp, false, null, null);
     }
     
-    public IDatatype process(String temp, IDatatype... ldt) {
+    public IDatatype process(String temp, IDatatype... ldt) throws EngineException {
         return process(temp, false, null, null, null, ldt[0], (ldt.length == 1) ? null : ldt);
     }
 
@@ -836,13 +842,15 @@ public class Transformer implements TransformProcessor {
      */
     
     public IDatatype process(IDatatype dt, IDatatype[] args, String temp,
-            boolean allTemplates, String sep, Expr exp) {
+            boolean allTemplates, String sep, Expr exp) throws EngineException {
         return process(temp, allTemplates, sep, exp, null, dt, args);
     }
 
     @Override
     public IDatatype process(String temp, boolean allTemplates, String sep,
-            Expr exp, Environment env, IDatatype dt, IDatatype[] args) {
+            Expr exp, Environment env, IDatatype dt, IDatatype[] args) 
+        throws EngineException
+    {
         count++;
         if (dt == null) {
             return EMPTY;
@@ -927,13 +935,7 @@ public class Transformer implements TransformProcessor {
                     share(bm, env);
                 }
 
-                Mappings map;
-                try {
-                    map = exec.query(qq, bm);
-                } catch (EngineException ex) {
-                    logger.error(ex.getMessage());  
-                    map = Mappings.create(qq);
-                }
+                Mappings map = exec.query(qq, bm);
                 save(map);
                 stack.visit(dt);
                 stack.pop();
@@ -1020,7 +1022,12 @@ public class Transformer implements TransformProcessor {
             if (dt.isBlank()) {
                 Transformer t = Transformer.create(graph, TURTLE);
                 t.setDebug(false);
-                String str = t.process(dt).getLabel();
+                String str;
+                try {
+                    str = t.process(dt).getLabel();
+                } catch (EngineException ex) {
+                    str = "";
+                }
                 if (!dt.getLabel().equals(str)) {
                     System.out.print("= " + str + " ");
                 }
@@ -1215,6 +1222,9 @@ public class Transformer implements TransformProcessor {
         return DatatypeMap.TRUE;
     }
 
+    /**
+     * funcall(name, dt) where name = st:default
+     */
     IDatatype eval(String name, IDatatype dt, IDatatype def, Environment env) {
         if (env != null && env.getQuery() != null) {
             Query q = env.getQuery();
@@ -1224,7 +1234,7 @@ public class Transformer implements TransformProcessor {
                 if (function != null) {
                     IDatatype dt1 = null;
                     try {
-                        dt1 = new Funcall(name).call((Interpreter) exec.getEvaluator(),
+                        dt1 = new Funcall(name).callWE((Interpreter) exec.getEvaluator(),
                                 (Binding) env.getBind(), env, exec.getProducer(), (Function) function, param(dt));
                     } catch (EngineException ex) {
                         logger.error(ex.getMessage());

@@ -119,7 +119,11 @@ public class Start {
         if (owl){
             RuleEngine re = RuleEngine.create(g);
             re.setProfile(RuleEngine.OWL_RL);
-            re.process();
+            try {
+                re.process();
+            } catch (EngineException ex) {
+                Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
 
         Date d2 = new Date();
@@ -170,7 +174,11 @@ public class Start {
 
         for (String stl : sttl) {
             Transformer t = Transformer.create(g, stl);
-            System.out.println(t.transform());
+            try {
+                System.out.println(t.transform());
+            } catch (EngineException ex) {
+                Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     

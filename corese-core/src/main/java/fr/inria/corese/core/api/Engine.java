@@ -2,6 +2,7 @@ package fr.inria.corese.core.api;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.exceptions.EngineException;
 
 /**
  * 
@@ -24,7 +25,7 @@ public interface Engine {
 	void init();
 
 	// return true if some new entailment have been performed 
-	boolean process();
+	boolean process() throws EngineException ;
 	
 	// remove entailments
 	void remove();

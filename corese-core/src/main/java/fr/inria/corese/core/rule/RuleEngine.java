@@ -45,7 +45,9 @@ import java.util.Comparator;
 import java.util.Date;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.sparql.triple.function.core.UUIDFunction;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 
@@ -151,22 +153,17 @@ public class RuleEngine implements Engine, Graphable {
         p.setListPath(true);
     }
     
-    public void setProfile(Profile p) {
+    public void setProfile(Profile p) throws LoadException {
         profile = p;
         loadProfile(p);
     }
     
-    void loadProfile(Profile p) {
+    void loadProfile(Profile p) throws LoadException {
         switch (p) {
             case OWLRL:
             case OWLRL_LITE:
             case OWLRL_EXT:
-               try {
-                    load(p.getPath());
-                } catch (LoadException ex) {
-                    logger.error(ex.getMessage());
-                }
-                break;   
+               load(p.getPath());
         }
     }
     
@@ -174,11 +171,16 @@ public class RuleEngine implements Engine, Graphable {
      * setProfile(OWL_RL) load OWL RL rule base and clean the OWL/RDF graph
      * 
      */
-    public void setProfile(int n) {
+    public void setProfile(int n)  {
+        try {
         switch (n) {
             case OWL_RL:        setProfile(OWLRL)  ; break;              
             case OWL_RL_LITE:   setProfile(OWLRL_LITE)  ; break;
             case OWL_RL_EXT:    setProfile(OWLRL_EXT)  ; break;                
+        }
+        }
+        catch (LoadException e) {
+            logger.error(e.getMessage());
         }
     }
     
@@ -331,14 +333,32 @@ public class RuleEngine implements Engine, Graphable {
     }
 
     @Override
-    public boolean process() {
+    public boolean process() throws EngineException {
+        return process(Binding.create());
+    }
+    
+    public boolean process(Binding b) throws EngineException {
         System.out.println("RuleEngine process: " + getPath());
-        before();
+        before(b);
         int size = graph.size();
-        entail();
+        Mapping m = Mapping.create(b);
+        entail(m);
         after();
         return graph.size() > size;
     }
+    
+    /**
+     * Process Rule engine without interfering with Graph Workflow if any, 
+     * in particular with RDFS entailment when cleaning the Ontology
+     * @return 
+     */
+    public boolean processWithoutWorkflow() throws EngineException {
+        boolean status = graph.getWorkflow().isActivate();
+        graph.getWorkflow().setActivate(false);
+        boolean b = process();
+        graph.getWorkflow().setActivate(status);
+        return b;
+    }    
     
     public IDatatype getPath() {
         String str = getProfile().getPath();
@@ -348,9 +368,10 @@ public class RuleEngine implements Engine, Graphable {
         return DatatypeMap.newResource(str);
     }
     
-    void before() {
+    void before(Binding b) {
         try {
-            setVisitor(QuerySolverVisitorRule.create(this, getQueryProcess().getEval()));
+            setVisitor(QuerySolverVisitorRule.create(this, getQueryProcess().getEval()));            
+            getVisitor().getProcessor().getEnvironment().setBind(b);
             getVisitor().init();
             getVisitor().beforeEntailment(getPath());
         } catch (EngineException ex) {
@@ -368,40 +389,29 @@ public class RuleEngine implements Engine, Graphable {
         getVisitor().afterEntailment(getPath());
     }
     
-    /**
-     * Process Rule engine without interfering with Graph Workflow if any, 
-     * in particular with RDFS entailment when cleaning the Ontology
-     * @return 
-     */
-    public boolean processWithoutWorkflow() {
-        boolean status = graph.getWorkflow().isActivate();
-        graph.getWorkflow().setActivate(false);
-        boolean b = process();
-        graph.getWorkflow().setActivate(status);
-        return b;
-    }
 
-    public int process(Graph g) {
-        set(g);
-        if (exec == null) {
-            set(QueryProcess.create(g));
-        }
-        return entail();
-    }
 
-    public int process(Graph g, QueryProcess q) {
-        set(g);
-        set(q);
-        return entail();
-    }
-
-    public int process(QueryProcess q) {
-        if (graph == null) {
-            set(Graph.create());
-        }
-        set(q);
-        return entail();
-    }
+//    public int process(Graph g) {
+//        set(g);
+//        if (exec == null) {
+//            set(QueryProcess.create(g));
+//        }
+//        return entail();
+//    }
+//
+//    public int process(Graph g, QueryProcess q) {
+//        set(g);
+//        set(q);
+//        return entail();
+//    }
+//
+//    public int process(QueryProcess q) {
+//        if (graph == null) {
+//            set(Graph.create());
+//        }
+//        set(q);
+//        return entail();
+//    }
 
     public Graph getRDFGraph() {
         return graph;
@@ -550,14 +560,14 @@ public class RuleEngine implements Engine, Graphable {
         r.setProvenance(prov);
     }
 
-    public int synEntail() {
-        try {
-            graph.writeLock().lock();
-            return entail();
-        } finally {
-            graph.writeLock().unlock();
-        }
-    }
+//    public int synEntail() {
+//        try {
+//            graph.writeLock().lock();
+//            return entail();
+//        } finally {
+//            graph.writeLock().unlock();
+//        }
+//    }
 
     
     
@@ -565,19 +575,18 @@ public class RuleEngine implements Engine, Graphable {
     /**
      * Process rule base at saturation PRAGMA: not synchronized on write lock
      */
-    public int entail() {
+    public int entail(Mapping m) throws EngineException {
         begin();
         int start = graph.size();
         try {
-            infer();
+            infer(m);
             if (trace){
                 //traceSize();
             }
             return graph.size() - start;
         }
         catch (OutOfMemoryError e){
-            logger.error("Out of Memory: Rule Engine");
-            return graph.size() - start;
+            throw new EngineException(e);
         }
         finally {
             end();
@@ -629,7 +638,7 @@ public class RuleEngine implements Engine, Graphable {
     
     
      
-    void infer(){
+    void infer(Mapping m) throws EngineException{
         int size = graph.size(),
                 start = size;
         loop = 0;
@@ -681,7 +690,7 @@ public class RuleEngine implements Engine, Graphable {
                     if (loop == 0) {
                         // run all rules, add all solutions
                         nt = record(rule, loopIndex, loop);
-                        nbres = process(rule, nt, loop, loopIndex,  nbrule);
+                        nbres = process(rule, m, nt, loop, loopIndex,  nbrule);
                         if (isClosure(rule)){
                             // rule run at saturation: record nb edge after saturation
                             nt = record(rule, loopIndex+1, loop);
@@ -704,7 +713,7 @@ public class RuleEngine implements Engine, Graphable {
                             }
                             
                             rw.start(ot, nt);
-                            nbres = process(rule, nt, loop, loopIndex,  nbrule);
+                            nbres = process(rule, m, nt, loop, loopIndex,  nbrule);
                             if (isClosure(rule)){
                                 // rule run at saturation: record nb edge after execution
                                 nt = record(rule, loopIndex+1, loop);
@@ -721,7 +730,7 @@ public class RuleEngine implements Engine, Graphable {
 
                     rw.finish(rule);
                 } else {
-                    nbres = process(rule, null, loop, -1,  nbrule);
+                    nbres = process(rule, m, null, loop, -1,  nbrule);
                     nbrule++;
                 }
 
@@ -827,7 +836,7 @@ public class RuleEngine implements Engine, Graphable {
     /**
      * Process one rule 
      */
-    int process(Rule rule, Record nt,  int loop, int loopIndex,  int nbr) {
+    int process(Rule rule, Mapping m, Record nt,  int loop, int loopIndex,  int nbr) throws EngineException {
         
         if (trace){
            System.out.println(loop + " : " + nbr + " : " + rule.getIndex() + " " + ((rw!=null)?rw.isNew():""));
@@ -869,12 +878,12 @@ public class RuleEngine implements Engine, Graphable {
             clos.closure(loop, loopIndex, index);
         }
         else {
-            process(rule, cons);
+            process(rule, m, cons);
             
             if (graph.size() > start && isConstruct 
                     && isOptTransitive() && rule.isAnyTransitive()){ 
                  // optimization for transitive rules: eval at saturation
-                 transitive(rule, cons);               
+                 transitive(rule, m, cons);               
             }
         }
 
@@ -903,7 +912,7 @@ public class RuleEngine implements Engine, Graphable {
        for evaluating the where part, the first query edge matches new edges only
        Producer will consider list of edges created at preceeding loop.
     */
-    void transitive(Rule rule, Construct cons) {
+    void transitive(Rule rule, Mapping m, Construct cons) throws EngineException {
         rule.setClosure(true);
         Query qq = rule.getQuery();
         boolean go = true;
@@ -915,7 +924,7 @@ public class RuleEngine implements Engine, Graphable {
             cons.setInsertList(new ArrayList<>());
             int size = graph.size();
 
-            process(rule, cons);
+            process(rule, m, cons);
 
             if (graph.size() == size) {
                 qq.setEdgeList(null);
@@ -939,22 +948,18 @@ public class RuleEngine implements Engine, Graphable {
    
     
     // process rule
-    void process(Rule r, Construct cons) {
-        try {
-            Query qq = r.getQuery();
-            getVisitor().beforeRule(qq);
-            Mappings map = exec.query(qq, null);
-            if (cons.isBuffer()) {
-                // cons insert list contains only new edge that do not exist
-                graph.addOpt(r.getUniquePredicate(), cons.getInsertList());
-            } else {
-                // create edges from Mappings as usual
-                cons.insert(map, null);
-            }
-            getVisitor().afterRule(qq, cons.isBuffer() ? cons.getInsertList() : map);
-        } catch (EngineException ex) {
-            logger.error(ex.getMessage());
+    void process(Rule r, Mapping m, Construct cons) throws EngineException {
+        Query qq = r.getQuery();
+        getVisitor().beforeRule(qq);
+        Mappings map = exec.query(qq, m);
+        if (cons.isBuffer()) {
+            // cons insert list contains only new edge that do not exist
+            graph.addOpt(r.getUniquePredicate(), cons.getInsertList());
+        } else {
+            // create edges from Mappings as usual
+            cons.insert(map, null);
         }
+        getVisitor().afterRule(qq, cons.isBuffer() ? cons.getInsertList() : map);
     }
     
     

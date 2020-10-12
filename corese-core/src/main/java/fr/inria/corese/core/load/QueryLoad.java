@@ -15,6 +15,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.query.QueryEngine;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import org.slf4j.Logger;
@@ -109,15 +110,6 @@ public class QueryLoad {
         return true;
     }
     
-    boolean isURL2(String name) {
-        for (String s : PROTOCOLS) {
-            if (name.startsWith(s)) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
     @Deprecated
     public String read(InputStream stream) throws IOException {
         return read(new InputStreamReader(stream));
@@ -149,7 +141,10 @@ public class QueryLoad {
         String query = "", str = "";
         Reader fr;
         try {
-            if (isURL(name)) {
+            if (NSManager.isResource(name)) {
+                fr = new InputStreamReader(getClass().getResourceAsStream(NSManager.stripResource(name)));
+            }
+            else if (isURL(name)) {
                 URL url = new URL(name);
                 fr = new InputStreamReader(url.openStream());
             } else {

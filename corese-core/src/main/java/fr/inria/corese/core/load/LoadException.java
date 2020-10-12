@@ -1,5 +1,6 @@
 package fr.inria.corese.core.load;
 
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 
 public class LoadException extends Exception {
@@ -100,6 +101,21 @@ public class LoadException extends Exception {
     
     public SafetyException getSafetyException() {
         return (SafetyException) getException();
+    }
+    
+     public boolean isEngineException() {
+        return getException() != null && getException() instanceof EngineException;
+    }
+    
+    public EngineException getEngineException() {
+        return (EngineException) getException();
+    }
+    
+    public EngineException getCreateEngineException() {
+        if (isEngineException()) {
+            return getEngineException();
+        }
+        return new EngineException(this);
     }
 
 }

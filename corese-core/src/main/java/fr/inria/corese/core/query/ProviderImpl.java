@@ -36,6 +36,11 @@ import fr.inria.corese.core.load.Service;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -124,16 +129,19 @@ public class ProviderImpl implements Provider {
      * If there is a QueryProcess for this URI, use it Otherwise send query to
      * spaql endpoint If endpoint fails, use default QueryProcess if it exists
      */
-//    public Mappings service(Node serv, Exp exp, Environment env) {
-//        return service(serv, exp, null, env);
-//    }
-//    
-//    public Mappings service(Node serv, Exp exp, Mappings lmap, Environment env) {
-//        return service(serv, exp, lmap, env, null);
-//    }
-
     @Override
-    public Mappings service(Node serv, Exp exp, Mappings lmap, Eval eval) {
+    public Mappings service(Node serv, Exp exp, Mappings lmap, Eval eval) 
+            throws EngineException {
+        Binding b = (Binding) eval.getEnvironment().getBind();
+        if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel(), serv.getLabel())) {
+            throw new SafetyException(TermEval.SERVICE_MESS, serv.getLabel());
+        }
+        return serviceBasic(serv, exp, lmap, eval);
+    }
+    
+    public Mappings serviceBasic(Node serv, Exp exp, Mappings lmap, Eval eval) 
+            throws EngineException
+    {
         Query qq = eval.getEnvironment().getQuery();
         Exp body = exp.rest();
         Query q = body.getQuery();
@@ -150,7 +158,7 @@ public class ProviderImpl implements Provider {
             try {
                 map = globalSend(serv, q, exp, lmap, eval);
             } catch (EngineException ex) {
-                java.util.logging.Logger.getLogger(ProviderImpl.class.getName()).log(Level.SEVERE, null, ex);
+                logger.error(ex.getMessage());
             }
             if (map != null) {
                 return map;
@@ -173,7 +181,7 @@ public class ProviderImpl implements Provider {
             map = exec.query(ast);
             return map;
         } catch (EngineException ex) {
-            java.util.logging.Logger.getLogger(ProviderImpl.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
         }
         return new Mappings();
     }

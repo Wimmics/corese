@@ -23,6 +23,8 @@ import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.update.ASTUpdate;
 import fr.inria.corese.sparql.triple.update.Basic;
 import fr.inria.corese.sparql.triple.update.Update;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * SPARQL Update
@@ -30,6 +32,7 @@ import fr.inria.corese.sparql.triple.update.Update;
  * @author Olivier Corby, INRIA, I3S 2020
  */
 public class QueryProcessUpdate { 
+    private static Logger logger = LoggerFactory.getLogger(QueryProcessUpdate.class);
     
     static boolean reentrant = false;
     private boolean debug = false;
@@ -239,7 +242,11 @@ public class QueryProcessUpdate {
         RuleEngine re = RuleEngine.create(getGraph());
         re.setDebug(isDebug());
         re.defRule(q);
-        getGraph().process(re);
+        try {
+            getGraph().process(re);
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage());
+        }
         return Mappings.create(q);
     }
 

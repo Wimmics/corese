@@ -48,6 +48,7 @@ public class Parameter {
     private static final String EVENT_TRANS = "?trans";
     private static final String EVENT_SOLVER = "?solver";
     private static final String EVENT_SERVER = "?server";
+    private static final String LEVEL = "?level";
     
     
     private static final String SOLVER_USER = COS+"user";
@@ -58,11 +59,12 @@ public class Parameter {
     public static boolean PROFILE_EVENT = false;
     
     String q = 
-            "select ?event ?profile ?param ?solver ?rule ?trans ?server "
+            "select ?event ?profile ?param ?solver ?rule ?trans ?server ?level "
             + "(aggregate(distinct ?acc) as ?accept) "
             + "(aggregate(distinct ?rej) as ?reject) "
             + "(aggregate(distinct ?fun) as ?function) "
             + "where {"
+            + "optional { [] cos:level ?level }"
             + "optional { [] cos:accept ?acc ; cos:reject ?rej }"
             + "optional { [] cos:load ?fun }"
             + "optional { [] cos:event ?ev "
@@ -113,12 +115,14 @@ public class Parameter {
     }
     
     void process(Mappings map) {
+        
         for (Mapping m : map) {
             for (Node var : map.getSelect()) {
                 IDatatype value = (IDatatype) map.getValue(var);
                 if (value != null) {
                     switch (var.getLabel()) {
                         case FUNCTION_IMPORT:
+                            System.out.println("param: " + var + " " + value);
                             importFunction(value);
                             break;
                     }
@@ -172,12 +176,21 @@ public class Parameter {
                             QuerySolverVisitorTransformer.setVisitorName(label.equals(SOLVER_USER)
                                     ?QuerySolverVisitorTransformerUser.class.getName():label);
                             break;
+                        case LEVEL: 
+                            // ?level = Level.USER
+                            Access.Level.USER_DEFAULT = level(label);
                     }
                 }
             }
         }
     }
     
+    Access.Level level(String level) {
+        switch (level) {
+            case SOLVER_USER: return Access.Level.USER;
+            default: return Access.Level.DEFAULT;
+        }
+    }
     
     void namespace(IDatatype dt, boolean b) {
         for (IDatatype ns : dt.getList()) {

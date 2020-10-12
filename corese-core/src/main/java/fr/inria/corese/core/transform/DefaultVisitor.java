@@ -11,6 +11,9 @@ import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Transformer Visitor to be used in a transformation
@@ -131,11 +134,15 @@ public class DefaultVisitor implements TemplateVisitor {
     }
     
     void trace(IDatatype name, IDatatype obj) {
-        Transformer t = Transformer.create(graph, getTransform());
-        IDatatype dt = t.process(obj);
-        System.out.println(name);
-        System.out.println((dt != null) ? dt.getLabel() : obj);
-        System.out.println();
+        try {
+            Transformer t = Transformer.create(graph, getTransform());
+            IDatatype dt = t.process(obj);
+            System.out.println(name);
+            System.out.println((dt != null) ? dt.getLabel() : obj);
+            System.out.println();
+        } catch (EngineException ex) {
+            Logger.getLogger(DefaultVisitor.class.getName()).log(Level.SEVERE, null, ex);
+        }
     }
 
     
@@ -190,17 +197,23 @@ public class DefaultVisitor implements TemplateVisitor {
         Edge ent = visitedGraph.add(obj, DatatypeMap.newResource(RDF.TYPE), DatatypeMap.newResource(name));
     }
     
-    StringBuilder toSB(){
+    StringBuilder toSB() {
         StringBuilder sb = new StringBuilder();
         Transformer t = Transformer.create(graph, getTransform());
-        for (IDatatype dt : list){
-            IDatatype res = t.process(dt);
-            if (res != null){
-                sb.append(res.getLabel());
-                sb.append(NL).append(NL);
+        for (IDatatype dt : list) {
+            IDatatype res;
+            try {
+                res = t.process(dt);
+                if (res != null) {
+                    sb.append(res.getLabel());
+                    sb.append(NL).append(NL);
+                }
+            } catch (EngineException ex) {
+                Logger.getLogger(DefaultVisitor.class.getName()).log(Level.SEVERE, null, ex);
             }
+
         }
-        if (visitedGraph.size() > 0){
+        if (visitedGraph.size() > 0) {
             sb.append(toStringGraph());
         }
         return sb;

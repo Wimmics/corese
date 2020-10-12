@@ -20,6 +20,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.RuleLoad;
+import java.util.logging.Level;
 
 /**
  * Pipeline described using RDF, interpreted using SPARQL queries
@@ -331,7 +332,11 @@ public class Pipe {
 	void rule(String q){
 		RuleEngine re = parseRule(q);
 		if (re != null){
-			re.process();
+                    try {
+                        re.process();
+                    } catch (EngineException ex) {
+                        java.util.logging.Logger.getLogger(Pipe.class.getName()).log(Level.SEVERE, null, ex);
+                    }
 		}
 	}
 		

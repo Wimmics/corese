@@ -10,6 +10,8 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.transform.Transformer;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.slf4j.LoggerFactory;
 
@@ -69,16 +71,22 @@ public class QueryManager {
      * Type checker written using templates
      * Operates on query graph union target graph
      */
-    void typecheck(Graph g){
+    void typecheck(Graph g) {
         QueryProcess qp = QueryProcess.create(g, true);
         qp.add(graph);
         Transformer pp = Transformer.create(qp, Transformer.RDFTYPECHECK);
-        Node res = pp.process();
-        if (! res.isBlank()){
-            System.out.println("Type Check:\n" + res.getLabel());
+        Node res;
+        try {
+            res = pp.process();
+            if (!res.isBlank()) {
+                System.out.println("Type Check:\n" + res.getLabel());
+            }
+        } catch (EngineException ex) {
+
         }
+
     }
-    
+
     /**
      * Process type check queries
      */

@@ -178,7 +178,7 @@ public class PluginTransform implements ComputerProxy {
             }
             return t;
         } catch (LoadException ex) {
-            throw new EngineException(ex);
+            throw ex.getCreateEngineException();
         }
 
     }

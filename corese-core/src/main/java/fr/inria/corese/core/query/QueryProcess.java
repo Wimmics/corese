@@ -1099,7 +1099,7 @@ public class QueryProcess extends QuerySolver {
             }
             b.setAccessLevel(c.getLevel());
         }
-        return new Funcall(name).call((Interpreter) eval.getEvaluator(),
+        return new Funcall(name).callWE((Interpreter) eval.getEvaluator(),
                 b, eval.getMemory(), eval.getProducer(), function, param);
     }
 
@@ -1271,10 +1271,13 @@ public class QueryProcess extends QuerySolver {
         return imports(path, true);
     }
     
+    // bypass access control
     public boolean imports(String path, boolean pub) throws EngineException {
         String qp = "@public  @import <%s> select where {}";
         String ql = "@import <%s> select where {}";
+        boolean b = Access.skip(true);        
         Query q = compile(String.format((pub)?qp:ql, path));
+        Access.skip(b);
         return ! q.isImportFailure();
     }
 

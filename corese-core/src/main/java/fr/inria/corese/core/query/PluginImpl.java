@@ -75,6 +75,7 @@ import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
@@ -255,7 +256,7 @@ public class PluginImpl
                  return pas.eval(exp, env, p);
                  
              case XT_ENTAILMENT:
-                 return entailment(env, p, null);
+                 //return entailment(env, p, null);
                  
              case STL_INDEX:
                 return index(env, p);    
@@ -367,7 +368,7 @@ public class PluginImpl
                  return exists(env, p, null, dt, null);    
                                  
              case XT_ENTAILMENT:
-                 return entailment(env, p, dt);
+                 //return entailment(env, p, dt);
                                          
              default:
                  //return pt.function(exp, env, p, dt);
@@ -826,10 +827,17 @@ public class PluginImpl
     }
        
     @Override
-    public IDatatype entailment(Environment env, Producer p, IDatatype dt) { 
+    public IDatatype entailment(Environment env, Producer p, IDatatype dt) throws EngineException { 
+        Binding bind = (Binding) env.getBind();
         Graph g = getGraph(p);
-        if (dt != null && dt.isPointer() && dt.getPointerObject().pointerType() == GRAPH){
-            g = (Graph) dt.getPointerObject().getTripleStore();
+        String uri = null;
+        if (dt != null) {
+            if (dt.pointerType() == GRAPH){
+                g = (Graph) dt.getPointerObject().getTripleStore();
+            }
+            else {
+                uri = dt.getLabel();
+            }
         }
         boolean b = env.getEval().getSPARQLEngine().isSynchronized();
         if (g.isReadLocked() && ! b) {
@@ -838,11 +846,40 @@ public class PluginImpl
             logger.info("Graph locked, perform entailment on copy");
             g = g.copy();
         }
-        RuleEngine re = RuleEngine.create(g);
-        re.setSynchronized(b);
-        re.setProfile(RuleEngine.OWL_RL);
-        re.process();
+        
+        RuleEngine re = create(g, uri, b, bind.getAccessLevel());
+        re.process(bind);
         return DatatypeMap.createObject(g);
+    }
+    
+    RuleEngine create(Graph g, String uri, boolean b, Level level) throws EngineException {
+        if (uri == null) {
+            return  create(g, b);
+        } else {
+            return  create(g, uri, level);
+        }
+    }
+    
+    RuleEngine create(Graph g, boolean b) throws EngineException  {
+        try {
+            RuleEngine re = RuleEngine.create(g);
+            re.setSynchronized(b);
+            re.setProfile(RuleEngine.Profile.OWLRL);
+            return re;
+        } catch (LoadException ex) {
+            throw ex.getCreateEngineException();
+        }
+    }
+    
+    RuleEngine create(Graph g, String uri, Level level) throws EngineException  {
+        try {
+            Load ld = Load.create(g);
+            ld.setLevel(level);
+            ld.parse(uri, Load.RULE_FORMAT);
+            return ld.getRuleEngine();
+        } catch (LoadException ex) {
+            throw ex.getCreateEngineException();
+        }
     }
     
     /**

@@ -211,29 +211,32 @@ public class ShapeWorkflow extends SemanticWorkflow {
     public Graph process(Graph g, Graph s, boolean graph, IDatatype... param) {
         Transformer t = Transformer.create(g, SHAPE_TRANS);
         t.getContext().export(SHAPE_NAME, DatatypeMap.createObject(s));
-
-        if (graph) {
-            // check whole graph
-            if (param.length == 0) {
-                // whole shape graph
-                t.process();
+        try {
+            if (graph) {
+                // check whole graph
+                if (param.length == 0) {
+                    // whole shape graph
+                    t.process();
+                } else {
+                    // param = {shape}
+                    //t.template(MAIN, param[0]);
+                    t.process(MAIN, dtgraph, param[0]);
+                }
             } else {
-                // param = {shape}
-                //t.template(MAIN, param[0]);
-                t.process(MAIN, dtgraph, param[0]);
+                // check node in graph
+                switch (param.length) {
+                    case 1:
+                        // param = {node}
+                        t.process(MAIN, dtnode, param[0]);
+                        break;
+                    case 2:
+                        // TBD: param = {node, shape}
+                        t.process(MAIN, dtnode, param[0], param[1]);
+                        break;
+                }
             }
-        } else {
-            // check node in graph
-            switch (param.length) {
-                case 1:
-                    // param = {node}
-                    t.process(MAIN, dtnode, param[0]);
-                    break;
-                case 2:
-                    // TBD: param = {node, shape}
-                    t.process(MAIN, dtnode, param[0], param[1]);
-                    break;
-            }
+        } catch (EngineException e) {
+            logger.error(e.getMessage());
         }
 
         if (t.getVisitor() == null || t.getVisitor().visitedGraph() == null) {
@@ -290,9 +293,14 @@ public class ShapeWorkflow extends SemanticWorkflow {
             res = success();
         }
         else {
-            //res = data.getTemplateResult();
-            Transformer t = Transformer.create(data.getVisitedGraph(), resultFormat);
-            res = t.transform();
+            try {
+                //res = data.getTemplateResult();
+                Transformer t = Transformer.create(data.getVisitedGraph(), resultFormat);
+                res = t.transform();
+            } catch (EngineException ex) {
+                logger.error(ex.getMessage());
+                res = "";
+            }
         }
         return res;
     }

@@ -14,6 +14,9 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.TreeMap;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Given two bnodes representing OWL expressions
@@ -87,14 +90,15 @@ public class MatchBNode {
     }
     
     void trace(Node n1, Node n2) {
-        Transformer t = Transformer.create(graph, Transformer.TURTLE);
-        System.out.println(n1 + " " + t.process(n1).getLabel());
-        System.out.println(n2 + " " + t.process(n2).getLabel());
+            try {
+                Transformer t = Transformer.create(graph, Transformer.TURTLE);
+                System.out.println(n1 + " " + t.process(n1).getLabel());
+                System.out.println(n2 + " " + t.process(n2).getLabel());
 //        System.out.println("MBN: " + graph.getList(n1));
 //        System.out.println("MBN: " + graph.getList(n2));
-        System.out.println();
-         
-        
+System.out.println();
+
+
 //        if (b){
 //            List<Entity> l1 = g.getEdgeListSimple(n1);
 //            List<Entity> l2 = g.getEdgeListSimple(n2);
@@ -105,9 +109,12 @@ public class MatchBNode {
 //            for (Entity e :l2){
 //                System.out.print(e.getEdge().getEdgeNode() + " ");
 //            }
-//            System.out.println();        
+//            System.out.println();
 //            System.out.println();        
 //        }
+            } catch (EngineException ex) {
+                Logger.getLogger(MatchBNode.class.getName()).log(Level.SEVERE, null, ex);
+            }
     }
     
     

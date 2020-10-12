@@ -7,6 +7,7 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.api.Engine;
 import fr.inria.corese.core.logic.Entailment;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -62,7 +63,7 @@ public class Workflow implements Engine {
      * to perform inference
      */
     @Override
-    public synchronized boolean process() {
+    public synchronized boolean process() throws EngineException {
         boolean b = false;
         if (isAvailable()) {
             isIdle = false;
@@ -72,7 +73,7 @@ public class Workflow implements Engine {
         return b;
     }
 
-    public synchronized boolean process(Engine e) {
+    public synchronized boolean process(Engine e) throws EngineException {
         boolean b = false;
         if (isBasicAvailable()) {
             isIdle = false;
@@ -97,7 +98,7 @@ public class Workflow implements Engine {
     /**
      * Run submitted engines until no inference is performed
      */
-    boolean run() {
+    boolean run() throws EngineException {
         int count = 2;
         boolean isSuccess = false;
 
@@ -125,7 +126,7 @@ public class Workflow implements Engine {
     /**
      * Run engine and submitted engines until no inference is performed
      */
-    boolean run(Engine e) {
+    boolean run(Engine e) throws EngineException {
         int size = 0;
         boolean isSuccess = false;
         int count = 2;

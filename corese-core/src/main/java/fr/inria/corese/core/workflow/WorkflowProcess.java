@@ -19,10 +19,11 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
 import fr.inria.corese.kgram.api.core.PointerType;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.Date;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Root class
@@ -30,6 +31,7 @@ import java.util.List;
  *
  */
 public class WorkflowProcess implements AbstractProcess {
+    public static Logger logger = LoggerFactory.getLogger(WorkflowProcess.class);
     private Context context;
     private Dataset dataset;
     private Data data;

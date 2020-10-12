@@ -50,8 +50,10 @@ import java.util.Map;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.Collection;
+import java.util.logging.Level;
 
 /**
  * Graph Manager Edges are stored in an index An index is a table: predicate ->
@@ -815,11 +817,11 @@ public class Graph extends GraphObject implements
     /**
      * Process entailments
      */
-    public synchronized void process() {
+    public synchronized void process() throws EngineException {
         manager.process();
     }
 
-    public synchronized void process(Engine e) {
+    public synchronized void process(Engine e) throws EngineException {
         manager.process(e);
     }
 
@@ -1151,7 +1153,11 @@ public class Graph extends GraphObject implements
         }
 
         if (getEventManager().isEntail() && getWorkflow().isAvailable()) {
-            process();
+            try {
+                process();
+            } catch (EngineException ex) {
+                logger.error(ex.getMessage());
+            }
             getEventManager().setEntail(false);
             if (isDebug && getEventManager().isUpdate()) {
                 logger.info("Graph modified after entailment");

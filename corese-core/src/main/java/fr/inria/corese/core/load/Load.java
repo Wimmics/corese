@@ -848,15 +848,15 @@ public class Load
             engine = RuleEngine.create(graph);
         }
 
-        if (path.endsWith(LoadFormat.IRULE)) {
-            // individual rule
-            QueryLoad ql = QueryLoad.create();
-            String rule = ql.readWE(path);
-            if (rule != null) {
-                engine.addRule(rule);
-            }
-        } 
-        else {
+//        if (path.endsWith(LoadFormat.IRULE)) {
+//            // individual rule
+//            QueryLoad ql = QueryLoad.create();
+//            String rule = ql.readWE(path);
+//            if (rule != null) {
+//                engine.addRule(rule);
+//            }
+//        } 
+//        else {
             // rule base
             RuleLoad load = RuleLoad.create(engine);
             load.setLevel(getLevel());
@@ -865,7 +865,7 @@ public class Load
             } catch (EngineException ex) {
                 throw  LoadException.create(ex, path);
             }
-        }
+        //}
     }
     
     /**

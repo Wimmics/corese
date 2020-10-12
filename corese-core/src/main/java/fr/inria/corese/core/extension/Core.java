@@ -10,10 +10,10 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.core.FunctionEvaluator;
 import fr.inria.corese.sparql.triple.function.extension.IOFunction;
-import fr.inria.corese.sparql.triple.function.proxy.GraphSpecificFunction;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.lang.reflect.InvocationTargetException;
@@ -181,17 +181,31 @@ public class Core extends PluginImpl implements FunctionEvaluator {
 
     IDatatype xt_turtle(IDatatype x) {
         if (x.isLiteral() && x.getDatatypeURI().equals(IDatatype.GRAPH_DATATYPE)) {
-            Transformer t = Transformer.create(getGraph(x), Transformer.TURTLE);
-            return t.process();
+            try {
+                Transformer t = Transformer.create(getGraph(x), Transformer.TURTLE);
+                return t.process();
+            } catch (EngineException ex) {
+                Logger.getLogger(Core.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
         } else {
             Transformer t = Transformer.create(getGraph(), Transformer.TURTLE);
-            return t.process(x);
+            try {
+                return t.process(x);
+            } catch (EngineException ex) {
+                Logger.getLogger(Core.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+            }
         }
+        return x;
     }
 
     IDatatype xt_turtle(IDatatype g, IDatatype x) {
         Transformer t = Transformer.create(getGraph(g), Transformer.TURTLE);
-        return t.process(x);
+        try {
+            return t.process(x);
+        } catch (EngineException ex) {
+            Logger.getLogger(Core.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        return x;
     }
     
     @Override

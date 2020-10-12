@@ -251,8 +251,8 @@ public class Eval implements ExpType, Plugin {
         if (map != null) {
             bind(map);
         }
-        if (!q.isFail()) {
-            query(gNode, q);
+        if (!q.isFail()) {           
+            queryWE(gNode, q);
 
             if (q.getQueryProfile() == Query.COUNT_PROFILE) {
                 countProfile();
@@ -273,6 +273,19 @@ public class Eval implements ExpType, Plugin {
         }
         evaluator.finish(memory);
         return results;
+    }
+    
+    int queryWE(Node gNode, Query q) throws SparqlException {
+        try {
+            return query(gNode, q);
+        } catch (SparqlException ex) {
+            if (ex.isStop()) {
+                // LDScriptException stop means stop query processing
+                return 0;
+            }
+            // exception means this is an error
+            throw ex;
+        }
     }
 
     /**
@@ -671,7 +684,7 @@ public class Eval implements ExpType, Plugin {
         return memory;
     }
 
-    Mappings getResults() {
+    public Mappings getResults() {
         return results;
     }
 

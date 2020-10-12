@@ -291,6 +291,9 @@ public interface ExprType {
         public static int ISEXTENSION   = 334;
         public static int SAFE          = 335;
         public static int STATIC        = 336;
+        public static int TRY_CATCH     = 337;
+        public static int THROW         = 338;
+        public static int RESUME        = 339;
         
         public static int XT_MAPPING     = 400;
         public static int XT_ADD         = 401;
@@ -313,7 +316,7 @@ public interface ExprType {
         public static int XT_REJECT      = 417;
         public static int XT_VARIABLES   = 418;
         public static int XT_VALUES      = 419;
-        public static int XT_EDGES        = 420;
+        public static int XT_EDGES       = 420;
         public static int XT_TRIPLE      = 421;
         public static int XT_GEN_GET     = 422;
         public static int XT_DISPLAY     = 423;
@@ -384,6 +387,7 @@ public interface ExprType {
         public static int XT_OBJECTS     = 487;
         public static int XT_SYNTAX      = 488;
         public static int XT_HTTP_GET    = 489;
+        public static int XT_GET_DATATYPE_VALUE    = 490;
         
         
              

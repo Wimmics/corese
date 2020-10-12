@@ -4,6 +4,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.SparqlException;
 
 /**
  * Service Provider
@@ -29,7 +30,9 @@ public interface Provider {
 	 */
 	//Mappings service(Node serv, Exp exp, Mappings map, Environment env);
         
-	default Mappings service(Node serv, Exp exp, Mappings map, Eval eval) { return null; };
+	default Mappings service(Node serv, Exp exp, Mappings map, Eval eval) 
+            throws SparqlException { 
+            return null; };
 
 	void set(String uri, double version);
 

@@ -34,6 +34,8 @@ public interface ProcessVisitor extends Pointerable {
     
     default void setProcessor(Eval e) {}
     
+    default Eval getProcessor() { return null;}
+    
     default void setDefaultValue(DatatypeValue val) {}
     
     default DatatypeValue defaultValue() {return null;}

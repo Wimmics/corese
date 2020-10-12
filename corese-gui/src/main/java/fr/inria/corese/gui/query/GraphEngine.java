@@ -192,11 +192,11 @@ public class GraphEngine {
         load(path);
     }
 
-    public boolean runRuleEngine() {
+    public boolean runRuleEngine() throws EngineException {
         return runRuleEngine(false, false);
     }
 
-    public boolean runRuleEngine(boolean opt, boolean trace) {
+    public boolean runRuleEngine(boolean opt, boolean trace) throws EngineException {
         if (rengine == null) {
             logger.error("No rulebase available yet");
             return false;
@@ -211,7 +211,7 @@ public class GraphEngine {
     }
 
     // TODO: clean timestamp, clean graph index
-    public void setOWLRL(boolean run, int owl, boolean trace) {
+    public void setOWLRL(boolean run, int owl, boolean trace) throws EngineException {
         if (run) {
             owlEngine = RuleEngine.create(graph);
             owlEngine.setProfile(owl);

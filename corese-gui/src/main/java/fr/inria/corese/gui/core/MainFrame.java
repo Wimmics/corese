@@ -82,7 +82,7 @@ public class MainFrame extends JFrame implements ActionListener {
     static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-09-21";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-10-16";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -195,7 +195,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String STYLESHEET = "style.txt";
     private static final String TXT = ".txt";
     private static final String RQ = ".rq";
-    private static final String URI_CORESE = "http://wimmics.inria.fr/corese";
+    private static final String URI_CORESE = "http://project.inria.fr/corese";
     private static final String URI_GRAPHSTREAM = "http://graphstream-project.org/";
     int nbTabs = 0;
     
@@ -1112,9 +1112,17 @@ public class MainFrame extends JFrame implements ActionListener {
             newQuery(textQuery);
         } //Applique les règles chargées
         else if (e.getSource() == runRules) {
-            runRules(false);
+            try {
+                runRules(false);
+            } catch (EngineException ex) {
+                LOGGER.error(ex.getMessage());
+            }
         } else if (e.getSource() == runRulesOpt) {
-            runRules(true);
+            try {
+                runRules(true);
+            } catch (EngineException ex) {
+                LOGGER.error(ex.getMessage());
+            }
         } //Remet tout à zéro
         else if (e.getSource() == reset) {
             reset();
@@ -1250,7 +1258,7 @@ public class MainFrame extends JFrame implements ActionListener {
         out.close();
     }
 
-    void runRules(boolean opt) {
+    void runRules(boolean opt) throws EngineException {
         if (opt) {
             cbrdfs.setSelected(false);
             setRDFSEntailment(false);

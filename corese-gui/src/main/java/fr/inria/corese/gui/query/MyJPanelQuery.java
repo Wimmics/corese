@@ -511,7 +511,11 @@ public final class MyJPanelQuery extends JPanel {
     String graphToString(Mappings map) {
         Graph g = (Graph) map.getGraph();
         Transformer t = Transformer.create(g, Transformer.TURTLE);
-        return t.transform();
+        try {
+            return t.transform();
+        } catch (EngineException ex) {
+            return ex.getMessage();
+        }
     }
 
     void fillTable(Mappings map) {

@@ -7,6 +7,9 @@ package fr.inria.corese.gui.core;
 
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.gui.query.GraphEngine;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 
 /**
@@ -15,6 +18,7 @@ import fr.inria.corese.gui.query.GraphEngine;
  *
  */
 public class Entailment extends Thread {
+    private static final Logger logger = LogManager.getLogger(MainFrame.class.getName());
     boolean doit = false;
     int owl = RuleEngine.OWL_RL;
     GraphEngine engine;
@@ -26,7 +30,11 @@ public class Entailment extends Thread {
     
     @Override
     public void run(){
-        engine.setOWLRL(doit, owl, trace);
+        try {
+            engine.setOWLRL(doit, owl, trace);
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage());
+        }
     }
 
     void setOWLRL(boolean selected, int owl) {

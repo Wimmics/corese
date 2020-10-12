@@ -133,7 +133,12 @@ public class ProviderImpl implements Provider {
     public Mappings service(Node serv, Exp exp, Mappings lmap, Eval eval) 
             throws EngineException {
         Binding b = (Binding) eval.getEnvironment().getBind();
-        if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel(), serv.getLabel())) {
+        if (serv == null) {
+            if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel())) {
+                throw new SafetyException(TermEval.SERVICE_MESS);
+            }
+        }
+        else if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel(), serv.getLabel())) {
             throw new SafetyException(TermEval.SERVICE_MESS, serv.getLabel());
         }
         return serviceBasic(serv, exp, lmap, eval);

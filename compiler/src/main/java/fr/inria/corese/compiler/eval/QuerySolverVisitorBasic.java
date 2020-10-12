@@ -156,6 +156,11 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
         setEval(e);
     }
     
+    @Override
+    public Eval getProcessor() {
+        return getEval();
+    }
+    
   
     Hierarchy getHierarchy() {
         return getEnvironment().getExtension().getHierarchy();
@@ -384,7 +389,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     
     IDatatype call(Function fun, IDatatype[] param, Evaluator eval, Environment env, Producer p) {
         try {
-            return new Funcall(fun.getFunction().getLabel()).call((Computer) eval, (Binding) env.getBind(), env, p, fun, param);
+            return new Funcall(fun.getFunction().getLabel()).callWE((Computer) eval, (Binding) env.getBind(), env, p, fun, param);
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
             return null;

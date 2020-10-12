@@ -155,22 +155,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return producer.getNode(value);
     }
 
-//    @Override
-//    public List<Node> evalList(Filter f, Environment env) {
-//
-//        Expr exp = f.getExp();
-//        switch (exp.oper()) {
-//
-//            default:
-//                Object value = eval(exp, env);
-//                if (value == ERROR_VALUE) {
-//                    return null;
-//                }
-//                List<Node> lNode = producer.toNodeList(value);
-//                return lNode;
-//        }
-//    }
-
     /**
      * Functions that return several variables as result such as: sql("select
      * from where") as (?x ?y)
@@ -253,7 +237,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             logger.info(exp.toString());
         }
         Binding b = (Binding) env.getBind();
-        IDatatype dt = ((Expression) exp).eval(this, b, env, p);
+        // evalWE clean the binding stack if an EngineException is thrown
+        IDatatype dt = ((Expression) exp).evalWE(this, b, env, p);
         if (b.isDebug()) {
             System.out.println("eval: " + exp + " = " + dt);
         }

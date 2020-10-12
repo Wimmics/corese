@@ -78,8 +78,8 @@ public class FunctionCompiler {
         if (ast.getDefine() == null || ast.getDefine().isEmpty()) {
             return;
         }
-        if (Access.reject(Access.Feature.DEFINE_FUNCTION, ast.getLevel())) { 
-            //logger.error(TermEval.FUNCTION_DEFINITION_MESS);
+        if (Access.reject(Access.Feature.LDSCRIPT, ast.getLevel())
+         || Access.reject(Access.Feature.DEFINE_FUNCTION, ast.getLevel())) { 
             throw new SafetyException(TermEval.FUNCTION_DEFINITION_MESS);
         }
 

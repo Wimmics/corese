@@ -55,7 +55,7 @@ public interface GraphProcessor {
     IDatatype degree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index);
     IDatatype mindegree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index, IDatatype min);
 
-    IDatatype entailment(Environment env, Producer p, IDatatype graph);
+    IDatatype entailment(Environment env, Producer p, IDatatype graph) throws EngineException;
     
     IDatatype shape(Expr exp, Environment env, Producer p, IDatatype[] param);
 

@@ -54,6 +54,9 @@ public class SystemFunction extends TermEval {
             case ExprType.XT_DATATYPE:
                 if (param.length < 2) {return null;}
                 return (IDatatype) env.getVisitor().datatype(param[0], param[1]);
+                
+            case ExprType.XT_GET_DATATYPE_VALUE:
+                return b.getDatatypeValue();
         }
         
         return TRUE;

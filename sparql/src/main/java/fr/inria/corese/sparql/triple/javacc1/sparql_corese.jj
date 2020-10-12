@@ -2126,7 +2126,7 @@ Expression BuiltInCall(Exp stack) : { ExpressionList el; Expression exp1 = null,
     |
 
     ((
-    t1  = <UUID> | t1 = <STRUUID> | t1 = <NOW> | t1 = <RAND>
+    t1  = <UUID> | t1 = <STRUUID> | t1 = <NOW> | t1 = <RAND> | t1 = <STOP>
     )
 
     <LPAREN><RPAREN>
@@ -2149,7 +2149,7 @@ Expression BuiltInCall(Exp stack) : { ExpressionList el; Expression exp1 = null,
         | t1 = <MD5> | t1 = <SHA1> | t1 = <SHA256> | t1 = <SHA384> | t1 = <SHA512>
         | t1 =  <ROUND> | t1 = <FLOOR> | t1 = <CEIL>  | t1 = <ABS> 
         | t1 =  <YEAR> | t1 = <MONTH> | t1 = <DAY> | t1 = <HOURS> | t1 = <MINUTES> | t1 = <SECONDS> | t1 = <TIMEZONE> | t1 = <TZ>
-        | t1 = <UNNEST>  | t1 = <RETURN> | t1 = <SELF> | t1 = <EVAL>
+        | t1 = <UNNEST>  | t1 = <RETURN> | t1 = <SELF> | t1 = <EVAL> 
    )
  
 
@@ -2184,7 +2184,7 @@ Expression BuiltInCall(Exp stack) : { ExpressionList el; Expression exp1 = null,
     (
     ( t1 = <REGEX> | t1 = <COALESCE> | t1 = <CONCAT> | t1 = <SUBSTR> | t1 = <REPLACE>
     | t1 = <METHOD> | t1 = <FUNCALL> | t1 = <MAP> | t1 = <MAPLIST> | t1 = <MAPMERGE>  
-    | t1 = <MAPFINDLIST> | t1 = <MAPFIND> | t1 = <MAPANY> | t1 = <MAPEVERY> )
+    | t1 = <MAPFINDLIST> | t1 = <MAPFIND> | t1 = <MAPANY> | t1 = <MAPEVERY> | t1 = <THROW>)
     <LPAREN> 
     { term =  astq.createFunction(t1.image); }
       exp1 = Expression(stack) { term.add(exp1); }
@@ -2216,6 +2216,7 @@ Term FunctionCorese(Exp stack): { Token t; Term term = null; ExpressionList v; C
 {	
   (
     term = IfThenElse(stack)
+  | term = TryCatch(stack)
   | term = Let(stack)
   | term = Set(stack)
   | term = For(stack)
@@ -2347,7 +2348,13 @@ IDatatype ListTerm() : { String s; Token t1;  Atom a; }
   { return a.getDatatypeValue(); }
 }
 
-
+Term TryCatch(Exp stack) : {Variable var; Expression e1, e2;}
+{
+    <TRY> e1 = Body(stack)
+    <CATCH> <LPAREN> var = Var() <RPAREN>
+    e2 = Body(stack)
+    { return astq.defTryCatch(e1, var, e2); }
+}
 
 Term Let (Exp stack) : 
 {boolean dynamic = false; Expression exp ; Expression arg; ExpressionList list; }
@@ -2880,6 +2887,10 @@ TOKEN [IGNORE_CASE] :
 | < MINUSP: "minus" >
 | < NOT: "not">
 | < SCOPE: "scope">
+| < TRY: "try">
+| < CATCH: "catch">
+| < THROW: "throw">
+| < STOP: "stop">
 | < LET: "let">
 | < LETDYN: "letdyn">
 | < SET: "set">

@@ -197,10 +197,11 @@ public class GraphSpecificFunction extends LDScript {
         return null;
     }
     
-    IDatatype entailment(GraphProcessor proc, Binding b, Environment env, Producer p, IDatatype[] param) throws SafetyException {
-        check(Feature.LDSCRIPT_ENTAILMENT, b, TermEval.ENTAILMENT_MESS);
+    IDatatype entailment(GraphProcessor proc, Binding b, Environment env, Producer p, IDatatype[] param) throws EngineException {
+        check(Feature.LINKED_RULE, b, TermEval.LINKED_RULE_MESS);
         switch (param.length) {
             case 0: return proc.entailment(env, p, null);
+            // param is a graph
             default:return proc.entailment(env, p, param[0]);
         }
     }

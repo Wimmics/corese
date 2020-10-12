@@ -25,6 +25,7 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.ASTQ;
 import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.script.TryCatch;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.IOException;
 import java.util.Map;
@@ -1406,6 +1407,15 @@ public class ASTQuery
     
     public Term setStatic(Variable var, Expression exp) {
         return Term.function(Processor.STATIC, var, exp);
+    }
+    
+    public TryCatch defTryCatch(Expression e1, Variable var, Expression e2) {
+        Let let = let(defLet(var, Term.function(Processor.XT_GET_DATATYPE_VALUE)), e2);
+        return new TryCatch(e1, let);
+    }
+    
+    public Term defThrow(Expression exp) {
+        return Term.function(Processor.THROW, exp);
     }
 
     /**

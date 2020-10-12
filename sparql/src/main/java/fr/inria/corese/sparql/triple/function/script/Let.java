@@ -180,30 +180,6 @@ public class Let extends Statement {
         }
     }
     
-    
-     //@Override
-//    public IDatatype eval2(Computer eval, Binding b, Environment env, Producer p) {
-//        IDatatype val = getDefinition().eval(eval, b, env, p);
-//        if (val == null) {
-//            return null;
-//        } else if (val == DatatypeMap.UNBOUND) {
-//            val = null;
-//        }
-//        Variable var = getVariable();
-//        b.set(this, var, val);
-//        boolean save = true; 
-//        if (isDynamic()) {
-//            save = b.isDynamicCapture();
-//            b.setDynamicCapture(isDynamic());
-//        }
-//        IDatatype res = getBody().eval(eval, b, env, p);
-//        if (isDynamic()) {
-//            b.setDynamicCapture(save);
-//        }
-//        b.unset(this, var, val);
-//        return res;
-//    }
-    
     @Override
     public void tailRecursion(Function fun) {
         getBody().tailRecursion(fun);

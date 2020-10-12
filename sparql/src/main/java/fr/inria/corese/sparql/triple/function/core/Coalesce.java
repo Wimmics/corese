@@ -32,7 +32,7 @@ public class Coalesce extends TermEval {
             b.setCoalesce(true);
             IDatatype dt = null;
             try {
-                dt = arg.eval(eval, b, env, p);
+                dt = arg.evalWE(eval, b, env, p);
             }
             catch (EngineException e) {
                 if (exception) {

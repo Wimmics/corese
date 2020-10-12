@@ -99,4 +99,17 @@ public class Funcall extends LDScript {
         }
         return b.resultValue(dt);
     }
+    
+    // restore binding stack in case of exception
+    public IDatatype callWE(Computer eval, Binding b, Environment env, Producer p, Function function, IDatatype... param)
+            throws EngineException {
+        int varSize = b.getVariableSize();
+        int levelSize = b.getLevelSize();
+        try {
+            return call(eval, b, env, p, function, param);
+        } catch (EngineException e) {
+            b.pop(varSize, levelSize);
+            throw e;
+        }
+    }
 }

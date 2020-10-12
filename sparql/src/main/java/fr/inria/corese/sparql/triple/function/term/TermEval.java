@@ -43,6 +43,7 @@ public class TermEval extends Term {
     public static final String IMPORT_MESS = "Import unauthorized";
     public static final String UNDEFINED_EXPRESSION_MESS = "Undefined expression";
     public static final String ENTAILMENT_MESS = "Entailment unauthorized";
+    public static final String SERVICE_MESS = "Service unauthorized";
     
     
     public TermEval(String name, Expression e1, Expression e2, Expression e3) {

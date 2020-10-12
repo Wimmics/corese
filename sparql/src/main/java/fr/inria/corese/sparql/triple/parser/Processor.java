@@ -110,6 +110,10 @@ public class Processor {
 	static final String APPLY   = "apply";
 	static final String REDUCE  = "reduce";
         
+        public static final String STOP        = "stop";
+        public static final String THROW        = "throw";
+        public static final String TRY_CATCH     = "trycatch";
+        public static final String XT_GET_DATATYPE_VALUE     = EXT + "getDatatypeValue";
         private static final String XT_SELF     = EXT + "self";
         public static final String XT_FIRST    = EXT + "first";
         public static final String XT_REST     = EXT + "rest";
@@ -666,8 +670,13 @@ public class Processor {
 		defoper(SEQUENCE,       ExprType.SEQUENCE);
 		defoper(EXT+SEQUENCE,   ExprType.SEQUENCE);
 		defsysoper(LET,         ExprType.LET);
+		defsysoper(TRY_CATCH,   ExprType.TRY_CATCH);
+		defoper(THROW,          ExprType.THROW);
+		defoper(STOP,          ExprType.RESUME);
 		defoper(SET,            ExprType.SET);
 		defoper(STATIC,         ExprType.STATIC);
+                
+		defoper(XT_GET_DATATYPE_VALUE, ExprType.XT_GET_DATATYPE_VALUE);
 		defoper(XT_JSON_OBJECT, ExprType.XT_JSON_OBJECT);
 		defoper(XT_MAP,         ExprType.XT_MAP);
 		defoper(XT_LIST,        ExprType.LIST);

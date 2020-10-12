@@ -24,6 +24,10 @@ public class EngineException extends SparqlException {
     public EngineException(Exception e) {
         super(e);
     }
+    
+    public EngineException(Error e) {
+        super(e);
+    }
 
     public EngineException(String message) {
         super(message);

@@ -380,6 +380,9 @@ public class Term extends Expression {
                 return new Self(name);
             case ExprType.RETURN:
                 return new Return(name);
+            case ExprType.THROW:
+            case ExprType.RESUME:    
+                return new Throw(name);
             case ExprType.ERROR:
                 return new ErrorFunction(name);
 
@@ -459,7 +462,8 @@ public class Term extends Expression {
             case ExprType.XT_STACK:
             case ExprType.XT_RESULT:    
             case ExprType.XT_VISITOR:    
-            case ExprType.XT_DATATYPE:    
+            case ExprType.XT_DATATYPE:
+            case ExprType.XT_GET_DATATYPE_VALUE:
                 return new SystemFunction(name);
                 
 

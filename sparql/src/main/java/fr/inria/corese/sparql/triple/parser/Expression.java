@@ -24,7 +24,6 @@ import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.Regex;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -1013,6 +1012,20 @@ public class Expression extends TopExp
 
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         return null;
+    }
+    
+    /**
+     * Eval exp and clean stack if an exception is thrown by exp
+     */
+    public IDatatype evalWE(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
+        int varSize = b.getVariableSize();
+        int levelSize = b.getLevelSize();
+        try {
+            return eval(eval, b, env, p);
+        } catch (EngineException e) {
+            b.pop(varSize, levelSize);
+            throw e;
+        }
     }
 
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param) throws EngineException {

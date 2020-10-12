@@ -19,8 +19,9 @@ public class Access {
     // throw exception for coalesce  
     // false -> sparql semantics, coalesce trap error
     public static boolean COALESCE_EXCEPTION = false;
-    // check namespace for every level 
-    public static boolean CHECK_NAMESPACE = false;
+    
+    // true -> skip access control
+    public static boolean SKIP = false;
 
     public enum Mode {
         LIBRARY, GUI, SERVER
@@ -63,6 +64,7 @@ public class Access {
         }
         
         boolean provide(Level l) {
+            if (SKIP) { return true; }
             return getValue() >= l.getValue();
         }
         
@@ -86,6 +88,7 @@ public class Access {
         
 
         SPARQL_UPDATE, 
+        SPARQL_SERVICE,
         
         // may deny whole LDScript
         LDSCRIPT, 
@@ -146,6 +149,14 @@ public class Access {
         return sb.toString();
     }
     
+    
+    public static boolean skip(boolean b) {
+        boolean save = SKIP;
+        SKIP = b;
+        return save;
+    }
+    
+    
     public Access singleton() {
         return singleton;
     }
@@ -176,34 +187,23 @@ public class Access {
     }
     
     // consider level value 
-    public static boolean provide(Feature feature, Level level) {
-        return level.provide(get(feature));
-    }
+//    public static boolean provide(Feature feature, Level level) {
+//        return level.provide(get(feature));
+//    }
     
     public static boolean provide(Feature feature) {
-        return DEFAULT.provide(get(feature));
+        return accept(feature, DEFAULT);
     }
     
     // tune level value if the server is protected or not 
     // if the server is not protected, public -> default
     public static boolean accept(Feature feature, Level actionLevel) {
-        return getLevel(actionLevel).provide(get(feature));
+        return actionLevel.provide(get(feature));
     }
     
     public static boolean accept(Feature feature) {
         return DEFAULT.provide(get(feature));
     }
-    
-//    public static boolean accept(Feature feature, Context c) {
-//        if (c == null) {
-//            return accept(feature);
-//        }
-//        return accept(feature, c.getLevel());
-//    }
-//    
-//    public static boolean reject(Feature feature, Context c) {
-//        return ! accept(feature, c);
-//    }
     
     public static boolean reject(Feature feature, Level actionLevel) {
         return ! accept(feature, actionLevel);
@@ -213,9 +213,8 @@ public class Access {
      * feature = LINKED_TRANSFORMATION uri=st:turtle
      * feature = IMPORT_FUNCTION       uri=ex:myfun.rq
      * check uri: 
-     * action level >= DEFAULT -> every uri is authorized
-     * action level < DEFAULT  -> predefined uri is authorized
-     * TODO: specify additional authorized namespaces
+     * action level >= DEFAULT -> if accept is empty, every namespace is authorized
+     * action level < DEFAULT  -> access to explicitely authorized namespace only
      */
     public static boolean accept(Feature feature, Level actionLevel, String uri) {
        return accept(feature, actionLevel) && acceptNamespace(feature, actionLevel, uri);
@@ -226,19 +225,16 @@ public class Access {
     }
     
     public static boolean acceptNamespace (Feature feature, Level actionLevel, String uri) {
-        if (actionLevel.provide(SUPER_USER)) {
+        if (SKIP || actionLevel.provide(SUPER_USER)) {
             return true;
         }
-        else if (CHECK_NAMESPACE) {
-            return accept(uri);
-        }
-        else if (actionLevel.provide(DEFAULT)) {
-            // action level >= DEFAULT -> every uri is authorized
-            return true;
+       else if (actionLevel.provide(DEFAULT)) {
+            // action level >= DEFAULT -> if accept is empty, every namespace is authorized
+            return accept(uri, true);
         }
         else {
-            // action level < DEFAULT -> access to authorized namespace only
-            return accept(uri);
+            // action level < DEFAULT -> access to explicitely authorized namespace only
+            return accept(uri, false);
         }
     }
     
@@ -246,8 +242,27 @@ public class Access {
         return NSManager.isPredefinedNamespace(uri) || AccessNamespace.access(uri);
     }
     
+    static boolean accept(String uri, boolean resultWhenEmptyAccept) {
+        return NSManager.isPredefinedNamespace(uri) || AccessNamespace.access(uri, resultWhenEmptyAccept);
+    }
+    
     public static void define(String ns, boolean b) {
         AccessNamespace.define(ns, b);
+        if (isFile(ns)) {
+           AccessNamespace.define(toFile(ns), b); 
+        }
+    }
+    
+    public static void define(Feature feature, Level accessRight) {
+        set(feature, accessRight); 
+    }
+    
+    static boolean  isFile(String ns) {
+        return ns.startsWith("/");
+    }
+    
+    static String toFile(String ns) {
+        return "file://" + ns;
     }
     
     public static boolean reject(Feature feature) {
@@ -374,6 +389,7 @@ public class Access {
         deny(READ_WRITE);
         deny(JAVA_FUNCTION);
         deny(LINKED_FUNCTION);
+        // deny(SPARQL_SERVICE);
         // other features are PRIVATE and user query is PUBLIC
     }
     

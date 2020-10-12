@@ -41,10 +41,9 @@ public class Binding implements Binder {
     ArrayList<IDatatype> valList;
     // level of the stack before function call
     // every funcall add a level
-    // let add no level
     ArrayList<Integer> level;
     int currentLevel = 0, count = 0;
-    Expr current;
+   // Expr current;
     
     HashMap<String, IDatatype> globalValue;
     HashMap<String, Variable>  globalVariable;
@@ -58,6 +57,7 @@ public class Binding implements Binder {
     private boolean coalesce = false;
     private Access.Level accessLevel = Access.Level.USER_DEFAULT;
     private Context context;
+    private IDatatype datatypeValue;
     
     private static Binding singleton;
     
@@ -88,7 +88,7 @@ public class Binding implements Binder {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("Level: ").append(level).append(NL);
+        sb.append("Level stack: ").append(level).append(NL);
         for (int i = index(); i >= 0; i--) {
             sb.append("(").append(i).append(") ");
             sb.append(varList.get(i)).append(" = ").append(valList.get(i));
@@ -181,11 +181,6 @@ public class Binding implements Binder {
                 if (desallocation(exp)) {
                     return;
                 }
-//                if (exp.getNbVariable() > 0) {
-//                    desallocate(exp);
-//                    return;
-//                }
-            // else continue
 
             default:
                 unset(var);
@@ -247,6 +242,27 @@ public class Binding implements Binder {
     void pop() {
         varList.remove(varList.size() - 1);
         valList.remove(valList.size() - 1);
+    }
+    
+    public int getLevelSize() {
+        return level.size();
+    }
+    
+    public int getVariableSize() {
+        return varList.size();
+    }
+    
+    
+    /**
+     * catch exception: reset stack in previous state
+     */
+    public void pop(int varSize, int levelSize) {
+        while (varList.size() > varSize) {
+            pop();
+        }
+        while (level.size() > levelSize) {
+            popLevel();
+        }
     }
 
     /**
@@ -377,8 +393,12 @@ public class Binding implements Binder {
         return level.get(level.size() - 1);
     }
 
-    int getCurrentLevel() {
+    public int getCurrentLevel() {
         return (level.isEmpty()) ? 0 : getLevel();
+    }
+    
+    public int getCurrentVariableLevel() {
+        return varList.isEmpty() ? 0 : varList.size() - 1;
     }
     
     // global variable
@@ -682,6 +702,20 @@ public class Binding implements Binder {
      */
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    /**
+     * @return the datatypeValue
+     */
+    public IDatatype getDatatypeValue() {
+        return datatypeValue;
+    }
+
+    /**
+     * @param datatypeValue the datatypeValue to set
+     */
+    public void setDatatypeValue(IDatatype datatypeValue) {
+        this.datatypeValue = datatypeValue;
     }
     
 }

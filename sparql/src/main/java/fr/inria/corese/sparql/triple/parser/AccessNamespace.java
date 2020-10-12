@@ -43,18 +43,21 @@ public class AccessNamespace {
     }
     
     public static void define(String ns, boolean b) {
-        singleton().access(ns, b);
+        singleton().setAccess(ns, b);
     }
     
     public static boolean access(String ns) {
         return singleton().accept(ns);
+    }
+    public static boolean access(String ns, boolean resultWhenEmptyAccept) {
+        return singleton().accept(ns, resultWhenEmptyAccept);
     }
     
     public static void clean() {
          singleton().clear();
     }
     
-    public void access(String ns, boolean b) {
+    public void setAccess(String ns, boolean b) {
         if (b) {
             accept.put(ns, b);
             reject.remove(ns);
@@ -71,8 +74,16 @@ public class AccessNamespace {
     }
     
     public boolean accept(String ns) {
+        return accept(ns, false);
+    }
+    
+    
+    public boolean accept(String ns, boolean resultWhenEmptyAccept) {
         if (reject.match(ns)) {
             return false;
+        }
+        if (accept.isEmpty()) {
+            return resultWhenEmptyAccept;
         }
         if (accept.match(ns)) {
             return true;

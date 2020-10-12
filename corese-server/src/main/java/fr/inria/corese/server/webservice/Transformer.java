@@ -5,8 +5,10 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import static fr.inria.corese.server.webservice.Utility.toStringList;
 import fr.inria.corese.core.workflow.Data;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -235,8 +237,13 @@ public class Transformer {
         c.set(LOAD, (p.getLoad() == null) ? "" : p.getLoad());
         c.setTransform((p.getTransform()== null) ? "" : p.getTransform());  
         complete(c, p);
-        IDatatype res = t.process();
-        return res.stringValue();
+        IDatatype res;
+        try {
+            res = t.process();
+            return res.stringValue();
+        } catch (EngineException ex) {
+            return ex.getMessage();
+        }
     }
     
     String result(Param p, String ft){

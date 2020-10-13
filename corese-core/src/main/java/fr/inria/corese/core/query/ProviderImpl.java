@@ -45,8 +45,6 @@ import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.Locale;
-import java.util.logging.Level;
 
 /**
  * Implements service expression There may be local QueryProcess for some URI
@@ -128,18 +126,15 @@ public class ProviderImpl implements Provider {
     /**
      * If there is a QueryProcess for this URI, use it Otherwise send query to
      * spaql endpoint If endpoint fails, use default QueryProcess if it exists
+     * When service URL is a constant or a bound variable, serv = URL
+     * otherwise serv = NULL
      */
     @Override
     public Mappings service(Node serv, Exp exp, Mappings lmap, Eval eval) 
             throws EngineException {
         Binding b = (Binding) eval.getEnvironment().getBind();
-        if (serv == null) {
-            if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel())) {
+        if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel())) {
                 throw new SafetyException(TermEval.SERVICE_MESS);
-            }
-        }
-        else if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel(), serv.getLabel())) {
-            throw new SafetyException(TermEval.SERVICE_MESS, serv.getLabel());
         }
         return serviceBasic(serv, exp, lmap, eval);
     }
@@ -159,12 +154,8 @@ public class ProviderImpl implements Provider {
 
         if (exec == null) {
             
-            Mappings map = null;
-            try {
-                map = globalSend(serv, q, exp, lmap, eval);
-            } catch (EngineException ex) {
-                logger.error(ex.getMessage());
-            }
+            Mappings map = globalSend(serv, q, exp, lmap, eval);
+           
             if (map != null) {
                 return map;
             }
@@ -247,10 +238,14 @@ public class ProviderImpl implements Provider {
         ArrayList<Mappings> mapList     = new ArrayList<>();
         ArrayList<ProviderThread> pList = new ArrayList<>();
         int timeout = getTimeout(q, serviceNode, eval.getEnvironment());
-        // With @new annotation => service in parallel
+        // by default in parallel 
         boolean parallel = q.getOuterQuery().isParallel();
 
         for (Node service : list) {
+            Binding b = (Binding) eval.getEnvironment().getBind();
+            if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel(), service.getLabel())) {
+                throw new SafetyException(TermEval.SERVICE_MESS, service.getLabel());
+            }
             if (eval.isStop()) {
                 break;
             }

@@ -77,9 +77,9 @@ public class ExtendGraph {
      * graph ?g { }
      */
      IDatatype extension(Producer p, Expr exp, Environment env, IDatatype dt) {
-         if (dt.getLabel().startsWith(KGEXTQUERY)){
-             return eval(p, exp, env, dt);
-         }
+//         if (dt.getLabel().startsWith(KGEXTQUERY)){
+//             return eval(p, exp, env, dt);
+//         }
          switch (map.get(dt.getLabel())){
              case EXT_DESCRIBE: return describe(p, exp, env);
              case EXT_QUERY:    return query(p, exp, env, null);
@@ -154,40 +154,27 @@ public class ExtendGraph {
     }
 
     
-     IDatatype load(Producer p, Expr exp, Environment env, IDatatype dt) {
-         return load(p, exp, env, dt, null);
-     }
-
-     IDatatype load(Producer p, Expr exp, Environment env, IDatatype dt, IDatatype format) {
-         Graph g = Graph.create();
-         Load ld = Load.create(g);
-         try {
-             if (PluginImpl.readWriteAuthorized()){
-                ld.parse(dt.getLabel(), (format == null) ? Load.UNDEF_FORMAT : LoadFormat.getDTFormat(format.getLabel()));
-             }
-         } catch (LoadException ex) {
-             logger.error("Load error: " + dt);
-             logger.error(ex.getMessage());
-             ex.printStackTrace();
-         }
-        IDatatype res = DatatypeMap.createObject(g);
-        return res;
-    }
-      
-//         Object load2(Producer p, Expr exp, Environment env, IDatatype dt, IDatatype undef_format) {
+//     IDatatype load(Producer p, Expr exp, Environment env, IDatatype dt) {
+//         return load(p, exp, env, dt, null);
+//     }
+//
+//     IDatatype load(Producer p, Expr exp, Environment env, IDatatype dt, IDatatype format) {
 //         Graph g = Graph.create();
 //         Load ld = Load.create(g);
 //         try {
-//             if (PluginImpl.readWriteAuthorized){
-//                ld.parse(dt.getLabel(), (undef_format == null) ? Load.TURTLE_FORMAT : Load.UNDEF_FORMAT);
+//             if (PluginImpl.readWriteAuthorized()){
+//                ld.parse(dt.getLabel(), (format == null) ? Load.UNDEF_FORMAT : LoadFormat.getDTFormat(format.getLabel()));
 //             }
 //         } catch (LoadException ex) {
-//             logger.error("Load error: " + dt, ex);
+//             logger.error("Load error: " + dt);
+//             logger.error(ex.getMessage());
 //             ex.printStackTrace();
 //         }
-//        IDatatype res = create("load", g, IDatatype.GRAPH);
+//        IDatatype res = DatatypeMap.createObject(g);
 //        return res;
 //    }
+      
+
     
      IDatatype describe(Producer p, Expr exp, Environment env) {
         Graph g = (Graph) p.getGraph();
@@ -217,16 +204,16 @@ public class ExtendGraph {
         return null;
     }
 
-    private IDatatype eval(Producer p, Expr exp, Environment env, IDatatype dt) {
-       try {
-            String q = load(dt.getLabel());
-            IDatatype res = plugin.kgram(env, getGraph(p), q, null);
-            return res;
-        } catch (IOException ex) {
-            return null;
-        }
-        
-    }
+//    private IDatatype eval(Producer p, Expr exp, Environment env, IDatatype dt) {
+//       try {
+//            String q = load(dt.getLabel());
+//            IDatatype res = plugin.kgram(env, getGraph(p), q, null);
+//            return res;
+//        } catch (IOException ex) {
+//            return null;
+//        }
+//        
+//    }
     
     String load(String label) throws IOException {
         String str = label.substring(KGEXTQUERY.length()) + ".rq";

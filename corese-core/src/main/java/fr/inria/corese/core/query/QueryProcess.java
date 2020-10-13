@@ -305,13 +305,21 @@ public class QueryProcess extends QuerySolver {
     }
 
     public static Interpreter createInterpreter(Producer p, Matcher m) {
-        PluginImpl plugin = PluginImpl.create(m);
-        ProxyInterpreter proxy = new ProxyInterpreter();
-        proxy.setPlugin(plugin);
-        Interpreter eval = new Interpreter(proxy);
+        Interpreter eval = new Interpreter();
+        eval.setPlugin(PluginImpl.create(m));
         eval.setProducer(p);
         return eval;
     }
+
+    
+//    public static Interpreter createInterpreter(Producer p, Matcher m) {
+//        PluginImpl plugin = PluginImpl.create(m);
+//        ProxyInterpreter proxy = new ProxyInterpreter();
+//        proxy.setPlugin(plugin);
+//        Interpreter eval = new Interpreter(proxy);
+//        eval.setProducer(p);
+//        return eval;
+//    }
 
     /**
      * query = select from g where g is an external named graph return a new

@@ -208,10 +208,7 @@ public class Core extends PluginImpl implements FunctionEvaluator {
         return x;
     }
     
-    @Override
-    public IDatatype strdt(IDatatype dt, IDatatype type) {
-        return DatatypeMap.newInstance(dt.getLabel(), type.getLabel());
-    }
+
 
     void trace(Object... lobj) {
         for (Object obj : lobj) {
@@ -270,56 +267,6 @@ public class Core extends PluginImpl implements FunctionEvaluator {
        return null;
    }
    
-    @Override
-    public IDatatype funcall(IDatatype fun, IDatatype... ldt) {
-        String name = datatypeName(fun.getLabel());
-        if (ldt.length>0 && name != null) {
-            try {
-                IDatatype res = funcalldt(name, ldt);
-                return res;
-            } catch (NoSuchMethodException | IllegalAccessException | IllegalArgumentException | InvocationTargetException ex) {
-                // continue
-            }
-        }
-        name = javaName(fun);
-        try {
-            Method m = this.getClass().getMethod(name, signature(ldt.length));
-            return (IDatatype) m.invoke(this, ldt);
-        } catch (SecurityException e) {
-
-        } catch (InvocationTargetException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException e) {
-            trace(e, "funcall", name, ldt);
-            trace(ldt);
-        }
-        return null;
-    }
-    
-    /**
-     * funcall(rq:gt, x, y) -> x.gt(y)
-     */
-    public IDatatype funcalldt(String name, IDatatype... ldt) 
-            throws NoSuchMethodException, IllegalAccessException, IllegalArgumentException, InvocationTargetException {
-        IDatatype[] param = new IDatatype[ldt.length-1];
-        for (int i = 0; i<param.length; i++) {
-            param[i] = ldt[i+1];
-        }
-        Method m = ldt[0].getClass().getMethod(name, signature(param.length));
-        return (IDatatype) m.invoke(ldt[0], param);
-    }
-    
-    public IDatatype apply(IDatatype fun, IDatatype dt) {
-        return funcall(fun, DatatypeMap.toArray(dt));
-    }
-
-    Class[] signature(int n) {
-        return signature[n];
-    }
-
-    Class[] signature1(int n) {
-        Class<IDatatype>[] aclasses = new Class[n];
-        Arrays.fill(aclasses, IDatatype.class);
-        return aclasses;
-    }
 
     void prepare(IDatatype[] ldt) {
         for (int i = 1; i < ldt.length; i++) {
@@ -330,81 +277,8 @@ public class Core extends PluginImpl implements FunctionEvaluator {
         }
     }
 
-    @Override
-    public IDatatype map(IDatatype fun, IDatatype... ldt) {
-        return map(fun, false, ldt);
-    }
+  
 
-    public IDatatype mapany(IDatatype fun, IDatatype... ldt) {
-        return map(fun, true, ldt);
-    }
-
-    public IDatatype map(IDatatype fun, boolean mapany, IDatatype... ldt) {
-        String name = javaName(fun);
-        try {
-            prepare(ldt);
-            Method m = this.getClass().getMethod(name, signature(ldt.length));
-            IDatatype list = ldt[0];
-
-            for (IDatatype dt : list.getValues()) {
-                ldt[0] = dt;
-                IDatatype obj = (IDatatype) m.invoke(this, ldt);
-
-                if (mapany) {
-                    if (obj != null && obj.booleanValue()) {
-                        return TRUE;
-                    }
-                }
-            }
-            return (mapany) ? FALSE : TRUE;
-
-        } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-            trace(e, "map", name, ldt);
-            trace(ldt);
-        }
-        return null;
-    }
-
-    IDatatype mapfindlist(IDatatype fun, IDatatype... ldt) {
-        return maplist(fun, true, ldt);
-    }
-
-    @Override
-    public IDatatype maplist(IDatatype fun, IDatatype... ldt) {
-        return maplist(fun, false, ldt);
-    }
-
-    public IDatatype maplist(IDatatype fun, boolean find, IDatatype... ldt) {
-        String name = javaName(fun);
-        try {
-            prepare(ldt);
-            Method m = this.getClass().getMethod(name, signature(ldt.length));
-            IDatatype list = ldt[0];
-            ArrayList<IDatatype> res = new ArrayList<>();
-
-            for (IDatatype dt : list.getValues()) {
-                ldt[0] = dt;
-                IDatatype obj = (IDatatype) m.invoke(this, ldt);
-
-                if (obj != null) {
-                    if (find) {
-                        if (obj.booleanValue()) {
-                            res.add(dt);
-                        }
-                    } else {
-                        res.add(obj);
-                    }
-                }
-            }
-
-            return DatatypeMap.newInstance(res);
-
-        } catch (SecurityException | NoSuchMethodException | IllegalArgumentException | IllegalAccessException | InvocationTargetException e) {
-            trace(e, "maplist", name, ldt);
-            trace(ldt);
-        }
-        return null;
-    }
 
     IDatatype dt_list(IDatatype dt) {
         if (dt.isList()) {
@@ -428,9 +302,9 @@ public class Core extends PluginImpl implements FunctionEvaluator {
         return new IOFunction("validURI").validURI(dt);
     }
 
-    IDatatype xt_sparql(IDatatype q, IDatatype... dt) {
-        return kgram(q, dt);
-    }
+//    IDatatype xt_sparql(IDatatype q, IDatatype... dt) {
+//        return kgram(q, dt);
+//    }
 
     IDatatype xt_replace(IDatatype str, IDatatype x, IDatatype y) {
         return DatatypeMap.newInstance(str.getLabel().replace(x.getLabel(), y.getLabel()));
@@ -448,8 +322,6 @@ public class Core extends PluginImpl implements FunctionEvaluator {
         return xt_turtle(dt);
     }
 
-    IDatatype rq_strstarts(IDatatype a, IDatatype b) {
-        return strstarts(a, b);
-    }
+   
 
 }

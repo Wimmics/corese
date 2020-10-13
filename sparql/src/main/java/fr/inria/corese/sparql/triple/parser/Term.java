@@ -1902,6 +1902,6 @@ public class Term extends Expression {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
-        return eval.function((Expr) this, env, p);
+        return eval.function(this, env, p);
     }
 }

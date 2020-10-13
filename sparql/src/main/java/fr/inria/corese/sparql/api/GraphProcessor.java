@@ -59,7 +59,7 @@ public interface GraphProcessor {
     
     IDatatype shape(Expr exp, Environment env, Producer p, IDatatype[] param);
 
-    IDatatype sparql(Environment env, Producer p, IDatatype[] param);
+    IDatatype sparql(Environment env, Producer p, IDatatype[] param) throws EngineException;
     
     IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
     

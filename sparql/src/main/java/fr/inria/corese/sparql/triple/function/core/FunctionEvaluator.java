@@ -1,7 +1,6 @@
 package fr.inria.corese.sparql.triple.function.core;
 
 import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 
 /**

@@ -8,7 +8,6 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.event.ResultListener;
-import fr.inria.corese.kgram.filter.Proxy;
 import fr.inria.corese.kgram.core.SparqlException;
 /**
  * Interface for the connector that evaluates filters
@@ -23,8 +22,6 @@ public interface Evaluator {
         
         public static final int CACHE_MODE = 101;
         public static final int NO_CACHE_MODE = 102;
-
-        Proxy getProxy();
 	
 	void setMode(int mode);
 	
@@ -61,37 +58,18 @@ public interface Evaluator {
 	 * 	
 	 */
 	Mappings eval(Filter f, Environment e, List<Node> nodes) throws SparqlException;
-	
-	//Object eval(Expr f, Environment e, Producer p);
-        
-        //Object eval(Expr f, Environment e, Producer p, Object[] values);
-                        
-        //Expr getDefine(Expr exp, Environment env, Producer p, int n);
-                              
+	                             
         Expr getDefine(Environment env, String name, int n);
-        Expr getDefineMetadata(Environment env, String metadata, int n);
-        
+        Expr getDefineMetadata(Environment env, String metadata, int n);       
         Expr getDefineMethod(Environment env, String name, Object type, Object[] values);
 
         Expr getDefine(String name);
         
-        //int compare(Environment env, Producer p, Node n1, Node n2);
-
         // cast Java object into IDatatype
         Node cast(Object obj, Environment e, Producer p);
 
         Binder getBinder();
-	
-	/**
-	 * Evaluate a filter and return a list of Node
-	 * use case: ?doc xpath('/book/title') ?title
-	 * 
-	 * @param f
-	 * @param e
-	 * @return
-	 */
-	//List<Node> evalList(Filter f, Environment e);
-		        
+				        
         void setProducer(Producer p);
         
         void setKGRAM(Eval o);

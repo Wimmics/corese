@@ -13,6 +13,7 @@ import fr.inria.corese.sparql.triple.parser.*;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.visitor.ASTWalker;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.kgram.api.core.*;
 import static fr.inria.corese.kgram.api.core.ExpType.NODE;
@@ -28,6 +29,8 @@ import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.compiler.visitor.MetadataVisitor;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.parser.visitor.Record;
 import java.io.IOException;
 import java.util.HashMap;
 
@@ -73,6 +76,7 @@ public class Transformer implements ExpType {
     }
 
     private static Logger logger = LoggerFactory.getLogger(Transformer.class);
+    public static final String NL = System.getProperty("line.separator");
     public static final String ROOT = "?_kgram_";
     public static final String THIS = "?this";
     private static final String EXTENSION = Processor.KGEXTENSION;
@@ -271,18 +275,31 @@ public class Transformer implements ExpType {
         q = transform(q, ast);
         
         getFunctionCompiler().compile(q, ast);
-        //functionCompiler(q, ast);
-        //compileFunction(q, ast);
-        //define(q, ast);        
-        //compileLambda(q, ast);
-        
+               
         error(q, ast);
         
         toJava(ast);
         
         metadata(ast, q);
+        validate(ast, q);
         
         return q;
+    }
+    
+    /**
+     * Check static safety exception
+     */
+    void validate(ASTQuery ast, Query q) throws EngineException {
+        ASTWalker walker = new ASTWalker(ast);
+        ast.process(walker);
+        
+        if (!walker.getRecord().isEmpty()) {
+            StringBuilder sb = new StringBuilder();
+            for (Record rec : walker.getRecord()) {
+                sb.append(rec.toString()).append(NL);
+            }
+            throw new SafetyException(sb.toString());
+        }
     }
     
     

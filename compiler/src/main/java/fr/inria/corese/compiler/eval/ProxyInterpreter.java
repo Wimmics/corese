@@ -7,7 +7,6 @@ import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -113,9 +112,6 @@ public class ProxyInterpreter implements ExprType {
         number = 0;
     }
 
-//     public IDatatype[] createParam(int n){
-//         return new IDatatype[n];
-//     }
     /**
      * @return the producer
      */
@@ -139,14 +135,6 @@ public class ProxyInterpreter implements ExprType {
         }
     }
 
-//    public IDatatype getValue(Object val, Object obj){
-//       if (val instanceof Boolean){
-//           Boolean b = (Boolean) val;
-//           IDatatype dt = DatatypeMap.newInstance(b);
-//           return dt;
-//       }
-//       return null;
-//    }
     public IDatatype getValue(int value) {
         return DatatypeMap.newInstance(value);
     }

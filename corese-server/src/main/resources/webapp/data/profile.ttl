@@ -15,8 +15,18 @@
 
 #[] owl:imports <profile2.ttl>
 
-# display
+# authorized sparql endpoints, see Profile defNamespace
+st:access st:namespace 
+<http://dbpedia.org/sparql>,
+<http://fr.dbpedia.org/sparql>,
+<https://data.archives-ouvertes.fr/sparql>,
+<https://covidontheweb.inria.fr/sparql>,
+# authorized linked transformation
+<sttl/>
+.
 
+
+# display
 
 st:log a st:Server ;
 st:service "log" ;
@@ -41,7 +51,7 @@ st:service "covid" ;
     st:export true ;
     st:lang "fr" ;
     st:import st:dbpediaParam, st:mapParam ;
-    st:endpoint <http://covid19.i3s.unice.fr/sparql>
+    st:endpoint <https://covidontheweb.inria.fr/sparql>
   ] ;
   st:workflow st:covidwf
   .
@@ -459,6 +469,8 @@ st:content st:humancontent
 
 st:humancontent a sw:Workflow ; sw:body (
   #  [ a sw:Load ; sw:path <tutorial/human.rdfs>  ; sw:name st:data1 ] 
+    # draft event functions for getVisitor().beforeRequest(request) and /agent?action=sparql
+   # [ a sw:Query ; sw:uri <demo/system/event.rq> ]
     [ a sw:Load ; sw:path <tutorial/human1.rdf>  ; sw:name st:data1 ] 
     [ a sw:Load ; sw:path <tutorial/human2.rdf>  ; sw:name st:data2 ] 
     [ a sw:Load ; sw:path <tutorial/pragma.ttl>  ; sw:name st:pragma ]    
@@ -638,12 +650,14 @@ st:halsparql a st:Server ;
 
 st:halwf a sw:Workflow ; sw:body (
     #[ a sw:Query ; sw:uri <query/hal/test.rq> ]
+    [ a sw:Query ] # place holder for the query
     [ a sw:Transformation ; sw:uri st:web ]
 )
 .
 
 
 st:tutohal a sw:Workflow ; sw:body ( 
+    [ a sw:Query ; sw:uri <tutorial/process.rq> ]
     [ a sw:Parallel ; sw:body ( 
       # main is empty
           #  st:humancontent  

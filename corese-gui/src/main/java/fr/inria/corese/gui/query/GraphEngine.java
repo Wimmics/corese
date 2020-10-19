@@ -226,7 +226,11 @@ public class GraphEngine {
 
     public void runQueryEngine() {
         qengine.setDebug(isDebug);
-        qengine.process();
+        try {
+            qengine.process();
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage());
+        }
     }
 
     public void runPipeline(String path) {

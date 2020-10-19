@@ -12,6 +12,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Context;
+import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -163,30 +164,45 @@ public class TripleStore {
     
     // SPARQL Endpoint
     
-    Mappings query(String query, Dataset ds) throws EngineException {
-            return query(null, query, ds);
-    }
+//    Mappings query(String query, Dataset ds) throws EngineException {
+//            return query(null, query, ds);
+//    }
         
     Mappings query(HttpServletRequest request, String query, Dataset ds) throws EngineException {
         if (ds == null) {
             ds = new Dataset();
         }
-        if (ds.getContext() == null) {
-            ds.setContext(new Context());
-        }
-        Context c = ds.getContext();
+        Context c = ds.getCreateContext();
         c.setService(getName());
         c.setUserQuery(true);
-        c.setLevel(Access.getQueryAccessLevel(true, false));
-        if (request!=null) {
-            c.setRemoteHost(request.getRemoteHost());
-        }
+        c.setRemoteHost(request.getRemoteHost());
         Profile.getEventManager().call(ds.getContext());
         return getQueryProcess().query(query, ds);
     }
+    
 
-    Mappings query(String query) throws EngineException{
-        return query(query, new Dataset());
+    
+    void trace(HttpServletRequest request) {
+        Enumeration<String> en = request.getParameterNames();
+        while (en.hasMoreElements()) {
+            String name = en.nextElement();
+            System.out.println("param: " + name + " " + request.getParameter(name));
+        }
+        for (String name : request.getParameterMap().keySet()) {
+            System.out.println("server TS: " + name + " " + request.getParameter(name));
+        }
+        System.out.println("server TS: query " + request.getParameter("query"));
+        System.out.println("server TS: access " + request.getParameter("access"));
+    }
+    
+   
+
+//    Mappings query(String query) throws EngineException{
+//        return query(query, new Dataset());
+//    }
+    
+    Mappings query(HttpServletRequest request, String query) throws EngineException{
+        return query(request, query, new Dataset());
     }
 
     /**

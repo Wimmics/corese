@@ -231,8 +231,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
                         
                         if (cmd.hasOption("protect")) {
 				logger.info("protect");
-				SPARQLRestAPI.isProtected = true;
-                                Access.protect();
+				protect();
 			}
                         Access.setMode(Access.Mode.SERVER);
                         
@@ -366,6 +365,11 @@ public class EmbeddedJettyServer extends ResourceConfig {
 			System.err.println("Parsing failed.  Reason: " + exp.getMessage());
 		}
 	}
+        
+    static void protect() {
+        SPARQLRestAPI.isProtected = true;
+        Access.protect();
+    }
 
 	public static URI extractResourceDir(String dirname, boolean overwrite) throws FileSystemException, URISyntaxException {
 		URL dir_url = EmbeddedJettyServer.class.getClassLoader().getResource(dirname);

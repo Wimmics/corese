@@ -18,6 +18,9 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.transform.ContextBuilder;
 import fr.inria.corese.core.util.Parameter;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.AccessNamespace;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
@@ -41,7 +44,8 @@ import org.apache.logging.log4j.LogManager;
  *
  */
 public class Profile {
-
+    static final String ACCESS = NSManager.STL+"access";
+    static final String NS = NSManager.STL+"namespace";
     /**
      * @return the eventManager
      */
@@ -362,9 +366,27 @@ public class Profile {
     void process(Graph g) throws IOException, EngineException {
         initService(g);
         initServer(g);
+        if (isProtected()) {
+            defNamespace(g);
+        }
     }
     
-    
+    /**
+     * In protected mode, service is unauthorized bu default
+     * Authorize service on specific SPARQL endpoints 
+     * profile.ttl may contain:
+     * st:access st:namespace <http://dbpedia.org/sparql>
+     */
+    void defNamespace(Graph g) {
+        Node n = g.getResource(ACCESS);
+        if (n != null) {
+            Access.define(Access.Feature.SPARQL_SERVICE, Access.Level.USER);
+            for (Edge edge : g.getEdges(NS, n, 0)) {
+                System.out.println("access: " + edge.getNode(1).getLabel());
+                Access.define(edge.getNode(1).getLabel(), true);
+            }
+        }
+    }
 
     GraphStore loadServer(String name) throws IOException, LoadException {
         return load(getDataPath(name));

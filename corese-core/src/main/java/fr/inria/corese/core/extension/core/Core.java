@@ -163,7 +163,7 @@ public class Core implements FunctionEvaluator {
         try {
             Query q = exec.compile(query.getLabel());
             q.complete(getEnvironment().getQuery(), getPluginTransform().getContext());
-            Mappings map = exec.sparqlQuery(q, m);
+            Mappings map = exec.sparqlQuery(q, m, null);
             if (map.getGraph() == null) {
                 return DatatypeMap.createObject(map);
             } else {

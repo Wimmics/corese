@@ -311,16 +311,6 @@ public class QueryProcess extends QuerySolver {
         return eval;
     }
 
-    
-//    public static Interpreter createInterpreter(Producer p, Matcher m) {
-//        PluginImpl plugin = PluginImpl.create(m);
-//        ProxyInterpreter proxy = new ProxyInterpreter();
-//        proxy.setPlugin(plugin);
-//        Interpreter eval = new Interpreter(proxy);
-//        eval.setProducer(p);
-//        return eval;
-//    }
-
     /**
      * query = select from g where g is an external named graph return a new
      * QueryProcess with Producer(g)
@@ -430,18 +420,22 @@ public class QueryProcess extends QuerySolver {
      * this function
      */
     @Override
-    public Mappings query(Query q) {
-        return qquery(null, q, null, null);
+    public Mappings query(Query q) throws EngineException {
+        return query(null, q, null, null);
     }
 
     @Override
-    public Mappings eval(Query query) {
-        return qquery(null, query, null, null);
+    public Mappings eval(Query query) throws EngineException {
+        return query(null, query, null, null);
     }
 
     @Override
-    public Mappings eval(Query query, Mapping m) {
-        return qquery(null, query, m, null);
+    public Mappings eval(Query query, Mapping m) throws EngineException {
+        return query(null, query, m, null);
+    }
+    
+    public Mappings eval(Query query, Mapping m, Dataset ds) throws EngineException {
+        return query(null, query, m, ds);
     }
 
     /**
@@ -449,12 +443,12 @@ public class QueryProcess extends QuerySolver {
      * query(insert where)
      */
     @Override
-    public Mappings eval(Query query, Mapping m, Producer p) {
+    public Mappings eval(Query query, Mapping m, Producer p) throws EngineException {
         return eval(null, query, m, p);
     }
 
     @Override
-    public Mappings eval(Node gNode, Query query, Mapping m, Producer p) {
+    public Mappings eval(Node gNode, Query query, Mapping m, Producer p) throws EngineException {
         Dataset ds = getUpdateDataset(query);
         if (p == null || p == getProducer()) {
             return protectQuery(gNode, query, m, ds);
@@ -469,14 +463,14 @@ public class QueryProcess extends QuerySolver {
      * @event function call may perform update before or after select query
      * example: visitor init()
      */
-    Mappings protectQuery(Node gNode, Query query, Mapping m, Dataset ds) {
+    Mappings protectQuery(Node gNode, Query query, Mapping m, Dataset ds) throws EngineException {
         if (query.isUpdate()) {
             if (lock.getReadLockCount() > 0 && !isReentrant() && !isSynchronized()) {
                 logger.info("Update rejected to avoid deadlock");
                 return Mappings.create(query);
             }
         }
-        return qquery(gNode, query, m, ds);
+        return query(gNode, query, m, ds);
     }
 
     Dataset getUpdateDataset(Query q) {
@@ -583,14 +577,14 @@ public class QueryProcess extends QuerySolver {
 
     public Mappings sparqlQuery(String squery, Mapping map, Dataset ds) throws EngineException {
         Query q = compile(squery, ds);
-        return sparqlQuery(q, map);
+        return sparqlQuery(q, map, ds);
     }
 
-    public Mappings sparqlQuery(Query q, Mapping map) throws EngineException {
+    public Mappings sparqlQuery(Query q, Mapping map, Dataset ds) throws EngineException {
         if (q.isUpdate()) {
             throw new EngineException("Unauthorized Update in SPARQL Query:\n" + q.getAST().toString());
         }
-        return eval(q, map);
+        return eval(q, map, ds);
     }
 
     public Mappings sparqlUpdate(String squery) throws EngineException {
@@ -620,7 +614,7 @@ public class QueryProcess extends QuerySolver {
                 //return Mappings.create(q);
             }
         }
-        m = createMapping(m, ds);
+        m = completeMappings(m, ds);
         pragma(q);
         for (QueryVisitor vis : getAST(q).getVisitorList()) {
             vis.visit(q, getGraph());
@@ -661,12 +655,13 @@ public class QueryProcess extends QuerySolver {
     }
     
     /**
-     * 
+     * Dataset may contain workflow Binding or Context access level
+     * Share Binding or access level
      */
-    Mapping createMapping(Mapping m, Dataset ds) {
+    Mapping completeMappings(Mapping m, Dataset ds) {
         if (ds != null) {
             if (ds.getBinding() != null) {
-                // use case: workflow
+                // use case: share workflow Binding
                 if (m == null) {
                     m = new Mapping();
                 }
@@ -675,6 +670,7 @@ public class QueryProcess extends QuerySolver {
                 }
             }
             if (ds.getContext() != null) {
+                // use case: query with Context
                 if (m == null) {
                     m = new Mapping();
                 }
@@ -683,6 +679,7 @@ public class QueryProcess extends QuerySolver {
                     b = Binding.create();
                     m.setBind(b);
                 }
+                //share Context access level
                 b.setAccessLevel(ds.getContext().getLevel());
                 b.setDebug(ds.getContext().isDebug());
             }
@@ -691,20 +688,20 @@ public class QueryProcess extends QuerySolver {
     }
     
 
-    Mapping createMapping2(Mapping m, Dataset ds) {
-        if (m == null) {
-            if (ds != null) { 
-                if (ds.getBinding() != null) {
-                    m = Mapping.create(ds.getBinding());
-                }
-            }
-        } else if (m.getBind() == null) { 
-            if (ds != null) {
-                m.setBind(ds.getBinding());
-            }
-        }
-        return m;
-    }
+//    Mapping completeMappings2(Mapping m, Dataset ds) {
+//        if (m == null) {
+//            if (ds != null) { 
+//                if (ds.getBinding() != null) {
+//                    m = Mapping.create(ds.getBinding());
+//                }
+//            }
+//        } else if (m.getBind() == null) { 
+//            if (ds != null) {
+//                m.setBind(ds.getBinding());
+//            }
+//        }
+//        return m;
+//    }
 
     void dbProducer(Query q) {
         ASTQuery ast = getAST(q);

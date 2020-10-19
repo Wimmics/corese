@@ -38,7 +38,6 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.filter.Extension;
-import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.EventManager;
@@ -54,7 +53,6 @@ import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.ResultFormat;
-import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphListen;
@@ -64,7 +62,6 @@ import fr.inria.corese.core.workflow.ShapeWorkflow;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import java.util.ArrayList;
 import java.util.Comparator;
-import java.util.HashMap;
 import java.util.List;
 import java.util.TreeMap;
 import fr.inria.corese.kgram.api.core.Edge;
@@ -449,14 +446,6 @@ public class PluginImpl
         return DatatypeMap.newInstance(str);
     }
 
-//    Path getPath(Expr exp, Environment env){
-//        Node qNode = env.getQueryNode(exp.getExp(0).getLabel());
-//        if (qNode == null) {
-//            return null;
-//        }
-//        Path p = env.getPath(qNode);
-//        return p;
-//    }
     Edge getEdge(Expr exp, Environment env) {
         Memory mem = (Memory) env;
         return mem.getEdge(exp.getExp(0).getLabel());
@@ -1043,9 +1032,11 @@ public class PluginImpl
      * param[0] = query param[i, i+1] = var, val
      */
     @Override
-    public IDatatype sparql(Environment env, Producer p, IDatatype[] param) throws EngineException{
-        return kgram(env, getGraph(p), param[0].getLabel(),
-                (param.length == 1) ? null : createMapping(p, param, 1));
+    public IDatatype sparql(Environment env, Producer p, IDatatype[] param) throws EngineException {
+        Mapping m = createMapping(p, param, 1);
+        // share global variables and access level
+        m.setBind(env.getBind());
+        return kgram(env, getGraph(p), param[0].getLabel(), m);
     }
 
     /**
@@ -1086,14 +1077,14 @@ public class PluginImpl
 
     IDatatype kgram(Environment env, Graph g, String query, Mapping m) throws EngineException{
         QueryProcess exec = QueryProcess.create(g, true);
-        exec.setRule((env == null) ? false : env.getQuery().isRule());
+        exec.setRule(env.getQuery().isRule());
         try {
             Mappings map;
             if (g.getLock().getReadLockCount() == 0 && !g.getLock().isWriteLocked()) {
                 // use case: LDScript direct call  
-                map = exec.query(query, m, (env == null) ? null : getDataset(env));
+                map = exec.query(query, m, getDataset(env));
             } else {
-                map = exec.sparqlQuery(query, m, (env == null) ? null : getDataset(env));
+                map = exec.sparqlQuery(query, m, getDataset(env));
             }
             if (map.getGraph() == null) {
                 return DatatypeMap.createObject(map);

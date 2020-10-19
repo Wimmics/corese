@@ -265,7 +265,7 @@ public class QueryEngine implements Engine {
     }
 
     @Override
-    public boolean process() {
+    public boolean process() throws EngineException {
         if (!isActivate) {
             return false;
         }

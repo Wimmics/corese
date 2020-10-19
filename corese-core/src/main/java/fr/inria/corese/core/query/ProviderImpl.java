@@ -41,6 +41,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -558,24 +559,35 @@ public class ProviderImpl implements Provider {
         return serv.getLabel().startsWith(DB);
     }
     
-    Mappings send(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException {
-        return post1(q, serv, env, timeout);
+    Mappings send(Query q, Node serv, Environment env, int timeout) 
+            throws IOException, ParserConfigurationException, SAXException {
+        ASTQuery ast = (ASTQuery) q.getGlobalQuery().getAST();
+        if (ast.hasMetadata(Metadata.FORM)) {
+            return post2(q, serv, env, timeout);        
+        }
+        else {
+            return post1(q, serv, env, timeout);
+        }
     }
     
     
-    Mappings post1(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException {
+    Mappings post1(Query q, Node serv, Environment env, int timeout) 
+            throws IOException, ParserConfigurationException, SAXException {
         ASTQuery aa  = (ASTQuery) q.getOuterQuery().getAST();
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean trap = ast.isFederate() || ast.getGlobalAST().hasMetadata(Metadata.TRAP);
         String query = ast.toString();
-        InputStream stream = doPost(aa.getMetadata(), serv.getLabel(), query, timeout);       
+        Binding b = (Binding) env.getBind();
+        InputStream stream = doPost(aa.getMetadata(), serv.getLabel(), query, timeout, b.getAccessLevel()); 
         return parse(stream, trap);
     }
     
     
     Mappings post2(Query q, Node serv, Environment env, int timeout) throws IOException {
         try {
+            Binding b = (Binding) env.getBind();
             Service service = new Service(serv.getLabel()) ;
+            service.setLevel(b.getAccessLevel());
             Mappings map = service.query(q, null);
             return map;
         } catch (LoadException ex) {
@@ -609,17 +621,26 @@ public class ProviderImpl implements Provider {
     }
 
     public StringBuffer doPost2(Metadata meta, String server, String query) throws IOException {
-        URLConnection cc = post(meta, server, query, 0);
+        URLConnection cc = post(meta, server, query, 0, Level.DEFAULT);
         return getBuffer(cc.getInputStream());
     }
 
-    public InputStream doPost(Metadata meta, String server, String query, int timeout) throws IOException {
-        URLConnection cc = post(meta, server, query, timeout);
+    public InputStream doPost(Metadata meta, String server, String query, int timeout, Level level) throws IOException {
+        URLConnection cc = post(meta, server, query, timeout, level);
         return cc.getInputStream();
     }
 
-    URLConnection post(Metadata meta, String server, String query, int timeout) throws IOException {
+    URLConnection post(Metadata meta, String server, String query, int timeout, Level level) throws IOException {
+        String param = getParameter(server);
+        server = getServer(server);
         String qstr = "query=" + URLEncoder.encode(query, "UTF-8");
+        if (param !=null) {
+            // check param != access=...
+            qstr = param.concat("&").concat(qstr);
+        }
+//        if (level.equals(Level.USER)) {
+//            qstr = "access=".concat(level.toString()).concat("&").concat(qstr);
+//        }
         List<String> graphList = getGraphList(server, meta);
         qstr = complete(qstr, server, graphList);
         URL queryURL = new URL(server);
@@ -627,7 +648,6 @@ public class ProviderImpl implements Provider {
         urlConn.setRequestMethod("POST");
         urlConn.setDoOutput(true);
         urlConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        //urlConn.setRequestProperty("Accept", "application/rdf+xml,  application/sparql-results+xml");
         urlConn.setRequestProperty("Accept", "application/sparql-results+xml, application/rdf+xml");
         urlConn.setRequestProperty("Content-Length", String.valueOf(qstr.length()));
         urlConn.setRequestProperty("Accept-Charset", "UTF-8");
@@ -638,6 +658,22 @@ public class ProviderImpl implements Provider {
         out.flush();
 
         return urlConn;
+    }
+    
+    String getServer(String server) {
+        int index = server.indexOf("?");
+        if (index == -1) {
+            return server;
+        }
+        return server.substring(0, index);
+    }
+    
+    String getParameter(String server) {
+        int index = server.indexOf("?");
+        if (index == -1) {
+            return null;
+        }
+        return server.substring(index+1);
     }
     
     // default-graph-uri

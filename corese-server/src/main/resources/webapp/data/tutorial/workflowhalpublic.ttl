@@ -557,7 +557,7 @@ service <http://fr.dbpedia.org/sparql> {
 """ ;
 
 # name of function to preprocess the query : replace $pattern by appropriate code
-st:processquery fun:country ;
+st:processquery us:country ;
 
 st:select  st:prefLabel ;
 

@@ -7,6 +7,8 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 import java.io.IOException;
 import javax.ws.rs.client.Client;
@@ -29,12 +31,14 @@ import org.xml.sax.SAXException;
 public class Service {
 
     public static final String QUERY = "query";
+    public static final String ACCESS = "access";
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
     static final String ENCODING = "UTF-8";
     private ClientBuilder clientBuilder;
 
     boolean isDebug = !true;
     String service;
+    private Access.Level level = Access.Level.DEFAULT;
     
     public Service() {
         clientBuilder = ClientBuilder.newBuilder();
@@ -89,6 +93,7 @@ public class Service {
         return process(query, MIME_TYPE);
     }
 
+    // https://docs.oracle.com/javaee/7/api/index.html
     public String process(String query, String mime) {
         if (isDebug) {
             System.out.println(query);
@@ -97,6 +102,9 @@ public class Service {
         WebTarget target = client.target(service);
         Form form = new Form();
         form.param(QUERY, query);
+        if (getLevel().equals(Level.PUBLIC)) {
+            form.param(ACCESS, getLevel().toString());
+        }
         String res = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         if (isDebug) {
             System.out.println(res);
@@ -148,6 +156,20 @@ public class Service {
         Load ld = Load.create(g);
         ld.loadString(str, Load.RDFXML_FORMAT);
         return g;
+    }
+
+    /**
+     * @return the level
+     */
+    public Access.Level getLevel() {
+        return level;
+    }
+
+    /**
+     * @param level the level to set
+     */
+    public void setLevel(Access.Level level) {
+        this.level = level;
     }
 
 }

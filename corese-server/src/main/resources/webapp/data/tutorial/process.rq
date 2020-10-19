@@ -1,5 +1,8 @@
 @prefix fun: <>
 
+@trace 
+select * where {}
+
 @public {
 
 #
@@ -9,7 +12,7 @@
 # it is defined in profile.ttl tutohal
 # st:get(st:mode) is the DBpedia URI select by user
 #
-function fun:country(?q) {
+function us:country(?q) {
     xt:replace(?q, "$pattern", us:countryText())
 }
 

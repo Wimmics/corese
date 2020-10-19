@@ -1,9 +1,16 @@
-package fr.inria.corese.sparql.triple.parser;
+package fr.inria.corese.sparql.triple.parser.visitor;
 
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.sparql.triple.function.script.Let;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.Term;
+import fr.inria.corese.sparql.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.parser.VariableLocal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -14,13 +21,15 @@ import org.slf4j.Logger;
  * Visit filter/select/bind expressions
  * function, let, map: declare arguments as local variables, 
  * generate variable index
+ * 
+ * Expression compile(ast) -> local(ast) -> here
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
 public class ExpressionVisitorVariable implements ExpressionVisitor {
   
-    private static Logger logger = LoggerFactory.getLogger(ASTQuery.class);
+    private static Logger logger = LoggerFactory.getLogger(ExpressionVisitorVariable.class);
    
     private boolean let = false;
     private boolean functionDefinition = false;
@@ -39,7 +48,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     }
     
     // top level exp
-    ExpressionVisitorVariable(ASTQuery ast) {
+    public ExpressionVisitorVariable(ASTQuery ast) {
         this();
         this.ast = ast;
     }

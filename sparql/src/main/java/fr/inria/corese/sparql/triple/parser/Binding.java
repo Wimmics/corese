@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.parser;
 
+import fr.inria.corese.sparql.triple.api.Walker;
 import java.util.List;
 
 /**
@@ -52,6 +53,14 @@ public class Binding extends Exp {
 	
    public Variable getVariable(){
        return var;
+   }
+   
+    @Override
+   public void walk(Walker walker) {
+       walker.enter(this);
+       //getVariable().walk(walker);
+       getFilter().walk(walker);
+       walker.leave(this);
    }
    
    /*

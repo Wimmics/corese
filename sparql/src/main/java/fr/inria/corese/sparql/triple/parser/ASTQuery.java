@@ -25,6 +25,7 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.ASTQ;
 import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.api.Walker;
 import fr.inria.corese.sparql.triple.function.script.TryCatch;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.IOException;
@@ -731,7 +732,7 @@ public class ASTQuery
      * Used by VariableVisitor, called by Transformer def = function(st:foo(?x)
      * = st:bar(?x))
      */
-    void define(Function fun) {
+    public void define(Function fun) {
         Expression t = fun.getFunction(); 
         getGlobalAST().getUndefined().remove(t.getLabel());
     }
@@ -1349,7 +1350,7 @@ public class ASTQuery
     /**
      * SubQuery within function inherit function Metadata
      */
-    void inherit(Metadata meta) {
+    public void inherit(Metadata meta) {
         annotate(meta);
     }
 
@@ -3179,7 +3180,7 @@ public class ASTQuery
                }
             }
             
-            Binding b = createBind(val.getExp(), meta);
+            Binding b = createBind(val.getExpression(), meta);
             val.setBind(b); 
         }
        
@@ -3594,6 +3595,38 @@ public class ASTQuery
     @Override
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);
+    }
+    
+    /**
+     * Additional validation walk through every Exp and Expression
+     * Safety check
+     */
+    public void process(Walker walker) {
+        walker.start(this);
+        walk(walker);
+        walker.finish(this);
+    }
+    
+    public void walk(Walker walker) {
+        walker.enter(this); 
+        for (Exp exp : getBody()) {
+            exp.walk(walker);
+        }
+        if (getValues() != null) {
+            getValues().walk(walker);
+        }
+        for (Expression exp : getModifierExpressions()) {
+            exp.walk(walker);
+        }
+        if (getGlobalAST() == null) {
+            for (Function fun : getDefine().getFunctionList()) {
+                fun.walk(walker);
+            }
+            for (Function fun : getDefineLambda().getFunctionList()) {
+                fun.walk(walker);
+            }
+        }
+        walker.leave(this);
     }
 
     public void setApproximateSearchOptions(String key, String value) {

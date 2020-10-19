@@ -65,6 +65,7 @@ public class Metadata extends ASTObject
     public static final int GRAPH     = 46;
     public static final int FROM      = 47;
     public static final int UPDATE    = 48;
+    public static final int FORM      = 49;
 
     
     
@@ -177,6 +178,7 @@ public class Metadata extends ASTObject
                       
         define("@update",    UPDATE);  
         define("@event",    EVENT);  
+        define("@form",    FORM);  
 //        define(META_BEFORE, BEFORE);  
 //        define(META_AFTER,  AFTER);  
 //        define(META_PRODUCE,PRODUCE);  

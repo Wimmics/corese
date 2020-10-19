@@ -94,8 +94,6 @@ public class Access {
         LDSCRIPT, 
         // function us:test() {}
         DEFINE_FUNCTION, 
-        // xt:entailment()
-        LDSCRIPT_ENTAILMENT,        
         // sparql query in LDScript: xt:sparql, query(select where), let (select where)
         LDSCRIPT_SPARQL, 
         // xt:read xt:write xt:http:get xt:load
@@ -281,12 +279,21 @@ public class Access {
      * Return the access right granted to the query 
      */
     public static Level getQueryAccessLevel(boolean user, boolean special) {
+        return getQueryAccessLevel(DEFAULT, user, special);
+    }
+    
+    /**
+     * user query may have access level set by access=USER
+     * return the min of access levels
+     * 
+     */
+    public static Level getQueryAccessLevel(Level level, boolean user, boolean special) {
         if (isProtect()) {
             // run in protect mode
             if (user) {
                 if (special) {
                     // special case: authorize SPARQL_UPDATE (e.g. for tutorial)
-                    return RESTRICTED;
+                    return RESTRICTED.min(level);
                 }
                 else {
                     // user query has only access to PUBLIC feature
@@ -294,7 +301,8 @@ public class Access {
                 }
             }
         }
-        return USER_DEFAULT;
+        // user query may have lower access than default
+        return USER_DEFAULT.min(level);
     }
     
 

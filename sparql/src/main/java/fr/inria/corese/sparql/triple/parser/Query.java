@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
+import fr.inria.corese.sparql.triple.api.Walker;
 import java.util.List;
 
 public class Query extends Exp {
@@ -111,5 +112,13 @@ public class Query extends Exp {
         // e.g. Local variable visitor does not recursively visit subquery
         v.visit(this);
     }
+    
+    @Override
+     public void walk(Walker walker) {
+        walker.enter(this);
+        getAST().walk(walker);
+        walker.leave(this);
+    }
+    
 
 }

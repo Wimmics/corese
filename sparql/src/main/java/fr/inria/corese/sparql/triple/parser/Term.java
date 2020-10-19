@@ -1577,7 +1577,7 @@ public class Term extends Expression {
     }
 
     // this = xt:fun(?x, ?y)
-    List<Variable> getFunVariables() {
+    public List<Variable> getFunVariables() {
         ArrayList<Variable> list = new ArrayList<>();
         for (Expression exp : getArgs()) {
             if (exp.isVariable()) {
@@ -1667,6 +1667,7 @@ public class Term extends Expression {
         exist = exp;
     }
 
+    @Override
     public Exist getExist() {
         return exist;
     }
@@ -1727,6 +1728,7 @@ public class Term extends Expression {
     
     void checkAccessLevel(ASTQuery ast) throws EngineException {
         switch (oper()) {
+            case ExprType.LOAD:            
             case ExprType.READ:
             case ExprType.WRITE:
             case ExprType.XT_HTTP_GET:

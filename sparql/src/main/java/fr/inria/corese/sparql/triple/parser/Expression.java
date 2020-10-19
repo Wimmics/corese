@@ -30,6 +30,8 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.api.Walker;
+import fr.inria.corese.sparql.triple.parser.visitor.ExpressionVisitorVariable;
 import java.util.Collection;
 
 /**
@@ -268,6 +270,10 @@ public class Expression extends TopExp
     }
 
     public boolean isFunction() {
+        return false;
+    }
+    
+    public boolean isTemplate() {   
         return false;
     }
         
@@ -644,19 +650,14 @@ public class Expression extends TopExp
     public boolean isNotTermExist() {
         return false;
     }
+    
+    public Exist getExist() {
+        return null;
+    }
 
 
     @Override
     public boolean isExist() {
-//        if (oper() == ExprType.EXIST) {
-//            return true;
-//        } else {
-//            for (Expr ee : getExpList()) {
-//                if (ee.isExist()) {
-//                    return true;
-//                }
-//            }
-//        }
         return false;
     }
     
@@ -887,7 +888,15 @@ public class Expression extends TopExp
     public void accept(ASTVisitor visitor) {
         visitor.visit(this);
     }
-
+    
+    public void walk(Walker walker) {
+        walker.enter(this);
+        for (Expression exp : getArgs()) {
+            exp.walk(walker);
+        }
+        walker.leave(this);
+    }
+    
     public Expression copy(Variable o, Variable n) {
         return this;
     }

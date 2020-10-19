@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
+import fr.inria.corese.sparql.triple.api.Walker;
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
 import java.util.List;
 
@@ -79,6 +80,13 @@ public class Filter extends Exp {
     @Override
     void visit(ExpressionVisitor v) {
         getFilter().visit(v);
+    }
+    
+    @Override
+    public void walk(Walker walker) {
+        walker.enter(this);
+        getFilter().walk(walker);
+        walker.leave(this);
     }
 
 }

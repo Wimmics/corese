@@ -2,6 +2,7 @@ package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.api.ElementClause;
+import fr.inria.corese.sparql.triple.api.Walker;
 
 /**
  * <p>Title: Corese</p>
@@ -108,5 +109,11 @@ public class Atom extends Expression implements ElementClause{
 		}
 		return true;
 	}
+        
+        @Override
+        public void walk(Walker walker) {
+            walker.enter(this);
+            walker.leave(this);
+    }
 	
 }

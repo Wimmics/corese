@@ -307,7 +307,7 @@ public class Variable extends Atom {
         setType(ExprType.LOCAL);
     }
 
-    void undef() {
+    public void undef() {
         //setType(ExprType.UNDEF);
         setType(ExprType.LOCAL);
     }

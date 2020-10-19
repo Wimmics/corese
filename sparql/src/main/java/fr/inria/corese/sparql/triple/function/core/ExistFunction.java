@@ -7,6 +7,7 @@ import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.api.Walker;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Expression;
@@ -50,6 +51,13 @@ public class ExistFunction extends TermEval {
             ast.getGlobalAST().setLDScript(true);
         }
         return super.prepare(ast);
+    }
+    
+    @Override
+    public void walk(Walker walker) {
+        walker.enter(this);
+        getExist().walk(walker);
+        walker.leave(this);
     }
    
 }

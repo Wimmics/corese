@@ -211,6 +211,13 @@ public class Dataset extends ASTObject {
     public Context getContext() {
         return context;
     }
+    
+    public Context getCreateContext() {
+        if (getContext() == null) {
+            setContext(new Context());
+        }
+        return getContext();
+    }
 
     /**
      * @param context the context to set

@@ -7,6 +7,7 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.sparql.exceptions.QuerySemanticException;
 import fr.inria.corese.sparql.triple.api.ASTVisitor;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
+import fr.inria.corese.sparql.triple.api.Walker;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -509,6 +510,14 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             }
         }
         
+        public void walk(Walker walker) {
+            walker.enter(this);
+            for (Exp exp : getBody()) {
+                exp.walk(walker);
+            }
+            walker.leave(this);
+        }
+              
         Exp expandList() {
             BasicGraphPattern bgp = BasicGraphPattern.create();
             expandList(bgp);

@@ -29,6 +29,10 @@ public class TemplateFunction extends LDScript {
     public TemplateFunction(String name){
         super(name);
     }
+    
+    public boolean isTemplate() {   
+        return true;
+    }
               
   /**
      * st:format (e1, st:number(), e2)

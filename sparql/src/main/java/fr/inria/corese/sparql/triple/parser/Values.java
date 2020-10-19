@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.parser;
 
+import fr.inria.corese.sparql.triple.api.Walker;
 import java.util.List;
 import java.util.ArrayList;
 
@@ -168,6 +169,15 @@ public class Values extends Exp {
         }
         return true;
     }
+    
+   @Override
+   public void walk(Walker walker) {
+       walker.enter(this);
+       if (hasExpression()) {
+            getExpression().walk(walker);
+       }  
+       walker.leave(this);
+   }
 
     /**
      * @return the moved
@@ -189,7 +199,10 @@ public class Values extends Exp {
     public Expression getExp() {
         return exp;
     }
-
+    
+    public Expression getExpression() {
+        return exp;
+    }
     /**
      * @param exp the exp to set
      */

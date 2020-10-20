@@ -34,6 +34,7 @@ public class TermEval extends Term {
     public static final String SPARQL_MESS = "SPARQL query unauthorized";
     public static final String LOAD_MESS = "Load unauthorized";
     public static final String READ_MESS = "Read unauthorized";
+    public static final String HTTP_MESS = "HTTP unauthorized";
     public static final String WRITE_MESS = "Write unauthorized";
     public static final String JAVA_FUNCTION_MESS = "Java function unauthorized";
     public static final String LINKED_TRANSFORMATION_MESS = "Linked transformation unauthorized";

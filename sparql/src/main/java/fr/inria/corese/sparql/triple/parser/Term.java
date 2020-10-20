@@ -1707,8 +1707,6 @@ public class Term extends Expression {
         proc = processor;
         proc.type(this, ast);
         
-        //checkAccessLevel(ast);
-
         int i = 0;
         for (Expression exp : getArgs()) {
             exp.prepare(ast);
@@ -1726,30 +1724,7 @@ public class Term extends Expression {
         return this;
     }
     
-    void checkAccessLevel(ASTQuery ast) throws EngineException {
-        switch (oper()) {
-            case ExprType.LOAD:            
-            case ExprType.READ:
-            case ExprType.WRITE:
-            case ExprType.XT_HTTP_GET:
-                checkFeature(Feature.READ_WRITE, ast, "Read Write unauthorized");
-                break;
-                
-            case ExprType.JAVACALL:
-            case ExprType.DSCALL:
-            case ExprType.EXTERNAL:
-                checkFeature(Feature.JAVA_FUNCTION, ast, "Java function unauthorized");               
-                break;
-                
-//            case ExprType.APPLY_TEMPLATES_WITH:
-//            case ExprType.CALL_TEMPLATE_WITH: 
-                
-            case ExprType.KGRAM:
-                checkFeature(Feature.LDSCRIPT_SPARQL, ast, "SPARQL query unauthorized");               
-                break;
-                
-        }
-    }
+   
     
     void checkFeature(Feature feat, ASTQuery ast, String mess) throws EngineException  {
         if (reject(feat, ast)) {

@@ -6,6 +6,7 @@ public class Record {
 
     private String message;
     private TopExp expression;
+    private String uri;
     
     Record(TopExp exp, String mes) {
         setExpression(exp);
@@ -32,6 +33,20 @@ public class Record {
 
     public void setExpression(TopExp expression) {
         this.expression = expression;
+    }
+
+    /**
+     * @return the uri
+     */
+    public String getUri() {
+        return uri;
+    }
+
+    /**
+     * @param uri the uri to set
+     */
+    public void setUri(String uri) {
+        this.uri = uri;
     }
 
 }

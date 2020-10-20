@@ -71,6 +71,7 @@ public class NSManager extends ASTObject {
     public static final String DBPEDIA = "http://dbpedia.org/resource/";
     public static final String RESOURCE = "http://ns.inria.fr/corese/";
     public static final String SHACL_SHACL = RESOURCE+"data/shaclshacl.ttl";
+    public static final String HTTP = "http://ns.inria.fr/http/";
     
     public static final String COSNS = RDFS.COSNS;
     public static final String COS = RDFS.COS;
@@ -106,6 +107,7 @@ public class NSManager extends ASTObject {
     public static final String SPARQL_PREF = "rq";
     public static final String OWLRL = SWL + "owlrl";
     public static final String RDFSRL = SWL + "rdfs";
+    public static final String UNDEF_URL = "http://example.org/_undefined_";
 
     /**
      * prefix seed (ns1, ns2,...)
@@ -289,6 +291,7 @@ public class NSManager extends ASTObject {
         def.put(CAST, "cast");
         def.put(DOM, "dom");
         def.put(RESOURCE, "res");
+        //def.put(HTTP, "http");
     }
 
     // add default namespaces

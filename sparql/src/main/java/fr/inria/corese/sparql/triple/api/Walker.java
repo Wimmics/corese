@@ -4,6 +4,9 @@ import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.update.ASTUpdate;
+import fr.inria.corese.sparql.triple.update.Composite;
+import fr.inria.corese.sparql.triple.update.Update;
 
 /**
  * ASTQuery process(walker) walk through every Exp, Expression and Function
@@ -21,6 +24,18 @@ public interface Walker {
     }
     
     default void leave(ASTQuery ast) {
+    }
+    
+    default void enter(ASTUpdate ast) {
+    }
+    
+    default void leave(ASTUpdate ast) {
+    }
+    
+    default void enter(Composite ast) {
+    }
+    
+    default void leave(Composite ast) {
     }
     
     default void enter(Function fun) {

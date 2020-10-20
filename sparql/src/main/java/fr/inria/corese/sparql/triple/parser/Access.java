@@ -96,8 +96,10 @@ public class Access {
         DEFINE_FUNCTION, 
         // sparql query in LDScript: xt:sparql, query(select where), let (select where)
         LDSCRIPT_SPARQL, 
-        // xt:read xt:write xt:http:get xt:load
-        READ_WRITE,
+        // xt:read xt:write,  xt:load
+        READ_WRITE, 
+        // xt:http:get
+        HTTP,
         // java:fun(xt:stack())
         JAVA_FUNCTION,
 
@@ -371,6 +373,7 @@ public class Access {
     
     void initServer() {
         init();
+        deny(READ_WRITE);
     }
     
     /**

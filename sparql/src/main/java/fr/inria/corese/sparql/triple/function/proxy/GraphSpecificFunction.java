@@ -167,7 +167,7 @@ public class GraphSpecificFunction extends LDScript {
                 return proc.read(param[0]);
                 
             case XT_HTTP_GET:
-                check(Feature.READ_WRITE, b, READ_MESS);
+                check(Feature.HTTP, b, READ_MESS);
                 return proc.httpget(param[0]);    
                 
             default: return null;

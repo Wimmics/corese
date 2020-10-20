@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.update;
 
+import fr.inria.corese.sparql.triple.api.Walker;
 import fr.inria.corese.sparql.triple.parser.ASTBuffer;
 import java.util.ArrayList;
 import java.util.List;
@@ -170,5 +171,18 @@ public class ASTUpdate {
     public NSManager getNSM() {
         return getASTQuery().getNSM();
     }
+    
+    public void walk(Walker walker) {
+        walker.enter(this);
+        for (Update up : getUpdates()) {
+            if (up.isComposite()) {
+                walker.enter(up.getComposite());
+                up.getComposite().getBody().walk(walker);
+                walker.leave(up.getComposite());
+            }
+        }
+        walker.leave(this);
+    }
+
 
 }

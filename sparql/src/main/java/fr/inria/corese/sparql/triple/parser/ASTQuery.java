@@ -3607,6 +3607,14 @@ public class ASTQuery
         walker.finish(this);
     }
     
+    void switchProcess(Walker walker) {
+        if (isUpdate()) {
+            getUpdate().walk(walker);
+        } else {
+            walk(walker);
+        }
+    }
+    
     public void walk(Walker walker) {
         walker.enter(this); 
         for (Exp exp : getBody()) {

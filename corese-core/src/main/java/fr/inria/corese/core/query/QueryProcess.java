@@ -380,7 +380,11 @@ public class QueryProcess extends QuerySolver {
 
     @Override
     public Query compile(String squery) throws EngineException {
-        return compile(squery, null);
+        return compile(squery, (Dataset)null);
+    }
+    
+    public Query compile(String squery, Context c) throws EngineException {
+        return compile(squery, (c==null)?(Dataset)null:new Dataset(c));
     }
 
     public ASTQuery ast(String q) throws EngineException {
@@ -568,7 +572,7 @@ public class QueryProcess extends QuerySolver {
      *****************************************
      */
     public Mappings sparqlQuery(String squery) throws EngineException {
-        Query q = compile(squery, null);
+        Query q = compile(squery);
         if (q.isUpdate()) {
             throw new EngineException("Unauthorized Update in SPARQL Query:\n" + squery);
         }
@@ -588,7 +592,7 @@ public class QueryProcess extends QuerySolver {
     }
 
     public Mappings sparqlUpdate(String squery) throws EngineException {
-        Query q = compile(squery, null);
+        Query q = compile(squery);
         if (!q.isUpdate()) {
             throw new EngineException("Unauthorized Query in SPARQL Update:\n" + squery);
         }

@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.print.JSONFormat;
 import fr.inria.corese.core.print.TripleFormat;
@@ -163,7 +164,9 @@ public class LdpRequestAPI {
             return ctx;
         } catch (IOException ex)
         {
-            java.util.logging.Logger.getLogger( LdpRequestAPI.class.getName() ).log( Level.SEVERE, null, ex );
+            logger.error(ex.getMessage());
+        } catch (LoadException ex) {
+            logger.error(ex.getMessage());
         }
         return new Context();
     }

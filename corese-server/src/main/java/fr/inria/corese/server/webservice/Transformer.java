@@ -6,9 +6,11 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import static fr.inria.corese.server.webservice.Utility.toStringList;
 import fr.inria.corese.core.workflow.Data;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
@@ -164,23 +166,33 @@ public class Transformer {
             engine.setDebug(EmbeddedJettyServer.isDebug());
             engine.setEventManager(Profile.getEventManager());
             context = engine.getContext();
-                       
-            if (store != null && store.isProtect()) { //store.getMode() == QueryProcess.PROTECT_SERVER_MODE) {
-                // check profile, transform and query
-                String prof = context.getProfile();
-                if (prof != null && !nsm.toNamespace(prof).startsWith(NSManager.STL)) {
-                    return Response.status(500).header(headerAccept, "*").entity("Undefined profile: " + prof).build();
-                }
-                String trans = context.getTransform();
-                if (trans != null && !nsm.toNamespace(trans).startsWith(NSManager.STL)) {
-                    return Response.status(500).header(headerAccept, "*").entity("Undefined transform: " + trans).build();
-                }
+            
+            Level level = Access.getQueryAccessLevel(true);
+            String prof = context.getProfile();            
+            if (prof != null && !Access.acceptNamespace(Feature.LINKED_TRANSFORMATION, level, prof)) {
+                return Response.status(500).header(headerAccept, "*").entity("Undefined profile: " + prof).build();
             }
+            String trans = context.getTransform();
+            if (trans != null && !Access.acceptNamespace(Feature.LINKED_TRANSFORMATION, level, trans)) {
+                return Response.status(500).header(headerAccept, "*").entity("Undefined transformation: " + trans).build();
+            }
+                       
+//            if (store.isProtect()) { 
+//                // check profile, transform and query
+//                String prof = context.getProfile();
+//                if (prof != null && !nsm.toNamespace(prof).startsWith(NSManager.STL)) {
+//                    return Response.status(500).header(headerAccept, "*").entity("Undefined profile: " + prof).build();
+//                }
+//                String trans = context.getTransform();
+//                if (trans != null && !nsm.toNamespace(trans).startsWith(NSManager.STL)) {
+//                    return Response.status(500).header(headerAccept, "*").entity("Undefined transform: " + trans).build();
+//                }
+//            }
                        
             Data data = engine.process();
             return process(data, par, context);           
         } catch (Exception ex) {
-            logger.error("Error while querying the remote KGRAM engine");
+            logger.error("Error while querying the remote corese server");
             ex.printStackTrace();
             String err = ex.toString();
             String q = null;

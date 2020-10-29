@@ -19,8 +19,10 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.transform.ContextBuilder;
 import fr.inria.corese.core.util.Parameter;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.AccessNamespace;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.IOException;
 import java.net.InetAddress;
 import java.net.URI;
@@ -28,10 +30,8 @@ import java.net.URISyntaxException;
 import java.net.UnknownHostException;
 import java.util.Collection;
 import java.util.HashMap;
-import java.util.logging.Logger;
-import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
-
 
 /**
  * Parser of RDF profile that defines: 1- a set of profile (eg specifying a
@@ -46,6 +46,7 @@ import org.apache.logging.log4j.LogManager;
 public class Profile {
     static final String ACCESS = NSManager.STL+"access";
     static final String NS = NSManager.STL+"namespace";
+    private static Logger logger = LogManager.getLogger(Profile.class);
     /**
      * @return the eventManager
      */
@@ -89,21 +90,6 @@ public class Profile {
          return s;
     }
         
-//    private static void initServer(){
-//         try {
-//            SERVER = getLocalhost();
-//        } catch (UnknownHostException ex) {
-//            SERVER = stdLocalhost();
-//        }
-//        completeHost();     
-//    }
-    
-
-//    private static void completeHost(){
-//        DATA = SERVER + "/data/";
-//        QUERY = DATA + "query/";
-//    }
-    
     private void initServerData(boolean localhost) {
         if (localhost) {
             // localhost
@@ -136,20 +122,6 @@ public class Profile {
         return data + name;
     }
     
-    
-//    String getServer(){
-//        return SERVER;
-//    }
-//    
-//    String getQueryPath(String name){
-//        return QUERY + name;
-//    }  
-//    
-//    String getDataPath(String name){
-//        return DATA + name;
-//    }
-   
-    
 
     public Profile() {
         this(false);
@@ -180,7 +152,7 @@ public class Profile {
      * Complete service parameters according to a profile e.g. get
      * transformation from profile
      */
-    Param complete(Param par) throws IOException {
+    Param complete(Param par) throws IOException, LoadException {
         Context serverContext = null;
         if (par.getServer() != null){           
             Service server = getServer(par.getServer());
@@ -305,16 +277,18 @@ public class Profile {
         if (service == null) {
             GraphStore g = getProfileGraph();
             try {
-                LogManager.getLogger(Profile.class.getName()).warn("Load: " + name);
+                Level level = Access.getQueryAccessLevel(true);               
+                Access.check(Feature.LINKED_TRANSFORMATION, level, name, TermEval.LINKED_TRANSFORMATION_MESS);
+                logger.info("Load: " + name);
                 load(g, name);
                 // focus process on ?p = name
                 initService(g, name);
             } catch (LoadException ex) {
-                Logger.getLogger(Profile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                logger.error("Load error: "+ ex.getMessage());
             } catch (IOException ex) {
-                Logger.getLogger(Profile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                logger.error(ex.getMessage());
             } catch (EngineException ex) {
-                Logger.getLogger(Profile.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                logger.error(ex.getMessage());
             }
             
         }
@@ -355,24 +329,24 @@ public class Profile {
             process(g);
             initFunction();
         } catch (IOException ex) {
-            LogManager.getLogger(Profile.class.getName()).log(Level.ERROR, "", ex);
+                logger.error(ex.getMessage());
         } catch (LoadException ex) {
-            LogManager.getLogger(Profile.class.getName()).log(Level.ERROR, "", ex);
+                logger.error(ex.getMessage());
         } catch (EngineException ex) {
-            LogManager.getLogger(Profile.class.getName()).log(Level.ERROR, "", ex);
+                logger.error(ex.getMessage());
         }
     }
     
     void process(Graph g) throws IOException, EngineException {
         initService(g);
         initServer(g);
-        if (isProtected()) {
+        //if (isProtected()) {
             defNamespace(g);
-        }
+        //}
     }
     
     /**
-     * In protected mode, service is unauthorized bu default
+     * In protected mode, service is unauthorized by default
      * Authorize service on specific SPARQL endpoints 
      * profile.ttl may contain:
      * st:access st:namespace <http://dbpedia.org/sparql>
@@ -412,16 +386,16 @@ public class Profile {
         load.parse(path, Load.TURTLE_FORMAT);       
     }
 
-    String read(String path) throws IOException {
+    String read(String path) throws IOException, LoadException {
         QueryLoad ql = QueryLoad.create();
-        String res = ql.read(path);
+        String res = ql.readURL(path);
         if (res == null) {
             throw new IOException(path);
         }
         return res;
     }
 
-    String loadQuery(String path) throws IOException {
+    String loadQuery(String path) throws IOException, LoadException {
         if (isProtected && !path.startsWith(getServer())) {
             throw new IOException(path);
         }
@@ -566,7 +540,7 @@ public class Profile {
         return str;
     }
     
-     void initFunction2() throws IOException, EngineException{
+     void initFunction2() throws IOException, EngineException, LoadException{
         String str = read(getQueryPath("function.rq"));
         QueryProcess exec = QueryProcess.create(Graph.create());
         Query q = exec.compile(str);

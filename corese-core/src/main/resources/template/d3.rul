@@ -126,6 +126,7 @@ where {
     bind (coalesce(st:get(st:nodePropertyDisplay), xt:list("url")) as ?plist)
     bind (st:call-template(st:graph) as ?graph)
     bind (if (st:get(st:trace, true), xt:print(?graph), true) as ?tmp)
+    #bind (if (true, xt:print(?graph), true) as ?tmp)
 }
 
 ]]>
@@ -281,7 +282,7 @@ function us:shorten(?l) {
 
 function us:literal(?l) {
     let (?s = us:shorten(?l)) {
-        replace(replace(str(?s), "\n", ""), "\"", "'")
+        replace(replace(replace(str(?s), "\n", ""), "\"", "'"), "\r", "")
     }
 }
 

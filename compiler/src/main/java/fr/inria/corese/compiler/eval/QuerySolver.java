@@ -38,6 +38,8 @@ import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.AccessRightDefinition;
@@ -376,7 +378,7 @@ public class QuerySolver implements SPARQLEngine {
     }
 
     void tune(Eval kgram, Mapping m, boolean isVisitor) {
-        if (isVisitor || isVisitorable()) {
+        if ((isVisitor || isVisitorable()) && isEvent(m)) {
             if (m != null && m.getVisitorParameter()!= null) {
                 m.getVisitorParameter().setProcessor(kgram);
                 kgram.setVisitor(m.getVisitorParameter());
@@ -386,6 +388,10 @@ public class QuerySolver implements SPARQLEngine {
             }
         }
         kgram.getVisitor().setDefaultValue(DatatypeMap.TRUE);
+    }
+    
+    boolean isEvent(Mapping m) {
+        return Access.accept(Feature.EVENT, Access.getLevel(m));
     }
 
     // overloaded by QueryProcess

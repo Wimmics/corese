@@ -1,7 +1,11 @@
 package fr.inria.corese.sparql.triple.parser;
 
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
 import static fr.inria.corese.sparql.triple.parser.Access.Feature.*;
 import static fr.inria.corese.sparql.triple.parser.Access.Level.*;
+import static fr.inria.corese.sparql.triple.parser.Access.Mode.SERVER;
 import java.util.HashMap;
 
 /**
@@ -74,7 +78,8 @@ public class Access {
     
     } ;
     
-    public enum Feature  {         
+    public enum Feature  {  
+        EVENT,
         // @import <http://myfun.org/fun.rq> 
         // [] owl:imports <http://myfun.org/fun.rq>
         // load(file.rq)
@@ -97,7 +102,8 @@ public class Access {
         // sparql query in LDScript: xt:sparql, query(select where), let (select where)
         LDSCRIPT_SPARQL, 
         // xt:read xt:write,  xt:load
-        READ_WRITE, 
+        READ_WRITE, READ_FILE,
+        LOAD_FILE,
         // xt:http:get
         HTTP,
         // java:fun(xt:stack())
@@ -224,6 +230,19 @@ public class Access {
         return ! accept(feature, actionLevel, uri);
     }
     
+    public static void check(Feature feature, Level actionLevel, String uri, String mes) throws SafetyException {
+        if (reject(feature, actionLevel, uri)) {
+            TermEval.logger.error("reject: " + feature + " " + uri);
+            throw new SafetyException(mes + ": " + uri);
+        }
+    }
+    
+    public static void check(Feature feature, Level actionLevel, String mes) throws SafetyException {
+        if (Access.reject(feature, actionLevel)) {
+            throw new SafetyException(mes);
+        }
+    }
+    
     public static boolean acceptNamespace (Feature feature, Level actionLevel, String uri) {
         if (SKIP || actionLevel.provide(SUPER_USER)) {
             return true;
@@ -248,9 +267,9 @@ public class Access {
     
     public static void define(String ns, boolean b) {
         AccessNamespace.define(ns, b);
-        if (isFile(ns)) {
-           AccessNamespace.define(toFile(ns), b); 
-        }
+//        if (isFile(ns)) {
+//           AccessNamespace.define(toFile(ns), b); 
+//        }
     }
     
     public static void define(Feature feature, Level accessRight) {
@@ -280,6 +299,10 @@ public class Access {
      * special = true: grant RESTRICTED access level (better than PUBLIC) 
      * Return the access right granted to the query 
      */
+    public static Level getQueryAccessLevel(boolean user) {
+        return getQueryAccessLevel(user, false);
+    }
+    
     public static Level getQueryAccessLevel(boolean user, boolean special) {
         return getQueryAccessLevel(DEFAULT, user, special);
     }
@@ -294,8 +317,8 @@ public class Access {
             // run in protect mode
             if (user) {
                 if (special) {
-                    // special case: authorize SPARQL_UPDATE (e.g. for tutorial)
-                    return RESTRICTED.min(level);
+                    // special case: could authorize SPARQL_UPDATE (e.g. for tutorial)
+                    return USER; //return RESTRICTED.min(level);
                 }
                 else {
                     // user query has only access to PUBLIC feature
@@ -312,6 +335,11 @@ public class Access {
     public static void setLinkedFeature(boolean b) {
          setLinkedFunction(b);
          setLinkedTransformation(b);
+//         setLinkedRule(b);
+    }
+    
+    public static void setReadFile(boolean b) {
+         setFeature(READ_FILE, b);
     }
     
     public static void setFeature(Feature feature, boolean b) {
@@ -349,6 +377,10 @@ public class Access {
         //System.out.println(singleton);
     }
     
+    public static boolean isServerMode() {
+        return mode == SERVER;
+    }
+    
     void initMode() {
         switch (mode) {
             case LIBRARY:
@@ -374,6 +406,9 @@ public class Access {
     void initServer() {
         init();
         deny(READ_WRITE);
+        deny(READ_FILE);
+        deny(LOAD_FILE);
+        deny(JAVA_FUNCTION);
     }
     
     /**
@@ -384,8 +419,9 @@ public class Access {
      */
     void init() {
         deny(LINKED_FUNCTION);
-        // external transformation may contain/import function definition
-        //deny(LINKED_TRANSFORMATION);
+        // xt:read st:format cannot read the file system
+        // use case: server mode
+        deny(READ_FILE);
         set(SPARQL_UPDATE, RESTRICTED);
         set(LDSCRIPT, PUBLIC);
     }
@@ -398,6 +434,7 @@ public class Access {
     public static void protect() {
         setProtect(true);
         deny(READ_WRITE);
+        deny(HTTP);
         deny(JAVA_FUNCTION);
         deny(LINKED_FUNCTION);
         // deny(SPARQL_SERVICE);
@@ -417,6 +454,18 @@ public class Access {
     public static void setProtect(boolean aProtect) {
         protect = aProtect;
     }
+    
+    public static Level getLevel(Mapping m) {
+        return getLevel(m, USER_DEFAULT);
+    }
+
+    public static Level getLevel(Mapping m, Level level) {
+        if (m == null || m.getBind() == null) {
+            return level;
+        }
+        return ((fr.inria.corese.sparql.triple.function.term.Binding)m.getBind()).getAccessLevel();
+    }
+    
     
     
 }

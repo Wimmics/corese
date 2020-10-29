@@ -8,6 +8,8 @@ import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Processor;
 
 
@@ -27,17 +29,21 @@ public class TemplateFormat extends TemplateFunction {
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {     
         if (oper() == ExprType.STL_FORMAT && isFuture()) {
-            try {
-                return future(eval, b, env, p);
-            } catch (EngineException ex) {
-                log(ex.getMessage());
-                return null;
-            }
+            return future(eval, b, env, p);
         }
         
         IDatatype[] param = evalArguments(eval, b, env, p, 0);
-        if (param == null){
+        if (param == null || param.length == 0){
             return null;
+        }
+       
+        IDatatype format = param[0];
+        String path = format.getLabel();
+        if (format.isURI()) {
+            check(Feature.LINKED_TRANSFORMATION, b, path, LINKED_FORMAT_MESS);
+            if (isFile(path)) {
+                check(Feature.READ_FILE, b, path, LINKED_FORMAT_MESS);
+            }
         }
         
         return eval.getGraphProcessor().format(param);

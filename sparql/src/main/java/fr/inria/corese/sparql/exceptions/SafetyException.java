@@ -18,7 +18,7 @@ public class SafetyException extends EngineException {
     }
     
     public SafetyException(String mes, String path) {
-        super(mes);
+        super(mes + ": " + path);
         setPath(path);
     }
     

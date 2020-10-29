@@ -19,7 +19,7 @@ public class AccessNamespace {
         // empty map return false
         boolean match(String ns) {
             for (String name : keySet()) {
-                if (ns.startsWith(name)) {
+                if (ns.contains(name)) {
                     return true;
                 }
             }
@@ -31,10 +31,28 @@ public class AccessNamespace {
     
     static {
         singleton = new AccessNamespace();
+        singleton.init();
+    }
+    
+    void init() {
+        singleton().setAccess("/etc/passwd", false);
+        singleton().setAccess(".ssh/id_rsa", false);
     }
     
     public static AccessNamespace singleton() {
         return singleton;
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (! singleton().accept.isEmpty()) {
+            sb.append("accept:").append(NSManager.NL).append(singleton().accept.toString());
+        }
+        if (! singleton().reject.isEmpty()) {
+            sb.append("reject:").append(NSManager.NL).append(singleton().reject.toString());
+        }
+        return sb.toString();
     }
     
     AccessNamespace() {
@@ -55,6 +73,7 @@ public class AccessNamespace {
     
     public static void clean() {
          singleton().clear();
+         singleton().init();      
     }
     
     public void setAccess(String ns, boolean b) {

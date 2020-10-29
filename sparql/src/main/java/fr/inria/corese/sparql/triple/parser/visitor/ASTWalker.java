@@ -178,8 +178,10 @@ public class ASTWalker implements Walker {
     void process(Expression exp) {
         switch (exp.oper()) {
             case READ:
-            case LOAD:
                 check(Feature.READ_WRITE, getLevel(), TermEval.READ_MESS, exp);
+                break;             
+            case LOAD:
+                check(Feature.READ_WRITE, getLevel(), TermEval.LOAD_MESS, exp);
                 break;                
                                            
             case WRITE:

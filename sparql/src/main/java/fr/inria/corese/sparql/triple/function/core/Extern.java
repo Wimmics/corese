@@ -47,10 +47,14 @@ public class Extern extends TermEval {
         } catch (IllegalAccessException e) {
             trace(e, "eval", name, param);
         } catch (InvocationTargetException e) {
+            if (e.getCause() instanceof EngineException) {
+                throw (EngineException) e.getCause();
+            }
            trace(e, "eval", name, param);
         } catch (NullPointerException e) {
            trace(e, "eval", name, param); 
         }
+        
         return null;
     }
     
@@ -59,7 +63,7 @@ public class Extern extends TermEval {
         for (IDatatype dt : ldt) {
             str += dt + " ";
         }
-        TermEval.logger.error(title + " "+ name + " " + str, e);  
+        logger.error(title + " "+ name + " " + str, e);  
     }
     
 }

@@ -18,6 +18,9 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.net.MalformedURLException;
+import java.net.URL;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -38,6 +41,7 @@ public class TermEval extends Term {
     public static final String WRITE_MESS = "Write unauthorized";
     public static final String JAVA_FUNCTION_MESS = "Java function unauthorized";
     public static final String LINKED_TRANSFORMATION_MESS = "Linked transformation unauthorized";
+    public static final String LINKED_FORMAT_MESS = "Linked format unauthorized";
     public static final String LINKED_FUNCTION_MESS = "Linked function unauthorized";
     public static final String LINKED_RULE_MESS = "Linked rule unauthorized";
     public static final String FUNCTION_DEFINITION_MESS = "Function definition unauthorized";
@@ -175,16 +179,15 @@ public class TermEval extends Term {
     }
     
     public void check(Feature feature, Binding b, String uri, String mes) throws SafetyException {
-        if (Access.reject(feature, b.getAccessLevel(), uri)) {
-            //System.out.println("Level: " + b.getAccessLevel());
-            throw new SafetyException(mes, uri);
-        }
+        Access.check(feature, b.getAccessLevel(), uri, mes);
     }
     
     public void check(Feature feature, Binding b, String mes) throws SafetyException {
-        if (Access.reject(feature, b.getAccessLevel())) {
-            throw new SafetyException(mes);
-        }
+        Access.check(feature, b.getAccessLevel(), mes);
+    }
+    
+    public static boolean isFile(String path) {
+        return NSManager.isFile(path);
     }
     
     public void log(String mess) {

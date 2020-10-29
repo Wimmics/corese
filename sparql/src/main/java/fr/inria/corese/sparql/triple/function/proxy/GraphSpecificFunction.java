@@ -152,6 +152,12 @@ public class GraphSpecificFunction extends LDScript {
     
     public IDatatype io(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param) throws SafetyException, EngineException {
         GraphProcessor proc = eval.getGraphProcessor();
+        if (param.length == 0) {
+            return null;
+        }
+        IDatatype dt = param[0];
+        String path = dt.getLabel();
+        
         switch (oper()) {
 
             case LOAD:
@@ -160,15 +166,18 @@ public class GraphSpecificFunction extends LDScript {
 
             case WRITE:
                 check(Feature.READ_WRITE, b, WRITE_MESS);
-                return proc.write(param[0], param[1]);
+                return proc.write(dt, param[1]);
 
             case READ:
                 check(Feature.READ_WRITE, b, READ_MESS);
-                return proc.read(param[0]);
+                if (isFile(path)) {
+                    check(Feature.READ_FILE, b, path, READ_MESS);
+                }
+                return proc.read(dt);
                 
             case XT_HTTP_GET:
                 check(Feature.HTTP, b, READ_MESS);
-                return proc.httpget(param[0]);    
+                return proc.httpget(dt);    
                 
             default: return null;
         }

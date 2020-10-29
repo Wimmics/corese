@@ -797,6 +797,15 @@ public class NSManager extends ASTObject {
         }
     }
     
+    public static boolean isFile(String path) {
+        try {
+            URL url = new URL(path);
+            return url.getProtocol().equals("file");
+        } catch (MalformedURLException ex) {
+            return true;
+        }
+    }
+    
     /**
      * path = http://ns.inria.fr/corese/rule/owl.rul
      * return directory of resource: /rule/owl.rul

@@ -71,7 +71,7 @@ function us:shorten(?l) {
 
 function us:literal(?l) {
     let (?s = us:shorten(?l)) {
-        replace(replace(str(?s), "\n", ""), "\"", "'")
+        replace(replace(replace(str(?s), "\n", ""), "\"", "'"), "\r", "")
     }
 }
 

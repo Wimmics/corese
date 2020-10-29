@@ -26,6 +26,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.util.ArrayList;
 import java.util.List;
@@ -126,10 +127,8 @@ public class UpdateProcess {
     }
     
     Level getLevel(Mapping m) {
-        if (m == null || m.getBind() == null) {
-            return Level.USER_DEFAULT;
-        }
-        return ((Binding)m.getBind()).getAccessLevel();
+        return Access.getLevel(m, Level.USER_DEFAULT);
+
     }
 
     public void setDebug(boolean b) {

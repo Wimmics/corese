@@ -54,8 +54,9 @@ public class QueryEngine implements Engine {
     QueryEngine(Graph g) {
         graph = g;
         exec = QueryProcess.create(g);
-        list = new ArrayList<Query>();
-        table = new HashMap<String, Query>();       
+        list = new ArrayList<>();
+        table = new HashMap<>();
+        tableList = new HashMap<>();
         index = new TemplateIndex();
     }
 
@@ -153,14 +154,11 @@ public class QueryEngine implements Engine {
         q.setListPath(true);
     }
     
-    void complete(){
-        if (tableList == null){
-            tableList = new HashMap<String, ArrayList<Query>>();
-            for (String name : table.keySet()){
-                ArrayList<Query> list = new ArrayList<Query>(1);
-                list.add(table.get(name));
-                tableList.put(name, list);
-            }
+    void complete() {
+        for (String name : table.keySet()) {
+            ArrayList<Query> list = new ArrayList<>(1);
+            list.add(table.get(name));
+            tableList.put(name, list);
         }
     }
 

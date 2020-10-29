@@ -15,7 +15,9 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.query.QueryEngine;
+import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.io.File;
 import java.io.InputStream;
 import java.net.MalformedURLException;
 import org.slf4j.Logger;
@@ -136,6 +138,19 @@ public class QueryLoad {
         }
         return query;
     }
+       
+    public String readURL(String name) throws LoadException {
+        return readWE(name);
+    }
+    
+    public String readProtect(String name) throws LoadException {
+        return readWE(name);
+    }
+    
+    public String readWE(String name, boolean protect) throws LoadException {
+        return readWE(name);
+    }
+
 
     public String readWE(String name) throws LoadException {
         String query = "", str = "";
@@ -151,6 +166,9 @@ public class QueryLoad {
                 fr = new FileReader(name);
             }
 
+            if (fr == null) {
+                throw LoadException.create(new IOException(name)).setPath(name);
+            }
             query = read(fr);
         } catch (IOException ex) {
             throw LoadException.create(ex).setPath(name);
@@ -193,6 +211,40 @@ public class QueryLoad {
         }
         return sb.toString();
     }
+    
+     public void writeTemp(String name, String str) {
+        String query = "";
+        try {
+            File file = File.createTempFile(getName(name), getSuffix(name));
+            Writer fr = new FileWriter(file);
+            BufferedWriter fq = new BufferedWriter(fr);
+            fq.write(str);
+            fq.flush();
+            fr.close();
+        } catch (FileNotFoundException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        } catch (IOException e) {
+            // TODO Auto-generated catch block
+        }
+    }
+     
+    String getName(String name) {
+         int index = name.indexOf(".");
+         if (index == -1) {
+             return name;
+         }
+         return name.substring(0, index);
+    }
+     
+    String getSuffix(String name) {
+         int index = name.indexOf(".");
+         if (index == -1) {
+             return ".txt";
+         }
+         return name.substring(index+1);
+     }
+      
 
     public void write(String name, String str) {
         String query = "";
@@ -208,6 +260,6 @@ public class QueryLoad {
         } catch (IOException e) {
             // TODO Auto-generated catch block
         }
-
+        
     }
 }

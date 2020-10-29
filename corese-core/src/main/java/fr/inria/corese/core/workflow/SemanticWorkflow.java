@@ -4,10 +4,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
-import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.sparql.triple.parser.Access;
-import java.util.Date;
 
 /**
  * Workflow of Query | Update | RuleBase | Transformation
@@ -22,6 +19,7 @@ public class SemanticWorkflow extends  CompositeProcess {
     Data data;
     private int loop = -1;
     private Graph workflowGraph;
+    private boolean serverMode = false;
     
     public SemanticWorkflow(){
         super();
@@ -85,10 +83,10 @@ public class SemanticWorkflow extends  CompositeProcess {
        return add(new SPARQLProcess(q, path));
     }
     
-     public SemanticWorkflow addQueryPath(String path) throws LoadException{
-        String q = QueryLoad.create().readWE(path);
-        return addQuery(q, path);
-    }
+//     public SemanticWorkflow addQueryPath(String path) throws LoadException{
+//        String q = QueryLoad.create().readWE(path, isServerMode());
+//        return addQuery(q, path);
+//    }
     
     // return input graph
     public SemanticWorkflow addQueryProbe(String q){
@@ -347,6 +345,20 @@ public class SemanticWorkflow extends  CompositeProcess {
      */
     public void setWorkflowGraph(Graph workflowGraph) {
         this.workflowGraph = workflowGraph;
+    }
+
+    /**
+     * @return the serverMode
+     */
+    public boolean isServerMode() {
+        return serverMode;
+    }
+
+    /**
+     * @param serverMode the serverMode to set
+     */
+    public void setServerMode(boolean serverMode) {
+        this.serverMode = serverMode;
     }
 
 }

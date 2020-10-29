@@ -72,6 +72,7 @@ import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
+import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import javax.ws.rs.core.Response;
 
@@ -434,7 +435,7 @@ public class PluginImpl
     @Override
     public IDatatype write(IDatatype dtfile, IDatatype dt) {
         QueryLoad ql = QueryLoad.create();
-        ql.write(dtfile.getLabel(), dt.getLabel());
+        ql.writeTemp(dtfile.getLabel(), dt.getLabel());
         return dt;
     }
 
@@ -1109,7 +1110,7 @@ public class PluginImpl
         QueryLoad ql = QueryLoad.create();
         String str = null;
         try {
-            str = ql.readWE(dt.getLabel());
+            str = ql.readProtect(dt.getLabel());
         } catch (LoadException ex) {
             logger.error("Read error");
             logger.error(ex.getMessage());

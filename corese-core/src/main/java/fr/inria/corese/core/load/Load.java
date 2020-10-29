@@ -701,7 +701,11 @@ public class Load
     
     void loadWorkflow(Reader read, String path) throws LoadException{
         WorkflowParser wp = new WorkflowParser();
-        wp.parse(read, path);
+        try {
+            wp.parse(read, path);
+        } catch (SafetyException ex) {
+            throw new LoadException(ex).setPath(path);
+        }
         setWorkflow(wp.getWorkflowProcess());
     }
 

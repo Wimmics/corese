@@ -49,6 +49,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.sparql.triple.function.core.UUIDFunction;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 /**
@@ -110,6 +111,7 @@ public class RuleEngine implements Engine, Graphable {
     private boolean isDuplicate = false;
     private boolean isSkipPath = false;
     private boolean synchronize = false;
+    private boolean event = true;
     private Context context;
     private ProcessVisitor visitor;
     private String base;
@@ -224,7 +226,9 @@ public class RuleEngine implements Engine, Graphable {
      */
     public void cleanOWL() throws IOException, EngineException{
         Cleaner cl = new Cleaner(graph);
-        cl.setVisitor(getVisitor());
+        if (isEvent()) {
+            cl.setVisitor(getVisitor());
+        }
         getEventManager().start(Event.CleanOntology);
         cl.clean(Cleaner.OWL);
         graph.getIndex(1).clean();
@@ -369,11 +373,14 @@ public class RuleEngine implements Engine, Graphable {
     }
     
     void before(Binding b) {
+        setEvent(Access.accept(Feature.EVENT, b.getAccessLevel()));
         try {
             setVisitor(QuerySolverVisitorRule.create(this, getQueryProcess().getEval()));            
             getVisitor().getProcessor().getEnvironment().setBind(b);
-            getVisitor().init();
-            getVisitor().beforeEntailment(getPath());
+            if (isEvent()) {
+                getVisitor().init();
+                getVisitor().beforeEntailment(getPath());
+            }
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
         }
@@ -386,7 +393,7 @@ public class RuleEngine implements Engine, Graphable {
     
     void after() {
         graph.getEventManager().finish(Event.InferenceEngine, getClass().getName());
-        getVisitor().afterEntailment(getPath());
+        if (isEvent()) getVisitor().afterEntailment(getPath());
     }
     
 
@@ -661,7 +668,7 @@ public class RuleEngine implements Engine, Graphable {
 
         while (go) {
             getEventManager().start(Event.InferenceCycle);
-            getVisitor().loopEntailment(getPath());
+            if (isEvent()) getVisitor().loopEntailment(getPath());
             skip = 0;
             nbrule = 0;
             tnbres = 0;
@@ -854,7 +861,7 @@ public class RuleEngine implements Engine, Graphable {
         cons.set(new GraphManager(graph));
         cons.setLoopIndex(loopIndex);
         cons.setDebug(debug);
-        cons.setVisitor(getVisitor());
+        if (isEvent()) cons.setVisitor(getVisitor());
 
         if (isConstruct) {
             // kgram Result Listener create edges in list
@@ -950,7 +957,7 @@ public class RuleEngine implements Engine, Graphable {
     // process rule
     void process(Rule r, Mapping m, Construct cons) throws EngineException {
         Query qq = r.getQuery();
-        getVisitor().beforeRule(qq);
+        if (isEvent()) getVisitor().beforeRule(qq);
         Mappings map = exec.query(qq, m);
         if (cons.isBuffer()) {
             // cons insert list contains only new edge that do not exist
@@ -959,7 +966,7 @@ public class RuleEngine implements Engine, Graphable {
             // create edges from Mappings as usual
             cons.insert(map, null);
         }
-        getVisitor().afterRule(qq, cons.isBuffer() ? cons.getInsertList() : map);
+        if (isEvent()) getVisitor().afterRule(qq, cons.isBuffer() ? cons.getInsertList() : map);
     }
     
     
@@ -1384,5 +1391,19 @@ public class RuleEngine implements Engine, Graphable {
     
     public void setLevel(Level level) {
         this.level = level;
+    }
+
+    /**
+     * @return the event
+     */
+    public boolean isEvent() {
+        return event;
+    }
+
+    /**
+     * @param event the event to set
+     */
+    public void setEvent(boolean event) {
+        this.event = event;
     }
 }

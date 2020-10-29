@@ -69,6 +69,7 @@ public class Cleaner {
    }
     
     Mapping createMapping(ProcessVisitor vis) {
+        if (vis == null) { return null ;}
         Binding b = Binding.create();
         b.setVisitor(vis);
         return Mapping.create(b);

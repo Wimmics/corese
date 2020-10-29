@@ -21,9 +21,14 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  *
@@ -283,17 +288,25 @@ public class GraphManager {
         String uri = ope.getURI();
         IDatatype dt = DatatypeMap.newResource(uri);
         String src = ope.getTarget();
+        
         graph.logStart(q);
         graph.getEventManager().start(Event.LoadUpdate);
         //getQueryProcess().getCurrentVisitor().beforeLoad(dt);
         if (ope.isSilent()) {
             try {
+                if (NSManager.isFile(uri)) {
+                    // load access file system ?
+                    Access.check(Feature.LOAD_FILE, level, uri, TermEval.LOAD_MESS);
+                }
                 load.parse(uri, src);
-            } catch (LoadException ex) {
-                logger.error(ex.getMessage());
+            } catch (LoadException | SafetyException ex) {
+                logger.error("trap load error: " + ex.getMessage());
             }
             graph.logFinish(q);
         } else {
+            if (NSManager.isFile(uri)) {
+                Access.check(Feature.LOAD_FILE, level, uri, TermEval.LOAD_MESS);
+            }
             try {
                 load.parse(uri, src);
                 graph.logFinish(q);
@@ -301,7 +314,7 @@ public class GraphManager {
                 if (e.isSafetyException()) {
                     throw e.getSafetyException();
                 }
-                boolean error = false;
+                boolean error = true;
                 
                 if (load.getFormat(uri) == Loader.UNDEF_FORMAT
                         && e.getException() != null
@@ -309,8 +322,8 @@ public class GraphManager {
                     try {
                         //load.parse(uri, src, src, Loader.TURTLE_FORMAT);
                         load.parse(uri, src, uri, Loader.TURTLE_FORMAT);
+                        error = false;
                     } catch (LoadException ex) {
-                        error = true;
                     }
                 }
 

@@ -775,10 +775,7 @@ public class QueryProcess extends QuerySolver {
         if (ds != null && ds.getContext() != null) {
             return  ds.getContext().getLevel();
         }
-        if (m != null && m.getBind() != null) {
-            return  ((Binding)m.getBind()).getAccessLevel();
-        }
-        return Level.USER_DEFAULT;
+        return Access.getLevel(m);
     }
 
     static boolean isOverwrite() {

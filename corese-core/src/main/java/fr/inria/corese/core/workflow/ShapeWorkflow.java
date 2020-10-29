@@ -1,7 +1,6 @@
 package fr.inria.corese.core.workflow;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Context;
@@ -10,7 +9,6 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.kgram.api.core.PointerType;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.api.IDatatype;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -112,10 +110,11 @@ public class ShapeWorkflow extends SemanticWorkflow {
         SemanticWorkflow rdfWorkflow   = new SemanticWorkflow();
         SemanticWorkflow shapeWorkflow = new SemanticWorkflow(SHAPE_NAME);
         if (shape != null) {
-            loadShape(shapeWorkflow, shape, text, format);
+            shapeWorkflow.add(loadShape(shape, text, format));
         }
         if (data != null) {
             load = (text) ?  LoadProcess.createStringLoader(data, format) :  new LoadProcess(data);
+            // arg comes from http: no file access
             rdfWorkflow.add(load);
         }
         ParallelProcess para = new ParallelProcess();
@@ -141,10 +140,10 @@ public class ShapeWorkflow extends SemanticWorkflow {
         return this;
     }
     
-    void loadShape(SemanticWorkflow shapeWorkflow, String shape, boolean text, int format) {
+    LoadProcess loadShape(String shape, boolean text, int format) {
         LoadProcess shapeLoader = (text) ? LoadProcess.createStringLoader(shape, format) : new LoadProcess(shape);
         shapeLoader.setProcessor(getProcessor());
-        shapeWorkflow.add(shapeLoader);
+        return shapeLoader;
     }
     
     
@@ -376,5 +375,5 @@ public class ShapeWorkflow extends SemanticWorkflow {
         this.processor = processor;
         return this;
     }
-   
+
 }

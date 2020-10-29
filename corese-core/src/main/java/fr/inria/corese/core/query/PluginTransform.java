@@ -242,13 +242,15 @@ public class PluginTransform implements ComputerProxy {
             try {
                 return readResource(uri, NSManager.STL_FORMAT, FORMAT_LIB);
             } catch (LoadException ex) {
+                logger.error(ex.getMessage());
+                return "";
             }
         }
         QueryLoad ql = QueryLoad.create();
         try {
-            return ql.readWE(uri);
+            return ql.readProtect(uri);
         } catch (LoadException ex) {
-            logger.warn(ex.getMessage());
+            logger.error("Format unauthorized: " + ex.getMessage());
         }
         return "";
     }

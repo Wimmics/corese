@@ -39,6 +39,8 @@ import fr.inria.corese.sparql.api.TransformProcessor;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -167,26 +169,20 @@ public class Transformer implements TransformProcessor {
     // is there a st:default template
     private boolean hasDefault = false;
     private boolean starting = true;
+    private Level AccessLevel = Level.USER_DEFAULT;
+    private boolean event = true;
 
-//    private Transformer(Graph g, String p) {
-//        this(QueryProcess.create(g, true), p);
-//    }
-//
-//    private Transformer(Producer prod, String p) {
-//        this(QueryProcess.create(prod), p);
-//    }
     
     Transformer() {}
 
-//    private Transformer(QueryProcess qp, String p) {
-//         init(qp, p);
-//    }
     
     void init(QueryProcess qp, String p) throws LoadException {
         init(qp, p, Level.USER_DEFAULT);
     }
     
     void init(QueryProcess qp, String p, Level level) throws LoadException {
+        setAccessLevel(level);
+        setEvent(Access.accept(Feature.EVENT, level));
         setContext(new Context());
         setTransformation(p);
         set(qp);
@@ -222,6 +218,10 @@ public class Transformer implements TransformProcessor {
         return t;
     }
     
+    public static Transformer createWE(Graph g, String p) throws LoadException {
+        return createWE(QueryProcess.create(g), p);
+    }
+   
     public static Transformer createWE(Graph g, String p, Level level) throws LoadException {
         Transformer t = new Transformer();
         t.init(QueryProcess.create(g), p, level);
@@ -239,7 +239,7 @@ public class Transformer implements TransformProcessor {
         try {
             t.init(qp, p);
         } catch (LoadException ex) {
-            logger.error(ex.getMessage());
+            logger.error("Create transformer: " + ex.getMessage());
         }
         return t;
     }
@@ -753,13 +753,13 @@ public class Transformer implements TransformProcessor {
     void beforeTransformer(boolean astart) {
         if (astart) {
             setStarting(false);
-            getEventVisitor().beforeTransformer(getTransformation());
+            if (isEvent()) getEventVisitor().beforeTransformer(getTransformation());
         }
     }
     
     void afterTransformer(boolean astart, IDatatype dt) {
         if (astart) {
-            getEventVisitor().afterTransformer(getTransformation(), dt.getLabel());
+            if (isEvent()) getEventVisitor().afterTransformer(getTransformation(), dt.getLabel());
             setStarting(true);
         }
     }
@@ -1237,7 +1237,7 @@ public class Transformer implements TransformProcessor {
                         dt1 = new Funcall(name).callWE((Interpreter) exec.getEvaluator(),
                                 (Binding) env.getBind(), env, exec.getProducer(), (Function) function, param(dt));
                     } catch (EngineException ex) {
-                        logger.error(ex.getMessage());
+                        logger.error(ex.getMessage() + " in " + name);
                     }
 
                     return dt1;
@@ -1447,22 +1447,22 @@ public class Transformer implements TransformProcessor {
     /**
      * Load additional RDF into QueryProcess
      */
-    public void load(String uri) {
-        if (loaded.containsKey(uri)) {
-            return;
-        } else {
-            loaded.put(uri, uri);
-        }
-        Graph g = Graph.create();
-        Load load = Load.create(g);
-        try {
-            load.parse(uri, Load.TURTLE_FORMAT);
-            g.init();
-            exec.add(g);
-        } catch (LoadException ex) {
-            logger.error(ex.getMessage());
-        }
-    }
+//    public void load(String uri) {
+//        if (loaded.containsKey(uri)) {
+//            return;
+//        } else {
+//            loaded.put(uri, uri);
+//        }
+//        Graph g = Graph.create();
+//        Load load = Load.create(g);
+//        try {
+//            load.parse(uri, Load.TURTLE_FORMAT);
+//            g.init();
+//            exec.add(g);
+//        } catch (LoadException ex) {
+//            logger.error(ex.getMessage());
+//        }
+//    }
 
     /**
      * @return the hasDefault
@@ -1725,6 +1725,34 @@ public class Transformer implements TransformProcessor {
      */
     public void setStarting(boolean starting) {
         this.starting = starting;
+    }
+
+    /**
+     * @return the AccessLevel
+     */
+    public Level getAccessLevel() {
+        return AccessLevel;
+    }
+
+    /**
+     * @param AccessLevel the AccessLevel to set
+     */
+    public void setAccessLevel(Level AccessLevel) {
+        this.AccessLevel = AccessLevel;
+    }
+
+    /**
+     * @return the event
+     */
+    public boolean isEvent() {
+        return event;
+    }
+
+    /**
+     * @param event the event to set
+     */
+    public void setEvent(boolean event) {
+        this.event = event;
     }
 
 

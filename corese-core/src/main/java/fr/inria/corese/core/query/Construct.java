@@ -253,15 +253,13 @@ public class Construct
     }
     
     void record(List<Edge> construct, Edge[] where) {
-        if (isRule && ! construct.isEmpty() && getVisitor().entailment()) {
+        if (isRule && ! construct.isEmpty() && 
+                getVisitor() != null && getVisitor().entailment()) {
             List<Edge> whereList = new ArrayList<>();
             for (Edge e : where) {
                 whereList.add(graph.getGraph().getEdgeFactory().copy(e));
-                //whereList.add(e);
             }
-            if (getVisitor() != null) {
-                getVisitor().entailment(query, construct, whereList);
-            }
+            getVisitor().entailment(query, construct, whereList);
         }
     }
 

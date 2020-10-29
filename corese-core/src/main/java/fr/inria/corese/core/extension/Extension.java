@@ -19,11 +19,17 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.Context;
 import java.io.IOException;
 import java.util.Enumeration;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+
 
 /**
  * Generic Java Extension function public class
@@ -45,46 +51,60 @@ public class Extension extends Core {
 //    public static Extension singleton() {
 //        return singleton;
 //    }
-       
-    public IDatatype parse(IDatatype dt) {
-        if (dt.isURI()) {
-            return imports(dt, false);
+    
+    Binding getBinding() {
+        if (getEnvironment() == null) {
+            return null;
         }
-        else {
-            ASTQuery ast = parseQuery(dt.getLabel());
-            if (ast == null) {
-                return null;
-            }
-            return DatatypeMap.createObject(ast);
-        }
+        return (Binding) getEnvironment().getBind();
     }
+    
+    // inherit access level from Binding
+    Context getCreateContext() {
+        Binding b = getBinding();
+        if (b == null) {
+            return new Context(Level.DEFAULT);
+        }
+        return new Context(b.getAccessLevel());
+    }
+       
+    public IDatatype parse(IDatatype dt) throws EngineException {
+        Context c = getCreateContext();
+        if (Access.reject(Feature.LDSCRIPT_SPARQL, c.getLevel())) {
+            throw new SafetyException(TermEval.SPARQL_MESS);
+        }
+        ASTQuery ast = parseQuery(dt.getLabel(), c);
+        if (ast == null) { 
+            return null;
+        }
+        return DatatypeMap.createObject(ast);
+    }
+    
+    ASTQuery parseQuery(String str, Context c) throws EngineException {
+        QueryProcess exec = QueryProcess.create();
+        Query q = exec.compile(str, c);
+        return (ASTQuery) q.getAST();
+    }
+        
+        
    
-    public IDatatype imports(IDatatype dt, IDatatype pub) {
+    IDatatype imports(IDatatype dt, IDatatype pub) {
         return imports(dt, pub.booleanValue());
     }
     
-    public IDatatype imports(IDatatype dt, boolean pub) {
+    IDatatype imports(IDatatype dt, boolean pub) {
         QueryProcess exec = QueryProcess.create();
         try {
             boolean b = exec.imports(dt.getLabel(), pub);
             return DatatypeMap.newInstance(b);
         }
         catch (EngineException ex) {
-            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
             return DatatypeMap.FALSE;
         }
     }
     
-    ASTQuery parseQuery(String str) {
-        QueryProcess exec = QueryProcess.create();
-        try {
-            Query q = exec.compile(str);
-            return (ASTQuery) q.getAST();
-        } catch (EngineException ex) {
-            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);
-            return null;
-        }
-    }
+
     
     
     public IDatatype list(IDatatype dt) {
@@ -140,9 +160,9 @@ public class Extension extends Core {
         try {
             clean.clean();
         } catch (IOException ex) {
-            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
         } catch (EngineException ex) {
-            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
         }
         return DatatypeMap.TRUE;
     }
@@ -150,19 +170,19 @@ public class Extension extends Core {
     
  
     
-    public IDatatype mytest() {
+    IDatatype mytest() {
         try {
             QueryProcess exec = QueryProcess.create(getGraph());
             System.out.println("before mytest");
             Mappings map = exec.query("insert { graph us:g1 { [] rdf:value ?v } } where { bind (rand() as ?v) }");
             System.out.println("after mytest");
         } catch (EngineException ex) {
-            Logger.getLogger(Extension.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
         }
         return DatatypeMap.TRUE;
     }
     
-    public IDatatype mytest2() {
+     IDatatype mytest2() {
         Service s = new Service("http://localhost:8080/sparql");
         try {
             System.out.println("before mytest");

@@ -55,6 +55,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
 import fr.inria.corese.shex.shacl.Shex;
+import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.BufferedReader;
@@ -1495,13 +1496,16 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
 
-    void loadWF(String path, boolean run) {      
+    void loadWF(String path, boolean run) {
         WorkflowParser parser = new WorkflowParser();
         try {
             parser.parse(path);
             SemanticWorkflow wp = parser.getWorkflowProcess();
             defQuery(wp, run);
         } catch (LoadException ex) {
+            LOGGER.error(ex);
+            appendMsg(ex.toString());
+        } catch (SafetyException ex) {
             LOGGER.error(ex);
             appendMsg(ex.toString());
         }

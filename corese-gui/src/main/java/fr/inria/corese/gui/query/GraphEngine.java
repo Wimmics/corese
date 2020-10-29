@@ -86,6 +86,9 @@ public class GraphEngine {
                 case Command.LINKED_FUNCTION:
                     setLinkedFunction(true);
                     break;
+                case Command.READ_FILE:
+                    setReadFile(true);
+                    break;
                 case Command.DEBUG:
                     graph.setDebugMode(true);
                     break;
@@ -412,6 +415,10 @@ public class GraphEngine {
     public void setLinkedFunction(boolean linkedFunction) {
         this.linkedFunction = linkedFunction;
         Access.setLinkedFeature(linkedFunction);
+    }
+    
+    public void setReadFile(boolean b) {
+        Access.setReadFile(b);
     }
 
 }

@@ -12,7 +12,7 @@ import java.util.HashMap;
  */
 public class AccessNamespace {
     
-    NSMap accept, reject;
+    NSMap accept, reject, forbid;
     
     class NSMap extends HashMap<String, Boolean> {
 
@@ -31,12 +31,24 @@ public class AccessNamespace {
     
     static {
         singleton = new AccessNamespace();
+        singleton.start();
         singleton.init();
     }
     
+    void start() {
+        singleton().forbid("/etc/passwd");
+        singleton().forbid(".ssh/id_rsa");
+    }
+    
     void init() {
-        singleton().setAccess("/etc/passwd", false);
-        singleton().setAccess(".ssh/id_rsa", false);
+        for (String ns : forbid.keySet()) {
+            singleton().setAccess(ns, false);
+        }
+    }
+    
+    public static void clean() {
+         singleton().clear();
+         singleton().init();      
     }
     
     public static AccessNamespace singleton() {
@@ -58,10 +70,16 @@ public class AccessNamespace {
     AccessNamespace() {
         accept = new NSMap();
         reject = new NSMap();
+        forbid = new NSMap();
     }
     
     public static void define(String ns, boolean b) {
         singleton().setAccess(ns, b);
+    }
+    
+    // use case: forbidden even to super user 
+    public static boolean forbidden(String ns) {
+        return singleton().forbid.match(ns);
     }
     
     public static boolean access(String ns) {
@@ -71,9 +89,8 @@ public class AccessNamespace {
         return singleton().accept(ns, resultWhenEmptyAccept);
     }
     
-    public static void clean() {
-         singleton().clear();
-         singleton().init();      
+    void forbid(String ns) {
+        forbid.put(ns, false);
     }
     
     public void setAccess(String ns, boolean b) {

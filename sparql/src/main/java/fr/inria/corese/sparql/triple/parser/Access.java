@@ -162,6 +162,9 @@ public class Access {
         return save;
     }
     
+    public static boolean isActive() {
+        return ! SKIP;
+    }
     
     public Access singleton() {
         return singleton;
@@ -232,7 +235,7 @@ public class Access {
     
     public static void check(Feature feature, Level actionLevel, String uri, String mes) throws SafetyException {
         if (reject(feature, actionLevel, uri)) {
-            TermEval.logger.error("reject: " + feature + " " + uri);
+            //TermEval.logger.error("reject: " + feature + " " + uri);
             throw new SafetyException(mes + ": " + uri);
         }
     }
@@ -243,23 +246,21 @@ public class Access {
         }
     }
     
-    public static boolean acceptNamespace (Feature feature, Level actionLevel, String uri) {
+    public static boolean acceptNamespace(Feature feature, Level actionLevel, String uri) {
         if (SKIP || actionLevel.provide(SUPER_USER)) {
-            return true;
-        }
-       else if (actionLevel.provide(DEFAULT)) {
+            return ! AccessNamespace.forbidden(uri);
+        } else if (actionLevel.provide(DEFAULT)) {
             // action level >= DEFAULT -> if accept is empty, every namespace is authorized
             return accept(uri, true);
-        }
-        else {
+        } else {
             // action level < DEFAULT -> access to explicitely authorized namespace only
             return accept(uri, false);
         }
     }
     
-    static boolean accept(String uri) {
-        return NSManager.isPredefinedNamespace(uri) || AccessNamespace.access(uri);
-    }
+//    static boolean accept(String uri) {
+//        return NSManager.isPredefinedNamespace(uri) || AccessNamespace.access(uri);
+//    }
     
     static boolean accept(String uri, boolean resultWhenEmptyAccept) {
         return NSManager.isPredefinedNamespace(uri) || AccessNamespace.access(uri, resultWhenEmptyAccept);
@@ -303,22 +304,23 @@ public class Access {
         return getQueryAccessLevel(user, false);
     }
     
-    public static Level getQueryAccessLevel(boolean user, boolean special) {
-        return getQueryAccessLevel(DEFAULT, user, special);
-    }
+//    public static Level getQueryAccessLevel(boolean user, boolean special) {
+//        return getQueryAccessLevel(DEFAULT, user, special);
+//    }
     
     /**
      * user query may have access level set by access=USER
      * return the min of access levels
      * 
      */
-    public static Level getQueryAccessLevel(Level level, boolean user, boolean special) {
+    public static Level getQueryAccessLevel(boolean user, boolean hasKey) {
         if (isProtect()) {
             // run in protect mode
             if (user) {
-                if (special) {
-                    // special case: could authorize SPARQL_UPDATE (e.g. for tutorial)
-                    return USER; //return RESTRICTED.min(level);
+                // user query
+                if (hasKey) {
+                    // user has key: authorize SPARQL_UPDATE 
+                    return RESTRICTED; 
                 }
                 else {
                     // user query has only access to PUBLIC feature
@@ -326,8 +328,7 @@ public class Access {
                 }
             }
         }
-        // user query may have lower access than default
-        return USER_DEFAULT.min(level);
+        return USER_DEFAULT;
     }
     
 
@@ -409,6 +410,10 @@ public class Access {
         deny(READ_FILE);
         deny(LOAD_FILE);
         deny(JAVA_FUNCTION);
+        // user query on protected server may have parameter access=key 
+        // that grants RESTRICTED access level instead of USER
+        // hence key give access to Update
+        set(SPARQL_UPDATE, RESTRICTED);
     }
     
     /**
@@ -422,7 +427,6 @@ public class Access {
         // xt:read st:format cannot read the file system
         // use case: server mode
         deny(READ_FILE);
-        set(SPARQL_UPDATE, RESTRICTED);
         set(LDSCRIPT, PUBLIC);
     }
     
@@ -437,7 +441,6 @@ public class Access {
         deny(HTTP);
         deny(JAVA_FUNCTION);
         deny(LINKED_FUNCTION);
-        // deny(SPARQL_SERVICE);
         // other features are PRIVATE and user query is PUBLIC
     }
     

@@ -435,8 +435,11 @@ public class PluginImpl
     @Override
     public IDatatype write(IDatatype dtfile, IDatatype dt) {
         QueryLoad ql = QueryLoad.create();
-        ql.writeTemp(dtfile.getLabel(), dt.getLabel());
-        return dt;
+        String str = ql.writeTemp(dtfile.getLabel(), dt.getLabel());
+        if (str == null) {
+            return null;
+        }
+        return DatatypeMap.newInstance(str);
     }
 
     @Override

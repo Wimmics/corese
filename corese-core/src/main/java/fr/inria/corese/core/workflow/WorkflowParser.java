@@ -27,6 +27,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.parser.Access;
+import java.util.logging.Level;
 
 /**
  * Parse a graph that describes a Workflow 
@@ -225,6 +227,14 @@ public class WorkflowParser {
         return sw;
     }
     
+    public SemanticWorkflow parseWE(Node wf) throws LoadException {
+        try {
+            return parse(wf);
+        } catch (SafetyException ex) {
+            throw new LoadException((ex));
+        }
+    }
+
     void parseNode(Node wf) throws LoadException, SafetyException {
         Node body = getNode(BODY, wf);
         Node uri  = getNode(URI, wf);
@@ -618,7 +628,7 @@ public class WorkflowParser {
     
     void check(String value) throws SafetyException {
         if (value != null) {
-            if (isServerMode() && NSManager.isFile(value)) {
+            if (isServerMode() && NSManager.isFile(value) && Access.isActive()) {
                 throw new SafetyException("Path unauthorized: " + value);
             }
         }

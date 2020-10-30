@@ -212,7 +212,7 @@ public class QueryLoad {
         return sb.toString();
     }
     
-     public void writeTemp(String name, String str) {
+    public String writeTemp(String name, String str) {
         String query = "";
         try {
             File file = File.createTempFile(getName(name), getSuffix(name));
@@ -221,12 +221,13 @@ public class QueryLoad {
             fq.write(str);
             fq.flush();
             fr.close();
+            return file.toString();
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
+            logger.error(e.getMessage());
         } catch (IOException e) {
-            // TODO Auto-generated catch block
+            logger.error(e.getMessage());
         }
+        return null;
     }
      
     String getName(String name) {
@@ -242,7 +243,7 @@ public class QueryLoad {
          if (index == -1) {
              return ".txt";
          }
-         return name.substring(index+1);
+         return name.substring(index);
      }
       
 

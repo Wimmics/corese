@@ -118,9 +118,6 @@ public class LoadProcess extends WorkflowProcess {
         return new Data(this, null, g);
     }
     
-    boolean isFile(String path) {
-        return NSManager.isFile(path);
-    }
 
     /**
      * Document is Shex, translate it to Shacl

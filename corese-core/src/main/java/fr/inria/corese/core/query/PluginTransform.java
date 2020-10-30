@@ -21,6 +21,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -236,38 +237,56 @@ public class PluginTransform implements ComputerProxy {
         }
         return dt.stringValue();
     }
-
+    
     String getFormatURI(String uri) {
-        if (uri.startsWith(NSManager.STL_FORMAT)) {
-            try {
-                return readResource(uri, NSManager.STL_FORMAT, FORMAT_LIB);
-            } catch (LoadException ex) {
-                logger.error(ex.getMessage());
-                return "";
-            }
-        }
-        QueryLoad ql = QueryLoad.create();
         try {
+            QueryLoad ql = QueryLoad.create();
+            if (uri.startsWith(NSManager.STL_FORMAT)) {
+                // st:format/loc/myformat.html -> /webapp/format/loc/myformat.html
+                String name = FORMAT_LIB + uri.substring(NSManager.STL_FORMAT.length());
+                return ql.getResource(name);
+            }
             return ql.readProtect(uri);
         } catch (LoadException ex) {
-            logger.error("Format unauthorized: " + ex.getMessage());
+            logger.error(ex.getMessage());
+        } catch (IOException ex) {
+            logger.error(ex.getMessage());
         }
+
         return "";
     }
 
-    /**
-     * ns = http://ns.inria.fr/sparql-template/format/ resource =
-     * http://ns.inria.fr/sparql-template/format/navlab/title.html lib =
-     * /data/format/
-     */
-    String readResource(String resource, String ns, String lib) throws LoadException {
-        String name = lib + resource.substring(ns.length());
-        InputStream stream = getClass().getResourceAsStream(name);
-        if (stream == null) {
-            throw LoadException.create(new IOException(resource));
-        }
-        QueryLoad ql = QueryLoad.create();
-        return ql.readWE(stream);
-    }
+//    String getFormatURI2(String uri) {
+//        if (uri.startsWith(NSManager.STL_FORMAT)) {
+//            try {
+//                return readResource(uri, NSManager.STL_FORMAT, FORMAT_LIB);
+//            } catch (LoadException ex) {
+//                logger.error(ex.getMessage());
+//                return "";
+//            }
+//        }
+//        QueryLoad ql = QueryLoad.create();
+//        try {
+//            return ql.readProtect(uri);
+//        } catch (LoadException ex) {
+//            logger.error("Format unauthorized: " + ex.getMessage());
+//        }
+//        return "";
+//    }
+//
+//    /**
+//     * ns = http://ns.inria.fr/sparql-template/format/ resource =
+//     * http://ns.inria.fr/sparql-template/format/navlab/title.html lib =
+//     * /data/format/
+//     */
+//    String readResource(String resource, String ns, String lib) throws LoadException {
+//        String name = lib + resource.substring(ns.length());
+//        InputStream stream = getClass().getResourceAsStream(name);
+//        if (stream == null) {
+//            throw LoadException.create(new IOException(resource));
+//        }
+//        QueryLoad ql = QueryLoad.create();
+//        return ql.readWE(stream);
+//    }
 
 }

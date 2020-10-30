@@ -52,6 +52,7 @@ public class Parameter {
     
     
     private static final String SOLVER_USER = COS+"user";
+    private static final String SUPER_USER = COS+"super";
     private static final String SOLVER_SERVER_USER = "fr.inria.corese.server.webservice.QuerySolverVisitorServerUser";
     
     
@@ -177,7 +178,7 @@ public class Parameter {
                                     ?QuerySolverVisitorTransformerUser.class.getName():label);
                             break;
                         case LEVEL: 
-                            // ?level = Level.USER
+                            // ?level = cos:user -> Level.USER
                             Access.Level.USER_DEFAULT = level(label);
                     }
                 }
@@ -185,9 +186,15 @@ public class Parameter {
         }
     }
     
+    /**
+    * Assign the level of user action
+    * default is PRIVATE
+    */
     Access.Level level(String level) {
         switch (level) {
+            // restrict action level to user
             case SOLVER_USER: return Access.Level.USER;
+            // default level
             default: return Access.Level.DEFAULT;
         }
     }

@@ -61,7 +61,7 @@ public class SemanticWorkflow extends  CompositeProcess {
         SPARQLProcess wp = getEmptyQuery();
         if (wp == null) {
             wp = new SPARQLProcess(q);
-            wp.setUserQuery(protect);
+            //wp.setUserQuery(protect);
             return add(wp, n);
         }
         wp.setUserQuery(protect);

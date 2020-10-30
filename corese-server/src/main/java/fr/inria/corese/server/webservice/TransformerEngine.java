@@ -14,6 +14,7 @@ import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -77,6 +78,8 @@ public class TransformerEngine {
         setContext(create(param));
         complete(graph, profile, context);
     }
+    
+   
 
     /**
      * Create and run a Workflow
@@ -114,9 +117,11 @@ public class TransformerEngine {
         IDatatype querydt = context.get(Context.STL_QUERY);
         String query      = (querydt == null) ? null : querydt.stringValue();
         String transform  = context.getTransform();
+        Level level = param.getLevel();
         boolean isUserQuery  = param.isUserQuery();
-        boolean isRestricted = param.isRestricted() && context.hasValue(Context.STL_RESTRICTED, DatatypeMap.TRUE);
-        Access.Level level = Access.getQueryAccessLevel(isUserQuery, isRestricted);
+        //System.out.println("TE: key " + param.getKey() + " " + level);
+//        boolean isRestricted = false; //param.isRestricted() && context.hasValue(Context.STL_RESTRICTED, DatatypeMap.TRUE);
+//        Access.Level level = Access.getQueryAccessLevel(isUserQuery, isRestricted);
         logger.info("Parse workflow: " + swdt);
         if (swdt != null) {
             // there is a workflow            
@@ -125,19 +130,15 @@ public class TransformerEngine {
             parser.setServerMode(true);
             //parser.setDebug(true);
             parser.setProcessor(new Translator());
-            try {
-                //parser.setDebug(true);
-                parser.parse(profile.getNode(swdt));
-            } catch (SafetyException ex) {
-                throw new LoadException(ex);
-            }
+            parser.parseWE(profile.getNode(swdt));
             query = getQuery(wp, query);
             if (query != null) {
                 logger.warn("Workflow query: " + query);
                 wp.addQuery(query, 0, isUserQuery, level);
             }  
         } 
-        else if (query != null) {          
+        // there is no workflow
+        else if (query != null) {  
             if (transform == null) {
                 logger.info("SPARQL endpoint");
                 wp.addQueryMapping(query, isUserQuery, level);

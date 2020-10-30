@@ -2,6 +2,8 @@
 package fr.inria.corese.server.webservice;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.List;
@@ -56,6 +58,7 @@ public class Param {
     private String query;
     private String value;
     private String load;
+    private String key;
     
     private IDatatype title;
     private List<String> from;
@@ -134,12 +137,16 @@ public class Param {
             ctx.setServer(getHostname());
             ctx.export(Context.STL_SERVER, ctx.get(Context.STL_SERVER));
         }
-        //ctx.setUserQuery(isUserQuery());
         
         if (getRequest() != null){
             ctx.setRemoteHost(getRequest().getRemoteHost());
         }
         return ctx;
+    }
+    
+    Level getLevel() {
+        // HTTP request may have access key that grants better access level
+        return  Access.getQueryAccessLevel(isUserQuery(), SPARQLRestAPI.hasKey(getKey()));
     }
     
     String getValue(String str) {
@@ -418,6 +425,20 @@ public class Param {
      */
     public void setRequest(HttpServletRequest request) {
         this.request = request;
+    }
+
+    /**
+     * @return the key
+     */
+    public String getKey() {
+        return key;
+    }
+
+    /**
+     * @param key the key to set
+     */
+    public void setKey(String key) {
+        this.key = key;
     }
 
 }

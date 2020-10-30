@@ -38,6 +38,7 @@ import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.core.Context;
 
@@ -71,6 +72,7 @@ public class SPARQLRestAPI {
     private static Profile mprofile;
 
     static private final Logger logger = LogManager.getLogger(SPARQLRestAPI.class);
+    private static String key;
     
     QuerySolverVisitorServer visitor;
 
@@ -135,7 +137,20 @@ public class SPARQLRestAPI {
         store.init(isProtected);
         setVisitor( QuerySolverVisitorServer.create(createEval()));
         getVisitor().initServer(EmbeddedJettyServer.BASE_URI);
+        init();
         return Response.status(200).header(headerAccept, "*").entity("Endpoint reset").build();
+    }
+    
+    void init(){
+        if (getKey() == null) {
+            setKey(genkey());
+        }
+        logger.info("key: "+ getKey());
+    }
+    
+    String genkey() {
+        UUID uuid = UUID.randomUUID();
+        return uuid.toString();
     }
     
     void init(boolean localhost) {
@@ -779,25 +794,30 @@ public class SPARQLRestAPI {
         else {
             ds = new Dataset();
         }
-        
-        Level level = Access.getQueryAccessLevel(getLevel(access), true, false);
+        Level level = Access.getQueryAccessLevel(true, hasKey(access));
         ds.getCreateContext().setLevel(level);
         return ds;
     }
     
-    Level getLevel(String access) {
-        Access.Level level = Access.Level.DEFAULT;
-        if (access != null) {
-            try { 
-                level = Access.Level.valueOf(access);
-                level = level.min(Access.Level.DEFAULT);
-            }
-            catch (Exception e) {
-                logger.error(e.getMessage());
-            }
-        }
-        return level;
+    // access key gives special access level (RESTRICTED vs PUBLIC)
+    static boolean hasKey(String access) {
+        return access!=null && getKey() != null && getKey().equals(access);
     }
+    
+    
+//    Level getLevel(String access) {
+//        Access.Level level = Access.Level.DEFAULT;
+//        if (access != null) {
+//            try { 
+//                level = Access.Level.valueOf(access);
+//                level = level.min(Access.Level.DEFAULT);
+//            }
+//            catch (Exception e) {
+//                logger.error(e.getMessage());
+//            }
+//        }
+//        return level;
+//    }
      
 
     /**
@@ -821,5 +841,19 @@ public class SPARQLRestAPI {
         }
         String query = "template { st:atw(" + sep + name + sep + ")} where {}";
         return query;
+    }
+
+    /**
+     * @return the key
+     */
+    public static String getKey() {
+        return key;
+    }
+
+    /**
+     * @param aKey the key to set
+     */
+    public static void setKey(String aKey) {
+        key = aKey;
     }
 }

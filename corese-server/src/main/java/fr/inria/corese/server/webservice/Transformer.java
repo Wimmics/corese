@@ -80,6 +80,7 @@ public class Transformer {
             @FormParam("param") String param, 
             @FormParam("arg")       String arg,
             @FormParam("format") String format, 
+            @FormParam("access") String access, 
             @FormParam("query") String query, // SPARQL query
             @FormParam("name") String name, // SPARQL query name (in webapp/query)
             @FormParam("value") String value, // values clause that may complement query           
@@ -93,6 +94,7 @@ public class Transformer {
         par.setParam(param);
         par.setArg(arg);
         par.setFormat(format);
+        par.setKey(access);
         par.setDataset(from, named);
         par.setRequest(request);
         return template(getTripleStore(), par);
@@ -109,6 +111,7 @@ public class Transformer {
             @FormDataParam("param") String param,
             @FormDataParam("arg")       String arg,
             @FormDataParam("format") String format,
+            @FormDataParam("access") String access,
             @FormDataParam("query") String query, // SPARQL query
             @FormDataParam("name") String name, // SPARQL query name (in webapp/query)
             @FormDataParam("value") String value, // values clause that may complement query           
@@ -122,6 +125,7 @@ public class Transformer {
         par.setParam(param);
         par.setArg(arg);
         par.setFormat(format);
+        par.setKey(access);
         par.setDataset(toStringList(from), toStringList(named));
         par.setRequest(request);
         return template(getTripleStore(), par);
@@ -137,6 +141,7 @@ public class Transformer {
             @QueryParam("param") String param, 
             @QueryParam("arg") String arg, 
             @QueryParam("format") String format, 
+            @QueryParam("access") String access, 
             @QueryParam("query") String query, // SPARQL query
             @QueryParam("name") String name, // SPARQL query name (in webapp/query or path or URL)
             @QueryParam("value") String value, // values clause that may complement query           
@@ -150,6 +155,7 @@ public class Transformer {
         par.setParam(param);
         par.setArg(arg);
         par.setFormat(format);
+        par.setKey(access);
         par.setDataset(namedGraphUris, namedGraphUris);
         par.setRequest(request);
         return template(getTripleStore(), par);
@@ -167,7 +173,7 @@ public class Transformer {
             engine.setEventManager(Profile.getEventManager());
             context = engine.getContext();
             
-            Level level = Access.getQueryAccessLevel(true);
+            Level level = par.getLevel(); //Access.getQueryAccessLevel(true);
             String prof = context.getProfile();            
             if (prof != null && !Access.acceptNamespace(Feature.LINKED_TRANSFORMATION, level, prof)) {
                 return Response.status(500).header(headerAccept, "*").entity("Undefined profile: " + prof).build();
@@ -176,19 +182,7 @@ public class Transformer {
             if (trans != null && !Access.acceptNamespace(Feature.LINKED_TRANSFORMATION, level, trans)) {
                 return Response.status(500).header(headerAccept, "*").entity("Undefined transformation: " + trans).build();
             }
-                       
-//            if (store.isProtect()) { 
-//                // check profile, transform and query
-//                String prof = context.getProfile();
-//                if (prof != null && !nsm.toNamespace(prof).startsWith(NSManager.STL)) {
-//                    return Response.status(500).header(headerAccept, "*").entity("Undefined profile: " + prof).build();
-//                }
-//                String trans = context.getTransform();
-//                if (trans != null && !nsm.toNamespace(trans).startsWith(NSManager.STL)) {
-//                    return Response.status(500).header(headerAccept, "*").entity("Undefined transform: " + trans).build();
-//                }
-//            }
-                       
+                                              
             Data data = engine.process();
             return process(data, par, context);           
         } catch (Exception ex) {

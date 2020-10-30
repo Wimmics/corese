@@ -66,6 +66,7 @@ public class ServiceOnline {
             @FormParam("param")     String param, 
             @FormParam("arg")       String arg,
             @FormParam("format")    String format, 
+            @FormParam("access")    String access, 
             @FormParam("query")     String query, // SPARQL query
             @FormParam("name")      String name, // SPARQL query name (in webapp/query)
             @FormParam("value")     String value, // values clause that may complement query           
@@ -77,7 +78,7 @@ public class ServiceOnline {
     		logger.info("POST media: application/x-www-form-urlencoded. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
     				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
     				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
-        return get(request, serv, profile, resource, mode, param, arg, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
+        return get(request, serv, profile, resource, mode, param, arg, format, access, query, name, value, transform, defaultGraphUris, namedGraphUris);
     }
     
     @POST
@@ -92,6 +93,7 @@ public class ServiceOnline {
             @FormParam("param")     String param, 
             @FormParam("arg")       String arg,
             @FormParam("format")    String format, 
+            @FormParam("access")    String access, 
             @FormParam("query")     String query, // SPARQL query
             @FormParam("name")      String name, // SPARQL query name (in webapp/query)
             @FormParam("value")     String value, // values clause that may complement query           
@@ -103,7 +105,7 @@ public class ServiceOnline {
     		logger.info("POST media: application/x-www-form-urlencoded. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
     				+ ", param: " + param + ", query: " + query + ", name: " + name + ", value: " + value 
     				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
-        return get(request, serv, profile, resource, mode, param, arg, format,  query, name, value, transform, defaultGraphUris, namedGraphUris);
+        return get(request, serv, profile, resource, mode, param, arg, format, access, query, name, value, transform, defaultGraphUris, namedGraphUris);
     }
     
     @POST
@@ -118,6 +120,7 @@ public class ServiceOnline {
             @FormDataParam("param")     String param,
             @FormDataParam("arg")       String arg,
             @FormDataParam("format")    String format,
+            @FormDataParam("access")    String access,
             @FormDataParam("query")     String query, // SPARQL query
             @FormDataParam("name")      String name, // SPARQL query name (in webapp/query)
             @FormDataParam("value")     String value, // values clause that may complement query
@@ -129,7 +132,7 @@ public class ServiceOnline {
     		logger.info("POST media: multipart/form-data. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + mode 
     				+ ", param: " + param + ", arg: " + arg + ", query: " + query + ", name: " + name + ", value: " + value 
     				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
-        return get(request, serv, profile, resource, mode, param, arg, format,  query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));
+        return get(request, serv, profile, resource, mode, param, arg, format, access, query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));
     }
 
     @GET
@@ -143,6 +146,7 @@ public class ServiceOnline {
             @QueryParam("param")    String param, 
             @QueryParam("arg")      String arg,
             @QueryParam("format")   String format, 
+            @QueryParam("access")    String access, 
             @QueryParam("query")    String query, // SPARQL query
             @QueryParam("name")     String name, // SPARQL query name (in webapp/query or path or URL)
             @QueryParam("value")    String value, // values clause that may complement query           
@@ -164,6 +168,7 @@ public class ServiceOnline {
         par.setParam(param);
         par.setArg(arg);
         par.setFormat(format);
+        par.setKey(access);
         par.setDataset(namedGraphUris, namedGraphUris);
         par.setRequest(request);
         return new Transformer().template(getTripleStore(serv), par);

@@ -12,7 +12,6 @@ import fr.inria.corese.core.print.JSONFormat;
 import fr.inria.corese.core.print.TripleFormat;
 
 import java.io.IOException;
-import java.util.logging.Level;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;

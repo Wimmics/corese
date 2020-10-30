@@ -129,6 +129,8 @@ public class EmbeddedJettyServer extends ResourceConfig {
 		Option protect    = new Option("protect", "protect", false, "set server mode as protect");
 		Option string     = new Option("string", "string", false, "pprint string with xsd:string");
 		Option linkedFun  = new Option("lf", "linkedfunction", false, "authorize linked function");
+		Option superUser  = new Option("su", "superuser", false, "super user");
+		Option key        = new Option("key", "key", true, "key");
 		Option reentrant  = new Option("re", "reentrant", false, "authorize reentrant query");
 		Option param      = new Option("param", "param", true, "read properties file");
 
@@ -150,6 +152,8 @@ public class EmbeddedJettyServer extends ResourceConfig {
 		options.addOption(protect);
 		options.addOption(string);
 		options.addOption(linkedFun);
+		options.addOption(superUser);
+		options.addOption(key);
 		options.addOption(param);
 		options.addOption(reentrant);
 
@@ -233,6 +237,14 @@ public class EmbeddedJettyServer extends ResourceConfig {
 				logger.info("protect");
 				protect();
 			}
+                        if (cmd.hasOption("su")) {
+//                            logger.info("su");
+//                            Access.skip(true);
+                        }
+                        if (cmd.hasOption("key")) {
+                            String akey = cmd.getOptionValue("key");
+                            SPARQLRestAPI.setKey(akey);
+                        }
                         Access.setMode(Access.Mode.SERVER);
                         
                         if (cmd.hasOption("lf")) {

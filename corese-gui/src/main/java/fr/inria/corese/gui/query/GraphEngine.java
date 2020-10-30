@@ -89,6 +89,9 @@ public class GraphEngine {
                 case Command.READ_FILE:
                     setReadFile(true);
                     break;
+                case Command.SUPER_USER:
+                    Access.skip(true);
+                    break;
                 case Command.DEBUG:
                     graph.setDebugMode(true);
                     break;

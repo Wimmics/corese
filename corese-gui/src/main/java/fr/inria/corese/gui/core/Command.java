@@ -13,6 +13,7 @@ public class Command extends HashMap<String, String> {
     public static final String DEBUG            = "-debug";
     public static final String MAX_LOAD         = "-maxload";
     public static final String LINKED_FUNCTION  = "-linkedfunction";
+    public static final String SUPER_USER       = "-su";
     public static final String READ_FILE        = "-read";
     public static final String METADATA         = "-metadata";
     public static final String STRING           = "-string";

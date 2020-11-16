@@ -446,7 +446,7 @@ public class SPIN implements ASTVisitor {
             visit(exp.getTriple());
         } 
         else if (exp.isQuery()) {
-            ASTQuery ast = exp.getQuery();
+            ASTQuery ast = exp.getAST();
             if (ast.isBind()){
                 visitBind((Query) exp);
             }
@@ -668,7 +668,7 @@ public class SPIN implements ASTVisitor {
         sb.append("sp:SubQuery" + PT_COMMA);
         sb.append(tab() + "sp:query" + NL);
 
-        process(query.getQuery());
+        process(query.getAST());
 
         counter--;
         sb.append(NL + tab() + CSBRACKET + NL);
@@ -680,7 +680,7 @@ public class SPIN implements ASTVisitor {
      * subquery is a bind(exp as var)
      */
     public void visitBind(Query query) {
-        ASTQuery ast = query.getQuery();
+        ASTQuery ast = query.getAST();
         Variable var   = ast.getSelectVar().get(0);
         Expression exp = ast.getExpression(var);
         bind(exp, var);

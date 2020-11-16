@@ -18,10 +18,11 @@
 # authorized sparql endpoints, see Profile defNamespace
 st:access st:namespace 
 <http://dbpedia.org/sparql>,
+<http://dbpedia-historique.inria.fr/sparql>,
 <http://fr.dbpedia.org/sparql>,
 <https://data.archives-ouvertes.fr/sparql>,
 <https://covidontheweb.inria.fr/sparql>,
-# authorized linked transformation
+# authorized linked transformation,
 <sttl/>
 .
 

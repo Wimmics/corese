@@ -49,7 +49,7 @@ public class Pattern {
      * return kgram("select where", "?x", x)
      */
     void query(Exp exp){
-        ASTQuery ast = exp.get(0).get(0).getQuery();
+        ASTQuery ast = exp.get(0).get(0).getAST();
         ast.validate();
         String cleanQuery = dtc.string(clean(compile(ast)));
         // args: ast select variables that are bound in stack

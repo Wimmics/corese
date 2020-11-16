@@ -110,8 +110,11 @@ PARSER_BEGIN(SparqlCorese)
         astu = ASTUpdate.create();
         try {
         	ex = Start();
-        } catch(ParseException e) {
+        } catch (ParseException e) {
         	throw new JavaccParseException(e);
+        }
+        catch (Error e) {
+            throw new JavaccParseException(e);
         }
         if (show)
         	for (int i = 0; i<ex.size();i++) {
@@ -1968,7 +1971,7 @@ Variable Var() : { Token t1; Variable res; String s;}
 {
   (   t1 = <VAR1> { s = t1.image; }  
     | t1 = <VAR2> { s = "?"+(t1.image).substring(1,(t1.image).length()); }  
-    | t1 = <VAR3> { s = "?"+(t1.image); } 
+    | t1 = <VAR3> { s = "?"+(t1.image); handler.checkVariable(t1); } 
   ) 
   { res = ASTQuery.createVariable(s, astq); } 
   
@@ -2447,7 +2450,10 @@ Function Function(Metadata global, Metadata local) :
 {Exp stack; Token t = null; Function term;   ExpressionList v; Constant type, name=null; Expression body;}
 {
   <FUNCTION>  type = IRIrefConst() (name = IRIrefConst())?
-  { stack = BasicGraphPattern.create(); handler.setMetadata(metadata(global, local)) ;}
+  { stack = BasicGraphPattern.create(); 
+    handler.setMetadata(metadata(global, local)) ;
+    handler.setFunction(true);
+  }
   v = FunArgList()
   body = Body(stack)
 
@@ -2459,6 +2465,7 @@ Function Function(Metadata global, Metadata local) :
         }
   	term = astq.defineFunction(name, type, v, body, metadata(global, local) ); 
         handler.cleanMetadata();
+        handler.setFunction(false);
   }
   { return term; }
 }
@@ -2467,12 +2474,13 @@ Function Lambda () :
 {Exp stack; Token t = null; Function term;   ExpressionList v; Constant cst; Expression body;}
 {
   (<LAMBDA> | <FUNCTION>)
-  { stack = BasicGraphPattern.create(); }
+  { stack = BasicGraphPattern.create();     
+  }
   v = LambdaArgList()
   body = Body(stack)
 
   { 
-  	term = gast.defineLambda(v, body, handler.getMetadata());        
+  	term = gast.defineLambda(v, body, handler.getMetadata()); 
   }
   { return term; }
 }

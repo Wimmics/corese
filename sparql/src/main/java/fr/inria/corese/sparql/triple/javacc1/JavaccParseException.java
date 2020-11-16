@@ -20,7 +20,13 @@ public class JavaccParseException extends ParseException {
 		setExpectedToken();
 		setEnccouteredToken();
 	}
-	
+        
+        // user defined (not the parser)
+        public JavaccParseException(Error e) {
+		super();		
+		this.message = e.getMessage();
+        }
+        
 	public String getMessage() {
 		return message;
 	}

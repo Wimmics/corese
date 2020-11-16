@@ -180,9 +180,9 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             }
         }
         	
-	public ASTQuery getQuery(){
-		return null;
-	}
+//	public ASTQuery getQuery(){
+//		return null;
+//	}
 	
 	public Exp remove(int n){
 		return body.remove(n);
@@ -208,9 +208,9 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 		return null;
 	}
 	
-	public void setAST(ASTQuery ast){
-		
-	}
+//	public void setAST(ASTQuery ast){
+//		
+//	}
 	
 	public ASTQuery getAST(){
 		return null;

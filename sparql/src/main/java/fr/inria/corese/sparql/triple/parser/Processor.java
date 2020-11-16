@@ -646,6 +646,7 @@ public class Processor {
 		defoper(ISBLANK, ExprType.ISBLANK);
 		defoper(ISLITERAL, ExprType.ISLITERAL);
 		defoper(ISLIST, ExprType.ISLIST);
+		defoper(EXT+"isList", ExprType.ISLIST);
 		defoper(ISNUMERIC, ExprType.ISNUMERIC);
 		defoper(LANG, 	ExprType.LANG);
 		defoper(LANGMATCH, ExprType.LANGMATCH);

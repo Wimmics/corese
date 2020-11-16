@@ -1,5 +1,7 @@
 package fr.inria.corese.sparql.triple.parser;
 
+import fr.inria.corese.kgram.api.core.Pointerable;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
 import java.util.List;
 
@@ -26,7 +28,7 @@ import fr.inria.corese.sparql.triple.cst.RDFS;
  *
  * @author Olivier Corby & Olivier Savoie
  */
-public class Triple extends Exp {
+public class Triple extends Exp implements Pointerable {
 
     /**
      * @return the matchArity
@@ -235,25 +237,25 @@ public class Triple extends Exp {
      * 2. Semantic phase expand prefix with namespace uri expand get:gui expand
      * path : p[2] p{2} return uri triple
      */
-    @Override
-    public void setAST(ASTQuery a) {
-        ast = a;
-    }
+//    @Override
+//    public void setAST(ASTQuery a) {
+//        ast = a;
+//    }
 
-    @Override
-    public ASTQuery getAST() {
-        if (ast == null) {
-            ast = defaultAST();
-        }
-        return ast;
-    }
-
-    ASTQuery defaultAST() {
-        ASTQuery ast = ASTQuery.create();
-        //ast.setKgram(true);
-        ast.setBody(new And());
-        return ast;
-    }
+//    @Override
+//    public ASTQuery getAST() {
+//        if (ast == null) {
+//            ast = defaultAST();
+//        }
+//        return ast;
+//    }
+//
+//    ASTQuery defaultAST() {
+//        ASTQuery ast = ASTQuery.create();
+//        //ast.setKgram(true);
+//        ast.setBody(new And());
+//        return ast;
+//    }
 
     /**
      * Translate this exp triple as a Term
@@ -857,9 +859,17 @@ public class Triple extends Exp {
     @Override
     void visit(ExpressionVisitor v) {
         v.visit(this);
-//        if (isFilter()) {
-//            getFilter().visit(v);
-//        }
     }
-
+    
+    @Override
+    // let ((s p o) = t)
+    public IDatatype getValue(String var, int n){
+        switch(n) {
+            case 0: return getTerm(0).getDatatypeValue();
+            case 1: return getPredicate().getDatatypeValue();
+            case 2: return getTerm(1).getDatatypeValue();
+        }
+        return null;
+    }
+       
 }

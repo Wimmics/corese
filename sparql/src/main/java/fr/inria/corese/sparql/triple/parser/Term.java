@@ -282,6 +282,7 @@ public class Term extends Expression {
             case ExprType.ISBLANK:
             case ExprType.ISNUMERIC:
             case ExprType.ISWELLFORMED:
+            case ExprType.ISLIST:
             case ExprType.ISUNDEFINED:
             case ExprType.ISSKOLEM:
             case ExprType.ISEXTENSION:

@@ -1110,23 +1110,23 @@ public class ASTQuery
        return Binding.create(exp, var);
     }
     
-    public Exp createBind2(Expression exp, Variable var) {
-        if (var.getVariableList() != null) {
-            // bind (sql() as ())
-            return createASTBind(exp, var);
-        } else {
-            return Binding.create(exp, var);
-        }
-    }
-
-    public Exp createASTBind(Expression exp, Variable var) {
-        ASTQuery ast = subCreate();
-        ast.setBody(BasicGraphPattern.create());
-        ast.setSelect(var, exp);
-        ast.setBind(true);
-        Query q = Query.create(ast);
-        return q;
-    }
+//    public Exp createBind2(Expression exp, Variable var) {
+//        if (var.getVariableList() != null) {
+//            // bind (sql() as ())
+//            return createASTBind(exp, var);
+//        } else {
+//            return Binding.create(exp, var);
+//        }
+//    }
+//
+//    public Exp createASTBind(Expression exp, Variable var) {
+//        ASTQuery ast = subCreate();
+//        ast.setBody(BasicGraphPattern.create());
+//        ast.setSelect(var, exp);
+//        ast.setBind(true);
+//        Query q = Query.create(ast);
+//        return q;
+//    }
 
     Term createTerm(String oper, Expression exp1, Expression exp2) {
         checkBlank(exp1);
@@ -1697,7 +1697,7 @@ public class ASTQuery
         if (lvar.isEmpty() && ! lvar.isNested() && exp.isTerm()) {
             Exp query = exp.getTerm().getExistContent();
             if (query != null){
-                ASTQuery ast = query.getQuery();
+                ASTQuery ast = query.getAST();
                 ast.validate();
                 ExpressionList el = new ExpressionList();
                 for (Variable var : ast.getSelect()) { //ast.getSelectVariables()) {
@@ -1716,7 +1716,7 @@ public class ASTQuery
         if (lvar.isEmpty() && !lvar.isNested() && exp.isTerm()) {
             Exp query = exp.getTerm().getExistContent();
             if (query != null){
-                ASTQuery ast = query.getQuery();
+                ASTQuery ast = query.getAST();
                 ast.validate();
                 for (Variable var : ast.getSelect()) { //ast.getSelectVariables()) {
                     lvar.add(var);
@@ -2630,9 +2630,9 @@ public class ASTQuery
         return isBind;
     }
 
-    public void setBind(boolean b) {
-        isBind = b;
-    }
+//    public void setBind(boolean b) {
+//        isBind = b;
+//    }
 
 
     public int getVariableId() {
@@ -3025,7 +3025,7 @@ public class ASTQuery
         ASTQuery aa;
 
         if (bgp.size() == 1 && bgp.get(0).isQuery()) {
-            aa = bgp.get(0).getQuery();
+            aa = bgp.get(0).getAST();
         } else {
             aa = subCreate();
             aa.setSelectAll(true);

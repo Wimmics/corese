@@ -132,7 +132,7 @@ public class Service extends SourceExp {
         else {
             Exp ee = body.get(0);
             if (ee.isQuery()) {
-                ASTQuery q = ee.getQuery();
+                ASTQuery q = ee.getAST();
                 q.getBody().add(0, exp);
             }
             else {

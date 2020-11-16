@@ -31,10 +31,10 @@ public class Query extends Exp {
         return new Query(a);
     }
 
-    @Override
-    public ASTQuery getQuery() {
-        return ast;
-    }
+//    @Override
+//    public ASTQuery getQuery() {
+//        return ast;
+//    }
 
     @Override
     // TODO: complete this

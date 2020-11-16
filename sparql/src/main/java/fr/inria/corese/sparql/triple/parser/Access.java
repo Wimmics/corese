@@ -201,7 +201,7 @@ public class Access {
 //    }
     
     public static boolean provide(Feature feature) {
-        return accept(feature, DEFAULT);
+        return accept(feature, USER_DEFAULT);
     }
     
     // tune level value if the server is protected or not 
@@ -211,7 +211,7 @@ public class Access {
     }
     
     public static boolean accept(Feature feature) {
-        return DEFAULT.provide(get(feature));
+        return USER_DEFAULT.provide(get(feature));
     }
     
     public static boolean reject(Feature feature, Level actionLevel) {

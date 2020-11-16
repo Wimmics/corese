@@ -3,6 +3,7 @@ package fr.inria.corese.sparql.triple.parser;
 import fr.inria.corese.sparql.triple.api.Creator;
 import fr.inria.corese.sparql.triple.javacc1.ParseException;
 import fr.inria.corese.sparql.triple.javacc1.SparqlCorese;
+import fr.inria.corese.sparql.triple.javacc1.Token;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,6 +18,7 @@ public class ParserHandler {
     static final String SSQ3 = "'''";
     
     boolean insideWhere = false;
+    private boolean function = false;
 
     Creator create;
     SparqlCorese parser;
@@ -161,6 +163,7 @@ public class ParserHandler {
         insideWhere = false;
     }
     
+    
     public boolean isInsideWhere() {
         return insideWhere;
     }
@@ -213,6 +216,32 @@ public class ParserHandler {
     
     public void cleanMetadata() {
         setMetadata(null);
+    }
+
+    /**
+     * @return the function
+     */
+    public boolean isFunction() {
+        return function;
+    }
+
+    /**
+     * @param function the function to set
+     */
+    public void setFunction(boolean function) {
+        this.function = function;
+    }
+    
+    /**
+     * pragma: name is variable without ? and $
+     * are we in LDScript or in SPARQL ?
+     * 
+     */
+    public void checkVariable(Token name)  {
+        if (! isFunction()) {
+            System.out.println("Incorrect Variable: " + name + " Line: " + name.beginLine);
+            throw new Error("Incorrect Variable: " + name + " Line: " + name.beginLine);
+        }
     }
 
     

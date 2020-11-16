@@ -88,6 +88,8 @@ public class QueryExec {
      * User API query processor
      */
     public Mappings SPARQLQuery(String squery) throws EngineException {
+        // use case: call @event   @public @prepare function () {}
+        exec.prepare();
         Mappings map = exec.query(squery);
         return map;
     }

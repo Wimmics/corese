@@ -90,7 +90,7 @@ function sh:copy(partList, cardList, indexList) {
 
 
 function sh:copy(list) {
-if (sh:isList(list), 
+if (xt:isList(list), 
     maplist (sh:copy, list),
     list)
 }

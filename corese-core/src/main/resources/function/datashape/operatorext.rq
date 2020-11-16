@@ -100,7 +100,7 @@ function sh:tripleExtension(focus, source, element, exp) {
 # xsh:source : of source
 # 
 function sh:position(param, source, element) {
-    if (sh:isList(param)) {
+    if (xt:isList(param)) {
         let ((oper position) = param, 
             value = funcall(position, if (oper = xsh:source, source, element))) {
             xt:get(value, 0)
@@ -366,7 +366,10 @@ function sh:failure(node, exp) {
 
 function sh:display(subject, nodeList, exp) {
     let ((show) = exp) {
-        if (coalesce(show, false), xt:print("display:", sh:pretty(subject), nodeList), true);
+        if (coalesce(show, false), xt:print("display:", sh:pretty(subject), nodeList), 
+        if (coalesce(!show, false) && xt:size(nodeList) > 0,
+            xt:print("display:", sh:pretty(subject), nodeList),
+            true));
         return (true)
     }
 }
@@ -400,7 +403,7 @@ function xsh:compute(subject, node, exp) {
 
 
 function xsh:compute(node, exp) {
-    if (sh:isList(exp)) {
+    if (xt:isList(exp)) {
         let ((oper param) = exp) {
             if (xt:has(mapfun, oper), 
                 funcall(xt:get(mapfun, oper), node, param), 

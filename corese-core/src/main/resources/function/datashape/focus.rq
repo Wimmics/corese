@@ -103,7 +103,7 @@ query (
             ?sh xsh:targetTriplesOf ?prop 
             filter not exists { ?sh xsh:targetGraph ?g }
         }
-        values ?s { unnest(xt:edges(if (isBlank(?prop), bnode(), ?prop))) }
+        values ?s { unnest(sh:getEdges(?prop)) }
     }
     union {
         graph ?shape { 
@@ -112,7 +112,7 @@ query (
         }
         graph ?g {
             values ?prop {UNDEF}
-            values ?s { unnest(xt:edges(if (isBlank(?prop), bnode(), ?prop))) }
+            values ?s { unnest(sh:getEdges(?prop)) }
         }
     } 
     union {
@@ -122,12 +122,17 @@ query (
             }
             ?n ?s ?o  filter if (isBlank(?ns), true, regex(?s, ?ns))
         }
-        
     }
                       
   } 
   group by ?sh 
   ) 
+}
+
+
+
+function sh:getEdges(predicate) {
+    xt:edges(if (isBlank(predicate), bnode(), predicate))
 }
 
 #

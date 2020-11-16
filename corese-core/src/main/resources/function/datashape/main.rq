@@ -168,8 +168,17 @@ function sh:dostart(shape) {
     sh:defun();
     if (shape = xt:graph(), sh:sibling(), xt:focus(shape, sh:sibling())) ;
     sh:before();
+    sh:initMap();
     return (true)
 }
+
+function sh:initMap() {
+    # record shape result map shape -> map node -> boolean
+    set (shapeMap = xt:map())
+}
+
+
+
 
 function sh:fast(bb) {
     set(fast = bb)

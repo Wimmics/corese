@@ -32,6 +32,10 @@ function sh:pathparser(exp) {
     }
 }
 
+function sh:pathparser(dt:graph shape, exp) {
+    sh:path(shape, exp)
+}
+
 
 function sh:path(dt:graph shape, exp) {
   if (isURI(exp)) {

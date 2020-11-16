@@ -124,16 +124,22 @@ function sh:isListOperator(oper) {
 function sh:getShapeExtension(shacl, sh, list) {
     let (select ?shacl ?sh ?list
             (aggregate(
-                xt:list(xsh:function, ?name, ?arg, ?ternary)
+                #xt:list(xsh:function, ?name, ?arg, ?ternary)
+                xt:list(?ext, ?name, ?arg, ?ternary)
             ) as ?res) 
         where {
             graph ?shacl {  
                 {   values ?list {UNDEF}
                     ?sh ?name ?value 
                     filter xt:member(?name, ?list)
+                    bind (xsh:function as ?ext)
                 }
-                union { values ?list {UNDEF}
-                    ?sh  xsh:function ?fun optional { ?fun ?oper ?param } 
+                union { 
+                    values ?list {UNDEF}
+                    #?sh xsh:function ?fun 
+                    {?sh xsh:function|xsh:nodeFunction ?fun bind (xsh:function as ?ext) } union
+                    {?sh xsh:pathFunction ?fun              bind (xsh:pathFunction as ?ext) }
+                    optional { ?fun ?oper ?param } 
                     bind (coalesce(?oper, ?fun) as ?name)
                     bind (coalesce(?param, xt:list()) as ?value)
                 }

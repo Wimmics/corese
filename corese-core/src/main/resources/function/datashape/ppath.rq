@@ -34,11 +34,18 @@ function sh:pathfinder(path, node) {
 }
 
 function sh:pathfinder(path, node, subject) {
-    #xt:print("path finder:", sh:getPath(sh:shaclGraph(), path));
     sh:evalpath(subject, node, sh:getPPath(path))
 }
 
 
+# user api, evaluate SHACL path in compiled path format
+function sh:cpathfinder(path, node) {
+    sh:evalpath(node, path)
+}
+
+function sh:cpathfinder(path, node, subject) {
+    sh:evalpath(subject, node, path)
+}
 
 
 

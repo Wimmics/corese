@@ -30,8 +30,6 @@ function sh:path(sh, vis, nodeList, path, present) {
 }
 
 
-
-
 #
 # nodeList: target node list 
 # p: the path
@@ -67,7 +65,7 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
             xt:event("@pathShacl", sh, nodeList, p, cstList1, cstList2, cstList3, cstList4);
                         
             for (s in dt:list(nodeList)) {
-                #xt:print(xt:turtle(s));
+                            
                 let (targetList = sh:ppath(s, p)) {
                     #xt:print("path:", s, p, targetList, present);
                     
@@ -138,9 +136,19 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
                     } ;
                     
                     if (b4) {
+                        # xsh:function [ us:test(term) ]
+                        # oper = xsh:function
+                        # name = us:test 
+                        # value = (term)
                         for ((oper name value ternary) in cstList4) {
                             if (name = sh:display) {
                                 funcall(name, s, targetList, value)
+                            }
+                            else if (oper = xsh:pathFunction) {
+                                let (suc = coalesce(funcall(name, s, targetList, value), false)) {
+                                    sh:report(oper, sh, name, s, p, targetList, suc, vis) ;
+                                    if (! suc, set(res = false), true) 
+                                }
                             }
                             else {
                                 for (o in targetList) {
@@ -158,7 +166,7 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
                     
                 }
             }
-        } ;
+        };
         
         xt:event("@pathShacl", sh, nodeList, p, cstList1, cstList2, cstList3, cstList4, res);
         return (res)

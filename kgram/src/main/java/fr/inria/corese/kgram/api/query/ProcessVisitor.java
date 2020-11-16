@@ -41,6 +41,9 @@ public interface ProcessVisitor extends Pointerable {
     default DatatypeValue defaultValue() {return null;}
     
     default DatatypeValue initParam() {return defaultValue();}
+    
+    // before query and before lock graph
+    default DatatypeValue prepare() {return defaultValue();}
 
     default DatatypeValue init() {return defaultValue();}
     

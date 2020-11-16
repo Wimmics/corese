@@ -607,6 +607,14 @@ public class Query extends Exp implements Graphable {
     public static boolean isSPARQL2() {
         return true;
     }
+    
+    public String getFromName() {
+        List<Node> from = getFrom();
+        if (from != null && from.size() == 1) {
+            return from.get(0).getLabel();
+        }
+        return null;
+    }
 
     List<Node> getFrom(Node gNode) {
         if (gNode == null) {
@@ -2212,14 +2220,14 @@ public class Query extends Exp implements Graphable {
         }
     }
 
-    public void setBind(boolean isBind) {
-        this.isBind = isBind;
-    }
-
-    @Override
-    public boolean isBind() {
-        return isBind;
-    }
+//    public void setBind(boolean isBind) {
+//        this.isBind = isBind;
+//    }
+//
+//    @Override
+//    public boolean isBind() {
+//        return isBind;
+//    }
 
     public void setService(boolean isService) {
         this.isService = isService;

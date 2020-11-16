@@ -264,8 +264,7 @@ public class Memory extends PointerObject implements Environment {
             // exists {}
            copyInto(mem, exp);
         } // subquery
-        else if (eval.getMode() == Evaluator.SPARQL_MODE
-                && !sub.isBind()) {
+        else if (eval.getMode() == Evaluator.SPARQL_MODE){ //&& !sub.isBind()
             // SPARQL does not bind args
         } else {
             // bind subquery select nodes
@@ -277,13 +276,11 @@ public class Memory extends PointerObject implements Environment {
             // ?x in sub query is not the same as ?x in outer query (it is not bound here)
             // only ?z is the same
             for (Node subNode : sub.getSelect()) {
-                // get out Node with same label as sub Node :
-                // TODO:  optimize it ? 
-                Node outNode = query.getOuterNodeSelf(subNode);
-                copyInto(outNode, subNode, mem, n);
+//                Node outNode = query.getOuterNodeSelf(subNode);
+//                copyInto(outNode, subNode, mem, n);
+                copyInto(subNode, mem, n);
                 n++;
             }
-            //share(mem.getBind(), getBind());
             mem.share(this);
         }
         return mem;
@@ -343,30 +340,40 @@ public class Memory extends PointerObject implements Environment {
         // bind all nodes
         // use case: inpath copy the memory
         for (Node qNode : qNodes) {
-            copyInto(qNode, qNode, mem, n);
+            copyInto(qNode, mem, n);
             n++;
         }
     }
+    
+    void copyInto(Node qNode, Memory mem, int n) {
+        if (qNode != null) {
+            Node tNode = getNode(qNode);
+            if (tNode != null) {
+                mem.push(qNode, tNode, -1);
+            }
+        }
+    }
+    
        
     /**
      * outNode is query Node in this Memory 
      * subNode is query Node in mem Memory
      */
-    void copyInto(Node outNode, Node subNode, Memory mem, int n) {
-        if (outNode != null) {
-            Node qnode = outNode;
-            if (getNode(subNode) != null) {
-                // subNode may be prebound (use case: function with exists { select })
-                qnode = subNode;
-            }
-            if (qnode != null) {
-                Node tNode = getNode(qnode);
-                if (tNode != null) {
-                    mem.push(subNode, tNode, -1);
-                }
-            }
-        }
-    }
+//    void copyInto(Node outNode, Node subNode, Memory mem, int n) {
+//        if (outNode != null) {
+//            Node qnode = outNode;
+//            if (getNode(subNode) != null) {
+//                // subNode may be prebound (use case: function with exists { select })
+//                qnode = subNode;
+//            }
+//            if (qnode != null) {
+//                Node tNode = getNode(qnode);
+//                if (tNode != null) {
+//                    mem.push(subNode, tNode, -1);
+//                }
+//            }
+//        }
+//    }
 
     /**
      * Store a new result: take a picture of the stack as a Mapping

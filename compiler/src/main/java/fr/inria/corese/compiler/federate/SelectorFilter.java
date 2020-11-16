@@ -42,7 +42,7 @@ public class SelectorFilter {
             processBGP(body);
         }
         else if (body.isQuery()) {
-            process(body.getQuery());
+            process(body.getAST());
         }
         else for (Exp exp : body) {
             process(exp);

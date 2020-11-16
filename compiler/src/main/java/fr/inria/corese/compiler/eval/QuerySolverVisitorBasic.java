@@ -54,6 +54,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
 
     public static final String SHARE    = "@share";
     public static final String TRACE    = "@display";
+    public static final String PREPARE  = "@prepare";
     public static final String INIT     = "@init";
     public static final String BEFORE   = "@before";
     public static final String AFTER    = "@after";

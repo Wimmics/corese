@@ -297,6 +297,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             listener.listen(exp);
         }
         if (exp.arity() == 1) {
+            // argument return a graph on which we evaluate the exists
             IDatatype res = eval(exp.getExp(0), env, p);
             if (res == ERROR_VALUE) {
                 return ERROR_VALUE;
@@ -337,7 +338,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                         if (eval == null) {
                             return null;
                         }
-                        map = eval.subEval(qq, gNode, Stack.create(sub), 0);
+                        map = eval.subEval(qq, gNode, Stack.create(sub), 0); 
                     }
                 } else {
                     // never happen

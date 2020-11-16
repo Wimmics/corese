@@ -107,7 +107,7 @@ public class RewriteServiceGraph {
                 rewrite(exp.getFilter());
             }
             else if (exp.isQuery()) {
-                rewrite(exp.getQuery());
+                rewrite(exp.getAST());
             }
             else {
                 rewrite(exp);

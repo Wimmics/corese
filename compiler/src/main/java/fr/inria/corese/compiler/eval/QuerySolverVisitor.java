@@ -43,6 +43,11 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
         overload = new QuerySolverOverload(this);
     }
 
+    @Override
+    public IDatatype prepare() {
+        callback(PREPARE, toArray());
+        return DatatypeMap.TRUE;
+    }
     
     @Override
     public IDatatype init(Query q) {

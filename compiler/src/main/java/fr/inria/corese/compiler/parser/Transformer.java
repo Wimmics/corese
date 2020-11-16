@@ -693,7 +693,7 @@ public class Transformer implements ExpType {
         having(q, ast);
 
         // bind is compiled as subquery
-        q.setBind(ast.isBind());
+        //q.setBind(ast.isBind());
         q.setRelax(ast.isMore());
         new QueryProfile(q).profile();
         if (save != null) {
@@ -747,7 +747,7 @@ public class Transformer implements ExpType {
 
         if (body.isBGP() && body.size() == 1 && body.get(0).isQuery()) {
             // service body is a subquery
-            aa = body.get(0).getQuery();
+            aa = body.get(0).getAST();
         } else {
             // service body is a pattern
             aa = ast.subCreate();
@@ -1305,7 +1305,7 @@ public class Transformer implements ExpType {
                 break;
 
             case QUERY:
-                ASTQuery aa = query.getQuery();
+                ASTQuery aa = query.getAST();
                 if (aa.isConstruct()) {
                     exp = constructQuery(aa);
                 } 

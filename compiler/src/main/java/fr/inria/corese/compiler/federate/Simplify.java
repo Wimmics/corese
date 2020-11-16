@@ -407,8 +407,8 @@ public class Simplify {
             Exp e1 = exp.get(0).get(0);
             Exp e2 = exp.get(1).get(0);
             if (e1.isQuery() && e2.isQuery()){
-                ASTQuery ast1 = e1.getQuery();
-                ASTQuery ast2 = e2.getQuery();                
+                ASTQuery ast1 = e1.getAST();
+                ASTQuery ast2 = e2.getAST();                
                if (ast1.getFrom().size() == 1 && 
                     ast2.getFrom().size() == 1 &&
                     ast1.getFrom().get(0).equals(ast2.getFrom().get(0))

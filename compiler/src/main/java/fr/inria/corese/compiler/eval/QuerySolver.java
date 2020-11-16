@@ -20,7 +20,6 @@ import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.compiler.parser.Transformer;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -60,9 +59,9 @@ public class QuerySolver implements SPARQLEngine {
     public static final int RDF_ENTAILMENT = 1;
     public static final int RDFS_ENTAILMENT = 2;
 
-    public static final int DEFAULT_MODE = 0;
-    public static final int PROTECT_SERVER_MODE = 1;
-    static int INIT_SERVER_MODE = DEFAULT_MODE;
+//    public static final int DEFAULT_MODE = 0;
+//    public static final int PROTECT_SERVER_MODE = 1;
+//    static int INIT_SERVER_MODE = DEFAULT_MODE;
 
     private static int QUERY_PLAN = Query.QP_DEFAULT;
 
@@ -77,7 +76,7 @@ public class QuerySolver implements SPARQLEngine {
     protected ResultListener listener;
     protected Producer producer;
     protected Provider provider;
-    protected Evaluator evaluator;
+    protected Interpreter evaluator;
     protected Matcher matcher;
     protected Sorter sort;
     protected List<QueryVisitor> visit;
@@ -110,7 +109,7 @@ public class QuerySolver implements SPARQLEngine {
     boolean isSequence = false;
 
     int slice = Query.DEFAULT_SLICE;
-    private int mode = INIT_SERVER_MODE;
+    //private int mode = INIT_SERVER_MODE;
 
     // set default base for SPARQL Query
     // it is overloaded if query has a base (cf prefix/base)
@@ -132,7 +131,7 @@ public class QuerySolver implements SPARQLEngine {
     public QuerySolver() {
     }
 
-    protected QuerySolver(Producer p, Evaluator e, Matcher m) {
+    protected QuerySolver(Producer p, Interpreter e, Matcher m) {
         producer = p;
         evaluator = e;
         matcher = m;
@@ -254,10 +253,15 @@ public class QuerySolver implements SPARQLEngine {
         Query query = compile(squery, ds);
         return query(query, map);
     }
-
-    public Mappings eval(Query query) throws EngineException {
-        return query((Node) null, query, null);
+    
+    public Mappings query(Query query) throws EngineException {
+        return query(query, null);
     }
+
+
+//    public Mappings eval(Query query) throws EngineException {
+//        return query((Node) null, query, null);
+//    }
 
     @Override
     public Mappings eval(Query query, Mapping m, Producer p) throws SparqlException {
@@ -269,9 +273,9 @@ public class QuerySolver implements SPARQLEngine {
         return query(gNode, query, m);
     }
 
-    public Mappings eval(Query query, Mapping m) throws EngineException {
-        return query((Node) null, query, m);
-    }
+//    public Mappings eval(Query query, Mapping m) throws EngineException {
+//        return query((Node) null, query, m);
+//    }
 
     /**
      * Core QueryExec processor
@@ -280,6 +284,9 @@ public class QuerySolver implements SPARQLEngine {
         return query((Node) null, query, m);
     }
 
+    /**
+     * Main query function
+     */
     public Mappings query(Node gNode, Query query, Mapping m) throws EngineException {
         init(query);
         debug(query);
@@ -475,9 +482,6 @@ public class QuerySolver implements SPARQLEngine {
         }
     }
 
-//	public Transformer getTransformer(){
-//		return transformer;
-//	}
     public Matcher getMatcher() {
         return matcher;
     }
@@ -490,15 +494,12 @@ public class QuerySolver implements SPARQLEngine {
         producer = p;
     }
 
-    public Evaluator getEvaluator() {
+    public Interpreter getEvaluator() {
         return evaluator;
     }
 
     public Interpreter getInterpreter() {
-        if (evaluator instanceof Interpreter) {
-            return (Interpreter) evaluator;
-        }
-        return null;
+        return evaluator;
     }
 
     public ASTQuery getAST(Query q) {
@@ -577,22 +578,12 @@ public class QuerySolver implements SPARQLEngine {
         return query;
     }
 
-//    public Mappings filter(Mappings map, String filter) throws EngineException {
-//        Query q = compileFilter(filter);
-//        Eval kgram = Eval.create(producer, evaluator, matcher);
-//        kgram.filter(map, q);
-//        return map;
+//    Query compileFilter(String filter) throws EngineException {
+//        String str = "select * where {} having(" + filter + ")";
+//        Query q = compile(str);
+//        return q;
 //    }
 
-    Query compileFilter(String filter) throws EngineException {
-        String str = "select * where {} having(" + filter + ")";
-        Query q = compile(str);
-        return q;
-    }
-
-    public Mappings query(Query query) throws EngineException {
-        return query(query, null);
-    }
 
     void debug(Query query) {
         if (query.isDebug()) {
@@ -797,38 +788,36 @@ public class QuerySolver implements SPARQLEngine {
         this.isCachePath = isCachePath;
     }
 
-    /**
-     * @return the mode
-     */
-    public int getMode() {
-        return mode;
-    }
+//    /**
+//     * @return the mode
+//     */
+//    public int getMode() {
+//        return mode;
+//    }
+//
+//    /**
+//     * @param mode the mode to set
+//     */
+//    public void setMode(int mode) {
+//        this.mode = mode;
+//        //initMode();
+//    }
+//
+//    static public void setModeDefault(int mode) {
+//        INIT_SERVER_MODE = mode;
+//    }
 
-    /**
-     * @param mode the mode to set
-     */
-    public void setMode(int mode) {
-        this.mode = mode;
-        initMode();
-    }
-
-    static public void setModeDefault(int mode) {
-        INIT_SERVER_MODE = mode;
-    }
-
-    public void initMode() {
-    }
-
-    /**
-     * @return the isSynchronized
-     */
+//    public void initMode() {
+//    }
+    
+    // true = skip Lock ;  false = with Lock
+    @Override
     public boolean isSynchronized() {
         return isSynchronized;
     }
-
-    /**
-     * @param isSynchronized the isSynchronized to set
-     */
+   
+    // true = skip Lock ;  false = with Lock
+    @Override
     public void setSynchronized(boolean isSynchronized) {
         this.isSynchronized = isSynchronized;
     }

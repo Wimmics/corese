@@ -82,7 +82,7 @@ public class Sorter {
             }
         }
         else if (exp.isQuery()) {
-            if (hasConstant(exp.getQuery().getBody())) {
+            if (hasConstant(exp.getAST().getBody())) {
                 return true;
             }
         }
@@ -116,7 +116,7 @@ public class Sorter {
             }
         }
         else if (exp.isQuery()) {
-            if (hasFilter(exp.getQuery().getBody())) {
+            if (hasFilter(exp.getAST().getBody())) {
                 return true;
             }
         }

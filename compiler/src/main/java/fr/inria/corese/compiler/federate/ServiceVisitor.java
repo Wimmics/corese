@@ -147,7 +147,7 @@ public class ServiceVisitor implements QueryVisitor {
 
             if (exp.isQuery()) {
                 // TODO: graph name ??
-                rewrite(name, exp.getQuery());
+                rewrite(name, exp.getAST());
             } else if (exp.isService() || exp.isValues()) {
                 // keep it
             } else if (exp.isFilter() || exp.isBind()) {

@@ -123,7 +123,7 @@ public class ExpandPath implements QueryVisitor {
 			}
 		}
                 else if (exp.isQuery()){
-                    rewrite(exp.getQuery().getBody());
+                    rewrite(exp.getAST().getBody());
                 }
 		else for (int i=0; i<exp.size(); i++){
                     exp.set(i, rewrite(exp.get(i)));

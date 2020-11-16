@@ -75,7 +75,7 @@ public class UpdateProcess {
         manager.setLevel(getLevel(m));
         NSManager nsm = null;
         // Visitor was setup by QueryProcessUpdate init(q, m)
-        setVisitor(exec.getCurrentVisitor());
+        setVisitor(exec.getVisitor());
         for (Update u : astu.getUpdates()) {
             if (isDebug) {
                 logger.debug("** Update: " + u);

@@ -188,6 +188,28 @@ public class QueryLoad {
         String str = read(fr);
         return str;
     }
+    
+    // TODO: clean 
+    public String basicParse(String path) throws EngineException {
+        String pp = (path.endsWith("/")) ? path.substring(0, path.length() - 1) : path;
+        String str = null;
+        try {
+            if (NSManager.isResource(pp)) { 
+                // @import <function/test.rq> within transformation such as st:turtle
+                // the import uri is st:function/test.rq
+                // consider it as a resource
+                String name = NSManager.stripResource(pp); 
+                str = getResource(name);
+            } else {
+                str = readWE(pp);
+            }
+            return str;
+        } catch (LoadException | IOException ex) {
+            logger.error(ex.getMessage());
+            throw new EngineException(ex);
+        }
+    }
+
 
     String read(Reader fr) throws IOException {
         BufferedReader fq = new BufferedReader(fr);

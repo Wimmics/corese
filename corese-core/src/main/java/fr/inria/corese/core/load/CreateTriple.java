@@ -69,7 +69,7 @@ public class CreateTriple {
 
     void declare(Edge edge) {
         if (load.isEvent() && getQueryProcess() != null) {
-            getQueryProcess().getCurrentVisitor().insert(dtpath, edge);
+            getQueryProcess().getVisitor().insert(dtpath, edge);
         }
     }
     

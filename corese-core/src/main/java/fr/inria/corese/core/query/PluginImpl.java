@@ -1086,8 +1086,10 @@ public class PluginImpl
             Mappings map;
             if (g.getLock().getReadLockCount() == 0 && !g.getLock().isWriteLocked()) {
                 // use case: LDScript direct call  
+                // accept update
                 map = exec.query(query, m, getDataset(env));
             } else {
+                // reject update
                 map = exec.sparqlQuery(query, m, getDataset(env));
             }
             if (map.getGraph() == null) {

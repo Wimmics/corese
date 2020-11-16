@@ -7,9 +7,11 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * API for LDScript SHACL Interpreter
@@ -23,7 +25,7 @@ import java.util.logging.Logger;
 public class Shacl {
 
     
-    static final Logger logger = Logger.getLogger(Shacl.class.getName());
+    private static Logger logger = LoggerFactory.getLogger(Shacl.class);
     static final String SH = NSManager.SHACL;
     private static final String NBRESULT = NSManager.SHACL + "result";
     private static final String TRACE_VAR  = "?shaclTrace";
@@ -63,10 +65,9 @@ public class Shacl {
     static void init() {
         QueryProcess exec = QueryProcess.create(Graph.create());
         try {
-            System.out.println("Import LDScript SHACL Interpreter");
             exec.imports("http://ns.inria.fr/sparql-template/function/datashape/main.rq");
         } catch (EngineException ex) {
-            logger.log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
         }
     }
     
@@ -217,7 +218,7 @@ public class Shacl {
         for (Edge edge : g.getEdges(CONFORM)) {
             return edge.getNode(1).getDatatypeValue().booleanValue();
         }
-        logger.warning("Validation Report Graph has no conform");
+        //logger.error("Validation Report Graph has no conform");
         return true;
     }
     

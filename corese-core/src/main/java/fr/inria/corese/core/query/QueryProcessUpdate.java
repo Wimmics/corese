@@ -53,7 +53,11 @@ public class QueryProcessUpdate {
                 return map;
             }
         }
-
+        return basicUpdate(query, m, ds);
+    }
+      
+        
+    Mappings basicUpdate(Query query, Mapping m, Dataset ds) throws EngineException {
         Graph g = getGraph();
         GraphListener gl = (GraphListener) query.getPragma(Pragma.LISTEN);
 
@@ -74,30 +78,6 @@ public class QueryProcessUpdate {
             getQueryProcess().syncWriteUnlock(query);
         }
     }
-    
-    /**
-     * reentrant mode enables an update query during a select query 
-     * update performed on an external named graph, created if needed
-     */
-    Mappings reentrant(Query query, Mapping m, Dataset ds) throws EngineException {
-        String name = getWithName(query);
-        if (name != null && isExternal(name)) {
-            // get/create a graph and store it as named graph
-            // with name insert where
-            // insert data { graph name }
-            // drop graph name
-            return overWrite(name, query, m, ds, true);
-        }
-        name = getDeleteInsertName(query);
-        // insert { graph name {} } where {}
-        // consider name as external graph
-        // eval where {} on std graph
-        if (name != null && isExternal(name)) {
-            return overWrite(name, query, m, ds, false);
-        }
-        return null;
-    }
-    
     
      /**
      * from and named (if any) specify the Dataset over which update take place
@@ -136,7 +116,30 @@ public class QueryProcessUpdate {
         return map;
     }
 
-
+    /**
+     * reentrant mode enables an update query during a select query 
+     * update performed on an external named graph, created if needed
+     */
+    Mappings reentrant(Query query, Mapping m, Dataset ds) throws EngineException {
+        String name = getWithName(query);
+        if (name != null && isExternal(name)) {
+            // get/create a graph and store it as named graph
+            // with name insert where
+            // insert data { graph name }
+            // drop graph name
+            return overWrite(name, query, m, ds, true);
+        }
+        name = getDeleteInsertName(query);
+        // insert { graph name {} } where {}
+        // consider name as external graph
+        // eval where {} on std graph
+        if (name != null && isExternal(name)) {
+            return overWrite(name, query, m, ds, false);
+        }
+        return null;
+    }
+    
+    
     /**
      * Create a new graph where to perform update Store it as named graph of
      * main dataset 
@@ -210,7 +213,7 @@ public class QueryProcessUpdate {
     }
     
     ProcessVisitor getCurrentVisitor() {
-        return getQueryProcess().getCurrentVisitor();
+        return getQueryProcess().getVisitor();
     }
 
     String getWithName(Query query) {

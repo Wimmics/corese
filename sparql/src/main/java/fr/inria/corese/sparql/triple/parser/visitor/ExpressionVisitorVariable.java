@@ -231,7 +231,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                 // let (?m = select where {}){}
                 Exp e = t.getExist().getBody().get(0).get(0);
                 if (e.isQuery()) {
-                    ASTQuery ast = e.getQuery();
+                    ASTQuery ast = e.getAST();
                     ast.inherit(fun.getMetadata());
                 }
             }

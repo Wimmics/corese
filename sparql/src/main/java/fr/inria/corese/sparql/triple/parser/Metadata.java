@@ -113,6 +113,7 @@ public class Metadata extends ASTObject
     public static final String LEVEL  = "@level";
     public static final String POST   = "@post";
     public static final String GET    = "@get";
+    public static final String SHOW   = "@show";
              
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 

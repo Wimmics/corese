@@ -34,6 +34,8 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import java.io.BufferedReader;
+import java.io.Reader;
 import java.util.Collection;
 import java.util.logging.Level;
 import org.slf4j.Logger;
@@ -48,6 +50,7 @@ import org.slf4j.LoggerFactory;
 public class XMLResult {
 
     private static Logger logger = LoggerFactory.getLogger(XMLResult.class);
+    static final String NL = System.getProperty("line.separator");
 
     // create target Node
     Producer producer;
@@ -66,6 +69,7 @@ public class XMLResult {
     
     private boolean debug = false;
     private boolean trapError = false;
+    private boolean showResult = false;
 
     public XMLResult() {
         init();
@@ -101,6 +105,13 @@ public class XMLResult {
      */
     public Mappings parse(InputStream stream) throws ParserConfigurationException, SAXException, IOException 
     {
+        
+        if (isShowResult()) {
+            String str = read(stream);
+            System.out.println(str);
+            throw new IOException("Show result");
+        }
+        
         if (debug) {
             System.out.println("start parse XML result");
         }
@@ -401,5 +412,46 @@ public class XMLResult {
      */
     public void setTrapError(boolean trapError) {
         this.trapError = trapError;
+    }
+    
+    public String read(InputStream stream) throws IOException  {
+       return read(new InputStreamReader(stream));
+    }
+    
+    String read(Reader fr) throws IOException {
+        BufferedReader fq = new BufferedReader(fr);
+        StringBuilder sb = new StringBuilder();
+        String str;
+        boolean isnl = false;
+        while (true) {
+            str = fq.readLine();
+            if (str == null) {
+                fq.close();
+                break;
+            }
+            if (isnl){
+                sb.append(NL);
+            }
+            else {
+                isnl = true;
+            }
+            sb.append(str);
+            //sb.append(NL);
+        }
+        return sb.toString();
+    }
+
+    /**
+     * @return the showResult
+     */
+    public boolean isShowResult() {
+        return showResult;
+    }
+
+    /**
+     * @param showResult the showResult to set
+     */
+    public void setShowResult(boolean showResult) {
+        this.showResult = showResult;
     }
 }

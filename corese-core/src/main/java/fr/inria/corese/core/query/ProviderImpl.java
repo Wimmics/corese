@@ -33,6 +33,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.util.URLServer;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -46,6 +47,7 @@ import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import javax.ws.rs.core.MediaType;
 
 /**
  * Implements service expression There may be local QueryProcess for some URI
@@ -562,7 +564,9 @@ public class ProviderImpl implements Provider {
     Mappings send(Query q, Node serv, Environment env, int timeout) 
             throws IOException, ParserConfigurationException, SAXException {
         ASTQuery ast = (ASTQuery) q.getGlobalQuery().getAST();
-        if (ast.hasMetadata(Metadata.FORM)) {
+        URLServer url = new URLServer(serv.getLabel());
+        if (url.hasMethod() ||
+                ast.hasMetadata(Metadata.FORM) || ast.hasMetadata(Metadata.POST) || ast.hasMetadata(Metadata.GET)) {
             return post2(q, serv, env, timeout);        
         }
         else {
@@ -576,10 +580,11 @@ public class ProviderImpl implements Provider {
         ASTQuery aa  = (ASTQuery) q.getOuterQuery().getAST();
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean trap = ast.isFederate() || ast.getGlobalAST().hasMetadata(Metadata.TRAP);
+        boolean show = ast.getGlobalAST().hasMetadata(Metadata.SHOW);
         String query = ast.toString();
         Binding b = (Binding) env.getBind();
         InputStream stream = doPost(aa.getMetadata(), serv.getLabel(), query, timeout, b.getAccessLevel()); 
-        return parse(stream, trap);
+        return parse(stream, trap, show);
     }
     
     
@@ -612,10 +617,11 @@ public class ProviderImpl implements Provider {
         return map;
     }
 
-    Mappings parse(InputStream stream, boolean trap) throws ParserConfigurationException, SAXException, IOException {
+    Mappings parse(InputStream stream, boolean trap, boolean show) throws ParserConfigurationException, SAXException, IOException {
         ProducerImpl p = ProducerImpl.create(Graph.create());
         XMLResult r = SPARQLResult.create(p);
         r.setTrapError(trap);
+        r.setShowResult(show);
         Mappings map = r.parse(stream);
         return map;
     }
@@ -631,8 +637,9 @@ public class ProviderImpl implements Provider {
     }
 
     URLConnection post(Metadata meta, String server, String query, int timeout, Level level) throws IOException {
-        String param = getParameter(server);
-        server = getServer(server);
+        URLServer url = new URLServer(server);
+        String param = url.getParameter();
+        server = url.getServer();
         String qstr = "query=" + URLEncoder.encode(query, "UTF-8");
         if (param !=null) {
             // check param != access=...
@@ -647,10 +654,10 @@ public class ProviderImpl implements Provider {
         HttpURLConnection urlConn = (HttpURLConnection) queryURL.openConnection();
         urlConn.setRequestMethod("POST");
         urlConn.setDoOutput(true);
-        urlConn.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-        urlConn.setRequestProperty("Accept", "application/sparql-results+xml, application/rdf+xml");
-        urlConn.setRequestProperty("Content-Length", String.valueOf(qstr.length()));
+        urlConn.setRequestProperty("Accept", "application/sparql-results+xml,application/rdf+xml");
         urlConn.setRequestProperty("Accept-Charset", "UTF-8");
+        urlConn.setRequestProperty("Content-Type", MediaType.APPLICATION_FORM_URLENCODED);
+        urlConn.setRequestProperty("Content-Length", String.valueOf(qstr.length()));
         urlConn.setReadTimeout(timeout);
 
         OutputStreamWriter out = new OutputStreamWriter(urlConn.getOutputStream());
@@ -660,21 +667,6 @@ public class ProviderImpl implements Provider {
         return urlConn;
     }
     
-    String getServer(String server) {
-        int index = server.indexOf("?");
-        if (index == -1) {
-            return server;
-        }
-        return server.substring(0, index);
-    }
-    
-    String getParameter(String server) {
-        int index = server.indexOf("?");
-        if (index == -1) {
-            return null;
-        }
-        return server.substring(index+1);
-    }
     
     // default-graph-uri
     String complete(String qstr, String server, List<String> graphList) {

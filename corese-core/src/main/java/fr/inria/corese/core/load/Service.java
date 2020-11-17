@@ -7,10 +7,14 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.core.util.URLServer;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.logging.Logger;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -37,7 +41,11 @@ public class Service {
     private ClientBuilder clientBuilder;
 
     boolean isDebug = !true;
+    private boolean post = true;
+    private boolean showResult = false;
+    private boolean trap = false;
     String service;
+    private URLServer url;
     private Access.Level level = Access.Level.DEFAULT;
     
     public Service() {
@@ -49,6 +57,7 @@ public class Service {
     }
     public Service(String serv, ClientBuilder builder) {
         service = serv;
+        setURL(new URLServer(serv));
         this.clientBuilder = builder;
     }
 
@@ -65,7 +74,12 @@ public class Service {
         ASTQuery ast = (ASTQuery) query.getAST();
         if (ast.hasMetadata(Metadata.LIMIT) && ! ast.hasLimit()) {
             ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
-        }      
+        }  
+        if (getURL().isGET() || ast.getGlobalAST().hasMetadata(Metadata.GET)) {
+            setPost(false);
+        }        
+        setTrap(ast.getGlobalAST().hasMetadata(Metadata.TRAP));
+        setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
         Mappings map;
         if (m != null) {
             mapping(query, m);
@@ -92,25 +106,58 @@ public class Service {
     public String process(String query) {
         return process(query, MIME_TYPE);
     }
+    
+    public String process(String query, String mime) {
+        if (isPost()) {
+            return post(query, mime);
+        }
+        else {
+            return get(query, mime);
+        }
+    }
 
     // https://docs.oracle.com/javaee/7/api/index.html
-    public String process(String query, String mime) {
+    public String post(String query, String mime) {
         if (isDebug) {
             System.out.println(query);
         }
         Client client = clientBuilder.build();
-        WebTarget target = client.target(service);
+        WebTarget target = client.target(getURL().getServer());
         Form form = new Form();
         form.param(QUERY, query);
-        if (getLevel().equals(Level.PUBLIC)) {
-            form.param(ACCESS, getLevel().toString());
-        }
         String res = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
         if (isDebug) {
             System.out.println(res);
         }
         return res;
     }
+    
+    public String get(String query, String mime) {
+        if (isDebug) {
+            System.out.println(query);
+        }
+        Client client = clientBuilder.build();
+        String url;
+        String uri = getURL().getServer();
+        try {
+            url = uri + "?query=" + URLEncoder.encode(query, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            Load.logger.error(ex.getMessage());
+            url = uri + "?query=" + query;
+        }
+        WebTarget target = client.target(url);
+        Form form = new Form();
+        form.param(QUERY, query);
+        String res = target.request(mime).get().readEntity(String.class);
+        if (isDebug) {
+            System.out.println(res);
+        }
+        return res;
+    }
+    
+//        if (getLevel().equals(Level.PUBLIC)) {
+//            form.param(ACCESS, getLevel().toString());
+//        }
     
     public Response get(String uri) {
         Client client = clientBuilder.build();
@@ -132,6 +179,8 @@ public class Service {
 
     public Mappings parseMapping(String str, String encoding) throws LoadException {
         SPARQLResult xml = SPARQLResult.create(Graph.create());
+        xml.setTrapError(isTrap());
+        xml.setShowResult(isShowResult());
         try {
             Mappings map = xml.parseString(str, encoding);
             if (isDebug) {
@@ -172,4 +221,56 @@ public class Service {
         this.level = level;
     }
 
+    /**
+     * @return the post
+     */
+    public boolean isPost() {
+        return post;
+    }
+
+    /**
+     * @param post the post to set
+     */
+    public void setPost(boolean post) {
+        this.post = post;
+    }
+
+    /**
+     * @return the showResult
+     */
+    public boolean isShowResult() {
+        return showResult;
+    }
+
+    /**
+     * @param showResult the showResult to set
+     */
+    public void setShowResult(boolean showResult) {
+        this.showResult = showResult;
+    }
+
+    /**
+     * @return the trap
+     */
+    public boolean isTrap() {
+        return trap;
+    }
+
+    /**
+     * @param trap the trap to set
+     */
+    public void setTrap(boolean trap) {
+        this.trap = trap;
+    }
+
+    
+    public URLServer getURL() {
+        return url;
+    }
+
+   
+    public void setURL(URLServer url) {
+        this.url = url;
+    }
+    
 }

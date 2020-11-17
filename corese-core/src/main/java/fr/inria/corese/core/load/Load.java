@@ -72,7 +72,7 @@ public class Load
         implements StatementHandler, RDFListener, org.xml.sax.ErrorHandler,
         Loader {
 
-    private static Logger logger = LoggerFactory.getLogger(Load.class);
+    public static Logger logger = LoggerFactory.getLogger(Load.class);
     private static int DEFAULT_FORMAT = RDFXML_FORMAT;
     static final String HTTP = "http://";
     static final String FTP = "ftp://";

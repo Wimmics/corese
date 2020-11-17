@@ -130,10 +130,6 @@ public class QueryProcess extends QuerySolver {
         }
     }
 
-//    @Override
-//    public void initMode() {
-//    }
-
     public static QueryProcess create() {
         return create(Graph.create());
     }
@@ -430,20 +426,6 @@ public class QueryProcess extends QuerySolver {
     public Mappings query(Query q) throws EngineException {
         return query(null, q, null, null);
     }
-
-//    @Override
-//    public Mappings eval(Query query) throws EngineException {
-//        return query(null, query, null, null);
-//    }
-
-//    @Override
-//    public Mappings eval(Query query, Mapping m) throws EngineException {
-//        return query(null, query, m, null);
-//    }
-    
-//    public Mappings eval(Query query, Mapping m, Dataset ds) throws EngineException {
-//        return query(null, query, m, ds);
-//    }
 
     /**
      * Use case: LDScript function execute query(construct where) or

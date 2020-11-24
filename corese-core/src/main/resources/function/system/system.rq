@@ -9,13 +9,7 @@ function xt:parse(q) {
     fun:parse(q)
 }
 
-function xt:import(url) {
-    fun:imports(url, false)
-}
 
-function xt:import(url, pub) {
-    fun:imports(url, pub)
-}
 
 
 # return singleton Agent

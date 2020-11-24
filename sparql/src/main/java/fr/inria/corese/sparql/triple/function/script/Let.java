@@ -159,9 +159,14 @@ public class Let extends Statement {
             save = b.isDynamicCapture();
             b.setDynamicCapture(isDynamic());
         }
-        IDatatype res = getBody().eval(eval, b, env, p);
-        if (isDynamic()) {
-            b.setDynamicCapture(save);
+        IDatatype res = null;
+        try {
+            res = getBody().eval(eval, b, env, p);
+        }
+        finally  {
+            if (isDynamic()) {
+                b.setDynamicCapture(save);
+            }
         }
         
         desallocate(b, getDeclaration().size() - 1);

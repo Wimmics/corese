@@ -28,7 +28,9 @@ public interface GraphProcessor {
     
     IDatatype spin(IDatatype dt);
     
-    IDatatype graph(IDatatype dt);    
+    IDatatype graph(IDatatype dt);  
+    // xt:create(dt:graph) -> GraphStore.create()
+    IDatatype create(IDatatype dt);    
         
     IDatatype similarity(Environment env, Producer p);
     

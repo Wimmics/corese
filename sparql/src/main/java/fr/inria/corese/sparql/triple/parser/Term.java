@@ -19,6 +19,7 @@ import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.kgram.api.core.ExpPattern;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_CREATE;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -583,6 +584,7 @@ public class Term extends Expression {
             case ExprType.STL_INDEX: 
             case ExprType.XT_TOGRAPH:
             case ExprType.XT_SYNTAX:
+            case XT_CREATE:
                 return new GraphSpecificFunction(name);
                 
             case ExprType.XT_VALID_URI:

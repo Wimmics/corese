@@ -61,6 +61,9 @@ public class NSManager extends ASTObject {
     public static final String FOAF = "http://xmlns.com/foaf/0.1/";
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
     public static final String SHACL = "http://www.w3.org/ns/shacl#";
+    public static final String SHACL_FUNCTION_PATH = "http://www.w3.org/ns/shacl/functionpath#";
+    public static final String SHACL_FUNCTION = "http://www.w3.org/ns/shacl/function#";
+    public static final String SHACL_MESSAGE = "http://www.w3.org/ns/shacl/message#";
     public static final String SHACL_PREFIX =  "sh";
     public static final String SHEX_SHACL = "http://ns.inria.fr/shex/shacl#";
     public static final String SHAPE = SHACL;
@@ -282,6 +285,9 @@ public class NSManager extends ASTObject {
         def.put(SPARQL, SPARQL_PREF);
         //def.put(SHACL, "xsh");
         def.put(SHACL, SHACL_PREFIX);
+        def.put(SHACL_FUNCTION, "sx");
+        def.put(SHACL_FUNCTION_PATH, "sxp");
+        def.put(SHACL_MESSAGE,  "sm");
         def.put(SHEX_SHACL, "shex");
         def.put(SHACL_JAVA, "jsh");
         def.put(EXT_FUN, "fun");

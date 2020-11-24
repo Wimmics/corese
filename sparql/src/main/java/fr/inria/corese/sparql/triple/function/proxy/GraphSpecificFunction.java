@@ -10,6 +10,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.WRITE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TUNE;
 import static fr.inria.corese.kgram.api.core.ExprType.SIM;
 import static fr.inria.corese.kgram.api.core.ExprType.STL_INDEX;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_CREATE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_DEGREE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_DELETE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_ENTAILMENT;
@@ -141,6 +142,9 @@ public class GraphSpecificFunction extends LDScript {
                 
             case XT_TOGRAPH:
                 return proc.graph(param[0]);
+                
+            case XT_CREATE:
+                return proc.create(param[0]);
                 
             default: return null;
                 

@@ -6,7 +6,7 @@
 #
 prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>
 
-select (cal:jour(now()) as fr)
+select (cal:jour(now()) as ?fr)
 where  { }
 
 

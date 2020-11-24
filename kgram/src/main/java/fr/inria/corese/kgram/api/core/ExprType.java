@@ -388,6 +388,7 @@ public interface ExprType {
         public static int XT_SYNTAX      = 488;
         public static int XT_HTTP_GET    = 489;
         public static int XT_GET_DATATYPE_VALUE    = 490;
+        public static int XT_CREATE      = 491;
         
         
              

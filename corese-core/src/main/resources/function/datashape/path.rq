@@ -105,7 +105,7 @@ function sh:pathBasic(sh, vis, nodeList, p, present) {
                     } ;
                                                            
                     if (b2) {
-                        # sh:minCount ...
+                        # sh:minCount sh:and sh:or ...
                          # use case: shex optional statement
                         if (opt     && xt:size(targetList) = 0, return (true), true);
                         
@@ -234,7 +234,7 @@ function sh:lessThanOrEquals(sh, vis, s, p, q, nodeList){
 
 function sh:lessThanList(sh, vis, s, p, q, leq, oper, nodeList){
     let (suc = true, targetList = xt:objects(s, q)) {
-        for (o in nodeList) { #xt:objects(s, p)) {
+        for (o in nodeList) { 
             for (v in targetList) {
                 let (res = coalesce(if (leq, o <= v, o < v), false)) {
                     sh:report(oper, sh, s, p, o, res, vis) ;
@@ -373,7 +373,7 @@ function sh:and (sh, vis, s, p, cst, nodeList, present) {
     let (res = true, shList = sh:getShapeConstraint(sh:pathboolean,  cst)) {
         if (sh:trace(), xt:print("and:", sh, shList, nodeList), true);
         for (o in nodeList) {
-            let (suc = coalesce(sh:and(shList, o, present), false)) { 
+            let (suc = coalesce(sh:and(cst, shList, o, present), false)) { 
                 if (suc, true, sh:report(sh:and, sh, s, p, o, suc, vis));
                 set (res = res && suc)
             }
@@ -385,7 +385,7 @@ function sh:and (sh, vis, s, p, cst, nodeList, present) {
 function sh:or (sh, vis, s, p, cst, nodeList, present) {
     let (res = true, shList = sh:getShapeConstraint(sh:pathboolean, cst)) {
         for (o in nodeList) {
-            let (suc = coalesce(sh:or(shList, o, present), false)) { 
+            let (suc = coalesce(sh:or(cst, shList, o, present), false)) { 
                 if (suc, true, sh:report(sh:or, sh, s, p, o, suc, vis));
                 set (res = res && suc)
             }
@@ -397,7 +397,7 @@ function sh:or (sh, vis, s, p, cst, nodeList, present) {
 function sh:xone (sh, vis, s, p, cst, nodeList, present) {
     let (res = true, shList = sh:getShapeConstraint(sh:pathboolean,  cst)) {
         for (o in nodeList) {
-            let (suc = coalesce(sh:xone(shList, o, present), false)) { 
+            let (suc = coalesce(sh:xone(cst, shList, o, present), false)) { 
                 if (suc, true, sh:report(sh:xone, sh, s, p, o, suc, vis));
                 set (res = res && suc)
             }

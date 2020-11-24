@@ -6,6 +6,8 @@
 
 prefix sh:  <http://www.w3.org/ns/shacl#> 
 prefix xsh: <http://www.w3.org/ns/shacl#> 
+prefix sx:  <http://www.w3.org/ns/shacl/function#> 
+prefix sm:  <http://www.w3.org/ns/shacl/message#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
 function sh:constraint(sh, vis, nodeList, present) {
@@ -88,7 +90,10 @@ function sh:constraint2 (sh, vis, nodeList, cstList) {
     }
 }
 
-
+#
+# list: list of statements to retrieve in shape sh
+# return list of (oper list(arg))
+#
 function sh:getGenericShape(shape, sh, list) {
     let (select ?shape ?sh ?list 
         (aggregate(xt:list(?oper, ?arg)) as ?res) 
@@ -136,10 +141,27 @@ function sh:getShapeExtension(shacl, sh, list) {
                 }
                 union { 
                     values ?list {UNDEF}
-                    #?sh xsh:function ?fun 
-                    {?sh xsh:function|xsh:nodeFunction ?fun bind (xsh:function as ?ext) } union
-                    {?sh xsh:pathFunction ?fun              bind (xsh:pathFunction as ?ext) }
-                    optional { ?fun ?oper ?param } 
+                    
+                    {?sh xsh:function|xsh:nodeFunction ?fun 
+                     optional { ?fun ?oper ?param } 
+                     bind (xsh:function as ?ext) } 
+                     
+                     union 
+                     
+                     {?sh ?oper ?param filter strstarts(?oper, sx:)  
+                     bind (xsh:function as ?ext) } 
+                     
+                     union 
+                     
+                     {?sh ?oper ?param filter strstarts(?oper, sxp:)  
+                     bind (xsh:pathFunction as ?ext) } 
+                     
+                     union
+                     
+                    {?sh xsh:pathFunction ?fun              
+                     optional { ?fun ?oper ?param } 
+                     bind (xsh:pathFunction as ?ext) }
+                     
                     bind (coalesce(?oper, ?fun) as ?name)
                     bind (coalesce(?param, xt:list()) as ?value)
                 }
@@ -150,6 +172,22 @@ function sh:getShapeExtension(shacl, sh, list) {
                 bind (xt:isFunction(?name, 2) as ?binary)
                 bind (xt:isFunction(?name, 3) as ?ternary)
                 filter (?binary || ?ternary) # function is defined
+            }
+        } ) {
+        return(res)
+    }
+}
+
+# xsh:messageFunction [ us:mess() ]
+function sh:getFunctionExtension(shacl, sh) {
+    let (select ?shacl ?sh 
+            (aggregate (xt:list(?ext, ?name, ?arg)) as ?res) 
+        where {
+            graph ?shacl {  
+                {?sh xsh:messageFunction ?fun . ?fun ?name ?value} union 
+                {?sh ?name ?value filter strstarts(?name, sm:)}
+                bind (xsh:messageFunction as ?ext) 
+                bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
             }
         } ) {
         return(res)
@@ -185,6 +223,9 @@ function sh:compile(exp) {
 function sh:getValueList(value) {
     if (isBlank(value)) {
        coalesce(sh:reclist(value), value)
+    }
+    else if (isURI(value) && value = rdf:nil) {
+        return (xt:list())
     }
     else {
         return(value)

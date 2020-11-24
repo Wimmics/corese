@@ -89,7 +89,7 @@ function xsd:boolean sh:hasValue( s, v) {
 }
 
 function xsd:boolean sh:myclass(?o, ?c){
-    if (sh:isetup(sh:type), sh:type(?o, ?c), 
+    if (sh:isSetup(sh:type), sh:type(?o, ?c), 
         exists { ?o rdf:type/rdfs:subClassOf* ?c })
 }
 
@@ -164,11 +164,11 @@ function xsd:boolean sh:languageIn2(?object, ?lv){
 # by default, generate no report for sh:node constraints
 # if sh:detail() generate report for sh:node constraints
 function xsd:boolean sh:node(o, cst){
-    sh:core(cst, sh:isetup(sh:detail), o)
+    sh:core(cst, sh:isSetup(sh:nodeDetail), o)
 }
 
 function xsd:boolean sh:node(o, cst, present){
-    sh:core(cst, sh:isetup(sh:detail), o, present)
+    sh:core(cst, sh:isSetup(sh:nodeDetail), o, present)
 }
 
 

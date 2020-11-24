@@ -102,7 +102,11 @@ function sh:operator(oper) {
 
 
 function sh:isFunction(oper) {
-    oper = xsh:function || xt:member(oper, sh:defShapePathExtension())
+    oper = xsh:function || sh:isFunctionName(oper)
+}
+
+function sh:isFunctionName(oper) {
+     xt:member(oper, sh:defShapePathExtension()) || strstarts(oper, sx:)
 }
 
 function sh:usernamespace2(oper) {
@@ -177,7 +181,7 @@ function sh:parseFunction(shape, oper, fun) {
                 bind (?oper as ?name)
                 bind (sh:getExtValueList(?fun) as ?arg)
             }
-            filter (xt:member(name, sh:defShapePathExtension()) || xt:isFunction(name, 3)) 
+            filter (sh:isFunctionName(name) || xt:isFunction(name, 3)) 
         }}){
         sh:defineFunction(name, arg)
     }

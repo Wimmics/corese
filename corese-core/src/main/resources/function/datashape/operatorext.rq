@@ -17,6 +17,8 @@
 
 prefix sh:   <http://www.w3.org/ns/shacl#> 
 prefix xsh:  <http://www.w3.org/ns/shacl#> 
+prefix sx:   <http://www.w3.org/ns/shacl/function#> 
+prefix sm:   <http://www.w3.org/ns/shacl/message#> 
 
 
 #
@@ -374,7 +376,62 @@ function sh:display(subject, nodeList, exp) {
     }
 }
 
+# xsh:messageFunction [ sh:message() ]
+function sm:message(shape, node, value, exp) {
+    if (xt:size(exp) = 0, 
+        sm:messageQuery(shape, node, value, exp),
+        sm:messagePath(shape, node, value, exp))
+}
 
+function sm:messagePath(shape, node, value, exp) {
+     maplist(sh:pathfinder, exp, node)
+}
+
+
+function sm:messageQuery(shape, node, value, exp) {
+    let (select * where {
+            ?shape sh:path ?path  
+         } ) {
+        if (bound(path)) {
+            let (list = sh:pathfinder(path, node)) {
+                #return (xt:list(node, list))
+                return (list)
+            }
+        }
+        else {
+            return (xt:list())
+        }
+    }
+}
+
+function sh:message2(shape, node, value, exp) {
+    let (select * where {
+            ?shape sh:path ?path1  
+            optional { ?shape sh:qualifiedValueShape [sh:path ?path2] }
+         } ) {
+        let (list = sh:pathfinder(path1, node)) {
+            if (bound(path2)) {
+                sh:qualifiedmess(node, list, path2)
+            }
+            else {
+                return (list)
+            }
+        }
+    }
+}
+
+
+function sh:qualifiedmess(node, list, path) {
+    letdyn (apath = path) {
+        maplist(
+            function(elem) { 
+                let (res = sh:pathfinder(apath, elem)) {
+                    xt:list(elem, apath, res)
+                }  
+            }, 
+            list)
+    }
+}
 
 
 # Expression interpreter

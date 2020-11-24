@@ -33,7 +33,8 @@ public class Shacl {
     public static final String TRACEMAPFAIL_VAR = "?recordmapfail";
     public static final String MAPMAP_VAR = "?mapmap";
     public static final String SETUP_VAR  = "?setup";
-    public static final String SETUP_DETAIL = SH + "detail";
+    public static final String SETUP_DETAIL = SH + "nodeDetail";
+    public static final String SETUP_DETAIL_BOOLEAN = SH + "booleanDetail";
     public static final String SETUP_TYPE   = SH + "type";
     
     static final String FUNEVAL = SH+"funeval";
@@ -112,8 +113,15 @@ public class Shacl {
         return map;
     }
     
+    // sh:setup(sh:booleanDetail, true)
     public Shacl setup(String name, boolean b){
         setup().set(DatatypeMap.newResource(name), (b) ? DatatypeMap.TRUE : DatatypeMap.FALSE);
+        return this;
+    }
+    
+    // additional report for boolean operator arguments
+    public Shacl booleanDetail(boolean b) {
+        setup(SETUP_DETAIL_BOOLEAN, b);
         return this;
     }
     

@@ -1228,12 +1228,10 @@ public class QueryProcess extends QuerySolver {
         boolean b = Access.skip(true);        
         try {        
             Query q = compile(String.format((pub)?qp:ql, path));
-            Access.skip(b);
             return ! q.isImportFailure();
         }
-        catch (EngineException e) {
+        finally {
            Access.skip(b);
-           throw e;
         }
     }
 

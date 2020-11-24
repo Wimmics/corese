@@ -42,6 +42,7 @@ import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.edge.EdgeQuad;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.producer.DataProducer;
@@ -246,6 +247,19 @@ public class PluginImpl
 
     Graph graph(Mappings map) {
         return MappingsGraph.create(map).getGraph();
+    }
+    
+    @Override
+    public IDatatype create(IDatatype dt) {
+        switch (dt.getLabel()) {
+            case IDatatype.GRAPH_DATATYPE:
+                return DatatypeMap.createObject(GraphStore.create());
+            case IDatatype.LIST_DATATYPE:
+                return DatatypeMap.list();
+            case IDatatype.MAP_DATATYPE:
+                return DatatypeMap.map();
+        }
+        return null;
     }
 
     @Override
@@ -1091,6 +1105,10 @@ public class PluginImpl
             } else {
                 // reject update
                 map = exec.sparqlQuery(query, m, getDataset(env));
+            }
+            if (map.getQuery().isDebug()) {
+                System.out.println("result:");
+                System.out.println(map);
             }
             if (map.getGraph() == null) {
                 return DatatypeMap.createObject(map);

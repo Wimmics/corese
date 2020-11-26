@@ -448,7 +448,6 @@ public class Term extends Expression {
                 
             case ExprType.XT_SET:
             case ExprType.XT_ADD:
-            case ExprType.XT_MERGE:
             case ExprType.IOTA:
                 return new ListNary(name);
                 
@@ -577,6 +576,7 @@ public class Term extends Expression {
             case ExprType.XT_JOIN:
             case ExprType.XT_OPTIONAL:
             case ExprType.XT_UNION:
+            case ExprType.XT_MERGE:
             case ExprType.XT_ENTAILMENT:    
             case ExprType.XT_SHAPE_GRAPH:    
             case ExprType.XT_SHAPE_NODE:    

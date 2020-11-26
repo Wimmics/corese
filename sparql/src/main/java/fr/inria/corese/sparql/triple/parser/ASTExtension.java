@@ -95,7 +95,7 @@ public class ASTExtension implements Extension {
     private boolean debug = false;
 
     public ASTExtension() {
-        maps = new FunMap[11];
+        maps = new FunMap[15];
         funList = new ArrayList<>();
         for (int i=0; i<maps.length; i++){
             maps[i] = new FunMap();
@@ -152,7 +152,7 @@ public class ASTExtension implements Extension {
         }
     }
     
-    void defineFunction(Function exp) {       
+    void defineFunction(Function exp) { 
         Term fun = exp.getSignature(); 
         Function def = get(fun.getLabel(), fun.arity());
         if  (def != null && exp != def) {

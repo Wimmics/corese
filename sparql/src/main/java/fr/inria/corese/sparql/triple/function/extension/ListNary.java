@@ -35,8 +35,8 @@ public class ListNary extends TermEval {
                     return param[0].set(param[1], param[2]);
                 }
                 break;
-            case ExprType.XT_MERGE:
-                return (param.length == 2) ? DatatypeMap.merge(param[0], param[1]) :  DatatypeMap.merge(param[0]);   
+//            case ExprType.XT_MERGE:
+//                return (param.length == 2) ? DatatypeMap.merge(param[0], param[1]) :  DatatypeMap.merge(param[0]);   
             case ExprType.XT_ADD:
                 return (param.length == 2) ? DatatypeMap.add(param[0], param[1]) : DatatypeMap.add(param[0], param[1], param[2]);
         }

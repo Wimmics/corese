@@ -34,11 +34,13 @@ import fr.inria.corese.sparql.triple.function.script.LDScript;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGES;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_HTTP_GET;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_INSERT;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_MERGE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MINDEGREE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SUBJECTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SYNTAX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
@@ -129,6 +131,14 @@ public class GraphSpecificFunction extends LDScript {
             case XT_UNION:    
                 return proc.union(this, env, p, param[0], param[1]);
                 
+            case XT_MERGE:
+                if (isList(param)) {
+                    return (param.length == 2) ? DatatypeMap.merge(param[0], param[1]) :  DatatypeMap.merge(param[0]); 
+                }
+                else {
+                    return proc.merge(this, env, p, param[0], param[1]);
+                }
+                
             case XT_ENTAILMENT:
                 return entailment(proc, b, env, p, param);
                 
@@ -152,8 +162,16 @@ public class GraphSpecificFunction extends LDScript {
         
     }
     
+   boolean isList(IDatatype[] arr) {
+       for (IDatatype dt : arr) {
+           if (! dt.isList()) {
+               return false;
+           }
+       }
+       return true;
+   }
    
-    
+   
     public IDatatype io(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param) throws SafetyException, EngineException {
         GraphProcessor proc = eval.getGraphProcessor();
         if (param.length == 0) {

@@ -64,6 +64,7 @@ public interface GraphProcessor {
     IDatatype sparql(Environment env, Producer p, IDatatype[] param) throws EngineException;
     
     IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
+    IDatatype merge(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
     
     IDatatype algebra(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2);
     

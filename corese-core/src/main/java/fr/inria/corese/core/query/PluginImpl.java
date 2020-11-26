@@ -874,6 +874,18 @@ public class PluginImpl
 
         return null;
     }
+    
+     @Override
+    public IDatatype merge(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {    
+        if (dt1.pointerType() == GRAPH && dt2.pointerType() == GRAPH) {
+            Graph g1 = (Graph) dt1.getPointerObject();
+            Graph g2 = (Graph) dt2.getPointerObject();
+            g1.merge(g2);
+            return dt1;
+        }
+
+        return null;
+    }
 
     @Override
     public IDatatype algebra(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {

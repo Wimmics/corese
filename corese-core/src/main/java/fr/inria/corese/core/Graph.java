@@ -3145,6 +3145,12 @@ public class Graph extends GraphObject implements
         gu.init();
         return gu;       
     }
+    
+    public Graph merge(Graph g){
+        copy(g);
+        init();
+        return this;       
+    }
 
     void copyEdge(Edge ent) {
     }

@@ -37,12 +37,12 @@ function sh:setdsp(bb) {
 # consider sibling qualifiedValueShape with same path if any, 
 # compute a partition of relevant subset of nodeList that matches cardinality constraint of each sibling qvs
 #
-function sh:partitionValueShape(sh, vis, subject, path, nodeList, cstList) {
+function sh:partitionValueShape(report, sh, vis, subject, path, nodeList, cstList) {
     let (res = true) {
         for ((oper qsh disjoint amin amax extra) in cstList) {
             # there is one qvs in cstList
             let (suc = coalesce(                    
-                sh:partitionValueShape(sh, vis, extra, subject, path, qsh, disjoint, amin, amax, nodeList) , 
+                sh:partitionValueShape(report, sh, vis, extra, subject, path, qsh, disjoint, amin, amax, nodeList) , 
                 false) ) {
                 if (! suc, set(res = false), true) 
             }
@@ -56,7 +56,7 @@ function sh:partitionValueShape(sh, vis, subject, path, nodeList, cstList) {
 # sh: property shape ; qsh: qualified shape ; nodeList: subject path object node list
 # extra = true: extra values authorized for subject path  in addition to qualified values
 #
-function sh:partitionValueShape (sh, vis, extra, subject, path, qsh, disjoint, amin, amax, nodeList) {
+function sh:partitionValueShape (report, sh, vis, extra, subject, path, qsh, disjoint, amin, amax, nodeList) {
         # list = node list that match qualified shape
         sh:dsp("shex partition:");
         sh:dsp(subject, path, nodeList);
@@ -74,7 +74,7 @@ function sh:partitionValueShape (sh, vis, extra, subject, path, qsh, disjoint, a
                 # check there is no extra node in nodeList that does not match any qvs
                 let (res = ! sh:extra(nodeList, candidate)) {
                     sh:dsp("extra:", res);
-                    sh:report(shex:extra, sh, subject, path, subject, res, vis) ;
+                    sh:report(report, shex:extra, sh, subject, path, subject, res, vis) ;
                 }
             } ;
             
@@ -83,7 +83,7 @@ function sh:partitionValueShape (sh, vis, extra, subject, path, qsh, disjoint, a
                 
             let (res = sh:prepare(candidate, cardinality)) {
                 sh:dsp("partition:", res);
-                sh:report(shex:qualifiedValueShape, sh, subject, path, subject, res, vis) ;
+                sh:report(report, shex:qualifiedValueShape, sh, subject, path, subject, res, vis) ;
                 return (res)
             }
         }

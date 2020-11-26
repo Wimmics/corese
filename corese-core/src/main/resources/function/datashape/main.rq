@@ -88,6 +88,24 @@ function dt:graph sh:shacl(dt:graph shape, focus) {
     }
 }
 
+#
+# focus = mappings or list(sh=nodeShape; list=targetNodeList)
+#
+function sh:shacleval(shape, focus) {
+    let (suc = true) {
+        for ((sh list) in focus) {
+            if (sh:trace(), 
+                xt:print("target:", coalesce(sh, "undef"), xt:size(list), list), true);
+            if (bound(sh) && xt:size(list) > 0) {
+                let (res = sh:core(sh:validationReport(), sh, true, list)) {
+                    if (res, true, set(suc = false))
+                }
+            }
+        } ;
+        return (suc)
+    }
+}
+
 function sh:focus() {
     sh:focuslist(xt:graph())
 }
@@ -130,23 +148,7 @@ function sh:show(shape, mapmap) {
         return (true)
 }
 
-#
-# focus = mappings or list(sh=nodeShape; list=targetNodeList)
-#
-function sh:shacleval(shape, focus) {
-    let (suc = true) {
-        for ((sh list) in focus) {
-            if (sh:trace(), 
-                xt:print("target:", coalesce(sh, "undef"), xt:size(list), list), true);
-            if (bound(sh) && xt:size(list) > 0) {
-                let (res = sh:core(sh, true, list)) {
-                    if (res, true, set(suc = false))
-                }
-            }
-        } ;
-        return (suc)
-    }
-}
+
 
 
 # start
@@ -272,30 +274,31 @@ function sh:createValidationReport() {
     sh:validationReport(xt:create(dt:graph)) ;
 }
 
+function sh:subValidationReport(detail) {
+    if (detail) {
+        let (save = sh:validationReport()) {
+            sh:createValidationReport();
+            return (save);
+        }
+    }
+    else {
+        return (sh:validationReport())
+    }
+}
+
+
+function sh:restoreValidationReport(detail, save) {
+    if (detail) {
+        # record additional report  
+        set (myreport = sh:validationReport());
+        # restore global report
+        sh:validationReport(save)
+    }
+}
+
 function sh:validationReport(g) {
     set (validationReport = g)
 }
-
-#
-# url: uri of current validation result
-# g : validation report graph of substatement (node, boolean)
-# add additional reports and url sh:detail uri
-#
-function sh:validationReportAdd(url, g) {
-    letdyn (list = xt:focus(g, sh:collecturl()), res = url) {
-        sh:validationReport(xt:union(sh:validationReport(), g)) ;
-        map (function(id) { 
-                sh:store(sh:validationReport(), res, sh:detail, id); 
-             }, list)
-    }
-}
-
-function sh:collecturl() {
-    let (select (aggregate(?url) as ?list) where { ?url a sh:ValidationResult } ) {
-        return (list)
-    }
-}
-
 
 
 function sh:validationReport() {
@@ -310,7 +313,7 @@ function sh:finish() {
 
 
 function xsd:boolean sh:hasShape(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, ls) {
-    sh:core(sh, vis, ls)
+    sh:core(sh:validationReport(), sh, vis, ls)
 }
 
 
@@ -561,11 +564,11 @@ function xsd:boolean sh:safe(dt:graph shape, sh, xsd:boolean suc) {
 
 
 function sh:value(v){
-    return(if (isURI(v) && v = st:null, error(), v))
+    return(if (isURI(v) && v = sh:null, error(), v))
 }
 
 function sh:isValue(v){
-    return (! (isURI(v) && v = st:null))
+    return (! (isURI(v) && v = sh:null))
 }
 
 function xsd:boolean sh:trace() {

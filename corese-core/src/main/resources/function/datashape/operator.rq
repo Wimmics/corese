@@ -161,24 +161,22 @@ function xsd:boolean sh:languageIn2(?object, ?lv){
 }
 
 
-# by default, generate no report for sh:node constraints
-# if sh:detail() generate report for sh:node constraints
-function xsd:boolean sh:node(o, cst){
-    sh:core(cst, sh:isSetup(sh:nodeDetail), o)
+#function xsd:boolean sh:node(report, o, cst){
+#    sh:core(report, cst, sh:isSetup(sh:nodeDetail), o)
+#}
+
+function xsd:boolean sh:node(report, o, cst, present, vis){
+    sh:core(report, cst, vis, o, present)
 }
 
-function xsd:boolean sh:node(o, cst, present){
-    sh:core(cst, sh:isSetup(sh:nodeDetail), o, present)
+# TODO: why vis = true ?
+function xsd:boolean sh:property(report, o, cst){
+    sh:core(report, cst, true, o)
 }
 
 
-function xsd:boolean sh:property(o, cst){
-    sh:core(cst, true, o)
-}
-
-
-function xsd:boolean sh:property(o, cst, present){
-    sh:core(cst, true, o, present)
+function xsd:boolean sh:property(report, o, cst, present){
+    sh:core(report, cst, true, o, present)
 }
 
 

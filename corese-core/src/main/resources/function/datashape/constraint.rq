@@ -10,7 +10,7 @@ prefix sx:  <http://www.w3.org/ns/shacl/function#>
 prefix sm:  <http://www.w3.org/ns/shacl/message#> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
-function sh:constraint(sh, vis, nodeList, present) {
+function sh:constraint(report, sh, vis, nodeList, present) {
     let (cstList1 = sh:getShapeConstraint(sh:cstgeneric1, sh),
          cstList2 = sh:getShapeConstraint(sh:cstgeneric2, sh),         
          cstList3 = sh:getShapeConstraint(sh:cstsparql, sh),         
@@ -19,10 +19,10 @@ function sh:constraint(sh, vis, nodeList, present) {
             xt:event("@nodeShacl", sh, nodeList, cstList1, cstList2, cstList3, cstList4)
          } ;
          let (
-            b1 = sh:constraint1  (sh, vis, nodeList, cstList1, present),
-            b2 = sh:constraint2  (sh, vis, nodeList, cstList2),
-            b4 = sh:nodeextension(sh, vis, nodeList, cstList4),
-            b5 = sh:cstsparql    (sh, vis, nodeList, cstList3)) {
+            b1 = sh:constraint1  (report, sh, vis, nodeList, cstList1, present),
+            b2 = sh:constraint2  (report, sh, vis, nodeList, cstList2),
+            b4 = sh:nodeextension(report, sh, vis, nodeList, cstList4),
+            b5 = sh:cstsparql    (report, sh, vis, nodeList, cstList3)) {
         #xt:print("res:", b1 && b2 && b4 && b5);
         return (b1 && b2 && b4 && b5)
     }
@@ -37,7 +37,7 @@ function sh:constraint(sh, vis, nodeList, present) {
 # nodeList is either a list of nodes or a single node
 # sh:report generates a validation report in case of error
 #
-function sh:constraint1 (sh, vis, nodeList, cstList, present) {
+function sh:constraint1 (report, sh, vis, nodeList, cstList, present) {
     let (res = true) {
         for ((oper value) in cstList) {  
             for (node in dt:list(nodeList)) {   
@@ -45,9 +45,11 @@ function sh:constraint1 (sh, vis, nodeList, cstList, present) {
                 else {
                 sh:push(sh, node);
                 let (suc = coalesce(
-                        if (oper = sh:node, funcall(oper, node, value, present), funcall(oper, node, value)),
+                        if (oper = sh:node, 
+                            sh:node(report, node, value, present, false), 
+                            funcall(oper, node, value)),
                         false)) {
-                        sh:report(oper, sh, if (oper = sh:node, value, st:null),  node, st:null, node, suc, vis) ;
+                        sh:report(report, oper, sh, if (oper = sh:node, value, sh:null),  node, sh:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
                 }
                 ; sh:pop()
@@ -60,14 +62,14 @@ function sh:constraint1 (sh, vis, nodeList, cstList, present) {
 
 
 # oper = xsh:function
-function sh:nodeextension (sh, vis, nodeList, cstList) {
+function sh:nodeextension (report, sh, vis, nodeList, cstList) {
     let (res = true) {
         for ((oper name value ternary) in cstList) {  
             for (node in dt:list(nodeList)) {  
                 let (suc = coalesce(
                         if (ternary, funcall(name, node, node, value), funcall(name, node, value)),
                         false)) {
-                        sh:report(oper, sh, name, node, st:null, node, suc, vis) ;
+                        sh:report(report, oper, sh, name, node, sh:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
                     }
             }
@@ -77,11 +79,11 @@ function sh:nodeextension (sh, vis, nodeList, cstList) {
 }
 
 
-function sh:constraint2 (sh, vis, nodeList, cstList) {
+function sh:constraint2 (report, sh, vis, nodeList, cstList) {
     let (res = true) {
         for ((oper value) in cstList) {  
             for (node in dt:list(nodeList)) {    
-                let (suc = coalesce(funcall(oper, sh, vis, node, value), false)) {
+                let (suc = coalesce(funcall(oper, report, sh, vis, node, value), false)) {
                     if (suc, true, set(res = false))
                 }
             }
@@ -194,7 +196,21 @@ function sh:getFunctionExtension(shacl, sh) {
     }
 }
 
-
+# xsh:resultFunction [ us:mess() ]
+function sh:getResultExtension(shacl, sh) {
+    let (select ?shacl ?sh 
+            (aggregate (xt:list(?ext, ?name, ?arg)) as ?res) 
+        where {
+            graph ?shacl {  
+                {?sh xsh:resultFunction ?fun . ?fun ?name ?value}  
+                #union {?sh ?name ?value filter strstarts(?name, smr:)}
+                bind (xsh:messageResult as ?ext) 
+                bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
+            }
+        } ) {
+        return(res)
+    }
+}
 
 # (fun x y) -> (fun (x y))
 function sh:compile(name, exp) {
@@ -259,48 +275,48 @@ function sh:nodeextension(shape, sh) {
 }
 
 
-function sh:class (sh, vis, s, ?c) {
+function sh:class (report, sh, vis, s, ?c) {
     let (suc = exists { ?s rdf:type/rdfs:subClassOf* ?c } ) {
-        sh:report(sh:class, sh, s, rdf:type, s, suc, vis) ;
+        sh:report(report, sh:class, sh, s, rdf:type, s, suc, vis) ;
         return (suc)
     }
 }
 
-function sh:type (sh, vis, s, ?c) {
+function sh:type (report, sh, vis, s, ?c) {
     let (suc = exists { ?s rdf:type ?c } ) {
-        sh:report(sh:type, sh, s, rdf:type, s, suc, vis) ;
+        sh:report(report, sh:type, sh, s, rdf:type, s, suc, vis) ;
         return (suc)
     }
 }
 
-function sh:disjoint (sh, vis, s, p) {
+function sh:disjoint (report, sh, vis, s, p) {
     let (l = sh:ppath(s, p), suc = ! xt:member(s, l)) {
-        sh:report(sh:disjoint, sh, s, p, s, suc, vis) ;
+        sh:report(report, sh:disjoint, sh, s, p, s, suc, vis) ;
         return (suc)
     }
 }
 
-function sh:equals (sh, vis, s, p) {
+function sh:equals (report, sh, vis, s, p) {
     let (l  = sh:ppath(s, p),
-         b1 = sh:equals1(sh, vis, s, p, l),
-         b2 = sh:equals2(sh, vis, s, p, l)) {
+         b1 = sh:equals1(report, sh, vis, s, p, l),
+         b2 = sh:equals2(report, sh, vis, s, p, l)) {
             return (b1 && b2)
     }
 }
 
 
-function sh:equals1 (sh, vis, s, p, l) {
+function sh:equals1 (report, sh, vis, s, p, l) {
     let (suc = xt:member(s, l)) {
-        sh:report(sh:equals, sh, s, p, s, suc, vis);
+        sh:report(report, sh:equals, sh, s, p, s, suc, vis);
         return (suc)
     }
 }
 
-function sh:equals2 (sh, vis, s, p, l) {
+function sh:equals2 (report, sh, vis, s, p, l) {
     let (res = true) {
         for (m in l) {
             let (suc = s = m) {
-                sh:report(sh:equals, sh, s, p, m, suc, vis);
+                sh:report(report, sh:equals, sh, s, p, m, suc, vis);
                 set (res = res && suc)
             }
         } ;

@@ -55,7 +55,7 @@ function sh:cpathfinder(path, node, subject) {
 # inv = true means within inverse path
 #
 function dt:list sh:path(shape, node, exp, xsd:boolean inv){
-    sh:evalpath(xt:list(), node, node, exp, inv, st:null)
+    sh:evalpath(xt:list(), node, node, exp, inv, sh:null)
 }
 
 
@@ -64,16 +64,16 @@ function dt:list sh:path(shape, node, exp, xsd:boolean inv){
 # evaluate path compiled as dt:list
 #
 function sh:evalpath(node, exp) {
-    sh:evalpath(xt:list(), node, node, exp, false, st:null)
+    sh:evalpath(xt:list(), node, node, exp, false, sh:null)
 }
 
 
 function sh:evalpath(subject, node, exp) {
-    sh:evalpath(xt:list(), subject, node, exp, false, st:null)
+    sh:evalpath(xt:list(), subject, node, exp, false, sh:null)
 }
 
 
-# url = st:null || server URL
+# url = sh:null || server URL
 # if null, triple patterns are evaluated on local dataset
 # if not null, triple patterns are evaluated on SPARQL endpoint url with service url { s p o }
 # focus is argument for (us:g1 us:g2) like select from
@@ -247,7 +247,7 @@ function dt:list sh:pathmap(exp, focus, subject, node, xsd:boolean inv, url){
 
 
 function dt:list sh:pathProperty(focus, subject, node, p, xsd:boolean inv, url){
-    if (url = st:null) {
+    if (url = sh:null) {
         if (inv) {
             return(sh:inverse(focus, node, p))
         }

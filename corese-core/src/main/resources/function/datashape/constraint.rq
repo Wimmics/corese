@@ -8,6 +8,7 @@ prefix sh:  <http://www.w3.org/ns/shacl#>
 prefix xsh: <http://www.w3.org/ns/shacl#> 
 prefix sx:  <http://www.w3.org/ns/shacl/function#> 
 prefix sm:  <http://www.w3.org/ns/shacl/message#> 
+prefix sr:  <http://www.w3.org/ns/shacl/result> 
 prefix msh: <http://ns.inria.fr/shacl/>
 
 function sh:constraint(report, sh, vis, nodeList, present) {
@@ -203,7 +204,7 @@ function sh:getResultExtension(shacl, sh) {
         where {
             graph ?shacl {  
                 {?sh xsh:resultFunction ?fun . ?fun ?name ?value}  
-                #union {?sh ?name ?value filter strstarts(?name, smr:)}
+                union {?sh ?name ?value filter strstarts(?name, sr:)}
                 bind (xsh:messageResult as ?ext) 
                 bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
             }

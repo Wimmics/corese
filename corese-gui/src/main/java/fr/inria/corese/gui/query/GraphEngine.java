@@ -109,7 +109,7 @@ public class GraphEngine {
                     QueryProcess.setOverwrite(true);
                     break;
                 case Command.RDF_STAR:
-                    Graph.setEdgeMetadataDefault(true);
+                    Graph.setRDFStar(true);
                     break;
                 case Command.ACCESS:
                     AccessRight.setActive(true);

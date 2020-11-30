@@ -26,9 +26,14 @@ public class MapAnyEvery extends Funcall {
         super(name);
         setArity(2);
     }
+    
+//    @Override
+//    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
+//        return evalnew(eval, b, env, p);
+//    }
 
-    //@Override
-    public IDatatype evalnew(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
+    @Override
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype name = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);
         if (name == null || param == null) {
@@ -72,7 +77,7 @@ public class MapAnyEvery extends Funcall {
         if (iter == null) {
             return null;
         }
-        IDatatype[] value = param; // new IDatatype[param.length];
+        IDatatype[] value = param; 
         boolean error = false, ok = true;
         
         for (IDatatype elem : iter) {
@@ -108,7 +113,7 @@ public class MapAnyEvery extends Funcall {
 
     }
     
-     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
+     public IDatatype evalold(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype name = getBasicArg(0).eval(eval, b, env, p);
         IDatatype[] param = evalArguments(eval, b, env, p, 1);
         if (name == null || param == null) {

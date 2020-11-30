@@ -60,21 +60,23 @@ public class NSManager extends ASTObject {
     public static final String SQL = "http://ns.inria.fr/ast/sql#";
     public static final String FOAF = "http://xmlns.com/foaf/0.1/";
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
-    public static final String SHACL = "http://www.w3.org/ns/shacl#";
-    public static final String SHACL_FUNCTION_PATH = "http://www.w3.org/ns/shacl/functionpath#";
-    public static final String SHACL_FUNCTION = "http://www.w3.org/ns/shacl/function#";
-    public static final String SHACL_MESSAGE = "http://www.w3.org/ns/shacl/message#";
-    public static final String SHACL_PREFIX =  "sh";
-    public static final String SHEX_SHACL = "http://ns.inria.fr/shex/shacl#";
-    public static final String SHAPE = SHACL;
-    public static final String SHACL_JAVA = "function://fr.inria.corese.core.extension.SHACL.";
     public static final String EXT_FUN    = "function://fr.inria.corese.core.extension.Extension.";
     public static final String DCTERM = "http://purl.org/dc/terms/";
     public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";
     public static final String DBPEDIA = "http://dbpedia.org/resource/";
     public static final String RESOURCE = "http://ns.inria.fr/corese/";
-    public static final String SHACL_SHACL = RESOURCE+"data/shaclshacl.ttl";
     public static final String HTTP = "http://ns.inria.fr/http/";
+    
+    public static final String SHACL = "http://www.w3.org/ns/shacl#";
+    public static final String SHACL_FUNCTION_PATH = "http://www.w3.org/ns/shacl/functionpath#";
+    public static final String SHACL_FUNCTION = "http://www.w3.org/ns/shacl/function#";
+    public static final String SHACL_MESSAGE = "http://www.w3.org/ns/shacl/message#";
+    public static final String SHACL_RESULT = "http://www.w3.org/ns/shacl/result#";
+    public static final String SHACL_PREFIX =  "sh";
+    public static final String SHEX_SHACL = "http://ns.inria.fr/shex/shacl#";
+    public static final String SHAPE = SHACL;
+    public static final String SHACL_JAVA = "function://fr.inria.corese.core.extension.SHACL.";
+    public static final String SHACL_SHACL = RESOURCE+"data/shaclshacl.ttl";
     
     public static final String COSNS = RDFS.COSNS;
     public static final String COS = RDFS.COS;
@@ -288,6 +290,7 @@ public class NSManager extends ASTObject {
         def.put(SHACL_FUNCTION, "sx");
         def.put(SHACL_FUNCTION_PATH, "sxp");
         def.put(SHACL_MESSAGE,  "sm");
+        def.put(SHACL_RESULT,  "sr");
         def.put(SHEX_SHACL, "shex");
         def.put(SHACL_JAVA, "jsh");
         def.put(EXT_FUN, "fun");

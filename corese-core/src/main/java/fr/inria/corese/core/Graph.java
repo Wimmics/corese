@@ -1131,6 +1131,10 @@ public class Graph extends GraphObject implements
     public static void setEdgeMetadataDefault(boolean b) {
         EDGE_METADATA_DEFAULT = b;
     }
+    
+    public static void setRDFStar(boolean b) {
+        setEdgeMetadataDefault(b);
+    }
    
     /**
      * send e.g. by kgram eval() before every query execution restore
@@ -3176,6 +3180,10 @@ public class Graph extends GraphObject implements
         Edge e = fac.create(createNode(source), createNode(subject), createNode(predicate), createNode(value));
         Edge ee = addEdgeWithNode(e);
         return ee;
+    }
+    
+    public List<Edge> delete(IDatatype subject, IDatatype predicate, IDatatype value) {
+        return delete(null, subject, predicate, value);
     }
     
     public List<Edge> delete(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {

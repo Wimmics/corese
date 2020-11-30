@@ -62,8 +62,8 @@ function sh:partitionValueShape (report, sh, vis, extra, subject, path, qsh, dis
         sh:dsp(subject, path, nodeList);
         
         let (opt = sh:getShapeConstraint(sh:optional, sh),
-            list = mapfindlist(sh:qualifiedShape, nodeList,  qsh),
-            (partList cardList) = sh:partitionSiblingNodeList(qsh, subject, path, nodeList),
+            list = mapfindlist(sh:qualifiedShape, nodeList,  qsh, report),
+            (partList cardList) = sh:partitionSiblingNodeList(report, qsh, subject, path, nodeList),
             candidate   = xt:cons(list, partList),
             cardinality = xt:cons(xt:list(amin, amax), cardList)) {
             
@@ -100,12 +100,12 @@ function sh:extra(nodeList, candidate) {
 #
 # return list of sibling shape with same path qualified node list 
 #
-function sh:partitionSiblingNodeList(qsh, subject, currentPath, nodeList) {
+function sh:partitionSiblingNodeList(report, qsh, subject, currentPath, nodeList) {
     let (siblingNodeList = xt:list(), cardList = xt:list(),
         cstList = coalesce(sh:getConstraint(sh:sibling, qsh), xt:list())) {
         for ((sh, path, amin, amax) in cstList) {
             if (coalesce(sh:samePath(currentPath, path), false)) {
-                let (targetQualified =  mapfindlist(sh:qualifiedShape, nodeList,  sh)) {
+                let (targetQualified =  mapfindlist(sh:qualifiedShape, nodeList,  sh, report)) {
                     xt:add(siblingNodeList, targetQualified) ;
                     xt:add(cardList, xt:list(amin, amax))
                 }
@@ -241,7 +241,8 @@ function sh:transitiveIntersection(nodeList, mapInterList) {
         let (list = xt:get(mapInterList, nodeList),
             tmp = xt:remove(mapInterList, nodeList),
             fst = maplist(rq:self, list),
-            rst = maplist(sh:transitiveIntersection, list, xt:list(mapInterList))) {
+            #rst = maplist(sh:transitiveIntersection, list, xt:list(mapInterList))) {
+            rst = maplist(sh:transitiveIntersection, list, mapInterList)) {
             return (xt:merge(fst, reduce(xt:merge, rst)))
         }
     }

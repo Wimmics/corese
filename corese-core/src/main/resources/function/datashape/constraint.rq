@@ -213,6 +213,22 @@ function sh:getResultExtension(shacl, sh) {
     }
 }
 
+# [] xsh:resultFunction [ us:mess() ]
+function sh:getResultExtensionGlobal(shacl, mysh) {
+    let (select ?shacl ?sh 
+            (aggregate (xt:list(?ext, ?name, ?arg)) as ?res) 
+        where {
+            graph ?shacl {  
+                ?sh xsh:resultFunction ?fun . ?fun ?name ?value
+                filter not exists { ?sh ?p ?v filter (?p != xsh:resultFunction) }
+                bind (xsh:messageResult as ?ext) 
+                bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
+            }
+        } ) {
+        return(res)
+    }
+}
+
 # (fun x y) -> (fun (x y))
 function sh:compile(name, exp) {
     if (name in (xsh:evaluate, xsh:compute), sh:compile(exp), exp)

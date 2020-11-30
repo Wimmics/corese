@@ -232,9 +232,9 @@ function dt:list sh:seqlistmap(focus, subject, nodeList, dt:list expList, xsd:bo
 
 # p = (sh:alternativePath (exp .. exp))
 function dt:list sh:alternativePath(focus, subject, node, exp, xsd:boolean inv, url){
-    #xt:print("alter:", exp);
-    let (expList = exp) { # xt:get(exp, 1)) {
-        return(mapmerge(sh:pathmap, expList, xt:list(focus), subject, node, inv, url))
+    let (expList = exp) { 
+        #return(mapmerge(sh:pathmap, expList, xt:list(focus), subject, node, inv, url))
+        return(mapmerge(sh:pathmap, expList, focus, subject, node, inv, url))
     }
 }
 

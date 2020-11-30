@@ -165,6 +165,14 @@ function sh:store(gg, sub, pred, obj) {
     xt:insert(gg, sub, pred, obj)
 }
 
+function sh:insert(gg, sub, pred, obj) {
+    xt:insert(gg, sub, pred, obj)
+}
+
+function sh:delete(gg, sub, pred, obj) {
+    xt:delete(gg, sub, pred, obj)
+}
+
 function sh:myvalidationReport() {
     coalesce(tripleList, set(tripleList = xt:list()))
 }
@@ -192,13 +200,30 @@ function sh:messageFunction(shape, sh, cst, node, value) {
 }
 
 function sh:resultFunction(report, subReport, res, sh, oper, node, path, value) {
-    let (mf = sh:getResultExtension(sh)) {
-        for ((fun name param) in mf) {
+    let (rf = sh:getResultExtension(sh)) {
+        if (xt:size(rf) = 0) {
+            set (rf = sh:getResultExtensionGlobal(sh)) ;
+            if (xt:size(rf) = 0 && sh:isValue(subReport)) {
+                # there is no resultFunction and there is a subReport: default is merge
+                sh:merge(report, subReport, res) ;
+                return (res)
+            }
+        } ;
+        for ((fun name param) in rf) {
+            funcall(name, report, subReport, res, sh, oper, node, path, value, param)
+        } 
+    } ;
+    return (res)
+}
+
+function sh:resultFunction2(report, subReport, res, sh, oper, node, path, value) {
+    let (rf = sh:getResultExtension(sh)) {
+        for ((fun name param) in rf) {
             funcall(name, report, subReport, res, sh, oper, node, path, value, param)
         } ;
-        if (xt:size(mf) = 0 && sh:isValue(subReport)) {
+        if (xt:size(rf) = 0 && sh:isValue(subReport)) {
             # there is no resultFunction but there is a subReport: default is merge
-            sh:mergeReport(report, subReport, res)
+            sh:merge(report, subReport, res)
         }
     } 
 }
@@ -224,6 +249,17 @@ function sh:getResultExtension(sh) {
 # ((xsh:resultFunction name param))
 function sh:resultExtension(shape, sh) {
     sh:getResultExtension(shape, sh)
+}
+
+
+function sh:getResultExtensionGlobal(sh) {
+    sh:getShapeConstraint(sh:resultExtensionGlobal, sh:resultExtensionGlobal)
+}
+
+
+# ((xsh:resultFunction name param))
+function sh:resultExtensionGlobal(shape, sh) {
+    sh:getResultExtensionGlobal(shape, sh)
 }
 
 
@@ -299,7 +335,7 @@ function sh:reportDetail(report, subReport, oper, sh, cst, s, p, o, suc, vis, de
 # for each id in subReport, add triple: url sh:detail id
 # TODO: delete sh:result triples from subReport
 #
-function sh:mergeReport(report, subReport, url) {
+function sh:merge(report, subReport, url) {
     if (sh:isValue(subReport)) {
         letdyn (list = sh:collecturl(subReport), res = url, myreport = report) {
             xt:merge(report, subReport) ;
@@ -317,7 +353,13 @@ function sh:collecturl(report) {
 
 
 
+function  sr:skipDetail(report, detail, url, shape, oper, s, p, o, exp) {
 
+}
+
+function sr:mergeDetail(report, detail, url, shape, oper, s, p, o, exp) {
+    sh:merge(report, detail, url)
+}
 
 
 

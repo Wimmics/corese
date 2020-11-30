@@ -144,7 +144,8 @@ function sh:nodePath(source, element, exp) {
    let ((param) = exp) {
         if (xt:size(exp) = 1, 
             funcall(param, element),
-            reduce(xt:merge, maplist(rq:funcall, exp, xt:list(element))))
+            #reduce(xt:merge, maplist(rq:funcall, exp, xt:list(element))))
+            reduce(xt:merge, maplist(rq:funcall, exp, element)))
     }
 }
 

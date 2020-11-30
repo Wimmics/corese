@@ -630,7 +630,7 @@ public class PluginImpl
         Edge e;
         if (param.length == 3) {
             e = g.add(first, param[1], param[2]);
-        } else if (first.isPointer() && first.pointerType() == PointerType.GRAPH) {
+        } else if (first.pointerType() == PointerType.GRAPH) {
             Graph gg = (Graph) first.getPointerObject();
             e = gg.add(param[1], param[2], param[3]);
         } else {
@@ -642,11 +642,17 @@ public class PluginImpl
     @Override
     public IDatatype delete(Environment env, Producer p, IDatatype... param) {
         Graph g = getGraph(p);
+        IDatatype first = param[0];
         List<Edge> le;
         if (param.length == 3) {
-            le = g.delete(null, param[0], param[1], param[2]);
-        } else {
-            le = g.delete(param[0], param[1], param[2], param[3]);
+            le = g.delete(first, param[1], param[2]);
+        } 
+        else if (first.pointerType() == PointerType.GRAPH) {
+            Graph gg = (Graph) first.getPointerObject();
+            le = gg.delete(param[1], param[2], param[3]);
+        }
+        else {
+            le = g.delete(first, param[1], param[2], param[3]);
         }
         return (le == null) ? FALSE : TRUE;
     }

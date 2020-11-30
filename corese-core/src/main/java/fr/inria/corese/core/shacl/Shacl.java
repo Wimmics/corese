@@ -1,6 +1,8 @@
 package fr.inria.corese.core.shacl;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.logic.RDF;
+import fr.inria.corese.core.producer.DataProducer;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -235,6 +237,15 @@ public class Shacl {
     // number of value of property sh:result
     public int nbResult(Graph g) {
         return g.size(DatatypeMap.newResource(NBRESULT));
+    }
+    
+    // [] a sh:AbstractResult
+    public int nbAbstractResult(Graph g) {
+        DataProducer dp = new DataProducer(g).iterate(
+                DatatypeMap.createBlank(), 
+                DatatypeMap.newResource(RDF.TYPE), 
+                DatatypeMap.newResource(NSManager.SHACL+"AbstractResult"));
+        return dp.cardinality();
     }
     
     

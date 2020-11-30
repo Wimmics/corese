@@ -99,6 +99,15 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
         setIterable(new ArrayList<Edge>(0));
         return this; 
     } 
+    
+    // after iterate()
+    public int cardinality() {
+        int n = 0;
+        for (Edge e : this) {
+            if (e != null) { n++; }
+        }
+        return n;
+    }
      
     /**
      * if arg is bnode: 

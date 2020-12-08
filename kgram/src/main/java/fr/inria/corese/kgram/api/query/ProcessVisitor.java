@@ -3,6 +3,7 @@ package fr.inria.corese.kgram.api.query;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
+import fr.inria.corese.kgram.api.core.Graph;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.core.Eval;
@@ -52,6 +53,8 @@ public interface ProcessVisitor extends Pointerable {
     default DatatypeValue before(Query q) { return defaultValue(); }
     
     default DatatypeValue after(Mappings map) { return defaultValue(); }
+    
+    default DatatypeValue construct(Mappings map) { return defaultValue(); }
     
     default DatatypeValue beforeUpdate(Query q) { return defaultValue(); }
     

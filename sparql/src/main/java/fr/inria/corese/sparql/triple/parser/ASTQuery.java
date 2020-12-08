@@ -2403,12 +2403,26 @@ public class ASTQuery
     public Constant createConstant(String s, String datatype, String lang) {
         if (datatype == null) {
             datatype = datatype(lang);
-        } else if (!knownDatatype(datatype)) {
+        } 
+        else if (knownDatatype(datatype)) {
+            // record prefix namespace for pprint if any
+            getNSM().toNamespaceB(datatype);
+        }
+        else {
             datatype = getNSM().toNamespaceB(datatype);
         }
-        //s = clean(s);
         return Constant.create(s, datatype, lang);
     }
+    
+    // when there is a datatype given in the syntax
+    public Constant createConstantWithDatatype(String s, String datatype, String lang) {
+        Constant cst = createConstant(s, datatype, lang);
+        if (datatype != null) {
+            cst.setNativeDatatype(true);
+        }
+        return cst;
+    }
+
 
     String datatype(String lang) {
         return DatatypeMap.datatype(lang);

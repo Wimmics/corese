@@ -14,7 +14,6 @@ import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import java.util.List;
 
@@ -35,6 +34,8 @@ public class Constant extends Atom {
     static DatatypeMap dm;
     private static boolean stringDatatype = false;
     boolean isQName = false;
+    // when there is a datatype in the syntactical form of a literal
+    private boolean nativeDatatype = false;
     IDatatype dt;
     String datatype = null;
     int weight = 1;
@@ -169,6 +170,10 @@ public class Constant extends Atom {
     public static void setString(boolean b) {
         stringDatatype = b;
     }
+    
+    static boolean isString() {
+        return stringDatatype ;
+    }
 
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
@@ -188,12 +193,12 @@ public class Constant extends Atom {
                     sb.append(name);
                 } else if (datatype.startsWith("http://")) {
                     toString(name, sb);
-                    if (!datatype.equals(RDF.xsdstring) || stringDatatype) {
+                    if (!datatype.equals(RDF.xsdstring) || isString() || isNativeDatatype()) {
                         sb.append(KeywordPP.SDT + "<").append(datatype).append(">");
                     }
                 } else {
                     toString(name, sb);
-                    if (!datatype.equals(RDF.qxsdString) || stringDatatype) {
+                    if (!datatype.equals(RDF.qxsdString) || isString() || isNativeDatatype()) {
                         sb.append(KeywordPP.SDT).append(datatype);
                     }
                 }
@@ -513,6 +518,20 @@ public class Constant extends Atom {
     @Override
     public Expression replace(Variable arg, Variable var) {
         return this;
+    }
+
+    /**
+     * @return the nativeDatatype
+     */
+    public boolean isNativeDatatype() {
+        return nativeDatatype;
+    }
+
+    /**
+     * @param nativeDatatype the nativeDatatype to set
+     */
+    public void setNativeDatatype(boolean nativeDatatype) {
+        this.nativeDatatype = nativeDatatype;
     }
  
 

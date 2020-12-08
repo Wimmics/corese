@@ -27,9 +27,11 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.extension.CoreseXML;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  *
@@ -135,26 +137,16 @@ public class XML extends TermEval {
 
             }
         }
-//        else {
-//            switch (oper()) {
-//                case XT_ATTRIBUTES:
-//                    return DatatypeMap.map();
-//
-//                case XT_NODE_TYPE:
-//                    return CoreseXML.TEXT;
-//                      
-//                case XT_ELEMENTS: 
-//                    return DatatypeMap.newList();
-//                    
-//                case XT_TEXT_CONTENT:
-//                    return dt; 
-//                    
-//                case XT_NODE_NAME:    
-//                case XT_NODE_PROPERTY:
-//                case XT_NODE_VALUE:
-//                    return dt;    
-//            }
-//        }      
+        else {
+            switch (oper()) {
+                case XT_NAMESPACE:
+                    String str = NSManager.namespace(dt.getLabel());
+                    if (str.isEmpty()) {
+                        return dt;
+                    }
+                    return DatatypeMap.newResource(str);
+            }
+        }
 
         return null;
     }

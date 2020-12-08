@@ -844,6 +844,7 @@ public class QueryProcess extends QuerySolver {
         cons.setDebug(isDebug() || query.isDebug());
         cons.construct(map);
         map.setGraph(gg);
+        getVisitor().construct(map);
     }
 
     /**

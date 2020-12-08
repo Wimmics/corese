@@ -125,7 +125,7 @@ public class PluginImpl
     boolean isCache = false;
     TreeNode cache;
 
-    ExtendGraph ext;
+    //ExtendGraph ext;
     private PluginTransform pt;
     private static IStorage storageMgr;
     private AppxSearchPlugin pas;
@@ -145,7 +145,7 @@ public class PluginImpl
 
     void init() {
         cache = new TreeNode();
-        ext = new ExtendGraph(this);
+        //ext = new ExtendGraph(this);
         pt = new PluginTransform(this);
         pas = new AppxSearchPlugin(this);
     }

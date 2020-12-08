@@ -4,6 +4,7 @@
  */
 package fr.inria.corese.server.webservice;
 
+import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.util.Parameter;
 import fr.inria.corese.sparql.triple.parser.Access;
@@ -133,6 +134,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
 		Option key        = new Option("key", "key", true, "key");
 		Option reentrant  = new Option("re", "reentrant", false, "authorize reentrant query");
 		Option param      = new Option("param", "param", true, "read properties file");
+		Option rdfstar    = new Option("rdfstar", "rdfstar", false, "RDF*");
 
 		Option sslOpt         = new Option("ssl", "ssl", false, "enable ssl connection ?");
 		Option portSslOpt     = new Option("pssl", "pssl", true, "port of ssl connection");
@@ -156,6 +158,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
 		options.addOption(key);
 		options.addOption(param);
 		options.addOption(reentrant);
+		options.addOption(rdfstar);
 
 		options.addOption(sslOpt);
 		options.addOption(portSslOpt);
@@ -237,6 +240,9 @@ public class EmbeddedJettyServer extends ResourceConfig {
 				logger.info("protect");
 				protect();
 			}
+                        if (cmd.hasOption("rdfstar")) {
+                            Graph.setRDFStar(true);
+                        }
                         if (cmd.hasOption("su")) {
 //                            logger.info("su");
 //                            Access.skip(true);
@@ -330,7 +336,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
 				SPIN.class,
 				MultiPartFeature.class,
 				SDK.class,
-				Tutorial.class,ServiceOnline.class,
+				Tutorial.class,ServiceOnline.class,ServiceOnline2.class,
 				Transformer.class,
 				Processor.class,
                                 Agent.class

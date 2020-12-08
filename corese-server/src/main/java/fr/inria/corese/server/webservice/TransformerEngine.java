@@ -12,8 +12,6 @@ import fr.inria.corese.core.workflow.WorkflowParser;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.sparql.exceptions.SafetyException;
-import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.util.List;
 import org.apache.logging.log4j.LogManager;
@@ -133,7 +131,7 @@ public class TransformerEngine {
             parser.parseWE(profile.getNode(swdt));
             query = getQuery(wp, query);
             if (query != null) {
-                logger.warn("Workflow query: " + query);
+                logger.info("Workflow query: " + query);
                 wp.addQuery(query, 0, isUserQuery, level);
             }  
         } 
@@ -142,7 +140,7 @@ public class TransformerEngine {
             if (transform == null) {
                 logger.info("SPARQL endpoint");
                 wp.addQueryMapping(query, isUserQuery, level);
-                wp.add(new ResultProcess());
+                wp.add(new ResultProcess(context.stringValue(Context.STL_FORMAT)));
                 return wp;
             } else {
                 // select where return Graph Mappings

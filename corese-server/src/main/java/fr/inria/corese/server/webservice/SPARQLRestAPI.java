@@ -292,7 +292,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris, 
             @QueryParam("named-graph-uri")   List<String> namedGraphUris,
             @QueryParam ("format")           String format) {
-        System.out.println("getTriplesXMLForGet");
+        logger.info("getTriplesXMLForGet");
         beforeRequest(request, query);
         
         try {
@@ -333,8 +333,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Get SPARQL Result JOSN: " + query);
+            logger.info("getTriplesJSONForGet");
             if (query == null)
                 throw new Exception("No query");
 
@@ -354,8 +353,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris, 
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Get SPARQL Results CSV: " + query);
+            logger.info("getTriplesCSVForGet");
             if (query == null)
                 throw new Exception("No query");
 
@@ -375,8 +373,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris, 
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Get SPARQL Results TSV: " + query);
+            logger.info("getTriplesTSVForGet");
             if (query == null)
                 throw new Exception("No query");
 
@@ -400,8 +397,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Get RDF XML: " + query);
+            logger.info("getRDFGraphXMLForGet");
             if (query == null)
                 throw new Exception("No query");
 
@@ -421,8 +417,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Get RDF Turtle: " + query);
+            logger.info("getRDFGraphNTripleForGet");
             if (query == null)
                 throw new Exception("No query");
 
@@ -444,8 +439,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Get RDF Turtle: " + query);
+            logger.info("getRDFGraphTrigForGet");
             if (query == null)
                 throw new Exception("No query");
 
@@ -467,8 +461,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Get RDF JSON-LD: " + query);
+            logger.info("getRDFGraphJsonLDForGet");
             if (query == null)
                 throw new Exception("No query");
 
@@ -498,9 +491,8 @@ public class SPARQLRestAPI {
             @QueryParam ("format")  String format,
             String message) {
         try {
-            System.out.println("getXMLForPost");
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Post SPARQL Result XML: " + query);
+            logger.info("getXMLForPost");
+
             if (query.equals(""))
                 query = message;
             if (logger.isDebugEnabled())
@@ -529,9 +521,7 @@ public class SPARQLRestAPI {
             @QueryParam ("format")  String format,
             String message) {
         try {
-            System.out.println("getTriplesXMLForPost");
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Post SPARQL Result XML/plain: " + query);
+            logger.info("getTriplesXMLForPost");
             if (query.equals(""))
                 query = message;
             if (logger.isDebugEnabled())
@@ -560,9 +550,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {            
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Post SPARQL Result JSON: " + query);
-
+            logger.info("getTriplesJSONForPostNew");
             Mappings map = getTripleStore().query(request, query, createDataset(defaultGraphUris, namedGraphUris, access));
             return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(map).toString()).build();
         } catch (Exception ex) {
@@ -584,8 +572,7 @@ public class SPARQLRestAPI {
         try {
             if (query.equals(""))
                 query = message;
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Post SPARQL Result JSON: " + query);
+            logger.info("getTriplesJSONForPost");
 
             Mappings map = getTripleStore().query(request, query, createDataset(defaultGraphUris, namedGraphUris, access));
             return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(map).toString()).build();
@@ -606,8 +593,7 @@ public class SPARQLRestAPI {
         try {
             if (query.equals(""))
                 query = message;
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Post SPARQL Result CSV: " + query);
+            logger.info("getTriplesCSVForPost");
 
             return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(getTripleStore()
                     .query(request, query, createDataset(defaultGraphUris, namedGraphUris, access))).toString()).build();
@@ -628,8 +614,7 @@ public class SPARQLRestAPI {
         try {
             if (query.equals(""))
                 query = message;
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Post SPARQL Result TSV: " + query);
+            logger.info("getTriplesTSVForPost");
 
             return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(getTripleStore()
                     .query(request, query, createDataset(defaultGraphUris, namedGraphUris, access))).toString()).build();
@@ -654,8 +639,7 @@ public class SPARQLRestAPI {
         try {
             if (query.equals(""))
                 query = message;
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Post RDF XML: " + query);
+            logger.info("getRDFGraphXMLForPost");
 
             Mappings map = getTripleStore().query(request, query, createDataset(defaultGraphUris, namedGraphUris, access));
             return Response.status(200).header(headerAccept, "*").entity(ResultFormat.create(map).toString()).build();
@@ -674,8 +658,7 @@ public class SPARQLRestAPI {
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
         try {
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Post RDF NT: " + query);
+            logger.info("getRDFGraphNTripleForPost");
 
             return Response.status(200).header(headerAccept, "*")
                     .entity(TripleFormat.create(getTripleStore()
@@ -695,8 +678,7 @@ public class SPARQLRestAPI {
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
         try {
-            if (logger.isDebugEnabled())
-                logger.debug("Rest Post RDF JSON-LD: " + query);
+            logger.info("getRDFGraphJsonLDForPost");
 
             return Response.status(200).header(headerAccept, "*")
                     .entity(JSONLDFormat.create(getTripleStore()
@@ -743,6 +725,8 @@ public class SPARQLRestAPI {
             @QueryParam("using-graph-uri") List<String> defaultGraphUris, 
             @QueryParam("using-named-graph-uri") List<String> namedGraphUris) {
         try {
+            logger.info("updateTriplesDirect");
+
             if (message != null) {
                 logger.debug(message);
                 getTripleStore().query(request, message, createDataset(defaultGraphUris, namedGraphUris, access));
@@ -764,6 +748,7 @@ public class SPARQLRestAPI {
             @QueryParam("default-graph-uri") List<String> defaultGraphUris, 
             @QueryParam("named-graph-uri") List<String> namedGraphUris) {
         try {
+            logger.info("getTriplesForHead");
             Mappings mp = getTripleStore().query(request, query, createDataset(defaultGraphUris, namedGraphUris, access));
             return Response.status(mp.size() > 0 ? 200 : 400).header(headerAccept, "*").entity("Query has no response").build();
         } catch (Exception ex) {

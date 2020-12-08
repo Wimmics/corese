@@ -13,8 +13,9 @@ where {
   ?s rs:index ?i  
   ?s rs:binding [ rs:variable ?var ; rs:value ?val ]
     
-  graph eng:dataset {
-     bind (st:apply-templates-with(st:turtlehtml, ?val) as ?res)
+  bind (st:get(st:dataset) as ?g)
+  graph ?g {   # eng:dataset {    
+    bind (st:apply-templates-with(st:turtlehtml, ?val) as ?res)
   }
   
 }

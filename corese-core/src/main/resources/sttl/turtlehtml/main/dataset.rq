@@ -11,8 +11,9 @@ template st:dataset {
   st:call-template(st:close)
 }
 where {
-  graph eng:dataset {
-     bind (st:apply-templates-with(st:turtlehtml) as ?res)
+  bind (st:get(st:dataset) as ?g)
+  graph ?g {   # eng:dataset {     
+       bind (st:apply-templates-with(st:turtlehtml) as ?res)
   }
 }
 

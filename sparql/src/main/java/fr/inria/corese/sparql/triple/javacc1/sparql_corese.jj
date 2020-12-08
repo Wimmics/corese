@@ -2713,7 +2713,7 @@ Constant RDFLiteral() : { Constant res; String iriref, s, lang; Token t; }
     t = <LANGTAG> { lang = t.image.substring(1,t.image.length()); }
     | ( t = <DATATYPE> iriref = IRIref() )  
   )?
-  { res = astq.createConstant(s, iriref, lang); }
+  { res = astq.createConstantWithDatatype(s, iriref, lang); }
   { return res; }
 }
 

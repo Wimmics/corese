@@ -8291,7 +8291,7 @@ ExpressionList arg, el = null; Metadata meta = null;
       jj_la1[264] = jj_gen;
       ;
     }
-    res = astq.createConstant(s, iriref, lang);
+    res = astq.createConstantWithDatatype(s, iriref, lang);
     {if (true) return res;}
     throw new Error("Missing return statement in function");
   }

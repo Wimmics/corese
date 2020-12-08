@@ -105,6 +105,11 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
     }
     
     @Override
+    public IDatatype construct(Mappings map) {
+        return callback(CONSTRUCT, toArray(map.getGraph()));
+    }
+    
+    @Override
     public IDatatype beforeUpdate(Query q) {
         return callback(BEFORE_UPDATE, toArray(q));
     }

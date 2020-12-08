@@ -25,7 +25,6 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,6 +57,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     public static final String INIT     = "@init";
     public static final String BEFORE   = "@before";
     public static final String AFTER    = "@after";
+    public static final String CONSTRUCT = "@construct";
     public static final String BEFORE_UPDATE = "@beforeUpdate";
     public static final String AFTER_UPDATE  = "@afterUpdate";
     public static final String BEFORE_LOAD   = "@beforeLoad";

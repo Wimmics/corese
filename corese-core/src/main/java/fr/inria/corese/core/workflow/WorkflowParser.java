@@ -28,7 +28,6 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.Access;
-import java.util.logging.Level;
 
 /**
  * Parse a graph that describes a Workflow 

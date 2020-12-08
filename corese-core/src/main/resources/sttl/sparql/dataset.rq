@@ -10,7 +10,8 @@ template st:dataset {
   str(?res)
 }
 where {  
-  graph eng:dataset {
+  bind (st:get(st:dataset) as ?g)
+  graph ?g {   # eng:dataset {
     bind (st:apply-templates-with(st:sparql) as ?res)
   }
 }

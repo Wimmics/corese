@@ -32,10 +32,11 @@ public class ResultFormat implements ResultFormatDef {
     private int select_format = DEFAULT_SELECT_FORMAT;
     private long nbResult = Long.MAX_VALUE;
     
-    static HashMap<String, Integer> table;
+    static HashMap<String, Integer> table, format;
     
     static {
         init();
+        initFormat();
     }
     
     static void init(){
@@ -47,6 +48,15 @@ public class ResultFormat implements ResultFormatDef {
         table.put(Metadata.DISPLAY_RDF, RDF_FORMAT);
         table.put(Metadata.DISPLAY_XML, XML_FORMAT);
         table.put(Metadata.DISPLAY_JSON, JSON_FORMAT);
+    }
+    
+    
+    static void initFormat() {
+        format = new HashMap<>();
+        format.put("application/sparql-results+json", JSON_FORMAT);
+        format.put("application/sparql-results+xml", XML_FORMAT);
+        format.put("json", JSON_FORMAT);
+        format.put("xml", XML_FORMAT);
     }
 
     ResultFormat(Mappings m) {
@@ -62,11 +72,11 @@ public class ResultFormat implements ResultFormatDef {
         this.type = type;
     }
     
-     ResultFormat(Mappings m, int sel, int cons) {
+    ResultFormat(Mappings m, int sel, int cons) {
         this(m);
         this.select_format = sel;
         this.construct_format = cons;
-     }
+    }
     
     ResultFormat(Graph g, int type) {
         this(g);
@@ -120,6 +130,14 @@ public class ResultFormat implements ResultFormatDef {
             }
         }
         return type;
+    }
+    
+    // str = application/sparql-results+json OR json
+    public static int getFormat(String str) {
+        if (str != null && format.containsKey(str)) {
+            return format.get(str);
+        }
+        return XML_FORMAT;
     }
 
     @Override

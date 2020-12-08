@@ -50,7 +50,7 @@ public class ASTWalker implements Walker {
     
     public ASTWalker(ASTQuery ast) {
         this.ast = ast;
-        trace = ast.hasMetadata(Metadata.TRACE);
+        //trace = ast.hasMetadata(Metadata.TRACE);
         list = new ArrayList<>();
     }
     

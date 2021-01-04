@@ -456,7 +456,7 @@ function sh:isBoolean(oper) {
 
 
 function sh:defConstraint(sh, class, oper, value) {
-    sh:defConstraint(sh, class, st:null, oper, value)
+    sh:defConstraint(sh, class, sh:null, oper, value)
 }
 
 # Define a constraint in the input format of the interpreter

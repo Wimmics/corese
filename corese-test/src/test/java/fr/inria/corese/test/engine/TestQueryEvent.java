@@ -880,13 +880,20 @@ public class TestQueryEvent {
                 + "where {}"
 
                 + "function us:foo() {"
-                + "let (?g1 = construct where {?x ?p ?y}, ?g2 = construct where {?x ?p ?y}) {"
+                + "let (?g1 = construct {?x ?p ?y} where {?x ?p ?y}, ?g2 = construct where {?x ?p ?y}) {"
                 + "?g1 = ?g2"
+                + "}"
+                + "}"
+                
+                + "@type dt:graph dt:triple "
+                + "function us:eq(g1, g2) {"
+                + "letdyn (i = -1, list = maplist(rq:self, g2)) {"
+                + "  mapevery(lambda(t1) { t1 = xt:get(list, set (i = i+1)) }, g1)"
                 + "}"
                 + "}"
 
                 + "@type dt:graph dt:triple "
-                + "function us:eq(?g1, ?g2) {"
+                + "function us:eqqqq(?g1, ?g2) {"
                 + "  mapevery(lambda(?t1, ?t2) { ?t1 = ?t2 }, ?g1, ?g2)"
                 + "}"
                 
@@ -909,7 +916,7 @@ public class TestQueryEvent {
         assertEquals(true, dt.booleanValue());
     }
 
-    @Test
+    //@Test
     public void testExtFun17() throws EngineException {
 
         String init = "prefix ex: <http://example.org/> "

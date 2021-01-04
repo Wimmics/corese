@@ -9,8 +9,8 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.shacl.Shacl;
-import fr.inria.corese.core.shacl.ShaclJava;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.kgram.api.core.Edge;
 import org.junit.Test;
 
 import fr.inria.corese.sparql.api.IDatatype;
@@ -20,6 +20,8 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import javax.xml.transform.TransformerException;
 
 import static org.junit.Assert.*;
@@ -44,7 +46,11 @@ public class DataShapeExt {
         void init(Graph g) {
             RuleEngine re = RuleEngine.create(g);
             re.setProfile(RuleEngine.OWL_RL);
-            re.process();
+            try {
+                re.process();
+            } catch (EngineException ex) {
+                Logger.getLogger(DataShapeExt.class.getName()).log(Level.SEVERE, null, ex);
+            }
         }
     }
     
@@ -60,245 +66,367 @@ public class DataShapeExt {
         return g;
     }
     
-    Shacl api2(String q) throws EngineException, LoadException, IOException {
-        return api(q, true);
-    }
-    
-    Shacl api(String q, boolean list) throws EngineException, LoadException, IOException {
-        Graph g = myinit();
+               @Test
+    public void testtfun6() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
-        exec.query(q);
-        Shacl shacl = new Shacl(g);
-        //shacl.setTrace(true);
-        IDatatype dt = exec.funcall(NSManager.USER + "defshape");
-        shacl.funeval((list)?DatatypeMap.list(dt):dt);
-        shacl.parse();
-        //System.out.println(Transformer.turtle(shacl.getResult()));
-        return shacl;
+        exec.query(tfun6());
+        Shacl shacl = new Shacl(g); 
+        Graph gg = shacl.eval();  
+        System.out.println(Transformer.turtle(gg));
+        gg.init();
+        assertEquals(2, shacl.nbAbstractResult(gg));
     }
     
-    
- @Test
-    public void testapi2() throws EngineException, LoadException, IOException, TransformerException {      
-        Shacl shacl = api2(qapi1());
-        Graph g = shacl.getResult();
-        //System.out.println(Transformer.turtle(g));
-    }
-    
-     String qapi1() {
-        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
-                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
-//                + "insert data {"
-//                + "us:test a sh:NodeShape ;"
-//                + "sh:targetClass h:Person ;"
-//                + "sh:property ["
-//                + "sh:path h:hasFriend ; sh:class h:Person ;"
-//                + "sh:and ([sh:class h:Person][sh:pattern i:])"
-//                + "] ;"
-//                + "sh:property ["
-//                + "sh:path h:hasChild ; sh:class h:Person ;"
-//                + "] ;"  
-//                
-//                + "sh:node us:test2 ;"
-//                
-//                + "sh:and ([sh:class h:Person]"
-//                + "[sh:property [ sh:path h:name ; sh:datatype xsd:string]]);"
-//                
-//                + "sh:property ["
-//                + "sh:path sh:hasParent ;"
-//                + "sh:qualifiedMinCount 1 ;"
-//                + "sh:qualifiedValueShape [sh:class h:Man]"
-//                + "]"
-//                + "}"
+    String tfun6() {
+        String i = "insert data {"
+                + "[] sh:booleanDetail true ."
+                + "us:test a sh:NodeShape ;"
+                + "sh:targetSubjectsOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path (foaf:knows foaf:name) ;"
+                + "sh:or ([sh:nodeKind sh:Literal][sh:nodeKind sh:BlankNode]) ;"
+                + "sh:minCount 1;"
+                + "sm:message();"
+                + "sr:result() "
+                + "]"
+                + "."
                 
-                + "@public function us:defshape() {"
-                + "    let (shape = @(sh:shape us:test"
-                + "        (sh:targetClass h:Person)"
-                + "(sh:property (sh:path h:hasFriend) "
-                + "(sh:and (sh:class h:Person)(sh:pattern i:)"
-                + "  (sh:in (i:Alice i:Sophie i:Gaston))"
-                + ")"
-                + ")"
-                + "    )) {shape}"
-                + "}";
-        return q;
-    }
-    
-    
-    String qapi6() {
-        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
-                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
-                + "insert data {"
-                + "us:test a sh:NodeShape ;"
-                + "sh:targetSubjectsOf h:hasFriend "
+                + "us:John foaf:name 'John' ; foaf:knows us:Jim ."
+                + "us:Jim foaf:name us:Jim, 'Jim' ; foaf:knows 'Jack'  "
                 + "}"
-                + "@public function us:defshape() {"
-                + "    let (shape = @(sh:shape us:test "
-                + "(sh:targetClass h:Person )"
-                + "(sh:property (sh:path h:hasFriend)"
-                + "(sh:qualifiedValueShape (sh:class h:Person)(sh:qualifiedValueShapesDisjoint true)(sh:qualifiedMinCount 1)))"
-                + "(sh:property (sh:path h:hasChild)"
-                + "(sh:qualifiedValueShape (sh:class h:Person)(sh:qualifiedMinCount 1)))"
-                + "    )) { shape }"
-                + "}";
-        
-        return q;
-    }
-
-    Shacl api(String q) throws EngineException, LoadException, IOException {
-        Graph g = myinit();
+                
+                + "@public function sr:result(report, detail, url, sh, oper, s, p, o, exp) {"
+                + "sh:merge(report, detail, url)"
+                + "}"
+                
+               
+                ;
+        return i;
+     }
+    
+             @Test
+    public void testtfun5() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
-        exec.query(q);
-        Shacl shacl = new Shacl(g);
-        IDatatype dt = exec.funcall(NSManager.USER + "defshape");
-        shacl.input().setVariable("?before", DatatypeMap.TRUE);
-        shacl.input().setVariable("?defshape", dt);
-        shacl.eval();
-        return shacl;
+        exec.query(tfun5());
+        Shacl shacl = new Shacl(g); 
+        Graph gg = shacl.eval();  
+        System.out.println(Transformer.turtle(gg));
+        gg.init();
+        assertEquals(2, shacl.nbAbstractResult(gg));
     }
     
-  
-    
-    @Test
-    public void testapi() throws EngineException, LoadException, IOException, TransformerException {      
-        Shacl shacl = api2(qapi1());
-        Graph g = shacl.getResult();
-        //System.out.println(Transformer.turtle(g));
-        assertEquals(1, shacl.nbResult(g));
-        
-        shacl = api2(qapi2());
-        g = shacl.getResult();
-        //System.out.println(Transformer.turtle(g));
-        assertEquals(1, shacl.nbResult(g));
-        
-        shacl = api2(qapi3());
-        g = shacl.getResult();
-        //System.out.println(Transformer.turtle(g));
-        assertEquals(0, shacl.nbResult(g));
-        
-        shacl = api2(qapi4());
-        g = shacl.getResult();
-        //System.out.println(Transformer.turtle(g));
-        assertEquals(1, shacl.nbResult(g));
-        
-        shacl = api2(qapi5());
-        g = shacl.getResult();
-        //System.out.println(Transformer.turtle(g));
-        
-        shacl = api2(qapi6());
-        g = shacl.getResult();
-        //System.out.println(Transformer.turtle(g));
-        
-        shacl = api(qapi7(), false);
-        g = shacl.getResult();
-        System.out.println(Transformer.turtle(g));
-    }
-    
-  
-    String qapi7() {
-        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
-                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
-                + "insert data {"
+    String tfun5() {
+        String i = "insert data {"
+                + "[] sh:booleanDetail true ."
                 + "us:test a sh:NodeShape ;"
-                + "sh:targetSubjectsOf h:name ;"
+                + "sh:targetSubjectsOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path (foaf:knows foaf:name) ;"
+                + "sh:or([sh:nodeKind sh:Literal][sh:nodeKind sh:BlankNode]) ;"
+                + "sh:minCount 1;"
+                + "sm:message();"
+               // + "sr:result() "
+                + "]"
+                + "."
+                
+                + "us:John foaf:name 'John' ; foaf:knows us:Jim ."
+                + "us:Jim foaf:name us:Jim, 'Jim' ; foaf:knows 'Jack'  "
                 + "}"
-                + "@public function us:defshape() {"
-                + "    let (shape = @("
-                + "(sh:shape us:test "
-                + "(sh:targetSubjectsOf h:name )"
-                + "(sh:property (sh:path h:hasFriend)"
-                + "(sh:node us:node)"
-                + "))"
-                + "(sh:shape us:node (sh:class h:Person))"
-                + ")) {shape}"
-                + "}";
-        return q;
+                
+                + "@public function sr:result(report, detail, url, sh, oper, s, p, o, exp) {"
+                + "let (bn = bnode()) {"
+                + "sh:store(report, url, us:mydetail, bn) ;"
+                + "sh:store(report, bn, us:arg, xt:list(s, o));"
+                + ""
+                + "}"
+                + "}"
+                
+               
+                ;
+        return i;
+     }
+    
+    
+    
+          @Test
+    public void testtfun4() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(tfun4());
+        Shacl shacl = new Shacl(g); 
+        Graph gg = shacl.eval();  
+        System.out.println(Transformer.turtle(gg));
+        assertEquals(2, shacl.nbResult(gg));
+        assertEquals(26, gg.size());
     }
     
-    
-      String qapi5() {
-        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
-                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
-                + "insert data {"
+    String tfun4() {
+        String i = "insert data {"
                 + "us:test a sh:NodeShape ;"
-                + "sh:targetSubjectsOf h:name ;"
+                + "sh:targetSubjectsOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path (foaf:knows foaf:name) ;"
+                + "sh:nodeKind sh:Literal ;"
+                + "sh:minCount 1;"
+                + "sm:message();"
+                + "sr:result() "
+                + "]"
+                + "."
+                
+                + "us:John foaf:name 'John' ; foaf:knows us:Jim ."
+                + "us:Jim foaf:name us:Jim, 'Jim' ; foaf:knows 'Jack'  "
                 + "}"
-                + "@public function us:defshape() {"
-                + "    let (shape = @(sh:shape us:test "
-                + "(sh:targetSubjectsOf h:name )"
-                + "(sh:property (sh:path (xsh:function (xsh:predicatePath(xsh:subject))))"
-                + "(xsh:function (xsh:display(true)))"
-                + ")"
-                + "    )) {shape}"
-                + "}";
-        return q;
+                
+                + "@public function sr:result(report, detail, url, sh, oper, s, p, o, exp) {"
+                + "let (bn = bnode()) {"
+                + "sh:store(report, url, us:mydetail, bn) ;"
+                + "sh:store(report, bn, us:arg, xt:list(s, o));"
+                + "}"
+                + "}"
+                
+               
+                ;
+        return i;
+     }
+    
+    
+    
+         @Test
+    public void testtfun3() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(tfun3());
+        Shacl shacl = new Shacl(g); 
+        Graph gg = shacl.eval();  
+        System.out.println(Transformer.turtle(gg));
+        assertEquals(2, shacl.nbResult(gg));
     }
     
-      String qapi4() {
-        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
-                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
-                + "insert data {"
+    String tfun3() {
+        String i = "insert data {"
                 + "us:test a sh:NodeShape ;"
-                + "sh:targetClass h:Person ;"
-                + "}"
-                + "@public function us:defshape() {"
-                + "    let (shape = @(sh:shape us:test"
-                + "        (sh:targetClass h:Person)"                
-                + "(sh:property (sh:path (sh:sequencePath ((sh:alternativePath (h:hasChild h:hasFriend )) h:name) )) "
-                + "(xsh:function (xsh:display(true)))"
-                + "(sh:datatype xsd:string)"
-                + ")"
-                + "    )) {shape}"
-                + "}";
-        return q;
-    }
+                + "sh:targetSubjectsOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path (foaf:knows foaf:name) ;"
+                + "sh:nodeKind sh:Literal ;"
+                + "sh:minCount 1;"
+                //+ "sh:message 'person with name:';"
+               // + "sh:messageFunction[ us:mess(foaf:name) ]"
+                + "sm:message(); "
+                //+ "sm:mess()"
+              //  + "xsh:display(true)"
+                + "]"
+                + "."
+                
+                + "us:John foaf:name 'John' ; foaf:knows us:Jim ."
+                + "us:Jim foaf:name us:Jim, 'Jim' ; foaf:knows 'Jack'  "
 
-      String qapi3() {
-        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
-                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
-                + "insert data {"
-                + "us:test a sh:NodeShape ;"
-                + "sh:targetNode i:Sophie ;"
                 + "}"
-                + "@public function us:defshape() {"
-                + "    let (shape = @(sh:shape us:test"
-                + "        (sh:targetNode i:Sophie)"                
-                + "(sh:property (sh:path h:name) "
-                + "(xsh:function (xsh:display(true)))"
-                + "(sh:languageIn ('en' 'fr'))"
-                + "(sh:hasValue 'Sophie'@fr)"
-                + ")"
-                + "    )) {shape}"
-                + "}";
-        return q;
+                
+                + "@public function sx:path(source, node, exp) {"
+                + "let ((path) = exp) {"
+                + "sh:pathfinder(path, node)"
+                + "}"
+                + "}"
+                 
+                + "@public function sm:mess(shape, node, value, exp) {"
+                + "xt:turtle(node)"
+                + "}"
+                ;
+        return i;
+     }
+    
+    
+    
+        @Test
+    public void testtfun2() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(tfun2());
+        Shacl shacl = new Shacl(g); 
+        Graph gg = shacl.eval();  
+        //System.out.println(Transformer.turtle(gg));
+        assertEquals(2, shacl.nbResult(gg));
     }
     
-     String qapi2() {
-        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
-                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
-                + "insert data {"
+    String tfun2() {
+        String i = "insert data {"
                 + "us:test a sh:NodeShape ;"
-                + "sh:targetClass h:Person ;"
+                + "sh:targetSubjectsOf foaf:knows ;"
+                + "sh:property ["
+                + "sh:path [sx:path((foaf:knows foaf:name))] ;"
+                + "sh:nodeKind sh:Literal ;"
+                + "sh:minCount 1;"
+                //+ "sh:message 'person with name:';"
+               // + "sh:messageFunction[ us:mess(foaf:name) ]"
+                + "sm:message((foaf:knows foaf:name))"
+              //  + "xsh:display(true)"
+                + "]"
+                + "."
+                
+                + "us:John foaf:name 'John' ; foaf:knows 'Jim' ."
+                + "us:Jim foaf:knows 'Jack'  "
+
                 + "}"
-                + "@public function us:defshape() {"
-                + "    let (shape = @(sh:shape us:test"
-                + "        (sh:targetClass h:Person)"                
-                + "(sh:property (sh:path h:hasFriend) "
-                + "(sh:equals h:hasFriend) (sh:class h:Person)(sh:pattern i:)(sh:nodeKind sh:IRI)"
-                + "(sh:minLength 5)(sh:minCount 0)"
-                + "(xsh:function (xsh:display(true)))"
-                + "(sh:property (sh:path h:name)(sh:minCount 1)(sh:datatype xsd:string)"
-                + ")"
-                + "(sh:node (sh:and (sh:not (sh:pattern h:))))"
-                + ")"
-                + "    )) {shape}"
+                
+                + "@public function sx:path(source, node, exp) {"
+                + "let ((path) = exp) {"
+                + "sh:pathfinder(path, node)"
+                + "}"
                 + "}";
-        return q;
+        return i;
+     }
+    
+    
+       @Test
+    public void testtfun() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(tfun());
+        Shacl shacl = new Shacl(g); 
+        Graph gg = shacl.eval();        
+        System.out.println(Transformer.turtle(gg));
+        Edge edge = gg.getEdge(NSManager.SHACL+"resultMessage2");
+        assertEquals(true, edge != null);
+        IDatatype dt = (IDatatype) edge.getNode(1).getDatatypeValue();
+        assertEquals(true, dt.isList());
     }
     
- 
+    String tfun() {
+        String i = "insert data {"
+                + "us:test a sh:NodeShape ;"
+                + "sh:targetFunction [ us:target(foaf:Person foaf:knows) ] ;"
+                + "sh:property ["
+                + "sh:path foaf:knows ;"
+                + "sh:nodeKind sh:IRI ;"
+                //+ "sh:message 'person with name:';"
+               // + "sh:messageFunction[ us:mess(foaf:name) ]"
+                + "sm:message(foaf:name)"
+              //  + "xsh:display(true)"
+                + "]"
+                + "."
+                
+                + "us:John a foaf:Person ; foaf:name 'John' ; foaf:knows 'Jim' ."
+                + "us:Jim foaf:knows 'Jack'  "
+
+                + "}"
+                
+                + "@public "
+                + "function us:mess(shape, source, node, exp) {"
+                + "let ((path) = exp, "
+                + "     list = sh:pathfinder(path, source),"
+                + "     (val) = list) {"
+                + "return (list)"
+                + "}"
+                + "}"
+                
+                + "@public "
+                + "function us:target(exp) {"
+                + "let ((type pred) = exp) {"
+                + "let (select type pred (aggregate(distinct ?x) as ?list)"
+                + "where {"
+                + "?x a ?type ; ?pred ?val"
+                + "}) {"
+                + "return(list)"
+                + "}"
+                + "}"
+                + "}" 
+                
+                ;
+        return i;
+     }
     
     
+    // xsh:function evaluate path and evaluate shape on result of path
+      @Test
+    public void testeval() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(peval());
+        Shacl shacl = new Shacl(g); 
+        Graph gg = shacl.eval();        
+        System.out.println(Transformer.turtle(gg));
+        assertEquals(true, shacl.conform(gg));
+    }
+    
+    
+    String peval() {
+        String i = "insert data {"
+                + "us:test a sh:NodeShape ;"
+                + "sh:targetNode us:John ;"
+                + "sh:property ["
+                + "sh:path foaf:knows ;"
+                + "sx:path (foaf:name [sh:datatype xsd:string]) "
+                + "]"
+                + "."
+                
+                + "us:John foaf:knows us:Jim "
+                + "us:Jim foaf:name 'Jim' "
+
+                + "}"
+                
+                // function evaluate path and evaluate shape on result of path
+                + "@public "
+                + "function sx:path(source, node, exp) {"
+                + "let ((path shape) = exp,"
+                + "     list = sh:pathfinder(path, node),"
+                + "     (value) = list,"
+                + "     res = sh:eval(shape, value)) {"
+                + "xt:print('us:test', source, node, value);"
+                + "res"
+                + "}"
+                + "}"
+                
+                
+                ;
+        return i;
+    }
+    
+    
+      // xsh:pathFunction with path target node list
+      // xsh:nodeFunction with path target nodes one by one
+       @Test
+    public void testpathfun() throws EngineException, LoadException, IOException, TransformerException {
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(pf());
+        Shacl shacl = new Shacl(g); 
+        Graph gg = shacl.eval();        
+        System.out.println(Transformer.turtle(gg));
+        assertEquals(true, shacl.conform(gg));
+    }
+    
+    
+    String pf() {
+        String i = "insert data {"
+                + "us:test a sh:NodeShape ;"
+                + "sh:targetNode us:John ;"
+                + "sh:property ["
+                + "sh:path foaf:knows ;"
+                + "xsh:pathFunction [ us:path(true) ] ;"
+                + "xsh:nodeFunction [ us:path(false) ]"
+                + "]"
+                + "."
+                
+                + "us:John foaf:knows us:Jim "
+
+                + "}"
+                
+                
+                + "@public "
+                + "function us:path(source, node, exp) {"
+                + "let ((islist) = exp) {"
+                + "xt:print('us:test', source, node);"
+                + "if (islist, xt:isList(node), !xt:isList(node))"
+                + "}"
+                + "}"
+                
+                
+                ;
+        return i;
+    }
     
     
     
@@ -1085,7 +1213,7 @@ public class DataShapeExt {
                 + "function us:exp3() {let (exp =  @(rq:or (rq:lt h:trouserssize h:shirtsize) (rq:lt h:age 50) ) ) {exp}}"
                 + "function us:exp4() {let (exp =  @(rq:if (rq:lt h:age 50) false true)   ) {exp}}"
                 + "function us:exp5() {let (exp =  @(rq:eq (rq:self) (rq:self i:John) )) {exp}}"
-                + "function us:exp6() {let (exp =  @(rq:and (rq:lt h:trouserssize (rq:mult 10 h:shirtsize)) (rq:not (rq:lt h:age 0)) ) ) {exp}}"
+               // + "function us:exp6() {let (exp =  @(rq:and (rq:lt h:trouserssize (rq:mult 10 h:shirtsize)) (rq:not (rq:lt h:age 0)) ) ) {exp}}"
                 + "function us:exp7() {let (exp =  @(rq:coalesce h:undef true ) ) {exp}}"
                 + "function us:exp8() {let (exp =  @(rq:exist h:age) ) {exp}}"
                 + "function us:exp9() {let (exp =  @(rq:if (rq:exist h:age) (rq:lt h:age 18) true)) {exp}}"
@@ -1110,9 +1238,9 @@ public class DataShapeExt {
         //System.out.println(map);
         assertEquals(1, map.size());
 
-        map = exec.query(q, map("?fun", NSManager.USER + "exp6"));
-        //System.out.println(map);
-        assertEquals(7, map.size());
+//        map = exec.query(q, map("?fun", NSManager.USER + "exp6"));
+//        //System.out.println(map);
+//        assertEquals(7, map.size());
 
         map = exec.query(q, map("?fun", NSManager.USER + "exp7"));
         //System.out.println(map);
@@ -1154,19 +1282,19 @@ public class DataShapeExt {
     }
 
     //@Test
-    public void testshacljavaexp2() throws EngineException, LoadException, IOException, TransformerException {
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-        Load ld = Load.create(g);
-        ld.parse(data + "test/human1.rdf");
-        ld.parse(data + "test/human2.rdf");
-        ld.parse(data + "test/shapeexp2.ttl");
-
-        ShaclJava shacl = new ShaclJava(g);
-        Graph gg = shacl.eval();
-        //System.out.println(Transformer.turtle(gg));
-        assertEquals(2, gg.size());
-    }
+//    public void testshacljavaexp2() throws EngineException, LoadException, IOException, TransformerException {
+//        Graph g = Graph.create();
+//        QueryProcess exec = QueryProcess.create(g);
+//        Load ld = Load.create(g);
+//        ld.parse(data + "test/human1.rdf");
+//        ld.parse(data + "test/human2.rdf");
+//        ld.parse(data + "test/shapeexp2.ttl");
+//
+//        ShaclJava shacl = new ShaclJava(g);
+//        Graph gg = shacl.eval();
+//        //System.out.println(Transformer.turtle(gg));
+//        assertEquals(2, gg.size());
+//    }
 
     @Test
     public void testshaclexp4() throws EngineException, LoadException, IOException, TransformerException {
@@ -1285,20 +1413,20 @@ public class DataShapeExt {
         return g.size(DatatypeMap.newResource(NBRESULT));
     }
 
-    @Test
-    public void testshacljavaexp1() throws EngineException, LoadException, IOException, TransformerException {
-        Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
-        Load ld = Load.create(g);
-        ld.parse(data + "test/human1.rdf");
-        ld.parse(data + "test/human2.rdf");
-        ld.parse(data + "test/shapeexp1.ttl");
-
-        ShaclJava shacl = new ShaclJava(g);
-        Graph gg = shacl.eval();
-        //System.out.println(Transformer.turtle(gg));
-        assertEquals(11, gg.size());
-    }
+//    @Test
+//    public void testshacljavaexp1() throws EngineException, LoadException, IOException, TransformerException {
+//        Graph g = Graph.create();
+//        QueryProcess exec = QueryProcess.create(g);
+//        Load ld = Load.create(g);
+//        ld.parse(data + "test/human1.rdf");
+//        ld.parse(data + "test/human2.rdf");
+//        ld.parse(data + "test/shapeexp1.ttl");
+//
+//        ShaclJava shacl = new ShaclJava(g);
+//        Graph gg = shacl.eval();
+//        //System.out.println(Transformer.turtle(gg));
+//        assertEquals(11, gg.size());
+//    }
 
     //@Test
     public void testshacl1() throws EngineException, LoadException, IOException, TransformerException {
@@ -1341,5 +1469,266 @@ public class DataShapeExt {
         res = shacl.node(obj);
         assertEquals(2, res.size());
     }
+    
+    
+    
+    
+      Shacl api2(String q) throws EngineException, LoadException, IOException {
+        return api(q, true);
+    }
+    
+    Shacl api(String q, boolean list) throws EngineException, LoadException, IOException {
+        Graph g = myinit();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(q);
+        Shacl shacl = new Shacl(g);
+        //shacl.setTrace(true);
+        IDatatype dt = exec.funcall(NSManager.USER + "defshape");
+        shacl.funeval((list)?DatatypeMap.list(dt):dt);
+        shacl.funparse();
+        //System.out.println(Transformer.turtle(shacl.getResult()));
+        return shacl;
+    }
+    
+    
+ @Test
+    public void testapi2() throws EngineException, LoadException, IOException, TransformerException {      
+        Shacl shacl = api2(qapi1());
+        Graph g = shacl.getResult();
+        //System.out.println(Transformer.turtle(g));
+        
+        shacl = api2(qapi10());
+        g = shacl.getResult();
+    }
+    
+    String qapi10() {
+        String q =   "prefix h: <http://www.inria.fr/2015/humans#>"
+                + "@public function us:defshape() {"
+                + "    let (shape = @(sh:shape us:test"
+                + "        (sh:targetClass h:Person)"
+                + "(sh:property "
+                + "(sh:path (sh:sequencePath (h:hasFriend "
+                + "(xsh:function(xsh:filter((sh:class h:Woman))))"
+                + "))) "
+                + "(xsh:function(xsh:display(true)))))"
+                + ") {"
+                + "shape}"
+                + "}";
+        
+        return q;
+    }
+    
+     String qapi1() {
+        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+//                + "insert data {"
+//                + "us:test a sh:NodeShape ;"
+//                + "sh:targetClass h:Person ;"
+//                + "sh:property ["
+//                + "sh:path h:hasFriend ; sh:class h:Person ;"
+//                + "sh:and ([sh:class h:Person][sh:pattern i:])"
+//                + "] ;"
+//                + "sh:property ["
+//                + "sh:path h:hasChild ; sh:class h:Person ;"
+//                + "] ;"  
+//                
+//                + "sh:node us:test2 ;"
+//                
+//                + "sh:and ([sh:class h:Person]"
+//                + "[sh:property [ sh:path h:name ; sh:datatype xsd:string]]);"
+//                
+//                + "sh:property ["
+//                + "sh:path sh:hasParent ;"
+//                + "sh:qualifiedMinCount 1 ;"
+//                + "sh:qualifiedValueShape [sh:class h:Man]"
+//                + "]"
+//                + "}"
+                
+                + "@public function us:defshape() {"
+                + "    let (shape = @(sh:shape us:test"
+                + "        (sh:targetClass h:Person)"
+                + "(sh:property (sh:path h:hasFriend) "
+                + "(sh:and (sh:class h:Person)(sh:pattern i:)"
+                + "  (sh:in (i:Alice i:Sophie i:Gaston))"
+                + ")"
+                + ")"
+                + "    )) {shape}"
+                + "}";
+        return q;
+    }
+    
+    
+    String qapi6() {
+        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                + "insert data {"
+                + "us:test a sh:NodeShape ;"
+                + "sh:targetSubjectsOf h:hasFriend "
+                + "}"
+                + "@public function us:defshape() {"
+                + "    let (shape = @(sh:shape us:test "
+                + "(sh:targetClass h:Person )"
+                + "(sh:property (sh:path h:hasFriend)"
+                + "(sh:qualifiedValueShape (sh:class h:Person)(sh:qualifiedValueShapesDisjoint true)(sh:qualifiedMinCount 1)))"
+                + "(sh:property (sh:path h:hasChild)"
+                + "(sh:qualifiedValueShape (sh:class h:Person)(sh:qualifiedMinCount 1)))"
+                + "    )) { shape }"
+                + "}";
+        
+        return q;
+    }
+
+    Shacl api(String q) throws EngineException, LoadException, IOException {
+        Graph g = myinit();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(q);
+        Shacl shacl = new Shacl(g);
+        IDatatype dt = exec.funcall(NSManager.USER + "defshape");
+        shacl.input().setVariable("?before", DatatypeMap.TRUE);
+        shacl.input().setVariable("?defshape", dt);
+        shacl.eval();
+        return shacl;
+    }
+    
+  
+    
+    @Test
+    public void testapi() throws EngineException, LoadException, IOException, TransformerException {      
+        Shacl shacl = api2(qapi1());
+        Graph g = shacl.getResult();
+        //System.out.println(Transformer.turtle(g));
+        assertEquals(1, shacl.nbResult(g));
+        
+        shacl = api2(qapi2());
+        g = shacl.getResult();
+        //System.out.println(Transformer.turtle(g));
+        assertEquals(1, shacl.nbResult(g));
+        
+        shacl = api2(qapi3());
+        g = shacl.getResult();
+        //System.out.println(Transformer.turtle(g));
+        assertEquals(0, shacl.nbResult(g));
+        
+        shacl = api2(qapi4());
+        g = shacl.getResult();
+        //System.out.println(Transformer.turtle(g));
+        assertEquals(1, shacl.nbResult(g));
+        
+        shacl = api2(qapi5());
+        g = shacl.getResult();
+        //System.out.println(Transformer.turtle(g));
+        
+        shacl = api2(qapi6());
+        g = shacl.getResult();
+        //System.out.println(Transformer.turtle(g));
+        
+        shacl = api(qapi7(), false);
+        g = shacl.getResult();
+        System.out.println(Transformer.turtle(g));
+    }
+    
+  
+    String qapi7() {
+        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                + "insert data {"
+                + "us:test a sh:NodeShape ;"
+                + "sh:targetSubjectsOf h:name ;"
+                + "}"
+                + "@public function us:defshape() {"
+                + "    let (shape = @("
+                + "(sh:shape us:test "
+                + "(sh:targetSubjectsOf h:name )"
+                + "(sh:property (sh:path h:hasFriend)"
+                + "(sh:node us:node)"
+                + "))"
+                + "(sh:shape us:node (sh:class h:Person))"
+                + ")) {shape}"
+                + "}";
+        return q;
+    }
+    
+    
+      String qapi5() {
+        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                + "insert data {"
+                + "us:test a sh:NodeShape ;"
+                + "sh:targetSubjectsOf h:name ;"
+                + "}"
+                + "@public function us:defshape() {"
+                + "    let (shape = @(sh:shape us:test "
+                + "(sh:targetSubjectsOf h:name )"
+                + "(sh:property (sh:path (xsh:function (xsh:predicatePath(xsh:subject))))"
+                + "(xsh:function (xsh:display(true)))"
+                + ")"
+                + "    )) {shape}"
+                + "}";
+        return q;
+    }
+    
+      String qapi4() {
+        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                + "insert data {"
+                + "us:test a sh:NodeShape ;"
+                + "sh:targetClass h:Person ;"
+                + "}"
+                + "@public function us:defshape() {"
+                + "    let (shape = @(sh:shape us:test"
+                + "        (sh:targetClass h:Person)"                
+                + "(sh:property (sh:path (sh:sequencePath ((sh:alternativePath (h:hasChild h:hasFriend )) h:name) )) "
+                + "(xsh:function (xsh:display(true)))"
+                + "(sh:datatype xsd:string)"
+                + ")"
+                + "    )) {shape}"
+                + "}";
+        return q;
+    }
+
+      String qapi3() {
+        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                + "insert data {"
+                + "us:test a sh:NodeShape ;"
+                + "sh:targetNode i:Sophie ;"
+                + "}"
+                + "@public function us:defshape() {"
+                + "    let (shape = @(sh:shape us:test"
+                + "        (sh:targetNode i:Sophie)"                
+                + "(sh:property (sh:path h:name) "
+                + "(xsh:function (xsh:display(true)))"
+                + "(sh:languageIn ('en' 'fr'))"
+                + "(sh:hasValue 'Sophie'@fr)"
+                + ")"
+                + "    )) {shape}"
+                + "}";
+        return q;
+    }
+    
+     String qapi2() {
+        String q = "prefix h: <http://www.inria.fr/2015/humans#> "
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#> "
+                + "insert data {"
+                + "us:test a sh:NodeShape ;"
+                + "sh:targetClass h:Person ;"
+                + "}"
+                + "@public function us:defshape() {"
+                + "    let (shape = @(sh:shape us:test"
+                + "        (sh:targetClass h:Person)"                
+                + "(sh:property (sh:path h:hasFriend) "
+                + "(sh:equals h:hasFriend) (sh:class h:Person)(sh:pattern i:)(sh:nodeKind sh:IRI)"
+                + "(sh:minLength 5)(sh:minCount 0)"
+                + "(xsh:function (xsh:display(true)))"
+                + "(sh:property (sh:path h:name)(sh:minCount 1)(sh:datatype xsd:string)"
+                + ")"
+                + "(sh:node (sh:and (sh:not (sh:pattern h:))))"
+                + ")"
+                + "    )) {shape}"
+                + "}";
+        return q;
+    }
+    
+ 
 
 }

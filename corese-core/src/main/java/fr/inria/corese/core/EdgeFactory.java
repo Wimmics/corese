@@ -4,7 +4,6 @@ import fr.inria.corese.core.edge.*;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.logic.Entailment;
-import fr.inria.corese.core.producer.DataFilter;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;

@@ -2,7 +2,6 @@ package fr.inria.corese.compiler.federate;
 
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
-import fr.inria.corese.sparql.triple.parser.Binding;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
@@ -83,19 +82,25 @@ public class RewriteBGP {
         void merge(List<Expression> filterList) {
             for (String uri : map.keySet()) {
                 List<BasicGraphPattern> list = map.get(uri);
-                if (list.size() == 2) {
-                    List<Variable> l1 = list.get(0).getSubscopeVariables();
-                    List<Variable> l2 = list.get(1).getSubscopeVariables();
-                    for (Expression filter : filterList) {
-                        List<Variable> varList = filter.getInscopeVariables();
-                        if (gentle(l1, l2, varList)) {
-                            list.get(0).include(list.get(1));
-                            list.remove(1);
-                        }
+                merge(list, filterList);
+            }
+        }
+        
+        void merge(List<BasicGraphPattern> list, List<Expression> filterList) {
+            if (list.size() == 2) {
+                List<Variable> l1 = list.get(0).getSubscopeVariables();
+                List<Variable> l2 = list.get(1).getSubscopeVariables();
+                for (Expression filter : filterList) {
+                    List<Variable> varList = filter.getInscopeVariables();
+                    if (gentle(l1, l2, varList)) {
+                        list.get(0).include(list.get(1));
+                        list.remove(1);
+                        return;
                     }
                 }
             }
         }
+        
           
         // every var in l3 in l1 or l2
         // some  var in l3 not in l1 and in l2

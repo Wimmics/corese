@@ -119,7 +119,7 @@ public class RewriteServiceGraph {
         if (exp.isTermExist()) {
             rewrite(exp.getTerm().getExistBGP());
         }
-        else {
+        else if (exp.isTerm()) {
             for (Expression ee : exp.getArgs()) {
                 rewrite(ee);
             }

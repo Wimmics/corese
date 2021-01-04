@@ -8,7 +8,7 @@ prefix ft: <http://ns.inria.fr/sparql-template/format/tutorial/>
 template st:selectparam2(?n, ?select) {
 
 format {
-  ft:selectparam2.html 
+  if (?insert, ft:selectparam2insert.html , ft:selectparam2.html) 
   
   coalesce(?title, "")
   ?name
@@ -32,7 +32,10 @@ where {
   bind (st:get(st:context) as ?g)
   
   # TODO: mandatory to bind ?select parameter
-  graph ?g { ?select st:name ?name ; st:uri ?uri }
+  graph ?g { ?select st:name ?name ; st:uri ?uri 
+    optional { ?select st:action ?action }
+    bind (coalesce(?action = st:insert, false) as ?insert)
+  }
   
   {
     graph ?g {
@@ -52,7 +55,7 @@ where {
         { ?select st:predicate ?p 
            graph ?gg { 
             select distinct ?p ?value 
-            where { ?x ?p ?value}  
+            where { ?x ?p ?value   filter (! isBlank(?value)) }  
             order by ?value }
         }
         union 

@@ -491,16 +491,15 @@ public class ProviderImpl implements Provider {
             }
             
             if (gq.isDebug()) {
-                logger.info("** Provider query: \n" + q.getAST());
+                logger.info("** Service query: \nservice " + serv + "\n" + q.getAST());
             }
             Mappings res = eval(q, serv, env, timeout);
             
             if (gq.isDebug()) {
-                if (res.size() <= 100 || gq.isDetail()) {
-                    logger.info("** Provider result: \n" + res.toString(true));
-                }
-                else {
-                   logger.info("** Provider result: \n" + res.size()); 
+                if (res.size() > 0) {
+                    logger.info("** Service " + serv + " result: \n" + res.toString(false, false, 10));
+                } else {
+                    logger.info("** Service " + serv + " result size: " + res.size());
                 }
             }
             if (res != null && res.isError()) {
@@ -519,7 +518,7 @@ public class ProviderImpl implements Provider {
         }
 
         if (gq.isDebug()) {
-            logger.info("** Provider error");
+            logger.info("** Service error");
         }
         return null;
     }

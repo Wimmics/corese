@@ -77,7 +77,11 @@ public class CompileService {
         ASTQuery ast = (ASTQuery) out.getAST();
         if (ast.hasMetadata(Metadata.LIMIT)) {
             ASTQuery aa = (ASTQuery) q.getAST();
-            int limit = ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue();
+            int limit = ast.getLimit();
+            IDatatype dt = ast.getMetadata().getDatatypeValue(Metadata.LIMIT);
+            if (dt != null) {
+                limit = dt.intValue();
+            }
             if (limit < aa.getLimit()) {
                 aa.setLimit(limit);
             }
@@ -295,7 +299,7 @@ public class CompileService {
         for (Node varNode : q.getBody().getRecordInScopeNodesForService()) {
             String varName = varNode.getLabel();
             Node valNode = m.getNodeValue(varName);
-            if (valNode != null) { // && ! valNode.isBlank()) {
+            if (valNode != null && ! valNode.isBlank()) {
                 // do not send bnode because it will raise a syntax error
                 // and it will not be available on another server because 
                 // bnode are local

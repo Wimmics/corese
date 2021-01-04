@@ -50,13 +50,14 @@ function us:display(?g) {
   reduce(rq:concat, 
         maplist(st:apply-templates-with-graph, 
             xt:list(d3:frame, st:hturtle), 
-            xt:list(?g)))  
+            ?g))  
 }
 
 
 function fun:drawlist(?text, ?date) {
     xt:print('funcall drawlist:', ?text, ?date) ;
-    let (?glist = maplist(us:graph, ?text, xt:list(?date))) {
+    #let (?glist = maplist(us:graph, ?text, xt:list(?date))) {
+    let (?glist = maplist(us:graph, ?text, ?date)) {
          reduce(rq:concat, maplist(us:display, ?glist))
     }
 }

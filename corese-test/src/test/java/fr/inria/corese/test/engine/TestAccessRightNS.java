@@ -9,6 +9,8 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessNamespace;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 
@@ -123,22 +125,29 @@ public class TestAccessRightNS {
     }
 
      @Test
-   public void mytest4() throws EngineException {
+   public void mytest4()  {
         String q = "prefix ff: </user/corby/home/AATest/data/junit/function/accept.rq/>"
                 + "@import ff: "
                 + "select (coalesce(funcall(ff:test), false) as ?t) where {}";
 
         clear();
 
-        Interpreter.getExtension().removeNamespace("/user/corby/home/AATest/data/junit/function/");
-        AccessNamespace.define("/user/corby/home/AATest/data/junit/function/reject", !true);
+        AccessNamespace.define("/user/corby/home/AATest/data/junit/function/reject", false);
         //Access.setLinkedFunction(true);
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
-        Mappings map = exec.query(q);
-        //System.out.println(map);
-        IDatatype dt = (IDatatype) map.getValue("?t");
-        Assert.assertEquals(false, dt.booleanValue());
+        Mappings map;
+       try {
+           map = exec.query(q);
+           //System.out.println(map);
+           IDatatype dt = (IDatatype) map.getValue("?t");
+           Assert.assertEquals(false, true);
+       } catch (EngineException ex) {
+           // ok
+           System.out.println(ex);
+           System.out.println(ex.getPath());
+       }
+        
     }
 
     @Test
@@ -161,22 +170,30 @@ public class TestAccessRightNS {
     }
 
      @Test
-   public void mytest2() throws EngineException {
+   public void mytest2()  {
         String q = "prefix ff: </user/corby/home/AATest/data/junit/function/accept.rq/>"
                 + "@import ff: "
                 + "select (coalesce(funcall(ff:test), false) as ?t) where {}";
 
         clear();
-
-        AccessNamespace.define("/user/corby/home/AATest/data/junit/function/accept", true);
+        
+        Access.define("/user/corby/home/AATest/data/junit/function/accept", true);
 //        AccessNamespace.define("/user/corby/home/AATest/data/junit/function/reject", true);
         //Access.setLinkedFunction(true);
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
-        Mappings map = exec.query(q);
+        Mappings map;
+       try {
+           map = exec.query(q);
+           IDatatype dt = (IDatatype) map.getValue("?t");
+            Assert.assertEquals(false, true);
+       } catch (EngineException ex) {
+           System.out.println("trap safety exception with success");
+           System.out.println(ex);
+           System.out.println(ex.getPath());
+       }
         //System.out.println(map);
-        IDatatype dt = (IDatatype) map.getValue("?t");
-        Assert.assertEquals(false, dt.booleanValue());
+        
     }
 
     @Test

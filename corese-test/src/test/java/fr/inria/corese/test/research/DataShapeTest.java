@@ -9,7 +9,6 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.shacl.Shacl;
-import fr.inria.corese.core.shacl.ShaclJava;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.workflow.Data;
 import fr.inria.corese.core.workflow.ShapeWorkflow;
@@ -50,9 +49,9 @@ public class DataShapeTest {
         "core/misc", 
         "core/targets", 
         "core/validation-reports",
-//            
-//       "sparql/property",
-//       "sparql/node" ,
+            
+       "sparql/property",
+       "sparql/node" ,
        
        //  "sparql/component"
     };
@@ -213,7 +212,7 @@ public class DataShapeTest {
 
    
     public void test() throws LoadException, EngineException, IOException {
-          Access.set(Access.Feature.LINKED_FUNCTION, Access.Level.DEFAULT);
+          //Access.set(Access.Feature.LINKED_FUNCTION, Access.Level.USER_DEFAULT);
 
         // 4 distinct from 4.0
 //        Function.typecheck = true;
@@ -278,7 +277,7 @@ public class DataShapeTest {
 
     void file(String file) throws EngineException, LoadException {
         //System.out.println("start: " + file);
-//        if (file.contains("severity-002")) { // || file.contains("and-001")){
+//        if (file.contains("datatype-003")) { // || file.contains("and-001")){
 //            //ok
 //        }
 //        else {
@@ -358,9 +357,9 @@ public class DataShapeTest {
         Shacl shacl = new Shacl(g);
         before(shacl);
         //shacl.setTrace(true);
-        //Graph res = shacl.eval(sh); 
+        Graph res = shacl.eval(sh); 
         //shacl.setup(Shacl.SETUP_DETAIL, true);
-        Graph res = shacl.funeval(); 
+        //Graph res = shacl.funeval(); 
         after(shacl);
         //trace();
         return res;
@@ -400,13 +399,13 @@ public class DataShapeTest {
     }
     
     // 4.471
-    Graph execjava(String shape, String data) throws EngineException, LoadException {
-        Graph g = load(data);
-        Graph sh = (data.equals(shape)) ? g : load(shape, g);
-        ShaclJava java = new ShaclJava(g);
-        Graph res = java.eval();
-        return res;
-    }
+//    Graph execjava(String shape, String data) throws EngineException, LoadException {
+//        Graph g = load(data);
+//        Graph sh = (data.equals(shape)) ? g : load(shape, g);
+//        ShaclJava java = new ShaclJava(g);
+//        Graph res = java.eval();
+//        return res;
+//    }
     
     Graph execwf(String shape, String data) throws EngineException {
         ShapeWorkflow wf = new ShapeWorkflow(shape, data, false, lds);
@@ -432,6 +431,7 @@ public class DataShapeTest {
     }
 
     void trace(Graph w3c, Graph kg) {
+        try {
         Transformer t1 = Transformer.create(w3c, Transformer.TURTLE);
         Transformer t2 = Transformer.create(kg, Transformer.TURTLE);
         System.out.println("w3c report: ");
@@ -440,6 +440,10 @@ public class DataShapeTest {
         System.out.println("kgram report: ");
         System.out.println(t2.transform());
         System.out.println("==");
+        }
+        catch (EngineException e) {
+            System.out.println(e.getMessage());
+        }
     }
 
     boolean compare(String file, Graph g, Mappings w3c, Mappings kgram) {
@@ -469,6 +473,7 @@ public class DataShapeTest {
     }
 
     boolean compare(int i, String mes, Graph g, Mapping w3, Mapping kg, String var, boolean path) {
+        try {
         IDatatype dtw3 = (IDatatype) w3.getValue(var);
         IDatatype dtkg = (IDatatype) kg.getValue(var);
         if (dtw3 != null) {
@@ -496,6 +501,11 @@ public class DataShapeTest {
 
         }
         return true;
+        }
+        catch (EngineException e ) {
+            System.out.println(e.getMessage());
+            return false;
+        }
     }
 
     Graph manifest(String dir) throws LoadException {

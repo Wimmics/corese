@@ -54,6 +54,7 @@ import fr.inria.corese.kgram.event.StatListener;
 import fr.inria.corese.sparql.datatype.extension.CoresePointer;
 import fr.inria.corese.sparql.exceptions.UndefinedExpressionException;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -264,7 +265,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         exec.setReentrant(true);
         Mappings map = exec.query(q);
-        map = exec.query("select * from us:g1 where { ?s ?p ?o}");
+        map = exec.query("select * from us:g1 where { ?s ?p ?o }");
          assertEquals(1, map.size());
     }
     
@@ -1549,7 +1550,7 @@ public class TestQuery1 {
         assertEquals(true, dt1.booleanValue()&&dt2.booleanValue());
     }
     
-      @Test 
+      //@Test 
  public void testgraphit() throws LoadException, EngineException{
         Graph gg = Graph.create();
         QueryProcess exec = QueryProcess.create(gg);
@@ -2594,8 +2595,8 @@ public class TestQuery1 {
                 + "function us:test(){"
                 + "let (?funcall = rq:funcall, ?map = rq:maplist, ?apply = rq:reduce, ?plus  = rq:plus, "
                 + "?funlist = @(rq:plus rq:mult)){"
-                + "funcall(?funcall, ?apply, ?plus, funcall(?map, ?apply, ?funlist, xt:list(xt:iota(5))))"
-                //+ "funcall(?funcall, ?apply, ?plus, funcall(?map, ?apply, ?funlist, xt:iota(5)))"
+                //+ "funcall(?funcall, ?apply, ?plus, funcall(?map, ?apply, ?funlist, xt:list(xt:iota(5))))"
+                + "funcall(?funcall, ?apply, ?plus, funcall(?map, ?apply, ?funlist, xt:iota(5)))"
                 + "}"
                 + "}";
 
@@ -3232,10 +3233,14 @@ public class TestQuery1 {
 
 
     @Test
-    public void testFormatBase() {
+    public void testFormatBase() throws EngineException, LoadException {
         Graph g = Graph.create();
-        Transformer t = Transformer.create(g, data + "junit/sttl/format1/");
+        //Access.define("junit/sttl/format1/", true);
+        //Access.define("junit/sttl/format2/", true);
+        Access.authorize(Feature.READ_FILE);
+        Transformer t = Transformer.createWE(g, data + "junit/sttl/format1/");
         String res = t.transform();
+        System.out.println("result: " + res);
         assertEquals(true, res != null && res.equals("test"));
     }
 
@@ -5767,7 +5772,7 @@ public class TestQuery1 {
     }
 
     @Test
-    public void testTrig() throws LoadException {
+    public void testTrig() throws LoadException, EngineException {
         Graph g = Graph.create(true);
         Load ld = Load.create(g);
         ld.parse(RDF.RDF, Load.TURTLE_FORMAT);

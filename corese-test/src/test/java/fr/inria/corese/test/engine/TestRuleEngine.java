@@ -496,7 +496,7 @@ public class TestRuleEngine {
 	
 	
 	@Test
-	public void test4(){
+	public void test4() throws EngineException{
 
 		String query = 
 			"prefix c: <http://www.inria.fr/acacia/comma#>" +
@@ -516,7 +516,7 @@ public class TestRuleEngine {
 	}
 	
 	@Test
-	public void test44(){
+	public void test44() throws EngineException{
 
 		String query = 
 			"prefix c: <http://www.inria.fr/acacia/comma#>" +
@@ -563,7 +563,7 @@ public class TestRuleEngine {
 		
 	
 	@Test
-	public void test8(){
+	public void test8() throws EngineException{
 		Graph g = createGraph();
 		QueryProcess exec = QueryProcess.create(g);
 		

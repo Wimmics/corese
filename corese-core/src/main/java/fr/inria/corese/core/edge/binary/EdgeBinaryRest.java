@@ -4,8 +4,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 
 /**
- * Edge entailed by a Rule
- * index and provenance
+ * Graph Edge for the defaultGraph
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *

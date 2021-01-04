@@ -4,7 +4,8 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 
 /**
- *
+ * Graph Edge for the defaultGraph
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *
  */

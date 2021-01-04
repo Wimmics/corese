@@ -44,6 +44,7 @@ public class EdgeTriple extends EdgeBinary  {
         return predicate;
     }
 
+    @Override
     public void setEdgeNode(Node node) {
         predicate = node;
     }

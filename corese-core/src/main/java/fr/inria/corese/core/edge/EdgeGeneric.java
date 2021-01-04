@@ -6,7 +6,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
 
 /**
- * Graph Edge as Quad
+ * Buffer Edge as Quad to deliver complete edge for Producer
  *
  * @author Olivier Corby, Wimmics, INRIA I3S, 2014
  *

@@ -37,7 +37,7 @@ function sh:path(report, sh, vis, nodeList, path, present) {
 # present = true: return false when path is empty; use case: qualified value shape
 #
 
-function sh:pathBasic(report, sh, vis, nodeList, p, present) {
+function sh:pathBasic(report, sh, vis, s, p, present) {
     #xt:print("path", sh, p, nodeList);
     let (res = true, 
         opt      = sh:getShapeConstraint(sh:optional, sh),
@@ -62,9 +62,9 @@ function sh:pathBasic(report, sh, vis, nodeList, p, present) {
                 xt:print("path cst3:", cstList3);
                 xt:print("path cst4:", cstList4)
             } ;
-            xt:event("@pathShacl", sh, nodeList, p, cstList1, cstList2, cstList3, cstList4);
-                        
-            for (s in dt:list(nodeList)) {
+            xt:event("@pathShacl", sh, s, p, cstList1, cstList2, cstList3, cstList4);
+                                                
+           # for (s in dt:list(nodeList)) {
                             
                 let (targetList = sh:ppath(s, p)) {
                     #xt:print("path:", s, p, targetList, present);
@@ -81,9 +81,9 @@ function sh:pathBasic(report, sh, vis, nodeList, p, present) {
                         } ;
                         
                         for (o in targetList) {
-                            if (sh:contains(sh, o)) {}
-                            else {
-                            sh:push(sh, o);
+                            #if (sh:contains(sh, o)) {}
+                            #else {
+                            #sh:push(sh, o);
                             
                             for ((oper val) in cstList1) {
                                 if (oper = sh:node) {
@@ -109,8 +109,8 @@ function sh:pathBasic(report, sh, vis, nodeList, p, present) {
                                 }
                             }
                             
-                            ; sh:pop()
-                            } ;
+                            #; sh:pop()
+                            #} ;
                             
                             #xt:print("res1:", sh, s, p, o, res)
                         } 
@@ -124,7 +124,6 @@ function sh:pathBasic(report, sh, vis, nodeList, p, present) {
                         for ((oper val) in cstList2) {
                             let (suc = coalesce(
                             if (oper in (sh:and, sh:or, sh:xone, sh:not),  
-                                #funcall(oper, report, sh, vis, s, p, val, targetList, present),   
                                 sh:pathbool(report, oper, sh, vis, s, p, val, targetList, present),   
                                 funcall(oper, report, sh, vis, s, p, val, targetList)),   
                             false)) {
@@ -178,10 +177,10 @@ function sh:pathBasic(report, sh, vis, nodeList, p, present) {
                     }
                     
                 }
-            }
+            #}
         };
         
-        xt:event("@pathShacl", sh, nodeList, p, cstList1, cstList2, cstList3, cstList4, res);
+        xt:event("@pathShacl", sh, s, p, cstList1, cstList2, cstList3, cstList4, res);
         return (res)
     }
 }

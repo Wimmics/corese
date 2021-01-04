@@ -21,6 +21,26 @@ function sh:core(report, sh, vis, nodeList) {
 #
 function sh:core(report, sh, vis, nodeList, present) {
     if (sh:trace(), xt:print("core:", sh, nodeList, present), true);
+    let (res = true) {
+        for (node in dt:list(nodeList)) {
+            if (sh:contains(sh, node)) {}
+            else {
+                sh:push(sh, node);
+                let (suc = sh:pathcore(report, sh, vis, node, present)) {
+                    if (suc || vis, set (suc = sh:booleancore   (report, sh, vis, node, present) && suc), true) ;
+                    if (suc || vis, set (suc = sh:constraintcore(report, sh, vis, node, present) && suc), true);
+                    if (suc || vis, set (suc = sh:closedcore    (report, sh, vis, node) && suc), true); 
+                    set(res = res && suc)  
+                } ;
+                sh:pop()
+            }
+        } ;
+        return (res)
+    }
+}
+
+function sh:core22(report, sh, vis, nodeList, present) {
+    if (sh:trace(), xt:print("core:", sh, nodeList, present), true);
     let (res = sh:pathcore(report, sh, vis, nodeList, present)) {
         if (res || vis, set (res = sh:booleancore   (report, sh, vis, nodeList, present) && res), true) ;
         if (res || vis, set (res = sh:constraintcore(report, sh, vis, nodeList, present) && res), true);
@@ -35,13 +55,12 @@ function sh:eval(shape, node) {
     sh:core(sh:validationReport(), shape, false, dt:list(node), false)
 }
 
-function sh:closedcore(report, sh, vis, nodeList) {
+function sh:closedcore(report, sh, vis, node) {
     let (res = true) {
         if (sh:isClosed(sh)) {
             let (anypred = bnode(), predList = sh:getPredicates(sh)) {
                 #xt:print("closed:", sh, predList);
                 if (sh:trace(), xt:print("core closed:", sh, nodeList), true); 
-                for (node in dt:list(nodeList)) {
                     for ((s p o) in xt:edges(node, anypred)) {
                         let (suc = xt:member(p, predList)) {
                             #if (suc, true, xt:print("closed fail:", s, p, o, vis, sh, predList));
@@ -49,7 +68,6 @@ function sh:closedcore(report, sh, vis, nodeList) {
                             sh:report(report, sh:closed, sh, s, p, o, suc, vis)
                         }
                     }
-                }
             }
         } ;
         return (res)
@@ -186,14 +204,13 @@ function msh:fun(name) {
 # sh : main shape
 # cst : shape argument of sh:not [ cst ]
 #
-function msh:not (report, oper, sh, cst, vis, ls, present) {
+function msh:not (report, oper, sh, cst, vis, s, present) {
     let (res = true) {
-        for (s in dt:list(ls)) {
             let (suc = coalesce(! sh:core(report, cst, false, s, present), false)) {
                 if (suc, true, set(res = false));
                 sh:report(report, sh:not, sh, s, sh:null, s,  suc, vis)
             }
-        };
+        ;
         return (res)
     }
 }
@@ -203,9 +220,8 @@ function msh:not (report, oper, sh, cst, vis, ls, present) {
 # sh:  main shape
 # cst: boolean shape, i.e. bnode value of sh:or ()
 #
-function msh:boolean (report, oper, sh, cst, vis, ls, present) {
+function msh:boolean (report, oper, sh, cst, vis, s, present) {
     let (res = true) {
-        for (s in dt:list(ls)) {
                     
             let (suc = coalesce(
                     funcall(oper, report, sh, cst, sh:getCstList(oper, cst), s, sh:null, s, vis, present), 
@@ -215,7 +231,7 @@ function msh:boolean (report, oper, sh, cst, vis, ls, present) {
                                                 
                 if (suc, true, set (res = false))
             }
-        } ;
+         ;
         return(res)
     }
 }

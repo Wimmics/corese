@@ -160,11 +160,6 @@ function xsd:boolean sh:languageIn2(?object, ?lv){
     }
 }
 
-
-#function xsd:boolean sh:node(report, o, cst){
-#    sh:core(report, cst, sh:isSetup(sh:nodeDetail), o)
-#}
-
 function xsd:boolean sh:node(report, o, cst, present, vis){
     sh:core(report, cst, vis, o, present)
 }

@@ -38,13 +38,13 @@ function sh:constraint(report, sh, vis, nodeList, present) {
 # nodeList is either a list of nodes or a single node
 # sh:report generates a validation report in case of error
 #
-function sh:constraint1 (report, sh, vis, nodeList, cstList, present) {
+function sh:constraint1 (report, sh, vis, node, cstList, present) {
     let (res = true) {
         for ((oper value) in cstList) {  
-            for (node in dt:list(nodeList)) {   
-                if (sh:contains(sh, node)) {}
-                else {
-                sh:push(sh, node);
+           # for (node in dt:list(nodeList)) {   
+                #if (sh:contains(sh, node)) {}
+                #else {
+                #sh:push(sh, node);
                 let (suc = coalesce(
                         if (oper = sh:node, 
                             sh:node(report, node, value, present, false), 
@@ -53,9 +53,9 @@ function sh:constraint1 (report, sh, vis, nodeList, cstList, present) {
                         sh:report(report, oper, sh, if (oper = sh:node, value, sh:null),  node, sh:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
                 }
-                ; sh:pop()
-                }
-            }
+                #; sh:pop()
+                #}
+           # }
         } ;
         return (res)
     }
@@ -63,31 +63,31 @@ function sh:constraint1 (report, sh, vis, nodeList, cstList, present) {
 
 
 # oper = xsh:function
-function sh:nodeextension (report, sh, vis, nodeList, cstList) {
+function sh:nodeextension (report, sh, vis, node, cstList) {
     let (res = true) {
         for ((oper name value ternary) in cstList) {  
-            for (node in dt:list(nodeList)) {  
+            #for (node in dt:list(nodeList)) {  
                 let (suc = coalesce(
                         if (ternary, funcall(name, node, node, value), funcall(name, node, value)),
                         false)) {
                         sh:report(report, oper, sh, name, node, sh:null, node, suc, vis) ;
                         if (suc, true, set(res = false))
                     }
-            }
+            #}
         } ;
         return (res)
     }
 }
 
 
-function sh:constraint2 (report, sh, vis, nodeList, cstList) {
+function sh:constraint2 (report, sh, vis, node, cstList) {
     let (res = true) {
         for ((oper value) in cstList) {  
-            for (node in dt:list(nodeList)) {    
+            #for (node in dt:list(nodeList)) {    
                 let (suc = coalesce(funcall(oper, report, sh, vis, node, value), false)) {
                     if (suc, true, set(res = false))
                 }
-            }
+            #}
         } ;
         return (res)
     }

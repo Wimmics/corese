@@ -233,7 +233,9 @@ function sh:pop() {
 
 function sh:contains(sh, object) {
     for ((name value) in stack) {
-        if (name = sh, return(true), true)
+        if (name == sh && object == value) {
+            return(true)
+        }
     } ;
     return (false)
 }

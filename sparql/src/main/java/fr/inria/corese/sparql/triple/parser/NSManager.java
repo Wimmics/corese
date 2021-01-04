@@ -16,6 +16,7 @@ import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.NSMANAGER;
+import static fr.inria.corese.sparql.datatype.DatatypeMap.newResource;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -771,6 +772,23 @@ public class NSManager extends ASTObject {
             }
         }
         return name;
+    }
+    
+    
+    public static String domain(String uri) {
+        try {
+            URI url = new URI(uri);
+            if (url.getScheme() == null || url.getAuthority() == null) {
+                return null;
+            }
+            String res = url.getScheme().concat(":");
+            if (url.getScheme().startsWith("http")) {
+                res = res.concat("//");
+            }
+            return res.concat(url.getAuthority());
+        } catch (URISyntaxException ex) {
+            return null;
+        }
     }
 
     public boolean sysNamespace(String name) {

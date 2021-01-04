@@ -20,12 +20,17 @@ import fr.inria.corese.sparql.datatype.extension.CoreseXML;
 import fr.inria.corese.sparql.datatype.extension.CoresePointer;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 import org.json.JSONObject;
 import org.w3c.dom.NodeList;
 
@@ -1302,6 +1307,26 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
                 || label.equals(fr.inria.corese.sparql.datatype.RDF.LANGSTRING)
                 || label.equals(fr.inria.corese.sparql.datatype.RDF.HTML);
     }
- 
+    
+    public static IDatatype URIDomain(IDatatype dt) {
+        String dom = NSManager.domain(dt.getLabel());
+        if (dom == null) {
+            return null;
+        }
+       return newResource(dom);
+    }
+    
+    public static IDatatype split(IDatatype dt1, IDatatype dt2) {
+        String[] split = dt1.stringValue().split(dt2.stringValue());
+        return cast(split);
+    }
+
+    public static IDatatype cast(String[] arr) {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        for (String str : arr) {
+            list.add(newInstance(str));
+        }
+        return newList(list);
+    }
 
 }

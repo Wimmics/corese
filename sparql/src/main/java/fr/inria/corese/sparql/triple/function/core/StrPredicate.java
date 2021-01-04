@@ -7,6 +7,7 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
  *
@@ -44,7 +45,10 @@ public class StrPredicate extends BinaryFunction {
                 return strbefore(dt1, dt2);
             case ExprType.STRAFTER:
                  if (eval.isCompliant() && ! (isStringLiteral(dt1) && isStringLiteral(dt2))) return null;
-               return strafter(dt1, dt2);    
+               return strafter(dt1, dt2); 
+               
+            case ExprType.XT_SPLIT:
+                return DatatypeMap.split(dt1, dt2);
         }
         return null;
     }

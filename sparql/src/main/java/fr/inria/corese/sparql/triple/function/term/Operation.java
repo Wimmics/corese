@@ -9,6 +9,7 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
 /**
  *
@@ -42,6 +43,13 @@ public class Operation extends BinaryFunction {
             case ExprType.MINUS:    return dt1.minus(dt2);
             case ExprType.POWER:    return DatatypeMap.newInstance(Math.pow(dt1.doubleValue(), dt2.doubleValue()));
             
+            case ExprType.EQUAL:    return dt1.equals(dt2)?TRUE:FALSE;
+            case ExprType.NOT_EQUAL:
+                try { return dt1.equalsWE(dt2)?FALSE:TRUE; } 
+                catch (CoreseDatatypeException e) {
+                    return TRUE;
+                }
+                
             case ExprType.EQ:       return dt1.eq(dt2);
             case ExprType.NEQ:      return dt1.neq(dt2);
             case ExprType.LE:       return dt1.le(dt2);

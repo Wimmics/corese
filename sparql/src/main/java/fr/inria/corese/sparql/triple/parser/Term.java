@@ -141,6 +141,11 @@ public class Term extends Expression {
             case ExprType.NEQ:
                 return new NEQ(name, exp1, exp2);
                 
+            case ExprType.EQUAL:
+                return new Operation(name, exp1, exp2);
+            case ExprType.NOT_EQUAL:
+                return new Operation(name, exp1, exp2);    
+                
             case ExprType.LE:
                 return new LE(name, exp1, exp2);            
             case ExprType.LT:
@@ -204,6 +209,8 @@ public class Term extends Expression {
 
             case ExprType.EQ:
             case ExprType.NEQ:
+            case ExprType.EQUAL:
+            case ExprType.NOT_EQUAL:
             case ExprType.LT:
             case ExprType.LE:
             case ExprType.GE:
@@ -296,6 +303,7 @@ public class Term extends Expression {
             case ExprType.STRAFTER:
             case ExprType.STARTS:
             case ExprType.ENDS:
+            case ExprType.XT_SPLIT:
                 return new StrPredicate(name);
             case ExprType.REGEX:
             case ExprType.SUBSTR:
@@ -495,6 +503,7 @@ public class Term extends Expression {
             case ExprType.QNAME:
             case ExprType.XT_EXPAND:
             case ExprType.XT_DEFINE:
+            case ExprType.XT_DOMAIN:
                 return new Namespace(name);
                 
             //case ExprType.STL_INDEX:

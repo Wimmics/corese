@@ -616,7 +616,9 @@ public class Processor {
 		defoper("<", 	ExprType.LT);
 		defoper("<=", 	ExprType.LE);
 		defoper("=", 	ExprType.EQ);
+		defoper("==", 	ExprType.EQUAL);
 		defoper("!=", 	ExprType.NEQ);
+		defoper("!==", 	ExprType.NOT_EQUAL);
 		defoper(">", 	ExprType.GT);
 		defoper(">=", 	ExprType.GE);
 		defoper("~", 	ExprType.CONT);
@@ -938,8 +940,8 @@ public class Processor {
                 defoper(RQ_AND,    ExprType.AND);
                 defoper(RQ_OR,     ExprType.OR);
                 defoper(RQ_NOT,    ExprType.NOT);
-                defoper(RQ_EQUAL,  ExprType.EQ);
-                defoper(RQ_DIFF,   ExprType.NEQ); 
+                defoper(RQ_EQUAL,  ExprType.EQUAL);
+                defoper(RQ_DIFF,   ExprType.NOT_EQUAL); 
                 defoper(RQ_EQ,     ExprType.EQ);                 
                 defoper(RQ_NE,     ExprType.NEQ);                 
                 defoper(RQ_LT,     ExprType.LT); 
@@ -961,7 +963,9 @@ public class Processor {
                 defoper(EXT+"nodeelement",  ExprType.XT_NODE_ELEMENT);
                 defoper(EXT+"objectvalue",  ExprType.XT_DATATYPE_VALUE);
                 defoper(EXT+"namespace",    ExprType.XT_NAMESPACE);
+                defoper(EXT+"domain",       ExprType.XT_DOMAIN);
                 defoper(EXT+"base",         ExprType.XT_BASE);
+                defoper(EXT+"split",        ExprType.XT_SPLIT);
                 
                 defoper(DOM+"getNodeProperty", ExprType.XT_NODE_PROPERTY);
                 defoper(DOM+"getNodeDatatypeValue", ExprType.XT_DATATYPE_VALUE);

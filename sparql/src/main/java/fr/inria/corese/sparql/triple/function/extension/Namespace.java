@@ -44,11 +44,14 @@ public class Namespace extends TermEval {
                     return uri(env, dt);
                 }
                 return qname(env, dt);
+                
+            case ExprType.XT_DOMAIN:
+                return DatatypeMap.URIDomain(dt);
         }
 
         return null;
 
-    }
+    }    
     
     IDatatype define(IDatatype dt, Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype dt2 = getBasicArg(1).eval(eval, b, env, p);

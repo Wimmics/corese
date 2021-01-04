@@ -118,6 +118,10 @@ public interface ExprType {
 	public static int TGE 	= 104;
 	public static int TLT 	= 105;
 	public static int TGT 	= 106;
+        // ==  where type error return false
+	public static int EQUAL    = 107;
+        // !== where type error return true
+	public static int NOT_EQUAL= 108;
 
 	public static int EQNE 	= 109;
 	
@@ -389,6 +393,8 @@ public interface ExprType {
         public static int XT_HTTP_GET    = 489;
         public static int XT_GET_DATATYPE_VALUE    = 490;
         public static int XT_CREATE      = 491;
+        public static int XT_DOMAIN      = 492;
+        public static int XT_SPLIT       = 493;
         
         
              

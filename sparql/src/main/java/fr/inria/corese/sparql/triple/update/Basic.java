@@ -224,6 +224,10 @@ public class Basic extends Update {
 
     @Override
     public Constant getGraphName() {
+        if (getCTarget() != null) {
+            // load into graph
+            return getCTarget();
+        }
         return agraph;
     }
 

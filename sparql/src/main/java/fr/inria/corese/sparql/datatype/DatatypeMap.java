@@ -20,17 +20,12 @@ import fr.inria.corese.sparql.datatype.extension.CoreseXML;
 import fr.inria.corese.sparql.datatype.extension.CoresePointer;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 import org.json.JSONObject;
 import org.w3c.dom.NodeList;
 
@@ -791,8 +786,6 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
      * str) use case: template with st:number()
      */
     public static IDatatype createFuture(Object obj) {
-        //CoreseUndefLiteral dt = new CoreseUndefLiteral();
-        //dt.setFuture(true);
         CoreseUndefFuture dt = new CoreseUndefFuture();
         dt.setDatatype(xsdstring);
         dt.setObject(obj);

@@ -4,6 +4,7 @@ import fr.inria.corese.kgram.api.core.Pointerable;
 
 /**
  * Encapsulate an Object which is not a Pointerable
+ * To be used in CoresePointer
  * Use case: DatatypeMap.createObject(object) on any Object
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2018

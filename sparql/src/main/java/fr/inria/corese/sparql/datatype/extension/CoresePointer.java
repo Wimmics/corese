@@ -17,7 +17,7 @@ import java.util.List;
  * Extension IDatatype that contains LDScript Pointerable object
  * These objects implement an API that enables them to be processed by LDScript
  * statements such as for (?e in ?g), xt:gget(?e, "?x", 0) mainly speaking they are iterable
- * Pointerable objects have specific extension datatypes
+ * Pointerable objects have specific extension datatypes such as dt:graph
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *

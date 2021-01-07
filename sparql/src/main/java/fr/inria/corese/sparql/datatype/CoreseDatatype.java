@@ -1258,8 +1258,10 @@ public class CoreseDatatype
     /**
      * **************************************************************
      *
-     * Draft IDatatype implements Node To get rid of both Node & IDatatype
-     * objects IDatatype would be a node in graph directly
+     * IDatatype implements Node to be able to get rid of both Node & IDatatype
+     * objects IDatatype could be a node in graph directly (not used yet)
+     * In addition, SPARQL statements such as bind that require a Node may use IDatatype 
+     * see ProducerImpl getNode()
      *
      ***************************************************************
      */

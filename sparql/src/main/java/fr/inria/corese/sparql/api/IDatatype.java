@@ -12,13 +12,8 @@ import java.util.List;
 import java.util.Map;
 
 /**
- * This is an interface for all Corese datatypes.<br />
- *
- * This is an interface for all xsd:datatypes: each has a normalized label and a
- * lower case label, that are comparable with an other datatype(instance). Each
- * can also have a value space (which is a string or not and so allow regular
- * expression matching) that have an order relation.
- *
+ * Interface for Corese XSD datatypes
+ * 
  * @author Olivier Corby & Olivier Savoie & Virginie Bottollier
  */
 public interface IDatatype
@@ -81,6 +76,7 @@ public interface IDatatype
 
     boolean isXMLLiteral();
 
+    @Override
     boolean isUndefined();
 
     boolean isGeneralized(); // isExtension or isUndefined
@@ -101,8 +97,10 @@ public interface IDatatype
 
     List<IDatatype> getValues();
 
+    @Override
     List<IDatatype> getValueList();
 
+    @Override
     IDatatype getValue(String var, int n);
 
     IDatatype toList();
@@ -117,6 +115,7 @@ public interface IDatatype
         return null;
     }
 
+    @Override
     Iterable getLoop();
 
     IDatatype has(IDatatype dt);
@@ -127,6 +126,7 @@ public interface IDatatype
 
     IDatatype set(IDatatype name, IDatatype value);
 
+    @Override
     int size();
 
     IDatatype length();
@@ -150,14 +150,18 @@ public interface IDatatype
 
     IDatatype isURINode();
 
+    @Override
     boolean isFuture();
 
     boolean isPointer();
 
+    @Override
     boolean isExtension();
 
+    @Override
     PointerType pointerType();
 
+    @Override
     Pointerable getPointerObject();
 
     /**
@@ -200,8 +204,10 @@ public interface IDatatype
     String toSparql(boolean prefix, boolean xsd);
 
     // Used by XMLLiteral to store a XML DOM 
+    @Override
     void setObject(Object obj);
 
+    @Override
     Object getObject();
 
     IDatatype getPublicDatatypeValue();
@@ -332,17 +338,20 @@ public interface IDatatype
     /**
      * @return the lang of this ('fr', 'en',...)
      */
+    @Override
     String getLang();
 
     /**
      * @return the datatype of this as a URI
      */
+    @Override
     String getDatatypeURI();
 
     /**
      * @return the string depending on the datatype
      * <br>representing the value of this
      */
+    @Override
     String getLabel();
 
     String getID();
@@ -354,12 +363,14 @@ public interface IDatatype
     /**
      * @return true if this instance class is a number
      */
+    @Override
     boolean isNumber();
 
     boolean isDecimalInteger();
 
     boolean isDate();
 
+    @Override
     boolean isBoolean();
 
     Class getJavaClass();

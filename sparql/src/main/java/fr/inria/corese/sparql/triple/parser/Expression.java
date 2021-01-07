@@ -1019,6 +1019,11 @@ public class Expression extends TopExp
         return EXPRESSION;
     }
 
+    /**
+     * Top Level expression evaluator for SPARQL filter and LDScript exp
+     * Computer eval is a proxy for statements on the RDF graph such as exists {}
+     * Computer is class fr.inria.corese.compiler.eval.Interpreter
+     */
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         return null;
     }

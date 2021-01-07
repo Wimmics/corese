@@ -155,8 +155,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     /**
-     * Functions that return several variables as result such as: sql("select
-     * from where") as (?x ?y)
+     * Functions that return several variables as result such as: 
+     * values (VAR+) { unnest(exp) }
      */
     @Override
     public Mappings eval(Filter f, Environment env, List<Node> nodes) throws EngineException {
@@ -167,7 +167,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                 if (hasListener) {
                     listener.listen(exp);
                 }
-                // unnest(sql()) as ()
                 exp = exp.getExp(0);
 
             default:
@@ -205,12 +204,13 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     /**
-     * Bridge to expression evaluation
+     * Bridge to expression evaluation for SPARQL filter and LDScript expression
+     * Expressions are defined in fr.inria.corese.sparql.triple.parser
+     * Each expression implements function:
+     * eval(Computer e, Binding b, Environment env, Producer p)
      */
     public IDatatype eval(Expr exp, Environment env, Producer p) throws EngineException {
-        if (env.getEval() == null) {
-            throw new EngineException("Undefined Eval in Interpreter");
-        }
+        // Stack for LDScript variable binding
         Binding b = (Binding) env.getBind();
         // evalWE clean the binding stack if an EngineException is thrown
         IDatatype dt = ((Expression) exp).evalWE(this, b, env, p);
@@ -218,6 +218,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             System.out.println("eval: " + exp + " = " + dt);
         }
         if (dt == null) {
+            // Evaluation error, may be overloaded by visitor event @error function 
             DatatypeValue res = env.getVisitor().error(env.getEval(), exp, EMPTY);
             if (res != null) {
                 return (IDatatype) res;

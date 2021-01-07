@@ -48,16 +48,20 @@ public class QueryProcessUpdate {
 
     Mappings synUpdate(Query query, Mapping m, Dataset ds) throws EngineException {
         if (isReentrant()) {
+            // basically skip lock on std graph and perform update on external named graph
+            // use case: select where trigger sparql micro service that perform update
             Mappings map = reentrant(query, m, ds);
             if (map != null) {
                 return map;
             }
         }
-        return basicUpdate(query, m, ds);
+        return synchronizedUpdate(query, m, ds);
     }
       
-        
-    Mappings basicUpdate(Query query, Mapping m, Dataset ds) throws EngineException {
+    /**
+     * Synchronized Update
+     */ 
+    Mappings synchronizedUpdate(Query query, Mapping m, Dataset ds) throws EngineException {
         Graph g = getGraph();
         GraphListener gl = (GraphListener) query.getPragma(Pragma.LISTEN);
 
@@ -80,6 +84,7 @@ public class QueryProcessUpdate {
     }
     
      /**
+      * Update that (may be) not synchronized
      * from and named (if any) specify the Dataset over which update take place
      * where {} clause is computed on this Dataset delete {} clause is computed
      * on this Dataset insert {} take place in Entailment.DEFAULT, unless there
@@ -119,6 +124,13 @@ public class QueryProcessUpdate {
     /**
      * reentrant mode enables an update query during a select query 
      * update performed on an external named graph, created if needed
+     * 
+     * use case: sparql micro service
+     * select where query trigger sparql micro service that perform update
+     * but select where has locked the graph as read, so update is locked
+     * solution: perform update (without lock) on external named graph
+     * by contract, reentrant update query specify a named graph 
+     * that is processed as external named graph without lock
      */
     Mappings reentrant(Query query, Mapping m, Dataset ds) throws EngineException {
         String name = getWithName(query);
@@ -141,12 +153,11 @@ public class QueryProcessUpdate {
     
     
     /**
-     * Create a new graph where to perform update Store it as named graph of
-     * main dataset 
-     * toName = true: execute whole query on external named graph
-     * toName = false: execute where on std graph, execute insert/delete on
-     * external graph in this case, Construct setGraphManager processes external
-     * graph
+     * Create a new graph where to perform update 
+     * Store it as external named graph of main dataset 
+     * toName = true:  execute whole query on external named graph
+     * toName = false: execute where on std graph, insert/delete on external graph 
+     * in this case, Construct setGraphManager processes external graph
      */
     Mappings overWrite(String name, Query query, Mapping m, Dataset ds, boolean toName) throws EngineException {
         Graph g = getGraph();
@@ -174,7 +185,6 @@ public class QueryProcessUpdate {
             System.out.println(gg.getNames());
             System.out.println(gg);
         }
-        //g.setNamedGraph(name, gg);
         complete(exec.getAST(query).getUpdate(), g);
         return map;
     }
@@ -293,11 +303,6 @@ public class QueryProcessUpdate {
         getQueryProcess().setEval(eval);
         setSynchronized(b);
     }
-
-//    public void update(Query q, List<Edge> del, List<Edge> ins) {
-//        //System.out.println("QPU: " + getCurrentVisitor());
-//        getCurrentVisitor().update(q, del, ins);
-//    } 
 
     static boolean isReentrant() {
         return QueryProcess.isReentrant();

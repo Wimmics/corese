@@ -385,7 +385,7 @@ public class Graph extends GraphObject implements
     }
     
     /**
-     * Return edges in specific objects
+     * Return copy edges in specific objects
      * @return 
      */
     @Override
@@ -411,10 +411,13 @@ public class Graph extends GraphObject implements
     }
 
     /**
-     * Return successive edges in the "same physical" object
-     * It may be necessary to make copy using 
-     * g.getEdgeFactory().copy(edge)
-     * @return 
+     * Iterate graph edges
+     * Successive edges of the same property are returned in the "same physical" Edge object
+     * The reason is that edges are stored without the property Node. 
+     * Iterator creates a buffer to store a copy of edges with the property Node.
+     * For performance purpose in SPARQL Producer, we iterate edges in the same buffer
+     * If needed, it may be necessary to make copy of edge buffer using 
+     * g.getEdgeFactory().copy(edge) .
      */
     @Override
     public Iterator<Edge> iterator() {

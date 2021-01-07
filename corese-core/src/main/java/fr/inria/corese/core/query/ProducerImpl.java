@@ -626,7 +626,6 @@ public class ProducerImpl implements Producer, IProducerQP {
      */
     @Override
     synchronized public Node getNode(Object value) {
-        // TODO Auto-generated method stub
         if (!(value instanceof IDatatype)) {
             return DatatypeMap.createObject(value);
         }

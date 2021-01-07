@@ -247,11 +247,11 @@ function sh:setup() {
 function sh:initsetup() {
    sh:setup() ; 
    let (select * where {
-            optional { [] sh:nodeDetail ?node }
-            optional { [] sh:booleanDetail ?bool }
+            optional { [] xsh:nodeDetail ?node }
+            optional { [] xsh:booleanDetail ?bool }
         }) {
-        if (bound(?node), sh:setup(sh:nodeDetail, ?node), true) ;
-        if (bound(?bool), sh:setup(sh:booleanDetail, ?bool), true) ;        
+        if (bound(?node), sh:setup(xsh:nodeDetail, ?node), true) ;
+        if (bound(?bool), sh:setup(xsh:booleanDetail, ?bool), true) ;        
     }
 }
 

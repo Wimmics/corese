@@ -265,17 +265,15 @@ function xsd:boolean sh:xone(report, sh, cst, cstList, s, p, o, vis, present) {
 # oper:  boolean operator
 # cst: boolean shape, i.e. bnode value of sh:or ()
 # cstList: list of statements of boolean shape
-# detail:  [] sh:booleanDetail true   
+# detail:  [] xsh:booleanDetail true   
 # sh:isdetail(cst): cst sh:detail true
 #
 function xsd:integer sh:bool(report, oper, sh, cst, cstList, s, p, o, vis, present, funincr, funsuc) {
    let (cc = 0, nodeList = xt:list(o), 
-        detail      = vis && sh:isSetup(sh:booleanDetail),
+        detail      = vis && sh:isSetup(xsh:booleanDetail),
         subReport   = sh:detailReport(report, detail)) {
-                
         for (cst in cstList) {
-            let (res = sh:core(subReport, cst, detail #&& sh:isdetail(cst)
-                , nodeList, present)) {  
+            let (res = sh:core(subReport, cst, detail, nodeList, present)) {  
                  set (cc = cc +  funcall(funincr, res))  
             }
         } ;

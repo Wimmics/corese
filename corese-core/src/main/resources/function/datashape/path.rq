@@ -87,7 +87,7 @@ function sh:pathBasic(report, sh, vis, s, p, present) {
                             
                             for ((oper val) in cstList1) {
                                 if (oper = sh:node) {
-                                    let (detail   = vis && sh:isSetup(sh:nodeDetail), 
+                                    let (detail   = vis && sh:isSetup(xsh:nodeDetail), 
                                         subReport = sh:detailReport(report, detail),
                                         suc = coalesce(sh:node(subReport, o, val, present, detail), false)) {
                                         

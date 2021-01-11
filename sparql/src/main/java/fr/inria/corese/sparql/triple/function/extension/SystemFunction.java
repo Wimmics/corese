@@ -56,6 +56,9 @@ public class SystemFunction extends TermEval {
                 return (IDatatype) env.getVisitor().datatype(param[0], param[1]);
                 
             case ExprType.XT_GET_DATATYPE_VALUE:
+                // system function for try catch, see TryCatch
+                // the catch store the exception object in the Binding
+                // xt:getDatatypeValue() return the exception object stored in the Binding
                 return b.getDatatypeValue();
         }
         

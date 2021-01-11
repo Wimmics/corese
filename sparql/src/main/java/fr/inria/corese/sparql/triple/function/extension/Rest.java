@@ -49,7 +49,7 @@ public class Rest extends TermEval {
     
     public static IDatatype rest(IDatatype dt, IDatatype index, IDatatype last){        
       
-        if (dt.isMap() || dt.pointerType() == EXPRESSION) {
+        if (dt.isMap() || dt.isJSON() || dt.isXML() || dt.pointerType() == EXPRESSION) {
             dt = dt.toList();
         }
         if (dt.isList()) {

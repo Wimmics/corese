@@ -30,6 +30,10 @@ public class TryCatch extends Statement {
           return dt;
         }
         catch (LDScriptException e){
+            // try {exp} catch (var) { exp } implemented as:
+            // TryCatch(exp, let(var = xt:getDatatytpeValue()) { exp })
+            // arg(0) = exp
+            // arg(1) = let(var = xt:getDatatytpeValue()) { exp }
             b.setDatatypeValue(e.getDatatypeValue());
             IDatatype res = getArg(1).eval(eval, b, env, p);
             return res;

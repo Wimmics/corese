@@ -19,6 +19,7 @@ public class LDScriptException extends EngineException {
         setStop(b);
     }
     
+    @Override
     public IDatatype getDatatypeValue() {
         return dt;
     }

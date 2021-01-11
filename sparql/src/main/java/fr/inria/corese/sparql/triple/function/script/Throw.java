@@ -22,10 +22,12 @@ public class Throw extends LDScript {
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
           switch (oper()) {
-              case THROW: 
+              case THROW:
+                  // throw(exp)
                   IDatatype dt = getArg(0).eval(eval, b, env, p);
                   throw new LDScriptException(dt);
                   
+                  // stop()
               default:throw new StopException();
           }
     }

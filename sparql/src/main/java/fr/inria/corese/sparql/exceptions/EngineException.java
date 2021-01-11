@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.exceptions;
 
 import fr.inria.corese.kgram.core.SparqlException;
+import fr.inria.corese.sparql.api.IDatatype;
 
 /**
  * This class gathers all the exceptions that can be thrown in Corese
@@ -67,6 +68,10 @@ public class EngineException extends SparqlException {
      */
     public void setPath(String path) {
         this.path = path;
+    }
+    
+    public IDatatype getDatatypeValue() {
+        return null;
     }
 
 }

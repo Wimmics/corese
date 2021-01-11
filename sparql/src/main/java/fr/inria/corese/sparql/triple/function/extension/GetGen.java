@@ -72,7 +72,7 @@ public class GetGen extends TermEval {
         if (dt.isList()) {
             return getResult(DatatypeMap.get(dt, ind));           
         }
-        if (dt.isMap()) {
+        if (dt.isMap() || dt.isJSON() || dt.isXML()) {
             return getResult(DatatypeMap.get(dt.toList(), ind));    
         }
         if (dt.isPointer()){

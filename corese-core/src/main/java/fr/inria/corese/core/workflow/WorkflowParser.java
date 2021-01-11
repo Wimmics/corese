@@ -750,7 +750,7 @@ public class WorkflowParser {
         // get text to load from Context st:arg
         String text = getStringParam(TEXT_PARAM);
         if (text != null) {
-            check(text);
+            //check(text);
             LoadProcess load = new LoadProcess(text, Loader.UNDEF_FORMAT);           
             w.add(load);
         }

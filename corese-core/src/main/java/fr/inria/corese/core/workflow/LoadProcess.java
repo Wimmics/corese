@@ -8,10 +8,6 @@ import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.exceptions.SafetyException;
-import fr.inria.corese.sparql.triple.parser.NSManager;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.util.logging.Level;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 

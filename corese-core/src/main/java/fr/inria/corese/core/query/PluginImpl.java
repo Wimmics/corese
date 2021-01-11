@@ -258,6 +258,8 @@ public class PluginImpl
                 return DatatypeMap.list();
             case IDatatype.MAP_DATATYPE:
                 return DatatypeMap.map();
+            case IDatatype.JSON_DATATYPE:
+                return DatatypeMap.json();    
         }
         return null;
     }

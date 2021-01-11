@@ -244,8 +244,8 @@ public class EmbeddedJettyServer extends ResourceConfig {
                             Graph.setRDFStar(true);
                         }
                         if (cmd.hasOption("su")) {
-//                            logger.info("su");
-//                            Access.skip(true);
+                            logger.info("su");
+                            Access.skip(true);
                         }
                         if (cmd.hasOption("key")) {
                             String akey = cmd.getOptionValue("key");

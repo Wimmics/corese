@@ -720,13 +720,13 @@ public class SPARQLRestAPI {
     @POST
     @Consumes("application/sparql-update")
     public Response updateTriplesDirect(@javax.ws.rs.core.Context HttpServletRequest request,
-            @QueryParam("update") String message, 
+            String message, // standard parameter, do not add @QueryParam()
             @QueryParam("access") String access, 
             @QueryParam("using-graph-uri") List<String> defaultGraphUris, 
             @QueryParam("using-named-graph-uri") List<String> namedGraphUris) {
         try {
-            logger.info("updateTriplesDirect");
-
+            //request.
+            logger.info("updateTriplesDirect");           
             if (message != null) {
                 logger.debug(message);
                 getTripleStore().query(request, message, createDataset(defaultGraphUris, namedGraphUris, access));

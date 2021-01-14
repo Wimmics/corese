@@ -850,12 +850,12 @@ public class Transformer implements TransformProcessor {
     public IDatatype process(String temp, boolean allTemplates, String sep,
             Expr exp, Environment env, IDatatype dt, IDatatype[] args) 
         throws EngineException
-    {
+    { 
         count++;
         if (dt == null) {
             return EMPTY;
         }
-        
+               
         boolean astart = isStarting();
         beforeTransformer(astart);
 
@@ -1073,6 +1073,11 @@ public class Transformer implements TransformProcessor {
     
     public Query getTemplate(String temp) {
        return qe.getTemplate(temp);
+    }
+    
+    @Override
+    public boolean isDefined(String name) {
+        return qe.getTemplate(name) != null;
     }
 
     /**

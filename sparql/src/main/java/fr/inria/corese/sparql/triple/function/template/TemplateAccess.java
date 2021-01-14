@@ -50,7 +50,9 @@ public class TemplateAccess extends TemplateFunction {
             case ExprType.STL_ISSTART:
                 return (trans.isStart()) ? TRUE : FALSE;
                 
-
+            case ExprType.STL_DEFINED:
+                return trans.isDefined(param[0].getLabel()) ? TRUE : FALSE;
+                            
             default:
                 return null;
         }

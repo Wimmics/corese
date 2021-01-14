@@ -31,6 +31,7 @@ import javax.xml.transform.TransformerException;
 import javax.xml.transform.TransformerFactory;
 import javax.xml.transform.dom.DOMSource;
 import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 import org.w3c.dom.Document;
 
 public class XPathFun {
@@ -133,6 +134,19 @@ public class XPathFun {
     public String print(Document doc) throws IOException, TransformerException {
         TransformerFactory tf = TransformerFactory.newInstance();
         Transformer transformer = tf.newTransformer();
+        transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
+        transformer.setOutputProperty(OutputKeys.METHOD, "xml");
+        transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+        transformer.setOutputProperty(OutputKeys.ENCODING, "UTF-8");
+        StringWriter str = new StringWriter();
+        transformer.transform(new DOMSource(doc), new StreamResult(str));
+        return str.toString();
+    }
+    
+    public String xslt(Document doc, String xsl) throws IOException, TransformerException {
+        TransformerFactory tf = TransformerFactory.newInstance();
+        StreamSource stylesource = new StreamSource(xsl); 
+        Transformer transformer = tf.newTransformer(stylesource);
         transformer.setOutputProperty(OutputKeys.OMIT_XML_DECLARATION, "no");
         transformer.setOutputProperty(OutputKeys.METHOD, "xml");
         transformer.setOutputProperty(OutputKeys.INDENT, "yes");

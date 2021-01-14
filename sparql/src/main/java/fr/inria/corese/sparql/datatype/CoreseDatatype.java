@@ -40,7 +40,7 @@ import java.util.List;
 public class CoreseDatatype
         implements IDatatype {
   
-    private static Logger logger = LoggerFactory.getLogger(CoreseDatatype.class);
+    public static Logger logger = LoggerFactory.getLogger(CoreseDatatype.class);
     static final CoreseURI datatype = new CoreseURI(RDF.RDFSRESOURCE);
     static final CoreseString empty = new CoreseString("");
     public static final CoreseBoolean TRUE = CoreseBoolean.TRUE;

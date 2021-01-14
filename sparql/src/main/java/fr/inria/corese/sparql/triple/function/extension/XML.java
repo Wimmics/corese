@@ -22,6 +22,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_PROPERTY;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_TYPE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_NODE_VALUE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_TEXT_CONTENT;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_XSLT;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -65,10 +66,24 @@ public class XML extends TermEval {
                 label = param[2];
                 break;
         }
+        
+        switch (oper()) {
+            case XT_XSLT:
+                // xslt(xsl, xml)
+                if (isXML(label)) {
+                    CoreseXML node = DatatypeMap.getXML(label);
+                    return node.xslt(dt);
+                }
+                else {
+                    return null;
+                }
+        }
 
         if (isXML(dt)) {
-            CoreseXML node = (CoreseXML) dt;
+            CoreseXML node = DatatypeMap.getXML(dt);
+            
             switch (oper()) {
+                    
                 case XT_ATTRIBUTES:
                     return node.getAttributes();
 

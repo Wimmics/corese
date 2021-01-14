@@ -892,6 +892,8 @@ public class Processor {
                 defoper(STL_ERRORS,             ExprType.STL_ERRORS);
                 defoper(STL_ERROR_MAP,          ExprType.STL_ERROR_MAP);
                 defoper(STL_BOOLEAN,            ExprType.STL_BOOLEAN);
+                defoper(STL+"defined",          ExprType.STL_DEFINED);
+                defoper(EXT+"xslt",             ExprType.XT_XSLT);
 
 		defoper(LEVEL,          ExprType.LEVEL);
 		defoper(INDENT,         ExprType.INDENT);

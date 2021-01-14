@@ -5,7 +5,8 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 
 /**
- *
+ * Transformer API
+ * 
  * @author Olivier Corby - INRIA - 2018
  */
 public interface TransformProcessor {
@@ -24,5 +25,7 @@ public interface TransformProcessor {
     IDatatype process(String temp, boolean all, String sep, Expr exp, Environment env, 
             IDatatype dt, IDatatype[] args)
             throws EngineException;
+    
+    boolean isDefined(String name);
     
 }

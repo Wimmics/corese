@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.datatype.extension;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.CoreseDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.function.XPathFun;
 import fr.inria.corese.sparql.triple.parser.NSManager;
@@ -231,6 +232,16 @@ public class CoreseXML extends CoreseExtension {
 
     public IDatatype getBaseURI() {
         return getBaseURI(node);
+    }
+    
+    public IDatatype xslt(IDatatype dt) {
+        try {
+            String str = new XPathFun().xslt(getDocument(node), dt.getLabel());
+            return DatatypeMap.newInstance(str);
+        } catch (IOException | TransformerException ex) {
+            CoreseDatatype.logger.error(ex.getMessage());
+        }
+        return null;
     }
 
     /**

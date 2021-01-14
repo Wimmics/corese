@@ -262,6 +262,7 @@ public class Term extends Expression {
             case ExprType.XT_TEXT_CONTENT:
             case ExprType.XT_NAMESPACE:
             case ExprType.XT_BASE:
+            case ExprType.XT_XSLT:               
                 return new XML(name);
  
             case ExprType.XT_SPIN:
@@ -516,7 +517,8 @@ public class Term extends Expression {
                 
             case ExprType.INDENT:
             case ExprType.STL_NL:
-            case ExprType.STL_ISSTART:           
+            case ExprType.STL_ISSTART: 
+            case ExprType.STL_DEFINED:
                 return new TemplateAccess(name);
                 
             case ExprType.APPLY_TEMPLATES:

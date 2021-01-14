@@ -31,7 +31,7 @@ public class Metadata extends ASTObject
     public static final int MORE    = 12;
     public static final int FEDERATE= 13;
     public static final int DISPLAY = 14;
-    public static final int BIND    = 15;
+    public static final int BIND    = 15; // @event @bind
     public static final int TYPE    = 16;
     public static final int COMPILE = 17;
     public static final int SKIP    = 18;
@@ -66,6 +66,7 @@ public class Metadata extends ASTObject
     public static final int FROM      = 47;
     public static final int UPDATE    = 48;
     public static final int FORM      = 49;
+    public static final int BINDING   = 50; // service binding
 
     
     
@@ -153,7 +154,8 @@ public class Metadata extends ASTObject
         define("@bounce",   BOUNCE);      
         define("@sparqlzero", SPARQL10);      
         define("@encoding", ENCODING);      
-        define("@bind",     BIND);      
+        define("@bind",     BIND);  // @event @bind  
+        define("@binding",  BINDING);  // service bind: to differ from @event @bind    
         define("@import",   IMPORT);      
         define("@display",  DISPLAY);      
         define("@type",     TYPE);      

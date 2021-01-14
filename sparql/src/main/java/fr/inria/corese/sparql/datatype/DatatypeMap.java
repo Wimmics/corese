@@ -1195,6 +1195,13 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         }
         return list.getList().member(elem);
     }
+    
+    public static CoreseXML getXML(IDatatype dt) {
+        if (dt instanceof CoreseXML) {
+            return (CoreseXML) dt;
+        }
+        return null;
+    }
 
     public static IDatatype iota(IDatatype... args) {
         if (args.length == 0) {

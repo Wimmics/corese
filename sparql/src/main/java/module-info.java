@@ -8,6 +8,7 @@ module fr.inria.corese.sparql {
 	exports fr.inria.corese.sparql.triple.parser.visitor;
 	exports fr.inria.corese.sparql.exceptions;
 	exports fr.inria.corese.sparql.datatype;
+	exports fr.inria.corese.sparql.datatype.extension;
 	exports fr.inria.corese.sparql.api;
 	exports fr.inria.corese.sparql.triple.cst;
 	exports fr.inria.corese.sparql.triple.update;

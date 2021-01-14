@@ -253,6 +253,7 @@ public interface ExprType {
  	public static int STL_STRIP                 = 282;
         public static int FORMAT                    = 283;
         public static int STL_ERROR_MAP             = 284;
+        public static int STL_DEFINED               = 285;
 
               
 	public static int ISSKOLEM 	= 300;
@@ -403,7 +404,7 @@ public interface ExprType {
         public static int DB          = 502;
         public static int EDGE_ACCESS = 503;
         
-        
+        // DOM XML
         public static int XT_NODE_PROPERTY   = 600;
         public static int XT_NODE_TYPE  = 601;
         public static int XT_ATTRIBUTES = 602;
@@ -421,6 +422,8 @@ public interface ExprType {
         public static int XT_HAS_ATTRIBUTE=614;
         public static int XT_NODE_LOCAL_NAME=615;
         public static int XT_NODE_FIRST_CHILD=616;
+        
+        public static int XT_XSLT        = 650;
         
 
 }

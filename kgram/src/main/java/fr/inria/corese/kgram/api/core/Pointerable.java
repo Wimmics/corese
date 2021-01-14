@@ -8,7 +8,7 @@ import fr.inria.corese.kgram.path.Path;
 import java.util.ArrayList;
 
 /**
- *
+ * Interface for objects that can be object of a CoresePointer
  * @author Olivier Corby - Wimmics Inria I3S - 2015
  */
 public interface Pointerable extends Loopable {

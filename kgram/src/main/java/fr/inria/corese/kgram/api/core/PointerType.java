@@ -3,7 +3,7 @@ package fr.inria.corese.kgram.api.core;
 import static fr.inria.corese.kgram.api.core.ExpType.DT;
 
 /**
- *
+ * Pointer type for object that can be object of CoresePointer
  * @author Olivier Corby, Wimmics INRIA I3S, 2019
  *
  */

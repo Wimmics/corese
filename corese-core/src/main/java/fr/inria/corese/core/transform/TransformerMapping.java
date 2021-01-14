@@ -8,6 +8,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.List;
 
 /**
@@ -39,7 +40,7 @@ public class TransformerMapping {
         this.mapping = mapping;
     }
     
-     Mapping getMapping(Query q, IDatatype[] ldt, IDatatype dt) {
+     Mapping getMapping(Query q, IDatatype[] ldt, IDatatype dt) {         
         if (ldt != null && q != null && !q.getArgList().isEmpty()) {
             return getMapping(q, ldt);
         }
@@ -58,8 +59,7 @@ public class TransformerMapping {
                 map = getMapping(q, dt);
                 q.setMapping(map);
             }
-            else {
-                //map.getNodes()[0] = getNode(dt);
+            else {                
                 map.setNode(getNode(dt), 0);
             }
 
@@ -97,7 +97,6 @@ public class TransformerMapping {
         else {
             // reuse template Mapping
             for (int i = 0; i<values.length; i++){
-                //map.getNodes()[i] = getNode(values[i]);
                 map.setNode(getNode(values[i]), i);
             }
         }
@@ -144,7 +143,8 @@ public class TransformerMapping {
     Node getNode(IDatatype dt) {
         Node n = graph.getNode(dt, false, false);
         if (n == null) {
-            n = fake.getNode(dt, true, true);
+            //n = fake.getNode(dt, true, true);
+            return dt;
         }
         return n;
     }

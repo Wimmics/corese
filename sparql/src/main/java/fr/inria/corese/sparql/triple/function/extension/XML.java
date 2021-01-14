@@ -67,22 +67,14 @@ public class XML extends TermEval {
                 break;
         }
         
-        switch (oper()) {
-            case XT_XSLT:
-                // xslt(xsl, xml)
-                if (isXML(label)) {
-                    CoreseXML node = DatatypeMap.getXML(label);
-                    return node.xslt(dt);
-                }
-                else {
-                    return null;
-                }
-        }
-
         if (isXML(dt)) {
             CoreseXML node = DatatypeMap.getXML(dt);
             
             switch (oper()) {
+                
+                case XT_XSLT:
+                    // xslt(xml, xsl)
+                    return node.xslt(label);
                     
                 case XT_ATTRIBUTES:
                     return node.getAttributes();

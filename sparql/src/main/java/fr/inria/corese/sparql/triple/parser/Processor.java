@@ -793,6 +793,7 @@ public class Processor {
 
 		defsysoper(XPATH, 	ExprType.XPATH);
 		defsysoper(KGXPATH, 	ExprType.XPATH);
+		defsysoper(EXT+"xpath", ExprType.XPATH);
 		defsysoper(SQL, 	ExprType.SQL);
 		defoper(KGSQL, 	ExprType.SQL);
 		defoper(KG_SPARQL, ExprType.KGRAM);

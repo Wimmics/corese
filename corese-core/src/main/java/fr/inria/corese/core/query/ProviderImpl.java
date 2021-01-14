@@ -198,7 +198,7 @@ public class ProviderImpl implements Provider {
         // share prefix
         compiler.prepare(q);
 
-        int slice = getSlice(q, serv, eval.getEnvironment(), map); //compiler.slice(q);
+        int slice = getSlice(q, serv, eval.getEnvironment(), map); 
 
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean hasValues = ast.getValues() != null;
@@ -534,7 +534,8 @@ public class ProviderImpl implements Provider {
     int getSlice(Query q, Node serv, Environment env, Mappings map) {
         // former: 
         q.getGlobalQuery().getSlice();
-        return env.getEval().getVisitor().slice(serv, map);
+        int slice = env.getEval().getVisitor().slice(serv, map==null?Mappings.create(q):map);
+        return slice;
     }
     
     Mappings eval(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException, EngineException {

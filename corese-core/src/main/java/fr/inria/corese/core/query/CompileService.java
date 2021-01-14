@@ -11,7 +11,6 @@ import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Term;
-import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.Node;
@@ -115,7 +114,7 @@ public class CompileService {
     
      boolean hasMetaData(Query q, String type) {
          ASTQuery ast = (ASTQuery) q.getAST();
-         return ast.hasMetadata(Metadata.BIND, type);
+         return ast.hasMetadata(Metadata.BINDING, type);
     }
         
     public void prepare(Query q) {

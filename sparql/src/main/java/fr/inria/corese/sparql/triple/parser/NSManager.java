@@ -645,7 +645,7 @@ public class NSManager extends ASTObject {
         return dt;
     }
 
-    boolean isDisplayable(String ns) {
+    public boolean isDisplayable(String ns) {
         if (isRecorded(ns)) {
             return true;
         }
@@ -917,8 +917,9 @@ public class NSManager extends ASTObject {
     /**
      * @param record the record to set
      */
-    public void setRecord(boolean record) {
+    public NSManager setRecord(boolean record) {
         this.record = record;
+        return this;
     }
 
 }

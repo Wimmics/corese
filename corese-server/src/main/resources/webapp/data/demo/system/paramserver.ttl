@@ -1,0 +1,14 @@
+#
+# Parameters to tune Corese behaviour
+# new Param().load(path).process()
+#
+
+[] 
+
+cos:function [
+    cos:load 
+        </user/corby/home/AAServer/data/demo/system/server.rq>
+]
+
+
+.

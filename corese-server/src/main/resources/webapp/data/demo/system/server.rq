@@ -1,0 +1,111 @@
+#
+# Server Event Function
+# Current graph is SPARQL endpoint graph
+# SPARQLRestAPI getVisitor().beforeRequest() and afterRequest()
+# Use with -param file with: [] cos:function [ cos:load </path/to/server.rq> ]
+#
+#
+
+prefix fun: <function://fr.inria.corese.core.extension.Extension>
+prefix ff1:  <http://localhost:8080/data/demo/system/test.rq/>
+prefix ff:  <test.rq/>
+
+#@public @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq> 
+
+select * where { }
+
+#
+# @init function called by Parameter after Parameter graph load processing
+# We can set application specific parameters
+# PRAGMA: for this @init function the current graph is the Parameter graph
+# whereas for other @event function it is the current graph of the query at stake
+#
+@public @initParam
+function us:initParam() {
+    xt:print("@initParam");
+    #us:initialize()
+}
+
+@public @initServer
+function us:initServer(url) {
+    xt:print("@initServer", url);
+    #xt:print(xt:graph())
+}
+
+
+# current graph is Parameter graph
+@public 
+function us:initialize() {
+    xt:print(xt:turtle(xt:graph()));
+    let (select * where { [] cos:name ?name }) {
+        xt:print("start agent:", ?name)
+    }
+}
+
+
+
+@public @insert
+function us:insert(path, atriple) {
+	xt:print("@insert", atriple);
+}
+
+
+
+@public @beforeRequest
+function us:beforeRequest(dt:HttpServletRequest request, q) {
+    xt:print("\n@beforeRequest");
+    xt:print(request);
+    us:trace(request);
+    xt:print(q)
+}
+
+@public @afterRequest
+function us:afterRequest(dt:HttpServletRequest request, dt:Response resp, q, amap, res) {
+    xt:print("\n@afterRequest");
+    xt:print(resp);
+    us:traceResponce(resp);
+    xt:print("result:", amap);
+    xt:print(res)
+}
+
+
+@public
+function us:trace(dt:HttpServletRequest request) {
+    for (name in fun:list(java:getHeaderNames(request))) {
+        xt:print("header:", name, "=", java:getHeader(request, name));
+    } ;
+    for (name in fun:list(java:getParameterNames(request))) {
+        xt:print("param:", name, "=", java:getParameter(request, name));
+    } ;
+    xt:print("path:", java:getContextPath(request));
+    xt:print("method:", java:getMethod(request));
+}
+
+
+@public
+function us:traceResponce(dt:Response resp) {
+    xt:print(java:getStringHeaders(resp))
+}
+
+
+
+@public
+function us:tracemore(dt:HttpServletRequest request) {
+    for (name in fun:list(java:getAttributeNames(request))) {
+        xt:print("attribute:", name, "=", java:getAttribute(request, name));
+    } ;
+    for (name in coalesce(fun:list(java:getCookies(request)), xt:list())) {
+        xt:print("cookie:", name);
+    } ;
+    let (cn = java:getServletContext(request)) {
+        for (name in fun:list(java:getAttributeNames(cn))) {
+            xt:print("context:", name, "=", java:getAttribute(cn, name));
+        }
+    }
+}
+
+
+
+
+
+

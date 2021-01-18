@@ -63,8 +63,8 @@ public class RDFFormat {
     List<String> with, without;
 
     RDFFormat(NSManager n) {
-        with = new ArrayList<String>();
-        without = new ArrayList<String>();
+        with = new ArrayList<>();
+        without = new ArrayList<>();
         nsm = n;
     }
 
@@ -104,17 +104,21 @@ public class RDFFormat {
     public static RDFFormat create(Graph g, Query q) {
         return new RDFFormat(g, q);
     }
+    
+    static NSManager nsm() {
+        return NSManager.create().setRecord(true);
+    }
 
     public static RDFFormat create(Mappings map) {
         Graph g = (Graph) map.getGraph();
         if (g != null) {
             return create(g, map.getQuery());
         }
-        return create(map, NSManager.create());
+        return create(map, nsm());
     }
 
     public static RDFFormat create(Graph g) {
-        return new RDFFormat(g, NSManager.create());
+        return new RDFFormat(g, nsm());
     }
 
     public static RDFFormat create(Mappings lm, NSManager m) {
@@ -126,7 +130,7 @@ public class RDFFormat {
     }
 
     public static RDFFormat create(Mapping m) {
-        return new RDFFormat(m, NSManager.create());
+        return new RDFFormat(m, nsm());
     }
 
     public static RDFFormat create(Mapping m, NSManager n) {
@@ -228,21 +232,22 @@ public class RDFFormat {
 
     void header(StringBuilder bb) {
         boolean first = true;
+        
         for (String p : nsm.getPrefixSet()) {
-
-            if (first) {
-                first = false;
-            } else {
-                bb.append(NL);
-            }
-
             String ns = nsm.getNamespace(p);
+            if (nsm.isDisplayable(ns)) {
+                if (first) {
+                    first = false;
+                } else {
+                    bb.append(NL);
+                }
 
-            bb.append(XMLNS);
-            if (!p.equals("")) {
-                bb.append(":");
+                bb.append(XMLNS);
+                if (!p.equals("")) {
+                    bb.append(":");
+                }
+                bb.append(p).append("='").append(toXML(ns)).append("'");
             }
-            bb.append(p).append("='").append(toXML(ns)).append("'");
         }
     }
 

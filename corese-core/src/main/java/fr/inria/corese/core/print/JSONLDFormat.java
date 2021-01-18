@@ -108,7 +108,7 @@ public class JSONLDFormat {
     }
 
     public static JSONLDFormat create(Graph g) {
-        return new JSONLDFormat(g, NSManager.create());
+        return new JSONLDFormat(g, NSManager.create().setRecord(true));
     }
 
     @Override
@@ -194,7 +194,10 @@ public class JSONLDFormat {
 
         //2. add prefixes 
         for (String p : ns) {
-            context.addObject(new JSONLDObject(quote(p), quote(nsm.getNamespace(p))));
+            String uri = nsm.getNamespace(p);
+            if (nsm.isDisplayable(uri)) {
+                context.addObject(new JSONLDObject(quote(p), quote(uri)));
+            }
         }
 
         return context;

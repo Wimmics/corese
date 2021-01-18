@@ -41,7 +41,7 @@ public class TripleFormat extends RDFFormat {
     }
 
     public static TripleFormat create(Graph g) {
-        return new TripleFormat(g, NSManager.create());
+        return new TripleFormat(g, nsm());
     }
 
     public static TripleFormat create(Mappings map, boolean isGraph) {
@@ -57,7 +57,7 @@ public class TripleFormat extends RDFFormat {
     }
 
     public static TripleFormat create(Graph g, boolean isGraph) {
-        TripleFormat t = new TripleFormat(g, NSManager.create());
+        TripleFormat t = new TripleFormat(g, nsm());
         t.setGraph(isGraph);
         return t;
     }
@@ -118,6 +118,7 @@ public class TripleFormat extends RDFFormat {
                 sdisplay(SPACE);
                 subject(gNode);
                 sdisplay(OGRAPH);
+                display();
                 for (Node node : graph.getNodeGraphIterator(gNode)) {
                     print(gNode, node);
                 }

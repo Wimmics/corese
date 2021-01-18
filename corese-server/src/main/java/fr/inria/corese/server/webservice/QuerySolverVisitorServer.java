@@ -14,6 +14,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.ServletContext;
+import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 /**
@@ -41,9 +42,9 @@ public class QuerySolverVisitorServer extends QuerySolverVisitor {
     Graph getGraph() {
         return SPARQLRestAPI.getTripleStore().getGraph();
     }
-    
    
-    public IDatatype beforeRequest(HttpServletRequest request, String query) { 
+    public IDatatype beforeRequest(HttpServletRequest request, String query) {
+        //trace(request);
         IDatatype dt = callback(getEval(), BEFORE_REQUEST, toArray(request, query));
         return dt;
     }
@@ -51,6 +52,28 @@ public class QuerySolverVisitorServer extends QuerySolverVisitor {
     public IDatatype afterRequest(HttpServletRequest request, String query, Mappings map) {
         IDatatype dt = callback(getEval(), AFTER_REQUEST, toArray(request, query, map));
         return dt;
+    }
+    
+    public IDatatype afterRequest(HttpServletRequest request, Response resp, String query, Mappings map, String res) {
+        //trace(resp);
+        IDatatype dt = callback(getEval(), AFTER_REQUEST, toArray(request, resp, query, map, res));
+        return dt;
+    }
+    
+    void trace(HttpServletRequest req) {
+        System.out.println("Request header: ");
+        Enumeration en = req.getHeaderNames();
+        
+        while (en.hasMoreElements()) {
+            String key = (String) en.nextElement();
+            String val = req.getHeader(key);
+            System.out.println(key + " " + val);
+        }
+    }
+    
+    void trace(Response resp) {
+        System.out.println("Response header: " + resp.getStringHeaders());
+        System.out.println("media type: " + resp.getMediaType());
     }
     
     /**

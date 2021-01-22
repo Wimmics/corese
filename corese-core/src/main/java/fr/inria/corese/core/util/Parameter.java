@@ -138,7 +138,13 @@ public class Parameter {
                 IDatatype value = (IDatatype) map.getValue(var);
                 if (value != null) {
                     String label = value.getLabel();
-                    System.out.println("param: " + var + " " + value);
+                    
+                    switch (var.getLabel()) {
+                        case FUNCTION_IMPORT: // already processed above: skip
+                            break;
+                        default: System.out.println("param: " + var + " " + value);
+                    }
+                    
                     switch (var.getLabel()) {
                         case LINKED_FUNCTION_ACCEPT:
                             namespace(value, true);

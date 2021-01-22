@@ -22,6 +22,23 @@ import java.util.HashMap;
  */
 public class ResultFormat implements ResultFormatDef {
     
+    public static final String SPARQL_RESULTS_XML  = "application/sparql-results+xml";
+    public static final String SPARQL_RESULTS_JSON = "application/sparql-results+json";
+    public static final String SPARQL_RESULTS_CSV  = "application/sparql-results+csv";
+    public static final String SPARQL_RESULTS_TSV  = "application/sparql-results+tsv";
+    
+    public static final String XML         = "application/xml";
+    
+    public static final String JSON_LD     = "application/ld+json";
+    public static final String JSON        = "application/json";
+    public static final String RDF_XML     = "application/rdf+xml";
+    public static final String TRIG        = "application/trig";
+    public static final String TURTLE      = "application/turtle";
+    public static final String TURTLE_TEXT = "text/turtle"; 
+    public static final String TRIG_TEXT   = "text/trig"; 
+    public static final String NT_TEXT     = "text/nt"; 
+    public static final String TEXT        = "text/plain"; 
+    
     public static int DEFAULT_SELECT_FORMAT    = XML_FORMAT;
     public static int DEFAULT_CONSTRUCT_FORMAT = RDF_XML_FORMAT;
     
@@ -58,22 +75,24 @@ public class ResultFormat implements ResultFormatDef {
         content = new HashMap<>();
         
         // use case: template without format
-        defContent("text/plain", TEXT_FORMAT);
+        defContent(TEXT, TEXT_FORMAT);
         
         // Mappings
-        defContent("application/sparql-results+json", JSON_FORMAT);
-        defContent("application/sparql-results+xml", XML_FORMAT);
-        defContent("application/sparql-results+csv", CSV_FORMAT);
-        defContent("application/sparql-results+tsv", TSV_FORMAT);
+        defContent(SPARQL_RESULTS_JSON, JSON_FORMAT);
+        defContent(SPARQL_RESULTS_XML, XML_FORMAT);
+        defContent(SPARQL_RESULTS_CSV, CSV_FORMAT);
+        defContent(SPARQL_RESULTS_TSV, TSV_FORMAT);
         // Graph
-        defContent("application/rdf+xml",           RDF_XML_FORMAT);        
-        defContent("text/turtle",                   TURTLE_FORMAT);
-        defContent("application/trig",              TRIG_FORMAT);
-        defContent("application/ld+json",           JSON_LD_FORMAT);
+        defContent(RDF_XML,           RDF_XML_FORMAT);        
+        defContent(TURTLE_TEXT,       TURTLE_FORMAT);
+        defContent(TRIG,              TRIG_FORMAT);
+        defContent(JSON_LD,           JSON_LD_FORMAT);
+        defContent(JSON,              JSON_FORMAT);
         
-        format.put("text/trig", TRIG_FORMAT);
-        format.put("text/nt", TURTLE_FORMAT);
-        format.put("application/turtle", TURTLE_FORMAT);
+        format.put(TRIG_TEXT, TRIG_FORMAT);
+        format.put(NT_TEXT, TURTLE_FORMAT);
+        format.put(TURTLE, TURTLE_FORMAT);
+        format.put(XML, XML_FORMAT);
     
         // shortcut for HTTP parameter format=
         format.put("text", TEXT_FORMAT);
@@ -148,6 +167,7 @@ public class ResultFormat implements ResultFormatDef {
         return format;
     }
     
+    // in case where type = text
     static int defaultType(Mappings map) {
         return map.getGraph() == null ? DEFAULT_SELECT_FORMAT : TURTLE_FORMAT; 
     }
@@ -189,8 +209,12 @@ public class ResultFormat implements ResultFormatDef {
         DEFAULT_CONSTRUCT_FORMAT = i;
     }
     
+    // no type was given at creation
     static int type(Mappings m) {
         Integer type = UNDEF_FORMAT;
+        if (m.getQuery().isTemplate()) {
+            return TEXT_FORMAT;
+        }
         ASTQuery ast = (ASTQuery) m.getAST();
         if (ast != null && ast.hasMetadata(Metadata.DISPLAY)) {
             String val = ast.getMetadata().getValue(Metadata.DISPLAY);
@@ -290,7 +314,7 @@ public class ResultFormat implements ResultFormatDef {
                 }
             }
 
-            return process(map, type());
+            return process(map);
         }
     }
     
@@ -305,27 +329,45 @@ public class ResultFormat implements ResultFormatDef {
         }
     }
         
-
-    String process(Mappings map, int type) {
+    /**
+     * Tune the format
+     */
+    String process(Mappings map) {
+        int mytype = type();
         if (isGraphFormat(type) && map.getGraph() == null) {
-            // use case: Display Mappings as RDF Graph Mappings
+            // return Mappings as W3C RDF Graph Mappings
             map.setGraph(MappingsGraph.create(map).getGraph());
         }
-        else if (type == TEXT_FORMAT) {
-            // Content-Type remains text/plain
-            type = defaultType(map);
+        else if (mytype == TEXT_FORMAT) {
+            // Chose appropriate format
+            // Content-Type remains text/plain, do not setType()
+            mytype = defaultType(map);
         }
-        return processBasic(map, type);
+//        else if (!isGraphFormat(mytype) && map.getGraph() != null) {
+//            // display graph but format is not graph
+//            // select approximate format
+//            switch (mytype) {
+//                case XML_FORMAT:  mytype = setType(RDF_XML_FORMAT); break;
+//                case JSON_FORMAT: mytype = setType(JSON_LD_FORMAT); break;
+//            }
+//        }
+        return processBasic(map, mytype);
     }
+       
     
-        
+    /**
+     * Main function
+     * map may contain a graph (construct OR W3C RDF graph format for Mappings)
+     */  
     String processBasic(Mappings map, int type) {
         switch (type) {                         
-            // case map is graph
+            // map is graph
             case RDF_XML_FORMAT:
                 return RDFFormat.create(map).toString();
             case TURTLE_FORMAT:
+                return TripleFormat.create(map).toString();
             case RDF_FORMAT:
+                // W3C RDF Graph Mappings, graph has been set above
                 return TripleFormat.create(map).toString();
             case TRIG_FORMAT:
                 return TripleFormat.create(map, true).toString();                
@@ -333,7 +375,7 @@ public class ResultFormat implements ResultFormatDef {
                 return JSONLDFormat.create(map).toString();
                             
                 
-            // case map is query result
+            // map is query result
             case XML_FORMAT:
                 XMLFormat ft = XMLFormat.create(map);
                 ft.setNbResult(nbResult);
@@ -406,8 +448,9 @@ public class ResultFormat implements ResultFormatDef {
         return type;
     }
     
-    void setType(int t) {
+    int setType(int t) {
         type = t;
+        return t;
     }
     
     public String getContentType() {

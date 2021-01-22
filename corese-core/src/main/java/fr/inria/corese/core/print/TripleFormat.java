@@ -9,6 +9,11 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
 
+/**
+ * Turtle Format
+ * 
+ * Olivier Corby, Wimmics INRIA 2013
+ */
 public class TripleFormat extends RDFFormat {
 
     static final String PREFIX = "@prefix";

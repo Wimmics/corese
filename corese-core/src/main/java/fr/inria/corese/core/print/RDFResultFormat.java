@@ -10,7 +10,7 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Serializer;
 
 /**
- * Generate RDF Result Format for Mappings (bindings in RDF)
+ * Generate Turtle W3C RDF Format for Mappings (bindings in RDF)
  * @author Olivier Corby, Wimmics INRIA I3S, 2014
  *
  */

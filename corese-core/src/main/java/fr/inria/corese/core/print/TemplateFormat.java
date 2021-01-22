@@ -14,7 +14,7 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 
 /*
- * 
+ * pragma with template ...
  * Olivier Corby, Wimmics INRIA 2013
  */
 public class TemplateFormat {

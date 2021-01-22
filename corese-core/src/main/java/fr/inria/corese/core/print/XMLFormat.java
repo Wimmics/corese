@@ -17,6 +17,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  * SPARQL XML Result Format for KGRAM Mappings
@@ -36,7 +37,7 @@ public class XMLFormat  {
 	Vector<String> select;
 	PrintWriter pw;
 
-	public  static final String SPARQLRES   =  "http://www.w3.org/2005/sparql-results#";
+	public  static final String SPARQLRES   =  NSManager.XMLRESULT;
 	private static final String XMLDEC ="<?xml version=\"1.0\" ?>";
 	private static final String OHEADER ="<sparql xmlns='" + SPARQLRES + "'>";
 	private static final String CHEADER="</sparql>";

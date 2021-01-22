@@ -1,6 +1,10 @@
 package fr.inria.corese.server.webservice;
 
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.kgram.core.Mappings;
 import static fr.inria.corese.server.webservice.Utility.toStringList;
+import fr.inria.corese.sparql.exceptions.EngineException;
 
 import java.util.List;
 
@@ -33,14 +37,48 @@ import javax.servlet.http.HttpServletRequest;
 @Path("service/{serv}")
 public class ServiceOnline {
 
-    private final Logger logger = LogManager.getLogger(this.getClass());
+    static private final Logger logger = LogManager.getLogger(ServiceOnline.class);
 
     static final String SERVICE = "/service/"; 
     
     static {
         Manager.getManager().init();
     }
+    
+    QuerySolverVisitorServer visitor;
 
+    public ServiceOnline() {
+        //setVisitor(QuerySolverVisitorServer.create(createEval()));
+    }
+    
+    QuerySolverVisitorServer getVisitor() {
+        return visitor;
+    }
+    
+    void setVisitor(QuerySolverVisitorServer vis) {
+        visitor = vis;
+    }
+
+  /**
+     * Current graph is SPARQL endpoint graph.
+     */
+    Eval createEval(TripleStore store) {
+        QueryProcess exec = QueryProcess.create(store.getGraph());
+        try {
+            return exec.getEval();
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage());
+        }
+        return null;
+    }
+    
+    void beforeRequest(HttpServletRequest request, String query) {
+        getVisitor().beforeRequest(request, query);
+    }
+    
+    void afterRequest(HttpServletRequest request, Response resp, String query, Mappings map, String res) {
+        getVisitor().afterRequest(request, resp, query, map, res);
+    }
    
    TripleStore getTripleStore(String serv){
        TripleStore ts = getManager().getTripleStoreByService(serv);       
@@ -219,7 +257,12 @@ public class ServiceOnline {
         par.setKey(access);
         par.setDataset(namedGraphUris, namedGraphUris);
         par.setRequest(request);
-        return new Transformer().template(getTripleStore(serv), par);
+        TripleStore store = getTripleStore(serv);
+        setVisitor(QuerySolverVisitorServer.create(createEval(store)));
+        beforeRequest(request, query);
+        Response resp = new Transformer().template(store, par);
+        afterRequest(request, resp, query, new Mappings(), resp.getEntity().toString());
+        return resp;
     }
 
     /**

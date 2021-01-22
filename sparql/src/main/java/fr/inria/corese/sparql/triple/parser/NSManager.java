@@ -61,6 +61,7 @@ public class NSManager extends ASTObject {
     public static final String SQL = "http://ns.inria.fr/ast/sql#";
     public static final String FOAF = "http://xmlns.com/foaf/0.1/";
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
+    public static final String XMLRESULT = "http://www.w3.org/2005/sparql-results#";
     public static final String EXT_FUN    = "function://fr.inria.corese.core.extension.Extension.";
     public static final String DCTERM = "http://purl.org/dc/terms/";
     public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";

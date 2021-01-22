@@ -12,8 +12,6 @@ prefix ff:  <test.rq/>
 
 #@public @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq> 
 
-select * where { }
-
 #
 # @init function called by Parameter after Parameter graph load processing
 # We can set application specific parameters
@@ -23,7 +21,7 @@ select * where { }
 @public @initParam
 function us:initParam() {
     xt:print("@initParam");
-    #us:initialize()
+    us:initialize()
 }
 
 @public @initServer
@@ -36,9 +34,9 @@ function us:initServer(url) {
 # current graph is Parameter graph
 @public 
 function us:initialize() {
-    xt:print(xt:turtle(xt:graph()));
-    let (select * where { [] cos:name ?name }) {
-        xt:print("start agent:", ?name)
+    #xt:print(xt:turtle(xt:graph()));
+    let (select * where { [] cos:load ?name }) {
+        xt:print("load:", ?name)
     }
 }
 

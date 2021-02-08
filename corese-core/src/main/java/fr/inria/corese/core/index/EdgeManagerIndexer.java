@@ -714,16 +714,17 @@ public class EdgeManagerIndexer
         }
         
         Edge target = list.get(i);
-        if (AccessRight.isActive() && AccessRight.reject(edge.getLevel(), target.getLevel())) {
+        
+        if (AccessRight.acceptDelete(edge, target)) {
+            Edge ent = list.remove(i);
+            if (getIndex() == 0) {
+                graph.setSize(graph.size() - 1);
+            }
+            logDelete(ent);
+            return ent;
+        } else {
             return null;
         }
-        
-        Edge ent = list.remove(i);
-        if (getIndex() == 0) {
-            graph.setSize(graph.size() - 1);
-        }
-        logDelete(ent);
-        return ent;
     }
 
     boolean onInsert(Edge ent) {

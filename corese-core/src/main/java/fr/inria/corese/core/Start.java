@@ -14,6 +14,10 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.shacl.Shacl;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.Access;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -31,6 +35,7 @@ public class Start {
     boolean display = true;
     boolean verbose = false;
     boolean execShacl = false;
+    String param = null;
 
     /**
      * Corese as command line take path and query as argument load the docs from
@@ -91,6 +96,16 @@ public class Start {
                 execShacl = true;
                 i++;
             }
+            else if (args[i].equals("-su")) {
+                Access.skip(true);
+                i++;
+            }
+            else if (args[i].equals("-var")) {
+                i++;
+                // -arg var=val;var=val
+                // global var for SPARQL query LDSCript
+                param = args[i++];
+            }
             else if (args[i].equals("-s") || args[i].equals("-silent")) {
                 i++;
                 display = false;
@@ -131,7 +146,7 @@ public class Start {
             QueryProcess exec = QueryProcess.create(g);
             
             for (String q : query) {
-                Mappings map = exec.query(q);
+                Mappings map = exec.query(q, param(param));
                 ResultFormat f = ResultFormat.create(map);
                 if (display) {
                     System.out.println(f);
@@ -145,7 +160,7 @@ public class Start {
                     System.out.println(q);
                     System.out.println();
                 }
-                Mappings map = exec.query(q);
+                Mappings map = exec.query(q, param(param));
                 ResultFormat f = ResultFormat.create(map);
                 System.out.println(f);
             }
@@ -180,6 +195,24 @@ public class Start {
                 Logger.getLogger(Start.class.getName()).log(Level.SEVERE, null, ex);
             }
         }
+    }
+    
+    // var=val;var=val
+    Binding param(String param) {
+        Binding b = Binding.create();
+        if (param != null) {
+            String[] list = param.split(";");
+
+            for (String elem : list) {
+                String[] decl = elem.split("=");
+                String var = decl[0];
+                if (!var.startsWith("?")) {
+                    var = "?".concat(var);
+                }
+                b.setVariable(var, DatatypeMap.newInstance(decl[1]));
+            }
+        }
+        return b;
     }
     
     void shacl(Graph g, String shape) throws LoadException, EngineException {

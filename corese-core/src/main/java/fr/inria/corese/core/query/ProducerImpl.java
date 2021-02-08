@@ -35,6 +35,7 @@ import fr.inria.corese.core.Index;
 import fr.inria.corese.core.util.ValueCache;
 import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
 import fr.inria.corese.kgram.core.SparqlException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.util.HashMap;
@@ -322,29 +323,35 @@ public class ProducerImpl implements Producer, IProducerQP {
             it = graph.getDataStore().getDefault(emptyFrom).iterate(predicate, focusNode, n);
         } else {
             boolean skip = graph.isEdgeMetadata() && edge.nbNode()==2;
-            byte access = ast.getAccess().getWhere();
-            it = getEdges(gNode, getNode(gNode, env), from, predicate, focusNode, objectNode, n, skip, access);
+            it = getEdges(gNode, getNode(gNode, env), from, predicate, focusNode, objectNode, n, skip, getAccessRight(env));
         }
         // in case of local Matcher
         it = localMatch(it, gNode, edge, env);
 
         return it;
+    }      
+    
+    
+    AccessRight getAccessRight(Environment env) {
+        Binding b = (Binding) env.getBind();
+        return b.getAccessRight();
     }
+    
 
     /**
      * Enumerate candidate edges either from default graph or from named graphs
      */
     public Iterable<Edge> getEdges(Node gNode, Node sNode, List<Node> from,
-            Node predicate, Node focusNode, Node objectNode, int n, boolean skip, byte access) {
+            Node predicate, Node focusNode, Node objectNode, int n, boolean skip, AccessRight access) {
         return dataProducer(gNode, from, sNode, skip, access).iterate(predicate, focusNode, n);
     }
     
-    Iterable<Edge> getEdges(Node gNode, Node sNode, List<Node> from,
-            Node predicate, Node focusNode, Node objectNode, int n, boolean skip) {
-        return dataProducer(gNode, from, sNode, skip, AccessRight.PUBLIC).iterate(predicate, focusNode, n);
-    }
+//    Iterable<Edge> getEdges(Node gNode, Node sNode, List<Node> from,
+//            Node predicate, Node focusNode, Node objectNode, int n, boolean skip) {
+//        return dataProducer(gNode, from, sNode, skip, null).iterate(predicate, focusNode, n);
+//    }
 
-    DataProducer dataProducer(Node gNode, List<Node> from, Node sNode, boolean skip, byte access) {
+    DataProducer dataProducer(Node gNode, List<Node> from, Node sNode, boolean skip, AccessRight access) {
         DataProducer dp;
         if (gNode == null) {
             dp = graph.getDataStore().getDefault(from).setSkipEdgeMetadata(skip);
@@ -499,7 +506,7 @@ public class ProducerImpl implements Producer, IProducerQP {
             }
         }
 
-        Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, graph.isEdgeMetadata());
+        Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, graph.isEdgeMetadata(), getAccessRight(env));
 
         return it;
     }
@@ -507,6 +514,7 @@ public class ProducerImpl implements Producer, IProducerQP {
     boolean isDB() {
         return getClass() != ProducerImpl.class;
     }
+    
 
     /**
      * regex is a negation ?x ! rdf:type ?y ?x !(rdf:type|rdfs:subClassOf) ?y
@@ -521,7 +529,7 @@ public class ProducerImpl implements Producer, IProducerQP {
             if (match(exp, predicate)) {
                 // exclude
             } else {
-                Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, graph.isEdgeMetadata());
+                Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, graph.isEdgeMetadata(), getAccessRight(env));
 
                 if (it != null) {
                     meta.next(it);

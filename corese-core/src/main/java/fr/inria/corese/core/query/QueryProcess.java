@@ -45,11 +45,10 @@ import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
-import java.io.IOException;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -366,6 +365,10 @@ public class QueryProcess extends QuerySolver {
     public Mappings query(String squery, Context c) throws EngineException {
         return query(squery, null, Dataset.create(c));
     }
+    
+    public Mappings query(String squery, AccessRight access) throws EngineException {
+        return query(squery, new Context(access));
+    }
 
     @Override
     public Mappings query(String squery, Mapping map) throws EngineException {
@@ -622,13 +625,25 @@ public class QueryProcess extends QuerySolver {
 
             if (q.isConstruct()) {
                 // construct where
-                construct(map, null);
+                construct(map, null, getAccessRight(m));
             }
             log(Log.QUERY, q, map);
         }
 
         finish(q, map);
         return map;
+    }
+    
+    AccessRight getAccessRight(Mapping m) {
+        Binding b = getBinding(m);
+        return b==null?null:b.getAccessRight();
+    }
+    
+    Binding getBinding(Mapping m) {
+        if (m == null) {
+            return null;
+        }
+        return (Binding) m.getBind();
     }
     
     /**
@@ -646,7 +661,8 @@ public class QueryProcess extends QuerySolver {
                     m.setBind(ds.getBinding());
                 }
             }
-            if (ds.getContext() != null) {
+            Context c = ds.getContext();
+            if (c != null) {
                 // use case: query with Context
                 if (m == null) {
                     m = new Mapping();
@@ -656,9 +672,12 @@ public class QueryProcess extends QuerySolver {
                     b = Binding.create();
                     m.setBind(b);
                 }
+                b.setDebug(c.isDebug());
                 //share Context access level
-                b.setAccessLevel(ds.getContext().getLevel());
-                b.setDebug(ds.getContext().isDebug());
+                b.setAccessLevel(c.getLevel());
+                if (c.getAccessRight() != null) {
+                    b.setAccessRight(c.getAccessRight());
+                }
             }
         }
         return m;
@@ -835,7 +854,7 @@ public class QueryProcess extends QuerySolver {
     /**
      * construct {} where {} *
      */
-    void construct(Mappings map, Dataset ds) {
+    void construct(Mappings map, Dataset ds, AccessRight access) {
         Query query = map.getQuery();
         Graph gg = getGraph().construct();
         // can be required to skolemize
@@ -843,6 +862,7 @@ public class QueryProcess extends QuerySolver {
         Construct cons = Construct.create(query, new GraphManager(gg));
         cons.setDebug(isDebug() || query.isDebug());
         cons.construct(map);
+        cons.setAccessRight(access);
         map.setGraph(gg);
         getVisitor().construct(map);
     }

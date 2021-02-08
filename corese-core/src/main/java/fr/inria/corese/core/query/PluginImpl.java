@@ -75,6 +75,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 import javax.ws.rs.core.Response;
 
 /**
@@ -451,7 +452,7 @@ public class PluginImpl
     @Override
     public IDatatype write(IDatatype dtfile, IDatatype dt) {
         QueryLoad ql = QueryLoad.create();
-        String str = ql.writeTemp(dtfile.getLabel(), dt.getLabel());
+        String str = ql.writeTemp(dtfile.getLabel(), dt);
         if (str == null) {
             return null;
         }
@@ -1231,6 +1232,10 @@ public class PluginImpl
         } else {
             return (ASTQuery) q.getAST();
         }
+    }
+    
+    ASTQuery getAST(Environment env) {
+        return (ASTQuery) env.getQuery().getAST();
     }
 
     public class TreeNode extends TreeMap<IDatatype, IDatatype> {

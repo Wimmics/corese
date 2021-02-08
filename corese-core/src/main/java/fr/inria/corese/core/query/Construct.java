@@ -62,6 +62,7 @@ public class Construct
     private int loopIndex = -1;
     private Node prov;
     private ProcessVisitor visitor;
+    private AccessRight accessRight;
     
 
     Construct(Query q, Dataset ds) {
@@ -72,6 +73,7 @@ public class Construct
     Construct(Query q) {
         query = q;
         ast = (ASTQuery) query.getAST();
+        //setAccessRight(ast.getAccess());
         table = new HashMap<Node, Node>();
         count = 0;
         //dtDefaultGraph = DatatypeMap.createResource(src);
@@ -153,8 +155,8 @@ public class Construct
     }
     
     public void delete(Mappings map, Dataset ds) {
-        if (AccessRight.isActive()) {
-            if (! ast.getAccess().isDelete()){
+        if (AccessRight.isActive() && getAccessRight() != null) {
+            if (! getAccessRight().isDelete()){
                 return;
             } 
         }
@@ -169,8 +171,8 @@ public class Construct
     }
 
     public void insert(Mappings map, Dataset ds) {
-        if (AccessRight.isActive()) {
-            if (! ast.getAccess().isInsert()){
+        if (AccessRight.isActive() && getAccessRight() != null) {
+            if (! getAccessRight().isInsert()){
                 return;
             } 
         }
@@ -282,8 +284,8 @@ public class Construct
                     ent.setIndex(loopIndex);
                     if (isDelete) {
                         boolean accept = true;
-                        if (AccessRight.isActive()) {
-                            accept = ast.getAccess().setDelete(ent);
+                        if (AccessRight.isActive()&&getAccessRight() != null) {
+                            accept = getAccessRight().setDelete(ent);
                         }
                         if (accept) {
                             if (isDebug) {
@@ -312,8 +314,8 @@ public class Construct
                             logger.debug("** Construct: " + ent);
                         }
                         boolean accept = true;
-                        if (AccessRight.isActive()) {
-                            accept = ast.getAccess().setInsert(ent);
+                        if (AccessRight.isActive()&&getAccessRight() != null) {
+                            accept = getAccessRight().setInsert(ent);
                         }
                         if (accept) {
                             if (isRule && isAllEntailment()) {
@@ -632,5 +634,19 @@ public class Construct
      */
     public static void setAllEntailment(boolean aAllEntailment) {
         allEntailment = aAllEntailment;
+    }
+
+    /**
+     * @return the accessRight
+     */
+    public AccessRight getAccessRight() {
+        return accessRight;
+    }
+
+    /**
+     * @param accessRight the accessRight to set
+     */
+    public void setAccessRight(AccessRight accessRight) {
+        this.accessRight = accessRight;
     }
 }

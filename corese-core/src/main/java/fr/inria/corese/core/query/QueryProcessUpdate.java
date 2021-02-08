@@ -17,6 +17,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
@@ -114,11 +115,23 @@ public class QueryProcessUpdate {
         }
         UpdateProcess up = UpdateProcess.create(getQueryProcess(), createUpdateManager(getGraph()), ds);
         up.setDebug(isDebug());
-        Mappings map = up.update(query, m);
+        Mappings map = up.update(query, m, getBinding(m));
 
         afterUpdate(vis, map, isSynchronized());
         getEventManager().finish(Event.Update, ast);
         return map;
+    }
+    
+    // Binding may have been set by @beforeUpdate
+    Binding getBinding(Mapping m) {
+        if (m == null) {
+            return getQueryProcess().getCurrentBinding();
+        }
+        Binding b = (Binding) m.getBind();
+        if (b == null) {
+            return getQueryProcess().getCurrentBinding();
+        }
+        return b;
     }
 
     /**

@@ -14,6 +14,7 @@ import fr.inria.corese.core.edge.EdgeTop;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.PRODUCER;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.util.ArrayList;
 
 /**
@@ -251,6 +252,11 @@ public class DataProducer extends GraphObject implements Iterable<Edge>, Iterato
     
     public DataProducer access(byte n){
         setFilter(new DataFilter(ExprType.EDGE_ACCESS, n));
+        return  this;
+    }
+    
+    public DataProducer access(AccessRight ac){
+        setFilter(new DataFilter(ExprType.EDGE_ACCESS, ac));
         return  this;
     }
     

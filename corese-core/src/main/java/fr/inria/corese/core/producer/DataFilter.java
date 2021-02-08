@@ -26,6 +26,7 @@ public class DataFilter implements ExprType {
     private int test;
     int index, other = 1;
     byte level = AccessRight.DEFAULT;
+    private AccessRight accessRight;
     
     private IDatatype value;
     
@@ -45,10 +46,15 @@ public class DataFilter implements ExprType {
        this(test, null, index);
     }
     
-     public DataFilter(int test, byte level){
+    public DataFilter(int test, byte level){
        this.test = test;
        this.level = level;
     }
+     
+    public DataFilter(int test, AccessRight ac){
+       this.test = test;
+       setAccessRight(ac);
+    } 
     
     public DataFilter(int test, IDatatype dt){
         this(test, dt, 1);
@@ -121,8 +127,7 @@ public class DataFilter implements ExprType {
                 return result(ent.getIndex() >= index);
                 
             case EDGE_ACCESS:
-                //System.out.println("DF access: "  + level + " " + ent.getLevel());
-                return AccessRight.accept(level, ent.getLevel());    
+                return getAccessRight().acceptWhere(ent.getLevel());    
                 
             default:
                 IDatatype dt =  getValue(ent, index);
@@ -207,6 +212,20 @@ public class DataFilter implements ExprType {
      */
     public void setValue(IDatatype value) {
         this.value = value;
+    }
+
+    /**
+     * @return the accessRight
+     */
+    public AccessRight getAccessRight() {
+        return accessRight;
+    }
+
+    /**
+     * @param accessRight the accessRight to set
+     */
+    public void setAccessRight(AccessRight accessRight) {
+        this.accessRight = accessRight;
     }
     
 

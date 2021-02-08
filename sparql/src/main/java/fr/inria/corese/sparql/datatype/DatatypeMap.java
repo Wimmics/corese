@@ -26,6 +26,7 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.NodeList;
 
@@ -352,7 +353,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
                 return newInstance((Double) obj);
             }  else if (obj instanceof Short) {
                 return newInstance(Integer.valueOf((Short)obj));
-            }          
+            } 
+            else if (obj instanceof Byte) {
+                return newInstance(Integer.valueOf((Byte)obj));
+            } 
         } else if (obj instanceof Boolean) {
             return newInstance((Boolean) obj);
         } else if (obj instanceof String) {
@@ -686,7 +690,14 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
     
     public static CoreseJSON json(String json) {
-        return new CoreseJSON(json);
+        try {
+            return new CoreseJSON(json);
+        }
+        catch(JSONException ex) {
+            logger.error(ex.getMessage());
+            logger.error(json.substring(0, 100).concat("..."));
+            return json();
+        }
     }
     
     public static CoreseJSON json() {

@@ -51,6 +51,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 
 /**
  * Forward Rule Engine 
@@ -116,6 +117,7 @@ public class RuleEngine implements Engine, Graphable {
     private ProcessVisitor visitor;
     private String base;
     private Level level = Level.USER_DEFAULT;
+    private AccessRight accessRight;
     
     public enum Profile {
         
@@ -341,12 +343,17 @@ public class RuleEngine implements Engine, Graphable {
         return process(Binding.create());
     }
     
+    /**
+     * LDScript Binding stack is shared by rule processing
+     * Hence global and static variables are available
+     * Binding may manage AccessRight which is shared by rule processing
+     */
     public boolean process(Binding b) throws EngineException {
         System.out.println("RuleEngine process: " + getPath());
         before(b);
         int size = graph.size();
         Mapping m = Mapping.create(b);
-        entail(m);
+        entail(m, b);
         after();
         return graph.size() > size;
     }
@@ -396,29 +403,6 @@ public class RuleEngine implements Engine, Graphable {
         if (isEvent()) getVisitor().afterEntailment(getPath());
     }
     
-
-
-//    public int process(Graph g) {
-//        set(g);
-//        if (exec == null) {
-//            set(QueryProcess.create(g));
-//        }
-//        return entail();
-//    }
-//
-//    public int process(Graph g, QueryProcess q) {
-//        set(g);
-//        set(q);
-//        return entail();
-//    }
-//
-//    public int process(QueryProcess q) {
-//        if (graph == null) {
-//            set(Graph.create());
-//        }
-//        set(q);
-//        return entail();
-//    }
 
     public Graph getRDFGraph() {
         return graph;
@@ -582,11 +566,11 @@ public class RuleEngine implements Engine, Graphable {
     /**
      * Process rule base at saturation PRAGMA: not synchronized on write lock
      */
-    public int entail(Mapping m) throws EngineException {
+    public int entail(Mapping m, Binding b) throws EngineException {
         begin();
         int start = graph.size();
         try {
-            infer(m);
+            infer(m, b);
             if (trace){
                 //traceSize();
             }
@@ -645,7 +629,7 @@ public class RuleEngine implements Engine, Graphable {
     
     
      
-    void infer(Mapping m) throws EngineException{
+    void infer(Mapping m, Binding b) throws EngineException{
         int size = graph.size(),
                 start = size;
         loop = 0;
@@ -697,7 +681,7 @@ public class RuleEngine implements Engine, Graphable {
                     if (loop == 0) {
                         // run all rules, add all solutions
                         nt = record(rule, loopIndex, loop);
-                        nbres = process(rule, m, nt, loop, loopIndex,  nbrule);
+                        nbres = process(rule, m, b, nt, loop, loopIndex,  nbrule);
                         if (isClosure(rule)){
                             // rule run at saturation: record nb edge after saturation
                             nt = record(rule, loopIndex+1, loop);
@@ -720,7 +704,7 @@ public class RuleEngine implements Engine, Graphable {
                             }
                             
                             rw.start(ot, nt);
-                            nbres = process(rule, m, nt, loop, loopIndex,  nbrule);
+                            nbres = process(rule, m, b, nt, loop, loopIndex,  nbrule);
                             if (isClosure(rule)){
                                 // rule run at saturation: record nb edge after execution
                                 nt = record(rule, loopIndex+1, loop);
@@ -737,7 +721,7 @@ public class RuleEngine implements Engine, Graphable {
 
                     rw.finish(rule);
                 } else {
-                    nbres = process(rule, m, null, loop, -1,  nbrule);
+                    nbres = process(rule, m, b, null, loop, -1,  nbrule);
                     nbrule++;
                 }
 
@@ -843,7 +827,7 @@ public class RuleEngine implements Engine, Graphable {
     /**
      * Process one rule 
      */
-    int process(Rule rule, Mapping m, Record nt,  int loop, int loopIndex,  int nbr) throws EngineException {
+    int process(Rule rule, Mapping m, Binding b, Record nt,  int loop, int loopIndex,  int nbr) throws EngineException {
         
         if (trace){
            System.out.println(loop + " : " + nbr + " : " + rule.getIndex() + " " + ((rw!=null)?rw.isNew():""));
@@ -856,6 +840,7 @@ public class RuleEngine implements Engine, Graphable {
 
         Query qq = rule.getQuery();
         Construct cons = Construct.create(qq);
+        cons.setAccessRight(b.getAccessRight());
         cons.setDefaultGraph(graph.addRuleGraphNode());
         cons.setRule(rule, rule.getIndex(), rule.getProvenance());
         cons.set(new GraphManager(graph));
@@ -864,11 +849,12 @@ public class RuleEngine implements Engine, Graphable {
         if (isEvent()) cons.setVisitor(getVisitor());
 
         if (isConstruct) {
+            // TODO AR
             // kgram Result Listener create edges in list
             // after query completes, edges are inserted in graph
             // no Mappings are created by kgram
             cons.setBuffer(true);
-            cons.setInsertList(new ArrayList<Edge>());
+            cons.setInsertList(new ArrayList<>());
             //cons.setDefaultGraph(graph.addRuleGraphNode());
             Mappings map = Mappings.create(qq);
             // ResultWatcher call cons to create edges when a solution occur
@@ -885,12 +871,12 @@ public class RuleEngine implements Engine, Graphable {
             clos.closure(loop, loopIndex, index);
         }
         else {
-            process(rule, m, cons);
+            process(rule, m, b, cons);
             
             if (graph.size() > start && isConstruct 
                     && isOptTransitive() && rule.isAnyTransitive()){ 
                  // optimization for transitive rules: eval at saturation
-                 transitive(rule, m, cons);               
+                 transitive(rule, m, b, cons);               
             }
         }
 
@@ -919,7 +905,7 @@ public class RuleEngine implements Engine, Graphable {
        for evaluating the where part, the first query edge matches new edges only
        Producer will consider list of edges created at preceeding loop.
     */
-    void transitive(Rule rule, Mapping m, Construct cons) throws EngineException {
+    void transitive(Rule rule, Mapping m, Binding b, Construct cons) throws EngineException {
         rule.setClosure(true);
         Query qq = rule.getQuery();
         boolean go = true;
@@ -931,7 +917,7 @@ public class RuleEngine implements Engine, Graphable {
             cons.setInsertList(new ArrayList<>());
             int size = graph.size();
 
-            process(rule, m, cons);
+            process(rule, m, b, cons);
 
             if (graph.size() == size) {
                 qq.setEdgeList(null);
@@ -955,7 +941,7 @@ public class RuleEngine implements Engine, Graphable {
    
     
     // process rule
-    void process(Rule r, Mapping m, Construct cons) throws EngineException {
+    void process(Rule r, Mapping m, Binding b, Construct cons) throws EngineException {
         Query qq = r.getQuery();
         if (isEvent()) getVisitor().beforeRule(qq);
         Mappings map = exec.query(qq, m);
@@ -1406,4 +1392,19 @@ public class RuleEngine implements Engine, Graphable {
     public void setEvent(boolean event) {
         this.event = event;
     }
+    
+    /**
+     * @return the accessRight
+     */
+    public AccessRight getAccessRight() {
+        return accessRight;
+    }
+
+    /**
+     * @param accessRight the accessRight to set
+     */
+    public void setAccessRight(AccessRight accessRight) {
+        this.accessRight = accessRight;
+    }
+
 }

@@ -21,6 +21,7 @@ public class AccessRightDefinition {
     private AccessMap predicateAccess;
     
     private boolean debug = false;
+    private boolean inheritDefault = false;
     
     
     
@@ -30,10 +31,16 @@ public class AccessRightDefinition {
     
     public class AccessMap extends HashMap<String, Byte> {
 
-        public void define(String uri, Byte b) {
+        public AccessMap define(String uri, Byte b) {
             put(uri, b);
+            return this;
         }
 
+        /**
+         * return URI access right if any
+         * otherwise return namespace(URI) access right if any
+         * otherwise return null
+         */
         Byte getAccess(Node node) {
             if (isEmpty()) {
                 return null;
@@ -46,6 +53,30 @@ public class AccessRightDefinition {
             return get(ns);
         }
         
+        void inherit(AccessMap map) {
+            for (String key : map.keySet()) {
+                put(key, map.get(key));
+            }
+        }
+        
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        if (! getNode().isEmpty()) {
+            sb.append("node:");
+            sb.append(getNode());
+        }
+        if (! getPredicate().isEmpty()) {
+            sb.append("predicate:");
+            sb.append(getPredicate());
+        }
+        if (! getGraph().isEmpty()) {
+            sb.append("graph:");
+            sb.append(getGraph());
+        }
+        return sb.toString();
     }
     
     public AccessRightDefinition() {
@@ -53,12 +84,29 @@ public class AccessRightDefinition {
     }
     
     void init() {
-        nodeAccess      = new AccessMap();
-        graphAccess     = new AccessMap();
-        predicateAccess = new AccessMap();
+        setNodeAccess(new AccessMap());
+        setGraphAccess(new AccessMap());
+        setPredicateAccess(new AccessMap());
     }
     
     
+    public void inheritDefault() {
+        inherit(getSingleton());
+        setInheritDefault(true);
+    }
+    
+    public void clear() {
+        getNodeAccess().clear();
+        getPredicateAccess().clear();
+        getGraphAccess().clear();
+    }
+    
+    public void inherit(AccessRightDefinition acc) {
+        getNodeAccess().inherit(acc.getNodeAccess());
+        getPredicateAccess().inherit(acc.getPredicateAccess());
+        getGraphAccess().inherit(acc.getGraphAccess());
+    }
+       
     int size() {
         return getNode().size() + getPredicate().size() + getGraph().size();
     }
@@ -69,7 +117,7 @@ public class AccessRightDefinition {
      * res is the URI|namespace access right granted for edge 
      */
     Byte getAccess(Edge edge, byte def) {
-        Byte res = getAccessOrDefault(edge);
+        Byte res = getAccess(edge);
         if (res == null) {
             return def;
         }
@@ -77,6 +125,51 @@ public class AccessRightDefinition {
     }
     
     Byte getAccess(Edge edge) {
+       return getAccessDirect(edge);
+    }
+    
+    /**
+     * URI of default may overload namespace of current (if current has no URI)
+     */
+    Byte getAccessDirect(Edge edge) {  
+        if (size() == 0) {
+            return null;
+        }
+        return combine(getSubject(edge), combine(getObject(edge), combine(getPredicate(edge), getGraph(edge))));
+    }  
+
+    /**
+     * Namespace of current overload URI of default
+     */
+    Byte getAccessWithDefault(Edge edge) {
+        Byte subject = get(getSubject(edge), getSingleton().getSubject(edge));
+        Byte object = get(getObject(edge), getSingleton().getObject(edge));
+        Byte pred = get(getPredicate(edge), getSingleton().getPredicate(edge));
+        Byte graph = get(getGraph(edge), getSingleton().getGraph(edge));
+        return combine(subject, combine(object, combine(pred, graph)));
+    }  
+         
+    Byte get(Byte current, Byte defaut) {
+        return (current == null) ? defaut : current;
+    }
+    
+    Byte getAccess2(Edge edge, byte def) {
+        Byte res = getAccessOrDefault(edge);
+        if (res == null) {
+            return def;
+        }
+        return res;
+    }
+    
+    Byte getAccessOrDefault(Edge edge) {
+        Byte res = getAccessBasic(edge);
+        if (res == null) {
+            return getSingleton().getAccessBasic(edge);
+        }
+        return res;
+    }
+    
+    Byte getAccessBasic(Edge edge) {
         if (size() > 0) {
             Byte node   = combine(getSubject(edge),   getObject(edge));
             Byte access = combine(getPredicate(edge), getGraph(edge));
@@ -86,8 +179,13 @@ public class AccessRightDefinition {
         return null;
     }
     
+    int getMode() {
+        return AccessRight.getMode();
+    }
+
+    
     Byte combine(Byte b1, Byte b2) {
-        if (AccessRight.getMode() == AccessRight.BI_MODE) {
+        if (getMode() == AccessRight.BI_MODE) {
             return combineBinary(b1, b2);
         }
         return moreRestricted(b1, b2);
@@ -103,13 +201,6 @@ public class AccessRightDefinition {
         return (byte)(b1 | b2) ;
     }
     
-    Byte getAccessOrDefault(Edge edge) {
-        Byte res = getAccess(edge);
-        if (res == null) {
-            return getSingleton().getAccess(edge);
-        }
-        return res;
-    }
 
     Byte moreRestricted(Byte b1, Byte b2) {
         if (b1 == null) {
@@ -147,7 +238,7 @@ public class AccessRightDefinition {
     Byte getSubject(Edge edge) {
         return getNode().getAccess(edge.getNode(0));
     }
-    
+       
     Byte getObject(Edge edge) {
         return getNode().getAccess(edge.getNode(1));
     }
@@ -162,42 +253,42 @@ public class AccessRightDefinition {
      * @return the nodeAccess
      */
     public AccessMap getNode() {
-        return nodeAccess;
+        return getNodeAccess();
     }
 
     /**
      * @param nodeAccess the nodeAccess to set
      */
     public void setNode(AccessMap nodeAccess) {
-        this.nodeAccess = nodeAccess;
+        this.setNodeAccess(nodeAccess);
     }
 
     /**
      * @return the graphAccess
      */
     public AccessMap getGraph() {
-        return graphAccess;
+        return getGraphAccess();
     }
 
     /**
      * @param graphAccess the graphAccess to set
      */
     public void setGraph(AccessMap graphAccess) {
-        this.graphAccess = graphAccess;
+        this.setGraphAccess(graphAccess);
     }
 
     /**
      * @return the predicateAccess
      */
     public AccessMap getPredicate() {
-        return predicateAccess;
+        return getPredicateAccess();
     }
 
     /**
      * @param predicateAccess the predicateAccess to set
      */
     public void setPredicate(AccessMap predicateAccess) {
-        this.predicateAccess = predicateAccess;
+        this.setPredicateAccess(predicateAccess);
     }
 
     /**
@@ -226,6 +317,62 @@ public class AccessRightDefinition {
      */
     public static void setSingleton(AccessRightDefinition aSingleton) {
         singleton = aSingleton;
+    }
+
+    /**
+     * @return the nodeAccess
+     */
+    public AccessMap getNodeAccess() {
+        return nodeAccess;
+    }
+
+    /**
+     * @param nodeAccess the nodeAccess to set
+     */
+    public void setNodeAccess(AccessMap nodeAccess) {
+        this.nodeAccess = nodeAccess;
+    }
+
+    /**
+     * @return the graphAccess
+     */
+    public AccessMap getGraphAccess() {
+        return graphAccess;
+    }
+
+    /**
+     * @param graphAccess the graphAccess to set
+     */
+    public void setGraphAccess(AccessMap graphAccess) {
+        this.graphAccess = graphAccess;
+    }
+
+    /**
+     * @return the predicateAccess
+     */
+    public AccessMap getPredicateAccess() {
+        return predicateAccess;
+    }
+
+    /**
+     * @param predicateAccess the predicateAccess to set
+     */
+    public void setPredicateAccess(AccessMap predicateAccess) {
+        this.predicateAccess = predicateAccess;
+    }
+
+    /**
+     * @return the inheritDefault
+     */
+    public boolean isInheritDefault() {
+        return inheritDefault;
+    }
+
+    /**
+     * @param inheritDefault the inheritDefault to set
+     */
+    public void setInheritDefault(boolean inheritDefault) {
+        this.inheritDefault = inheritDefault;
     }
     
     

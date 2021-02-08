@@ -471,7 +471,6 @@ public class ASTQuery
         predicateList = new ArrayList<>();
         tripleList = new ArrayList<>();
         visitList = new ArrayList<>();
-        setAccessRight(new AccessRight());
     }
 
     ASTQuery(String query) {
@@ -507,7 +506,6 @@ public class ASTQuery
         ASTQuery ast = create();
         ast.setGlobalAST(this);
         ast.setNSM(getNSM());
-        ast.setAccessRight(getAccessRight());
         return ast;
     }
 
@@ -1311,16 +1309,6 @@ public class ASTQuery
         return metadata;
     }
     
-    /** 
-     * this is a generated update ast
-     * ga is the global update query
-     * share access right
-    */
-    public void shareAccess(ASTQuery ga) {
-        if (AccessRight.isActive()) {
-            setAccessRight(ga.getAccessRight());
-        }
-    }
         
     public String getMetadataValue(int type) {
         return metadata.getValue(type);
@@ -3823,34 +3811,10 @@ public class ASTQuery
     
     // does not overload annotation
     public void defReadAccess(byte readAccess) {
-//        if (getReadAccess() == UNDEFINED) {
-//            setReadAccess(readAccess);
-//        }
     }
     // does not overload annotation
     public void defWriteAccess(byte readAccess) {
-//        if (getWriteAccess() == UNDEFINED) {
-//            setWriteAccess(readAccess);
-//        }
     }
     
-    public AccessRight getAccess() {
-        return getGlobalAST().getAccessRight();
-    }
-    
-
-    /**
-     * @return the accessRight
-     */
-    public AccessRight getAccessRight() {
-        return accessRight;
-    }
-
-    /**
-     * @param accessRight the accessRight to set
-     */
-    public void setAccessRight(AccessRight accessRight) {
-        this.accessRight = accessRight;
-    }
     
 }

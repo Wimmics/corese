@@ -10,6 +10,8 @@ import fr.inria.corese.sparql.api.IDatatype;
 public class AccessRight {
     
     private static boolean active = false;
+    // @deprecated
+    private static boolean inheritDefault = false;
     
     // NONE means no access right 
     public static final byte NONE       =-1;
@@ -18,7 +20,8 @@ public class AccessRight {
     public static final byte PROTECTED  = 2;
     public static final byte RESTRICTED = 3;
     public static final byte PRIVATE    = 4;
-    
+    public static final byte SUPER_USER = 5;
+      
     public static final int GT_MODE  = 0;
     public static final int EQ_MODE  = 1;
     public static final int BI_MODE  = 2;
@@ -32,6 +35,9 @@ public class AccessRight {
     public static final byte FIVE = 0b0010000;
     public static final byte SIX  = 0b0100000;
     public static final byte SEVEN= 0b1000000;
+    
+    public static final byte ACCESS_MAX = PRIVATE;
+    public static final byte ACCESS_MAX_BI = SEVEN;
     
     public static final byte[] BINARY = {ZERO, ONE, TWO, THREE, FOUR, FIVE, SIX, SEVEN};
     
@@ -56,14 +62,20 @@ public class AccessRight {
 
     // update authorized
     private boolean update = true;
-       
-    // access granted to the delete clause
-    private byte delete = DEFAULT;
-    // access level assigned to inserted edge 
-    private byte insert = DEFAULT;
-    // access granted to the where clause
-    private byte where  = DEFAULT;
     
+    // default access right assigned to inserted/loaded triple
+    private byte define = DEFAULT;
+    
+    // access granted to delete clause
+    private byte delete = DEFAULT;
+    // access granted to insert clause
+    private byte insert = DEFAULT;
+    // access granted to where clause
+    private byte whereMin = UNDEFINED;
+    private byte whereMax = UNDEFINED;
+    private byte[] whereList = new byte[0];
+    private byte where    = DEFAULT;
+        
     private static int mode = DEFAULT_MODE;
     
     private AccessRightDefinition insertRightDefinition, deleteRightDefinition;
@@ -71,11 +83,12 @@ public class AccessRight {
     private boolean debug = false;
     
     
-    // by default insert and delete access right are the same
+    
+    /**
+     * 
+     */
     public AccessRight() {
-        AccessRightDefinition a = new AccessRightDefinition();
-        setInsertRightDefinition(a);
-        setDeleteRightDefinition(a);
+        split();
     }
     
     public AccessRight(byte access) {
@@ -85,10 +98,17 @@ public class AccessRight {
 
     public AccessRight(byte delete, byte insert, byte where) {
         this();
+        setDefine(insert);
         setDelete(delete);
         setInsert(insert);
         setWhere(where);
     }
+    
+    @Override
+    public String toString() {
+        return "access right:\n".concat(getAccessRightDefinition().toString());
+    }
+       
     
     // insert and delete have different access right
     public AccessRight split() {
@@ -97,27 +117,59 @@ public class AccessRight {
         return this;
     }
     
-    /**
-     *  
-     */
-    public boolean setDelete(Edge edge) {
-        setDeleteNS(edge);
-        return accept(edge.getLevel());
+    public void inheritDefault() {
+        getAccessRightDefinition().inheritDefault();
     }
     
-    public boolean setInsert(Edge edge) {
-        //setInsertBasic(edge);
-        setInsertNS(edge);
-        return accept(edge.getLevel());
+    public void splitInheritDefault() {
+        getInsertRightDefinition().inheritDefault();
+        getDeleteRightDefinition().inheritDefault();
     }
-    
-    
+      
     
     public static boolean accept(byte b) {
         return b != NONE;
     }
     public static boolean reject(byte b) {
         return b == NONE;
+    }
+    
+//    public static boolean acceptWhere(byte query, byte target) {
+//        return accept(query, target);
+//    }
+    
+    
+    
+    public boolean acceptWhere(byte target) {
+        //return acceptWhereBasic(target);
+        return acceptWhereGeneric(target);
+    }
+    
+    public boolean acceptWhereGeneric(byte target) {
+        if (getWhereMax() != UNDEFINED) {
+            return acceptWhereMinMax(target);
+        }
+        if (getWhereList().length > 0) {
+            return acceptWhereList(target);
+        }
+        return acceptWhereBasic(target);
+    }
+    
+    public boolean acceptWhereBasic(byte target) {
+        return accept(getWhere(), target);
+    }
+    
+    public boolean acceptWhereMinMax(byte target) {
+        return getWhereMin() <= target && target <= getWhereMax();
+    }
+    
+    public boolean acceptWhereList(byte target) {
+        for (byte b : getWhereList()) {
+            if (b == target) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public static boolean accept(byte query, byte target) {
@@ -130,38 +182,55 @@ public class AccessRight {
                 return acceptGT(query, target);
         }
     }
+    
     public static boolean reject(byte query, byte target) {
-        switch (mode) {
-            case EQ_MODE:
-                return rejectEQ(query, target);
-            case BI_MODE:
-                return rejectBI(query, target);
-            default:
-                return rejectLT(query, target);
-        }
+        return ! accept(query, target);
     }
+    
+    /**
+     * Use case: delete target edge
+     */
+    public static boolean acceptDelete(Edge query, Edge target) {
+        return ! isActive() || accept(query.getLevel(), target.getLevel());
+    }   
     
     // specific test for query = target = 0
     public static boolean acceptBI(byte query, byte target) {
         return (query & target) > 0;
     } 
-    public static boolean rejectBI(byte query, byte target) {
-        return  (query & target) == 0;
-    } 
+//    public static boolean rejectBI(byte query, byte target) {
+//        return  (query & target) == 0;
+//    } 
     
     public static boolean acceptGT(byte query, byte target) {
         return query >= target;
     } 
-    public static boolean rejectLT(byte query, byte target) {
-        return query < target;
-    } 
+//    public static boolean rejectLT(byte query, byte target) {
+//        return query < target;
+//    } 
     
     public static boolean acceptEQ(byte query, byte target) {
-        return query == target;
+        return query == SUPER_USER || query == target;
     } 
-    public static boolean rejectEQ(byte query, byte target) {
-        return query != target;
-    } 
+//    public static boolean rejectEQ(byte query, byte target) {
+//        return query != target;
+//    } 
+    
+    /**
+     * Construct call setDelete and setInsert
+     * Load CreateTriple call setInsert
+     */
+    public boolean setDelete(Edge edge) {
+        setDeleteNS(edge);
+        return accept(edge.getLevel());
+    }
+    
+    public boolean setInsert(Edge edge) {
+        //setInsertBasic(edge);
+        setInsertNS(edge);
+        return accept(edge.getLevel()) && accept(getInsert(), edge.getLevel());
+    }
+   
     
     public void setDeleteBasic(Edge edge) {
         edge.setLevel(getDelete());
@@ -172,7 +241,7 @@ public class AccessRight {
     }
     
     public void setInsertNS(Edge edge) {
-        edge.setLevel(getInsertRightDefinition().getAccess(edge, getInsert()));
+        edge.setLevel(getInsertRightDefinition().getAccess(edge, getDefine()));
         if (isDebug()) System.out.println(edge.getLevel()+ " " + edge);
     }
         
@@ -188,6 +257,7 @@ public class AccessRight {
         return update;
     }
     
+    // Called by Construct
     public boolean isInsert() {
         return accept(getInsert());
     }
@@ -230,6 +300,16 @@ public class AccessRight {
     public void setInsert(byte insert) {
         this.insert = insert;
     }
+    
+    /**
+     * to be used in order to align the insert clause
+     * with the define clause
+     * 
+     */
+    public void setDefineInsert(byte insert) {
+        setDefine(insert);
+        setInsert(insert);
+    }
 
     /**
      * @return the where
@@ -246,6 +326,7 @@ public class AccessRight {
     }
     
     public void setAccess(byte b) {
+        setDefine(b);
         setDelete(b);
         setInsert(b);
         setWhere(b);
@@ -366,6 +447,83 @@ public class AccessRight {
     public void setDebug(boolean debug) {
         this.debug = debug;
         getAccessRightDefinition().setDebug(debug);
+    }
+
+    /**
+     * @return the inheritDefault
+     */
+    public static boolean isInheritDefault() {
+        return inheritDefault;
+    }
+
+    /**
+     * @param aInheritDefault the inheritDefault to set
+     */
+    public static void setInheritDefault(boolean aInheritDefault) {
+        inheritDefault = aInheritDefault;
+    }
+
+    /**
+     * @return the define
+     */
+    public byte getDefine() {
+        return define;
+    }
+
+    /**
+     * Default access right for inserted/loaded triple
+     * The insert access right must permit this default access
+     * Use: setDefineInsert 
+     */
+    public void setDefine(byte define) {
+        this.define = define;
+    }
+
+    /**
+     * @return the whereMin
+     */
+    public byte getWhereMin() {
+        return whereMin;
+    }
+
+    /**
+     * @param whereMin the whereMin to set
+     */
+    public void setWhereMin(byte whereMin) {
+        this.whereMin = whereMin;
+    }
+
+    /**
+     * @return the whereMax
+     */
+    public byte getWhereMax() {
+        return whereMax;
+    }
+
+    /**
+     * @param whereMax the whereMax to set
+     */
+    public void setWhereMax(byte whereMax) {
+        this.whereMax = whereMax;
+    }
+    
+    public void setWhere(byte min, byte max) {
+        setWhereMin(min);
+        setWhereMax(max);
+    }
+
+    /**
+     * @return the whereList
+     */
+    public byte[] getWhereList() {
+        return whereList;
+    }
+
+    /**
+     * @param whereList the whereList to set
+     */
+    public void setWhereList(byte... whereList) {
+        this.whereList = whereList;
     }
 
    

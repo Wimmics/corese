@@ -16,7 +16,6 @@ import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.NSMANAGER;
-import static fr.inria.corese.sparql.datatype.DatatypeMap.newResource;
 import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -55,6 +54,7 @@ public class NSManager extends ASTObject {
     public static final String XSI = "http://www.w3.org/2001/XMLSchema-instance#";
     public static final String XML = fr.inria.corese.sparql.datatype.RDF.XML;
     public static final String RDF = RDFS.RDF;
+    public static final String RDFS_NS = RDFS.RDFS;
     public static final String OWL = RDFS.OWL;
     public static final String SKOS = "http://www.w3.org/2004/02/skos/core#";
     public static final String SPIN = "http://spinrdf.org/sp#";

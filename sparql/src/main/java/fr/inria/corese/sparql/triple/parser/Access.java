@@ -2,7 +2,6 @@ package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.sparql.exceptions.SafetyException;
-import fr.inria.corese.sparql.triple.function.term.TermEval;
 import static fr.inria.corese.sparql.triple.parser.Access.Feature.*;
 import static fr.inria.corese.sparql.triple.parser.Access.Level.*;
 import static fr.inria.corese.sparql.triple.parser.Access.Mode.SERVER;

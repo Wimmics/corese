@@ -83,6 +83,7 @@ public class Context extends ASTObject {
     private HashMap<String, Context> context;
     NSManager nsm;
     private Binding bind;
+    private AccessRight accessRight;
     Access.Level level = Access.Level.USER_DEFAULT;
     private boolean debug;
     
@@ -107,6 +108,11 @@ public class Context extends ASTObject {
     public Context(Access.Level level) {
         this();
         setLevel(level);
+    }
+    
+    public Context(AccessRight access) {
+        this();
+        setAccessRight(access);
     }
 
     @Override
@@ -576,6 +582,20 @@ public class Context extends ASTObject {
      */
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+
+    /**
+     * @return the accessRight
+     */
+    public AccessRight getAccessRight() {
+        return accessRight;
+    }
+
+    /**
+     * @param accessRight the accessRight to set
+     */
+    public void setAccessRight(AccessRight accessRight) {
+        this.accessRight = accessRight;
     }
   
 }

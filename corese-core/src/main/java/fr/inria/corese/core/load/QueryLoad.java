@@ -15,6 +15,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.query.QueryEngine;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.File;
@@ -241,6 +242,32 @@ public class QueryLoad {
             Writer fr = new FileWriter(file);
             BufferedWriter fq = new BufferedWriter(fr);
             fq.write(str);
+            fq.flush();
+            fr.close();
+            return file.toString();
+        } catch (FileNotFoundException e) {
+            logger.error(e.getMessage());
+        } catch (IOException e) {
+            logger.error(e.getMessage());
+        }
+        return null;
+    }
+    
+    public String writeTemp(String name, IDatatype dt) {
+        String query = "";
+        try {
+            File file = File.createTempFile(getName(name), getSuffix(name));
+            Writer fr = new FileWriter(file);
+            BufferedWriter fq = new BufferedWriter(fr);
+            if (dt.isList()) {
+                for (IDatatype elem : dt) {
+                    fq.write(elem.stringValue());
+                    fq.write(NL);
+                }
+            }
+            else {
+                fq.write(dt.stringValue());
+            }
             fq.flush();
             fr.close();
             return file.toString();

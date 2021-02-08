@@ -12,6 +12,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.VariableLocal;
@@ -48,7 +49,8 @@ public class Binding implements Binder {
     HashMap<String, IDatatype> globalValue;
     HashMap<String, Variable>  globalVariable;
     private ProcessVisitor visitor;
-
+    private AccessRight accessRight;
+    
     private boolean debug = DEBUG_DEFAULT;
 
     private static Logger logger = LoggerFactory.getLogger(Binding.class);
@@ -71,6 +73,7 @@ public class Binding implements Binder {
         level = new ArrayList();
         setGlobalVariableValues(new HashMap<>());
         setGlobalVariableNames(new HashMap<>());
+        setAccessRight(new AccessRight());
     }
 
     public static Binding create() {
@@ -530,6 +533,7 @@ public class Binding implements Binder {
     
     void shareContext(Binding b) {
         setAccessLevel(b.getAccessLevel());
+        setAccessRight(b.getAccessRight());
         setDebug(b.isDebug());
     }
     
@@ -716,6 +720,20 @@ public class Binding implements Binder {
      */
     public void setDatatypeValue(IDatatype datatypeValue) {
         this.datatypeValue = datatypeValue;
+    }
+    
+    /**
+     * @return the accessRight
+     */
+    public AccessRight getAccessRight() {
+        return accessRight;
+    }
+
+    /**
+     * @param accessRight the accessRight to set
+     */
+    public void setAccessRight(AccessRight accessRight) {
+        this.accessRight = accessRight;
     }
     
 }

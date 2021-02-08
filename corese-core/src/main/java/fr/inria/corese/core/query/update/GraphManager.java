@@ -276,12 +276,13 @@ public class GraphManager {
     }
     
     
-    boolean load(Query q, Basic ope, Level level) throws EngineException {
+    boolean load(Query q, Basic ope, Level level, AccessRight access) throws EngineException {
         Load load = Load.create(graph);
         load.setLevel(level);
         if (AccessRight.isActive()) {
-            ASTQuery ast = (ASTQuery) q.getAST();
-            load.setAccessRight(ast.getAccess());
+//            ASTQuery ast = (ASTQuery) q.getAST();
+//            load.setAccessRight(ast.getAccess());
+            load.setAccessRight(access);
         }
         //getQueryProcess().init(q);
         load.setQueryProcess(getQueryProcess());

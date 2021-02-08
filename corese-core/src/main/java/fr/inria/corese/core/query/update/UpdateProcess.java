@@ -1,7 +1,6 @@
 package fr.inria.corese.core.query.update;
 
 import fr.inria.corese.core.Event;
-import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
@@ -67,12 +66,13 @@ public class UpdateProcess {
      * Process an update sparql query There may be a list of queries return the
      * Mappings of the last update ...
      */
-    public Mappings update(Query q, Mapping m) throws EngineException {
+    public Mappings update(Query q, Mapping m, Binding bind) throws EngineException {
         query = q;
         ASTQuery ast = (ASTQuery) q.getAST();
         ASTUpdate astu = ast.getUpdate();
         Mappings map = Mappings.create(q);
-        manager.setLevel(getLevel(m));
+        manager.setLevel(getLevel(bind));
+        manager.setAccessRight(bind == null ? null : bind.getAccessRight());
         NSManager nsm = null;
         // Visitor was setup by QueryProcessUpdate init(q, m)
         setVisitor(exec.getVisitor());
@@ -108,7 +108,7 @@ public class UpdateProcess {
                 Composite c = u.getComposite();
                 // pass current binding as parameter
                 // use case: @event function has defined global variable
-                map = process(q, c, m, exec.getCurrentBinding());
+                map = process(q, c, m, bind); //exec.getCurrentBinding());
             }
             // save and restore eval to get initial Visitor with possible @event function
             // because @event function may execute query and hence reset eval
@@ -128,8 +128,15 @@ public class UpdateProcess {
     
     Level getLevel(Mapping m) {
         return Access.getLevel(m, Level.USER_DEFAULT);
-
-    }
+    } 
+    
+    Level getLevel(Binding b) {
+        if (b == null) {
+            return Level.USER_DEFAULT;
+        }
+        return b.getAccessLevel();
+    } 
+    
 
     public void setDebug(boolean b) {
         isDebug = b;
@@ -411,7 +418,6 @@ public class UpdateProcess {
         ast.setPrefixExp(ga.getPrefixExp());
         ast.shareFunction(ga);
         ast.setAnnotation(ga.getMetadata());
-        ast.shareAccess(ga);
         ast.setSelectAll(true);
         // where {pat}
         ast.setBody(ope.getBody());

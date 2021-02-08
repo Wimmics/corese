@@ -7,6 +7,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 
 
 /**
@@ -34,6 +35,8 @@ public interface Manager {
         void insert(Query q, Mappings map, Dataset ds);
         
         void setLevel(Level l);
+        
+        void setAccessRight(AccessRight access);
         	
 
 }

@@ -1,6 +1,5 @@
 package fr.inria.corese.core.query.update;
 
-import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.Construct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -13,6 +12,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 
 /**
  * SPARQL 1.1 Update
@@ -34,6 +34,7 @@ public class ManagerImpl implements Manager {
     static final int ADD = 2;
     
     private Level level = Level.USER_DEFAULT;
+    private AccessRight accessRight;
 
     public ManagerImpl(GraphManager gm) {
         this.gm = gm;
@@ -91,7 +92,7 @@ public class ManagerImpl implements Manager {
     }
     
     boolean load(Query q, Basic ope) throws  EngineException {
-        return gm.load(q, ope, getLevel());
+        return gm.load(q, ope, getLevel(), getAccessRight());
     }
    
     private boolean clear(Basic ope, Dataset ds) {
@@ -215,6 +216,7 @@ public class ManagerImpl implements Manager {
     @Override
     public void insert(Query query, Mappings lMap, Dataset ds) {
         Construct cons = Construct.create(query, gm);
+        cons.setAccessRight(getAccessRight());
         cons.setDebug(query.isDebug());
         cons.insert(lMap, ds);
         lMap.setGraph(gm.getGraph());
@@ -223,6 +225,7 @@ public class ManagerImpl implements Manager {
     @Override
     public void delete(Query query, Mappings lMap, Dataset ds) {
         Construct cons = Construct.create(query, gm);
+        cons.setAccessRight(getAccessRight());
         cons.setDebug(query.isDebug());
         cons.delete(lMap, ds);
         lMap.setGraph(gm.getGraph());
@@ -240,5 +243,19 @@ public class ManagerImpl implements Manager {
      */
     public void setLevel(Level level) {
         this.level = level;
+    }
+
+    /**
+     * @return the accessRight
+     */
+    public AccessRight getAccessRight() {
+        return accessRight;
+    }
+
+    /**
+     * @param accessRight the accessRight to set
+     */
+    public void setAccessRight(AccessRight accessRight) {
+        this.accessRight = accessRight;
     }
 }

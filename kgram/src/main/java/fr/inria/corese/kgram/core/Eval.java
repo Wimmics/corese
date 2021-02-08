@@ -2025,10 +2025,13 @@ public class Eval implements ExpType, Plugin {
 
                 if (bmatch) {
                     if (hasCandidate) {
-                        getVisitor().candidate(this, getGraphNode(gNode), qEdge, edge);
+                        DatatypeValue dt = getVisitor().candidate(this, getGraphNode(gNode), qEdge, edge);
+                        if (dt != null) {
+                            bmatch = dt.booleanValue();
+                        }
                     }
 
-                    bmatch = push(p, qEdge, edge, gNode, graph, n);
+                    bmatch &= push(p, qEdge, edge, gNode, graph, n);
                 }
 
                 if (isEvent) {

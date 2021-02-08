@@ -504,6 +504,9 @@ public class SPARQLRestAPI {
     // SPARQL QUERY - SELECT and ASK with HTTP POST
     // ----------------------------------------------------
 
+    String getQuery(String query, String message) {
+        return (query.isEmpty()) ? message : query;
+    }
 
     @POST
     @Produces({SPARQL_RESULTS_XML, XML, TEXT})
@@ -518,8 +521,7 @@ public class SPARQLRestAPI {
         try {
             logger.info("getXMLForPost");
 
-            if (query.equals(""))
-                query = message;
+            query = getQuery(query, message);
             if (logger.isDebugEnabled())
                 logger.debug("Rest Post SPARQL Result XML/plain: " + query);
         
@@ -551,8 +553,8 @@ public class SPARQLRestAPI {
             String message) {
         try {
             logger.info("getTriplesXMLForPost");
-            if (query.equals(""))
-                query = message;
+            query = getQuery(query, message);
+
             if (logger.isDebugEnabled())
                 logger.debug("Rest Post SPARQL Result XML/plain: " + query);
             
@@ -586,8 +588,8 @@ public class SPARQLRestAPI {
             @FormParam("access") String access, 
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
-            if (query.equals(""))
-                query = message;
+            query = getQuery(query, message);
+
             logger.info("getTriplesTEXTForPost");       
         return getResultForPost(request, query, access, defaultGraphUris, namedGraphUris, ResultFormat.TEXT_FORMAT);
     }
@@ -600,15 +602,20 @@ public class SPARQLRestAPI {
             @DefaultValue("") @QueryParam("query") String query, 
             @QueryParam("access") String access, 
             @QueryParam("default-graph-uri") List<String> defaultGraphUris,
-            @QueryParam("named-graph-uri") List<String> namedGraphUris) {
-        try {            
-            logger.info("getTriplesJSONForPostNew");
-            Mappings map = getTripleStore().query(request, query, createDataset(defaultGraphUris, namedGraphUris, access));
-            return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(map).toString()).build();
-        } catch (Exception ex) {
-            logger.error("Error while querying the remote KGRAM engine", ex);
-            return Response.status(ERROR).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
-        }
+            @QueryParam("named-graph-uri") List<String> namedGraphUris, 
+            String message) {
+//        try {            
+//            logger.info("getTriplesJSONForPostNew");
+//            Mappings map = getTripleStore().query(request, query, createDataset(defaultGraphUris, namedGraphUris, access));
+//            return Response.status(200).header(headerAccept, "*").entity(JSONFormat.create(map).toString()).build();
+//        } catch (Exception ex) {
+//            logger.error("Error while querying the remote KGRAM engine", ex);
+//            return Response.status(ERROR).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
+//        }
+        logger.info("getTriplesJSONForPostNew");
+        query = getQuery(query, message);
+
+        return getResultForPost(request, query, access, defaultGraphUris, namedGraphUris, ResultFormat.JSON_FORMAT);
     }
 
 
@@ -620,9 +627,9 @@ public class SPARQLRestAPI {
             @FormParam("access") String access, 
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
-            if (query.equals(""))
-                query = message;
-            logger.info("getTriplesJSONForPost");       
+
+        query = getQuery(query, message);
+        logger.info("getTriplesJSONForPost");       
         return getResultForPost(request, query, access, defaultGraphUris, namedGraphUris, ResultFormat.JSON_FORMAT);
     }
     
@@ -655,8 +662,7 @@ public class SPARQLRestAPI {
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
         try {
-            if (query.equals(""))
-                query = message;
+            query = getQuery(query, message);
             logger.info("getTriplesCSVForPost");
 
             return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(getTripleStore()
@@ -676,8 +682,7 @@ public class SPARQLRestAPI {
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
         try {
-            if (query.equals(""))
-                query = message;
+            query = getQuery(query, message);
             logger.info("getTriplesTSVForPost");
 
             return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(getTripleStore()
@@ -701,9 +706,9 @@ public class SPARQLRestAPI {
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
 
-        if (query.equals(""))
-                query = message;
-            logger.info("getRDFGraphXMLForPost");            
+        query = getQuery(query, message);
+
+        logger.info("getRDFGraphXMLForPost");            
         return getResultForPost(request, query, access, defaultGraphUris, namedGraphUris, ResultFormat.RDF_XML_FORMAT);
     }
 
@@ -716,9 +721,7 @@ public class SPARQLRestAPI {
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
 
-        if (query.equals("")) {
-            query = message;
-        }
+        query = getQuery(query, message);
         logger.info("getRDFGraphNTripleForPost");
         return getResultForPost(request, query, access, defaultGraphUris, namedGraphUris, ResultFormat.TURTLE_FORMAT);        
     }
@@ -731,9 +734,7 @@ public class SPARQLRestAPI {
             @FormParam("access") String access, 
             @FormParam("default-graph-uri") List<String> defaultGraphUris,
             @FormParam("named-graph-uri") List<String> namedGraphUris, String message) {
-        if (query.equals("")) {
-            query = message;
-        }
+        query = getQuery(query, message);
         logger.info("getRDFGraphJsonLDForPost");
         return getResultForPost(request, query, access, defaultGraphUris, namedGraphUris, ResultFormat.JSON_LD_FORMAT);        
         

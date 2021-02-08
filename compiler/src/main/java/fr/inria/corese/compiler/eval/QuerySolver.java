@@ -37,6 +37,7 @@ import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.api.ASTVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
@@ -136,7 +137,6 @@ public class QuerySolver implements SPARQLEngine {
         evaluator = e;
         matcher = m;
         setPragma(BasicGraphPattern.create());
-        setAccessRight(new AccessRight());
     }
 
     public static QuerySolver create() {
@@ -369,9 +369,6 @@ public class QuerySolver implements SPARQLEngine {
 
     void tune(Eval kgram, Query q, Mapping m) {
         ASTQuery ast = (ASTQuery) q.getAST();
-        if (AccessRight.isActive()) {
-            ast.setAccessRight(getAccessRight());
-        }
         boolean event = ast.hasMetadata(Metadata.EVENT);
         tune(kgram, m, event);
         if (q.isInitMode()) {
@@ -969,32 +966,6 @@ public class QuerySolver implements SPARQLEngine {
      */
     public static void setVisitorable(boolean aVisitorable) {
         visitorable = aVisitorable;
-    }
-
-    /**
-     * @return the accessRight
-     */
-    public AccessRight getAccessRight() {
-        return accessRight;
-    }
-
-    public AccessRightDefinition getAccessRightDefinition() {
-        return getAccessRight().getAccessRightDefinition();
-    }
-
-    public AccessRightDefinition getInsertRightDefinition() {
-        return getAccessRight().getInsertRightDefinition();
-    }
-
-    public AccessRightDefinition getDeleteRightDefinition() {
-        return getAccessRight().getDeleteRightDefinition();
-    }
-
-    /**
-     * @param accessRight the accessRight to set
-     */
-    public void setAccessRight(AccessRight accessRight) {
-        this.accessRight = accessRight;
     }
 
 }

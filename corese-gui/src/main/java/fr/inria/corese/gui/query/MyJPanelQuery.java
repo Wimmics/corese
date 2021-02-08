@@ -84,6 +84,7 @@ public final class MyJPanelQuery extends JPanel {
     static final int TABLE_PANEL    = 2;
 
     int maxres = 1000000;
+    int maxresxml = 10000;
     
     //Boutton du panneau Query
     private JButton buttonRun, buttonShacl, buttonShex, buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
@@ -495,7 +496,10 @@ public final class MyJPanelQuery extends JPanel {
             } else {
                 // RDF or XML
                 ResultFormat rf = ResultFormat.create(map);
-                rf.setNbResult(maxres);
+                rf.setNbResult(maxresxml);
+                if (map.size() > maxresxml) {
+                    System.out.println(String.format("display %s xml results out of %s", maxresxml, map.size()));
+                }
                 String str = rf.toString();
                 if (str == "" && ast.getErrors() != null) {
                     return ast.getErrorString();

@@ -83,7 +83,7 @@ public class MainFrame extends JFrame implements ActionListener {
     static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2020-11-11";
+    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2021-02-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -1175,7 +1175,10 @@ public class MainFrame extends JFrame implements ActionListener {
                         // do not record because we do not want that this rule based be reloaded
                         // when we perform Engine/Reload
                         //ongletListener.getModel().addElement(lPath);
+                        Date d1 = new Date();
                         boolean b = myCorese.runRuleEngine();
+                        Date d2 = new Date();
+                        System.out.println("Time: " + (d2.getTime()-d1.getTime())/1000.0);
                         if (b) {
                             appendMsg("\n rules applied... \n" + myCapturer.getContent() + "\ndone.\n");
                         }

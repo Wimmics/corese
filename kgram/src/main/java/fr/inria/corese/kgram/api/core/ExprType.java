@@ -396,6 +396,7 @@ public interface ExprType {
         public static int XT_CREATE      = 491;
         public static int XT_DOMAIN      = 492;
         public static int XT_SPLIT       = 493;
+        public static int XT_PATH        = 494;
         
         
              

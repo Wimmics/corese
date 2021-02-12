@@ -83,7 +83,9 @@ public final class MyJPanelQuery extends JPanel {
     static final int XML_PANEL      = 1;
     static final int TABLE_PANEL    = 2;
 
+    // display max table result
     int maxres = 1000000;
+    // display max xml result format
     int maxresxml = 10000;
     
     //Boutton du panneau Query

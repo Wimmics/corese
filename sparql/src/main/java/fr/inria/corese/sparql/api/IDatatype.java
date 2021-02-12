@@ -123,6 +123,20 @@ public interface IDatatype
     IDatatype get(int n);
 
     IDatatype get(IDatatype name);
+    
+    // xml to json
+    default IDatatype json() {
+        return null;
+    }
+    
+    // json pointer
+    default IDatatype path(IDatatype list) {
+        return null;
+    }
+    
+    default IDatatype path(IDatatype list, int n) {
+        return null;
+    }
 
     IDatatype set(IDatatype name, IDatatype value);
 

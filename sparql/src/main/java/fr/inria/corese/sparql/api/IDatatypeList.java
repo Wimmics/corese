@@ -30,7 +30,7 @@ public interface IDatatypeList extends IDatatype {
 
     IDatatype reverse();
 
-    IDatatype append(IDatatype list);
+    IDatatypeList append(IDatatype list);
     
     IDatatype merge();
 

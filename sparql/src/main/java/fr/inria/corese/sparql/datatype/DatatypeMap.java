@@ -689,6 +689,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return new CoreseMap();
     }
     
+    public static CoreseJSON json(JSONObject obj) {
+        return new CoreseJSON(obj);
+    }
+    
     public static CoreseJSON json(String json) {
         try {
             return new CoreseJSON(json);
@@ -698,6 +702,15 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
             logger.error(json.substring(0, 100).concat("..."));
             return json();
         }
+    }
+    
+      // param = [slot value slot value]
+    public static CoreseJSON json(IDatatype... param) {
+        CoreseJSON json = new CoreseJSON(new JSONObject());
+        for (int i = 0; i < param.length; i++) {
+            json.set(param[i++], param[i]);
+        }
+        return json;
     }
     
     public static CoreseJSON json() {
@@ -725,7 +738,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return list;
     } 
     
-    public static IDatatype newList(IDatatype... ldt) {
+    public static CoreseList newList(IDatatype... ldt) {
         return new CoreseList(ldt);
     }
     
@@ -1328,7 +1341,11 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
     
     public static IDatatype split(IDatatype dt1, IDatatype dt2) {
-        String[] split = dt1.stringValue().split(dt2.stringValue());
+        return split(dt1, dt2.getLabel());
+    }
+    
+    public static IDatatype split(IDatatype dt1, String sep) {
+        String[] split = dt1.stringValue().split(sep);
         return cast(split);
     }
 

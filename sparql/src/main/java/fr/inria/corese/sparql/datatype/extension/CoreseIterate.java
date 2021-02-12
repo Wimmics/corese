@@ -17,6 +17,10 @@ public class CoreseIterate extends CoreseUndefLiteral implements Iterator<IDatat
     CoreseInteger res;
     CoreseInteger next;
     
+    public CoreseIterate() {
+        this(0, Integer.MAX_VALUE-1);
+    }
+    
     public CoreseIterate(int start, int end){
         this(start, end, (end < start) ? -1 : 1);
     }

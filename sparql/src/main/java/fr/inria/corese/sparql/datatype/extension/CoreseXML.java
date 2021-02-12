@@ -11,6 +11,8 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import javax.xml.transform.TransformerException;
+import org.json.JSONML;
+import org.json.JSONObject;
 import org.w3c.dom.Attr;
 import org.w3c.dom.Document;
 import org.w3c.dom.Element;
@@ -108,6 +110,13 @@ public class CoreseXML extends CoreseExtension {
             return node.toString();
         }
     }
+    
+    @Override
+    public IDatatype json() {
+        JSONObject obj = JSONML.toJSONObject(getContent());
+        return DatatypeMap.json(obj);
+    }
+   
 
     @Override
     public Iterator<IDatatype> iterator() {
@@ -409,7 +418,7 @@ public class CoreseXML extends CoreseExtension {
             return DatatypeMap.map();
         }
         NamedNodeMap map = node.getAttributes();
-        CoreseMap dt = new CoreseMap();
+        CoreseMap dt = new CoreseMap();       
         for (int i = 0; i < map.getLength(); i++) {
             Node att = map.item(i);
             dt.set(DatatypeMap.newInstance(att.getNodeName()), DatatypeMap.newInstance(att.getTextContent()));

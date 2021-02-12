@@ -265,7 +265,7 @@ public class CoreseList extends CoreseExtension implements IDatatypeList {
     }
 
     @Override
-    public IDatatype append(IDatatype dtlist) {
+    public IDatatypeList append(IDatatype dtlist) {
         if (!dtlist.isList()) {
             return null;
         }

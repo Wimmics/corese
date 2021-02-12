@@ -1,13 +1,19 @@
 package fr.inria.corese.sparql.datatype.extension;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatypeList;
+import fr.inria.corese.sparql.datatype.CoreseDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
+import org.json.JSONML;
 import org.json.JSONObject;
+import org.json.JSONPointer;
+import org.json.JSONPointerException;
 
 /**
  *
@@ -104,6 +110,114 @@ public class CoreseJSON extends CoreseExtension {
             default: json.put(key, value.stringValue()); break;
         }
     }
+     
+    /**
+     */
+    @Override
+    public IDatatype path(IDatatype path) {
+        if (path.getLabel().startsWith("/")) {
+            return jsonPath(path);
+        }
+        else {
+            return myPath(path);
+        }
+    }
+    
+    public IDatatype jsonPath(IDatatype path) {
+        JSONPointer jp = new JSONPointer(path.getLabel());
+        try {
+            Object res = jp.queryFrom(getObject());
+            return cast(res);
+        }
+        catch (JSONPointerException e) {
+            CoreseDatatype.logger.error(e.getMessage());
+            return defaultPath();
+        }
+    }
+       
+    /**
+     * Path that walk through json array and compute a list of results
+     */    
+    IDatatype myPath(IDatatype path) {
+        if (! path.isList()) {
+            path = DatatypeMap.split(path, "/");
+        }
+        return path(path, 0);
+    }
+        
+    IDatatype defaultPath() {
+        return DatatypeMap.newList();
+    }
+        
+    @Override
+    public IDatatype path(IDatatype path, int i) {
+        IDatatype obj, res = null;
+        
+        if (i < path.size()) {
+            IDatatype slot = path.get(i);
+                       
+            if (has(slot).booleanValue()) {
+                obj = get(slot);
+                res = path(obj, path, i+1);
+            } else {
+                res = defaultPath();
+            }
+        }
+        else {
+            // path is finished
+            res = this;
+        }
+        
+        if (res.isList()) {
+            return res;
+        }
+        else {
+            return DatatypeMap.newList(res);
+        }
+    }
+    
+    /**
+     * path = (p1 (p2 p3)* p4)
+     * exp  = (p2 p3)*
+     */
+    void star(IDatatype path, int i) {
+        IDatatype exp = path.get(i);
+        // 1) skip exp
+        path(path, i+1);
+        
+        // 2) 
+        // path' = (p1 exp exp* p4)
+        
+    }
+    
+    /**
+     * obj is result of preceding path step
+     */
+    IDatatype path(IDatatype obj, IDatatype path, int i) {
+        if (i >= path.size()) {
+            // end of path 
+            return obj;
+        } else if (obj.isList()) {
+            // compute path for each element of the list
+            IDatatypeList list = DatatypeMap.newList();
+            
+            for (IDatatype elem : obj) {
+                IDatatype res = path(elem, path, i);
+                if (res.isList()) {
+                    list = list.append(res);
+                }
+                else {
+                    list.add(res);
+                }
+            }
+            return list;
+        } else if (obj.isJSON()) {
+            return obj.path(path, i);
+        } 
+        // path continues but obj is not json
+        return defaultPath();
+    }
+
       
     JSONArray toJSONArray(IDatatype list) {
         JSONArray arr = new JSONArray();
@@ -173,7 +287,7 @@ public class CoreseJSON extends CoreseExtension {
             return new CoreseJSON((JSONObject) obj);
         } else if (obj instanceof String) {
             String str = (String) obj;
-            if (str.startsWith("http://") || str.startsWith("https://")) {
+            if (NSManager.isURI(str)) {
                 return DatatypeMap.newResource(str);
             }
         }
@@ -182,8 +296,8 @@ public class CoreseJSON extends CoreseExtension {
     
     IDatatype cast(JSONArray ar) {
         ArrayList<IDatatype> list = new ArrayList<>();
-        for (int i=0; i<ar.length(); i++) {
-            list.add(cast(ar.get(i)));
+        for (Object obj : ar) {
+            list.add(cast(obj));
         }
         return DatatypeMap.newList(list);
     }

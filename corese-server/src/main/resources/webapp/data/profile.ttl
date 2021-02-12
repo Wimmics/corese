@@ -13,7 +13,11 @@
 @prefix fun: <query/hal/process/>
 
 
-#[] owl:imports <profile2.ttl>
+#[] owl:imports <phyprofile.ttl>
+
+[] owl:imports <myprofile.ttl> .
+[] owl:imports <covidprofile.ttl>
+[] owl:imports <d2kabprofile.ttl> .
 
 # authorized sparql endpoints, see Profile defNamespace
 st:access st:namespace 
@@ -1021,9 +1025,7 @@ sw:body (
 #
 # AI4EU
 #
-[] owl:imports <myprofile.ttl>
-[] owl:imports <covidprofile.ttl>
-#[] owl:imports <phyprofile.ttl>
+
 
 
 

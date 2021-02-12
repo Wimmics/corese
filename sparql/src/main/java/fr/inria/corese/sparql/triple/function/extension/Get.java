@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.function.extension;
 
 import static fr.inria.corese.kgram.api.core.ExprType.XT_HAS;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_PATH;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -16,7 +17,7 @@ import fr.inria.corese.kgram.api.query.Producer;
  *
  */
 public class Get extends BinaryFunction {
-    public static final IDatatype UNDEF = DatatypeMap.UNBOUND;
+    public static final IDatatype UNDEF = null; //DatatypeMap.UNBOUND;
 
     public Get(){}
     
@@ -35,15 +36,13 @@ public class Get extends BinaryFunction {
            
         switch (oper()) {
             case XT_HAS: return dt.has(dtind);
+            case XT_PATH: return dt.path(dtind);
             default: return get(dt, dtind);
         }
     }
        
     /**
-     * Generic get with variable name and index
-     * may be unbound, return specific UNDEF value because null would be considered an error  
-     * embedding let will let the variable unbound, see getConstantValue()
-     * it can be catched with bound(var) or coalesce(var)
+     * Generic get 
      */
     public static IDatatype get(IDatatype dt,  IDatatype ind){  
         if (dt.isList()) {

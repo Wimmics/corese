@@ -20,12 +20,15 @@ public class Iterate extends TermEval {
     
     public Iterate(String name){
         super(name);
-        setArity(2);
     }
     
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         IDatatype[] args = evalArguments(eval, b, env, p, 0);
+        
+        if (args.length == 0) {
+            return DatatypeMap.newIterate(0, Integer.MAX_VALUE-1);
+        }
         
         int start = 0;
         int end = 1;

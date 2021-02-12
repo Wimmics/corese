@@ -39,9 +39,17 @@ public class ResultFormater extends TermEval {
                 if (arity() == 0) {
                     return DatatypeMap.json();
                 }
+                else if (arity() > 1) {
+                    // xt:json(slot, value, slot, value)
+                    IDatatype[] param = evalArguments(eval, b, env, p, 0);
+                    if (param == null) {
+                        return null;
+                    }
+                    return DatatypeMap.json(param);
+                }
         }
 
-        IDatatype dt = getArg(0).eval(eval, b, env, p);
+        IDatatype dt = getArg(0).eval(eval, b, env, p); 
 
         if (dt == null) {
             return null;
@@ -51,6 +59,9 @@ public class ResultFormater extends TermEval {
             case XT_JSON:
                 if (dt.getCode() == IDatatype.STRING || dt.getCode() == IDatatype.LITERAL) {
                     return DatatypeMap.json(dt.stringValue());
+                }
+                else if (dt.isXML()) {
+                    return dt.json();
                 }
                 break;
 

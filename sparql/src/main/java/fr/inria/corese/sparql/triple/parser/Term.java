@@ -431,7 +431,9 @@ public class Term extends Expression {
                 
             case ExprType.XT_HAS:
             case ExprType.XT_GET:
+            case ExprType.XT_PATH:
                 return new Get(name);
+                
             case ExprType.XT_REVERSE:
             case ExprType.XT_FIRST:
             case ExprType.XT_REST:

@@ -118,6 +118,7 @@ public class Processor {
         public static final String XT_FIRST    = EXT + "first";
         public static final String XT_REST     = EXT + "rest";
         public static final String XT_GET      = EXT + "get";
+        public static final String XT_PATH     = EXT + "path";
         public static final String XT_HAS      = EXT + "has";
         public static final String XT_REMOVE   = EXT + "remove";
         public static final String XT_REMOVE_INDEX = EXT + "removeindex";
@@ -723,6 +724,7 @@ public class Processor {
 		defoper(XT_SELF,        ExprType.SELF);
 		defoper(XT_HAS,         ExprType.XT_HAS);
 		defoper(XT_GET,         ExprType.XT_GET);
+		defoper(XT_PATH,        ExprType.XT_PATH);
 		defoper(XT_REMOVE,      ExprType.XT_REMOVE);
 		defoper(XT_REMOVE_INDEX,ExprType.XT_REMOVE_INDEX);
 		defoper(XT_SWAP,        ExprType.XT_SWAP);               

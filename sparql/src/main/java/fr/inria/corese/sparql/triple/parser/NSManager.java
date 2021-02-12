@@ -115,6 +115,9 @@ public class NSManager extends ASTObject {
     public static final String OWLRL = SWL + "owlrl";
     public static final String RDFSRL = SWL + "rdfs";
     public static final String UNDEF_URL = "http://example.org/_undefined_";
+    // use case: determine if a string can be considered as an uri
+    // use case: json string converted to uri or string
+    static String[] protocol = {"http://", "https://", "file://", "ftp://", "urn:"};
 
     /**
      * prefix seed (ns1, ns2,...)
@@ -160,11 +163,11 @@ public class NSManager extends ASTObject {
     }
 
     private NSManager() {
-        def = new HashMap<String, String>();
-        tprefix = new HashMap<String, String>();
-        tns = new HashMap<String, String>();
-        index = new HashMap<String, Integer>();
-        trecord = new HashMap<String, String>();
+        def = new HashMap<>();
+        tprefix = new HashMap<>();
+        tns = new HashMap<>();
+        index = new HashMap<>();
+        trecord = new HashMap<>();
         define();
     }
 
@@ -832,6 +835,15 @@ public class NSManager extends ASTObject {
         } catch (MalformedURLException ex) {
             return true;
         }
+    }
+    
+    public static boolean isURI(String str) {
+        for (String pro : protocol) {
+            if (str.startsWith(pro)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     /**

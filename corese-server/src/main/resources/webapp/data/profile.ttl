@@ -17,7 +17,7 @@
 
 [] owl:imports <myprofile.ttl> .
 [] owl:imports <covidprofile.ttl>
-[] owl:imports <d2kabprofile.ttl> .
+#[] owl:imports <d2kabprofile.ttl> .
 
 # authorized sparql endpoints, see Profile defNamespace
 st:access st:namespace 

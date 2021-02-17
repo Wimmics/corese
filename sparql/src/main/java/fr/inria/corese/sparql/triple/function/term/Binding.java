@@ -736,4 +736,10 @@ public class Binding implements Binder {
         this.accessRight = accessRight;
     }
     
+    
+    public static int getDefaultValue(String name, int value) {
+        IDatatype dt = getStaticVariable(name);
+        return (dt == null) ? value: dt.intValue();
+    }
+    
 }

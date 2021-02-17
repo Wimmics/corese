@@ -10,7 +10,8 @@ function us:beforeshacl(focus) {
     #sh:shexSemantics(true);
     #sh:setdsp(true);
     # additional messages for sh:node elements
-    #sh:setup(sh:detail, true);
+    #sh:setup(sh:nodeDetail, true);
+    #sh:setup(sh:booleanDetail, true);
     us:prettyfocus(focus)
 }
 

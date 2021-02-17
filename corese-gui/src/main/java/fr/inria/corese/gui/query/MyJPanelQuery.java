@@ -49,6 +49,7 @@ import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.XMLFormat;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.SPINProcess;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 
@@ -86,7 +87,7 @@ public final class MyJPanelQuery extends JPanel {
     // display max table result
     int maxres = 1000000;
     // display max xml result format
-    int maxresxml = 10000;
+    int maxresxml = 1000;
     
     //Boutton du panneau Query
     private JButton buttonRun, buttonShacl, buttonShex, buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
@@ -111,7 +112,8 @@ public final class MyJPanelQuery extends JPanel {
     private boolean excepCatch = false;
     private JTextArea textAreaLinesGraph;
     private String stylesheet = "";
-    private CharSequence resultXML = "";
+    //private CharSequence resultXML = "";
+    //private String resultXML = "";
     private SparqlQueryEditor sparqlQueryEditor;
     private JTextPane serviceEditor;
     private MainFrame mainFrame;
@@ -291,11 +293,11 @@ public final class MyJPanelQuery extends JPanel {
         ActionListener searchListener = new ActionListener() {
             @Override
             public void actionPerformed(final ActionEvent e) {
-                textAreaXMLResult.setText(resultXML.toString());
+                //textAreaXMLResult.setText(resultXML.toString());
                 String toSearch = "";
                 String message = "";
 
-                CharSequence temps = textAreaXMLResult.getText();
+                String temps = textAreaXMLResult.getText();
                 toSearch = JOptionPane.showInputDialog("Search", message);
 
                 if (toSearch != null) {
@@ -312,7 +314,8 @@ public final class MyJPanelQuery extends JPanel {
 
         // Résultat sous forme XML
         textAreaXMLResult.setEditable(false);
-        textAreaXMLResult.setText(resultXML.toString());
+        //textAreaXMLResult.setText(resultXML.toString());
+        textAreaXMLResult.setText("");
         scrollPaneXMLResult.setViewportView(textAreaXMLResult);
         tabbedPaneResults.addTab("XML/RDF", scrollPaneXMLResult);
 
@@ -488,6 +491,15 @@ public final class MyJPanelQuery extends JPanel {
             return n.getLabel();
         }
     }
+    
+    /**
+     * Max number of xml results to display can be set by LDScript static variable max_xml_result
+     * Use case: Event/GUI set this static variable 
+     * location: resources/function/event/gui.rq
+     */
+    int maxResXML() {
+        return Binding.getDefaultValue("?max_xml_result", maxresxml);
+    }
 
     String toString(Mappings map) {
         Query q = map.getQuery();
@@ -498,12 +510,12 @@ public final class MyJPanelQuery extends JPanel {
             } else {
                 // RDF or XML
                 ResultFormat rf = ResultFormat.create(map);
-                rf.setNbResult(maxresxml);
-                if (map.size() > maxresxml) {
-                    System.out.println(String.format("display %s xml results out of %s", maxresxml, map.size()));
-                }
+                rf.setNbResult(maxResXML());
                 String str = rf.toString();
-                if (str == "" && ast.getErrors() != null) {
+                if (map.size() > maxResXML()) {
+                    System.out.println(String.format("Display %s xml results out of %s", maxResXML(), map.size()));
+                }
+                if (str.isEmpty() && ast.getErrors() != null) {
                     return ast.getErrorString();
                 }
                 return str;
@@ -544,7 +556,6 @@ public final class MyJPanelQuery extends JPanel {
             String columnName = var.getLabel();
             //System.out.println(sv);
             String[] colmunData = new String[size];
-
             for (int j = 0; j < map.size(); j++) {
                 if (j >= maxres){
                     logger.warn("Stop display after " + maxres + " results out of " + map.size());
@@ -582,6 +593,10 @@ public final class MyJPanelQuery extends JPanel {
             return dt.getLabel();
         }
     }
+    
+    String getResultText() {
+        return getTextAreaXMLResult().getText();
+    }
 
     void display(Mappings map, MainFrame coreseFrame) {
         if (map == null) {
@@ -592,21 +607,22 @@ public final class MyJPanelQuery extends JPanel {
         Query q = map.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean oneValue = !map.getQuery().isListGroup();
-        resultXML = toString(map);
-        textAreaXMLResult.setText(resultXML.toString());
+        //resultXML = toString(map);
+        getTextAreaXMLResult().setText(toString(map));
+        System.out.println("XML Results string size: " + getResultText().length());
 
         // On affiche la version en arbre du résultat dans l'onglet Tree
         // crée un arbre de racine "root"
-        DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
-        DefaultTreeModel treeModel = new DefaultTreeModel(root);
-        treeResult = new JTree(treeModel);
-        treeResult.setShowsRootHandles(true);
-
-        //display(root, map);
-
-        TreePath myPath = treeResult.getPathForRow(0);
-        treeResult.expandPath(myPath);
-        scrollPaneTreeResult.setViewportView(treeResult);
+//        DefaultMutableTreeNode root = new DefaultMutableTreeNode("root");
+//        DefaultTreeModel treeModel = new DefaultTreeModel(root);
+//        treeResult = new JTree(treeModel);
+//        treeResult.setShowsRootHandles(true);
+//
+//        //display(root, map);
+//
+//        TreePath myPath = treeResult.getPathForRow(0);
+//        treeResult.expandPath(myPath);
+//        scrollPaneTreeResult.setViewportView(treeResult);
 
         //afficher les resultats dans une tableau sauf pour les templates
         if (q.isTemplate() || ast.isAsk() || ast.getErrors() != null){

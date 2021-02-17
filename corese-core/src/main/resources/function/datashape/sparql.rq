@@ -8,23 +8,126 @@ function sh:sparql(report, sh, vis, nodeList, p) {
     }
 }
 
+#
+# sparql with path
+#
 function sh:sparqlbasic(report, sh, vis, nodeList, p) {
     let (suc = true) {
-        for ((cst define q mes) in sh:getShapeConstraint(sh:cstsparql, sh)) {  
-            for (node in dt:list(nodeList)) {
-                for (object in sh:ppath(node, p)) { 
-                        if (sh:trace(), xt:print("path sparql:", node, p, object, q), true);
-                        let (res = sh:mysparql(report, concat(define, q), sh, cst, node, object, vis, 
-                            coalesce(mes, sh:null), bound(mes))) {
-                            if (res, true, set(suc = false))
-                        } 
+        for ((cst define q mes amin amax) in sh:getShapeConstraint(sh:cstsparql, sh)) { 
+            let (funList = sh:getShapeConstraint(sh:sparqlfunction, cst)) {
+        
+                for (node in dt:list(nodeList)) {
+                    for (object in sh:ppath(node, p)) { 
+                            if (sh:trace(), xt:print("path sparql:", node, p, object, q), true);
+                            let (res = sh:mysparql(report, concat(define, q), sh, cst, node, object, vis, 
+                                coalesce(mes, sh:null), bound(mes), amin, amax, funList)) {
+                                if (res, true, set(suc = false))
+                            } 
                     } 
                 }
-        } ;
+            }
+        };
         return (suc)
     }
 }
 
+#
+# sparql without path
+#
+function sh:cstsparql (report, sh, vis, nodeList, cstList) {
+   let (res = true) {
+        for ((cst define q mes amin amax) in cstList) {  
+            let (funList = sh:getShapeConstraint(sh:sparqlfunction, cst)) {
+
+                for (node in dt:list(nodeList)) {   
+                    if (sh:trace(), xt:print("cstsparql:", node, q), true);
+                    let (suc = coalesce(
+                        sh:mysparql(report, concat(define, q), sh, cst, node, node, vis, 
+                            mes, isLiteral(mes), amin, amax, funList),
+                        false)) {
+                        if (suc, true, set(res = false))
+                    }
+                }
+            }
+        };
+        return (res)
+    }
+}
+
+
+function sh:sparqlfunction(shape, sh) {
+    sh:getSparqlExtension(shape, sh)
+}
+
+
+#
+# SPARQL constraint
+# focus is the focus node, val is the value of focus to be tested
+# for constraint: they are the same, for path: focus=subject ; val=object
+# Query MUST return variables: ?this ?path ?value
+#
+function sh:mysparql(report, q, sh, cst, focus, val, vis, mes, hasmes, amin, amax, funList) {
+    let (maps = xt:sparql(q, "$this", val)) {
+      #  if (xt:size(maps) > 0, xt:print("sparql:", maps), true);
+      
+      if (xt:size(funList) > 0 || amin >= 0 || amax >= 0) {
+            # query return solutions as "success": check amin <= size <= amax
+            sh:mysparqlext(report, q, sh, cst, focus, val, vis, mes, hasmes, amin, amax, funList, maps)
+        }
+        else {
+            # query return solutions as errors
+            for (m in maps) {
+                let ((path value) = m) {
+                    if (hasmes) {
+                        let (mmes = sh:mymessage(mes, m)) {
+                            # xt:print(mmes);
+                            # suc = false
+                            sh:report(report, sh:sparql, sh, focus, path, value, false, vis)
+                        }
+                    }
+                    else {
+                        # suc = false
+                        sh:report(report, sh:sparql, sh, focus, path, value, false, vis)
+                    }
+                }
+            } ;
+            # results are errors
+            return (size = 0)
+        }
+    }
+}
+
+#
+# xsh:function [ us:mytest(exp) ] --> function us:mytest(cst, focus, maps, exp)
+# check number of results: sh:minCount sh:maxCount
+#
+function sh:mysparqlext(report, q, sh, cst, focus, val, vis, mes, hasmes, amin, amax, funList, maps) {
+    let (res = true) {
+        if (xt:size(funList) > 0) {
+            for ((oper name exp) in funList) {
+                let (suc = funcall(name, cst, focus, maps, exp)) {
+                    sh:report(report, sh:sparqlFunction, sh, focus, sh:sparql, focus, suc, vis) ;
+                    set (res = res && suc)
+                }
+            }
+        } ;
+        
+        if (amin >= 0 || amax >= 0) {
+            # query return solutions as "success": check amin <= size <= amax
+            let (size = xt:size(maps), 
+                 suc =  amin <= size && if (amax >= 0, size <= amax, true)) {
+                sh:report(report, sh:sparqlCount, sh, focus, sh:sparql, size, suc, vis) ;
+                set (res = res && suc)
+            }
+        } ;
+        
+        return (res)
+    }
+}
+
+#
+# sparql with parameters
+#
 function sh:sparqlvalid (report, sh, vis, nodeList, p) {
     let (res = true) {
         for ((cst define q oper value) in sh:getShapeConstraint(sh:sparqlvalid,  sh)) {  
@@ -40,53 +143,6 @@ function sh:sparqlvalid (report, sh, vis, nodeList, p) {
         return (res)
     }
 }
-
-function sh:cstsparql (report, sh, vis, nodeList, cstList) {
-   let (res = true) {
-        for ((cst define q mes) in cstList) {  
-            for (node in dt:list(nodeList)) {   
-                if (sh:trace(), xt:print("cstsparql:", node, q), true);
-                let (suc = coalesce(
-                    sh:mysparql(report, concat(define, q), sh, cst, node, node, vis, 
-                        mes, isLiteral(mes)),
-                    false)) {
-                    if (suc, true, set(res = false))
-                }
-            }
-        } ;
-        return (res)
-    }
-}
-
-#
-# SPARQL constraint
-# focus is the focus node, val is the value of focus to be tested
-# for constraint: they are the same, for path: focus=subject ; val=object
-# Query MUST return variables: ?this ?path ?value
-#
-function sh:mysparql(report, q, sh, cst, focus, val, vis, mes, hasmes) {
-    let (maps = xt:sparql(q, "$this", val)) {
-      #  if (xt:size(maps) > 0, xt:print("sparql:", maps), true);
-        for (m in maps) {
-            let ((path value) = m) {
-                if (hasmes) {
-                    let (mmes = sh:mymessage(mes, m)) {
-                        # xt:print(mmes);
-                        # suc = false
-                        sh:report(report, sh:sparql, sh, focus, path, value, false, vis)
-                    }
-                }
-                else {
-                    # suc = false
-                    sh:report(report, sh:sparql, sh, focus, path, value, false, vis)
-                }
-            }
-        } ;
-        # results are errors
-        return (xt:size(maps) = 0)
-    }
-}
-
 
 
 # replace {?var} by {val} in message
@@ -104,13 +160,16 @@ function sh:mymessage(xsd:string mes, dt:mapping m) {
 
 
 function sh:cstsparql(shape, sh) {
-    let (select * (aggregate (xt:list(cst, define, q, coalesce(mes, sh:null))) as ?list)
+    let (select * 
+        (aggregate (xt:list(cst, define, q, coalesce(mes, sh:null), coalesce(?min, -1), coalesce(?max, -1))) as ?list)
         where {
         graph ?shape {  
                 ?sh sh:sparql ?cst 
                 ?cst sh:select ?q
                 filter not exists { ?cst sh:deactivated true }
                 optional { ?cst sh:message ?mes }
+                optional { ?cst sh:minCount ?min }
+                optional { ?cst sh:maxCount ?max }
                 
                 # collect prefix definitions
                 {

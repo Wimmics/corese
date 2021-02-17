@@ -1,0 +1,12 @@
+#
+# Tune Corese GUI environment
+#
+select * where {
+    bind (us:tune() as ?t)
+}
+
+
+function us:tune() {
+    # number of xml results to display
+    static (max_xml_result = 2000)
+}

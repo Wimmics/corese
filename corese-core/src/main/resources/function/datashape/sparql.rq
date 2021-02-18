@@ -55,11 +55,6 @@ function sh:cstsparql (report, sh, vis, nodeList, cstList) {
 }
 
 
-function sh:sparqlfunction(shape, sh) {
-    sh:getSparqlExtension(shape, sh)
-}
-
-
 #
 # SPARQL constraint
 # focus is the focus node, val is the value of focus to be tested
@@ -71,7 +66,7 @@ function sh:mysparql(report, q, sh, cst, focus, val, vis, mes, hasmes, amin, ama
       #  if (xt:size(maps) > 0, xt:print("sparql:", maps), true);
       
       if (xt:size(funList) > 0 || amin >= 0 || amax >= 0) {
-            # query return solutions as "success": check amin <= size <= amax
+            # query return solutions not considered as errors: check amin <= size <= amax
             sh:mysparqlext(report, q, sh, cst, focus, val, vis, mes, hasmes, amin, amax, funList, maps)
         }
         else {
@@ -104,9 +99,10 @@ function sh:mysparql(report, q, sh, cst, focus, val, vis, mes, hasmes, amin, ama
 function sh:mysparqlext(report, q, sh, cst, focus, val, vis, mes, hasmes, amin, amax, funList, maps) {
     let (res = true) {
         if (xt:size(funList) > 0) {
+            # xsh:function 
             for ((oper name exp) in funList) {
                 let (suc = funcall(name, cst, focus, maps, exp)) {
-                    sh:report(report, sh:sparqlFunction, sh, focus, sh:sparql, focus, suc, vis) ;
+                    sh:report(report, sh:sparqlFunction, sh, focus, sh:sparql, name, suc, vis) ;
                     set (res = res && suc)
                 }
             }
@@ -124,6 +120,12 @@ function sh:mysparqlext(report, q, sh, cst, focus, val, vis, mes, hasmes, amin, 
         return (res)
     }
 }
+
+
+function sh:sparqlfunction(shape, sh) {
+    sh:getSparqlExtension(shape, sh)
+}
+
 
 #
 # sparql with parameters

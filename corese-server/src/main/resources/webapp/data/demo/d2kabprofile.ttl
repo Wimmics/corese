@@ -1,0 +1,113 @@
+@prefix spq:    <http://ns.inria.fr/sparql-template/sparql#>
+
+
+st:access st:namespace 
+<http://corese.inria.fr/>,
+<d2kab/>,
+<https://opendata.inra.fr/openrdf-sesame/repositories/Ahol> ,
+    <http://quantum.agroparistech.fr/graphdb/repositories/Composite_making_process>,
+    <http://geco.ecophytopic.fr:8890/sparql>,
+    <http://agrold.southgreen.fr/sparql>,
+    <http://ontology.irstea.fr/bsv/sparql>,
+    <http://ontology.irstea.fr/weather/sparql>,
+    <http://sparql.agroportal.lirmm.fr/sparql/>,
+    <http://taxref.mnhn.fr/sparql>       
+.
+
+
+st:d2kab a st:Server ;
+  st:service "d2kab" ;
+  
+  st:param [ st:lang 'en' ;
+    st:sttl st:combine ; 
+    #st:transformations (spq:result d3:frame  st:hturtle) ; 
+    st:transformations (spq:result) ; 
+    st:hyperlink true ; 
+    st:number true ;
+    st:export true ;
+    st:contextlist(st:d2kab) ;
+    st:focus false ;
+    st:mapzoom 3 ;
+    st:mapsize "mapmedium" ; # mapmedium maplarge
+    st:title "D2KAB Knowledge Graph Index" ;
+    st:lodprofile (
+        (<https://aurehal.archives-ouvertes.fr/> st:hal)
+        (<https://data.archives-ouvertes.fr/> st:hal)
+        (<http://www.w3c.org/ns/org> st:hal) 
+        (<http://fr.dbpedia.org/resource/> st:dbpedia)         
+        ("*" st:lod)
+    ) 
+  ] ;
+  st:workflow st:d2kabwf ;
+  st:shareContent st:d2kabcontent
+.
+
+#
+# sparql endpoint with json format : /myservice/d2kabsparql ?query=select where
+# use case: LinkedDataViz
+#
+st:d2kabsparqljson a st:Server ;
+  st:param [st:format "json"];
+  st:service "d2kabsparql" ;
+  st:shareContent st:d2kabIndex
+.
+
+st:d2kabsparqlxml a st:Server ;
+  st:param [st:format "xml"];
+  st:service "d2kabsparqlxml" ;
+  st:shareContent st:d2kabIndex
+.
+
+
+
+st:d2kabwf a sw:Workflow ; sw:body (
+    [ a sw:Query ; sw:result sw:graph ] # place holder for the query ; result = graph format
+    [ a sw:Transformation ; sw:uri st:web ]
+)
+.
+
+
+st:d2kabcontent a sw:Workflow ; sw:body ( 
+    [ a sw:Parallel ; sw:body ( 
+      # main dataset
+          st:d2kabIndex  
+
+      [ a sw:Workflow ; sw:body ( [ a sw:Load ; sw:path <d2kab/workflow.ttl> ] ) ]
+      
+      # context dataset with predefined queries in a specific graph
+      [ a sw:Workflow ; sw:name st:context ; sw:body ( 
+        [ a sw:Load ; sw:path <d2kab/workflow.ttl>  ; sw:name st:context ]
+        st:indexQuery ) ]
+        
+     #st:d2kabIndex
+  
+	  
+      ) ]    
+    # set st:context graph as named graph of main
+    [a sw:Dataset]
+).
+
+st:d2kabIndex a sw:Workflow ; # sw:name st:d2kab ; 
+    sw:body ( 
+        [ a sw:Load ; sw:path 
+    <d2kab/data/agroparistechclass.ttl>,
+    <d2kab/data/agroparistechproperty.ttl>,
+    <d2kab/data/agroparistechpropertyns.ttl>,
+    <d2kab/data/aholclass.ttl>,
+    <d2kab/data/aholproperty.ttl>,
+    <d2kab/data/aholpropertyns.ttl>,
+    <d2kab/data/bsvclass.ttl>,
+    <d2kab/data/bsvproperty.ttl>,
+    <d2kab/data/bsvpropertyns.ttl>,
+    <d2kab/data/ecophytoclass.ttl>,
+    <d2kab/data/ecophytoproperty.ttl>,
+    <d2kab/data/ecophytopropertyns.ttl>,
+    <d2kab/data/taxrefclass.ttl>,
+    <d2kab/data/taxrefproperty.ttl>,
+    <d2kab/data/taxrefpropertyns.ttl>,
+    <d2kab/data/weatherclass.ttl>,
+    <d2kab/data/weatherproperty.ttl>,
+    <d2kab/data/weatherpropertyns.ttl>
+            ]
+       # [ a sw:RuleBase ; sw:uri sw:owlrl ]
+      ) 

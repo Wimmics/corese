@@ -1,0 +1,126 @@
+#
+# Used defined profile.ttl for user applications
+#
+@prefix ai:     <http://www.ai4eu.eu/ontologies/core#>
+@prefix aid:    <http://www.ai4eu.eu/ontologies/data#>
+@prefix spq:    <http://ns.inria.fr/sparql-template/sparql#>
+@prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
+
+
+
+
+st:covid a st:Server ;   
+st:service "covid" ;
+  st:param [ 
+    st:transformations (st:browser) ;
+    st:export true ;
+    st:lang "fr" ;
+    st:endpoint <https://covidontheweb.inria.fr/sparql>
+  ] ;
+  st:workflow st:covidwf
+  .
+  
+  
+st:covidwf a sw:Workflow ;
+  sw:body ( 
+    [ a sw:Query ;  
+        sw:uri <covid/query/browse.rq> 
+    ]
+    [ a sw:Transformation ; sw:uri st:combine ]
+  )
+.
+
+
+
+
+
+
+st:covidtuto a st:Server ;
+st:service "covidtuto" ;
+st:shareContent st:covidContent ;
+#st:transform st:web ;
+st:workflow st:covidtutowf ;
+st:param [
+    st:lang 'en' ;
+    # transformation for the result of the query in the st:web transformation
+    st:sttl <sttl/combine.rul> ;
+    # list of transformations for the st:combine transformation
+    st:transformations (d3:frame spq:result   navlab:map  ) ; # <sttl/chart.rul>
+    st:lodprofile (
+        (ai: st:sparql)         
+        (aid: st:sparql)         
+        (dc: st:sparql)  
+        (<http://purl.org/dc/elements/1.1/> st:sparql)
+        (foaf: st:sparql)  
+        (rdf: st:sparql) 
+        (rdfs: st:sparql)
+        (owl: st:sparql)
+        ("*" st:lod)
+    ) ;
+    st:mapzoom 3 ;
+    st:mapsize "mapmedium" ;
+    st:hyperlink true ; 
+    st:title "Covid";
+    st:prefix (("ai" ai:)) ;
+    #st:exportlist (st:lodprofile st:transformations st:sttl st:location st:mapzoom st:mapsize st:mappings) ;
+    st:export true ;
+    # do not focus sttl result on st:uri because it is the URI of the query not of a target resource
+    st:focus false 
+] 
+.
+
+
+
+st:individualCovid a st:Server ;
+st:service "individualCovid" ;
+st:workflow st:individualCovid ;
+st:param [
+    st:title "Class" ;
+    st:hierarchy ( rdfs:subClassOf rdf:type ) ;
+    # to be displayed on mouse over
+    st:nodePropertyDisplay ("url" "property" "class") ;
+    st:nodePropertyList (("property" us:value)) ;
+    st:export true ;
+    st:trace false ;
+    st:prefix (("ai" ai:))
+] ;
+sw:body ( 
+    [ a sw:Dataset ; sw:mode sw:new ] 
+    [ a sw:Query ; sw:uri <covid/query/class.rq> ] 
+    [ a sw:Transformation ; sw:uri d3:ontology ] 
+)
+.
+
+
+
+st:covidtutowf a sw:Workflow ; 
+sw:body (
+    [ a sw:Query ; sw:result sw:graph ] # place holder where to put the query to be executed from the tutorial
+    [ a sw:RuleBase ;  sw:uri sw:owlrl ; sw:onupdate true ]
+    [ a sw:Transformation ; sw:uri st:web ]
+)
+.
+
+
+
+
+st:covidContent a sw:Workflow ; 
+sw:body ( 
+    [ a sw:Parallel ; sw:body ( 
+      # main is empty
+
+      [ a sw:Workflow ; sw:body ( ) ]
+      
+      # context dataset with predefined queries in a specific graph
+      [ a sw:Workflow ; sw:name st:context ; sw:body ( 
+       # [ a sw:Query ; sw:uri  <ai4eu/function/process.rq> ] # function definition
+        [ a sw:Load  ; sw:path <covid/data/workflow.ttl>  ; sw:name st:context ]
+        st:indexQuery ) ]
+                	  
+      ) ]  
+      
+    # set st:context graph as named graph of main
+    [a sw:Dataset]
+).
+
+

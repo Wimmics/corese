@@ -676,8 +676,11 @@ public class Processor {
 		defsysoper(LET,         ExprType.LET);
 		defsysoper(TRY_CATCH,   ExprType.TRY_CATCH);
 		defoper(THROW,          ExprType.THROW);
-		defoper(STOP,          ExprType.RESUME);
+		defoper(STOP,           ExprType.RESUME);
 		defoper(SET,            ExprType.SET);
+		defoper(EXT+"unset",    ExprType.UNSET);
+		defoper(EXT+"unsetStatic",    ExprType.STATIC_UNSET);
+		defoper(EXT+"staticUnset",    ExprType.STATIC_UNSET);
 		defoper(STATIC,         ExprType.STATIC);
                 
 		defoper(XT_GET_DATATYPE_VALUE, ExprType.XT_GET_DATATYPE_VALUE);

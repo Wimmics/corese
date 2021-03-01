@@ -295,6 +295,9 @@ public class QueryLoad {
          return name.substring(index);
      }
       
+    public void write(String name, IDatatype dt) {
+        write(name, dt.stringValue());
+    }
 
     public void write(String name, String str) {
         String query = "";
@@ -305,10 +308,8 @@ public class QueryLoad {
             fq.flush();
             fr.close();
         } catch (FileNotFoundException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
         } catch (IOException e) {
-            // TODO Auto-generated catch block
         }
         
     }

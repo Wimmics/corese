@@ -109,7 +109,9 @@ public class XMLResult {
         if (isShowResult()) {
             String str = read(stream);
             System.out.println(str);
-            throw new IOException("Show result");
+            setShowResult(false);
+            InputStream inputStream = new ByteArrayInputStream(str.getBytes());
+            return parse(inputStream);
         }
         
         if (debug) {

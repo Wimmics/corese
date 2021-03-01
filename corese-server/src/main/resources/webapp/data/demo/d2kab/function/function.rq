@@ -1,0 +1,84 @@
+@public {
+
+#
+# list = list of endpoint url 
+# q =    property
+# generate clickable URL with /sparql?query=service <url> {?s ?p ?o}
+#
+function us:pquery(list, q) {
+    uri(us:link(us:psparql(list, q)))
+}
+
+function us:pquery(list, q, skip) {
+    uri(us:link(us:psparql(us:skip(list, skip), q)))
+}
+
+#
+# list = list of endpoint url 
+# q =    class
+# generate clickable URL with /sparql?query=service <url> {?s a ?t}
+#
+function us:cquery(list, q) {
+    uri(us:link(us:csparql(list, q)))
+}
+
+function us:cquery(list, q, skip) {
+    uri(us:link(us:csparql(us:skip(list, skip), q)))
+}
+
+
+
+
+
+function us:link(q) {
+    st:format(
+    "%1$s/srv/template?query=%2$s&transform=st:sparql", 
+    coalesce(st:get(st:server), "http://localhost:8080"),
+    encode_for_uri(q))
+}
+
+# generate ?s ?p ?o
+function us:psparql(list, p) {
+    st:format (
+    """select ?a ?al (%2$s as ?p) ?v ?vl ?endpoint 
+    where { 
+    values ?endpoint { %1$s }
+    service ?endpoint { select * where {
+        ?a %2$s ?v 
+        optional {?a rdfs:label ?al} 
+        optional {?v rdfs:label ?vl}} 
+        limit 10 }}""",
+        
+        apply(rq:concat, maplist(us:uri, list)), 
+        us:uri(p))
+}
+
+# generate ?s a ?t
+function us:csparql(list, t) {
+    st:format (
+    """select ?s (%2$s as ?t) ?tl ?endpoint 
+    where { 
+    values ?endpoint { %1$s }
+    service ?endpoint { select * where {?s a %2$s optional { %2$s rdfs:label ?tl }} 
+    limit 10 }}
+    """, 
+    
+    apply(rq:concat, maplist(us:uri, list)), 
+    us:uri(t))
+}
+
+function us:uri(?p) {
+    st:format("<%s>", ?p)
+}
+
+
+
+function us:skip(list, skip) {
+    for (url in skip) {
+        xt:remove(list, url)
+    } ;
+    return (list)
+}
+
+
+}

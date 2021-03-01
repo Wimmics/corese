@@ -7,14 +7,13 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.core.query.ProviderImpl;
 import fr.inria.corese.core.util.URLServer;
 import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.logging.Logger;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
@@ -23,6 +22,8 @@ import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.ParserConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.xml.sax.SAXException;
 
@@ -33,11 +34,13 @@ import org.xml.sax.SAXException;
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  */
 public class Service {
+    static Logger logger = LoggerFactory.getLogger(Service.class);
 
     public static final String QUERY = "query";
     public static final String ACCESS = "access";
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
     static final String ENCODING = "UTF-8";
+    static final int REDIRECT = 303;
     private ClientBuilder clientBuilder;
 
     boolean isDebug = !true;
@@ -116,39 +119,65 @@ public class Service {
         }
     }
 
-    // https://docs.oracle.com/javaee/7/api/index.html
     public String post(String query, String mime) {
-        if (isDebug) {
-            System.out.println(query);
-        }
-        Client client = clientBuilder.build();
-        WebTarget target = client.target(getURL().getServer());
-        Form form = new Form();
-        form.param(QUERY, query);
-        String res = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
-        if (isDebug) {
-            System.out.println(res);
-        }
-        return res;
+        return post(getURL().getServer(), query, mime);
     }
     
-    public String get(String query, String mime) {
+    // https://docs.oracle.com/javaee/7/api/index.html
+    public String post(String url, String query, String mime) {
         if (isDebug) {
             System.out.println(query);
         }
         Client client = clientBuilder.build();
-        String url;
-        String uri = getURL().getServer();
-        try {
-            url = uri + "?query=" + URLEncoder.encode(query, "UTF-8");
-        } catch (UnsupportedEncodingException ex) {
-            Load.logger.error(ex.getMessage());
-            url = uri + "?query=" + query;
-        }
         WebTarget target = client.target(url);
         Form form = new Form();
         form.param(QUERY, query);
-        String res = target.request(mime).get().readEntity(String.class);
+        try {
+            String res = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+            if (isDebug) {
+                System.out.println(res);
+            }
+            return res;
+        } catch (javax.ws.rs.RedirectionException ex) {
+            String uri = ex.getLocation().toString();
+            logger.warn(String.format("Service redirection: %s to: %s", url, uri));
+            if (uri.equals(url)) {
+                throw ex;
+            }
+            return post(uri,query, mime);
+        }
+    }
+    
+    public String get(String query, String mime) {
+        return get(getURL().getServer(), query, mime);
+    }
+
+    public String get(String uri, String query, String mime) {
+        if (isDebug) {
+            System.out.println(query);
+        }
+        String url;
+        try {
+            url = uri + "?query=" + URLEncoder.encode(query, "UTF-8");
+        } catch (UnsupportedEncodingException ex) {
+            logger.error(ex.getMessage());
+            url = uri + "?query=" + query;
+        }
+        return getBasic(url, mime);
+    }
+        
+    String getBasic(String url, String mime) {
+        Client client = clientBuilder.build();
+        WebTarget target = client.target(url);
+        Response resp = target.request(mime).get();
+        
+        if (resp.getStatus() == REDIRECT) {
+            String myUrl = resp.getLocation().toString();
+            logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
+            return getBasic(myUrl, mime);
+        }
+        
+        String res = resp.readEntity(String.class);
         if (isDebug) {
             System.out.println(res);
         }

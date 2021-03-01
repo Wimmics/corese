@@ -37,7 +37,8 @@ public class Binding implements Binder {
     static final int UNBOUND = ExprType.UNBOUND;
     public static boolean DEBUG_DEFAULT = false;
     public static boolean DYNAMIC_CAPTURE_DEFAULT = false;
-
+    public static final String SLICE_SERVICE  = "?slice_service";
+    public static final String MAX_XML_RESULT = "?max_xml_result";
     ArrayList<Expr> varList;
     ArrayList<IDatatype> valList;
     // level of the stack before function call
@@ -332,6 +333,10 @@ public class Binding implements Binder {
      */
     @Override
     public IDatatype get(Expr var) {
+        return getBasic(var, true);
+    }
+        
+    public IDatatype getBasic(Expr var, boolean withStatic) {
         switch (var.getIndex()) {
             case UNBOUND: {
                 if (isDynamicCapture()) {
@@ -342,8 +347,8 @@ public class Binding implements Binder {
                         }
                     }
                 }
-                
-                IDatatype dt = getGlobalVariable(var.getLabel());
+
+                IDatatype dt = (withStatic)?getGlobalVariable(var.getLabel()):getBasicGlobalVariable(var.getLabel());
                 if (dt == null) {
 
                     if (isDebug()) {
@@ -411,11 +416,15 @@ public class Binding implements Binder {
     
     // global variable + static global variable
     public IDatatype getGlobalVariable(String name) {
-        IDatatype dt = getGlobalVariableValues().get(name);
+        IDatatype dt = getBasicGlobalVariable(name);
         if (dt == null) {
             return getStaticVariable(name);
         }
         return dt;
+    }
+    
+    public IDatatype getBasicGlobalVariable(String name) {
+        return getGlobalVariableValues().get(name);
     }
       
     public Binding setVariable(String name, IDatatype val) {
@@ -443,7 +452,7 @@ public class Binding implements Binder {
     /**
      * set(?x = exp) ?x is already bound, assign variable
      */
-    public void bind(Expr exp, Expr var, IDatatype val) {
+    public void bind(Expr exp, Variable var, IDatatype val) {
         switch (var.subtype()) {
             // global means SPARQL variable
             // local  means LDScript variable
@@ -463,12 +472,16 @@ public class Binding implements Binder {
                             }
                         }
                         
-                        define((Variable) var, val);
+                        define(var, val);
                         break;
                     default:
                         valList.set(getIndex(var), val);
                 }
         }
+    }
+    
+    public void unbind(Expr exp, Variable var) {
+        bind(exp, var, null);
     }
     
     void define(Variable var, IDatatype val) {

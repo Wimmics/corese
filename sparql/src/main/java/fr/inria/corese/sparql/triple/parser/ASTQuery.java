@@ -1323,6 +1323,10 @@ public class ASTQuery
         return metadata != null && metadata.hasMetadata(type);
     }
     
+    public boolean hasMetadata(String... type) {
+        return metadata != null && metadata.hasMetadata(type);
+    }
+    
     public boolean hasMetadata(String type) {
         return metadata != null && metadata.hasMetadata(type);
     }

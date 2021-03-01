@@ -415,7 +415,9 @@ public class Term extends Expression {
             case ExprType.SEQUENCE:
                 return new Sequence(name);
             case ExprType.SET:
+            case ExprType.UNSET:
             case ExprType.STATIC:
+            case ExprType.STATIC_UNSET:
                 return new SetFunction(name);
 
             case ExprType.LENGTH:

@@ -9,12 +9,13 @@
 
 @prefix db:  <http://fr.dbpedia.org/resource/>
 @prefix dbo: <http://fr.dbpedia.org/ontology/>
-@prefix ai: <http://www.ai4eu.eu/ontologies/core#>
-@prefix dc: <http://purl.org/dc/terms/>
-@prefix de: <http://purl.org/dc/elements/1.1/>
+@prefix ai:  <http://www.ai4eu.eu/ontologies/core#>
+@prefix dc:  <http://purl.org/dc/terms/>
+@prefix de:  <http://purl.org/dc/elements/1.1/>
+@prefix rel: <http://ai4eu.org/onto/>
 
 # where to find preprocess function fun:projectName 
-@prefix fun: <>
+@prefix fun: <function/>
 
 #
 # List of Query
@@ -34,6 +35,15 @@ sw:body (
     st:simple1
     st:simple2
     st:simple20
+       
+    st:skos1
+    
+    st:owl1
+    st:owl2
+    
+    st:kg1
+    st:kg2
+    st:kg3
 
 )
 .
@@ -100,11 +110,7 @@ st:selectKey
     st:function fun:access
 .
 
-st:access
-    st:type  st:silent ;
-    st:name  "arg" ;
-    st:value "restricted"
-.
+
 
 
 st:simple01 a sw:Query ;
@@ -130,7 +136,7 @@ where {
   
   optional {
     ?org ai:location ?location
-        service <http://dbpedia.org/sparql> {
+        service <https://dbpedia.org/sparql> {
             ?location geo:lat ?lat ; geo:long ?lon             
         }
     }
@@ -176,7 +182,7 @@ where {
   
   optional {
     ?creator ai:location ?location
-        service <http://dbpedia.org/sparql> {
+        service <https://dbpedia.org/sparql> {
                 ?location geo:lat ?lat ; geo:long ?lon 
         }
     }
@@ -215,7 +221,7 @@ where {
  
   optional {
     ?org ai:location ?location
-        service <http://dbpedia.org/sparql> {
+        service <https://dbpedia.org/sparql> {
             ?location geo:lat ?lat ; geo:long ?lon             
         }
     }
@@ -307,8 +313,7 @@ insert data {
         dct:description "actual system proven in operational environment (competitive manufacturing in the case of key enabling technologies; or in space)"@en .
 }
 """ ;
-st:select st:selectType ;
-st:select st:access
+st:select st:selectType 
 .
 
 
@@ -378,6 +383,163 @@ where {
 st:select st:selectCreator ;
 st:select st:selectKeyword 
 .
+
+
+
+
+st:skos1 a sw:Query ;
+st:name st:skos1 ;
+rdfs:label "SKOS Thesaurus" ;
+rdfs:comment """SKOS Thesaurus."""@en ;
+rdfs:comment """SKOS Thesaurus"""@fr ;
+
+st:query 
+"""
+prefix rel: <http://ai4eu.org/onto/>
+prefix ai:  <http://ai4eu.org/ns/>
+select ?l ?x  where {
+?x a skos:Concept ; rdfs:label ?l 
+}
+order by ?l 
+limit 100
+""" 
+.
+
+
+
+
+st:owl1 a sw:Query ;
+st:name st:owl1 ;
+rdfs:label "Ontology Class" ;
+rdfs:comment """Ontology Class."""@en ;
+rdfs:comment """Ontology Class"""@fr ;
+
+st:query 
+"""
+prefix rel: <http://ai4eu.org/onto/>
+prefix ai:  <http://ai4eu.org/ns/>
+select ?l ?x  where {
+?x a owl:Class ; rdfs:label ?l 
+}
+order by ?l 
+""" 
+.
+
+st:owl2 a sw:Query ;
+st:name st:owl2 ;
+rdfs:label "Ontology Property" ;
+rdfs:comment """Ontology Property."""@en ;
+rdfs:comment """Ontology Property"""@fr ;
+
+st:query 
+"""
+prefix rel: <http://ai4eu.org/onto/>
+prefix ai:  <http://ai4eu.org/ns/>
+select ?l ?x  where {
+{?x a owl:DatatypeProperty} union { ?x a owl:ObjectProperty }
+?x  rdfs:label ?l 
+}
+order by ?l 
+""" 
+.
+
+
+
+
+st:kg1 a sw:Query ;
+st:name st:kg1 ;
+rdfs:label "Knowledge Graph Instance" ;
+rdfs:comment """Knowledge Graph Instance."""@en ;
+rdfs:comment """Knowledge Graph"""@fr ;
+
+st:query 
+"""
+prefix rel: <http://ai4eu.org/onto/>
+prefix ai:  <http://ai4eu.org/ns/>
+select * where {
+?x rel:instanceof $mode ; rdfs:label ?l
+}
+order by ?l
+limit 100
+""" ;
+st:select st:selectKind 
+.
+
+
+st:selectKind
+    st:title "Type" ;
+    st:name "mode" ;
+    st:uri st:mode ;
+    st:graph st:dataset ;
+    st:predicate rel:instanceof
+.
+
+
+
+
+st:kg2 a sw:Query ;
+st:name st:kg2 ;
+rdfs:label "Knowledge Graph Property" ;
+rdfs:comment """
+Knowledge Graph Property.
+<a href="http://covid19.i3s.unice.fr:8080/ldviz?url=http://corese.inria.fr/service/ai4eusparql&query=prefix rel: <http://ai4eu.org/onto/> select ?n1 ?n2 (us:relation as ?doc) where { select ?n1 ?n2 (count(*) as ?c) where { ?x ?n1 ?y . ?y ?n2 ?z filter strstarts(?n1, rel:) filter strstarts(?n2, rel:) } group by ?n1 ?n2 having (?c >= 5) } limit 500">LDViz query</a>
+"""@en ;
+rdfs:comment """Knowledge Graph"""@fr ;
+
+st:query 
+"""
+prefix rel: <http://ai4eu.org/onto/>
+prefix ai:  <http://ai4eu.org/ns/>
+select  ?p (count(*) as ?c) where {
+?x ?p ?y
+}
+group by ?p
+order by desc(?c)
+limit 100
+"""
+.
+
+
+st:kg3 a sw:Query ;
+st:name st:kg3 ;
+rdfs:label "Knowledge Graph Type" ;
+rdfs:comment """Knowledge Graph Type."""@en ;
+rdfs:comment """Knowledge Graph"""@fr ;
+
+st:query 
+"""
+prefix rel: <http://ai4eu.org/onto/>
+prefix ai:  <http://ai4eu.org/ns/>
+select  ?t (count(*) as ?c) where {
+?x rel:instanceof ?t
+}
+group by ?t
+order by desc(?c)
+limit 100
+"""
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 

@@ -17,6 +17,7 @@ public interface GraphProcessor {
             throws EngineException;
     
     IDatatype write(IDatatype dtfile, IDatatype dt); 
+    IDatatype superWrite(IDatatype dtfile, IDatatype dt); 
     IDatatype syntax(IDatatype dtsyntax, IDatatype dtgraph, IDatatype node); 
     
     IDatatype read(IDatatype dt); 

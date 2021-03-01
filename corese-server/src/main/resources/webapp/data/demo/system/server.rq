@@ -54,7 +54,7 @@ function us:beforeRequest(dt:HttpServletRequest request, q) {
     xt:print("\n@beforeRequest");
     xt:print(request);
     us:trace(request);
-    xt:print(q)
+    xt:print("query:\n", q)
 }
 
 @public @afterRequest

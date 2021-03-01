@@ -6,7 +6,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
-import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
@@ -19,7 +18,6 @@ import fr.inria.corese.kgram.api.query.Provider;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import java.util.List;
 
@@ -73,9 +71,9 @@ public class CompileService {
     
     void complete(Query q) {
         Query out = q.getOuterQuery();
-        ASTQuery ast = (ASTQuery) out.getAST();
+        ASTQuery ast = getAST(out);
         if (ast.hasMetadata(Metadata.LIMIT)) {
-            ASTQuery aa = (ASTQuery) q.getAST();
+            ASTQuery aa = getAST(q);
             int limit = ast.getLimit();
             IDatatype dt = ast.getMetadata().getDatatypeValue(Metadata.LIMIT);
             if (dt != null) {
@@ -87,41 +85,34 @@ public class CompileService {
         }
     }
 
-   @Deprecated
-    String getBind(Query q) {
-        Transformer t = (Transformer) q.getTransformer();
-        if (t != null) {
-            Context c = t.getContext();
-            IDatatype dt = c.get(Context.STL_BIND);
-            if (dt != null) {
-                return dt.getLabel();
-            }
-        }
-        return null;
-    }
-
     boolean isValues(Query q) {
-        String str = getBind(q);
-        return (str != null && str.equals(Context.STL_VALUES)) ||
-                hasMetaData(q, VALUES);
+        return hasRecMetaData(q, Metadata.BINDING, VALUES);
     }
 
     boolean isFilter(Query q) {
-        String str = getBind(q);
-        return (str != null && str.equals(Context.STL_FILTER)) ||
-                hasMetaData(q, FILTER);
+        return hasRecMetaData(q, Metadata.BINDING, FILTER);
     }
     
-     boolean hasMetaData(Query q, String type) {
-         ASTQuery ast = (ASTQuery) q.getAST();
-         return ast.hasMetadata(Metadata.BINDING, type);
+    boolean hasMetaData(Query q, int meta, String type) {
+         ASTQuery ast =  getAST(q.getGlobalQuery());
+         return ast.hasMetadata(meta, type);
+    }
+    
+    boolean hasRecMetaData(Query q, int meta, String type) {
+         if (getAST(q).hasMetadata(meta, type)) {
+             return true;
+         }
+         if (q.getOuterQuery() == null || q.getOuterQuery() == q) {
+             return false;
+         }
+         return hasRecMetaData(q.getOuterQuery(), meta, type);
+    }
+    
+    ASTQuery getAST(Query q) {
+        return (ASTQuery) q.getAST();
     }
         
     public void prepare(Query q) {
-//        Query g = q.getGlobalQuery();
-//        ASTQuery ast = (ASTQuery) q.getAST();
-//        ASTQuery ag = (ASTQuery) g.getAST();
-        //ast.setPrefixExp(ag.getPrefixExp());
     }
 
     public int slice(Query q) {

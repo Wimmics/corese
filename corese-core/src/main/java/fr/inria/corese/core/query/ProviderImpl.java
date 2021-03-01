@@ -35,6 +35,7 @@ import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.util.URLServer;
 import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
@@ -479,6 +480,8 @@ public class ProviderImpl implements Provider {
      */
     Mappings send(CompileService compiler, Node serv, Query q, Mappings map, Environment env, int start, int limit, int timeout) throws EngineException {
         Query gq = q.getGlobalQuery();
+        // use case: ldscript nested query
+        boolean debug = q.isRecDebug();       
         try {
 
             // generate bindings from map/env if any
@@ -486,16 +489,16 @@ public class ProviderImpl implements Provider {
             
             if (! hasBind && start > 0){
                 // this is not the first slice and there is no bindings: skip it
-                if (gq.isDebug()) {logger.info("Skip slice for absence of relevant binding");}
+                if (debug) {logger.info("Skip slice for absence of relevant binding");}
                 return Mappings.create(q);
             }
             
-            if (gq.isDebug()) {
+            if (debug) {
                 logger.info("** Service query: \nservice " + serv + "\n" + q.getAST());
             }
             Mappings res = eval(q, serv, env, timeout);
             
-            if (gq.isDebug()) {
+            if (debug) {
                 if (res.size() > 0) {
                     logger.info("** Service " + serv + " result: \n" + res.toString(false, false, 10));
                 } else {
@@ -535,7 +538,12 @@ public class ProviderImpl implements Provider {
         // former: 
         q.getGlobalQuery().getSlice();
         int slice = env.getEval().getVisitor().slice(serv, map==null?Mappings.create(q):map);
-        return slice;
+        Binding bind = (Binding) env.getBind();
+        IDatatype dt = bind.getGlobalVariable(Binding.SLICE_SERVICE);
+        if (dt == null || dt.intValue() <= 0) {
+            return slice;
+        }
+        return dt.intValue();
     }
     
     Mappings eval(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException, EngineException {
@@ -565,15 +573,26 @@ public class ProviderImpl implements Provider {
             throws IOException, ParserConfigurationException, SAXException {
         ASTQuery ast = (ASTQuery) q.getGlobalQuery().getAST();
         URLServer url = new URLServer(serv.getLabel());
-        if (url.hasMethod() ||
-                ast.hasMetadata(Metadata.FORM) || ast.hasMetadata(Metadata.POST) || ast.hasMetadata(Metadata.GET)) {
-            return post2(q, serv, env, timeout);        
+        if (ast.hasMetadata(Metadata.OLD_SERVICE)) {
+            return post1(q, serv, env, timeout);        
         }
         else {
-            return post1(q, serv, env, timeout);
+            return post2(q, serv, env, timeout);
         }
     }
     
+//    Mappings sendOld(Query q, Node serv, Environment env, int timeout) 
+//            throws IOException, ParserConfigurationException, SAXException {
+//        ASTQuery ast = (ASTQuery) q.getGlobalQuery().getAST();
+//        URLServer url = new URLServer(serv.getLabel());
+//        if (url.hasMethod() || ast.hasMetadata(Metadata.FORM, Metadata.POST, Metadata.GET)) {
+//            return post2(q, serv, env, timeout);        
+//        }
+//        else {
+//            return post1(q, serv, env, timeout);
+//        }
+//    }
+//    
     
     Mappings post1(Query q, Node serv, Environment env, int timeout) 
             throws IOException, ParserConfigurationException, SAXException {

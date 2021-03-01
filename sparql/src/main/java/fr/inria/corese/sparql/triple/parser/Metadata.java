@@ -65,7 +65,6 @@ public class Metadata extends ASTObject
     public static final int GRAPH     = 46;
     public static final int FROM      = 47;
     public static final int UPDATE    = 48;
-    public static final int FORM      = 49;
     public static final int BINDING   = 50; // service binding
 
     
@@ -114,6 +113,8 @@ public class Metadata extends ASTObject
     public static final String LEVEL  = "@level";
     public static final String POST   = "@post";
     public static final String GET    = "@get";
+    public static final String FORM   = "@form";
+    public static final String OLD_SERVICE   = "@oldService";
     public static final String SHOW   = "@show";
              
     private static HashMap<String, Integer> annotation;    
@@ -183,7 +184,6 @@ public class Metadata extends ASTObject
                       
         define("@update",    UPDATE);  
         define("@event",    EVENT);  
-        define("@form",    FORM);  
 //        define(META_BEFORE, BEFORE);  
 //        define(META_AFTER,  AFTER);  
 //        define(META_PRODUCE,PRODUCE);  
@@ -289,6 +289,24 @@ public class Metadata extends ASTObject
             return false;
         }
         return hasMetadata(str);
+    }
+    
+    public boolean hasMetadata(int... type) {
+        for (int val : type) {
+            if (hasMetadata(val)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public boolean hasMetadata(String... type) {
+        for (String val : type) {
+            if (hasMetadata(val)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public boolean hasMetadata(String name){

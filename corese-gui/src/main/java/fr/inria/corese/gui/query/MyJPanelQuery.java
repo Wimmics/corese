@@ -90,7 +90,7 @@ public final class MyJPanelQuery extends JPanel {
     int maxresxml = 1000;
     
     //Boutton du panneau Query
-    private JButton buttonRun, buttonShacl, buttonShex, buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
+    private JButton buttonRun, buttonShacl, buttonPush, buttonShex, buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
     private JButton buttonSearch;
     private JButton buttonRefreshStyle, buttonDefaultStyle;
     //panneau de la newQuery
@@ -153,6 +153,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonRun = new JButton();
         buttonShacl = new JButton();
         buttonShex = new JButton();
+        buttonPush = new JButton();
         buttonStop = new JButton();
         buttonKill = new JButton();
         buttonValidate = new JButton();
@@ -276,6 +277,7 @@ public final class MyJPanelQuery extends JPanel {
          * Bouttons et leurs actions *
          */
         //Lancer une requête
+        buttonPush.setText("Push");
         buttonRun.setText("Query");
         buttonShacl.setText("Shacl");
         buttonShex.setText("Shex");
@@ -348,6 +350,7 @@ public final class MyJPanelQuery extends JPanel {
         hSeq2.addComponent(buttonRun);
         hSeq2.addComponent(buttonShacl);
         hSeq2.addComponent(buttonShex);
+        hSeq2.addComponent(buttonPush);
         hSeq2.addComponent(buttonStop);
         hSeq2.addComponent(buttonKill);
         hSeq2.addComponent(buttonValidate);
@@ -382,6 +385,7 @@ public final class MyJPanelQuery extends JPanel {
         vParallel2.addComponent(buttonRun);
         vParallel2.addComponent(buttonShacl);
         vParallel2.addComponent(buttonShex);
+        vParallel2.addComponent(buttonPush);
         vParallel2.addComponent(buttonStop);
         vParallel2.addComponent(buttonKill);
         vParallel2.addComponent(buttonValidate);
@@ -459,6 +463,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonRun.addActionListener(l_RunListener);
         buttonShacl.addActionListener(l_RunListener);
         buttonShex.addActionListener(l_RunListener);
+        buttonPush.addActionListener(l_RunListener);
         buttonStop.addActionListener(l_RunListener);
         buttonKill.addActionListener(l_RunListener);
         buttonValidate.addActionListener(l_RunListener);
@@ -498,7 +503,7 @@ public final class MyJPanelQuery extends JPanel {
      * location: resources/function/event/gui.rq
      */
     int maxResXML() {
-        return Binding.getDefaultValue("?max_xml_result", maxresxml);
+        return Binding.getDefaultValue(Binding.MAX_XML_RESULT, maxresxml);
     }
 
     String toString(Mappings map) {
@@ -600,16 +605,16 @@ public final class MyJPanelQuery extends JPanel {
 
     void display(Mappings map, MainFrame coreseFrame) {
         if (map == null) {
-                    // go to XML for error message
-                    tabbedPaneResults.setSelectedIndex(XML_PANEL);
-                    return;
+            // go to XML for error message
+            tabbedPaneResults.setSelectedIndex(XML_PANEL);
+            return;
         }
         Query q = map.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean oneValue = !map.getQuery().isListGroup();
         //resultXML = toString(map);
         getTextAreaXMLResult().setText(toString(map));
-        System.out.println("XML Results string size: " + getResultText().length());
+        //System.out.println("XML Results string size: " + getResultText().length());
 
         // On affiche la version en arbre du résultat dans l'onglet Tree
         // crée un arbre de racine "root"
@@ -799,7 +804,8 @@ public final class MyJPanelQuery extends JPanel {
         return new ActionListener() {            
             @Override
             public void actionPerformed(ActionEvent ev) {
-                textAreaXMLResult.setText("");
+                String txt = getTextArea().getText();
+                getTextArea().setText("");
                 Mappings l_Results = null;
                 scrollPaneTreeResult.setViewportView(new JPanel());
                 scrollPaneTreeResult.setRowHeaderView(new JPanel());
@@ -809,6 +815,7 @@ public final class MyJPanelQuery extends JPanel {
 
                 try {
                     String query = sparqlQueryEditor.getTextPaneQuery().getText();
+                    
                     if (ev.getSource() == buttonToSPARQL) {
                         SPINProcess spin = SPINProcess.create();
                         String str = spin.toSparql(query);
@@ -817,8 +824,13 @@ public final class MyJPanelQuery extends JPanel {
                     } else if (ev.getSource() == buttonToSPIN) {
                         SPINProcess spin = SPINProcess.create();
                         String str = spin.toSpin(query);
-                        coreseFrame.getPanel().getTextArea().setText(str);
+                        //coreseFrame.getPanel().
+                        getTextArea().setText(str);
                         tabbedPaneResults.setSelectedIndex(XML_PANEL);
+                    }
+                    else if (ev.getSource() == buttonPush) { 
+                        // push current result into new query editor (as if load query were done)
+                        coreseFrame.newQuery(txt, "generated");
                     } else if (ev.getSource() == buttonRun || ev.getSource() == buttonValidate 
                             || ev.getSource() == buttonShacl || ev.getSource() == buttonShex) {
                         // buttonRun

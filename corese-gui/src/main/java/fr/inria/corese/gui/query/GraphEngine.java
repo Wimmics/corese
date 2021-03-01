@@ -20,6 +20,7 @@ import fr.inria.corese.core.load.Build;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadPlugin;
+import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.util.Parameter;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Access;
@@ -116,10 +117,14 @@ public class GraphEngine {
                     break;
                 case Command.PARAM:
                     param(cmd.get(key));
+                    break;               
+                case Command.LOAD:
+                    System.out.println("load: " + cmd.get(key));
+                    loadDirProtect(cmd.get(key));
                     break;
             }
         }
-    }
+    }   
     
     void param(String path) {
         try {
@@ -194,6 +199,15 @@ public class GraphEngine {
 
     }
 
+    public void loadDirProtect(String path)  {
+        try {
+            Load ld = loader();
+            ld.parseDir(path);
+        } catch (LoadException ex) {
+            logger.error(ex);
+        } 
+    }
+    
     public void loadDir(String path) throws EngineException, LoadException {
         load(path);
     }

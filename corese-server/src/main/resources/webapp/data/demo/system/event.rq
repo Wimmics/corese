@@ -12,9 +12,44 @@ prefix fun: <function://fr.inria.corese.core.extension.Extension>
 prefix ff1:  <http://localhost:8080/data/demo/system/test.rq/>
 prefix ff:  <test.rq/>
 
-@public @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq> 
+#@public @import <http://ns.inria.fr/sparql-template/function/datashape/main.rq> 
 
 select * where { }
+
+#
+# @init function called by Parameter after Parameter graph load processing
+# We can set application specific parameters
+# PRAGMA: for this @init function the current graph is the Parameter graph
+# whereas for other @event function it is the current graph of the query at stake
+#
+@public @initParam
+function us:initParam() {
+    xt:print("@initParam");
+    us:initialize()
+}
+
+@public @initServer
+function us:initServer(url) {
+    xt:print("@initServer", url);
+    xt:print(xt:graph())
+}
+
+
+# current graph is Parameter graph
+@public 
+function us:initialize() {
+    xt:print(xt:turtle(xt:graph()));
+    let (select * where { [] cos:name ?name }) {
+        xt:print("start agent:", ?name)
+    }
+}
+
+
+
+@public @insert
+function us:insert(path, atriple) {
+	xt:print("@insert", atriple);
+}
 
 
 
@@ -103,7 +138,7 @@ function us:notify(request) {
     let (subject   = coalesce(java:getParameter(request, "subject"), "undef"), 
          predicate = coalesce(java:getParameter(request, "predicate"), "undef"), 
          object    = coalesce(java:getParameter(request, "object") ,"undef")) {
-        xt:print("notify:", subject, predicate, object)
+        xt:print("notify:",  subject, predicate, object)
     } 
 }
 

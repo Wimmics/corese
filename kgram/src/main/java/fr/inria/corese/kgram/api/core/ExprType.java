@@ -299,6 +299,8 @@ public interface ExprType {
         public static int TRY_CATCH     = 337;
         public static int THROW         = 338;
         public static int RESUME        = 339;
+        public static int UNSET         = 340;
+        public static int STATIC_UNSET  = 341;
         
         public static int XT_MAPPING     = 400;
         public static int XT_ADD         = 401;

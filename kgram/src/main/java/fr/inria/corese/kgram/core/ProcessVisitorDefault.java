@@ -17,13 +17,19 @@ public class ProcessVisitorDefault implements ProcessVisitor {
     DatatypeValue defaultValue;
 
     @Override
+    public int slice() {
+        return slice;
+    }
+    
+    @Override
     public int slice(Node serv, Mappings map) {
         return slice;
     }
 
     @Override
-    public void setSlice(int n) {
+    public int setSlice(int n) {
         slice = n;
+        return n;
     }
     
     @Override

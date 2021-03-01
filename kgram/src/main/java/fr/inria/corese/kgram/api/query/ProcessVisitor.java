@@ -3,7 +3,6 @@ package fr.inria.corese.kgram.api.query;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
-import fr.inria.corese.kgram.api.core.Graph;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.core.Eval;
@@ -92,9 +91,12 @@ public interface ProcessVisitor extends Pointerable {
     
     default int timeout(Node serv) { return 0; }
     
+    default int slice() { return SLICE_DEFAULT; }
+
     default int slice(Node serv, Mappings map) { return SLICE_DEFAULT; }
     
-    default void setSlice(int n) {}
+    // return result for ldscript call java:setSlice()
+    default int setSlice(int n) { return SLICE_DEFAULT; }
 
     default DatatypeValue produce(Eval eval, Node g, Edge edge) { return defaultValue(); }
     

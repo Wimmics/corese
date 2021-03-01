@@ -23,4 +23,25 @@ function sh:test(shape, sh, subject) {
     xt:print("test:", shape, sh, subject)
 }
 
+
+function sh:endpoint(shape, sh, subject, path, object) {
+    let (select * where { 
+        graph ?shape { ?sh sh:remote [ sh:class ?class ; sh:endpoint ?uri ] }
+        bind (exists { service ?uri { ?object a ?class } } as ?suc)
+    }) {
+    xt:print("endpoint:", ?object, ?class, ?uri) ;
+        return (suc)
+    }
+}
+
+function sh:endpoint(shape, sh, object) {
+    let (select * where { 
+        graph ?shape { ?sh sh:remote [ sh:class ?class ; sh:endpoint ?uri ] }
+        bind (exists { service ?uri { ?object a ?class } } as ?suc)
+    }) {
+    xt:print("endpoint:", ?object, ?class, ?uri) ;
+        return (suc)
+    }
+}
+
 }

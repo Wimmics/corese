@@ -889,7 +889,9 @@ public class Mappings extends PointerObject
     }
 
     void template(Evaluator eval, Query q, Memory mem, Producer p) throws SparqlException {
-        if (size() > 0 && !isFake() && q.isTemplate()) {
+        if (q.isTemplate() && size() > 0 && ! (isFake() && q.isTransformationTemplate()) ) {
+            // fake in transformation template -> fail
+            // fake in query template -> not fail
             setTemplateResult(apply(eval, q.getTemplateGroup(), mem, p));
         }
     }

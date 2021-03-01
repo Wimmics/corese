@@ -22,6 +22,6 @@ where {
 }
 order by ?in 
 us:sort(coalesce(?p, ?q), coalesce(?y, ?x)) 
-coalesce(?p, q) coalesce(?y, ?x)
+coalesce(?p, ?q) coalesce(?y, ?x)
 
 

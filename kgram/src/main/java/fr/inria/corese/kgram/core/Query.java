@@ -485,6 +485,16 @@ public class Query extends Exp implements Graphable {
     boolean needEdge(){
             return getGlobalQuery().isRelax() || getGlobalQuery().isRule();
     }
+    
+    public boolean isRecDebug() {
+        if (isDebug()) {
+            return true;
+        }
+        if (getOuterQuery() == null || getOuterQuery() == this) {
+            return false;
+        }
+        return getOuterQuery().isRecDebug();
+    }
 
     public Query getGlobalQuery() {
         if (query != null) {

@@ -1,0 +1,386 @@
+#
+# Query definitions for a Workflow with st:web transformation
+# This graph is stored in named graph st:context
+# It is available in query and transformation with bind (st:get(st:context) as ?g)
+#
+# Olivier Corby - Wimmics Inria I3S - 2020
+#
+
+@prefix db:  <http://fr.dbpedia.org/resource/>
+@prefix dbo: <http://fr.dbpedia.org/ontology/>
+@prefix idx: <http://ns.inria.fr/rdf/index/> 
+
+[] owl:imports <function/function.rq>
+  
+#
+# List of Query
+#
+us:hal a sw:Workflow ;
+sw:display true;
+sw:debug true;
+sw:collect true;
+sw:body (
+    st:into    
+    st:namespace
+    st:predicate
+    st:class
+    
+    st:federate1
+
+    st:ldvizns
+    st:ldvizpredicate
+    st:ldvizclass
+    
+)
+.
+
+#
+# Define HTML selector
+#
+st:myserver
+    st:name "param" ; 
+    st:uri st:param ;
+    st:value (
+    "endpoint"
+    <https://opendata.inra.fr/openrdf-sesame/repositories/Ahol> 
+    <http://quantum.agroparistech.fr/graphdb/repositories/Composite_making_process>
+    <http://geco.ecophytopic.fr:8890/sparql>
+    <http://agrold.southgreen.fr/sparql>
+    <http://ontology.irstea.fr/bsv/sparql>
+    <http://ontology.irstea.fr/weather/sparql>
+    <http://sparql.agroportal.lirmm.fr/sparql/>
+    <http://taxref.mnhn.fr/sparql>        
+    )
+.
+
+st:myclass
+    st:title "Class:";
+    st:name "arg1" ; 
+    st:uri st:arg1 ;
+    st:graph st:dataset ;
+    st:predicate idx:class ;
+    st:action st:insert
+.
+
+st:mypredicate
+    st:title "Property:";
+    st:name "arg2" ; 
+    st:uri st:arg2 ;
+    st:graph st:dataset ;
+    st:predicate idx:predicate ;
+    st:action st:insert
+.
+
+
+
+
+
+
+
+
+
+
+st:into a sw:Query ;
+    st:name st:intro ;
+    rdfs:label "Introduction" ;
+
+    rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next' permettent de naviguer dans les requêtes successives.
+    'Submit' soumet la requête SPARQL au serveur. """@fr ;
+
+    rdfs:comment """
+    This prototype enables users to query a Knowledge Graph Index of SPARQL endpoints of the <a href="https://d2kab.mystrikingly.com/">D2KAB</a> ANR project.
+    <br/>
+    Choose a query in the selector. 'Previous' and 'Next' enable user to navigate in queries. When a query is selected, a query pattern is shown in the text area. 'Submit' sends the SPARQL query to the server."""@en ;
+
+    st:query ""
+.
+
+
+
+
+
+st:namespace a sw:Query ;
+st:name st:namespace ;
+rdfs:label "Namespace" ;
+rdfs:comment "Namespace."@fr ;
+rdfs:comment """Retrieve the list of namespaces effectively used in the endpoints."""@en ;
+
+st:query 
+"""
+prefix idx: <http://ns.inria.fr/rdf/index/> 
+select ?namespace (aggregate(distinct ?s) as ?endpoint)
+where {
+    ?s idx:namespace ?namespace .
+    filter ("$param" = "endpoint" || ?s = <$param>) 
+}
+group by ?namespace
+order by desc(xt:size(?endpoint)) ?namespace
+""" ;
+st:select st:myserver
+.
+
+
+
+
+
+
+st:predicate a sw:Query ;
+st:name st:predicate ;
+rdfs:label "Predicate" ;
+rdfs:comment "Predicate."@fr ;
+rdfs:comment """Retrieve list of predicates used by the endpoints. For each predicate, a clickable query is provided  that returns a sample of triples using the predicate in the target SPARQL endpoints."""@en ;
+
+st:query 
+"""
+prefix idx: <http://ns.inria.fr/rdf/index/> 
+select ?predicate (sample(?label) as ?plabel) (aggregate(distinct ?s) as ?endpoint)
+(us:pquery(?endpoint, ?predicate) as ?query)
+where {
+    select * where {
+        graph ?g {
+            ?s idx:namespace ?ns .  
+            filter ("$param" = "endpoint" || ?s = <$param>) 
+            ?ns idx:data ?dt .
+            ?dt idx:predicate ?predicate 
+            optional { ?dt rdfs:label ?label }
+        }} limit 250
+}
+group by ?predicate 
+order by desc(xt:size(?endpoint)) ?predicate
+
+""" ;
+st:select st:myserver 
+.
+
+
+
+
+
+st:class a sw:Query ;
+st:name st:class ;
+rdfs:label "Class" ;
+rdfs:comment "Class."@fr ;
+rdfs:comment """Retrieve list of classes used by the endpoints. For each class, a clickable query is provided  that returns a sample of instances typed by the class in the target SPARQL endpoints."""@en ;
+
+st:query 
+"""
+prefix idx: <http://ns.inria.fr/rdf/index/> 
+select ?class (sample(?label) as ?classlabel) (aggregate(distinct ?s) as ?endpoint)
+(us:cquery(?endpoint, ?class) as ?query)
+where {
+    select * where {
+        graph ?g {
+            ?s idx:namespace ?ns .
+            filter ("$param" = "endpoint" || ?s = <$param>) 
+            ?ns idx:data ?dt . ?dt idx:class ?class 
+            optional { ?dt rdfs:label ?label }
+            filter isURI(?class)
+        }} limit 250
+}
+group by ?class 
+order by desc(xt:size(?endpoint)) ?class
+""" ;
+st:select st:myserver
+
+.
+
+
+
+
+st:sample a sw:Query ;
+st:name st:sample ;
+rdfs:label "Sample" ;
+rdfs:comment "Sample."@fr ;
+rdfs:comment """Sample namespace of resources shared by endpoints with specific properties."""@en ;
+
+st:query 
+"""
+#
+# Return endpoints and properties that share resource URI namespace 
+#
+prefix idx: <http://ns.inria.fr/rdf/index/> 
+select ?namespace ?endpoint  ?propertyDomain ?property
+where {
+select  (?node as ?namespace) (aggregate(distinct ?s1) as ?l1) (aggregate(distinct ?s2) as ?l2) 
+(aggregate(distinct ?ns1) as ?lp1) (aggregate(distinct ?ns2) as ?lp2) 
+(xt:sort(xt:merge(?l1, ?l2)) as ?endpoint) (xt:sort(xt:merge(?lp1, ?lp2)) as ?property)  
+(xt:merge(maplist(xt:domain, ?property)) as ?propertyDomain)
+where {
+    ?s1 idx:namespace ?ns1 . ?s2 idx:namespace ?ns2 
+    filter (?s1 < ?s2)
+    
+    graph ?g1 {
+        ?s1 idx:namespace ?ns1 .
+        ?ns1 idx:data ?dt1 . ?dt1  idx:predicate ?p1 .
+        {?dt1 idx:subjectDomain ?node} union {?dt1 idx:objectDomain ?node}
+    }
+                       
+    graph ?g2 {
+        ?s2 idx:namespace ?ns2 .
+        ?ns2 idx:data ?dt2 . ?dt2  idx:predicate ?p2 .
+        {?dt2 idx:subjectDomain ?node} union {?dt2 idx:objectDomain ?node}
+    }
+
+}
+group by ?node #?s1 ?s2 ?p1 ?p2
+}
+order by desc(xt:size(?endpoint)) desc(xt:size(?property)) ?namespace
+
+""" 
+
+.
+
+
+
+
+
+
+
+
+
+#
+# LinkedDataViz Queries 
+# http://covid19.i3s.unice.fr:8080/covid
+# http://corese.inria.fr/myservice/d2kabsparql
+#
+
+st:ldvizns a sw:Query ;
+st:name st:ldvizns ;
+rdfs:label "Linked Data Viz Namespace" ;
+rdfs:comment "Namespace."@fr ;
+rdfs:comment """Retrieve the list of namespaces used by the endpoints. 
+<a href="http://covid19.i3s.unice.fr:8081/ldviz?query=prefix idx: %3Chttp://ns.inria.fr/rdf/index/%3E 
+ select ?n1 ?n2 ?doc where {?n1 idx:namespace ?n2  bind (?n2 as ?doc)}&url=http://corese.inria.fr/myservice/d2kabsparql">Linked Data Viz Query</a>.
+"""@en ;
+
+st:query 
+"""
+# http://corese.inria.fr/myservice/d2kabsparql
+prefix idx: <http://ns.inria.fr/rdf/index/> 
+select ?n1 ?n2 ?doc where {
+    ?n1 idx:namespace ?n2 .  
+    bind (?n2 as ?doc)
+} 
+""" 
+
+.
+
+
+st:ldvizpredicate a sw:Query ;
+st:name st:ldvizpredicate ;
+rdfs:label "Linked Data Viz Predicate" ;
+rdfs:comment "Predicate."@fr ;
+rdfs:comment """Retrieve the list of predicates used by the endpoints. 
+<a href="http://covid19.i3s.unice.fr:8081/ldviz?query=prefix idx: %3Chttp://ns.inria.fr/rdf/index/%3E 
+ select ?n1 ?n2 ?doc where {graph ?g {?n1 idx:namespace ?ns . ?ns idx:data ?dt . ?dt idx:predicate ?n2 } bind (?n2 as ?doc)}&url=http://corese.inria.fr/myservice/d2kabsparql">Linked Data Viz Query</a>.
+"""@en ;
+
+st:query 
+"""
+# http://corese.inria.fr/myservice/d2kabsparql
+prefix idx: <http://ns.inria.fr/rdf/index/> 
+select ?n1 ?n2 ?doc where {
+graph ?g {
+        ?n1 idx:namespace ?ns .  
+        ?ns idx:data ?dt .
+        ?dt idx:predicate ?n2 }
+    bind (?n2 as ?doc)
+} 
+""" 
+
+.
+
+
+
+st:ldvizclass a sw:Query ;
+st:name st:ldvizclass ;
+rdfs:label "Linked Data Viz Class" ;
+rdfs:comment "Class."@fr ;
+rdfs:comment """Retrieve the list of classes used by the endpoints. 
+<a href="http://covid19.i3s.unice.fr:8081/ldviz?query=prefix idx: %3Chttp://ns.inria.fr/rdf/index/%3E 
+ select ?n1 ?n2 ?doc where {graph ?g {?n1 idx:namespace ?ns . ?ns idx:data ?dt . ?dt idx:class ?n2}bind (?n2 as ?doc)}&url=http://corese.inria.fr/myservice/d2kabsparql">Linked Data Viz Query</a>.
+"""@en ;
+
+st:query 
+"""
+# http://corese.inria.fr/myservice/d2kabsparql
+prefix idx: <http://ns.inria.fr/rdf/index/> 
+select ?n1 ?n2 ?doc where {
+graph ?g {
+        ?n1 idx:namespace ?ns .  
+        ?ns idx:data ?dt .
+        ?dt idx:class ?n2 }
+    bind (?n2 as ?doc)
+} 
+""" 
+
+.
+
+
+
+
+
+
+
+
+st:federate1 a sw:Query ;
+st:name st:federate1 ;
+rdfs:label "Federated Query" ;
+rdfs:comment "Federated Query."@fr ;
+rdfs:comment """Federated Query annotated by URL of endpoints. 
+The selectors provide the list of classes and properties. When an entity is selected, it is copied in the clipboard, and in the Pad;  you can paste it in the text editor. <br/>
+The federated query engine rewrites the query with appropriate service clauses.
+With the @variable annotation,  each solution is decorated with the URL of the endpoints that contributed to the solution."""@en ;
+
+st:query 
+"""
+prefix dce: <http://purl.org/dc/elements/1.1/>
+@federate 
+<http://ontology.irstea.fr/weather/sparql> 
+<http://ontology.irstea.fr/bsv/sparql>  
+<http://agrold.southgreen.fr/sparql> 
+<http://taxref.mnhn.fr/sparql>
+# <http://sparql.agroportal.lirmm.fr/sparql/>
+@variable
+
+select * where {
+    ?a dce:creator ?b 
+    # ?a ?p ?v
+}
+limit 100
+""" 
+;
+st:select st:myclass, st:mypredicate
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

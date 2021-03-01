@@ -16,6 +16,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.api.GraphProcessor;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.script.LDScript;
 
@@ -44,7 +45,7 @@ public class GraphFunction extends LDScript {
                     return DatatypeMap.createObject(p.getGraph());
                 }
                 else {
-                    return access(param[0], p);
+                    return access(param[0], eval, p);
                 }
                 
             case XT_NODE:
@@ -64,7 +65,7 @@ public class GraphFunction extends LDScript {
                 
             default:
                 switch (param.length) {
-                    case 1: return access(param[0], p);
+                    case 1: return access(param[0], eval, p);
                     default: return null;
                 }
                 
@@ -72,13 +73,20 @@ public class GraphFunction extends LDScript {
         }
     }
        
-    IDatatype access(IDatatype dt, Producer p) {
+    IDatatype access(IDatatype dt, Computer eval, Producer p) {
         if (dt.pointerType() != PointerType.TRIPLE) {
             switch (oper()) {
                 case XT_INDEX: return index(dt, p);
+                case XT_GRAPH:
+                    if (dt.pointerType() == PointerType.MAPPINGS) {
+                        // generate graph representation of sparql query result
+                        GraphProcessor proc = eval.getGraphProcessor();
+                        return proc.graph(dt);
+                    }
                 default: return null;
             }
         }
+        
         Edge edge = dt.getPointerObject().getEdge();
         switch (oper()) {
             case XT_GRAPH:

@@ -43,6 +43,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
+import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 
 /**
@@ -188,7 +189,12 @@ public class GraphSpecificFunction extends LDScript {
 
             case WRITE:
                 check(Feature.READ_WRITE, b, WRITE_MESS);
-                return proc.write(dt, param[1]);
+                if (dt.getLabel().startsWith("/") && Access.accept(Feature.SUPER_WRITE, b.getAccessLevel())) {
+                    proc.superWrite(dt, param[1]);
+                }
+                else {
+                    return proc.write(dt, param[1]);
+                }
 
             case READ:
                 check(Feature.READ_WRITE, b, READ_MESS);

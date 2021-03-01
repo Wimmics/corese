@@ -15,13 +15,13 @@
 
 #[] owl:imports <phyprofile.ttl>
 
-[] owl:imports <myprofile.ttl> .
-[] owl:imports <covidprofile.ttl>
+#[] owl:imports <myprofile.ttl> .
 #[] owl:imports <d2kabprofile.ttl> .
+#[] owl:imports <covidprofile.ttl>
 
 # authorized sparql endpoints, see Profile defNamespace
 st:access st:namespace 
-<http://dbpedia.org/sparql>,
+<https://dbpedia.org/sparql>,
 <http://dbpedia-historique.inria.fr/sparql>,
 <http://fr.dbpedia.org/sparql>,
 <https://data.archives-ouvertes.fr/sparql>,
@@ -47,31 +47,6 @@ st:workflow [
         [ a sw:Transformation ; sw:uri st:logger  ]    
     )
 ]
-
-
-st:covid a st:Server ;   
-st:service "covid" ;
-  st:param [ 
-    st:transformations (st:browser) ;
-    st:export true ;
-    st:lang "fr" ;
-    st:import st:dbpediaParam, st:mapParam ;
-    st:endpoint <https://covidontheweb.inria.fr/sparql>
-  ] ;
-  st:workflow st:covidwf
-  .
-  
-  
-st:covidwf a sw:Workflow ;
-  sw:body ( 
-    [ a sw:Query ;  
-        sw:uri <demo/covid/query/covid.rq> 
-    ]
-    [ a sw:Transformation ; sw:uri st:combine ]
-  )
-.
-
-
 
 
 st:dbpedia a st:Profile ;   

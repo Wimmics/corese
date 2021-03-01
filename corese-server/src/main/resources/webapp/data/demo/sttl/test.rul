@@ -1,0 +1,28 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 13 13:41:34 CEST 2019
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+
+
+
+<rule>
+<body>
+<![CDATA[
+template st:start {
+    ?test st:nl() ?read
+}
+where {
+    bind ("Hello World" as ?test)
+    bind (xt:read("/tmp/tmp.txt") as ?read)
+}
+]]>
+</body>
+</rule>
+
+
+
+</rdf:RDF>

@@ -1,0 +1,96 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 13 13:41:34 CEST 2019
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+
+
+
+<rule>
+<body>
+<![CDATA[
+template st:start {
+   st:call-template-with(st:navlab, st:maplist, ?list)
+}
+where {
+   bind (us:loclist() as ?list)
+}
+
+
+function us:loclist() {
+    let (?map = ds:getPublicDatatypeValue(true),
+         #?host = xt:get(?map, st:host),
+         ?host = us:map(),
+         ?list = maplist(us:locate, us:iplist(?host))) {
+        xt:print(?list); 
+        return(?list)
+    }
+}
+
+
+function us:iplist(?map) {
+    maplist(lambda((?key, ?value)) { ?key }, ?map)
+}
+
+function us:locate(?ip) {
+    let (?json = us:describe(?ip),
+         ?pair = xt:get(?json, "loc"),
+         ?lat  = strbefore(?pair, ","),
+         ?lon  = strafter(?pair,  ",")) {
+         xt:print("json:", ?json) ;
+         xt:print("");
+         xt:list(?ip, xsd:decimal(?lat), xsd:decimal(?lon))
+    }
+}
+
+function us:describe(?ip) {
+ let (?res = xt:read(concat("https://ipinfo.io/", ?ip))) {
+    xt:json(?res)
+ }
+}
+
+
+
+function us:map() {
+    let (?map = xt:map()) {
+    map(lambda(?ip, ?map) { xt:set(?map, ?ip, 1) }, 
+    xt:list(
+    "109.17.241.120",
+    "134.59.132.141", 
+    "144.76.102.243", 
+    "136.243.17.161",
+    "148.251.237.246",
+    "165.225.104.69",
+    "185.110.74.166",
+    "78.240.108.121", 
+    "46.4.83.150",
+    "5.9.145.132",
+    "78.240.108.121",
+    "86.246.181.63",
+    "88.198.36.62", 
+    "81.171.98.162",
+    "90.19.197.46", 
+    "95.163.255.39", 
+    "66.249.79.10"
+    ), xt:list(?map) );
+        return (?map)
+    }
+}
+
+function us:json(?json, ?key) {
+    let (?str  = strafter(?json, concat("\"", ?key, "\": \"")),
+         ?pair = strbefore(?str, "\"")) {
+         return(?pair)
+    }
+}
+
+]]>
+</body>
+</rule>
+
+
+
+</rdf:RDF>

@@ -47,6 +47,8 @@ public class Manager {
     static HashMap<String, String> mapService;
     static NSManager nsm;
     static Manager manager;
+    
+    boolean initDone = false;
 
     static {
         //init();
@@ -63,24 +65,28 @@ public class Manager {
      * content
      */
     void init() {
-        mapURI = new HashMap<String, TripleStore>();
-        mapService = new HashMap<String, String>();
-        nsm = NSManager.create();
-        Profile p = getProfile();
-        for (Service s : p.getServers()) {
-            if (!s.getName().equals(DEFAULT) && !s.getName().equals(USER)) {
-                // default/user if the sparql endpoint
-                logger.info("Load: " + s.getName());
-                try {
-                    initTripleStore(p, s);
-                } catch (LoadException ex) {
-                    LogManager.getLogger(Manager.class.getName()).log(Level.ERROR, "", ex);
-                } catch (EngineException ex) {
-                    LogManager.getLogger(Manager.class.getName()).log(Level.ERROR, "", ex);
+        if (initDone) {}
+        else {
+            initDone = true;
+            mapURI = new HashMap<String, TripleStore>();
+            mapService = new HashMap<String, String>();
+            nsm = NSManager.create();
+            Profile p = getProfile();
+            for (Service s : p.getServers()) {
+                if (!s.getName().equals(DEFAULT) && !s.getName().equals(USER)) {
+                    // default/user if the sparql endpoint
+                    logger.info("Load: " + s.getName());
+                    try {
+                        initTripleStore(p, s);
+                    } catch (LoadException ex) {
+                        LogManager.getLogger(Manager.class.getName()).log(Level.ERROR, "", ex);
+                    } catch (EngineException ex) {
+                        LogManager.getLogger(Manager.class.getName()).log(Level.ERROR, "", ex);
+                    }
                 }
             }
+            system();
         }
-        system();
         // draft
         // complete();
     }
@@ -98,6 +104,24 @@ public class Manager {
             }
         }
     }
+    
+    // URI or name serv
+    static TripleStore getEndpoint(String serv) {
+       getManager().init();
+       TripleStore ts = getManager().getTripleStore(getURIOrName(serv));
+       if (ts == null){
+           return Transformer.getTripleStore();
+       }
+       return ts;
+   }
+    
+    static String getURIOrName(String serv) {
+        String uri = getURI(serv);
+        if (uri == null) {
+            return serv;
+        }
+        return uri;
+    }
 
     TripleStore getTripleStore(String name) {
         return mapURI.get(name);
@@ -111,7 +135,7 @@ public class Manager {
         return getTripleStore(uri);
     }
 
-    String getURI(String name) {
+    static String getURI(String name) {
         return mapService.get(name);
     }
 

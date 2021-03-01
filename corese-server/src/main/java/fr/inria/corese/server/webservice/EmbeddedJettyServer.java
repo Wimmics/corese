@@ -330,7 +330,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
 			// === SSL Connector end ====
 
 			ResourceConfig config = new ResourceConfig(
-				SPARQLRestAPI.class,
+				SPARQLRestAPI.class, SPARQLService.class,
 				SrvWrapper.class,
 				LdpRequestAPI.class,
 				SPIN.class,

@@ -107,7 +107,7 @@ where {
 }
 order by ?in 
 us:sort(coalesce(?p, ?q), coalesce(?y, ?x)) 
-coalesce(?p, q) coalesce(?y, ?x)
+coalesce(?p, ?q) coalesce(?y, ?x)
 
 
 ]]>
@@ -168,7 +168,7 @@ template {
 where {
     {?in ?p ?y} union {?x ?q ?in}
 }
-order by ?in us:sort(coalesce(?p, ?q), coalesce(?y, ?x)) coalesce(?p, q) coalesce(?y, ?x)
+order by ?in us:sort(coalesce(?p, ?q), coalesce(?y, ?x)) coalesce(?p, ?q) coalesce(?y, ?x)
 
 pragma {st:template st:priority 1000}
 

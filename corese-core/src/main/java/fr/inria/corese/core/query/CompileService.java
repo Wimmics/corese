@@ -1,5 +1,6 @@
 package fr.inria.corese.core.query;
 
+import fr.inria.corese.core.util.URLServer;
 import java.util.ArrayList;
 
 import fr.inria.corese.sparql.api.IDatatype;
@@ -40,47 +41,45 @@ public class CompileService {
     /**
      * Mappings map is result of preceding query pattern
      * Take map into account to evaluate service clause on remote endpoint
-     * Generate relevant bindings for the service:
+     * Generate relevant variable bindings for the service:
      * 
      * for each Mapping m in map : 
      * for each var in select clause of service : 
-     * generate filter (var = m.value(var))
+     * generate filter (var = m.value(var)) or values clause
+     * When no map, use env
+     * Create a copy of ast with bindings if any, otherwise return ast as is.
      */
-    public boolean compile(Node serv, Query q, Mappings map, Environment env, int start, int limit) {
-        complete(q);
+    public ASTQuery compile(URLServer serv, Query q, Mappings map, Environment env, int start, int limit) {
+        ASTQuery ast = getAST(q);
+        complete(q, ast);
         Query out = q.getOuterQuery();
+        boolean isValues = isValues(out) || (!isFilter(out) && !provider.isSparql0(serv.getNode()));
+        
         if (map == null || (map.size() == 1 && map.get(0).size() == 0)) {
             // lmap may contain one empty Mapping
             // use env because it may have bindings
-            if (isValues(out)) {
-                bindings(q, env);
-            } else if (isFilter(out) || provider.isSparql0(serv)) {
-                filter(q, env);
-            } else {
-                bindings(q, env);
-            }
-            return true;
-        } else if (isValues(out)) {
+            if (isValues) {
+                return bindings(q, env);
+            } else  {
+                return filter(q, env);
+            } 
+        } else if (isValues) {
             return bindings(q, map, start, limit);
-        } else if (isFilter(out) || provider.isSparql0(serv)) {
-            return filter(q, map, start, limit);
         } else {
-            return bindings(q, map, start, limit);
-        }
+            return filter(q, map, start, limit);
+        } 
     }
     
-    void complete(Query q) {
-        Query out = q.getOuterQuery();
-        ASTQuery ast = getAST(out);
-        if (ast.hasMetadata(Metadata.LIMIT)) {
-            ASTQuery aa = getAST(q);
-            int limit = ast.getLimit();
+    void complete(Query q, ASTQuery ast) {
+        ASTQuery gast = getAST(q.getOuterQuery());
+        if (gast.hasMetadata(Metadata.LIMIT)) {
+            int limit = gast.getLimit();
             IDatatype dt = ast.getMetadata().getDatatypeValue(Metadata.LIMIT);
             if (dt != null) {
                 limit = dt.intValue();
             }
-            if (limit < aa.getLimit()) {
-                aa.setLimit(limit);
+            if (limit < ast.getLimit()) {
+                ast.setLimit(limit);
             }
         }
     }
@@ -129,20 +128,18 @@ public class CompileService {
      * Search select variable of query that is bound in env Generate binding for
      * such variable Set bindings in ASTQuery
      */
-    void bindings(Query q, Environment env) {
+    ASTQuery bindings(Query q, Environment env) {
         ASTQuery ast = (ASTQuery) q.getAST();
-        ast.clearBindings();
         ArrayList<Variable> lvar = new ArrayList<Variable>();
         ArrayList<Constant> lval = new ArrayList<Constant>();
 
-        //for (Node qv : q.getSelect()) {
         for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
             String name = qv.getLabel();
             Variable var = ast.getSelectAllVar(name);
             if (var == null){
                var = Variable.create(name);
             }
-            Node val = env.getNode(qv); //var.getProxyOrSelf());
+            Node val = env.getNode(qv); 
 
             if (val != null && ! val.isBlank()) {
                 lvar.add(var);
@@ -153,21 +150,18 @@ public class CompileService {
         }
         
        Values values = Values.create(lvar, lval);
-
-       setValues(ast, values);
+       return setValues(ast, values);
     }
 
     /**
      * Generate bindings as bindings from Mappings
      */
-    public boolean bindings(Query q, Mappings map, int start, int limit) {
+    ASTQuery bindings(Query q, Mappings map, int start, int limit) {
         ASTQuery ast = (ASTQuery) q.getAST();
-        ast.clearBindings();
         ArrayList<Variable> lvar = new ArrayList<Variable>();
         ArrayList<Constant> lval;
         Values values = Values.create();
 
-        //for (Node qv : q.getSelect()) {
         for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
             String name = qv.getLabel();
             Variable var = ast.getSelectAllVar(name);
@@ -203,8 +197,8 @@ public class CompileService {
             }
         }
 
-       setValues(ast, values);
-       return success(values);
+       return setValues(ast, values);
+       //return success(values);
     }
         
     boolean success(Values values) {
@@ -212,30 +206,50 @@ public class CompileService {
             values.getValues().size() > 0;
     }
     
-    void setValues(ASTQuery ast, Values values) {
-        if (ast.getSaveBody() == null) {
-            ast.setSaveBody(ast.getBody());
-        }
-        BasicGraphPattern body = BasicGraphPattern.create();
+    /**
+     * Return a copy of ast with values if any or ast itself
+     */
+    ASTQuery setValues(ASTQuery aa, Values values) {
         if (success(values)) {
+            ASTQuery ast = aa.copy();           
+            BasicGraphPattern body = BasicGraphPattern.create();
             body.add(values);
+            for (Exp e : ast.getBody()) {
+                body.add(e);
+            }
+            ast.setBody(body);
+            return ast;
+        } else {
+            return aa;
         }
-        for (Exp e : ast.getSaveBody()) {
-            body.add(e);
-        }
-        ast.setBody(body);
     }
     
+    /**
+     * Return a copy of ast with filter if any or ast itself
+     */
+    ASTQuery setFilter(ASTQuery aa, Term f) {
+        if (f != null) {
+            ASTQuery ast = aa.copy();           
+            BasicGraphPattern body = BasicGraphPattern.create();
+            for (Exp e : ast.getBody()) {
+                body.add(e);
+            }  
+            body.add(f);
+            ast.setBody(body);
+            return ast;
+        } else {
+            return aa;
+        }
+    }
 
     /**
      * Search select variable of query that is bound in env Generate binding for
      * such variable as filters Set filters in ASTQuery
      */
-    void filter(Query q, Environment env) {
+    ASTQuery filter(Query q, Environment env) {
         ASTQuery ast = (ASTQuery) q.getAST();
         ArrayList<Term> lt = new ArrayList<Term>();
 
-        //for (Node qv : q.getSelect()) {
         for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
             String var = qv.getLabel();
             Node val = env.getNode(var);
@@ -257,13 +271,13 @@ public class CompileService {
             }
         }
 
-        setFilter(ast, filter);
+        return setFilter(ast, filter);
     }
 
     /**
      * Generate bindings from Mappings as filter
      */
-    public boolean filter(Query q, Mappings map, int start, int limit) {
+    public ASTQuery filter(Query q, Mappings map, int start, int limit) {
         ASTQuery ast = (ASTQuery) q.getAST();
         Term filter = null;
         for (int j = start; j < map.size() && j < limit; j++) {
@@ -278,8 +292,8 @@ public class CompileService {
             }
         }
 
-        setFilter(ast, filter);
-        return (filter != null);
+        return setFilter(ast, filter);
+        //return (filter != null);
     }
     
     Term getFilter(Query q, Mapping m) {
@@ -356,23 +370,7 @@ public class CompileService {
     void submit(List<Term> lt) {
         //termList.add(lt);
     }
-    
-
-    void setFilter(ASTQuery ast, Term f) {
-        if (ast.getSaveBody() == null) {
-            ast.setSaveBody(ast.getBody());
-        }
-
-        BasicGraphPattern body = BasicGraphPattern.create();
-
-        for (Exp e : ast.getSaveBody()) {
-            body.add(e);
-        }
-        if (f != null) {
-            body.add(f);
-        }
-        ast.setBody(body);
-    }
+      
 
     /**
      * Generate bindings as a string values () {()} syntax

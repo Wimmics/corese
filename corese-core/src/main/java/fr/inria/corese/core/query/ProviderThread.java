@@ -1,5 +1,6 @@
 package fr.inria.corese.core.query;
 
+import fr.inria.corese.core.util.URLServer;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Exp;
@@ -19,21 +20,21 @@ public class ProviderThread extends Thread {
     /**
      * @return the service
      */
-    public Node getService() {
+    public URLServer getService() {
         return service;
     }
 
     /**
      * @param service the service to set
      */
-    public void setService(Node service) {
+    public void setService(URLServer service) {
         this.service = service;
     }
     
     ProviderImpl p;
     Query q;
     Exp exp;
-    private Node service;
+    private URLServer service;
     Mappings map, sol;
     Eval eval;
     CompileService c;
@@ -41,7 +42,7 @@ public class ProviderThread extends Thread {
     int length;
     int timeout;
     
-    ProviderThread(ProviderImpl p, Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout){
+    ProviderThread(ProviderImpl p, Query q, URLServer service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout){
         this.p = p;
         this.q = q;
         this.service = service;

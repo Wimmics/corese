@@ -101,7 +101,6 @@ public class ProviderImpl implements Provider {
 
     @Override
     public boolean isSparql0(Node serv) {
-        //if (true) return false;
         if (serv.getLabel().startsWith(LOCALHOST)) {
             return false;
         }
@@ -143,11 +142,15 @@ public class ProviderImpl implements Provider {
         return serviceBasic(serv, exp, lmap, eval);
     }
     
+    /**
+     * exp: service statement
+     */
     public Mappings serviceBasic(Node serv, Exp exp, Mappings lmap, Eval eval) 
             throws EngineException
     {
         Query qq = eval.getEnvironment().getQuery();
         Exp body = exp.rest();
+        // select query inside service statement
         Query q = body.getQuery();
         
         QueryProcess exec = null ;
@@ -191,35 +194,35 @@ public class ProviderImpl implements Provider {
     }
 
     /**
-     * Take Mappings into account when sending service to remote endpoint
+     * serv: servive variable/URI, null when variable is unbound
+     * q: select where query inside service statement
+     * exp: service statement
+     * map: current mappings for service candidate variable bindings
      */
     Mappings globalSend(Node serv, Query q, Exp exp, Mappings map, Eval eval) throws EngineException {
         CompileService compiler = new CompileService(this);
-
         // share prefix
         compiler.prepare(q);
-
         int slice = getSlice(q, serv, eval.getEnvironment(), map); 
-
-        ASTQuery ast = (ASTQuery) q.getAST();
-        boolean hasValues = ast.getValues() != null;
-        boolean skipBind = ast.getGlobalAST().hasMetadata(Metadata.BIND, Metadata.SKIP_STR);
+        ASTQuery ast = getAST(q);
+        //boolean hasValues = ast.getValues() != null;
+        boolean skipBind = ast.getGlobalAST().hasMetadata(Metadata.BINDING, Metadata.SKIP_STR);
         Mappings res = null;
         Graph g = getGraph(eval.getProducer());
-        if (map == null || slice == 0 || hasValues || skipBind) {
-            // if query has its own values {}, do not include Mappings
-            return sliceSend(g, compiler, serv, q, exp, (skipBind) ? null : map, eval, false, slice);
-            //return basicSend(g, compiler, serv, q, exp, (skipBind) ? null : map, eval, 0, 0);
-        } else {
-            res = sliceSend(g, compiler, serv, q, exp, map, eval, true, slice);
-        }
-
-        if (!hasValues) {
-            ast.setValues(null);
-        }
-
+        // when servive variable is unbound, get service URL (list) from Environment or Mappings
+        List<Node> serviceList = getServerList(exp, map, eval.getEnvironment());
+        boolean bslice = ! (map == null || slice <= 0  || skipBind); // || hasValues);
+        res = sliceSend(serviceList, g, compiler, serv, q, exp, (skipBind) ? null : map, eval, bslice, slice);
+        restore(ast);
         return res;
     }
+    
+    void restore(ASTQuery ast) {
+        if (ast.getSaveBody() != null) {
+            ast.setBody(ast.getSaveBody());
+        }
+    }
+    
     
     /**
      * Generalized service clause with possibly several service URIs
@@ -230,12 +233,11 @@ public class ProviderImpl implements Provider {
      * When several services, they are evaluated in parallel by default, unless @sequence metadata
      * When several services, return *distinct* Mappings, unless @duplicate metadata.
      */
-    Mappings sliceSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, boolean slice, int length) throws EngineException {
+    Mappings sliceSend(List<Node> serverList, Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, boolean slice, int length) throws EngineException {
         
-        List<Node> list = getServerList(exp, map, eval.getEnvironment());
-        g.getEventManager().start(Event.Service, list);
+        g.getEventManager().start(Event.Service, serverList);
        
-        if (list.isEmpty()) {
+        if (serverList.isEmpty()) {
             logger.error("Undefined service: " + exp.getServiceNode());
         }
 
@@ -244,9 +246,11 @@ public class ProviderImpl implements Provider {
         int timeout = getTimeout(q, serviceNode, eval.getEnvironment());
         // by default in parallel 
         boolean parallel = q.getOuterQuery().isParallel();
-
-        for (Node service : list) {
-            Binding b = (Binding) eval.getEnvironment().getBind();
+        Binding b = (Binding) eval.getEnvironment().getBind();
+        
+        for (Node service : serverList) {
+            URLServer url = new URLServer(service);
+            
             if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel(), service.getLabel())) {
                 throw new SafetyException(TermEval.SERVICE_MESS, service.getLabel());
             }
@@ -256,6 +260,7 @@ public class ProviderImpl implements Provider {
             g.getEventManager().process(Event.Service, service);
 
             Mappings input = map;
+            
             if (slice) {
                 // select appropriate subset of distinct Mappings with service URI 
                 input = getMappings(q, exp, exp.getServiceNode(), service, map, eval.getEnvironment());
@@ -270,12 +275,15 @@ public class ProviderImpl implements Provider {
             Mappings sol = new Mappings();
             mapList.add(sol);
             
+            // draft: local slice
+            //int mySlice = url.intValue("slice");
+            
             if (parallel) {
-                ProviderThread p = parallelProcess(q, service, exp, input, sol, eval, compiler, slice, length, timeout);
+                ProviderThread p = parallelProcess(q, url, exp, input, sol, eval, compiler, slice, length, timeout);
                 pList.add(p);
             }
             else {
-                process(q, service, exp, input, sol, eval, compiler, slice, length, timeout);
+                process(q, url, exp, input, sol, eval, compiler, slice, length, timeout);
             }
         }
         
@@ -290,8 +298,8 @@ public class ProviderImpl implements Provider {
         
         Mappings res = getResult(q, mapList);
         
-        if (list.size() > 1) {
-            eval.getVisitor().service(eval, DatatypeMap.toList(list), exp, res);
+        if (serverList.size() > 1) {
+            eval.getVisitor().service(eval, DatatypeMap.toList(serverList), exp, res);
         }
         g.getEventManager().finish(Event.Service, "result: " + ((res!= null) ? res.size(): 0));
         return res;
@@ -300,7 +308,7 @@ public class ProviderImpl implements Provider {
     /**
      * Execute service in a parallel thread 
      */
-    ProviderThread parallelProcess(Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout) {
+    ProviderThread parallelProcess(Query q, URLServer service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout) {
         ProviderThread thread = new ProviderThread(this, q, service, exp, map, sol, eval, compiler, slice, length, timeout);
         thread.start();
         return thread;
@@ -309,8 +317,9 @@ public class ProviderImpl implements Provider {
     /**
      * Execute one service with possibly input Mappings map and possibly slicing map into packet of size length
      * Add results into Mappings sol which is empty when entering
+     * Several such process may run in parallel in case of several service URL
      */
-    void process(Query q, Node service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout) throws EngineException {
+    void process(Query q, URLServer service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout) throws EngineException {
         int size = 0;
         if (slice) {
             while (size < map.size()) {
@@ -321,19 +330,84 @@ public class ProviderImpl implements Provider {
                 // it may produce bindings for target service
                 Mappings res = send(compiler, service, q, map, eval.getEnvironment(), size, size + length, timeout);
                 // join (serviceNode = serviceURI)
-                complete(exp.getServiceNode(), service, res, eval.getEnvironment());
+                complete(exp.getServiceNode(), service.getNode(), res, eval.getEnvironment());
                 addResult(sol, res);
                 size += length;
             }
         } else {
             Mappings res = send(compiler, service, q, map, eval.getEnvironment(), 0, 0, timeout);
             // join (serviceNode = serviceURI)
-            complete(exp.getServiceNode(), service, res, eval.getEnvironment());
+            complete(exp.getServiceNode(), service.getNode(), res, eval.getEnvironment());
             addResult(sol, res);
         }
 
         synchronized (eval.getEnvironment().getBind()) {
-            eval.getVisitor().service(eval, service, exp, sol);
+            eval.getVisitor().service(eval, service.getNode(), exp, sol);
+        }
+    }
+    
+
+    /**
+     * Send query to sparql endpoint using HTTP request
+     * Generate variable binding from map or env if any and possibly modify the AST 
+     * with these bindings (filter by default or values)
+     * Handle annotation @binding kg:values kg:filter 
+     */
+    Mappings send(CompileService compiler, URLServer serv, Query q, Mappings map, Environment env, int start, int limit, int timeout) throws EngineException {
+        Query gq = q.getGlobalQuery();
+        // use case: ldscript nested query
+        boolean debug = q.isRecDebug();       
+        try {
+
+            // oririnal ast
+            ASTQuery aa = getAST(q);
+            // ast possibly modified with variable bindings from map/env 
+            ASTQuery ast = compiler.compile(serv, q, map, env, start, limit);
+            if (aa == ast) {
+                // no binding
+                if (start > 0) {
+                    // this is not the first slice and there is no more bindings: skip it
+                    if (debug) {
+                        logger.info("Skip slice for absence of relevant binding");
+                    }
+                    return Mappings.create(q);
+                }               
+            }
+
+            if (debug) {
+                logger.info(String.format("** Service %s \n%s", serv, ast));
+            }
+            Mappings res = eval(q, ast, serv, env, timeout);
+            
+            if (debug) {
+                trace(serv, res);
+            }
+            if (res != null && res.isError()) {
+                logger.info("Parse error in result of: " + serv.getURL());
+            }
+            return res;
+        } catch (IOException e) {
+            logger.error(q.getAST().toString(), e);
+            gq.addError(SERVICE_ERROR, e);
+        } catch (ParserConfigurationException | SAXException e) {
+            e.printStackTrace();
+        }
+
+        if (gq.isDebug()) {
+            logger.info("** Service error");
+        }
+        return null;
+    }
+    
+    ASTQuery getAST(Query q) {
+        return (ASTQuery) q.getAST();
+    }
+    
+    void trace(URLServer serv, Mappings res) {
+        if (res.size() > 0) {
+            logger.info(String.format("** Service %s result: \n%s", serv, res.toString(false, false, 10)));
+        } else {
+            logger.info(String.format("** Service %s result size: %s", serv, res.size()));
         }
     }
     
@@ -368,7 +442,7 @@ public class ProviderImpl implements Provider {
                 res.add(m);
             }
         }
-        ASTQuery ast = (ASTQuery) q.getGlobalQuery().getAST();
+        ASTQuery ast = getAST(q.getGlobalQuery());
         boolean distinct = ! ast.hasMetadata(Metadata.DUPLICATE);
         // TODO: if two Mappings have their own duplicates, they are removed
         if (res != null && res.getSelect() != null && distinct){
@@ -397,6 +471,8 @@ public class ProviderImpl implements Provider {
             return map.getMappings(q);
         }
         if (serviceNode.isVariable() && ! env.isBound(serviceNode)) {
+            // service var is not bound ; map defines values for var
+            // select Mapping in map where var = uri
            return map.getMappings(q, serviceNode, serviceURI);
         }
         return map;
@@ -441,90 +517,6 @@ public class ProviderImpl implements Provider {
         return map.aggregate(serviceNode);
     }
     
-   
-    @Deprecated
-    Mappings basicSend(Graph g, CompileService compiler, Node serviceNode, Query q, Exp exp, Mappings map, Eval eval, int min, int max) throws EngineException {
-        List<Node> list = getServerList(exp, map, eval.getEnvironment());
-        g.getEventManager().start(Event.Service, list);
-        if (list.size() == 1) { 
-            Mappings res = send(compiler, list.get(0), q, map, eval.getEnvironment(), min, max, 0);
-            eval.getVisitor().service(eval, list.get(0), exp, res);
-            g.getEventManager().finish(Event.Service);
-            return res;
-        } else {
-            Mappings res = null;
-            for (Node service : list) {
-                if (eval.isStop()) {
-                    break;
-                }
-                g.getEventManager().process(Event.Service, service);
-                Mappings sol = send(compiler, service, q, map, eval.getEnvironment(), min, max, 0);
-                eval.getVisitor().service(eval, service, exp, sol);
-                complete(exp.getServiceNode(), serviceNode, sol, eval.getEnvironment());
-                if (res == null) {
-                    res = sol;
-                } else if (sol != null) {
-                    res.add(sol);
-                }
-            }
-            if (list.size() > 1) {
-                eval.getVisitor().service(eval, DatatypeMap.toList(list), exp, res);
-            }
-            g.getEventManager().finish(Event.Service);
-            return res;
-        }
-    }
-
-    /**
-     * Send query to sparql endpoint using a POST HTTP query
-     */
-    Mappings send(CompileService compiler, Node serv, Query q, Mappings map, Environment env, int start, int limit, int timeout) throws EngineException {
-        Query gq = q.getGlobalQuery();
-        // use case: ldscript nested query
-        boolean debug = q.isRecDebug();       
-        try {
-
-            // generate bindings from map/env if any
-            boolean hasBind = compiler.compile(serv, q, map, env, start, limit);
-            
-            if (! hasBind && start > 0){
-                // this is not the first slice and there is no bindings: skip it
-                if (debug) {logger.info("Skip slice for absence of relevant binding");}
-                return Mappings.create(q);
-            }
-            
-            if (debug) {
-                logger.info("** Service query: \nservice " + serv + "\n" + q.getAST());
-            }
-            Mappings res = eval(q, serv, env, timeout);
-            
-            if (debug) {
-                if (res.size() > 0) {
-                    logger.info("** Service " + serv + " result: \n" + res.toString(false, false, 10));
-                } else {
-                    logger.info("** Service " + serv + " result size: " + res.size());
-                }
-            }
-            if (res != null && res.isError()) {
-                logger.info("Parse error in result of: " + serv.getLabel());
-            }
-            return res;
-        } catch (IOException e) {
-            logger.error(q.getAST().toString(), e);
-            gq.addError(SERVICE_ERROR, e);
-        } catch (ParserConfigurationException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        } catch (SAXException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
-
-        if (gq.isDebug()) {
-            logger.info("** Service error");
-        }
-        return null;
-    }
     
     int getTimeout(Query q, Node serv, Environment env) {
         Integer time = (Integer) q.getGlobalQuery().getPragma(Pragma.TIMEOUT);
@@ -540,20 +532,20 @@ public class ProviderImpl implements Provider {
         int slice = env.getEval().getVisitor().slice(serv, map==null?Mappings.create(q):map);
         Binding bind = (Binding) env.getBind();
         IDatatype dt = bind.getGlobalVariable(Binding.SLICE_SERVICE);
-        if (dt == null || dt.intValue() <= 0) {
+        if (dt == null) {
             return slice;
         }
         return dt.intValue();
     }
     
-    Mappings eval(Query q, Node serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException, EngineException {
-        if (isDB(serv)){
-            return db(q, serv);
+    Mappings eval(Query q, ASTQuery ast, URLServer serv, Environment env, int timeout) throws IOException, ParserConfigurationException, SAXException, EngineException {
+        if (isDB(serv.getNode())){
+            return db(q, serv.getNode());
         }
-        if (serv.getLabel().equals(LOCAL_SERVICE)) {
-            return getDefault().query(getDefault().getAST(q));
+        if (serv.getServer().equals(LOCAL_SERVICE)) {
+            return getDefault().query(ast);
         }
-        return send(q, serv,env, timeout);
+        return send(q, ast, serv, env, timeout);
     }
     
     /**
@@ -562,60 +554,45 @@ public class ProviderImpl implements Provider {
      */
     Mappings db(Query q, Node serv) throws EngineException{
         QueryProcess exec = QueryProcess.dbCreate(Graph.create(), true, QueryProcess.DB_FACTORY, serv.getLabel().substring(DB.length()));
-        return exec.query((ASTQuery) q.getAST());
+        return exec.query(getAST(q));
     }
     
     boolean isDB(Node serv){
         return serv.getLabel().startsWith(DB);
     }
     
-    Mappings send(Query q, Node serv, Environment env, int timeout) 
+    Mappings send(Query q, ASTQuery ast, URLServer serv, Environment env, int timeout) 
             throws IOException, ParserConfigurationException, SAXException {
-        ASTQuery ast = (ASTQuery) q.getGlobalQuery().getAST();
-        URLServer url = new URLServer(serv.getLabel());
-        if (ast.hasMetadata(Metadata.OLD_SERVICE)) {
-            return post1(q, serv, env, timeout);        
+        ASTQuery aa =  getAST(q.getGlobalQuery());
+        if (aa.hasMetadata(Metadata.OLD_SERVICE)) {
+            return post1(q, ast, serv, env, timeout);        
         }
         else {
-            return post2(q, serv, env, timeout);
+            return post2(q, ast, serv, env, timeout);
         }
     }
     
-//    Mappings sendOld(Query q, Node serv, Environment env, int timeout) 
-//            throws IOException, ParserConfigurationException, SAXException {
-//        ASTQuery ast = (ASTQuery) q.getGlobalQuery().getAST();
-//        URLServer url = new URLServer(serv.getLabel());
-//        if (url.hasMethod() || ast.hasMetadata(Metadata.FORM, Metadata.POST, Metadata.GET)) {
-//            return post2(q, serv, env, timeout);        
-//        }
-//        else {
-//            return post1(q, serv, env, timeout);
-//        }
-//    }
-//    
-    
-    Mappings post1(Query q, Node serv, Environment env, int timeout) 
+    Mappings post1(Query q, ASTQuery ast, URLServer serv, Environment env, int timeout) 
             throws IOException, ParserConfigurationException, SAXException {
-        ASTQuery aa  = (ASTQuery) q.getOuterQuery().getAST();
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery aa  = getAST(q.getOuterQuery());
         boolean trap = ast.isFederate() || ast.getGlobalAST().hasMetadata(Metadata.TRAP);
         boolean show = ast.getGlobalAST().hasMetadata(Metadata.SHOW);
         String query = ast.toString();
         Binding b = (Binding) env.getBind();
-        InputStream stream = doPost(aa.getMetadata(), serv.getLabel(), query, timeout, b.getAccessLevel()); 
+        InputStream stream = doPost(aa.getMetadata(), serv.getURL(), query, timeout, b.getAccessLevel()); 
         return parse(stream, trap, show);
     }
     
     
-    Mappings post2(Query q, Node serv, Environment env, int timeout) throws IOException {
+    Mappings post2(Query q, ASTQuery ast, URLServer serv, Environment env, int timeout) throws IOException {
         try {
             Binding b = (Binding) env.getBind();
-            Service service = new Service(serv.getLabel()) ;
+            Service service = new Service(serv) ;
             service.setLevel(b.getAccessLevel());
-            Mappings map = service.query(q, null);
+            Mappings map = service.query(q, ast, null);
             return map;
         } catch (LoadException ex) {
-            throw (new IOException(ex.getMessage() + " " + serv.getLabel()));
+            throw (new IOException(ex.getMessage() + " " + serv.getURL()));
         }
     }
 
@@ -657,7 +634,7 @@ public class ProviderImpl implements Provider {
 
     URLConnection post(Metadata meta, String server, String query, int timeout, Level level) throws IOException {
         URLServer url = new URLServer(server);
-        String param = url.getParameter();
+        String param = url.getParam();
         server = url.getServer();
         String qstr = "query=" + URLEncoder.encode(query, "UTF-8");
         if (param !=null) {

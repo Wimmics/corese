@@ -471,8 +471,8 @@ public class QuerySolver implements SPARQLEngine {
         q.setCheckLoop(isCheckLoop);
         q.setDetail(q.isDetail() || isDetail);
         q.setSlice(slice);
-        if (isDebug) {
-            q.setDebug(isDebug);
+        if (isDebug()) {
+            q.setDebug(isDebug());
         }
         if (isOptimize) {
             q.setOptimize(isOptimize);

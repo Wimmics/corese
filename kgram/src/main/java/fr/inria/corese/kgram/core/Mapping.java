@@ -253,10 +253,10 @@ public class Mapping
         initValues();
     }
 
-    void initValues() {
+    public void initValues() {
         if (values == null) {
             // use case: select (exp as var), values already exists
-            values = new HashMap<String, Node>();
+            values = new HashMap<>();
         }
         int i = 0;
         for (Node q : qNodes) {

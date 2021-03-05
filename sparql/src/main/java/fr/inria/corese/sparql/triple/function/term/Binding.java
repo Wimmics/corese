@@ -431,6 +431,13 @@ public class Binding implements Binder {
         return bind(new VariableLocal(name), val);
     }
     
+    public Binding setGlobalVariable(String name, IDatatype val) {
+        if (!name.startsWith("?")){
+            name = "?"+name;
+        }
+        return bind(new VariableLocal(name), val);
+    }
+    
     public static Binding setStaticVariable(String name, IDatatype val) {
         return getSingleton().setVariable(name, val);
     }

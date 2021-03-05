@@ -258,7 +258,7 @@ public class Dataset extends ASTObject {
     }
 
     public IDatatype getNamedList(){
-        ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+        ArrayList<IDatatype> list = new ArrayList<>();
         if (getNamed() != null){
             for (Constant g : getNamed()){
                 list.add(g.getDatatypeValue());
@@ -268,7 +268,7 @@ public class Dataset extends ASTObject {
     }
 		
     public IDatatype getFromList(){
-        ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+        ArrayList<IDatatype> list = new ArrayList<>();
         if (getFrom() != null){
             for (Constant g : getFrom()){
                 list.add(g.getDatatypeValue());

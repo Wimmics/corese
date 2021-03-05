@@ -1027,6 +1027,10 @@ public class ASTQuery
         return selectVar;
     }
     
+    public void setSelectVar(List<Variable> list) {
+        selectVar = list;
+    }
+    
     public Variable getSelectVar(String name) {
         for (Variable var : selectVar){
             if (var.getLabel().equals(name)){
@@ -1071,6 +1075,10 @@ public class ASTQuery
 
     public List<Expression> getOrderBy() {
         return sort;
+    }
+    
+    void setOrderBy(List<Expression> list) {
+         sort = list;
     }
 
     public String getText() {
@@ -2757,6 +2765,31 @@ public class ASTQuery
     private void compileAsk() {
         setMaxResult(1);
     }
+    
+    /**
+     * Copy AST of select where for service clause
+     * 
+     */
+    public ASTQuery copy() {
+        ASTQuery ast = create();
+        ast.setGlobalAST(getGlobalAST());
+        ast.setNSM(getNSM());
+        ast.setMetadata(getMetadata());
+        ast.setSelectVar(getSelectVar());
+        ast.setSelectExpression(getSelectExpression());
+        ast.setSelectAll(isSelectAll());
+        ast.setDistinct(isDistinct());
+        ast.setDataset(getDataset());
+        ast.setBody(getBody());
+        ast.setLimit(getLimit());
+        ast.setOffset(getOffset());
+        ast.setGroupBy(getGroupBy());
+        ast.setOrderBy(getOrderBy());
+        ast.setReverse(getReverse());
+        ast.setHaving(getHaving());
+        ast.setValues(getValues());
+        return ast;
+    }
 
    
     /**
@@ -3114,6 +3147,10 @@ public class ASTQuery
     public List<Expression> getGroupBy() {
         return lGroup;
     }
+    
+    void setGroupBy(List<Expression> list) {
+        lGroup = list;
+    }
 
     public boolean isGroupBy(String name) {
         for (Expression exp : lGroup) {
@@ -3279,6 +3316,10 @@ public class ASTQuery
     public List<Boolean> getReverse() {
         return reverseTable;
     }
+    
+    void setReverse(List<Boolean> list) {
+        reverseTable = list;
+    }
 
     public String toSparql() {
         return toString();
@@ -3415,6 +3456,14 @@ public class ASTQuery
 
     public Expression getExpression(Variable var) {
         return selectFunctions.get(var.getName());
+    }
+    
+    public HashMap<String, Expression> getSelectExpression() {
+        return selectFunctions;
+    }
+    
+    public void setSelectExpression(HashMap<String, Expression> map) {
+        selectFunctions = map;
     }
 
     boolean hasExpression(Variable var) {

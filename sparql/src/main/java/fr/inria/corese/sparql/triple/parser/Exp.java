@@ -357,6 +357,10 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         public Exist getExist() {
             return null;
         }
+        
+        public Values getValuesExp() {
+            return null;
+        }
 	     				
 	public boolean isAnd(){
 		return false;

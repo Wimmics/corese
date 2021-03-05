@@ -69,6 +69,11 @@ public class Values extends Exp {
     public Values copy() {
         return this;
     }
+    
+    @Override
+    public Values getValuesExp() {
+        return this;
+    }
 
     @Override
     public ASTBuffer toString(ASTBuffer sb) {

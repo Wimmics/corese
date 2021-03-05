@@ -177,7 +177,12 @@ public class TripleStore {
         c.setUserQuery(true);
         c.setRemoteHost(request.getRemoteHost());
         Profile.getEventManager().call(ds.getContext());
-        return getQueryProcess().query(query, ds);
+        QueryProcess exec = getQueryProcess();
+        exec.setDebug(c.isDebug());
+        // prevent Binding debug true to prevent systematic filter tracing
+        c.setDebug(false);
+        Mappings map = exec.query(query, ds);
+        return map;
     }
     
 

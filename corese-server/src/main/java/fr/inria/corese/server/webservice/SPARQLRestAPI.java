@@ -30,12 +30,13 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.print.CSVFormat;
 import fr.inria.corese.core.print.JSOND3Format;
 import fr.inria.corese.core.print.JSONFormat;
-import fr.inria.corese.core.print.JSONLDFormat;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.TSVFormat;
-import fr.inria.corese.core.print.TripleFormat;
 import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.util.UUID;
@@ -561,6 +562,7 @@ public class SPARQLRestAPI {
 
     /**
      * Default POST function (ie when there is no header Accept)
+     * SPARQL service clause executed here
      */
     @POST
     @Produces({SPARQL_RESULTS_XML, XML})
@@ -569,20 +571,27 @@ public class SPARQLRestAPI {
             @PathParam("url") String url, 
             @DefaultValue("") @FormParam("query") String query, 
             @FormParam("access") String access, 
-            @FormParam("default-graph-uri") List<String> defaultGraphUris,
-            @FormParam("named-graph-uri") List<String> namedGraphUris, 
+            @FormParam("default-graph-uri") List<String> defaut,
+            @FormParam("named-graph-uri") List<String> named, 
             @FormParam("format")  String format,
+            @FormParam("param")  String param,
+            @FormParam("mode")  String mode,
             String message) {
         try {
             logger.info("getTriplesXMLForPost");
-            query = getQuery(query, message);
-
+            query = getQuery(query, message);            
             if (logger.isDebugEnabled())
                 logger.debug("Rest Post SPARQL Result XML/plain: " + query);
             
             beforeRequest(request, query);
+            Dataset ds = createDataset(defaut, named, access);
             
-            Mappings map = getTripleStore(url).query(request, query, createDataset(defaultGraphUris, namedGraphUris, access));
+            beforeParameter(ds, param, mode);
+            
+            Mappings map = getTripleStore(url).query(request, query, ds);
+            
+            afterParameter(ds, map);
+            
             String ft = request.getHeader("Accept");
             if (ft.contains(SPARQL_RESULTS_XML) || ft.contains(XML)) {
                 format = SPARQL_RESULTS_XML;
@@ -599,8 +608,9 @@ public class SPARQLRestAPI {
             logger.error("Error while querying the remote KGRAM engine", ex);
             return Response.status(ERROR).header(headerAccept, "*").entity("Error while querying the remote KGRAM engine").build();
         }
-    }
-    
+    }   
+
+
     
     @POST
     @Produces(TEXT)
@@ -845,76 +855,30 @@ public class SPARQLRestAPI {
         }
     }
 
-    /**
-     * Creates a Corese/KGRAM Dataset based on a set of default or named graph URIs. 
-     * For *strong* SPARQL compliance, use dataset.complete() before returning the dataset.
-     *
-     * @param defaultGraphUris
-     * @param namedGraphUris
-     * @return a dataset if the parameters are not null or empty.
-     */
-
-//    private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris) {
-//        return createDataset(defaultGraphUris, namedGraphUris, null);
-//    }
     
-    private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris, String access) {
-        Dataset ds = null;
-        if (((defaultGraphUris != null) && (!defaultGraphUris.isEmpty())) 
-                || ((namedGraphUris != null) && (!namedGraphUris.isEmpty()))) {
-            ds = Dataset.instance(defaultGraphUris, namedGraphUris);
-        } 
-        else {
-            ds = new Dataset();
-        }
-        Level level = Access.getQueryAccessLevel(true, hasKey(access));
-        ds.getCreateContext().setLevel(level);
-        return ds;
-    }
-    
-    // access key gives special access level (RESTRICTED vs PUBLIC)
-    static boolean hasKey(String access) {
-        return access!=null && getKey() != null && getKey().equals(access);
-    }
-    
-    
-//    Level getLevel(String access) {
-//        Access.Level level = Access.Level.DEFAULT;
-//        if (access != null) {
-//            try { 
-//                level = Access.Level.valueOf(access);
-//                level = level.min(Access.Level.DEFAULT);
-//            }
-//            catch (Exception e) {
-//                logger.error(e.getMessage());
-//            }
+// 
+//    /**
+//     * This function is used to copy the InputStream into a local file.
+//     */
+//    private void writeToFile(InputStream uploadedInputStream, File uploadedFile) throws IOException {
+//        OutputStream out = new FileOutputStream(uploadedFile);
+//        int read = 0;
+//        byte[] bytes = new byte[1024];
+//        while ((read = uploadedInputStream.read(bytes)) != -1) {
+//            out.write(bytes, 0, read);
 //        }
-//        return level;
+//        out.flush();
+//        out.close();
 //    }
-     
 
-    /**
-     * This function is used to copy the InputStream into a local file.
-     */
-    private void writeToFile(InputStream uploadedInputStream, File uploadedFile) throws IOException {
-        OutputStream out = new FileOutputStream(uploadedFile);
-        int read = 0;
-        byte[] bytes = new byte[1024];
-        while ((read = uploadedInputStream.read(bytes)) != -1) {
-            out.write(bytes, 0, read);
-        }
-        out.flush();
-        out.close();
-    }
-
-    String getTemplate(String name) {
-        String sep = "";
-        if (name.contains("/")) {
-            sep = "'";
-        }
-        String query = "template { st:atw(" + sep + name + sep + ")} where {}";
-        return query;
-    }
+//    String getTemplate(String name) {
+//        String sep = "";
+//        if (name.contains("/")) {
+//            sep = "'";
+//        }
+//        String query = "template { st:atw(" + sep + name + sep + ")} where {}";
+//        return query;
+//    }
 
     /**
      * @return the key
@@ -929,4 +893,132 @@ public class SPARQLRestAPI {
     public static void setKey(String aKey) {
         key = aKey;
     }
+    
+    
+    
+    /**********************************************************************
+     * 
+     * service URL Parameter Processing
+     * http://corese.fr/sparql?param=format:rdf&mode=debug&default-graph-uri=url
+     * 
+     **********************************************************************/
+    
+    /**
+     * Creates a Dataset based on a set of default or named graph URIs. 
+     * For *strong* SPARQL compliance, use dataset.complete() before returning the dataset.
+     *
+     * @return a dataset
+     */    
+    private Dataset createDataset(List<String> defaultGraphUris, List<String> namedGraphUris, String access) {
+        Dataset ds = null;
+        if (((defaultGraphUris != null) && (!defaultGraphUris.isEmpty())) 
+                || ((namedGraphUris != null) && (!namedGraphUris.isEmpty()))) {
+            ds = Dataset.instance(defaultGraphUris, namedGraphUris);
+        } 
+        else {
+            ds = new Dataset();
+        }
+        boolean b = hasKey(access);
+        if (b) {
+            System.out.println("has key access");
+        }
+        Level level = Access.getQueryAccessLevel(true, b);
+        ds.getCreateContext().setLevel(level);
+        return ds;
+    }
+    
+    // access key gives special access level (RESTRICTED vs PUBLIC)
+    static boolean hasKey(String access) {
+        return access!=null && getKey() != null && getKey().equals(access);
+    }
+    
+    
+    /**
+     * Parameters of sparql service URL: 
+     * http://corese.fr/sparql?mode=debug&param=format:rdf;test:12
+     * parameter recorded in context and as ldscript global variable
+     * Draft for testing
+     */
+    void beforeParameter(Dataset ds, String param, String mode) {
+        if (param != null) {
+            System.out.println("URL param: " + param);
+            if (param.contains(":") || param.contains("~")) {
+                ds.setBinding(Binding.create());
+                
+                for (String pair : param.split(";")) {
+                    String sep = ":";
+                    if (pair.contains("~")) {
+                        sep = "~";
+                    }
+                    String[] list = pair.split(sep);
+                    param(ds, list[0], list[1]);                    
+                }
+            }
+        }
+        
+        if (mode != null) {
+            for (String kw : mode.split(";")) {
+                mode(ds, kw);
+            }
+        }
+        
+        beforeParameter(ds);
+    }
+    
+    /**
+     * Record dataset from named in context for documentation purpose
+     */
+    void beforeParameter(Dataset ds) {
+        IDatatype from = ds.getFromList();
+        if (from.size() > 0) {
+            ds.getContext().set("default-graph-uri", from);
+        }
+        IDatatype named = ds.getNamedList();
+        if (named.size() > 0) {
+            ds.getContext().set("named-graph-uri", named);
+        }
+    }
+    
+    /**
+     * parameter key=val
+     * record in context and as ldscript global variable
+     * get global variable var in sparql with: funcall(function() {var})
+     */
+    void param(Dataset ds, String key, String value) {
+        System.out.println(key + "=" + value);
+        ds.getContext().set(key, value);
+        ds.getBinding().setGlobalVariable(key, DatatypeMap.newInstance(value));
+    }
+    
+    /**
+     * @param mode : debug ; trace
+     */
+    void mode(Dataset ds, String mode) {
+        System.out.println("URL mode: " + mode);
+        switch (mode) {
+            case "debug":
+                ds.getContext().setDebug(true);
+                // continue
+                
+            default:
+                ds.getContext().set(mode, true);
+                break;    
+        }
+    }
+
+    
+    void afterParameter(Dataset ds, Mappings map) {
+        if (ds.getContext().hasValue("trace")) {
+            System.out.println(map.getQuery().getAST());
+            System.out.println(map.toString(false, true, 10));
+        }
+        // draft for testing
+        if (ds.getContext().hasValue("format")) {
+            ResultFormat ft = ResultFormat.create(map, ds.getContext().get("format").getLabel());
+            System.out.println(ft);
+        }
+    }
+    
+    
+    
 }

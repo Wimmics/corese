@@ -103,6 +103,7 @@ public class ResultFormat implements ResultFormatDef {
         format.put("tsv", TSV_FORMAT);
         
         format.put("jsonld", JSON_LD_FORMAT);
+        format.put("rdf", TURTLE_FORMAT);
         format.put("turtle", TURTLE_FORMAT);
         format.put("trig", TRIG_FORMAT);
         format.put("rdfxml", RDF_XML_FORMAT);

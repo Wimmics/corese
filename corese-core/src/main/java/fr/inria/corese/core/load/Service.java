@@ -47,7 +47,6 @@ public class Service {
     private boolean post = true;
     private boolean showResult = false;
     private boolean trap = false;
-    String service;
     private URLServer url;
     private Access.Level level = Access.Level.DEFAULT;
     
@@ -55,13 +54,15 @@ public class Service {
         clientBuilder = ClientBuilder.newBuilder();
     }
 
-    public Service(String serv) {
+    public Service(URLServer serv) {
         this(serv, ClientBuilder.newBuilder());
     }
-    public Service(String serv, ClientBuilder builder) {
-        service = serv;
-        setURL(new URLServer(serv));
+    public Service(String serv) {
+        this(new URLServer(serv), ClientBuilder.newBuilder());
+    }
+    public Service(URLServer serv, ClientBuilder builder) {
         this.clientBuilder = builder;
+        setURL(serv);
     }
 
 
@@ -74,18 +75,14 @@ public class Service {
     }
 
     public Mappings query(Query query, Mapping m) throws LoadException {
-        ASTQuery ast = (ASTQuery) query.getAST();
-        if (ast.hasMetadata(Metadata.LIMIT) && ! ast.hasLimit()) {
-            ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
-        }  
-        if (getURL().isGET() || ast.getGlobalAST().hasMetadata(Metadata.GET)) {
-            setPost(false);
-        }        
-        setTrap(ast.getGlobalAST().hasMetadata(Metadata.TRAP));
-        setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
+        return query(query, getAST(query), m);
+    }
+    
+    public Mappings query(Query query, ASTQuery ast, Mapping m) throws LoadException {
+        metadata(ast);
         Mappings map;
         if (m != null) {
-            mapping(query, m);
+            ast = mapping(query, m);
         }
         if (ast.isSelect() || ast.isAsk()) {
             map = parseMapping(process(ast.toString()), encoding(ast));
@@ -98,12 +95,38 @@ public class Service {
         map.init(query);
         return map;
     }
+    
+    ASTQuery getAST(Query q) {
+        return (ASTQuery) q.getAST();
+    }
+    
+    void metadata(ASTQuery ast) {
+        if (!ast.hasLimit()) {
+            if (ast.hasMetadata(Metadata.LIMIT)) {
+                ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
+            }
+            // DRAFT: for testing (modify ast ...)
+            String lim = getURL().getParameter("limit");
+            if (lim != null) {
+                ast.setLimit(Integer.valueOf(lim));
+            }
+        }
+        if (getURL().isGET() || ast.getGlobalAST().hasMetadata(Metadata.GET)) {
+            setPost(false);
+        }
+        if (ast.getGlobalAST().isDebug()) {
+            System.out.println(isPost()?"POST":"GET");
+        }
+        setTrap(ast.getGlobalAST().hasMetadata(Metadata.TRAP));
+        setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
+    }
 
-    void mapping(Query q, Mapping m) {
+    ASTQuery mapping(Query q, Mapping m) {
         Mappings map = new Mappings();
         map.add(m);
         CompileService cs = new CompileService();
-        cs.filter(q, map, 0, 1);
+        ASTQuery ast = cs.filter(q, map, 0, 1);
+        return ast;
     }
 
     public String process(String query) {
@@ -120,6 +143,7 @@ public class Service {
     }
 
     public String post(String query, String mime) {
+        // Server URL without parameters
         return post(getURL().getServer(), query, mime);
     }
     
@@ -130,8 +154,9 @@ public class Service {
         }
         Client client = clientBuilder.build();
         WebTarget target = client.target(url);
-        Form form = new Form();
+        Form form = getForm();
         form.param(QUERY, query);
+        //complete(form);          
         try {
             String res = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
             if (isDebug) {
@@ -148,7 +173,21 @@ public class Service {
         }
     }
     
+    Form getForm() {
+        return getURL().getMap() == null ? new Form() : new Form(getURL().getMap());
+    }
+    
+    void complete(Form form) {
+        if (getURL().getMap() != null) {
+            for (String key : getURL().getMap().keySet()) {
+                //System.out.println("service: " + key + "=" + getURL().getParameter(key));
+                form.param(key, getURL().getParameter(key));
+            }
+        }
+    }
+
     public String get(String query, String mime) {
+        // Server URL without parameters
         return get(getURL().getServer(), query, mime);
     }
 

@@ -2,7 +2,6 @@ package fr.inria.corese.server.webservice;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Dataset;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
@@ -10,9 +9,11 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.Enumeration;
+import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -40,6 +41,7 @@ public class TripleStore {
     }
 
     private static Logger logger = LogManager.getLogger(TripleStore.class);
+    static HashMap<String, Integer> metaMap ;
     GraphStore graph = GraphStore.create(false);
     //QueryProcess exec;// = QueryProcess.create(graph);
     boolean rdfs = false;
@@ -47,6 +49,20 @@ public class TripleStore {
     private boolean match   = false;
     private boolean protect = false;
     private String name = Manager.DEFAULT;
+    
+    static {
+       init();
+    }
+    
+    static void init() {
+        metaMap = new HashMap<>();
+        metaMap.put(SPARQLRestAPI.SPARQL, Metadata.SPARQL);
+        metaMap.put("trace", Metadata.TRACE);
+        metaMap.put("index", Metadata.INDEX);
+        metaMap.put("move", Metadata.MOVE);
+        metaMap.put("variable", Metadata.VARIABLE);
+        metaMap.put("count", Metadata.SERVER);
+    }
 
     TripleStore(boolean rdfs, boolean owl) {
        this(rdfs, owl, true);
@@ -163,11 +179,7 @@ public class TripleStore {
     }
     
     // SPARQL Endpoint
-    
-//    Mappings query(String query, Dataset ds) throws EngineException {
-//            return query(null, query, ds);
-//    }
-        
+               
     Mappings query(HttpServletRequest request, String query, Dataset ds) throws EngineException {
         if (ds == null) {
             ds = new Dataset();
@@ -181,11 +193,50 @@ public class TripleStore {
         exec.setDebug(c.isDebug());
         // prevent Binding debug true to prevent systematic filter tracing
         c.setDebug(false);
-        Mappings map = exec.query(query, ds);
+        
+        Mappings map;
+        if (isFederate(ds)) {
+            // federate sparql query with @federate uri
+            ASTQuery ast = federate(query, ds);
+            map = exec.query(ast, ds);
+        } else {
+            map = exec.query(query, ds);
+        }
+        
         return map;
     }
     
-
+    boolean isFederate(Dataset ds) {
+        Context c = ds.getContext();
+        return (c.hasValue(SPARQLRestAPI.FEDERATE) || c.hasValue("federation")) && c.hasValue("uri");
+    }
+    
+    ASTQuery federate(String query, Dataset ds) throws EngineException {
+        QueryProcess exec = getQueryProcess();
+        ASTQuery ast = exec.parse(query);
+        ast.setAnnotation(metadata(ast, ds));
+        return ast;
+    }
+    
+    /**
+     * SPARQL query executed as federated query on a federation of endpoints 
+     * Generate appropriate Metadata for AST with federation information
+     */
+    Metadata metadata(ASTQuery ast, Dataset ds) {
+        Metadata meta = new Metadata();
+        // one URI: URI of federation
+        // several URI: list of endpoint URI
+        int type = (ds.getUriList().size() > 1) ? Metadata.FEDERATE : Metadata.FEDERATION;
+        meta.set(type, ds.getUriList());
+                
+        for (String key : metaMap.keySet()) {
+            if (ds.getContext().hasValue(key)) {
+                meta.add(metaMap.get(key));
+            }
+        }
+        
+        return meta;
+    }
     
     void trace(HttpServletRequest request) {
         Enumeration<String> en = request.getParameterNames();

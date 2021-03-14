@@ -1,5 +1,6 @@
 package fr.inria.corese.server.webservice;
 
+import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -340,9 +341,8 @@ public class Profile {
     void process(Graph g) throws IOException, EngineException {
         initService(g);
         initServer(g);
-        //if (isProtected()) {
-            defNamespace(g);
-        //}
+        initFederation(g);
+        defNamespace(g);
     }
     
     /**
@@ -425,6 +425,24 @@ public class Profile {
         for (Mapping m : map) {
             initServiceMap(g, m);
         }
+    }
+    
+    void initFederation(Graph g) throws IOException, EngineException {
+        String str = getResource("query/federation.rq");
+        
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(str);
+        
+        for (Mapping m : map) {
+            IDatatype dt   = getValue(m, "?uri");
+            IDatatype list = getValue(m, "?list");
+            System.out.println("federation: " + dt + " : " + list);
+            FederateVisitor.declareFederation(dt.getLabel(), list.getValueList());
+        }
+    }
+    
+    IDatatype getValue(Mapping m, String var) {
+        return (IDatatype) m.getValue(var);
     }
     
     /**

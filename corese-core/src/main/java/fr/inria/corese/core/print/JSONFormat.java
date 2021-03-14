@@ -1,6 +1,6 @@
 package fr.inria.corese.core.print;
 
-import java.util.Vector;
+import java.util.ArrayList;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -48,7 +48,7 @@ public class JSONFormat extends XMLFormat {
     public static JSONFormat create(Query q, ASTQuery ast, Mappings lm) {
         JSONFormat res;
         res = new JSONFormat(lm);
-        res.setQuery(q);
+        res.setQuery(q, lm);
         res.setAST(ast);
         return res;
     }
@@ -88,7 +88,7 @@ public class JSONFormat extends XMLFormat {
     }
 
     @Override
-    void printVariables(Vector<String> select) {
+    void printVariables(ArrayList<String> select) {
         int n = 1;
         for (String var : select) {
             print("\"" + getName(var) + "\"");

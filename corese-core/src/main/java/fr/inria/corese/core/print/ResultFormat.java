@@ -49,6 +49,7 @@ public class ResultFormat implements ResultFormatDef {
     private int select_format = DEFAULT_SELECT_FORMAT;
     private long nbResult = Long.MAX_VALUE;
     private String contentType;
+    private boolean selectAll = false;
     
     static HashMap<String, Integer> table, format;
     static HashMap<Integer, String> content;
@@ -379,6 +380,7 @@ public class ResultFormat implements ResultFormatDef {
             // map is query result
             case XML_FORMAT:
                 XMLFormat ft = XMLFormat.create(map);
+                ft.setSelectAll(isSelectAll());
                 ft.setNbResult(nbResult);
                 return ft.toString();
 
@@ -467,6 +469,20 @@ public class ResultFormat implements ResultFormatDef {
      */
     public void setContentType(String contentType) {
         this.contentType = contentType;
+    }
+
+    /**
+     * @return the selectAll
+     */
+    public boolean isSelectAll() {
+        return selectAll;
+    }
+
+    /**
+     * @param selectAll the selectAll to set
+     */
+    public void setSelectAll(boolean selectAll) {
+        this.selectAll = selectAll;
     }
     
     

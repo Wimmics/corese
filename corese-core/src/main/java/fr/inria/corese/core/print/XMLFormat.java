@@ -5,7 +5,7 @@ import java.io.StringWriter;
 import java.text.NumberFormat;
 import java.util.List;
 import java.util.Locale;
-import java.util.Vector;
+import java.util.ArrayList;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
@@ -37,7 +37,7 @@ public class XMLFormat {
     Query query;
     ASTQuery ast;
     Mappings lMap;
-    Vector<String> select;
+    ArrayList<String> select;
     PrintWriter pw;
 
     public static final String SPARQLRES = NSManager.XMLRESULT;
@@ -63,6 +63,7 @@ public class XMLFormat {
 
     boolean displaySort = false;
     NumberFormat nf = NumberFormat.getInstance(Locale.FRENCH);
+    private boolean selectAll = false;
 
     XMLFormat(Mappings lm) {
         lMap = lm;
@@ -79,16 +80,36 @@ public class XMLFormat {
 
     public static XMLFormat create(Query q, ASTQuery ast, Mappings lm) {
         XMLFormat res = new XMLFormat(lm);
-        res.setQuery(q);
+        res.setQuery(q, lm);
         res.setAST(ast);
         return res;
     }
 
-    void setQuery(Query q) {
+    void setQuery(Query q, Mappings map) {
         query = q;
-        select = new Vector<String>();
-        for (Node node : q.getSelect()) {
+    }
+    
+    /**
+     * perform init() just before printing because we need to wait
+     * a possible setSelectAll(true) 
+     * So we cannot do it at creation time
+     */
+    void init() {
+        setSelect();
+    }
+    
+    void setSelect() {
+        select = new ArrayList<>();
+        for (Node node : query.getSelect()) {
             select.add(node.getLabel());
+        }
+        if (isSelectAll()) {
+            // additional select nodes such as ?_server_0 in federate mode
+            for (Node node : lMap.getQueryNodeList()) {
+                if (!select.contains(node.getLabel())) {
+                    select.add(node.getLabel());
+                }
+            }
         }
     }
 
@@ -112,7 +133,7 @@ public class XMLFormat {
         ast = q;
     }
 
-    Vector<String> getSelect() {
+    ArrayList<String> getSelect() {
         return select;
     }
 
@@ -189,6 +210,7 @@ public class XMLFormat {
     }
 
     public void print(boolean printInfoInFile, String fileName) {
+        init();
         println(getTitle(Title.XMLDEC));
         if (lMap.size() > getNbResult()) {
             println(String.format("<!-- Display %s results out of %s -->", getNbResult(), lMap.size()));
@@ -370,7 +392,7 @@ public class XMLFormat {
         return o.toString();
     }
 
-    void printVariables(Vector<String> select) {
+    void printVariables(ArrayList<String> select) {
         for (String var : select) {
             printVar(var);
         }
@@ -436,6 +458,20 @@ public class XMLFormat {
             println(CRESULTS);
         }
         println(CHEADER);
+    }
+
+    /**
+     * @return the selectAll
+     */
+    public boolean isSelectAll() {
+        return selectAll;
+    }
+
+    /**
+     * @param selectAll the selectAll to set
+     */
+    public void setSelectAll(boolean selectAll) {
+        this.selectAll = selectAll;
     }
 
 }

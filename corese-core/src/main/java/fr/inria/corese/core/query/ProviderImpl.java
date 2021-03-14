@@ -139,7 +139,10 @@ public class ProviderImpl implements Provider {
         if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel())) {
                 throw new SafetyException(TermEval.SERVICE_MESS);
         }
-        return serviceBasic(serv, exp, lmap, eval);
+        Mappings map = serviceBasic(serv, exp, lmap, eval);
+//        System.out.println("service result");
+//        System.out.println(map.toString(true, true, 10));
+        return map;
     }
     
     /**

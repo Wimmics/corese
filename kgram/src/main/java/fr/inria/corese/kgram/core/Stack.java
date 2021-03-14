@@ -64,6 +64,10 @@ public class Stack extends ArrayList<Exp> implements ExpType {
 		st.set(n, exp);
 		return st;
 	}
+        
+        boolean isCompleted() {
+            return size() == 1;
+        }
 	
 	/**
 	 * Push all elements of AND in the stack

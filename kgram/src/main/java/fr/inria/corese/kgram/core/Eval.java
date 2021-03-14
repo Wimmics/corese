@@ -861,9 +861,9 @@ public class Eval implements ExpType, Plugin {
         }
     }
 
-    private int solution(Producer p, int n) throws SparqlException {
+    private int solution(Producer p, Mapping m, int n) throws SparqlException {
         int backtrack = n - 1;
-        int status = store(p);
+        int status = store(p, m);
         if (status == STOP) {
             return STOP;
         }
@@ -919,7 +919,7 @@ public class Eval implements ExpType, Plugin {
         nbCall++;
 
         if (n >= stack.size()) {
-            backtrack = solution(p, n);
+            backtrack = solution(p, null, n);
             return backtrack;
         }
 
@@ -1658,12 +1658,16 @@ public class Eval implements ExpType, Plugin {
             // service delegated to provider
             Mappings lMap = provider.service(node, exp, data, this);
 
+            if (stack.isCompleted()) {
+                return result(p, lMap, n);
+            }
+                        
             for (Mapping map : lMap) {
                 if (stop) {
                     return STOP;
                 }
                 // push each Mapping in memory and continue
-                complete(query, map);
+                complete(query, map, false);
                 if (env.push(map, n, false)) {
                     backtrack = eval(gNode, stack, n + 1);
                     env.pop(map, false);
@@ -1679,11 +1683,27 @@ public class Eval implements ExpType, Plugin {
 
         return backtrack;
     }
+    
+    // stack = just one service: store and return result directly
+    int result(Producer p, Mappings lMap, int n) throws SparqlException {
+        for (Mapping map : lMap) {
+            complete(query, map, true);
+            solution(p, map, n);
+        }
+        return STOP;
+    }
 
-    void complete(Query q, Mapping map) {
+    void complete(Query q, Mapping map, boolean addNode) {
         int i = 0;
         for (Node node : map.getQueryNodes()) {
             Node out = q.getOuterNode(node);
+            // draft: use case ?_server_0
+            if (out == null) {
+                out = node;
+                if (addNode && ! q.getSelect().contains(node)) {
+                    q.getSelect().add(node);
+                }
+            }
             map.getQueryNodes()[i] = out;
             i++;
         }
@@ -2335,7 +2355,7 @@ public class Eval implements ExpType, Plugin {
     /**
      * Store a new result
      */
-    private int store(Producer p) throws SparqlException {
+    private int store(Producer p, Mapping m) throws SparqlException {
         boolean store = true;
         if (listener != null) {
             store = listener.process(memory);
@@ -2344,25 +2364,32 @@ public class Eval implements ExpType, Plugin {
             nbResult++;
         }
         if (storeResult && store) {
-            Mapping ans = memory.store(query, p, isSubEval);
-            if (ans != null && acceptable(ans)) {
-                //submit(ans);
-                if (hasEvent) {
-                    send(Event.RESULT, ans);
-                }
-                boolean b = true;
-                if (!isSubEval) {
-                    b = getVisitor().distinct(this, query, ans);
-                    if (b) {
-                        b = getVisitor().result(this, results, ans);
-                    }
-                }
-                if (b) {
-                    results.add(ans);
-                }
+            Mapping ans = m;
+            if (m == null) {
+               ans = memory.store(query, p, isSubEval);
             }
+            store(ans);
         }
         return -1;
+    }
+    
+    void store(Mapping ans) {
+        if (ans != null && acceptable(ans)) {
+            //submit(ans);
+            if (hasEvent) {
+                send(Event.RESULT, ans);
+            }
+            boolean b = true;
+            if (!isSubEval) {
+                b = getVisitor().distinct(this, query, ans);
+                if (b) {
+                    b = getVisitor().result(this, results, ans);
+                }
+            }
+            if (b) {
+                results.add(ans);
+            }
+        }
     }
 
     boolean acceptable(Mapping m) {

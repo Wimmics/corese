@@ -1660,6 +1660,10 @@ public class Mappings extends PointerObject
         }
         return get(0).getQueryNodeList();
     }
+    
+    public List<Node> getQueryNodeList() {
+        return getNodeListValues();
+    }
 
     /**
      * @param nodeList the nodeList to set

@@ -115,6 +115,7 @@ public class Selector {
         for (Mapping m : map) {
             IDatatype serv = (IDatatype) m.getValue(SERVER_VAR);
             
+            // table: predicate -> exists boolean variable
             for (String pred : predicateVariable.keySet()) {
                 String var = predicateVariable.get(pred);
                 IDatatype val = (IDatatype) m.getValue(var);
@@ -123,6 +124,7 @@ public class Selector {
                 }
             }
             
+            // table: triple -> exists boolean variable
             for (Triple t : tripleVariable.keySet()) {
                 String var = tripleVariable.get(t);
                 IDatatype val = (IDatatype) m.getValue(var);
@@ -215,17 +217,33 @@ public class Selector {
         ASTQuery aa = ASTQuery.create();
         aa.setSelectAll(true);
         aa.setNSM(ast.getNSM()); 
+        Variable serv = Variable.create(SERVER_VAR);
         
         // triple selector
-        BasicGraphPattern bgp = (sparql10) ? createBGP10(aa) : createBGP(aa); 
+        BasicGraphPattern bgp ;
         
-        Variable serv   = Variable.create(SERVER_VAR);
-        Service service = Service.create(serv, bgp);                
-        Values values   = Values.create(serv, list);        
+        if (vis.isIndex()) {
+            bgp = createBGPIndex(serv, aa);
+        }
+        else if (sparql10) {
+            bgp = createBGP10(aa);
+        }
+        else {
+            bgp = createBGP(serv, aa);
+        }              
         
-        BasicGraphPattern body = BasicGraphPattern.create(values, service);        
+        BasicGraphPattern body;
+        if (vis.isIndex()) {
+            bgp.add(0,Values.create(serv, list));
+            body = bgp;
+        }
+        else {
+            Service service = Service.create(serv, bgp);                
+            Values values   = Values.create(serv, list);        
+            body = aa.bgp(values, service); 
+        }
+        
         aa.setBody(body);
-        
         metadata(aa, ast);
         return aa;
     }
@@ -300,7 +318,7 @@ public class Selector {
     }
     
     
-    BasicGraphPattern createBGP(ASTQuery aa) {
+    BasicGraphPattern createBGP(Variable serv, ASTQuery aa) {
         BasicGraphPattern bgp = BasicGraphPattern.create();
         int i = 0;
         
@@ -330,6 +348,42 @@ public class Selector {
         return bgp;
     }
     
+    /**
+     * Create BGP to query graph index
+     */
+    BasicGraphPattern createBGPIndex(Variable serv, ASTQuery aa) {
+        BasicGraphPattern bgp = BasicGraphPattern.create();
+        int i = 0;
+        
+        for (Constant p : ast.getPredicateList()) {
+            if (p.getLabel().equals(ASTQuery.getRootPropertyURI())) {
+
+            } else {
+                Constant pns = aa.createQName("idx:namespace");
+                Constant pdt = aa.createQName("idx:data");
+                Constant ppr = aa.createQName("idx:predicate");
+                
+                Variable ns  = Variable.create("?ns");
+                Variable dt  = Variable.create("?dt");
+                Variable pr  = Variable.create("?pr");
+                
+                Triple t1 = aa.triple(serv, pns, ns);
+                Triple t2 = aa.triple(ns, pdt, dt);
+                Triple t3 = aa.triple(dt, ppr, p);
+                
+                // exists { ?serv idx:namespace/idx:data/idx:predicate predicate }
+                Variable var = exist(aa, bgp, aa.bgp(t3, t2, t1), i);
+                declare(p, var);
+                                
+                i++;
+            }                      
+        }
+        
+        selectTriple(aa, bgp, i);
+                
+        return bgp;
+    }
+    
     void selectTriple(ASTQuery aa, BasicGraphPattern bgp, int i) {
         if (vis.isSelectFilter()) {
             selectTripleFilter(aa, bgp, i);
@@ -339,7 +393,10 @@ public class Selector {
         }
     }
 
-    
+    /**
+     * generate exists { s p o filter F } where F variables are bound by s p o
+     * by default filter limited to x = y 
+     */
     void selectTripleFilter(ASTQuery aa, BasicGraphPattern bgp, int i) {
         List<BasicGraphPattern> list = new SelectorFilter(ast).process();
         for (BasicGraphPattern exp : list) {

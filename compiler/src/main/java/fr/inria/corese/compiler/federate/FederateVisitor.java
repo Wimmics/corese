@@ -17,13 +17,13 @@ import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -76,6 +76,8 @@ public class FederateVisitor implements QueryVisitor {
     boolean variable = false;
     boolean aggregate = false;
     boolean provenance = false;
+    private boolean index = false;
+    private boolean sparql = false;
 
     ASTQuery ast;
     Stack stack;
@@ -110,26 +112,41 @@ public class FederateVisitor implements QueryVisitor {
             return;
         }
         rew.setDebug(ast.isDebug());
-        try {
-            option();
-        } catch (EngineException ex) {
-            java.util.logging.Logger.getLogger(FederateVisitor.class.getName()).log(Level.SEVERE, null, ex);
-        }
+        option();
         
-        if (verbose) {
-            System.out.println("\nbefore:");
-            System.out.println(ast.getBody());
+        if (isSparql()) {
+            // select where { BGP } -> select where { service URLs { BGP } }
+            if (verbose) {
+                System.out.println("\nbefore:");
+                System.out.println(ast.getBody());
+            }
+            sparql(ast);
         }
+        else {
+        
+            if (select) {
+                try {
+                    selector = new Selector(this, exec, ast);
+                    selector.process();
+                } catch (EngineException ex) {
+                    logger.error(ex.getMessage());
+                }
+            }
 
-        rewrite(ast);
+            if (verbose) {
+                System.out.println("\nbefore:");
+                System.out.println(ast.getBody());
+            }
 
+            rewrite(ast);
+        }
         if (verbose) {
             System.out.println("\nafter:");
             System.out.println(ast.getBody());
             System.out.println();
         }
     }
-    
+       
     boolean init() {
         if (ast.hasMetadata(Metadata.FEDERATION)) {
             List<String> list = ast.getMetadata().getValues(Metadata.FEDERATION);
@@ -150,9 +167,12 @@ public class FederateVisitor implements QueryVisitor {
                 for (int i = 1; i < list.size(); i++) {
                     serviceList.add(Constant.createResource(list.get(i)));
                 }
-                getFederation().put(list.get(0), serviceList);
+                defFederation(list.get(0), serviceList);
             }
             ast.setServiceList(serviceList);
+            // same as Transformer federate()
+            // use case: come here from corese server federate mode
+            ast.defService((String)null);
         }
 
         return true;
@@ -191,7 +211,7 @@ public class FederateVisitor implements QueryVisitor {
      * default is false:
      * @type kg:exist kg:verbose
      */
-    void option() throws EngineException {
+    void option()  {
         if (ast.hasMetadataValue(Metadata.TYPE, Metadata.VERBOSE)) {
             verbose = true;
         }
@@ -230,10 +250,13 @@ public class FederateVisitor implements QueryVisitor {
             variable = true;
             provenance = true;
         }
-        if (select) {
-            selector = new Selector(this, exec, ast);
-            selector.process();
+        if (ast.hasMetadata(Metadata.INDEX)) {
+            setIndex(true);
         }
+        if (ast.hasMetadata(Metadata.SPARQL)) {
+            setSparql(true);
+        }
+        
     }
     
     boolean skip(String name) {
@@ -245,7 +268,17 @@ public class FederateVisitor implements QueryVisitor {
     }
     
     
-    
+    void sparql(ASTQuery ast) {
+        Exp body = ast.getBody();
+        Service serv = Service.create(ast.getServiceList(), body);
+        ast.setBody(ast.bgp(serv));
+        // include external values clause inside body
+        prepare(ast);
+        // TODO: check inherit limit ??? offset ???
+        complete(ast);
+        variable(ast);
+        finish(ast);       
+    }
     
     
 
@@ -258,6 +291,10 @@ public class FederateVisitor implements QueryVisitor {
         graph(ast);
         complete(ast);
         variable(ast);
+        finish(ast);
+    }
+    
+    void finish(ASTQuery ast) {
         ast.getVisitorList().add(this);
     }
     
@@ -735,11 +772,35 @@ public class FederateVisitor implements QueryVisitor {
         return bounce;
     }
     
-        /**
+    public static void defineFederation(String name, List<String> list) {
+        List<Atom> serviceList = new ArrayList<>();
+        for (String url : list) {
+            serviceList.add(Constant.createResource(url));
+        }
+        defFederation(name, serviceList);
+    }
+    
+    public static void declareFederation(String name, List<IDatatype> list) {
+        List<Atom> serviceList = new ArrayList<>();
+        for (IDatatype url : list) {
+            serviceList.add(Constant.create(url));
+        }
+        defFederation(name, serviceList);
+    }
+    
+    public static void defFederation(String name, List<Atom> list) {
+        getFederation().put(name, list);
+    }
+    
+    /**
      * @return the federation
      */
     public static HashMap<String, List<Atom>> getFederation() {
         return federation;
+    }
+    
+    public static List<Atom> getFederation(String name) {
+        return getFederation().get(name);
     }
 
     /**
@@ -775,6 +836,34 @@ public class FederateVisitor implements QueryVisitor {
      */
     public void setSelectFilter(boolean selectFilter) {
         this.selectFilter = selectFilter;
+    }
+
+    /**
+     * @return the index
+     */
+    public boolean isIndex() {
+        return index;
+    }
+
+    /**
+     * @param index the index to set
+     */
+    public void setIndex(boolean index) {
+        this.index = index;
+    }
+
+    /**
+     * @return the sparql
+     */
+    public boolean isSparql() {
+        return sparql;
+    }
+
+    /**
+     * @param sparql the sparql to set
+     */
+    public void setSparql(boolean sparql) {
+        this.sparql = sparql;
     }
 
    

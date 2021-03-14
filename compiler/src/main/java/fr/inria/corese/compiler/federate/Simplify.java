@@ -73,7 +73,7 @@ public class Simplify {
         for (Exp exp : bgp) {
             if (exp.isService()){ 
                 if (exp.getService().isFederate()) {
-                    // skip
+                    // several URI: skip
                 }               
                 else if (isTripleFilterOnly(exp.getBodyExp())) {
                     // do not merge basic BGP with same service URI
@@ -138,6 +138,7 @@ public class Simplify {
             ArrayList<Service> list = new ArrayList<>();
             for (Exp exp : bgp) {
                 if (exp.isService() && isMoveable(exp.getService())) {
+                    // exp moveable if connected with serv and exp has only one triple
                     Service serv = getCandidate(exp.getService(), serviceList);
                     if (serv != null) {
                         serv.getBodyExp().include(exp.getService().getBodyExp());

@@ -244,9 +244,9 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 		return uri.indexOf(".*")!=-1;
 	}
 	
-	void process(ASTQuery aq){
-		aq.setQuery(this);
-	}
+//	void process(ASTQuery aq){
+//		aq.setQuery(this);
+//	}
 	
 	
 	

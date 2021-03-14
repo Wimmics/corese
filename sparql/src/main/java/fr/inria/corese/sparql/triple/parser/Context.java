@@ -8,6 +8,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.CONTEXT;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatypeList;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -326,23 +327,37 @@ public class Context extends ASTObject {
             table.remove(name);
         }
         else {
-            table.put(name, DatatypeMap.newInstance(str));
+            set(name, DatatypeMap.newInstance(str));
         }
         return this;
     }
     
+    public Context add(String name, String value) {
+        return add(name, DatatypeMap.newInstance(value));
+    }
+    
+    public Context add(String name, IDatatype value) {
+        IDatatype list = get(name);
+        if (list == null) {
+            list = DatatypeMap.newList();
+            set(name, list);
+        }
+        list.getList().add(value);
+        return this;
+    }
+    
      public Context set(String name, int n) {
-        table.put(name, DatatypeMap.newInstance(n));
+        set(name, DatatypeMap.newInstance(n));
         return this;
     }
      
      public Context set(String name, boolean n) {
-        table.put(name, DatatypeMap.newInstance(n));
+        set(name, DatatypeMap.newInstance(n));
         return this;
     }
 
     public Context setURI(String name, String str) {
-        table.put(name, DatatypeMap.newResource(str));
+        set(name, DatatypeMap.newResource(str));
         return this;
     }
 

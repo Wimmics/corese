@@ -222,7 +222,7 @@ public class ASTQuery
     /**
      * Compiled triple query expression
      */
-    Exp query;
+    //Exp query;
     // compiled construct (graph ?g removed)
     Exp constructExp,
             // genuine construct
@@ -856,9 +856,9 @@ public class ASTQuery
     }
 
 
-    public void setQuery(Exp query) {
-        this.query = query;
-    }
+//    public void setQuery(Exp query) {
+//        this.query = query;
+//    }
 
     public void setScore(boolean score) {
         this.hasScore = score;
@@ -990,14 +990,14 @@ public class ASTQuery
         base = ns;
     }
 
-    public Exp getQueryExp() {
-        return query;
-    }
+//    public Exp getQueryExp() {
+//        return query;
+//    }
 
     public Exp getExtBody() {
-        if (query != null) {
-            return query;
-        }
+//        if (query != null) {
+//            return query;
+//        }
         return getBody();
     }
 
@@ -2672,9 +2672,9 @@ public class ASTQuery
             compileTemplate();
         }
         Exp exp = getBody();
-        if (exp != null) {
-            setQuery(exp);
-        }
+//        if (exp != null) {
+//            setQuery(exp);
+//        }
     }
 
     // TODO: clean
@@ -3037,7 +3037,7 @@ public class ASTQuery
         defPPNamespace(prefix, ns);
     }
     
-    void defService(List<String> list){
+    public void defService(List<String> list){
         if (list != null && ! list.isEmpty()){
             defService(list.get(0));
             setServiceList(new ArrayList<>());

@@ -69,6 +69,9 @@ public class NSManager extends ASTObject {
     public static final String RESOURCE = "http://ns.inria.fr/corese/";
     public static final String HTTP = "http://ns.inria.fr/http/";
     
+    public static final String INDEX    = "http://ns.inria.fr/rdf/index/";
+    public static final String FEDERATE = "http://ns.inria.fr/federation/";
+    
     public static final String SHACL = "http://www.w3.org/ns/shacl#";
     public static final String SHACL_FUNCTION_PATH = "http://www.w3.org/ns/shacl/functionpath#";
     public static final String SHACL_FUNCTION = "http://www.w3.org/ns/shacl/function#";
@@ -305,6 +308,7 @@ public class NSManager extends ASTObject {
         def.put(CAST, "cast");
         def.put(DOM, "dom");
         def.put(RESOURCE, "res");
+        def.put(INDEX, "idx");
         //def.put(HTTP, "http");
     }
 

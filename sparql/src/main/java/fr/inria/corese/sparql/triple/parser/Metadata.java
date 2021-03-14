@@ -27,6 +27,7 @@ public class Metadata extends ASTObject
     public static final int NEW    = 5;
     
     // Query
+    public static final int SPARQL  = 10; // federate sparql
     public static final int RELAX   = 11;
     public static final int MORE    = 12;
     public static final int FEDERATE= 13;
@@ -66,6 +67,7 @@ public class Metadata extends ASTObject
     public static final int FROM      = 47;
     public static final int UPDATE    = 48;
     public static final int BINDING   = 50; // service binding
+    public static final int INDEX     = 51; // service binding
 
     
     
@@ -150,6 +152,8 @@ public class Metadata extends ASTObject
         define("@relax",    RELAX);      
         define("@federate", FEDERATE);      
         define("@federation",FEDERATION);      
+        define("@sparql",   SPARQL);      
+        define("@index",    INDEX);      
         define("@limit",    LIMIT);      
         define("@move",     MOVE);      
         define("@bounce",   BOUNCE);      
@@ -258,6 +262,20 @@ public class Metadata extends ASTObject
        if (! list.contains(val)){
            list.add(val);
        }
+    }
+    
+    public void set(int type, List<String> list) {
+        String name = name(type);
+        if (name != null) {
+            set(name, list);
+        }
+    }
+
+    public void set(String name, List<String> list){
+        if (! list.isEmpty()) {
+            add(name, list.get(0));
+        }
+        value.put(name, list);
     }
     
     public void add(String name, Constant val){

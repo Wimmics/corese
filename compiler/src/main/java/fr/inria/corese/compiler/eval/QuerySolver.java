@@ -37,12 +37,10 @@ import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.triple.api.ASTVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
-import fr.inria.corese.sparql.triple.parser.AccessRightDefinition;
 
 /**
  * Evaluator of SPARQL query by KGRAM Ready to use Package with KGRAM and SPARQL
@@ -557,6 +555,11 @@ public class QuerySolver implements SPARQLEngine {
         transformer.setSPARQLCompliant(isSPARQLCompliant);
         Query query = transformer.transform(squery);
         return query;
+    }
+    
+    public ASTQuery parse(String q) throws EngineException {
+        Transformer transformer = createTransformer(null);
+        return transformer.parse(q);
     }
 
     Transformer createTransformer(Dataset ds) {

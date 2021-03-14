@@ -516,11 +516,11 @@ public class Transformer implements ExpType {
      * eng:describe { BGP } }
      */
     void preprocess(ASTQuery ast) {
-        if (ast.getFrom().size() == 1
-                && isSystemGraph(ast.getFrom().get(0).getLabel())) {
-            Source exp = Source.create(ast.getFrom().get(0), ast.getQueryExp());
-            ast.setQuery(BasicGraphPattern.create(exp));
-        }
+//        if (ast.getFrom().size() == 1
+//                && isSystemGraph(ast.getFrom().get(0).getLabel())) {
+//            Source exp = Source.create(ast.getFrom().get(0), ast.getQueryExp());
+//            ast.setQuery(BasicGraphPattern.create(exp));
+//        }
     }
 
     /**
@@ -644,8 +644,8 @@ public class Transformer implements ExpType {
      * For query and subquery Generate a new compiler for each (sub) query in
      * order to get fresh new nodes
      */
-    Query compile(ASTQuery ast) throws EngineException {
-        Exp ee = compile(ast.getExtBody(), false);
+    Query compile(ASTQuery ast) throws EngineException {        
+        Exp ee = compile(ast.getBody(), false);
         Query q = Query.create(ee);
         q.setUseBind(isUseBind);
         //compileFunction(q, ast);
@@ -770,14 +770,13 @@ public class Transformer implements ExpType {
             // special case for federated query
             // one service clause with several URI
             // perform merge of resut Mappings
-            ArrayList<Node> list = new ArrayList<Node>();
+            ArrayList<Node> list = new ArrayList<>();
             for (Atom at : service.getServiceList()) {
                 Node serv = compile(at);
                 list.add(serv);
             }
             exp.setNodeSet(list);
         }
-        
         return exp;
     }
 
@@ -1289,7 +1288,6 @@ public class Transformer implements ExpType {
     }
 
     Exp compile(fr.inria.corese.sparql.triple.parser.Exp query, boolean opt, int level) throws EngineException {
-
         Exp exp = null;
         int type = getType(query);
         opt = opt || isOption(type);

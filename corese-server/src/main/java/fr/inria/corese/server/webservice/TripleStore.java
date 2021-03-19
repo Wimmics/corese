@@ -61,6 +61,7 @@ public class TripleStore {
         metaMap.put("index", Metadata.INDEX);
         metaMap.put("move", Metadata.MOVE);
         metaMap.put("variable", Metadata.VARIABLE);
+        metaMap.put("provenance", Metadata.VARIABLE);
         metaMap.put("count", Metadata.SERVER);
     }
 

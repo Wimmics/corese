@@ -438,6 +438,11 @@ public class Profile {
             IDatatype list = getValue(m, "?list");
             System.out.println("federation: " + dt + " : " + list);
             FederateVisitor.declareFederation(dt.getLabel(), list.getValueList());
+            
+            for (IDatatype serv : list.getValueList()) {
+                System.out.println("access: " + serv.getLabel());
+                Access.define(serv.getLabel(), true);
+            }
         }
     }
     

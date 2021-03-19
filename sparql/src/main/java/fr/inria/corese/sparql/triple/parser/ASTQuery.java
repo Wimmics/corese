@@ -3238,6 +3238,7 @@ public class ASTQuery
         return values;
     }
 
+    // parser api to create select variable
     public void defSelect(Variable var, Expression exp) {
         checkSelect(var);
         if (exp == null) {
@@ -3736,6 +3737,25 @@ public class ASTQuery
      */
     public void setLDScript(boolean ldscript) {
         this.ldscript = ldscript;
+    }
+    
+    /**
+     * There is a service with mode=provenance
+     * A variable ?_server_0 will be generated at runtime by server in FederateVisitor (core)
+     * when the server will receive the service call
+     * Declare this variable in the select clause of the calling query
+     * We modify the select query because at runtime the server will send back 
+     * ?_server_0 binding and the calling query must be aware of this variable to handle it
+     * otherwise, the variable would not be in the select and it would not be visible
+     * The function call happens after parsing, in ASTParser Walker called by Transformer
+     */
+    public void provenance() {
+        if (getValues() == null) {
+            Variable var = new Variable(Service.SERVER_VAR);
+            defSelect(var, null);
+            Values values = Values.create(var, (Constant)null);
+            setValues(values);
+        }
     }
     
     

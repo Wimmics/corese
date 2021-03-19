@@ -617,6 +617,7 @@ public class Term extends Expression {
             case ExprType.XT_METADATA:
             case ExprType.XT_CONTEXT:  
             case ExprType.XT_QUERY:    
+            case ExprType.XT_MAPPINGS:    
             case ExprType.XT_FROM:    
             case ExprType.XT_NAMED:
             case ExprType.XT_NAME:

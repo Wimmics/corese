@@ -9,6 +9,8 @@ import java.util.List;
  * @author Olivier Corby, Edelweiss, INRIA 2011
  */
 public class Service extends SourceExp {
+    public static String SERVER_SEED = "?_server_";
+    public static String SERVER_VAR = SERVER_SEED+"0";
 
     private List<Atom> serviceList;
     boolean silent;

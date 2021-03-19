@@ -21,4 +21,7 @@ public interface ResultFormatDef {
     public static final int CSV_FORMAT     = 14; 
     public static final int TSV_FORMAT     = 15; 
     
+    public static final int HTML_FORMAT    = 20; 
+
+    
 }

@@ -16,6 +16,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.script.LDScript;
@@ -78,10 +79,14 @@ public class GraphFunction extends LDScript {
             switch (oper()) {
                 case XT_INDEX: return index(dt, p);
                 case XT_GRAPH:
+                    // xt:graph(dt:mappings map) -> return the graph of the Mappings if any, null otherwise
+                    // there is also a cast dt:graph(dt:mappings map) in class Cast
                     if (dt.pointerType() == PointerType.MAPPINGS) {
-                        // generate graph representation of sparql query result
-                        GraphProcessor proc = eval.getGraphProcessor();
-                        return proc.graph(dt);
+                        Mappings map = dt.getPointerObject().getMappings();
+                        if (map.getGraph() == null) {
+                            return null;
+                        }
+                        return DatatypeMap.createObject(map.getGraph());
                     }
                 default: return null;
             }

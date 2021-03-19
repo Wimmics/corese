@@ -3,6 +3,7 @@ package fr.inria.corese.sparql.triple.function.proxy;
 import fr.inria.corese.kgram.api.core.Expr;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_CONTEXT;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_FROM;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_MAPPINGS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_METADATA;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_NAME;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_NAMED;
@@ -41,6 +42,11 @@ public class Introspection extends LDScript {
                          
             case XT_QUERY:
                 return DatatypeMap.createObject(env.getQuery());
+                
+            case XT_MAPPINGS:
+                // use case: transformer work on Mappings of a query
+                // st:start template manage Mappings 
+                return DatatypeMap.createObject(env.getQuery().getMappings());    
                 
             case XT_METADATA:
                 ASTQuery ast = (ASTQuery) env.getQuery().getAST();

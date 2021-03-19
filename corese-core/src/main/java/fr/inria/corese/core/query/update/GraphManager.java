@@ -23,7 +23,6 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
@@ -299,46 +298,66 @@ public class GraphManager {
                     // load access file system ?
                     Access.check(Feature.LOAD_FILE, level, uri, TermEval.LOAD_MESS);
                 }
-                load.parse(uri, src);
+                //load.parse(uri, src);
+                load(src, uri);
             } catch (LoadException | SafetyException ex) {
-                logger.error("trap load error: " + ex.getMessage());
+                logger.error("Load silent trap error: " + ex.getMessage());
             }
             graph.logFinish(q);
         } else {
             if (NSManager.isFile(uri)) {
                 Access.check(Feature.LOAD_FILE, level, uri, TermEval.LOAD_MESS);
             }
+            
             try {
-                load.parse(uri, src);
-                graph.logFinish(q);
-            } catch (LoadException e) {
+                load(src, uri);
+            }
+            catch (LoadException e) {
                 if (e.isSafetyException()) {
                     throw e.getSafetyException();
                 }
-                boolean error = true;
-                
-                if (load.getFormat(uri) == Loader.UNDEF_FORMAT
-                        && e.getException() != null
-                        && e.getException().getMessage().contains("{E301}")) {
-                    try {
-                        //load.parse(uri, src, src, Loader.TURTLE_FORMAT);
-                        load.parse(uri, src, uri, Loader.TURTLE_FORMAT);
-                        error = false;
-                    } catch (LoadException ex) {
-                    }
-                }
-
-                if (error) {
-                    logger.error("Load error: " + ope.getURI() + "\n" + e);
-                    q.addError("Load error: ", ope.getURI() + "\n" + e);
-                }
-                graph.logFinish(q);
+                logger.error("Load error: " + ope.getURI() + "\n" + e);
+                q.addError("Load error: ", ope.getURI() + "\n" + e);
                 return ope.isSilent();
-            } finally {
+            }
+            finally {
                    //getQueryProcess().getCurrentVisitor().afterLoad(dt);
-                   graph.getEventManager().finish(Event.LoadUpdate);
+                graph.logFinish(q);
+                graph.getEventManager().finish(Event.LoadUpdate);
             }
         }
+            
+//            try {
+//                load.parse(uri, src);
+//                graph.logFinish(q);
+//            } catch (LoadException e) {
+//                if (e.isSafetyException()) {
+//                    throw e.getSafetyException();
+//                }
+//                boolean error = true;
+//                
+//                if (load.getFormat(uri) == Loader.UNDEF_FORMAT
+//                        && e.getException() != null
+//                        && e.getException().getMessage().contains("{E301}")) {
+//                    try {
+//                        //load.parse(uri, src, src, Loader.TURTLE_FORMAT);
+//                        load.parse(uri, src, uri, Loader.TURTLE_FORMAT);
+//                        error = false;
+//                    } catch (LoadException ex) {
+//                    }
+//                }
+//
+//                if (error) {
+//                    logger.error("Load error: " + ope.getURI() + "\n" + e);
+//                    q.addError("Load error: ", ope.getURI() + "\n" + e);
+//                }
+//                graph.logFinish(q);
+//                return ope.isSilent();
+//            } finally {
+//                   //getQueryProcess().getCurrentVisitor().afterLoad(dt);
+//                   graph.getEventManager().finish(Event.LoadUpdate);
+//            }
+        //}
 
         if (load.isRule(uri) && load.getRuleEngine() != null) { 
             // load rule base into workflow
@@ -355,8 +374,19 @@ public class GraphManager {
         return true;
     }
 
-    
-    
+    // try RDF/XML and if parse error try Turtle
+    void load(String src, String uri) throws LoadException {
+        try {
+            load.parse(uri, src);
+        } catch (LoadException e) {
+            if (load.getFormat(uri) == Loader.UNDEF_FORMAT
+                    && e.getException() != null
+                    && e.getException().getMessage().contains("{E301}")) {
+                load.parse(uri, src, uri, Loader.TURTLE_FORMAT);
+            }
+        }
+    }
+
     
     /**
      * Corese extension wrt SPARQL Update: optional

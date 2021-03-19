@@ -6,7 +6,6 @@ import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.update.ASTUpdate;
 import fr.inria.corese.sparql.triple.update.Composite;
-import fr.inria.corese.sparql.triple.update.Update;
 
 /**
  * ASTQuery process(walker) walk through every Exp, Expression and Function

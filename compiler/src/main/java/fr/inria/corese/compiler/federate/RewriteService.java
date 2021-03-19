@@ -20,7 +20,7 @@ public class RewriteService {
     FederateVisitor vis;
     int count = 0;
     boolean export = false;
-    String name = "?_server_";
+    String name = Service.SERVER_SEED;
     ArrayList<Variable> varList; 
     ArrayList<Service> serviceList;
     

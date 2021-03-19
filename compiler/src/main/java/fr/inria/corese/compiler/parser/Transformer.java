@@ -30,6 +30,7 @@ import fr.inria.corese.compiler.visitor.MetadataVisitor;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.parser.visitor.ASTParser;
 import fr.inria.corese.sparql.triple.parser.visitor.Record;
 import java.io.IOException;
 import java.util.HashMap;
@@ -210,6 +211,8 @@ public class Transformer implements ExpType {
             ast.setDefaultDataset(getDataset());
         }
         ParserSparql1.create(ast).parse();
+        ASTParser walk = new ASTParser(ast);
+        ast.walk(walk);
         return ast;
     }
     

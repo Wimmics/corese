@@ -654,6 +654,9 @@ public class Transformer implements TransformProcessor {
      * Otherwise, apply the first template that matches without bindings.
      */
     public IDatatype process() throws EngineException {
+        if (getBinding() != null) {
+            return process(getBinding());
+        }
         return process(null, false, null, null, null);
     }
     

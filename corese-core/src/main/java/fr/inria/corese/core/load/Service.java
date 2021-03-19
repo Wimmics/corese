@@ -7,9 +7,9 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.CompileService;
-import fr.inria.corese.core.query.ProviderImpl;
-import fr.inria.corese.core.util.URLServer;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.HashMapList;
+import fr.inria.corese.sparql.triple.parser.URLServer;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -20,6 +20,8 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.MultivaluedHashMap;
+import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
@@ -156,7 +158,6 @@ public class Service {
         WebTarget target = client.target(url);
         Form form = getForm();
         form.param(QUERY, query);
-        //complete(form);          
         try {
             String res = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
             if (isDebug) {
@@ -174,7 +175,15 @@ public class Service {
     }
     
     Form getForm() {
-        return getURL().getMap() == null ? new Form() : new Form(getURL().getMap());
+        return getURL().getMap() == null ? new Form() : new Form(getMap(getURL().getMap()));
+    }
+    
+    MultivaluedMap<String, String> getMap(HashMapList<String> map) {
+        MultivaluedMap<String, String> amap = new MultivaluedHashMap<>();
+        for (String key : map.keySet()) {
+            amap.put(key, map.get(key));
+        }
+        return amap;
     }
     
     void complete(Form form) {
@@ -197,12 +206,33 @@ public class Service {
         }
         String url;
         try {
-            url = uri + "?query=" + URLEncoder.encode(query, "UTF-8");
+            url = complete(uri, URLEncoder.encode(query, "UTF-8"));
         } catch (UnsupportedEncodingException ex) {
-            logger.error(ex.getMessage());
-            url = uri + "?query=" + query;
+            url = complete(uri, query);
         }
         return getBasic(url, mime);
+    }
+    
+    String complete(String uri, String query) {
+        if (getURL().hasParameter()) {
+            return String.format("%s?%s&query=%s", uri, param(), query);
+        }
+        return String.format("%s?query=%s", uri, query);
+    }
+    
+    /**
+     * Generate the parameter string
+     * We can skip some key=val parameters here.
+     */
+    String param() {
+        StringBuilder sb = new StringBuilder();
+        for (String key : getURL().getMap().keySet()) {
+            for (String value : getURL().getMap().get(key)) {
+                String format = sb.length() == 0 ? "%s=%s" : "&%s=%s";
+                sb.append(String.format(format, key, value));
+            }
+        }
+        return sb.toString();
     }
         
     String getBasic(String url, String mime) {

@@ -1658,9 +1658,9 @@ public class Eval implements ExpType, Plugin {
             // service delegated to provider
             Mappings lMap = provider.service(node, exp, data, this);
 
-            if (stack.isCompleted()) {
-                return result(p, lMap, n);
-            }
+//            if (stack.isCompleted()) {
+//                return result(p, lMap, n);
+//            }
                         
             for (Mapping map : lMap) {
                 if (stop) {

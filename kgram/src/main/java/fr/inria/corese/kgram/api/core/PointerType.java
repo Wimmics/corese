@@ -27,7 +27,7 @@ public enum PointerType {
         VISITOR("visitor"),
         ; 
     
-        private String name;
+        public String name;
                 
         private PointerType(String n) {
             name = DT+n;

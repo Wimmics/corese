@@ -19,8 +19,6 @@ import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import java.net.MalformedURLException;
-import java.net.URL;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 

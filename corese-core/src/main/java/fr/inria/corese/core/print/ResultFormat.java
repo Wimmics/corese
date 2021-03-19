@@ -14,6 +14,10 @@ import fr.inria.corese.core.util.MappingsGraph;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.ResultFormatDef;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.HashMap;
 
 /**
@@ -28,6 +32,7 @@ public class ResultFormat implements ResultFormatDef {
     public static final String SPARQL_RESULTS_TSV  = "application/sparql-results+tsv";
     
     public static final String XML         = "application/xml";
+    public static final String HTML        = "text/html";
     
     public static final String JSON_LD     = "application/ld+json";
     public static final String JSON        = "application/json";
@@ -42,14 +47,18 @@ public class ResultFormat implements ResultFormatDef {
     public static int DEFAULT_SELECT_FORMAT    = XML_FORMAT;
     public static int DEFAULT_CONSTRUCT_FORMAT = RDF_XML_FORMAT;
     
-    Mappings map;
-    Graph graph;
+    private Mappings map;
+    private Graph graph;
+    private Binding bind;
+    private Context context;
     int type = UNDEF_FORMAT;
     private int construct_format = DEFAULT_CONSTRUCT_FORMAT;
     private int select_format = DEFAULT_SELECT_FORMAT;
     private long nbResult = Long.MAX_VALUE;
     private String contentType;
     private boolean selectAll = false;
+    private boolean transformer;
+    private String transformation;
     
     static HashMap<String, Integer> table, format;
     static HashMap<Integer, String> content;
@@ -94,9 +103,11 @@ public class ResultFormat implements ResultFormatDef {
         format.put(NT_TEXT, TURTLE_FORMAT);
         format.put(TURTLE, TURTLE_FORMAT);
         format.put(XML, XML_FORMAT);
+        format.put(HTML, HTML_FORMAT);
     
         // shortcut for HTTP parameter format=
         format.put("text", TEXT_FORMAT);
+        format.put("html", HTML_FORMAT);
         
         format.put("json", JSON_FORMAT);
         format.put("xml", XML_FORMAT);
@@ -157,12 +168,29 @@ public class ResultFormat implements ResultFormatDef {
         return new ResultFormat(m, type);
     }
     
+    static public ResultFormat create(Mappings m, String format, String trans) {
+        return create(m, format).transform(trans);       
+    }    
+    
+    static public ResultFormat create(Mappings m, int type, String trans) {
+        return create(m, type).transform(trans);       
+    }
+    
+    ResultFormat transform(String trans) {
+        if (trans != null) {
+            String ft = NSManager.nsm().toNamespace(trans);
+            setTransformer(true);
+            setTransformation(ft);
+        }
+        return this;
+    }
+    
     // special case: template without format considered as text format
     static String tuneFormat(Mappings m, String format) {
         if (m.getQuery() != null) {
             if (format == null) {
                 if (m.getQuery().isTemplate()) {
-                    return "text/plain";
+                    return TEXT; //"text/plain";
                 }
             } 
         }
@@ -251,7 +279,10 @@ public class ResultFormat implements ResultFormatDef {
 
     @Override
     public String toString() {
-        if (map == null){
+        if (isTransformer()) {
+            return transformer();
+        }
+        else if (getMappings() == null){
             return graphToString();
         }
         else {
@@ -259,8 +290,37 @@ public class ResultFormat implements ResultFormatDef {
         }
     }
     
+    String transformer() {
+        Transformer t = Transformer.create(theGraph(), getMappings(), getTransformation());
+        if (getContext() != null) {
+            t.setContext(getContext());
+        }
+        if (getBind() != null) {
+            t.setBinding(getBind());
+        }
+        return t.toString();
+    }
+    
+    public ResultFormat init(Dataset ds) {
+        setContext(ds.getContext());
+        setBind(ds.getBinding());
+        return this;
+    }
+    
+    Graph theGraph() {
+        if (getGraph() != null) {
+            return getGraph();
+        }
+        else if (getMappings().getGraph() != null) {
+            return (Graph) getMappings().getGraph();
+        }
+        else {
+            return Graph.create();
+        }
+    } 
+    
     public String toString(IDatatype dt) {
-        Node node = graph.getNode(dt);
+        Node node = getGraph().getNode(dt);
         if (node == null) {
             return dt.toString();
         }
@@ -284,28 +344,33 @@ public class ResultFormat implements ResultFormatDef {
         }
         switch (type){
             case RDF_XML_FORMAT:
-                return  RDFFormat.create(graph).toString();
-            case TURTLE_FORMAT:
-                return TripleFormat.create(graph).toString(node);
+                return  RDFFormat.create(getGraph()).toString();           
             case TRIG_FORMAT:
-                return TripleFormat.create(graph, true).toString(node);    
+                return TripleFormat.create(getGraph(), true).toString(node);    
             case JSON_LD_FORMAT:
-                return JSONLDFormat.create(graph).toString();               
+                return JSONLDFormat.create(getGraph()).toString();  
+            case TURTLE_FORMAT:
+            default:
+                // e.g. HTML
+                String str = TripleFormat.create(getGraph()).toString(node);
+                if (type == HTML_FORMAT) {
+                    return html(str);
+                }
+                return str;
         }
-        return null;
     }   
     
     String mapToString(){
-        Query q = map.getQuery();
+        Query q = getMappings().getQuery();
         if (q == null) {
             return "";
         }
         
         if (q.isTemplate()) {
-            return map.getTemplateStringResult();
+            return getMappings().getTemplateStringResult();
         } 
-        else if (q.hasPragma(Pragma.TEMPLATE) && map.getGraph() != null) {
-            return TemplateFormat.create(map).toString();
+        else if (q.hasPragma(Pragma.TEMPLATE) && getMappings().getGraph() != null) {
+            return TemplateFormat.create(getMappings()).toString();
         } 
         else {
             if (type() == UNDEF_FORMAT) {
@@ -316,7 +381,7 @@ public class ResultFormat implements ResultFormatDef {
                 }
             }
 
-            return process(map);
+            return process(getMappings());
         }
     }
     
@@ -336,24 +401,23 @@ public class ResultFormat implements ResultFormatDef {
      */
     String process(Mappings map) {
         int mytype = type();
-        if (isGraphFormat(type) && map.getGraph() == null) {
+        if (isGraphFormat(mytype) && map.getGraph() == null) {
             // return Mappings as W3C RDF Graph Mappings
             map.setGraph(MappingsGraph.create(map).getGraph());
         }
-        else if (mytype == TEXT_FORMAT) {
+        else if (mytype == TEXT_FORMAT || mytype == HTML_FORMAT) {
             // Chose appropriate format
-            // Content-Type remains text/plain, do not setType()
+            // Content-Type remains the same, do not setType()
             mytype = defaultType(map);
         }
-//        else if (!isGraphFormat(mytype) && map.getGraph() != null) {
-//            // display graph but format is not graph
-//            // select approximate format
-//            switch (mytype) {
-//                case XML_FORMAT:  mytype = setType(RDF_XML_FORMAT); break;
-//                case JSON_FORMAT: mytype = setType(JSON_LD_FORMAT); break;
-//            }
-//        }
-        return processBasic(map, mytype);
+
+        String res = processBasic(map, mytype);
+        
+        if (type() == HTML_FORMAT) {
+            return html(res);
+        }
+        //System.out.println("result format: " + res);
+        return res;
     }
        
     
@@ -376,14 +440,7 @@ public class ResultFormat implements ResultFormatDef {
             case JSON_LD_FORMAT:
                 return JSONLDFormat.create(map).toString();
                             
-                
-            // map is query result
-            case XML_FORMAT:
-                XMLFormat ft = XMLFormat.create(map);
-                ft.setSelectAll(isSelectAll());
-                ft.setNbResult(nbResult);
-                return ft.toString();
-
+                          
             case JSON_FORMAT:
                 return JSONFormat.create(map).toString();
 
@@ -392,9 +449,19 @@ public class ResultFormat implements ResultFormatDef {
                 
             case TSV_FORMAT:
                 return TSVFormat.create(map).toString();
-
+                
+             // map is query result
+            case XML_FORMAT:
+            default:
+                XMLFormat ft = XMLFormat.create(map);
+                ft.setSelectAll(isSelectAll());
+                ft.setNbResult(nbResult);
+                return ft.toString();
         }
-        return null;
+    }
+    
+    String html(String str) {
+        return String.format("<pre>%s</pre>", str.replace("<", "&lt;"));
     }
 
     public void write(String name) throws IOException {
@@ -483,6 +550,90 @@ public class ResultFormat implements ResultFormatDef {
      */
     public void setSelectAll(boolean selectAll) {
         this.selectAll = selectAll;
+    }
+
+    /**
+     * @return the transformer
+     */
+    public boolean isTransformer() {
+        return transformer;
+    }
+
+    /**
+     * @param transformer the transformer to set
+     */
+    public void setTransformer(boolean transformer) {
+        this.transformer = transformer;
+    }
+
+    /**
+     * @return the transformation
+     */
+    public String getTransformation() {
+        return transformation;
+    }
+
+    /**
+     * @param transformation the transformation to set
+     */
+    public void setTransformation(String transformation) {
+        this.transformation = transformation;
+    }
+
+    /**
+     * @return the graph
+     */
+    public Graph getGraph() {
+        return graph;
+    }
+
+    /**
+     * @param graph the graph to set
+     */
+    public void setGraph(Graph graph) {
+        this.graph = graph;
+    }
+
+    /**
+     * @return the map
+     */
+    public Mappings getMappings() {
+        return map;
+    }
+
+    /**
+     * @param map the map to set
+     */
+    public void setMappings(Mappings map) {
+        this.map = map;
+    }
+
+    /**
+     * @return the bind
+     */
+    public Binding getBind() {
+        return bind;
+    }
+
+    /**
+     * @param bind the bind to set
+     */
+    public void setBind(Binding bind) {
+        this.bind = bind;
+    }
+
+    /**
+     * @return the context
+     */
+    public Context getContext() {
+        return context;
+    }
+
+    /**
+     * @param context the context to set
+     */
+    public void setContext(Context context) {
+        this.context = context;
     }
     
     

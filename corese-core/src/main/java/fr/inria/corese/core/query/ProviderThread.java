@@ -1,12 +1,11 @@
 package fr.inria.corese.core.query;
 
-import fr.inria.corese.core.util.URLServer;
-import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 

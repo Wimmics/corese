@@ -33,7 +33,6 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.load.Service;
-import fr.inria.corese.core.util.URLServer;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -45,6 +44,7 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
@@ -250,11 +250,11 @@ public class ProviderImpl implements Provider {
         // by default in parallel 
         boolean parallel = q.getOuterQuery().isParallel();
         Binding b = (Binding) eval.getEnvironment().getBind();
-        
+
         for (Node service : serverList) {
             URLServer url = new URLServer(service);
-            
             if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel(), service.getLabel())) {
+                logger.error(TermEval.SERVICE_MESS + " " + service.getLabel());
                 throw new SafetyException(TermEval.SERVICE_MESS, service.getLabel());
             }
             if (eval.isStop()) {
@@ -359,7 +359,8 @@ public class ProviderImpl implements Provider {
     Mappings send(CompileService compiler, URLServer serv, Query q, Mappings map, Environment env, int start, int limit, int timeout) throws EngineException {
         Query gq = q.getGlobalQuery();
         // use case: ldscript nested query
-        boolean debug = q.isRecDebug();       
+        boolean debug = q.isRecDebug();
+        debug = true;
         try {
 
             // oririnal ast

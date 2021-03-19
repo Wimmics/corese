@@ -1,6 +1,5 @@
 package fr.inria.corese.core.query;
 
-import fr.inria.corese.core.util.URLServer;
 import java.util.ArrayList;
 
 import fr.inria.corese.sparql.api.IDatatype;
@@ -20,6 +19,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.triple.parser.Processor;
+import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.List;
 
 public class CompileService {

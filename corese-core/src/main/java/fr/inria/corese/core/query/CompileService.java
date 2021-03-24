@@ -19,12 +19,14 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.triple.parser.Processor;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import java.util.HashMap;
 import java.util.List;
 
-public class CompileService {
-    public static final String VALUES = NSManager.KGRAM + "values";
-    public static final String FILTER = NSManager.KGRAM + "filter";
+public class CompileService implements URLParam {
+    public static final String KG_VALUES = NSManager.KGRAM + "values";
+    public static final String KG_FILTER = NSManager.KGRAM + "filter";
 
     Provider provider;
     List<List<Term>> termList;
@@ -51,10 +53,9 @@ public class CompileService {
      */
     public ASTQuery compile(URLServer serv, Query q, Mappings map, Environment env, int start, int limit) {
         ASTQuery ast = getAST(q);
-        complete(q, ast);
+        complete(serv, q, ast);
         Query out = q.getOuterQuery();
-        boolean isValues = isValues(out) || (!isFilter(out) && !provider.isSparql0(serv.getNode()));
-        
+        boolean isValues = isValues(serv, out) || (!isFilter(serv, out) && !provider.isSparql0(serv.getNode()));
         if (map == null || (map.size() == 1 && map.get(0).size() == 0)) {
             // lmap may contain one empty Mapping
             // use env because it may have bindings
@@ -70,26 +71,29 @@ public class CompileService {
         } 
     }
     
-    void complete(Query q, ASTQuery ast) {
-        ASTQuery gast = getAST(q.getOuterQuery());
-        if (gast.hasMetadata(Metadata.LIMIT)) {
-            int limit = gast.getLimit();
-            IDatatype dt = ast.getMetadata().getDatatypeValue(Metadata.LIMIT);
-            if (dt != null) {
-                limit = dt.intValue();
-            }
-            if (limit < ast.getLimit()) {
-                ast.setLimit(limit);
+    void complete(URLServer serv, Query q, ASTQuery ast) {
+        int myLimit = serv.intValue(LIMIT);
+        if (myLimit >= 0) {
+            ast.setLimit(myLimit);
+        } else {
+            ASTQuery gast = getAST(q.getOuterQuery());
+            if (gast.hasMetadata(Metadata.LIMIT)) {
+                int limit = gast.getLimit();
+                IDatatype dt = ast.getMetadata().getDatatypeValue(Metadata.LIMIT);
+                if (dt != null) {
+                    limit = dt.intValue();
+                }
+                ast.setLimit(Math.min(limit, ast.getLimit()));
             }
         }
     }
 
-    boolean isValues(Query q) {
-        return hasRecMetaData(q, Metadata.BINDING, VALUES);
+    boolean isValues(URLServer serv, Query q) {
+        return serv.hasParameter(BINDING, VALUES) || hasRecMetaData(q, Metadata.BINDING, KG_VALUES);
     }
 
-    boolean isFilter(Query q) {
-        return hasRecMetaData(q, Metadata.BINDING, FILTER);
+    boolean isFilter(URLServer serv, Query q) {
+        return serv.hasParameter(BINDING, FILTER) || hasRecMetaData(q, Metadata.BINDING, KG_FILTER);
     }
     
     boolean hasMetaData(Query q, int meta, String type) {
@@ -158,10 +162,12 @@ public class CompileService {
      */
     ASTQuery bindings(Query q, Mappings map, int start, int limit) {
         ASTQuery ast = (ASTQuery) q.getAST();
-        ArrayList<Variable> lvar = new ArrayList<Variable>();
-        ArrayList<Constant> lval;
+        ArrayList<Variable> lvar = new ArrayList<>();
+        //ArrayList<Constant> lval;
         Values values = Values.create();
-
+        HashMap<String, Boolean> mapBound = new HashMap<>();
+        
+        // determine list of in-scope variables in service
         for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
             String name = qv.getLabel();
             Variable var = ast.getSelectAllVar(name);
@@ -169,34 +175,65 @@ public class CompileService {
                 var = Variable.create(name);
             }
             lvar.add(var);
+            mapBound.put(name, false);
         }
 
-        values.setVariables(lvar);
+        // determine in-scope variables that are bound at last once in Mappings
+        for (Variable var : lvar) {
+            for (int j = start; j < map.size() && j < limit; j++) {
 
-        for (int j = start; j < map.size() && j < limit; j++) {
+                Mapping m = map.get(j);
+                // variables in-scope in service clause that may be bound
+                // by Mappings variable binding
+                Node val = m.getNodeValue(var.getLabel());
 
-            Mapping m = map.get(j);
-            boolean ok = false;
-            lval = new ArrayList<>();
-
-            for (Node qnode : q.getBody().getRecordInScopeNodesForService()) {
-                Node val = m.getNode(qnode);
-                
-                if (val != null && ! val.isBlank()) {
-                    IDatatype dt = (IDatatype) val.getValue();
-                    Constant cst = Constant.create(dt);
-                    lval.add(cst);
-                    ok = true;
-                } else {
-                    lval.add(null);
+                if (val != null && !val.isBlank()) {
+                    mapBound.put(var.getLabel(), true);
+                    break;
                 }
             }
+        }
+        
+        // remove unbound variables from lvar
+        for (int i = 0; i<lvar.size(); ) {
+            Variable var = lvar.get(i);
+            if (mapBound.get(var.getLabel())) {
+                i++;
+            }
+            else {
+                lvar.remove(i);
+            }
+        }
+        
+        if (!lvar.isEmpty()) {
+            for (int j = start; j < map.size() && j < limit; j++) {
+                Mapping m = map.get(j);
+                // list of values for one result
+                ArrayList<Constant> list = new ArrayList<>();
 
-            if (ok) {
-                values.addValues(lval);
+                boolean ok = false;
+                
+                for (Variable var : lvar) {
+                    Node val = m.getNodeValue(var.getLabel());
+
+                    if (val != null && !val.isBlank()) {
+                        IDatatype dt = (IDatatype) val.getValue();
+                        Constant cst = create(ast, dt);
+                        list.add(cst);
+                        ok = true;
+                    } else {
+                        // unbound variable -> undef
+                        list.add(null);
+                    }
+                }
+                if (ok) {
+                    // at least one variable is bound in this result
+                    values.addValues(list);
+                }
             }
         }
 
+       values.setVariables(lvar);
        return setValues(ast, values);
        //return success(values);
     }
@@ -281,7 +318,7 @@ public class CompileService {
         ASTQuery ast = (ASTQuery) q.getAST();
         Term filter = null;
         for (int j = start; j < map.size() && j < limit; j++) {
-            Term f = getFilter(q, map.get(j));
+            Term f = getFilter(q, ast, map.get(j));
 
             if (f != null) {                
                 if (filter == null) {
@@ -296,9 +333,8 @@ public class CompileService {
         //return (filter != null);
     }
     
-    Term getFilter(Query q, Mapping m) {
+    Term getFilter(Query q, ASTQuery ast, Mapping m) {
         ArrayList<Term> lt = new ArrayList<Term>();
-        ASTQuery ast = (ASTQuery) q.getAST();
 
         for (Node varNode : q.getBody().getRecordInScopeNodesForService()) {
             String varName = varNode.getLabel();
@@ -335,11 +371,22 @@ public class CompileService {
     Term filter(ASTQuery ast, Variable var, IDatatype dt) {
         if (dt.isBlank()) {
             return Term.function(Processor.ISBLANK, var);
-        } else if (dt.isURI() && dt.getLabel().contains(" ")) {
-            //ProviderImpl.logger.warn("URI with space: " + dt);
-            return Term.create(Term.SEQ, var, Constant.create(dt.getLabel().replace(" ", "%20")));
+        } else  {    
+            return Term.create(Term.SEQ, var, create(ast, dt));
         }
-        return Term.create(Term.SEQ, var, Constant.create(dt));
+    }
+    
+    Constant create(ASTQuery ast, IDatatype dt) {
+        if (dt.isURI()) {
+            if (dt.getLabel().contains(" ")) {
+                return Constant.create(dt.getLabel().replace(" ", "%20"));
+            } else {
+                return ast.createQNameURI(dt.getLabel());
+            }
+        }
+        else {
+            return Constant.create(dt);   
+        }
     }
     
     /**

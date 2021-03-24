@@ -672,7 +672,7 @@ public class QueryProcess extends QuerySolver {
                     b = Binding.create();
                     m.setBind(b);
                 }
-                b.setDebug(c.isDebug());
+                //b.setDebug(c.isDebug());
                 //share Context access level
                 b.setAccessLevel(c.getLevel());
                 if (c.getAccessRight() != null) {

@@ -44,6 +44,7 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.ArrayList;
 import java.util.Hashtable;
@@ -60,7 +61,7 @@ import javax.ws.rs.core.MediaType;
  * @author Olivier Corby, Edelweiss INRIA 2011
  *
  */
-public class ProviderImpl implements Provider {
+public class ProviderImpl implements Provider, URLParam {
 
     private static final String DB = "db:";
     private static final String SERVICE_ERROR = "Service error: ";
@@ -214,7 +215,8 @@ public class ProviderImpl implements Provider {
         Graph g = getGraph(eval.getProducer());
         // when servive variable is unbound, get service URL (list) from Environment or Mappings
         List<Node> serviceList = getServerList(exp, map, eval.getEnvironment());
-        boolean bslice = ! (map == null || slice <= 0  || skipBind); // || hasValues);
+        boolean bslice = ! (map == null || slice <= 0  || skipBind); 
+        // slice by default
         res = sliceSend(serviceList, g, compiler, serv, q, exp, (skipBind) ? null : map, eval, bslice, slice);
         restore(ast);
         return res;
@@ -265,6 +267,7 @@ public class ProviderImpl implements Provider {
             Mappings input = map;
             
             if (slice) {
+                // default behaviour when map != null
                 // select appropriate subset of distinct Mappings with service URI 
                 input = getMappings(q, exp, exp.getServiceNode(), service, map, eval.getEnvironment());
                 if (input.size() > 0) {
@@ -278,8 +281,10 @@ public class ProviderImpl implements Provider {
             Mappings sol = new Mappings();
             mapList.add(sol);
             
-            // draft: local slice
-            //int mySlice = url.intValue("slice");
+            // sparql?slice=20
+            length = url.intValue(SLICE, length);
+            // sparql?timeout=123
+            timeout = url.intValue(TIMEOUT, timeout);
             
             if (parallel) {
                 ProviderThread p = parallelProcess(q, url, exp, input, sol, eval, compiler, slice, length, timeout);
@@ -359,8 +364,7 @@ public class ProviderImpl implements Provider {
     Mappings send(CompileService compiler, URLServer serv, Query q, Mappings map, Environment env, int start, int limit, int timeout) throws EngineException {
         Query gq = q.getGlobalQuery();
         // use case: ldscript nested query
-        boolean debug = q.isRecDebug();
-        debug = true;
+        boolean debug = serv.hasParameter(MODE, DEBUG) || q.isRecDebug();
         try {
 
             // oririnal ast
@@ -593,6 +597,7 @@ public class ProviderImpl implements Provider {
             Binding b = (Binding) env.getBind();
             Service service = new Service(serv) ;
             service.setLevel(b.getAccessLevel());
+            service.setTimeout(timeout);
             Mappings map = service.query(q, ast, null);
             return map;
         } catch (LoadException ex) {
@@ -635,7 +640,8 @@ public class ProviderImpl implements Provider {
         URLConnection cc = post(meta, server, query, timeout, level);
         return cc.getInputStream();
     }
-
+    
+@Deprecated
     URLConnection post(Metadata meta, String server, String query, int timeout, Level level) throws IOException {
         URLServer url = new URLServer(server);
         String param = url.getParam();

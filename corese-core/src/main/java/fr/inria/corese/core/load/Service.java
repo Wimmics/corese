@@ -6,18 +6,22 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.concurrent.TimeUnit;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
+import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
@@ -35,11 +39,10 @@ import org.xml.sax.SAXException;
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  */
-public class Service {
+public class Service implements URLParam {
     static Logger logger = LoggerFactory.getLogger(Service.class);
 
-    public static final String QUERY = "query";
-    public static final String ACCESS = "access";
+    
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
     static final String ENCODING = "UTF-8";
     static final int REDIRECT = 303;
@@ -49,8 +52,10 @@ public class Service {
     private boolean post = true;
     private boolean showResult = false;
     private boolean trap = false;
+    private int timeout = 0;
     private URLServer url;
     private Access.Level level = Access.Level.DEFAULT;
+    private MediaType format;
     
     public Service() {
         clientBuilder = ClientBuilder.newBuilder();
@@ -108,7 +113,7 @@ public class Service {
                 ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
             }
             // DRAFT: for testing (modify ast ...)
-            String lim = getURL().getParameter("limit");
+            String lim = getURL().getParameter(LIMIT);
             if (lim != null) {
                 ast.setLimit(Integer.valueOf(lim));
             }
@@ -116,11 +121,16 @@ public class Service {
         if (getURL().isGET() || ast.getGlobalAST().hasMetadata(Metadata.GET)) {
             setPost(false);
         }
+        if (getURL().hasParameter(MODE, SHOW)) {
+            setShowResult(true);
+        }
         if (ast.getGlobalAST().isDebug()) {
             System.out.println(isPost()?"POST":"GET");
         }
         setTrap(ast.getGlobalAST().hasMetadata(Metadata.TRAP));
-        setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
+        if (! isShowResult()) {
+            setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
+        }
     }
 
     ASTQuery mapping(Query q, Mapping m) {
@@ -132,7 +142,16 @@ public class Service {
     }
 
     public String process(String query) {
-        return process(query, MIME_TYPE);
+        return process(query, getAccept());
+    }
+    
+    //   /sparql?format=json
+    String getAccept() {
+        String ft = getURL().getParameter(FORMAT);
+        if (ft == null) {
+            return MIME_TYPE;
+        }
+        return  ResultFormat.decode(ft);
     }
     
     public String process(String query, String mime) {
@@ -152,15 +171,33 @@ public class Service {
     // https://docs.oracle.com/javaee/7/api/index.html
     public String post(String url, String query, String mime) {
         if (isDebug) {
+            System.out.println("service post " + url);
             System.out.println(query);
         }
-        Client client = clientBuilder.build();
+        clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
+        Client client = clientBuilder.build();               
         WebTarget target = client.target(url);
         Form form = getForm();
         form.param(QUERY, query);
         try {
-            String res = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+            //String res = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
+            // request() return Invocation.Builder
+            Response resp = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+            String res = resp.readEntity(String.class);
+            
+            if (resp.getStatus() == REDIRECT) {
+                String myUrl = resp.getLocation().toString();
+                logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
+                if (myUrl.equals(url)) {
+                    throw new javax.ws.rs.RedirectionException(resp);
+                }
+                return post(myUrl, query, mime);
+            }
+            
+            
+            setFormat(resp.getMediaType());
             if (isDebug) {
+                System.out.println("service post result");
                 System.out.println(res);
             }
             return res;
@@ -170,7 +207,7 @@ public class Service {
             if (uri.equals(url)) {
                 throw ex;
             }
-            return post(uri,query, mime);
+            return post(uri, query, mime);
         }
     }
     
@@ -236,13 +273,18 @@ public class Service {
     }
         
     String getBasic(String url, String mime) {
+        clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build();
         WebTarget target = client.target(url);
         Response resp = target.request(mime).get();
-        
+        setFormat(resp.getMediaType());
+
         if (resp.getStatus() == REDIRECT) {
             String myUrl = resp.getLocation().toString();
             logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
+            if (myUrl.equals(url)) {
+                throw new javax.ws.rs.RedirectionException(resp);
+            }
             return getBasic(myUrl, mime);
         }
         
@@ -276,6 +318,28 @@ public class Service {
     }
 
     public Mappings parseMapping(String str, String encoding) throws LoadException {
+        if (getFormat() != null) {
+            
+            switch (getFormat().toString()) {
+                case ResultFormat.SPARQL_RESULTS_JSON:
+                    if (isShowResult()) {
+                        System.out.println("Service json result");
+                        System.out.println(str);
+                    }
+                    return parseJSONMapping(str);
+            }
+        }
+        
+        return parseXMLMapping(str, encoding);
+    }    
+    
+    public Mappings parseJSONMapping(String str) {
+        SPARQLJSONResult res = new SPARQLJSONResult(Graph.create());
+        Mappings map = res.parse(str);
+        return map;
+    }
+    
+    public Mappings parseXMLMapping(String str, String encoding) throws LoadException {
         SPARQLResult xml = SPARQLResult.create(Graph.create());
         xml.setTrapError(isTrap());
         xml.setShowResult(isShowResult());
@@ -285,11 +349,7 @@ public class Service {
                 System.out.println(map);
             }
             return map;
-        } catch (ParserConfigurationException ex) {
-            throw LoadException.create(ex);
-        } catch (SAXException ex) {
-            throw LoadException.create(ex);
-        } catch (IOException ex) {
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
             throw LoadException.create(ex);
         }
     }
@@ -369,6 +429,34 @@ public class Service {
    
     public void setURL(URLServer url) {
         this.url = url;
+    }
+
+    /**
+     * @return the format
+     */
+    public MediaType getFormat() {
+        return format;
+    }
+
+    /**
+     * @param format the format to set
+     */
+    public void setFormat(MediaType format) {
+        this.format = format;
+    }
+
+    /**
+     * @return the timeout
+     */
+    public int getTimeout() {
+        return timeout;
+    }
+
+    /**
+     * @param timeout the timeout to set
+     */
+    public void setTimeout(int timeout) {
+        this.timeout = timeout;
     }
     
 }

@@ -1,0 +1,11 @@
+#
+# Process federation definitions from /data/demo/fedprofile.ttl
+# Used in Profile.java
+#
+
+select (aggregate(distinct ?name) as ?list) 
+where {
+    ?x a st:Server ; 
+        st:service ?name ; 
+        st:content|st:shareContent ?ct 
+}

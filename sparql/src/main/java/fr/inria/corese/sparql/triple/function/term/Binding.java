@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.inria.corese.sparql.triple.function.term;
 
 import fr.inria.corese.sparql.api.IDatatype;

@@ -1,9 +1,6 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.kgram.api.core.Node;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,10 +8,9 @@ import java.util.List;
  *
  * @author corby
  */
-public class URLServer {
+public class URLServer implements URLParam {
     
-    public static final String MODE = "mode";
-    public static final String PROV = "provenance";
+
     
     // whole URL: http://corese.inria.fr/sparql?param=value
     private String url;
@@ -113,6 +109,14 @@ public class URLServer {
         catch (Exception ex) { return -1;}
     }
     
+    public int intValue(String name, int def) {
+        int value = intValue(name);
+        if (value == -1) {
+            return def;
+        }
+        return value;
+    }
+
     
     HashMapList hashmap(String param) {
         HashMapList<String> map = new HashMapList();

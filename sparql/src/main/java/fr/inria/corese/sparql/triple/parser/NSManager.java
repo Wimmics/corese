@@ -130,7 +130,7 @@ public class NSManager extends ASTObject {
     public static final String HASH = "#";
     static final String NL = System.getProperty("line.separator");
     static final char[] END_CHAR = {'#', '/', '?'}; //, ':'}; // may end an URI ...
-    static final String[] PB_CHAR = {"(", ")", "'", "\"", ","};
+    static final String[] PB_CHAR = {":", "#", "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
     static final String pchar = ":";
     int count = 0;
     static final NSManager nsm = create();
@@ -446,7 +446,7 @@ public class NSManager extends ASTObject {
 
     /**
      *
-     * @param skip: do not generate prefxi when prefix undefined
+     * @param skip: do not generate prefix when prefix undefined
      * @param display: display mode, generate prefixed named even with ' or ()
      */
     public String toPrefixURI(String nsname, boolean skip, boolean display) {
@@ -468,11 +468,6 @@ public class NSManager extends ASTObject {
                 return true;
             }
         }
-//        String name = strip(str);
-//        if (name != str && name.length()>0 && name.charAt(0) >= '0' && name.charAt(0) <= '9'){
-//            return true;
-//        }
-
         return false;
     }
 
@@ -488,7 +483,7 @@ public class NSManager extends ASTObject {
         return toPrefix(nsname, skip, false);
     }
 
-    public String toPrefix(String nsname, boolean skip, boolean xml) {
+    public String toPrefix(String nsname, boolean skip, boolean xml) {       
         String ns = namespace(nsname);
         if (ns == null || ns.equals("") || ns.equals(nsname)) {
             return nsname;
@@ -502,11 +497,15 @@ public class NSManager extends ASTObject {
             }
         }
         String str = p;
+        String name = nsname.substring(ns.length());
+        if (containsChar(name)) {
+            return nsname;
+        }
         if (!(xml && p.equals(""))) {
             str += pchar;
         }
         record(ns);
-        str += nsname.substring(ns.length());
+        str += name;
         return str;
     }
 

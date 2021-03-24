@@ -10,7 +10,6 @@ import java.util.Iterator;
 import java.util.List;
 import org.json.JSONArray;
 import org.json.JSONException;
-import org.json.JSONML;
 import org.json.JSONObject;
 import org.json.JSONPointer;
 import org.json.JSONPointerException;
@@ -252,6 +251,7 @@ public class CoreseJSON extends CoreseExtension {
                             arr.put(i, (JSONObject) value.getObject());
                             break;
                     }
+                    break;
 
                 default:
                     arr.put(i, value.stringValue());

@@ -5,12 +5,13 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Service;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 
 /**
  * Walker just after parsing to complete the AST.
  */
-public class ASTParser implements Walker {
+public class ASTParser implements Walker, URLParam {
     
     ASTQuery ast;
 
@@ -34,7 +35,7 @@ public class ASTParser implements Walker {
         Atom serv = exp.getServiceName();
         if (serv.isConstant()) {
             URLServer url = new URLServer(serv.getLabel());
-            if (url.hasParameter(URLServer.MODE, URLServer.PROV)) {
+            if (url.hasParameter(MODE, PROVENANCE)) {
                 ast.provenance();
             }
         }

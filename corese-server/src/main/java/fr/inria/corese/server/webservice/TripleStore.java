@@ -9,9 +9,14 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.shacl.Shacl;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 import java.util.Enumeration;
 import java.util.HashMap;
 import javax.servlet.http.HttpServletRequest;
@@ -24,7 +29,7 @@ import org.apache.logging.log4j.LogManager;
  * @author Olivier Corby, Wimmics INRIA I3S, 2015
  *
  */
-public class TripleStore {
+public class TripleStore implements URLParam {
 
     /**
      * @return the name
@@ -125,14 +130,7 @@ public class TripleStore {
             graph = (GraphStore) g;
          }
     }
-    
-//    int getMode(){
-//        return exec.getMode();
-//    }
-    
-//    void setMode(int m){
-//        exec.setMode(m);                              
-//    }
+   
     
     void setOWL(boolean b){
         owl = b;
@@ -140,9 +138,6 @@ public class TripleStore {
     
     void init(boolean b) {
         setProtect(b);
-//        if (b){
-//            exec.setMode(QueryProcess.PROTECT_SERVER_MODE);
-//        }
 
         if (rdfs) {
             logger.info("Endpoint successfully reset with RDFS entailments.");
@@ -179,8 +174,14 @@ public class TripleStore {
         ld.parse(path, src, Load.TURTLE_FORMAT);
     }
     
-    // SPARQL Endpoint
-               
+    /**
+     * Extended SPARQL Endpoint
+     * 
+     * SPARQL endpoint:    /sparql?query=
+     * Federated endpoint: /federate?query=
+     * Load and evaluate shape, execute query on shacl validation report
+     * SHACL endpoint:     /sparql?mode=shacl&uri=shape&query=select * where { ?sh sh:conforms ?b }
+     */
     Mappings query(HttpServletRequest request, String query, Dataset ds) throws EngineException {
         if (ds == null) {
             ds = new Dataset();
@@ -189,32 +190,110 @@ public class TripleStore {
         c.setService(getName());
         c.setUserQuery(true);
         c.setRemoteHost(request.getRemoteHost());
+        c.set(REQUEST, DatatypeMap.createObject(request));
         Profile.getEventManager().call(ds.getContext());
         QueryProcess exec = getQueryProcess();
         exec.setDebug(c.isDebug());
-        // prevent Binding debug true to prevent systematic filter tracing
-        c.setDebug(false);
         
         Mappings map;
-        if (isFederate(ds)) {
-            // federate sparql query with @federate uri
-            ASTQuery ast = federate(query, ds);
-            map = exec.query(ast, ds);
-        } else {
-            map = exec.query(query, ds);
+        try {
+            before(exec, query, ds);
+            if (isFederate(ds)) {
+                // federate sparql query with @federate uri
+                map = exec.query(federate(query, ds), ds);
+            } else if (isShacl(c)) {
+                map = shacl(query, ds);
+            } else {
+                map = exec.query(query, ds);
+            }
+            after(exec, query, ds);
+        } catch (LoadException ex) {
+            throw new EngineException(ex);
         }
-        
         return map;
     }
     
+    void before(QueryProcess exec, String query, Dataset ds) throws LoadException, EngineException {
+        if (isBefore(ds.getContext())) {
+            IDatatype dt = getBefore(ds.getContext());
+            QueryLoad ql = QueryLoad.create();
+            ql.setAccessRight(ds.getContext().getAccessRight());
+            String str = ql.readWE(dt.getLabel());
+            System.out.println("TS: before: " + str);
+            Mappings map = exec.query(str, ds);
+        }
+    }
+    
+    void after(QueryProcess exec, String query, Dataset ds) throws LoadException, EngineException {
+        if (isAfter(ds.getContext())) {
+            IDatatype dt = getAfter(ds.getContext());
+            QueryLoad ql = QueryLoad.create();
+            ql.setAccessRight(ds.getContext().getAccessRight());
+            String str = ql.readWE(dt.getLabel());
+            System.out.println("TS: after: " + str);
+            Mappings map = exec.query(str, ds);
+        }
+    }
+    
+    IDatatype getBefore(Context c) {
+        return c.get(URI).get(0);
+    }
+    
+    IDatatype getAfter(Context c) {
+        return c.get(URI).get(c.get(URI).size()-1);
+    }
+    
+    boolean isBefore(Context c) {
+        return c.hasValue(BEFORE) && hasValueList(c, URI);
+    }
+    
+    boolean isAfter(Context c) {
+        return c.hasValue(AFTER) && hasValueList(c, URI);
+    }
+    
+    boolean isShacl(Context c) {
+        return c.hasValue(SHACL) && hasValueList(c, URI);
+    }
+    
+    boolean hasValueList(Context c, String name) {
+        return c.hasValue(name) && c.get(name).isList() && c.get(name).size()>0;
+    }
+    
+    // federate?query=select where {}
     boolean isFederate(Dataset ds) {
         Context c = ds.getContext();
-        return (c.hasValue(SPARQLRestAPI.FEDERATE) || c.hasValue("federation")) && c.hasValue("uri");
+        return (c.hasValue(FEDERATE)) && 
+                ds.getUriList() != null && !ds.getUriList().isEmpty();
+    }
+    
+    /**
+     * sparql?mode=shacl&uri=shape&query=select * where { ?s sh:conforms ?b }
+     * Load shacl shape
+     * Evaluate shape
+     * Execute query on shacl validation report
+     */ 
+    Mappings shacl(String query, Dataset ds) throws EngineException {
+        Graph shacl = Graph.create();
+        Load ld = Load.create(shacl);
+        try {
+            for (IDatatype dt : ds.getContext().get(URI)) {
+                ld.parse(dt.getLabel());
+            }
+        } catch (LoadException ex) {
+            logger.error(ex);
+            throw new EngineException(ex) ;
+        }
+        Shacl sh = new Shacl(getGraph());
+        Graph res = sh.eval(shacl);
+        QueryProcess exec = QueryProcess.create(res);
+        exec.setDebug(ds.getContext().isDebug());
+        Mappings map = exec.query(query);
+        return map;
     }
     
     ASTQuery federate(String query, Dataset ds) throws EngineException {
         QueryProcess exec = getQueryProcess();
-        ASTQuery ast = exec.parse(query);
+        ASTQuery ast = exec.parse(query, ds);
         ast.setAnnotation(metadata(ast, ds));
         return ast;
     }
@@ -248,15 +327,9 @@ public class TripleStore {
         for (String name : request.getParameterMap().keySet()) {
             System.out.println("server TS: " + name + " " + request.getParameter(name));
         }
-        System.out.println("server TS: query " + request.getParameter("query"));
-        System.out.println("server TS: access " + request.getParameter("access"));
+        System.out.println("server TS: query " + request.getParameter(QUERY));
+        System.out.println("server TS: access " + request.getParameter(ACCESS));
     }
-    
-   
-
-//    Mappings query(String query) throws EngineException{
-//        return query(query, new Dataset());
-//    }
     
     Mappings query(HttpServletRequest request, String query) throws EngineException{
         return query(request, query, new Dataset());

@@ -33,23 +33,19 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.ResultFormatDef;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Map;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.ResponseBuilder;
-import org.apache.commons.lang.ArrayUtils;
-import org.apache.commons.lang.StringUtils;
 
 /**
  * KGRAM SPARQL endpoint exposed as a rest web service.
@@ -61,7 +57,7 @@ import org.apache.commons.lang.StringUtils;
  * @author Olivier Corby
  */
 @Path("sparql")
-public class SPARQLRestAPI implements ResultFormatDef {
+public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     private static final String ERROR_ENDPOINT = "Error while querying Corese SPARQL endpoint";
 
     private static final String headerAccept = "Access-Control-Allow-Origin";
@@ -84,16 +80,9 @@ public class SPARQLRestAPI implements ResultFormatDef {
     
     public static final String PROFILE_DEFAULT = "profile.ttl";
     public static final String DEFAULT = NSManager.STL + "default";
-    
-    static final String SPARQL = "sparql";
-    static final String FEDERATE = "federate";
-    private static final String URL = "url";
-    private static final String URI = "uri";
-    private static final String FORMAT = "format";
-    private static final String TRACE = "trace";
-    private static final String DEBUG = "debug";
-    private static final String OPER = "operation";
-    
+       
+    private static final String URL = "url";   
+    private static final String OPER = "operation";    
     
     static final int ERROR = 500;
 
@@ -1104,6 +1093,7 @@ public class SPARQLRestAPI implements ResultFormatDef {
     Dataset beforeParameter(Dataset ds, String oper, List<String> uri, List<String> param, List<String> mode) {
         if (oper != null) {
             ds.getContext().set(OPER, oper);
+            List<String> federation = new ArrayList<>();
             switch (oper) {
                 
                 case FEDERATE:
@@ -1113,11 +1103,13 @@ public class SPARQLRestAPI implements ResultFormatDef {
                     // From SPARQL endpoint (alternative) mode and uri are bound
                     // http://corese.inria.fr/sparql?mode=federate&uri=http://ns.inria.fr/federation/d2kab
                     mode = leverage(mode);
-                    uri  = leverage(uri);
+                    //uri  = leverage(uri);
                     // declare federate mode for TripleStore query()
                     mode.add(FEDERATE);
                     // federation URL defined in /webapp/data/demo/fedprofile.ttl
-                    uri.add(ds.getContext().get(URL).getLabel());
+                    //uri.add(ds.getContext().get(URL).getLabel());
+                    federation.add(ds.getContext().get(URL).getLabel());
+                    defineFederation(ds, federation);
                     break;
                     
                 case SPARQL:
@@ -1134,11 +1126,13 @@ public class SPARQLRestAPI implements ResultFormatDef {
                     if (FederateVisitor.getFederation(furl) != null) {
                         // federation is defined 
                         mode = leverage(mode);
-                        uri = leverage(uri);
+                        //uri = leverage(uri);
                         mode.add(FEDERATE);
                         mode.add(SPARQL);
                         // record the name of the federation
-                        uri.add(furl);
+                        //uri.add(furl);
+                        federation.add(furl);
+                        defineFederation(ds, federation);
                     }
                     break;
                     
@@ -1149,28 +1143,39 @@ public class SPARQLRestAPI implements ResultFormatDef {
         }
         
         if (uri!=null && !uri.isEmpty()) {
-            // list of URI given as parameter uri= or as name of federation
+            // list of URI given as parameter uri= 
             ds.getContext().set(URI, DatatypeMap.listResource(uri));
-            ds.setUriList(uri);
+            //ds.setUriList(uri);
         }
         
         if (param != null) {
-            System.out.println("URL param: " + param);
-            ds.setBinding(Binding.create());           
-            for (String elem : param) {
-                param(ds, elem);
+            for (String kw : param) {
+                mode(ds, PARAM, decode(kw));
             }
         }
         
         if (mode != null) {
             for (String kw : mode) {
-                mode(ds, kw);
+                mode(ds, MODE, decode(kw));
             }
         }
         
         beforeParameter(ds);
         
         return ds;
+    }
+    
+    void defineFederation(Dataset ds, List<String> federation) {
+        ds.setUriList(federation);
+        ds.getContext().set(FEDERATION, DatatypeMap.listResource(federation));
+    }
+    
+    String decode(String value) {
+        try {
+            return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
+        } catch (UnsupportedEncodingException ex) {
+            return value;
+        }
     }
           
     List<String> leverage(List<String> name) {
@@ -1183,11 +1188,11 @@ public class SPARQLRestAPI implements ResultFormatDef {
     void beforeParameter(Dataset ds) {
         IDatatype from = ds.getFromList();
         if (from.size() > 0) {
-            ds.getContext().set("default-graph-uri", from);
+            ds.getContext().set(DEFAULT_GRAPH, from);
         }
         IDatatype named = ds.getNamedList();
         if (named.size() > 0) {
-            ds.getContext().set("named-graph-uri", named);
+            ds.getContext().set(NAMED_GRAPH, named);
         }
     }
     
@@ -1216,17 +1221,19 @@ public class SPARQLRestAPI implements ResultFormatDef {
     /**
      * @param mode : debug ; trace
      */
-    void mode(Dataset ds, String mode) {
-        System.out.println("URL mode: " + mode);
-        ds.getContext().add("mode", mode);
-        switch (mode) {
-            case DEBUG:
-                ds.getContext().setDebug(true);
+    void mode(Dataset ds, String name, String mode) {
+        //System.out.println("URL mode: " + mode);
+        ds.getContext().add(name, mode);
+        if (name.equals(MODE)) {
+            switch (mode) {
+                case DEBUG:
+                    ds.getContext().setDebug(true);
                 // continue
-                
-            default:
-                ds.getContext().set(mode, true);
-                break;    
+
+                default:
+                    ds.getContext().set(mode, true);
+                    break;
+            }
         }
     }
 

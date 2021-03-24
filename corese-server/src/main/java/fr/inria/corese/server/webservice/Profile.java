@@ -29,6 +29,7 @@ import java.net.InetAddress;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.UnknownHostException;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import org.apache.logging.log4j.Logger;
@@ -342,6 +343,7 @@ public class Profile {
         initService(g);
         initServer(g);
         initFederation(g);
+        localFederation(g);
         defNamespace(g);
     }
     
@@ -443,6 +445,30 @@ public class Profile {
                 System.out.println("access: " + serv.getLabel());
                 Access.define(serv.getLabel(), true);
             }
+        }
+    }
+    
+    void localFederation(Graph g) throws IOException, EngineException {
+        String str = getResource("query/federationlocal.rq");
+        String local1 = "http://corese.inria.fr/local/federate";
+        String local2 = "http://localhost:8080/local/federate";
+        String local3 = "http://antipolis:8080/local/federate";
+        
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(str);
+        
+        for (Mapping m : map) {
+            IDatatype list = getValue(m, "?list");
+            ArrayList<String> alist = new ArrayList<>();
+            for (IDatatype dt : list) {
+                if (!dt.getLabel().contains("sparql")) {
+                    alist.add(String.format("%s/%s/sparql", getServer(), dt.getLabel()));
+                }
+            }
+            System.out.println("federation: " + local1 + " : " + alist);
+            FederateVisitor.defineFederation(local1, alist);           
+            FederateVisitor.defineFederation(local2, alist);           
+            FederateVisitor.defineFederation(local3, alist);           
         }
     }
     
@@ -585,7 +611,7 @@ public class Profile {
         return servers.get(name);
     }
     
-    
+ 
       /**
      * 
      * @param g

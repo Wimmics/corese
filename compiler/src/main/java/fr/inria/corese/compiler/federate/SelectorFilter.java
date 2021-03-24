@@ -7,16 +7,31 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 
 public class SelectorFilter {
+    static HashMap<String, Boolean> map;
+    static String[] ope = {"=", "regex", "contains", "strstarts"};
+    
     ASTQuery ast;
     ArrayList<BasicGraphPattern> res;
+    
+    static {
+        init();
+    }
     
     SelectorFilter(ASTQuery ast) {
         this.ast = ast;
         res = new ArrayList<>();
+    }
+    
+    static void init() {
+        map = new HashMap<>();
+        for (String ope : ope) {
+            map.put(ope, true);
+        }
     }
     
     /**
@@ -89,7 +104,8 @@ public class SelectorFilter {
     }
     
     boolean accept(Expression exp) {
-        return exp.getName().equals("=");
+        Boolean b = map.get(exp.getName());
+        return b!= null && b;
     }
     
     

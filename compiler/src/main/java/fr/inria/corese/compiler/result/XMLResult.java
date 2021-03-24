@@ -55,7 +55,7 @@ public class XMLResult {
     // create target Node
     Producer producer;
     // create query Node
-    	fr.inria.corese.compiler.parser.Compiler compiler;
+    	private fr.inria.corese.compiler.parser.Compiler compiler;
     HashMap<String, Integer> table;
     ArrayList<Node> varList;
     private static final int UNKNOWN = -1;
@@ -88,7 +88,7 @@ public class XMLResult {
         return new XMLResult(p);
     }
 
-    class VTable extends HashMap<String, Variable> {
+    public class VTable extends HashMap<String, Variable> {
 
         public Variable get(String name) {
             Variable var = super.get(name);
@@ -143,14 +143,14 @@ public class XMLResult {
     }
 
     public Collection<Node> getVariables() {
-        return compiler.getVariables();
+        return getCompiler().getVariables();
     }
 
-    void complete(Mappings map) {
+    public void complete(Mappings map) {
         try {
             ASTQuery ast = ASTQuery.create();
             ast.setBody(BasicGraphPattern.create());
-            for (Node n : varList) { //getVariables()) {
+            for (Node n : varList) { 
                 ast.setSelect(new Variable(n.getLabel()));
             }
             QuerySolver qs = QuerySolver.create();
@@ -165,8 +165,8 @@ public class XMLResult {
 
     public void init() {
         varList = new ArrayList<>();
-        compiler = new CompilerFacKgram().newInstance();
-        table = new HashMap<String, Integer>();
+        setCompiler(new CompilerFacKgram().newInstance());
+        table = new HashMap<>();
         table.put("result",  RESULT);
         table.put("binding", BINDING);
         table.put("uri",     URI);
@@ -214,6 +214,10 @@ public class XMLResult {
         Node n = producer.getNode(dt);
         return n;
     }
+    
+    public void defineVariable(Node var) {
+       varList.add(var);
+    }
 
     /**
      *
@@ -239,8 +243,8 @@ public class XMLResult {
         MyHandler(Mappings m) {
             maps = m;
             vtable = new VTable();
-            lvar = new ArrayList<Node>();
-            lval = new ArrayList<Node>();
+            lvar = new ArrayList<>();
+            lval = new ArrayList<>();
         }
 
         @Override
@@ -271,12 +275,9 @@ public class XMLResult {
         }
         
         Node getVariable(String var) {
-            return compiler.createNode(vtable.get(var));
+            return getCompiler().createNode(vtable.get(var));
         }
         
-        void defineVariable(Node var) {
-            varList.add(var);
-        }
 
         @Override
         public void startElement(String namespaceURI, String simpleName,
@@ -455,5 +456,19 @@ public class XMLResult {
      */
     public void setShowResult(boolean showResult) {
         this.showResult = showResult;
+    }
+
+    /**
+     * @return the compiler
+     */
+    public fr.inria.corese.compiler.parser.Compiler getCompiler() {
+        return compiler;
+    }
+
+    /**
+     * @param compiler the compiler to set
+     */
+    public void setCompiler(fr.inria.corese.compiler.parser.Compiler compiler) {
+        this.compiler = compiler;
     }
 }

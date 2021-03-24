@@ -558,7 +558,11 @@ public class QuerySolver implements SPARQLEngine {
     }
     
     public ASTQuery parse(String q) throws EngineException {
-        Transformer transformer = createTransformer(null);
+        return parse(q, (Dataset) null);
+    }
+    
+    public ASTQuery parse(String q, Dataset ds) throws EngineException {
+        Transformer transformer = createTransformer(ds);
         return transformer.parse(q);
     }
 

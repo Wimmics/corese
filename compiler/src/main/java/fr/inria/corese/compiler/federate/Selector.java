@@ -110,6 +110,7 @@ public class Selector {
         }
         Date d1 = new Date();
         ASTQuery aa = createSelector(list, false);
+        metadata(aa);
         Mappings map = exec.basicQuery(aa);
         
         for (Mapping m : map) {
@@ -136,6 +137,14 @@ public class Selector {
         }
         Date d2 = new Date();
         trace(map, d1, d2);
+    }
+    
+    void metadata(ASTQuery aa) {
+        if (ast.hasMetadata(Metadata.SHOW)) {
+            Metadata meta = new Metadata();
+            meta.add(Metadata.SHOW);
+            aa.setAnnotation(meta);
+        }
     }
           
     void process10(List<Constant> list) throws EngineException {

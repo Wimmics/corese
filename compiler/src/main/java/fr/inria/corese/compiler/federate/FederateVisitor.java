@@ -19,8 +19,10 @@ import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -45,7 +47,7 @@ import org.slf4j.Logger;
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */
-public class FederateVisitor implements QueryVisitor {
+public class FederateVisitor implements QueryVisitor, URLParam {
 
     private static Logger logger = LoggerFactory.getLogger(FederateVisitor.class);
     static final String UNDEF = "?undef_serv";
@@ -267,10 +269,16 @@ public class FederateVisitor implements QueryVisitor {
         return exist;
     }
     
-    
+    /**
+     * Rewrite query body with one service clause with federation URLs
+     */
     void sparql(ASTQuery ast) {
         Exp body = ast.getBody();
-        Service serv = Service.create(ast.getServiceList(), body);
+        List<Atom> list = ast.getServiceList();
+        if (ast.getContext() != null) {
+            list = tune(ast.getContext(), list);
+        }
+        Service serv = Service.create(list, body);
         ast.setBody(ast.bgp(serv));
         // include external values clause inside body
         prepare(ast);
@@ -280,7 +288,50 @@ public class FederateVisitor implements QueryVisitor {
         finish(ast);       
     }
     
+    /**
+     * Complete URL of SPARQL endpoints of federation with information from context
+     * For example: mode=share&mode=debug
+     */
+    List<Atom> tune(Context c, List<Atom> list) {
+        if (c.hasValue(MODE) && c.hasValue(SHARE)) {
+            List<Atom> alist = new ArrayList<>();
+            for (Atom at : list) {
+                String uri = tune(c, at.getConstant().getLongName());
+                alist.add(Constant.createResource(uri));
+            }
+            return alist;
+        }
+        return list;
+    }
     
+    /**
+     * Complete URI with information from context
+     */
+    String tune(Context ct, String uri) {
+        for (IDatatype mode : ct.get(MODE)) {
+            switch (mode.getLabel()) {
+                case DEBUG:
+                case TRACE:
+                    uri = complete(uri, MODE, mode.getLabel());                  
+            }
+        }
+        if (ct.hasValue(URI)) {
+            for (IDatatype dt : ct.get(URI)) {
+                uri=complete(uri, URI, dt.getLabel());
+            }
+        }
+        System.out.println("FedVis tune URL: " + uri);
+        return uri;
+    }
+    
+    String complete(String uri, String key, String val) {
+        if (uri.contains("?")) {
+            uri = String.format("%s&%s=%s", uri, key, val);
+        } else {
+            uri = String.format("%s?%s=%s", uri, key, val);
+        }
+        return uri;
+    }
 
     /**
      * Main rewrite function 

@@ -97,7 +97,7 @@ public class ResultFormat implements ResultFormatDef {
         defContent(TURTLE_TEXT,       TURTLE_FORMAT);
         defContent(TRIG,              TRIG_FORMAT);
         defContent(JSON_LD,           JSON_LD_FORMAT);
-        defContent(JSON,              JSON_FORMAT);
+        defContent(JSON,              JSON_LD_FORMAT);
         
         format.put(TRIG_TEXT, TRIG_FORMAT);
         format.put(NT_TEXT, TURTLE_FORMAT);
@@ -270,6 +270,11 @@ public class ResultFormat implements ResultFormatDef {
             return getFormat(DEFAULT_SELECT_FORMAT);
         }
         return ft;
+    }
+    
+    // json -> application/json
+    public static String decode(String ft) {
+        return getFormat(getFormat(ft));
     }
     
     static int getType(String ft) {

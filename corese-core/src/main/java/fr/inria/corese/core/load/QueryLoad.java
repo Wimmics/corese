@@ -16,6 +16,7 @@ import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.File;
@@ -24,7 +25,7 @@ import java.net.MalformedURLException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-public class QueryLoad {
+public class QueryLoad extends Load {
 
     private static Logger logger = LoggerFactory.getLogger(QueryLoad.class);
     static final String HTTP = "http://";
@@ -154,6 +155,7 @@ public class QueryLoad {
 
 
     public String readWE(String name) throws LoadException {
+        check(Access.Feature.READ_WRITE, name, TermEval.READ_MESS);
         String query = "", str = "";
         Reader fr;
         try {
@@ -313,4 +315,5 @@ public class QueryLoad {
         }
         
     }
+
 }

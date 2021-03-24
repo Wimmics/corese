@@ -242,8 +242,13 @@ function dt:list sh:pathmap(exp, focus, subject, node, xsd:boolean inv, url){
     sh:evalpath(focus, subject, node, exp, inv, url)
 }
 
-
-
+# TODO: check inv
+function dt:list sh:negativePath(focus, subject, s, exp, inv, url){
+    let (select ?s ?exp (aggregate(?o) as ?l) 
+         where  { values ?exp {undef} ?s ?p ?o filter (?p != ?exp) }){
+        return(?l)
+    }
+}
 
 
 function dt:list sh:pathProperty(focus, subject, node, p, xsd:boolean inv, url){

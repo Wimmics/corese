@@ -130,7 +130,8 @@ public class NSManager extends ASTObject {
     public static final String HASH = "#";
     static final String NL = System.getProperty("line.separator");
     static final char[] END_CHAR = {'#', '/', '?'}; //, ':'}; // may end an URI ...
-    static final String[] PB_CHAR = {":", "#", "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
+    static final String[] PB_CHAR_NAME = {":", "#", "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
+    static final String[] PB_CHAR_URI = {"(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
     static final String pchar = ":";
     int count = 0;
     static final NSManager nsm = create();
@@ -450,7 +451,7 @@ public class NSManager extends ASTObject {
      * @param display: display mode, generate prefixed named even with ' or ()
      */
     public String toPrefixURI(String nsname, boolean skip, boolean display) {
-        if (!display && containsChar(nsname)) {
+        if (!display && containsChar(nsname, PB_CHAR_URI)) {
             return uri(nsname);
         } else {
             String str = toPrefix(nsname, skip);
@@ -462,8 +463,8 @@ public class NSManager extends ASTObject {
         }
     }
 
-    boolean containsChar(String str) {
-        for (String s : PB_CHAR) {
+    boolean containsChar(String str, String [] pb) {
+        for (String s : pb) {
             if (str.contains(s)) {
                 return true;
             }
@@ -483,7 +484,7 @@ public class NSManager extends ASTObject {
         return toPrefix(nsname, skip, false);
     }
 
-    public String toPrefix(String nsname, boolean skip, boolean xml) {       
+    public String toPrefix(String nsname, boolean skip, boolean xml) {   
         String ns = namespace(nsname);
         if (ns == null || ns.equals("") || ns.equals(nsname)) {
             return nsname;
@@ -498,7 +499,7 @@ public class NSManager extends ASTObject {
         }
         String str = p;
         String name = nsname.substring(ns.length());
-        if (containsChar(name)) {
+        if (containsChar(name, PB_CHAR_NAME)) {
             return nsname;
         }
         if (!(xml && p.equals(""))) {

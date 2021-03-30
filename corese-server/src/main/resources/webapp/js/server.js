@@ -104,20 +104,28 @@ window.onpopstate = function (event) {
     loadContent();
 };
 
-//loading content of page whe refreshing or reloading page, load all contents
+// loading content of page whe refreshing or reloading page, load all contents
+// Home page webapp/demo_new.html has 3 place holders: navgator footerOfSite content
+// place holders are completed with 3 HTML files from webapp/html
 function loadContent() {
-    //0. load header and footer of page
+    // 0 load header and footer of page
     $('#navgator').load("/html/navigator.html");
     $('#footerOfSite').load("/html/footer.html");
 
-    //1 load home page content
+    // 1 load home page content when required and return
     if (location.pathname === '/demo_new.html' || location.pathname.trim() === '/') {
         $(content).load("/html/content.html");
         changeURL = true;
         return;
     }
+    else if (location.pathname === '/ldbrowser.html') {
+        $(content).load("/html/ldbrowser.html");
+        changeURL = true;
+        return;
+    }
 
-    //2 load template from server
+    // 2 execute requested service using trans(url) and insert content
+    // in the page following ajax protocol
     var url = location.pathname + location.search;
     var index = url.indexOf(srv);
     if (index !== -1) {

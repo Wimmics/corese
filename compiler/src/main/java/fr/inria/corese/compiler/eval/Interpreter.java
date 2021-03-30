@@ -217,13 +217,13 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         if (b.isDebug()) {
             System.out.println("eval: " + exp + " = " + dt);
         }
-        if (dt == null) {
-            // Evaluation error, may be overloaded by visitor event @error function 
-            DatatypeValue res = env.getVisitor().error(env.getEval(), exp, EMPTY);
-            if (res != null) {
-                return (IDatatype) res;
-            }
-        }
+//        if (dt == null) {
+//            // Evaluation error, may be overloaded by visitor event @error function 
+//            DatatypeValue res = env.getVisitor().error(env.getEval(), exp, EMPTY);
+//            if (res != null) {
+//                return (IDatatype) res;
+//            }
+//        }
         return dt;
     }
 

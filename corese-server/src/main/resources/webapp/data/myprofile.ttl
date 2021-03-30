@@ -2,9 +2,20 @@
 # Used defined profile.ttl for user applications
 #
 
+st:access st:namespace 
+<http://localhost:8080/>, 
+<http://antipolis:8080/>
+.
+
+
+
 [] owl:imports 
+<demo/halprofile.ttl>, 
 <demo/d2kabprofile.ttl>, 
 <demo/ai4euprofile.ttl>, 
-<demo/ldvizprofile.ttl>
+<demo/ldvizprofile.ttl>,
+<demo/fedprofile.ttl>
 .
+
+
 

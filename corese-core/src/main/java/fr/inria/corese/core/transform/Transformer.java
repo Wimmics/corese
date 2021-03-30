@@ -715,9 +715,10 @@ public class Transformer implements TransformProcessor {
                 context.set(STL_START, (String) null);
             }
             
-            if (isDebug) {
-                System.out.println("transformer start:");
+            if (isDebug) { //(getTransformation().contains("turtlehtml")) {
+                System.out.println("transformer start: " + getTransformation());
                 System.out.println(qq.getAST()); 
+                System.out.println("graph size: "+ getGraph().size());
             }
             
             Mappings map = exec.query(qq, m);

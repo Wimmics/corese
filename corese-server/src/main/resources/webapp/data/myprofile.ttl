@@ -10,6 +10,7 @@ st:access st:namespace
 
 
 [] owl:imports 
+<demo/demoprofile.ttl>, 
 <demo/halprofile.ttl>, 
 <demo/d2kabprofile.ttl>, 
 <demo/ai4euprofile.ttl>, 

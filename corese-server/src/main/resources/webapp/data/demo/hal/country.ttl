@@ -1,0 +1,87 @@
+@prefix db:  <http://fr.dbpedia.org/resource/>
+@prefix dbo: <http://fr.dbpedia.org/ontology/>
+
+dbo:member rdfs:subPropertyOf dbo:include .
+dbo:include a owl:TransitiveProperty .
+
+db:All dbo:include
+db:Europe_continentale, db:Amérique, db:Asie, db:Asie_centrale, db:Afrique_du_Nord, db:Afrique
+.
+
+db:Europe_continentale dbo:include db:Europe, db:Europe_Est .
+
+db:Europe dbo:member 
+db:Andorre, 
+db:France, db:Italie, db:Espagne, db:Grèce, db:Malte, db:Chypre, db:Saint-Marin, db:Vatican, db:Malte, db:Portugal, db:Monaco, 
+db:Allemagne, db:Royaume-Uni, db:Belgique, db:Autriche, 
+db:République_tchèque, db:Slovaquie, 
+db:Hongrie, db:Bulgarie, db:Roumanie, db:Slovénie, db:Croatie, db:Serbie, db:Albanie, db:Kosovo, 
+db:Serbie-et-Monténégro, db:Monténégro, db:Bosnie-Herzégovine, db:Macédoine, db:Moldavie,
+db:Luxembourg, db:Liechtenstein, db:Pays-Bas, db:Lituanie, db:Lettonie, db:Estonie, db:Pologne, 
+db:Suisse, db:Suède, db:Norvège, db:Finlande, db:Danemark, db:Islande, db:Irlande
+.
+
+
+db:Europe_Est dbo:member 
+db:Russie, db:Ukraine,  db:Arménie, db:Biélorussie
+.
+
+db:Amérique dbo:include 
+db:Amérique_du_Nord, db:Amérique_centrale, db:Amérique_du_Sud 
+.
+
+db:Amérique_du_Nord dbo:member
+db:États-Unis, db:Canada, db:Mexique.
+
+
+db:Amérique_centrale dbo:member
+db:Cuba, db:Jamaïque, db:Honduras, db:Nicaragua, db:Panama, db:Guatemala, db:Belize, db:Salvador, db:Costa_Rica
+.
+
+
+db:Amérique_du_Sud dbo:member
+db:Brésil, db:Venezuela, db:Argentine, db:Chili, 
+<http://fr.dbpedia.org/resource/Équateur_(pays)>, 
+db:Guyana, db:Uruguay, db:Paraguay, db:Colombie, db:Bolivie, db:Pérou, db:Suriname
+.
+
+db:Asie dbo:member
+db:Chine, db:Cambodge, db:Japon, db:Corée_du_Nord, db:Corée_du_Sud, db:Thaïlande, db:Taïwan, db:Inde, db:Népal, db:Bhoutan, db:Mongolie,
+db:Bengladesh, db:Birmanie, db:Indonésie, db:Philippines, db:Laos, db:Malaisie, db:Laos, db:Viêt_Nam, db:Singapour, 
+db:Australie, db:Nouvelle-Zélande, db:Maldives, 
+db:Papouasie-Nouvelle-Guinée, db:Sri_Lanka, db:Timor_oriental
+.
+
+db:Asie_centrale dbo:member
+db:Iran, db:Afghanistan, db:Pakistan, db:Ouzbékistan, db:Kazakhstan, db:Turkménistan, db:Kirghizistan, db:Tadjikistan
+.
+
+
+db:Moyen-Orient dbo:member
+db:Israël, db:Palestine,  db:Jordanie, db:Liban, db:Syrie,
+db:Irak, db:Turquie, db:Géorgie, db:Azerbaïdjan, db:Iran, db:Arabie_saoudite, 
+db:Koweït, db:Yémen, db:Emirats_arabes-unis, 
+db:Dubaï, db:Qatar, db:Oman, db:Bahreïn, db:Brunei
+.
+
+db:Afrique dbo:include 
+db:Afrique_du_Nord, db:Afrique_continentale 
+.
+
+
+db:Afrique_du_Nord dbo:member
+db:Maroc, db:Algérie, db:Tunisie, db:Libye, db:Égypte
+.
+
+
+db:Afrique_continentale dbo:member
+db:Afrique_du_Sud, db:Angola, 
+db:Bénin, db:Botswana, db:Burkina_Faso, db:Burundi,  
+db:Cameroun, db:Cap-Vert, db:République_centrafricaine, db:Comores, db:Congo, db:République_démocratique_du_Congo,
+<http://fr.dbpedia.org/resource/Côte_d'Ivoire>,
+db:Djibouti, db:Érythrée, db:Éthiopie,  db:Gabon, db:Gambie, db:Ghana, db:Guinée, db:Guinée-Bissau, db:Guinée_équatoriale, 
+db:Kenya, db:Lesotho, db:Liberia, db:Madagascar, db:Malawi, db:Maurice, db:Mauritanie, db:Mali,db:Mozambique, db:Namibie, db:Niger, db:Nigeria, 
+db:Ouganda, db:Rwanda, db:Sao_Tomé-et-Principe, 
+db:Sénégal,  db:Seychelles, db:Sierra_Leone, db:Somalie, db:Soudan, db:Swaziland, db:Tchad, db:Togo, 
+db:Tanzanie, db:Zambie, db:Zimbabwe
+.

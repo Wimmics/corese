@@ -19,6 +19,7 @@ import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import java.util.Enumeration;
 import java.util.HashMap;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
@@ -62,11 +63,10 @@ public class TripleStore implements URLParam {
     static void init() {
         metaMap = new HashMap<>();
         metaMap.put(SPARQLRestAPI.SPARQL, Metadata.SPARQL);
-        metaMap.put("trace", Metadata.TRACE);
+        metaMap.put(TRACE, Metadata.TRACE);
+        metaMap.put(PROVENANCE, Metadata.VARIABLE);
         metaMap.put("index", Metadata.INDEX);
         metaMap.put("move", Metadata.MOVE);
-        metaMap.put("variable", Metadata.VARIABLE);
-        metaMap.put("provenance", Metadata.VARIABLE);
         metaMap.put("count", Metadata.SERVER);
     }
 
@@ -183,6 +183,9 @@ public class TripleStore implements URLParam {
      * SHACL endpoint:     /sparql?mode=shacl&uri=shape&query=select * where { ?sh sh:conforms ?b }
      */
     Mappings query(HttpServletRequest request, String query, Dataset ds) throws EngineException {
+        if (ds.getCreateContext().hasValue(TRACE)) {
+            trace(request);
+        }
         if (ds == null) {
             ds = new Dataset();
         }
@@ -191,6 +194,11 @@ public class TripleStore implements URLParam {
         c.setUserQuery(true);
         c.setRemoteHost(request.getRemoteHost());
         c.set(REQUEST, DatatypeMap.createObject(request));
+        String platform = getCookie(request, PLATFORM);
+        if (platform != null) {
+            // calling platform
+            c.set(PLATFORM, platform);
+        }
         Profile.getEventManager().call(ds.getContext());
         QueryProcess exec = getQueryProcess();
         exec.setDebug(c.isDebug());
@@ -218,7 +226,7 @@ public class TripleStore implements URLParam {
             IDatatype dt = getBefore(ds.getContext());
             QueryLoad ql = QueryLoad.create();
             ql.setAccessRight(ds.getContext().getAccessRight());
-            String str = ql.readWE(dt.getLabel());
+            String str = ql.readWithAccess(dt.getLabel());
             System.out.println("TS: before: " + str);
             Mappings map = exec.query(str, ds);
         }
@@ -229,11 +237,12 @@ public class TripleStore implements URLParam {
             IDatatype dt = getAfter(ds.getContext());
             QueryLoad ql = QueryLoad.create();
             ql.setAccessRight(ds.getContext().getAccessRight());
-            String str = ql.readWE(dt.getLabel());
+            String str = ql.readWithAccess(dt.getLabel());
             System.out.println("TS: after: " + str);
             Mappings map = exec.query(str, ds);
         }
     }
+    
     
     IDatatype getBefore(Context c) {
         return c.get(URI).get(0);
@@ -318,17 +327,35 @@ public class TripleStore implements URLParam {
         return meta;
     }
     
+    
+    
+    String getCookie(HttpServletRequest req, String name) {
+        if (req.getCookies() == null) {
+            return null;
+        }
+        for (Cookie cook : req.getCookies()) {
+            if (cook.getName().equals(name)) {
+                return cook.getValue();
+            }
+        }
+        return null;
+    }
+    
     void trace(HttpServletRequest request) {
-        Enumeration<String> en = request.getParameterNames();
-        while (en.hasMoreElements()) {
-            String name = en.nextElement();
-            System.out.println("param: " + name + " " + request.getParameter(name));
+        System.out.println("Endpoint HTTP Request");
+        if (request.getCookies() != null) {
+            for (Cookie cook : request.getCookies()) {
+                System.out.println("cookie: " + cook.getName() + " " + cook.getValue()); // + " " + cook.getPath());
+            }
+        }
+        Enumeration<String> enh =  request.getHeaderNames();
+        while (enh.hasMoreElements()) {
+            String name = enh.nextElement();
+            System.out.println("header: " + request.getHeader(name));
         }
         for (String name : request.getParameterMap().keySet()) {
-            System.out.println("server TS: " + name + " " + request.getParameter(name));
+            System.out.println("param: " + name + " " + request.getParameter(name));
         }
-        System.out.println("server TS: query " + request.getParameter(QUERY));
-        System.out.println("server TS: access " + request.getParameter(ACCESS));
     }
     
     Mappings query(HttpServletRequest request, String query) throws EngineException{

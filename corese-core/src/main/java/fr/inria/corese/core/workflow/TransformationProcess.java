@@ -56,6 +56,10 @@ public class TransformationProcess extends  WorkflowProcess {
             return data;
         }
         Transformer t = Transformer.create(data.getGraph(), getPath());
+        t.setDebug(isDebug());
+        if (isDebug()) {
+            System.out.println("Transformer graph size: " + data.getGraph().size());
+        }
         setTransfomer(t);
         init(t, data, getContext());
         Data res = new Data(data.getGraph());

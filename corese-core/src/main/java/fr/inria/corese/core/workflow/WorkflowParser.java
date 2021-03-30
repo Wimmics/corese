@@ -532,22 +532,25 @@ public class WorkflowParser {
       * Special case: may get input from Context     
       */
     ShapeWorkflow datashape(IDatatype dt, boolean shex) throws SafetyException {
-        IDatatype dtest  = getValue(TEST_VALUE, dt);
-        boolean test  = (dtest == null) ? false : dtest.booleanValue();
-        
-        String uri     = getParam(dt, URI, LOAD_PARAM, true, true);
-        String shape   = getParam(dt, SHAPE, MODE_PARAM, true, true);
-        String result  = getParam(dt, PATH, PATH);
-        String sformat  = getStringParam(FORMAT_PARAM);
-        boolean isText = (sformat != null) ;
-        int format = (isText) ?  getFormat(sformat) : Load.UNDEF_FORMAT ;
-        
+        IDatatype dtest = getValue(TEST_VALUE, dt);
+        boolean test = (dtest == null) ? false : dtest.booleanValue();
+        // format parameter => rdf and shacl input as text (otherwise as URL)
+        String sformat = getStringParam(FORMAT_PARAM);
+        boolean isURL = (sformat == null);
+        // rdf
+        String rdf = getParam(dt, URI, LOAD_PARAM, isURL, isURL);
+        // shacl
+        String shacl = getParam(dt, SHAPE, MODE_PARAM, isURL, isURL);
+        String result = getParam(dt, PATH, PATH);
+
+        int format = (isURL) ? Load.UNDEF_FORMAT : getFormat(sformat) ;
+
         ShapeWorkflow ap = null;
         ap = new ShapeWorkflow().setShex(shex);
         if (shex) {
             ap.setProcessor(getProcessor());
         }
-        ap.create(shape, uri, result, isText, format, test, false);
+        ap.create(shacl, rdf, result, !isURL, format, test, false);
         return ap;
     }
     
@@ -625,6 +628,7 @@ public class WorkflowParser {
         return value;
     }
     
+    // TODO: fix it 
     void check(String value) throws SafetyException {
         if (value != null) {
             if (isServerMode() && NSManager.isFile(value) && Access.isActive()) {

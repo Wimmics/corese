@@ -50,7 +50,7 @@ public class Eval implements ExpType, Plugin {
 
     // true = new processing of named graph 
     public static boolean NAMED_GRAPH_DEFAULT = true;
-    private static Logger logger = LoggerFactory.getLogger(Eval.class);
+    static Logger logger = LoggerFactory.getLogger(Eval.class);
 
     static final int STOP = -2;
     public static int count = 0;
@@ -1401,27 +1401,41 @@ public class Eval implements ExpType, Plugin {
      * exp a Join, Minus, Optional, Union
      */
     Exp prepareRest(Exp exp, MappingSet set1) {
+        Mappings map = prepareMappings(exp, set1);
+        return getRest(exp, set1, map);
+    }
+    
+    Exp getRest(Exp exp, MappingSet set1, Mappings map) {
+        return (map == null) ? exp.rest(): setMappings(exp, set1, map);
+    }
+    
+    Exp setMappings(Exp exp, MappingSet set1, Mappings map) {
+        Exp rest = exp.rest();
+        if (exp.isJoin() || isAndJoin(rest) || isFederate(rest)) {
+            // service clause in rest may take Mappings into account
+            set1.setJoinMappings(map);
+        } else {
+            // inject Mappings in copy of rest as a values clause            
+            rest = complete(rest, map);
+        }
+        return rest;
+    }
+    
+    Mappings prepareMappings(Exp exp, MappingSet set1) {
         Exp rest = exp.rest();
         // in-scope variables in rest
         // except those that are only in right arg of an optional in rest
-        List<Node> nodeListInScope = rest.getRecordInScopeNodes();
+        List<Node> nodeListInScope = rest.getRecordInScopeNodesWithoutBind();
         if (!nodeListInScope.isEmpty() && set1.hasIntersection(nodeListInScope)) {
             // generate values when at least one variable in-subscope is always 
             // bound in map1, otherwise it would generate duplicates in map2
             // or impose irrelevant bindings 
             // map = select distinct map1 wrt exp inscope nodes 
             Mappings map = set1.getMappings().distinct(nodeListInScope);
-            //Mappings map = set1.getMappings();                      
             map.setNodeList(nodeListInScope);
-            if (exp.isJoin() || isAndJoin(rest) || isFederate(rest)) {
-                // service clause in rest may take Mappings into account
-                set1.setJoinMappings(map);
-            } else {
-                // inject Mappings in copy of rest as a values clause            
-                rest = complete(rest, map);
-            }
+            return map;           
         }
-        return rest;
+        return null;
     }
     
     

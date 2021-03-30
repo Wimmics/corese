@@ -1068,59 +1068,29 @@ public class Memory extends PointerObject implements Environment {
         return ExprType.UNBOUND;
     }
     
-     
-    public Node getNode2(Expr var) {
-
-        switch (var.subtype()) {
-            case ExprType.LOCAL:
-                return bind.get(var);
-
-            case ExprType.UNDEF:
-                return null;
-
-            case ExprType.GLOBAL:
-            default:
-                int index = var.getIndex();
-                if (index == ExprType.UNBOUND) {
-                    index = getIndex(var.getLabel());
-                    var.setIndex(index);
-                    if (index == ExprType.UNBOUND) {
-                        return null;
-                    }
-                }
-                return getNode(index);
-        }
-
-    }
-
     @Override
     public Node getNode(Expr var) {
         int index = var.getIndex();
         switch (var.subtype()) {
-            case ExprType.LOCAL:
+            // ldscript variable
+            // normally we do not get here because ldscript variable is 
+            // instance of VariableLocal and eval() call Binding directly
+            // however, it is not a bug, it is just less efficient to be here
+            case ExprType.LOCAL: 
                 return get(var);
 
             case ExprType.UNDEF:
                 if (debug) {
                     System.out.println("Memory UNDEF: Unbound variable: " + var);
-                    if (var.getLabel().equals("?value")) {
-                        System.out.println(query.getAST());
-                        System.out.println(this);
-                    }
                 }
                 return null;
-
+            // sparql bgp
             case ExprType.GLOBAL:
                 index = getIndex(var.getLabel());
                 var.setIndex(index);
                 if (index == ExprType.UNBOUND) {
                     if (debug) {
                         System.out.println("Memory GLOBAL: Unbound variable: " + var);
-//                        if (!var.getLabel().equals("?value") && !var.getLabel().equals("?m")) {
-//                            System.out.println(query);
-//                            System.out.println(query.getAST());
-//                            System.out.println(this);
-//                        }
                     }
                     return null;
                 }
@@ -1287,34 +1257,10 @@ public class Memory extends PointerObject implements Environment {
     }
 
     @Override
-    public void set(Expr exp, Expr var, Node value) {
-        bind.set(exp, var, value);
-    }
-
-    @Override
-    public void bind(Expr exp, Expr var, Node value) {
-        bind.bind(exp, var, value);
-    }
-
-    @Override
-    public void set(Expr exp, List<Expr> lvar, Node[] value) {
-        bind.set(exp, lvar, value);
-    }
-
-    @Override
     public Node get(Expr var) {
         return bind.get(var);
     }
 
-    @Override
-    public void unset(Expr exp, Expr var, Node value) {
-        bind.unset(exp, var, value);
-    }
-
-    @Override
-    public void unset(Expr exp, List<Expr> lvar) {
-        bind.unset(exp, lvar);
-    }
 
     @Override
     public void setBind(Binder b) {

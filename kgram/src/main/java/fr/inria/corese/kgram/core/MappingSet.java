@@ -91,9 +91,17 @@ public class MappingSet {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append("first: ").append(set1.getUnion()).append(NL);
-        sb.append("rest:  ").append(set2.getUnion()).append(NL);
-        sb.append("list:  ").append(isBound).append(" ").append(varList);
+        sb.append("inter: ").append(getIntersection()).append(NL);
+        sb.append("union: ").append(getUnion()).append(NL);
+        if (set1 != null) {
+            sb.append("first var: ").append(set1.getUnion()).append(NL);
+        }
+        if (set2 != null) {
+            sb.append("rest var:  ").append(set2.getUnion()).append(NL);
+        }
+        if (varList!=null) {
+            sb.append("common var:  ").append(varList).append(" always bound: ").append(isBound);
+        }
         return sb.toString();
     }
     

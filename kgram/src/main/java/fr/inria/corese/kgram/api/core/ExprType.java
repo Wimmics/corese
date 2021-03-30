@@ -4,7 +4,9 @@ public interface ExprType {
     
 	public static int UNDEF   = -1;
         public static int UNBOUND = -2;
+        // LDScript variable
         public static int LOCAL   = -3;	
+        // SPARQL BGP variable
         public static int GLOBAL  = -4;	
 
 	// abstract type

@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.core;
 
+import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
@@ -21,6 +22,7 @@ import org.slf4j.LoggerFactory;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
+@Deprecated
 public class Bind implements Binder {
 
     static final String NL = System.getProperty("line.separator");
@@ -299,6 +301,11 @@ public class Bind implements Binder {
 
     @Override
     public ProcessVisitor getVisitor() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public DatatypeValue getGlobalVariable(String var) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

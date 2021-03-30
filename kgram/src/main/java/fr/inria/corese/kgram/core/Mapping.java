@@ -1003,7 +1003,7 @@ public class Mapping
     @Override
     public Node getNode(Expr var) {
         switch (var.subtype()) {
-            case ExprType.LOCAL: {
+            case ExprType.LOCAL: {               
                 Node node = get(var);
                 if (debug && node == null) {
                     System.out.println("Mapping: Unbound variable: " + var);
@@ -1293,40 +1293,17 @@ public class Mapping
     }
     
     Binder getCreateBind(){
-        if (bind == null) {
-            bind = Bind.create();
-        }
         return bind;
     }
 
     @Override
-    public void bind(Expr exp, Expr var, Node value) {
-        getCreateBind().bind(exp, var, value);
-    }
-
-    @Override
-    public void set(Expr exp, Expr var, Node value) {
-        getCreateBind().set(exp, var, value);
-    }
-
-    @Override
-    public void set(Expr exp, List<Expr> lvar, Node[] value) {
-        getCreateBind().set(exp, lvar, value);
-    }
-
-    @Override
     public Node get(Expr var) {
-        return getCreateBind().get(var);
-    }
-
-    @Override
-    public void unset(Expr exp, Expr var, Node value) {
-        getCreateBind().unset(exp, var, value);
-    }
-
-    @Override
-    public void unset(Expr exp, List<Expr> lvar) {
-        getCreateBind().unset(exp, lvar);
+        // return getCreateBind().get(var);
+        if (getBind() == null) {
+            Eval.logger.error("Mapping unbound ldscript variable: " + var);
+            return null;
+        }
+        return getBind().get(var);
     }
 
     @Override

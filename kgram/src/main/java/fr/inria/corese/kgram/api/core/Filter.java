@@ -44,7 +44,7 @@ public interface Filter {
 
 	boolean isFunctional();
 
-
+        boolean isRecExist();
 
 	
 }

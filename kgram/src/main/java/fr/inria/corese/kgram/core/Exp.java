@@ -132,6 +132,7 @@ public class Exp extends PointerObject
     Regex regex;
     Exp next;
     private Exp postpone;
+    private List<Exp> inscopeFilter;
     private Exp path;
     private Exp bind;
     private Exp values;
@@ -1600,6 +1601,10 @@ public class Exp extends PointerObject
     }
    
     public List<Node> getRecordInScopeNodesForService() {
+        return getRecordInScopeNodesWithoutBind();
+    }
+    
+    public List<Node> getRecordInScopeNodesWithoutBind() {
         return getRecordInScopeNodes(false);
     }
 
@@ -2170,6 +2175,47 @@ public class Exp extends PointerObject
             setPostpone(p);
             setPostpone(true);
        }
+       inscopeFilter();
+    }
+    
+    /**
+     * BGP1 optional { filter(exp) BGP2 }
+     * var(exp) memberOf inscope(BGP1, BGP2)
+     * TODO: 
+     * for safety we skip bind because bind may fail 
+     * and variable may not be bound whereas we need them to be bound
+     * to test in-scope filter
+     * FIX: we could check at runtime whether variables are bound in Mapping
+     * in BGP1 before testing filter. see EvalOptional
+     */
+    void inscopeFilter() {
+        List<Node> l1 = first().getRecordInScopeNodesWithoutBind();
+        List<Node> l2 = rest().getRecordInScopeNodesWithoutBind();
+        
+        for (Exp exp : rest()) { 
+            if (exp.isFilter() && ! exp.getFilter().isRecExist()) {
+                List<String> lvar = exp.getFilter().getVariables();
+                if (bind(l1, lvar) && bind(l2, lvar)) {
+                    getCreateInscopeFilter().add(exp);
+                }
+            }
+        }
+    }
+    
+    boolean bind(List<Node> lnode, List<String> lvar) {
+        for (String var : lvar) {
+            boolean suc = false;
+            for (Node node : lnode) {
+                if (node.getLabel().equals(var)) {
+                    suc = true;
+                    break;
+                }
+            }
+            if (! suc) {
+                return false;
+            }
+        }
+        return true;
     }
     
     /**
@@ -2274,5 +2320,27 @@ public class Exp extends PointerObject
         }
         return null;
     }
+
+    /**
+     * @return the inscopeFilter
+     */
+    public List<Exp> getInscopeFilter() {
+        return inscopeFilter;
+    }
+
+    /**
+     * @param inscopeFilter the inscopeFilter to set
+     */
+    public void setInscopeFilter(List<Exp> inscopeFilter) {
+        this.inscopeFilter = inscopeFilter;
+    }
+    
+    public List<Exp> getCreateInscopeFilter() {
+        if (getInscopeFilter() == null) {
+            setInscopeFilter(new ArrayList<>());
+        }
+        return getInscopeFilter();
+    }
+    
     
 }

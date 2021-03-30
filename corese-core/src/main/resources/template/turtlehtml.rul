@@ -81,7 +81,7 @@ where {
   select distinct ?x where { 
     bind (st:focus() as ?x)
     bind (st:get(st:uri) as ?uri)
-    bind (bound(?uri) as ?sort)    
+    bind (bound(?uri) as ?sort) 
     ?x ?p ?y     
     filter ( 
       isURI(?x) 
@@ -91,7 +91,8 @@ where {
 	   || exists { ?x ?q ?x }
 	  ))
     )
-  } order by if (?sort, ?x != ?uri, true) ?x
+  } 
+  order by if (?sort, ?x != ?uri, true) ?x
 }
 
 ]]>
@@ -366,7 +367,7 @@ function st:display2(?x){
 }
 
 # considered as an error if someone called st:visit(name, node, false) cf datashape main profile
-function us:error(node) {
+function us:myerror(node) {
     st:visited(node)
 }
 ]]>
@@ -398,7 +399,7 @@ where {
 # Olivier Corby, Wimmics Inria I3S, 2013
 #
 template  {
-    if (us:error(?in), 
+    if (us:myerror(?in), 
         st:call-template(st:pperror, st:call-template(st:list, ?in)),
         st:call-template(st:list, ?in)
   )
@@ -419,9 +420,9 @@ where {
 #
 template {
 
-  if (us:error(?in), "<span class='fail'>", "")
+  if (us:myerror(?in), "<span class='fail'>", "")
   ?in 
-  if (us:error(?in), "</span>", "")      
+  if (us:myerror(?in), "</span>", "")      
      
 ibox { 
 	st:nl()
@@ -450,7 +451,7 @@ template {
   if (?refer, concat(st:turtle(?in), " "), "[") 
   
   ibox {
-    if (us:error(?in), 
+    if (us:myerror(?in), 
         st:call-template(st:pperror, st:call-template(st:value, ?in)),
         st:call-template(st:value, ?in)
     )
@@ -460,7 +461,7 @@ template {
   if (?nested, "]", "] ."))
   
   # pretty printer of errors
-  if (us:error(?in),
+  if (us:myerror(?in),
 	st:call-template(st:pperrorsp, ?in),
   "")
 }

@@ -16,14 +16,91 @@
 <!-- Siste description end-->
 
 
+
+<!-- Services begin-->
 <div class="container">
-    <h1>DataShape Validator</h1>
+    <h1>SPARQL Endpoint</h1>
+    <div class="row">
+        <!-- Services: sparql query-->
+        <div class="col-md-4">
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3 class="panel-title">SPARQL Query</h3>
+                </div>
+                <div class="panel-body">
+                    <form method='POST' action='/template' id='sparqlQueryForm'>
+                        <label>Profile:</label>
+                        <select name="profile" id='select'>
+                            <option value="st:sparql">Triple</option>
+                            <option value="st:hturtle">Turtle</option>
+                            <option value="st:endpoint">Result</option>
+                        </select>
+                        <br/>
+                        <textarea  class="form-control custom-control"  rows='8' name='query'>
+  select * where {
+    ?x ?p ?y
+  } 
+  limit 100
+                        </textarea>
+                        <br/>
+                        <label>Key:</label><input type='text' name='access' value='' />  
+                        <br/>                      
+                        <input type='hidden' name='profile2' value='st:sparql' />
+                        <input type='submit' value='Query' class="btn btn-default"  onclick="trans(this.form); return false;">
+                    </form>
+                </div>
+            </div>
+        </div>
+        
+        
+        <!--Services: DBPedia Query-->
+        <div class="col-md-4 ">
+            <div class="panel">
+                <div class="panel-heading">
+                    <h3 class="panel-title">Federated Query</h3>
+                </div>
+
+                <div class="panel-body">                     
+                    <form method="POST" action="/template" id='dbpediaQueryForm'>
+                        <label>Query result format:</label>
+                        <select name="profile">
+                            <option value="st:sparql" >LDP</option>
+                            <option value="st:std">STD</option>
+
+                        </select>
+                        <br/>
+                        <textarea class="form-control custom-control"  rows='8' id='query-dbp' name='query'>
+ select * where {
+   service <http://fr.dbpedia.org/sparql> {
+     <http://fr.dbpedia.org/resource/Antibes> ?p ?y
+   }
+ }
+ limit 10
+ offset 10
+                        </textarea>
+                        <br>
+        <input type='submit' value='Query' class="btn btn-default" onClick="trans(this.form);return false;">
+        </form>
+        </div>
+
+</div>
+</div>
+        
+        
+ </div>
+ </div>        
+ 
+
+
+
+<div class="container">
+    <h1>SHACL Validator</h1>
 <div class="row">
 
 <div class="col-md-6">
 <div class="panel">
     <div class="panel-heading">
-        <h3 class="panel-title">Data Shape</h3>
+        <h3 class="panel-title">SHACL</h3>
     </div>
     <div class="panel-body">
         <form method='POST' action='/service/shape' id='datashape'>
@@ -45,7 +122,7 @@
 <div class="col-md-6">
 <div class="panel">
     <div class="panel-heading">
-        <h3 class="panel-title">Data Shape</h3>
+        <h3 class="panel-title">SHACL</h3>
     </div>
     <div class="panel-body">
         <form method='POST' action='/service/shape' id='datashape2'>
@@ -78,274 +155,3 @@
 </div>
 </div>
 
-
-
-
-
-<!-- LD boowser-->     
-<div class="container">
-    <h1>Linked Data Navigators</h1>
-    <div class="row">
-    
-    
-	<div class="col-md-2" >
-            <div class="panel">
-                <div class="panel-heading" align="center"><strong>Music</strong></div>
-                <div class="panel-body" align="center">
-                    <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Jimmy_Page&profile=st:dbpedia');" >
-                        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Jimmy_Page_at_the_Echo_music_award_2013.jpg" alt="Jimmy Page" height="150">
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-<!--        <div class="col-md-2" >
-            <div class="panel panel-primary">
-                <div class="panel-heading"></div>
-                <div class="panel-body" align="center">
-                    <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Sean_Penn&profile=st:dbpedia');" >
-                        <img src="https://commons.wikimedia.org/wiki/Special:FilePath/Seanpenn1.jpg?width=300" alt="Sean Penn" height="150">
-                        <p><strong>Cinema</strong></p>
-                    </a>              
-                </div>
-            </div>
-        </div>-->
-    
-        <!-- one example: france kings-->
-        <div class="col-md-2" >
-            <div class="panel">
-                <div class="panel-heading" align="center"><strong>France</strong></div>
-                <div class="panel-body" align="center">
-                    <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Voltaire&profile=st:dbpedia');" >
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Nicolas_de_Largilli%C3%A8re%2C_Fran%C3%A7ois-Marie_Arouet_dit_Voltaire_%28vers_1724-1725%29_-002-transparent.png/440px-Nicolas_de_Largilli%C3%A8re%2C_Fran%C3%A7ois-Marie_Arouet_dit_Voltaire_%28vers_1724-1725%29_-002-transparent.png" alt="France kings" height="150">
-                    </a>
-                </div>
-            </div>
-        </div>
-        <!-- one example end-->
-
-        <!-- one example: Auguste-->
-        <div class="col-md-2" >
-            <div class="panel">
-                <div class="panel-heading" align="center"><strong>Rome</strong></div>
-                <div class="panel-body" align="center">
-                    <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Auguste&profile=st:dbpedia');" >
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Statue-Augustus.jpg/200px-Statue-Augustus.jpg" alt="Auguste" height="150">
-                        <br>
-                    </a>              
-                </div>
-            </div>
-        </div>
-        <!-- one example end-->                         
-
-       
-
-        <!-- one example: Emmanuel-Philibert de Savoie -->
-        <!--<div class="col-md-2" >
-            <div class="panel panel-primary">
-                <div class="panel-heading"></div>
-                <div class="panel-body" align="center">
-                    <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)&profile=st:dbpedia');" >
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Alessandro_farnese_pantoja_(detail).jpg/200px-Alessandro_farnese_pantoja_(detail).jpg" alt="Emmanuel-Philibert de Savoie" height="90">
-                        <p><strong>Savoy</strong></p>
-                    </a>              
-                </div>
-            </div>
-        </div>-->
-        
-        
-        
-        <!-- one example end-->         
-
-        <!-- one example place Nice-->
-       
-        
-       
-         <!--<div class="col-md-2">
-            <div class="panel panel-primary">
-                <div class="panel-heading"></div>
-                <div class="panel-body" align="center">
-                    <a href="javascript:trans('/service/cdn?profile=st:antiquity');" >
-                        <img src="https://4.bp.blogspot.com/-dBdIxh7qaW8/U2OoBVn8nLI/AAAAAAAADnM/Ilx9Eadqppk/s1600/P1060820.JPG" alt="Antiquity" height="80">
-                        <p><strong>Antiquity</strong></p>
-                    </a>              
-                </div>
-            </div>
-        </div>-->
-        
-        
-         <div class="col-md-2" >
-            <div class="panel">
-                <div class="panel-heading" align="center"><strong>History</strong></div>
-                <div class="panel-body" align="center">
-                    <a href="javascript:trans('/service/cdn');" >
-                        <img src="https://3.bp.blogspot.com/-3tBevLpWI6E/UtK25pLm86I/AAAAAAAADf8/Tvhy3899Iwo/s320/P1060114.JPG" alt="History" height="80">
-                    </a>
-                </div>
-            </div>
-        </div>
-        
-         <div class="col-md-2" >
-            <div class="panel">
-                <div class="panel-heading" align="center"><strong>Place</strong></div>
-                <div class="panel-body" align="center">
-                    <a href="javascript:trans('/template?uri=http://fr.dbpedia.org/resource/Nice&profile=st:dbpedia');" >
-                        <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Port_Of_Nice,_C%C3%B4te_d'Azur.jpg/200px-Port_Of_Nice,_C%C3%B4te_d'Azur.jpg" alt="Nice" height="80">                       
-                    </a>
-                </div>
-            </div>
-        </div>
-                 
-
-    </div>
-</div>
-
-
-<!-- LD boowser end>    
-
-<!-- Services begin-->
-<div class="container">
-    <h1>Online services</h1>
-    <div class="row">
-        <!-- Services: sparql query-->
-        <div class="col-md-4">
-            <div class="panel">
-                <div class="panel-heading">
-                    <h3 class="panel-title">SPARQL Query</h3>
-                </div>
-                <div class="panel-body">
-                    <form method='POST' action='/template' id='sparqlQueryForm'>
-                        <label>Profile:</label>
-                        <select name="profile" id='select'>
-                            <option value="st:sparql">Triple</option>
-                            <option value="st:hturtle">Turtle</option>
-                            <option value="st:endpoint">Result</option>
-                            <option value="st:halendpoint">Hal Result</option>
-                        </select>
-                        <br/>
-                        <textarea  class="form-control custom-control"  rows='8' name='query'>
-  select * where {
-    ?x ?p ?y
-  } 
-  limit 100
-                        </textarea>
-                        <br/>
-                        <label>Key:</label><input type='text' name='access' value='' />  
-                        <br/>                      
-                        <input type='hidden' name='profile2' value='st:sparql' />
-                        <input type='submit' value='Query' class="btn btn-default"  onclick="trans(this.form); return false;">
-                    </form>
-                </div>
-            </div>
-        </div>
-        <!--Services: DBPedia Query-->
-        <div class="col-md-4 ">
-            <div class="panel">
-                <div class="panel-heading">
-                    <h3 class="panel-title">DBpedia Query</h3>
-                </div>
-
-                <div class="panel-body">                     
-                    <form method="POST" action="/template" id='dbpediaQueryForm'>
-                        <label>Query result format:</label>
-                        <select name="profile">
-                            <option value="st:sparql" >LDP</option>
-                            <option value="st:std">STD</option>
-
-                        </select>
-                        <br/>
-                        <textarea class="form-control custom-control"  rows='8' id='query-dbp' name='query'>
- select * where {
-   service <http://fr.dbpedia.org/sparql> {
-     <http://fr.dbpedia.org/resource/Antibes> ?p ?y
-   }
- }
- limit 10
- offset 10
-                                    </textarea>
-                                    <br>
-                           <input type='submit' value='Query' class="btn btn-default" onClick="trans(this.form);return false;">
-                                    </form>
-                                    </div>
-
-                                    </div>
-                                    </div>
-        
-        
- </div>
- </div>        
- 
-<div class="container">
-    
-    <div class="row">
-                                    <!--Services: transformation self-services-->
-                                    <div class="col-md-4">
-                                        <div class="panel">
-                                            <div class="panel-heading">
-                                                <h3 class="panel-title">Transformation</h3>
-                                            </div>
-                                            <div class="panel-body">
-                                                <form method='POST' action='/process/test' id='selfServiceForm'>
-                                                    <label for='uri'>RDF Graph: </label>
-                                                    <input type='text' id='uri' name='uri' value = 'http://corese.inria.fr/data/tutorial/human1.rdf' class="form-control custom-control" /><br/>
-                                                    <label for='sel'>Format: </label><br>
-                                                    <select name='transform' class="form-control" id='sel'>
-                                                        <option>st:turtle</option>
-                                                        <option>st:rdfxml</option>
-                                                        <option>st:json</option>
-                                                        <option>st:owl</option>
-                                                        <option>st:spin</option>
-                                                    </select>
-                                                    <br/><br><br>
-                           <!--input type='button' value='Transform' class="btn btn-default" onclick="javascript:trans('/process/test',{transform:$('#transform').val(), uri:$('#uri').val()});"-->
-                           <input type='submit' value='Transform' class="btn btn-default" onClick="trans(this.form); return false;">
-                                                </form>
-
-                                            </div>
-                                        </div>
-                                    </div>
-                                    
-                                    
-<!--                                    <div class="col-md-4">
-                                        <div class="panel panel-info">
-                                            <div class="panel-heading">
-                                                <h3 class="panel-title">Data Shape</h3>
-                                            </div>
-                                            <div class="panel-body">
-                                                <form method='POST' action='/process/shape' id='shape'>
-                                                    <label for='uri'>RDF Graph: </label>
-                                                    <input type='text' id='uri' name='uri' value = '/data/shape/data.ttl' class="form-control custom-control" /><br/>
-                                                    <label for='sel'>Shape: </label><br>
-                                                    <input type="text"  name='transform' class="form-control" id='sel' value='/data/shape/shape.ttl'/>                                                       
-                                                    <br/><br><br>
-                                                    <input type='submit' value='Validate' class="btn btn-default" onClick="trans(this.form); return false;">
-                                                </form>
-
-                                            </div>
-                                        </div>
-                                    </div> -->
-                                    
-                                     <div class="col-md-4">
-                                        <div class="panel">
-                                            <div class="panel-heading">
-                                                <h3 class="panel-title">Data Shape</h3>
-                                            </div>
-                                            <div class="panel-body">
-                                                <form method='POST' action='/service/shape' id='shape2'>
-                                                    <label for='uri'>RDF Graph: </label>
-                                                    <input type='text' id='param' name='param' value = '/data/shape/shape4shape.ttl' class="form-control custom-control" /><br/>
-                                                    <label for='sel'>Shape: </label><br>
-                                                    <input type="text"  name='mode' class="form-control" id='sel2' value='/data/shape/shape4shape.ttl'/>                                                       
-                                                    <br/><br><br>
-                                                    <input type='submit' value='Validate' class="btn btn-default" onClick="trans(this.form); return false;">
-                                                </form>
-
-                                            </div>
-                                        </div>
-                                    </div> 
-                                    
-                                    
-                                    
-                                    </div>
-                                    </div>
-                                    <!-- Services end-->

@@ -4,9 +4,9 @@
 #
 template {
 
-  if (us:error(?in), "<span class='fail'>", "")
+  if (us:myerror(?in), "<span class='fail'>", "")
   ?in 
-  if (us:error(?in), "</span>", "")      
+  if (us:myerror(?in), "</span>", "")      
      
 ibox { 
 	st:nl()

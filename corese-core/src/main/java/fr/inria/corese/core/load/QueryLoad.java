@@ -154,8 +154,12 @@ public class QueryLoad extends Load {
     }
 
 
-    public String readWE(String name) throws LoadException {
+    public String readWithAccess(String name) throws LoadException {
         check(Access.Feature.READ_WRITE, name, TermEval.READ_MESS);
+        return readWE(name);
+    }
+    
+    public String readWE(String name) throws LoadException {
         String query = "", str = "";
         Reader fr;
         try {

@@ -21,12 +21,12 @@ import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.Configuration;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
+import javax.ws.rs.core.Cookie;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,6 +53,7 @@ public class Service implements URLParam {
     private boolean showResult = false;
     private boolean trap = false;
     private int timeout = 0;
+    private int count = 0;
     private URLServer url;
     private Access.Level level = Access.Level.DEFAULT;
     private MediaType format;
@@ -137,7 +138,7 @@ public class Service implements URLParam {
         Mappings map = new Mappings();
         map.add(m);
         CompileService cs = new CompileService();
-        ASTQuery ast = cs.filter(q, map, 0, 1);
+        ASTQuery ast = cs.filter(getURL(), q, map, 0, 1);
         return ast;
     }
 
@@ -182,7 +183,11 @@ public class Service implements URLParam {
         try {
             //String res = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
             // request() return Invocation.Builder
-            Response resp = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+            Cookie cook = new Cookie(COUNT, Integer.toString(getCount()), url, getURL().getServer());
+            Cookie cook2 = new Cookie(PLATFORM, CORESE);
+            Response resp = target.request(mime)
+                    .cookie(cook).cookie(cook2)
+                    .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
             String res = resp.readEntity(String.class);
             
             if (resp.getStatus() == REDIRECT) {
@@ -457,6 +462,20 @@ public class Service implements URLParam {
      */
     public void setTimeout(int timeout) {
         this.timeout = timeout;
+    }
+
+    /**
+     * @return the count
+     */
+    public int getCount() {
+        return count;
+    }
+
+    /**
+     * @param count the count to set
+     */
+    public void setCount(int count) {
+        this.count = count;
     }
     
 }

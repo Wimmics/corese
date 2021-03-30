@@ -1,5 +1,6 @@
 package fr.inria.corese.core.query;
 
+import fr.inria.corese.compiler.eval.Interpreter;
 import java.util.ArrayList;
 
 import fr.inria.corese.sparql.api.IDatatype;
@@ -18,11 +19,18 @@ import fr.inria.corese.kgram.api.query.Provider;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.api.ComputerEval;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import fr.inria.corese.sparql.triple.parser.VariableLocal;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 public class CompileService implements URLParam {
     public static final String KG_VALUES = NSManager.KGRAM + "values";
@@ -65,9 +73,9 @@ public class CompileService implements URLParam {
                 return filter(q, env);
             } 
         } else if (isValues) {
-            return bindings(q, map, start, limit);
+            return bindings(serv, q, map, env, start, limit);
         } else {
-            return filter(q, map, start, limit);
+            return filter(serv, q, map, start, limit);
         } 
     }
     
@@ -160,51 +168,28 @@ public class CompileService implements URLParam {
     /**
      * Generate bindings as bindings from Mappings
      */
-    ASTQuery bindings(Query q, Mappings map, int start, int limit) {
+    ASTQuery bindings(URLServer url, Query q, Mappings map, Environment env, int start, int limit) {
         ASTQuery ast = (ASTQuery) q.getAST();
-        ArrayList<Variable> lvar = new ArrayList<>();
-        //ArrayList<Constant> lval;
-        Values values = Values.create();
-        HashMap<String, Boolean> mapBound = new HashMap<>();
+        //Expression filter = getFilter(ast, url);
+        //Binding b = Binding.create();
         
-        // determine list of in-scope variables in service
-        for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
-            String name = qv.getLabel();
-            Variable var = ast.getSelectAllVar(name);
-            if (var == null){
-                var = Variable.create(name);
-            }
-            lvar.add(var);
-            mapBound.put(name, false);
-        }
-
-        // determine in-scope variables that are bound at last once in Mappings
-        for (Variable var : lvar) {
+        // in-scope variables
+        List<Variable> varList = getVariables(url, q, ast, map);
+        // in-scope bound variables
+        List<Variable> lvar = new ArrayList<>();
+        
+        // determine in-scope variables that are bound at least in one Mapping
+        for (Variable var : varList) {
             for (int j = start; j < map.size() && j < limit; j++) {
-
-                Mapping m = map.get(j);
-                // variables in-scope in service clause that may be bound
-                // by Mappings variable binding
-                Node val = m.getNodeValue(var.getLabel());
-
+                Node val = map.get(j).getNodeValue(var.getLabel());
                 if (val != null && !val.isBlank()) {
-                    mapBound.put(var.getLabel(), true);
+                    lvar.add(var);
                     break;
                 }
             }
         }
         
-        // remove unbound variables from lvar
-        for (int i = 0; i<lvar.size(); ) {
-            Variable var = lvar.get(i);
-            if (mapBound.get(var.getLabel())) {
-                i++;
-            }
-            else {
-                lvar.remove(i);
-            }
-        }
-        
+        Values values = Values.create();
         if (!lvar.isEmpty()) {
             for (int j = start; j < map.size() && j < limit; j++) {
                 Mapping m = map.get(j);
@@ -218,9 +203,14 @@ public class CompileService implements URLParam {
 
                     if (val != null && !val.isBlank()) {
                         IDatatype dt = (IDatatype) val.getValue();
-                        Constant cst = create(ast, dt);
-                        list.add(cst);
-                        ok = true;
+                        if (true) { //(filter == null || eval(filter, env, b, var, dt)) {
+                            Constant cst = create(ast, dt);
+                            list.add(cst);
+                            ok = true;
+                        }
+                        else {
+                            list.add(null);
+                        }
                     } else {
                         // unbound variable -> undef
                         list.add(null);
@@ -233,9 +223,77 @@ public class CompileService implements URLParam {
             }
         }
 
-       values.setVariables(lvar);
+       values.setVariables(lvar);      
        return setValues(ast, values);
-       //return success(values);
+    }
+    
+    /**
+     * DRAFT for testing
+     * service </sparql?filter=?_tmp_> {
+     *   bind (regex(?x, ns:) as ?_tmp_)
+     * }
+     * select candidate variable binding passing for ?x where filter succeed
+     * var=dt is a candidate variable binding
+     * if var is filter variable ?x: eval filter with ?x=dt
+     * manage ?x as a global variable
+     */
+    boolean eval(Expression filter, Environment env, Binding b, Variable var, IDatatype dt) {
+        if (filter.isTerm() && filter.arity() >= 2 && 
+            filter.getArg(0).isVariable() && filter.getArg(0).equals(var)) {
+            b.setGlobalVariable(var.getLabel(), dt);            
+            try {
+                IDatatype res = filter.eval((Interpreter)env.getEval().getEvaluator(), b, env, env.getEval().getProducer());
+                if (res == null) {
+                    return false;
+                }
+                return res.booleanValue();
+            } catch (EngineException ex) {
+                System.out.println("filter: " + var + " " + dt + " " + "error");
+                return false;
+            }
+        }
+        return true;
+    }
+    
+    Expression getFilter(ASTQuery ast, URLServer url) {
+        String name = url.getParameter(FILTER);
+        if (name == null) {
+            return null;
+        }
+        Expression exp = getFilter(ast, name);
+        if (exp != null && exp.arity()>=2 && exp.getArg(0).isVariable()) {
+            Variable nvar = new VariableLocal(exp.getArg(0).getLabel());
+            nvar.setIndex(Binding.UNBOUND);
+            exp.getTerm().setArg(0, nvar);
+        }
+        return exp;
+    }
+    
+    Expression getFilter(ASTQuery ast, String name) {
+        for (Exp exp : ast.getBody()) {
+            if (exp.isBind() && exp.getBind().getVariable().getLabel().equals(name)) {
+                return exp.getBind().getFilter();
+            }
+        }
+        return null;
+    }
+    
+    
+    List<Variable> getVariables(URLServer url, Query q, ASTQuery ast, Mappings map) {
+        ArrayList<Variable> lvar = new ArrayList<>();
+        // determine list of in-scope variables in service
+        for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
+            String name = qv.getLabel();
+            if (url.accept(name)) {
+                // variable not in skip and in focus -- if any
+                Variable var = ast.getSelectAllVar(name);
+                if (var == null) {
+                    var = Variable.create(name);
+                }
+                lvar.add(var);
+            }
+        }
+        return lvar;
     }
         
     boolean success(Values values) {
@@ -314,11 +372,12 @@ public class CompileService implements URLParam {
     /**
      * Generate bindings from Mappings as filter
      */
-    public ASTQuery filter(Query q, Mappings map, int start, int limit) {
+    public ASTQuery filter(URLServer url, Query q, Mappings map, int start, int limit) {
         ASTQuery ast = (ASTQuery) q.getAST();
         Term filter = null;
+        List<Variable> lvar = getVariables(url, q, ast, map);
         for (int j = start; j < map.size() && j < limit; j++) {
-            Term f = getFilter(q, ast, map.get(j));
+            Term f = getFilter(url, q, ast, map.get(j), lvar);
 
             if (f != null) {                
                 if (filter == null) {
@@ -330,21 +389,19 @@ public class CompileService implements URLParam {
         }
 
         return setFilter(ast, filter);
-        //return (filter != null);
     }
     
-    Term getFilter(Query q, ASTQuery ast, Mapping m) {
-        ArrayList<Term> lt = new ArrayList<Term>();
+    Term getFilter(URLServer url, Query q, ASTQuery ast, Mapping m, List<Variable> lvar) {
+        ArrayList<Term> lt = new ArrayList<>();
 
-        for (Node varNode : q.getBody().getRecordInScopeNodesForService()) {
-            String varName = varNode.getLabel();
-            Node valNode = m.getNodeValue(varName);
-            if (valNode != null && ! valNode.isBlank()) {
+        for (Variable var : lvar) {
+            Node valNode = m.getNodeValue(var.getLabel());
+            if (valNode != null && !valNode.isBlank()) {
                 // do not send bnode because it will raise a syntax error
                 // and it will not be available on another server because 
                 // bnode are local
                 // wish: select Mapping with unique(varNode, valNode)
-                Term t = filter(ast, Variable.create(varName), (IDatatype) valNode.getDatatypeValue()); 
+                Term t = filter(ast, var, (IDatatype) valNode.getDatatypeValue());
                 lt.add(t);
             }
         }

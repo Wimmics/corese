@@ -10,7 +10,7 @@
 @prefix dbo: <http://fr.dbpedia.org/ontology/>
 @prefix idx: <http://ns.inria.fr/rdf/index/> 
 
-[] owl:imports <function/function.rq>
+#[] owl:imports <function/function.rq>
   
 #
 # List of Query
@@ -26,6 +26,8 @@ sw:body (
     st:class
     
     st:federate1
+    st:federate2
+    st:federate3
 
     st:ldvizns
     st:ldvizpredicate
@@ -249,8 +251,8 @@ st:name st:ldvizns ;
 rdfs:label "Linked Data Viz Namespace" ;
 rdfs:comment "Namespace."@fr ;
 rdfs:comment """Retrieve the list of namespaces used by the endpoints. 
-<a href="http://covid19.i3s.unice.fr:8081/ldviz?query=prefix idx: %3Chttp://ns.inria.fr/rdf/index/%3E 
- select ?n1 ?n2 ?doc where {?n1 idx:namespace ?n2  bind (?n2 as ?doc)}&url=http://corese.inria.fr/myservice/d2kabsparql">Linked Data Viz Query</a>.
+<a href="http://covid19.i3s.unice.fr:8080/ldviz?query=prefix idx: %3Chttp://ns.inria.fr/rdf/index/%3E 
+ select ?n1 ?n2 ?doc where {?n1 idx:namespace ?n2  bind (?n2 as ?doc)}&url=http://corese.inria.fr/d2kab/sparql">Linked Data Viz Query</a>.
 """@en ;
 
 st:query 
@@ -271,8 +273,8 @@ st:name st:ldvizpredicate ;
 rdfs:label "Linked Data Viz Predicate" ;
 rdfs:comment "Predicate."@fr ;
 rdfs:comment """Retrieve the list of predicates used by the endpoints. 
-<a href="http://covid19.i3s.unice.fr:8081/ldviz?query=prefix idx: %3Chttp://ns.inria.fr/rdf/index/%3E 
- select ?n1 ?n2 ?doc where {graph ?g {?n1 idx:namespace ?ns . ?ns idx:data ?dt . ?dt idx:predicate ?n2 } bind (?n2 as ?doc)}&url=http://corese.inria.fr/myservice/d2kabsparql">Linked Data Viz Query</a>.
+<a href="http://covid19.i3s.unice.fr:8080/ldviz?title=D2KAB Predicate&query=prefix idx: %3Chttp://ns.inria.fr/rdf/index/%3E 
+ select ?n1 ?n2 ?doc where {graph ?g {?n1 idx:namespace ?ns . ?ns idx:data ?dt . ?dt idx:predicate ?n2 } bind (?n2 as ?doc)}&url=http://corese.inria.fr/d2kab/sparql">Linked Data Viz Query</a>.
 """@en ;
 
 st:query 
@@ -297,8 +299,8 @@ st:name st:ldvizclass ;
 rdfs:label "Linked Data Viz Class" ;
 rdfs:comment "Class."@fr ;
 rdfs:comment """Retrieve the list of classes used by the endpoints. 
-<a href="http://covid19.i3s.unice.fr:8081/ldviz?query=prefix idx: %3Chttp://ns.inria.fr/rdf/index/%3E 
- select ?n1 ?n2 ?doc where {graph ?g {?n1 idx:namespace ?ns . ?ns idx:data ?dt . ?dt idx:class ?n2}bind (?n2 as ?doc)}&url=http://corese.inria.fr/myservice/d2kabsparql">Linked Data Viz Query</a>.
+<a href="http://covid19.i3s.unice.fr:8080/ldviz?query=prefix idx: %3Chttp://ns.inria.fr/rdf/index/%3E 
+ select ?n1 ?n2 ?doc where {graph ?g {?n1 idx:namespace ?ns . ?ns idx:data ?dt . ?dt idx:class ?n2}bind (?n2 as ?doc)}&url=http://corese.inria.fr/d2kab/sparql">Linked Data Viz Query</a>.
 """@en ;
 
 st:query 
@@ -325,7 +327,7 @@ graph ?g {
 
 st:federate1 a sw:Query ;
 st:name st:federate1 ;
-rdfs:label "Federated Query" ;
+rdfs:label "Federated Query 1" ;
 rdfs:comment "Federated Query."@fr ;
 rdfs:comment """Federated Query annotated by URL of endpoints. 
 The selectors provide the list of classes and properties. When an entity is selected, it is copied in the clipboard, and in the Pad;  you can paste it in the text editor. <br/>
@@ -335,12 +337,7 @@ With the @variable annotation,  each solution is decorated with the URL of the e
 st:query 
 """
 prefix dce: <http://purl.org/dc/elements/1.1/>
-@federate 
-<http://ontology.irstea.fr/weather/sparql> 
-<http://ontology.irstea.fr/bsv/sparql>  
-<http://agrold.southgreen.fr/sparql> 
-<http://taxref.mnhn.fr/sparql>
-# <http://sparql.agroportal.lirmm.fr/sparql/>
+@federation  <http://corese.inria.fr/d2kab/federate>
 @variable
 
 select * where {
@@ -355,9 +352,58 @@ st:select st:myclass, st:mypredicate
 
 
 
+st:federate2 a sw:Query ;
+st:name st:federate2 ;
+rdfs:label "Federated Query 2" ;
+rdfs:comment "Federated Query."@fr ;
+rdfs:comment """Federated Query annotated by URL of endpoints. 
+The selectors provide the list of classes and properties. When an entity is selected, it is copied in the clipboard, and in the Pad;  you can paste it in the text editor. 
+"""@en;
+
+st:query 
+"""
+select * where {
+    service <http://corese.inria.fr/d2kab/sparql> {
+        select * where {
+            select * where {
+                ?s skos:prefLabel ?l
+                filter regex(?l, "bio")
+                filter langMatches(lang(?l), "en")
+            } limit 10
+        }
+    }
+}
+""" 
+;
+st:select st:myclass, st:mypredicate
+.
 
 
 
+st:federate3 a sw:Query ;
+st:name st:federate3 ;
+rdfs:label "Federated Query 3" ;
+rdfs:comment "Federated Query."@fr ;
+rdfs:comment """Federated Query annotated by URL of endpoints. 
+The selectors provide the list of classes and properties. When an entity is selected, it is copied in the clipboard, and in the Pad;  you can paste it in the text editor. 
+"""@en;
+
+st:query 
+"""
+select * where {
+    service <http://corese.inria.fr/d2kab/federate> {
+        select * where {
+            ?s skos:prefLabel ?l
+            filter regex(?l, "bio")
+            filter langMatches(lang(?l), "en")
+        } limit 10
+
+    }
+}
+""" 
+;
+st:select st:myclass, st:mypredicate
+.
 
 
 

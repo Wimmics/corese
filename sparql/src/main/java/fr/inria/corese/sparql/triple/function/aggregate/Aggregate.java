@@ -68,7 +68,6 @@ public class Aggregate extends LDScript {
             env.aggregate(map, n++);
             map.setEval(env.getEval());
             if (map.getBind() == null) {
-                //map.setBind(Binding.create());
                 map.setBind(b);
             }
             // TODO: should we inherit Binding b for aggregate eval ?

@@ -299,12 +299,12 @@ public class ASTExtension implements Extension {
             for (String atype : getActualHierarchy().getSuperTypes((DatatypeValue) param[0],  type)) {
                 ASTExtension ext = getMethodExtension(atype);
                 if (isDebug()) {
-                    System.out.println("Ext: " + atype + " " + ext);
+                    System.out.println("ASTExtension: " + label + " " + atype + " " + ext);
                 }
                 if (ext != null) {
                     Function exp = ext.get(label, param.length);
                     if (isDebug()) {
-                        System.out.println("Ext: " + atype + " " + exp);
+                        System.out.println("ASTExtension: " + label + " " + atype + " " + exp);
                     }
                     if (exp != null) {
                         return exp;

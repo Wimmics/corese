@@ -91,13 +91,17 @@ public class Let extends Statement {
     public Expression getDefinition(Expression decl) {
         return decl.getArg(1);
     }
+    
+    public void setDefinition(Expression decl, Expression exp) {
+        decl.getArgs().set(1, exp);
+    }
 
     @Override
     public Expression getBody() {
         return body;
     }
     
-    void setBody(Expression exp) {
+    public void setBody(Expression exp) {
         body = exp;
     }
 

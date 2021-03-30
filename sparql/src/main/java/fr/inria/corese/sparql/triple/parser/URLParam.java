@@ -15,10 +15,13 @@ public interface URLParam {
     static final String NAMED_GRAPH = "named-graph-uri";
 
     // specific for service clause
+    static final String LOOP = "loop";
     static final String LIMIT = "limit";
     static final String SLICE = "slice";
     static final String TIMEOUT = "timeout";
     static final String BINDING = "binding";
+    static final String FOCUS = "focus";
+    static final String SKIP = "skip";
 
     // value of mode=
     static final String TRACE = "trace";
@@ -33,6 +36,9 @@ public interface URLParam {
     static final String BEFORE = "before";
     static final String AFTER = "after";
     static final String SHARE = "share";
+    static final String COUNT = "count";
+    static final String PLATFORM = "platform";
+    static final String CORESE = "corese";
 
     // values of binding=
     static final String VALUES = "values";

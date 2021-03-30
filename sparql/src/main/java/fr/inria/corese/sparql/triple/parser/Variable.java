@@ -10,6 +10,7 @@ import fr.inria.corese.sparql.triple.cst.KeywordPP;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExprType;
+import static fr.inria.corese.kgram.api.core.ExprType.LOCAL;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -107,7 +108,7 @@ public class Variable extends Atom {
                 sb.append(KeywordPP.BN + name.substring(1, name.length()));
             }
         } else {
-            sb.append(name);
+            sb.append(name);            
         }
         return sb;
     }
@@ -308,7 +309,6 @@ public class Variable extends Atom {
     }
 
     public void undef() {
-        //setType(ExprType.UNDEF);
         setType(ExprType.LOCAL);
     }
 

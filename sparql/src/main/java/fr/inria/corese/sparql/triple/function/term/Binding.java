@@ -30,7 +30,7 @@ import org.slf4j.Logger;
 public class Binding implements Binder {
    
     static final String NL = System.getProperty("line.separator");
-    static final int UNBOUND = ExprType.UNBOUND;
+    public static final int UNBOUND = ExprType.UNBOUND;
     public static boolean DEBUG_DEFAULT = false;
     public static boolean DYNAMIC_CAPTURE_DEFAULT = false;
     public static final String SLICE_SERVICE  = "?slice_service";
@@ -411,6 +411,7 @@ public class Binding implements Binder {
     }
     
     // global variable + static global variable
+    @Override
     public IDatatype getGlobalVariable(String name) {
         IDatatype dt = getBasicGlobalVariable(name);
         if (dt == null) {

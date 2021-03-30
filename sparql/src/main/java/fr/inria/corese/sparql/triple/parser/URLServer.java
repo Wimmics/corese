@@ -1,7 +1,9 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.kgram.api.core.Node;
-import java.util.ArrayList;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+
 import java.util.List;
 
 /**
@@ -78,6 +80,33 @@ public class URLServer implements URLParam {
         return getMap().getFirst(name);
     }
     
+    public String getVariable(String name) {
+        String value = getParameter(name);        
+        if (value != null && isVariable(value)) {
+            return extractVariable(value);
+        }
+        return null;
+    }
+    
+    String extractVariable(String value) {
+        return value.substring(1, value.length()-1);
+    }
+    
+    /**
+     * var not in skip AND/OR var in focus
+     */
+    public boolean accept(String var) {
+        List<String> focus = getParameterList(FOCUS);
+        List<String> skip  = getParameterList(SKIP);
+        if (skip != null && skip.contains(var)) {
+            return false;
+        }
+        if (focus != null && ! focus.contains(var)) {
+            return false;
+        }
+        return true;
+    } 
+    
     public boolean hasParameter() {
         return getMap() != null && !getMap().isEmpty();
     }
@@ -117,7 +146,11 @@ public class URLServer implements URLParam {
         return value;
     }
 
-    
+    /**
+     * param = URL parameter string
+     * create hashmap for parameter value
+     * hashmap: param -> list(value)
+     */
     HashMapList hashmap(String param) {
         HashMapList<String> map = new HashMapList();
         String[] params = param.split("&");
@@ -127,17 +160,38 @@ public class URLServer implements URLParam {
             if (keyval.length>=2)   {
                 String key = keyval[0];
                 String val = keyval[1];
-                List<String> list = map.get(key);
-                if (list == null) {
-                    list = new ArrayList<>();
-                    map.put(key, list);
-                }
+                List<String> list = map.getCreate(key);               
                 if (! list.contains(val)) {
                     list.add(val);
                 }
             }
         }
         return map;
+    }
+    
+    /**
+     * ?param={?this}
+     * get ?this=value in Binding
+     * set param=value
+     */
+    public void complete(Binding b) {
+        if (getMap() == null) {
+            return;
+        }
+        
+        for (String key : getMap().keySet()) {
+            String val = getParameter(key);
+            if (isVariable(val)) {
+                 IDatatype dt = b.getGlobalVariable(extractVariable(val));
+                 if (dt != null) {  
+                     getMap().setFirst(key, dt.getLabel());
+                 }
+            }
+        }
+    }
+    
+    boolean isVariable(String value) {
+        return value.startsWith("{") && value.endsWith("}");
     }
     
     public boolean hasMethod() {

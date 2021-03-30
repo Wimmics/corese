@@ -96,6 +96,10 @@ public class Function extends Statement {
     public Expression getBody() {
         return body;
     }
+    
+    public void setBody(Expression exp) {
+        body = exp;
+    }
 
     // retun the URI of the Function
     @Override

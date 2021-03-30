@@ -3,6 +3,8 @@ package fr.inria.corese.sparql.triple.parser.visitor;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
 import fr.inria.corese.kgram.api.core.ExprType;
+import static fr.inria.corese.kgram.api.core.ExprType.LOCAL;
+import fr.inria.corese.sparql.triple.function.script.ForLoop;
 import fr.inria.corese.sparql.triple.function.script.Let;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
@@ -147,7 +149,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
                 break;
                 
             case ExprType.FOR:
-                loop(t);
+                loop(t.getFor());
                 break;
                                                                       
 //            case ExprType.AGGREGATE:
@@ -169,13 +171,24 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         for (int i=0; i<t.getArgs().size(); i++) {
             Expression e = t.getArg(i);
             e.visit(this);
-            if (e.isVariable() && e.subtype() == ExprType.LOCAL){
-                VariableLocal var = new VariableLocal(e.getLabel());
-                var.setIndex(e.getIndex());
+            if (isLocal(e)){
+//                VariableLocal var = new VariableLocal(e.getLabel());
+//                var.setIndex(e.getIndex());
+                VariableLocal var = getLocal(e.getVariable());
                 t.setArg(i, var);
                 t.setExp(i, var);
             }
         }
+    }
+    
+    VariableLocal getLocal(Variable var) {
+        VariableLocal nvar = new VariableLocal(var.getLabel());
+        nvar.setIndex(var.getIndex());
+        return nvar;
+    }
+    
+    boolean isLocal(Expression exp) {
+        return exp.isVariable() && exp.subtype() == LOCAL;
     }
             
     
@@ -217,6 +230,11 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         Expression body = f.getBody();
         ExpressionVisitorVariable vis = new ExpressionVisitorVariable(ast, f);
         vis.start(body);
+        
+        if (isLocal(body)) {
+            f.setBody(getLocal(body.getVariable()));
+        }
+        
         f.setNbVariable(vis.getNbVariable());
         ast.define(f);        
     }
@@ -248,8 +266,6 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             // ok
         }       
         else if (isFunctionDefinition()) {
-//            ast.addError("Undefined variable: " + var + " in function: " + fun.getSignature().getName());
-//            ast.addFail(true);
             var.undef();
         }
     }
@@ -268,14 +284,22 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             Variable var    = t.getVariable(decl);
             Expression exp  = t.getDefinition(decl);        
             exp.visit(this);
+            if (isLocal(exp)) {
+                t.setDefinition(decl, getLocal(exp.getVariable()));
+            }
             define(var);
         }
         
         t.getBody().visit(this);
         
+        if (isLocal(t.getBody())) {
+            t.setBody(getLocal(t.getBody().getVariable()));
+        }
+        
         boolean letquery = t.isLetQuery() && ! isTopLevel;
         ArrayList<Expression> list = new ArrayList<>();
        
+        // process select variable in let (select * where {})
         for (int i = t.getDeclaration().size() - 1; i>=0; i--) {
             Expression decl = t.getDeclaration().get(i);
             Variable var = t.getVariable(decl);
@@ -287,7 +311,6 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         
         for (Expression decl : list) {
             t.removeDeclaration(decl);
-            //setNbVariable(getNbVariable() - 1);
         }
         
         if (isTopLevel) {
@@ -297,13 +320,18 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
         }
     }
     
-     void loop(Term t) {
+     void loop(ForLoop t) {
         boolean isTopLevel = isTopLevel();
         
         Variable var    = t.getVariable();
         Expression exp  = t.getDefinition();
         
         exp.visit(this);
+        
+        if (isLocal(exp)) {
+            t.setDefinition(getLocal(exp.getVariable()));
+        }
+        
         define(var);
         
         t.getBody().visit(this);

@@ -57,6 +57,11 @@ public class ForLoop extends Statement {
     public Expression getDefinition() {
         return getBasicArg(1);
     }
+    
+    public void setDefinition(Expression exp) {
+        // TODO: setExp ???
+        setArg(1, exp);
+    }
 
     @Override
     public Expression getBody() {

@@ -436,14 +436,16 @@ public class Profile {
         Mappings map = exec.query(str);
         
         for (Mapping m : map) {
-            IDatatype dt   = getValue(m, "?uri");
+            IDatatype dt = getValue(m, "?uri");
             IDatatype list = getValue(m, "?list");
-            System.out.println("federation: " + dt + " : " + list);
-            FederateVisitor.declareFederation(dt.getLabel(), list.getValueList());
-            
-            for (IDatatype serv : list.getValueList()) {
-                System.out.println("access: " + serv.getLabel());
-                Access.define(serv.getLabel(), true);
+            if (dt != null) {
+                System.out.println("federation: " + dt + " : " + list);
+                FederateVisitor.declareFederation(dt.getLabel(), list.getValueList());
+
+                for (IDatatype serv : list.getValueList()) {
+                    System.out.println("access: " + serv.getLabel());
+                    Access.define(serv.getLabel(), true);
+                }
             }
         }
     }

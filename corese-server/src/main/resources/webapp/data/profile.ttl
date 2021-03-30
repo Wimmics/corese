@@ -499,11 +499,7 @@ sw:body (
 
 
 
-st:tutorial1 a st:Server ;
-  st:service "rdf" ;
-  st:transform st:web ;
-  st:content st:tutocontent
-.
+
 
 st:tutorial2 a st:Server ;
   st:param [ st:lang 'en';
@@ -631,55 +627,7 @@ st:inriacontent a sw:Workflow ; sw:body (
     
     
   
-@prefix cn: <http://cdn.fr/schema/>
-  
-# /tutorial/cdn
-
-st:cdn a st:Server ;
-    st:service "cdn" ;
-    st:transform st:cdn ;
-    
-    st:param [
-      st:import st:history
-    ] ;
-    
-    st:content st:cdncontent  
-  .  
-    
-st:cdncontent a sw:Workflow ; sw:body ( 
-[ a sw:Load ; sw:named true ; sw:path 
-  <cdn/aa_siecle.ttl> ,  <cdn/fr.ttl> , 
-  <cdn/spqr.ttl> ,    <cdn/franc.ttl> , <cdn/eds.ttl> , 
-  <cdn/emp.ttl> ,     <cdn/provence.ttl> ,  <cdn/icon.rdf> , 
-  <cdn/icon.ttl> ,    <cdn/context.ttl> ,
-  <cdn/an1000.ttl> ,  <cdn/an1100.ttl> , 
-  <cdn/an1200.ttl> ,  <cdn/an1300.ttl> ,  <cdn/an1400.ttl> , 
-  <cdn/an1500.ttl> ,  <cdn/an1600.ttl> ,  <cdn/an1700.ttl> , 
-  <cdn/an1800.ttl> ,  <cdn/an1900.ttl>  ,  <cdn/pos.ttl>	
-] 
-).
-
-    
- st:history a st:Profile ;
-    st:transform st:cdn ;        
-    st:param [
-      st:text ( "Antiquité" "France" "Contexte" "Savoie, Piémont" "Comté de Nice");
-      st:topic ( (cn:rome) (cn:fr) (cn:emp cn:context) (cn:mds) (cn:cdn)) ;      
-      st:min -700 ;
-      st:max 3000 ;
-    ] .
-    
-    
- st:antiquity a st:Profile ;
-    st:transform st:cdn ;    
-    st:param [      
-      st:text ( "Antiquité"  "France" "Contexte" );
-      st:topic ( (cn:rome) (cn:fr) (cn:emp cn:context) ) ;      
-      st:uri cn:I ;
-      st:min -700 ;
-      st:max 500 ;
-    ] .
-          
+ 
 
 
 

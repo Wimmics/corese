@@ -1,0 +1,87 @@
+#
+# Federation definition 
+# <http://corese.inria.fr/d2kab/federate> <http://corese.inria.fr/d2kab/sparql>
+# A federation is an URI associated to a list of sparql endpoints
+# The URI can itself be  used as the URL of a sparql endpoint to query the endpoints
+# of the federation
+# mode /federate : split and rewrite the query with several service clauses
+# mode /sparql :   rewrite the whole query with one service clause
+# This file is processed by /data/query/federation.rq
+#
+
+#
+# For testing
+#
+<http://localhost:8080/test/federate> a st:Federation ;
+    rdfs:label "test" ;
+    st:definition (<http://localhost:8080/test1/federate> <http://localhost:8080/test2/federate>)
+    #st:definition (<http://localhost:8080/sparql> <http://corese.inria.fr/sparql>)
+.
+
+<http://corese.inria.fr/test/federate> a st:Federation ;
+    owl:sameAs <http://localhost:8080/test/federate>
+.
+
+
+<http://localhost:8080/test1/federate>  a st:Federation ;
+    rdfs:label "test1" ;
+    st:definition (<http://localhost:8080/sparql>)
+.
+
+<http://localhost:8080/test2/federate> a st:Federation ;
+    rdfs:label "test2" ;
+    st:definition (<http://corese.inria.fr/sparql> )
+.
+
+
+
+
+#
+# D2KAB
+#
+
+#
+# Several service clauses
+#
+<http://corese.inria.fr/d2kab/federate> a st:Federation ;
+    rdfs:label "d2kab" ;
+    st:definition (
+    
+<http://147.100.179.235:8082/blazegraph/namespace/AnaEE_sites/sparql>
+<https://ico.iate.inra.fr/fuseki/annotation/query> 
+<https://ico.iate.inra.fr/fuseki/ontology/query> 
+<http://taxref-graphdb.i3s.unice.fr/repositories/geco>
+<http://quantum.agroparistech.fr/graphdb/repositories/Composite_making_process>
+<http://ontology.irstea.fr/ppdo/sparql>
+<https://opendata.inra.fr/openrdf-sesame/repositories/Ahol> 
+<http://agrold.southgreen.fr/sparql> 
+<http://ontology.irstea.fr/bsv/sparql> 
+<http://ontology.irstea.fr/weather/sparql> 
+
+#<http://geco.ecophytopic.fr:8890/sparql> 
+#<http://sparql.agroportal.lirmm.fr/sparql/>
+#<http://taxref.mnhn.fr/sparql> 
+)
+.
+
+#
+# One service clause
+#
+<http://corese.inria.fr/d2kab/sparql> a st:Federation ;
+    rdfs:label "d2kab" ;
+    st:definition (
+<http://corese.inria.fr/d2kab/federate>
+#<http://sparql.agroportal.lirmm.fr/sparql/>
+)
+.
+
+<http://localhost:8080/d2kab/federate> a st:Federation ;
+st:definition (<http://corese.inria.fr/d2kab/federate>)
+.
+<http://localhost:8080/d2kab/sparql> a st:Federation ;
+st:definition (<http://corese.inria.fr/d2kab/sparql>)
+.
+
+
+
+

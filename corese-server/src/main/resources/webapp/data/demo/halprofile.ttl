@@ -1,0 +1,84 @@
+
+@prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
+@prefix d3:  <http://ns.inria.fr/sparql-template/d3#>
+
+
+st:tutorialhal a st:Server ;
+  st:param [ st:lang 'en' ;
+  
+#  st:patternparam  st:mode ;
+#  st:patternoption ("?country" "$mode, ?country") ;
+
+# these URI have space instead of _ in hal
+# we need special treatment (see workflowhal.ttl)
+
+  st:patternvalue  (
+        db:Afrique_du_Sud db:Arabie_saoudite 
+        db:Corée_du_Sud db:Corée_du_Nord <http://fr.dbpedia.org/resource/Côte_d’Ivoire> db:République_tchèque db:Sierra_Leone db:Sri_Lanka 
+    ) ;
+    
+    #st:processquery fun:trace ;
+    
+    st:sttl st:combine ; 
+    st:transformations (
+        navlab:map d3:frame st:hturtle
+        ) ; 
+    st:hyperlink true ; 
+    st:number true ;
+    st:export true ;
+    st:contextlist(st:geo) ;
+    st:focus false ;
+    st:mapzoom 3 ;
+    st:mapsize "mapmedium" ; # mapmedium maplarge
+    st:title "HAL Open Data" ;
+    st:lodprofile (
+        (<https://aurehal.archives-ouvertes.fr/> st:hal)
+        (<https://data.archives-ouvertes.fr/> st:hal)
+        (<http://www.w3c.org/ns/org> st:hal) 
+        (<http://fr.dbpedia.org/resource/> st:dbpedia)         
+        ("*" st:lod)
+    ) 
+  ] ;
+  st:service "halopendata" ;
+  st:workflow st:halwf ;
+  st:shareContent st:tutohal
+.
+
+
+st:halsparql a st:Server ;
+  st:service "halsparql" ;
+  st:shareContent st:tutohal
+.
+
+
+st:halwf a sw:Workflow ; sw:body (
+    [ a sw:Query ] # place holder for the query
+    [ a sw:Transformation ; sw:uri st:web ]
+)
+.
+
+
+st:tutohal a sw:Workflow ; sw:body ( 
+    [ a sw:Query ; sw:uri <hal/process.rq> ]
+    [ a sw:Parallel ; sw:body ( 
+      # main is empty
+          #  st:humancontent  
+
+      [ a sw:Workflow ; sw:body ( [ a sw:Load ; sw:path <hal/workflowhalpublic.ttl> ] ) ]
+      
+      # context dataset with predefined queries in a specific graph
+      [ a sw:Workflow ; sw:name st:context ; sw:body ( 
+        [ a sw:Load ; sw:path <hal/workflowhalpublic.ttl>  ; sw:name st:context ]
+        st:indexQuery ) ]
+        
+      [ a sw:Workflow ; sw:name st:geo ; sw:body ( 
+        [ a sw:Load ; sw:path <hal/country.ttl> ; sw:name st:geo ]
+        [ a sw:RuleBase ; sw:uri sw:owlrl ]
+      ) ]
+  
+	  
+      ) ]    
+    # set st:context graph as named graph of main
+    [a sw:Dataset]
+).
+

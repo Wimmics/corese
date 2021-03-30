@@ -1,17 +1,10 @@
 @prefix spq:    <http://ns.inria.fr/sparql-template/sparql#>
 
+[] owl:imports <d2kab/function/function.rq>
+
 
 st:access st:namespace 
-<http://corese.inria.fr/>,
-<d2kab/>,
-<https://opendata.inra.fr/openrdf-sesame/repositories/Ahol> ,
-    <http://quantum.agroparistech.fr/graphdb/repositories/Composite_making_process>,
-    <http://geco.ecophytopic.fr:8890/sparql>,
-    <http://agrold.southgreen.fr/sparql>,
-    <http://ontology.irstea.fr/bsv/sparql>,
-    <http://ontology.irstea.fr/weather/sparql>,
-    <http://sparql.agroportal.lirmm.fr/sparql/>,
-    <http://taxref.mnhn.fr/sparql>       
+<d2kab/>
 .
 
 
@@ -92,22 +85,25 @@ st:d2kabIndex a sw:Workflow ; # sw:name st:d2kab ;
         [ a sw:Load ; sw:path 
     <d2kab/data/agroparistechclass.ttl>,
     <d2kab/data/agroparistechproperty.ttl>,
-    <d2kab/data/agroparistechpropertyns.ttl>,
+    <d2kab/data/agroparistechpropertydom.ttl>,
     <d2kab/data/aholclass.ttl>,
     <d2kab/data/aholproperty.ttl>,
-    <d2kab/data/aholpropertyns.ttl>,
+    <d2kab/data/aholpropertydom.ttl>,
     <d2kab/data/bsvclass.ttl>,
     <d2kab/data/bsvproperty.ttl>,
-    <d2kab/data/bsvpropertyns.ttl>,
+    <d2kab/data/bsvpropertydom.ttl>,
     <d2kab/data/ecophytoclass.ttl>,
     <d2kab/data/ecophytoproperty.ttl>,
-    <d2kab/data/ecophytopropertyns.ttl>,
+    <d2kab/data/ecophytopropertydom.ttl>,
+    <d2kab/data/ppdoclass.ttl>,
+    <d2kab/data/ppdoproperty.ttl>,
+    <d2kab/data/ppdopropertydom.ttl>,
     <d2kab/data/taxrefclass.ttl>,
     <d2kab/data/taxrefproperty.ttl>,
-    <d2kab/data/taxrefpropertyns.ttl>,
+    <d2kab/data/taxrefpropertydom.ttl>,
     <d2kab/data/weatherclass.ttl>,
     <d2kab/data/weatherproperty.ttl>,
-    <d2kab/data/weatherpropertyns.ttl>
+    <d2kab/data/weatherpropertydom.ttl>
             ]
        # [ a sw:RuleBase ; sw:uri sw:owlrl ]
       ) 

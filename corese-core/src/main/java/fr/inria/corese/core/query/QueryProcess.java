@@ -517,7 +517,11 @@ public class QueryProcess extends QuerySolver {
         if (ast.isUpdate()) {
             return update(ast);
         }
-        return query(ast, null);
+        return query(ast, (Dataset) null);
+    }
+    
+    public Mappings query(ASTQuery ast, Binding b) throws EngineException {
+        return query(ast, Dataset.create(b));
     }
 
     public Mappings query(ASTQuery ast, Dataset ds) throws EngineException {

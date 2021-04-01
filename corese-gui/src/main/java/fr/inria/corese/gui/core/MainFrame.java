@@ -440,50 +440,53 @@ public class MainFrame extends JFrame implements ActionListener {
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
         //crée les options du menu et leurs listeners
-        loadRDFs = new JMenuItem("1 - Load RDFS/OWL");
+        loadRDFs = new JMenuItem("RDFS/OWL");
         loadRDFs.addActionListener(this);
-        loadRDFs.setToolTipText("Step 1 : load RDFs file and ontology rules");
+        loadRDFs.setToolTipText("Load RDFs file and ontology rules");
 
-        loadRule = new JMenuItem("2 - Load Rule");
+        loadRule = new JMenuItem("Rule");
         loadRule.addActionListener(this);
-        loadRule.setToolTipText("Step 2 : Load file with inferencing rules");
-
-        loadRDF = new JMenuItem("3 - Load RDF");
-        loadRDF.addActionListener(this);
-        loadRDF.setToolTipText("Step 3 : Load RDF file");
+        loadRule.setToolTipText("Load file with inferencing rules");
         
-        loadSHACL = new JMenuItem("Load SHACL");
+        loadAndRunRule = new JMenuItem("Load & Run Rule");
+        loadAndRunRule.addActionListener(this);
+
+        loadRDF = new JMenuItem("RDF");
+        loadRDF.addActionListener(this);
+        loadRDF.setToolTipText("Load RDF file");
+        
+        loadSHACL = new JMenuItem("SHACL");
         loadSHACL.addActionListener(this);
         loadSHACL.setToolTipText("Load SHACL");
         
-        loadSHACLShape = new JMenuItem("Load SHACL Shape Validator");
+        loadSHACLShape = new JMenuItem("SHACL Shape Validator");
         loadSHACLShape.addActionListener(this);
         loadSHACLShape.setToolTipText("Load SHACL Shape Validator");
         
-        loadShex = new JMenuItem("Load Shex");
+        loadQuery = new JMenuItem("Query");
+        loadQuery.addActionListener(this);
+        
+        loadShex = new JMenuItem("Shex");
         loadShex.addActionListener(this);
         loadShex.setToolTipText("Load Shex");
-
-        execWorkflow = new JMenuItem("Process Workflow");
-        execWorkflow.addActionListener(this);
         
-        loadWorkflow = new JMenuItem("Load Workflow");
+        loadWorkflow = new JMenuItem("Workflow");
         loadWorkflow.addActionListener(this);
         
         loadRunWorkflow = new JMenuItem("Load & Run Workflow");
         loadRunWorkflow.addActionListener(this);
 
-        loadQuery = new JMenuItem("Load Query");
-        loadQuery.addActionListener(this);
+        loadStyle = new JMenuItem("Style");
+        loadStyle.addActionListener(this);
+        
+        execWorkflow = new JMenuItem("Process Workflow");
+        execWorkflow.addActionListener(this);
 
         cpTransform = new JMenuItem("Compile Transformation");
         cpTransform.addActionListener(this);
         
         shex = new JMenuItem("Translate Shex to Shacl");
         shex.addActionListener(this);
-
-        loadStyle = new JMenuItem("Load Style");
-        loadStyle.addActionListener(this);
 
         saveQuery = new JMenuItem("Save Query");
         saveQuery.addActionListener(this);
@@ -527,9 +530,7 @@ public class MainFrame extends JFrame implements ActionListener {
         itypecheck = defItem("Engine",   "shacl/typecheck.rq");
         ipredicate = defItem("Predicate", "shacl/predicate.rq");
         ipredicatepath = defItem("Predicate Path", "shacl/predicatepath.rq");
-        
-        loadAndRunRule = new JMenuItem("Load&Run Rule");
-        loadAndRunRule.addActionListener(this);
+
         cut = new JMenuItem("Cut");
         cut.addActionListener(this);
         copy = new JMenuItem("Copy");
@@ -621,24 +622,28 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu eventMenu = new JMenu("Event");        
         JMenu explainMenu = new JMenu("Explain");
         JMenu aboutMenu = new JMenu("?");
+        
+        JMenu fileMenuLoad = new JMenu("Load");
 
         //On ajoute tout au menu
-        fileMenu.add(loadRDFs);
-        fileMenu.add(loadRule);
-        fileMenu.add(loadRDF);
-        fileMenu.add(loadSHACL);
-        fileMenu.add(loadSHACLShape);
-        fileMenu.add(loadShex);
-        fileMenu.add(loadQuery);
-        fileMenu.add(loadWorkflow);
-        fileMenu.add(loadRunWorkflow);
+        fileMenu.add(fileMenuLoad);
+
+        fileMenuLoad.add(loadRDFs);
+        fileMenuLoad.add(loadRule);
+        fileMenuLoad.add(loadAndRunRule);
+        fileMenuLoad.add(loadRDF);
+        fileMenuLoad.add(loadSHACL);
+        fileMenuLoad.add(loadSHACLShape);
+        fileMenuLoad.add(loadQuery);
+        fileMenuLoad.add(loadShex);
+        fileMenuLoad.add(loadWorkflow);
+        fileMenuLoad.add(loadRunWorkflow);
+        fileMenuLoad.add(loadStyle);
         fileMenu.add(execWorkflow);
         fileMenu.add(cpTransform);
         fileMenu.add(shex);
         fileMenu.add(saveQuery);
         fileMenu.add(saveResult);
-        fileMenu.add(loadAndRunRule);
-        fileMenu.add(loadStyle);
 
         queryMenu.add(iselect);
         queryMenu.add(iselecttuple);

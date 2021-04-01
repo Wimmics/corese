@@ -11,6 +11,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.shacl.Shacl;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -211,7 +212,11 @@ public class TripleStore implements URLParam {
                 map = exec.query(federate(query, ds), ds);
             } else if (isShacl(c)) {
                 map = shacl(query, ds);
-            } else {
+            } 
+            else if (isConstruct(c)) {
+                map = construct(query, ds);
+            }
+            else {
                 map = exec.query(query, ds);
             }
             after(exec, query, ds);
@@ -264,6 +269,10 @@ public class TripleStore implements URLParam {
         return c.hasValue(SHACL) && hasValueList(c, URI);
     }
     
+    boolean isConstruct(Context c) {
+        return c.hasValue(CONSTRUCT);
+    }
+    
     boolean hasValueList(Context c, String name) {
         return c.hasValue(name) && c.get(name).isList() && c.get(name).size()>0;
     }
@@ -298,6 +307,25 @@ public class TripleStore implements URLParam {
         exec.setDebug(ds.getContext().isDebug());
         Mappings map = exec.query(query);
         return map;
+    }
+    
+    Mappings construct(String query, Dataset ds) throws EngineException {
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        try {
+            for (IDatatype dt : ds.getContext().get(URI)) {
+                ld.parse(dt.getLabel());       
+            }
+            g.init();
+            Mappings map = new Mappings();
+            Query q = getQueryProcess().compile(query);
+            map.setGraph(g);
+            map.setQuery(q);
+            return map;
+        } catch (LoadException ex) {
+            logger.error(ex);
+            throw new EngineException(ex) ;
+        }
     }
     
     ASTQuery federate(String query, Dataset ds) throws EngineException {

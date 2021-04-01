@@ -450,17 +450,6 @@ public class Eval implements ExpType, Plugin {
         return results;
     }
 
-    /**
-     * gNode = subQuery.getGraphNode(graphName); node = env.getNode(graphName)
-     *
-     */
-//    public Mappings query(Node gNode, Node node, Query query) {
-//        if (gNode != null && node != null) {
-//            getMemory().push(gNode, node);
-//        }
-//        return eval(gNode, query, null);
-//    }
-
     // draft for processing EXTERN expression
     public void add(Plugin p) {
         plugin = p;
@@ -491,8 +480,9 @@ public class Eval implements ExpType, Plugin {
     }
 
     /**
-     * Eval exp alone in a fresh new Memory Node gNode : actual graph node Node
-     * node : exp graph node
+     * Eval exp alone in a fresh new Memory 
+     * Node gNode : actual graph node 
+     * Node queryNode : exp graph node
      */
     public Mappings subEval(Producer p, Node gNode, Node queryNode, Exp exp, Exp main) throws SparqlException {
         return subEval(p, gNode, queryNode, exp, main, null, null, false);
@@ -509,8 +499,11 @@ public class Eval implements ExpType, Plugin {
     }
     
     /**
-     * ext = false : gNode is the URI, queryNode is meaningless
-     * ext = true :  gNode is external graph, queryNode is named graph variable
+     * ext = false : gNode is named graph URI, queryNode is meaningless
+     * ext = true :  gNode is external graph, queryNode is named graph variable if any or null
+     * node: if ext=true & queryNode=null -> gNode can be null
+     * external graph: external named graph in GraphStore or Node graph pointer
+     * When external: Producer p is new Producer(externalGraph)
      * 
      */
     Mappings subEvalNew(Producer p, Node gNode, Node queryNode, Exp exp, Exp main, Mappings map, Mapping m, boolean bind, boolean external) throws SparqlException {    
@@ -988,11 +981,7 @@ public class Eval implements ExpType, Plugin {
                         eval(p, gNode, stack, n + 1);
                         break;
 
-                    case AND:
-//                        getVisitor().bgp(this, getGraphNode(gNode), exp, null);
-//                        stack = stack.and(exp, n);
-//                        backtrack = eval(p, gNode, stack, n);
-                        
+                    case AND:                        
                         backtrack = and(p, gNode, exp, stack, n);
                         break;
 
@@ -1333,16 +1322,7 @@ public class Eval implements ExpType, Plugin {
             } 
         }
     }
-    
-//    private void graphNode2(Producer p, Node graphNode, Node queryNode, Memory mem) {
-//        if (graphNode != null) {
-//            if (memory.isBound(graphNode)) {
-//                mem.push((queryNode == null) ? graphNode : queryNode, memory.getNode(graphNode));
-//            } else if (graphNode.isConstant()) {
-//                mem.push((queryNode == null) ? graphNode : queryNode, p.getNode(graphNode));
-//            }
-//        }
-//    }
+
 
     private int minus(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
@@ -2173,6 +2153,15 @@ public class Eval implements ExpType, Plugin {
     private int query(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         return query(p, p, gNode, exp, data, stack, n);
     }
+    
+    
+    public Mappings query(Producer p, Node gNode, Exp exp, Mappings data) throws SparqlException {
+        Query subQuery = exp.getQuery();
+        Eval ev = copy(copyMemory(memory, query, subQuery, null), p, evaluator, subQuery, false);
+        ev.getMemory().setJoinMappings(data); 
+        Mappings map = ev.eval(gNode, subQuery, null);
+        return map;
+    }
 
     private int query(Producer p1, Producer p2, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1, evENUM = Event.ENUM;
@@ -2185,21 +2174,21 @@ public class Eval implements ExpType, Plugin {
         // bind sub query select nodes in new memory
         Eval ev = copy(copyMemory(memory, query, subQuery, null), p1, evaluator, subQuery, false);
         // draft federated query
-        ev.getMemory().setJoinMappings(data); //memory.getJoinMappings());
-        Node subNode = null;
+        ev.getMemory().setJoinMappings(data); 
+//        Node subNode = null;
+//
+//        if (newGraph) {}
+//        else if (gNode != null) {
+//            // find equivalent gNode in subquery 
+//            subNode = subQuery.getGraphNode(gNode);
+//            if (env.isBound(gNode)) {
+//                // bind outer gNode as graph node
+//                ev.getMemory().push(subNode, env.getNode(gNode));
+//            }
+//        }
 
-        if (newGraph) {}
-        else if (gNode != null) {
-            // find equivalent gNode in subquery 
-            subNode = subQuery.getGraphNode(gNode);
-            if (env.isBound(gNode)) {
-                // bind outer gNode as graph node
-                ev.getMemory().push(subNode, env.getNode(gNode));
-            }
-        }
-
-        Node gg = newGraph ? gNode : subNode;
-        Mappings lMap = ev.eval(gg, subQuery, null);
+        //Node gg = newGraph ? gNode : subNode;
+        Mappings lMap = ev.eval(gNode, subQuery, null);
 
         getVisitor().query(this, getGraphNode(gNode), exp, lMap);
         getVisitor().finish(lMap);
@@ -2227,7 +2216,7 @@ public class Eval implements ExpType, Plugin {
 
         return backtrack;
     }
-
+    
     /**
      * exp.first() is a subquery that implements a BIND() pop the binding at the
      * end of group pattern

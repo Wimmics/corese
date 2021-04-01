@@ -417,7 +417,7 @@ public class Query extends Exp implements Graphable {
 
     void setError(String mes, Object obj, boolean duplicate) {
         if (errors == null) {
-            errors = new ArrayList<String>();
+            errors = new ArrayList<>();
         }
         String str = mes;
         if (obj != null) {

@@ -87,10 +87,7 @@ public class EvalOptional {
         if (map != null && map.isEmpty()) {
             // Every Mapping fail filter, rest() will always fail: skip optional rest()
             if (env.getQuery().isDebug()) {
-                Eval.logger.info("Optional: candidate Mappings fail filter:");
-                Eval.logger.info(exp.getInscopeFilter().toString());
-                Eval.logger.info("Skip optional part:");
-                Eval.logger.info(exp.toString());
+                trace(exp);
             }
             map2 = Mappings.create(env.getQuery());
         }
@@ -144,6 +141,13 @@ public class EvalOptional {
         }
 
         return backtrack;
+    }
+    
+    void trace(Exp exp) {
+        Eval.logger.info("Optional: candidate Mappings fail filter:");
+        Eval.logger.info(exp.getInscopeFilter().toString());
+        Eval.logger.info("Skip optional part:");
+        Eval.logger.info(exp.toString());
     }
     
     /**

@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.api.Graph;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 
@@ -23,7 +24,7 @@ public class URLServer implements URLParam {
     private HashMapList<String> amap;
     // service Node for service clause
     private Node node;
-    
+    private Graph graph;
     
     
     public URLServer(String s) {
@@ -47,7 +48,16 @@ public class URLServer implements URLParam {
         setParam(parameter(getURL()));
         if (getParam()!=null) {
             setMap(hashmap(getParam()));
+            if (hasParameter(DISPLAY, PARAM)) {
+                display();
+            }
         }
+    }
+    
+    public void display() {
+        getMap().keySet().forEach((key) -> {
+            System.out.println(String.format("%s=%s", key, getParameterList(key)));
+        });
     }
     
     
@@ -109,6 +119,10 @@ public class URLServer implements URLParam {
     
     public boolean hasParameter() {
         return getMap() != null && !getMap().isEmpty();
+    }
+    
+    public boolean hasParameter(String name) {
+        return getParameterList(name) != null;
     }
     
     public boolean hasParameter(String name, String value) {
@@ -258,6 +272,20 @@ public class URLServer implements URLParam {
      */
     public void setNode(Node node) {
         this.node = node;
+    }
+
+    /**
+     * @return the graph
+     */
+    public Graph getGraph() {
+        return graph;
+    }
+
+    /**
+     * @param graph the graph to set
+     */
+    public void setGraph(Graph graph) {
+        this.graph = graph;
     }
     
 }

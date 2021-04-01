@@ -1353,6 +1353,11 @@ public class ASTQuery
     public void inherit(Metadata meta) {
         annotate(meta);
     }
+    
+    public void inheritFunction(ASTQuery ast) {
+        setDefine(ast.getDefine());
+        setDefineLambda(ast.getDefineLambda());
+    }
 
     public void annotate(Metadata meta) {
         for (String m : meta) {

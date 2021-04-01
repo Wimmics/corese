@@ -8,8 +8,14 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 
@@ -55,8 +61,9 @@ public class Service implements URLParam {
     private int timeout = 0;
     private int count = 0;
     private URLServer url;
+    private Binding bind;
     private Access.Level level = Access.Level.DEFAULT;
-    private MediaType format;
+    private String format;
     
     public Service() {
         clientBuilder = ClientBuilder.newBuilder();
@@ -104,57 +111,11 @@ public class Service implements URLParam {
         return map;
     }
     
-    ASTQuery getAST(Query q) {
-        return (ASTQuery) q.getAST();
-    }
-    
-    void metadata(ASTQuery ast) {
-        if (!ast.hasLimit()) {
-            if (ast.hasMetadata(Metadata.LIMIT)) {
-                ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
-            }
-            // DRAFT: for testing (modify ast ...)
-            String lim = getURL().getParameter(LIMIT);
-            if (lim != null) {
-                ast.setLimit(Integer.valueOf(lim));
-            }
-        }
-        if (getURL().isGET() || ast.getGlobalAST().hasMetadata(Metadata.GET)) {
-            setPost(false);
-        }
-        if (getURL().hasParameter(MODE, SHOW)) {
-            setShowResult(true);
-        }
-        if (ast.getGlobalAST().isDebug()) {
-            System.out.println(isPost()?"POST":"GET");
-        }
-        setTrap(ast.getGlobalAST().hasMetadata(Metadata.TRAP));
-        if (! isShowResult()) {
-            setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
-        }
-    }
-
-    ASTQuery mapping(Query q, Mapping m) {
-        Mappings map = new Mappings();
-        map.add(m);
-        CompileService cs = new CompileService();
-        ASTQuery ast = cs.filter(getURL(), q, map, 0, 1);
-        return ast;
-    }
-
     public String process(String query) {
         return process(query, getAccept());
     }
     
-    //   /sparql?format=json
-    String getAccept() {
-        String ft = getURL().getParameter(FORMAT);
-        if (ft == null) {
-            return MIME_TYPE;
-        }
-        return  ResultFormat.decode(ft);
-    }
-    
+
     public String process(String query, String mime) {
         if (isPost()) {
             return post(query, mime);
@@ -162,11 +123,6 @@ public class Service implements URLParam {
         else {
             return get(query, mime);
         }
-    }
-
-    public String post(String query, String mime) {
-        // Server URL without parameters
-        return post(getURL().getServer(), query, mime);
     }
     
     // https://docs.oracle.com/javaee/7/api/index.html
@@ -200,11 +156,8 @@ public class Service implements URLParam {
             }
             
             
-            setFormat(resp.getMediaType());
-            if (isDebug) {
-                System.out.println("service post result");
-                System.out.println(res);
-            }
+            setFormat(resp.getMediaType().toString());
+            trace(res);
             return res;
         } catch (javax.ws.rs.RedirectionException ex) {
             String uri = ex.getLocation().toString();
@@ -215,6 +168,33 @@ public class Service implements URLParam {
             return post(uri, query, mime);
         }
     }
+
+    ASTQuery mapping(Query q, Mapping m) {
+        Mappings map = new Mappings();
+        map.add(m);
+        CompileService cs = new CompileService();
+        ASTQuery ast = cs.filter(getURL(), q, map, 0, 1);
+        return ast;
+    }
+
+
+    //   /sparql?format=json
+    String getAccept() {
+        String ft = getURL().getParameter(FORMAT);
+        if (ft == null) {
+            return MIME_TYPE;
+        }
+        return  ResultFormat.decode(ft);
+    }
+    
+
+
+    public String post(String query, String mime) {
+        // Server URL without parameters
+        return post(getURL().getServer(), query, mime);
+    }
+    
+
     
     Form getForm() {
         return getURL().getMap() == null ? new Form() : new Form(getMap(getURL().getMap()));
@@ -228,14 +208,14 @@ public class Service implements URLParam {
         return amap;
     }
     
-    void complete(Form form) {
-        if (getURL().getMap() != null) {
-            for (String key : getURL().getMap().keySet()) {
-                //System.out.println("service: " + key + "=" + getURL().getParameter(key));
-                form.param(key, getURL().getParameter(key));
-            }
-        }
-    }
+//    void complete(Form form) {
+//        if (getURL().getMap() != null) {
+//            for (String key : getURL().getMap().keySet()) {
+//                //System.out.println("service: " + key + "=" + getURL().getParameter(key));
+//                form.param(key, getURL().getParameter(key));
+//            }
+//        }
+//    }
 
     public String get(String query, String mime) {
         // Server URL without parameters
@@ -282,7 +262,7 @@ public class Service implements URLParam {
         Client client = clientBuilder.build();
         WebTarget target = client.target(url);
         Response resp = target.request(mime).get();
-        setFormat(resp.getMediaType());
+        setFormat(resp.getMediaType().toString());
 
         if (resp.getStatus() == REDIRECT) {
             String myUrl = resp.getLocation().toString();
@@ -294,15 +274,9 @@ public class Service implements URLParam {
         }
         
         String res = resp.readEntity(String.class);
-        if (isDebug) {
-            System.out.println(res);
-        }
+        trace(res);
         return res;
     }
-    
-//        if (getLevel().equals(Level.PUBLIC)) {
-//            form.param(ACCESS, getLevel().toString());
-//        }
     
     public Response get(String uri) {
         Client client = clientBuilder.build();
@@ -323,20 +297,66 @@ public class Service implements URLParam {
     }
 
     public Mappings parseMapping(String str, String encoding) throws LoadException {
-        if (getFormat() != null) {
-            
-            switch (getFormat().toString()) {
-                case ResultFormat.SPARQL_RESULTS_JSON:
-                    if (isShowResult()) {
-                        System.out.println("Service json result");
-                        System.out.println(str);
-                    }
-                    return parseJSONMapping(str);
-            }
+        if (getURL().hasParameter(WRAPPER)) {
+            return wrapper(str);
         }
         
+        if (getFormat() != null) {
+            switch (getFormat()) {
+                case ResultFormat.SPARQL_RESULTS_JSON:
+                    return parseJSONMapping(str);
+                    
+                case ResultFormat.TURTLE:
+                case ResultFormat.TURTLE_TEXT:
+                    return parseTurtle(str);
+            }
+        }
+               
         return parseXMLMapping(str, encoding);
-    }    
+    }  
+    
+    Mappings wrapper(String str) throws LoadException  {
+        String name = getURL().getParameter(WRAPPER);
+        String fname = NSManager.nsm().toNamespace(name);
+        IDatatype dt;
+        try {
+            if (getBind() == null) {
+                dt = QueryProcess.create().funcall(fname, DatatypeMap.newInstance(str));
+            }
+            else {
+                dt = QueryProcess.create().funcall(fname, getBind(), DatatypeMap.newInstance(str));
+            }
+            if (getURL().hasParameter(MODE, SHOW)) {
+                System.out.println("wrap: "+ name);
+                System.out.println(dt);
+            }
+        } catch (EngineException ex) {
+            logger.error("Service wrapper error: " + name);
+            throw new LoadException(ex);
+        }
+        if (dt != null && dt.isExtension() && dt.getDatatypeURI().equals(IDatatype.GRAPH_DATATYPE)) {
+            Mappings map = new Mappings();
+            map.setGraph(dt.getPointerObject().getTripleStore());
+            return map;
+        }
+        throw new LoadException(new IOException(String.format("Wrapper %s fail on service result", name)));
+    }
+    
+    void trace(String str) {
+        if (isShowResult()) {
+            System.out.println("Service string result");
+            System.out.println(str);
+        }
+    }
+    
+    public Mappings parseTurtle(String str) throws LoadException {
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        ld.loadString(str, Load.TURTLE_FORMAT);
+        Mappings map = new Mappings();
+        map.setGraph(g);
+        return map;
+    }
     
     public Mappings parseJSONMapping(String str) {
         SPARQLJSONResult res = new SPARQLJSONResult(Graph.create());
@@ -439,14 +459,14 @@ public class Service implements URLParam {
     /**
      * @return the format
      */
-    public MediaType getFormat() {
+    public String getFormat() {
         return format;
     }
 
     /**
      * @param format the format to set
      */
-    public void setFormat(MediaType format) {
+    public void setFormat(String format) {
         this.format = format;
     }
 
@@ -476,6 +496,50 @@ public class Service implements URLParam {
      */
     public void setCount(int count) {
         this.count = count;
+    }
+    
+        ASTQuery getAST(Query q) {
+        return (ASTQuery) q.getAST();
+    }
+    
+    void metadata(ASTQuery ast) {
+        if (!ast.hasLimit()) {
+            if (ast.hasMetadata(Metadata.LIMIT)) {
+                ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
+            }
+            // DRAFT: for testing (modify ast ...)
+            String lim = getURL().getParameter(LIMIT);
+            if (lim != null) {
+                ast.setLimit(Integer.valueOf(lim));
+            }
+        }
+        if (getURL().isGET() || ast.getGlobalAST().hasMetadata(Metadata.GET)) {
+            setPost(false);
+        }
+        if (getURL().hasParameter(MODE, SHOW)) {
+            setShowResult(true);
+        }
+        if (ast.getGlobalAST().isDebug()) {
+            System.out.println(isPost()?"POST":"GET");
+        }
+        setTrap(getURL().hasParameter(MODE, TRAP) || ast.getGlobalAST().hasMetadata(Metadata.TRAP));
+        if (! isShowResult()) {
+            setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
+        }
+    }
+
+    /**
+     * @return the bind
+     */
+    public Binding getBind() {
+        return bind;
+    }
+
+    /**
+     * @param bind the bind to set
+     */
+    public void setBind(Binding bind) {
+        this.bind = bind;
     }
     
 }

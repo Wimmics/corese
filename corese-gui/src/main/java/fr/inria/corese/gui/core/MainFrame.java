@@ -478,6 +478,9 @@ public class MainFrame extends JFrame implements ActionListener {
 
         loadStyle = new JMenuItem("Style");
         loadStyle.addActionListener(this);
+
+        refresh = new JMenuItem("Reload");
+        refresh.addActionListener(this);
         
         execWorkflow = new JMenuItem("Process Workflow");
         execWorkflow.addActionListener(this);
@@ -557,8 +560,6 @@ public class MainFrame extends JFrame implements ActionListener {
         tuto.addActionListener(this);
         doc = new JMenuItem("Online doc GraphStream");
         doc.addActionListener(this);
-        refresh = new JMenuItem("Reload");
-        refresh.addActionListener(this);
         myRadio = new ButtonGroup();
 //        coreseBox = new JRadioButton("Corese - SPARQL 1.1");
 //        coreseBox.setSelected(true);
@@ -639,6 +640,7 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenuLoad.add(loadWorkflow);
         fileMenuLoad.add(loadRunWorkflow);
         fileMenuLoad.add(loadStyle);
+        fileMenu.add(refresh);
         fileMenu.add(execWorkflow);
         fileMenu.add(cpTransform);
         fileMenu.add(shex);
@@ -715,7 +717,6 @@ public class MainFrame extends JFrame implements ActionListener {
         engineMenu.add(runRules);
         engineMenu.add(runRulesOpt);
         engineMenu.add(reset);
-        engineMenu.add(refresh);
 //        engineMenu.add(coreseBox);
 //        myRadio.add(coreseBox);
         // engineMenu.add(kgramBox);

@@ -1059,7 +1059,7 @@ public class QueryProcess extends QuerySolver {
     }
 
     public IDatatype funcall(String name, Binding b, IDatatype... param) throws EngineException {
-        return funcall(name, new Context().setBind(b), param);
+        return funcall(name, (b==null)?null:new Context().setBind(b), param);
     }
 
     public IDatatype funcall(String name, Context c, IDatatype... param) throws EngineException {

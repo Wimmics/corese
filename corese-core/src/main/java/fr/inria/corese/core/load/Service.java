@@ -8,24 +8,19 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.CompileService;
-import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
-import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
@@ -33,11 +28,9 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Cookie;
-import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.xml.sax.SAXException;
 
 /**
  * Send a SPARQL query to a SPARQL endpoint
@@ -47,10 +40,10 @@ import org.xml.sax.SAXException;
  */
 public class Service implements URLParam {
     static Logger logger = LoggerFactory.getLogger(Service.class);
+     static final String ENCODING = "UTF-8";
 
     
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
-    static final String ENCODING = "UTF-8";
     static final int REDIRECT = 303;
     private ClientBuilder clientBuilder;
 
@@ -64,6 +57,7 @@ public class Service implements URLParam {
     private Binding bind;
     private Access.Level level = Access.Level.DEFAULT;
     private String format;
+    private ServiceParser parser;
     
     public Service() {
         clientBuilder = ClientBuilder.newBuilder();
@@ -78,15 +72,16 @@ public class Service implements URLParam {
     public Service(URLServer serv, ClientBuilder builder) {
         this.clientBuilder = builder;
         setURL(serv);
+        setParser(new ServiceParser(serv));
     }
 
 
     public Mappings select(String query) throws LoadException {
-        return parseMapping(process(query));
+        return getParser().parseMapping(process(query));
     }
 
     public Graph construct(String query) throws LoadException {
-        return parseGraph(process(query));
+        return getParser().parseGraph(process(query));
     }
 
     public Mappings query(Query query, Mapping m) throws LoadException {
@@ -100,9 +95,9 @@ public class Service implements URLParam {
             ast = mapping(query, m);
         }
         if (ast.isSelect() || ast.isAsk()) {
-            map = parseMapping(process(ast.toString()), encoding(ast));
+            map = getParser().parseMapping(process(ast.toString()), encoding(ast));
         } else {
-            Graph g = parseGraph(process(ast.toString()), encoding(ast));
+            Graph g = getParser().parseGraph(process(ast.toString()), encoding(ast));
             map = new Mappings();
             map.setGraph(g);
         }
@@ -141,9 +136,10 @@ public class Service implements URLParam {
             // request() return Invocation.Builder
             Cookie cook = new Cookie(COUNT, Integer.toString(getCount()), url, getURL().getServer());
             Cookie cook2 = new Cookie(PLATFORM, CORESE);
-            Response resp = target.request(mime)
-                    .cookie(cook).cookie(cook2)
-                    .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+            
+            Builder rb = target.request(mime); // .cookie(cook)
+            setHeader(rb);
+            Response resp =  rb.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
             String res = resp.readEntity(String.class);
             
             if (resp.getStatus() == REDIRECT) {
@@ -167,6 +163,25 @@ public class Service implements URLParam {
             }
             return post(uri, query, mime);
         }
+    }
+    
+    void trace(String str) {
+        if (isShowResult()) {
+            System.out.println("Service string result");
+            System.out.println(str);
+        }
+    }
+    
+    Builder setHeader(Builder rb) {
+        if (getURL().hasParameter(HEADER)) {
+            for (String header : getURL().getParameterList(HEADER)) {
+                String[] pair = header.split(":");
+                if (pair.length >= 2) {
+                    rb.header(pair[0], pair[1]);
+                }
+            }
+        }
+        return rb;
     }
 
     ASTQuery mapping(Query q, Mapping m) {
@@ -292,103 +307,6 @@ public class Service implements URLParam {
         return ENCODING;
     }
 
-    public Mappings parseMapping(String str) throws LoadException {
-        return parseMapping(str, ENCODING);
-    }
-
-    public Mappings parseMapping(String str, String encoding) throws LoadException {
-        if (getURL().hasParameter(WRAPPER)) {
-            return wrapper(str);
-        }
-        
-        if (getFormat() != null) {
-            switch (getFormat()) {
-                case ResultFormat.SPARQL_RESULTS_JSON:
-                    return parseJSONMapping(str);
-                    
-                case ResultFormat.TURTLE:
-                case ResultFormat.TURTLE_TEXT:
-                    return parseTurtle(str);
-            }
-        }
-               
-        return parseXMLMapping(str, encoding);
-    }  
-    
-    Mappings wrapper(String str) throws LoadException  {
-        String name = getURL().getParameter(WRAPPER);
-        String fname = NSManager.nsm().toNamespace(name);
-        IDatatype dt;
-        try {
-            if (getBind() == null) {
-                dt = QueryProcess.create().funcall(fname, DatatypeMap.newInstance(str));
-            }
-            else {
-                dt = QueryProcess.create().funcall(fname, getBind(), DatatypeMap.newInstance(str));
-            }
-            if (getURL().hasParameter(MODE, SHOW)) {
-                System.out.println("wrap: "+ name);
-                System.out.println(dt);
-            }
-        } catch (EngineException ex) {
-            logger.error("Service wrapper error: " + name);
-            throw new LoadException(ex);
-        }
-        if (dt != null && dt.isExtension() && dt.getDatatypeURI().equals(IDatatype.GRAPH_DATATYPE)) {
-            Mappings map = new Mappings();
-            map.setGraph(dt.getPointerObject().getTripleStore());
-            return map;
-        }
-        throw new LoadException(new IOException(String.format("Wrapper %s fail on service result", name)));
-    }
-    
-    void trace(String str) {
-        if (isShowResult()) {
-            System.out.println("Service string result");
-            System.out.println(str);
-        }
-    }
-    
-    public Mappings parseTurtle(String str) throws LoadException {
-        Graph g = Graph.create();
-        Load ld = Load.create(g);
-        ld.loadString(str, Load.TURTLE_FORMAT);
-        Mappings map = new Mappings();
-        map.setGraph(g);
-        return map;
-    }
-    
-    public Mappings parseJSONMapping(String str) {
-        SPARQLJSONResult res = new SPARQLJSONResult(Graph.create());
-        Mappings map = res.parse(str);
-        return map;
-    }
-    
-    public Mappings parseXMLMapping(String str, String encoding) throws LoadException {
-        SPARQLResult xml = SPARQLResult.create(Graph.create());
-        xml.setTrapError(isTrap());
-        xml.setShowResult(isShowResult());
-        try {
-            Mappings map = xml.parseString(str, encoding);
-            if (isDebug) {
-                System.out.println(map);
-            }
-            return map;
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            throw LoadException.create(ex);
-        }
-    }
-
-    public Graph parseGraph(String str) throws LoadException {
-        return parseGraph(str, ENCODING);
-    }
-
-    public Graph parseGraph(String str, String encoding) throws LoadException {
-        Graph g = Graph.create();
-        Load ld = Load.create(g);
-        ld.loadString(str, Load.RDFXML_FORMAT);
-        return g;
-    }
 
     /**
      * @return the level
@@ -468,6 +386,7 @@ public class Service implements URLParam {
      */
     public void setFormat(String format) {
         this.format = format;
+        getParser().setFormat(format);
     }
 
     /**
@@ -522,9 +441,10 @@ public class Service implements URLParam {
         if (ast.getGlobalAST().isDebug()) {
             System.out.println(isPost()?"POST":"GET");
         }
-        setTrap(getURL().hasParameter(MODE, TRAP) || ast.getGlobalAST().hasMetadata(Metadata.TRAP));
+        getParser().setTrap(getURL().hasParameter(MODE, TRAP) || ast.getGlobalAST().hasMetadata(Metadata.TRAP));
         if (! isShowResult()) {
             setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
+            getParser().setShowResult(isShowResult());        
         }
     }
 
@@ -540,6 +460,21 @@ public class Service implements URLParam {
      */
     public void setBind(Binding bind) {
         this.bind = bind;
+        getParser().setBind(bind);
+    }
+
+    /**
+     * @return the parser
+     */
+    public ServiceParser getParser() {
+        return parser;
+    }
+
+    /**
+     * @param parser the parser to set
+     */
+    public void setParser(ServiceParser parser) {
+        this.parser = parser;
     }
     
 }

@@ -438,7 +438,7 @@ public class ProviderImpl implements Provider, URLParam {
 
         if (g != null) {
             // service return RDF graph
-            // evaluate BGP(graph)
+            // evaluate query(graph) locally
             QueryProcess exec = QueryProcess.create(g);
             ast.inheritFunction(getAST(q.getGlobalQuery()));
             res = exec.query(ast, getBinding(env));

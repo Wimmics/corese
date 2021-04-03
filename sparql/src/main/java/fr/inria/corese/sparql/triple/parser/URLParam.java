@@ -22,6 +22,7 @@ public interface URLParam {
     static final String BINDING = "binding";
     static final String FOCUS = "focus";
     static final String SKIP = "skip";
+    static final String HEADER = "header";
 
     // value of mode=
     static final String DISPLAY = "cn:display";

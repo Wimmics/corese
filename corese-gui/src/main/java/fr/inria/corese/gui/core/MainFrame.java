@@ -54,6 +54,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
+import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.shex.shacl.Shex;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.Access;
@@ -110,6 +111,11 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem saveResult;
     private JMenuItem loadAndRunRule;
     private JMenuItem refresh;
+    private JMenuItem exportRDF;
+    private JMenuItem exportTurtle;
+    private JMenuItem exportOwl;
+    private JMenuItem exportJson;
+    private JMenuItem exportTrig;
     private JMenuItem copy;
     private JMenuItem cut;
     private JMenuItem paste;
@@ -482,6 +488,26 @@ public class MainFrame extends JFrame implements ActionListener {
         refresh = new JMenuItem("Reload");
         refresh.addActionListener(this);
         
+        exportRDF = new JMenuItem("RDF/XML");
+        exportRDF.addActionListener(this);
+        exportRDF.setToolTipText("Export graph in RDF/XML format");
+
+        exportTurtle = new JMenuItem("Turtle");
+        exportTurtle.addActionListener(this);
+        exportTurtle.setToolTipText("Export graph in Turtle format");
+
+        exportOwl = new JMenuItem("OWL");
+        exportOwl.addActionListener(this);
+        exportOwl.setToolTipText("Export graph in OWL format");
+
+        exportJson = new JMenuItem("JSON");
+        exportJson.addActionListener(this);
+        exportJson.setToolTipText("Export graph in JSON format");
+
+        exportTrig = new JMenuItem("TriG");
+        exportTrig.addActionListener(this);
+        exportTrig.setToolTipText("Export graph in TriG format");
+        
         execWorkflow = new JMenuItem("Process Workflow");
         execWorkflow.addActionListener(this);
 
@@ -625,10 +651,10 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu aboutMenu = new JMenu("?");
         
         JMenu fileMenuLoad = new JMenu("Load");
+        JMenu fileMenuExport = new JMenu("Export");
 
         //On ajoute tout au menu
         fileMenu.add(fileMenuLoad);
-
         fileMenuLoad.add(loadRDFs);
         fileMenuLoad.add(loadRule);
         fileMenuLoad.add(loadAndRunRule);
@@ -640,7 +666,16 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenuLoad.add(loadWorkflow);
         fileMenuLoad.add(loadRunWorkflow);
         fileMenuLoad.add(loadStyle);
+
         fileMenu.add(refresh);
+
+        fileMenu.add(fileMenuExport);
+        fileMenuExport.add(exportRDF);
+        fileMenuExport.add(exportTurtle);
+        fileMenuExport.add(exportOwl);
+        fileMenuExport.add(exportJson);
+        fileMenuExport.add(exportTrig);
+
         fileMenu.add(execWorkflow);
         fileMenu.add(cpTransform);
         fileMenu.add(shex);
@@ -1058,6 +1093,21 @@ public class MainFrame extends JFrame implements ActionListener {
         } //Sauvegarde le résultat sous forme XML dans un fichier texte
         else if (e.getSource() == saveResult) {
             save(current.getTextAreaXMLResult().getText());
+        } // Exporter le graph au format RDF/XML
+        else if (e.getSource() == exportRDF) {
+            saveGraph(Transformer.RDFXML);
+        } // Exporter le graph au format Turle
+        else if (e.getSource() == exportTurtle) {
+            saveGraph(Transformer.TURTLE);
+        } // Exporter le graph au format OWL
+        else if (e.getSource() == exportOwl) {
+            saveGraph(Transformer.OWL);
+        } // Exporter le graph au format Json
+        else if (e.getSource() == exportJson) {
+            saveGraph(Transformer.JSON);
+        } // Exporter le graph au format TriG
+        else if (e.getSource() == exportTrig) {
+            saveGraph(Transformer.TRIG);
         } // Charge et exécute une règle directement
         else if (e.getSource() == loadAndRunRule) {
             loadRunRule();
@@ -1196,6 +1246,16 @@ public class MainFrame extends JFrame implements ActionListener {
                     }
                 }
             }
+        }
+    }
+
+    void saveGraph(String format) {
+        Graph graph = myCorese.getGraph();
+        Transformer transformer = Transformer.create(graph, format);
+        try {
+            save(transformer.transform());
+        } catch (EngineException ex) {
+            LOGGER.error(ex);
         }
     }
     

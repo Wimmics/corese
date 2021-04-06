@@ -54,6 +54,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
+import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.shex.shacl.Shex;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.Access;
@@ -110,6 +111,11 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem saveResult;
     private JMenuItem loadAndRunRule;
     private JMenuItem refresh;
+    private JMenuItem exportRDF;
+    private JMenuItem exportTurtle;
+    private JMenuItem exportOwl;
+    private JMenuItem exportJson;
+    private JMenuItem exportTrig;
     private JMenuItem copy;
     private JMenuItem cut;
     private JMenuItem paste;
@@ -440,50 +446,76 @@ public class MainFrame extends JFrame implements ActionListener {
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
         //crée les options du menu et leurs listeners
-        loadRDFs = new JMenuItem("1 - Load RDFS/OWL");
+        loadRDFs = new JMenuItem("RDFS/OWL");
         loadRDFs.addActionListener(this);
-        loadRDFs.setToolTipText("Step 1 : load RDFs file and ontology rules");
+        loadRDFs.setToolTipText("Load RDFs file and ontology rules");
 
-        loadRule = new JMenuItem("2 - Load Rule");
+        loadRule = new JMenuItem("Rule");
         loadRule.addActionListener(this);
-        loadRule.setToolTipText("Step 2 : Load file with inferencing rules");
-
-        loadRDF = new JMenuItem("3 - Load RDF");
-        loadRDF.addActionListener(this);
-        loadRDF.setToolTipText("Step 3 : Load RDF file");
+        loadRule.setToolTipText("Load file with inferencing rules");
         
-        loadSHACL = new JMenuItem("Load SHACL");
+        loadAndRunRule = new JMenuItem("Load & Run Rule");
+        loadAndRunRule.addActionListener(this);
+
+        loadRDF = new JMenuItem("RDF");
+        loadRDF.addActionListener(this);
+        loadRDF.setToolTipText("Load RDF file");
+        
+        loadSHACL = new JMenuItem("SHACL");
         loadSHACL.addActionListener(this);
         loadSHACL.setToolTipText("Load SHACL");
         
-        loadSHACLShape = new JMenuItem("Load SHACL Shape Validator");
+        loadSHACLShape = new JMenuItem("SHACL Shape Validator");
         loadSHACLShape.addActionListener(this);
         loadSHACLShape.setToolTipText("Load SHACL Shape Validator");
         
-        loadShex = new JMenuItem("Load Shex");
+        loadQuery = new JMenuItem("Query");
+        loadQuery.addActionListener(this);
+        
+        loadShex = new JMenuItem("Shex");
         loadShex.addActionListener(this);
         loadShex.setToolTipText("Load Shex");
-
-        execWorkflow = new JMenuItem("Process Workflow");
-        execWorkflow.addActionListener(this);
         
-        loadWorkflow = new JMenuItem("Load Workflow");
+        loadWorkflow = new JMenuItem("Workflow");
         loadWorkflow.addActionListener(this);
         
         loadRunWorkflow = new JMenuItem("Load & Run Workflow");
         loadRunWorkflow.addActionListener(this);
 
-        loadQuery = new JMenuItem("Load Query");
-        loadQuery.addActionListener(this);
+        loadStyle = new JMenuItem("Style");
+        loadStyle.addActionListener(this);
+
+        refresh = new JMenuItem("Reload");
+        refresh.addActionListener(this);
+        
+        exportRDF = new JMenuItem("RDF/XML");
+        exportRDF.addActionListener(this);
+        exportRDF.setToolTipText("Export graph in RDF/XML format");
+
+        exportTurtle = new JMenuItem("Turtle");
+        exportTurtle.addActionListener(this);
+        exportTurtle.setToolTipText("Export graph in Turtle format");
+
+        exportOwl = new JMenuItem("OWL");
+        exportOwl.addActionListener(this);
+        exportOwl.setToolTipText("Export graph in OWL format");
+
+        exportJson = new JMenuItem("JSON");
+        exportJson.addActionListener(this);
+        exportJson.setToolTipText("Export graph in JSON format");
+
+        exportTrig = new JMenuItem("TriG");
+        exportTrig.addActionListener(this);
+        exportTrig.setToolTipText("Export graph in TriG format");
+        
+        execWorkflow = new JMenuItem("Process Workflow");
+        execWorkflow.addActionListener(this);
 
         cpTransform = new JMenuItem("Compile Transformation");
         cpTransform.addActionListener(this);
         
         shex = new JMenuItem("Translate Shex to Shacl");
         shex.addActionListener(this);
-
-        loadStyle = new JMenuItem("Load Style");
-        loadStyle.addActionListener(this);
 
         saveQuery = new JMenuItem("Save Query");
         saveQuery.addActionListener(this);
@@ -527,9 +559,7 @@ public class MainFrame extends JFrame implements ActionListener {
         itypecheck = defItem("Engine",   "shacl/typecheck.rq");
         ipredicate = defItem("Predicate", "shacl/predicate.rq");
         ipredicatepath = defItem("Predicate Path", "shacl/predicatepath.rq");
-        
-        loadAndRunRule = new JMenuItem("Load&Run Rule");
-        loadAndRunRule.addActionListener(this);
+
         cut = new JMenuItem("Cut");
         cut.addActionListener(this);
         copy = new JMenuItem("Copy");
@@ -556,8 +586,6 @@ public class MainFrame extends JFrame implements ActionListener {
         tuto.addActionListener(this);
         doc = new JMenuItem("Online doc GraphStream");
         doc.addActionListener(this);
-        refresh = new JMenuItem("Reload");
-        refresh.addActionListener(this);
         myRadio = new ButtonGroup();
 //        coreseBox = new JRadioButton("Corese - SPARQL 1.1");
 //        coreseBox.setSelected(true);
@@ -621,24 +649,38 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu eventMenu = new JMenu("Event");        
         JMenu explainMenu = new JMenu("Explain");
         JMenu aboutMenu = new JMenu("?");
+        
+        JMenu fileMenuLoad = new JMenu("Load");
+        JMenu fileMenuExport = new JMenu("Export");
 
         //On ajoute tout au menu
-        fileMenu.add(loadRDFs);
-        fileMenu.add(loadRule);
-        fileMenu.add(loadRDF);
-        fileMenu.add(loadSHACL);
-        fileMenu.add(loadSHACLShape);
-        fileMenu.add(loadShex);
-        fileMenu.add(loadQuery);
-        fileMenu.add(loadWorkflow);
-        fileMenu.add(loadRunWorkflow);
+        fileMenu.add(fileMenuLoad);
+        fileMenuLoad.add(loadRDFs);
+        fileMenuLoad.add(loadRule);
+        fileMenuLoad.add(loadAndRunRule);
+        fileMenuLoad.add(loadRDF);
+        fileMenuLoad.add(loadSHACL);
+        fileMenuLoad.add(loadSHACLShape);
+        fileMenuLoad.add(loadQuery);
+        fileMenuLoad.add(loadShex);
+        fileMenuLoad.add(loadWorkflow);
+        fileMenuLoad.add(loadRunWorkflow);
+        fileMenuLoad.add(loadStyle);
+
+        fileMenu.add(refresh);
+
+        fileMenu.add(fileMenuExport);
+        fileMenuExport.add(exportRDF);
+        fileMenuExport.add(exportTurtle);
+        fileMenuExport.add(exportOwl);
+        fileMenuExport.add(exportJson);
+        fileMenuExport.add(exportTrig);
+
         fileMenu.add(execWorkflow);
         fileMenu.add(cpTransform);
         fileMenu.add(shex);
         fileMenu.add(saveQuery);
         fileMenu.add(saveResult);
-        fileMenu.add(loadAndRunRule);
-        fileMenu.add(loadStyle);
 
         queryMenu.add(iselect);
         queryMenu.add(iselecttuple);
@@ -710,7 +752,6 @@ public class MainFrame extends JFrame implements ActionListener {
         engineMenu.add(runRules);
         engineMenu.add(runRulesOpt);
         engineMenu.add(reset);
-        engineMenu.add(refresh);
 //        engineMenu.add(coreseBox);
 //        myRadio.add(coreseBox);
         // engineMenu.add(kgramBox);
@@ -1052,6 +1093,21 @@ public class MainFrame extends JFrame implements ActionListener {
         } //Sauvegarde le résultat sous forme XML dans un fichier texte
         else if (e.getSource() == saveResult) {
             save(current.getTextAreaXMLResult().getText());
+        } // Exporter le graph au format RDF/XML
+        else if (e.getSource() == exportRDF) {
+            saveGraph(Transformer.RDFXML);
+        } // Exporter le graph au format Turle
+        else if (e.getSource() == exportTurtle) {
+            saveGraph(Transformer.TURTLE);
+        } // Exporter le graph au format OWL
+        else if (e.getSource() == exportOwl) {
+            saveGraph(Transformer.OWL);
+        } // Exporter le graph au format Json
+        else if (e.getSource() == exportJson) {
+            saveGraph(Transformer.JSON);
+        } // Exporter le graph au format TriG
+        else if (e.getSource() == exportTrig) {
+            saveGraph(Transformer.TRIG);
         } // Charge et exécute une règle directement
         else if (e.getSource() == loadAndRunRule) {
             loadRunRule();
@@ -1190,6 +1246,16 @@ public class MainFrame extends JFrame implements ActionListener {
                     }
                 }
             }
+        }
+    }
+
+    void saveGraph(String format) {
+        Graph graph = myCorese.getGraph();
+        Transformer transformer = Transformer.create(graph, format);
+        try {
+            save(transformer.transform());
+        } catch (EngineException ex) {
+            LOGGER.error(ex);
         }
     }
     

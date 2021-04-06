@@ -413,6 +413,8 @@ public class PluginImpl
         return load(dt, null, format, null, Level.USER_DEFAULT);
     }
 
+    // expectedFormat: st:text when argument is rdf text  
+    // st:turtle st:rdfxml st:json
     @Override
     public IDatatype load(IDatatype dt, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat,
             Level level) throws SafetyException {
@@ -425,9 +427,13 @@ public class PluginImpl
         Load ld = Load.create(g);
         ld.setLevel(level);
         try {
-            if (requiredFormat == null) {
+            if (expectedFormat != null && expectedFormat.getLabel().equals(Transformer.TEXT)) {
+                ld.loadString(dt.stringValue(), getFormat(requiredFormat));
+            }
+            else if (requiredFormat == null) {
                 ld.parse(dt.getLabel(), getFormat(expectedFormat));
-            } else {
+            }            
+            else {
                 //System.out.println("PI: " + requiredFormat + " " + getFormat(requiredFormat));
                 ld.parseWithFormat(dt.getLabel(), getFormat(requiredFormat));
             }
@@ -435,7 +441,8 @@ public class PluginImpl
             if (ex.isSafetyException()) {
                 throw ex.getSafetyException();
             }
-            logger.error("Load error: " + dt + " " + ((requiredFormat != null) ? requiredFormat : ""));
+            logger.error(String.format("Load error: %s \n%s %s", dt.stringValue(), 
+                    ((expectedFormat == null) ? "" :expectedFormat), ((requiredFormat == null) ? "" :requiredFormat)));
             logger.error(ex.getMessage());
             //ex.printStackTrace();
         }
@@ -443,6 +450,7 @@ public class PluginImpl
         return res;
     }
 
+    // st:turtle st:rdfxml st:json
     int getFormat(IDatatype dt) {
         return (dt == null) ? Load.UNDEF_FORMAT : LoadFormat.getDTFormat(dt.getLabel());
     }

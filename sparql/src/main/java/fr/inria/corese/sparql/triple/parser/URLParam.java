@@ -22,11 +22,14 @@ public interface URLParam {
     static final String BINDING = "binding";
     static final String FOCUS = "focus";
     static final String SKIP = "skip";
+    static final String HEADER = "header";
 
     // value of mode=
+    static final String DISPLAY = "cn:display";
     static final String TRACE = "trace";
     static final String DEBUG = "debug";
     static final String SHOW = "show";
+    static final String TRAP = "trap";
     static final String SPARQL = "sparql";
     static final String PROVENANCE = "provenance";
     static final String FEDERATE = "federate";
@@ -39,6 +42,8 @@ public interface URLParam {
     static final String COUNT = "count";
     static final String PLATFORM = "platform";
     static final String CORESE = "corese";
+    static final String CONSTRUCT = "construct";
+    static final String WRAPPER = "wrapper";
 
     // values of binding=
     static final String VALUES = "values";

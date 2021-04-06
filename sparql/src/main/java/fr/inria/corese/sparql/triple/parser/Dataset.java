@@ -59,6 +59,12 @@ public class Dataset extends ASTObject {
     public static Dataset create(Context c) {
         return new Dataset(c);
     }
+    
+    public static Dataset create(Binding b) {
+        Dataset ds = new Dataset();
+        ds.setBinding(b);
+        return ds;
+    }
 
     public static Dataset create(List<Constant> f, List<Constant> n) {
         if (f == null && n == null) {

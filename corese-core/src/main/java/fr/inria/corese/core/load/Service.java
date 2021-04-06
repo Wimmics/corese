@@ -8,18 +8,19 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 
-import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
+import javax.ws.rs.client.Invocation.Builder;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
@@ -27,11 +28,9 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Cookie;
-import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.xml.sax.SAXException;
 
 /**
  * Send a SPARQL query to a SPARQL endpoint
@@ -41,10 +40,10 @@ import org.xml.sax.SAXException;
  */
 public class Service implements URLParam {
     static Logger logger = LoggerFactory.getLogger(Service.class);
+     static final String ENCODING = "UTF-8";
 
     
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
-    static final String ENCODING = "UTF-8";
     static final int REDIRECT = 303;
     private ClientBuilder clientBuilder;
 
@@ -55,8 +54,10 @@ public class Service implements URLParam {
     private int timeout = 0;
     private int count = 0;
     private URLServer url;
+    private Binding bind;
     private Access.Level level = Access.Level.DEFAULT;
-    private MediaType format;
+    private String format;
+    private ServiceParser parser;
     
     public Service() {
         clientBuilder = ClientBuilder.newBuilder();
@@ -71,15 +72,16 @@ public class Service implements URLParam {
     public Service(URLServer serv, ClientBuilder builder) {
         this.clientBuilder = builder;
         setURL(serv);
+        setParser(new ServiceParser(serv));
     }
 
 
     public Mappings select(String query) throws LoadException {
-        return parseMapping(process(query));
+        return getParser().parseMapping(process(query));
     }
 
     public Graph construct(String query) throws LoadException {
-        return parseGraph(process(query));
+        return getParser().parseGraph(process(query));
     }
 
     public Mappings query(Query query, Mapping m) throws LoadException {
@@ -93,9 +95,9 @@ public class Service implements URLParam {
             ast = mapping(query, m);
         }
         if (ast.isSelect() || ast.isAsk()) {
-            map = parseMapping(process(ast.toString()), encoding(ast));
+            map = getParser().parseMapping(process(ast.toString()), encoding(ast));
         } else {
-            Graph g = parseGraph(process(ast.toString()), encoding(ast));
+            Graph g = getParser().parseGraph(process(ast.toString()), encoding(ast));
             map = new Mappings();
             map.setGraph(g);
         }
@@ -104,57 +106,11 @@ public class Service implements URLParam {
         return map;
     }
     
-    ASTQuery getAST(Query q) {
-        return (ASTQuery) q.getAST();
-    }
-    
-    void metadata(ASTQuery ast) {
-        if (!ast.hasLimit()) {
-            if (ast.hasMetadata(Metadata.LIMIT)) {
-                ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
-            }
-            // DRAFT: for testing (modify ast ...)
-            String lim = getURL().getParameter(LIMIT);
-            if (lim != null) {
-                ast.setLimit(Integer.valueOf(lim));
-            }
-        }
-        if (getURL().isGET() || ast.getGlobalAST().hasMetadata(Metadata.GET)) {
-            setPost(false);
-        }
-        if (getURL().hasParameter(MODE, SHOW)) {
-            setShowResult(true);
-        }
-        if (ast.getGlobalAST().isDebug()) {
-            System.out.println(isPost()?"POST":"GET");
-        }
-        setTrap(ast.getGlobalAST().hasMetadata(Metadata.TRAP));
-        if (! isShowResult()) {
-            setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
-        }
-    }
-
-    ASTQuery mapping(Query q, Mapping m) {
-        Mappings map = new Mappings();
-        map.add(m);
-        CompileService cs = new CompileService();
-        ASTQuery ast = cs.filter(getURL(), q, map, 0, 1);
-        return ast;
-    }
-
     public String process(String query) {
         return process(query, getAccept());
     }
     
-    //   /sparql?format=json
-    String getAccept() {
-        String ft = getURL().getParameter(FORMAT);
-        if (ft == null) {
-            return MIME_TYPE;
-        }
-        return  ResultFormat.decode(ft);
-    }
-    
+
     public String process(String query, String mime) {
         if (isPost()) {
             return post(query, mime);
@@ -162,11 +118,6 @@ public class Service implements URLParam {
         else {
             return get(query, mime);
         }
-    }
-
-    public String post(String query, String mime) {
-        // Server URL without parameters
-        return post(getURL().getServer(), query, mime);
     }
     
     // https://docs.oracle.com/javaee/7/api/index.html
@@ -185,9 +136,10 @@ public class Service implements URLParam {
             // request() return Invocation.Builder
             Cookie cook = new Cookie(COUNT, Integer.toString(getCount()), url, getURL().getServer());
             Cookie cook2 = new Cookie(PLATFORM, CORESE);
-            Response resp = target.request(mime)
-                    .cookie(cook).cookie(cook2)
-                    .post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
+            
+            Builder rb = target.request(mime); // .cookie(cook)
+            setHeader(rb);
+            Response resp =  rb.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
             String res = resp.readEntity(String.class);
             
             if (resp.getStatus() == REDIRECT) {
@@ -200,11 +152,8 @@ public class Service implements URLParam {
             }
             
             
-            setFormat(resp.getMediaType());
-            if (isDebug) {
-                System.out.println("service post result");
-                System.out.println(res);
-            }
+            setFormat(resp.getMediaType().toString());
+            trace(res);
             return res;
         } catch (javax.ws.rs.RedirectionException ex) {
             String uri = ex.getLocation().toString();
@@ -215,6 +164,52 @@ public class Service implements URLParam {
             return post(uri, query, mime);
         }
     }
+    
+    void trace(String str) {
+        if (isShowResult()) {
+            System.out.println("Service string result");
+            System.out.println(str);
+        }
+    }
+    
+    Builder setHeader(Builder rb) {
+        if (getURL().hasParameter(HEADER)) {
+            for (String header : getURL().getParameterList(HEADER)) {
+                String[] pair = header.split(":");
+                if (pair.length >= 2) {
+                    rb.header(pair[0], pair[1]);
+                }
+            }
+        }
+        return rb;
+    }
+
+    ASTQuery mapping(Query q, Mapping m) {
+        Mappings map = new Mappings();
+        map.add(m);
+        CompileService cs = new CompileService();
+        ASTQuery ast = cs.filter(getURL(), q, map, 0, 1);
+        return ast;
+    }
+
+
+    //   /sparql?format=json
+    String getAccept() {
+        String ft = getURL().getParameter(FORMAT);
+        if (ft == null) {
+            return MIME_TYPE;
+        }
+        return  ResultFormat.decode(ft);
+    }
+    
+
+
+    public String post(String query, String mime) {
+        // Server URL without parameters
+        return post(getURL().getServer(), query, mime);
+    }
+    
+
     
     Form getForm() {
         return getURL().getMap() == null ? new Form() : new Form(getMap(getURL().getMap()));
@@ -228,14 +223,14 @@ public class Service implements URLParam {
         return amap;
     }
     
-    void complete(Form form) {
-        if (getURL().getMap() != null) {
-            for (String key : getURL().getMap().keySet()) {
-                //System.out.println("service: " + key + "=" + getURL().getParameter(key));
-                form.param(key, getURL().getParameter(key));
-            }
-        }
-    }
+//    void complete(Form form) {
+//        if (getURL().getMap() != null) {
+//            for (String key : getURL().getMap().keySet()) {
+//                //System.out.println("service: " + key + "=" + getURL().getParameter(key));
+//                form.param(key, getURL().getParameter(key));
+//            }
+//        }
+//    }
 
     public String get(String query, String mime) {
         // Server URL without parameters
@@ -282,7 +277,7 @@ public class Service implements URLParam {
         Client client = clientBuilder.build();
         WebTarget target = client.target(url);
         Response resp = target.request(mime).get();
-        setFormat(resp.getMediaType());
+        setFormat(resp.getMediaType().toString());
 
         if (resp.getStatus() == REDIRECT) {
             String myUrl = resp.getLocation().toString();
@@ -294,15 +289,9 @@ public class Service implements URLParam {
         }
         
         String res = resp.readEntity(String.class);
-        if (isDebug) {
-            System.out.println(res);
-        }
+        trace(res);
         return res;
     }
-    
-//        if (getLevel().equals(Level.PUBLIC)) {
-//            form.param(ACCESS, getLevel().toString());
-//        }
     
     public Response get(String uri) {
         Client client = clientBuilder.build();
@@ -318,57 +307,6 @@ public class Service implements URLParam {
         return ENCODING;
     }
 
-    public Mappings parseMapping(String str) throws LoadException {
-        return parseMapping(str, ENCODING);
-    }
-
-    public Mappings parseMapping(String str, String encoding) throws LoadException {
-        if (getFormat() != null) {
-            
-            switch (getFormat().toString()) {
-                case ResultFormat.SPARQL_RESULTS_JSON:
-                    if (isShowResult()) {
-                        System.out.println("Service json result");
-                        System.out.println(str);
-                    }
-                    return parseJSONMapping(str);
-            }
-        }
-        
-        return parseXMLMapping(str, encoding);
-    }    
-    
-    public Mappings parseJSONMapping(String str) {
-        SPARQLJSONResult res = new SPARQLJSONResult(Graph.create());
-        Mappings map = res.parse(str);
-        return map;
-    }
-    
-    public Mappings parseXMLMapping(String str, String encoding) throws LoadException {
-        SPARQLResult xml = SPARQLResult.create(Graph.create());
-        xml.setTrapError(isTrap());
-        xml.setShowResult(isShowResult());
-        try {
-            Mappings map = xml.parseString(str, encoding);
-            if (isDebug) {
-                System.out.println(map);
-            }
-            return map;
-        } catch (ParserConfigurationException | SAXException | IOException ex) {
-            throw LoadException.create(ex);
-        }
-    }
-
-    public Graph parseGraph(String str) throws LoadException {
-        return parseGraph(str, ENCODING);
-    }
-
-    public Graph parseGraph(String str, String encoding) throws LoadException {
-        Graph g = Graph.create();
-        Load ld = Load.create(g);
-        ld.loadString(str, Load.RDFXML_FORMAT);
-        return g;
-    }
 
     /**
      * @return the level
@@ -439,15 +377,16 @@ public class Service implements URLParam {
     /**
      * @return the format
      */
-    public MediaType getFormat() {
+    public String getFormat() {
         return format;
     }
 
     /**
      * @param format the format to set
      */
-    public void setFormat(MediaType format) {
+    public void setFormat(String format) {
         this.format = format;
+        getParser().setFormat(format);
     }
 
     /**
@@ -476,6 +415,66 @@ public class Service implements URLParam {
      */
     public void setCount(int count) {
         this.count = count;
+    }
+    
+        ASTQuery getAST(Query q) {
+        return (ASTQuery) q.getAST();
+    }
+    
+    void metadata(ASTQuery ast) {
+        if (!ast.hasLimit()) {
+            if (ast.hasMetadata(Metadata.LIMIT)) {
+                ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
+            }
+            // DRAFT: for testing (modify ast ...)
+            String lim = getURL().getParameter(LIMIT);
+            if (lim != null) {
+                ast.setLimit(Integer.valueOf(lim));
+            }
+        }
+        if (getURL().isGET() || ast.getGlobalAST().hasMetadata(Metadata.GET)) {
+            setPost(false);
+        }
+        if (getURL().hasParameter(MODE, SHOW)) {
+            setShowResult(true);
+        }
+        if (ast.getGlobalAST().isDebug()) {
+            System.out.println(isPost()?"POST":"GET");
+        }
+        getParser().setTrap(getURL().hasParameter(MODE, TRAP) || ast.getGlobalAST().hasMetadata(Metadata.TRAP));
+        if (! isShowResult()) {
+            setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
+            getParser().setShowResult(isShowResult());        
+        }
+    }
+
+    /**
+     * @return the bind
+     */
+    public Binding getBind() {
+        return bind;
+    }
+
+    /**
+     * @param bind the bind to set
+     */
+    public void setBind(Binding bind) {
+        this.bind = bind;
+        getParser().setBind(bind);
+    }
+
+    /**
+     * @return the parser
+     */
+    public ServiceParser getParser() {
+        return parser;
+    }
+
+    /**
+     * @param parser the parser to set
+     */
+    public void setParser(ServiceParser parser) {
+        this.parser = parser;
     }
     
 }

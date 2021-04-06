@@ -110,6 +110,10 @@ public class EvalGraphNew {
         return res;
     }
 
+    /**
+     * Node graph: graph URI or Node graph pointer or Node path pointer
+     * Exp exp: graph name { BGP }
+     */
     private Mappings graph(Producer p, Node graph, Exp exp, Mappings map, int n) throws SparqlException {
         int backtrack = n - 1;
         boolean external = false;
@@ -144,9 +148,11 @@ public class EvalGraphNew {
             // exp += values(var, map)
             Exp ee = body;
             if (graph.getPath() == null) {
+                // not a path pointer
                 ee = eval.complete(body, map);
             }
-            res = eval.subEvalNew(np, target, var, ee, main, null, null, false, external);
+            // function call below can be reused with np = new Producer(graph) target=null var=null external=true
+            res = eval.subEvalNew(np, target, var, ee, main, (Mappings)null, (Mapping)null, false, external);
         }
         res.setNamedGraph(graph);
 

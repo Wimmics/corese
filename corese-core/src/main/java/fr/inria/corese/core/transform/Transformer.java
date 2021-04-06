@@ -72,6 +72,7 @@ public class Transformer implements TransformProcessor {
     public static final String OWL = STL + "owl";
     public static final String OWLRL = STL + "owlrl";
     public static final String DATASHAPE = STL + "dsmain";
+    public static final String TEXT = STL + "text";
     public static final String TURTLE = STL + "turtle";
     public static final String TURTLE_HTML = STL + "hturtle";
     public static final String RDFXML = STL + "rdfxml";

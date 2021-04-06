@@ -345,7 +345,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             
             ResultFormat rf = getFormat(map, ds, format, type, transform);            
             String res = rf.toString();
-            
+                       
             ResponseBuilder rb = Response.status(200).header(headerAccept, "*");
             
             if (format != null) {
@@ -395,29 +395,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             int type) {
         return getResultFormat(request, name, oper, uri, param, mode, query, access, defaut, named, null, type, null);
     }
-        
-//        try {
-//            if (query == null) {
-//                throw new Exception("No query");
-//            }
-//            beforeRequest(request, query);
-//            Dataset ds = createDataset(request, defaut, named, access);                                  
-//            beforeParameter(ds, oper, uri, param, mode);
-//            Mappings map = getTripleStore(name).query(request, query, ds);  
-//            afterParameter(ds, map);            
-//            ResultFormat ft = ResultFormat.create(map, type);
-//            String res = ft.toString();
-//            Response resp = Response.status(200).header(headerAccept, "*")
-//                    .entity(res).build();
-//            afterRequest(request, resp, query, map, res);
-//            return resp;
-//        } catch (Exception ex) {
-//            logger.error(ERROR_ENDPOINT, ex);
-//            return Response.status(ERROR).header(headerAccept, "*").entity(ERROR_ENDPOINT).build();
-//        }
-//    }
-
-      
+            
      
     /**
      * parameter format=application/sparql-results+json

@@ -37,10 +37,8 @@ public class TripleFormat extends RDFFormat {
 
     public static TripleFormat create(Mappings map) {
         Graph g = (Graph) map.getGraph();
-        if (g != null) {
-            Query q = map.getQuery();
-            NSManager nsm = ((ASTQuery) q.getAST()).getNSM();
-            return create(g, nsm);
+        if (g != null) {            
+            return create(g, getNSM(map));
         }
         return create(Graph.create());
     }
@@ -51,14 +49,20 @@ public class TripleFormat extends RDFFormat {
 
     public static TripleFormat create(Mappings map, boolean isGraph) {
         Graph g = (Graph) map.getGraph();
-        if (g != null) {
-            Query q = map.getQuery();
-            NSManager nsm = ((ASTQuery) q.getAST()).getNSM();
-            TripleFormat t = new TripleFormat(g, nsm);
+        if (g != null) {            
+            TripleFormat t = new TripleFormat(g, getNSM(map));
             t.setGraph(isGraph);
             return t;
         }
         return create(Graph.create());
+    }
+    
+    static NSManager getNSM(Mappings map) {
+        Query q = map.getQuery();
+        if (q == null) {
+            return nsm();
+        }
+        return ((ASTQuery) q.getAST()).getNSM();
     }
 
     public static TripleFormat create(Graph g, boolean isGraph) {

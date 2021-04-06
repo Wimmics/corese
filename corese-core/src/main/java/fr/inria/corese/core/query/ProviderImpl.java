@@ -33,8 +33,8 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.load.Service;
-import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -137,7 +137,7 @@ public class ProviderImpl implements Provider, URLParam {
     @Override
     public Mappings service(Node serv, Exp exp, Mappings lmap, Eval eval) 
             throws EngineException {
-        Binding b = (Binding) eval.getEnvironment().getBind();
+        Binding b = getBinding(eval.getEnvironment());
         if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel())) {
                 throw new SafetyException(TermEval.SERVICE_MESS);
         }
@@ -252,7 +252,7 @@ public class ProviderImpl implements Provider, URLParam {
         int timeout = getTimeout(q, serviceNode, eval.getEnvironment());
         // by default in parallel 
         boolean parallel = q.getOuterQuery().isParallel();
-        Binding b = (Binding) eval.getEnvironment().getBind();
+        Binding b = getBinding(eval.getEnvironment());
 
         for (Node service : serverList) {
             URLServer url = new URLServer(service);
@@ -346,7 +346,7 @@ public class ProviderImpl implements Provider, URLParam {
                 }
                 // consider subset of Mappings of size slice
                 // it may produce bindings for target service
-                Mappings res = send(compiler, service, q, map, eval.getEnvironment(), size, size + length, timeout, count);
+                Mappings res = send(compiler, service, q, map, eval, size, size + length, timeout, count);
                 // join (serviceNode = serviceURI)
                 complete(exp.getServiceNode(), service.getNode(), res, eval.getEnvironment());
                 addResult(sol, res);
@@ -354,7 +354,7 @@ public class ProviderImpl implements Provider, URLParam {
                 count++;
             }
         } else {
-            Mappings res = send(compiler, service, q, map, eval.getEnvironment(), 0, 0, timeout, count);
+            Mappings res = send(compiler, service, q, map, eval, 0, 0, timeout, count);
             // join (serviceNode = serviceURI)
             complete(exp.getServiceNode(), service.getNode(), res, eval.getEnvironment());
             addResult(sol, res);
@@ -368,13 +368,14 @@ public class ProviderImpl implements Provider, URLParam {
 
     /**
      * Send query to sparql endpoint using HTTP request
-     * Generate variable binding from map or env if any and possibly modify the AST 
-     * with these bindings (filter by default or values)
-     * Handle annotation @binding kg:values kg:filter 
+     * Generate variable binding from map or env if any 
+     * Consider subset of Mappings map within start & limit 
+     * Possibly modify the AST with these bindings (filter or values)
      */
-    Mappings send(CompileService compiler, URLServer serv, Query q, Mappings map, Environment env, 
+    Mappings send(CompileService compiler, URLServer serv, Query q, Mappings map, Eval eval, 
             int start, int limit, int timeout, int count) throws EngineException {
         Query gq = q.getGlobalQuery();
+        Environment env = eval.getEnvironment();
         // use case: ldscript nested query
         boolean debug = serv.hasParameter(MODE, DEBUG) || q.isRecDebug();
         try {
@@ -397,42 +398,66 @@ public class ProviderImpl implements Provider, URLParam {
             if (debug) {
                 logger.info(String.format("** Service %s \n%s", serv, ast));
             }
+                                       
+            Mappings res = send(serv, q, ast, map, env, start, limit, timeout, count);
                         
-            int loop = serv.intValue(LOOP);
-            if (loop > 0) {
-                // loop eval(ast) with limit=loop offset+=limit
-            }
-                      
-            Mappings res = eval(q, ast, serv, env, timeout, count);
-            
             if (debug) {
                 trace(serv, res);
             }
             if (res != null && res.isError()) {
-                logger.info("Parse error in result of: " + serv.getURL());
+                logger.info("Parse error in result of service: " + serv.getURL());
             }
             return res;
-        } 
-        catch (javax.ws.rs.ProcessingException e) {
+        }         
+        catch (javax.ws.rs.ProcessingException | IOException | ParserConfigurationException | 
+                SAXException | SparqlException e) {
             logger.error(e.getMessage());
             logger.error(serv.getServer());
-            gq.addError(SERVICE_ERROR, e);
-        }
-        catch (IOException e) {
             logger.error(q.getAST().toString(), e);
             gq.addError(SERVICE_ERROR, e);
-        } catch (ParserConfigurationException | SAXException e) {
-            e.printStackTrace();
         }
-
-        if (gq.isDebug()) {
-            logger.info("** Service error");
-        }
+        
         return null;
     }
     
+    
+    Mappings send(URLServer serv, Query q, ASTQuery ast, Mappings map, Environment env, 
+            int start, int limit, int timeout, int count) 
+            throws EngineException, IOException, ParserConfigurationException, SAXException {
+        
+        Mappings res = null;
+        Graph g;
+
+        if (serv.getGraph() != null) {
+            // reuse former graph from previous service call
+            g = (Graph) serv.getGraph();
+        } else {
+            res = eval(q, ast, serv, env, timeout, count);
+            g = (Graph) res.getGraph();
+        }
+
+        if (g != null) {
+            // service return RDF graph
+            // evaluate query(graph) locally
+            QueryProcess exec = QueryProcess.create(g);
+            ast.inheritFunction(getAST(q.getGlobalQuery()));
+            res = exec.query(ast, getBinding(env));
+            // record graph for next loop step
+            serv.setGraph(g);
+        }
+        
+        return res;
+    }
+
+    
+    
+    
     ASTQuery getAST(Query q) {
         return (ASTQuery) q.getAST();
+    }
+    
+    Binding getBinding(Environment env) {
+        return (Binding) env.getBind();
     }
     
     void trace(URLServer serv, Mappings res) {
@@ -562,7 +587,7 @@ public class ProviderImpl implements Provider, URLParam {
         // former: 
         q.getGlobalQuery().getSlice();
         int slice = env.getEval().getVisitor().slice(serv, map==null?Mappings.create(q):map);
-        Binding bind = (Binding) env.getBind();
+        Binding bind = getBinding(env);
         IDatatype dt = bind.getGlobalVariable(Binding.SLICE_SERVICE);
         if (dt == null) {
             return slice;
@@ -610,7 +635,7 @@ public class ProviderImpl implements Provider, URLParam {
         boolean trap = ast.isFederate() || ast.getGlobalAST().hasMetadata(Metadata.TRAP);
         boolean show = ast.getGlobalAST().hasMetadata(Metadata.SHOW);
         String query = ast.toString();
-        Binding b = (Binding) env.getBind();
+        Binding b = getBinding(env);
         InputStream stream = doPost(aa.getMetadata(), serv.getURL(), query, timeout, b.getAccessLevel()); 
         return parse(stream, trap, show);
     }
@@ -618,11 +643,12 @@ public class ProviderImpl implements Provider, URLParam {
     
     Mappings post2(Query q, ASTQuery ast, URLServer serv, Environment env, int timeout, int count) throws IOException {
         try {
-            Binding b = (Binding) env.getBind();
+            Binding b = getBinding(env);
             Service service = new Service(serv) ;
             service.setLevel(b.getAccessLevel());
             service.setTimeout(timeout);
             service.setCount(count);
+            service.setBind(b);
             Mappings map = service.query(q, ast, null);
             return map;
         } catch (LoadException ex) {

@@ -790,17 +790,25 @@ public class ProducerImpl implements Producer, IProducerQP {
         if (g == null) {
             g = Graph.create();
         }
+        ProducerImpl p = getProducer(g, env.getQuery());
+        return p;
+    }
+        
+    public static ProducerImpl getProducer(Graph g, Query q) { 
+        ProducerImpl p = getProducer(g);
+        p.setQuery(q);
+        return p;
+    }
+    
+    public static ProducerImpl getProducer(Graph g) {    
         ProducerImpl p = ProducerImpl.create(g);
         MatcherImpl m = MatcherImpl.create(g);
         p.setMode(EXTENSION);
         p.setMatch(true);
         p.set(m);
-        // producer remember the query that createt it
-        // use case: templates may share this producer
-        p.setQuery(env.getQuery());
         return p;
     }
-
+        
     /**
      * @return the speedUp
      */

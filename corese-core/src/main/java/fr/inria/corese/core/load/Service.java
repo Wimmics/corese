@@ -17,10 +17,12 @@ import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.concurrent.TimeUnit;
+import javax.ws.rs.RedirectionException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.Invocation.Builder;
+import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.Form;
 import javax.ws.rs.core.MediaType;
@@ -44,7 +46,6 @@ public class Service implements URLParam {
 
     
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
-    static final int REDIRECT = 303;
     private ClientBuilder clientBuilder;
 
     boolean isDebug = !true;
@@ -141,27 +142,41 @@ public class Service implements URLParam {
             setHeader(rb);
             Response resp =  rb.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
             String res = resp.readEntity(String.class);
-            
-            if (resp.getStatus() == REDIRECT) {
+                        
+            if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
                 String myUrl = resp.getLocation().toString();
                 logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
                 if (myUrl.equals(url)) {
-                    throw new javax.ws.rs.RedirectionException(resp);
+                    throw new RedirectionException(resp);
                 }
                 return post(myUrl, query, mime);
             }
+               
+            trace(resp);
             
+            if (resp.getStatus() >= Response.Status.BAD_REQUEST.getStatusCode()) {
+                throw new ResponseProcessingException(resp, res);
+            }
             
             setFormat(resp.getMediaType().toString());
             trace(res);
             return res;
-        } catch (javax.ws.rs.RedirectionException ex) {
+        } catch (RedirectionException ex) {
             String uri = ex.getLocation().toString();
             logger.warn(String.format("Service redirection: %s to: %s", url, uri));
             if (uri.equals(url)) {
                 throw ex;
             }
             return post(uri, query, mime);
+        }
+    }
+    
+    void trace(Response res) {
+        if (getURL().hasParameter(DISPLAY, HEADER)) {
+            System.out.println("service header: " + getURL().getURL());
+            for (String name : res.getHeaders().keySet()) {
+                System.out.println("header: " + name + "=" + res.getHeaderString(name));
+            }
         }
     }
     
@@ -279,7 +294,7 @@ public class Service implements URLParam {
         Response resp = target.request(mime).get();
         setFormat(resp.getMediaType().toString());
 
-        if (resp.getStatus() == REDIRECT) {
+        if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
             String myUrl = resp.getLocation().toString();
             logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
             if (myUrl.equals(url)) {

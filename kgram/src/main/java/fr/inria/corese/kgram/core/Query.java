@@ -402,7 +402,7 @@ public class Query extends Exp implements Graphable {
     public void setHasFunctional(boolean hasFunctional) {
         this.hasFunctional = hasFunctional;
     }
-
+    
     public void addError(String mes, Object obj) {
         getGlobalQuery().setError(mes, obj);
     }
@@ -433,7 +433,7 @@ public class Query extends Exp implements Graphable {
                     }
                 }
             }
-            logger.error(str);
+            //logger.error(str);
             errors.add(str);
         }
     }

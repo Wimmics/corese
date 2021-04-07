@@ -18,6 +18,10 @@ public class SparqlException extends Exception {
         super(e);
     }
     
+     public SparqlException(Exception e, String m) {
+        super(m, e);
+    }
+    
     public SparqlException(Error e) {
         super(e);
     }

@@ -71,6 +71,7 @@ public class Mappings extends PointerObject
     private Node result;
     private Binder binding;
     private Object provenance;
+    private String link;
 
     public Mappings() {
         list = new ArrayList<Mapping>();
@@ -1732,6 +1733,20 @@ public class Mappings extends PointerObject
         for (Mapping m : this) {
             m.setNamedGraph(node);
         }
+    }
+
+    /**
+     * @return the link
+     */
+    public String getLink() {
+        return link;
+    }
+
+    /**
+     * @param link the link to set
+     */
+    public void setLink(String link) {
+        this.link = link;
     }
 
   

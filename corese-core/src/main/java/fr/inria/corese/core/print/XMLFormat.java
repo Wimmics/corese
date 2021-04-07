@@ -117,6 +117,7 @@ public class XMLFormat {
         return ast;
     }
 
+    @Override
     public String toString() {
         StringBuffer sb = toStringBuffer();
         return sb.toString();
@@ -229,7 +230,9 @@ public class XMLFormat {
         if (printInfoInFile && fileName != null) {
             printLink(fileName);
         }
-
+        if (lMap.getLink() != null) {
+            println(String.format("<link href='%s'/>", lMap.getLink()));
+        }
         println(getTitle(Title.CHEAD));
 
         if (isQTAsk()) {

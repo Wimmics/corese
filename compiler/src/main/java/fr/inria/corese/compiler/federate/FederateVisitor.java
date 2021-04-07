@@ -312,9 +312,24 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             switch (mode.getLabel()) {
                 case DEBUG:
                 case TRACE:
-                    uri = complete(uri, MODE, mode.getLabel());                  
+                    uri = complete(uri, MODE, mode.getLabel()); 
+                    break;                
             }
         }
+        
+        if (ct.hasValue(PARAM)) {
+            // mode=share&param=timeout~1000
+            for (IDatatype param : ct.get(PARAM)) {
+                String label = param.getLabel();
+                if  (label.contains("~")) {
+                    String[] pair = label.split("~");
+                    if (pair.length >= 2) {
+                        uri = complete(uri, pair[0], pair[1]); 
+                    }
+                }
+            }
+        }
+        
         if (ct.hasValue(URI)) {
             for (IDatatype dt : ct.get(URI)) {
                 uri=complete(uri, URI, dt.getLabel());
@@ -323,6 +338,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         System.out.println("FedVis tune URL: " + uri);
         return uri;
     }
+    
+    
     
     String complete(String uri, String key, String val) {
         if (uri.contains("?")) {

@@ -8,13 +8,14 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.CONTEXT;
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.api.IDatatypeList;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Execution Context for SPARQL Query and Template
@@ -83,6 +84,12 @@ public class Context extends ASTObject {
     HashMap<String, Boolean> export;
     private HashMap<String, Context> context;
     NSManager nsm;
+    // service exceptions list
+    private List<EngineException> exceptionList;
+    // service SPARQL Results XML format link href=url
+    private List<String> linkList;
+    // endpoint service URL 
+    List<String> urlList;
     private Binding bind;
     private AccessRight accessRight;
     Access.Level level = Access.Level.USER_DEFAULT;
@@ -612,5 +619,76 @@ public class Context extends ASTObject {
     public void setAccessRight(AccessRight accessRight) {
         this.accessRight = accessRight;
     }
-  
+
+    /**
+     * @return the exceptionList
+     */
+    public List<EngineException> getExceptionList() {
+        return exceptionList;
+    }
+
+    /**
+     * @param exceptionList the exceptionList to set
+     */
+    public void setExceptionList(List<EngineException> exceptionList) {
+        this.exceptionList = exceptionList;
+    }
+    
+    public void add(EngineException e) {       
+        getCreateExceptionList().add(e);
+    }
+    
+    public List<EngineException> getCreateExceptionList() {
+        if (getExceptionList() == null) {
+            setExceptionList(new ArrayList<>());
+        }
+        return getExceptionList();
+    }
+
+    /**
+     * @return the linkList
+     */
+    public List<String> getLink() {
+        return linkList;
+    }
+
+    /**
+     * @param linkList the linkList to set
+     */
+    public void setLink(List<String> linkList) {
+        this.linkList = linkList;
+    }
+    
+    public void addLink(String url) {
+        getCreateLink().add(url);
+    }
+    
+    public List<String> getCreateLink() {
+        if (getLink() == null) {
+            setLink(new ArrayList<>());
+        }
+        return getLink();
+    }
+    
+    public List<String> getURLList() {
+        return urlList;
+    }
+    
+    public void setURLList(List<String> urlList) {
+        this.urlList = urlList;
+    }
+    
+    public void addURL(String url) {
+        if (! getCreateURLList().contains(url)) {
+            getURLList().add(url);
+        }
+    }
+    
+    public List<String> getCreateURLList() {
+        if (getURLList() == null) {
+            setURLList(new ArrayList<>());
+        }
+        return getURLList();
+    }
+    
 }

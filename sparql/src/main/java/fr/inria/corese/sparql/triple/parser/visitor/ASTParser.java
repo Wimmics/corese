@@ -34,9 +34,16 @@ public class ASTParser implements Walker, URLParam {
     void enter(Service exp) {
         Atom serv = exp.getServiceName();
         if (serv.isConstant()) {
-            URLServer url = new URLServer(serv.getLabel());
+            URLServer url = new URLServer(serv.getLabel());            
             if (url.hasParameter(MODE, PROVENANCE)) {
-                ast.provenance();
+                boolean b = false;
+                if (exp.getBodyExp().size()>0 && exp.getBodyExp().get(0).isQuery()) {
+                    ASTQuery aa = exp.getBodyExp().get(0).getAST();
+                    b = aa.provenance();
+                }
+                if (! b) {
+                    ast.provenance();
+                }
             }
         }
     }

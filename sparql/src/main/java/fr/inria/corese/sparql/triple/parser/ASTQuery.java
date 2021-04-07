@@ -283,31 +283,7 @@ public class ASTQuery
     private fr.inria.corese.kgram.core.Query updateQuery;
     private AccessRight accessRight;
 
-    /**
-     * @return the defaultDataset
-     */
-    public Dataset getDefaultDataset() {
-        return defaultDataset;
-    }
 
-    /**
-     * @param defaultDataset the defaultDataset to set
-     */
-    public void setDefaultDataset(Dataset defaultDataset) {
-        this.defaultDataset = defaultDataset;
-        if (defaultDataset != null && defaultDataset.getContext() != null){
-            setContext(defaultDataset.getContext());
-        }
-    }
-
-    public Context getContext() {
-        return context;
-    }
-    
-    public void setContext(Context c){
-        context = c;
-    }
-    
     public Object getTemplateVisitor(){
         if (defaultDataset != null){
             return defaultDataset.getTemplateVisitor();
@@ -631,6 +607,10 @@ public class ASTQuery
                 if (!b) {
                     ok = false;
                 }
+            }
+            
+            if (getValues() != null) {
+                getValues().validate(this);
             }
 
             return ok;
@@ -3754,13 +3734,17 @@ public class ASTQuery
      * otherwise, the variable would not be in the select and it would not be visible
      * The function call happens after parsing, in ASTParser Walker called by Transformer
      */
-    public void provenance() {
+    public boolean provenance() {
         if (getValues() == null) {
             Variable var = new Variable(Service.SERVER_VAR);
-            defSelect(var, null);
             Values values = Values.create(var, (Constant)null);
             setValues(values);
+            if (! isSelectAll()) {
+                defSelect(var, null);
+            }
+            return true;
         }
+        return false;
     }
     
     
@@ -3894,5 +3878,48 @@ public class ASTQuery
     public void defWriteAccess(byte readAccess) {
     }
     
+        /**
+     * @return the defaultDataset
+     */
+    public Dataset getDefaultDataset() {
+        return defaultDataset;
+    }
+
+    /**
+     * @param defaultDataset the defaultDataset to set
+     */
+    public void setDefaultDataset(Dataset defaultDataset) {
+        this.defaultDataset = defaultDataset;
+        if (defaultDataset != null && defaultDataset.getContext() != null){
+            setContext(defaultDataset.getContext());
+        }
+    }
+
+    public Context getContext() {
+        return context;
+    }
     
+    public Context getCreateContext() {
+        if (getContext() == null) {
+            setContext(new Context());
+        }
+        return getContext();
+    }
+    
+    public void setContext(Context c){
+        context = c;
+    }
+    
+    public void addException(EngineException e) {        
+        getCreateContext().add(e);
+    }
+    
+    public void addLink(String url) { 
+        getCreateContext().addLink(url);
+    }    
+    
+    public void addURL(String url) { 
+        getCreateContext().addURL(url);
+    } 
+
 }

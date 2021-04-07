@@ -35,6 +35,7 @@ import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.query.update.Manager;
 import fr.inria.corese.core.query.update.ManagerImpl;
@@ -49,6 +50,7 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1275,6 +1277,32 @@ public class QueryProcess extends QuerySolver {
             transformer.setSPARQLEngine(this);
         }
         return transformer;
+    }
+    
+    public Graph getExceptionGraph(Mappings map) throws LoadException {
+         LogManager te = getLogManager(map);
+         return te.parse();
+    }
+    
+    /**
+     * Manager for local and remote endpoint Exceptions
+     */
+    public LogManager getLogManager(Mappings map) {
+        return new LogManager(getExceptionList(map), getLinkList(map));
+    }
+    
+    // local exceptions
+    public List<EngineException> getExceptionList(Mappings map) {
+        return getAST(map).getCreateContext().getCreateExceptionList();
+    }
+    
+    // remote exceptions
+    public List<String> getLinkList(Mappings map) {
+        return getAST(map).getCreateContext().getCreateLink();
+    }
+
+    public List<String> getURLList(Mappings map) {
+        return getAST(map).getCreateContext().getURLList();
     }
     
     /***********************************************************************/

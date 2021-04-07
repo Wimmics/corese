@@ -50,6 +50,8 @@ import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
+import javax.ws.rs.ProcessingException;
+import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.MediaType;
 
 /**
@@ -253,16 +255,22 @@ public class ProviderImpl implements Provider, URLParam {
         // by default in parallel 
         boolean parallel = q.getOuterQuery().isParallel();
         Binding b = getBinding(eval.getEnvironment());
+        ASTQuery gast = getAST(q.getGlobalQuery());
 
         for (Node service : serverList) {
             URLServer url = new URLServer(service);
             // /sparql?param={?this} 
             // get ?this=value in Binding global variable and set param=value
             url.complete(b);
+            gast.addURL(url.getURL());
+            
             if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel(), service.getLabel())) {
                 logger.error(TermEval.SERVICE_MESS + " " + service.getLabel());
-                throw new SafetyException(TermEval.SERVICE_MESS, service.getLabel());
+                SafetyException ex = new SafetyException(TermEval.SERVICE_MESS, service.getLabel());
+                gast.addException(ex.setURL(url));
+                throw ex;
             }
+            
             if (eval.isStop()) {
                 break;
             }
@@ -353,18 +361,24 @@ public class ProviderImpl implements Provider, URLParam {
                 size += length;
                 count++;
             }
+            
         } else {
             Mappings res = send(compiler, service, q, map, eval, 0, 0, timeout, count);
             // join (serviceNode = serviceURI)
             complete(exp.getServiceNode(), service.getNode(), res, eval.getEnvironment());
             addResult(sol, res);
         }
+        
+        //log(service, sol);
 
         synchronized (eval.getEnvironment().getBind()) {
             eval.getVisitor().service(eval, service.getNode(), exp, sol);
         }
     }
     
+    void log(URLServer serv, Mappings map) {
+        System.out.println("service: " + serv + "; nb results: " + map.size());
+    }
 
     /**
      * Send query to sparql endpoint using HTTP request
@@ -375,9 +389,11 @@ public class ProviderImpl implements Provider, URLParam {
     Mappings send(CompileService compiler, URLServer serv, Query q, Mappings map, Eval eval, 
             int start, int limit, int timeout, int count) throws EngineException {
         Query gq = q.getGlobalQuery();
+        ASTQuery gast = getAST(gq);
         Environment env = eval.getEnvironment();
         // use case: ldscript nested query
         boolean debug = serv.hasParameter(MODE, DEBUG) || q.isRecDebug();
+        ASTQuery targetAST = getAST(q);
         try {
 
             // oririnal ast
@@ -398,8 +414,9 @@ public class ProviderImpl implements Provider, URLParam {
             if (debug) {
                 logger.info(String.format("** Service %s \n%s", serv, ast));
             }
-                                       
-            Mappings res = send(serv, q, ast, map, env, start, limit, timeout, count);
+                   
+            targetAST = ast;
+            Mappings res = send(serv, q, ast, gast, map, env, start, limit, timeout, count);
                         
             if (debug) {
                 trace(serv, res);
@@ -408,22 +425,31 @@ public class ProviderImpl implements Provider, URLParam {
                 logger.info("Parse error in result of service: " + serv.getURL());
             }
             return res;
-        }         
-        catch (javax.ws.rs.ProcessingException | IOException | ParserConfigurationException | 
-                SAXException | SparqlException e) {
-            logger.error(e.getMessage());
-            logger.error(serv.getServer());
-            logger.error(q.getAST().toString(), e);
-            gq.addError(SERVICE_ERROR, e);
+        } 
+        
+        catch (ResponseProcessingException e) {
+            gast.addException(new EngineException(e, e.getMessage()).setURL(serv).setAST(targetAST).setObject(e.getResponse()));
+            error(serv, gq, getAST(q), e);
+        }
+        catch (ProcessingException | IOException | SparqlException e) {
+            gast.addException(new EngineException(e, e.getMessage()).setURL(serv).setAST(targetAST));            
+            error(serv, gq, getAST(q), e);
         }
         
         return null;
     }
     
+    void error(URLServer serv, Query gq, ASTQuery ast, Exception e) {
+        logger.error(e.getMessage());
+        logger.error(serv.getServer());
+        logger.error(ast.toString());
+        gq.addError(SERVICE_ERROR, e);
+    }
     
-    Mappings send(URLServer serv, Query q, ASTQuery ast, Mappings map, Environment env, 
+    
+    Mappings send(URLServer serv, Query q, ASTQuery ast, ASTQuery gast, Mappings map, Environment env, 
             int start, int limit, int timeout, int count) 
-            throws EngineException, IOException, ParserConfigurationException, SAXException {
+            throws EngineException, IOException {
         
         Mappings res = null;
         Graph g;
@@ -433,6 +459,9 @@ public class ProviderImpl implements Provider, URLParam {
             g = (Graph) serv.getGraph();
         } else {
             res = eval(q, ast, serv, env, timeout, count);
+            if (res.getLink()!=null){
+                gast.addLink(res.getLink());
+            }
             g = (Graph) res.getGraph();
         }
 
@@ -595,7 +624,8 @@ public class ProviderImpl implements Provider, URLParam {
         return dt.intValue();
     }
     
-    Mappings eval(Query q, ASTQuery ast, URLServer serv, Environment env, int timeout, int count) throws IOException, ParserConfigurationException, SAXException, EngineException {
+    Mappings eval(Query q, ASTQuery ast, URLServer serv, Environment env, int timeout, int count) 
+            throws IOException,  EngineException {
         if (isDB(serv.getNode())){
             return db(q, serv.getNode());
         }
@@ -619,13 +649,23 @@ public class ProviderImpl implements Provider, URLParam {
     }
     
     Mappings send(Query q, ASTQuery ast, URLServer serv, Environment env, int timeout, int count) 
-            throws IOException, ParserConfigurationException, SAXException {
-        ASTQuery aa =  getAST(q.getGlobalQuery());
-        if (aa.hasMetadata(Metadata.OLD_SERVICE)) {
-            return post1(q, ast, serv, env, timeout);        
-        }
-        else {
-            return post2(q, ast, serv, env, timeout, count);
+            throws IOException {
+        return post(q, ast, serv, env, timeout, count);
+    }
+    
+
+    Mappings post(Query q, ASTQuery ast, URLServer serv, Environment env, int timeout, int count) throws IOException {
+        try {
+            Binding b = getBinding(env);
+            Service service = new Service(serv) ;
+            service.setLevel(b.getAccessLevel());
+            service.setTimeout(timeout);
+            service.setCount(count);
+            service.setBind(b);
+            Mappings map = service.query(q, ast, null);
+            return map;
+        } catch (LoadException ex) {
+            throw (new IOException(ex.getMessage() + " " + serv.getURL()));
         }
     }
     
@@ -641,20 +681,6 @@ public class ProviderImpl implements Provider, URLParam {
     }
     
     
-    Mappings post2(Query q, ASTQuery ast, URLServer serv, Environment env, int timeout, int count) throws IOException {
-        try {
-            Binding b = getBinding(env);
-            Service service = new Service(serv) ;
-            service.setLevel(b.getAccessLevel());
-            service.setTimeout(timeout);
-            service.setCount(count);
-            service.setBind(b);
-            Mappings map = service.query(q, ast, null);
-            return map;
-        } catch (LoadException ex) {
-            throw (new IOException(ex.getMessage() + " " + serv.getURL()));
-        }
-    }
 
     /**
      * ********************************************************************

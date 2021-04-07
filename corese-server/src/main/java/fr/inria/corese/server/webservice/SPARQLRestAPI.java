@@ -332,7 +332,8 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             List<String> defaut, List<String> named,
             String format, int type, String transform) { 
            
-        try {           
+        try {  
+            logger.info("Endpoint URL: " + request.getRequestURL());
             if (query == null)
                 throw new Exception("No query");
 
@@ -346,7 +347,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             ResultFormat rf = getFormat(map, ds, format, type, transform);            
             String res = rf.toString();
                        
-            ResponseBuilder rb = Response.status(200).header(headerAccept, "*");
+            ResponseBuilder rb = Response.status(Response.Status.OK).header(headerAccept, "*");
             
             if (format != null) {
                 // real content type of result, possibly different from @Produces
@@ -355,7 +356,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             Response resp = rb.entity(res).build();
             
             afterRequest(request, resp, query, map, res);  
-            
+                                 
             return resp;
         } catch (Exception ex) {
             logger.error(ERROR_ENDPOINT, ex);
@@ -431,8 +432,6 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @QueryParam("uri")    List<String> uri) {
         
         logger.info("getHTMLForGet");
-        String ft = request.getHeader("Accept"); 
-        System.out.println("accept: " + ft);
         return getResultFormat(request, name, oper, uri, param, mode, query, access, defaut, named, null, HTML_FORMAT, transform);
     }
     

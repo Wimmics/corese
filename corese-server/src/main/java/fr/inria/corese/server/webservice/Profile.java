@@ -82,11 +82,11 @@ public class Profile {
         setEventManager(new EventManager());
     }
     
-    private static String stdLocalhost() {
+    static String stdLocalhost() {
         return "http://localhost:" + EmbeddedJettyServer.port;
     }
     
-    private static String getLocalhost() throws UnknownHostException {
+    static String getLocalhost() throws UnknownHostException {
          String s = "http://" + InetAddress.getLocalHost().getCanonicalHostName();
          s += (port == 80) ? "" : ":" + port;
          return s;

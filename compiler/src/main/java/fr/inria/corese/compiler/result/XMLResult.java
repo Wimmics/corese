@@ -66,10 +66,12 @@ public class XMLResult {
     private static final int BNODE = 5;
     private static final int BOOLEAN = 6;
     private static final int VARIABLE = 7;
+    private static final int LINK = 8;
     
     private boolean debug = false;
     private boolean trapError = false;
     private boolean showResult = false;
+    String link;
 
     public XMLResult() {
         init();
@@ -127,6 +129,7 @@ public class XMLResult {
             InputStreamReader r = new InputStreamReader(stream, "UTF-8");
             parser.parse(new InputSource(r), handler);
             complete(map);
+            map.setLink(link);
             return map;
         } catch (ParserConfigurationException | SAXException | IOException e) {
             if (isTrapError()) {                
@@ -174,6 +177,7 @@ public class XMLResult {
         table.put("literal", LITERAL);
         table.put("boolean", BOOLEAN);
         table.put("variable",VARIABLE);
+        table.put("link",   LINK);
     }
 
     int type(String name) {
@@ -288,6 +292,10 @@ public class XMLResult {
             isContent = false;
 
             switch (type(simpleName)) {
+                
+                case LINK:
+                    link = atts.getValue("href");                    
+                    break;
 
                 case RESULT:
                     //map =  Mapping.create();

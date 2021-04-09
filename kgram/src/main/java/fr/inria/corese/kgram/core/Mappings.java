@@ -415,7 +415,7 @@ public class Mappings extends PointerObject
     }
 
     public void setSelect(Node node) {
-        select = new ArrayList<Node>(1);
+        select = new ArrayList<>(1);
         select.add(node);
     }
 

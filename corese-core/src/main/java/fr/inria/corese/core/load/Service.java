@@ -128,7 +128,8 @@ public class Service implements URLParam {
             System.out.println(query);
         }
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
-        Client client = clientBuilder.build();               
+        clientBuilder.readTimeout(timeout, TimeUnit.MILLISECONDS);
+        Client client = clientBuilder.build(); 
         WebTarget target = client.target(url);
         Form form = getForm();
         form.param(QUERY, query);
@@ -142,7 +143,7 @@ public class Service implements URLParam {
             setHeader(rb);
             Response resp =  rb.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
             String res = resp.readEntity(String.class);
-                        
+
             if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
                 String myUrl = resp.getLocation().toString();
                 logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
@@ -168,6 +169,10 @@ public class Service implements URLParam {
                 throw ex;
             }
             return post(uri, query, mime);
+        }
+        catch (Exception e) {
+            logger.error(e.getClass().getName() + " " + e.getMessage());
+            throw e;
         }
     }
     

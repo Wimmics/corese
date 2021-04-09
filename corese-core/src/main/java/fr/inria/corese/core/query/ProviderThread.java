@@ -16,20 +16,6 @@ import java.util.logging.Logger;
  */
 public class ProviderThread extends Thread {
 
-    /**
-     * @return the service
-     */
-    public URLServer getService() {
-        return service;
-    }
-
-    /**
-     * @param service the service to set
-     */
-    public void setService(URLServer service) {
-        this.service = service;
-    }
-    
     ProviderImpl p;
     Query q;
     Exp exp;
@@ -63,9 +49,18 @@ public class ProviderThread extends Thread {
     void process() {
         try {
             p.process(q, service, exp, map, sol, eval, c, slice, length, timeout);
-        } catch (EngineException ex) {
-            Logger.getLogger(ProviderThread.class.getName()).log(Level.SEVERE, null, ex);
+        } catch (EngineException ex) {           
+            ProviderImpl.logger.error(ex.getMessage());
         }
     }
+       
+    public URLServer getService() {
+        return service;
+    }
+    
+    public void setService(URLServer service) {
+        this.service = service;
+    }
+    
 
 }

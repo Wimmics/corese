@@ -47,6 +47,7 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.ContextLog;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
@@ -346,7 +347,10 @@ public class QueryProcess extends QuerySolver {
     @Override
     public Mappings query(String squery) throws EngineException {
         //System.out.println("QP: " + squery);
-        return doQuery(squery, null, null);
+        Mappings map = doQuery(squery, null, null);
+//        LogManager man = getLogManager(map);
+//        System.out.println(man);
+        return map;
     }
 
     /**
@@ -707,6 +711,9 @@ public class QueryProcess extends QuerySolver {
         if (eval != null) {
             eval.finish(q, map);
             map.setEval(null);
+        }
+        if (getAST(q).hasMetadata(Metadata.LOG)) {
+            System.out.println(getLogManager(map));
         }
     }
 
@@ -1285,24 +1292,20 @@ public class QueryProcess extends QuerySolver {
     }
     
     /**
-     * Manager for local and remote endpoint Exceptions
+     * Manager for local and remote endpoint log
+     * getLinkList() is a list of link href url of log document recorded in AST Context
+     * use case:  
+     * service http://corese.inria.fr/d2kab/sparql generates a log document on corese server
+     * with URL http://corese.inria.fr/log/url.ttl
+     * Query Results XML format contains <link href='http://corese.inria.fr/log/url.ttl' />
+     * client receive result and parse link url
      */
     public LogManager getLogManager(Mappings map) {
-        return new LogManager(getExceptionList(map), getLinkList(map));
+        return new LogManager(getLog(map));
     }
-    
-    // local exceptions
-    public List<EngineException> getExceptionList(Mappings map) {
-        return getAST(map).getCreateContext().getCreateExceptionList();
-    }
-    
-    // remote exceptions
-    public List<String> getLinkList(Mappings map) {
-        return getAST(map).getCreateContext().getCreateLink();
-    }
-
-    public List<String> getURLList(Mappings map) {
-        return getAST(map).getCreateContext().getURLList();
+        
+    public ContextLog getLog(Mappings map) {
+        return getAST(map).getLog();
     }
     
     /***********************************************************************/

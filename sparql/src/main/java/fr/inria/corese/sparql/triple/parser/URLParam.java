@@ -32,6 +32,7 @@ public interface URLParam {
     static final String TRAP = "trap";
     static final String SPARQL = "sparql";
     static final String PROVENANCE = "provenance";
+    static final String NBVAR = "nbvar";
     static final String FEDERATE = "federate";
     static final String FEDERATION = "federation";
     static final String SHACL = "shacl";

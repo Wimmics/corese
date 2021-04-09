@@ -68,6 +68,7 @@ public class Metadata extends ASTObject
     public static final int UPDATE    = 48;
     public static final int BINDING   = 50; // service binding
     public static final int INDEX     = 51; // service binding
+    public static final int LOG       = 52; 
 
     
     
@@ -143,6 +144,7 @@ public class Metadata extends ASTObject
         define("@sequence", SEQUENCE);
         define("@variable", VARIABLE);
         define("@provenance",PROVENANCE);      
+        define("@log",      LOG);      
         define("@duplicate",DUPLICATE);      
         define("@count",    COUNT);
         define("@server",   SERVER);

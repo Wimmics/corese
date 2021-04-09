@@ -37,12 +37,16 @@ public class ASTParser implements Walker, URLParam {
             URLServer url = new URLServer(serv.getLabel());            
             if (url.hasParameter(MODE, PROVENANCE)) {
                 boolean b = false;
+                int n = 1;
+                if (url.hasParameter(NBVAR)) {
+                    n = url.intValue(NBVAR);
+                }
                 if (exp.getBodyExp().size()>0 && exp.getBodyExp().get(0).isQuery()) {
                     ASTQuery aa = exp.getBodyExp().get(0).getAST();
-                    b = aa.provenance();
+                    b = aa.provenance(n);
                 }
                 if (! b) {
-                    ast.provenance();
+                    ast.provenance(n);
                 }
             }
         }

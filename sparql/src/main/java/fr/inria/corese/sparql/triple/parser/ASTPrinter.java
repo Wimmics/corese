@@ -135,7 +135,12 @@ public class ASTPrinter implements KeywordPP {
                 for (Variable s : ast.getSelectVar()) {
 
                     if (ast.getExpression(s) != null) {
-                        expr(ast.getExpression(s), s, sb);
+                        if (ast.getGroupByMap().containsKey(s.getLabel())) {
+                            sb.append(s);
+                        }
+                        else {
+                            expr(ast.getExpression(s), s, sb);
+                        }
                     } else {
                         sb.append(s);
                     }
@@ -247,7 +252,14 @@ public class ASTPrinter implements KeywordPP {
         if (ast.getGroupBy().size() > 0) {
             sb.kw(GROUPBY);
             for (Expression exp : ast.getGroupBy()) {
-                sb.append(exp.toString()).append(SPACE);
+                if (exp.isVariable() && ast.getGroupByMap().containsKey(exp.getVariable().getLabel())) {
+                    Variable var = exp.getVariable();
+                    Expression body = ast.getGroupByMap().get(var.getLabel());
+                    sb.append(String.format("(%s as %s)", body, var));
+                }
+                else {
+                    sb.append(exp).append(SPACE);
+                }
             }
             sb.nl();
         }

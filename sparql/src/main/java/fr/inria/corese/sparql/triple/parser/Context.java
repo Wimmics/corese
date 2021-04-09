@@ -7,6 +7,7 @@ package fr.inria.corese.sparql.triple.parser;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.CONTEXT;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -84,12 +85,8 @@ public class Context extends ASTObject {
     HashMap<String, Boolean> export;
     private HashMap<String, Context> context;
     NSManager nsm;
-    // service exceptions list
-    private List<EngineException> exceptionList;
-    // service SPARQL Results XML format link href=url
-    private List<String> linkList;
-    // endpoint service URL 
-    List<String> urlList;
+    private ContextLog contextLog;
+    
     private Binding bind;
     private AccessRight accessRight;
     Access.Level level = Access.Level.USER_DEFAULT;
@@ -619,76 +616,31 @@ public class Context extends ASTObject {
     public void setAccessRight(AccessRight accessRight) {
         this.accessRight = accessRight;
     }
-
-    /**
-     * @return the exceptionList
-     */
-    public List<EngineException> getExceptionList() {
-        return exceptionList;
-    }
-
-    /**
-     * @param exceptionList the exceptionList to set
-     */
-    public void setExceptionList(List<EngineException> exceptionList) {
-        this.exceptionList = exceptionList;
-    }
     
-    public void add(EngineException e) {       
-        getCreateExceptionList().add(e);
-    }
-    
-    public List<EngineException> getCreateExceptionList() {
-        if (getExceptionList() == null) {
-            setExceptionList(new ArrayList<>());
+    /**
+     * Service log manager
+     */
+    public ContextLog getLog() {
+        if (getContextLog() == null) {
+            setContextLog(new ContextLog());
         }
-        return getExceptionList();
+        return getContextLog();
     }
 
     /**
-     * @return the linkList
+     * @return the contextLog
      */
-    public List<String> getLink() {
-        return linkList;
+    public ContextLog getContextLog() {
+        return contextLog;
     }
 
     /**
-     * @param linkList the linkList to set
+     * @param contextLog the contextLog to set
      */
-    public void setLink(List<String> linkList) {
-        this.linkList = linkList;
+    public void setContextLog(ContextLog contextLog) {
+        this.contextLog = contextLog;
     }
-    
-    public void addLink(String url) {
-        getCreateLink().add(url);
-    }
-    
-    public List<String> getCreateLink() {
-        if (getLink() == null) {
-            setLink(new ArrayList<>());
-        }
-        return getLink();
-    }
-    
-    public List<String> getURLList() {
-        return urlList;
-    }
-    
-    public void setURLList(List<String> urlList) {
-        this.urlList = urlList;
-    }
-    
-    public void addURL(String url) {
-        if (! getCreateURLList().contains(url)) {
-            getURLList().add(url);
-        }
-    }
-    
-    public List<String> getCreateURLList() {
-        if (getURLList() == null) {
-            setURLList(new ArrayList<>());
-        }
-        return getURLList();
-    }
-    
+
+
+
 }

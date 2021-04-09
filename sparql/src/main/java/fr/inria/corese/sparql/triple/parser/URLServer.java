@@ -260,6 +260,10 @@ public class URLServer implements URLParam {
         return url;
     }
     
+    public String getLogURL() {
+        return getURL();
+    }
+    
     /**
      * @return the node
      */

@@ -109,6 +109,30 @@ public class FederateVisitor implements QueryVisitor, URLParam {
      */
     @Override
     public void visit(ASTQuery ast) {
+        process(ast);
+    }
+    
+    @Override
+    public void visit(fr.inria.corese.kgram.core.Query query) {
+        query.setFederate(true);
+        ASTQuery ast = (ASTQuery) query.getAST();
+        ast.getLog().setAST(ast);
+    }
+    
+    @Override
+    public void before(fr.inria.corese.kgram.core.Query q) {
+        
+    }
+    
+    @Override
+    public void after(Mappings map) {
+        if (provenance) {
+            Provenance prov = getProvenance(map);
+            System.out.println(prov);        
+        }
+    }
+    
+    void process(ASTQuery ast) {
         this.ast = ast;
         if (! init()) {
             return;
@@ -181,23 +205,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     }
     
     
-    @Override
-    public void visit(fr.inria.corese.kgram.core.Query query) {
-        query.setFederate(true);
-    }
-    
-    @Override
-    public void before(fr.inria.corese.kgram.core.Query q) {
-        
-    }
-    
-    @Override
-    public void after(Mappings map) {
-        if (provenance) {
-            Provenance prov = getProvenance(map);
-            System.out.println(prov);        
-        }
-    }
+
     
     public Provenance getProvenance(Mappings map) {
         Provenance prov = new Provenance(rs.getServiceList(), map);

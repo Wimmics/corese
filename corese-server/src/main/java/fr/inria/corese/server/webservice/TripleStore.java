@@ -26,8 +26,6 @@ import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -238,9 +236,8 @@ public class TripleStore implements URLParam {
      */
     void log(QueryProcess exec, Mappings map, Context ct) {
         if (ct.hasValue(PROVENANCE)) {
-            List<EngineException> list = exec.getExceptionList(map);
-            if (!list.isEmpty() || !exec.getURLList(map).isEmpty()) {
-                LogManager log = new LogManager(list).setURLList(exec.getURLList(map));
+            if (!exec.getLog(map).isEmpty()) {
+                LogManager log = new LogManager(exec.getLog(map));
                 String str = log.toString();
                 QueryLoad ql = QueryLoad.create();
                 String home = EmbeddedJettyServer.resourceURI.getPath() + LOG;

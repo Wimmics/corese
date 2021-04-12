@@ -446,6 +446,10 @@ public class MainFrame extends JFrame implements ActionListener {
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
         //crée les options du menu et leurs listeners
+        loadRDF = new JMenuItem("RDF");
+        loadRDF.addActionListener(this);
+        loadRDF.setToolTipText("Load RDF file");
+
         loadRDFs = new JMenuItem("RDFS/OWL");
         loadRDFs.addActionListener(this);
         loadRDFs.setToolTipText("Load RDFs file and ontology rules");
@@ -456,10 +460,6 @@ public class MainFrame extends JFrame implements ActionListener {
         
         loadAndRunRule = new JMenuItem("Load & Run Rule");
         loadAndRunRule.addActionListener(this);
-
-        loadRDF = new JMenuItem("RDF");
-        loadRDF.addActionListener(this);
-        loadRDF.setToolTipText("Load RDF file");
         
         loadSHACL = new JMenuItem("SHACL");
         loadSHACL.addActionListener(this);
@@ -655,10 +655,10 @@ public class MainFrame extends JFrame implements ActionListener {
 
         //On ajoute tout au menu
         fileMenu.add(fileMenuLoad);
+        fileMenuLoad.add(loadRDF);
         fileMenuLoad.add(loadRDFs);
         fileMenuLoad.add(loadRule);
         fileMenuLoad.add(loadAndRunRule);
-        fileMenuLoad.add(loadRDF);
         fileMenuLoad.add(loadSHACL);
         fileMenuLoad.add(loadSHACLShape);
         fileMenuLoad.add(loadQuery);

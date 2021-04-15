@@ -1,6 +1,8 @@
 package fr.inria.corese.gui.core;
 
 import fr.inria.corese.gui.query.MyJPanelQuery;
+import fr.inria.corese.gui.shacl.MyJPanelShacl;
+
 import java.awt.BorderLayout;
 import java.awt.Component;
 import java.awt.Desktop;
@@ -157,11 +159,12 @@ public class MainFrame extends JFrame implements ActionListener {
     private String defaultStylesheet, saveStylesheet;
     private ArrayList<JCheckBox> listCheckbox;	//list qui stocke les JCheckBoxs présentes sur le JPanelListener
     private ArrayList<JMenuItem> listJMenuItems;	//list qui stocke les Boutons présents sur le JPanelListener
-    // Les 3 types d'onglets
+    // Les 4 types d'onglets
     private ArrayList<MyJPanelQuery> monTabOnglet;
     private JPanel plus;
     private MyJPanelQuery current;
     private MyJPanelListener ongletListener;
+    private MyJPanelShacl ongletShacl;
     // Pour connaître l'onglet selectionné
     protected int selected;
     // Texte dans l'onglet requête
@@ -260,8 +263,10 @@ public class MainFrame extends JFrame implements ActionListener {
         //Création et ajout des deux onglets "Listener" et "+"
         monTabOnglet = new ArrayList<MyJPanelQuery>();
         ongletListener = new MyJPanelListener(this);
+        ongletShacl = new MyJPanelShacl(this);
         plus = new JPanel();
         conteneurOnglets.addTab("System", ongletListener);
+        conteneurOnglets.addTab("Shacl", ongletShacl);
         conteneurOnglets.addTab("+", plus);
 
         //Par défaut, l'onglet sélectionné est "listener"
@@ -415,7 +420,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
         /**
          * ajoute le bouton de fermeture Juste après la création de l'onglet
-         * Query il y a donc 3 composants au conteneur d'onglet (Listener,
+         * Query il y a donc 4 composants au conteneur d'onglet (Listener, Shacl
          * Query, +) On différencie si c'est le 1er onglet créé ou non car le
          * fait d'ajouter le croix fermante à l'onglet ajoute un composant au
          * conteneur d'onglet (1 onglets = 1 composants onglet + 1 composant
@@ -429,9 +434,9 @@ public class MainFrame extends JFrame implements ActionListener {
          * retirer la croix et l'onglet "+" dans le compte
          */
         //Si c'est le 1er onglet Query créé
-        if (conteneurOnglets.getComponentCount() == 3) {
-            //On applique la croix fermante sur le 2eme composant (l'onglet tout juste créé)
-            initTabComponent(1);
+        if (conteneurOnglets.getComponentCount() == 4) {
+            //On applique la croix fermante sur le 3eme composant (l'onglet tout juste créé)
+            initTabComponent(2);
         } //S'il y en avait déjà
         else {
             initTabComponent(conteneurOnglets.getComponentCount() - 3);

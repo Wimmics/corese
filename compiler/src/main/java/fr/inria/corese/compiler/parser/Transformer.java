@@ -112,6 +112,7 @@ public class Transformer implements ExpType {
     private Metadata metadata;
     BasicGraphPattern pragma;
     private int planner = Query.STD_PLAN;
+    private int number = 0;
 
     static {
         loaded = new HashMap();
@@ -780,6 +781,7 @@ public class Transformer implements ExpType {
             }
             exp.setNodeSet(list);
         }
+        exp.setNumber(incrNumber());
         return exp;
     }
 
@@ -1917,5 +1919,23 @@ public class Transformer implements ExpType {
      */
     public void setFunctionCompiler(FunctionCompiler functionCompiler) {
         this.functionCompiler = functionCompiler;
+    }
+
+    /**
+     * @return the number
+     */
+    public int getNumber() {
+        return number;
+    }
+    
+    int incrNumber() {
+        return number++;
+    }
+
+    /**
+     * @param number the number to set
+     */
+    public void setNumber(int number) {
+        this.number = number;
     }
 }

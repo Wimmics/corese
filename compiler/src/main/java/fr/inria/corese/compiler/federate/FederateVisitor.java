@@ -23,6 +23,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.URLParam;
+import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -150,6 +151,10 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
         else {
         
+            if (ast.getContext() != null) {
+                ast.setServiceList(tune(ast.getContext(), ast.getServiceList()));
+            }
+            
             if (select) {
                 try {
                     selector = new Selector(this, exec, ast);
@@ -304,60 +309,18 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         if (c.hasValue(MODE) && c.hasValue(SHARE)) {
             List<Atom> alist = new ArrayList<>();
             for (Atom at : list) {
-                String uri = tune(c, at.getConstant().getLongName());
-                alist.add(Constant.createResource(uri));
+                String uri = at.getConstant().getLongName();
+                if (c.accept(uri)) {
+                    uri = c.tune(uri);
+                    System.out.println("Fed tune: " + uri);
+                    alist.add(Constant.createResource(uri));
+                }
             }
             return alist;
         }
         return list;
     }
-    
-    /**
-     * Complete URI with information from context
-     */
-    String tune(Context ct, String uri) {
-        for (IDatatype mode : ct.get(MODE)) {
-            switch (mode.getLabel()) {
-                case DEBUG:
-                case TRACE:
-                    uri = complete(uri, MODE, mode.getLabel()); 
-                    break;                
-            }
-        }
-        
-        if (ct.hasValue(PARAM)) {
-            // mode=share&param=timeout~1000
-            for (IDatatype param : ct.get(PARAM)) {
-                String label = param.getLabel();
-                if  (label.contains("~")) {
-                    String[] pair = label.split("~");
-                    if (pair.length >= 2) {
-                        uri = complete(uri, pair[0], pair[1]); 
-                    }
-                }
-            }
-        }
-        
-        if (ct.hasValue(URI)) {
-            for (IDatatype dt : ct.get(URI)) {
-                uri=complete(uri, URI, dt.getLabel());
-            }
-        }
-        System.out.println("FedVis tune URL: " + uri);
-        return uri;
-    }
-    
-    
-    
-    String complete(String uri, String key, String val) {
-        if (uri.contains("?")) {
-            uri = String.format("%s&%s=%s", uri, key, val);
-        } else {
-            uri = String.format("%s?%s=%s", uri, key, val);
-        }
-        return uri;
-    }
-
+       
     /**
      * Main rewrite function 
      */
@@ -877,6 +840,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     
     public static List<Atom> getFederation(String name) {
         return getFederation().get(name);
+    }
+    
+    public List<Atom> getFederationFilter(String name) {
+        List<Atom> list = getFederation().get(name);
+        if (list == null) {
+            return null;
+        }
+        return list;
     }
 
     /**

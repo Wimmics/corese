@@ -7,16 +7,13 @@ package fr.inria.corese.sparql.triple.parser;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.CONTEXT;
-import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 
 /**
  * Execution Context for SPARQL Query and Template
@@ -24,7 +21,7 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2014
  *
  */
-public class Context extends ASTObject {
+public class Context extends ASTObject implements URLParam {
 
     public static final String NL = System.getProperty("line.separator");
     public static final String STL = NSManager.STL;
@@ -639,6 +636,90 @@ public class Context extends ASTObject {
      */
     public void setContextLog(ContextLog contextLog) {
         this.contextLog = contextLog;
+    }
+    
+    public boolean accept(String uri) {
+        if (hasValue(REJECT)) {
+            for (IDatatype dt : get(REJECT)) {
+                if (uri.contains(dt.getLabel())) {
+                    return false;
+                }
+            }
+        }
+
+        if (hasValue(ACCEPT)) {
+            for (IDatatype dt : get(ACCEPT)) {
+                if (uri.contains(dt.getLabel())) {
+                    return true;
+                }
+            }
+            return false;
+        }
+        
+        return true;
+    }
+    
+    
+    /**
+     * Complete Service URI with information from context
+     * Use case: FederateVisitor
+     */
+    public String tune(String uri) {
+        for (IDatatype mode : get(MODE)) {
+            switch (mode.getLabel()) {
+                case DEBUG:
+                case TRACE:
+                    uri = complete(uri, MODE, mode.getLabel()); 
+                    break;                
+            }
+        }
+        
+        if (hasValue(EXPORT)) {
+            for (IDatatype key : get(EXPORT)) {
+                uri = complete(uri, key.getLabel(), get(key.getLabel()).getLabel()); 
+            }
+        }
+        
+        if (hasValue(PARAM)) {
+            boolean accept = true;
+            int count = 0;
+            // mode=share&param=timeout~1000
+            
+            for (IDatatype param : get(PARAM)) {
+                String label = param.getLabel();
+                
+                if  (label.contains(SEPARATOR)) {
+                    String[] pair = label.split(SEPARATOR);
+                    
+                    if (pair.length >= 2) {
+                        String key = pair[0];
+                        String val = pair[1];
+                        
+                        if (!URLServer.isEncoded(key)) {
+                            uri = complete(uri, key, val); 
+                        }                       
+                    }
+                }
+            }
+        }
+                                 
+        if (hasValue(URI)) {
+            for (IDatatype dt : get(URI)) {
+                uri=complete(uri, URI, dt.getLabel());
+            }
+        }
+        return uri;
+    }
+    
+    
+    
+    String complete(String uri, String key, String val) {
+        if (uri.contains("?")) {
+            uri = String.format("%s&%s=%s", uri, key, val);
+        } else {
+            uri = String.format("%s?%s=%s", uri, key, val);
+        }
+        return uri;
     }
 
 

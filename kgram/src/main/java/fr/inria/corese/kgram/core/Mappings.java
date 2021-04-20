@@ -1412,23 +1412,21 @@ public class Mappings extends PointerObject
      * Join (var = val) to each Mapping, remove those where var = something else
      * Use case: service ?s { BGP }
      */
-    public void join (Node var, Node val) {
-        if (! getSelect().contains(var)){
+    public void join(Node var, Node val) {
+        if (!getSelect().contains(var)) {
             getSelect().add(var);
         }
-      for (int i = 0; i<size(); ) {
+        for (int i = 0; i < size();) {
             Mapping m = list.get(i);
-            Node node = m.getNodeValue(var); //m.getNode(var);
-            if (node == null){
+            Node node = m.getNodeValue(var);
+            if (node == null) {
                 m.addNode(var, val);
                 i++;
-            }
-            else if (node.equals(val)) {
+            } else if (node.equals(val)) {
                 i++;
-            }
-            else {
+            } else {
                 list.remove(m);
-            }         
+            }
         }
     }
     
@@ -1453,8 +1451,15 @@ public class Mappings extends PointerObject
         return list;
     }
     
+    public Mappings limit(int n) {
+        while (size()>n) {
+            remove(size()-1);
+        }
+        return this;
+    }
+    
     public Mappings getMappings(Query q, Node var, Node val) {
-        Mappings map = create(q); //create(getQuery());
+        Mappings map = create(q); 
         for (Mapping m : this) {
             Node node = m.getNodeValue(var);
             if (node != null && node.equals(val)) {

@@ -50,7 +50,6 @@ import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
-import java.util.concurrent.TimeoutException;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.MediaType;
@@ -223,6 +222,7 @@ public class ProviderImpl implements Provider, URLParam {
         // slice by default
         res = sliceSend(serviceList, g, compiler, serv, q, exp, (skipBind) ? null : map, eval, bslice, slice);
         restore(ast);
+        res.limit(ast.getLimit());
         return res;
     }
     
@@ -260,15 +260,17 @@ public class ProviderImpl implements Provider, URLParam {
 
         for (Node service : serverList) {
             URLServer url = new URLServer(service);
+            url.setNumber(exp.getNumber());
             // /sparql?param={?this} 
             // get ?this=value in Binding global variable and set param=value
             url.complete(b);
-            gast.getLog().addURL(url);
+            url.encode();
+            gast.getLogSync().addURL(url);
             
             if (Access.reject(Feature.SPARQL_SERVICE, b.getAccessLevel(), service.getLabel())) {
                 logger.error(TermEval.SERVICE_MESS + " " + service.getLabel());
                 SafetyException ex = new SafetyException(TermEval.SERVICE_MESS, service.getLabel());
-                gast.getLog().addException(ex.setURL(url));
+                gast.getLogSync().addException(ex.setURL(url));
                 throw ex;
             }
             
@@ -437,12 +439,12 @@ public class ProviderImpl implements Provider, URLParam {
         
         catch (ResponseProcessingException e) {
             logger.error("ResponseProcessingException: " + serv.getURL());
-            gast.getLog().addException(new EngineException(e, e.getMessage()).setURL(serv).setAST(targetAST).setObject(e.getResponse()));
+            gast.getLogSync().addException(new EngineException(e, e.getMessage()).setURL(serv).setAST(targetAST).setObject(e.getResponse()));
             error(serv, gq, getAST(q), e);
         }
         catch (ProcessingException | IOException | SparqlException e) {
             logger.error("ProcessingException: " + serv.getURL());
-            gast.getLog().addException(new EngineException(e, e.getMessage()).setURL(serv).setAST(targetAST));            
+            gast.getLogSync().addException(new EngineException(e, e.getMessage()).setURL(serv).setAST(targetAST));            
             error(serv, gq, getAST(q), e);
         }
         
@@ -470,7 +472,7 @@ public class ProviderImpl implements Provider, URLParam {
         } else {
             res = eval(q, ast, serv, env, timeout, count);
             if (res.getLink()!=null){
-                gast.getLog().addLink(res.getLink());
+                gast.getLogSync().addLink(res.getLink());
             }
             g = (Graph) res.getGraph();
         }
@@ -500,11 +502,11 @@ public class ProviderImpl implements Provider, URLParam {
     }
     
     void traceInput(ASTQuery ast, URLServer serv, Mappings map) {        
-        ast.getLog().addURLInput(serv, map);
+        ast.getLogSync().addURLInput(serv, map);
     }
     
     void traceOutput(ASTQuery ast, URLServer serv, Mappings map) {
-        ast.getLog().addURLOutput(serv, map);
+        ast.getLogSync().addURLOutput(serv, map);
     }
     
     void traceResult(URLServer serv, Mappings res) {

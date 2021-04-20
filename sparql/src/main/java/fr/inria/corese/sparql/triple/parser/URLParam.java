@@ -4,11 +4,14 @@ package fr.inria.corese.sparql.triple.parser;
  *
  */
 public interface URLParam {
+    
+    static final String SEPARATOR = "~";
 
     static final String MODE = "mode";
     static final String QUERY = "query";
     static final String ACCESS = "access";
     static final String FORMAT = "format";
+    static final String DECODE = "decode";
     static final String PARAM = "param";
     static final String URI = "uri";
     static final String DEFAULT_GRAPH = "default-graph-uri";
@@ -40,11 +43,14 @@ public interface URLParam {
     static final String BEFORE = "before";
     static final String AFTER = "after";
     static final String SHARE = "share";
+    static final String EXPORT = "export";
     static final String COUNT = "count";
     static final String PLATFORM = "platform";
     static final String CORESE = "corese";
     static final String CONSTRUCT = "construct";
     static final String WRAPPER = "wrapper";
+    static final String ACCEPT = "accept";
+    static final String REJECT = "reject";
 
     // values of binding=
     static final String VALUES = "values";

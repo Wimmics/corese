@@ -3,6 +3,7 @@ package fr.inria.corese.sparql.triple.parser;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 
@@ -21,15 +22,28 @@ public class ContextLog {
     // log service endpoint URL 
     List<String> urlList;
     // url -> input/output Mappings size
-    HashMap<String, Integer> inputMap, outputMap;
+    CountMap inputMap, outputMap;
     private ASTQuery ast;
+    
+    public class CountMap extends HashMap<String, Integer> {
+        
+        public ArrayList<String> getKeys() {
+            
+            ArrayList<String> list = new ArrayList<>();
+            for (String key : keySet()) {
+                list.add(key);
+            }
+            Collections.sort(list);
+            return list;
+        }
+    }
     
     ContextLog() {
         exceptionList = new ArrayList<>();
         linkList = new ArrayList<>();
         urlList = new ArrayList<>();
-        inputMap = new HashMap<>();
-        outputMap = new HashMap<>();
+        inputMap = new CountMap();
+        outputMap = new CountMap();
     }
     
     public boolean isEmpty() {
@@ -86,11 +100,11 @@ public class ContextLog {
     }
     
     void incr(URLServer url, HashMap<String, Integer> amap, Mappings map) {
-        Integer n = amap.get(url.getLogURL());
+        Integer n = amap.get(url.getLogURLNumber());
         if (n == null) {
-            amap.put(url.getLogURL(), size(map));
+            amap.put(url.getLogURLNumber(), size(map));
         } else {
-            amap.put(url.getLogURL(), n + size(map));
+            amap.put(url.getLogURLNumber(), n + size(map));
         }
     }
     
@@ -98,11 +112,11 @@ public class ContextLog {
         return (map==null)?0:map.size();
     }
     
-   public HashMap<String, Integer> getInputMap() {
+   public CountMap getInputMap() {
        return inputMap;
    }
     
-   public HashMap<String, Integer> getOutputMap() {
+   public CountMap getOutputMap() {
        return outputMap;
    }
 

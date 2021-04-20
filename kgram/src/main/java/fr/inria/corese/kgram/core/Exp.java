@@ -141,6 +141,7 @@ public class Exp extends PointerObject
     HashMap<Node, Mappings> cache;
     int min = -1, max = -1;
     private int level = -1;
+    private int number = -1;
     private boolean isSystem = false;
     private boolean mappings = false;
 
@@ -2340,6 +2341,20 @@ public class Exp extends PointerObject
             setInscopeFilter(new ArrayList<>());
         }
         return getInscopeFilter();
+    }
+    
+    /**
+     * @return the number
+     */
+    public int getNumber() {
+        return number;
+    }
+
+    /**
+     * @param number the number to set
+     */
+    public void setNumber(int number) {
+        this.number = number;
     }
     
     

@@ -35,7 +35,9 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.URLParam;
+import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -43,7 +45,6 @@ import java.util.ArrayList;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.PathParam;
-import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response.ResponseBuilder;
 
@@ -641,7 +642,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     @POST
     @Produces({SPARQL_RESULTS_XML, XML})
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response getTriplesXMLForPost(@Context HttpServletRequest request,
+    public Response getTriplesXMLForPost(@javax.ws.rs.core.Context HttpServletRequest request,
             // name of server with a specific rdf graph (SPARQLService)
             @PathParam("name") String name, 
             // name of federation  (SPARQLFederate)
@@ -1171,49 +1172,35 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         if (named.size() > 0) {
             ds.getContext().set(NAMED_GRAPH, named);
         }
-    }
-    
-    void param(Dataset ds, String elem) {
-        if (elem.contains(":") || elem.contains("~")) {
-            String sep = ":";
-            if (elem.contains("~")) {
-                sep = "~";
-            }
-            String[] list = elem.split(sep);
-            param(ds, list[0], list[1]);
-        }
-    }
+    }   
     
     /**
-     * parameter key=val
-     * record in context and as ldscript global variable
-     * get global variable var in sparql with: funcall(function() {var})
+     * name:  param | mode
+     * value: debug | trace.
      */
-    void param(Dataset ds, String key, String value) {
-        System.out.println(key + "=" + value);
-        ds.getContext().set(key, value);
-        ds.getBinding().setGlobalVariable(key, DatatypeMap.newInstance(value));
-    }
-    
-    /**
-     * @param mode : debug ; trace
-     */
-    void mode(Dataset ds, String name, String mode) {
+    void mode(Dataset ds, String name, String value) {
         //System.out.println("URL mode: " + mode);
-        ds.getContext().add(name, mode);
-        if (name.equals(MODE)) {
-            switch (mode) {
-                case DEBUG:
-                    ds.getContext().setDebug(true);
-                // continue
+        ds.getContext().add(name, value);
 
-                default:
-                    ds.getContext().set(mode, true);
-                    break;
-            }
+        switch (name) {
+            case MODE:
+                switch (value) {
+                    case DEBUG:
+                        ds.getContext().setDebug(true);
+                    // continue
+
+                    default:
+                        ds.getContext().set(value, true);
+                        break;
+                }
+                break;
+
+            case PARAM:
+                URLServer.decode(ds.getContext(), value);
+                break;
         }
     }
-
+       
     
     void afterParameter(Dataset ds, Mappings map) {
         if (ds.getContext().hasValue(TRACE)) {

@@ -4,6 +4,8 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.Graph;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import java.util.ArrayList;
+import java.util.HashMap;
 
 import java.util.List;
 
@@ -13,7 +15,7 @@ import java.util.List;
  */
 public class URLServer implements URLParam {
     
-
+    static HashMap<String, Boolean> encode;
     
     // whole URL: http://corese.inria.fr/sparql?param=value
     private String url;
@@ -25,6 +27,11 @@ public class URLServer implements URLParam {
     // service Node for service clause
     private Node node;
     private Graph graph;
+    private int number = -1;
+    
+    static {
+        start();
+    }
     
     
     public URLServer(String s) {
@@ -41,7 +48,7 @@ public class URLServer implements URLParam {
     @Override
     public String toString() {
         return getURL();
-    }
+    }       
     
     void init() {
         setServer(server(getURL()));
@@ -204,6 +211,92 @@ public class URLServer implements URLParam {
         }
     }
     
+    
+    static void start() {
+        encode = new HashMap<>();
+        // boolean means share in federate mode
+        encode.put(ACCEPT, false);
+        encode.put(REJECT, false);
+        encode.put(TIMEOUT, true);
+    }
+    
+    /**
+     * encode key=val as param=key~val for corese server SPARQL API parameter passing
+     */
+    public static boolean isEncoded(String name) {
+        if (encode.containsKey(name)) {
+            return true;
+        }
+        return false;
+    }
+    
+    static boolean isShare(String name) {
+        return encode.containsKey(name) && encode.get(name);
+    }
+    
+    /**
+     * Some parameter key=val are encoded as param=key~val
+     * Because corese server have limited number of parameters in SPARQL API
+     */
+    public void encode() {
+        if (getMap() == null) {
+            return;
+        }
+        
+        List<String> param = getMap().get(PARAM);
+        if (param == null) {
+            param = new ArrayList<>();
+        }
+        
+        for (String key : getMap().keySet()) {
+            if (isEncoded(key)) {
+                param.addAll(toParam(key, getMap().get(key)));
+            } 
+        }
+        
+        if (! param.isEmpty()){
+            getMap().put(PARAM, param);
+        }
+    }
+    
+    
+    /**
+     * Decode parameter  param=key~val as key=val in Context
+     */
+    public static void decode(Context c, String param) {
+        if (param.contains(":") || param.contains(SEPARATOR)) {
+            String sep = param.contains(SEPARATOR) ? SEPARATOR : ":";
+            String[] list = param.split(sep);
+
+            if (list.length >= 2) {
+                String key = list[0];
+                if (isEncoded(key)) {
+                    if (isShare(key)) {
+                        // timeout
+                        if (!c.hasValue(key)) {
+                            c.add(EXPORT, key);
+                        }
+                        c.set(key, list[1]);
+                    } else {
+                        // accept reject
+                        c.add(key, list[1]);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * str -> accept~str
+     */
+    List<String> toParam(String name, List<String> list) {
+        ArrayList<String> param = new ArrayList<>();
+        for (String value : list) {
+            param.add(String.format("%s~%s", name, value));
+        }
+        return param;
+    }
+    
     boolean isVariable(String value) {
         return value.startsWith("{") && value.endsWith("}");
     }
@@ -216,7 +309,7 @@ public class URLServer implements URLParam {
         String method = getParameter("method");
         return method != null && method.equals("get");
     }
-
+    
     /**
      * @return the param
      */
@@ -264,6 +357,10 @@ public class URLServer implements URLParam {
         return getURL();
     }
     
+    public String getLogURLNumber() {
+        return String.format("%s.%s", getServer(), getNumber());
+    }
+    
     /**
      * @return the node
      */
@@ -290,6 +387,20 @@ public class URLServer implements URLParam {
      */
     public void setGraph(Graph graph) {
         this.graph = graph;
+    }
+
+    /**
+     * @return the number
+     */
+    public int getNumber() {
+        return number;
+    }
+
+    /**
+     * @param number the number to set
+     */
+    public void setNumber(int number) {
+        this.number = number;
     }
     
 }

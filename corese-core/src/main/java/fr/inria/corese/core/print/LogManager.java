@@ -166,7 +166,7 @@ public class LogManager {
     }
     
     void processIO() {
-        for (String url : log.getInputMap().keySet()) {
+        for (String url : log.getInputMap().getKeys()) {
             Integer n = log.getInputMap().get(url);
             property("<%s> %s %s ", url, INPUT, n);
             if (log.getOutputMap().containsKey(url)) {
@@ -178,7 +178,7 @@ public class LogManager {
             }
         }
         
-        for (String url : log.getOutputMap().keySet()) {
+        for (String url : log.getOutputMap().getKeys()) {
             if (!log.getInputMap().containsKey(url)) {
                 Integer n = log.getOutputMap().get(url);
                 property("<%s> %s %s . \n", url, OUTPUT, n);

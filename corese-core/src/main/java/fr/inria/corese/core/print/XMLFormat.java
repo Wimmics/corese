@@ -227,11 +227,12 @@ public class XMLFormat {
         // print variable or functions selected in the header
         printVariables(getSelect());
 
-        if (printInfoInFile && fileName != null) {
-            printLink(fileName);
-        }
+//        if (printInfoInFile && fileName != null) {
+//            printLink(fileName);
+//        }
         if (lMap.getLink() != null) {
-            println(String.format("<link href='%s'/>", lMap.getLink()));
+            //println(String.format("<link href='%s'/>", lMap.getLink()));
+            printLink(lMap.getLink());
         }
         println(getTitle(Title.CHEAD));
 

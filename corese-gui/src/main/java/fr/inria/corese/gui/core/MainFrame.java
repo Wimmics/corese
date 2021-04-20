@@ -110,6 +110,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem loadStyle;
     private JMenuItem cpTransform, shex;
     private JMenuItem saveQuery;
+    private JMenuItem saveShacl;
     private JMenuItem saveResult;
     private JMenuItem loadAndRunRule;
     private JMenuItem refresh;
@@ -522,6 +523,9 @@ public class MainFrame extends JFrame implements ActionListener {
         shex = new JMenuItem("Translate Shex to Shacl");
         shex.addActionListener(this);
 
+        saveShacl = new JMenuItem("Save Shacl");
+        saveShacl.addActionListener(this);
+
         saveQuery = new JMenuItem("Save Query");
         saveQuery.addActionListener(this);
 
@@ -656,7 +660,7 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu aboutMenu = new JMenu("?");
         
         JMenu fileMenuLoad = new JMenu("Load");
-        JMenu fileMenuExport = new JMenu("Export");
+        JMenu fileMenuSaveGraph = new JMenu("Savge graph");
 
         //On ajoute tout au menu
         fileMenu.add(fileMenuLoad);
@@ -673,19 +677,21 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenuLoad.add(loadStyle);
 
         fileMenu.add(refresh);
-
-        fileMenu.add(fileMenuExport);
-        fileMenuExport.add(exportRDF);
-        fileMenuExport.add(exportTurtle);
-        fileMenuExport.add(exportOwl);
-        fileMenuExport.add(exportJson);
-        fileMenuExport.add(exportTrig);
-
+        
         fileMenu.add(execWorkflow);
         fileMenu.add(cpTransform);
         fileMenu.add(shex);
+
+        fileMenu.add(fileMenuSaveGraph);
+        fileMenuSaveGraph.add(exportRDF);
+        fileMenuSaveGraph.add(exportTurtle);
+        fileMenuSaveGraph.add(exportOwl);
+        fileMenuSaveGraph.add(exportJson);
+        fileMenuSaveGraph.add(exportTrig);
+
         fileMenu.add(saveQuery);
         fileMenu.add(saveResult);
+        fileMenu.add(saveShacl);
 
         queryMenu.add(iselect);
         queryMenu.add(iselecttuple);
@@ -1089,6 +1095,9 @@ public class MainFrame extends JFrame implements ActionListener {
         else if (e.getSource() == shex) {
             shex(false);
         } 
+        else if (e.getSource() == saveShacl) {
+            this.ongletShacl.writeShacl();
+        }
         //sauvegarde la requête dans un fichier texte (.txt)
         else if (e.getSource() == saveQuery) {
           saveQuery();

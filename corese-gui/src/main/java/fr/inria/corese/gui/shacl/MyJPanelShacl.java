@@ -1,21 +1,26 @@
 package fr.inria.corese.gui.shacl;
 
 import java.awt.BorderLayout;
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.FlowLayout;
 import java.awt.Font;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.FileWriter;
+import java.io.IOException;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JFileChooser;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
-import javax.swing.ScrollPaneConstants;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
@@ -30,7 +35,7 @@ public class MyJPanelShacl extends JPanel {
     private static final long serialVersionUID = 1L;
     private static final int FontSize = 16;
 
-    private MainFrame MainFrame;
+    private MainFrame mainFrame;
 
     private JTextPane shaclEditor;
     private JTextArea shaclResult;
@@ -39,19 +44,62 @@ public class MyJPanelShacl extends JPanel {
         super();
         this.shaclEditor = new JTextPane();
         this.shaclResult = new JTextArea();
-        this.MainFrame = coreseFrame;
+        this.mainFrame = coreseFrame;
         this.initComponents();
+    }
+
+    public void writeShacl() {
+        String shaclEditorContent = getShaclEditorContent();
+
+        JFileChooser filechoose = new JFileChooser();
+        int resultatEnregistrer = filechoose.showDialog(filechoose, "Save");
+
+        // If user clicks on save button
+        if (resultatEnregistrer == JFileChooser.APPROVE_OPTION) {
+            String pathSelectFile = filechoose.getSelectedFile().toString();
+
+            // Write file
+            try {
+                FileWriter myWriter = new FileWriter(pathSelectFile);
+                myWriter.write(shaclEditorContent);
+                myWriter.close();
+            } catch (IOException ex) {
+                java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                        ex);
+            }
+        }
     }
 
     private void initComponents() {
         setLayout(new BoxLayout(this, BoxLayout.PAGE_AXIS));
         setBorder(BorderFactory.createEmptyBorder(0, 5, 5, 5));
 
-        /////////////////////////////
-        // Configure button pannel //
-        /////////////////////////////
-        JPanel buttonsPannel = new JPanel();
-        buttonsPannel.setLayout(new FlowLayout());
+        ///////////////////
+        // Buttons panel //
+        ///////////////////
+        JPanel buttonsPanel = initButtonsPanel();
+        add(buttonsPanel);
+
+        //////////////////
+        // Editor panel //
+        //////////////////
+        JPanel editorPanel = new JPanel();
+        editorPanel.setLayout(new BorderLayout());
+
+        // Split plane
+        JScrollPane shaclEditor = this.initShaclEditor();
+        JScrollPane shaclResult = this.initShaclResult();
+        final JSplitPane splitPlane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, shaclEditor, shaclResult);
+        splitPlane.setContinuousLayout(true);
+
+        editorPanel.add(splitPlane);
+
+        add(editorPanel);
+    }
+
+    private JPanel initButtonsPanel() {
+        JPanel buttonsPanel = new JPanel();
+        buttonsPanel.setLayout(new FlowLayout());
 
         // validate button
         ActionListener buttonValidateListener = new ActionListener() {
@@ -78,7 +126,7 @@ public class MyJPanelShacl extends JPanel {
                 }
 
                 // Evaluation
-                Shacl shacl = new Shacl(MainFrame.getMyCorese().getGraph(), shapeGraph);
+                Shacl shacl = new Shacl(mainFrame.getMyCorese().getGraph(), shapeGraph);
                 Graph result = null;
                 try {
                     result = shacl.eval();
@@ -95,7 +143,7 @@ public class MyJPanelShacl extends JPanel {
         JButton buttonValidate = new JButton("Validate");
         buttonValidate.setMaximumSize(new Dimension(200, 200));
         buttonValidate.addActionListener(buttonValidateListener);
-        buttonsPannel.add(buttonValidate);
+        buttonsPanel.add(buttonValidate);
 
         // Clear button
         ActionListener buttonClearListener = new ActionListener() {
@@ -110,38 +158,87 @@ public class MyJPanelShacl extends JPanel {
         JButton buttonClear = new JButton("Clear");
         buttonClear.setMaximumSize(new Dimension(200, 200));
         buttonClear.addActionListener(buttonClearListener);
-        buttonsPannel.add(buttonClear);
+        buttonsPanel.add(buttonClear);
 
-        add(buttonsPannel);
+        // save button
+        ActionListener buttonSaveListener = new ActionListener() {
 
-        /////////////////////////////
-        // Configure editor pannel //
-        /////////////////////////////
-        JPanel editorPanel = new JPanel();
-        editorPanel.setLayout(new BorderLayout());
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                writeShacl();
+            }
+        };
+
+        JButton buttonSave = new JButton("Save");
+        buttonSave.setMaximumSize(new Dimension(200, 200));
+        buttonSave.addActionListener(buttonSaveListener);
+        buttonsPanel.add(buttonSave);
+
+        return buttonsPanel;
+    }
+
+    private JScrollPane initShaclEditor() {
+        // Line counter
+        JTextArea lineCounter = new JTextArea(10, 2);
+        lineCounter.setEditable(false);
+        lineCounter.setFocusable(false);
+        lineCounter.setBackground(new Color(230, 230, 230));
+        lineCounter.setFont(new Font("Sanserif", Font.BOLD, FontSize));
+        lineCounter.setText("\n1");
 
         // Shacl editor
         this.shaclEditor.setBorder(BorderFactory.createTitledBorder("Shacl editor:"));
         this.shaclEditor.setPreferredSize(new Dimension(400, 250));
         this.shaclEditor.setFont(new Font("Sanserif", Font.BOLD, FontSize));
+        this.shaclEditor.getDocument().addDocumentListener(new DocumentListener() {
 
-        JScrollPane scrollShaclEditor = new JScrollPane(this.shaclEditor);
-        scrollShaclEditor.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+            private void updatelineCounter() {
+                String[] lines = shaclEditor.getText().split("\r\n|\r|\n");
+                int nb_line = lines.length + 1;
 
-        // Shacl result
+                String text = "\n";
+                for (int i = 1; i < nb_line; i++) {
+                    text += String.valueOf(i);
+                    if (i != nb_line - 1) {
+                        text += "\n";
+                    }
+                }
+                lineCounter.setText(text);
+            }
+
+            @Override
+            public void changedUpdate(DocumentEvent arg0) {
+                updatelineCounter();
+            }
+
+            @Override
+            public void insertUpdate(DocumentEvent arg0) {
+                updatelineCounter();
+            }
+
+            @Override
+            public void removeUpdate(DocumentEvent arg0) {
+                updatelineCounter();
+            }
+
+        });
+
+        JScrollPane scrollShaclEditor = new JScrollPane(this.shaclEditor, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
+        scrollShaclEditor.setRowHeaderView(lineCounter);
+        scrollShaclEditor.setViewportView(this.shaclEditor);
+        return scrollShaclEditor;
+    }
+
+    private JScrollPane initShaclResult() {
         this.shaclResult.setBorder(BorderFactory.createTitledBorder("Results:"));
         this.shaclResult.setEditable(false);
         this.shaclResult.setFont(new Font("Sanserif", Font.BOLD, FontSize));
 
-        JScrollPane scrollShaclResult = new JScrollPane(shaclResult);
-        scrollShaclResult.setVerticalScrollBarPolicy(ScrollPaneConstants.VERTICAL_SCROLLBAR_ALWAYS);
+        JScrollPane scrollShaclResult = new JScrollPane(this.shaclResult, JScrollPane.VERTICAL_SCROLLBAR_ALWAYS,
+                JScrollPane.HORIZONTAL_SCROLLBAR_ALWAYS);
 
-        // Split plane
-        final JSplitPane splitPlane = new JSplitPane(JSplitPane.VERTICAL_SPLIT, scrollShaclEditor, scrollShaclResult);
-        splitPlane.setContinuousLayout(true);
-        editorPanel.add(splitPlane);
-
-        add(editorPanel);
+        return scrollShaclResult;
     }
 
     private String getShaclEditorContent() {

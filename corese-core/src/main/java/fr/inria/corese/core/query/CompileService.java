@@ -19,7 +19,6 @@ import fr.inria.corese.kgram.api.query.Provider;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.sparql.api.ComputerEval;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Expression;
@@ -27,10 +26,7 @@ import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import fr.inria.corese.sparql.triple.parser.VariableLocal;
-import java.util.HashMap;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 public class CompileService implements URLParam {
     public static final String KG_VALUES = NSManager.KGRAM + "values";
@@ -38,10 +34,12 @@ public class CompileService implements URLParam {
 
     Provider provider;
     List<List<Term>> termList;
+    private Environment env;
 
-    public CompileService(Provider p) {
+    public CompileService(Provider p, Environment env) {
         provider = p;
         termList = new ArrayList<>();
+        setEnv(env);
     }
 
     public CompileService() {
@@ -59,7 +57,7 @@ public class CompileService implements URLParam {
      * When no map, use env
      * Create a copy of ast with bindings if any, otherwise return ast as is.
      */
-    public ASTQuery compile(URLServer serv, Query q, Mappings map, Environment env, int start, int limit) {
+    public ASTQuery compile(URLServer serv, Query q, Mappings map, int start, int limit) {
         ASTQuery ast = getAST(q);
         complete(serv, q, ast);
         Query out = q.getOuterQuery();
@@ -68,12 +66,12 @@ public class CompileService implements URLParam {
             // lmap may contain one empty Mapping
             // use env because it may have bindings
             if (isValues) {
-                return bindings(q, env);
+                return bindings(q, getEnv());
             } else  {
-                return filter(q, env);
+                return filter(q, getEnv());
             } 
         } else if (isValues) {
-            return bindings(serv, q, map, env, start, limit);
+            return bindings(serv, q, map, getEnv(), start, limit);
         } else {
             return filter(serv, q, map, start, limit);
         } 
@@ -515,5 +513,19 @@ public class CompileService implements URLParam {
         sb.append("}");
         return sb;
 
+    }
+
+    /**
+     * @return the env
+     */
+    public Environment getEnv() {
+        return env;
+    }
+
+    /**
+     * @param env the env to set
+     */
+    public void setEnv(Environment env) {
+        this.env = env;
     }
 }

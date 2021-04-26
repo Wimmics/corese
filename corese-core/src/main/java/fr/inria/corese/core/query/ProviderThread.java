@@ -16,26 +16,19 @@ import java.util.logging.Logger;
  */
 public class ProviderThread extends Thread {
 
-    ProviderImpl p;
+    private ProviderService provider;
     Query q;
-    Exp exp;
     private URLServer service;
     Mappings map, sol;
-    Eval eval;
-    CompileService c;
     boolean slice;
     int length;
     int timeout;
     
-    ProviderThread(ProviderImpl p, Query q, URLServer service, Exp exp, Mappings map, Mappings sol, Eval eval, CompileService compiler, boolean slice, int length, int timeout){
-        this.p = p;
-        this.q = q;
+    ProviderThread(ProviderService p, URLServer service, Mappings map, Mappings sol, boolean slice, int length, int timeout){
+        provider = p;
         this.service = service;
-        this.exp = exp;
         this.map = map;
         this.sol = sol;
-        this.eval = eval; 
-        this.c = compiler;
         this.slice = slice;
         this.length = length;
         this.timeout = timeout;
@@ -48,7 +41,7 @@ public class ProviderThread extends Thread {
     
     void process() {
         try {
-            p.process(q, service, exp, map, sol, eval, c, slice, length, timeout);
+            getProvider().process(service, map, sol, slice, length, timeout);
         } catch (EngineException ex) {           
             ProviderImpl.logger.error(ex.getMessage());
         }
@@ -60,6 +53,20 @@ public class ProviderThread extends Thread {
     
     public void setService(URLServer service) {
         this.service = service;
+    }
+
+    /**
+     * @return the provider
+     */
+    public ProviderService getProvider() {
+        return provider;
+    }
+
+    /**
+     * @param provider the provider to set
+     */
+    public void setProvider(ProviderService provider) {
+        this.provider = provider;
     }
     
 

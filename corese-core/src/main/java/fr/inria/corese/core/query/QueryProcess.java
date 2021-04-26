@@ -1305,7 +1305,8 @@ public class QueryProcess extends QuerySolver {
     }
         
     public ContextLog getLog(Mappings map) {
-        return getAST(map).getLog();
+        //return getAST(map).getLog();
+        return getBinding().getCreateLog();
     }
     
     /***********************************************************************/

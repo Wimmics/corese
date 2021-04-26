@@ -2,9 +2,11 @@ package fr.inria.corese.core.extension;
 
 import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.logic.Distance;
+import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.query.Construct;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.Cleaner;
@@ -27,8 +29,12 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.ContextLog;
 import java.io.IOException;
 import java.util.Enumeration;
+import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -41,6 +47,7 @@ import java.util.Enumeration;
  * @author Olivier Corby, Wimmics INRIA I3S, 2020
  */
 public class Extension extends Core {
+    private static Logger logger = LoggerFactory.getLogger(Extension.class);
     
     static Extension singleton;
     
@@ -67,6 +74,42 @@ public class Extension extends Core {
         }
         return new Context(b.getAccessLevel());
     }
+    
+    ContextLog getLog() {
+        return getBinding().getLog();
+    }
+    
+    public IDatatype getContextLog() {
+        if (getLog() == null) {
+            return null;
+        }
+        return DatatypeMap.createObject(getLog());
+    }
+    
+    /**
+     * Service evaluation report graph recorded in ContextLog 
+     */
+    public IDatatype getLogGraph() {
+        if (getLog() == null) {
+            return null;
+        }
+        LogManager man = new LogManager(getLog());
+        try {
+            Graph g = man.parse();
+            return DatatypeMap.createObject(g);
+        } catch (LoadException ex) {
+            logger.error(ex.getMessage());
+            return null;
+        }
+    }
+    
+    public IDatatype getLogURL() {
+        if (getLog() == null || getLog().getLink() == null) {
+            return null;
+        }
+        return DatatypeMap.newResource(getLog().getLink());
+    }
+
        
     public IDatatype parse(IDatatype dt) throws EngineException {
         Context c = getCreateContext();

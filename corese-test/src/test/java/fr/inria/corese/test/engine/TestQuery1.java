@@ -52,11 +52,15 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
 import fr.inria.corese.sparql.datatype.extension.CoresePointer;
+import fr.inria.corese.sparql.exceptions.LDScriptException;
 import fr.inria.corese.sparql.exceptions.UndefinedExpressionException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
 import javax.xml.transform.TransformerException;
@@ -79,6 +83,7 @@ public class TestQuery1 {
     static String data  = Thread.currentThread().getContextClassLoader().getResource("data/").getPath() ;
     static String QUERY = Thread.currentThread().getContextClassLoader().getResource("query/").getPath() ;
     static String text  = Thread.currentThread().getContextClassLoader().getResource("text/").getPath() ;
+    static String test  = Thread.currentThread().getContextClassLoader().getResource("test/").getPath() ;
 
     private static final String FOAF = "http://xmlns.com/foaf/0.1/";
     private static final String SPIN_PREF = "prefix sp: <" + NSManager.SPIN + ">\n";
@@ -257,6 +262,297 @@ public class TestQuery1 {
         return graph;
     }
     
+    
+    public void generic() throws EngineException {
+        String i = "insert data { [] rdf:value ( [] ) }";
+        
+        String q = "select (us:test() as ?t)  where {}"
+                + "function us:test() {}";
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Mappings map = exec.query(q);
+    }
+    
+    //@Test
+    public void format() throws EngineException {
+        String i = "insert data { [] rdf:value () }";
+        String q = "select (xt:xml(?m) as ?xml) (xt:rdf(?m) as ?rdf) (xt:json(?m) as ?json) "
+                + "(xt:graph(?m) as ?g) "
+                + "where { bind (us:test() as ?m) }"
+                
+                + "function us:test() { "
+                + "query(select * where {?s ?p ?o})"
+                + "}";
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+        Mappings map = exec.query(q);
+        
+        DatatypeValue xml = map.getValue("?xml");
+        DatatypeValue rdf = map.getValue("?rdf");
+        DatatypeValue json = map.getValue("?json");
+        IDatatype gg   = (IDatatype) map.getValue("?g");
+        
+        System.out.println(xml.stringValue());
+        System.out.println(rdf.stringValue());
+        System.out.println(json.stringValue());
+        System.out.println(gg.getContent());
+    }
+    
+    @Test
+    public void xslt() throws EngineException {        
+        String q = String.format(
+                "select (us:test(<%s>, <%s>) as ?t) (us:test(xt:xml(?t)) as ?name) where {}"
+                        
+                + "function us:test(xml, xslt) {"
+                + "let (doc = xt:xml(xml)) {"
+                + "xt:xslt(doc, xslt)"
+                + "}"
+                + "}", test+"data/data.xml", test+"data/xslt.xsl")
+        
+        +"function us:test(xml) {"
+                + "for (doc in xml) {"
+                + "for (node in doc) {"
+                + "return(dom:getNodeName(node))"
+                + "}"
+                + "}"
+                + "}";
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        DatatypeValue dt = map.getValue("?name");
+        assertEquals("title", dt.stringValue());
+    }
+    
+    
+      @Test
+    public void json() throws EngineException, MalformedURLException, LoadException, URISyntaxException {
+        String q = "select (us:test() as ?t) "
+                + "where {}"
+                + "function us:test() {"
+                + "let (json = xt:json('{\"knows\": [ {\"name\": \"John\"} , {\"name\": \"Jack\"}] }')) {"
+                + "return (xt:path(json, '/knows/1/name'))"
+                + "} "
+                + "}";
+        
+        Graph g = Graph.create();
+        Load load = Load.create(g);
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        DatatypeValue dt = map.getValue("?t");
+        assertEquals("Jack", dt.stringValue());               
+    }
+    
+    
+    @Test
+    public void testmap2() throws EngineException {
+        String q = "select (us:test(dt:map) as ?t)  "
+                + "(us:test(dt:json) as ?js)"
+                + "where {}"
+                
+                + "function us:test(atype) {"
+                + "let (amap = xt:create(atype), "
+                + "list = @(('a' 1)('b' 2)('c' 3))) {"
+                + "for ((key val) in list) {"
+                + "xt:set(amap, key, val)"
+                + "} ;"
+                + "let ((aa | bb . cc) = amap,"
+                + "(ee) = bb) {"
+                + "reduce(rq:plus, maplist (function((key, val)) { val }, xt:list(aa, ee, cc)))"
+                + "}"
+                + "}"
+                + "}";
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        assertEquals(6, map.getValue("?t").intValue());
+        assertEquals(6, map.getValue("?js").intValue());
+    }
+    
+    
+    
+    @Test
+    public void testmap() throws EngineException {
+        String q = "select (us:test(dt:map) as ?t)  "
+                + "(us:test(dt:json) as ?js)"
+                + "where {}"
+                
+                + "function us:test(atype) {"
+                + "let (amap = xt:create(atype), "
+                + "list = @(('a' 1)('b' 2)('c' 3))) {"
+                + "for ((key val) in list) {"
+                + "xt:set(amap, key, val)"
+                + "} ;"
+                + "reduce(rq:plus, maplist (function((key, val)) { val }, amap))"
+                + "}"
+                + "}";
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        assertEquals(6, map.getValue("?t").intValue());
+        assertEquals(6, map.getValue("?js").intValue());
+    }
+    
+    
+       @Test
+    public void testgraph5() throws EngineException {
+        String q = "select (us:test() as ?t)  "
+                + "where {}"
+                
+                + "function us:test() {"
+                + "let (agraph = construct {[] rdf:value 1, 2, 3} where {}) {"
+                + "let ((t1 | t2 . t3) = maplist(xt:self, agraph), (tt) = t2) {"
+                + "reduce(rq:plus, maplist (function((s, p, o)) { o }, xt:list(t1, tt, t3)))"
+                + "}"
+                + "}"
+                + "}";
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        assertEquals(6, map.getValue("?t").intValue());
+    }
+    
+    
+      @Test
+    public void testgraph3() throws EngineException {
+        String q = "select (us:test() as ?t)  "
+                + "where {}"
+                
+                + "function us:test() {"
+                + "let (agraph = construct {[] rdf:value 1, 2, 3} where {}) {"
+                + "let ((t1 | t2 . t3) = agraph, (tt) = t2) {"
+                + "reduce(rq:plus, maplist (function((s, p, o)) { o }, xt:list(t1, tt, t3)))"
+                + "}"
+                + "}"
+                + "}";
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        assertEquals(6, map.getValue("?t").intValue());
+    }
+    
+     @Test
+    public void testgraph2() throws EngineException {
+        String q = "select (us:test() as ?t)  "
+                + "where {}"
+                
+                + "function us:test() {"
+                + "let (agraph = construct {[] rdf:value 1, 2, 3} where {}) {"
+                + "reduce(rq:plus, maplist (function((s, p, o)) { o }, agraph))"
+                + "}"
+                + "}";
+        
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(q);
+        assertEquals(6, map.getValue("?t").intValue());
+    }
+    
+    
+    
+    
+       @Test
+    public void exception4() {
+        String q = "select ?x (us:test() as ?t)  where { values ?x {1} }"
+                + "function us:test() { try {us:foo() } catch (var) { static(myvar=var); throw(2) }  }"
+                + "function us:foo()  {throw(throw(1))}";
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        try {
+            Mappings map = exec.query(q);
+            assertEquals(false, true);
+        } catch (EngineException ex) {
+            assertEquals(2, ex.getDatatypeValue().intValue());
+            IDatatype dt = Binding.getStaticVariable("?myvar");
+            assertEquals(1, dt.intValue());
+        }
+    }
+    
+      @Test
+    public void exception3() {
+        String q = "select ?x (us:test() as ?t)  where { values ?x {1} }"
+                + "function us:test() { try {us:foo() } catch (var) { var }  }"
+                + "function us:foo()  {throw(throw(1))}";
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        try {
+            Mappings map = exec.query(q);
+            assertEquals(1, map.size());
+        } catch (EngineException ex) {
+            assertEquals(false, true);
+        }
+    }
+    
+     @Test
+    public void exception2() {
+        String q = "select ?x (us:test() as ?t)  where { values ?x {1} }"
+                + "function us:test() { try {us:foo() } catch (var) { var }  }"
+                + "function us:foo()  {throw(1)}";
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        try {
+            Mappings map = exec.query(q);
+            assertEquals(1, map.size());
+        } catch (EngineException ex) {
+            assertEquals(false, true);
+        }
+    }
+    
+    
+    
+    @Test
+    public void exception() throws EngineException {
+        String q = "select ?x (us:test() as ?t)  where { values ?x {1} }"
+                + "function us:test() { throw(1) }";
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        try {
+            Mappings map = exec.query(q);
+            assertEquals(false, true);
+        } 
+        catch (LDScriptException ex) {
+            assertEquals(1, ex.getDatatypeValue().intValue());
+        }
+        
+        
+    }
+    
+    
+    
+    @Test
+    public void testStatic2() throws EngineException {
+        String q = "select (us:test() as ?t)  where {}"
+                + "function us:test() {static (stat = stat+1) }";
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Binding.setStaticVariable("?stat", DatatypeMap.ONE);
+        Mappings map = exec.query(q);
+        DatatypeValue dt = map.getValue("?t");
+        assertEquals(true, (dt!=null)&&(dt.intValue()==2));  
+        assertEquals(2, Binding.getStaticVariable("?stat").intValue());
+    }
+    
+    @Test
+    public void testStatic() throws EngineException {
+        String q = "select (us:test() as ?t)  where {}"
+                + "function us:test() {let (stat = stat+1) {return (stat) }}";
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        Binding.setStaticVariable("?stat", DatatypeMap.ONE);
+        Mappings map = exec.query(q);
+        DatatypeValue dt = map.getValue("?t");
+        assertEquals(true, (dt!=null)&&(dt.intValue()==2)); 
+        assertEquals(1, Binding.getStaticVariable("?stat").intValue());
+    }
+    
      @Test
     public void testREM() throws EngineException, LoadException {
         String q = "prefix ex: <function://fr.inria.corese.test.engine.TestQuery1> "
@@ -266,7 +562,7 @@ public class TestQuery1 {
         exec.setReentrant(true);
         Mappings map = exec.query(q);
         map = exec.query("select * from us:g1 where { ?s ?p ?o }");
-         assertEquals(1, map.size());
+        assertEquals(1, map.size());
     }
     
    public IDatatype mytest(IDatatype dt) {
@@ -339,7 +635,7 @@ public class TestQuery1 {
                 + "}"
                 
                 + "function us:test(xml) {"
-                + "let (list = xpath(xml,'/doc/*/text()')"
+                + "let (list = xt:xpath(xml,'/doc/*/text()')"
                 + ") {"
                 + "maplist(dom:getNodeDatatypeValue, list)"
                 + "}"
@@ -379,7 +675,7 @@ public class TestQuery1 {
                 + "function us:test(xml) {"
                 + "let ((other) = dom:getElementsByTagName(xml,  \"other\"), "
                 //+ "sublist = dom:getChildNodes(other)"
-                + "sublist = xpath(xml,'//other/node()')"
+                + "sublist = xt:xpath(xml,'//other/node()')"
                 + ") {"
                 + "maplist(dom:getNodeValue, sublist)"
                 + "}"
@@ -429,7 +725,7 @@ public class TestQuery1 {
         assertEquals("test", map.getValue("?local").stringValue());
         assertEquals("ns:test", map.getValue("?name").stringValue());
         assertEquals("text", map.getValue("?text").stringValue());
-          System.out.println(map);
+          //System.out.println(map);
     }
     
     
@@ -1140,7 +1436,7 @@ public class TestQuery1 {
                 + "}"
                 
                 + "function us:test(?g) {"
-                + "xt:print(?g)"
+                //+ "xt:print(?g)"
                 + "}"
                 ;
         
@@ -1950,7 +2246,7 @@ public class TestQuery1 {
         Mappings map = exec.query(t);
 
         String json = map.getTemplateStringResult();
-        System.out.println(json);
+        //System.out.println(json);
         
         assertEquals(true, (json.length() <= 1350 && json.length() >= 1000));
 
@@ -2245,6 +2541,7 @@ public class TestQuery1 {
         Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
+        //System.out.println(map.getQuery().getAST());
         IDatatype dt = (IDatatype) map.getValue("?t");
         assertEquals(120, dt.intValue());
     }
@@ -2401,9 +2698,9 @@ public class TestQuery1 {
                 + "}";
 
         String q = "base <http://example.org/>"
-                + "select (us:bar() as ?t) (datatype(?t) as ?d) where {}"
+                + "select (us:bar2() as ?t) (datatype(?t) as ?d) where {}"
 
-                + "@public function us:bar() {"
+                + "@public function us:bar2() {"
                 + "let (?f1 = rq:uri, ?f2 = rq:replace, ?f3 = rq:sha256, ?f4 = xsd:integer) {"
                 + "xt:list("
                 + "xt:list(funcall(?f1, 'abc'), uri('abc')),"
@@ -2416,7 +2713,7 @@ public class TestQuery1 {
                 + "}";
 
         String q2 = "base <http://example2.org/>"
-                + "select (us:bar() as ?t)  where {}";
+                + "select (us:bar2() as ?t)  where {}";
 
         Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
@@ -3240,7 +3537,7 @@ public class TestQuery1 {
         Access.authorize(Feature.READ_FILE);
         Transformer t = Transformer.createWE(g, data + "junit/sttl/format1/");
         String res = t.transform();
-        System.out.println("result: " + res);
+        //System.out.println("result: " + res);
         assertEquals(true, res != null && res.equals("test"));
     }
 
@@ -3312,8 +3609,6 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
         assertEquals(size, map.size());
-
-
     }
 
 
@@ -3406,7 +3701,7 @@ public class TestQuery1 {
         assertEquals("aoobooooc", dt.getLabel());
     }
 
-
+    
     @Test
     public void testrdfxml() throws LoadException, IOException {
         Graph g = Graph.create();
@@ -3851,7 +4146,7 @@ public class TestQuery1 {
 
         Mappings map = exec.query(q);
         //System.out.println("*****************************************");
-        System.out.println(map);
+        //System.out.println(map);
         assertEquals(2, map.size()); // there is also a global prefix c:
 //        IDatatype p = (IDatatype) map.getValue("?p");
 //        IDatatype n = (IDatatype) map.getValue("?n");
@@ -4450,7 +4745,7 @@ public class TestQuery1 {
                 + "[] us:width 3 ; us:length 4"
                 + "}";
 
-        String q = "@trace select * (us:surface(?x) as ?s) where {"
+        String q = " select * (us:surface(?x) as ?s) where {"
                 + "?x us:width ?w "
                 + "}"
                 + "function us:surface(?x){"
@@ -6087,7 +6382,7 @@ public class TestQuery1 {
 
     }
 
-    @Test
+    //@Test
     public void testSystem() throws EngineException {
         GraphStore gs = GraphStore.create();
         GraphStoreInit.create(gs).init();
@@ -7891,10 +8186,10 @@ public class TestQuery1 {
                 //+ "bind (xpath(?p, 'name/text()')  as ?n)  "
                 //+ "bind (xpath(?p, 'lname/text()') as ?l) " 
                 
-                + "values ?p { unnest(xpath(?xml, '/doc/person')) } "
-                + "values ?n { unnest(xpath(?p, 'name/text()')) }  "
-                + "values ?l { unnest(xpath(?p, 'lname/text()')) }  "
-                + "values ?y { unnest(xpath(?p, 'year/text()')) }  "
+                + "values ?p { unnest(xt:xpath(?xml, '/doc/person')) } "
+                + "values ?n { unnest(xt:xpath(?p, 'name/text()')) }  "
+                + "values ?l { unnest(xt:xpath(?p, 'lname/text()')) }  "
+                + "values ?y { unnest(xt:xpath(?p, 'year/text()')) }  "
                
                 + "}}";
 
@@ -7938,10 +8233,10 @@ public class TestQuery1 {
                 + "where {"
                     + "select * where {"
                     + "values ?xml { <file://" + text + "phrase.xml> } "
-                    + "values ?st { unnest(xpath(?xml, '/doc/phrase')) }  "
-                    + "values ?s  { unnest(xpath(?st, 'subject/text()')) }  "
-                    + "values ?p  { unnest(xpath(?st, 'verb/text()')) }   "
-                    + "values ?o  { unnest(xpath(?st, 'object/text()')) }  "
+                    + "values ?st { unnest(xt:xpath(?xml, '/doc/phrase')) }  "
+                    + "values ?s  { unnest(xt:xpath(?st, 'subject/text()')) }  "
+                    + "values ?p  { unnest(xt:xpath(?st, 'verb/text()')) }   "
+                    + "values ?o  { unnest(xt:xpath(?st, 'object/text()')) }  "
 
                     + "bind  (uri(xt:objectvalue(?s)) as ?su) "
                     + "bind  (uri(xt:objectvalue(?p)) as ?pr)   "

@@ -124,7 +124,7 @@ public class TestAST {
 		
 		ast.setValues(values);
 		
-		System.out.println(ast);
+		//System.out.println(ast);
 
 		Graph g = Graph.create();
 		QueryProcess exec = QueryProcess.create(g);
@@ -136,10 +136,10 @@ public class TestAST {
 			exec.query(init);
 			
 			RDFFormat ff = RDFFormat.create(g);
-			System.out.println(ff);
+			//System.out.println(ff);
 
 			Mappings map = exec.query(ast);
-			System.out.println(map);
+			//System.out.println(map);
 		
 			assertEquals("Result", 2, map.size());
 
@@ -373,7 +373,7 @@ public void test20() throws EngineException{
 	exec.query(query);
 	
 	RDFFormat f = RDFFormat.create(g);
-	System.out.println(f);
+	//System.out.println(f);
 }
 	
 	
@@ -780,9 +780,9 @@ public void test21(){
 			Mappings map =  exec.query(ast);
 			RDFFormat f = RDFFormat.create(map);
 			
-			System.out.println(ast);
-			System.out.println(map);
-			System.out.println(f);
+//			System.out.println(ast);
+//			System.out.println(map);
+//			System.out.println(f);
 			assertEquals("Result", map.size(), 1);
 			
 	
@@ -829,9 +829,9 @@ public void test21(){
 			Mappings map =  exec.query(ast);
 			RDFFormat f = RDFFormat.create(map);
 			
-			System.out.println(ast);
-			System.out.println(map);
-			System.out.println(f);
+//			System.out.println(ast);
+//			System.out.println(map);
+//			System.out.println(f);
 			assertEquals("Result", 1, map.size());
 			
 	
@@ -878,9 +878,9 @@ public void test21(){
 			Mappings map =  exec.query(ast);
 			RDFFormat f = RDFFormat.create(map);
 			
-			System.out.println(ast);
-			System.out.println(map);
-			System.out.println(f);
+//			System.out.println(ast);
+//			System.out.println(map);
+//			System.out.println(f);
 			assertEquals("Result", map.size(), 2);
 			
 	
@@ -921,9 +921,9 @@ public void test21(){
 			Mappings map =  exec.query(ast);
 			ResultFormat f = ResultFormat.create(map);
 			
-			System.out.println(ast);
-			System.out.println(map);
-			System.out.println(f);
+//			System.out.println(ast);
+//			System.out.println(map);
+//			System.out.println(f);
 			assertEquals("Result", map.size(), 1);
 			
 	
@@ -948,7 +948,7 @@ public void test21(){
 		ast.setBody(BasicGraphPattern.create(t1));
 		ast.setRule(true);
 		
-		System.out.println(ast);
+		//System.out.println(ast);
 
 		String init = 
 			"prefix foaf: <http://foaf.org/>" +
@@ -961,7 +961,7 @@ public void test21(){
 		QueryProcess exec = QueryProcess.create(g);
 		
 		RuleEngine re = RuleEngine.create(g);
-		re.setDebug(true);
+		//re.setDebug(true);
 
 		re.addRule(ast.toString());
 		
@@ -972,8 +972,8 @@ public void test21(){
 			Mappings map =  exec.query(query);
 			ResultFormat f = ResultFormat.create(map);
 			
-			System.out.println(map);
-			System.out.println(f);
+//			System.out.println(map);
+//			System.out.println(f);
 			assertEquals("Result", 1, map.size());
 			
 	

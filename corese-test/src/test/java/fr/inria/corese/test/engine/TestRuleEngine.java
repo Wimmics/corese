@@ -23,6 +23,7 @@ import fr.inria.corese.sparql.storage.api.Parameters;
 
 import fr.inria.corese.core.api.Engine;
 import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -424,7 +425,7 @@ public class TestRuleEngine {
           
        
      RuleEngine testRules() throws LoadException {
-        Graph g = createGraph();
+        Graph g = createGraph();       
         Load ld = Load.create(g);
         ld.parse(data + "comma/comma.rdfs");
         ld.parseDir(data + "comma/data");

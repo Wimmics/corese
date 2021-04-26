@@ -9,7 +9,7 @@ import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
-import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.ContextLog;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.VariableLocal;
 import java.util.ArrayList;
@@ -55,7 +55,7 @@ public class Binding implements Binder {
     private boolean result;
     private boolean coalesce = false;
     private Access.Level accessLevel = Access.Level.USER_DEFAULT;
-    private Context context;
+    private ContextLog contextLog;
     private IDatatype datatypeValue;
     
     private static Binding singleton;
@@ -71,6 +71,7 @@ public class Binding implements Binder {
         setGlobalVariableValues(new HashMap<>());
         setGlobalVariableNames(new HashMap<>());
         setAccessRight(new AccessRight());
+        getCreateLog();
     }
 
     public static Binding create() {
@@ -101,6 +102,9 @@ public class Binding implements Binder {
             sb.append(name).append(" = ").append(getGlobalVariableValues().get(name)).append(NL);
         }
         sb.append("access level: ").append(getAccessLevel()).append(NL);
+        if (getLog() !=null) {
+            sb.append(getLog());
+        }
         return sb.toString();
     }
 
@@ -549,9 +553,12 @@ public class Binding implements Binder {
     }
     
     void shareContext(Binding b) {
+        setDebug(b.isDebug());
         setAccessLevel(b.getAccessLevel());
         setAccessRight(b.getAccessRight());
-        setDebug(b.isDebug());
+        if (b.getLog()!=null) {
+            setLog(b.getLog());
+        }
     }
     
     void shareGlobalVariable(Binding b) {
@@ -714,15 +721,22 @@ public class Binding implements Binder {
     /**
      * @return the context
      */
-    public Context getContext() {
-        return context;
+    public ContextLog getLog() {
+        return contextLog;
+    }
+    
+     public ContextLog getCreateLog() {
+        if (getLog() == null) {
+            setLog(new ContextLog());
+        }
+        return getLog();
     }
 
     /**
      * @param context the context to set
      */
-    public void setContext(Context context) {
-        this.context = context;
+    public void setLog(ContextLog context) {
+        this.contextLog = context;
     }
 
     /**

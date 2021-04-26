@@ -14,6 +14,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Execution Context for SPARQL Query and Template
@@ -133,6 +134,10 @@ public class Context extends ASTObject implements URLParam {
             sb.append("user query: true").append(NL);
         }
         sb.append("level: ").append(getLevel()).append(NL);
+        if (getContextLog() != null){
+            sb.append(getContextLog().toString());
+            sb.append(NL);
+        }
         return sb.toString();
     }
     
@@ -333,6 +338,11 @@ public class Context extends ASTObject implements URLParam {
         return this;
     }
     
+    public Context set(String name, List<String> list) {
+        set(name, DatatypeMap.newStringList(list));
+        return this;
+    }
+    
     public Context add(String name, String value) {
         return add(name, DatatypeMap.newInstance(value));
     }
@@ -462,6 +472,20 @@ public class Context extends ASTObject implements URLParam {
 
     public IDatatype get(String name) {
         return table.get(name);
+    }
+    
+    public IDatatype getFirst(String name) {
+        IDatatype dt = table.get(name);
+        if (dt == null) {
+            return null;
+        }
+        if (dt.isList()) {
+            if (dt.size() == 0) {
+                return null;
+            }
+            return dt.get(0);
+        }
+        return dt;
     }
     
     public IDatatype get(IDatatype name) {
@@ -675,34 +699,13 @@ public class Context extends ASTObject implements URLParam {
         }
         
         if (hasValue(EXPORT)) {
+            // defined by URLServer decode
+            // share parameters such as timeout=1000
             for (IDatatype key : get(EXPORT)) {
-                uri = complete(uri, key.getLabel(), get(key.getLabel()).getLabel()); 
+                uri = complete(uri, key.getLabel(), getFirst(key.getLabel()).getLabel()); 
             }
         }
-        
-        if (hasValue(PARAM)) {
-            boolean accept = true;
-            int count = 0;
-            // mode=share&param=timeout~1000
-            
-            for (IDatatype param : get(PARAM)) {
-                String label = param.getLabel();
-                
-                if  (label.contains(SEPARATOR)) {
-                    String[] pair = label.split(SEPARATOR);
-                    
-                    if (pair.length >= 2) {
-                        String key = pair[0];
-                        String val = pair[1];
-                        
-                        if (!URLServer.isEncoded(key)) {
-                            uri = complete(uri, key, val); 
-                        }                       
-                    }
-                }
-            }
-        }
-                                 
+                                              
         if (hasValue(URI)) {
             for (IDatatype dt : get(URI)) {
                 uri=complete(uri, URI, dt.getLabel());

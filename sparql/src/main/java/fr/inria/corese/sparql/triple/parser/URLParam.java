@@ -6,6 +6,8 @@ package fr.inria.corese.sparql.triple.parser;
 public interface URLParam {
     
     static final String SEPARATOR = "~";
+    static final String CLIENT = "cn:";
+    static final String SERVER = "sv:";
 
     static final String MODE = "mode";
     static final String QUERY = "query";
@@ -28,7 +30,7 @@ public interface URLParam {
     static final String HEADER = "header";
 
     // value of mode=
-    static final String DISPLAY = "cn:display";
+    static final String DISPLAY = "display";
     static final String TRACE = "trace";
     static final String DEBUG = "debug";
     static final String SHOW = "show";
@@ -36,6 +38,8 @@ public interface URLParam {
     static final String SPARQL = "sparql";
     static final String PROVENANCE = "provenance";
     static final String NBVAR = "nbvar";
+    static final String NBRESULT = "nbresult";
+    static final String RESULT = "result";
     static final String FEDERATE = "federate";
     static final String FEDERATION = "federation";
     static final String SHACL = "shacl";

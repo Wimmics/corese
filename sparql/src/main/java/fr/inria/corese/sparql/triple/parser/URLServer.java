@@ -10,8 +10,9 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *
- * @author corby
+ * Manage service URL with parameters
+ * 
+ * @author Olivier Corby, Wimmics INRIA I3S, 2021
  */
 public class URLServer implements URLParam {
     
@@ -217,13 +218,15 @@ public class URLServer implements URLParam {
         // boolean means share in federate mode
         encode.put(ACCEPT, false);
         encode.put(REJECT, false);
-        encode.put(TIMEOUT, true);
     }
     
     /**
      * encode key=val as param=key~val for corese server SPARQL API parameter passing
      */
     public static boolean isEncoded(String name) {
+        if (name.startsWith(SERVER)) {
+            return true;
+        }
         if (encode.containsKey(name)) {
             return true;
         }
@@ -231,12 +234,14 @@ public class URLServer implements URLParam {
     }
     
     static boolean isShare(String name) {
-        return encode.containsKey(name) && encode.get(name);
+        //return encode.containsKey(name) && encode.get(name);
+        return encode.containsKey(name) ? encode.get(name) : true;
     }
     
     /**
-     * Some parameter key=val are encoded as param=key~val
-     * Because corese server have limited number of parameters in SPARQL API
+     * Use case: calling service clause: 
+     * Parameter sv:key=val  encoded as param=sv:key~val
+     * Because corese server have limited number of parameters in SPARQL API.
      */
     public void encode() {
         if (getMap() == null) {
@@ -261,7 +266,10 @@ public class URLServer implements URLParam {
     
     
     /**
-     * Decode parameter  param=key~val as key=val in Context
+     * Use case: corese server process HTTP request 
+     * Decode parameter  param=sv:key~val as key=val in Context
+     * export = (key_1  key_2)
+     * Parameters used by FederateVisitor to tune federation service URL.
      */
     public static void decode(Context c, String param) {
         if (param.contains(":") || param.contains(SEPARATOR)) {
@@ -271,19 +279,37 @@ public class URLServer implements URLParam {
             if (list.length >= 2) {
                 String key = list[0];
                 if (isEncoded(key)) {
-                    if (isShare(key)) {
-                        // timeout
-                        if (!c.hasValue(key)) {
-                            c.add(EXPORT, key);
-                        }
-                        c.set(key, list[1]);
-                    } else {
-                        // accept reject
-                        c.add(key, list[1]);
-                    }
+                    String name = clean(key, SERVER);
+                    // sv:accept sv:reject are not "shared"
+                    if (isShare(name) && !c.hasValue(name)) {
+                        // list of parameter name
+                        c.add(EXPORT, name);
+                    } 
+                    // parameter value
+                    c.add(name, list[1]);
                 }
             }
         }
+    }
+    
+    public void decode(Context c) {
+        if (hasParameter()) {
+            for (String key : getMap().keySet()) {
+                if (isEncoded(key)) {
+                    if (isShare(key) && !c.hasValue(key)) {
+                        c.add(EXPORT, key);
+                    }
+                    c.set(key, getParameterList(key));
+                }
+            }
+        }
+    }
+    
+    static String clean(String name, String pref) {
+        if (name.startsWith(pref)) {
+            return name.substring(pref.length());
+        }
+        return name;
     }
     
     /**

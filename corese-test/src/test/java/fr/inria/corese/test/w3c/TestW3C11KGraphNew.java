@@ -1193,6 +1193,9 @@ public class TestW3C11KGraphNew {
                 earl.define(test, true);
                 return true;
             }
+            else {
+                System.out.println(e);
+            }
 
             System.out.println("** ERROR 2: " + e.getMessage() + " " + nbres + " " + 0);
             if (fdefault.size() > 0) {

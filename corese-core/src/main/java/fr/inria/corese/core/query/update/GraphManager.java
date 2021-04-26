@@ -279,8 +279,6 @@ public class GraphManager {
         Load load = Load.create(graph);
         load.setLevel(level);
         if (AccessRight.isActive()) {
-//            ASTQuery ast = (ASTQuery) q.getAST();
-//            load.setAccessRight(ast.getAccess());
             load.setAccessRight(access);
         }
         //getQueryProcess().init(q);
@@ -299,7 +297,7 @@ public class GraphManager {
                     Access.check(Feature.LOAD_FILE, level, uri, TermEval.LOAD_MESS);
                 }
                 //load.parse(uri, src);
-                load(src, uri);
+                load(load, src, uri);
             } catch (LoadException | SafetyException ex) {
                 logger.error("Load silent trap error: " + ex.getMessage());
             }
@@ -310,7 +308,7 @@ public class GraphManager {
             }
             
             try {
-                load(src, uri);
+                load(load, src, uri);
             }
             catch (LoadException e) {
                 if (e.isSafetyException()) {
@@ -327,38 +325,6 @@ public class GraphManager {
             }
         }
             
-//            try {
-//                load.parse(uri, src);
-//                graph.logFinish(q);
-//            } catch (LoadException e) {
-//                if (e.isSafetyException()) {
-//                    throw e.getSafetyException();
-//                }
-//                boolean error = true;
-//                
-//                if (load.getFormat(uri) == Loader.UNDEF_FORMAT
-//                        && e.getException() != null
-//                        && e.getException().getMessage().contains("{E301}")) {
-//                    try {
-//                        //load.parse(uri, src, src, Loader.TURTLE_FORMAT);
-//                        load.parse(uri, src, uri, Loader.TURTLE_FORMAT);
-//                        error = false;
-//                    } catch (LoadException ex) {
-//                    }
-//                }
-//
-//                if (error) {
-//                    logger.error("Load error: " + ope.getURI() + "\n" + e);
-//                    q.addError("Load error: ", ope.getURI() + "\n" + e);
-//                }
-//                graph.logFinish(q);
-//                return ope.isSilent();
-//            } finally {
-//                   //getQueryProcess().getCurrentVisitor().afterLoad(dt);
-//                   graph.getEventManager().finish(Event.LoadUpdate);
-//            }
-        //}
-
         if (load.isRule(uri) && load.getRuleEngine() != null) { 
             // load rule base into workflow
             // TODO ? load <rulebase.rul> into kg:workflow
@@ -375,7 +341,7 @@ public class GraphManager {
     }
 
     // try RDF/XML and if parse error try Turtle
-    void load(String src, String uri) throws LoadException {
+    void load(Load load, String src, String uri) throws LoadException {
         try {
             load.parse(uri, src);
         } catch (LoadException e) {

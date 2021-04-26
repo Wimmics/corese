@@ -6,8 +6,8 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ContextLog;
 import fr.inria.corese.sparql.triple.parser.URLServer;
@@ -29,6 +29,8 @@ import org.slf4j.LoggerFactory;
  * URI inserted in SPARQL Query Results XML Format link href and stored in Mappings
  * 
  * API: LogManager man = exec.getLogManager(map);
+ * 
+ * @author Olivier Corby, Wimmics INRIA I3S, 2021
  */
 public class LogManager {
     private static Logger logger = LoggerFactory.getLogger(LogManager.class);
@@ -39,6 +41,7 @@ public class LogManager {
     private static final String ENDPOINT = "ns:endpoint";
     private static final String QUERY = "ns:query";
     private static final String AST = "ns:ast";
+    private static final String AST_SELECT = "ns:astSelect";
     private static final String MESSAGE = "ns:message";
     private static final String DATE = "ns:date";
     private static final String SERVER = "ns:server";
@@ -47,6 +50,9 @@ public class LogManager {
     private static final String URL = "ns:url";
     private static final String INPUT = "ns:input";
     private static final String OUTPUT = "ns:output";
+    private static final String RESULT = "ns:result";
+    private static final String RESULT_SELECT = "ns:resultSelect";
+    private static final String NL = System.getProperty("line.separator");
         
     ContextLog log;
     StringBuilder sb;
@@ -126,6 +132,12 @@ public class LogManager {
         if (log.getAST() != null) {
             property("[] %s \"\"\"\n%s\"\"\" .\n", AST, log.getAST());
         }
+        if (log.getASTSelect()!= null) {
+            property("[] %s \"\"\"\n%s\"\"\" .\n", AST_SELECT, log.getASTSelect());
+        }
+        if (log.getSelectMap()!= null) {
+            property("[] %s \"\"\"\n%s\"\"\" .\n", RESULT_SELECT, log.getSelectMap());
+        }
     }
     
     // local exception list
@@ -138,7 +150,7 @@ public class LogManager {
     
     // remote error document URI list
     void processRemote() {
-        for (String url : log.getLink()) {
+        for (String url : log.getLinkList()) {
             processLink(url);
         }
     }
@@ -183,6 +195,11 @@ public class LogManager {
                 Integer n = log.getOutputMap().get(url);
                 property("<%s> %s %s . \n", url, OUTPUT, n);
             }
+        }
+        sb.append(NL);
+        for (String url : log.getResultMap().getKeys()) {
+            Mappings map = log.getResultMap().get(url);
+            property("<%s> %s \"\"\"\n%s\"\"\" . \n", url, RESULT, map.toString(false, false, log.getResultMap().getDisplay()));
         }
     }
     

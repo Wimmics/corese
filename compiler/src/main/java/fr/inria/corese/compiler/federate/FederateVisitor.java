@@ -91,6 +91,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     RewriteService rs;
     Simplify sim;
     List<Atom> empty;
+    private URLServer url;
     
     static {
         federation = new HashMap<>();
@@ -188,6 +189,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             else if (list.size() == 1) {
                 // refer to federation
                 serviceList = getFederation().get(list.get(0));
+                setURL(new URLServer(list.get(0)));
                 if (serviceList == null) {
                     logger.error("Undefined federation: " + list.get(0));
                     return false;
@@ -306,7 +308,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
      * For example: mode=share&mode=debug
      */
     List<Atom> tune(Context c, List<Atom> list) {
-        if (c.hasValue(MODE) && c.hasValue(SHARE)) {
+        if (isShareable(c)) {
             List<Atom> alist = new ArrayList<>();
             for (Atom at : list) {
                 String uri = at.getConstant().getLongName();
@@ -319,6 +321,11 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             return alist;
         }
         return list;
+    }
+    
+    boolean isShareable(Context c) {
+        return (c.hasValue(MODE) && c.hasValue(SHARE))
+                || c.hasValue(ACCEPT) || c.hasValue(REJECT) || c.hasValue(EXPORT);
     }
        
     /**
@@ -911,6 +918,20 @@ public class FederateVisitor implements QueryVisitor, URLParam {
      */
     public void setSparql(boolean sparql) {
         this.sparql = sparql;
+    }
+
+    /**
+     * @return the url
+     */
+    public URLServer getURL() {
+        return url;
+    }
+
+    /**
+     * @param url the url to set
+     */
+    public void setURL(URLServer url) {
+        this.url = url;
     }
 
    

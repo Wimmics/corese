@@ -112,6 +112,8 @@ public class Selector {
         ASTQuery aa = createSelector(list, false);
         metadata(aa);
         Mappings map = exec.basicQuery(aa);
+        ast.getLog().setASTSelect(aa);
+        ast.getLog().setSelectMap(map);
         
         for (Mapping m : map) {
             IDatatype serv = (IDatatype) m.getValue(SERVER_VAR);

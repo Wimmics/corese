@@ -16,7 +16,7 @@ public class EdgeTriple extends EdgeBinary  {
     }
 
   
-    EdgeTriple(Node pred, Node subject, Node object) {
+    public EdgeTriple(Node pred, Node subject, Node object) {
         this.predicate = pred;
         this.subject = subject;
         this.object = object;

@@ -20,7 +20,7 @@ public abstract class EdgeBinary extends EdgeTop
     }
 
   
-    EdgeBinary(Node subject, Node object) {
+    public EdgeBinary(Node subject, Node object) {
         this.subject = subject;
         this.object = object;
     }    

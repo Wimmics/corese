@@ -1,4 +1,4 @@
-package fr.inria.corese.core.edge;
+package fr.inria.corese.core.edge.rule;
 
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;

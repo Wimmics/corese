@@ -1,8 +1,9 @@
-package fr.inria.corese.core.edge;
+package fr.inria.corese.core.edge.rule;
 
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.edge.EdgeTriple;
 
 /**
  * Edge entailed by a Rule

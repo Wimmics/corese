@@ -1,5 +1,6 @@
-package fr.inria.corese.core.edge;
+package fr.inria.corese.core.edge.internal;
 
+import fr.inria.corese.core.edge.EdgeBinary;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 

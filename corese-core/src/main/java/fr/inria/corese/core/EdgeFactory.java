@@ -1,6 +1,9 @@
 package fr.inria.corese.core;
 
 import fr.inria.corese.core.edge.*;
+import fr.inria.corese.core.edge.binary.*;
+import fr.inria.corese.core.edge.internal.*;
+import fr.inria.corese.core.edge.rule.*;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.logic.Entailment;

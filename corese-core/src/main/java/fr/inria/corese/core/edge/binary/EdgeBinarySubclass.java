@@ -1,7 +1,8 @@
-package fr.inria.corese.core.edge;
+package fr.inria.corese.core.edge.binary;
 
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.edge.EdgeBinary;
 
 /**
  * Graph Edge for the defaultGraph

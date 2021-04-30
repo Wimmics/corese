@@ -189,16 +189,20 @@ public class Constant extends Atom {
                 else if (datatype.equals(RDF.qxsdInteger)
                         || datatype.equals(RDF.xsdinteger)
                         || datatype.equals(RDF.qxsdBoolean)
-                        || datatype.equals(RDF.xsdboolean)) {
+                        || datatype.equals(RDF.xsdboolean)
+                        || (datatype.equals(RDF.xsddecimal) && ! isNativeDatatype()) ) {
+                    // value without datatype
                     sb.append(name);
                 } else if (datatype.startsWith("http://")) {
                     toString(name, sb);
                     if (!datatype.equals(RDF.xsdstring) || isString() || isNativeDatatype()) {
+                        // value with datatype with syntax ^^<http://>
                         sb.append(KeywordPP.SDT + "<").append(datatype).append(">");
                     }
                 } else {
                     toString(name, sb);
                     if (!datatype.equals(RDF.qxsdString) || isString() || isNativeDatatype()) {
+                        // value with datatype with syntax ^^xsd:
                         sb.append(KeywordPP.SDT).append(datatype);
                     }
                 }

@@ -118,7 +118,10 @@ public class TestAccessRight {
         def.getNode().define("http://www.inria.fr/2015/humans-instances#John", AccessRight.RESTRICTED);
         
         
-        String i = "load </user/corby/home/AADemo/coursshacl/data/human1.rdf>";
+        //String i = "load </user/corby/home/AADemo/coursshacl/data/human1.rdf>";
+        String i = String.format("load <%shuman/human1.rdf>", data);
+       //load.parse(data+"human/human1.rdf");
+
         exec.query(i, access);
                       
         String q = "prefix h: <http://www.inria.fr/2015/humans#>"

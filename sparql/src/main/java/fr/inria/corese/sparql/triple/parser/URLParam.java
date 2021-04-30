@@ -24,6 +24,7 @@ public interface URLParam {
     static final String LIMIT = "limit";
     static final String SLICE = "slice";
     static final String TIMEOUT = "timeout";
+    static final String TIME = "time";
     static final String BINDING = "binding";
     static final String FOCUS = "focus";
     static final String SKIP = "skip";
@@ -37,9 +38,13 @@ public interface URLParam {
     static final String TRAP = "trap";
     static final String SPARQL = "sparql";
     static final String PROVENANCE = "provenance";
+    static final String DETAIL = "detail";
+    static final String LOG = "log";
     static final String NBVAR = "nbvar";
     static final String NBRESULT = "nbresult";
+    static final String NBINPUT = "nbinput";
     static final String RESULT = "result";
+    static final String RESULT_TEXT = "text";
     static final String FEDERATE = "federate";
     static final String FEDERATION = "federation";
     static final String SHACL = "shacl";

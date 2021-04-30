@@ -28,6 +28,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.api.Walker;
 import fr.inria.corese.sparql.triple.function.script.TryCatch;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.io.IOException;
 import java.util.Map;
 import java.util.UUID;

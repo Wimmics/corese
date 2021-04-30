@@ -9,6 +9,7 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.CONTEXT;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;

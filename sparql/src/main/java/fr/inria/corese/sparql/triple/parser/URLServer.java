@@ -133,6 +133,15 @@ public class URLServer implements URLParam {
         return getParameterList(name) != null;
     }
     
+    public boolean hasAnyParameter(String... lname) {
+        for (String name : lname) {
+            if (getParameterList(name) != null) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
     public boolean hasParameter(String name, String value) {
         List<String> list = getParameterList(name);
         if (list == null) {
@@ -149,24 +158,37 @@ public class URLServer implements URLParam {
     }
     
     public int intValue(String name) {
-        if (getMap() == null) {
-            return -1;
-        }
-        String value = getMap().getFirst(name);
-        if (value == null) {
-            return -1;
-        }
-        try { return Integer.valueOf(value); }
-        catch (Exception ex) { return -1;}
+         return intValue(name, -1);
     }
     
-    public int intValue(String name, int def) {
-        int value = intValue(name);
-        if (value == -1) {
+    public int intValue(String name, int def) {       
+        String value = getParameter(name);
+        if (value == null) {
             return def;
         }
-        return value;
+        try {
+            return Integer.valueOf(value);
+        } catch (Exception ex) {
+            return def;
+        }
     }
+    
+    public double doubleValue(String name) {
+         return doubleValue(name, -1);
+    }
+    
+    public double doubleValue(String name, double def) {
+        String value = getParameter(name);
+        if (value == null) {
+            return def;
+        }
+        try {
+            return Double.valueOf(value);
+        } catch (Exception ex) {
+            return def;
+        }
+    }
+    
 
     /**
      * param = URL parameter string

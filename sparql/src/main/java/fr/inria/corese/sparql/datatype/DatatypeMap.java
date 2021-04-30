@@ -663,7 +663,11 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
 //        return dt;
 //    }
     
-    static IDatatype genericPointer(String name, Object obj){
+    public static IDatatype genericPointer(Object obj){
+        return genericPointer(null, obj);
+    }
+    
+    public static IDatatype genericPointer(String name, Object obj){
         return new CoresePointer(name==null?defaultName(obj):name, new PointerObject(obj));
     }
     

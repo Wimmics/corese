@@ -9,7 +9,7 @@ import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
-import fr.inria.corese.sparql.triple.parser.ContextLog;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.VariableLocal;
 import java.util.ArrayList;

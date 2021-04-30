@@ -34,27 +34,41 @@ public class ServiceParser implements URLParam {
     }
    
     public Mappings parseMapping(String str) throws LoadException {
-        return parseMapping(str, ENCODING);
+        return parseMapping(null, str, ENCODING);
     }
 
-    public Mappings parseMapping(String str, String encoding) throws LoadException {
+    public Mappings parseMapping(String query, String str, String encoding) throws LoadException {
+        Mappings map = null;
+        log(str);
         if (getURL().hasParameter(WRAPPER)) {
-            return wrapper(str);
+            map = wrapper(str);
         }
-        
-        if (getFormat() != null) {
+        else if (getFormat() != null) {
             switch (getFormat()) {
                 case ResultFormat.SPARQL_RESULTS_JSON:
-                    return parseJSONMapping(str);
+                    map = parseJSONMapping(str); break;
                     
                 case ResultFormat.TURTLE:
                 case ResultFormat.TURTLE_TEXT:
-                    return parseTurtle(str);
+                    map = parseTurtle(str); break;
+                default:
+                   map = parseXMLMapping(str, encoding); 
             }
         }
-               
-        return parseXMLMapping(str, encoding);
+        else {     
+            map = parseXMLMapping(str, encoding);
+        }
+        map.setLength(str.length());
+        map.setQueryLength(query.length());
+        return map;
     }  
+    
+    // @federate with one URL may have no bind
+    synchronized void log(String result) {
+        if (getBind()!=null){
+            getBind().getLog().traceResult(getURL(), result);
+        }
+    }
     
     /**
      * URL = /sparql?wrapper=functionName

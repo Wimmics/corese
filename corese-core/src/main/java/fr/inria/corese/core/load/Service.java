@@ -95,10 +95,11 @@ public class Service implements URLParam {
         if (m != null) {
             ast = mapping(query, m);
         }
+        String astq = ast.toString();
         if (ast.isSelect() || ast.isAsk()) {
-            map = getParser().parseMapping(process(ast.toString()), encoding(ast));
+            map = getParser().parseMapping(astq, process(astq), encoding(ast));
         } else {
-            Graph g = getParser().parseGraph(process(ast.toString()), encoding(ast));
+            Graph g = getParser().parseGraph(process(astq), encoding(ast));
             map = new Mappings();
             map.setGraph(g);
         }

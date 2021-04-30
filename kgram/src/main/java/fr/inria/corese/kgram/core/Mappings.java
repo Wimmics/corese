@@ -72,9 +72,12 @@ public class Mappings extends PointerObject
     private Binder binding;
     private Object provenance;
     private String link;
+    private int length = 0;
+    private int queryLength = 0;
+    private int display = Integer.MAX_VALUE;
 
     public Mappings() {
-        list = new ArrayList<Mapping>();
+        list = new ArrayList<>();
     }
 
     Mappings(Mapping map) {
@@ -1752,6 +1755,48 @@ public class Mappings extends PointerObject
      */
     public void setLink(String link) {
         this.link = link;
+    }
+
+    /**
+     * @return the length
+     */
+    public int getLength() {
+        return length;
+    }
+
+    /**
+     * @param length the length to set
+     */
+    public void setLength(int length) {
+        this.length = length;
+    }
+
+    /**
+     * @return the queryLength
+     */
+    public int getQueryLength() {
+        return queryLength;
+    }
+
+    /**
+     * @param queryLength the queryLength to set
+     */
+    public void setQueryLength(int queryLength) {
+        this.queryLength = queryLength;
+    }
+
+    /**
+     * @return the display
+     */
+    public int getDisplay() {
+        return display;
+    }
+
+    /**
+     * @param display the display to set
+     */
+    public void setDisplay(int display) {
+        this.display = display;
     }
 
   

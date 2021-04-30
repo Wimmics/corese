@@ -22,15 +22,17 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.triple.cst.LogKey;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
-import fr.inria.corese.sparql.triple.parser.ContextLog;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ResponseProcessingException;
@@ -95,12 +97,11 @@ public class ProviderService implements URLParam {
         int slice = getSlice(serv, getMappings()); 
         //boolean hasValues = ast.getValues() != null;
         boolean skipBind = getGlobalAST().hasMetadata(Metadata.BINDING, Metadata.SKIP_STR);
-        Mappings res = null;
         // when servive variable is unbound, get service URL (list) from Environment or Mappings
         List<Node> serviceList = getServerList(exp, getMappings());
         boolean bslice = ! (getMappings() == null || slice <= 0  || skipBind); 
         // slice by default
-        res = send(serviceList, serv, (skipBind) ? null : getMappings(), bslice, slice);
+        Mappings res = send(serviceList, serv, (skipBind) ? null : getMappings(), bslice, slice);
         restore(getAST());
         res.limit(getAST().getLimit());
         return res;
@@ -148,7 +149,8 @@ public class ProviderService implements URLParam {
             // get ?this=value in Binding global variable and set param=value
             url.complete(getBinding());
             url.encode();
-            getLog().addURL(url);
+            //getLog().addURL(url);
+            getLog().add(LogKey.ENDPOINT, url.getLogURL());
             
             if (Access.reject(Feature.SPARQL_SERVICE, getBinding().getAccessLevel(), service.getLabel())) {
                 logger.error(TermEval.SERVICE_MESS + " " + service.getLabel());
@@ -230,7 +232,7 @@ public class ProviderService implements URLParam {
             throws EngineException {
         int size = 0, count = 0;        
         traceInput(service, map);
-        
+        Date d1 = new Date();
         if (slice) {
             boolean debug = service.hasParameter(MODE, DEBUG) || getQuery().isRecDebug();
             
@@ -250,17 +252,20 @@ public class ProviderService implements URLParam {
                 addResult(sol, res);
                 size += length;
                 count++;
+                
+                if (stop(service, sol, d1)) {
+                    break;
+                }
             }
             
         } else {
-            Mappings res = send(service, map, 0, 0, timeout, count);
+            Mappings res = send(service, map, 0, 0, timeout, count++);
             // join (serviceNode = serviceURI)
             complete(getServiceExp().getServiceNode(), service.getNode(), res);
             addResult(sol, res);
         }
         
-        traceOutput(service, sol);
-        //log(service, sol);
+        traceOutput(service, sol, count, (new Date().getTime()-d1.getTime())/1000.0);
 
         synchronized (getBinding()) {
             eval.getVisitor().service(eval, service.getNode(), getServiceExp(), sol);
@@ -306,6 +311,7 @@ public class ProviderService implements URLParam {
             }
                    
             targetAST = ast;
+            traceAST(serv, ast);
             Mappings res = send(serv, ast, map, start, limit, timeout, count);
                         
             if (debug) {
@@ -370,20 +376,38 @@ public class ProviderService implements URLParam {
         return res;
     }
 
-    
-    
+    boolean stop(URLServer service, Mappings sol, Date d) {
+        if (service.hasParameter(TIME)) {
+            double time = (new Date().getTime() - d.getTime()) / 1000.0;
+            if (time >= service.doubleValue(TIME)) {
+                logger.info("Service time limit: " + time + " >= " + service.doubleValue(TIME));
+                return true;
+            }
+        }
+
+        if (service.hasParameter(LIMIT)) {
+            if (sol.size() >= service.intValue(LIMIT)) {
+                logger.info("Service result limit: " + sol.size() + " >= " + service.intValue(LIMIT));
+                return true;
+            }
+        }
+        return false;
+    }
     
     ASTQuery getAST(Query q) {
         return (ASTQuery) q.getAST();
     }
     
+    void traceAST(URLServer serv, ASTQuery ast) {
+        getLog().traceAST(serv, ast);
+    }
 
     void traceInput(URLServer serv, Mappings map) {        
-        getLog().addURLInput(serv, map);
+        getLog().traceInput(serv, map);
     }
     
-    void traceOutput(URLServer serv, Mappings map) {
-        getLog().addURLOutput(serv, map);
+    void traceOutput(URLServer serv, Mappings map, int nbcall, double time) {
+        getLog().traceOutput(serv, map, nbcall, time);
     }
     
     void traceResult(URLServer serv, Mappings res) {
@@ -397,6 +421,8 @@ public class ProviderService implements URLParam {
     void addResult(Mappings sol, Mappings res) {
         if (res != null) {
             sol.add(res);
+            sol.setLength(sol.getLength() + res.getLength());
+            sol.setQueryLength(sol.getQueryLength()+ res.getQueryLength());
             if (sol.getQuery() == null) {
                 sol.setQuery(res.getQuery());
                 sol.init(res.getQuery());

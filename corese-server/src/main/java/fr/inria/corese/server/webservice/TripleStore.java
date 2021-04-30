@@ -15,6 +15,7 @@ import fr.inria.corese.core.shacl.Shacl;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.cst.LogKey;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Metadata;
@@ -22,7 +23,6 @@ import fr.inria.corese.sparql.triple.parser.URLParam;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.List;
 import java.util.UUID;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -34,7 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class TripleStore implements URLParam {
-    private static final String LOG = "/log/";
+    private static final String LOG_DIR = "/log/";
 
     /**
      * @return the name
@@ -222,6 +222,7 @@ public class TripleStore implements URLParam {
             }
             else {
                 map = exec.query(query, ds);
+                log(exec, map, ds.getContext());
             }
             after(exec, query, ds);
         } catch (LoadException ex) {
@@ -235,14 +236,15 @@ public class TripleStore implements URLParam {
      * generate an URL for report and set URL as Mappings link
      */
     void log(QueryProcess exec, Mappings map, Context ct) {
-        if (ct.hasValue(PROVENANCE)) {
-            if (!exec.getLog(map).isEmpty()) {
+        if (ct.hasValue(PROVENANCE) || ct.hasValue(LOG)) {
+            if (exec.getLog(map).isEmpty()) {
+               System.out.println("log is empty" );
+            }
+            else {
                 LogManager log = new LogManager(exec.getLog(map));
-                String str = log.toString();
                 QueryLoad ql = QueryLoad.create();
-                String home = EmbeddedJettyServer.resourceURI.getPath() + LOG;
+                String home = EmbeddedJettyServer.resourceURI.getPath() + LOG_DIR;
                 String name = UUID.randomUUID().toString().concat(".ttl");
-                ql.write(home + name, str);
                 String uri;
                 try {
                     uri = Profile.getLocalhost();
@@ -250,8 +252,12 @@ public class TripleStore implements URLParam {
                     logger.error(ex.getMessage());
                     uri = Profile.stdLocalhost();
                 }
-                uri += LOG + name;
+                uri += LOG_DIR + name;
+                log.getLog().add(LogKey.LOG, uri);
+                String str = log.toString();
+                ql.write(home + name, str);
                 map.setLink(uri);
+                System.out.println("server report: " + uri);
             }
         }
     }

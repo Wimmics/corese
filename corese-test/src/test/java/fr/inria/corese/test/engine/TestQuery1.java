@@ -63,7 +63,6 @@ import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.logging.Logger;
-import javax.xml.transform.TransformerException;
 
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -580,7 +579,7 @@ public class TestQuery1 {
 
     
         @Test
-    public void testForLoop() throws EngineException, LoadException, IOException, TransformerException {
+    public void testForLoop() throws EngineException, LoadException, IOException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         String i = "insert data {[] rdf:value (1)}";
@@ -602,7 +601,7 @@ public class TestQuery1 {
     }
     
        @Test
-    public void testRDFList() throws EngineException, LoadException, IOException, TransformerException {
+    public void testRDFList() throws EngineException, LoadException, IOException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         String i = "insert data {[] rdf:value (1)}";
@@ -616,7 +615,7 @@ public class TestQuery1 {
     
     
      @Test
-    public void testXML4() throws EngineException, LoadException, IOException, TransformerException {
+    public void testXML4() throws EngineException, LoadException, IOException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
                
@@ -650,7 +649,7 @@ public class TestQuery1 {
     }
     
      @Test
-    public void testXML3() throws EngineException, LoadException, IOException, TransformerException {
+    public void testXML3() throws EngineException, LoadException, IOException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         

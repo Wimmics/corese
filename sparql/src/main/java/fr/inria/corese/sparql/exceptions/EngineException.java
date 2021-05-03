@@ -1,6 +1,5 @@
 package fr.inria.corese.sparql.exceptions;
 
-import fr.inria.corese.kgram.api.query.ASTQ;
 import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -47,6 +46,11 @@ public class EngineException extends SparqlException {
 
     public EngineException(String message) {
         super(message);
+    }
+    
+    public EngineException(String message, Object object) {
+        this(message);
+        setObject(object);
     }
 
     public static EngineException cast(SparqlException e) {

@@ -83,7 +83,7 @@ public class MainFrame extends JFrame implements ActionListener {
     /**
      *
      */
-    static MainFrame singleton ;
+    private static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
     private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2021-05-01";
@@ -254,8 +254,8 @@ public class MainFrame extends JFrame implements ActionListener {
         //Initialise le menu
         initMenu();
 
-        listCheckbox = new ArrayList<JCheckBox>();
-        listJMenuItems = new ArrayList<JMenuItem>();
+        listCheckbox = new ArrayList<>();
+        listJMenuItems = new ArrayList<>();
 
         //Création et ajout de notre conteneur d'onglets à la fenêtre
         conteneurOnglets = new JTabbedPane();
@@ -359,6 +359,10 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         process(cmd);
     }
+        
+    public void focusMessagePanel() {
+        getConteneurOnglets().setSelectedIndex(0);
+    }
 
     void execPlus() {
         execPlus(defaultQuery);
@@ -386,13 +390,13 @@ public class MainFrame extends JFrame implements ActionListener {
      * Affiche du texte dans le panel logs *
      */
     public void appendMsg(String msg) {
-        final Document currentDoc = ongletListener.getTextPaneLogs().getDocument();
+        Document currentDoc = ongletListener.getTextPaneLogs().getDocument();
         try {
-            currentDoc.insertString(ongletListener.getTextPaneLogs().getDocument().getLength(), msg, null);
+            currentDoc.insertString(currentDoc.getLength(), msg, null);
 
             //Place l'ascenceur en bas à chaque ajout de texte
             ongletListener.getScrollPaneLog().revalidate();
-            int length = ongletListener.getTextPaneLogs().getDocument().getLength();
+            int length = currentDoc.getLength();
             ongletListener.getTextPaneLogs().setCaretPosition(length);
         } catch (Exception innerException) {
             LOGGER.fatal("Output capture problem:", innerException);
@@ -1054,10 +1058,12 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     private void setOWLRL(boolean selected, int owl) {
-        Entailment e = new Entailment(myCorese);
-        e.setOWLRL(selected, owl);
-        e.setTrace(trace);
-        e.process();
+        if (selected) {
+            Entailment e = new Entailment(myCorese);
+            e.setOWLRL(selected, owl);
+            e.setTrace(trace);
+            e.process();
+        }
     }
 
     //Actions du menu
@@ -2010,7 +2016,7 @@ public class MainFrame extends JFrame implements ActionListener {
         coreseFrame.setStyleSheet();
         coreseFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MyJPanelListener.listLoadedFiles.setCellRenderer(new MyCellRenderer());
-        singleton = coreseFrame;
+        setSingleton(coreseFrame);
     }
     
     public void show(String text) {
@@ -2018,9 +2024,9 @@ public class MainFrame extends JFrame implements ActionListener {
     }
     
     public static void display(String text) {
-        if (singleton != null) {
-            singleton.appendMsg(text);
-            singleton.appendMsg("\n");
+        if (getSingleton() != null) {
+            getSingleton().appendMsg(text);
+            getSingleton().appendMsg("\n");
         }
     }
 
@@ -2036,5 +2042,13 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     public void setShexSemantics(boolean shexSemantics) {
         this.shexSemantics = shexSemantics;
+    }
+
+    public static MainFrame getSingleton() {
+        return singleton;
+    }
+
+    public static void setSingleton(MainFrame aSingleton) {
+        singleton = aSingleton;
     }
 }

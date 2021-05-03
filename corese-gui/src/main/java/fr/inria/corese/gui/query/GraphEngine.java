@@ -20,7 +20,6 @@ import fr.inria.corese.core.load.Build;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadPlugin;
-import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.util.Parameter;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.Access;
@@ -233,12 +232,12 @@ public class GraphEngine {
     // TODO: clean timestamp, clean graph index
     public void setOWLRL(boolean run, int owl, boolean trace) throws EngineException {
         if (run) {
-            owlEngine = RuleEngine.create(graph);
-            owlEngine.setProfile(owl);
-            owlEngine.setTrace(trace);
+            setOwlEngine(RuleEngine.create(graph));
+            getOwlEngine().setProfile(owl);
+            getOwlEngine().setTrace(trace);
             Date d1 = new Date();
             // disconnect RDFS entailment during OWL processing
-            owlEngine.processWithoutWorkflow();
+            getOwlEngine().processWithoutWorkflow();
             Date d2 = new Date();
             System.out.println("Time: " + (d2.getTime() - d1.getTime()) / (1000.0));
         }
@@ -436,6 +435,14 @@ public class GraphEngine {
     
     public void setReadFile(boolean b) {
         Access.setReadFile(b);
+    }
+
+    public RuleEngine getOwlEngine() {
+        return owlEngine;
+    }
+
+    public void setOwlEngine(RuleEngine owlEngine) {
+        this.owlEngine = owlEngine;
     }
 
 }

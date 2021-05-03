@@ -6,7 +6,9 @@
 package fr.inria.corese.gui.core;
 
 import fr.inria.corese.core.rule.RuleEngine;
+import fr.inria.corese.core.rule.RuleError;
 import fr.inria.corese.gui.query.GraphEngine;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -34,6 +36,11 @@ public class Entailment extends Thread {
             engine.setOWLRL(doit, owl, trace);
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
+            MainFrame.display(ex.getMessage());
+            for (RuleError err : engine.getOwlEngine().getErrorList()) {
+                MainFrame.display(err.toString());
+            }
+            MainFrame.getSingleton().focusMessagePanel();
         }
     }
 

@@ -576,8 +576,32 @@ public final class MyJPanelQuery extends JPanel {
             }
             model.addColumn(columnName, colmunData);
         }
-
+        
         this.tableResults.setModel(model);
+    }
+    
+    // table = model
+    void sort(DefaultTableModel table, int col) {
+        for (int i = 0; i<table.getRowCount(); i++) {
+            String v1 = (String) table.getValueAt(i, col);
+            
+            for (int j=i+1; j<table.getRowCount(); j++) {
+                String v2 = (String) table.getValueAt(j, col);
+                if (v1.compareTo(v2) > 0) {
+                    swap(table, i, j);
+                    v1 = v2;
+                }
+            }
+        }
+    }
+       
+    // swap row i and j
+    void swap(DefaultTableModel table, int i, int j){
+        for (int k=0; k<table.getColumnCount(); k++) {
+            Object temp = table.getValueAt(i, k);
+            table.setValueAt(table.getValueAt(j, k), i, k);
+            table.setValueAt(temp, j, k);
+        }
     }
     
     String pretty(IDatatype dt) {

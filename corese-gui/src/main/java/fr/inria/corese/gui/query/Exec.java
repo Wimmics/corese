@@ -130,7 +130,6 @@ public class Exec extends Thread {
             System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
             return map;
         } catch (EngineException e) {
-            // TODO Auto-generated catch block
             e.printStackTrace();
             frame.getPanel().getTextArea().setText(e.toString());
         }

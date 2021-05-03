@@ -52,6 +52,7 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import java.util.AbstractList;
 
 /**
  * Forward Rule Engine 
@@ -118,6 +119,7 @@ public class RuleEngine implements Engine, Graphable {
     private String base;
     private Level level = Level.USER_DEFAULT;
     private AccessRight accessRight;
+    private List<RuleError> errorList;
     
     public enum Profile {
         
@@ -139,9 +141,12 @@ public class RuleEngine implements Engine, Graphable {
         }
     
     };
+    
+    
 
     public RuleEngine() {
-        rules = new ArrayList<Rule>();
+        rules = new ArrayList<>();
+        errorList = new ArrayList<>();
     }
     
     void set(Graph g) {
@@ -349,7 +354,7 @@ public class RuleEngine implements Engine, Graphable {
      * Binding may manage AccessRight which is shared by rule processing
      */
     public boolean process(Binding b) throws EngineException {
-        System.out.println("RuleEngine process: " + getPath());
+        logger.info("process: " + getPath());
         before(b);
         int size = graph.size();
         Mapping m = Mapping.create(b);
@@ -366,9 +371,13 @@ public class RuleEngine implements Engine, Graphable {
     public boolean processWithoutWorkflow() throws EngineException {
         boolean status = graph.getWorkflow().isActivate();
         graph.getWorkflow().setActivate(false);
-        boolean b = process();
-        graph.getWorkflow().setActivate(status);
-        return b;
+        try {
+            boolean b = process();
+            return b;
+        }
+        finally {
+            graph.getWorkflow().setActivate(status);
+        }
     }    
     
     public IDatatype getPath() {
@@ -380,6 +389,7 @@ public class RuleEngine implements Engine, Graphable {
     }
     
     void before(Binding b) {
+        getErrorList().clear();
         setEvent(Access.accept(Feature.EVENT, b.getAccessLevel()));
         try {
             setVisitor(QuerySolverVisitorRule.create(this, getQueryProcess().getEval()));            
@@ -398,12 +408,14 @@ public class RuleEngine implements Engine, Graphable {
         graph.getEventManager().start(Event.InferenceEngine, getClass().getName());
     }
     
-    void after() {
+    void after() throws EngineException {
         graph.getEventManager().finish(Event.InferenceEngine, getClass().getName());
         if (isEvent()) getVisitor().afterEntailment(getPath());
+        if (! getErrorList().isEmpty()) {
+            throw new EngineException("RuleEngine Constraint Error", getErrorList()) ;
+        }
     }
-    
-
+        
     public Graph getRDFGraph() {
         return graph;
     }
@@ -502,6 +514,13 @@ public class RuleEngine implements Engine, Graphable {
     }
 
     public Query defRule(String name, String rule) throws EngineException {
+        return defRule(name, rule, Rule.RULE_TYPE);
+    }
+    
+    public Query defRule(String name, String rule, String type) throws EngineException {
+        if (type == null) {
+            type = Rule.RULE_TYPE;
+        }
         if (isTransformation()) {
             if (getQueryEngine() == null) {
                 setQueryEngine(QueryEngine.create(getGraphStore()));
@@ -517,7 +536,7 @@ public class RuleEngine implements Engine, Graphable {
                 if (name == null) {
                     name = getRuleID();
                 }
-                Rule r = Rule.create(name, qq);
+                Rule r = Rule.create(name, qq, type);
                 defRule(r);
                 return qq;
             }
@@ -952,10 +971,31 @@ public class RuleEngine implements Engine, Graphable {
             // create edges from Mappings as usual
             cons.insert(map, null);
         }
-        if (isEvent()) getVisitor().afterRule(qq, cons.isBuffer() ? cons.getInsertList() : map);
+
+        if (r.isConstraint()) {
+            // constraint succeed when there is no solution (cf owlrl.rul)
+            boolean success = (cons.isBuffer()) ? cons.getInsertList().isEmpty() : map.isEmpty();
+            if (! success) {
+                logger.error("Constraint error: " + r.getName());
+                logger.error((cons.isBuffer()?cons.getInsertList():map).toString());               
+                getErrorList().add(error(r, cons, map));
+            }
+            if (isEvent()) {
+                getVisitor().constraintRule(qq, cons.isBuffer() ? cons.getInsertList() : map, DatatypeMap.newInstance(success));
+            }
+        }
+        if (isEvent()) {            
+            getVisitor().afterRule(qq, cons.isBuffer() ? cons.getInsertList() : map);
+        }
     }
     
-    
+    RuleError error(Rule r, Construct cons, Mappings map) {
+        if (cons.isBuffer()) {
+            return new RuleError(r, cons.getInsertList());
+        } else {
+            return new RuleError(r, map);
+        }
+    }
     
     /**
      * **************************************************
@@ -1405,6 +1445,14 @@ public class RuleEngine implements Engine, Graphable {
      */
     public void setAccessRight(AccessRight accessRight) {
         this.accessRight = accessRight;
+    }
+
+    public List<RuleError> getErrorList() {
+        return errorList;
+    }
+
+    public void setErrorList(List<RuleError> errorList) {
+        this.errorList = errorList;
     }
 
 }

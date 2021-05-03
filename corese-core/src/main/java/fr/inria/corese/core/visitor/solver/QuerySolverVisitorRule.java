@@ -99,6 +99,12 @@ public class QuerySolverVisitorRule extends QuerySolverVisitorBasic {
         return callback(AFTER_RULE, toArray(getRuleEngine(), q, res));
     }
     
+    // res: Mappings or List<Edge>
+    @Override
+    public IDatatype constraintRule(Query q, Object res, DatatypeValue success) {
+        return callback(CONSTRAINT_RULE, toArray(getRuleEngine(), q, res, success));
+    }
+    
     // rule engine call entailment only when ldscript function entailment below this one is defined
     @Override
     public boolean entailment() {

@@ -1,5 +1,6 @@
 package fr.inria.corese.core.load;
 
+import fr.inria.corese.core.rule.Rule;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.Reader;
@@ -33,13 +34,14 @@ import org.w3c.dom.Attr;
 public class RuleLoad {
 
     private static Logger logger = LoggerFactory.getLogger(Load.class);
-    static final String NS  = "http://ns.inria.fr/corese/rule/";
+    static final String NS  = NSManager.RULE;
     static final String NS2 = "http://ns.inria.fr/edelweiss/2011/rule#";
     static final String NS1 = "http://ns.inria.fr/corese/2008/rule#";
     static final String STL = NSManager.STL;
     static final String RDF = NSManager.RDF;
     static final String[] NAMESPACE = {NS, STL, NS2, NS1};
     static final String COS = NSManager.COS;
+    static final String TYPE = "type";
     static final String BODY = "body";
     static final String RULE = "rule";
     static final String VALUE = "value";
@@ -49,6 +51,7 @@ public class RuleLoad {
     static final String THEN = "then";
     static final String CONST = "construct";
     static final String WHERE = "where";
+    static final String RESOURCE = "resource";
     static final String ABOUT = "about";
     static final String ID = "ID";
     private Level level = Level.USER_DEFAULT;
@@ -165,9 +168,22 @@ public class RuleLoad {
             if (body == null) {
                 body = getElement(rule, VALUE);
             }
-            String text  = body.getTextContent();
-            engine.defRule(uri, text);
+            String text = body.getTextContent();
+            String type = getType(rule);             
+            engine.defRule(uri, text, type);
         }
+    }
+    
+    String getType(Element rule) {
+        String type = null;
+        Element typeElem = getElement(rule, TYPE);
+        if (typeElem != null) {
+            Attr typeAttr = typeElem.getAttributeNodeNS(RDF, RESOURCE);
+            if (typeAttr != null) {
+                type = typeAttr.getValue();
+            }
+        }
+        return type;
     }
     
     Element getElement(Element elem, String name) {

@@ -17,9 +17,12 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.triple.function.core.UUIDFunction;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import org.slf4j.LoggerFactory;
 
 public class Rule {
+    public static final String RULE_TYPE = NSManager.RULE + "rule";
+    public static final String CONSTRAINT_TYPE = NSManager.RULE + "constraint";
 
     static String TRANS_QUERY = "";
     static String TRANS_PSEUDO_QUERY = "";
@@ -41,6 +44,8 @@ public class Rule {
     private boolean isGeneric = false;
     private boolean isClosure = false;
     private Node provenance;
+    private String type = RULE_TYPE;
+    private boolean constraint = false;
 
     static {
         try {
@@ -57,9 +62,22 @@ public class Rule {
         name = n;
         q.setURI(n);
     }
+    
+    public Rule(String n, Query q, String type) {
+        this(n, q);
+        if (type != null){
+            setRuleType(type);
+            setConstraint(type.equals(CONSTRAINT_TYPE));
+        }
+    }
 
     public static Rule create(String n, Query q) {
         Rule r = new Rule(n, q);
+        return r;
+    }
+    
+    public static Rule create(String n, Query q, String type) {
+        Rule r = new Rule(n, q, type);
         return r;
     }
 
@@ -95,7 +113,7 @@ public class Rule {
         return query.getAST();
     }
 
-    String getName() {
+    public String getName() {
         return name;
     }
 
@@ -296,5 +314,30 @@ public class Rule {
      */
     public void setRecord(Record record) {
         this.record = record;
+    }
+
+    /**
+     * @param type the type to set
+     */
+    public void setRuleType(String type) {
+        this.type = type;
+    }
+    
+    public String getRuleType() {
+        return  type;
+    }
+
+    /**
+     * @return the constraint
+     */
+    public boolean isConstraint() {
+        return constraint;
+    }
+
+    /**
+     * @param constraint the constraint to set
+     */
+    public void setConstraint(boolean constraint) {
+        this.constraint = constraint;
     }
 }

@@ -18,7 +18,6 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Context;
 import java.io.IOException;
-import javax.xml.transform.TransformerException;
 import static org.junit.Assert.assertEquals;
 import org.junit.Test;
 
@@ -197,7 +196,7 @@ public class TestQueryEvent {
     
 
     @Test
-    public void testEventUpdate() throws EngineException, LoadException, IOException, TransformerException {
+    public void testEventUpdate() throws EngineException, LoadException, IOException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
 

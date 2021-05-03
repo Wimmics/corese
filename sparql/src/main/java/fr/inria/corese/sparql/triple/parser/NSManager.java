@@ -67,6 +67,8 @@ public class NSManager extends ASTObject {
     public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";
     public static final String DBPEDIA = "http://dbpedia.org/resource/";
     public static final String RESOURCE = "http://ns.inria.fr/corese/";
+    public static final String CORESE = "http://ns.inria.fr/corese/";
+    public static final String RULE  = CORESE+"rule/";
     public static final String HTTP = "http://ns.inria.fr/http/";
     
     public static final String INDEX    = "http://ns.inria.fr/rdf/index/";

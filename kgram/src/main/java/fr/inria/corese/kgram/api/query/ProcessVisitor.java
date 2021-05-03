@@ -79,6 +79,11 @@ public interface ProcessVisitor extends Pointerable {
     
     default DatatypeValue afterRule(Query q, Object res) { return defaultValue(); }
     
+    // success = true when there is no solution 
+    // because rule where part test condition where constraint fails
+    // res = Mappings or List<Edge>
+    default DatatypeValue constraintRule(Query q, Object res, DatatypeValue success) { return success; }
+
     default DatatypeValue start(Query q) { return defaultValue(); }
     
     default DatatypeValue finish(Mappings map) { return defaultValue(); }

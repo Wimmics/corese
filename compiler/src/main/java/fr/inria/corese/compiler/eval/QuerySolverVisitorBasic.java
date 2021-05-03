@@ -69,6 +69,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     public static final String LOOP_ENTAIL = "@loopEntailment";
     public static final String BEFORE_RULE = "@beforeRule";
     public static final String AFTER_RULE  = "@afterRule";    
+    public static final String CONSTRAINT_RULE  = "@constraintRule";    
     public static final String START    = "@start";
     public static final String FINISH   = "@finish"; 
     public static final String OVERLOAD = "@overload"; 

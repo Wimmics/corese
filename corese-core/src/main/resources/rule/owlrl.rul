@@ -36,7 +36,6 @@ CONSTRUCT {
 	owl:Nothing a owl:Class .
 }
 WHERE {}
-
 </body>
 </rule>
 
@@ -46,6 +45,7 @@ WHERE {}
 
 
 <rule rdf:about='&owl;differentFrom'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  eq-diff1 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -65,6 +65,7 @@ WHERE {
 
 
 <rule rdf:about='&owl;AllDifferent1'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  eq-diff2 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -88,6 +89,7 @@ WHERE {
 
 
 <rule rdf:about='&owl;AllDifferent2'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  eq-diff3 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -165,6 +167,7 @@ WHERE {
 </rule>
 
 <rule rdf:about='&owl;IrreflexiveProperty'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  prp-irp -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -193,6 +196,7 @@ WHERE {
 </rule>
 
 <rule  rdf:about='&owl;AsymmetricProperty'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  prp-asyp -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -276,6 +280,7 @@ WHERE {
 </rule>
 
 <rule rdf:about='&owl;propertyDisjointWith'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  prp-pdw -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -294,6 +299,7 @@ WHERE {
 </rule>
 
 <rule rdf:about='&owl;AllDisjointProperties'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  prp-adp -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -344,6 +350,7 @@ WHERE {
 </rule>
 
 <rule rdf:about='&owl;NegativeAssertionProperty1'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  prp-npa1 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -363,6 +370,7 @@ WHERE {
 </rule>
 
 <rule rdf:about='&owl;NegativeAssertionProperty2'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  prp-npa2 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -384,6 +392,7 @@ WHERE {
 
 
 <rule rdf:about='&owl;Nothing'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  cls-nothing2 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -450,6 +459,7 @@ WHERE {
 
 
 <rule rdf:about='&owl;complementOf'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  cls-com -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -563,6 +573,7 @@ WHERE {
 </rule>
 
 <rule rdf:about='&owl;maxCardinality1'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  cls-maxc1 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -599,6 +610,7 @@ WHERE {
 </rule>
 
 <rule rdf:about='&owl;maxQualifiedCardinality1'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  cls-maxqc1 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -621,6 +633,7 @@ WHERE {
 </rule>
 
 <rule rdf:about='&owl;maxQualifiedCardinality2'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  cls-maxqc2 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -726,6 +739,7 @@ WHERE {
 </rule>
 
 <rule rdf:about='&owl;disjointWith'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  cax-dw -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -745,6 +759,7 @@ WHERE {
 </rule>
 
 <rule rdf:about='&owl;AllDisjointClasses'>
+<type rdf:resource='&rule;constraint'/>
 <body>  <!--  cax-adc -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
@@ -1093,19 +1108,21 @@ WHERE {
 
 
 <!--  eq-ref  -->
-<rule rdf:about='&owl;sameAs1'>
+<rule rdf:about='&owl;sameAs'>
   <body> 
 CONSTRUCT {
     ?s owl:sameAs ?s .
     ?p owl:sameAs ?p .
+    ?v owl:sameAs ?v
 }
 WHERE {
 	?s ?p ?o
+    bind (if (isLiteral(?o), error(), ?o) as ?v)
 }
 </body>
 </rule>
 
-<!--  eq-ref  -->
+<!--  eq-ref  
 <rule rdf:about='&owl;sameAs2'>
 <body>  
 CONSTRUCT {   
@@ -1114,10 +1131,10 @@ CONSTRUCT {
 WHERE {
 	?s ?p ?o .
         Filter (! isLiteral(?o))
-       <!-- Filter (isURI(?o))-->
 }
 </body>
 </rule>
+-->
 
 <rule rdf:about='&owl;sameAs3'>
   <body>  <!--  eq-sym -->

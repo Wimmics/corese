@@ -52,7 +52,6 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
-import java.util.AbstractList;
 
 /**
  * Forward Rule Engine 
@@ -860,7 +859,7 @@ public class RuleEngine implements Engine, Graphable {
         Query qq = rule.getQuery();
         Construct cons = Construct.create(qq);
         cons.setAccessRight(b.getAccessRight());
-        cons.setDefaultGraph(graph.addRuleGraphNode());
+        cons.setDefaultGraph(rule.isConstraint()?graph.addConstraintGraphNode():graph.addRuleGraphNode());
         cons.setRule(rule, rule.getIndex(), rule.getProvenance());
         cons.set(new GraphManager(graph));
         cons.setLoopIndex(loopIndex);
@@ -874,7 +873,6 @@ public class RuleEngine implements Engine, Graphable {
             // no Mappings are created by kgram
             cons.setBuffer(true);
             cons.setInsertList(new ArrayList<>());
-            //cons.setDefaultGraph(graph.addRuleGraphNode());
             Mappings map = Mappings.create(qq);
             // ResultWatcher call cons to create edges when a solution occur
             rw.setConstruct(cons);

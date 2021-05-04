@@ -48,6 +48,7 @@ public class Entailment implements Engine {
     public static String DEFAULT = KGRAPH + "default";
     public static String ENTAIL = KGRAPH + "entailment";
     public static String RULE = KGRAPH + "rule";
+    public static String CONSTRAINT = KGRAPH + "constraint";
     public static String[] GRAPHS = {DEFAULT, ENTAIL, RULE};
     public static final String XSD = "http://www.w3.org/2001/XMLSchema#";
     // take literal range into account in loader

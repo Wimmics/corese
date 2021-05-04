@@ -32,6 +32,7 @@ public interface LogKey {
     static final String RESULT = "ns:output";
     static final String RESULT_TEXT = "ns:outputText";
     static final String RESULT_SELECT = "ns:outputSelect";
+    static final String BNODE = "ns:bnode";
     static final String NL = System.getProperty("line.separator");
 
 }

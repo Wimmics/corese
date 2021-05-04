@@ -33,8 +33,6 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
-
-import fr.inria.corese.gui.core.CompoundUndoManager;
 import fr.inria.corese.gui.core.MainFrame;
 
 /**
@@ -63,7 +61,6 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
     private JScrollPane scrollPaneQuery;
     private JTextPane textPaneQuery;
     private JTextArea textAreaLines;
-    private CompoundUndoManager undoManager = null;
     private boolean isColoring;
     private int temp3;
     private int temp;
@@ -125,9 +122,6 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
         textPaneQuery.addFocusListener(this);
         textPaneQuery.getDocument().addDocumentListener(this);
         textPaneQuery.addCaretListener(this);
-
-        undoManager = new CompoundUndoManager(textPaneQuery);
-        checkLines(textPaneQuery, textAreaLines);
 
         scrollPaneQuery = new JScrollPane();
         scrollPaneQuery.setRowHeaderView(textAreaLines);
@@ -299,10 +293,6 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
             }
         }
         return i;
-    }
-
-    public CompoundUndoManager getUndoManager() {
-        return undoManager;
     }
 
     public void setQueryText(String newRequest) {

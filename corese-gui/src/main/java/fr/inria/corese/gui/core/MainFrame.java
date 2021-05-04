@@ -122,8 +122,6 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem copy;
     private JMenuItem cut;
     private JMenuItem paste;
-    private JMenuItem undo;
-    private JMenuItem redo;
     private JMenuItem duplicate;
     private JMenuItem duplicateFrom;
     private JMenuItem newQuery;
@@ -289,8 +287,6 @@ public class MainFrame extends JFrame implements ActionListener {
                     current = (MyJPanelQuery) c;
 
                     // Certaines options du menu deviennent utilisables
-                    undo.setEnabled(true);
-                    redo.setEnabled(true);
                     cut.setEnabled(true);
                     copy.setEnabled(true);
                     paste.setEnabled(true);
@@ -310,8 +306,6 @@ public class MainFrame extends JFrame implements ActionListener {
 
                 } // Sinon elles restent grisées et inutilisables
                 else {
-                    undo.setEnabled(false);
-                    redo.setEnabled(false);
                     cut.setEnabled(false);
                     copy.setEnabled(false);
                     paste.setEnabled(false);
@@ -579,8 +573,6 @@ public class MainFrame extends JFrame implements ActionListener {
         copy.addActionListener(this);
         paste = new JMenuItem("Paste ");
         paste.addActionListener(this);
-        undo = new JMenuItem("Undo");
-        redo = new JMenuItem("Redo");
         duplicate = new JMenuItem("Duplicate Query");
         duplicate.addActionListener(this);
         duplicateFrom = new JMenuItem("Duplicate from selection");
@@ -634,8 +626,6 @@ public class MainFrame extends JFrame implements ActionListener {
         checkBoxVerbose = new JCheckBox("Verbose");
         validate = new JMenuItem("Validate");
 
-        undo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Z, ActionEvent.CTRL_MASK));
-        redo.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_Y, ActionEvent.CTRL_MASK));
         cut.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_X, ActionEvent.CTRL_MASK));
         copy.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_C, ActionEvent.CTRL_MASK));
         paste.setAccelerator(KeyStroke.getKeyStroke(KeyEvent.VK_V, ActionEvent.CTRL_MASK));
@@ -754,8 +744,6 @@ public class MainFrame extends JFrame implements ActionListener {
         
         eventMenu.add(defItemFunction("GUI",            "event/gui.rq"));
 
-        editMenu.add(undo);
-        editMenu.add(redo);
         editMenu.add(cut);
         editMenu.add(copy);
         editMenu.add(paste);
@@ -1015,8 +1003,6 @@ public class MainFrame extends JFrame implements ActionListener {
 
         //S'il n'y a pas encore d'onglet Query ces options sont inutilisables
         if (nbreTab.isEmpty()) {
-            undo.setEnabled(false);
-            redo.setEnabled(false);
             cut.setEnabled(false);
             copy.setEnabled(false);
             paste.setEnabled(false);
@@ -1956,14 +1942,6 @@ public class MainFrame extends JFrame implements ActionListener {
 
     public void setKgram(boolean isKgram) {
         this.isKgram = isKgram;
-    }
-
-    public JMenuItem getUndo() {
-        return undo;
-    }
-
-    public JMenuItem getRedo() {
-        return redo;
     }
 
     public MyJPanelQuery getPanel() {

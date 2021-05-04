@@ -27,10 +27,6 @@ import javax.swing.event.DocumentListener;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
-import javax.swing.tree.DefaultTreeModel;
-import javax.swing.tree.TreePath;
-import javax.swing.undo.CannotRedoException;
-import javax.swing.undo.CannotUndoException;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -435,28 +431,6 @@ public final class MyJPanelQuery extends JPanel {
             }
         };
         buttonDefaultStyle.addActionListener(defaultListener);
-
-        coreseFrame.getUndo().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    sparqlQueryEditor.getUndoManager().undo();
-                    sparqlQueryEditor.requestFocus();
-                } catch (CannotUndoException ex) {
-                    Toolkit.getDefaultToolkit().beep();
-                }
-            }
-        });
-
-        coreseFrame.getRedo().addActionListener(new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                try {
-                    sparqlQueryEditor.getUndoManager().redo();
-                    sparqlQueryEditor.requestFocus();
-                } catch (CannotRedoException ex) {
-                    Toolkit.getDefaultToolkit().beep();
-                }
-            }
-        });
 
         ActionListener l_RunListener = createListener(coreseFrame, false);
         

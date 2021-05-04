@@ -2,5 +2,4 @@ select (count(*) as ?c)
 from kg:rule
 where {
    ?x ?p ?y
-   bind (kg:provenance(?p) as ?pr)
 }

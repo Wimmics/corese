@@ -86,7 +86,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.1 - Wimmics INRIA I3S - 2021-05-01";
+    private static final String TITLE = "Corese 4.2 - Wimmics INRIA I3S - 2021-05-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -101,7 +101,6 @@ public class MainFrame extends JFrame implements ActionListener {
     boolean trace = false;
     // Pour le menu
     private JMenuItem loadRDF;
-    private JMenuItem loadRDFs;
     private JMenuItem loadSHACL, loadShex;
     private JMenuItem loadSHACLShape;
     private JMenuItem loadQuery;
@@ -144,9 +143,9 @@ public class MainFrame extends JFrame implements ActionListener {
             iserviceCorese, iserviceDBpedia, ifederate,
             iinsert, iinsertdata, idelete, ideleteinsert,
             iturtle, in3, irdfxml, ijson, itrig, ispin, iowl, 
-            ientailment, irule, isystem, iprovenance, iindex, ifunction, ical;
+            ientailment, irule, ierror, ifunction, ical;
     private JMenuItem itypecheck, ipredicate, ipredicatepath;
-    HashMap<Object, String> itable;
+    HashMap<Object, DefQuery> itable;
     private JCheckBox checkBoxQuery;
     private JCheckBox checkBoxRule;
     private JCheckBox checkBoxVerbose;
@@ -217,6 +216,33 @@ public class MainFrame extends JFrame implements ActionListener {
         // false: load files into named graphs
         // true:  load files into kg:default graph
         Load.setDefaultGraphValue(false);
+    }
+    
+    class DefQuery {
+
+        private String query;
+        private String name;
+        
+        DefQuery(String n, String q) {
+            query = q; name = n;
+        }
+
+        public String getQuery() {
+            return query;
+        }
+
+        public void setQuery(String query) {
+            this.query = query;
+        }
+
+        public String getName() {
+            return name;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
     }
 
     /**
@@ -359,14 +385,14 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     void execPlus() {
-        execPlus(defaultQuery);
+        execPlus("", defaultQuery);
     }
 
-    void execPlus(String str) {
+    void execPlus(String name, String str) {
         // s : texte par défaut dans la requête
         textQuery = str;
         //Crée un nouvel onglet Query
-        newQuery(str);
+        newQuery(str, name);
     }
 
     void setStyleSheet() {
@@ -450,14 +476,10 @@ public class MainFrame extends JFrame implements ActionListener {
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
         //crée les options du menu et leurs listeners
-        loadRDF = new JMenuItem("RDF");
+        loadRDF = new JMenuItem("Dataset");
         loadRDF.addActionListener(this);
-        loadRDF.setToolTipText("Load RDF file");
-
-        loadRDFs = new JMenuItem("RDFS/OWL");
-        loadRDFs.addActionListener(this);
-        loadRDFs.setToolTipText("Load RDFs file and ontology rules");
-
+        loadRDF.setToolTipText("Load Dataset");
+       
         loadRule = new JMenuItem("Rule");
         loadRule.addActionListener(this);
         loadRule.setToolTipText("Load file with inferencing rules");
@@ -530,7 +552,7 @@ public class MainFrame extends JFrame implements ActionListener {
         saveResult = new JMenuItem("Save Result");
         saveResult.addActionListener(this);
 
-        itable = new HashMap<Object, String>();
+        itable = new HashMap<>();
 
         iselect = defItem("Select", DEFAULT_SELECT_QUERY);
         iselecttuple = defItem("Select Tuple", DEFAULT_TUPLE_QUERY);
@@ -549,11 +571,9 @@ public class MainFrame extends JFrame implements ActionListener {
         idelete = defItem("Delete", DEFAULT_DELETE_QUERY);
         ideleteinsert = defItem("Delete Insert", DEFAULT_DELETE_INSERT_QUERY);
 
-        ientailment = defItem("Entailment", DEFAULT_ENTAILMENT_QUERY);
-        irule = defItem("Rule", DEFAULT_RULE_QUERY);
-        isystem = defItem("System", DEFAULT_SYSTEM_QUERY);
-        iindex = defItem("Index", "index.rq");
-        iprovenance = defItem("Provenance", DEFAULT_PROVENANCE_QUERY);
+        ientailment = defItem("RDFS Entailment", DEFAULT_ENTAILMENT_QUERY);
+        irule = defItem("Rule/OWL RL", DEFAULT_RULE_QUERY);      
+        ierror = defItem("Constraint", "constraint.rq");      
 
         iturtle = defItem("Turtle", DEFAULT_TEMPLATE_QUERY);
         in3 = defItem("NTriple", "n3.rq");
@@ -659,7 +679,6 @@ public class MainFrame extends JFrame implements ActionListener {
         //On ajoute tout au menu
         fileMenu.add(fileMenuLoad);
         fileMenuLoad.add(loadRDF);
-        fileMenuLoad.add(loadRDFs);
         fileMenuLoad.add(loadRule);
         fileMenuLoad.add(loadAndRunRule);
         fileMenuLoad.add(loadSHACL);
@@ -706,9 +725,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
         explainMenu.add(ientailment);
         explainMenu.add(irule);
-        explainMenu.add(iprovenance);
-        explainMenu.add(isystem);
-        explainMenu.add(iindex);
+        explainMenu.add(ierror);
 
         templateMenu.add(iturtle);
         templateMenu.add(in3);
@@ -1013,13 +1030,6 @@ public class MainFrame extends JFrame implements ActionListener {
             saveResult.setEnabled(false);
         }
     }
-
-    JMenuItem defItem2(String name, String query) {
-        JMenuItem it = new JMenuItem(name);
-        it.addActionListener(this);
-        itable.put(it, query);
-        return it;
-    }
     
     JMenuItem defItem(String name, String q) {
         return defItemBasic(QUERY, name, q);
@@ -1034,10 +1044,8 @@ public class MainFrame extends JFrame implements ActionListener {
         it.addActionListener(this);
         try {
             String str = read(root + q);
-            itable.put(it, str);
-        } catch (LoadException ex) {
-            LOGGER.error(ex);
-        } catch (IOException ex) {
+            itable.put(it, new DefQuery(q, str));
+        } catch (LoadException | IOException ex) {
             LOGGER.error(ex);
         }
         return it;
@@ -1055,16 +1063,11 @@ public class MainFrame extends JFrame implements ActionListener {
     //Actions du menu
     @Override
     public void actionPerformed(ActionEvent e) {
-        //Appelle la fonction pour le chargement d'un fichier RDFS/OWL
-        if (e.getSource() == loadRDFs) {
-            loadRDFs();
-
-        } //Appelle la fonction pour le chargement d'un fichier query
-        else if (e.getSource() == loadQuery) {
+        if (e.getSource() == loadQuery) {
             loadQuery();
         } else if (e.getSource() == loadRule) {
             loadRule();
-        } //Appelle la fonction pour le chargement d'un fichier RDF
+        } 
         else if (e.getSource() == loadRDF || e.getSource() == loadSHACL) {
             loadRDF();
         } 
@@ -1216,8 +1219,9 @@ public class MainFrame extends JFrame implements ActionListener {
                 temp.getButtonTKgram().setEnabled(true);
             }
         } else if (itable.get(e.getSource()) != null) {
-            String query = itable.get(e.getSource());
-            execPlus(query);
+            // Button Explain
+            DefQuery def = itable.get(e.getSource());
+            execPlus(def.getName(), def.getQuery());
         }
     }
     
@@ -1404,93 +1408,42 @@ public class MainFrame extends JFrame implements ActionListener {
         return extension;	//on retourne le résultat
     }
 
-    /**
-     * permet de ranger un tableau selon l'ordre suivant 1)rdfs,owl 2)rul 3)rdf
-     *
-     * @param strArray
-     */
-    public void sortArray(String[] strArray) {
-        String tmp;
-        if (strArray.length == 1) {
-            return;
-        }
-        for (int i = 0; i < strArray.length; i++) {
-            for (int j = i + 1; j < strArray.length; j++) {
-                Object tempi = strArray[i];
-                String exti = MyCellRenderer.extension(tempi);
-                Object tempj = strArray[j];
-                String extj = MyCellRenderer.extension(tempj);
-                if (exti.equals("rdf") && (extj.equals("rul") || extj.equals("rdfs") || extj.equals("owl"))) {
-                    tmp = strArray[i];
-                    strArray[i] = strArray[j];
-                    strArray[j] = tmp;
-                }
-                if (exti.equals("rul") && (extj.equals("rdfs") || extj.equals("owl"))) {
-                    tmp = strArray[i];
-                    strArray[i] = strArray[j];
-                    strArray[j] = tmp;
-                }
-                if (exti.equals("owl") && (extj.equals("rdfs"))) {
-                    tmp = strArray[i];
-                    strArray[i] = strArray[j];
-                    strArray[j] = tmp;
-                }
-
-            }
-        }
-    }
-
-    /**
-     * Permet d'ordonnée une liste en utilisant la méthode SortArray Récupère le
-     * model de la liste afin de réorganiser celle-ci
-     */
-    public void sort() {
-        DefaultListModel dlm;
-        dlm = ongletListener.getModel();
-
-        int numItems = dlm.getSize();
-        String[] a = new String[numItems];
-        for (int i = 0; i < numItems; i++) {
-            a[i] = (String) dlm.getElementAt(i);
-        }
-        sortArray(a);
-        for (int i = 0; i < numItems; i++) {
-            dlm.setElementAt(a[i], i);
-        }
-
-    }
 
     void display() {
         for (int i = 0; i < getOngletListener().getModel().getSize(); i++) {
             System.out.println("GUI: " + ongletListener.getModel().get(i).toString());
         }
     }
-
-    public void loadRDF() {
-        Filter FilterRDF = new Filter(new String[]{"rdf", "ttl", "html"}, "RDF files (*.rdf,*.ttl)");
-        load(FilterRDF);
+    
+    void loadRDF() {
+        loadDataset();
     }
 
-    public void loadRDFs() {
-        Filter FilterRDFS = new Filter(new String[]{"rdfs", "owl", "ttl"}, "RDFS/OWL files (*.rdfs,*.owl,*.ttl)");
-        load(FilterRDFS);
+    
+    void loadDataset() {
+        Filter FilterRDF  = new Filter("RDF", "rdf", "ttl", "trig", "jsonld", "html");
+        Filter FilterRDFS = new Filter("RDFS/OWL", "rdfs", "owl", "ttl");
+        Filter FilterDS   = new Filter("Dataset", "rdf", "rdfs", "owl", "ttl", "html");        
+        load(FilterRDF, FilterRDFS, FilterDS);
     }
 
-    public void execWorkflow() {
-        Filter FilterRDF = new Filter(new String[]{"ttl", "sw"}, "Workflow files (*.ttl, *.sw)");
+    void execWorkflow() {
+        Filter FilterRDF = new Filter("Workflow", "ttl", "sw");
         load(FilterRDF, true, true, false);
     }
     
-    public void loadWorkflow(boolean run) {
-        Filter FilterRDF = new Filter(new String[]{"ttl", "sw"}, "Workflow files (*.ttl, *.sw)");
+    void loadWorkflow(boolean run) {
+        Filter FilterRDF = new Filter("Workflow", "ttl", "sw");
         load(FilterRDF, true, false, run);
     }
+    
     /**
      * Charge un fichier dans CORESE
      */
-    public void load(Filter filter) {
-        load(filter, false, false, false);
+    void load(Filter... filter) {
+        load(false, false, false, filter);
     }
+    
 
     /**
      * wf: load a Workflow
@@ -1498,11 +1451,18 @@ public class MainFrame extends JFrame implements ActionListener {
      * run: set the queries in query panels an run the queries in the GUI
      */
     public void load(Filter filter, boolean wf, boolean exec, boolean run) {
+        load(wf, exec, run, filter);
+    }
+    
+    
+    void load(boolean wf, boolean exec, boolean run, Filter... filter) {
         controler(LOAD);
         lPath = null;
         JFileChooser fileChooser = new JFileChooser(lCurrentPath);
         fileChooser.setMultiSelectionEnabled(true);
-        fileChooser.addChoosableFileFilter(filter);
+        for (Filter f : filter){
+            fileChooser.addChoosableFileFilter(f);
+        }
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File[] lFiles = fileChooser.getSelectedFiles();
@@ -1601,8 +1561,18 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     String selectPath() {
+        return selectPath(null);
+    }
+    
+    String selectPath(String title, String... ext) {
         lPath = null;
         JFileChooser fileChooser = new JFileChooser(lCurrentPath);
+        
+        if (ext != null && ext.length>0) {
+            Filter filter = new Filter(title, ext);
+            fileChooser.addChoosableFileFilter(filter);
+        }
+        
         fileChooser.setMultiSelectionEnabled(true);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         int returnValue = fileChooser.showOpenDialog(null);
@@ -1647,7 +1617,7 @@ public class MainFrame extends JFrame implements ActionListener {
     }
     
     void shex(boolean load) {
-        String path = selectPath();
+        String path = selectPath("Shex", "shex");
         if (path != null) {
             Shex shex = new Shex().setExtendShacl(shexExtend)
                     .setClosed(shexClosed)
@@ -1713,8 +1683,18 @@ public class MainFrame extends JFrame implements ActionListener {
      * Crée un nouvel onglet requête avec le texte contenu dans un fichier
      */
     public String loadText() {
+        return loadText(null);
+    }
+
+    public String loadText(String title, String... ext) {
         String str = "";
         JFileChooser fileChooser = new JFileChooser(lCurrentPath);
+        
+        if (ext != null && ext.length>0) {
+            Filter filter = new Filter(title, ext);
+            fileChooser.addChoosableFileFilter(filter);
+        }
+        
         File selectedFile;
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -1753,7 +1733,7 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     public void loadQuery() {
-        textQuery = loadText();
+        textQuery = loadText("Query", "rq");
         newQuery(textQuery, getFileName());
     }
     
@@ -1767,7 +1747,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
     public void loadPipe() {
         //Load and run a pipeline
-        Filter FilterRUL = new Filter(new String[]{"rdf", "ttl"}, "rdf files (*.rdf,*.ttl)");
+        Filter FilterRUL = new Filter("RDF", "rdf", "ttl");
         JFileChooser fileChooser = new JFileChooser(lCurrentPath);
         fileChooser.addChoosableFileFilter(FilterRUL);
         File selectedFile;
@@ -1784,7 +1764,7 @@ public class MainFrame extends JFrame implements ActionListener {
      * Charge un fichier Rule dans CORESE
      */
     public void loadRule() {
-        Filter FilterRUL = new Filter(new String[]{"rul", "brul"}, "Rul files (*.rul)");
+        Filter FilterRUL = new Filter("Rule" ,"rul", "brul");
         load(FilterRUL);
     }
 

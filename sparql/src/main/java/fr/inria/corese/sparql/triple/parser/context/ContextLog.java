@@ -64,7 +64,7 @@ public class ContextLog implements URLParam, LogKey {
         getSubjectMap().set(getSubject(), property, value);
     }
 
-    void incr(String subject, String property, int value) {
+    public void incr(String subject, String property, int value) {
         getSubjectMap().incr(subject, property, value);
     }
 

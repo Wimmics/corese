@@ -16,6 +16,7 @@ public interface Loader {
     static final int TRIG_FORMAT   = 8;
     static final int NQUADS_FORMAT = 9;
     static final int WORKFLOW_FORMAT = 10;
+    static final int OWL_FORMAT = 11;
     
     static final String JSONLD_FORMAT_STR = "application/ld+json";
     static final String JSON_FORMAT_STR = "application/json";

@@ -76,11 +76,12 @@ public class ProviderService implements URLParam {
         setEval(eval);
         // after setEval:
         setBinding((Binding) getEnvironment().getBind());
+        // after setBinding:
         init();
     }
     
     void init() {
-        setCompiler(new CompileService(getProvider(), getEnvironment()));
+        setCompiler(new CompileService(this, getEnvironment()));
         // federate visitor may have recorded data in AST Context
         // share it with Binding Context Log
         getLog().share(getGlobalAST().getLog());
@@ -93,7 +94,6 @@ public class ProviderService implements URLParam {
     Mappings send(Node serv, Exp exp) throws EngineException {
         setServiceExp(exp);
         // share prefix
-        getCompiler().prepare(getQuery());
         int slice = getSlice(serv, getMappings()); 
         //boolean hasValues = ast.getValues() != null;
         boolean skipBind = getGlobalAST().hasMetadata(Metadata.BINDING, Metadata.SKIP_STR);
@@ -590,100 +590,58 @@ public class ProviderService implements URLParam {
         }
     }
   
-    /**
-     * @return the defaut
-     */
     public QueryProcess getDefault() {
         return defaut;
     }
 
-    /**
-     * @param defaut the defaut to set
-     */
     public void setDefault(QueryProcess defaut) {
         this.defaut = defaut;
     }
 
-    /**
-     * @return the provider
-     */
     public ProviderImpl getProvider() {
         return provider;
     }
 
-    /**
-     * @param provider the provider to set
-     */
     public void setProvider(ProviderImpl provider) {
         this.provider = provider;
     }
 
-    /**
-     * @return the query
-     */
     public Query getQuery() {
         return query;
     }
 
-    /**
-     * @param query the query to set
-     */
     public void setQuery(Query query) {
         this.query = query;
     }
 
-    /**
-     * @return the serviceExp
-     */
     public Exp getServiceExp() {
         return serviceExp;
     }
 
-    /**
-     * @param serviceExp the serviceExp to set
-     */
     public void setServiceExp(Exp serviceExp) {
         this.serviceExp = serviceExp;
     }
 
-    /**
-     * @return the mappings
-     */
     public Mappings getMappings() {
         return mappings;
     }
 
-    /**
-     * @param mappings the mappings to set
-     */
     public void setMappings(Mappings mappings) {
         this.mappings = mappings;
     }
 
-    /**
-     * @return the eval
-     */
     public Eval getEval() {
         return eval;
     }
 
-    /**
-     * @param eval the eval to set
-     */
     public void setEval(Eval eval) {
         this.eval = eval;
     }
 
-    /**
-     * @return the compiler
-     */
     public CompileService getCompiler() {
         return compiler;
     }
 
-    /**
-     * @param compiler the compiler to set
-     */
     public void setCompiler(CompileService compiler) {
         this.compiler = compiler;
     }
@@ -696,44 +654,32 @@ public class ProviderService implements URLParam {
         return binding;
     }
 
-    /**
-     * @param binding the binding to set
-     */
     public void setBinding(Binding binding) {
         this.binding = binding;
     }
 
-    /**
-     * @return the globalAST
-     */
     public ASTQuery getGlobalAST() {
         return globalAST;
     }
 
-    /**
-     * @param globalAST the globalAST to set
-     */
     public void setGlobalAST(ASTQuery globalAST) {
         this.globalAST = globalAST;
     }
     
     synchronized ContextLog getLog() {
-        //return getGlobalAST().getLog();
         return getBinding().getCreateLog();
     }
 
-    /**
-     * @return the ast
-     */
     public ASTQuery getAST() {
         return ast;
     }
 
-    /**
-     * @param ast the ast to set
-     */
     public void setAST(ASTQuery ast) {
         this.ast = ast;
+    }
+    
+    boolean isSparql0(Node node) {
+        return getProvider().isSparql0(node);
     }
     
 }

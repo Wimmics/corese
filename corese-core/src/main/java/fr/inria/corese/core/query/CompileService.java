@@ -15,7 +15,6 @@ import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.kgram.api.query.Provider;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
@@ -25,18 +24,20 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import fr.inria.corese.sparql.triple.cst.LogKey;
 import fr.inria.corese.sparql.triple.parser.VariableLocal;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.util.List;
 
 public class CompileService implements URLParam {
     public static final String KG_VALUES = NSManager.KGRAM + "values";
     public static final String KG_FILTER = NSManager.KGRAM + "filter";
 
-    Provider provider;
+    private ProviderService provider;
     List<List<Term>> termList;
     private Environment env;
 
-    public CompileService(Provider p, Environment env) {
+    public CompileService(ProviderService p, Environment env) {
         provider = p;
         termList = new ArrayList<>();
         setEnv(env);
@@ -61,7 +62,8 @@ public class CompileService implements URLParam {
         ASTQuery ast = getAST(q);
         complete(serv, q, ast);
         Query out = q.getOuterQuery();
-        boolean isValues = isValues(serv, out) || (!isFilter(serv, out) && !provider.isSparql0(serv.getNode()));
+        boolean isValues = isValues(serv, out) || 
+                (!isFilter(serv, out) && !getProvider().isSparql0(serv.getNode()));
         if (map == null || (map.size() == 1 && map.get(0).size() == 0)) {
             // lmap may contain one empty Mapping
             // use env because it may have bindings
@@ -140,8 +142,8 @@ public class CompileService implements URLParam {
      */
     ASTQuery bindings(Query q, Environment env) {
         ASTQuery ast = (ASTQuery) q.getAST();
-        ArrayList<Variable> lvar = new ArrayList<Variable>();
-        ArrayList<Constant> lval = new ArrayList<Constant>();
+        ArrayList<Variable> lvar = new ArrayList<>();
+        ArrayList<Constant> lval = new ArrayList<>();
 
         for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
             String name = qv.getLabel();
@@ -167,10 +169,7 @@ public class CompileService implements URLParam {
      * Generate bindings as bindings from Mappings
      */
     ASTQuery bindings(URLServer url, Query q, Mappings map, Environment env, int start, int limit) {
-        ASTQuery ast = (ASTQuery) q.getAST();
-        //Expression filter = getFilter(ast, url);
-        //Binding b = Binding.create();
-        
+        ASTQuery ast = (ASTQuery) q.getAST();        
         // in-scope variables
         List<Variable> varList = getVariables(url, q, ast, map);
         // in-scope bound variables
@@ -188,35 +187,40 @@ public class CompileService implements URLParam {
         }
         
         Values values = Values.create();
+        
         if (!lvar.isEmpty()) {
             for (int j = start; j < map.size() && j < limit; j++) {
                 Mapping m = map.get(j);
                 // list of values for one result
                 ArrayList<Constant> list = new ArrayList<>();
 
-                boolean ok = false;
-                
+                boolean ok = false, blank = false;
+
                 for (Variable var : lvar) {
                     Node val = m.getNodeValue(var.getLabel());
-
-                    if (val != null && !val.isBlank()) {
-                        IDatatype dt = (IDatatype) val.getValue();
-                        if (true) { //(filter == null || eval(filter, env, b, var, dt)) {
-                            Constant cst = create(ast, dt);
-                            list.add(cst);
-                            ok = true;
-                        }
-                        else {
-                            list.add(null);
-                        }
-                    } else {
-                        // unbound variable -> undef
+                    if (val == null) {
                         list.add(null);
+                    } 
+                    else if (val.isBlank()) {
+                        list.add(null);
+                        blank = true;
+                    } 
+                    else {
+                        IDatatype dt = (IDatatype) val.getValue();
+                        Constant cst = create(ast, dt);
+                        list.add(cst);
+                        ok = true;
                     }
                 }
                 if (ok) {
                     // at least one variable is bound in this result
                     values.addValues(list);
+                }
+                else if (blank) {
+                    // there is a binding but it is blank: we skip it
+                    // hence we may lose a join between services 
+                    // in particular when services concern the same endpoint
+                    getLog().incr(url.getLogURLNumber(), LogKey.BNODE, 1);
                 }
             }
         }
@@ -341,18 +345,23 @@ public class CompileService implements URLParam {
      */
     ASTQuery filter(Query q, Environment env) {
         ASTQuery ast = (ASTQuery) q.getAST();
-        ArrayList<Term> lt = new ArrayList<Term>();
+        ArrayList<Term> lt = new ArrayList<>();
 
         for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
             String var = qv.getLabel();
             Node val = env.getNode(var);
 
-            if (val != null && ! val.isBlank()) {
-                Variable v = Variable.create(var);
-                IDatatype dt = (IDatatype) val.getValue();
-                Constant cst = Constant.create(dt);
-                Term t = Term.create(Term.SEQ, v, cst);
-                lt.add(t);
+            if (val != null) {
+                if (val.isBlank()) {
+                
+                }
+                else {
+                    Variable v = Variable.create(var);
+                    IDatatype dt = (IDatatype) val.getValue();
+                    Constant cst = Constant.create(dt);
+                    Term t = Term.create(Term.SEQ, v, cst);
+                    lt.add(t);
+                }
             }
         }
 
@@ -374,6 +383,7 @@ public class CompileService implements URLParam {
         ASTQuery ast = (ASTQuery) q.getAST();
         Term filter = null;
         List<Variable> lvar = getVariables(url, q, ast, map);
+        
         for (int j = start; j < map.size() && j < limit; j++) {
             Term f = getFilter(url, q, ast, map.get(j), lvar);
 
@@ -391,16 +401,21 @@ public class CompileService implements URLParam {
     
     Term getFilter(URLServer url, Query q, ASTQuery ast, Mapping m, List<Variable> lvar) {
         ArrayList<Term> lt = new ArrayList<>();
-
+        boolean blank = false;
+        
         for (Variable var : lvar) {
             Node valNode = m.getNodeValue(var.getLabel());
-            if (valNode != null && !valNode.isBlank()) {
-                // do not send bnode because it will raise a syntax error
-                // and it will not be available on another server because 
-                // bnode are local
-                // wish: select Mapping with unique(varNode, valNode)
-                Term t = filter(ast, var, (IDatatype) valNode.getDatatypeValue());
-                lt.add(t);
+            if (valNode != null) {
+                if (valNode.isBlank()) {
+                    // do not send bnode because it will raise a syntax error
+                    // and it will not be available on another server because 
+                    // bnode are local
+                    blank = true;
+                }
+                else {                    
+                    Term t = filter(ast, var, (IDatatype) valNode.getDatatypeValue());
+                    lt.add(t);
+                }
             }
         }
         
@@ -412,6 +427,9 @@ public class CompileService implements URLParam {
                 f = Term.create(Term.SEAND, f, lt.get(i));
             }
             return f;
+        }
+        else if (blank) {
+            getLog().incr(url.getLogURLNumber(), LogKey.BNODE, 1);
         }
         return null;
     }
@@ -527,5 +545,17 @@ public class CompileService implements URLParam {
      */
     public void setEnv(Environment env) {
         this.env = env;
+    }
+
+    public ContextLog getLog() {
+        return getProvider().getLog();
+    }
+
+    public ProviderService getProvider() {
+        return provider;
+    }
+
+    public void setProvider(ProviderService provider) {
+        this.provider = provider;
     }
 }

@@ -121,7 +121,7 @@ public class Graph extends GraphObject implements
     public static boolean TRIPLE_UNIQUE_NAME = true;
     
     private static final String[] PREDEFINED = {
-        Entailment.DEFAULT, Entailment.ENTAIL, Entailment.RULE,
+        Entailment.DEFAULT, Entailment.ENTAIL, Entailment.RULE, Entailment.CONSTRAINT,
         RDFS.SUBCLASSOF, RDFS.LABEL, 
         RDF.TYPE, RDF.FIRST, RDF.REST
     }; 
@@ -129,13 +129,14 @@ public class Graph extends GraphObject implements
     public static final int DEFAULT_INDEX   = 0;
     public static final int ENTAIL_INDEX    = 1;
     public static final int RULE_INDEX      = 2;
+    public static final int RULE_CONSTRAINT = 3;
     
-    public static final int SUBCLASS_INDEX  = 3;
-    public static final int LABEL_INDEX     = 4;
+    public static final int SUBCLASS_INDEX  = 4;
+    public static final int LABEL_INDEX     = 5;
     
-    public static final int TYPE_INDEX      = 5;
-    public static final int FIRST_INDEX     = 6;
-    public static final int REST_INDEX      = 7;
+    public static final int TYPE_INDEX      = 6;
+    public static final int FIRST_INDEX     = 7;
+    public static final int REST_INDEX      = 8;
    
     public static final int DEFAULT_UNION = 0;
     public static final int DEFAULT_GRAPH = 1;
@@ -228,7 +229,7 @@ public class Graph extends GraphObject implements
 
     private boolean hasList = false;
     
-    private Node ruleGraph, defaultGraph, entailGraph;
+    private Node ruleGraph, constraintGraph, defaultGraph, entailGraph;
     
    private ArrayList<Node> systemNode, defaultGraphList;
    DataStore dataStore;
@@ -660,8 +661,8 @@ public class Graph extends GraphObject implements
      * They are retrieved by getResource, getNode, getGraph, getProperty on demand
      */
     void initSystem(){
-        system = new HashMap<String, Node>();
-        systemNode = new ArrayList<Node>();
+        system = new HashMap<>();
+        systemNode = new ArrayList<>();
         for (String uri : PREDEFINED){
             Node n = createSystemNode(uri);
             system.put(uri, n);
@@ -669,6 +670,7 @@ public class Graph extends GraphObject implements
         }
         defaultGraph = system.get(Entailment.DEFAULT);
         ruleGraph    = system.get(Entailment.RULE);
+        constraintGraph    = system.get(Entailment.CONSTRAINT);
     }
     
     NodeImpl createSystemNode(String label){
@@ -3258,6 +3260,14 @@ public class Graph extends GraphObject implements
        
     public Node getRuleGraphNode(){
         return ruleGraph;
+    }
+    
+    public Node addConstraintGraphNode(){
+        return basicAddGraphNode(constraintGraph);
+    }
+       
+    public Node getConstraintGraphNode(){
+        return constraintGraph;
     }
     
     public boolean isRuleGraphNode(Node node){

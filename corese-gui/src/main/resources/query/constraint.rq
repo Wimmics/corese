@@ -1,0 +1,6 @@
+select (count(*) as ?c) 
+from kg:constraint
+where {
+   ?x ?p ?y
+}
+order by ?x if (?p = rdf:type, 0, if (?p = rdfs:label, 1, 2)) ?p ?y

@@ -29,6 +29,7 @@ public class LoadFormat {
     static final String EXT_RDF = ".rdf";
     static final String EXT_RDFS = ".rdfs";
     static final String EXT_OWL = ".owl";
+    static final String OWL_RDFXML = ".owx";
     static final String JSONLD = ".jsonld";
     static final String SWF = ".sw";
     
@@ -42,7 +43,7 @@ public class LoadFormat {
     }
     
     static void init(){
-        ptable = new HashMap<String, Integer>();
+        ptable = new HashMap<>();
         define(BRULE,   Loader.RULE_FORMAT);
         define(IRULE,   Loader.RULE_FORMAT);
         define(RULE,    Loader.RULE_FORMAT);
@@ -59,7 +60,8 @@ public class LoadFormat {
         define(SVG,     Loader.RDFA_FORMAT);
         define(EXT_RDF, Loader.RDFXML_FORMAT);
         define(EXT_RDFS,Loader.RDFXML_FORMAT);
-        define(EXT_OWL, Loader.RDFXML_FORMAT);
+        define(OWL_RDFXML, Loader.RDFXML_FORMAT);
+        define(EXT_OWL, Loader.OWL_FORMAT);
         define(JSONLD,  Loader.JSONLD_FORMAT);
         define(SWF,     Loader.WORKFLOW_FORMAT);
         

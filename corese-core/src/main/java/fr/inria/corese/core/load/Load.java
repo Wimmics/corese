@@ -56,6 +56,7 @@ import java.io.ByteArrayInputStream;
 import java.io.FileFilter;
 import java.net.URLConnection;
 import java.util.ArrayList;
+import java.util.logging.Level;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;
@@ -687,6 +688,10 @@ public class Load
                 case RDFXML_FORMAT:
                     loadRDFXML(stream, path, base, name);
                     break;
+                    
+                case OWL_FORMAT:
+                    loadRDFXMLOrTurtle(stream, path, base, name);
+                    break;    
 
                 case UNDEF_FORMAT:
                 default:
@@ -706,6 +711,20 @@ public class Load
             throw new LoadException(ex).setPath(path);
         }
         setWorkflow(wp.getWorkflowProcess());
+    }
+    
+    /**
+     * .owl is RDF/XML or Turtle
+     */
+    void loadRDFXMLOrTurtle(Reader stream, String path, String base, String name) throws LoadException {
+        try {
+            loadRDFXML(stream, path, base, name);
+        } catch (LoadException e) {
+            if (e.getException() != null
+                && e.getException().getMessage().contains("{E301}")) {
+                parse(path, base, name, TURTLE_FORMAT);
+            }
+        }
     }
 
     void loadRDFXML(Reader stream, String path, String base, String name) throws LoadException {
@@ -737,15 +756,17 @@ public class Load
         arp.setErrorHandler(this);
         try {
             arp.load(stream, base);
-            stream.close();
-        } catch (SAXException e) {
-            throw LoadException.create(e, arp.getLocator(), path);
-        } catch (IOException e) {
+        } catch (SAXException | IOException e) {
             throw LoadException.create(e, arp.getLocator(), path);
         } finally {
             build.finish();
             after(dt, b);
             source = save;
+            try {
+                stream.close();
+            } catch (IOException ex) {
+                throw LoadException.create(ex, arp.getLocator(), path);
+            }
         }
     }
 

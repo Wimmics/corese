@@ -1,7 +1,6 @@
 package fr.inria.corese.gui.core;
 
 import fr.inria.corese.gui.query.MyJPanelQuery;
-import fr.inria.corese.gui.shacl.MyJPanelShacl;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -42,6 +41,7 @@ import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.gui.editor.ShaclEditor;
 import fr.inria.corese.gui.event.MyEvalListener;
 import fr.inria.corese.gui.query.Buffer;
 import fr.inria.corese.gui.query.GraphEngine;
@@ -109,7 +109,6 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem loadStyle;
     private JMenuItem cpTransform, shex;
     private JMenuItem saveQuery;
-    private JMenuItem saveShacl;
     private JMenuItem saveResult;
     private JMenuItem loadAndRunRule;
     private JMenuItem refresh;
@@ -162,7 +161,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JPanel plus;
     private MyJPanelQuery current;
     private MyJPanelListener ongletListener;
-    private MyJPanelShacl ongletShacl;
+    private ShaclEditor ongletShacl;
     // Pour connaître l'onglet selectionné
     protected int selected;
     // Texte dans l'onglet requête
@@ -288,7 +287,7 @@ public class MainFrame extends JFrame implements ActionListener {
         //Création et ajout des deux onglets "Listener" et "+"
         monTabOnglet = new ArrayList<MyJPanelQuery>();
         ongletListener = new MyJPanelListener(this);
-        ongletShacl = new MyJPanelShacl(this);
+        ongletShacl = new ShaclEditor(this);
         plus = new JPanel();
         conteneurOnglets.addTab("System", ongletListener);
         conteneurOnglets.addTab("Shacl", ongletShacl);
@@ -543,9 +542,6 @@ public class MainFrame extends JFrame implements ActionListener {
         shex = new JMenuItem("Translate Shex to Shacl");
         shex.addActionListener(this);
 
-        saveShacl = new JMenuItem("Save Shacl");
-        saveShacl.addActionListener(this);
-
         saveQuery = new JMenuItem("Save Query");
         saveQuery.addActionListener(this);
 
@@ -704,7 +700,6 @@ public class MainFrame extends JFrame implements ActionListener {
 
         fileMenu.add(saveQuery);
         fileMenu.add(saveResult);
-        fileMenu.add(saveShacl);
 
         queryMenu.add(iselect);
         queryMenu.add(iselecttuple);
@@ -1090,9 +1085,6 @@ public class MainFrame extends JFrame implements ActionListener {
         else if (e.getSource() == shex) {
             shex(false);
         } 
-        else if (e.getSource() == saveShacl) {
-            this.ongletShacl.writeShacl();
-        }
         //sauvegarde la requête dans un fichier texte (.txt)
         else if (e.getSource() == saveQuery) {
           saveQuery();

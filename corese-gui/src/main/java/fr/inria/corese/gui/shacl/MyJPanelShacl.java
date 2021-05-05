@@ -9,11 +9,14 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Paths;
 
 import javax.swing.BorderFactory;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
 import javax.swing.JFileChooser;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JSplitPane;
@@ -21,6 +24,9 @@ import javax.swing.JTextArea;
 import javax.swing.JTextPane;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.filechooser.FileNameExtensionFilter;
+
+import org.apache.logging.log4j.core.config.AwaitCompletionReliabilityStrategy;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
@@ -150,8 +156,16 @@ public class MyJPanelShacl extends JPanel {
 
             @Override
             public void actionPerformed(ActionEvent e) {
-                setShaclEditorContent("");
-                setShaclResultContent("");
+                int input = JOptionPane.showConfirmDialog(null, 
+                    "Clear editor contents?",
+                    "Confirmation",
+                    JOptionPane.OK_CANCEL_OPTION
+                );
+
+                if (input == 0) {
+                    setShaclEditorContent("");
+                    setShaclResultContent("");
+                }
             }
         };
 
@@ -159,6 +173,39 @@ public class MyJPanelShacl extends JPanel {
         buttonClear.setMaximumSize(new Dimension(200, 200));
         buttonClear.addActionListener(buttonClearListener);
         buttonsPanel.add(buttonClear);
+
+        // Load button
+        ActionListener buttonLoadListener = new ActionListener() {
+
+            @Override
+            public void actionPerformed(ActionEvent e) {
+                
+                JFileChooser fileChooser = new JFileChooser();
+                fileChooser.setDialogTitle("Select a Turtle file");
+                fileChooser.setAcceptAllFileFilterUsed(false);
+                FileNameExtensionFilter filter = new FileNameExtensionFilter("Turtle", "ttl");
+                fileChooser.addChoosableFileFilter(filter);
+                int returnValue = fileChooser.showOpenDialog(null);
+
+                if (returnValue == JFileChooser.APPROVE_OPTION) {
+                    String pathSelectFile = fileChooser.getSelectedFile().toString();
+                    String content = null;
+                    try {
+                        content = new String(Files.readAllBytes(Paths.get(pathSelectFile)));
+                    } catch (IOException e1) {
+                        e1.printStackTrace();
+                    }
+                    setShaclEditorContent(content);
+                }
+
+            }
+
+        };
+        
+        JButton buttonLoad = new JButton("Load");
+        buttonLoad.setMaximumSize(new Dimension(200, 200));
+        buttonLoad.addActionListener(buttonLoadListener);
+        buttonsPanel.add(buttonLoad);
 
         // save button
         ActionListener buttonSaveListener = new ActionListener() {
@@ -193,8 +240,9 @@ public class MyJPanelShacl extends JPanel {
         this.shaclEditor.getDocument().addDocumentListener(new DocumentListener() {
 
             private void updatelineCounter() {
-                String[] lines = shaclEditor.getText().split("\r\n|\r|\n");
-                int nb_line = lines.length + 1;
+
+                String editor_text = shaclEditor.getText();
+                int nb_line = editor_text.length() - editor_text.replace("\n", "").length() + 2;
 
                 String text = "\n";
                 for (int i = 1; i < nb_line; i++) {

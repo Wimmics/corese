@@ -6,8 +6,6 @@ import java.awt.event.ActionListener;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.transform.Transformer;
-import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.gui.editor.pane.EditorPane;
 import fr.inria.corese.gui.editor.pane.ResultPane;
 
@@ -52,15 +50,6 @@ public class ValidateTurtleButton extends Button {
                 // Evaluation
                 // get editor content : editorTurtleContent
                 // set content in result : resultPane.setContent("CONTENT")
-
-
-
-
-
-
-
-
-
 
                 // Format and export result
                 // Transformer transformer = Transformer.create(result, Transformer.TURTLE);

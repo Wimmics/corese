@@ -34,37 +34,40 @@ public class ValidateShaclButton extends Button {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                // Load shape graph
-                Graph shapeGraph = Graph.create();
-                Load ld = Load.create(shapeGraph);
+                String editorShaclContent = editorPane.getContent();
+                Graph coreseGraph = mainFrame.getMyCorese().getGraph();
 
-                String shaclString = ValidateShaclButton.this.editorPane.getContent();
-                if (shaclString.strip().isEmpty()) {
-                    ValidateShaclButton.this.resultPane.setContent("Error : SHACL document is empty.");
+                // Test if empty
+                if (editorShaclContent.strip().isEmpty()) {
+                    resultPane.setContent("Error : SHACL document is empty.");
                     return;
                 }
-
+                
+                // Try to load SHACL file
+                Graph shapeGraph = Graph.create();
+                Load ld = Load.create(shapeGraph);
                 try {
-                    ld.loadString(ValidateShaclButton.this.editorPane.getContent(), Load.TURTLE_FORMAT);
+                    ld.loadString(editorShaclContent, Load.TURTLE_FORMAT);
                 } catch (LoadException e1) {
-                    ValidateShaclButton.this.resultPane.setContent("Error : malformed SHACL document.");
+                    resultPane.setContent("Error : malformed SHACL document.");
                     e1.printStackTrace();
                     return;
                 }
 
-                // Evaluation
-                Shacl shacl = new Shacl(ValidateShaclButton.this.mainFrame.getMyCorese().getGraph(), shapeGraph);
+                // Eval
+                Shacl shacl = new Shacl(coreseGraph, shapeGraph);
                 Graph result = null;
                 try {
                     result = shacl.eval();
                 } catch (EngineException e2) {
-                    ValidateShaclButton.this.resultPane.setContent("Error : engine exception.");
+                    resultPane.setContent("Error : engine exception.");
                     e2.printStackTrace();
                     return;
                 }
 
+                // Format and export result
                 Transformer transformer = Transformer.create(result, Transformer.TURTLE);
-                ValidateShaclButton.this.resultPane.setContent(transformer.toString());
+                resultPane.setContent(transformer.toString());
             }
         };
         return buttonValidateListener;

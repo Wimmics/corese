@@ -1987,6 +1987,12 @@ public class MainFrame extends JFrame implements ActionListener {
             getSingleton().appendMsg("\n");
         }
     }
+    
+    public static void newline() {
+        if (getSingleton() != null) {
+            getSingleton().appendMsg("\n");
+        }
+    }
 
     /**
      * @return the shexSemantics

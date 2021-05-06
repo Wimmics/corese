@@ -8,10 +8,11 @@ import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
 
+import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.gui.editor.button.ClearButton;
 import fr.inria.corese.gui.editor.button.LoadButton;
 import fr.inria.corese.gui.editor.button.SaveButton;
-import fr.inria.corese.gui.editor.button.ValidateTurtleButton;
+import fr.inria.corese.gui.editor.button.ValidateShaclButton;
 import fr.inria.corese.gui.editor.pane.EditorPane;
 import fr.inria.corese.gui.editor.pane.ResultPane;
 
@@ -19,13 +20,16 @@ public class TurtleEditor extends JPanel {
 
     private static final long serialVersionUID = 1L;
 
+    private MainFrame mainFrame;
+
     private EditorPane editorPane;
     private ResultPane resultPane;
 
-    public TurtleEditor() {
+    public TurtleEditor(final MainFrame coreseFrame) {
         super();
         this.editorPane = new EditorPane("Turtle");
         this.resultPane = new ResultPane();
+        this.mainFrame = coreseFrame;
         this.initComponents();
         this.initButtonsPanel();
         this.initEditorPanel();
@@ -53,7 +57,7 @@ public class TurtleEditor extends JPanel {
         buttonsPanel.setLayout(new FlowLayout());
 
         // validate button
-        ValidateTurtleButton validateButton = new ValidateTurtleButton(this.editorPane, this.resultPane);
+        ValidateShaclButton validateButton = new ValidateShaclButton(this.editorPane, this.resultPane, this.mainFrame);
         buttonsPanel.add(validateButton);
 
         // Clear button
@@ -61,11 +65,12 @@ public class TurtleEditor extends JPanel {
         buttonsPanel.add(clearButton);
 
         // Load button
-        LoadButton loadButton = new LoadButton(this.editorPane, null, "Select a Turtle file", true, "Trutle", ".ttl");
+        LoadButton loadButton = new LoadButton(this.editorPane, this.mainFrame, "Select a Turtle file", true, "Trutle",
+                ".ttl");
         buttonsPanel.add(loadButton);
 
         // Save button
-        SaveButton saveButton = new SaveButton(this.editorPane);
+        SaveButton saveButton = new SaveButton(this.editorPane, this.mainFrame);
         buttonsPanel.add(saveButton);
 
         add(buttonsPanel);

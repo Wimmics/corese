@@ -290,7 +290,7 @@ public class MainFrame extends JFrame implements ActionListener {
         monTabOnglet = new ArrayList<MyJPanelQuery>();
         ongletListener = new MyJPanelListener(this);
         ongletShacl = new ShaclEditor(this);
-        ongletTurtle = new TurtleEditor();
+        ongletTurtle = new TurtleEditor(this);
         plus = new JPanel();
         conteneurOnglets.addTab("System", ongletListener);
         conteneurOnglets.addTab("Shacl editor", ongletShacl);
@@ -1930,6 +1930,14 @@ public class MainFrame extends JFrame implements ActionListener {
 
     public void setEvalListener(MyEvalListener el) {
         this.el = el;
+    }
+
+    public String getLCurrentPath() {
+        return this.lCurrentPath;
+    }
+
+    public void setLCurrentPath(String lCurrentPath) {
+        this.lCurrentPath = lCurrentPath;
     }
 
     /**

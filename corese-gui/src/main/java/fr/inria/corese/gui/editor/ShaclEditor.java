@@ -65,11 +65,12 @@ public class ShaclEditor extends JPanel {
         buttonsPanel.add(clearButton);
 
         // Load button
-        LoadButton loadButton = new LoadButton(this.editorPane, null, "Select a SHACL file", true, "Trutle", ".ttl");
+        LoadButton loadButton = new LoadButton(this.editorPane, this.mainFrame, "Select a SHACL file", true, "Trutle",
+                "ttl");
         buttonsPanel.add(loadButton);
 
         // Save button
-        SaveButton saveButton = new SaveButton(this.editorPane);
+        SaveButton saveButton = new SaveButton(this.editorPane, this.mainFrame);
         buttonsPanel.add(saveButton);
 
         add(buttonsPanel);

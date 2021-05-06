@@ -2,6 +2,7 @@ package fr.inria.corese.gui.editor.button;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.FileWriter;
 import java.io.IOException;
 
@@ -13,10 +14,12 @@ import fr.inria.corese.gui.editor.pane.EditorPane;
 public class SaveButton extends Button {
 
     private EditorPane editor;
+    private MainFrame mainFrame;
 
-    public SaveButton(EditorPane editor) {
+    public SaveButton(EditorPane editor, final MainFrame coreseFrame) {
         super("Save");
         this.editor = editor;
+        this.mainFrame = coreseFrame;
     }
 
     @Override
@@ -26,15 +29,20 @@ public class SaveButton extends Button {
 
             @Override
             public void actionPerformed(ActionEvent e) {
+
                 String shaclEditorContent = SaveButton.this.editor.getContent();
 
-                JFileChooser filechoose = new JFileChooser();
-                int resultatEnregistrer = filechoose.showDialog(filechoose, "Save");
+                JFileChooser fileChooser = new JFileChooser(SaveButton.this.mainFrame.getLCurrentPath());
+                int resultatEnregistrer = fileChooser.showDialog(fileChooser, "Save");
 
                 // If user clicks on save button
                 if (resultatEnregistrer == JFileChooser.APPROVE_OPTION) {
-                    String pathSelectFile = filechoose.getSelectedFile().toString();
+                    File selectedFile = fileChooser.getSelectedFile();
 
+                    // save current path
+                    SaveButton.this.mainFrame.setLCurrentPath(selectedFile.getParent());
+
+                    String pathSelectFile = selectedFile.toString();
                     // Write file
                     try {
                         FileWriter myWriter = new FileWriter(pathSelectFile);

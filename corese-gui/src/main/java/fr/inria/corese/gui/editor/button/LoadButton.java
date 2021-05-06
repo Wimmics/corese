@@ -2,6 +2,7 @@ package fr.inria.corese.gui.editor.button;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
@@ -9,33 +10,29 @@ import java.nio.file.Paths;
 import javax.swing.JFileChooser;
 import javax.swing.filechooser.FileNameExtensionFilter;
 
+import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.gui.editor.pane.EditorPane;
 
 public class LoadButton extends Button {
 
     private EditorPane editor;
+    private MainFrame mainFrame;
     private String dialogTitle = "Select a file";
-    private String path = null;
 
     private Boolean hasFilter = false;
     private Boolean acceptAllFileFilter;
     private String filterName;
     private String filterExtension;
 
-    public LoadButton(EditorPane editor) {
+    public LoadButton(EditorPane editor, final MainFrame coreseFrame) {
         super("Load");
         this.editor = editor;
+        this.mainFrame = coreseFrame;
     }
 
-    public LoadButton(EditorPane editor, String path) {
-        this(editor);
-        this.path = path;
-    }
-
-    public LoadButton(EditorPane editor, String path, String dialogTitle, Boolean acceptAllFileFilter,
+    public LoadButton(EditorPane editor, final MainFrame coreseFrame, String dialogTitle, Boolean acceptAllFileFilter,
             String filterName, String filterExtension) {
-        this(editor, path);
-        this.path = path;
+        this(editor, coreseFrame);
         this.hasFilter = true;
         this.acceptAllFileFilter = acceptAllFileFilter;
         this.filterName = filterName;
@@ -46,9 +43,11 @@ public class LoadButton extends Button {
     protected ActionListener action() {
 
         ActionListener buttonLoadListener = new ActionListener() {
+
             @Override
             public void actionPerformed(ActionEvent e) {
-                JFileChooser fileChooser = new JFileChooser(LoadButton.this.path);
+
+                JFileChooser fileChooser = new JFileChooser(LoadButton.this.mainFrame.getLCurrentPath());
                 fileChooser.setDialogTitle(LoadButton.this.dialogTitle);
 
                 if (LoadButton.this.hasFilter) {
@@ -61,7 +60,12 @@ public class LoadButton extends Button {
                 int returnValue = fileChooser.showOpenDialog(null);
 
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    String pathSelectFile = fileChooser.getSelectedFile().toString();
+                    File selectedFile = fileChooser.getSelectedFile();
+
+                    // save current path
+                    LoadButton.this.mainFrame.setLCurrentPath(selectedFile.getParent());
+
+                    String pathSelectFile = selectedFile.toString();
                     String content = null;
                     try {
                         content = new String(Files.readAllBytes(Paths.get(pathSelectFile)));

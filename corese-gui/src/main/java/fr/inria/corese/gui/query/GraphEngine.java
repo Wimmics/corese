@@ -38,15 +38,12 @@ import org.apache.logging.log4j.LogManager;
  */
 public class GraphEngine {
 
-   
-    
     private static Logger logger = LogManager.getLogger(GraphEngine.class);
     static final String BRUL = "brul";
 
     private Graph graph;
     private RuleEngine rengine, owlEngine;
     private QueryEngine qengine;
-//	private Engine bengine;
     QueryProcess exec;
     private QuerySolverVisitor visitor;
     LoadPlugin plugin;
@@ -58,9 +55,7 @@ public class GraphEngine {
     GraphEngine(boolean b) {
         DatatypeMap.setLiteralAsString(false);
         graph = GraphStore.create(b);
-        //rengine = RuleEngine.create(graph);
         qengine = QueryEngine.create(graph);
-//		bengine = Engine.create(QueryProcess.create(graph, true));
         exec = QueryProcess.create(graph, true);
         try {
             setVisitor(new QuerySolverVisitor(exec.getEval()));
@@ -116,15 +111,15 @@ public class GraphEngine {
                     break;
                 case Command.PARAM:
                     param(cmd.get(key));
-                    break;               
+                    break;
                 case Command.LOAD:
                     System.out.println("load: " + cmd.get(key));
                     loadDirProtect(cmd.get(key));
                     break;
             }
         }
-    }   
-    
+    }
+
     void param(String path) {
         try {
             new Parameter().load(path).process();
@@ -198,15 +193,15 @@ public class GraphEngine {
 
     }
 
-    public void loadDirProtect(String path)  {
+    public void loadDirProtect(String path) {
         try {
             Load ld = loader();
             ld.parseDir(path);
         } catch (LoadException ex) {
             logger.error(ex);
-        } 
+        }
     }
-    
+
     public void loadDir(String path) throws EngineException, LoadException {
         load(path);
     }
@@ -262,7 +257,6 @@ public class GraphEngine {
 
         return false;
     }
-
 
     public void load(InputStream rdf, String source) throws EngineException {
 
@@ -393,12 +387,10 @@ public class GraphEngine {
         return null;
     }
 
-
     public String getQuery(String uri) {
 
         return null;
     }
-
 
     public void start() {
 
@@ -417,8 +409,8 @@ public class GraphEngine {
     public void setVisitor(QuerySolverVisitor visitor) {
         this.visitor = visitor;
     }
-    
-     /**
+
+    /**
      * @return the linkedFunction
      */
     public boolean isLinkedFunction() {
@@ -432,7 +424,7 @@ public class GraphEngine {
         this.linkedFunction = linkedFunction;
         Access.setLinkedFeature(linkedFunction);
     }
-    
+
     public void setReadFile(boolean b) {
         Access.setReadFile(b);
     }

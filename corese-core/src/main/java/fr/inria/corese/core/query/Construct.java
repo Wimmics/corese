@@ -258,8 +258,12 @@ public class Construct
         if (isRule && ! construct.isEmpty() && 
                 getVisitor() != null && getVisitor().entailment()) {
             List<Edge> whereList = new ArrayList<>();
-            for (Edge e : where) {
-                whereList.add(graph.getGraph().getEdgeFactory().copy(e));
+            if (where != null) {
+                for (Edge e : where) {
+                    if (e != null) {
+                        whereList.add(graph.getGraph().getEdgeFactory().copy(e));
+                    }
+                }
             }
             getVisitor().entailment(query, construct, whereList);
         }

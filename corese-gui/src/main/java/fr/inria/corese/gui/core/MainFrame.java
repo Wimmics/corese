@@ -143,7 +143,7 @@ public class MainFrame extends JFrame implements ActionListener {
             iserviceCorese, iserviceDBpedia, ifederate,
             iinsert, iinsertdata, idelete, ideleteinsert,
             iturtle, in3, irdfxml, ijson, itrig, ispin, iowl, 
-            ientailment, irule, ierror, ifunction, ical;
+            ientailment, irule, ierror, ifunction, ical, iowlrl;
     private JMenuItem itypecheck, ipredicate, ipredicatepath;
     HashMap<Object, DefQuery> itable;
     private JCheckBox checkBoxQuery;
@@ -582,6 +582,7 @@ public class MainFrame extends JFrame implements ActionListener {
         itrig = defItem("Trig", DEFAULT_TRIG_QUERY);
         ispin = defItem("SPIN", DEFAULT_SPIN_QUERY);
         iowl = defItem("OWL", DEFAULT_OWL_QUERY);
+        iowlrl = defItem("OWL RL Check", "owlrl.rq");
         
         itypecheck = defItem("Engine",   "shacl/typecheck.rq");
         ipredicate = defItem("Predicate", "shacl/predicate.rq");
@@ -731,8 +732,9 @@ public class MainFrame extends JFrame implements ActionListener {
         templateMenu.add(irdfxml);
         templateMenu.add(ijson);
         templateMenu.add(itrig);
-        templateMenu.add(iowl);
         templateMenu.add(ispin);
+        templateMenu.add(iowl);
+        templateMenu.add(iowlrl);
         
         shaclMenu.add(itypecheck);
         shaclMenu.add(defItem("Fast Engine", "shacl/fastengine.rq"));
@@ -776,7 +778,7 @@ public class MainFrame extends JFrame implements ActionListener {
         // engineMenu.add(kgramBox);
         engineMenu.add(cbrdfs);
         engineMenu.add(cbowlrl);
-        engineMenu.add(cbowlrllite);
+        //engineMenu.add(cbowlrllite);
         engineMenu.add(cbowlrlext);
         engineMenu.add(cbtrace);
         engineMenu.add(cbnamed);
@@ -1419,8 +1421,9 @@ public class MainFrame extends JFrame implements ActionListener {
     void loadDataset() {
         Filter FilterRDF  = new Filter("RDF", "rdf", "ttl", "trig", "jsonld", "html");
         Filter FilterRDFS = new Filter("RDFS/OWL", "rdfs", "owl", "ttl");
+        Filter FilterOWL = new Filter("OWL", "owl");
         Filter FilterDS   = new Filter("Dataset", "rdf", "rdfs", "owl", "ttl", "html");        
-        load(FilterRDF, FilterRDFS, FilterDS);
+        load(FilterRDF, FilterRDFS, FilterOWL, FilterDS);
     }
 
     void execWorkflow() {

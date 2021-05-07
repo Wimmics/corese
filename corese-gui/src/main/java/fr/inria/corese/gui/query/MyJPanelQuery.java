@@ -491,6 +491,10 @@ public final class MyJPanelQuery extends JPanel {
                 ResultFormat rf = ResultFormat.create(map);
                 rf.setNbResult(maxResXML());
                 String str = rf.toString();
+                if (str == null) {
+                    // use case: template fail
+                    str = "";
+                }
                 if (map.size() > maxResXML()) {
                     System.out.println(String.format("Display %s xml results out of %s", maxResXML(), map.size()));
                 }

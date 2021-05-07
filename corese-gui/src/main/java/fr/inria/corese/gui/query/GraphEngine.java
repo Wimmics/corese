@@ -196,7 +196,14 @@ public class GraphEngine {
     public void loadDirProtect(String path) {
         try {
             Load ld = loader();
-            ld.parseDir(path);
+            if (path.contains(";")) {
+                for (String name : path.split(";")) {
+                    ld.parseDir(name);
+                }
+            }
+            else {
+                ld.parseDir(path);
+            }
         } catch (LoadException ex) {
             logger.error(ex);
         }

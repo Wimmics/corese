@@ -380,7 +380,7 @@ public class SPIN implements ASTVisitor {
     
     
     void visitSelectVar(ASTQuery ast){
-        if (ast.getSelectVar().size() != 0) {
+        if (!ast.getSelectVar().isEmpty()) {
             sb.append(tab() + SPRESULT_VARIABLES + SPACE + OPAREN + NL);
             counter++;
             

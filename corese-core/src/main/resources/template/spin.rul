@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 21 13:43:42 CEST 2019
+Fri May 07 15:14:23 CEST 2021
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -143,7 +143,7 @@ where {
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template sp:list {
-  if(?b, "\n  ", "")
+  if (?b, "\n  ", "")
   ?exp  ; separator = " "
 }
 where {
@@ -684,7 +684,7 @@ template{
 }
 where {
   ?in sp:varName ?var 
-  filter(not exists { ?in sp:expression ?e })
+  filter not exists { ?in sp:expression ?e }
 }
 
 
@@ -1530,18 +1530,19 @@ where {
   # ?ope matches any type, hence restrict this template to
   # SPIN blank nodes
   # otherwise c:John a foaf:Person would match this template
-  filter(isBlank(?in))
+  filter isBlank(?in)
   
   { ?in sp:arg1 ?f } union 
   { ?in sp:expression ?f } union 
   # function with no arg:
-  { filter not exists { 
-      ?in ?p ?v  filter(?p not in (sp:distinct, rdf:type )) }}
+  { values ?in {undef} 
+    filter not exists { 
+      ?in ?p ?v  filter (?p not in (sp:distinct, rdf:type )) }}
   
   optional { ?in sp:distinct ?d }
   optional { ?in sp:separator ?s }
   
-      filter(
+      filter (
       ?ope not in (
         sp:undef,
 	sp:lt, sp:gt, sp:le, sp:ge, sp:eq, sp:ne, 

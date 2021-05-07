@@ -1,0 +1,9 @@
+#
+# Check whether the dataset contains an OWL RL ontology
+# defined in: https://www.w3.org/TR/owl2-profiles/#OWL_2_RL
+#
+template {
+    st:call-template-with(st:owlrl, st:main)
+}
+where {
+}

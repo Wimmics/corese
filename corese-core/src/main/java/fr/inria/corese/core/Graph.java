@@ -53,7 +53,6 @@ import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.Collection;
-import java.util.logging.Level;
 
 /**
  * Graph Manager Edges are stored in an index An index is a table: predicate ->
@@ -2928,7 +2927,7 @@ public class Graph extends GraphObject implements
 
     // clear all except graph names.
     // they must be cleared explicitely
-    void clear() {
+    public void clear() {
         clearIndex();
         clearNodes();
         for (Index t : tables) {
@@ -3506,6 +3505,14 @@ public class Graph extends GraphObject implements
             ds.addNamed(node.getLabel());
         }
         return ds;
+    }
+    
+    public Graph getRuleGraph(boolean constraint) {
+        return this;
+    }
+    
+    public Node getRuleGraphName(boolean constraint) {
+        return constraint ? addConstraintGraphNode() : addRuleGraphNode();
     }
     
         /**

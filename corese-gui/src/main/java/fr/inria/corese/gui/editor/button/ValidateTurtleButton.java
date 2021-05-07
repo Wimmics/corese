@@ -41,9 +41,10 @@ public class ValidateTurtleButton extends Button {
                 Load ld = Load.create(turtleGraph);
                 try {
                     ld.loadString(editorTurtleContent, Load.TURTLE_FORMAT);
+                    resultPane.setContent("Turtle validated");
                 } catch (LoadException e1) {
-                    resultPane.setContent("Error : malformed Turle document.");
-                    e1.printStackTrace();
+                    //resultPane.setContent("Error: malformed Turle document.");
+                    resultPane.setContent(e1.getMessage());
                     return;
                 }
 

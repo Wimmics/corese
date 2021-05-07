@@ -1,4 +1,4 @@
-select (count(*) as ?c) 
+select *
 from kg:constraint
 where {
    ?x ?p ?y

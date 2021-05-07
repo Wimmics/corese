@@ -1,11 +1,10 @@
 template st:main(?in) {
-    ?res  
+    str(?res)  
 }
 where {
-
-  #bind (unnest(st:errors(?in)) as ?e)
   values ?e { unnest(st:errors(?in)) }
   filter strstarts(?e, st:)
+  
   bind (strafter(?e, st:) as ?str)
   bind (strbefore(?str, "/") as ?type)
   bind (strafter(?str, "/")  as ?desc)
@@ -20,6 +19,4 @@ values (?type ?uri) {
  bind ( st:call-template(?uri, ?desc)  as ?res)
  
  filter (strlen(?res) > 0)
-
-
 } 

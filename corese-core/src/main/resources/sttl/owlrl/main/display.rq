@@ -1,0 +1,6 @@
+template st:display (?amap) {
+    ?key " : " ?val 
+}
+where {
+    values (?key ?val) { unnest(?amap) }
+}

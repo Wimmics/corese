@@ -22,7 +22,7 @@ import java.util.logging.Logger;
  * st:visit(st:start, st:trace)
  * st:visit(st:silent, false)
  * st:visit(st:exp, ?x)
- * bind(st:visited() as ?node)
+ * bind (st:visited() as ?node)
  * 
  * Olivier Corby, Wimmics INRIA I3S - 2015
  *
@@ -63,7 +63,7 @@ public class DefaultVisitor implements TemplateVisitor {
         distinct = new HashMap();
         value    = new HashMap();
         list     = new ArrayList();
-        errors   = new HashMap<IDatatype, List<IDatatype>>();
+        errors   = new HashMap<>();
         initVisitedGraph();
     }
     
@@ -71,12 +71,7 @@ public class DefaultVisitor implements TemplateVisitor {
         visitedGraph = Graph.create();
         visitedNode = DatatypeMap.createObject(visitedGraph);
     }
-    
-    /*
-    public void visit(IDatatype name, IDatatype obj, IDatatype arg) {
-       visit(name.getLabel(), obj, arg);
-    }
-    //*/
+      
     
     @Override
     public void visit(IDatatype name, IDatatype obj, IDatatype arg) {
@@ -332,7 +327,7 @@ public class DefaultVisitor implements TemplateVisitor {
     	if (errors.containsKey(dt)){
             return errors.get(dt);
     	}
-    	else return new ArrayList<IDatatype>(0);
+    	else return new ArrayList<>(0);
     }
     
     @Override

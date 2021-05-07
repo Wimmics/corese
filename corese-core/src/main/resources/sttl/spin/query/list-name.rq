@@ -5,7 +5,7 @@
 prefix sp:      <http://spinrdf.org/sp#> .
 
 template sp:list {
-  if(?b, "\n  ", "")
+  if (?b, "\n  ", "")
   ?exp  ; separator = " "
 }
 where {

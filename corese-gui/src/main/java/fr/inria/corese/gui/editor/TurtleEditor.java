@@ -1,9 +1,11 @@
 package fr.inria.corese.gui.editor;
 
 import java.awt.BorderLayout;
+import java.awt.Dimension;
 import java.awt.FlowLayout;
 
 import javax.swing.BorderFactory;
+import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JPanel;
 import javax.swing.JSplitPane;
@@ -57,26 +59,30 @@ public class TurtleEditor extends JPanel {
         JPanel buttonsPanel = new JPanel();
         buttonsPanel.setLayout(new FlowLayout());
 
-        // validate button
-        ValidateTurtleButton validateButton = new ValidateTurtleButton(this.editorPane, this.resultPane);
-        buttonsPanel.add(validateButton);
-
-        // Clear button
-        ClearButton clearButton = new ClearButton(this.editorPane, this.resultPane);
-        buttonsPanel.add(clearButton);
-
         // Open button
         OpenButton openButton = new OpenButton(this.editorPane, this.mainFrame, "Select a Turtle file", true, "Trutle",
                 ".ttl");
         buttonsPanel.add(openButton);
 
+        // Save button
+        SaveButton saveButton = new SaveButton(this.editorPane, this.mainFrame);
+        buttonsPanel.add(saveButton);
+
+        buttonsPanel.add(Box.createRigidArea(new Dimension(15, 0)));
+
+        // validate button
+        ValidateTurtleButton validateButton = new ValidateTurtleButton(this.editorPane, this.resultPane);
+        buttonsPanel.add(validateButton);
+
         // Load button
         LoadButton loadButton = new LoadButton(this.editorPane, this.resultPane, this.mainFrame);
         buttonsPanel.add(loadButton);
 
-        // Save button
-        SaveButton saveButton = new SaveButton(this.editorPane, this.mainFrame);
-        buttonsPanel.add(saveButton);
+        buttonsPanel.add(Box.createRigidArea(new Dimension(15, 0)));
+
+        // Clear button
+        ClearButton clearButton = new ClearButton(this.editorPane, this.resultPane);
+        buttonsPanel.add(clearButton);
 
         add(buttonsPanel);
     }

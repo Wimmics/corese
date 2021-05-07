@@ -20,7 +20,7 @@ public class EditorPane {
 
     public EditorPane(String title) {
         this.editor = new JTextPane();
-        this.lineCounter = new JTextArea(10, 2);
+        this.lineCounter = new JTextArea(10, 1);
         this.font = new Font("Sanserif", Font.BOLD, 16);
         this.title = title;
         this.initLineCounter();
@@ -54,6 +54,8 @@ public class EditorPane {
                     }
                 }
                 lineCounter.setText(text);
+
+                lineCounter.setColumns(Integer.toString(nb_line).length());
             }
 
             @Override

@@ -10,7 +10,7 @@ import javax.swing.JSplitPane;
 
 import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.gui.editor.button.ClearButton;
-import fr.inria.corese.gui.editor.button.LoadButton;
+import fr.inria.corese.gui.editor.button.OpenButton;
 import fr.inria.corese.gui.editor.button.SaveButton;
 import fr.inria.corese.gui.editor.button.ValidateShaclButton;
 import fr.inria.corese.gui.editor.pane.EditorPane;
@@ -64,10 +64,10 @@ public class ShaclEditor extends JPanel {
         ClearButton clearButton = new ClearButton(this.editorPane, this.resultPane);
         buttonsPanel.add(clearButton);
 
-        // Load button
-        LoadButton loadButton = new LoadButton(this.editorPane, this.mainFrame, "Select a SHACL file", true, "Trutle",
+        // Open button
+        OpenButton openButton = new OpenButton(this.editorPane, this.mainFrame, "Select a SHACL file", true, "Trutle",
                 "ttl");
-        buttonsPanel.add(loadButton);
+        buttonsPanel.add(openButton);
 
         // Save button
         SaveButton saveButton = new SaveButton(this.editorPane, this.mainFrame);

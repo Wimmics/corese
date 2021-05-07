@@ -1,34 +1,36 @@
 package fr.inria.corese.gui.query;
 
-import fr.inria.corese.compiler.eval.QuerySolverVisitor;
-import fr.inria.corese.compiler.eval.QuerySolverVisitorBasic;
+import java.io.ByteArrayInputStream;
 import java.io.InputStream;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
+import java.nio.charset.StandardCharsets;
+import java.util.Date;
+import java.util.logging.Level;
 
-import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.gui.core.Command;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.core.pipe.Pipe;
-import fr.inria.corese.kgram.core.Mappings;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
-import fr.inria.corese.core.query.QueryEngine;
-import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.Build;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadPlugin;
+import fr.inria.corese.core.pipe.Pipe;
+import fr.inria.corese.core.query.QueryEngine;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.util.Parameter;
+import fr.inria.corese.gui.core.Command;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Constant;
-import java.util.Date;
-import java.util.logging.Level;
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
 
 /**
  * Lite implementation of IEngine using kgraph and kgram
@@ -282,8 +284,12 @@ public class GraphEngine {
 
     }
 
-    public void loadRDF(String rdf, String source) throws EngineException {
+    public void loadRDF(String rdf, int format) throws EngineException, LoadException {
+        
+        InputStream stream = new ByteArrayInputStream(rdf.getBytes(StandardCharsets.UTF_8));
 
+        Load ld = this.loader();
+        ld.parse(stream, "", format);
     }
 
     public void loadRDFRule(String rdf, String source) throws EngineException {

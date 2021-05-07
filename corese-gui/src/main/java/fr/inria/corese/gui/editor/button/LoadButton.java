@@ -2,41 +2,27 @@ package fr.inria.corese.gui.editor.button;
 
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
-import java.io.File;
-import java.io.IOException;
-import java.nio.file.Files;
-import java.nio.file.Paths;
 
-import javax.swing.JFileChooser;
-import javax.swing.filechooser.FileNameExtensionFilter;
+import javax.swing.JOptionPane;
 
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.gui.editor.pane.EditorPane;
+import fr.inria.corese.gui.editor.pane.ResultPane;
+import fr.inria.corese.sparql.exceptions.EngineException;
 
 public class LoadButton extends Button {
 
     private EditorPane editor;
+    private ResultPane result;
     private MainFrame mainFrame;
-    private String dialogTitle = "Select a file";
 
-    private Boolean hasFilter = false;
-    private Boolean acceptAllFileFilter;
-    private String filterName;
-    private String filterExtension;
-
-    public LoadButton(EditorPane editor, final MainFrame coreseFrame) {
+    public LoadButton(EditorPane editor, ResultPane result, final MainFrame coreseFrame) {
         super("Load");
         this.editor = editor;
+        this.result = result;
         this.mainFrame = coreseFrame;
-    }
-
-    public LoadButton(EditorPane editor, final MainFrame coreseFrame, String dialogTitle, Boolean acceptAllFileFilter,
-            String filterName, String filterExtension) {
-        this(editor, coreseFrame);
-        this.hasFilter = true;
-        this.acceptAllFileFilter = acceptAllFileFilter;
-        this.filterName = filterName;
-        this.filterExtension = filterExtension;
     }
 
     @Override
@@ -47,33 +33,24 @@ public class LoadButton extends Button {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                JFileChooser fileChooser = new JFileChooser(LoadButton.this.mainFrame.getLCurrentPath());
-                fileChooser.setDialogTitle(LoadButton.this.dialogTitle);
+                String editorContent = editor.getContent();
 
-                if (LoadButton.this.hasFilter) {
-                    fileChooser.setAcceptAllFileFilterUsed(LoadButton.this.acceptAllFileFilter);
-                    FileNameExtensionFilter filter = new FileNameExtensionFilter(LoadButton.this.filterName,
-                            LoadButton.this.filterExtension);
-                    fileChooser.addChoosableFileFilter(filter);
-
+                // Test if empty
+                if (editorContent.strip().isEmpty()) {
+                    result.setContent("Error : SHACL document is empty.");
+                    return;
                 }
-                int returnValue = fileChooser.showOpenDialog(null);
 
-                if (returnValue == JFileChooser.APPROVE_OPTION) {
-                    File selectedFile = fileChooser.getSelectedFile();
-
-                    // save current path
-                    LoadButton.this.mainFrame.setLCurrentPath(selectedFile.getParent());
-
-                    String pathSelectFile = selectedFile.toString();
-                    String content = null;
-                    try {
-                        content = new String(Files.readAllBytes(Paths.get(pathSelectFile)));
-                    } catch (IOException e1) {
-                        e1.printStackTrace();
-                    }
-                    LoadButton.this.editor.setContent(content);
+                // Load editor content in Corese
+                try {
+                    LoadButton.this.mainFrame.getMyCorese().loadRDF(editorContent, Load.TURTLE_FORMAT);
+                } catch (EngineException | LoadException e1) {
+                    e1.printStackTrace();
+                    return;
                 }
+
+                // Confirmation
+                JOptionPane.showMessageDialog(null, "Document is loaded in Corese");
 
             }
 

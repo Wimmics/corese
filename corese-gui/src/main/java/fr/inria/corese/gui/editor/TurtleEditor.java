@@ -11,8 +11,9 @@ import javax.swing.JSplitPane;
 import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.gui.editor.button.ClearButton;
 import fr.inria.corese.gui.editor.button.LoadButton;
+import fr.inria.corese.gui.editor.button.OpenButton;
 import fr.inria.corese.gui.editor.button.SaveButton;
-import fr.inria.corese.gui.editor.button.ValidateShaclButton;
+import fr.inria.corese.gui.editor.button.ValidateTurtleButton;
 import fr.inria.corese.gui.editor.pane.EditorPane;
 import fr.inria.corese.gui.editor.pane.ResultPane;
 
@@ -57,16 +58,20 @@ public class TurtleEditor extends JPanel {
         buttonsPanel.setLayout(new FlowLayout());
 
         // validate button
-        ValidateShaclButton validateButton = new ValidateShaclButton(this.editorPane, this.resultPane, this.mainFrame);
+        ValidateTurtleButton validateButton = new ValidateTurtleButton(this.editorPane, this.resultPane);
         buttonsPanel.add(validateButton);
 
         // Clear button
         ClearButton clearButton = new ClearButton(this.editorPane, this.resultPane);
         buttonsPanel.add(clearButton);
 
-        // Load button
-        LoadButton loadButton = new LoadButton(this.editorPane, this.mainFrame, "Select a Turtle file", true, "Trutle",
+        // Open button
+        OpenButton openButton = new OpenButton(this.editorPane, this.mainFrame, "Select a Turtle file", true, "Trutle",
                 ".ttl");
+        buttonsPanel.add(openButton);
+
+        // Load button
+        LoadButton loadButton = new LoadButton(this.editorPane, this.resultPane, this.mainFrame);
         buttonsPanel.add(loadButton);
 
         // Save button

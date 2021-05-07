@@ -1,9 +1,10 @@
-template st:profile {
-
-}
+template st:profile {}
 where {}
 
-  function st:aggregate(?x) { st:agg_and(?x) }
-  
-  
+
+
+function st:aggregate(?x) { st:agg_and(?x) }
+
+
+
 

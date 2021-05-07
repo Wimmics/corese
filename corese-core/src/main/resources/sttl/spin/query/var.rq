@@ -9,7 +9,7 @@ template{
 }
 where {
   ?in sp:varName ?var 
-  filter(not exists { ?in sp:expression ?e })
+  filter not exists { ?in sp:expression ?e }
 }
 
 

@@ -1,13 +1,14 @@
 template st:allRL(?tag) {
-
-	"<span class=owlrl>OWL RL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
-
+if (st:get(st:execmode, st:standalone), 
+    st:format("%s", ?mess), 
+    st:format(
+        "<span class=owlrl>OWL RL: <a href='%s'>%s</a>.</span>", 
+        str(?href), str(?mess)))
 }
 where {
-	
 	bind(st:linkPro(?id) as ?href)
-	
-} values (?tag ?mess ?id) {
+} 
+values (?tag ?mess ?id) {
 	### axiom ###
 	("datatypeLit" "Restriction on datatypes" "Entities_3")
 	("datatypeRes" "Restriction on datatypes" "Entities_3")
@@ -30,4 +31,7 @@ where {
 	### super Class Expression ###
 	("failSuper" "Statement not supported in a Super Class Expression" "Class_Expressions_3")
 	("super" "Not a valid Super Class Expression" "Class_Expressions_3")
+	
+	###  Individual ###
+	("individual"  "Not a valid individual type expression" "Axioms_3" )
 }

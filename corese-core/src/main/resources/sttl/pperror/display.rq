@@ -1,0 +1,13 @@
+template st:display (?amap) {
+
+    if (xt:size(?amap) = 0, 
+        "OWL RL Ontology",
+        concat("Ontology not in OWL RL: ", xt:size(?amap), " failures"))
+        
+    st:nl() st:nl() 
+    
+    st:call-template(st:displaymap, ?amap)
+}
+where {
+    bind (st:set(st:execmode, st:standalone) as ?tmp)
+}

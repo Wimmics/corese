@@ -1,0 +1,10 @@
+template st:displaymap (?amap) {
+    st:number() ". " 
+    st:call-template(st:main, ?key)
+    st:nl() st:nl()
+    st:apply-templates-with(st:turtle, ?key) 
+    st:nl()
+}
+where {
+    values (?key ?val) { unnest(?amap) }
+}

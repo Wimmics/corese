@@ -6,10 +6,8 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.QueryLoad;
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Mapping;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import java.io.IOException;
 import java.util.Date;
@@ -28,6 +26,7 @@ public class Cleaner {
     
     Graph graph;
     private ProcessVisitor visitor;
+    private boolean debug = false;
     
     public Cleaner(Graph g){
         graph = g;
@@ -63,6 +62,9 @@ public class Cleaner {
              String qq = ql.getResource(data + q); 
              //DatatypeValue dt = getVisitor().prepareEntailment(DatatypeMap.newInstance(qq));
              Mappings map = exec.query(qq, createMapping(getVisitor()));
+             if (isDebug()) {
+                 RuleEngine.logger.info(q + " nb res: "+ map.size());
+             }             
          }
          Date d2 = new Date();
          System.out.println("Clean: " + ((d2.getTime() - d1.getTime()) / 1000.0));
@@ -105,6 +107,14 @@ public class Cleaner {
      */
     public void setVisitor(ProcessVisitor visitor) {
         this.visitor = visitor;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
 }

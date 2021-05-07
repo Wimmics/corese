@@ -80,7 +80,7 @@ public class RuleEngine implements Engine, Graphable {
     public static final int OWL_RL_EXT = 3;
    
     private static final String UNKNOWN = "unknown";
-    private static Logger logger = LoggerFactory.getLogger(RuleEngine.class);
+    public static Logger logger = LoggerFactory.getLogger(RuleEngine.class);
     Graph graph;
     QueryProcess exec;
     private QueryEngine qengine;
@@ -100,8 +100,8 @@ public class RuleEngine implements Engine, Graphable {
     // LIMITATION: do not use if Corese RDFS entailment is set to true
     // because we test predicate equality (we do not check rdfs:subPropertyOf)
     private boolean isOptimize = false;
-    boolean debug = false,
-            trace = false;
+    private boolean debug = false;
+    boolean trace = false;
     private boolean test = false;
     int loop = 0;
     Profile profile = STDRL;
@@ -232,6 +232,7 @@ public class RuleEngine implements Engine, Graphable {
      */
     public void cleanOWL() throws IOException, EngineException{
         Cleaner cl = new Cleaner(graph);
+        cl.setDebug(isDebug());
         if (isEvent()) {
             cl.setVisitor(getVisitor());
         }
@@ -405,6 +406,14 @@ public class RuleEngine implements Engine, Graphable {
         }
         getQueryProcess().setSynchronized(isSynchronized());
         graph.getEventManager().start(Event.InferenceEngine, getClass().getName());
+    }
+    
+    void beforeConstraint() {
+        Graph g = getGraphStore().getRuleGraph(true);
+        if (g != getGraphStore()) {
+            // specific graph for constraint entailment
+            g.clear();
+        }
     }
     
     void after() throws EngineException {
@@ -685,7 +694,7 @@ public class RuleEngine implements Engine, Graphable {
             }
             
             for (Rule rule : getRules()) {
-               if (debug) {
+               if (isDebug()) {
                     rule.getQuery().setDebug(true);
                 }
 
@@ -755,7 +764,7 @@ public class RuleEngine implements Engine, Graphable {
                 System.out.println("Graph: " + graph.size());
             }
 
-            if (debug) {
+            if (isDebug()) {
                 System.out.println("Skip: " + skip);
                 System.out.println("Run: " + nbrule);
                 System.out.println("Graph: " + graph.size());
@@ -775,7 +784,7 @@ public class RuleEngine implements Engine, Graphable {
             getEventManager().finish(Event.InferenceCycle);
         }        
         
-        if (debug) {
+        if (isDebug()) {
             System.out.println("Total Skip: " + tskip);
             System.out.println("Total Run: " + trun);     
             logger.debug("** Rule: " + (graph.size() - start));
@@ -859,11 +868,16 @@ public class RuleEngine implements Engine, Graphable {
         Query qq = rule.getQuery();
         Construct cons = Construct.create(qq);
         cons.setAccessRight(b.getAccessRight());
-        cons.setDefaultGraph(rule.isConstraint()?graph.addConstraintGraphNode():graph.addRuleGraphNode());
+        
+        Graph targetGraph = getGraphStore().getRuleGraph(rule.isConstraint());
+        Node name = targetGraph.getRuleGraphName(rule.isConstraint());
+        
+        cons.setDefaultGraph(name);
+        cons.set(new GraphManager(targetGraph));
+        
         cons.setRule(rule, rule.getIndex(), rule.getProvenance());
-        cons.set(new GraphManager(graph));
         cons.setLoopIndex(loopIndex);
-        cons.setDebug(debug);
+        cons.setDebug(isDebug());
         if (isEvent()) cons.setVisitor(getVisitor());
 
         if (isConstruct) {
@@ -962,9 +976,10 @@ public class RuleEngine implements Engine, Graphable {
         Query qq = r.getQuery();
         if (isEvent()) getVisitor().beforeRule(qq);
         Mappings map = exec.query(qq, m);
+        
         if (cons.isBuffer()) {
             // cons insert list contains only new edge that do not exist
-            graph.addOpt(r.getUniquePredicate(), cons.getInsertList());
+            getGraphStore().getRuleGraph(r.isConstraint()).addOpt(r.getUniquePredicate(), cons.getInsertList());
         } else {
             // create edges from Mappings as usual
             cons.insert(map, null);
@@ -1451,6 +1466,10 @@ public class RuleEngine implements Engine, Graphable {
 
     public void setErrorList(List<RuleError> errorList) {
         this.errorList = errorList;
+    }
+
+    public boolean isDebug() {
+        return debug;
     }
 
 }

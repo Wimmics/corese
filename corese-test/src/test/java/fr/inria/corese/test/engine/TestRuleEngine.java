@@ -108,7 +108,7 @@ public class TestRuleEngine {
         Mappings map = exec.query(q);
         IDatatype dt = (IDatatype) map.getValue("?g");
         Graph gg = (Graph) dt.getObject();
-        assertEquals(14, gg.size());
+        assertEquals(7, gg.size());
     }  
      
      
@@ -271,7 +271,7 @@ public class TestRuleEngine {
                 + "order by ?x ?p ?y";
 
         Mappings map = exec.query(q);
-        assertEquals(170, map.size());
+        assertEquals(121, map.size());
 
     } 
         

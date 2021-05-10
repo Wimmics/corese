@@ -60,8 +60,8 @@ public class TurtleEditor extends JPanel {
         buttonsPanel.setLayout(new FlowLayout());
 
         // Open button
-        OpenButton openButton = new OpenButton(this.editorPane, this.mainFrame, "Select a Turtle file", true, "Trutle",
-                ".ttl");
+        OpenButton openButton = new OpenButton(this.editorPane, this.mainFrame, "Select a Turtle file", true, "Turtle",
+                "ttl");
         buttonsPanel.add(openButton);
 
         // Save button

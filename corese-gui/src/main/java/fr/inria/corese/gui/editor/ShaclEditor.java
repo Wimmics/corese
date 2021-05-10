@@ -59,7 +59,7 @@ public class ShaclEditor extends JPanel {
         buttonsPanel.setLayout(new FlowLayout());
 
         // Open button
-        OpenButton openButton = new OpenButton(this.editorPane, this.mainFrame, "Select a SHACL file", true, "Trutle",
+        OpenButton openButton = new OpenButton(this.editorPane, this.mainFrame, "Select a SHACL file", true, "Turtle",
                 "ttl");
         buttonsPanel.add(openButton);
 

@@ -15,7 +15,7 @@ import fr.inria.corese.gui.editor.button.ClearButton;
 import fr.inria.corese.gui.editor.button.LoadButton;
 import fr.inria.corese.gui.editor.button.OpenButton;
 import fr.inria.corese.gui.editor.button.SaveButton;
-import fr.inria.corese.gui.editor.button.ValidateTurtleButton;
+import fr.inria.corese.gui.editor.button.SyntaxCheckButton;
 import fr.inria.corese.gui.editor.pane.EditorPane;
 import fr.inria.corese.gui.editor.pane.ResultPane;
 
@@ -71,7 +71,7 @@ public class TurtleEditor extends JPanel {
         buttonsPanel.add(Box.createRigidArea(new Dimension(15, 0)));
 
         // validate button
-        ValidateTurtleButton validateButton = new ValidateTurtleButton(this.editorPane, this.resultPane);
+        SyntaxCheckButton validateButton = new SyntaxCheckButton(this.editorPane, this.resultPane);
         buttonsPanel.add(validateButton);
 
         // Load button

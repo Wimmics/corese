@@ -14,6 +14,7 @@ import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.gui.editor.button.ClearButton;
 import fr.inria.corese.gui.editor.button.OpenButton;
 import fr.inria.corese.gui.editor.button.SaveButton;
+import fr.inria.corese.gui.editor.button.SyntaxCheckButton;
 import fr.inria.corese.gui.editor.button.ValidateShaclButton;
 import fr.inria.corese.gui.editor.pane.EditorPane;
 import fr.inria.corese.gui.editor.pane.ResultPane;
@@ -68,6 +69,10 @@ public class ShaclEditor extends JPanel {
         buttonsPanel.add(saveButton);
 
         buttonsPanel.add(Box.createRigidArea(new Dimension(15, 0)));
+
+        // validate button
+        SyntaxCheckButton syntaxButton = new SyntaxCheckButton(this.editorPane, this.resultPane);
+        buttonsPanel.add(syntaxButton);
 
         // validate button
         ValidateShaclButton validateButton = new ValidateShaclButton(this.editorPane, this.resultPane, this.mainFrame);

@@ -9,13 +9,13 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.gui.editor.pane.EditorPane;
 import fr.inria.corese.gui.editor.pane.ResultPane;
 
-public class ValidateTurtleButton extends Button {
+public class SyntaxCheckButton extends Button {
 
     private EditorPane editorPane;
     private ResultPane resultPane;
 
-    public ValidateTurtleButton(EditorPane editorPane, ResultPane resultPane) {
-        super("Validate");
+    public SyntaxCheckButton(EditorPane editorPane, ResultPane resultPane) {
+        super("Check syntax");
         this.editorPane = editorPane;
         this.resultPane = resultPane;
     }
@@ -23,7 +23,7 @@ public class ValidateTurtleButton extends Button {
     @Override
     protected ActionListener action() {
 
-        ActionListener buttonValidateListener = new ActionListener() {
+        ActionListener buttonSyntaxListener = new ActionListener() {
 
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -41,23 +41,14 @@ public class ValidateTurtleButton extends Button {
                 Load ld = Load.create(turtleGraph);
                 try {
                     ld.loadString(editorTurtleContent, Load.TURTLE_FORMAT);
-                    resultPane.setContent("Turtle validated");
+                    resultPane.setContent("Turtle is syntactically valid");
                 } catch (LoadException e1) {
-                    //resultPane.setContent("Error: malformed Turle document.");
                     resultPane.setContent(e1.getMessage());
                     return;
                 }
-
-                // Evaluation
-                // get editor content : editorTurtleContent
-                // set content in result : resultPane.setContent("CONTENT")
-
-                // Format and export result
-                // Transformer transformer = Transformer.create(result, Transformer.TURTLE);
-                // resultPane.setContent(transformer.toString());
             }
         };
-        return buttonValidateListener;
+        return buttonSyntaxListener;
     }
 
 }

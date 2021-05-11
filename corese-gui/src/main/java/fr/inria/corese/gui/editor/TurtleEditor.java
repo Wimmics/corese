@@ -70,9 +70,9 @@ public class TurtleEditor extends JPanel {
 
         buttonsPanel.add(Box.createRigidArea(new Dimension(15, 0)));
 
-        // validate button
-        SyntaxCheckButton validateButton = new SyntaxCheckButton(this.editorPane, this.resultPane);
-        buttonsPanel.add(validateButton);
+        // Syntax button
+        SyntaxCheckButton syntaxButton = new SyntaxCheckButton(this.editorPane, this.resultPane);
+        buttonsPanel.add(syntaxButton);
 
         // Load button
         LoadButton loadButton = new LoadButton(this.editorPane, this.resultPane, this.mainFrame);

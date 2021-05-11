@@ -70,11 +70,11 @@ public class ShaclEditor extends JPanel {
 
         buttonsPanel.add(Box.createRigidArea(new Dimension(15, 0)));
 
-        // validate button
+        // Syntaxe button
         SyntaxCheckButton syntaxButton = new SyntaxCheckButton(this.editorPane, this.resultPane);
         buttonsPanel.add(syntaxButton);
 
-        // validate button
+        // Validate button
         ValidateShaclButton validateButton = new ValidateShaclButton(this.editorPane, this.resultPane, this.mainFrame);
         buttonsPanel.add(validateButton);
 

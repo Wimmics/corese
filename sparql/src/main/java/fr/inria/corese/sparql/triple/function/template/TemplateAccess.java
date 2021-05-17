@@ -1,12 +1,14 @@
 package fr.inria.corese.sparql.triple.function.template;
 
 import fr.inria.corese.kgram.api.core.ExprType;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_MAPPINGS;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.TransformProcessor;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 
@@ -52,6 +54,14 @@ public class TemplateAccess extends TemplateFunction {
                 
             case ExprType.STL_DEFINED:
                 return trans.isDefined(param[0].getLabel()) ? TRUE : FALSE;
+                
+            case XT_MAPPINGS:
+                Mappings map = trans.getMappings();
+                if (map == null) {
+                    return null;
+                }
+                return DatatypeMap.createObject(map);
+                        
                             
             default:
                 return null;

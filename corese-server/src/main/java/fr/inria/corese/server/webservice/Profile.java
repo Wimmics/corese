@@ -75,6 +75,7 @@ public class Profile {
     NSManager nsm;
     IDatatype profileDatatype;
     GraphStore profileGraph;
+    private Context context;
 
     boolean isProtected = false;
 
@@ -134,6 +135,7 @@ public class Profile {
         services = new HashMap();
         servers = new HashMap();
         nsm = NSManager.create();
+        setContext(new Context());
     }
     
 
@@ -344,6 +346,7 @@ public class Profile {
         initServer(g);
         initFederation(g);
         localFederation(g);
+        initParameter(g);
         defNamespace(g);
     }
     
@@ -427,6 +430,24 @@ public class Profile {
         for (Mapping m : map) {
             initServiceMap(g, m);
         }
+    }
+    
+    
+    void initParameter(Graph g) throws IOException, EngineException {
+        String str = getResource("query/urlparameter.rq");
+        
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(str);
+        
+        for (Mapping m : map) {
+            IDatatype dt   = getValue(m, "?url");
+            IDatatype list = getValue(m, "?list");
+            if (dt != null) {
+                getContext().set(dt.getLabel(), list);
+            }
+        }
+        logger.info("Parameter Context");
+        logger.info(getContext());
     }
     
     void initFederation(Graph g) throws IOException, EngineException {
@@ -659,6 +680,14 @@ public class Profile {
      */
     public static void setProfile(Profile aProfileManager) {
         profileManager = aProfileManager;
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
 
 }

@@ -1,0 +1,11 @@
+#
+# Define parameters for URL
+# Used in Profile.java
+#
+
+select ?url (aggregate(xt:list(?key, ?val)) as ?list) 
+where {
+    ?url st:param/rdf:rest*/rdf:first ?pair .
+    ?pair rdf:first ?key ; rdf:rest/rdf:first ?val
+}
+group by ?url 

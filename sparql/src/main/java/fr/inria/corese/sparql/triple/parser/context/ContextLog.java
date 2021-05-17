@@ -143,6 +143,10 @@ public class ContextLog implements URLParam, LogKey {
     public void addLink(String url) {
         getLinkList().add(url);
     }
+    
+    public void addLink(List<String> linkList) {
+        getLinkList().addAll(linkList);
+    }
 
     void addURLInput(URLServer url, Mappings map) {
         incr(url.getLogURLNumber(), INPUT_CARD, mapSize(map));

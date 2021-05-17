@@ -17,7 +17,6 @@ public class SPARQLJSONResult extends SPARQLResult {
     private JSONObject json;
     VTable vtable;
     private List<String> varList;
-    private String link;
     
     public SPARQLJSONResult(Graph g) {
         super(g);
@@ -50,7 +49,7 @@ public class SPARQLJSONResult extends SPARQLResult {
         JSONArray link = json.getJSONObject("head").getJSONArray("link");
         for (int i=0; i<link.length(); i++) {
             String url = link.getString(i);
-            setLink(url);
+            addLink(url);
         }               
     }
     
@@ -64,7 +63,7 @@ public class SPARQLJSONResult extends SPARQLResult {
                 map.add(m);
             }
         }
-        map.setLink(getLink());
+        map.setLinkList(getLink());
         return map;
     }
     
@@ -136,19 +135,5 @@ public class SPARQLJSONResult extends SPARQLResult {
         this.varList = varList;
     }
 
-    /**
-     * @return the link
-     */
-    public String getLink() {
-        return link;
-    }
-
-    /**
-     * @param link the link to set
-     */
-    public void setLink(String link) {
-        this.link = link;
-    }
-    
-    
+   
 }

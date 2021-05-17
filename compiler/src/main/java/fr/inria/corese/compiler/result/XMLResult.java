@@ -71,7 +71,7 @@ public class XMLResult {
     private boolean debug = false;
     private boolean trapError = false;
     private boolean showResult = false;
-    String link;
+    private List<String> link;
 
     public XMLResult() {
         init();
@@ -129,7 +129,7 @@ public class XMLResult {
             InputStreamReader r = new InputStreamReader(stream, "UTF-8");
             parser.parse(new InputSource(r), handler);
             complete(map);
-            map.setLink(link);
+            map.setLinkList(getLink());
             return map;
         } catch (ParserConfigurationException | SAXException | IOException e) {
             if (isTrapError()) {                
@@ -167,6 +167,7 @@ public class XMLResult {
     }
 
     public void init() {
+        link = new ArrayList<>();
         varList = new ArrayList<>();
         setCompiler(new CompilerFacKgram().newInstance());
         table = new HashMap<>();
@@ -294,7 +295,7 @@ public class XMLResult {
             switch (type(simpleName)) {
                 
                 case LINK:
-                    link = atts.getValue("href");                    
+                    addLink(atts.getValue("href"));                    
                     break;
 
                 case RESULT:
@@ -478,5 +479,17 @@ public class XMLResult {
      */
     public void setCompiler(fr.inria.corese.compiler.parser.Compiler compiler) {
         this.compiler = compiler;
+    }
+
+    public List<String> getLink() {
+        return link;
+    }
+
+    public void setLink(List<String> link) {
+        this.link = link;
+    }
+    
+    public void addLink(String link) {
+        getLink().add(link);
     }
 }

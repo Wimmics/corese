@@ -36,6 +36,7 @@ public class QuerySolverVisitorServerUser extends QuerySolverVisitorServer {
     public IDatatype afterRequest(HttpServletRequest request, Response resp, String query, Mappings map, String res) {
         System.out.println("User Defined Server Visitor after");
         //System.out.println(map.toString(false, true, 10));
+        System.out.println(res);
         return DatatypeMap.TRUE;
     }
     

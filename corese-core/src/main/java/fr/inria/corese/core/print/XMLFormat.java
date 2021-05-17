@@ -219,23 +219,9 @@ public class XMLFormat {
         println(getTitle(Title.OHEADER));
         error();
         detail();
-        println(getTitle(Title.OHEAD));
-        if (isMore()) {
-            //printVar(SIMILARITY);
-        }
-
-        // print variable or functions selected in the header
-        printVariables(getSelect());
-
-//        if (printInfoInFile && fileName != null) {
-//            printLink(fileName);
-//        }
-        if (lMap.getLink() != null) {
-            //println(String.format("<link href='%s'/>", lMap.getLink()));
-            printLink(lMap.getLink());
-        }
-        println(getTitle(Title.CHEAD));
-
+        
+        printHead();
+        
         if (isQTAsk()) {
             printAsk();
         } else {
@@ -253,6 +239,15 @@ public class XMLFormat {
         }
 
         println(getTitle(Title.CHEADER));
+    }
+    
+    
+    public void printHead() {
+        println(getTitle(Title.OHEAD));
+        // print variable or functions selected in the header
+        printVariables(getSelect());
+        printLink(lMap.getLinkList());
+        println(getTitle(Title.CHEAD));
     }
 
     void detail() {
@@ -407,8 +402,10 @@ public class XMLFormat {
         println(getTitle(Title.OVAR) + getName(var) + getTitle(Title.CVAR));
     }
 
-    void printLink(String name) {
-        print("<link href=\"" + name + "\"/>\n");
+    void printLink(List<String> list) {
+        for (String name : list) {
+            print("<link href=\"" + name + "\"/>\n");
+        }
     }
 
     protected String getName(String var) {

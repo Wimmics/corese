@@ -37,7 +37,7 @@ public class LoadButton extends Button {
 
                 // Test if empty
                 if (editorContent.strip().isEmpty()) {
-                    result.setContent("Error : SHACL document is empty.");
+                    result.setContent("Error : Document is empty.");
                     return;
                 }
 
@@ -50,7 +50,8 @@ public class LoadButton extends Button {
                 }
 
                 // Confirmation
-                JOptionPane.showMessageDialog(null, "Document is loaded in Corese");
+                result.setContent("Document is loaded in Corese");
+                LoadButton.this.mainFrame.appendMsg("Loaded from editor …" );
 
             }
 

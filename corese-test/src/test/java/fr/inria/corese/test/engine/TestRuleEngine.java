@@ -271,7 +271,7 @@ public class TestRuleEngine {
                 + "order by ?x ?p ?y";
 
         Mappings map = exec.query(q);
-        assertEquals(121, map.size());
+        assertEquals(114, map.size());
 
     } 
         

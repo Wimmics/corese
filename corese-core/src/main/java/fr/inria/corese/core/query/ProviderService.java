@@ -357,8 +357,8 @@ public class ProviderService implements URLParam {
             g = (Graph) serv.getGraph();
         } else {
             res = eval(ast, serv, timeout, count);
-            if (res.getLink()!=null){
-                getLog().addLink(res.getLink());
+            if (!res.getLinkList().isEmpty()){
+                getLog().addLink(res.getLinkList());
             }
             g = (Graph) res.getGraph();
         }

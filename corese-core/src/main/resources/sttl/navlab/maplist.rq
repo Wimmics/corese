@@ -3,14 +3,14 @@
 #
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
-template st:maplist(?list) {
+template st:maplist(?format, ?list) {
   
 format {
-  ft:map.html
+  ?format
   
   str(?lat) 
   str(?lon)
-  coalesce(st:get(st:mapzoom), 7)  
+  coalesce(st:get(st:mapzoom), 4)  
   coalesce(st:get(st:mapicon1), "/img/smarker.png")
   
   st:call-template(st:map2, ?rest)

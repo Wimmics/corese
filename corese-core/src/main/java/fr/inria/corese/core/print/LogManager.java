@@ -138,7 +138,7 @@ public class LogManager implements LogKey {
     // local exception list
     void processLocal() {
         for (EngineException e : log.getExceptionList()) {
-            process2(e);
+            process(e);
             //sb.append("\n");
         }
     }
@@ -146,6 +146,13 @@ public class LogManager implements LogKey {
     // remote error document URI list
     void processRemote() {
         for (String url : log.getLinkList()) {
+            processLinkTurtle(url);
+        }
+    }
+    
+    
+    void processLinkTurtle(String url) {
+        if (url.endsWith(".ttl")) {
             processLink(url);
         }
     }
@@ -169,30 +176,31 @@ public class LogManager implements LogKey {
     /**
      * Generate Turtle representation of Exception, append string to buffer
      */
+//    void process(EngineException e) {
+//        property("%s a ns:ServiceReport; \n", "[]");
+//        if (e.getURL() != null) {
+//            property("%s <%s>; \n", URL, e.getURL().getServer());
+//        }
+//
+//        if (e.getCause() instanceof ResponseProcessingException) {
+//            Response resp = (Response) e.getObject();
+//            if (resp != null) {
+//                property("%s \"%s\" ; \n", INFO, resp.getStatusInfo());
+//                property("%s %s ; \n", STATUS, resp.getStatus());
+//                property("%s \"%s\" ; \n", SERVER, getServer(resp));
+//                
+//                property("%s \"%s\" ; \n", DATE, resp.getHeaderString("Date"));
+//
+//                trace(e.getURL(), resp);
+//            }
+//        }
+//
+//        property("%s \"\"\" %s \"\"\" ;\n", MESSAGE, e.getMessage());
+//        property("%s \"\"\"\n%s\"\"\" \n", QUERY, e.getAST());
+//        sb.append(".\n");
+//    }
+
     void process(EngineException e) {
-        property("%s a ns:ServiceReport; \n", "[]");
-        if (e.getURL() != null) {
-            property("%s <%s>; \n", URL, e.getURL().getServer());
-        }
-
-        if (e.getCause() instanceof ResponseProcessingException) {
-            Response resp = (Response) e.getObject();
-            if (resp != null) {
-                property("%s \"%s\" ; \n", INFO, resp.getStatusInfo());
-                property("%s %s ; \n", STATUS, resp.getStatus());
-                property("%s \"%s\" ; \n", SERVER, getServer(resp));
-                property("%s \"%s\" ; \n", DATE, resp.getHeaderString("Date"));
-
-                trace(e.getURL(), resp);
-            }
-        }
-
-        property("%s \"\"\" %s \"\"\" ;\n", MESSAGE, e.getMessage());
-        property("%s \"\"\"\n%s\"\"\" \n", QUERY, e.getAST());
-        sb.append(".\n");
-    }
-
-    void process2(EngineException e) {
         ContextLog log = getLog();
         String sub = DatatypeMap.createBlank().getLabel();
 
@@ -210,7 +218,9 @@ public class LogManager implements LogKey {
                 if (serv != null) {
                     log.set(sub, SERVER, serv);
                 }
-                log.set(sub, DATE, resp.getHeaderString("Date"));
+                if (resp.getHeaderString("Date") != null){
+                    log.set(sub, DATE, resp.getHeaderString("Date"));
+                }
 
                 trace(e.getURL(), resp);
             }

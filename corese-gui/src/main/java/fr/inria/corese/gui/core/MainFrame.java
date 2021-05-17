@@ -574,6 +574,7 @@ public class MainFrame extends JFrame implements ActionListener {
         ientailment = defItem("RDFS Entailment", DEFAULT_ENTAILMENT_QUERY);
         irule = defItem("Rule/OWL RL", DEFAULT_RULE_QUERY);      
         ierror = defItem("Constraint", "constraint.rq");      
+        iowlrl = defItem("OWL RL Check", "owlrl.rq");
 
         iturtle = defItem("Turtle", DEFAULT_TEMPLATE_QUERY);
         in3 = defItem("NTriple", "n3.rq");
@@ -582,7 +583,6 @@ public class MainFrame extends JFrame implements ActionListener {
         itrig = defItem("Trig", DEFAULT_TRIG_QUERY);
         ispin = defItem("SPIN", DEFAULT_SPIN_QUERY);
         iowl = defItem("OWL", DEFAULT_OWL_QUERY);
-        iowlrl = defItem("OWL RL Check", "owlrl.rq");
         
         itypecheck = defItem("Engine",   "shacl/typecheck.rq");
         ipredicate = defItem("Predicate", "shacl/predicate.rq");
@@ -726,6 +726,7 @@ public class MainFrame extends JFrame implements ActionListener {
         explainMenu.add(ientailment);
         explainMenu.add(irule);
         explainMenu.add(ierror);
+        explainMenu.add(iowlrl);
 
         templateMenu.add(iturtle);
         templateMenu.add(in3);
@@ -734,7 +735,6 @@ public class MainFrame extends JFrame implements ActionListener {
         templateMenu.add(itrig);
         templateMenu.add(ispin);
         templateMenu.add(iowl);
-        templateMenu.add(iowlrl);
         
         shaclMenu.add(itypecheck);
         shaclMenu.add(defItem("Fast Engine", "shacl/fastengine.rq"));

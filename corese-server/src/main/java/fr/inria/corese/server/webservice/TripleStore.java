@@ -242,24 +242,30 @@ public class TripleStore implements URLParam {
             }
             else {
                 LogManager log = new LogManager(exec.getLog(map));
-                QueryLoad ql = QueryLoad.create();
-                String home = EmbeddedJettyServer.resourceURI.getPath() + LOG_DIR;
-                String name = UUID.randomUUID().toString().concat(".ttl");
-                String uri;
-                try {
-                    uri = Profile.getLocalhost();
-                } catch (UnknownHostException ex) {
-                    logger.error(ex.getMessage());
-                    uri = Profile.stdLocalhost();
-                }
-                uri += LOG_DIR + name;
-                log.getLog().add(LogKey.LOG, uri);
-                String str = log.toString();
-                ql.write(home + name, str);
-                map.setLink(uri);
+                String uri = document(log.toString(), ".ttl");
+                map.addLink(uri);               
                 System.out.println("server report: " + uri);
             }
         }
+    }
+    
+    /**
+     * Save content as document in HTTP server, return URL for this document 
+     */
+    static String document(String str, String ext) {
+        String home = EmbeddedJettyServer.resourceURI.getPath() + LOG_DIR;
+        String name = UUID.randomUUID().toString().concat(ext);
+        QueryLoad ql = QueryLoad.create();
+        ql.write(home + name, str);
+        String uri;
+        try {
+            uri = Profile.getLocalhost();
+        } catch (UnknownHostException ex) {
+            logger.error(ex.getMessage());
+            uri = Profile.stdLocalhost();
+        }
+        uri += LOG_DIR + name;
+        return uri;
     }
     
     void before(QueryProcess exec, String query, Dataset ds) throws LoadException, EngineException {

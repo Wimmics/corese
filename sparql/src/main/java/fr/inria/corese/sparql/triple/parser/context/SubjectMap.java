@@ -91,6 +91,9 @@ public class SubjectMap extends HashMap<String, PropertyMap> implements LogKey {
 
     
     IDatatype value(String str) {
+        if (str == null) {
+            return null;
+        }
         if (str.startsWith("http://") || str.startsWith("https://")) {
             return newResource(str);
         }

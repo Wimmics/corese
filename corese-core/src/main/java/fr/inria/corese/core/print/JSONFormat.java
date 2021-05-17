@@ -7,6 +7,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
+import java.util.List;
 
 /**
  * SPARQL JSON Result Format for KGRAM Mappings
@@ -18,8 +19,10 @@ public class JSONFormat extends XMLFormat {
 
     private static final String OHEADER = "{";
     private static final String CHEADER = "}";
-    private static final String OHEAD = "\"head\": { \n\"vars\": [";
-    private static final String CHEAD = "] },";
+    private static final String OHEAD = "\"head\": { \n";
+    private static final String CHEAD = "},";
+    private static final String OPEN_VAR ="\"vars\": [";
+    private static final String CLOSE_VAR ="]";   
     private static final String OHEADASK = "\"head\": { } ,";
     private static final String CHEADASK = "";
     private static final String OVAR = "";
@@ -86,9 +89,21 @@ public class JSONFormat extends XMLFormat {
                 return "";
         }
     }
+    
+    
 
     @Override
-    void printVariables(ArrayList<String> select) {
+    public void printHead() {
+        println(getTitle(Title.OHEAD));
+        // print variable or functions selected in the header
+        println(OPEN_VAR);
+        printVar(getSelect());
+        println(CLOSE_VAR);
+        printLnk(lMap.getLinkList());
+        println(getTitle(Title.CHEAD));
+    }    
+            
+    void printVar(ArrayList<String> select) {
         int n = 1;
         for (String var : select) {
             print("\"" + getName(var) + "\"");
@@ -97,6 +112,14 @@ public class JSONFormat extends XMLFormat {
             }
         }
     }
+    
+    void printLnk(List<String> list) {
+        for (String name : list) {
+            print(", \n\"link\": [\"" + name + "\"]");
+        }
+    }
+    
+    
 
     @Override
     public void printAsk() {
@@ -174,11 +197,6 @@ public class JSONFormat extends XMLFormat {
 
     int getnBind() {
         return nBind;
-    }
-
-    @Override
-    void printLink(String name) {
-        print("\"link\": [\"" + name + "\"],");
     }
 
     /**

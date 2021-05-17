@@ -3732,7 +3732,7 @@ public class ASTQuery
      * otherwise, the variable would not be in the select and it would not be visible
      * The function call happens after parsing, in ASTParser Walker called by Transformer
      */
-    public boolean provenance(int n) {
+    public boolean provenance(ASTQuery ast, int n) {
         if (getValues() == null) {
             ArrayList<Variable> varList = new ArrayList<>();
             ArrayList<Constant> valList = new ArrayList<>();
@@ -3741,7 +3741,10 @@ public class ASTQuery
                 Variable var = new Variable(Service.SERVER_SEED+i);
                 varList.add(var);
                 if (!isSelectAll()) {
-                    defSelect(var, null);
+                    setSelect(var);
+                }
+                if (ast!=null&& !ast.isSelectAll()) {
+                    ast.setSelect(var);
                 }
                 valList.add(null);
             }

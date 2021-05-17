@@ -41,7 +41,7 @@ public class ASTPrinter implements KeywordPP {
             ast.getUpdate().toString(sb);
         } else {
             if (isPrefix()){
-                sb.append(ast.getNSM().toString(null, false, false));
+                sb.append(ast.getNSM().toString(null, false, true));
             }
             
             if (ast.isTemplate()) {

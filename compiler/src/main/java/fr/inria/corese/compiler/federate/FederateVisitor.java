@@ -295,10 +295,10 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
         Service serv = Service.create(list, body);
         ast.setBody(ast.bgp(serv));
+        // TODO: check inherit limit ??? offset ???
+        complete(ast);        
         // include external values clause inside body
         prepare(ast);
-        // TODO: check inherit limit ??? offset ???
-        complete(ast);
         variable(ast);
         finish(ast);       
     }

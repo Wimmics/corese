@@ -15,7 +15,7 @@
   ?p1 != ?p2 on properties 
   
   
-  Maxime Lefrançois & Olivier Corby - Wimmics INRIA I3S - 2014
+  Maxime Lefrançois & Olivier Corby - Wimmics INRIA I3S - 2014-2021
 -->
 
 <rdf:RDF 
@@ -64,43 +64,20 @@ WHERE {
 
 
 
-<rule rdf:about='&owl;AllDifferent1'>
+<rule rdf:about='&owl;AllDifferent'>
 <type rdf:resource='&rule;constraint'/>
 <body>  <!--  eq-diff2 -->
 prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
     _:b0 sp:violationRoot ?x .
+    _:b0 sp:violationPath owl:sameAs .
     _:b0 sp:arg1 ?zi ; sp:arg2 ?zj .
     _:b0 rdfs:label "Violation of owl:AllDifferent" .
 }
 WHERE {
     ?x a owl:AllDifferent .
-    ?x owl:members ?list1 .
-    ?list1 rdf:rest* ?list2 .
-    ?list2 rdf:first ?zi .
-    ?list2 rdf:rest+ ?list3 .
-    ?list3 rdf:first ?zj .
-    ?zi owl:sameAs ?zj .
-}
-</body>
-</rule>
-
-
-
-<rule rdf:about='&owl;AllDifferent2'>
-<type rdf:resource='&rule;constraint'/>
-<body>  <!--  eq-diff3 -->
-prefix sp:   &lt;http://spinrdf.org/sp#&gt;
-CONSTRUCT {
-    _:b0 a sp:ConstraintViolation .
-    _:b0 sp:violationRoot ?x .
-    _:b0 rdfs:label "Violation of owl:AllDifferent" .
-    _:b0 sp:arg1 ?zi ; sp:arg2 ?zj .
-}
-WHERE {
-    ?x a owl:AllDifferent .
-    ?x owl:distinctMembers ?list1 .
+    ?x owl:members|owl:distinctMembers ?list1 .
     ?list1 rdf:rest* ?list2 .
     ?list2 rdf:first ?zi .
     ?list2 rdf:rest+ ?list3 .
@@ -133,7 +110,7 @@ CONSTRUCT {
 }
 WHERE {
     ?p rdfs:range ?c .
-    ?x ?p ?y . filter(! isLiteral(?y))
+    ?x ?p ?y . filter (! isLiteral(?y))
 }
 </body>
 </rule>
@@ -202,7 +179,7 @@ prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
     _:b0 sp:violationPath ?p .
-    _:b0 rdfs:label "Antisymmetric property" .
+    _:b0 rdfs:label "Asymmetric property" .
     _:b0 sp:arg1 ?x ; sp:arg2 ?y .
 }
 WHERE {
@@ -259,7 +236,7 @@ CONSTRUCT {
     ?x ?p2 ?y .
 }
 WHERE {
-    ?p1 owl:equivalentProperty ?p2 . filter(?p1 != ?p2)
+    ?p1 owl:equivalentProperty ?p2 . filter (?p1 != ?p2)
     ?x ?p1 ?y .
 }
 
@@ -272,7 +249,7 @@ CONSTRUCT {
     ?x ?p1 ?y .
 }
 WHERE {
-    ?p1 owl:equivalentProperty ?p2 . filter(?p1 != ?p2)
+    ?p1 owl:equivalentProperty ?p2 . filter (?p1 != ?p2)
     ?x ?p2 ?y .
 }
 
@@ -305,7 +282,7 @@ prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
     _:b0 sp:violationRoot ?x .
-    _:b0 sp:violationPath ?pi .
+    _:b0 sp:violationPath ?pi, ?pj .
     _:b0 rdfs:label "Violation of owl:AllDisjointProperties" .
     _:b0 sp:arg1 ?u ; sp:arg2 ?v .
 }
@@ -363,6 +340,7 @@ WHERE {
     ?x owl:targetIndividual ?i2 .
     ?x owl:sourceIndividual ?i1 .
     ?x owl:assertionProperty ?p .
+    ?x a owl:NegativePropertyAssertion .
     ?i1 ?p ?i2 .
 }
 
@@ -383,6 +361,7 @@ WHERE {
     ?x owl:targetValue ?lt .
     ?x owl:sourceIndividual ?i .
     ?x owl:assertionProperty ?p .
+    ?x a owl:NegativePropertyAssertion .
     ?i ?p ?lt .
 }
 
@@ -465,7 +444,7 @@ prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
     _:b0 sp:violationRoot ?x .
-    _:b0 rdfs:label "ComplementOf Violation" .
+    _:b0 rdfs:label "Violation of owl:complementOf" .
     _:b0 sp:arg1 ?c1 .
     _:b0 sp:arg2 ?c2 .
 }
@@ -581,7 +560,7 @@ CONSTRUCT {
     _:b0 sp:violationRoot ?x .
     _:b0 sp:violationPath ?p .
     _:b0 rdfs:label "owl:maxCardinality of 0" .
-    _:b0 sp:arg1 ?u ; sp:arg2 ?u .
+    _:b0 sp:arg1 ?u ; sp:arg2 ?y .
 }
 WHERE {
     ?x owl:maxCardinality "0"^^xsd:nonNegativeInteger .
@@ -604,6 +583,7 @@ WHERE {
     ?u a ?x .
     ?u ?p ?y1 .
     ?u ?p ?y2 .
+    filter (?y1 != ?y2)
 }
 
 </body>
@@ -668,6 +648,7 @@ WHERE {
     ?y1 a ?c .
     ?u ?p ?y2 .
     ?y2 a ?c .
+    filter (?y1 != ?y2)
 }
 
 </body>
@@ -718,7 +699,7 @@ CONSTRUCT {
     ?x a ?c2 .
 }
 WHERE {
-    ?c1 owl:equivalentClass ?c2 . filter(?c1 != ?c2)
+    ?c1 owl:equivalentClass ?c2 . filter (?c1 != ?c2)
     ?x a ?c1 .
 }
 
@@ -731,7 +712,7 @@ CONSTRUCT {
     ?x a ?c1 .
 }
 WHERE {
-    ?c1 owl:equivalentClass ?c2 . filter(?c1 != ?c2)
+    ?c1 owl:equivalentClass ?c2 . filter (?c1 != ?c2)
     ?x a ?c2 .
 }
 
@@ -745,7 +726,7 @@ prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
     _:b0 sp:violationRoot ?x .
-    _:b0 rdfs:label "Shared instance of disjoint classes" .
+    _:b0 rdfs:label "Violates owl:disjointWith" .
     _:b0 sp:arg1 ?c1 ;
       sp:arg2 ?c2
 }
@@ -765,7 +746,7 @@ prefix sp:   &lt;http://spinrdf.org/sp#&gt;
 CONSTRUCT {
     _:b0 a sp:ConstraintViolation .
     _:b0 sp:violationRoot ?x .
-    _:b0 rdfs:label "Shared instance of classes from an AllDisjointClasses block" .
+    _:b0 rdfs:label "Violates owl:AllDisjointClasses" .
     _:b0 sp:arg1 ?ci ;
       sp:arg2 ?cj
       }
@@ -808,7 +789,7 @@ CONSTRUCT {
     ?c2 rdfs:subClassOf ?c1 .
 }
 WHERE {
-    ?c1 owl:equivalentClass ?c2 . filter(?c1 != ?c2)
+    ?c1 owl:equivalentClass ?c2 . filter (?c1 != ?c2)
 }
 </body>
 </rule>
@@ -847,7 +828,7 @@ CONSTRUCT {
     ?c1 owl:equivalentClass ?c2 .
 }
 WHERE {
-    ?c1 rdfs:subClassOf ?c2 . filter(?c1 != ?c2)
+    ?c1 rdfs:subClassOf ?c2 . filter (?c1 != ?c2)
     ?c2 rdfs:subClassOf ?c1 .
 }
 
@@ -861,7 +842,9 @@ CONSTRUCT {
     ?p owl:equivalentProperty ?p .
 }
 WHERE {
-    ?p a owl:ObjectProperty .
+    ?p a owl:ObjectProperty 
+    # use case: owl:onProperty [ owl:inverseOf ex:hasFriend ]
+    filter isURI(?p)
 }
 
 </body>
@@ -886,7 +869,7 @@ CONSTRUCT {
     ?p2 rdfs:subPropertyOf ?p1 .
 }
 WHERE {
-    ?p1 owl:equivalentProperty ?p2 . filter(?p1 != ?p2)
+    ?p1 owl:equivalentProperty ?p2 . filter (?p1 != ?p2)
 }
 
 </body>
@@ -898,7 +881,7 @@ CONSTRUCT {
     ?p1 owl:equivalentProperty ?p2 .
 }
 WHERE {
-    ?p1 rdfs:subPropertyOf ?p2 . filter(?p1 != ?p2)
+    ?p1 rdfs:subPropertyOf ?p2 . filter (?p1 != ?p2)
     ?p2 rdfs:subPropertyOf ?p1 .
 }
 
@@ -924,7 +907,7 @@ CONSTRUCT {
     ?x ?p2 ?y .
 }
 WHERE {
-    ?p1 rdfs:subPropertyOf ?p2 . filter(?p1 != ?p2)
+    ?p1 rdfs:subPropertyOf ?p2 . filter (?p1 != ?p2)
     ?x ?p1 ?y .
 }
 
@@ -938,7 +921,7 @@ CONSTRUCT {
 }
 WHERE {
     ?p rdfs:domain ?c1 .
-    ?c1 rdfs:subClassOf ?c2 . filter(?c1 != ?c2)
+    ?c1 rdfs:subClassOf ?c2 . filter (?c1 != ?c2)
 }
 
 </body>
@@ -951,7 +934,7 @@ CONSTRUCT {
 }
 WHERE {
     ?p2 rdfs:domain ?c .
-    ?p1 rdfs:subPropertyOf ?p2 . filter(?p1 != ?p2)
+    ?p1 rdfs:subPropertyOf ?p2 . filter (?p1 != ?p2)
 }
 
 </body>
@@ -966,7 +949,7 @@ CONSTRUCT {
 }
 WHERE {
     ?p rdfs:range ?c1 .
-    ?c1 rdfs:subClassOf ?c2 . filter(?c1 != ?c2)
+    ?c1 rdfs:subClassOf ?c2 . filter (?c1 != ?c2)
 }
 
 </body>
@@ -981,7 +964,7 @@ CONSTRUCT {
 }
 WHERE {
     ?p2 rdfs:range ?c .
-    ?p1 rdfs:subPropertyOf ?p2 . filter(?p1 != ?p2)
+    ?p1 rdfs:subPropertyOf ?p2 . filter (?p1 != ?p2)
 }
 
 </body>
@@ -996,28 +979,11 @@ CONSTRUCT {
     ?c1 rdfs:subClassOf ?c2 .
 }
 WHERE {
-    ?p1 rdfs:subPropertyOf ?p2 . filter(?p1 != ?p2)    
+    ?p1 rdfs:subPropertyOf ?p2 . filter (?p1 != ?p2)    
     ?c1 owl:hasValue ?i .
     ?c1 owl:onProperty ?p1 .
     ?c2 owl:hasValue ?i .
     ?c2 owl:onProperty ?p2 .
-}
-
-</body>
-</rule>
-
-<rule rdf:about='&rdfs;subClassOf2'>
-<body>  <!--  scm-svf1 -->
-CONSTRUCT  {
-    ?c1 rdfs:subClassOf ?c2 .
-}
-WHERE {
-#here
-    ?y1 rdfs:subClassOf ?y2 . filter(?y1 != ?y2)
-    ?c1 owl:someValuesFrom ?y1 .
-    ?c1 owl:onProperty ?p .
-    ?c2 owl:someValuesFrom ?y2 .
-    ?c2 owl:onProperty ?p .
 }
 
 </body>
@@ -1029,7 +995,7 @@ CONSTRUCT {
     ?c1 rdfs:subClassOf ?c2 .
 }
 WHERE {
-    ?p1 rdfs:subPropertyOf ?p2 . filter(?p1 != ?p2)
+    ?p1 rdfs:subPropertyOf ?p2 . filter (?p1 != ?p2)
     ?c1 owl:someValuesFrom ?y .
     ?c1 owl:onProperty ?p1 .
     ?c2 owl:someValuesFrom ?y .
@@ -1039,13 +1005,49 @@ WHERE {
 </body>
 </rule>
 
+<rule rdf:about='&rdfs;subPropertyOf6'>
+<body>  <!--  scm-avf2 -->
+<!--  the order c2 c1 is correct because allValuesFrom means  that entitites in c2 that have no property p1 are member of c1 -->
+CONSTRUCT {
+    ?c2 rdfs:subClassOf ?c1 .
+}
+WHERE {
+    ?p1 rdfs:subPropertyOf ?p2 . filter (?p1 != ?p2)
+    ?c1 owl:allValuesFrom ?y .
+    ?c1 owl:onProperty ?p1 .
+    ?c2 owl:allValuesFrom ?y .
+    ?c2 owl:onProperty ?p2 .
+}
+
+</body>
+</rule>
+
+
+<rule rdf:about='&rdfs;subClassOf2'>
+<body>  <!--  scm-svf1 -->
+CONSTRUCT  {
+    ?c1 rdfs:subClassOf ?c2 .
+}
+WHERE {
+    ?y1 rdfs:subClassOf ?y2 . filter (?y1 != ?y2)
+    ?c1 owl:someValuesFrom ?y1 .
+    ?c1 owl:onProperty ?p .
+    ?c2 owl:someValuesFrom ?y2 .
+    ?c2 owl:onProperty ?p .
+}
+
+</body>
+</rule>
+
+
+
 <rule rdf:about='&rdfs;subClassOf3'>
 <body>  <!--  scm-avf1 -->
 CONSTRUCT {
     ?c1 rdfs:subClassOf ?c2 .
 }
 WHERE {
-    ?y1 rdfs:subClassOf ?y2 . filter(?y1 != ?y2)
+    ?y1 rdfs:subClassOf ?y2 . filter (?y1 != ?y2)
     ?c1 owl:allValuesFrom ?y1 .
     ?c1 owl:onProperty ?p .
     ?c2 owl:allValuesFrom ?y2 .
@@ -1055,21 +1057,6 @@ WHERE {
 </body>
 </rule>
 
-<rule rdf:about='&rdfs;subClassOf4'>
-<body>  <!--  scm-avf2 -->
-CONSTRUCT {
-    ?c2 rdfs:subClassOf ?c1 .
-}
-WHERE {
-    ?p1 rdfs:subPropertyOf ?p2 . filter(?p1 != ?p2)
-    ?c1 owl:allValuesFrom ?y .
-    ?c1 owl:onProperty ?p1 .
-    ?c2 owl:allValuesFrom ?y .
-    ?c2 owl:onProperty ?p2 .
-}
-
-</body>
-</rule>
 
 
 
@@ -1112,29 +1099,36 @@ WHERE {
   <body> 
 CONSTRUCT {
     ?s owl:sameAs ?s .
-    ?p owl:sameAs ?p .
-    ?v owl:sameAs ?v
+    ?pp owl:sameAs ?pp .
+    ?oo owl:sameAs ?oo
 }
 WHERE {
 	?s ?p ?o
-    bind (if (isLiteral(?o), error(), ?o) as ?v)
+    # do not modify the ontology:
+    filter (! strstarts(?p, owl:))
+    filter (! strstarts(?p, rdfs:))
+    filter (! strstarts(?p, xsd:))
+    filter (! strstarts(?p, rdf:) 
+        # exclude bnode object in:   s rdf:type [ a owl:Restriction ]
+        || (?p = rdf:type &amp;&amp; ! isBlank(?o)))
+    
+    filter (! strstarts(?s, owl:))
+    filter (! strstarts(?s, xsd:))
+    filter (! strstarts(?s, rdf:))
+    filter (! strstarts(?s, rdfs:))
+    
+    filter (! strstarts(?o, owl:))
+    filter (! strstarts(?o, xsd:))
+    filter (! strstarts(?o, rdf:))
+    filter (! strstarts(?o, rdfs:))
+    
+    bind (if (isLiteral(?o), error(), ?oo) as ?oo)
+    # protect from OWL not RL
+    bind (if (isBlank(?p), error(), ?p) as ?pp)
 }
 </body>
 </rule>
 
-<!--  eq-ref  
-<rule rdf:about='&owl;sameAs2'>
-<body>  
-CONSTRUCT {   
-    ?o owl:sameAs ?o .
-}
-WHERE {
-	?s ?p ?o .
-        Filter (! isLiteral(?o))
-}
-</body>
-</rule>
--->
 
 <rule rdf:about='&owl;sameAs3'>
   <body>  <!--  eq-sym -->
@@ -1142,7 +1136,7 @@ CONSTRUCT {
     ?y owl:sameAs ?x .
 }
 WHERE {
-    ?x owl:sameAs ?y . filter(?x != ?y)
+    ?x owl:sameAs ?y . filter (?x != ?y)
 }
 </body>
 </rule>
@@ -1160,33 +1154,38 @@ WHERE {
 </body>
 </rule>
 
-
 <rule rdf:about='&owl;sameAs5'>
-<body>  
-CONSTRUCT {
-    ?s2 ?p ?o .
-}
-WHERE {
-    ?s owl:sameAs ?s2 .
-    filter(?s != ?s2)
-    ?s ?p ?o 
-    filter(?p != rdf:first)
-}
-</body>
-</rule>
-
-<rule rdf:about='&owl;sameAs6'>
 <body>  
 CONSTRUCT {
     ?s ?p2 ?o .
 }
 WHERE {
     ?p owl:sameAs ?p2 .
-    filter(?p != ?p2)
+    filter (?p != ?p2)
     ?s ?p ?o .
 }
 </body>
 </rule>
+
+
+<rule rdf:about='&owl;sameAs6'>
+<body>  
+CONSTRUCT {
+    ?s2 ?p ?o .
+}
+WHERE {
+    ?s owl:sameAs ?s2 .
+    filter (?s != ?s2)
+    ?s ?p ?o 
+     # do not modify list structure and ontology statement
+    filter (?p not in (rdf:first))
+    filter (! strstarts(?p, owl:))
+    filter (! strstarts(?p, rdfs:))
+}
+</body>
+</rule>
+
+
 
 <rule rdf:about='&owl;sameAs7'>
 <body>  
@@ -1194,10 +1193,13 @@ CONSTRUCT {
     ?s ?p ?o2 .
 }
 WHERE {
-?o owl:sameAs ?o2 .
-?s ?p ?o .
-     filter(?o != ?o2)
-    filter(?p != rdf:first)
+    ?o owl:sameAs ?o2 .
+    ?s ?p ?o .
+    filter (?o != ?o2)
+     # do not modify list structure and ontology statement
+    filter (?p not in (rdf:first))
+    filter (! strstarts(?p, owl:))
+    filter (! strstarts(?p, rdfs:))
 }
 </body>
 </rule>
@@ -1209,10 +1211,38 @@ WHERE {
 
 
 
+<!--
+Additional rule to check whether there is bnode as property.
+In this case, ontology is not OWL RL
+-->
 
 
 
-
+<rule rdf:about='&owl;owlrlcheck1'>
+<type rdf:resource='&rule;constraint'/>
+<body>  
+CONSTRUCT {
+    [] a sp:ConstraintViolation ;
+    sp:arg1 ?s ;
+    sp:arg2 ?o ;
+    sp:violationPath ?p ;
+    sp:violationRoot ?r ;
+    sp:violationRoot ?v ;
+    rdfs:label "Blank Node property not in OWL RL Profile" .
+}
+WHERE {
+    ?s ?p ?o
+    filter isBlank(?p)
+    optional {
+        ?restr owl:onProperty ?p .
+        ?p ?r ?v
+        filter (?p != ?v)
+        # use case: owl:onProperty [ owl:inverseOf ex:hasFriend ]
+        filter ((strstarts(?r, owl:) &amp;&amp; ?r != owl:sameAs)  || strstarts(?r, rdfs:))
+    } 
+}
+</body>
+</rule>
 
 
 

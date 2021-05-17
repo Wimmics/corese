@@ -33,6 +33,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.ResultFormatDef;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Context;
@@ -364,24 +365,67 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             return Response.status(ERROR).header(headerAccept, "*").entity(ERROR_ENDPOINT).build();
         }
     }
-       
-    ResultFormat getFormat(Mappings map, Dataset ds, String format, int type, String transform) {
-        if (transform != null) {
-            if (type == UNDEF_FORMAT) {
-                return  ResultFormat.create(map, format, transform).init(ds);
+    
+    String getValue(Context ct, String name, String value) {
+        if (value != null) {
+            return value;
+        }
+        IDatatype dt = ct.get(name);
+        if (dt == null) {
+            return null;
+        }
+        if (dt.isList()) {
+            if (dt.size() > 0) {
+                return dt.get(0).getLabel();
             }
             else {
-                return  ResultFormat.create(map, type, transform).init(ds);
+                return null;
             }
         }
-        else if (type == UNDEF_FORMAT) {
+        return dt.getLabel();
+    }
+       
+    ResultFormat getFormat(Mappings map, Dataset ds, String format, int type, String transform) {
+        // predefined parameter associated to URL in urlparameter.ttl
+        transform = getValue(ds.getContext(), TRANSFORM, transform);
+        if (transform == null) {
+            return getFormatSimple(map, ds, format, type);
+        } else {
+            ResultFormat res = getFormatTransform(map, ds, format, type, transform);
+            if (ds.getContext().hasValue(LINK)) {
+                // mode=link
+                // save transformation result in document and return URL of document in map link
+                String url = TripleStore.document(res.toString(), ".html");
+                map.addLink(url);
+                logger.info("Transformation result in: " + url);
+                return getFormatSimple(map, ds, format, type);
+            }
+            else {
+                return res;
+            }
+        }
+    }
+    
+    ResultFormat getFormatTransform(Mappings map, Dataset ds, String format, int type, String transform) {
+        ResultFormat ft;
+        if (type == UNDEF_FORMAT) {
+            ft = ResultFormat.create(map, format, transform).init(ds);
+        } else {
+            ft = ResultFormat.create(map, type, transform).init(ds);
+        }
+        if (map.getBinding()!=null && ft.getBind()==null) {
+            ft.setBind((Binding)map.getBinding());
+        }
+        return ft;
+    }
+    
+    ResultFormat getFormatSimple(Mappings map, Dataset ds, String format, int type) {
+        if (type == UNDEF_FORMAT) {
             return ResultFormat.create(map, format);
         } else {
             return ResultFormat.create(map, type);
         }
     }
-    
-    
  
     
     /**
@@ -1117,6 +1161,8 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
                 // default:
                 // other operations considered as sparql endpoint
                 // with server name if any  
+                default:
+                    context(ds);
             }
         }
         
@@ -1141,6 +1187,29 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         beforeParameter(ds);
         
         return ds;
+    }
+    
+    /**
+     * urlprofile.ttl may predefine parameters for endpoint URL eg /psparql
+     */
+    void context(Dataset ds) {
+        Context ct = ds.getContext();
+        IDatatype dt = Profile.getProfile().getContext().get(ct.get(URL).getLabel());
+        
+        if (dt != null) {
+            
+            for (IDatatype pair : dt) {
+                String key = pair.get(0).getLabel();
+                IDatatype val = pair.get(1);
+                if (key.equals(MODE)) {
+                    mode(ds, key, val.getLabel());
+                }
+                else {
+                    ct.add(key, val);
+                }
+            }
+            System.out.println("Context:\n" + ct);
+        }
     }
     
     void defineFederation(Dataset ds, List<String> federation) {

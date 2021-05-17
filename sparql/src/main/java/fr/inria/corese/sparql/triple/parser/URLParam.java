@@ -41,7 +41,7 @@ public interface URLParam {
     static final String DETAIL = "detail";
     static final String LOG = "log";
     static final String NBVAR = "nbvar";
-    static final String NBRESULT = "nbresult";
+    static final String NBRESULT = "nboutput";
     static final String NBINPUT = "nbinput";
     static final String RESULT = "result";
     static final String RESULT_TEXT = "text";
@@ -60,6 +60,9 @@ public interface URLParam {
     static final String WRAPPER = "wrapper";
     static final String ACCEPT = "accept";
     static final String REJECT = "reject";
+    static final String DOCUMENT = "document";
+    static final String LINK = "link";
+    static final String TRANSFORM = "transform";
 
     // values of binding=
     static final String VALUES = "values";

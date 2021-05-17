@@ -2,6 +2,7 @@ package fr.inria.corese.sparql.api;
 
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.exceptions.EngineException;
 
 /**
@@ -27,5 +28,7 @@ public interface TransformProcessor {
             throws EngineException;
     
     boolean isDefined(String name);
+    
+    Mappings getMappings();
     
 }

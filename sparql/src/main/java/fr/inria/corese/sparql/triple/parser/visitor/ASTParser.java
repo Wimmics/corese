@@ -43,10 +43,10 @@ public class ASTParser implements Walker, URLParam {
                 }
                 if (exp.getBodyExp().size()>0 && exp.getBodyExp().get(0).isQuery()) {
                     ASTQuery aa = exp.getBodyExp().get(0).getAST();
-                    b = aa.provenance(n);
+                    b = aa.provenance(ast, n);
                 }
                 if (! b) {
-                    ast.provenance(n);
+                    ast.provenance(null, n);
                 }
             }
         }

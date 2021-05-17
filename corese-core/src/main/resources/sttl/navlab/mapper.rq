@@ -1,0 +1,15 @@
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
+template st:mapper {
+    st:call-template(st:maplist, ft:mapper.html, ?list)        
+} 
+where {
+    {select (aggregate(xt:list(?location, ?lat, ?lon)) as ?list)
+    where {
+        select distinct ?location ?lon ?lat where {
+            values (?location ?lon ?lat) { unnest(xt:mappings()) }
+        }
+    }}
+    filter (xt:size(?list) > 0)
+}
+

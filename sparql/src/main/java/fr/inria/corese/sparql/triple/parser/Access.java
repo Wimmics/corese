@@ -257,19 +257,12 @@ public class Access {
         }
     }
     
-//    static boolean accept(String uri) {
-//        return NSManager.isPredefinedNamespace(uri) || AccessNamespace.access(uri);
-//    }
-    
     static boolean accept(String uri, boolean resultWhenEmptyAccept) {
         return NSManager.isPredefinedNamespace(uri) || AccessNamespace.access(uri, resultWhenEmptyAccept);
     }
     
     public static void define(String ns, boolean b) {
         AccessNamespace.define(ns, b);
-//        if (isFile(ns)) {
-//           AccessNamespace.define(toFile(ns), b); 
-//        }
     }
     
     public static void define(Feature feature, Level accessRight) {
@@ -428,6 +421,8 @@ public class Access {
         // use case: server mode
         deny(READ_FILE);
         set(LDSCRIPT, PUBLIC);
+        // authorize server for query + transform when transform is authorized
+        set(LINKED_TRANSFORMATION, PUBLIC);
     }
     
     /**

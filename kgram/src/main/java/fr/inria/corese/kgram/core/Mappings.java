@@ -664,7 +664,12 @@ public class Mappings extends PointerObject
         sm2 = m2;
         Node[] order1 = m1.getOrderBy();
         Node[] order2 = m2.getOrderBy();
-
+        
+//        for (Node n : order1) { System.out.print(n + " " );}
+//        System.out.println();
+//        for (Node n : order2) { System.out.print(n + " " );}
+//        System.out.println();
+        
         List<Exp> orderBy = query.getOrderBy();
 
         int res = 0;
@@ -825,7 +830,10 @@ public class Mappings extends PointerObject
                     Event event = EventImpl.create(Event.AGG, exp);
                     manager.send(event);
                 }
-                eval(evaluator, exp, memory, p, (isSelect) ? SELECT : n++);
+                eval(evaluator, exp, memory, p, (isSelect) ? SELECT : n);
+            }
+            if (!isSelect)  {
+                n++;
             }
         }
     }
@@ -960,7 +968,7 @@ public class Mappings extends PointerObject
                                 (node == null) ? null : node.getDatatypeValue());
                 }
             }
-
+            
             if (hasEvent) {
                 Event event = EventImpl.create(Event.FILTER, exp, node);
                 manager.send(event);

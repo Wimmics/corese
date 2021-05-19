@@ -53,7 +53,7 @@ public class Transformer {
 
     static void init() {
         nsm = NSManager.create();
-        contentType = new HashMap<String, String>();
+        contentType = new HashMap<>();
         contentType.put(fr.inria.corese.core.transform.Transformer.TURTLE, "text/turtle; charset=utf-8");
         contentType.put(fr.inria.corese.core.transform.Transformer.RDFXML, "application/rdf+xml; charset=utf-8");
         contentType.put(fr.inria.corese.core.transform.Transformer.JSON,   "application/ld+json; charset=utf-8");    

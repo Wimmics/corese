@@ -1,6 +1,5 @@
 package fr.inria.corese.server.webservice;
 
-import fr.inria.corese.compiler.federate.FederateVisitor;
 import java.util.List;
 
 import javax.ws.rs.Consumes;
@@ -17,7 +16,6 @@ import javax.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
-import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.Graph;
@@ -29,25 +27,14 @@ import fr.inria.corese.core.print.JSONFormat;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.TSVFormat;
 import fr.inria.corese.kgram.core.Eval;
-import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.ResultFormatDef;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.Access.Level;
-import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.URLParam;
-import fr.inria.corese.sparql.triple.parser.URLServer;
-import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
 import java.util.UUID;
 import javax.servlet.http.HttpServletRequest;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response.ResponseBuilder;
 
 /**
  * KGRAM SPARQL endpoint exposed as a rest web service.
@@ -193,6 +180,12 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         return uuid.toString();
     }
     
+        // access key gives special access level (RESTRICTED vs PUBLIC)
+    static boolean hasKey(String access) {
+        return access!=null && getKey() != null && getKey().equals(access);
+    }
+    
+    
     void init(boolean localhost) {
         mprofile = new Profile(localhost);
         mprofile.setProtect(isProtected);
@@ -265,23 +258,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     // SPARQL QUERY - SELECT and ASK with HTTP GET
     // ----------------------------------------------------
 
-    /**
-     * Visitor call LDScript event @beforeRequest @public function 
-     * profile.ttl must load function definitions, 
-     * e.g. <demo/system/event.rq>
-     * 
-     */
-    void beforeRequest(HttpServletRequest request, String query) {
-        getVisitor().beforeRequest(request, query);
-    }
-    
-    void afterRequest(HttpServletRequest request, String query, Mappings map) {
-        getVisitor().afterRequest(request, query, map);
-    }
-    
-    void afterRequest(HttpServletRequest request, Response resp, String query, Mappings map, String res) {
-        getVisitor().afterRequest(request, resp, query, map, res);
-    }
+
     
     /**
      * Default function for HTTP GET:
@@ -308,7 +285,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @QueryParam("default-graph-uri") List<String> defaut, 
             @QueryParam("named-graph-uri")   List<String> named,
             @QueryParam("format")           String format,
-            @QueryParam("transform")        String transform,
+            @QueryParam("transform")        List<String> transform,
             @QueryParam("param")  List<String> param,
             @QueryParam("mode")   List<String> mode,
             @QueryParam("uri")    List<String> uri) {
@@ -324,110 +301,16 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     }
       
     
-    /**
-     * Specific endpoint function where format can be specified by format parameter
-     * Content-Type is set according to format parameter and what is returned by ResultFormat.
-     */
     public Response getResultFormat(HttpServletRequest request,
             String name, String oper, List<String> uri, List<String> param, List<String> mode,
             String query, String access, 
             List<String> defaut, List<String> named,
-            String format, int type, String transform) { 
-           
-        try {  
-            logger.info("Endpoint URL: " + request.getRequestURL());
-            if (query == null)
-                throw new Exception("No query");
-
-            beforeRequest(request, query);
-            Dataset ds = createDataset(request, defaut, named, access);
-                                  
-            beforeParameter(ds, oper, uri, param, mode);
-            Mappings map = getTripleStore(name).query(request, query, ds);  
-            afterParameter(ds, map);
-            
-            ResultFormat rf = getFormat(map, ds, format, type, transform);            
-            String res = rf.toString();
-                       
-            ResponseBuilder rb = Response.status(Response.Status.OK).header(headerAccept, "*");
-            
-            if (format != null) {
-                // real content type of result, possibly different from @Produces
-                rb = rb.header("Content-Type", rf.getContentType());
-            }
-            Response resp = rb.entity(res).build();
-            
-            afterRequest(request, resp, query, map, res);  
-                                 
-            return resp;
-        } catch (Exception ex) {
-            logger.error(ERROR_ENDPOINT, ex);
-            return Response.status(ERROR).header(headerAccept, "*").entity(ERROR_ENDPOINT).build();
-        }
+            String format, int type, List<String> transform) { 
+        return new SPARQLResult(request).setVisitor(getVisitor())
+        .getResultFormat(name, oper, uri, param, mode, query, access, defaut, named, format, type, transform);
     }
     
-    String getValue(Context ct, String name, String value) {
-        if (value != null) {
-            return value;
-        }
-        IDatatype dt = ct.get(name);
-        if (dt == null) {
-            return null;
-        }
-        if (dt.isList()) {
-            if (dt.size() > 0) {
-                return dt.get(0).getLabel();
-            }
-            else {
-                return null;
-            }
-        }
-        return dt.getLabel();
-    }
-       
-    ResultFormat getFormat(Mappings map, Dataset ds, String format, int type, String transform) {
-        // predefined parameter associated to URL in urlparameter.ttl
-        transform = getValue(ds.getContext(), TRANSFORM, transform);
-        if (transform == null) {
-            return getFormatSimple(map, ds, format, type);
-        } else {
-            ResultFormat res = getFormatTransform(map, ds, format, type, transform);
-            if (ds.getContext().hasValue(LINK)) {
-                // mode=link
-                // save transformation result in document and return URL of document in map link
-                String url = TripleStore.document(res.toString(), ".html");
-                map.addLink(url);
-                logger.info("Transformation result in: " + url);
-                return getFormatSimple(map, ds, format, type);
-            }
-            else {
-                return res;
-            }
-        }
-    }
-    
-    ResultFormat getFormatTransform(Mappings map, Dataset ds, String format, int type, String transform) {
-        ResultFormat ft;
-        if (type == UNDEF_FORMAT) {
-            ft = ResultFormat.create(map, format, transform).init(ds);
-        } else {
-            ft = ResultFormat.create(map, type, transform).init(ds);
-        }
-        if (map.getBinding()!=null && ft.getBind()==null) {
-            ft.setBind((Binding)map.getBinding());
-        }
-        return ft;
-    }
-    
-    ResultFormat getFormatSimple(Mappings map, Dataset ds, String format, int type) {
-        if (type == UNDEF_FORMAT) {
-            return ResultFormat.create(map, format);
-        } else {
-            return ResultFormat.create(map, type);
-        }
-    }
- 
-    
+   
     /**
      * Std endpoint function
      * type is the return format, eg JSON format
@@ -471,7 +354,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @QueryParam("default-graph-uri") List<String> defaut, 
             @QueryParam("named-graph-uri")   List<String> named,
             @QueryParam("format")           String format,
-            @QueryParam("transform")        String transform,
+            @QueryParam("transform")        List<String> transform,
             @QueryParam("param")  List<String> param,
             @QueryParam("mode")   List<String> mode,
             @QueryParam("uri")    List<String> uri) {
@@ -507,7 +390,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @QueryParam("access") String access, 
             @QueryParam("default-graph-uri") List<String> defaut,
             @QueryParam("named-graph-uri") List<String> named,
-            @QueryParam("transform")        String transform,
+            @QueryParam("transform")        List<String> transform,
             @QueryParam("param")  List<String> param,
             @QueryParam("mode")   List<String> mode,
             @QueryParam("uri")    List<String> uri) {
@@ -696,7 +579,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @FormParam("default-graph-uri") List<String> defaut,
             @FormParam("named-graph-uri") List<String> named, 
             @FormParam("format")  String format,
-            @FormParam("transform")  String transform,
+            @FormParam("transform")  List<String> transform,
             @FormParam("param")  List<String> param,
             @FormParam("mode")   List<String> mode,
             @FormParam("uri")    List<String> uri,
@@ -764,7 +647,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @PathParam("oper") String oper, 
             @DefaultValue("") @FormParam("query") String query, 
             @FormParam("access") String access, 
-            @FormParam("transform") String transform,  
+            @FormParam("transform") List<String> transform,  
             @FormParam("default-graph-uri") List<String> defaut,
             @FormParam("named-graph-uri") List<String> named,
             @FormParam("param")  List<String> param,
@@ -815,7 +698,9 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             return Response.status(ERROR).header(headerAccept, "*").entity(ERROR_ENDPOINT).build();
         }
     }
+    
 
+    
     @POST
     @Produces(SPARQL_RESULTS_TSV)
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
@@ -903,34 +788,23 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         
     }
 
-	/* Fix Franck: for some reason, this service tends to be selected for SPARQL queries, not updates.
-	 * Temporary fix is to only allow an update using the application/sparql-update content type (below)
-	/// SPARQL 1.1 Update ///
-	// update via URL-encoded POST
-	@POST
-	@Consumes("application/x-www-form-urlencoded")
-	//@Path("/update")
-	public Response updateTriplesEncoded(@FormParam("update") String update, @FormParam("using-graph-uri") List<String> defaut, @FormParam("using-named-graph-uri") List<String> named) {
-		try {
-			if (update != null) {
-				logger.debug(update);
-				getTripleStore().query(update, createDataset(request, defaut, named));
-			} else {
-				logger.warn("Null update query !");
-			}
-
-			return Response.status(200).header(headerAccept, "*").build();
-		} catch (Exception ex) {
-			logger.error("Error while querying the remote KGRAM engine", ex);
-			return Response.status(ERROR).header(headerAccept, "*").entity("Error while updating the Corese/KGRAM endpoint").build();
-		}
-	}
-	*/
 
     // ----------------------------------------------------
     // SPARQL UPDATE with HTTP POST
     // ----------------------------------------------------
 
+    Dataset createDataset(HttpServletRequest request, List<String> defaut, List<String> named, String access) {
+        return SPARQLResult.getSingleton().createDataset(request, defaut, named, access);
+    }
+    
+    void beforeRequest(HttpServletRequest request, String query) {
+        getVisitor().beforeRequest(request, query);
+    }
+    
+    void afterRequest(HttpServletRequest request, Response resp, String query, Mappings map, String res) {
+        getVisitor().afterRequest(request, resp, query, map, res);
+    }
+    
     @POST
     @Consumes("application/sparql-update")
     public Response updateTriplesDirect(@javax.ws.rs.core.Context HttpServletRequest request,
@@ -1024,30 +898,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         }
     }
 
-    
-// 
-//    /**
-//     * This function is used to copy the InputStream into a local file.
-//     */
-//    private void writeToFile(InputStream uploadedInputStream, File uploadedFile) throws IOException {
-//        OutputStream out = new FileOutputStream(uploadedFile);
-//        int read = 0;
-//        byte[] bytes = new byte[1024];
-//        while ((read = uploadedInputStream.read(bytes)) != -1) {
-//            out.write(bytes, 0, read);
-//        }
-//        out.flush();
-//        out.close();
-//    }
-
-//    String getTemplate(String name) {
-//        String sep = "";
-//        if (name.contains("/")) {
-//            sep = "'";
-//        }
-//        String query = "template { st:atw(" + sep + name + sep + ")} where {}";
-//        return query;
-//    }
+  
 
     /**
      * @return the key
@@ -1062,229 +913,5 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     public static void setKey(String aKey) {
         key = aKey;
     }
-    
-    
-    
-    /**********************************************************************
-     * 
-     * service URL Parameter Processing
-     * http://corese.fr/sparql?param=format:rdf&mode=debug&default-graph-uri=url
-     * 
-     **********************************************************************/
-    
-    /**
-     * Creates a Dataset based on a set of default or named graph URIs. 
-     * For *strong* SPARQL compliance, use dataset.complete() before returning the dataset.
-     *
-     * @return a dataset
-     */    
-    private Dataset createDataset(HttpServletRequest request, List<String> defaut, List<String> named, String access) {
-        Dataset ds = null;
-        if (((defaut != null) && (!defaut.isEmpty())) 
-                || ((named != null) && (!named.isEmpty()))) {
-            ds = Dataset.instance(defaut, named);
-        } 
-        else {
-            ds = new Dataset();
-        }
-        boolean b = hasKey(access);
-        if (b) {
-            System.out.println("has key access");
-        }
-        Level level = Access.getQueryAccessLevel(true, b);
-        ds.getCreateContext().setLevel(level);
-        ds.getContext().setURI(URL, request.getRequestURL().toString());
-        return ds;
-    }
-    
-    // access key gives special access level (RESTRICTED vs PUBLIC)
-    static boolean hasKey(String access) {
-        return access!=null && getKey() != null && getKey().equals(access);
-    }
-    
-    
-    /**
-     * Parameters of sparql service URL: 
-     * http://corese.fr/sparql?mode=debug&param=format:rdf;test:12
-     * 
-     * http://corese.fr/d2kab/sparql
-     * http://corese.fr/d2kab/federate
-     * name = d2kab ; oper = sparql|federate
-     * parameter recorded in context and as ldscript global variable
-     */
-    Dataset beforeParameter(Dataset ds, String oper, List<String> uri, List<String> param, List<String> mode) {
-        if (oper != null) {
-            ds.getContext().set(OPER, oper);
-            List<String> federation = new ArrayList<>();
-            switch (oper) {
-                
-                case FEDERATE:
-                    // From SPARQLService: var name is bound to d2kab
-                    // URL = http://corese.inria.fr/d2kab/federate
-                    // sparql query processed as a federated query on list of endpoints
-                    // From SPARQL endpoint (alternative) mode and uri are bound
-                    // http://corese.inria.fr/sparql?mode=federate&uri=http://ns.inria.fr/federation/d2kab
-                    mode = leverage(mode);
-                    //uri  = leverage(uri);
-                    // declare federate mode for TripleStore query()
-                    mode.add(FEDERATE);
-                    // federation URL defined in /webapp/data/demo/fedprofile.ttl
-                    //uri.add(ds.getContext().get(URL).getLabel());
-                    federation.add(ds.getContext().get(URL).getLabel());
-                    defineFederation(ds, federation);
-                    break;
-                    
-                case SPARQL:
-                    // URL = http://corese.inria.fr/id/sparql
-                    // when id is a federation: union of query results of endpoint of id federation
-                    // otherwise query triple store with name=id
-                    String surl = ds.getContext().get(URL).getLabel();
-                    String furl = surl;
-                    
-                    if (FederateVisitor.getFederation(furl) == null) {
-                        furl = surl.replace("/sparql", "/federate");
-                    }
-                    
-                    if (FederateVisitor.getFederation(furl) != null) {
-                        // federation is defined 
-                        mode = leverage(mode);
-                        //uri = leverage(uri);
-                        mode.add(FEDERATE);
-                        mode.add(SPARQL);
-                        // record the name of the federation
-                        //uri.add(furl);
-                        federation.add(furl);
-                        defineFederation(ds, federation);
-                    }
-                    break;
-                    
-                // default:
-                // other operations considered as sparql endpoint
-                // with server name if any  
-                default:
-                    context(ds);
-            }
-        }
-        
-        if (uri!=null && !uri.isEmpty()) {
-            // list of URI given as parameter uri= 
-            ds.getContext().set(URI, DatatypeMap.listResource(uri));
-            //ds.setUriList(uri);
-        }
-        
-        if (param != null) {
-            for (String kw : param) {
-                mode(ds, PARAM, decode(kw));
-            }
-        }
-        
-        if (mode != null) {
-            for (String kw : mode) {
-                mode(ds, MODE, decode(kw));
-            }
-        }
-        
-        beforeParameter(ds);
-        
-        return ds;
-    }
-    
-    /**
-     * urlprofile.ttl may predefine parameters for endpoint URL eg /psparql
-     */
-    void context(Dataset ds) {
-        Context ct = ds.getContext();
-        IDatatype dt = Profile.getProfile().getContext().get(ct.get(URL).getLabel());
-        
-        if (dt != null) {
-            
-            for (IDatatype pair : dt) {
-                String key = pair.get(0).getLabel();
-                IDatatype val = pair.get(1);
-                if (key.equals(MODE)) {
-                    mode(ds, key, val.getLabel());
-                }
-                else {
-                    ct.add(key, val);
-                }
-            }
-            System.out.println("Context:\n" + ct);
-        }
-    }
-    
-    void defineFederation(Dataset ds, List<String> federation) {
-        ds.setUriList(federation);
-        ds.getContext().set(FEDERATION, DatatypeMap.listResource(federation));
-    }
-    
-    String decode(String value) {
-        try {
-            return URLDecoder.decode(value, StandardCharsets.UTF_8.toString());
-        } catch (UnsupportedEncodingException ex) {
-            return value;
-        }
-    }
-          
-    List<String> leverage(List<String> name) {
-        return (name == null) ? new ArrayList<>() : name;
-    }
-    
-    /**
-     * Record dataset from named in context for documentation purpose
-     */
-    void beforeParameter(Dataset ds) {
-        IDatatype from = ds.getFromList();
-        if (from.size() > 0) {
-            ds.getContext().set(DEFAULT_GRAPH, from);
-        }
-        IDatatype named = ds.getNamedList();
-        if (named.size() > 0) {
-            ds.getContext().set(NAMED_GRAPH, named);
-        }
-    }   
-    
-    /**
-     * name:  param | mode
-     * value: debug | trace.
-     */
-    void mode(Dataset ds, String name, String value) {
-        //System.out.println("URL mode: " + mode);
-        ds.getContext().add(name, value);
-
-        switch (name) {
-            case MODE:
-                switch (value) {
-                    case DEBUG:
-                        ds.getContext().setDebug(true);
-                    // continue
-
-                    default:
-                        ds.getContext().set(value, true);
-                        break;
-                }
-                break;
-
-            case PARAM:
-                URLServer.decode(ds.getContext(), value);
-                break;
-        }
-    }
-       
-    
-    void afterParameter(Dataset ds, Mappings map) {
-        if (ds.getContext().hasValue(TRACE)) {
-            System.out.println("SPARQL endpoint");
-            System.out.println(map.getQuery().getAST());
-            System.out.println(map.toString(false, true, 10));
-        }
-        // draft for testing
-        if (ds.getContext().hasValue(FORMAT)) {
-            ResultFormat ft = ResultFormat.create(map, ds.getContext().get(FORMAT).getLabel());
-            System.out.println(ft);
-        }
-    }
-    
-    
-    
-    
+  
 }

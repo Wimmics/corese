@@ -20,6 +20,7 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.URLParam;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashMap;
@@ -66,7 +67,7 @@ public class TripleStore implements URLParam {
     
     static void init() {
         metaMap = new HashMap<>();
-        metaMap.put(SPARQLRestAPI.SPARQL, Metadata.SPARQL);
+        metaMap.put(URLParam.SPARQL, Metadata.SPARQL);
         metaMap.put(TRACE, Metadata.TRACE);
         metaMap.put(PROVENANCE, Metadata.VARIABLE);
         metaMap.put("index", Metadata.INDEX);
@@ -210,24 +211,41 @@ public class TripleStore implements URLParam {
         Mappings map;
         try {
             before(exec, query, ds);
+            
             if (isFederate(ds)) {
                 // federate sparql query with @federate uri
-                map = exec.query(federate(query, ds), ds);
-                log(exec, map, ds.getContext());
+                if (isCompile(c)) {
+                    Query qq = exec.compile(federate(query, ds), ds);
+                    map = logCompile(exec);
+                } else {
+                    map = exec.query(federate(query, ds), ds);
+                    log(exec, map, ds.getContext());
+                }
             } else if (isShacl(c)) {
                 map = shacl(query, ds);
-            } 
-            else if (isConstruct(c)) {
+            } else if (isConstruct(c)) {
                 map = construct(query, ds);
-            }
-            else {
+            } else {
                 map = exec.query(query, ds);
                 log(exec, map, ds.getContext());
             }
+            
             after(exec, query, ds);
         } catch (LoadException ex) {
             throw new EngineException(ex);
         }
+        return map;
+    }
+    
+    Mappings logCompile(QueryProcess exec) {
+        ContextLog log = exec.getLog();
+        Mappings map     = log.getSelectMap();
+        ASTQuery select  = log.getASTSelect();
+        ASTQuery rewrite = log.getAST();
+        String uri1 = document(select.toString(),  "select");
+        String uri2 = document(rewrite.toString(), "rewrite");
+        map.addLink(uri1);
+        map.addLink(uri2);
         return map;
     }
     
@@ -242,7 +260,7 @@ public class TripleStore implements URLParam {
             }
             else {
                 LogManager log = new LogManager(exec.getLog(map));
-                String uri = document(log.toString(), ".ttl");
+                String uri = document(log.toString(), "log", ".ttl");
                 map.addLink(uri);               
                 System.out.println("server report: " + uri);
             }
@@ -252,11 +270,22 @@ public class TripleStore implements URLParam {
     /**
      * Save content as document in HTTP server, return URL for this document 
      */
-    static String document(String str, String ext) {
+    static String document(String str) {
+        return document(str, "", "");
+    }
+
+    static String document(String str, String name) {
+        return document(str, name, "");
+    }
+    
+    static String document(String str, String name, String ext) {
         String home = EmbeddedJettyServer.resourceURI.getPath() + LOG_DIR;
-        String name = UUID.randomUUID().toString().concat(ext);
+        String id = UUID.randomUUID().toString().concat(ext);
+        if (name != null && !name.isEmpty()){
+            id = name.concat("-").concat(id);
+        }
         QueryLoad ql = QueryLoad.create();
-        ql.write(home + name, str);
+        ql.write(home + id, str);
         String uri;
         try {
             uri = Profile.getLocalhost();
@@ -264,7 +293,7 @@ public class TripleStore implements URLParam {
             logger.error(ex.getMessage());
             uri = Profile.stdLocalhost();
         }
-        uri += LOG_DIR + name;
+        uri += LOG_DIR + id;
         return uri;
     }
     
@@ -297,6 +326,14 @@ public class TripleStore implements URLParam {
     
     IDatatype getAfter(Context c) {
         return c.get(URI).get(c.get(URI).size()-1);
+    }
+    
+    boolean isParse(Context c) {
+        return c.hasValue(PARSE);
+    }
+    
+    boolean isCompile(Context c) {
+        return c.hasValue(COMPILE);
     }
     
     boolean isBefore(Context c) {

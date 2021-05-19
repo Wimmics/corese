@@ -63,6 +63,8 @@ public interface URLParam {
     static final String DOCUMENT = "document";
     static final String LINK = "link";
     static final String TRANSFORM = "transform";
+    static final String PARSE = "parse";
+    static final String COMPILE = "compile";
 
     // values of binding=
     static final String VALUES = "values";

@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 21 13:43:42 CEST 2019
+Wed May 12 11:30:56 CEST 2021
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -41,6 +41,28 @@ format {
 where { 
     ?r ?p ?v
 }
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
+template st:mapper {
+    st:call-template(st:maplist, ft:mapper.html, ?list)        
+} 
+where {
+    {select (aggregate(xt:list(?location, ?lat, ?lon)) as ?list)
+    where {
+        select distinct ?location ?lon ?lat where {
+            values (?location ?lon ?lat) { unnest(xt:mappings()) }
+        }
+    }}
+    filter (xt:size(?list) > 0)
+}
+
 ]]>
 </body>
 </rule>
@@ -230,14 +252,14 @@ function us:person(){
 #
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
-template st:maplist(?list) {
+template st:maplist(?format, ?list) {
   
 format {
-  ft:map.html
+  ?format
   
   str(?lat) 
   str(?lon)
-  coalesce(st:get(st:mapzoom), 7)  
+  coalesce(st:get(st:mapzoom), 4)  
   coalesce(st:get(st:mapicon1), "/img/smarker.png")
   
   st:call-template(st:map2, ?rest)
@@ -560,8 +582,10 @@ where {
 <rule>
 <body>
 <![CDATA[
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
 template st:map {
-    st:call-template(st:maplist, ?list)        
+    st:call-template(st:maplist, ft:map.html, ?list)        
 } 
 where {
     bind (st:get(st:location) as ?list)

@@ -169,12 +169,37 @@ public class ResultFormat implements ResultFormatDef {
     }
     
     static public ResultFormat create(Mappings m, String format, String trans) {
+        ResultFormat rf = createFromTrans(m, trans);
+        if (rf != null) {
+            return rf;
+        }
         return create(m, format).transform(trans);       
-    }    
+    } 
     
     static public ResultFormat create(Mappings m, int type, String trans) {
-        return create(m, type).transform(trans);       
+        ResultFormat rf = createFromTrans(m, trans);
+        if (rf != null) {
+            return rf;
+        }
+        return create(m, type).transform(trans);
     }
+    
+    static ResultFormat createFromTrans(Mappings m, String trans) {
+        if (trans == null) {
+            return null;
+        }
+        switch (NSManager.nsm().toNamespace(trans)) {
+            case Transformer.XML:
+                return create(m, ResultFormat.XML_FORMAT);
+            case Transformer.JSON:
+                return create(m, ResultFormat.JSON_FORMAT);
+            case Transformer.RDF:
+                return create(m, ResultFormat.RDF_FORMAT);
+            default: 
+                return null;
+        }
+    }
+        
     
     ResultFormat transform(String trans) {
         if (trans != null) {
@@ -408,7 +433,8 @@ public class ResultFormat implements ResultFormatDef {
         int mytype = type();
         if (isGraphFormat(mytype) && map.getGraph() == null) {
             // return Mappings as W3C RDF Graph Mappings
-            map.setGraph(MappingsGraph.create(map).getGraph());
+            //map.
+            setGraph(MappingsGraph.create(map).getGraph());
         }
         else if (mytype == TEXT_FORMAT || mytype == HTML_FORMAT) {
             // Chose appropriate format
@@ -439,7 +465,9 @@ public class ResultFormat implements ResultFormatDef {
                 return TripleFormat.create(map).toString();
             case RDF_FORMAT:
                 // W3C RDF Graph Mappings, graph has been set above
-                return TripleFormat.create(map).toString();
+                //return TripleFormat.create(map).toString();
+                Graph g = map.getGraph() == null ? getGraph() : (Graph) map.getGraph();
+                return TripleFormat.create(g).toString();
             case TRIG_FORMAT:
                 return TripleFormat.create(map, true).toString();                
             case JSON_LD_FORMAT:

@@ -754,6 +754,19 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return newList(list);
     }
    
+   public static List<String> toStringList(IDatatype dt) {
+       ArrayList<String> list = new ArrayList<>();
+       if (dt.isList()) {
+           for (IDatatype val : dt) {
+               list.add(val.getLabel());
+           }
+       }
+       else {
+           list.add(dt.getLabel());
+       }
+       return list;
+   }
+   
    public static IDatatype newStringList(List<String> alist) {
         ArrayList<IDatatype> list = new ArrayList<>();
         for (String str : alist) {

@@ -28,7 +28,6 @@ import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.logic.RDF;
 import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
@@ -44,6 +43,7 @@ import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.util.Arrays;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,6 +76,9 @@ public class Transformer implements TransformProcessor {
     public static final String TURTLE = STL + "turtle";
     public static final String TURTLE_HTML = STL + "hturtle";
     public static final String RDFXML = STL + "rdfxml";
+    public static final String ALL = STL + "all";
+    public static final String XML = STL + "xml";
+    public static final String RDF = STL + "rdf";
     public static final String JSON = STL + "json";
     public static final String TRIG = STL + "trig";
     public static final String TABLE = STL + "table";
@@ -97,6 +100,8 @@ public class Transformer implements TransformProcessor {
     public static final String STL_AGGREGATE = Processor.STL_AGGREGATE;
     public static final String STL_TRANSFORM = Context.STL_TRANSFORM;
     public static final String STL_PREFIX = Context.STL_PREFIX;
+    
+    public static final String[] RESULT_FORMAT = {XML, JSON, RDF};
     
     // default
     public static final String PPRINTER = TURTLE;
@@ -149,7 +154,7 @@ public class Transformer implements TransformProcessor {
     private boolean isCheck = false;
     // index and run templates according to focus node type
     // no subsumption (exact match on type)
-    @Deprecated
+    //@Deprecated
     private boolean isOptimize = isOptimizeDefault;
 
     // st:process() of template variable, may be overloaded
@@ -165,7 +170,7 @@ public class Transformer implements TransformProcessor {
 
     static {
         table = new Table();
-        dmap = new HashMap<>();
+        dmap = new HashMap<>();       
     }
     // is there a st:default template
     private boolean hasDefault = false;
@@ -204,7 +209,13 @@ public class Transformer implements TransformProcessor {
         init(level);
     }
     
-     
+    static public List<String> getFormatList(String name) {
+        switch (name) {
+            case ALL: return Arrays.asList(RESULT_FORMAT);
+        }
+        return null;
+    } 
+    
     void initMap() {
         Query q = getTemplate(start);
         if (q == null) {
@@ -678,7 +689,7 @@ public class Transformer implements TransformProcessor {
      */
     @Override
     public IDatatype process(String temp, boolean all, String sep, Expr exp, Environment env) 
-    throws EngineException {
+    throws EngineException {       
         boolean astart = isStarting();
         beforeTransformer(astart);
         count++;
@@ -897,10 +908,11 @@ public class Transformer implements TransformProcessor {
 
         IDatatype type = null;
         if (isOptimize) {
-            type = graph.getValue(RDF.TYPE, dt);
+            type = graph.getValue(fr.inria.corese.core.logic.RDF.TYPE, dt);
         }
 
-        List<Query> templateList = getTemplates(temp, type);
+        List<Query> templateList = getTemplates(temp, type);       
+                    
         Query tq = null;
         if (temp != null && templateList.size() == 1) {
             // named template may have specific arguments
@@ -909,6 +921,8 @@ public class Transformer implements TransformProcessor {
         // Mapping of tq or default Mapping ?in = dt
         Mapping m = tmap.getMapping(tq, args, dt);
         share(m, env);
+        
+   
         for (Query qq : templateList) {
 
             Mapping bm = m;
@@ -917,6 +931,15 @@ public class Transformer implements TransformProcessor {
                 qq.setDebug(true);
             }
 
+            if (isDebug) {
+                if (qq.isFail()) {
+                    System.out.println("template fail: " + dt + "\n" +qq.getAST());                
+                }
+                if (stack.contains(dt, args, qq)) {
+                    System.out.println("stack contains: " + dt + "\n" +qq.getAST());
+                }
+            }
+            
             if (!qq.isFail() && !stack.contains(dt, args, qq)) {
 
                 nbt++;
@@ -940,11 +963,20 @@ public class Transformer implements TransformProcessor {
                     share(bm, env);
                 }
 
+                if (isDebug) {
+                    System.out.println("try:\n"+qq.getAST());
+                }
+                
                 Mappings map = exec.query(qq, bm);
                 save(map);
                 stack.visit(dt);
                 stack.pop();
                 IDatatype res = getResult(map);
+                
+                if (isDebug) {
+                    System.out.println("map:\n" + map);
+                    System.out.println("res:\n" + res);
+                }
 
                 if (res != null) {
                     if (isTrace) {

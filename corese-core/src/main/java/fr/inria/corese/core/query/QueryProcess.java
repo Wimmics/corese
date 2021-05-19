@@ -1303,12 +1303,7 @@ public class QueryProcess extends QuerySolver {
     public LogManager getLogManager(Mappings map) {
         return new LogManager(getLog(map));
     }
-        
-    public ContextLog getLog(Mappings map) {
-        //return getAST(map).getLog();
-        return getBinding().getCreateLog();
-    }
-    
+            
     /***********************************************************************/
     
     /**

@@ -343,7 +343,7 @@ public class ProviderService implements URLParam {
         logger.error("service error: " + serv.getServer());
         logger.error(e.getMessage());
         logger.error(ast.toString());
-        gq.addError(SERVICE_ERROR, e);
+        gq.addError(SERVICE_ERROR.concat(serv.getServer()).concat("\n"), e);
     }
     
     

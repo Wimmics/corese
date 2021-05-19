@@ -119,6 +119,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         query.setFederate(true);
         ASTQuery ast = (ASTQuery) query.getAST();
         ast.getLog().setAST(ast);
+        exec.getLog().setAST(ast);
     }
     
     @Override

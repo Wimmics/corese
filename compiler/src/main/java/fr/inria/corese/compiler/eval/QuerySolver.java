@@ -41,6 +41,7 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 
 /**
  * Evaluator of SPARQL query by KGRAM Ready to use Package with KGRAM and SPARQL
@@ -160,6 +161,15 @@ public class QuerySolver implements SPARQLEngine {
 
     public void set(Sorter s) {
         sort = s;
+    }
+    
+    public ContextLog getLog(Mappings map) {
+        //return getAST(map).getLog();
+        return getLog();
+    }
+    
+    public ContextLog getLog() {
+        return getBinding().getCreateLog();
     }
 
     public void setVisitor(QueryVisitor v) {

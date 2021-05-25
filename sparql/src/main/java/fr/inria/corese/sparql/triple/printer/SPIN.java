@@ -93,8 +93,8 @@ public class SPIN implements ASTVisitor {
     
     SPIN() {
         setBuffer(new ASTBuffer());
-        tvar   = new HashMap <String, String> ();
-        tbnode = new HashMap <String, String> ();        
+        tvar   = new HashMap <> ();
+        tbnode = new HashMap <> ();        
     }
     
     public void init(){
@@ -120,6 +120,7 @@ public class SPIN implements ASTVisitor {
         return sb;
     }
     
+    @Override
     public String toString(){
         return sb.toString();
     }

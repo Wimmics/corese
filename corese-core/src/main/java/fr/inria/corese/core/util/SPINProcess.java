@@ -33,7 +33,6 @@ public class SPINProcess {
     // use case: W3C test case query have the query location path as default base
     private String defaultBase;
 
-
     public static SPINProcess create() {
         return new SPINProcess();
     }
@@ -42,15 +41,15 @@ public class SPINProcess {
         exec = QueryProcess.create(Graph.create());
     }
 
-   public Graph getGraph(){
-       return graph;
-   }
-   
-   public void setDefaultBase(String str){
-       defaultBase = str;
-       exec.setDefaultBase(str);
-   }
-   
+    public Graph getGraph() {
+        return graph;
+    }
+
+    public void setDefaultBase(String str) {
+        defaultBase = str;
+        exec.setDefaultBase(str);
+    }
+
     /**
      * PPrint SPARQL query into SPIN Turtle using Visitor, parse SPIN Turtle
      * into RDF Graph, PPrint RDF graph using templates back into SPARQL
@@ -65,13 +64,11 @@ public class SPINProcess {
         }
         return toSpinSparql(exec.getAST(qq));
     }
-    
-      
 
-        public String toSpin(String sparql) throws EngineException {
-            return toSpin(sparql, true);
-        }
-    
+    public String toSpin(String sparql) throws EngineException {
+        return toSpin(sparql, true);
+    }
+
     public String toSpin(String sparql, boolean nsm) throws EngineException {
         if (isDebug) {
             System.out.println("Input: \n" + sparql);
@@ -87,7 +84,7 @@ public class SPINProcess {
         String spin = sp.toString();
         return spin;
     }
-    
+
     public Graph toSpinGraph(String sparql) throws EngineException {
         return toGraph(toSpin(sparql));
     }
@@ -96,23 +93,23 @@ public class SPINProcess {
         return toGraph(toSpin(sparql), g);
     }
 
-     public String toSpin(ASTQuery ast) throws EngineException {
-         return toSpin(ast, null);
-     }
-     
-   public String toSpin(ASTQuery ast, String src) throws EngineException {
+    public String toSpin(ASTQuery ast) throws EngineException {
+        return toSpin(ast, null);
+    }
+
+    public String toSpin(ASTQuery ast, String src) throws EngineException {
         SPIN sp = SPIN.create();
         sp.visit(ast, src);
         String spin = sp.toString();
         return spin;
     }
-    
+
     public Graph toSpinGraph(ASTQuery ast, Graph g, String src) throws EngineException {
-        return toGraph(toSpin(ast, src), g);       
+        return toGraph(toSpin(ast, src), g);
     }
-    
-     public Graph toSpinGraph(ASTQuery ast) throws EngineException {
-        return toGraph(toSpin(ast, null), Graph.create());       
+
+    public Graph toSpinGraph(ASTQuery ast) throws EngineException {
+        return toGraph(toSpin(ast, null), Graph.create());
     }
 
     String toSpinSparql(ASTQuery ast) throws EngineException {
@@ -132,25 +129,24 @@ public class SPINProcess {
         return toSparql(spin, nsm);
     }
 
-     public Graph toGraph(String spin) throws EngineException {
-         graph = Graph.create();
-         return toGraph(spin, graph);
-     }
-     
-     
-     public Graph toGraph(String spin, Graph g) throws EngineException {
+    public Graph toGraph(String spin) throws EngineException {
+        graph = Graph.create();
+        return toGraph(spin, graph);
+    }
+
+    public Graph toGraph(String spin, Graph g) throws EngineException {
         Load ld = Load.create(g);
         ld.setEvent(false);
         try {
             ld.parse(new ByteArrayInputStream(spin.getBytes("UTF-8")), Load.TURTLE_FORMAT);
         } catch (LoadException ex) {
-            LoggerFactory.getLogger(SPINProcess.class.getName()).error(  "", ex);
+            LoggerFactory.getLogger(SPINProcess.class.getName()).error("", ex);
         } catch (UnsupportedEncodingException ex) {
-            LoggerFactory.getLogger(SPINProcess.class.getName()).error(  "", ex);
+            LoggerFactory.getLogger(SPINProcess.class.getName()).error("", ex);
         }
         return g;
-     }
-    
+    }
+
     public String toSparql(String spin, NSManager nsm) throws EngineException {
         Graph g = toGraph(spin);
         if (isDebug) {
@@ -158,11 +154,10 @@ public class SPINProcess {
         }
         return toSparql(g, nsm);
     }
-    
-        public String toSparql(Graph g) throws EngineException {
-            return toSparql(g, nsm);
-        }
 
+    public String toSparql(Graph g) throws EngineException {
+        return toSparql(g, nsm);
+    }
 
     public String toSparql(Graph g, NSManager nsm) throws EngineException {
         Transformer p = Transformer.create(g, Transformer.SPIN);

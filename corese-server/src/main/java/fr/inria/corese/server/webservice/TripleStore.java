@@ -12,6 +12,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.shacl.Shacl;
+import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -225,7 +226,11 @@ public class TripleStore implements URLParam {
                 map = shacl(query, ds);
             } else if (isConstruct(c)) {
                 map = construct(query, ds);
-            } else {
+            } 
+            else if (isSpin(c)) {
+                map = spin(query, ds);
+            }
+            else {
                 map = exec.query(query, ds);
                 log(exec, map, ds.getContext());
             }
@@ -328,6 +333,10 @@ public class TripleStore implements URLParam {
         return c.get(URI).get(c.get(URI).size()-1);
     }
     
+    boolean isSpin(Context c) {
+        return c.hasValue(TO_SPIN);
+    }
+    
     boolean isParse(Context c) {
         return c.hasValue(PARSE);
     }
@@ -362,6 +371,16 @@ public class TripleStore implements URLParam {
         return (c.hasValue(FEDERATE)) && 
                 ds.getUriList() != null && !ds.getUriList().isEmpty();
     }
+    
+    Mappings spin(String query, Dataset ds) throws EngineException {
+        Query q = getQueryProcess().compile(query);
+        SPINProcess sp = SPINProcess.create();
+        Graph g = sp.toSpinGraph(getQueryProcess().getAST(q));
+        Mappings map = Mappings.create(q);
+        map.setGraph(g);
+        return map;
+    }
+    
     
     /**
      * sparql?mode=shacl&uri=shape&query=select * where { ?s sh:conforms ?b }

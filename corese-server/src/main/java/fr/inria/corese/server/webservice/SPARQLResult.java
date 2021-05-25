@@ -278,7 +278,17 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
      * value: debug | trace.
      */
     void mode(Dataset ds, String name, String value) {
-        //System.out.println("URL mode: " + mode);
+        if (value.contains(";")) {
+            for (String val : value.split(";")) {
+                basicMode(ds, name, val);
+            }
+        }
+        else {
+            basicMode(ds, name, value);
+        }
+    }
+
+    void basicMode(Dataset ds, String name, String value) {
         ds.getContext().add(name, value);
 
         switch (name) {
@@ -341,11 +351,85 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
         getVisitor().afterRequest(request, resp, query, map, res);
     }
     
+         
+    ResultFormat getFormat(Mappings map, Dataset ds, String format, int type, List<String> transformList) {
+        // predefined parameter associated to URL in urlparameter.ttl
+        transformList = getValue(ds.getContext(), TRANSFORM, transformList);
+        
+        if (transformList == null || transformList.isEmpty()) {
+            return getFormatSimple(map, ds, format, type);
+        } else {
+            return getFormatTransform( map,  ds,  format,  type, prepare(ds.getContext(), transformList));           
+        }
+    }
+    
+    
+    ResultFormat getFormatTransform(Mappings map, Dataset ds, String format, int type, List<String> transformList) {
+            logger.info("Transform: " + transformList);
+            
+            boolean link = ds.getContext().hasAnyValue(LINK, LINK_REST);           
+            ResultFormat std ;
+            
+            if (link) {
+                // prepare (and return) std result with link to transform
+                std = getFormatSimple(map, ds, format, type);
+            }
+            else {
+                // return transform result 
+                // record std result in href document in case transform generate link href
+                int mytype = (type==ResultFormat.HTML_FORMAT) ? ResultFormat.UNDEF_FORMAT : type;
+                std = getFormatSimple(map, ds, format, mytype);
+                String url = TripleStore.document(std.toString(), "std");
+                ds.getContext().add(Context.STL_LINK, DatatypeMap.newResource(url));
+                logger.info("Query result in: " + url);
+            }
+            
+            Optional<ResultFormat> res = getFormatTransformList(map, ds, format, type, transformList);
+            if (res.isPresent()) {
+                // no link: return transformation result 
+                return res.get();
+            }
+            
+            // link: return query result
+            return std;
+    }
+    
+    Optional<ResultFormat> getFormatTransformList(Mappings map, Dataset ds, String format, int type, List<String> transformList) {
+        ResultFormat fst = null;
+
+        for (String transform : transformList) {
+            ResultFormat res = getFormatTransform(map, ds, format, type, transform);
+            if (fst == null) {
+                fst = res;
+            }
+            if (ds.getContext().hasValue(TRACE)) {
+                System.out.println(res);
+            }
+
+            if (ds.getContext().hasAnyValue(LINK, LINK_REST)) {
+                // mode=link
+                // save transformation result in document and return URL of document in map link
+                String url = TripleStore.document(res.toString(), getName(transform));
+                map.addLink(url);
+                logger.info("Transformation result in: " + url);
+            } else {
+                return Optional.of(res);
+            }
+        }
+        
+        if (ds.getContext().hasValue(LINK_REST)) {
+            return Optional.of(fst);
+        }
+        else {
+            return Optional.empty();
+        }
+    }
+    
     /**
      * predefined parameter associated to URL in urlparameter.ttl
      */
     List<String> getValue(Context ct, String name, List<String> value) {
-        if (value != null) {
+        if (value != null && !value.isEmpty()) {
             return value;
         }
         IDatatype dt = ct.get(name);
@@ -354,50 +438,39 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
         }
         return DatatypeMap.toStringList(dt);
     }
-       
-    ResultFormat getFormat(Mappings map, Dataset ds, String format, int type, List<String> transformList) {
-        // predefined parameter associated to URL in urlparameter.ttl
-        transformList = getValue(ds.getContext(), TRANSFORM, transformList);
-        if (transformList == null || transformList.isEmpty()) {
-            return getFormatSimple(map, ds, format, type);
-        } else {
-            Optional<ResultFormat> res = getFormatTransformList(map, ds, format, type, transformList);
-            if (res.isPresent()) {
-                // no link: return transformation result 
-                return res.get();
-            }
-            // link: return query result
-            return getFormatSimple(map, ds, format, type);
-        }
-    }
     
-    Optional<ResultFormat> getFormatTransformList(Mappings map, Dataset ds, String format, int type, List<String> transformList) {
-        for (String transform : transformList) {
-            transform = NSManager.nsm().toNamespace(transform);
-            List<String> list = getFormatList(transform);
-            if (list!=null) {
-                // st:all -> st:xml st:json ...
-                getFormatTransformList(map, ds, format, type, list);
-            } else {
-                ResultFormat res = getFormatTransform(map, ds, format, type, transform);
-
-                if (ds.getContext().hasValue(LINK)) {
-                    // mode=link
-                    // save transformation result in document and return URL of document in map link
-                    String url = TripleStore.document(res.toString(), getName(transform));
-                    map.addLink(url);
-                    logger.info("Transformation result in: " + url);
-                } else {
-                    return Optional.of(res);
+    /**
+     * trans;trans -> list of trans
+     * st:all -> st:xml st:json
+     */
+    List<String> prepare(Context c, List<String> transformList) {
+        List<String> list = new ArrayList<>();
+        
+        for (String name : transformList) {
+            if (name.contains(";")) {
+                for (String key : name.split(";")) {
+                    prepare(c, key, list);
                 }
             }
+            else {
+                prepare(c, name, list);
+            }
         }
-        return Optional.empty();
+
+        return list;
     }
     
-    List<String> getFormatList(String name) {
-        return Transformer.getFormatList(name);
+    void prepare(Context c, String name, List<String> list) {
+        name = c.nsm().toNamespace(name);
+        List<String> alist = Transformer.getFormatList(name);
+        if (alist == null) {
+            list.add(name);
+        } else {
+            list.addAll(alist);
+        }
     }
+    
+   
     
     String getName(String transform) {
         if (transform.contains("#")) {

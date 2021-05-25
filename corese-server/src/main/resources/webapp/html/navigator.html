@@ -12,17 +12,17 @@
         <ul class="nav navbar-nav">
             <li><a href="javascript:trans('/service/sparql');">SPARQL Tutorial</a></li>
             <!-- <li><a href="javascript:trans('/spin/tospin');">SPARQL-SPIN Converter</a></li>-->
-            
+
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">SHACL <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">                
                     <li><a href="javascript:trans('/service/shape');">Shacl</a></li>
                     <li><a href="javascript:trans('/service/shex');">Shex</a></li>
                 </ul>
-             </li>
-                                  
-                                  
-           
+            </li>
+
+
+
             <!--
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Physics <span class="caret"></span></a>
@@ -38,7 +38,7 @@
                 </ul>
             </li> 
             -->
-           
+
 
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">OWL <span class="caret"></span></a>
@@ -51,7 +51,7 @@
                     <li><a href="javascript:trans('/template?profile=st:display&mode=http://ns.inria.fr/sparql-template/owl%23html&param=/data/primer.owl');">OWL Syntax</a></li>
                     <li><a href="javascript:trans('/template?profile=st:display&mode=st:hturtle&param=/data/primer.owl');">OWL Turtle</a></li>
                     <li><a href="javascript:trans('/template?profile=st:display&mode=http://ns.inria.fr/sparql-template/rdfxml%23result&param=/data/primer.owl');">OWL RDF/XML</a></li>
-                    
+
                     <li><a href="javascript:trans('/service/class?param=http://www.w3.org/1999/02/22-rdf-syntax-ns');">RDF Class</a></li>
                     <li><a href="javascript:trans('/service/class?param=http://www.w3.org/2000/01/rdf-schema');">RDFS Class</a></li>
                     <li><a href="javascript:trans('/service/class?param=http://www.w3.org/2002/07/owl');">OWL Class</a></li>
@@ -59,11 +59,11 @@
                     <li><a href="javascript:trans('/service/signature?param=http://ns.inria.fr/huto/huto.ttl');">Time Ontology Signature</a></li>                   
                 </ul>
             </li>
-            
-                       
-           
-            
-             <li class="dropdown">
+
+
+
+
+            <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">AI4EU <span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu"> 
                     <li><a href="javascript:trans('/service/ai4eu');">AI4EU Query</a></li>
@@ -78,16 +78,29 @@
                     <li><a href="javascript:trans('/service/individual?param=/data/demo/ai4eu/ai4eu.ttl');">AI4EU Individual</a></li>
                 </ul>
             </li> 
-                        
-              <li class="dropdown">
+
+            <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Application<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu"> 
                     <li><a href="javascript:trans('/service/halopendata');">HAL</a></li>
                     <li><a href="javascript:trans('/service/d2kab');">D2KAB</a></li>
                     <li><a href="javascript:trans('/service/index');">Graph Index</a></li>
                 </ul>
-              </li>
-            
+            </li>
+
+            <li class="dropdown">
+                <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Extended Service<span class="caret"></span></a>
+                <ul class="dropdown-menu" role="menu"> 
+                    <li><a href="/sparql?mode=link&transform=st:all&query=select ?n (count(?o) as ?c) where {?s ?p ?n ; ?q ?o filter regex(?p, 'name') } group by ?s order by ?c">SPARQL+Formats</a></li>
+                    <li><a href="/halopendata/sparql?mode=link&transform=stm:mapper&query=prefix dbo: <http://fr.dbpedia.org/ontology%2F> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos%23>select * where {graph st:geo {db:Amérique dbo:include ?location} service <http://fr.dbpedia.org/sparql> {select * where {?location geo:lat ?lat ; geo:long ?lon}}}">SPARQL+Map</a></li>
+                    <li><a href="/halopendata/sparql?mode=log&query=prefix dbo: <http://fr.dbpedia.org/ontology%2F> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos%23>select * where {graph st:geo {db:Amérique dbo:include ?location} service <http://fr.dbpedia.org/sparql?nboutput=10> {select * where {?location geo:lat ?lat ; geo:long ?lon}}}">SPARQL+Log</a></li>
+                    <li><a href="/sparql?mode=link&transform=d3:chart&query=select ?n (count(?o) as ?c) where {?s ?p ?n ; ?q ?o filter regex(?p, 'name') } group by ?s order by ?c">SPARQL+Chart</a></li>
+                    <li><a href="/sparql?mode=link&transform=d3:graphic&query=construct where {?s ?p ?o} group by ?s">SPARQL+Graphic</a></li>
+<!--                    <li><a href="/sparql?mode=link&transform=d3:hierarchy&param=property~rdfs:subPropertyOf;rdfs:domain;rdfs:range&query=construct where {?s ?p ?o}">SPARQL+Hierarchy</a></li>-->
+                    <li><a href="/sparql?mode=link&transform=d3:hierarchy&param=prefix~h:http://www.inria.fr/2015/humans%23&param=property~h:hasMother;h:hasFather;h:hasParent;h:hasFriend;h:hasBrother;h:hasSister&query=construct where {?s ?p ?o}">SPARQL+Hierarchy</a></li>
+                    <li><a href="/sparql?mode=link&mode=spin&transform=st:turtle&query= select * where {?s ?p ?o}">SPARQL to SPIN</a></li>
+                </ul>
+            </li>
 
 
             <li class="dropdown">
@@ -100,11 +113,11 @@
                     <li><a href="javascript:trans('/template?transform=st:calendar');">Calendar</a></li>
                     <li><a href="javascript:trans('/service/geo');">Enclaves</a></li>
                     <li><a href="javascript:trans('/service/inria');">Inria</a></li>
-                    
+
                     <li><a href="javascript:trans('/template?profile=st:dbhistory');">DBpedia Update History</a></li>
                     <li><a href="javascript:trans('/template?profile=st:dbhistorytype&mode=dbo:Artist');">DBpedia Update History Artist</a></li>
                     <li><a href="javascript:trans('/template?profile=st:dbhistory&uri=http://ns.inria.fr/sparql-template/date/01/2002');">DBpedia Update History (2002)</a></li>
-                    
+
                     <li><a href="javascript:trans('/template?profile=st:calendar1');">DBpedia Calendar Born</a></li>
                     <li><a href="javascript:trans('/template?profile=st:calendar2');">DBpedia Calendar Decease</a></li>
                     <li><a href="javascript:trans('/template?profile=st:calendar3');">DBpedia Calendar Event</a></li>
@@ -112,25 +125,25 @@
                     <li><a href="javascript:trans('/template?profile=st:gcalendar2');">DBpedia Calendar Decease (2)</a></li>
                 </ul>
             </li>  
-            
+
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Demo<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu">
                     <li><a href="javascript:trans('/service/demo');">Demo</a></li>
                     <li><a href="http://sms.i3s.unice.fr/demo-sms?param=Delphinapterus+leucas" onclick="window.open('http://sms.i3s.unice.fr/demo-sms?param=Delphinapterus+leucas'); return false;">SPARQL Micro-Services</a></li>
-                    
+
                     <li><a href="javascript:trans('/template?profile=st:sparqltc&param=/data/query/test.rq');">SPARQL Typechek</a></li>
                     <li><a href="javascript:trans('/template?profile=st:sparqldsp&param=/data/query/test.rq&mode=st:spinhtml');">SPARQL</a></li>
                     <li><a href="javascript:trans('/template?profile=st:sparqldsp&param=/data/query/test.rq&mode=st:mix');">SPARQL + SPIN</a></li>
                     <li><a href="javascript:trans('/template?profile=st:sparqldsp&param=/data/query/test.rq&mode=st:hturtle');">SPARQL 2 SPIN</a></li>
-                    
+
                 </ul>
             </li>
-                    
-                    
-                    <!--<li><a href="javascript:trans('/service/log');">Server Log</a></li>-->
-                </ul>
-            </li>   
+
+
+            <!--<li><a href="javascript:trans('/service/log');">Server Log</a></li>-->
+        </ul>
+        </li>   
 
 
 

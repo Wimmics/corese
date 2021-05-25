@@ -18,6 +18,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import static fr.inria.corese.sparql.triple.parser.URLParam.LINK;
 import java.util.HashMap;
 
 /**
@@ -30,6 +31,16 @@ public class ResultFormat implements ResultFormatDef {
     public static final String SPARQL_RESULTS_JSON = "application/sparql-results+json";
     public static final String SPARQL_RESULTS_CSV  = "application/sparql-results+csv";
     public static final String SPARQL_RESULTS_TSV  = "application/sparql-results+tsv";
+    
+    static final String HEADER = 
+              "<html>\n"
+            + "<head>\n"
+            + "    <meta http-equiv=\"Content-Type\" content=\"text/html; charset=UTF-8\"/>"
+            + "</head>\n"
+            + "<body>\n"
+            + "<pre>%s</pre>"
+            + "</body>\n"
+            + "</html>\n";
     
     public static final String XML         = "application/xml";
     public static final String HTML        = "text/html";
@@ -52,6 +63,7 @@ public class ResultFormat implements ResultFormatDef {
     private Binding bind;
     private Context context;
     int type = UNDEF_FORMAT;
+    private int transformType = UNDEF_FORMAT;
     private int construct_format = DEFAULT_CONSTRUCT_FORMAT;
     private int select_format = DEFAULT_SELECT_FORMAT;
     private long nbResult = Long.MAX_VALUE;
@@ -179,6 +191,8 @@ public class ResultFormat implements ResultFormatDef {
     static public ResultFormat create(Mappings m, int type, String trans) {
         ResultFormat rf = createFromTrans(m, trans);
         if (rf != null) {
+            // remember the type in case it is html asked by bowser
+            rf.setTransformType(type);
             return rf;
         }
         return create(m, type).transform(trans);
@@ -193,8 +207,14 @@ public class ResultFormat implements ResultFormatDef {
                 return create(m, ResultFormat.XML_FORMAT);
             case Transformer.JSON:
                 return create(m, ResultFormat.JSON_FORMAT);
+            case Transformer.JSON_LD:
+                return create(m, ResultFormat.JSON_LD_FORMAT);    
             case Transformer.RDF:
                 return create(m, ResultFormat.RDF_FORMAT);
+            case Transformer.RDFXML:
+                return create(m, ResultFormat.RDF_XML_FORMAT); 
+            //case Transformer.TURTLE:
+              //  return create(m, ResultFormat.TURTLE_FORMAT);     
             default: 
                 return null;
         }
@@ -328,7 +348,17 @@ public class ResultFormat implements ResultFormatDef {
         if (getBind() != null) {
             t.setBinding(getBind());
         }
-        return t.toString();
+        String str = t.toString();
+//        if (isHTML()) {
+//            // transform is for display HTML in browser
+//            str = html(str);
+//        }
+        return str;
+    }
+    
+    boolean isHTML() {
+        return ((type() == HTML_FORMAT || getTransformType() == HTML_FORMAT) && 
+                (getContext()==null || !getContext().hasValue(LINK)));
     }
     
     public ResultFormat init(Dataset ds) {
@@ -383,7 +413,7 @@ public class ResultFormat implements ResultFormatDef {
             default:
                 // e.g. HTML
                 String str = TripleFormat.create(getGraph()).toString(node);
-                if (type == HTML_FORMAT) {
+                if (type() == HTML_FORMAT) {
                     return html(str);
                 }
                 return str;
@@ -445,6 +475,11 @@ public class ResultFormat implements ResultFormatDef {
         String res = processBasic(map, mytype);
         
         if (type() == HTML_FORMAT) {
+            // browser need html
+            return html(res);
+        }
+        else if (getTransformType() == HTML_FORMAT && (getContext() == null || !getContext().hasValue(LINK))) {
+            // transform=st:xml and no mode=link :  browser nee html
             return html(res);
         }
         //System.out.println("result format: " + res);
@@ -494,7 +529,7 @@ public class ResultFormat implements ResultFormatDef {
     }
     
     String html(String str) {
-        return String.format("<pre>%s</pre>", str.replace("<", "&lt;"));
+        return String.format(HEADER, str.replace("<", "&lt;"));
     }
 
     public void write(String name) throws IOException {
@@ -667,6 +702,14 @@ public class ResultFormat implements ResultFormatDef {
      */
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public int getTransformType() {
+        return transformType;
+    }
+
+    public void setTransformType(int transformType) {
+        this.transformType = transformType;
     }
     
     

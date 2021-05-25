@@ -26,6 +26,7 @@ public class TripleFormat extends RDFFormat {
     static final String CGRAPH = "}";
 
     boolean isGraph = false;
+    private Mappings mappings;
 
     TripleFormat(Graph g, NSManager n) {
         super(g, n);
@@ -38,9 +39,9 @@ public class TripleFormat extends RDFFormat {
     public static TripleFormat create(Mappings map) {
         Graph g = (Graph) map.getGraph();
         if (g != null) {            
-            return create(g, getNSM(map));
+            return create(g, getNSM(map)).setMappings(map);
         }
-        return create(Graph.create());
+        return create(Graph.create()).setMappings(map);
     }
 
     public static TripleFormat create(Graph g) {
@@ -52,9 +53,9 @@ public class TripleFormat extends RDFFormat {
         if (g != null) {            
             TripleFormat t = new TripleFormat(g, getNSM(map));
             t.setGraph(isGraph);
-            return t;
+            return t.setMappings(map);
         }
-        return create(Graph.create());
+        return create(Graph.create()).setMappings(map);
     }
     
     static NSManager getNSM(Mappings map) {
@@ -154,7 +155,20 @@ public class TripleFormat extends RDFFormat {
 
     @Override
     void header(StringBuilder bb) {
+        link(bb);
         bb.append(nsm.toString(PREFIX, false, false));
+    }
+    
+    void link(StringBuilder bb) {
+        if (getMappings() != null && !getMappings().getLinkList().isEmpty()) {
+            bb.append("#").append(NL);
+
+            for (String link : getMappings().getLinkList()) {
+                bb.append("# link href = ").append(link).append(NL);
+            }
+
+            bb.append("#").append(NL);
+        }
     }
 
     void print(Node gNode, Node node) {
@@ -234,6 +248,15 @@ public class TripleFormat extends RDFFormat {
             uri(dt1.getLabel());
         }
 
+    }
+
+    public Mappings getMappings() {
+        return mappings;
+    }
+
+    public TripleFormat setMappings(Mappings mappings) {
+        this.mappings = mappings;
+        return this;
     }
 
 }

@@ -91,6 +91,9 @@ public class NSManager extends ASTObject {
     public static final String STL = ExpType.STL;
     public static final String D3 = STL + "d3#";
     public static final String STL_FORMAT = STL + "format/";
+    // transform=stm:mapper generate map
+    public static final String STL_MAPPER = STL + "navlab#";    
+    public static final String STL_D3 = STL + "d3#";    
     public static final String JAVA = ExpType.EXT + "java/";
     public static final String DS = ExpType.EXT + "ds/";
     public static final String CAST = ExpType.EXT + "cast/";
@@ -289,6 +292,8 @@ public class NSManager extends ASTObject {
         def.put(FPPN, FPPP);
         def.put(PPN, PPP);
         def.put(STL, STL_PREF);
+        def.put(STL_MAPPER, "stm");
+        //def.put(STL_D3, "std");
         def.put(D3, "d3");
         def.put(SWL, SWL_PREF);
         def.put(EXT, EXT_PREF);

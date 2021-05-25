@@ -1,0 +1,56 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="module" src="/js/d3-graph-visualizer.js"></script>
+    <script nomodule src="/js/d3-graph-visualizer-nomodule.js"></script>
+
+    <script type="text/javascript" src="/js/d3.v4.min.js"></script>
+    <script type="text/javascript" src="/js/d3sparql.js"></script>
+    <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
+    <script type="module" src="/js/CoreseD3.js"></script>
+    <script type="module" src="/js/SelectDrawer.js"></script>
+    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min.js"></script>
+    <link type="text/css" href="/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+
+<div>
+	<div class="panel" style="overflow:auto;resize:both;">
+		<div class="panel-heading" align="center"><strong>D3.js Graph</strong></div>
+		<div class="panel-body" align="left" >
+			<ul class="nav nav-tabs">
+				<li class="active"><a data-toggle="tab" href="#ontologyDisplay">Ontology</a></li>
+				<li><a data-toggle="tab" href="#graphDisplay">Graph</a></li>
+			</ul>
+			<div class="tab-content">
+                                <div id="ontologyDisplay" class="tab-pane fade in active">
+					<svg id='ontology%1$s' width="100%%" height="100%%"></svg>       
+				</div>				
+				<div id="graphDisplay" class="tab-pane fade ">
+					<svg id='graph%1$s' width="100%%" height="100%%"></svg>       
+				</div>
+			</div>
+		</div>
+	</div>
+</div>
+
+<script>
+	var data%1$s = {
+		%4$s
+	};
+</script>
+
+<script type="module">
+	import {D3GraphVisualizer} from "/js/d3-graph-visualizer.js";
+	D3GraphVisualizer.drawRdf(data%1$s, '#graph%1$s');
+	D3GraphVisualizer.drawOntology(data%1$s, '#ontology%1$s', 
+	{"properties": [ %2$s ], "nodePropertiesToDisplay": [ %3$s ]  } );
+</script>
+
+<script nomodule>
+	D3GraphVisualizer.drawRdf(data%1$s, '#graph%1$s');
+    D3GraphVisualizer.drawOntology(data%1$s, '#ontology%1$s');
+</script>
+
+</body>
+</html>

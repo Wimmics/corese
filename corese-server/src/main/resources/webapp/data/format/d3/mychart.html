@@ -1,0 +1,53 @@
+<html>
+<head>
+    <meta http-equiv="Content-Type" content="text/html; charset=UTF-8"/>
+    <script type="module" src="/js/d3-graph-visualizer.js"></script>
+    <script nomodule src="/js/d3-graph-visualizer-nomodule.js"></script>
+
+    <script type="text/javascript" src="/js/d3.v4.min.js"></script>
+    <script type="text/javascript" src="/js/d3sparql.js"></script>
+    <script src="https://d3js.org/d3-selection-multi.v1.min.js"></script>
+    <script type="module" src="/js/CoreseD3.js"></script>
+    <script type="module" src="/js/SelectDrawer.js"></script>
+    <script type="module" src="https://cdnjs.cloudflare.com/ajax/libs/d3-cloud/1.2.5/d3.layout.cloud.min.js"></script>
+    <link type="text/css" href="/css/style.css" rel="stylesheet"/>
+</head>
+<body>
+    
+<div>
+    <div class="panel" id="selectViewerPanel" style="overflow:auto;resize:both;">
+        <div class="panel-heading" align="center"><strong>Viewer for select results using <a href='https://github.com/ktym/d3sparql'>d3sparql</a></strong></div>
+        <div class="panel-body" align="left" >
+            <ul id="navbar-header" class="nav nav-tabs">
+                <!--				<li class="active"><a data-toggle="tab" href="#viewerSelector">Graph</a></li> -->
+            </ul>
+            <div id="navbar-content" class="tab-content">
+                <div id="viewerSelector" class="tab-pane fade in active">
+                    <select id="selector">
+                        <option value="barchart">barchart</option>
+                        <option value="piechart">piechart</option>
+                    </select>
+                    <button id="addViewer" onclick="window.pageDrawer.addViewer()">Add Viewer</button>
+                    <div id="viewerConfiguration"></div>
+                    <svg id="result"></svg>
+                </div> 
+            </div>
+        </div>
+    </div>
+</div>
+<script>
+	var data%1$s = %2$s;
+</script>
+
+<script type="module">
+	import {SelectDrawer} from "/js/CoreseD3.js";
+	window.pageDrawer = SelectDrawer.manage(data%1$s, "#selectViewerPanel");
+</script>
+
+<script nomodule>
+	window.pageDrawer = SelectDrawer.manage(data%1$s, "#selectViewerPanel");
+</script>
+
+</body>
+</html>
+

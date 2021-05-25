@@ -76,6 +76,8 @@ public class Context extends ASTObject implements URLParam {
     public static final String STL_PREFIX         = STL + "prefix";
     public static final String STL_MAPPINGS       = STL + "mappings";
     public static final String STL_RESTRICTED     = STL + "restricted";
+    public static final String STL_HIERARCHY      = STL + "hierarchy";
+    public static final String STL_LINK           = STL + "link";
    
     
     
@@ -126,7 +128,7 @@ public class Context extends ASTObject implements URLParam {
         table.keySet().toArray(keys);
         Arrays.sort(keys);
         for (String key : keys) {           
-            sb.append(getNSM().toPrefix(key, true));
+            sb.append( nsm().toPrefix(key, true));
             sb.append(" : ");
             sb.append((table.get(key) == null) ? "null" : table.get(key));
             sb.append(NL);
@@ -142,7 +144,7 @@ public class Context extends ASTObject implements URLParam {
         return sb.toString();
     }
     
-    NSManager getNSM(){
+    public NSManager  nsm(){
         if (nsm == null){
             nsm = NSManager.create();
         }
@@ -158,7 +160,7 @@ public class Context extends ASTObject implements URLParam {
             sb.append("  Service: ").append(getService());
         }
         if (getProfile() != null) {
-            sb.append("  Profile: ").append(getNSM().toPrefix(getProfile()));
+            sb.append("  Profile: ").append( nsm().toPrefix(getProfile()));
         }
         if (get(STL_REMOTE_HOST) != null) {
             sb.append("  Host: ").append(get(STL_REMOTE_HOST).getLabel());
@@ -358,6 +360,34 @@ public class Context extends ASTObject implements URLParam {
         return this;
     }
     
+    /**
+     * URL param=property~skos:broader
+     * key = property ; value = skos:broader
+     */
+    public void decode(String key, String value) {
+        if (value.contains(";")) {
+            for (String val : value.split(";")) {
+                basicDecode(key, val);
+            }
+        }
+        else {
+            basicDecode(key, value);
+        }
+    }
+    
+    public void basicDecode(String key, String value) {        
+        switch (key) {
+            case PROPERTY: 
+                add(STL_HIERARCHY, DatatypeMap.newResource(nsm().toNamespace(value)));
+                break;
+            case PREFIX:
+                String pr = value.substring(0, value.indexOf(":"));
+                String ns = value.substring(value.indexOf(":")+1);
+                 nsm().defPrefix(pr, ns);
+                break;
+        }
+    }
+    
      public Context set(String name, int n) {
         set(name, DatatypeMap.newInstance(n));
         return this;
@@ -514,6 +544,15 @@ public class Context extends ASTObject implements URLParam {
     
     public boolean hasValue(String name) {
         return get(name) != null;
+    }
+    
+    public boolean hasAnyValue(String... name) {
+        for (String key : name) {
+            if (hasValue(key)) {
+                return true;
+            }
+        }
+        return false;
     }
     
     public IDatatype getName(String name) {

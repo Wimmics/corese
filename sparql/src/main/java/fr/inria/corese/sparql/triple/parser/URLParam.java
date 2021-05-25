@@ -62,9 +62,14 @@ public interface URLParam {
     static final String REJECT = "reject";
     static final String DOCUMENT = "document";
     static final String LINK = "link";
+    // display first transform, link other transform
+    static final String LINK_REST = "linkrest";
     static final String TRANSFORM = "transform";
     static final String PARSE = "parse";
     static final String COMPILE = "compile";
+    static final String PROPERTY = "property";
+    static final String PREFIX = "prefix";
+    static final String TO_SPIN = "spin";
 
     // values of binding=
     static final String VALUES = "values";

@@ -2091,7 +2091,9 @@ public class ASTQuery
     public Constant createQName(String qname) {
         String uri = getNSM().toNamespaceB(qname);      
         Constant cst = Constant.createResource(qname, uri);
-        if (qname.equals(uri)) {
+        if (qname == uri) { //(qname.equals(uri)) {
+            // use == instead of equals because 
+            // with prefix bif: <bif:> we have bif:test equals <bif:test>
             addError("Undefined prefix: ", qname);
         }
         cst.setQName(true);
@@ -2102,7 +2104,7 @@ public class ASTQuery
     public Constant createQNameURI(String uri) {
         String qname = getNSM().toPrefix(uri, true);
         Constant cst = Constant.createResource(qname, uri);
-        if (! uri.equals(qname)) {
+        if (uri != qname) { //(! uri.equals(qname)) {
            cst.setQName(true); 
         }       
         return cst;

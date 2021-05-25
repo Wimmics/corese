@@ -306,13 +306,17 @@ public class URLServer implements URLParam {
                     if (isShare(name) && !c.hasValue(name)) {
                         // list of parameter name
                         c.add(EXPORT, name);
-                    } 
+                    }
                     // parameter value
                     c.add(name, list[1]);
+                } else {
+                    c.decode(key, list[1]);
                 }
             }
         }
     }
+    
+
     
     public void decode(Context c) {
         if (hasParameter()) {

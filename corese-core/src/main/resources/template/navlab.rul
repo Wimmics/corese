@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Wed May 12 11:30:56 CEST 2021
+Fri May 21 15:23:49 CEST 2021
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -51,9 +51,11 @@ where {
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template st:mapper {
-    st:call-template(st:maplist, ft:mapper.html, ?list)        
+    st:call-template(st:maplist, ft:mapper.html, ?list, ?text)        
 } 
 where {
+    bind (coalesce(st:call-template(st:link), "link undef") as ?text)
+
     {select (aggregate(xt:list(?location, ?lat, ?lon)) as ?list)
     where {
         select distinct ?location ?lon ?lat where {
@@ -78,6 +80,24 @@ template st:icon(?label, ?ic) {
   }
 }
 where {}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:link {
+    format {
+        "<a href='%1$s'>%1$s</a><br/>"
+        str(?url)
+    }
+}
+where {
+    bind (xt:print("link:", coalesce(st:get(st:link), "undef")) as ?aa)
+    values ?url { unnest(st:get(st:link)) }
+    bind (xt:print("link:", ?url) as ?tmp)
+}
 ]]>
 </body>
 </rule>
@@ -252,7 +272,7 @@ function us:person(){
 #
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
-template st:maplist(?format, ?list) {
+template st:maplist(?format, ?list, ?text) {
   
 format {
   ?format
@@ -261,10 +281,9 @@ format {
   str(?lon)
   coalesce(st:get(st:mapzoom), 4)  
   coalesce(st:get(st:mapicon1), "/img/smarker.png")
-  
   st:call-template(st:map2, ?rest)
-          
   coalesce(st:get(st:mapsize), "mapmedium")
+  ?text
 }
    
 }
@@ -585,7 +604,7 @@ where {
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template st:map {
-    st:call-template(st:maplist, ft:map.html, ?list)        
+    st:call-template(st:maplist, ft:map.html, ?list, "")        
 } 
 where {
     bind (st:get(st:location) as ?list)

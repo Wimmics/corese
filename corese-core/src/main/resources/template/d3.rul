@@ -2,19 +2,18 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 21 13:43:42 CEST 2019
+Fri May 21 12:40:53 CEST 2021
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
 <rule>
 <body>
 <![CDATA[
-template st:map {
-    st:call-template-with(st:navlab, st:map, ?list)        
+template st:mapper {
+    st:call-template-with(st:navlab, st:mapper)        
 } 
 where {
-    bind (st:get(st:pos) as ?list)
-    filter (bound(?list) && xt:size(?list) > 0)
+    
 }
 ]]>
 </body>
@@ -62,21 +61,41 @@ where {
 <body>
 <![CDATA[
 prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
-template st:title {
-
-  if (bound(?title), st:format("<h2>%s</h2>", str(?title)), "")
-  if (bound(?uri),   st:format("<h3>URI: %s</h3>", str(?uri)), "")
-  if (bound(?param) || bound(?mode), 
-    st:format("<h3>%s %s %s</h3>", coalesce(str(?param), ""), coalesce(str(?arg), ""), coalesce(str(?mode), "")), 
-    "")
-
+template st:hierarchy {
+  format {
+      ft:hierarchy.html
+      ?id
+      us:plist(?list)
+      us:plist(?plist)
+      ?graph
+  }
 } 
 where {
-    bind (st:get(st:title) as ?title)
-    bind (st:get(st:get(st:uriparam)) as ?uri)
-    bind (st:get(st:param) as ?param)
-    bind (st:get(st:mode)  as ?mode)
-    bind (st:get(st:arg)   as ?arg)
+    bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
+    bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf))    as ?list)
+    bind (coalesce(st:get(st:nodePropertyDisplay), xt:list("url")) as ?plist)
+    bind (st:call-template(st:graph) as ?graph)
+    bind (if (st:get(st:trace, true), xt:print(?graph), true) as ?tmp)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix d3: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:chart {
+    format {
+        d3:mychart.html
+        ?id
+        coalesce(xt:json(coalesce(st:get(st:mappings), xt:mappings())), 
+            "{ error: 'error when reading st:mappings'}")
+    }
+}
+where {
+    bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
 }
 ]]>
 </body>
@@ -103,105 +122,6 @@ where {
     bind (if (st:get(st:trace, true), xt:print(?graph), true) as ?tmp)
 }
 
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
-template st:ontology {
-  format {
-      ft:ontology.html
-      ?id
-      us:plist(?list)
-      us:plist(?plist)
-      ?graph
-  }
-} 
-where {
-    bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
-    bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf))    as ?list)
-    bind (coalesce(st:get(st:nodePropertyDisplay), xt:list("url")) as ?plist)
-    bind (st:call-template(st:graph) as ?graph)
-    bind (if (st:get(st:trace, true), xt:print(?graph), true) as ?tmp)
-    #bind (if (true, xt:print(?graph), true) as ?tmp)
-}
-
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:nodes {
-  "\"nodes\":[\n"
-  group {
-  
-     format {
-            '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s}'        
-            ?id us:label(?s) us:kind(?s) us:nodeClass(?s) 
-             us:url(?s)
-             reduce(rq:concat, maplist(us:property, ?s, us:nodePropertyList()))
-      }
-        
-    ; separator = ",\n"
-  }
-  "\n]\n"
-} 
-where {
-   values (?s ?id) { unnest(us:getNodes()) }
-}
-
-
-# st:link : service?uri=...&profile=...
-# st:url  : URL either ?s itself or a proxy URL
-function us:url(?s) {
-    coalesce(
-        st:format(', "link": "%s"', st:cget(st:link, ?s)),
-        st:format(',  "url": "%s"', st:cget(st:url,  ?s)),
-        if (isURI(?s), st:format(',  "url": "%s"', ?s), "")
-    )
-}
-
-
-function us:property(?s, ?list) {
-    let ((?name ?uri) = ?list) {
-        coalesce(st:format(', "%s": "%s"', ?name, st:cget(?uri, ?s)), "")
-    }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-template st:edges {
-  "\"edges\":[\n"
-  
-  group { 
-  
-    format {
-        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s", "group": "%s" }'
-        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?g, ?p) us:edgeGroup(?g, ?p)
-    }
-    
-    ; separator = ",\n"
-  }
-  
-  "\n]\n"
-} 
-where {
-    select * where {
-        graph ?g { ?s ?p ?o }
-        bind (us:triple(?s, ?p, ?o) as ?ss)
-    } 
-    order by ?p ?s ?o
-    limit 5000
-}
 ]]>
 </body>
 </rule>
@@ -319,6 +239,158 @@ function us:pname(?x) {
     if (isURI(?x), st:turtle(?x), ?x)
 }
   
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:map {
+    st:call-template-with(st:navlab, st:map, ?list)        
+} 
+where {
+    bind (st:get(st:pos) as ?list)
+    filter (bound(?list) && xt:size(?list) > 0)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:title {
+
+  if (bound(?title), st:format("<h2>%s</h2>", str(?title)), "")
+  if (bound(?uri),   st:format("<h3>URI: %s</h3>", str(?uri)), "")
+  if (bound(?param) || bound(?mode), 
+    st:format("<h3>%s %s %s</h3>", coalesce(str(?param), ""), coalesce(str(?arg), ""), coalesce(str(?mode), "")), 
+    "")
+
+} 
+where {
+    bind (st:get(st:title) as ?title)
+    bind (st:get(st:get(st:uriparam)) as ?uri)
+    bind (st:get(st:param) as ?param)
+    bind (st:get(st:mode)  as ?mode)
+    bind (st:get(st:arg)   as ?arg)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:graphic {
+  format {
+      ft:graphic.html
+      st:call-template(st:graph)
+  }
+} 
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:ontology {
+  format {
+      ft:ontology.html
+      ?id
+      us:plist(?list)
+      us:plist(?plist)
+      ?graph
+  }
+} 
+where {
+    bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
+    bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf))    as ?list)
+    bind (coalesce(st:get(st:nodePropertyDisplay), xt:list("url")) as ?plist)
+    bind (st:call-template(st:graph) as ?graph)
+    bind (if (st:get(st:trace, true), xt:print(?graph), true) as ?tmp)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:nodes {
+  "\"nodes\":[\n"
+  group {
+  
+     format {
+            '{"id": "%s", "label": "%s", "group": "%s", "class": "%s" %s %s}'        
+            ?id us:label(?s) us:kind(?s) us:nodeClass(?s) 
+             us:url(?s)
+             reduce(rq:concat, maplist(us:property, ?s, us:nodePropertyList()))
+      }
+        
+    ; separator = ",\n"
+  }
+  "\n]\n"
+} 
+where {
+   values (?s ?id) { unnest(us:getNodes()) }
+}
+
+
+# st:link : service?uri=...&profile=...
+# st:url  : URL either ?s itself or a proxy URL
+function us:url(?s) {
+    coalesce(
+        st:format(', "link": "%s"', st:cget(st:link, ?s)),
+        st:format(',  "url": "%s"', st:cget(st:url,  ?s)),
+        if (isURI(?s), st:format(',  "url": "%s"', ?s), "")
+    )
+}
+
+
+function us:property(?s, ?list) {
+    let ((?name ?uri) = ?list) {
+        coalesce(st:format(', "%s": "%s"', ?name, st:cget(?uri, ?s)), "")
+    }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:edges {
+  "\"edges\":[\n"
+  
+  group { 
+  
+    format {
+        '{"source": "%s", "target": "%s", "label": "%s", "id": "e%s", "class": "%s", "group": "%s" }'
+        us:get(?s) us:get(?o) us:label(?p) kg:number() us:edgeClass(?g, ?p) us:edgeGroup(?g, ?p)
+    }
+    
+    ; separator = ",\n"
+  }
+  
+  "\n]\n"
+} 
+where {
+    select * where {
+        graph ?g { ?s ?p ?o }
+        bind (us:triple(?s, ?p, ?o) as ?ss)
+    } 
+    order by ?p ?s ?o
+    limit 5000
+}
 ]]>
 </body>
 </rule>

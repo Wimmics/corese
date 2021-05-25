@@ -1,0 +1,18 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:hierarchy {
+  format {
+      ft:hierarchy.html
+      ?id
+      us:plist(?list)
+      us:plist(?plist)
+      ?graph
+  }
+} 
+where {
+    bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
+    bind (coalesce(st:get(st:hierarchy), xt:list(rdfs:subClassOf))    as ?list)
+    bind (coalesce(st:get(st:nodePropertyDisplay), xt:list("url")) as ?plist)
+    bind (st:call-template(st:graph) as ?graph)
+    bind (if (st:get(st:trace, true), xt:print(?graph), true) as ?tmp)
+}
+

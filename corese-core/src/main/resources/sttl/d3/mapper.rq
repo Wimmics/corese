@@ -1,0 +1,6 @@
+template st:mapper {
+    st:call-template-with(st:navlab, st:mapper)        
+} 
+where {
+    
+}

@@ -1,0 +1,12 @@
+prefix d3: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:chart {
+    format {
+        d3:mychart.html
+        ?id
+        coalesce(xt:json(coalesce(st:get(st:mappings), xt:mappings())), 
+            "{ error: 'error when reading st:mappings'}")
+    }
+}
+where {
+    bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
+}

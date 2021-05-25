@@ -80,6 +80,7 @@ public class Transformer implements TransformProcessor {
     public static final String XML = STL + "xml";
     public static final String RDF = STL + "rdf";
     public static final String JSON = STL + "json";
+    public static final String JSON_LD = STL + "jsonld";
     public static final String TRIG = STL + "trig";
     public static final String TABLE = STL + "table";
     public static final String HTML = STL + "html";
@@ -100,8 +101,11 @@ public class Transformer implements TransformProcessor {
     public static final String STL_AGGREGATE = Processor.STL_AGGREGATE;
     public static final String STL_TRANSFORM = Context.STL_TRANSFORM;
     public static final String STL_PREFIX = Context.STL_PREFIX;
+    public static final String D3 = NSManager.D3;
+    public static final String D3_ALL = D3+"all";
     
     public static final String[] RESULT_FORMAT = {XML, JSON, RDF};
+    public static final String[] GRAPHIC_FORMAT = {D3+"graphic", D3+"hierarchy"};
     
     // default
     public static final String PPRINTER = TURTLE;
@@ -212,6 +216,7 @@ public class Transformer implements TransformProcessor {
     static public List<String> getFormatList(String name) {
         switch (name) {
             case ALL: return Arrays.asList(RESULT_FORMAT);
+            case D3_ALL: return Arrays.asList(GRAPHIC_FORMAT);
         }
         return null;
     } 

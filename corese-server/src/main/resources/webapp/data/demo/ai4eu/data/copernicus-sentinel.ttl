@@ -8,47 +8,133 @@
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix dcterms: <http://purl.org/dc/terms/> .
-@base <http://www.ai4eu.eu/ontologies/data> .
+@base <http://www.w3.org/2002/07/owl#> .
 
+[ rdf:type owl:Ontology
+ ] .
+
+#################################################################
+#    Annotation properties
+#################################################################
+
+###  http://purl.org/dc/terms/description
+dcterms:description rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/source
+dcterms:source rdf:type owl:AnnotationProperty .
+
+
+###  http://purl.org/dc/terms/title
+dcterms:title rdf:type owl:AnnotationProperty .
+
+
+###  http://www.ai4eu.eu/ontologies/core#atTRL
+ai:atTRL rdf:type owl:AnnotationProperty .
+
+
+###  http://www.ai4eu.eu/ontologies/core#authority
+ai:authority rdf:type owl:AnnotationProperty .
+
+
+###  http://www.ai4eu.eu/ontologies/core#download
+ai:download rdf:type owl:AnnotationProperty .
+
+
+###  http://www.ai4eu.eu/ontologies/core#keyword
+ai:keyword rdf:type owl:AnnotationProperty .
+
+
+###  http://www.ai4eu.eu/ontologies/core#location
+ai:location rdf:type owl:AnnotationProperty .
+
+
+###  http://www.ai4eu.eu/ontologies/core#trl
+ai:trl rdf:type owl:AnnotationProperty .
+
+
+###  http://xmlns.com/foaf/0.1/homepage
+foaf:homepage rdf:type owl:AnnotationProperty .
+
+
+###  http://xmlns.com/foaf/0.1/name
+foaf:name rdf:type owl:AnnotationProperty .
+
+
+#################################################################
+#    Classes
+#################################################################
+
+###  http://purl.org/dc/terms/LicenseDocument
+dcterms:LicenseDocument rdf:type owl:Class .
+
+
+###  http://www.ai4eu.eu/ontologies/core#ComputationalResource
+ai:ComputationalResource rdf:type owl:Class .
+
+
+###  http://www.ai4eu.eu/ontologies/core#Manual
+ai:Manual rdf:type owl:Class .
+
+
+###  http://www.ai4eu.eu/ontologies/core#SoftwareComponent
+ai:SoftwareComponent rdf:type owl:Class .
+
+
+###  http://www.ai4eu.eu/ontologies/core#StandAlone
+ai:StandAlone rdf:type owl:Class .
+
+
+###  http://www.ai4eu.eu/ontologies/core#TechnologyReadinessLevel
+ai:TechnologyReadinessLevel rdf:type owl:Class .
+
+
+###  http://xmlns.com/foaf/0.1/Organization
+foaf:Organization rdf:type owl:Class .
 
 
 #################################################################
 #    Individuals
 #################################################################
 
+###  http://www.ai4eu.eu/ontologies/data#eu
+:eu rdf:type owl:NamedIndividual ,
+             foaf:Organization ;
+    foaf:name "European Commission"@en .
 
+
+###  http://www.ai4eu.eu/ontologies/data#trl9
+:trl9 rdf:type owl:NamedIndividual ,
+               ai:TechnologyReadinessLevel ;
+      dcterms:description "dataset from eu copernicus project"@en ;
+      ai:authority :eu ;
+      ai:trl 9 .
 
 
 ###  http://www.co-ode.org/ontologies/ont.owl#Data
-:Data rdf:type owl:NamedIndividual ,
+<http://www.co-ode.org/ontologies/ont.owl#Data> rdf:type owl:NamedIndividual ,
                                                          ai:ComputationalResource .
 
 
 ###  http://www.co-ode.org/ontologies/ont.owl#Sentinel_Datasets
-:Sentinel_Datasets rdf:type owl:NamedIndividual ,
-ai:SoftwareComponent ;
-ai:keyword "Image data"@en , "Satellite Data"@en ;
-dcterms:creator :esa ;
-foaf:name "Sentinel Datasets"@en .
-
-
-:esa a foaf:Organization ;
-foaf:name "ESA"@en ;
-foaf:homepage "http://www.esa.int/ESA"^^xsd:anyURI ;
-ai:location <http://dbpedia.org/resource/Brussels> 
-.
+<http://www.co-ode.org/ontologies/ont.owl#Sentinel_Datasets> rdf:type owl:NamedIndividual ,
+                                                                      ai:SoftwareComponent ;
+                                                             ai:keyword "Image data"@en ,
+                                                                        "Satellite Data"@en ;
+                                                             foaf:name "Sentinel Datasets"@en .
 
 
 ###  http://www.co-ode.org/ontologies/ont.owl#Terms_of_use
-:Terms_of_use rdf:type owl:NamedIndividual ,
-dcterms:LicenseDocument ;
-dcterms:title "Non commercial license"@en ;
-foaf:homepage "https://sentinels.copernicus.eu/web/sentinel/terms-conditions"^^xsd:anyURI .
+<http://www.co-ode.org/ontologies/ont.owl#Terms_of_use> rdf:type owl:NamedIndividual ,
+                                                                 dcterms:LicenseDocument ;
+                                                        dcterms:title "Non commercial license"@en ;
+                                                        foaf:homepage <https://sentinels.copernicus.eu/web/sentinel/terms-conditions> .
 
 
 ###  http://www.co-ode.org/ontologies/ont.owl#sentinel_dataset_userguide
-:sentinel_dataset_userguide rdf:type owl:NamedIndividual , ai:Manual ;
-            foaf:homepage "https://sentinels.copernicus.eu/web/sentinel/user-guides"^^xsd:anyURI .
+<http://www.co-ode.org/ontologies/ont.owl#sentinel_dataset_userguide> rdf:type owl:NamedIndividual ,
+                                                                               ai:Manual ;
+                                                                      foaf:homepage <https://sentinels.copernicus.eu/web/sentinel/user-guides> .
 
 
 ###  Generated by the OWL API (version 4.5.9.2019-02-01T07:24:44Z) https://github.com/owlcs/owlapi

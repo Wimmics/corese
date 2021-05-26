@@ -21,21 +21,22 @@
   dcterms:creator :upmc ;
   dcterms:creator :thales .
 
-:wildcatpytorch-distro a owl:NamedIndividual, ai:Library ;
+:wildcatpytorch-distro: a owl:NamedIndividual, ai:Library ;
                    ai:atTRL :trl4 ;
                    ai:under_license :mit ;
+                   ai:language_used <http://dbpedia.org/resource/Python_(language)> ;
                    ai:download "https://github.com/durandtibo/wildcat.pytorch"^^xsd:anyURI .
 
 :GPU a owl:NamedIndividual, ai:ComputationalResource .
 
 :upmc a owl:NamedIndividual, foaf:Organization ;
         foaf:name "UPMC"@en ;
-        foaf:homepage "http://www.upmc.fr/en/"^^xsd:anyURI ;
-        ai:location <http://dbpedia.org/resource/France>.
+        foaf:homepage <http://www.upmc.fr/en/> ;
+        ai:location <http://dbpedia.org/resource/France> .
 
 :thales a owl:NamedIndividual, ai:Company ;
         foaf:name "Thales Group"@en ;
-        foaf:homepage "https://www.thalesgroup.com/en"^^xsd:anyURI ;
+        foaf:homepage <https://www.thalesgroup.com/en> ;
         ai:location <http://dbpedia.org/resource/France> .
 
 :eu a owl:NamedIndividual, foaf:Organization ;
@@ -44,3 +45,7 @@
 :mit a owl:NamedIndividual, dcterms:LicenseDocument ;
         dcterms:source "https://opensource.org/licenses/MIT"^^xsd:anyURI .
 
+:trl4 a owl:NamedIndividual, ai:TechnologyReadinessLevel ;
+        ai:authority :eu ;
+        ai:trl 4 ;
+        dcterms:description "technology validated in lab"@en .

@@ -11,7 +11,7 @@
 
 @base <http://www.ai4eu.eu/ontologies/data> .
 
-:mc-giver a owl:NamedIndividual, ai:SoftwareComponent ;
+:ellogon a owl:NamedIndividual, ai:SoftwareComponent ;
   foaf:name "mc-giver"^^xsd:string ;
   ai:distributed_as :mc-giver-distro ;
   ai:requires :CPU, :GPU ;
@@ -19,12 +19,16 @@
   ai:keyword "CNN"@en ,
            "Visual Document"@en ,
            "Classification"@en ;
-  dcterms:creator :uni-bologna .
+  dcterms:creator :unibo .
 
-:mc-giver-distro a owl:NamedIndividual, ai:StandAlone ;
-ai:download "http://example.org/undef"^^xsd:anyURI.
+:mc-giver-distro: a owl:NamedIndividual, ai:StandAlone ;
+                    ai:language_used <http://dbpedia.org/resource/Python_(language)> .
 
 :CPU a owl:NamedIndividual, ai:ComputationalResource .
 
 :GPU a owl:NamedIndividual, ai:ComputationalResource .
 
+:unibo a owl:NamedIndividual, foaf:Organization ;
+        foaf:name "University of Bologna"@en ;
+        foaf:homepage <https://www.unibo.it/en> ;
+        ai:location <http://dbpedia.org/resource/Italy> .

@@ -1,0 +1,289 @@
+@prefix : <http://www.ai4eu.eu/ontologies/ai4eu-categories#> .
+@prefix dc: <http://purl.org/dc/elements/1.1/> .
+@prefix dct: <http://purl.org/dc/terms/> .
+@prefix grddl: <http://www.w3.org/2003/g/data-view#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix skos: <http://www.w3.org/2004/02/skos/core#> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://www.ai4eu.eu/ontologies/ai4eu-categories> a owl:Ontology .
+
+:TechnicalCategories a skos:ConceptScheme;
+  dct:created "2020-06-26T11:16:50.576+03:00"^^xsd:dateTime;
+  rdfs:label "Technical Categories"@en .
+
+:BusinessCategories a skos:ConceptScheme;
+  dct:created "2020-06-26T11:17:07.506+03:00"^^xsd:dateTime;
+  rdfs:label "Business Categories"@en .
+
+:ExplainableAI a skos:Concept;
+  dct:created "2020-06-26T11:17:54.865+03:00"^^xsd:dateTime;
+  rdfs:label "Explainable AI"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:VerifiableAI a skos:Concept;
+  dct:created "2020-06-26T11:22:26.542+03:00"^^xsd:dateTime;
+  rdfs:label "Verifiable AI"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:PhysicalAI a skos:Concept;
+  dct:created "2020-06-26T11:22:46.133+03:00"^^xsd:dateTime;
+  rdfs:label "Physical AI"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:IntegrativeAI a skos:Concept;
+  dct:created "2020-06-26T11:23:06.620+03:00"^^xsd:dateTime;
+  rdfs:label "Integrative AI"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:CollaborativeAI a skos:Concept;
+  dct:created "2020-06-26T11:23:25.563+03:00"^^xsd:dateTime;
+  rdfs:label "Collaborative AI"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:AlgorithmSelection a skos:Concept;
+  dct:created "2020-06-26T11:24:02.480+03:00"^^xsd:dateTime;
+  rdfs:label "Algorithm Selection"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:ComputationalLogic a skos:Concept;
+  dct:created "2020-06-26T11:24:22.164+03:00"^^xsd:dateTime;
+  rdfs:label "Computational Logic"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:ComputerVision a skos:Concept;
+  dct:created "2020-06-26T11:24:43.568+03:00"^^xsd:dateTime;
+  rdfs:label "Computer Vision"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:ConstraintsSAT a skos:Concept;
+  dct:created "2020-06-26T11:25:08.029+03:00"^^xsd:dateTime;
+  rdfs:label "Constraints and SAT"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:DecisionSupportSystems a skos:Concept;
+  dct:created "2020-06-26T11:25:36.420+03:00"^^xsd:dateTime;
+  rdfs:label "Decision Support Systems"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:HeuristicSearch a skos:Concept;
+  dct:created "2020-06-26T11:26:36.581+03:00"^^xsd:dateTime;
+  rdfs:label "Heuristic Search"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:KnowledgeRepresentation a skos:Concept;
+  dct:created "2020-06-26T11:27:04.098+03:00"^^xsd:dateTime;
+  rdfs:label "Knowledge Representation"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:MachineLearning a skos:Concept;
+  dct:created "2020-06-26T11:27:26.361+03:00"^^xsd:dateTime;
+  rdfs:label "Machine Learning"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:MultiAgentSystems a skos:Concept;
+  dct:created "2020-06-26T11:27:50.163+03:00"^^xsd:dateTime;
+  rdfs:label "Multi-agent Systems"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:DeepLearning a skos:Concept;
+  dct:created "2020-06-26T11:28:26.104+03:00"^^xsd:dateTime;
+  rdfs:label "Deep Learning"@en;
+  skos:broader :MachineLearning;
+  skos:inScheme :TechnicalCategories .
+
+:Planning a skos:Concept;
+  dct:created "2020-06-26T11:28:49.146+03:00"^^xsd:dateTime;
+  rdfs:label "Planning"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:NLP a skos:Concept;
+  dct:created "2020-06-26T11:29:07.961+03:00"^^xsd:dateTime;
+  rdfs:label "Natural Language Processing"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:SpeechAudioProcessing a skos:Concept;
+  dct:created "2020-06-26T11:29:31.684+03:00"^^xsd:dateTime;
+  rdfs:label "Speech / Audio Processing"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:DialogueProcessing a skos:Concept;
+  dct:created "2020-06-26T11:29:57.033+03:00"^^xsd:dateTime;
+  rdfs:label "Dialogue Processing"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:ProbabilisticModels a skos:Concept;
+  dct:created "2020-06-26T11:30:17.498+03:00"^^xsd:dateTime;
+  rdfs:label "Probabilistic Models"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:SemanticWeb a skos:Concept;
+  dct:created "2020-06-26T11:30:36.222+03:00"^^xsd:dateTime;
+  rdfs:label "Semantic Web"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:Robotics a skos:Concept;
+  dct:created "2020-06-26T11:30:48.355+03:00"^^xsd:dateTime;
+  rdfs:label "Robotics"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:Reasoning a skos:Concept;
+  dct:created "2020-06-26T11:31:02.109+03:00"^^xsd:dateTime;
+  rdfs:label "Reasoning"@en;
+  skos:inScheme :TechnicalCategories;
+  skos:topConceptOf :TechnicalCategories .
+
+:Health a skos:Concept;
+  dct:created "2020-06-26T11:35:38.266+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Health"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:Agriculture a skos:Concept;
+  dct:created "2020-06-26T11:35:55.847+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Agriculture"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:CitizenServicesEducation a skos:Concept;
+  dct:created "2020-06-26T11:36:40.664+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Citizen Services and Education"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:RoboticsSector a skos:Concept;
+  dct:created "2020-06-26T11:37:17.405+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Robotics"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:IndustryManufacturing a skos:Concept;
+  dct:created "2020-06-26T11:37:39.562+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Industry and Manufacturing"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:AutonomousDrivingMobility a skos:Concept;
+  dct:created "2020-06-26T11:38:05.813+03:00"^^xsd:dateTime;
+  rdfs:label "AI in Autonomous Driving and Mobility"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:ArtMusic a skos:Concept;
+  dct:created "2020-06-26T11:38:24.062+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Art and Music"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:EnvironmentSustainability a skos:Concept;
+  dct:created "2020-06-26T11:39:34.232+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Environment and Sustainability"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:IoT a skos:Concept;
+  dct:created "2020-06-26T11:39:50.959+03:00"^^xsd:dateTime;
+  rdfs:label "AI for IoT"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:Cybersecurity a skos:Concept;
+  dct:created "2020-06-26T11:40:14.718+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Cybersecurity"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:Media a skos:Concept;
+  dct:created "2020-06-26T11:40:29.496+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Media"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:Telecommunications a skos:Concept;
+  dct:created "2020-06-26T11:43:15.968+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Telecommunications"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:FinanceInsurance a skos:Concept;
+  dct:created "2020-06-26T11:43:36.348+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Finance and Insurance"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:Law a skos:Concept;
+  dct:created "2020-06-26T11:43:59.887+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Law"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:RetailECommerce a skos:Concept;
+  dct:created "2020-06-26T11:44:24.063+03:00"^^xsd:dateTime;
+  rdfs:label "AI in Retail and e-Commerce"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:SoftwareEngineering a skos:Concept;
+  dct:created "2020-06-26T11:44:46.820+03:00"^^xsd:dateTime;
+  rdfs:label "AI in Software Engineering"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:HumanResources a skos:Concept;
+  dct:created "2020-06-26T11:45:06.285+03:00"^^xsd:dateTime;
+  rdfs:label "AI in Human Resources"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:TrustPrivacy a skos:Concept;
+  dct:created "2020-06-26T11:45:23.484+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Trust and Privacy"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:AmbientIntelligence a skos:Concept;
+  dct:created "2020-06-26T11:45:43.368+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Ambient Intelligence"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:Space a skos:Concept;
+  dct:created "2020-06-26T11:45:55.556+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Space"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:AirTrafficManagement a skos:Concept;
+  dct:created "2020-06-26T11:46:18.414+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Air Traffic Management"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .
+
+:Fashion a skos:Concept;
+  dct:created "2020-06-26T11:46:35.108+03:00"^^xsd:dateTime;
+  rdfs:label "AI for Fashion"@en;
+  skos:inScheme :BusinessCategories;
+  skos:topConceptOf :BusinessCategories .

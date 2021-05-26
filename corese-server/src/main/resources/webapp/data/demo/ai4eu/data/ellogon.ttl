@@ -6,7 +6,7 @@
 @prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
 @prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
 @prefix foaf: <http://xmlns.com/foaf/0.1/> .
-@prefix dct: <http://purl.org/dc/terms/> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
 @prefix cso: <https://cso.kmi.open.ac.uk/topics/> .
 
 @base <http://www.ai4eu.eu/ontologies/data> .
@@ -15,43 +15,48 @@
   foaf:name "Ellogon"^^xsd:string ;
   ai:distributed_as :ellogon-distro ;
   ai:requires :CPU ;
-  dct:subject cso:natural_language_processing_systems ;
+  dcterms:subject cso:natural_language_processing_systems ;
   ai:keyword "Linguistic Pipelines"@en ,
            "Language Engineering Platform"@en ,
            "NLP"@en ;
-  dct:bibliographicCitation "https://arxiv.org/pdf/cs/0205017"^^xsd:anyURI ;
-  dct:creator :ncsr .
+  dcterms:bibliographicCitation "https://arxiv.org/pdf/cs/0205017"^^xsd:anyURI ;
+  dcterms:creator :ncsr .
 
-:ellogon-distro a owl:NamedIndividual, ai:StandAlone ;
+:ellogon-distro: a owl:NamedIndividual, ai:StandAlone ;
                    ai:atTRL :trl9 ;
                    ai:accompanied_by :ellogon-devguide ,
                                      :ellogon-specs ,
                                      :ellogon-userguide ;
                    ai:under_license :lgpl ;
-                   ai:download "http://www.ellogon.org/index.php/download"^^xsd:anyURI .
+                   ai:download "http://www.ellogon.org/index.php/download"^^xsd:anyURI ;
+                   ai:language_used <http://dbpedia.org/resource/Tcl> .
 
 :CPU a owl:NamedIndividual, ai:ComputationalResource .
 
 :ncsr a owl:NamedIndividual, foaf:Organization ;
         foaf:name "National Centre for Scientific Research - Demokritos"@en ;
-        foaf:homepage "http://www.demokritos.gr"^^xsd:anyURI ;
+        foaf:homepage <http://www.demokritos.gr> ;
         ai:location <http://dbpedia.org/resource/Greece> .
 
 :eu a owl:NamedIndividual, foaf:Organization ;
       foaf:name "European Commission"@en .
 
 :ellogon-devguide a owl:NamedIndividual, ai:Manual ;
-                    dct:title "Ellogon Developers Guide"@en ;
-                    foaf:homepage "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=21:ellogondevelopersguide"^^xsd:anyURI .
+                    dcterms:title "Ellogon Developers Guide"@en ;
+                    ai:download "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=21:ellogondevelopersguide"^^xsd:anyURI .
 
 :ellogon-specs a owl:NamedIndividual, ai:Manual ;
-                 dct:title "Ellogon Components' Specification"@en ;
-                 foaf:homepage "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=19:ellogoncomponentsspecifications"^^xsd:anyURI .
+                 dcterms:title "Ellogon Components' Specification"@en ;
+                 ai:download "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=19:ellogoncomponentsspecifications"^^xsd:anyURI .
 
 :ellogon-userguide a owl:NamedIndividual, ai:Manual ;
-                     dct:title "Ellogon Users Guide"@en ;
-                     foaf:homepage "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=23:ellogonuserguide"^^xsd:anyURI .
+                     dcterms:title "Ellogon Users Guide"@en ;
+                     ai:download "http://ellogon.org/index.php/download/all-categories/category/7-ellogon-documentation-manuals?download=23:ellogonuserguide"^^xsd:anyURI .
 
-:lgpl a owl:NamedIndividual, dct:LicenseDocument ;
-        dct:source "https://www.gnu.org/copyleft/lesser.html"^^xsd:anyURI .
+:lgpl a owl:NamedIndividual, dcterms:LicenseDocument ;
+        dcterms:source "https://www.gnu.org/copyleft/lesser.html"^^xsd:anyURI .
 
+:trl9 a owl:NamedIndividual, ai:TechnologyReadinessLevel ;
+        ai:authority :eu ;
+        ai:trl 9 ;
+        dcterms:description "actual system proven in operational environment (competitive manufacturing in the case of key enabling technologies; or in space)"@en .

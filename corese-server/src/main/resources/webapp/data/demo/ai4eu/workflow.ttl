@@ -465,7 +465,9 @@ limit 100
 st:select st:selectKind 
 .
 
-
+#
+# create a selector with the values of property rel:instanceof 
+#
 st:selectKind
     st:title "Type" ;
     st:name "mode" ;
@@ -482,7 +484,7 @@ st:name st:kg2 ;
 rdfs:label "Knowledge Graph Property" ;
 rdfs:comment """
 Knowledge Graph Property.
-<a href="http://covid19.i3s.unice.fr:8080/ldviz?url=http://corese.inria.fr/service/ai4eusparql&query=prefix rel: <http://ai4eu.org/onto/> select ?n1 ?n2 (us:relation as ?doc) where { select ?n1 ?n2 (count(*) as ?c) where { ?x ?n1 ?y . ?y ?n2 ?z filter strstarts(?n1, rel:) filter strstarts(?n2, rel:) } group by ?n1 ?n2 having (?c >= 5) } limit 500">LDViz query</a>
+<a href="http://covid19.i3s.unice.fr:8080/ldviz?url=http://corese.inria.fr/ai4eu/sparql&title=KG Property&query=prefix rel: <http://ai4eu.org/onto/> select ?n1 ?n2 (us:relation as ?doc) where { select ?n1 ?n2 (count(*) as ?c) where { ?x ?n1 ?y . ?y ?n2 ?z filter strstarts(?n1, rel:) filter strstarts(?n2, rel:) } group by ?n1 ?n2 having (?c >= 5) } limit 500">LDViz query</a>
 """@en ;
 rdfs:comment """Knowledge Graph"""@fr ;
 

@@ -363,7 +363,12 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
         }
     }
     
-    
+    /**
+     * Post process query result map with transformation(s)
+     * Return either 
+     * a) when mode=link : query result with link url to transformation result document
+     * b) otherwise transformation result
+     */
     ResultFormat getFormatTransform(Mappings map, Dataset ds, String format, int type, List<String> transformList) {
             logger.info("Transform: " + transformList);
             
@@ -372,6 +377,8 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             
             if (link) {
                 // prepare (and return) std result with link to transform
+                // map will record link url of transform in function getFormatTransformList
+                // result format will be generated when returning HTTP result
                 std = getFormatSimple(map, ds, format, type);
             }
             else {
@@ -380,6 +387,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
                 int mytype = (type==ResultFormat.HTML_FORMAT) ? ResultFormat.UNDEF_FORMAT : type;
                 std = getFormatSimple(map, ds, format, mytype);
                 String url = TripleStore.document(std.toString(), "std");
+                // record url of std result document for transform
                 ds.getContext().add(Context.STL_LINK, DatatypeMap.newResource(url));
                 logger.info("Query result in: " + url);
             }
@@ -394,6 +402,12 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             return std;
     }
     
+    /**
+     * Process transformations
+     * When mode=link, add in map query result link url to transformation result document
+     * and return empty 
+     * Otherwise return result of (first) transformation
+     */
     Optional<ResultFormat> getFormatTransformList(Mappings map, Dataset ds, String format, int type, List<String> transformList) {
         ResultFormat fst = null;
 
@@ -403,25 +417,53 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
                 fst = res;
             }
             if (ds.getContext().hasValue(TRACE)) {
-                System.out.println(res);
+                logger.info(transform);
+                logger.info(res);
             }
 
             if (ds.getContext().hasAnyValue(LINK, LINK_REST)) {
                 // mode=link
-                // save transformation result in document and return URL of document in map link
+                // save transformation result in document and return URL of document in map result link
                 String url = TripleStore.document(res.toString(), getName(transform));
+                // PRAGMA: map record link url. It will be considered 
+                // by ResultFormat std in function getFormatTransform above
                 map.addLink(url);
                 logger.info("Transformation result in: " + url);
             } else {
+                // no link: return result of first transformation
                 return Optional.of(res);
             }
         }
         
         if (ds.getContext().hasValue(LINK_REST)) {
+            // return result of first transformation (it may have generated links to other transformations)
             return Optional.of(fst);
         }
         else {
+            // query result will be returned with link url to transformation result
             return Optional.empty();
+        }
+    }
+    
+    ResultFormat getFormatTransform(Mappings map, Dataset ds, String format, int type, String transform) {
+        ResultFormat ft;
+        if (type == UNDEF_FORMAT) {
+            ft = ResultFormat.create(map, format, transform).init(ds);
+        } else {
+            ft = ResultFormat.create(map, type, transform).init(ds);
+        }
+        if (map.getBinding()!=null && ft.getBind()==null) {
+            // share binding environment with transformer
+            ft.setBind((Binding)map.getBinding());
+        }
+        return ft;
+    }
+    
+    ResultFormat getFormatSimple(Mappings map, Dataset ds, String format, int type) {
+        if (type == UNDEF_FORMAT) {
+            return ResultFormat.create(map, format);
+        } else {
+            return ResultFormat.create(map, type);
         }
     }
     
@@ -479,27 +521,6 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
         return transform.substring(1+transform.lastIndexOf("/"));
     }
     
-    ResultFormat getFormatTransform(Mappings map, Dataset ds, String format, int type, String transform) {
-        ResultFormat ft;
-        if (type == UNDEF_FORMAT) {
-            ft = ResultFormat.create(map, format, transform).init(ds);
-        } else {
-            ft = ResultFormat.create(map, type, transform).init(ds);
-        }
-        if (map.getBinding()!=null && ft.getBind()==null) {
-            ft.setBind((Binding)map.getBinding());
-        }
-        return ft;
-    }
-    
-    ResultFormat getFormatSimple(Mappings map, Dataset ds, String format, int type) {
-        if (type == UNDEF_FORMAT) {
-            return ResultFormat.create(map, format);
-        } else {
-            return ResultFormat.create(map, type);
-        }
-    }
-
     public static SPARQLResult getSingleton() {
         return singleton;
     }

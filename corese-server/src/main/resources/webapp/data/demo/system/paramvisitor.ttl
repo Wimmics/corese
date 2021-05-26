@@ -1,0 +1,19 @@
+#
+# Parameters to tune Corese behaviour
+# new Param().load(path).process()
+#
+
+[] 
+
+
+
+cos:event [ 
+    cos:active true ;
+    #cos:solver      cos:user;
+    cos:rule        cos:user;
+    cos:transformer cos:user;
+    cos:server      cos:user;
+] 
+
+
+.

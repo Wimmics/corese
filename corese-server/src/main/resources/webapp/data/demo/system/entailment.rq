@@ -1,0 +1,14 @@
+select * where {
+  ?x ?p ?y
+}
+
+
+
+
+@entailment
+function us:entailment(re, q, acons, awhere) {
+    xt:print("construct:", acons);
+    xt:print("where:", awhere);
+    xt:print()
+    
+}

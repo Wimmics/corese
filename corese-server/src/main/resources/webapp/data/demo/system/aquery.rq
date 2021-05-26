@@ -1,0 +1,53 @@
+select * where {
+  ?x ?p ?y
+}
+
+
+#
+# @init function called by Parameter after Parameter graph load processing
+# We can set application specific parameters
+# PRAGMA: for this @init function the current graph is the Parameter graph
+# whereas for other @event function it is the current graph of the query at stake
+#
+@initParam
+function us:initParam() {
+    xt:print("@initParam");
+    us:initialize();
+}
+
+@initServer
+function us:initServer(url) {
+    xt:print("@initServer", url);
+    xt:print(xt:graph())
+}
+
+# current graph is Parameter graph
+
+function us:initialize() {
+    let (select ?name
+            (aggregate(distinct ?url) as ?list) 
+            (aggregate(distinct ?p) as ?plist)
+         where {
+            [] cos:name ?name .
+            optional { [] cos:notify ?url }
+            optional { [] cos:predicate ?p }
+          }) {
+        xt:print("start agent:", ?name) ;
+        static(notifyList = list);
+        xt:print("notify:", notifyList);
+        static(predicateList = plist);
+        xt:print("predicate list:", predicateList)
+    }
+}
+
+
+@before @start
+function us:before(q) {
+	xt:print("@before");
+	xt:print(java:getAST(q))
+}
+
+@after @finish
+function us:after(m) {
+	xt:print("@after")
+}

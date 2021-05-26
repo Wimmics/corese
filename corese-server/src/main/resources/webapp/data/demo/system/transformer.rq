@@ -1,0 +1,26 @@
+select * where {
+  ?x ?p ?y
+}
+
+
+@beforeTransformer
+function us:beforeTransformer(trans, url) {
+    xt:print("@beforeTransformer", url);
+}
+
+@afterTransformer
+function us:afterTransformer(trans, url, res) {
+    xt:print("@afterTransformer", url);
+    #xt:print(res)
+}
+
+@beforeWorkflow
+function us:beforeWorkflow(ctx, gg) {
+    xt:print("@beforeWorkflow", ctx);
+}
+
+@afterWorkflow
+function us:afterWorkflow(ctx, adata) {
+    xt:print("@afterWorkflow", ctx);
+    #xt:print(adata)
+}

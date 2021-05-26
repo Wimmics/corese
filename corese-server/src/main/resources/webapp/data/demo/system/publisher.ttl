@@ -1,0 +1,22 @@
+#
+# Parameters to tune Corese behaviour
+# new Param().load(path).process()
+#
+
+[] 
+
+cos:name "Corese Server Publisher Agent" ;
+
+cos:event [ 
+    cos:active true ;
+    cos:profile false ;
+    cos:notify <http://localhost:8081/agent>  ;
+    #cos:predicate us:  rdfs:, rdf:
+] ;
+
+cos:function [
+    cos:load 
+        </user/corby/home/AAServer/data/demo/system/aquery.rq>,
+        </user/corby/home/AAServer/data/demo/system/aupdate.rq>
+]
+.

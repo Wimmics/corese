@@ -1,0 +1,91 @@
+#
+# Imported as @public
+#
+
+select * where {
+  ?x ?p ?y
+}
+
+@beforeLoad
+function us:beforeLoad(path) {
+    xt:print("@beforeLoad", path, xt:size(xt:graph()))
+}
+
+
+@afterLoad
+function us:afterLoad(path) {
+    xt:print("@afterLoad", path, xt:size(xt:graph())) ;
+    us:notify(cos:action, cos:load, path) 
+}
+
+@insert
+function us:insert(path, atriple) {
+	xt:print("@insert", atriple);
+	us:publish(path, atriple)
+}
+
+
+
+@update
+function us:update(q, del, ins) {
+	xt:print("@update", del, ins);
+	us:publishList(q, del);
+	us:publishList(q, ins)
+
+}
+
+
+@afterRule        
+function us:afterRule(re, q, res) {
+    xt:print("@afterRule", res);
+    us:publishList(q, res)
+}
+
+
+
+
+
+
+
+
+function us:publishList(q, list) {
+    for (atriple in list) {
+        us:publish(q, atriple)
+    }  
+}
+
+function us:publish(apath, atriple) {
+   let ((s p o) = atriple) {
+   if (us:match(p),
+       us:notify(s, p, o), 
+       true)
+   } 
+}
+
+function us:match(pred) {
+    if (xt:size(predicateList) = 0, return (true), 
+        return (mapany(rq:strstarts, pred, predicateList)))
+}
+
+ 
+function us:notify(s, p, o) {
+    map(us:notify, us:url(), s, p, o)
+}
+
+#
+# notifyList is a static variable set by @initParam function in aquery.rq
+#
+function us:url() {
+    notifyList
+}
+
+#
+# Notify an agent about a triple s p o
+# http://localhost:8080/agent?action=notify&subject=s&...
+#
+function us:notify(server, s, p, o) {
+    xt:httpget(st:format("%s?action=notify&subject=%s&predicate=%s&object=%s", 
+        server, encode_for_uri(s), encode_for_uri(p), encode_for_uri(o)))
+}
+
+

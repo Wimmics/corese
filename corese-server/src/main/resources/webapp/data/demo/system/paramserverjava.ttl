@@ -1,0 +1,9 @@
+[] 
+cos:name "Corese Server Agent" ;
+
+cos:event [ 
+    cos:active true ;
+    cos:server "fr.inria.corese.server.webservice.QuerySolverVisitorServerUser"
+] 
+.
+

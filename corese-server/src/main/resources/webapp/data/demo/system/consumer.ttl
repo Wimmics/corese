@@ -1,0 +1,12 @@
+[] cos:function [
+    cos:load  </user/corby/home/AAServer/data/demo/system/event.rq> 
+]
+;
+
+cos:name "Corese Server Consumer Agent" ;
+
+cos:event [ 
+    cos:active true 
+] 
+.
+

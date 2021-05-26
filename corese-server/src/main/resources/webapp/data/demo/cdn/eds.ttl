@@ -1,0 +1,241 @@
+@prefix cn:   <http://cdn.fr/schema/>
+@prefix foaf: <http://xmlns.com/foaf/0.1/>
+@prefix p:  <http://fr.dbpedia.org/property/>
+@prefix o:  <http://fr.dbpedia.org/ontology/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+
+<> cn:topic cn:mds
+
+r:Humbert_Ier_de_Savoie  a foaf:Person ;
+p:successeur r:Amédée_I_de_Savoie  ;
+cn:begin 1027 ; cn:end 1047 ; rdfs:label "Humbert Ier"  ;
+rdfs:comment "dit Humbert aux blanches mains, fondateur de la Maison de Savoie" ;
+p:title "Comte de Savoie"  .
+
+
+
+r:Amédée_Ier_de_Savoie  a foaf:Person ;
+p:successeur r:Othon_Ier_de_Savoie  ;
+cn:begin 1047 ; cn:end 1051 ; rdfs:label "Amédée Ier"  ; p:title "Comte de Savoie" .
+
+
+r:Othon_Ier_de_Savoie  a foaf:Person ;
+p:successeur r:Pierre_Ier_de_Savoie  ;
+cn:begin 1051 ; cn:end 1060 ; rdfs:label "Othon Ier"  ; p:title "Comte de Savoie"  .
+
+
+r:Pierre_Ier_de_Savoie  a foaf:Person ;
+p:successeur r:Amédée_II_de_Savoie  ;
+cn:begin 1060 ; cn:end 1078 ; rdfs:label "Pierre Ier"  ; 
+p:title "Comte de Savoie" ; 
+st:icon <http://upload.wikimedia.org/wikipedia/commons/7/79/Pietro_I_di_Savoia_Denaro_Segusino.jpg> .
+
+
+r:Amédée_II_de_Savoie  a foaf:Person ;
+p:successeur r:Humbert_II_de_Savoie  ;
+cn:begin 1078 ; cn:end 1080 ; rdfs:label "Amédée II"  ; p:title "Comte de Savoie" .
+
+
+r:Humbert_II_de_Savoie a foaf:Person ;
+p:successeur r:Amédée_III_de_Savoie  ;
+cn:begin 1080 ; cn:end 1103 ; rdfs:label "Humbert II"  ; p:title "Comte de Savoie" .
+
+
+r:Amédée_III_de_Savoie a foaf:Person ;
+p:successeur r:Humbert_III_de_Savoie  ;
+cn:begin 1103 ; cn:end 1148 ; rdfs:label "Amédée III"  ; p:title "Comte de Savoie"  .
+
+
+r:Humbert_III_de_Savoie a foaf:Person ;
+p:successeur r:Thomas_Ier_de_Savoie  ;
+cn:begin 1148 ; cn:end 1189 ; rdfs:label "Humbert III"  ; p:title "Comte de Savoie"  .
+
+
+r:Thomas_Ier_de_Savoie a foaf:Person ;
+p:successeur r:Amédée_IV_de_Savoie  ;
+cn:begin 1189 ; cn:end 1233 ; rdfs:label "Thomas Ier"  ; p:title "Comte de Savoie"  .
+
+
+
+r:Amédée_IV_de_Savoie a foaf:Person ;
+p:successeur r:Boniface_de_Savoie  ;
+cn:begin 1233 ; cn:end 1253 ; rdfs:label "Amédée IV"  ; p:title "Comte de Savoie"  .
+
+
+r:Boniface_de_Savoie a foaf:Person ;
+p:successeur r:Pierre_II_de_Savoie  ;
+cn:begin 1253 ; cn:end 1263 ; rdfs:label "Boniface"  ; p:title "Comte de Savoie"  .
+
+
+
+r:Pierre_II_de_Savoie a foaf:Person ;
+p:successeur r:Philippe_Ier_de_Savoie  ;
+cn:begin 1263 ; cn:end 1268 ; rdfs:label "Pierre II"  ; p:title "Comte de Savoie"  .
+
+
+r:Philippe_Ier_de_Savoie a foaf:Person ;
+p:successeur r:Amédée_V_de_Savoie  ;
+cn:begin 1268 ; cn:end 1285 ; rdfs:label "Philippe Ier"  ; 
+st:icon <http://upload.wikimedia.org/wikipedia/commons/c/ce/Filippo_I_di_Savoia.jpg> ;
+p:title "Comte de Savoie"  .
+
+
+r:Amédée_V_de_Savoie a foaf:Person ;
+p:successeur r:Édouard_Ier_de_Savoie  ;
+cn:begin 1285 ; cn:end 1323 ; rdfs:label "Amédée V"  ; p:title "Comte de Savoie" .
+
+
+
+r:Édouard_Ier_de_Savoie a foaf:Person ;
+p:successeur r:Aymon_de_Savoie  ;
+cn:begin 1323 ; cn:end 1329 ; rdfs:label "Édouard"  ; p:title "Comte de Savoie"  .
+
+r:Aymon_de_Savoie a foaf:Person ; 
+p:successeur r:Amédée_VI_de_Savoie ;
+cn:begin 1329 ; cn:end 1343 ; rdfs:label "Aymon"  ; p:title "Comte de Savoie"  .
+
+r:Amédée_VI_de_Savoie a foaf:Person ; 
+p:successeur r:Amédée_VII_de_Savoie ;
+cn:begin 1343 ; cn:end 1383 ; rdfs:label "Amédée VI"  ; p:title "Comte de Savoie"  .
+
+r:Amédée_VII_de_Savoie a foaf:Person ;
+p:successeur r:Amédée_VIII_de_Savoie ;
+cn:begin 1383 ; cn:end 1391 ; 
+rdfs:label "Amédée VII" ; p:title "Comte de Savoie" .
+
+r:Amédée_VIII_de_Savoie a foaf:Person ;
+p:successeur r:Louis_Ier_de_Savoie ;
+cn:begin 1391 ; cn:end 1440 ; rdfs:label "Amédée VIII" ; 
+p:title "Comte de Savoie" .
+
+r:Louis_Ier_de_Savoie a foaf:Person ; 
+p:successeur r:Amédée_IX_de_Savoie ;
+cn:begin 1440 ; cn:end 1465 ; 
+rdfs:label "Louis Ier"  ; p:title "Duc de Savoie" ; 
+st:icon <http://upload.wikimedia.org/wikipedia/commons/4/49/Lodovico_di_Savoia.jpg>   .
+
+r:Amédée_IX_de_Savoie a foaf:Person ;
+p:successeur r:Philibert_Ier_de_Savoie ;
+cn:begin 1465 ; cn:end 1472 ; 
+rdfs:label "Amédée IX" ; p:title "Duc de Savoie" ; 
+st:icon <http://upload.wikimedia.org/wikipedia/commons/f/f6/Antoine_de_Lohny_Amedeo_IX.jpg> .
+
+r:Philibert_Ier_de_Savoie a foaf:Person ;
+p:successeur r:Charles_Ier_de_Savoie ;
+cn:begin 1472 ; cn:end 1482 ; 
+rdfs:label "Philibert Ier" ; p:title "Duc de Savoie" . 
+
+r:Charles_Ier_de_Savoie a foaf:Person ;
+p:successeur r:Charles_Jean_Amédée_de_Savoie ;
+cn:begin 1482 ; cn:end 1490 ; rdfs:label "Charles Ier" ; p:title "Duc de Savoie" .
+
+
+
+r:Charles_Jean_Amédée_de_Savoie a foaf:Person ;
+p:successeur r:Philippe_II_de_Savoie ;
+cn:begin 1490 ; cn:end 1496 ; 
+rdfs:label "Charles Jean Amédée" ; p:title "Duc de Savoie" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/0/02/Carlo_II_di_Savoia.jpg> .
+
+
+r:Philippe_II_de_Savoie a foaf:Person ;
+p:successeur r:Philibert_II_de_Savoie ;
+cn:begin 1496 ; cn:end 1497 ; 
+rdfs:label "Philippe II" ; p:title "Duc de Savoie"  .
+
+
+r:Philibert_II_de_Savoie a foaf:Person ;
+p:successeur r:Charles_III_de_Savoie ;
+cn:begin 1497 ; cn:end 1504 ; 
+rdfs:label "Philibert II" ; p:title "Duc de Savoie" . 
+
+
+r:Charles_III_de_Savoie a foaf:Person ;
+p:successeur <http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)>  ;
+cn:begin 1504 ; cn:end 1553 ; 
+rdfs:label "Charles III" ; p:title "Duc de Savoie" .
+
+
+<http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)> a foaf:Person;
+p:successeur r:Charles-Emmanuel_Ier_de_Savoie ;
+cn:begin 1553 ; cn:end 1580 ; 
+rdfs:label "Emmanuel-Philibert" ; p:title "Duc de Savoie" .
+
+
+r:Charles-Emmanuel_Ier_de_Savoie a foaf:Person ;
+p:successeur r:Victor-Amédée_Ier_de_Savoie ;
+cn:begin 1580 ; cn:end 1630 ; 
+rdfs:label "Charles-Emmanuel Ier" ; p:title "Duc de Savoie" .
+
+
+r:Victor-Amédée_Ier_de_Savoie a foaf:Person ;
+p:successeur r:François-Hyacinthe_de_Savoie ;
+cn:begin 1630 ; cn:end 1637 ; 
+rdfs:label "Victor-Amédée Ier" ; p:title "Duc de Savoie" .
+
+r:François-Hyacinthe_de_Savoie a foaf:Person ;
+p:successeur r:Charles-Emmanuel_II_de_Savoie ;
+cn:begin 1637 ; cn:end 1638 ; 
+rdfs:label "François-Hyacinthe" ; p:title "Duc de Savoie" .
+
+r:Charles-Emmanuel_II_de_Savoie a foaf:Person ;
+p:successeur r:Victor-Amédée_II_de_Savoie ;
+cn:begin 1638 ; cn:end 1675 ; 
+rdfs:label "Charles-Emmanuel II" ; p:title "Duc de Savoie"  .
+
+
+
+r:Victor-Amédée_II_de_Savoie a foaf:Person ; 
+p:successeur r:Charles-Emmanuel_III_de_Sardaigne ;
+cn:begin 1675 ; cn:end 1730 ;
+rdfs:label "Victor-Amédée II" ; p:title "Duc de Savoie" .
+
+
+r:Charles-Emmanuel_III_de_Sardaigne a foaf:Person ;
+p:successeur r:Victor-Amédée_III_de_Sardaigne ;
+cn:begin 1730 ; cn:end 1773 ;
+rdfs:label "Charles-Emmanuel III" ; 
+p:title "Roi de Sardaigne"  .
+
+
+
+r:Victor-Amédée_III_de_Sardaigne a foaf:Person ;
+p:successeur r:Charles-Emmanuel_IV_de_Sardaigne ;
+cn:begin 1773 ; cn:end 1796 ;
+rdfs:label "Victor-Amédée III" ; p:title "Roi de Sardaigne" .
+
+
+r:Charles-Emmanuel_IV_de_Sardaigne a foaf:Person ;
+p:successeur r:Victor-Emmanuel_Ier_de_Sardaigne ;
+cn:begin 1796 ; cn:end 1802 ;
+rdfs:label "Charles-Emmanuel IV" ; p:title "Roi de Sardaigne"  .
+
+
+r:Victor-Emmanuel_Ier_de_Sardaigne a foaf:Person ;
+p:successeur r:Charles-Félix_de_Savoie ;
+cn:begin 1802 ; cn:end 1821 ;
+rdfs:label "Victor-Emmanuel Ier" ; p:title "Roi de Sardaigne"  .
+
+
+r:Charles-Félix_de_Savoie a foaf:Person ;
+p:successeur r:Charles-Albert_de_Sardaigne ;
+cn:begin 1821 ; cn:end 1831 ;
+rdfs:label "Charles-Felix Ier" ; p:title "Roi de Sardaigne" .
+
+r:Charles-Albert_de_Sardaigne a foaf:Person ;
+p:successeur <http://fr.dbpedia.org/resource/Victor-Emmanuel_II_d'Italie> ;
+cn:begin 1831 ; cn:end 1849 ;
+rdfs:label "Charles-Albert" ; p:title "Roi de Sardaigne".
+
+
+<http://fr.dbpedia.org/resource/Victor-Emmanuel_II_d'Italie>
+a foaf:Person ;
+cn:begin 1849 ; cn:end 1878 ;
+rdfs:label "Victor-Emmanuel II" ; p:title "Roi de Sardaigne".
+
+r:Camillo_Cavour a foaf:Person ;
+cn:date 1858 ;
+rdfs:label "Camillo Cavour" ;
+rdfs:comment "Entrevue de Plombières avec Napoléon III" .
+

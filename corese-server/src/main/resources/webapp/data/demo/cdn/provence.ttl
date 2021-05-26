@@ -1,0 +1,310 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:context
+
+
+r:La_Garde-Freinet a o:Place ;
+cn:date 890 ;
+rdfs:label "La Garde Freinet" ;
+rdfs:comment "Installation des Sarrasins au Fraxinet" .
+
+r:Royaume_de_Bourgogne cn:date 946 ;
+rdfs:label "Royaume de Bourgogne";
+rdfs:comment "Provence unie avec le royaume de Bourgogne ou royaume d'Arles" .
+
+
+<http://fr.dbpedia.org/resource/Boson_II_d'Arles> a foaf:Person ;
+cn:date 949 ;
+rdfs:label "Boson II d'Arles" ;
+rdfs:comment "Comte d'Arles" .
+
+r:Guillaume_Ier_de_Provence a foaf:Person ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/6/61/De_provence_guillaume_le_lib.jpg> ;
+cn:date 972 ;
+rdfs:label "Guillaume le Libérateur" ;
+rdfs:comment "Marquis de Provence, expulse les Sarrasins installés à la Garde-Freinet" .
+
+r:Guillaume_II_de_Provence a foaf:Person ;
+cn:date 993 ;
+rdfs:label "Guillaume II" ;
+rdfs:comment "Comte de Provence" .
+
+r:Foulques_Bertrand_de_Provence a foaf:Person ;
+cn:date 1018 ;
+rdfs:label "Foulques Bertrand" ;
+rdfs:comment "Comte de Provence" .
+
+
+r:Guillaume_V_Bertrand_de_Provence a foaf:Person ;
+cn:date 1051 ;
+rdfs:label "Guillaume V Bertrand" ;
+rdfs:comment "Comte de Provence" .
+
+r:Geoffroi_II_de_Provence a foaf:Person ;
+cn:date 1051 ;
+rdfs:label "Geoffroi II" ;
+rdfs:comment "Comte de Provence" .
+
+
+r:Bertrand_II_de_Provence a foaf:Person ;
+cn:date 1061 ;
+rdfs:label "Bertrand II" ;
+rdfs:comment "Comte de Provence" .
+
+
+[] cn:date 1032 ;
+rdfs:label "Provence" ;
+rdfs:comment "Intégrée à l'Empire Germanique, avec le royaume de Bourgogne (jusqu'en 1481)" .
+
+r:Raimond-Bérenger_III_de_Barcelone
+a foaf:Person ;
+cn:date 1113 ;
+rdfs:label "Raimond Bérenger Ier" ;
+rdfs:comment "Comte de Barcelone, épouse Douce Ire, devient comte de Provence : fondation de la Maison de Barcelone (princes catalans)" .
+
+r:Bérenger-Raimond_de_Provence a foaf:Person ;
+cn:date 1130 ;
+rdfs:label "Bérenger Raimond" ;
+rdfs:comment "Comte de Provence" .
+
+r:Vaudès a foaf:Person ;
+cn:date 1140 ;
+rdfs:label "Pierre Valdès" ;
+rdfs:comment "Fondateur de l'Eglise vaudoise, excommunié, se réfugie dans le Lubéron (1140-1206)" .
+
+r:Raimond-Bérenger_II_de_Provence a foaf:Person ;
+cn:date 1144 ;
+rdfs:label "Raimond Bérenger II" ;
+rdfs:comment "Comte de Provence" .
+
+r:Guerres_baussenques cn:date 1145 ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/9/99/4490_BAUX1066_C_Recoura.jpg/300px-4490_BAUX1066_C_Recoura.jpg> ;
+rdfs:label "Guerres baussenques" ;
+rdfs:comment "Les seigneurs des Baux en guerre contre les comtes de Provence (1145-1156)" .
+
+
+r:Abbaye_de_Sénanque a o:Place ;
+cn:date 1148 ;
+rdfs:label "Abbaye de Sénanque" .
+
+r:Abbaye_du_Thoronet a o:Place ;
+cn:date 1160 ;
+st:icon <http://1.bp.blogspot.com/-usOXnjR9gFM/T7ab61FpSWI/AAAAAAAABgE/GYNc8kIn3BY/s1600/abbaye.JPG> ;
+rdfs:label "Abbaye du Thoronet" .
+
+
+<http://fr.dbpedia.org/resource/Alphonse_II_d'Aragon> a foaf:Person ;
+cn:date 1166 ;
+rdfs:label "Alphonse Ier" ;
+rdfs:comment "Comte de Provence" .
+
+r:Alphonse_II_de_Provence a foaf:Person ;
+cn:date 1196 ;
+rdfs:label "Alphonse II" ;
+rdfs:comment "Comte de Provence" .
+
+r:Raimond_Bérenger_IV_de_Provence a foaf:Person ;
+cn:date 1205 ;
+rdfs:label "Raimond Bérenger IV" ;
+rdfs:comment "Comte de Provence" .
+
+<http://fr.dbpedia.org/resource/Béatrice_de_Savoie_(1198-1266)> a foaf:Person ;
+cn:date 1219 ;
+rdfs:label "Béatrice de Savoie" ;
+rdfs:comment "Fille de Thomas Ier, épouse Raimond Bérenger IV" .
+
+r:Romée_de_Villeneuve a foaf:Person ;
+cn:date 1229 ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Rom%C3%A9e_de_Villeneuve%2C_baron_de_Vence.jpg/220px-Rom%C3%A9e_de_Villeneuve%2C_baron_de_Vence.jpg> ;
+rdfs:label "Romée de Villeneuve" ;
+rdfs:comment "Sénéchal de Provence" .
+
+
+r:Barcelonnette a o:Place ;
+cn:date 1231 ;
+rdfs:label "Barcelonnette" ;
+rdfs:comment "Fondation de la ville par Raimond Bérenger IV" .
+
+
+r:Château_de_Villeneuve-Loubet a o:Place ;
+cn:date 1231 ;
+rdfs:label "Château de Villeneuve-Loubet" .
+
+<http://fr.dbpedia.org/resource/Charles_Ier_de_Sicile> a foaf:Person ;
+cn:date 1246 ; 
+rdfs:label "Charles I d'Anjou" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/f/fa/Capitolini-MonumentoCarloAngi%C3%B2-ArnolfoDiCambio-2.jpg>;
+rdfs:comment "Frère de Saint Louis, épouse Béatrice de Provence, fille de Raimond Béranger IV, devient comte de Provence. Fondation de la Maison d'Anjou (les angevins)"  .
+
+[] cn:date 1258 ;
+rdfs:label "Vallée de la Roya" ;
+rdfs:comment "Acquise par la Provence auprès des comtes de Vintimille" .
+
+[] cn:date 1259 ;
+rdfs:label "Cuneo, Mondovi, Alba (Piémont)" ;
+rdfs:comment "Acquis par la Provence" .
+
+[] cn:date 1266 ; 
+rdfs:label "Charles I d'Anjou" ; 
+rdfs:comment "Roi de Naples"  .
+
+r:Comtat_Venaissin a o:Place ;
+cn:date 1274 ;
+rdfs:label "Comtat Venaissin" ;
+rdfs:comment "Philippe le Hardi cède le Comtat au pape Grégoire X (jusqu'en 1793)" .
+
+r:Vêpres_siciliennes cn:date 1282 ;
+rdfs:label "Vêpres siciliennes" ;
+rdfs:comment "Le comte de Provence perd la Sicile" .
+
+<http://fr.dbpedia.org/resource/Charles_II_d'Anjou> a foaf:Person ;
+cn:date 1285 ; 
+rdfs:label "Charles II d'Anjou" ; 
+rdfs:comment "Comte de Provence, roi de Naples"  .
+
+r:Robert_Ier_de_Naples a foaf:Person ;
+cn:date 1309 ; 
+rdfs:label "Robert d'Anjou" ; 
+rdfs:comment "Comte de Provence, roi de Naples" ; 
+st:icon <http://upload.wikimedia.org/wikipedia/commons/5/5b/Robert1b.jpg>  .
+
+
+<http://fr.dbpedia.org/resource/Papauté_d'Avignon> 
+cn:date 1309  ; rdfs:label "Papauté d'Avignon"  .
+
+
+r:République_des_Escartons 
+rdfs:label "Escartons de Briançon" ;
+cn:date 1343 .
+
+
+r:Jeanne_Ire_de_Naples cn:date 1343 ; a foaf:Person ;
+rdfs:label "Jeanne Ire" ; 
+st:icon <http://upload.wikimedia.org/wikipedia/commons/f/fd/Jeanne_I%C3%A8re_de_Naples%2C_dite_la_Reine_Jeanne%2C_comtesse_de_Provence.jpg>;
+rdfs:comment "Comtesse de Provence, reine de Naples" .
+
+
+r:Avignon a o:Place ;
+cn:date 1348 ;
+rdfs:label "Avignon" ;
+rdfs:comment "Le pape Clément VI achète la ville à la reine Jeanne (jusqu'à la Révolution)" .
+
+r:Dauphiné a o:Place ;
+cn:date 1349 ;
+rdfs:label "Dauphiné" ;
+rdfs:comment "Rattachement à la France" .
+
+r:Château_des_Seigneurs_de_la_Brigue a o:Place ;
+cn:date 1376 ;
+st:icon <http://3.bp.blogspot.com/-fC8FswPDsHI/U-NKdGGO78I/AAAAAAAADu4/CG2ZZhGYTGg/s1600/P1070423.JPG> ;
+rdfs:label "Château de La Brigue" .
+
+r:Louis_Ier_de_Naples a foaf:Person ;
+cn:date 1380 ; 
+rdfs:label "Louis d'Anjou" ; 
+rdfs:comment "Frère de Charles V, adopté par Jeanne Ire "  .
+
+
+
+
+r:Charles_III_de_Naples a foaf:Person ;
+cn:date 1382 ; 
+rdfs:label "Charles de Duras" ;
+rdfs:comment "Fait assassiner Jeanne Ire"  .
+
+
+
+<http://fr.dbpedia.org/resource/Union_d'Aix> cn:date 1382 ;
+rdfs:label "Union d'Aix" ;
+rdfs:comment "Guerre de succession entre Duras et Anjou" .
+
+
+<http://fr.dbpedia.org/resource/Louis_II_d'Anjou> a foaf:Person ;
+cn:date 1384 ; 
+rdfs:label "Louis II d'Anjou" ;
+rdfs:comment "Comte de Provence" 
+
+
+r:Jean_Grimaldi_de_Bueil a foaf:Person ;
+cn:date 1388 ;
+rdfs:label "Jean Grimaldi de Beuil" ;
+rdfs:comment "Négocie, avec son frère Annibal, la dédition de Nice à la Savoie" .
+
+
+<http://fr.dbpedia.org/resource/Louis_III_d'Anjou> a foaf:Person ;
+cn:date 1417 ; 
+rdfs:label "Louis III d'Anjou" ;
+rdfs:comment "Comte de Provence" 
+
+
+
+<http://fr.dbpedia.org/resource/René_d'Anjou> a foaf:Person ;
+cn:date 1434 ; 
+rdfs:label "René d'Anjou" ;
+rdfs:comment "Comte de Provence" 
+
+<http://fr.dbpedia.org/resource/Charles_V_d'Anjou> a foaf:Person ;
+cn:date 1480 ; 
+rdfs:label "Charles V d'Anjou" ;
+rdfs:comment "Dernier comte de Provence" 
+
+
+r:Histoire_de_la_Provence cn:date 1481 ; 
+rdfs:label "Provence" ;
+rdfs:comment "Rattachement à la France".
+
+
+r:Basilique_Sainte-Marie-Madeleine_de_Saint-Maximin-la-Sainte-Baume a o:Place ;
+cn:date 1532 ;
+rdfs:label "Basilique de Saint-Maximin" ;
+rdfs:comment "Plus important édifice gothique en Provence" .
+
+r:Saint-Paul-de-Vence a o:Place ;
+cn:date 1547 ;
+rdfs:label "Saint Paul de Vence";
+rdfs:comment "Ville frontière, rempart bastionné construit sur ordre de François Ier".
+
+r:Fort_Carré a o:Place ;
+cn:date 1553 ;
+rdfs:label "Fort Carré d'Antibes";
+rdfs:comment "Ville frontière, construction du fort de 1553 à 1585".
+
+r:Colmars a o:Place ;
+cn:date 1690 ;
+rdfs:label "Colmars les Alpes" ;
+rdfs:comment "Fortifications de Niquet" .
+
+r:Entrevaux a o:Place ;
+cn:date 1692 ;
+rdfs:label "Entrevaux";
+st:icon <http://upload.wikimedia.org/wikipedia/commons/e/e4/Entrevaux_-_Porte_d%27Italie.jpg>;
+rdfs:comment "Modernisation de la citadelle".
+
+
+r:Seyne a o:Place ;
+cn:date 1693 ;
+rdfs:label "Seyne" ;
+rdfs:comment "Citadelle de Vauban" .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

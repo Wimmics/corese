@@ -1,0 +1,118 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+
+<> cn:topic cn:context
+
+
+r:Ve_siècle cn:date 401 ;
+rdfs:label "Ve Siècle" ;
+rdfs:comment ""  .
+
+r:VIe_siècle cn:date 501 ;
+rdfs:label "VIe Siècle" ;
+rdfs:comment ""  .
+
+r:VIIe_siècle cn:date 601 ;
+rdfs:label "VIIe Siècle" ;
+rdfs:comment ""  .
+
+r:VIIIe_siècle cn:date 701 ;
+rdfs:label "VIIIe Siècle" ;
+rdfs:comment ""  .
+
+r:IXe_siècle cn:date 801 ;
+rdfs:label "IXe Siècle" ;
+rdfs:comment ""  .
+
+r:Xe_siècle cn:date 901 ;
+rdfs:label "Xe Siècle" ;
+rdfs:comment ""  .
+
+r:XIe_siècle cn:date 1001 ;
+rdfs:label "XIe Siècle" ;
+rdfs:comment "" .
+
+r:XIIe_siècle cn:date 1101 ;
+rdfs:label "XIIe Siècle" ;
+rdfs:comment "Les Croisades" .
+
+r:XIIIe_siècle cn:date 1201 ;
+rdfs:label "XIIIe Siècle" ;
+rdfs:comment "Les Croisades"  .
+
+r:XIVe_siècle cn:date 1301 ;
+rdfs:label "XIVe Siècle" ;
+rdfs:comment "La Guerre de cent ans, la Peste"  .
+
+r:XVe_siècle cn:date 1401 ;
+rdfs:label "XVe Siècle" ;
+rdfs:comment "Chute de Constantinople, Christophe Colomb"  .
+
+r:XVIe_siècle cn:date 1501 ;
+rdfs:label "XVIe Siècle" ;
+rdfs:comment "Renaissance, Réforme, Guerres de religion"  .
+
+r:XVIIe_siècle cn:date 1601 ;
+rdfs:label "XVIIe Siècle" ;
+rdfs:comment "Louis XIV, Galilée, Newton"  .
+
+r:XVIIIe_siècle cn:date 1701 ;
+rdfs:label "XVIIIe Siècle" ;
+rdfs:comment "Les Lumières, la Révolution".
+
+r:XIXe_siècle cn:date 1801 ;
+rdfs:label "XIXe Siècle" ;
+rdfs:comment "Les Révolutions, la République"  .
+
+r:XXe_siècle cn:date 1901 ;
+rdfs:label "XXe Siècle" ;
+rdfs:comment "" .
+
+
+cn:VII-   rdfs:label "-VII" ; 	cn:start  -700   ; cn:finish -601 .
+cn:VI-    rdfs:label "-VI" ; 	cn:start  -600   ; cn:finish -501 .
+cn:V-     rdfs:label "-V" ; 	cn:start  -500   ; cn:finish -401 .
+cn:IV-    rdfs:label "-IV" ; 	cn:start  -400   ; cn:finish -301 .
+cn:III-   rdfs:label "-III" ; 	cn:start  -300   ; cn:finish -201 .
+cn:II-    rdfs:label "-II" ; 	cn:start  -200   ; cn:finish -101 .
+cn:I-     rdfs:label "-I" ; 	cn:start  -100   ; cn:finish -1 .
+
+cn:I     rdfs:label "I" ; 	cn:start  1   ; cn:finish 100 .
+cn:II    rdfs:label "II" ; 	cn:start  101 ; cn:finish 200 .
+cn:III   rdfs:label "III" ; 	cn:start  201 ; cn:finish 300 .
+cn:IV    rdfs:label "IV" ; 	cn:start  301 ; cn:finish 400 .
+cn:V     rdfs:label "V" ; 	cn:start  401 ; cn:finish 500 .
+cn:VI    rdfs:label "VI" ; 	cn:start  501 ; cn:finish 600 .
+cn:VII   rdfs:label "VII" ; 	cn:start  601 ; cn:finish 700 .
+cn:VIII  rdfs:label "VIII" ; 	cn:start  701 ; cn:finish 800 .
+cn:IX    rdfs:label "IX" ; 	cn:start  801 ; cn:finish 900 .
+cn:X     rdfs:label "X" ; 	cn:start  901 ; cn:finish 1000 .
+
+cn:XI    rdfs:label "XI" ; 	cn:start 1001 ; cn:finish 1100 .
+cn:XII   rdfs:label "XII" ; 	cn:start 1101 ; cn:finish 1200 .
+cn:XIII  rdfs:label "XIII" ; 	cn:start 1201 ; cn:finish 1300 .
+cn:XIV   rdfs:label "XIV" ; 	cn:start 1301 ; cn:finish 1400 .
+cn:XV    rdfs:label "XV" ; 	cn:start 1401 ; cn:finish 1500 .
+cn:XVI   rdfs:label "XVI" ; 	cn:start 1501 ; cn:finish 1600 .
+cn:XVII  rdfs:label "XVII" ; 	cn:start 1601 ; cn:finish 1700 .
+cn:XVIII rdfs:label "XVIII" ; 	cn:start 1701 ; cn:finish 1800 .
+cn:XIX   rdfs:label "XIX" ; 	cn:start 1801 ; cn:finish 1900 .
+cn:XX    rdfs:label "XX" ; 	cn:start 1901 ; cn:finish 2000 .
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

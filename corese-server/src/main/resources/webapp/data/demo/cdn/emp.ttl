@@ -1,0 +1,56 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+<> cn:topic cn:emp
+
+r:Frédéric_Barberousse a foaf:Person ;
+cn:date 1155 ;
+rdfs:label "Frédéric de Hohenstaufen" ;
+rdfs:comment "Dit Barberousse, empereur germanique" .
+
+r:Henri_VI_du_Saint-Empire a foaf:Person ;
+cn:date 1190 ;
+rdfs:comment "Empereur germanique" ;
+rdfs:label "Henri VI" .
+
+r:Otton_IV_du_Saint-Empire a foaf:Person ;
+cn:date 1209 ;
+rdfs:comment "Empereur germanique" ;
+rdfs:label "Otton IV" .
+
+
+r:Frédéric_II_du_Saint-Empire a foaf:Person ;
+cn:date 1215 ;
+rdfs:comment "Empereur germanique" ;
+rdfs:label "Frédéric II" .
+
+r:Henri_VII_du_Saint_Empire a foaf:Person ;
+cn:date 1312 ;
+st:icon <https://upload.wikimedia.org/wikipedia/commons/a/a9/Henry_Lux_head.jpg> ;
+rdfs:comment "Empereur germanique" ;
+rdfs:label "Henri_VII" .
+
+r:Louis_IV_du_Saint-Empire a foaf:Person ;
+cn:date 1328 ;
+rdfs:comment "Empereur germanique" ;
+rdfs:label "Louis IV" .
+
+r:Charles_IV_du_Saint-Empire a foaf:Person ;
+cn:date 1355 ;
+rdfs:comment "Empereur germanique" ;
+rdfs:label "Charles IV" .
+
+r:Sigismond_Ier_du_Saint-Empire a foaf:Person ;
+cn:date 1433 ;
+rdfs:comment "Empereur germanique" ;
+rdfs:label "Sigismond Ier" .
+
+
+r:Charles_Quint a foaf:Person ;
+cn:date 1519  ; 
+rdfs:comment "Empereur germanique" ;
+rdfs:label "Charles Quint" .
+
+

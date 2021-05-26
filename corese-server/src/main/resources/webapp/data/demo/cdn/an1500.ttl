@@ -1,0 +1,107 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:cdn
+
+r:André_Provana_de_Leyni a foaf:Person ;
+cn:date 1511 ;
+rdfs:label "André Provana de Leyni" ;
+rdfs:comment "Chef militaire des États de Savoie (1511-1592)" .
+
+r:Louise_de_Savoie a foaf:Person ;
+cn:date 1515 ;
+rdfs:label "Louise de Savoie" ;
+rdfs:comment "Mère de François Ier, fille du duc de Savoie Philippe II".
+
+<http://fr.dbpedia.org/resource/Béatrice_de_Portugal_(1504-1538)> a foaf:Person ;
+cn:date 1521 ;
+rdfs:label "Béatrice de Portugal" ;
+rdfs:comment "Belle soeur de Charles Quint, épouse Charles III" .
+
+
+[] cn:date 1536 ; 
+rdfs:label "Occupation de la Savoie et du Piémont par la France. Charles III réfugié à Nice (1536-1559)" .
+
+r:Paix_de_Nice cn:date 1538 ; 
+rdfs:label "Congrès de Nice" ;
+rdfs:comment "avec François Ier,  Charles Quint, le pape Paul III et Charles III"  .
+
+[] cn:date 1539 ;
+rdfs:label "Hôtel des Monnaies à Nice" .
+
+r:Darse_de_Villefranche-sur-Mer a o:Place ;
+cn:date 1539 ;
+rdfs:label "Darse de Villefranche-sur-Mer" .
+
+<http://fr.dbpedia.org/resource/Siège_de_Nice_(1543)>
+cn:date 1543 ; 
+rdfs:label "Siège de Nice" ;
+rdfs:comment "Français et Ottomans alliés assiègent Nice" .
+
+
+r:Catherine_Ségurane a foaf:Person ;
+cn:date 1543 ; 
+rdfs:label "Catherine Ségurane" .
+
+
+
+
+
+
+<http://fr.dbpedia.org/resource/Marguerite_de_France_(1523-1574)>
+cn:date 1559 ;
+rdfs:label "Marguerite de Valois" ;
+rdfs:comment "Fille de François Ier, soeur d'Henri II, épouse Emmanuel-Philibert"  .
+
+r:Traités_du_Cateau-Cambrésis cn:date 1559 ;
+rdfs:label "Traité de Cateau-Cambrésis" ;
+rdfs:comment "Emmanuel-Philibert récupère la Savoie et le Piémont" .
+
+r:Fort_du_mont_Alban cn:date 1560 ; a o:Place ;
+rdfs:label "Fort du mont Alban" ;
+st:icon <http://3.bp.blogspot.com/-3tBevLpWI6E/UtK25pLm86I/AAAAAAAADf8/Tvhy3899Iwo/s320/P1060114.JPG>  .
+
+r:Citadelle_Saint-Elme cn:date 1560 ; a o:Place ;
+rdfs:label "Citadelle de Villefranche" ;
+st:icon <http://4.bp.blogspot.com/-lSwNPM_SAbE/UtK8wVHQnDI/AAAAAAAADgs/TgCSFFwzKVc/s1600/P1060197.JPG>.
+
+
+r:Sénat_de_Savoie cn:date 1560 ;
+rdfs:label "Sénat de Chambéry" .
+
+r:Édit_de_Rivoli cn:date 1561 ; 
+rdfs:label "Édit de Rivoli" ;
+rdfs:comment "Le français langue officielle de la Savoie et du Val d'Aoste ; l'italien langue officielle du Piémont et de Nice" .
+
+r:Turin a o:Place ; 
+cn:date 1563 ; 
+rdfs:label "Turin" ;
+rdfs:comment "Capitale des Etats de Savoie, succède à Chambéry" ;
+st:icon <http://1.bp.blogspot.com/-_VRkIJQPM5w/U-NOZFfRylI/AAAAAAAADvM/e_cs7pMmTQc/s1600/P1070482.JPG>  .
+
+
+[] cn:date 1576 ;
+rdfs:label "Château de Nice" ;
+rdfs:comment "Restructuré en citadelle militarisée" .
+
+[] cn:date 1577 ;
+rdfs:label "Sénat de Turin" .
+
+<http://fr.dbpedia.org/resource/Tende_(Alpes-Maritimes)> a o:Place ;
+cn:date 1579 ;
+rdfs:label "Tende" ;
+rdfs:comment "Acquisition du comté de Tende des Lascaris, facilitant l'accès du Piémont à la mer" .
+
+
+
+
+
+
+
+
+
+
+
+

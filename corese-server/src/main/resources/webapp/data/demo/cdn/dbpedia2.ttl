@@ -1,0 +1,25 @@
+@prefix w: <http://fr.wikipedia.org/wiki/>
+@prefix r: <http://fr.dbpedia.org/resource/>
+@prefix p: <http://fr.dbpedia.org/property/>
+r:Archimède a foaf:Person ;
+  dbo:dbpedia r:Archimède ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Domenico-Fetti_Archimedes_1620.jpg?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Archimède" ;
+  p:dateDeDécès 212 ;
+  p:dateDeNaissance 287 ;
+  rdfs:comment "Archimède de Syracuse (en grec ancien : Ἀρχιμήδης / Arkhimếdês), né à Syracuse vers 287 av. J.-C. et mort en cette même ville en 212 av. J.-C., est un grand scientifique grec de Sicile (Grande-Grèce) de l\'Antiquité, physicien, mathématicien et ingénieur. Bien que peu de détails de sa vie soient connus, il est considéré comme l\'un des principaux scientifiques de l\'Antiquité classique."@fr ;
+  rdfs:label "Archimède"@fr .
+
+r:Pythagore a foaf:Person ;
+  dbo:dbpedia r:Pythagore ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Kapitolinischer_Pythagoras_adjusted.jpg?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Pythagore" ;
+  rdfs:comment "Pythagore (en grec ancien Πυθαγόρας / Pythagóras) est un réformateur religieux et philosophe présocratique qui serait né aux environs de 580 av. J.-C. à Samos, une île de la mer Égée au  sud-est de la ville d\'Athènes ; on établit sa mort vers 495 av. J.-C., à l\'âge de 85 ans."@fr ;
+  rdfs:label "Pythagore"@fr .
+
+r:Thalès a foaf:Person ;
+  dbo:dbpedia r:Thalès ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Illustrerad_Verldshistoria_band_I_Ill_107.jpg?width=300> ;
+  dbo:wikipedia "http://fr.wikipedia.org/wiki/Thalès" ;
+  rdfs:comment "Thalès de Milet, appelé communément Thalès (en grec ancien : Θαλῆς ὁ Μιλήσιος / Thalễs ho Milếsios), est un philosophe et savant grec né à Milet vers -625 et mort vers -547 dans cette même ville.Il fut l\'un des « Sept sages » de la Grèce antique et le fondateur présumé de l\'école milésienne. Philosophe de la nature, il passe pour avoir effectué un séjour en Égypte, où il aurait été initié aux sciences égyptienne et babylonienne."@fr ;
+  rdfs:label "Thalès"@fr .

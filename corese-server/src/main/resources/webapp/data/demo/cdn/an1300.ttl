@@ -1,0 +1,24 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:cdn
+
+
+r:Bonne_de_Bourbon a foaf:Person ;
+cn:date 1355 ;
+rdfs:label "Bonne de Bourbon " ;
+rdfs:comment "Nièce du roi de France Philippe VI, épouse Amédée VI" .
+
+
+[] cn:date 1385 ; rdfs:label "Barcelonnette, Cuneo et Stura rejoignent la Savoie" .
+
+
+
+
+r:Dédition_de_Nice_à_la_Savoie 
+cn:date 1388 ; 
+rdfs:label "Dédition de Nice" ;
+rdfs:comment "Le comte de  Savoie annexe Nice, Puget-Théniers et Lantosque  au détriment du comte de Provence"  .
+

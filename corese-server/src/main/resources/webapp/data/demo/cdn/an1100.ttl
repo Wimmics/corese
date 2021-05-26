@@ -1,0 +1,8 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:cdn
+
+

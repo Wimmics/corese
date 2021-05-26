@@ -1,0 +1,43 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:cdn
+
+
+r:Marc_Joseph_de_Gratet_Dubouchage a foaf:Person;
+cn:date 1803 ;
+rdfs:label "Dubouchage" ;
+rdfs:comment "Préfet des Alpes-Maritimes, de 1803 à 1814.".
+
+
+r:Giuseppe_Garibaldi a foaf:Person ;
+cn:date 1807 ;
+rdfs:label "Garibaldi" ;
+rdfs:comment "1807-1882".
+
+r:Royaume_de_Sardaigne cn:date 1814 ; 
+rdfs:label "Restauration Sarde" ;
+rdfs:comment "Retour du Comté de Nice et de la Savoie au royaume de Piémont-Sardaigne" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/5/5a/TannerMapKingdomSardinia1839.jpg> .
+
+[] rdfs:label "Bornage du comté de Nice" ;
+cn:date 1823 ;
+cn:link <http://oliviercorby.blogspot.fr/p/borne.html> ;
+st:icon <http://4.bp.blogspot.com/-qzoiYjYSTRc/VEQFeGtksNI/AAAAAAAAD7w/7EDR3HBG0W4/s320/P1080438.JPG> .
+
+r:Statut_albertin cn:date 1848 ;
+rdfs:label "Statuto" .
+
+r:Gênes a o:Place ;
+rdfs:label "Gênes";
+cn:date 1853 ; 
+rdfs:comment "Suppression du port franc de Nice au profit de Gênes" .
+
+
+r:Annexion_du_comté_de_Nice_à_la_France 
+cn:date 1860 ; rdfs:label "La France annexe Nice et la Savoie".
+
+
+

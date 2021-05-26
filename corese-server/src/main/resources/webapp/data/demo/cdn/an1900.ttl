@@ -1,0 +1,28 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:cdn
+
+r:Mollières a o:Place ;
+cn:date 1947 ;
+rdfs:label "Mollières";
+rdfs:comment "Rattaché à la France" .
+
+r:Piène-Haute a o:Place ;
+cn:date 1947 ;
+rdfs:label "Piène";
+rdfs:comment "Rattaché à la France" .
+
+r:La_Brigue a o:Place ;
+cn:date 1947 ;
+rdfs:label "La Brigue";
+rdfs:comment "Rattachée à la France, ainsi que Tende" .
+
+
+
+r:Ligne_de_Coni_à_Vintimille cn:date 1970 ; 
+rdfs:label "Chemin de fer Tende-Breil" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/d/d2/Tenda23.jpg> ;
+rdfs:comment "L'Italie s'engage à restaurer et entretenir la ligne Tende-Breil au titre des dommages de guerre" .

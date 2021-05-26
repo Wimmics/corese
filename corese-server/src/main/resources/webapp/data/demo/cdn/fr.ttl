@@ -1,0 +1,263 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+<> cn:topic cn:fr
+
+
+
+
+r:Pépin_le_Bref a foaf:Person ;
+cn:date 751 ;
+rdfs:label "Pépin le Bref" .
+
+r:Carloman_Ier a foaf:Person ;
+cn:date 768 ;
+rdfs:label "Carloman Ier" .
+
+r:Charlemagne a foaf:Person ;
+cn:date 800 ;
+rdfs:label "Charlemagne" .
+
+
+r:Louis_le_Pieux a foaf:Person ;
+cn:date 814 ;
+rdfs:label "Louis le Pieux" .
+
+r:Charles_II_le_Chauve a foaf:Person ;
+cn:date 843 ;
+rdfs:label "Charles II le Chauve" .
+
+r:Louis_II_de_France a foaf:Person ;
+cn:date 877 ;
+rdfs:label "Louis II le Bègue" .
+
+r:Louis_III_de_France a foaf:Person ;
+cn:date 879 ;
+rdfs:label "Louis III" .
+
+r:Carloman_II a foaf:Person ;
+cn:date 879 ;
+rdfs:label "Carloman II" .
+
+r:Charles_III_le_Gros a foaf:Person ;
+cn:date 881 ;
+rdfs:label "Charles III le Gros" .
+
+<http://fr.dbpedia.org/resource/Eudes_de_France> a foaf:Person ;
+cn:date 888 ;
+rdfs:label "Eudes" .
+
+r:Charles_III_de_France a foaf:Person ;
+cn:date 898 ;
+rdfs:label "Charles III" .
+
+
+r:Robert_Ier_de_France a foaf:Person ;
+cn:date 922 ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/0/0e/Robert1.jpg> ;
+rdfs:label "Robert Ier" .
+
+r:Raoul_de_Bourgogne a foaf:Person ;
+cn:date 923 ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/c/cd/Rudolph_of_France.jpg> ;
+rdfs:label "Raoul" .
+
+r:Louis_IV_de_France a foaf:Person ;
+cn:date 936 ;
+rdfs:label "Louis IV" .
+
+r:Lothaire_de_France a foaf:Person ;
+cn:date 954 ;
+rdfs:label "Lothaire" .
+
+r:Louis_V_de_France a foaf:Person ;
+cn:date 986 ;
+rdfs:label "Louis V" .
+
+
+r:Hugues_Capet a foaf:Person ;
+cn:date 987  ; rdfs:label "Hugues Capet" ;
+rdfs:comment "Dynastie des Capétiens" .
+
+r:Robert_II_de_France a foaf:Person ;
+cn:date 996  ; rdfs:label "Robert le Pieux" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/5/52/Seal_of_Robert_II.jpg> .
+
+r:Henri_Ier_de_France a foaf:Person ;
+cn:date 1031  ; rdfs:label "Henri Ier" .
+
+r:Philippe_Ier_de_France a foaf:Person ;
+cn:date 1060  ; rdfs:label "Philippe Ier" .
+
+r:Louis_VI_de_France a foaf:Person ;
+cn:date 1108  ; rdfs:label "Louis VI"  .
+
+r:Louis_VII_de_France a foaf:Person ;
+cn:date 1137  ; rdfs:label "Louis VII" .
+
+r:Philippe_II_de_France a foaf:Person ;
+cn:date 1180  ; rdfs:label "Philippe Auguste" .
+
+r:Louis_VIII_de_France a foaf:Person ;
+cn:date 1223  ; rdfs:label "Louis VIII" .
+
+r:Louis_IX_de_France a foaf:Person ;
+cn:date 1226  ; rdfs:label "Saint Louis" .
+
+r:Philippe_III_de_France a foaf:Person ;
+cn:date 1270  ; rdfs:label "Philippe III" ;
+rdfs:comment "Dit le Hardi" .
+
+r:Philippe_IV_de_France a foaf:Person ;
+cn:date 1285  ; rdfs:label "Philippe le Bel".
+
+r:Louis_X_de_France a foaf:Person ;
+cn:date 1314  ; rdfs:label "Louis X" ;
+rdfs:comment "Dit le Hutin".
+
+r:Philippe_V_de_France a foaf:Person ;
+cn:date 1316  ; rdfs:label "Philippe V" .
+
+r:Charles_IV_de_France a foaf:Person ;
+cn:date 1322  ; rdfs:label "Charles IV"  .
+
+
+r:Philippe_VI_de_France a foaf:Person ;
+cn:date 1328  ; rdfs:label "Philippe VI" ;
+rdfs:comment "Capétiens de Valois".
+
+
+r:Jean_II_de_France a foaf:Person ;
+cn:date 1350  ; rdfs:label "Jean II" .
+
+r:Charles_V_de_France a foaf:Person ;
+cn:date 1364  ; rdfs:label "Charles V" .
+
+
+r:Charles_VI_de_France a foaf:Person ;
+cn:date 1380  ; rdfs:label "Charles VI" .
+
+
+r:Charles_VII_de_France a foaf:Person ;
+cn:date 1422  ; rdfs:label "Charles VII".
+
+r:Louis_XI_de_France a foaf:Person ;
+cn:date 1461  ; rdfs:label "Louis XI"  .
+
+
+r:Charles_VIII_de_France a foaf:Person ;
+cn:date 1483  ; rdfs:label "Charles VIII" .
+
+
+r:Louis_XII_de_France a foaf:Person ;
+cn:date 1498  ; rdfs:label "Louis XII" .
+
+
+
+r:François_Ier_de_France a foaf:Person ;
+cn:date 1515  ; 
+rdfs:label "François Ier" .
+
+
+r:Henri_II_de_France a foaf:Person ;
+cn:date 1547  ; 
+rdfs:label "Henri II"  .
+
+r:François_II_de_France a foaf:Person ;
+cn:date 1559  ; 
+rdfs:label "François II" .
+
+r:Charles_IX_de_France a foaf:Person ;
+cn:date 1560  ; 
+rdfs:label "Charles IX"  .
+
+r:Henri_III_de_France a foaf:Person ;
+cn:date 1574  ; 
+rdfs:label "Henri III" .
+
+r:Henri_IV_de_France a foaf:Person ;
+cn:date 1594  ; rdfs:label "Henri IV" ;
+rdfs:comment "Capétiens de Bourbon" .
+
+r:Louis_XIII_de_France a foaf:Person ;
+cn:date 1610  ; rdfs:label "Louis XIII".
+
+r:Louis_XIV_de_France a foaf:Person ;
+cn:date 1653  ; rdfs:label "Louis XIV"  .
+
+r:Louis_XV_de_France a foaf:Person ;
+cn:date 1715  ; rdfs:label "Louis XV" .
+
+r:Louis_XVI_de_France a foaf:Person ;
+cn:date 1774  ; rdfs:label "Louis XVI" .
+
+r:Georges_Jacques_Danton a foaf:Person ;
+cn:date 1793 ;
+rdfs:label "Danton" ;
+rdfs:comment "Président de la Convention" .
+
+r:Maximilien_de_Robespierre a foaf:Person ;
+cn:date 1794 ;
+rdfs:label "Robespierre" ;
+rdfs:comment "Président de la Convention" .
+
+r:Napoléon_Ier a foaf:Person ;
+cn:date 1804 ; rdfs:label "Napoléon Ier" .
+
+r:Louis_XVIII_de_France a foaf:Person ;
+cn:date 1814  ; rdfs:label "Louis XVIII" .
+
+r:Charles_X_de_France  a foaf:Person ;
+cn:date 1824  ; rdfs:label "Charles X" .
+
+r:Louis-Philippe_Ier a foaf:Person ;
+cn:date 1830  ; rdfs:label "Louis-Philippe" .
+
+[]
+cn:date 1849  ; rdfs:label "Napoléon III" ; 
+rdfs:comment "Président de la République";
+cn:link w:Napoleon_III .
+
+r:Napoléon_III a foaf:Person ;
+cn:date 1852  ; rdfs:label "Napoléon III" ;
+rdfs:comment "Empereur" .
+
+
+
+r:Adolphe_Thiers a foaf:Person ;
+cn:date 1871  ; rdfs:label "Adolphe Thiers" .
+
+r:Patrice_de_Mac_Mahon a foaf:Person ;
+  <http://cdn.fr/schema/date> 1873 ;
+  rdfs:label "Patrice de Mac Mahon"@fr .
+  
+r:Jules_Grévy a foaf:Person ;
+  <http://cdn.fr/schema/date> 1879 ;
+  rdfs:label "Jules Grévy"@fr .  
+
+<http://fr.dbpedia.org/resource/Sadi_Carnot_(homme_politique)> a foaf:Person ;
+  <http://cdn.fr/schema/date> 1887 ;  
+  rdfs:label "Sadi Carnot"@fr .
+  
+r:Jean_Casimir-Perier a foaf:Person ;
+  <http://cdn.fr/schema/date> 1894 ;
+  rdfs:label "Jean Casimir-Perier"@fr .
+
+r:Félix_Faure a foaf:Person ;
+  <http://cdn.fr/schema/date> 1895 ;  
+  rdfs:label "Félix Faure"@fr .
+  
+r:Émile_Loubet a foaf:Person ;
+  <http://cdn.fr/schema/date> 1899 ;
+  rdfs:label "Émile Loubet"@fr .    
+  
+r:Armand_Fallières a foaf:Person ;
+  <http://cdn.fr/schema/date> 1906 ;
+  rdfs:label "Armand Fallières"@fr .
+
+  
+r:Raymond_Poincaré a foaf:Person ;
+  <http://cdn.fr/schema/date> 1913 ;
+  rdfs:label "Raymond Poincaré"@fr .

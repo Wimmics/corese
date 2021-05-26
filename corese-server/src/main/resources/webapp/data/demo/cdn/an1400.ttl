@@ -1,0 +1,49 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:cdn
+
+[]
+cn:date 1416 ; 
+rdfs:label "Sigismond 1er" ;
+rdfs:comment "Erige le comté de Savoie en duché"   .
+
+[] cn:date 1431 ; 
+rdfs:label "1ères Galères de Savoie" .
+
+
+<http://fr.dbpedia.org/resource/Marguerite_de_Savoie_(1420-1479)> a foaf:Person ;
+cn:date 1432 ; 
+rdfs:label "Marguerite de Savoie" ;
+rdfs:comment "Fille du duc Amédée VIII, épouse Louis III d'Anjou, comte de Provence" 
+
+
+
+[] cn:date 1433 ; 
+rdfs:label "Route muletière vers Saint-Martin-Vésubie" .
+
+
+
+[] cn:date 1439 ; 
+rdfs:label "Amédée VIII devient  antipape Félix V"  .
+
+r:Ludovico_Brea a foaf:Person ;
+cn:date 1450 ;
+rdfs:label "Louis Bréa" ;
+rdfs:comment "Peintre des retables" .
+
+r:Yolande_de_France a foaf:Person ;
+cn:date 1466 ; 
+rdfs:label "Yolande de France" ;
+rdfs:comment "Fille de Charles VII, Régente" .
+
+r:Andrea_Doria a foaf:Person ;
+cn:date 1466 ;
+rdfs:label "Andrea Doria" .
+
+
+[] cn:date 1489 ; rdfs:label "Monaco, Menton et Roquebrune se détachent de Gênes"  .
+
+

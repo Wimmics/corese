@@ -1,0 +1,190 @@
+<?xml version="1.0" ?>
+<rdf:RDF
+xmlns:foaf='http://xmlns.com/foaf/0.1/'
+xmlns:rdfs='http://www.w3.org/2000/01/rdf-schema#'
+xmlns:cn='http://cdn.fr/schema/'
+xmlns:owl='http://www.w3.org/2002/07/owl#'
+xmlns:xsd='http://www.w3.org/2001/XMLSchema#'
+xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+xmlns:st='http://ns.inria.fr/sparql-template/'
+>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Charles_VI_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/7/7c/Carlo_VI_di_Francia,_Maestro_di_Boucicaut,_codice_Ms._Fran&#231;ais_165_della_Biblioteca_Universitaria_di_Ginevra.jpg/200px-Carlo_VI_di_Francia,_Maestro_di_Boucicaut,_codice_Ms._Fran&#231;ais_165_della_Biblioteca_Universitaria_di_Ginevra.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Philibert_II_de_Savoie'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/9/97/MR_Brou_04.jpg/200px-MR_Brou_04.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_XII_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Louis-xii-roi-de-france.jpg/200px-Louis-xii-roi-de-france.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_XIV_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/5/5f/Louis_XIV_of_France.jpg/200px-Louis_XIV_of_France.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis-Philippe_Ier'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/1/13/Louis-Philippe_de_Bourbon.jpg/200px-Louis-Philippe_de_Bourbon.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Philippe_Ier_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Philippe1France.JPG/200px-Philippe1France.JPG'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Charles_Quint'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Emperor_charles_v.png/200px-Emperor_charles_v.png'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_XVI_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/d/da/Louis_xvi.jpg/200px-Louis_xvi.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_VII_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/4/4a/PecetLudvik7Fr.gif/200px-PecetLudvik7Fr.gif'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Philippe_III_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/b/b0/Miniature_Philippe_III_Courronement.jpg/200px-Miniature_Philippe_III_Courronement.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_IX_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/a/ad/Louis_IX.jpg/200px-Louis_IX.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_VIII_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Louis-VIII.png/200px-Louis-VIII.png'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Jean_II_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/1/1d/JeanIIdFrance.jpg/200px-JeanIIdFrance.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/R&#233;volution_fran&#231;aise'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/4/4e/Prise_de_la_Bastille.jpg/200px-Prise_de_la_Bastille.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_VI_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Sceau_de_Louis_VI.jpg/200px-Sceau_de_Louis_VI.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Charles_VII_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Charles_VII_by_Jean_Fouquet_1445_1450.jpg/200px-Charles_VII_by_Jean_Fouquet_1445_1450.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Philippe_II_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Sceau_Philippe_Auguste.jpg/200px-Sceau_Philippe_Auguste.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Victor-Emmanuel_II_d&apos;Italie'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/8/85/Vittorio_Emanuele_II_ritratto.jpg/200px-Vittorio_Emanuele_II_ritratto.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Adolphe_Thiers'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Adolphe_Thiers.jpg/200px-Adolphe_Thiers.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louise_de_Savoie'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Louise-de-savoie1.jpg/200px-Louise-de-savoie1.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Philippe_V_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/c/c0/Philippe_V_Le_Long.JPG/200px-Philippe_V_Le_Long.JPG'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Philippe_VI_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Phil6france.jpg/200px-Phil6france.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Charles_VIII_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/Charles_VIII_Ecole_Francaise_16th_century_Musee_de_Conde_Chantilly.jpg/200px-Charles_VIII_Ecole_Francaise_16th_century_Musee_de_Conde_Chantilly.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_XVIII_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/e/e8/Louis_XVIII,_the_Desired.jpg/200px-Louis_XVIII,_the_Desired.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Hugues_Capet'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/f/f8/Hugues_Ier_Capet.jpg/200px-Hugues_Ier_Capet.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Napol&#233;on_III'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/9/99/Franz_Xaver_Winterhalter_Napoleon_III.jpg/200px-Franz_Xaver_Winterhalter_Napoleon_III.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Philippe_IV_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/f/f4/Bust_of_Philippe_le_Bel_SaintDenis.jpg/200px-Bust_of_Philippe_le_Bel_SaintDenis.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Charles-Albert_de_Sardaigne'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/2/21/CarloAlberto2.jpg/200px-CarloAlberto2.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Fran&#231;ois_Ier_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Francis1-1.jpg/200px-Francis1-1.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Charles_X_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Charles_X_of_France_1.PNG/200px-Charles_X_of_France_1.PNG'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Victor-Am&#233;d&#233;e_Ier_de_Savoie'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Vittorio_Amedeo_I_of_Savoy1.jpg/200px-Vittorio_Amedeo_I_of_Savoy1.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Henri_II_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/5/5d/Henry_II_of_France..jpg/200px-Henry_II_of_France..jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Henri_Ier_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Sceau_Henri_Ier.gif/200px-Sceau_Henri_Ier.gif'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Charles_IX_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/d/da/CharlesIX.jpg/200px-CharlesIX.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Charles_V_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Karel_V_van_Frankrijk.jpg/200px-Karel_V_van_Frankrijk.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Henri_III_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Henri_III_Versailles.jpg/200px-Henri_III_Versailles.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_XI_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/6/60/Louis-XI.jpg/200px-Louis-XI.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_XIII_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/f/f5/Louis_XIII_(de_Champaigne).jpg/200px-Louis_XIII_(de_Champaigne).jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Henri_IV_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/d/da/King_Henry_IV_of_France.jpg/200px-King_Henry_IV_of_France.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_X_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Louis_X_Le_Hutin.jpg/200px-Louis_X_Le_Hutin.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Charles_IV_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Charles_IV_Le_Bel.jpg/200px-Charles_IV_Le_Bel.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Humbert_Ier_de_Savoie'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Humbert_I_of_Savoy_tomb.jpg/200px-Humbert_I_of_Savoy_tomb.jpg'/>
+</rdf:Description>
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Louis_XV_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/7/78/Louis_XV_France_by_Louis-Michel_van_Loo_002.jpg/200px-Louis_XV_France_by_Louis-Michel_van_Loo_002.jpg'/>
+</rdf:Description>
+
+
+
+<rdf:Description rdf:about='http://fr.dbpedia.org/resource/Fran&#231;ois_II_de_France'>
+ <st:icon rdf:resource='http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/FrancoisII.jpg/200px-FrancoisII.jpg'/>
+</rdf:Description>
+
+</rdf:RDF>

@@ -1,0 +1,14 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:cdn
+
+
+
+r:Château_de_Chambéry 
+a o:Place ;
+cn:date 1295 ; 
+rdfs:label "Château de Chambéry" ;
+rdfs:comment "Résidence des comtes de Savoie"  .

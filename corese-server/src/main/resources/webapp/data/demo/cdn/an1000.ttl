@@ -1,0 +1,13 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:cdn
+
+
+
+r:Maison_de_Savoie cn:date 1027 ; 
+rdfs:label "Maison de Savoie" ;
+rdfs:comment "Fondation de la dynastie, sous l'égide du Saint-Empire romain germanique" ;
+cn:link w:Maison_de_Savoie .

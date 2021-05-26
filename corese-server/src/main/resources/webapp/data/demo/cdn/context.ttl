@@ -1,0 +1,533 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:context
+
+r:Jésus_de_Nazareth a foaf:Person ;
+cn:date -5 ;
+st:icon <https://upload.wikimedia.org/wikipedia/commons/3/33/Anastasis_Pio_Christiano_Inv31525.jpg> ;
+rdfs:label "Jésus de Nazareth" .
+
+r:Abbaye_de_Lérins a o:Place ;
+cn:date 410 ;
+rdfs:label "Abbaye de Lérins" ;
+rdfs:comment "Fondée par Honorat d'Arles" .
+
+r:Royaume_wisigoth cn:date 418 ;
+rdfs:label "Royaume Wisigoth" ;
+rdfs:comment "Capitale Toulouse (418-711)" .
+
+r:Attila a foaf:Person ;
+cn:date 453 ;
+rdfs:label "Attila" ;
+rdfs:comment "395-453" .
+
+
+
+<http://fr.dbpedia.org/resource/Bataille_de_Tolbiac_(496)> a o:Place ;
+cn:date 496 ;
+rdfs:label "Bataille de Tolbiac" .
+
+
+r:Mahomet a foaf:Person ;
+cn:date 570 ;
+rdfs:label "Mahomet" .
+
+r:Conquête_musulmane_de_la_péninsule_Ibérique cn:date 711 ;
+rdfs:label "Al Andalus" .
+
+r:Charles_Martel a foaf:Person ;
+cn:date 717 ;
+rdfs:label "Charles Martel" ;
+rdfs:comment "Maire du Palais" .
+
+<http://fr.dbpedia.org/resource/Bataille_de_Poitiers_(732)> a o:Place ;
+cn:date 732 ;
+rdfs:label "Bataille de Poitiers" .
+
+r:Âge_des_Vikings cn:date 793 ;
+rdfs:label "Âge des Vikings" ;
+rdfs:comment "793-1066" .
+
+r:Traité_de_Verdun cn:date 843 ;
+rdfs:label "Traité de Verdun" .
+
+r:Pénitence_de_Canossa 
+cn:date 1077 ;
+rdfs:label "Canossa" ;
+rdfs:comment "Le souverain germanique Henri IV en pénitence devant le Pape Grégoire VII qui l'avait excommunié" .
+
+r:Première_croisade cn:date 1096 ;
+rdfs:label "1re croisade" ;
+rdfs:comment "1096 - 1099"  .
+
+r:Deuxième_croisade cn:date 1147 ;
+rdfs:label "2e croisade" ;
+rdfs:comment "1147 - 1149".
+
+r:Troisième_croisade cn:date 1189 ;
+rdfs:label "3e croisade" ;
+rdfs:comment "1189 - 1192" .
+
+r:Quatrième_croisade cn:date 1202 ;
+rdfs:label "4e croisade" ;
+rdfs:comment "1202 - 1204" .
+
+r:Cinquième_croisade cn:date 1217 ;
+rdfs:label "5e croisade" ;
+rdfs:comment "1217 - 1221" .
+
+r:Sixième_croisade cn:date 1228 ;
+rdfs:label "6e croisade" ;
+rdfs:comment "1228 - 1229".
+
+r:Septième_croisade cn:date 1244 ;
+rdfs:label "7e croisade" ;
+rdfs:comment "1244 - 1254" .
+
+
+r:Al-Khwarismi a foaf:Person ;
+cn:date 780 ;
+rdfs:label "Al-Khwârizmî" ;
+rdfs:comment "780-850" .
+
+r:Avicenne a foaf:Person ;
+cn:date 980 ;
+rdfs:label "Avicenne" ;
+rdfs:comment "980-1037" .
+
+r:Averroès a foaf:Person ;
+cn:date 1126 ;
+rdfs:label "Averroès" ;
+rdfs:comment "1126-1198" .
+
+
+<http://fr.dbpedia.org/resource/Henri_II_d'Angleterre> a foaf:Person ;
+cn:date 1154 ;
+rdfs:label "Henri Plantagenêt" ;
+rdfs:comment "Roi d'Angleterre, 1154 - 1189" .
+
+r:Gengis_Khan a foaf:Person ;
+cn:date 1155 ;
+rdfs:label "Gengis Khan" ;
+rdfs:comment "1155-1227" .
+
+<http://fr.dbpedia.org/resource/Richard_Ier_d'Angleterre> a foaf:Person ;
+cn:date 1189 ;
+rdfs:label "Richard Coeur de Lion" ;
+rdfs:comment "Roi d'Angleterre, 1189 - 1199" .
+
+<http://fr.dbpedia.org/resource/Jean_d'Angleterre> a foaf:Person ;
+cn:date 1199 ;
+rdfs:label "Jean sans Terre" ;
+rdfs:comment "Roi d'Angleterre, 1199 - 1216" .
+
+r:Croisade_des_Albigeois cn:date 1208 ;
+rdfs:label "Croisade contre les Cathares" ;
+rdfs:comment "1208-1229" .
+
+
+r:Guelfes_et_gibelins cn:date 1210 ;
+rdfs:label "Conflit Guelfes vs Gibelins" .
+
+r:Bataille_de_Bouvines a o:Place ;
+cn:date 1214 ;
+rdfs:label "Bataille de Bouvines" .
+
+
+r:Inquisition_médiévale cn:date 1233 ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Konrad_von_Marburg.jpg/190px-Konrad_von_Marburg.jpg> ;
+rdfs:label "Inquisition en France" .
+
+
+r:Marco_Polo a foaf:Person ;
+cn:date 1254 ;
+rdfs:label "Marco Polo" ;
+rdfs:comment "1254-1324" .
+
+
+
+r:Guerre_de_Cent_Ans cn:date 1337  ; rdfs:label "Guerre de cent ans"  .
+
+
+r:Château_de_Montségur a o:Place ;
+cn:date 1244 ;
+rdfs:label "Château de Monségur" ;
+rdfs:comment "Prise du château, 200 cathares brulés vifs" . 
+
+r:Bertrand_Du_Guesclin a foaf:Person ;
+cn:date 1320 ;
+rdfs:label "Bertrand Du Guesclin" ;
+rdfs:comment "1320-1380" .
+
+r:Ibn_Khaldoun a foaf:Person ;
+cn:date 1332 ;
+rdfs:label "Ibn Khaldoun" ;
+rdfs:comment "1332-1406" .
+
+r:Peste_noire cn:date 1348 ;
+rdfs:label "Peste noire" ;
+rdfs:comment "40% de la population européenne disparait : 25 millions de morts" .
+
+<http://fr.dbpedia.org/resource/Grand_Schisme_d'Occident> 
+cn:date 1378  ; rdfs:label "Schisme catholique" .
+
+
+
+r:Jean_Ier_de_Bourgogne a foaf:Person ;
+cn:date 1405 ;
+rdfs:label "Jean sans Peur" ;
+rdfs:comment "Duc de Bourgogne" .
+
+
+r:Guerre_civile_entre_Armagnacs_et_Bourguignons cn:date 1407 ;
+rdfs:label "Guerre civile entre Armagnacs et Bourguignons" ;
+rdfs:comment "1407-1435" .
+
+<http://fr.dbpedia.org/resource/Bataille_d'Azincourt> a o:Place ;
+cn:date 1415 ;
+rdfs:label "Bataille d'Azincourt" .
+
+
+[] cn:date 1417  ; rdfs:label "Fin du Schisme  catholique" ;
+cn:link <http://fr.wikipedia.org/wiki/Grand_Schisme_d'Occident> .
+
+<http://fr.dbpedia.org/resource/Jeanne_d'Arc> a foaf:Person ;
+cn:date 1430  ; rdfs:label "Jeanne d'Arc"  .
+
+r:Johannes_Gutenberg a foaf:Person ;
+cn:date 1450 ;
+rdfs:label "Gutenberg" ;
+rdfs:comment "Imprimerie à caractères mobiles" .
+
+r:Léonard_de_Vinci a foaf:Person ; 
+cn:date 1452 ;
+rdfs:label "Léonard de Vinci" ;
+rdfs:comment "1452-1519" .
+
+[] cn:date 1453  ; 
+rdfs:label "Fin de la Guerre de cent ans" .
+
+
+r:Chute_de_Constantinople a o:Place ;
+cn:date 1453 ;
+rdfs:label "Chute de Constantinople" ;
+rdfs:comment "Prise par les Ottomans : fin de l'Empire byzantin" .
+
+r:Nicolas_Machiavel a foaf:Person ;
+cn:date 1469 ;
+rdfs:label "Nicolas Machiavel";
+rdfs:comment "1469 - 1527" .
+
+r:Nicolas_Copernic a foaf:Person ;
+cn:date 1473 ;
+rdfs:label "Nicolas Copernic" ;
+rdfs:comment "Théorie de l'héliocentrisme (1473-1543)" .
+
+
+r:François_Rabelais a foaf:Person ;
+  <http://cdn.fr/schema/date> 1483 ;  
+  rdfs:comment "1483-1553" ;  
+  rdfs:label "François Rabelais"@fr .
+
+
+r:Christophe_Colomb a foaf:Person ;
+cn:date 1492  ; rdfs:label "Christophe Colomb" ;
+rdfs:comment "Le gênois débarque à Cuba"  .
+
+<http://fr.dbpedia.org/resource/Décret_de_l'Alhambra> 
+cn:date 1492 ;
+rdfs:label "Reconquista";
+rdfs:comment "Expulsion des Musulmans et des Juifs d'Espagne par les Rois catholiques"  .
+
+
+r:Soliman_le_Magnifique a foaf:Person ;
+  <http://cdn.fr/schema/date> 1494 ;
+   rdfs:label "Soliman le Magnifique"@fr ;
+   rdfs:comment  "1494-1566" .
+   
+
+r:Bataille_de_Marignan a o:Place ;
+cn:date 1515  ; rdfs:label "Bataille de Marignan"  .
+
+[] 
+cn:date 1516  ; rdfs:label "Charles Quint Roi d'Espagne" .
+
+
+r:Martin_Luther a foaf:Person ;
+cn:date 1517  ; 
+rdfs:label "Martin Luther" ;
+rdfs:comment "Thèses de la Réforme" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/9/90/Lucas_Cranach_d.%C3%84._-_Martin_Luther%2C_1528_%28Veste_Coburg%29.jpg> .
+
+r:Michel_de_Montaigne a foaf:Person ;
+  rdfs:label "Michel de Montaigne"@fr ;
+  cn:date 1533 ;
+  dbo:thumbnail <http://commons.wikimedia.org/wiki/Special:FilePath/Montaigne-Dumonstier.jpg?width=300> ;
+  rdfs:comment "1533-1592" .
+
+
+
+<http://fr.dbpedia.org/resource/Bataille_de_Saint-Quentin_(1557)> a o:Place ;
+cn:date 1557 ;
+rdfs:label "Bataille de Saint-Quentin" ;
+rdfs:comment "A la tête de l'armée impériale, Emmanuel-Philibert défait les français" .
+
+<http://fr.dbpedia.org/resource/Galilée_(savant)> a foaf:Person ;
+cn:date 1564 ;
+rdfs:label "Galilée" ;
+rdfs:comment "1564-1642"  .
+
+r:Bataille_de_Lépante a o:Place ;
+cn:date 1571 ;
+rdfs:label "Bataille de Lépante" .
+
+r:Johannes_Kepler a foaf:Person ;
+cn:date 1571 ;
+rdfs:label "Kepler" ;
+rdfs:comment "Trajectoire elliptique des planètes (1571-1630)" .
+
+
+r:Massacre_de_la_Saint-Barthélemy 
+cn:date 1572  ; rdfs:label "Saint Barthélemy" ;
+rdfs:comment "Massacre des Protestants"  .
+
+r:Armand_Jean_du_Plessis_de_Richelieu a foaf:Person ;
+rdfs:label "Richelieu" ;
+cn:date 1585 ;
+rdfs:comment "1585-1642" .
+
+
+r:Édit_de_Nantes 
+cn:date 1598  ; rdfs:label "Edit de Nantes".
+
+r:Jules_Mazarin a foaf:Person ;
+cn:date 1602 ;
+rdfs:label "Mazarin" ;
+rdfs:comment "1602-1661" .
+
+
+
+r:Jean-Baptiste_Colbert a foaf:Person ;
+cn:date 1619 ;
+rdfs:label "Colbert" ;
+rdfs:comment "1619-1683" .
+
+r:Molière a foaf:Person ;
+cn:date 1622 ;
+rdfs:label "Molière" ;
+rdfs:comment "1622-1673" .
+
+r:Sébastien_Le_Prestre_de_Vauban a foaf:Person ;
+cn:date 1633 ;
+rdfs:label "Sébastien Le Prestre de Vauban" ;
+rdfs:comment "1633-1707" .
+
+r:Isaac_Newton a foaf:Person ; cn:date 1643 ;
+rdfs:label "Isaac Newton" ;
+rdfs:comment "Loi de la gravitation (1643-1727)"  .
+
+r:John_Law_de_Lauriston a foaf:Person ;
+  <http://cdn.fr/schema/date> 1671 ;
+  rdfs:comment "1671-1729" ;
+  rdfs:label "John Law de Lauriston"@fr .
+  
+
+
+
+<http://fr.dbpedia.org/resource/Édit_de_Fontainebleau_(1685)> 
+cn:date 1685  ; rdfs:label "Révocation de l'Edit de Nantes" .
+
+r:Johann_Sebastian_Bach a foaf:Person ;
+cn:date 1685 ;
+rdfs:label "Johann Sebastian Bach";
+rdfs:comment "1685-1750" .
+
+r:Montesquieu a foaf:Person ;
+  <http://cdn.fr/schema/date> 1689 ;
+  rdfs:comment "1689-1755" ;
+  rdfs:label "Montesquieu"@fr .
+
+
+r:Invasion_du_Dauphiné_en_1692 cn:date 1692 ;
+rdfs:label "Invasion du Dauphiné" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/7/7a/Blason_province_fr_Dauphine.svg/182px-Blason_province_fr_Dauphine.svg.png> ;
+rdfs:comment "Duc de Savoie Amédée II et  Ligue d'Augsbourg" .
+
+
+
+<http://fr.dbpedia.org/resource/Guerre_de_Succession_d'Espagne> 
+cn:date 1701  ; rdfs:label "Guerre de succession d'Espagne" ; 
+rdfs:comment "(1701-1714)" .
+
+<http://fr.dbpedia.org/resource/Traités_d'Utrecht_(1713)> cn:date 1713 ; rdfs:label "Traité d'Utrecht"  .
+
+r:Denis_Diderot a foaf:Person ;
+  <http://cdn.fr/schema/date> 1713 ;
+  rdfs:comment "1713-1784" ;
+  rdfs:label "Denis Diderot"@fr .
+
+r:Emmanuel_Kant a foaf:Person ;
+  <http://cdn.fr/schema/date> 1724 ;
+  rdfs:comment "1724-1804" ;  
+  rdfs:label "Emmanuel Kant" .
+  
+r:Nicolas_de_Condorcet a foaf:Person ;
+  <http://cdn.fr/schema/date> 1743 ;
+  rdfs:comment "1743-1794" ;
+  rdfs:label "Nicolas de Condorcet"@fr .  
+
+r:Jacques_Necker a foaf:Person ;
+  <http://cdn.fr/schema/date> 1732 ; 
+  rdfs:comment "1732-1804" ;
+  rdfs:label "Jacques Necker"@fr .
+
+r:Wolfgang_Amadeus_Mozart a foaf:Person ;
+cn:date 1756 ;
+rdfs:label "Mozart";
+rdfs:comment "1756-1791" . 
+  
+<http://fr.dbpedia.org/resource/Traité_de_Turin_(1760)> cn:date 1760 ; rdfs:label "Traité de Turin"  .
+
+r:François-Jean_Lefebvre_de_La_Barre a foaf:Person ;
+cn:date 1766  ;
+rdfs:label "François-Jean Lefebvre de la Barre" ;
+rdfs:comment "Torturé, décapité et brûlé pour blasphème et sacrilège" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/4/45/Chevalier_de_la_barre_statuecouleur.png>  .
+
+r:Voltaire a foaf:Person ;
+cn:date 1778 ;
+rdfs:label "Voltaire" ;
+rdfs:comment "1694-1778" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/c/c2/D%27apr%C3%A8s_Maurice_Quentin_de_La_Tour%2C_Portrait_de_Voltaire%2C_d%C3%A9tail_du_visage_%28ch%C3%A2teau_de_Ferney%29.jpg> .
+
+r:Révolution_française
+cn:date 1789  ; rdfs:label "Révolution française"  .
+
+<http://fr.dbpedia.org/resource/Déclaration_des_droits_de_l'homme_et_du_citoyen_de_1789>
+cn:date 1789 ;
+rdfs:label "Déclaration des droits de l'homme et du citoyen" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/a/aa/Le_Barbier_Dichiarazione_dei_diritti_dell%27uomo.jpg> .
+
+
+
+r:Bataille_de_Valmy a o:Place ;
+cn:date 1792 ;
+rdfs:label "Bataille de Valmy".
+
+<http://fr.dbpedia.org/resource/Première_République_(France)> cn:date 1792  ; 
+rdfs:label "République française" ; 
+st:icon <http://upload.wikimedia.org/wikipedia/commons/3/34/France_1800.png>  .
+
+[] cn:date 1793 ;
+rdfs:label "Exécution de Louis XVI".
+
+<http://fr.dbpedia.org/resource/Abolition_de_l'esclavage> cn:date 1794 ;
+rdfs:label "Abolition de l'esclavage" .
+#st:icon 
+#<http://commons.wikimedia.org/wiki/File:D%C3%A9cret_d%27abolition_de_l%27esclavage_du_16_pluvi%C3%B4se_an_II.png#/media/File:D%C3%A9cret_d%27abolition_de_l%27esclavage_du_16_pluvi%C3%B4se_an_II.png>.
+
+r:Bataille_de_Marengo a o:Place ;
+cn:date 1800 ;
+rdfs:label "Bataille de Marengo".
+
+r:Victor_Hugo a foaf:Person ;
+  <http://cdn.fr/schema/date> 1802 ; 
+  rdfs:comment "1802-1885" ;  
+  rdfs:label "Victor Hugo"@fr .
+
+r:Bataille_de_Trafalgar a o:Place ;
+cn:date 1805 ;
+rdfs:label "Bataille de Trafalgar".
+   
+  
+<http://fr.dbpedia.org/resource/Bataille_d'Austerlitz> a o:Place ;
+cn:date 1805 ;
+rdfs:label "Bataille d'Austerlitz".
+
+
+r:Charles_Darwin a foaf:Person ;
+  <http://cdn.fr/schema/date> 1809 ; 
+  rdfs:comment "1809-1882" ;
+  rdfs:label "Charles Darwin"@fr .
+
+r:Bataille_de_la_Bérézina a o:Place ;
+cn:date 1812 ;
+rdfs:label "Bataille de la Bérézina".
+
+
+r:Émile_Zola a foaf:Person ;
+  <http://cdn.fr/schema/date> 1840 ; 
+  rdfs:comment "1840-1902" ;
+  rdfs:label "Émile Zola"@fr .  
+  
+<http://fr.dbpedia.org/resource/Coup_d'État_du_18_brumaire> cn:date 1799  ; 
+rdfs:label "Coup d'Etat du 18 Brumaire" .
+
+r:Trois_Glorieuses 
+cn:date 1830  ; 
+rdfs:label "Révolution française de 1830" .
+
+r:Révolution_française_de_1848 
+cn:date 1848  ; 
+rdfs:label "Révolution française de 1848" .
+
+
+<http://fr.dbpedia.org/resource/Coup_d'État_du_2_décembre_1851> cn:date 1851  ; rdfs:label "Coup d'Etat de Napoléon III" ;
+rdfs:comment "Résistance dans le Var et les Basses-Alpes sévèrement réprimée par des dizaines d'exécutions" .
+
+
+r:Bataille_de_Solférino a o:Place ;
+cn:date 1859 ;
+rdfs:label "Bataille de Solférino" .
+
+<http://fr.dbpedia.org/resource/Royaume_d'Italie_(1861-1946)> 
+cn:date 1861  ; 
+rdfs:label "Unification italienne" ;
+rdfs:comment "Victor-Emmanuel II roi d'Italie" .
+
+
+r:Guerre_franco-allemande_de_1870 a o:Place ;
+cn:date 1870 ;
+rdfs:label "Guerre de 1870".
+
+
+<http://fr.dbpedia.org/resource/Commune_de_Paris_(1871)>
+cn:date 1871 ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/6/67/La_barricade_de_la_place_Blanche_d%C3%A9fendue_par_des_femmes_lors_de_la_Semaine_sanglante.jpg> ;
+rdfs:label "Commune de Paris" .
+
+
+<http://fr.dbpedia.org/resource/Humbert_Ier_d'Italie> a foaf:Person ;
+cn:date 1878 ; rdfs:comment "Roi d'Italie" ;
+rdfs:label "Humbert Ier"  .
+
+
+r:Albert_Einstein a foaf:Person ;
+  <http://cdn.fr/schema/date> 1879 ; 
+  rdfs:comment "1879-1955" ;
+  rdfs:label "Albert Einstein"@fr .
+  
+r:Relativité_restreinte cn:date 1905 ;
+rdfs:label "Relativité restreinte" .
+
+r:Relativité_générale cn:date 1915 ;
+rdfs:label "Relativité générale" .
+
+
+
+<http://fr.dbpedia.org/resource/Victor-Emmanuel_III_d'Italie> a foaf:Person ;
+cn:date 1900 ; rdfs:comment "Roi d'Italie";
+rdfs:label "Victor-Emmanuel III" .
+
+
+
+
+[] cn:date 1960 ;
+rdfs:label "100e anniversaire de l'annexion de Nice et de la Savoie" .
+
+[] cn:date 1988 ;
+st:icon <http://www.publications-sorbonne.fr/fr/Resources/titles/28405100461340/Images/28405100461340M.jpg> ;
+rdfs:label "600e anniversaire de la dédition de Nice" .

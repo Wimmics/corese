@@ -1,0 +1,148 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix foaf: <http://xmlns.com/foaf/0.1/>
+
+<> cn:topic cn:fr
+
+
+r:Mérovée a foaf:Person ;
+  cn:date 448 ;
+  rdfs:label "Mérovée" .
+
+r:Childéric_Ier a foaf:Person ;
+  cn:date 457 ;
+  rdfs:label "Childéric Ier" .
+
+r:Clovis_Ier a foaf:Person ;
+  cn:date 481 ;
+  rdfs:label "Clovis Ier" .
+
+r:Clodéric a foaf:Person ;
+  cn:date 507 ;
+  rdfs:label "Clodéric" .
+
+r:Childebert_Ier a foaf:Person ;
+  cn:date 511 ;
+  rdfs:label "Childebert Ier" .
+
+r:Clodomir a foaf:Person ;
+  cn:date 511 ;
+  st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/ea/Clotilde_partageant_le_royaume_entre_ses_fils.jpg/640px-Clotilde_partageant_le_royaume_entre_ses_fils.jpg> ;
+  rdfs:label "Clodomir" .
+
+r:Clotaire_Ier a foaf:Person ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/5/54/T%C3%AAte_de_Clotaire.jpg> ;
+  cn:date 511 ;
+  rdfs:label "Clotaire Ier" .
+
+r:Thierry_Ier a foaf:Person ;
+  cn:date 511 ;
+  rdfs:label "Thierry Ier" .
+
+r:Thibert_Ier a foaf:Person ;
+  cn:date 534 ;
+  rdfs:label "Thibert Ier" .
+
+<http://fr.dbpedia.org/resource/Thibaut_(roi)> a foaf:Person ;
+  cn:date 548 ;
+  rdfs:label "Thibaut" .
+
+r:Caribert_Ier a foaf:Person ;
+  cn:date 561 ;
+  rdfs:label "Caribert Ier" .
+
+<http://fr.dbpedia.org/resource/Chilpéric_Ier_(roi_des_Francs)> a foaf:Person ;
+  cn:date 561 ;
+  rdfs:label "Chilpéric Ier" .
+
+<http://fr.dbpedia.org/resource/Gontran_(roi)> a foaf:Person ;
+  cn:date 561 ;
+  rdfs:label "Gontran" .
+
+r:Sigebert_Ier a foaf:Person ;
+  cn:date 561 ;
+  rdfs:label "Sigebert Ier" .
+
+r:Childebert_II a foaf:Person ;
+  cn:date 575 ;
+  rdfs:label "Childebert II" .
+
+r:Clotaire_II a foaf:Person ;
+  cn:date 584 ;
+  rdfs:label "Clotaire II" .
+
+r:Thibert_II a foaf:Person ;
+  cn:date 595 ;
+  rdfs:label "Thibert II" .
+
+r:Sigebert_II a foaf:Person ;
+  cn:date 613 ;
+  rdfs:label "Sigebert II" .
+
+r:Caribert_II a foaf:Person ;
+  cn:date 629 ;
+  rdfs:label "Caribert II" .
+
+r:Dagobert_Ier a foaf:Person ;
+  cn:date 629 ;
+  rdfs:label "Dagobert Ier" .
+
+r:Clovis_II a foaf:Person ;
+  cn:date 639 ;
+  rdfs:label "Clovis II" .
+
+r:Sigebert_III a foaf:Person ;
+  cn:date 639 ;
+  rdfs:label "Sigebert III" .
+
+<http://fr.dbpedia.org/resource/Childebert_III_l'Adopté> a foaf:Person ;
+  cn:date 656 ;
+  rdfs:label """Childebert III l'Adopté""" .
+
+r:Clotaire_III a foaf:Person ;
+  cn:date 657 ;
+  rdfs:label "Clotaire III" .
+
+r:Childéric_II a foaf:Person ;
+  cn:date 662 ;
+  rdfs:label "Childéric II" .
+
+r:Clovis_III a foaf:Person ;
+  cn:date 675 ;
+  rdfs:label "Clovis III" .
+
+r:Thierry_III a foaf:Person ;
+  cn:date 675 ;
+  rdfs:label "Thierry III" .
+
+r:Dagobert_II a foaf:Person ;
+  cn:date 676 ;
+  rdfs:label "Dagobert II" .
+
+r:Clovis_IV a foaf:Person ;
+  cn:date 691 ;
+  rdfs:label "Clovis IV" .
+
+r:Childebert_IV a foaf:Person ;
+  cn:date 695 ;
+  rdfs:label "Childebert IV" .
+
+r:Dagobert_III a foaf:Person ;
+  cn:date 711 ;
+  rdfs:label "Dagobert III" .
+
+<http://fr.dbpedia.org/resource/Chilpéric_II_(roi_des_Francs)> a foaf:Person ;
+  cn:date 715 ;
+  rdfs:label "Chilpéric II" .
+
+r:Clotaire_IV a foaf:Person ;
+  cn:date 717 ;
+  rdfs:label "Clotaire IV" .
+
+r:Thierry_IV a foaf:Person ;
+  cn:date 721 ;
+  rdfs:label "Thierry IV" .
+
+r:Childéric_III a foaf:Person ;
+  cn:date 743 ;
+  rdfs:label "Childéric III" .

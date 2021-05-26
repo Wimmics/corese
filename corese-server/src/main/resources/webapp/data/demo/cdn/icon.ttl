@@ -1,0 +1,275 @@
+@prefix o: <http://dbpedia.org/ontology/>
+@prefix r: <http://fr.dbpedia.org/resource/>
+@prefix cn: <http://cdn.fr/schema/>
+
+@prefix o: <http://dbpedia.org/ontology/>
+@prefix r: <http://fr.dbpedia.org/resource/>
+@prefix cn: <http://cdn.fr/schema/>
+r:Al-Khwarismi st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/2/26/Abu_Abdullah_Muhammad_bin_Musa_al-Khwarizmi.jpg/200px-Abu_Abdullah_Muhammad_bin_Musa_al-Khwarizmi.jpg> .
+
+r:Andrea_Doria st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/17/Andrea_Doria.jpg/200px-Andrea_Doria.jpg> .
+
+r:Attila st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/14/Eugene_Ferdinand_Victor_Delacroix_Attila_fragment.jpg/200px-Eugene_Ferdinand_Victor_Delacroix_Attila_fragment.jpg> .
+
+r:Averroès st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/8/82/AverroesColor.jpg/200px-AverroesColor.jpg> .
+
+r:Avicenne st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/7/74/Avicenna-miniatur.jpg/200px-Avicenna-miniatur.jpg> .
+
+r:Camillo_Cavour st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/b8/Francesco_Hayez_041.jpg/200px-Francesco_Hayez_041.jpg> .
+
+r:Carloman_Ier st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Carloman_I.jpg/200px-Carloman_I.jpg> .
+
+r:Charlemagne st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/a/a4/Charlemagne-by-Durer.jpg/200px-Charlemagne-by-Durer.jpg> .
+
+r:Charles_III_de_France st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/1f/Georges_Rouget_(1783-1869)_-_Charles_III,_dit_le_simple,_roi_de_France_en_896_(879-929).jpg/200px-Georges_Rouget_(1783-1869)_-_Charles_III,_dit_le_simple,_roi_de_France_en_896_(879-929).jpg> .
+
+r:Charles_III_le_Gros st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/ec/Sceau_de_Charles_le_gros.jpg/200px-Sceau_de_Charles_le_gros.jpg> .
+
+r:Charles_II_le_Chauve st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/0/05/KarlII_monks.jpg/200px-KarlII_monks.jpg> .
+
+r:Charles_Martel st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Charles_Martel_01.jpg/200px-Charles_Martel_01.jpg> .
+
+r:Eudes_de_France st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Coronation_of_King_Odo.jpg/200px-Coronation_of_King_Odo.jpg> .
+
+r:Gengis_Khan st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/3/35/YuanEmperorAlbumGenghisPortrait.jpg/200px-YuanEmperorAlbumGenghisPortrait.jpg> .
+
+r:Jean_Ier_de_Bourgogne st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/a/a6/John_duke_of_burgundy.jpg/200px-John_duke_of_burgundy.jpg> .
+
+r:Johannes_Kepler st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/d/d4/Johannes_Kepler_1610.jpg/200px-Johannes_Kepler_1610.jpg> .
+
+r:Louis_III_de_France st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/7/73/Charles_Auguste_Guillaume_Henri_François_Louis_de_Steuben_-_Louis_III_(vers_863-882)_et_Carloman_(vers_866-884).jpg/200px-Charles_Auguste_Guillaume_Henri_François_Louis_de_Steuben_-_Louis_III_(vers_863-882)_et_Carloman_(vers_866-884).jpg> .
+
+r:Louis_II_de_France st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/3/34/Jean_Dassier_-_Louis_II._roy_de_France.jpg/200px-Jean_Dassier_-_Louis_II._roy_de_France.jpg> .
+
+r:Louis_le_Pieux st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/1a/Ludwik_I_Pobożny.jpg/200px-Ludwik_I_Pobożny.jpg> .
+
+r:Mahomet st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/8/8c/Mohammad_SAV.svg/200px-Mohammad_SAV.svg.png> .
+
+r:Pépin_le_Bref st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Pépin_the_younger.jpg/200px-Pépin_the_younger.jpg> .
+
+r:Romulus_Augustule st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/c/c6/RomulusAugustus.jpg/200px-RomulusAugustus.jpg> .
+
+r:Sébastien_Le_Prestre_de_Vauban st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/f/fa/Le_Brun_-_Vauban.jpg/200px-Le_Brun_-_Vauban.jpg> .
+
+r:Vaudès st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/7/7f/WaldoAtLutherDenkmal.JPG/200px-WaldoAtLutherDenkmal.JPG> .
+
+r:Caribert_II st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/2/20/Triens_de_Charibert_II_frappé_à_Bannaciaco.jpg/200px-Triens_de_Charibert_II_frappé_à_Bannaciaco.jpg> .
+
+r:Caribert_Ier st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/a/a1/Jean-Joseph_Dassy_(1796-1865)_-_Caribert,_roi_franc_de_Paris_et_de_l'ouest_de_Gaule_(mort_en_567).jpg/200px-Jean-Joseph_Dassy_(1796-1865)_-_Caribert,_roi_franc_de_Paris_et_de_l'ouest_de_Gaule_(mort_en_567).jpg> .
+
+r:Childebert_II st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/9/9e/Tiers_de_sou_de_Childebert_II.png/200px-Tiers_de_sou_de_Childebert_II.png> .
+
+<http://fr.dbpedia.org/resource/Childebert_III_l'Adopté> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Solidus_de_20_siliques_émis_par_Childebert_l'Adopté.jpg/200px-Solidus_de_20_siliques_émis_par_Childebert_l'Adopté.jpg> .
+
+r:Childebert_IV st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/9/9d/Childebert_III_694_711.jpg/200px-Childebert_III_694_711.jpg> .
+
+r:Childebert_Ier st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Roi_Childebert_Louvre_ML93.jpg/200px-Roi_Childebert_Louvre_ML93.jpg> .
+
+r:Childéric_II st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/Sou_d'or_de_Childéric_II.jpg/200px-Sou_d'or_de_Childéric_II.jpg> .
+
+r:Childéric_III st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/c/c2/Jean_Dassier_(1676-1763)_-_Childéric_III_roy_de_France_(754).jpg/200px-Jean_Dassier_(1676-1763)_-_Childéric_III_roy_de_France_(754).jpg> .
+
+r:Childéric_Ier st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/14/CHILDERICI_REGIS.jpg/200px-CHILDERICI_REGIS.jpg> .
+
+<http://fr.dbpedia.org/resource/Chilpéric_II_(roi_des_Francs)> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Sceau_de_Chilpéric_II.jpg/200px-Sceau_de_Chilpéric_II.jpg> .
+
+<http://fr.dbpedia.org/resource/Chilpéric_Ier_(roi_des_Francs)> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Portrait_Roi_de_france_Chilpéric_roy_de_France.jpg/200px-Portrait_Roi_de_france_Chilpéric_roy_de_France.jpg> .
+
+r:Clotaire_II st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/5/57/Clothaire_II_584_628.jpg/200px-Clothaire_II_584_628.jpg> .
+
+r:Clotaire_III st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/3/3c/Tiers_de_sou_de_Clotaire_III_frappé_à_Paris.jpeg/200px-Tiers_de_sou_de_Clotaire_III_frappé_à_Paris.jpeg> .
+
+r:Clovis_II st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Tiers_de_sous_d'or_de_Clovis_II.png/200px-Tiers_de_sous_d'or_de_Clovis_II.png> .
+
+r:Clovis_III st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Portrait_Roi_de_france_Clovis_III_(sic).jpg/200px-Portrait_Roi_de_france_Clovis_III_(sic).jpg> .
+
+r:Clovis_IV st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/b7/Georges_Rouget_(1783-1869)_-_Clovis_III_roi_d'Austrasie_en_691_(682-695).jpg/200px-Georges_Rouget_(1783-1869)_-_Clovis_III_roi_d'Austrasie_en_691_(682-695).jpg> .
+
+r:Clovis_Ier st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/8/86/François-Louis_Dejuinne_(1786-1844)_-_Clovis_roi_des_Francs_(465-511).jpg/200px-François-Louis_Dejuinne_(1786-1844)_-_Clovis_roi_des_Francs_(465-511).jpg> .
+
+r:Dagobert_II st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/d/de/Tiers_de_sou_de_Dagobert_II.jpeg/200px-Tiers_de_sou_de_Dagobert_II.jpeg> .
+
+r:Dagobert_III st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/e4/Portrait_Roi_de_france_Dagobert_II_(i.e_III).jpg/200px-Portrait_Roi_de_france_Dagobert_II_(i.e_III).jpg> .
+
+r:Dagobert_Ier st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/8/80/Emile_Signol_(1804-1892)_-_Dagobert_Ier_roi_d'Austrasie_de_Neustrie_et_de_Bourgogne_(mort_en_638).jpg/200px-Emile_Signol_(1804-1892)_-_Dagobert_Ier_roi_d'Austrasie_de_Neustrie_et_de_Bourgogne_(mort_en_638).jpg> .
+
+<http://fr.dbpedia.org/resource/Gontran_(roi)> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Tiers_de_sou_de_Gontran_frappé_à_Chalon-sur-Saône.jpeg/200px-Tiers_de_sou_de_Gontran_frappé_à_Chalon-sur-Saône.jpeg> .
+
+r:Mérovée st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/f/f6/Médaille_Roi_de_France_Mérovée.png/200px-Médaille_Roi_de_France_Mérovée.png> .
+
+r:Sigebert_II st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Sceau_de_Sigebert_II.jpg/200px-Sceau_de_Sigebert_II.jpg> .
+
+r:Sigebert_III st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Solidus_de_Sigebert_III_frappé_à_Marseille.png/200px-Solidus_de_Sigebert_III_frappé_à_Marseille.png> .
+
+r:Sigebert_Ier st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/bb/Sigebert_Ier.jpg/200px-Sigebert_Ier.jpg> .
+
+<http://fr.dbpedia.org/resource/Thibaut_(roi)> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/eb/Le_royaume_des_Francs_en_548.svg/200px-Le_royaume_des_Francs_en_548.svg.png> .
+
+r:Thibert_II st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Tiers_de_sou_de_Théodebert_II_frappé_à_Clermont.png/200px-Tiers_de_sou_de_Théodebert_II_frappé_à_Clermont.png> .
+
+r:Thibert_Ier st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/c/ca/Solidus_de_Théodebert_Ier_frappé_à_Bonna.jpg/200px-Solidus_de_Théodebert_Ier_frappé_à_Bonna.jpg> .
+
+r:Thierry_III st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/d/d7/Médaillon_Saint-Ouen15.JPG/200px-Médaillon_Saint-Ouen15.JPG> .
+
+r:Thierry_IV st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/9/9a/Portrait_Roi_de_france_Thierri_II_(i.e._IV).jpg/200px-Portrait_Roi_de_france_Thierri_II_(i.e._IV).jpg> .
+
+r:Thierry_Ier st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/d/d1/Portrait_Roi_de_france_Thierri_Ier.jpg/200px-Portrait_Roi_de_france_Thierri_Ier.jpg> .
+
+
+
+r:Othon_Ier_de_Savoie st:icon 
+<http://www.savoie-archives.fr/archives73/dossiers_sabaudia/maisondesavoie/images/04.jpg> .
+
+<http://fr.dbpedia.org/resource/Alphonse_II_d'Aragon> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/c/cf/Alfonso_II_de_Aragón_from_Liber_feudorum_maior.jpg/200px-Alfonso_II_de_Aragón_from_Liber_feudorum_maior.jpg> .
+
+r:Alphonse_II_de_Provence st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/0/00/Statue_Alphonse_II.JPG/200px-Statue_Alphonse_II.JPG> .
+
+r:Amédée_III_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Armoiries_Savoie_Ancien.svg/200px-Armoiries_Savoie_Ancien.svg.png> .
+
+r:Amédée_II_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Armoiries_Savoie_Ancien.svg/200px-Armoiries_Savoie_Ancien.svg.png> .
+
+r:Amédée_IV_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Armoiries_Savoie_Ancien.svg/200px-Armoiries_Savoie_Ancien.svg.png> .
+
+r:Amédée_VIII_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Armoiries_Savoie_1180.svg/200px-Armoiries_Savoie_1180.svg.png> .
+
+r:Amédée_VII_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Armoiries_Savoie_1180.svg/200px-Armoiries_Savoie_1180.svg.png> .
+
+r:Amédée_VI_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/a/ac/Amédée_VI_de_Savoie,_le_Comte_Vert.jpg/200px-Amédée_VI_de_Savoie,_le_Comte_Vert.jpg> .
+
+r:Amédée_V_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Armoiries_Savoie_1180.svg/200px-Armoiries_Savoie_1180.svg.png> .
+
+r:Aymon_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Armoiries_Savoie_1180.svg/200px-Armoiries_Savoie_1180.svg.png> .
+
+r:Boniface_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Armoiries_Savoie_1180.svg/200px-Armoiries_Savoie_1180.svg.png> .
+
+<http://fr.dbpedia.org/resource/Béatrice_de_Portugal_(1504-1538)> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/6/63/Beatrice_of_Portugal,_Duchess_of_Savoy.jpg/200px-Beatrice_of_Portugal,_Duchess_of_Savoy.jpg> .
+
+<http://fr.dbpedia.org/resource/Béatrice_de_Savoie_(1198-1266)> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Beatrix4.jpg/200px-Beatrix4.jpg> .
+
+r:Catherine_Ségurane st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/5/5a/Catherine_Segurane_monument_Nice.jpg/200px-Catherine_Segurane_monument_Nice.jpg> .
+
+r:Charles-Emmanuel_III_de_Sardaigne st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/10/Charles_Emmanuel_III_by_Clementi.jpg/200px-Charles_Emmanuel_III_by_Clementi.jpg> .
+
+r:Charles-Emmanuel_II_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/4/49/Carlo_Emanuele_II_di_Savoia.jpg/200px-Carlo_Emanuele_II_di_Savoia.jpg> .
+
+r:Charles-Emmanuel_IV_de_Sardaigne st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/1b/CharlesEmmanuel_IV_by_Panealbo.jpg/200px-CharlesEmmanuel_IV_by_Panealbo.jpg> .
+
+r:Charles-Emmanuel_Ier_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Karl_Emmanuel_I_Savoyen_MATEO.jpg/200px-Karl_Emmanuel_I_Savoyen_MATEO.jpg> .
+
+r:Charles-Félix_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/4/44/CarloFelice.jpg/200px-CarloFelice.jpg> .
+
+r:Charles_III_de_Naples st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Kis_Karoly_TK.jpg/200px-Kis_Karoly_TK.jpg> .
+
+r:Charles_III_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/9/99/CharlesIIIofSaboy-byJeanClouet.jpg/200px-CharlesIIIofSaboy-byJeanClouet.jpg> .
+
+<http://fr.dbpedia.org/resource/Charles_II_d'Anjou> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/c/c9/Comtes_charles_II_provence.jpg/200px-Comtes_charles_II_provence.jpg> .
+
+r:Charles_IV_du_Saint-Empire st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/16/Charles_IV-John_Ocko_votive_picture-fragment.jpg/200px-Charles_IV-John_Ocko_votive_picture-fragment.jpg> .
+
+r:Charles_Ier_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Armoiries_Savoie_1180.svg/200px-Armoiries_Savoie_1180.svg.png> .
+
+<http://fr.dbpedia.org/resource/Charles_V_d'Anjou> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/4/48/CoA_Charles_V_of_Anjou.svg/200px-CoA_Charles_V_of_Anjou.svg.png> .
+
+r:Christine_de_France st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/6/61/Christine_France_Savoy.jpg/200px-Christine_France_Savoy.jpg> .
+
+r:Christophe_Colomb st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/8/88/Colomb.jpeg/200px-Colomb.jpeg> .
+
+<http://fr.dbpedia.org/resource/Emmanuel-Philibert_de_Savoie_(1528-1580)> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/3/3e/Alessandro_farnese_pantoja_(detail).jpg/200px-Alessandro_farnese_pantoja_(detail).jpg> .
+
+r:François-Hyacinthe_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/c/c3/Francisko-Jacinto_de_Savojo.jpg/200px-Francisko-Jacinto_de_Savojo.jpg> .
+
+r:Frédéric_Barberousse st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/0/07/Friedrich-barbarossa-und-soehne-welfenchronik_1-1000x1540.jpg/200px-Friedrich-barbarossa-und-soehne-welfenchronik_1-1000x1540.jpg> .
+
+r:Frédéric_II_du_Saint-Empire st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/d/db/Frederick_II_and_eagle.jpg/200px-Frederick_II_and_eagle.jpg> .
+
+<http://fr.dbpedia.org/resource/Galilée_(savant)> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Galileo.arp.300pix.jpg/200px-Galileo.arp.300pix.jpg> .
+
+r:Georges_Jacques_Danton st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/b1/Georges_Danton.jpg/200px-Georges_Danton.jpg> .
+
+r:Giovanni_Domenico_Cassini st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/d/d6/Giovanni_Cassini.jpg/200px-Giovanni_Cassini.jpg> .
+
+<http://fr.dbpedia.org/resource/Henri_II_d'Angleterre> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/4/48/Henry_II_of_England.jpg/200px-Henry_II_of_England.jpg> .
+
+r:Henri_VI_du_Saint-Empire st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/4/44/Codex_Manesse_Heinrich_VI._(HRR).jpg/200px-Codex_Manesse_Heinrich_VI._(HRR).jpg> .
+
+r:Humbert_III_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/1c/Humbert3.jpg/200px-Humbert3.jpg> .
+
+r:Humbert_II_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/be/Armoiries_Savoie_Ancien.svg/200px-Armoiries_Savoie_Ancien.svg.png> .
+
+<http://fr.dbpedia.org/resource/Humbert_Ier_d'Italie> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/4/4c/Umberto_I_di_Savoia.jpg/200px-Umberto_I_di_Savoia.jpg> .
+
+r:Isaac_Newton st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/3/39/GodfreyKneller-IsaacNewton-1689.jpg/200px-GodfreyKneller-IsaacNewton-1689.jpg> .
+
+r:Jean_Grimaldi_de_Bueil st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Blason_Famille_Grimaldi_de_Bueil.svg/200px-Blason_Famille_Grimaldi_de_Bueil.svg.png> .
+
+<http://fr.dbpedia.org/resource/Jean_d'Angleterre> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/bd/King-John-lackland.jpg/200px-King-John-lackland.jpg> .
+
+<http://fr.dbpedia.org/resource/Jeanne_d'Arc> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/2/2b/Ingres_coronation_charles_vii.jpg/200px-Ingres_coronation_charles_vii.jpg> .
+
+r:Johann_Sebastian_Bach st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/6/6a/Johann_Sebastian_Bach.jpg/200px-Johann_Sebastian_Bach.jpg> .
+
+r:Johannes_Gutenberg st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/3/33/Gutenberg.jpg/200px-Gutenberg.jpg> .
+
+r:Lothaire_de_France st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/Lothaire-Face.jpg/200px-Lothaire-Face.jpg> .
+
+<http://fr.dbpedia.org/resource/Louis_III_d'Anjou> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Blason_duche_fr_Anjou-Sicie-Jérusalem.svg/200px-Blason_duche_fr_Anjou-Sicie-Jérusalem.svg.png> .
+
+<http://fr.dbpedia.org/resource/Louis_II_d'Anjou> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/5/53/Louis_II_of_Anjou,_King_of_Naples_and_Sicily_after_after_an_ink_and_watercolor_drawing_in_the_Bibliotheque_Nationale,_Paris.jpg/200px-Louis_II_of_Anjou,_King_of_Naples_and_Sicily_after_after_an_ink_and_watercolor_drawing_in_the_Bibliotheque_Nationale,_Paris.jpg> .
+
+r:Louis_IV_de_France st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/8/8b/Louis_IV_denier_Chinon_936_954.jpg/200px-Louis_IV_denier_Chinon_936_954.jpg> .
+
+r:Louis_IV_du_Saint-Empire st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/5/54/Ludovico_il_Bavaro.jpeg/200px-Ludovico_il_Bavaro.jpeg> .
+
+r:Louis_Ier_de_Naples st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/b2/Adoubement1.jpg/200px-Adoubement1.jpg> .
+
+r:Louis_V_de_France st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Louis_V_of_France.jpg/200px-Louis_V_of_France.jpg> .
+
+r:Ludovico_Brea st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/6/6d/Louis_Brea_-_Pieta_-_1475_circa.jpg/200px-Louis_Brea_-_Pieta_-_1475_circa.jpg> .
+
+r:Léonard_de_Vinci st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/b/ba/Leonardo_self.jpg/200px-Leonardo_self.jpg> .
+
+<http://fr.dbpedia.org/resource/Marguerite_de_Savoie_(1420-1479)> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/a/ae/41Ulrich_vielgeliebt.jpg/200px-41Ulrich_vielgeliebt.jpg> .
+
+r:Marie_Jeanne_Baptiste_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/4/4f/MarieJeanneBaptistedeSavoie.jpg/200px-MarieJeanneBaptistedeSavoie.jpg> .
+
+r:Maximilien_de_Robespierre st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/12/Robespierre.jpg/200px-Robespierre.jpg> .
+
+r:Molière st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/f/fe/Molière_-_Nicolas_Mignard_(1658).jpg/200px-Molière_-_Nicolas_Mignard_(1658).jpg> .
+
+r:Napoléon_Ier st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/4/40/Napoleon_in_His_Study.jpg/200px-Napoleon_in_His_Study.jpg> .
+
+r:Nicolas_Copernic st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/f/f2/Nikolaus_Kopernikus.jpg/200px-Nikolaus_Kopernikus.jpg> .
+
+r:Nicolas_Machiavel st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/2/27/Santi_di_Tito_-_Niccolo_Machiavelli's_portrait_headcrop.jpg/200px-Santi_di_Tito_-_Niccolo_Machiavelli's_portrait_headcrop.jpg> .
+
+
+
+r:Otton_IV_du_Saint-Empire st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/Otto_IV._und_Papst_Innocenz_III._reichen_sich_vor_den_ankommenden_Schiffen_Friedrichs_II._die_Hände.jpg/200px-Otto_IV._und_Papst_Innocenz_III._reichen_sich_vor_den_ankommenden_Schiffen_Friedrichs_II._die_Hände.jpg> .
+
+r:Philibert_Ier_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/e6/Armoiries_Savoie_1180.svg/200px-Armoiries_Savoie_1180.svg.png> .
+
+r:Philippe_II_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/2/2d/Filipo_la_2-a_de_Savojo.jpg/200px-Filipo_la_2-a_de_Savojo.jpg> .
+
+r:Pierre_II_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/8/86/Petr2trubka.jpg/200px-Petr2trubka.jpg> .
+
+r:Raimond-Bérenger_III_de_Barcelone st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/e/ef/Estàtua_de_Ramon_Berenguer_III_el_Gran-Barcelona.jpg/200px-Estàtua_de_Ramon_Berenguer_III_el_Gran-Barcelona.jpg> .
+
+r:Raimond_Bérenger_IV_de_Provence st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/a/aa/Statue_Raimond_Bérenger_IV.JPG/200px-Statue_Raimond_Bérenger_IV.JPG> .
+
+<http://fr.dbpedia.org/resource/René_d'Anjou> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/3/32/Rene1ofNaples.jpg/200px-Rene1ofNaples.jpg> .
+
+<http://fr.dbpedia.org/resource/Richard_Ier_d'Angleterre> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Church_of_Fontevraud_Abbey_Richard_I_effigy.jpg/200px-Church_of_Fontevraud_Abbey_Richard_I_effigy.jpg> .
+
+r:Sigismond_Ier_du_Saint-Empire st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/a/af/Pisanello_024b.jpg/200px-Pisanello_024b.jpg> .
+
+r:Thomas_Ier_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/5/58/Tomas1_hrob.jpg/200px-Tomas1_hrob.jpg> .
+
+r:Victor-Amédée_III_de_Sardaigne st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/6/69/Victor_Amadeus_III_by_Monari_Nicola,_Tore_Donatello.jpg/200px-Victor_Amadeus_III_by_Monari_Nicola,_Tore_Donatello.jpg> .
+
+r:Victor-Amédée_II_de_Savoie st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/5/5e/Maria_Giovanna_Battista_Clementi,_La_Clementina,_Portrait_of_Victor_Amadeus_II_of_Savoy,_during_the_siege_of_Turin_(1706),_Reggia_di_Venaria_(from_Castle_of_Racconigi).jpg/200px-Maria_Giovanna_Battista_Clementi,_La_Clementina,_Portrait_of_Victor_Amadeus_II_of_Savoy,_during_the_siege_of_Turin_(1706),_Reggia_di_Venaria_(from_Castle_of_Racconigi).jpg> .
+
+<http://fr.dbpedia.org/resource/Victor-Emmanuel_III_d'Italie> st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/9/9c/Victor_Emmanuel_III_of_Italy.jpg/200px-Victor_Emmanuel_III_of_Italy.jpg> .
+
+r:Victor-Emmanuel_Ier_de_Sardaigne st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/8/82/VittorioEmanueleI.jpg/200px-VittorioEmanueleI.jpg> .
+
+r:Wolfgang_Amadeus_Mozart st:icon <http://upload.wikimedia.org/wikipedia/commons/thumb/1/1e/Wolfgang-amadeus-mozart_1.jpg/200px-Wolfgang-amadeus-mozart_1.jpg> .

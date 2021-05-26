@@ -1,0 +1,137 @@
+@prefix p: <http://fr.dbpedia.org/property/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+r:Comtat_Venaissin p:latitude "44.0833"^^xsd:float ;
+  p:longitude "5.0"^^xsd:float .
+
+
+r:Bataille_de_Solférino p:latitude "45.3672"^^xsd:float ;
+  p:longitude "10.5664"^^xsd:float .
+
+
+r:Avignon p:latitude "43.95"^^xsd:double ;
+  p:longitude "4.81694"^^xsd:double  .
+
+
+r:Château_des_Seigneurs_de_la_Brigue p:latitude "44.0621"^^xsd:double ;
+  p:longitude "7.61481"^^xsd:double .
+
+r:Abbaye_de_Lérins p:latitude "43.5064"^^xsd:double ;
+  p:longitude "7.04698"^^xsd:double .
+
+<http://fr.dbpedia.org/resource/Bataille_de_Tolbiac_(496)> p:latitude "50.6753"^^xsd:float ;
+  p:longitude "6.60111"^^xsd:float .
+
+r:Château_de_Villeneuve-Loubet p:latitude "43.6598"^^xsd:double ;
+  p:longitude "7.12423"^^xsd:double  .
+
+r:Colmars p:latitude "44.1822"^^xsd:double ;
+  p:longitude "6.62722"^^xsd:double .
+
+r:Darse_de_Villefranche-sur-Mer p:latitude "43.6984"^^xsd:double ;
+  p:longitude "7.30833"^^xsd:double .
+
+r:Seyne p:latitude "44.3514"^^xsd:double ;
+  p:longitude "6.35694"^^xsd:double .
+
+
+
+
+r:La_Garde-Freinet p:latitude "43.3175"^^xsd:double ;
+  p:longitude "6.47"^^xsd:double .
+  
+
+
+r:Abbaye_de_Sénanque p:latitude "43.9283"^^xsd:double ;
+  p:longitude "5.18694"^^xsd:double .
+
+r:Abbaye_du_Thoronet p:latitude "43.4603"^^xsd:double ;
+  p:longitude "6.2639"^^xsd:double .
+
+r:Basilique_Sainte-Marie-Madeleine_de_Saint-Maximin-la-Sainte-Baume p:latitude "43.4527"^^xsd:double ;
+  p:longitude "5.86338"^^xsd:double .
+
+r:Durrës a o:Place ;
+rdfs:label "Durazzo" ;
+p:latitude  41.316667  ;
+p:longitude 19.45  .
+
+  r:Canossa a o:Place ;
+  p:latitude "44.6"^^xsd:double ;
+  p:longitude "10.4167"^^xsd:double .
+
+r:Bataille_de_Marignan
+p:latitude  45.366670 ;
+p:longitude 9.316670 .
+
+<http://fr.dbpedia.org/resource/Bataille_d'Azincourt> p:latitude 50.4636 ;
+  p:longitude 2.14167 .
+
+<http://fr.dbpedia.org/resource/Bataille_de_Bouvines> p:latitude 50.5833 ;
+  p:longitude 3.225 .
+
+<http://fr.dbpedia.org/resource/Bataille_de_Lépante> p:latitude 38.2 ;
+  p:longitude 21.3 .
+
+<http://fr.dbpedia.org/resource/Château_de_Nice> p:latitude 43.6944 ;
+  p:longitude 7.28056 .
+
+<http://fr.dbpedia.org/resource/Piène-Haute> p:latitude 43.9022 ;
+  p:longitude 7.51481 .
+
+<http://fr.dbpedia.org/resource/Château_de_Montségur> p:latitude 42.8756 ;
+  p:longitude 1.8325 .
+
+<http://fr.dbpedia.org/resource/Fort_Carré> p:latitude 43.5903 ;
+  p:longitude 7.12722 .
+
+
+<http://fr.dbpedia.org/resource/Saint-Paul-de-Vence> 
+  p:latitude 43.697 ;
+  p:longitude 7.123 .
+  
+  
+
+  
+<http://fr.dbpedia.org/resource/Chambéry> 
+  p:latitude 45.57 ;
+  p:longitude 5.9118 .
+
+<http://fr.dbpedia.org/resource/Barcelonnette> 
+  p:latitude 44.3866 ;
+  p:longitude 6.65305 .
+
+<http://fr.dbpedia.org/resource/Entrevaux> 
+p:latitude 43.9494 ;
+  p:longitude 6.8108 .  
+  
+<http://fr.dbpedia.org/resource/Beuil> p:latitude 44.0958 ;
+  p:longitude 6.98833 .
+
+<http://fr.dbpedia.org/resource/Citadelle_Saint-Elme> p:latitude 43.7014 ;
+  p:longitude 7.3109 .
+
+<http://fr.dbpedia.org/resource/Fort_du_mont_Alban> p:latitude 43.7013 ;
+  p:longitude 7.30018 .
+
+<http://fr.dbpedia.org/resource/Guillaumes> p:latitude 44.0914 ;
+  p:longitude 6.85417 .
+
+<http://fr.dbpedia.org/resource/Gênes> p:latitude 44.4067 ;
+  p:longitude 8.93333 .
+
+<http://fr.dbpedia.org/resource/La_Brigue> p:latitude 44.0631 ;
+  p:longitude 7.61694 .
+
+<http://fr.dbpedia.org/resource/Mollières> p:latitude 44.0719 ;
+  p:longitude 7.17194 .
+
+<http://fr.dbpedia.org/resource/Port_Lympia> p:latitude 43.6942 ;
+  p:longitude 7.28492 .
+
+<http://fr.dbpedia.org/resource/Tende_(Alpes-Maritimes)> p:latitude 44.0886 ;
+  p:longitude 7.59417 .
+
+<http://fr.dbpedia.org/resource/Turin> p:latitude 45.0667 ;
+  p:longitude 7.7 .

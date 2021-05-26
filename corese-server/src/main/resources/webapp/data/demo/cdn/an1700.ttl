@@ -1,0 +1,54 @@
+@prefix cn: <http://cdn.fr/schema/>
+@prefix w:  <http://fr.wikipedia.org/wiki/>
+@prefix r:  <http://fr.dbpedia.org/resource/>
+@prefix o:  <http://dbpedia.org/ontology/>
+
+<> cn:topic cn:cdn
+
+r:Château_de_Nice a o:Place ;
+cn:date 1706 ; 
+rdfs:label "Château de Nice" ;
+rdfs:comment "Détruit sur ordre de Louis XIV" ;
+st:icon <http://upload.wikimedia.org/wikipedia/commons/6/69/Détails_d%27un_plan_de_Nice_de_1625_.jpg>.
+
+
+
+[] cn:date 1713 ; rdfs:label "Victor-Amédée II roi de Sicile" ;
+cn:link w:Histoire_de_la_Sicile_piémontaise .
+
+[] cn:date 1713 ; rdfs:label "Barcelonette annexé par la France." ;
+rdfs:comment "Escartons coté Piémont annexés par Turin".
+
+
+[] cn:date 1720 ; rdfs:label "Victor-Amédée II roi de Sardaigne" ;
+cn:link w:Royaume_de_sardaigne .
+
+r:Port_Lympia a o:Place ;
+cn:date 1750 ; 
+rdfs:label "Port Lympia";
+rdfs:comment "Creusement du port artificel de Nice";
+st:icon <http://upload.wikimedia.org/wikipedia/commons/3/36/Vue_du_port_de_Nice.jpg> .
+
+
+
+[] cn:date 1760 ; rdfs:label "Roquesteron rive droite, Conségudes, les Ferres, Bouyon, Gattières, Aiglun  rattachés à la France" .
+
+[] cn:date 1760 ; rdfs:label "Roquesteron rive gauche, La Penne, Saint Antonin, Cuébris, Daluis, Guillaume, Sauze, la Roudoule,  rattachés au Comté de Nice" .
+
+[] cn:date 1785 ; rdfs:label "Liaison Nice-Turin (Route Royale) devient carrossable" .
+
+
+[] cn:date 1792 ; 
+rdfs:label "Annexion du Comté de Nice et de la Savoie par la France, département des Alpes-Maritimes" .
+
+
+
+
+
+
+
+
+
+
+
+

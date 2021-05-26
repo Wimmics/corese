@@ -1,0 +1,12 @@
+# phi:dbpedia dbpediaURL -> st:cget(st:url,  ?s)
+prefix dp:  <http://fr.dbpedia.org/property/>
+select * where {
+    ?x rdfs:subClassOf|rdf:type ?y 
+    ?x dp:dbpedia ?uri 
+    bind (st:cset(st:url, ?x, us:dbpedia(?uri)) as ?link)
+}
+
+
+function us:dbpedia(?uri) {
+    xt:replace(?uri, "fr.dbpedia.org/resource", "fr.wikipedia.org/wiki")
+}

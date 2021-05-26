@@ -1,0 +1,28 @@
+@prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
+
+
+
+<http://localhost:8080/map/psparql> st:param
+(("mode" "link") ("transform" navlab:mapper))
+.
+
+<http://localhost:8080/map/plsparql> st:param
+(("mode" "link") ("mode" "log") ("transform" navlab:mapper))
+.
+
+<http://corese.inria.fr/map/psparql> st:param
+(("mode" "link") ("transform" navlab:mapper))
+.
+
+<http://corese.inria.fr/map/plsparql> st:param
+(("mode" "link") ("mode" "log") ("transform" navlab:mapper))
+.
+
+
+<http://localhost:8080/halopendata/psparql> st:param
+(("mode" "link") ("transform" navlab:mapper))
+.
+
+<http://corese.inria.fr/halopendata/psparql> st:param
+(("mode" "link") ("transform" navlab:mapper))
+.

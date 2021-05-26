@@ -14,24 +14,11 @@
 #
 <http://localhost:8080/test/federate> a st:Federation ;
     rdfs:label "test" ;
-    st:definition (<http://localhost:8080/test1/federate> <http://localhost:8080/test2/federate>)
+    st:definition (<http://localhost:8080/sparql> <http://antipolis:8080/sparql>)
     #st:definition (<http://localhost:8080/sparql> <http://corese.inria.fr/sparql>)
 .
 
-<http://corese.inria.fr/test/federate> a st:Federation ;
-    owl:sameAs <http://localhost:8080/test/federate>
-.
 
-
-<http://localhost:8080/test1/federate>  a st:Federation ;
-    rdfs:label "test1" ;
-    st:definition (<http://localhost:8080/sparql>)
-.
-
-<http://localhost:8080/test2/federate> a st:Federation ;
-    rdfs:label "test2" ;
-    st:definition (<http://corese.inria.fr/sparql> )
-.
 
 
 
@@ -57,9 +44,10 @@
 <http://agrold.southgreen.fr/sparql> 
 <http://ontology.irstea.fr/bsv/sparql> 
 <http://ontology.irstea.fr/weather/sparql> 
+<http://ontology.inrae.fr/frenchcropusage/sparql>
 
+<http://sparql.agroportal.lirmm.fr/sparql/>
 #<http://geco.ecophytopic.fr:8890/sparql> 
-#<http://sparql.agroportal.lirmm.fr/sparql/>
 #<http://taxref.mnhn.fr/sparql> 
 )
 .
@@ -83,5 +71,17 @@ st:definition (<http://corese.inria.fr/d2kab/sparql>)
 .
 
 
+<http://localhost:8080/lod/sparql> a st:Federation ;
+    rdfs:label "lod" ;
+    st:definition (
+<https://covidontheweb.inria.fr/sparql>
+<http://sparql.archives-ouvertes.fr/sparql> 
+<https://data.bnf.fr/sparql> 
+<http://fr.dbpedia.org/sparql>
+<https://query.wikidata.org/sparql>
+<http://data.ign.fr/id/sparql> 
+<http://rdf.insee.fr/sparql>
+)
+.
 
 

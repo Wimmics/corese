@@ -17,7 +17,7 @@ template st:start {
     format {
         d3:frameselect.html
         ?id
-        coalesce(xt:json(st:get(st:mappings)), "{ error: 'error when reading st:mappings'}")
+        coalesce(xt:json(coalesce(st:get(st:mappings), xt:mappings())), "{ error: 'error when reading st:mappings'}")
     }
 }
 where {

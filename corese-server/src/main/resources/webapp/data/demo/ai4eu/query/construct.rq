@@ -1,0 +1,12 @@
+prefix rel: <http://ai4eu.org/onto/>
+
+construct {
+    ?s ?p ?o
+}
+where {
+    bind (coalesce(xt:list(st:get(st:uri)), st:get(st:hierarchy), xt:list(rdfs:subClassOf)) as ?list)
+    bind (st:set(st:hierarchy, ?list) as ?tmp)
+    
+    values ?p { unnest (?list) }
+    ?s ?p ?o
+}

@@ -1,0 +1,35 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 13 13:41:34 CEST 2018
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+
+
+
+<rule>
+<body>
+<![CDATA[
+prefix ai: <http://www.ai4eu.eu/ontologies/core#> .
+template st:start {
+     st:apply-templates-with-graph(st:sparql, xt:tograph(st:get(st:mappings)))
+}
+where {
+    bind (xt:print(xt:json(st:get(st:mappings))) as ?t1)
+    bind (xt:print(xt:xml(st:get(st:mappings)))  as ?t2)
+    #bind (xt:print(xt:rdf(st:get(st:mappings)))  as ?t3)
+    bind (xt:print(st:apply-templates-with-graph(st:turtle, xt:tograph(st:get(st:mappings)))) as ?t4)
+    #bind (xt:print(xt:tograph(st:get(st:mappings))) as ?t4)
+    bind (let (?m = st:get(st:mappings)) { xt:print(?m) } as ?tt)
+    bind (let (((?x ?y ?p)) = st:get(st:mappings)) { xt:print(?x, ?y, ?p) } as ?tt)
+
+}
+]]>
+</body>
+</rule>
+
+
+
+</rdf:RDF>

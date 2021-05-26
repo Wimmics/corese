@@ -4,7 +4,9 @@
 
 st:access st:namespace 
 <http://localhost:8080/>, 
-<http://antipolis:8080/>
+<http://antipolis:8080/>,
+<https://makg.org/sparql>,
+<http://www.lotico.com:3030/lotico/sparql>
 .
 
 
@@ -15,7 +17,8 @@ st:access st:namespace
 <demo/d2kabprofile.ttl>, 
 <demo/ai4euprofile.ttl>, 
 <demo/ldvizprofile.ttl>,
-<demo/fedprofile.ttl>
+<demo/fedprofile.ttl>,
+<demo/urlprofile.ttl>
 .
 
 

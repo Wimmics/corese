@@ -1,0 +1,6 @@
+template st:ast {
+    xt:replace(xt:content(?ast), "<", "&lt;")
+}
+where {
+    bind (java:getAST(java:getQuery(xt:mappings())) as ?ast)
+}

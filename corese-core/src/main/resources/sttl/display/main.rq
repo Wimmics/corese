@@ -1,0 +1,7 @@
+template st:main(?map) {
+    st:call-template(st:result, ?res)
+    st:nl()
+}
+where {
+    values ?res { unnest(?map) }
+}

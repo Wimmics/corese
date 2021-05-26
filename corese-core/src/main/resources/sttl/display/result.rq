@@ -1,0 +1,6 @@
+template st:result(?res) {
+    str(?val) ; separator = "; "
+}
+where {
+    values (?var ?val) { unnest(?res) }
+}

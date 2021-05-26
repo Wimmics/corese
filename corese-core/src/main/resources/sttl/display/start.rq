@@ -1,0 +1,7 @@
+template st:start {
+    format { "<pre>%s</pre>" st:call-template(st:ast) }
+    format { "<pre>%s</pre>" st:call-template(st:main, ?map) }
+}
+where {
+    bind (xt:solution() as ?map)
+}

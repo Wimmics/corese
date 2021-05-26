@@ -97,7 +97,7 @@
                     <li><a href="/sparql?mode=link&transform=d3:chart&query=select ?n (count(?o) as ?c) where {?s ?p ?n ; ?q ?o filter regex(?p, 'name') } group by ?s order by ?c">SPARQL+Chart</a></li>
                     <li><a href="/sparql?mode=link&transform=d3:graphic&query=construct where {?s ?p ?o} group by ?s">SPARQL+Graphic</a></li>
 <!--                    <li><a href="/sparql?mode=link&transform=d3:hierarchy&param=property~rdfs:subPropertyOf;rdfs:domain;rdfs:range&query=construct where {?s ?p ?o}">SPARQL+Hierarchy</a></li>-->
-                    <li><a href="/sparql?mode=link&transform=d3:hierarchy&param=prefix~h:http://www.inria.fr/2015/humans%23&param=property~h:hasMother;h:hasFather;h:hasParent;h:hasFriend;h:hasBrother;h:hasSister&query=construct where {?s ?p ?o}">SPARQL+Hierarchy</a></li>
+                    <li><a href="/sparql?mode=link&transform=d3:hierarchy&param=prefix~h:http://www.inria.fr/2015/humans%23&param=property~h:hasMother;h:hasFather;h:hasParent;h:hasFriend;h:hasBrother;h:hasSister;h:hasChild&query=prefix h: <http://www.inria.fr/2015/humans%23> construct {?s ?p ?o} where {values ?p {h:hasMother h:hasFather h:hasParent h:hasFriend h:hasBrother h:hasSister h:hasChild} ?s ?p ?o}">SPARQL+Hierarchy</a></li>
                     <li><a href="/sparql?mode=link&mode=spin&transform=st:turtle&query= select * where {?s ?p ?o}">SPARQL to SPIN</a></li>
                 </ul>
             </li>

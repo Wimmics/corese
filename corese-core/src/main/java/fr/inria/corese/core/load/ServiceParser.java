@@ -22,19 +22,23 @@ import org.xml.sax.SAXException;
  * @author Olivier Corby, Wimmics INRIA I3S, 2021
  */
 public class ServiceParser implements URLParam {
-     static final String ENCODING = "UTF-8";
+     public static final String ENCODING = "UTF-8";
      private boolean trap;
      private boolean showResult;
      private String format;
      private URLServer url;
      private Binding bind;
      
-    ServiceParser(URLServer url) {
+    public ServiceParser(URLServer url) {
          setURL(url);
+    }
+    
+    public ServiceParser(String url) {
+        this(new URLServer(url));
     }
    
     public Mappings parseMapping(String str) throws LoadException {
-        return parseMapping(null, str, ENCODING);
+        return parseMapping("", str, ENCODING);
     }
 
     public Mappings parseMapping(String query, String str, String encoding) throws LoadException {

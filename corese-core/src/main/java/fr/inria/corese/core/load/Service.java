@@ -78,7 +78,7 @@ public class Service implements URLParam {
 
 
     public Mappings select(String query) throws LoadException {
-        return getParser().parseMapping(process(query));
+        return getParser().parseMapping(query, process(query), ENCODING);
     }
 
     public Graph construct(String query) throws LoadException {

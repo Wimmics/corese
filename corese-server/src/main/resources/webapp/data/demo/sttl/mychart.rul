@@ -1,0 +1,32 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Apr 13 13:41:34 CEST 2019
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+
+
+
+<rule>
+<body>
+<![CDATA[
+prefix d3: <http://ns.inria.fr/sparql-template/format/d3/>
+template st:start {
+    format {
+        d3:mychart.html
+        ?id
+        coalesce(xt:json(coalesce(st:get(st:mappings), xt:mappings())), "{ error: 'error when reading st:mappings'}")
+    }
+}
+where {
+    bind (substr(replace(rand(), "\\.", ""), 0, 5) as ?id)
+}
+]]>
+</body>
+</rule>
+
+
+
+</rdf:RDF>

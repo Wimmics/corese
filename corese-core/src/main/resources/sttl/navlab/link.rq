@@ -1,0 +1,9 @@
+template st:link {
+    format {
+        "<a href='%1$s'>%1$s</a><br/>"
+        str(?url)
+    }
+}
+where {
+    values ?url { unnest(st:get(st:link)) }
+}

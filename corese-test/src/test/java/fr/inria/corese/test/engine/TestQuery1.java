@@ -6605,19 +6605,13 @@ public class TestQuery1 {
     }
 
     @Test
-    public void testPPSPINwdfgdwfgd() throws EngineException, LoadException {
-        String t1 =
-                "prefix f: <http://example.com/owl/families/> "
-                        + "template  {  st:apply-templates-with(st:spin)}"
-                        + "where {}";
-
+    public void testPPSPINwdfgdwfgd() throws EngineException, LoadException {       
         File f = new File(data + "template/spinhtml/data/");
 
         for (File ff : f.listFiles()) {
+            System.out.println(ff);
             testSPPP(ff.getAbsolutePath());
         }
-
-
     }
 
     public void testSPPP(String path) throws EngineException, LoadException {
@@ -6639,11 +6633,10 @@ public class TestQuery1 {
             assertEquals(true, true);
         } 
         catch (UndefinedExpressionException e) {
-            System.out.println("trap: " + e.getMessage());
+            System.out.println("trap1: " + e.getMessage());
         }
         catch (EngineException e) {
-            //System.out.println(path);
-            //System.out.println(e);
+            System.out.println("trap2: " + e.getMessage());
             assertEquals(true, false);
         }
     }

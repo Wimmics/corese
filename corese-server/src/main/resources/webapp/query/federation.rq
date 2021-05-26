@@ -1,0 +1,8 @@
+prefix fed: <http://ns.inria.fr/federation/>
+
+select * (aggregate(distinct ?url) as ?list) where {
+  ?uri a st:Federation ;
+    rdfs:label ?label ;
+    st:definition rdf:rest*/rdf:first ?url
+}
+group by ?uri

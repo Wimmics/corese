@@ -432,13 +432,20 @@ public class Profile {
         }
     }
     
-    
     void initParameter(Graph g) throws IOException, EngineException {
-        String str = getResource("query/urlparameter.rq");
+        initParameter(g, getResource("query/urlparameter.rq"));
+        initParameter(g, getResource("query/urlequivalence.rq"));
+        initParameter(g, getResource("query/urlmode.rq"));
         
+        logger.info("Parameter Context");
+        logger.info(getContext());
+    }
+
+    
+    void initParameter(Graph g, String q) throws IOException, EngineException {        
         QueryProcess exec = QueryProcess.create(g);
-        Mappings map = exec.query(str);
-        
+        Mappings map = exec.query(q);
+
         for (Mapping m : map) {
             IDatatype dt   = getValue(m, "?url");
             IDatatype list = getValue(m, "?list");
@@ -446,9 +453,9 @@ public class Profile {
                 getContext().set(dt.getLabel(), list);
             }
         }
-        logger.info("Parameter Context");
-        logger.info(getContext());
     }
+    
+    
     
     void initFederation(Graph g) throws IOException, EngineException {
         String str = getResource("query/federation.rq");

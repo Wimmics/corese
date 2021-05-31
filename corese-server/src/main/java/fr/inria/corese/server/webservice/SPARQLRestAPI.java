@@ -297,6 +297,10 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             // Explicit @Produces, skip format parameter 
             format = SPARQL_RESULTS_XML;
         }
+        // default function called in absence of http header accept
+        // in this case, the value of format is taken into account
+        // if there is header accept, the value of format is overloaded by header accept
+        // if there is no header and no format, default format is chosen (xml or turtle)
         return getResultFormat(request, name, oper, uri, param, mode, query, access, defaut, named, format, UNDEF_FORMAT, transform);
     }
       

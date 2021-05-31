@@ -16,16 +16,13 @@ import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.triple.cst.LogKey;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
-import java.net.UnknownHostException;
 import java.util.Enumeration;
 import java.util.HashMap;
-import java.util.UUID;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import org.slf4j.LoggerFactory;
@@ -217,7 +214,7 @@ public class TripleStore implements URLParam {
                 // federate sparql query with @federate uri
                 if (isCompile(c)) {
                     Query qq = exec.compile(federate(query, ds), ds);
-                    map = logCompile(exec);
+                    map = logCompile(ds.getContext(), exec);
                 } else {
                     map = exec.query(federate(query, ds), ds);
                     log(exec, map, ds.getContext());
@@ -235,6 +232,8 @@ public class TripleStore implements URLParam {
                 log(exec, map, ds.getContext());
             }
             
+            logQuery(map, c);
+            
             after(exec, query, ds);
         } catch (LoadException ex) {
             throw new EngineException(ex);
@@ -242,13 +241,13 @@ public class TripleStore implements URLParam {
         return map;
     }
     
-    Mappings logCompile(QueryProcess exec) {
+    Mappings logCompile(Context ct, QueryProcess exec) {
         ContextLog log = exec.getLog();
         Mappings map     = log.getSelectMap();
         ASTQuery select  = log.getASTSelect();
         ASTQuery rewrite = log.getAST();
-        String uri1 = document(select.toString(),  "select");
-        String uri2 = document(rewrite.toString(), "rewrite");
+        String uri1 = document(ct, select.toString(),  "select");
+        String uri2 = document(ct, rewrite.toString(), "rewrite");
         map.addLink(uri1);
         map.addLink(uri2);
         return map;
@@ -265,41 +264,31 @@ public class TripleStore implements URLParam {
             }
             else {
                 LogManager log = new LogManager(exec.getLog(map));
-                String uri = document(log.toString(), "log", ".ttl");
+                String uri = document(ct, log.toString(), "log", ".ttl");
                 map.addLink(uri);               
                 System.out.println("server report: " + uri);
             }
         }
     }
     
+    void logQuery(Mappings map, Context ct) {
+        if (ct.hasValue(LOG_QUERY)) {
+            String uri = document(ct, map.getQuery().getAST().toString(), "query");
+            map.addLink(uri);
+        }
+    }
+    
     /**
      * Save content as document in HTTP server, return URL for this document 
      */
-    static String document(String str) {
-        return document(str, "", "");
+    String document(Context ct, String str, String name) {
+        return document(ct, str, name, "");
     }
 
-    static String document(String str, String name) {
-        return document(str, name, "");
-    }
-    
-    static String document(String str, String name, String ext) {
-        String home = EmbeddedJettyServer.resourceURI.getPath() + LOG_DIR;
-        String id = UUID.randomUUID().toString().concat(ext);
-        if (name != null && !name.isEmpty()){
-            id = name.concat("-").concat(id);
-        }
-        QueryLoad ql = QueryLoad.create();
-        ql.write(home + id, str);
-        String uri;
-        try {
-            uri = Profile.getLocalhost();
-        } catch (UnknownHostException ex) {
-            logger.error(ex.getMessage());
-            uri = Profile.stdLocalhost();
-        }
-        uri += LOG_DIR + id;
-        return uri;
+    String document(Context ct, String str, String name, String ext) {
+        LinkedResult lr = new LinkedResult(name, ext, ct.getCreateKey());
+        lr.write(str);
+        return lr.getURL();
     }
     
     void before(QueryProcess exec, String query, Dataset ds) throws LoadException, EngineException {
@@ -310,6 +299,9 @@ public class TripleStore implements URLParam {
             String str = ql.readWithAccess(dt.getLabel());
             System.out.println("TS: before: " + str);
             Mappings map = exec.query(str, ds);
+        }
+        if (ds.getContext().hasValue(EXPLAIN)) {
+            exec.setDebug(true);
         }
     }
     

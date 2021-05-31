@@ -213,6 +213,10 @@ public class Transformer implements TransformProcessor {
         init(level);
     }
     
+    /**
+     * Definition of synonym
+     * st:all -> (st:xml st:json ...)
+     */
     static public List<String> getFormatList(String name) {
         switch (name) {
             case ALL: return Arrays.asList(RESULT_FORMAT);

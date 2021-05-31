@@ -8,6 +8,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Serializer;
+import static fr.inria.corese.core.print.RDFFormat.NL;
 
 /**
  * Generate Turtle W3C RDF Format for Mappings (bindings in RDF)
@@ -16,7 +17,7 @@ import fr.inria.corese.core.Serializer;
  */
 public class RDFResultFormat implements Graphable {
     static final String RDFRESULT = NSManager.RDFRESULT;
-    Mappings map;
+    private Mappings map;
     
     RDFResultFormat(Mappings m){
         map = m;
@@ -34,13 +35,14 @@ public class RDFResultFormat implements Graphable {
     
     Serializer process(){
         Serializer sb = new Serializer();
+        header(sb);
         sb.appendNL("@prefix rs: <" + RDFRESULT + "> .");
         sb.nl();
         sb.appendPNL("[] a rs:ResultSet");       
-        Query q = map.getQuery();
+        Query q = getMappings().getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         if (ast != null && ast.isAsk()){
-            sb.append("rs:boolean ", map.size() > 0);
+            sb.append("rs:boolean ", getMappings().size() > 0);
             sb.appendNL(" .");
         }
         else {
@@ -49,22 +51,43 @@ public class RDFResultFormat implements Graphable {
         return sb;
     }
     
+    void header(Serializer sb) {
+        link(sb);
+    }
+    
+    void link(Serializer bb) {
+        if (!getMappings().getLinkList().isEmpty()) {
+            bb.append("#").append(NL);
+
+            for (String link : getMappings().getLinkList()) {
+                bb.append("# link href = ").append(link).append(NL);
+            }
+
+            bb.append("#").append(NL);
+        }
+    }
+    
     void body(Serializer sb) {
-        Query q = map.getQuery();
+        Query q = getMappings().getQuery();
         for (Node n : q.getSelect()) {
             sb.append("rs:resultVariable '", getName(n));
             sb.appendPNL("'");
         }
         int i = 0;
-        for (Mapping m : map) {
+        for (Mapping m : getMappings()) {
             process(m, sb, i++);
         }
+        sb.close();
     }
     
     void process(Mapping m, Serializer sb, int i){
-        Query q = map.getQuery();        
+        Query q = getMappings().getQuery(); 
+        if (i>0) {
+            sb.appendNL(" ;");
+        }
         sb.appendNL("rs:solution [");
         sb.appendPNL("rs:index ", i);
+        
         for (Node n : q.getSelect()){
             if (m.getNode(n) != null){
                 sb.appendNL("rs:binding [");
@@ -74,7 +97,7 @@ public class RDFResultFormat implements Graphable {
                 sb.appendPNL("]");
             }
         }
-        sb.appendPNL("]");
+        sb.append("]");
     }
     
     String getName(Node n){
@@ -93,6 +116,14 @@ public class RDFResultFormat implements Graphable {
     @Override
     public Object getGraph() {
         return null;    
+    }
+
+    public Mappings getMappings() {
+        return map;
+    }
+
+    public void setMappings(Mappings map) {
+        this.map = map;
     }
     
 }

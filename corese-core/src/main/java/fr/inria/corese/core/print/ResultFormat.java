@@ -451,7 +451,8 @@ public class ResultFormat implements ResultFormatDef {
             case TURTLE_FORMAT:
             case TRIG_FORMAT:
             case JSON_LD_FORMAT:
-            case RDF_FORMAT: return true;
+            //case RDF_FORMAT: 
+                return true;
             default: return false;
         }
     }
@@ -498,17 +499,17 @@ public class ResultFormat implements ResultFormatDef {
                 return RDFFormat.create(map).toString();
             case TURTLE_FORMAT:
                 return TripleFormat.create(map).toString();
-            case RDF_FORMAT:
-                // W3C RDF Graph Mappings, graph has been set above
-                //return TripleFormat.create(map).toString();
-                Graph g = map.getGraph() == null ? getGraph() : (Graph) map.getGraph();
-                return TripleFormat.create(g).toString();
             case TRIG_FORMAT:
                 return TripleFormat.create(map, true).toString();                
             case JSON_LD_FORMAT:
                 return JSONLDFormat.create(map).toString();
+                
+                
                             
-                          
+            case RDF_FORMAT:
+                // W3C RDF Graph Mappings  
+                return RDFResultFormat.create(map).toString();
+                
             case JSON_FORMAT:
                 return JSONFormat.create(map).toString();
 

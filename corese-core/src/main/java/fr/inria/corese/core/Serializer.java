@@ -15,8 +15,9 @@ public class Serializer {
         sb = new StringBuilder();
     }
 
-    public void append(Object s1) {
+    public Serializer append(Object s1) {
         sb.append(s1);
+        return this;
     }
 
     public void append(Object s1, Object s2) {
@@ -62,6 +63,7 @@ public class Serializer {
         appendNL(".");
     }
 
+    @Override
     public String toString() {
         return sb.toString();
     }

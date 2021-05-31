@@ -725,7 +725,7 @@ public class Binding implements Binder {
         return contextLog;
     }
     
-     public ContextLog getCreateLog() {
+    public ContextLog getCreateLog() {
         if (getLog() == null) {
             setLog(new ContextLog());
         }
@@ -737,6 +737,11 @@ public class Binding implements Binder {
      */
     public void setLog(ContextLog context) {
         this.contextLog = context;
+    }
+    
+    @Override
+    public StringBuilder getTrace() {
+        return getCreateLog().getCreateTrace();
     }
 
     /**

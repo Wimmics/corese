@@ -33,6 +33,7 @@ public class ContextLog implements URLParam, LogKey {
     private ASTQuery ast;
     // federated visitor endpoint selector Mappings
     private ASTQuery astSelect;
+    private StringBuilder trace; 
 
     public ContextLog() {
         init();
@@ -240,5 +241,20 @@ public class ContextLog implements URLParam, LogKey {
 
     public void setSubjectMap(SubjectMap subjectMap) {
         this.subjectMap = subjectMap;
+    }
+
+    public StringBuilder getTrace() {
+        return trace;
+    }
+    
+    public StringBuilder getCreateTrace() {
+       if (getTrace() == null) {
+           setTrace(new StringBuilder());
+       }
+       return getTrace();
+    }
+
+    public void setTrace(StringBuilder trace) {
+        this.trace = trace;
     }
 }

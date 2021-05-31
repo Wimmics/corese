@@ -5,6 +5,7 @@ package fr.inria.corese.sparql.triple.parser;
  */
 public interface URLParam {
     
+    static final String STAR = "*";
     static final String SEPARATOR = "~";
     static final String CLIENT = "cn:";
     static final String SERVER = "sv:";
@@ -40,6 +41,7 @@ public interface URLParam {
     static final String PROVENANCE = "provenance";
     static final String DETAIL = "detail";
     static final String LOG = "log";
+    static final String LOG_QUERY = "logquery";
     static final String NBVAR = "nbvar";
     static final String NBRESULT = "nboutput";
     static final String NBINPUT = "nbinput";
@@ -70,6 +72,7 @@ public interface URLParam {
     static final String PROPERTY = "property";
     static final String PREFIX = "prefix";
     static final String TO_SPIN = "spin";
+    static final String EXPLAIN = "explain";
 
     // values of binding=
     static final String VALUES = "values";

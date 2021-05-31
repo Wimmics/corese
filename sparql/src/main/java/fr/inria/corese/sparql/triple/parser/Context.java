@@ -16,6 +16,7 @@ import java.util.Collection;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 /**
  * Execution Context for SPARQL Query and Template
@@ -94,6 +95,7 @@ public class Context extends ASTObject implements URLParam {
     private boolean debug;
     
     private boolean userQuery = false;
+    private String key;
    
    static {
        sexport = new HashMap();
@@ -351,10 +353,17 @@ public class Context extends ASTObject implements URLParam {
     }
     
     public Context add(String name, IDatatype value) {
+         return add(name, value, false);
+    }
+    
+    public Context add(String name, IDatatype value, boolean duplicate) {
         IDatatype list = get(name);
         if (list == null) {
             list = DatatypeMap.newList();
             set(name, list);
+        }
+        if (!duplicate && list.contains(value)) {
+            return this;
         }
         list.getList().add(value);
         return this;
@@ -387,8 +396,8 @@ public class Context extends ASTObject implements URLParam {
                 break;
         }
     }
-    
-     public Context set(String name, int n) {
+        
+    public Context set(String name, int n) {
         set(name, DatatypeMap.newInstance(n));
         return this;
     }
@@ -505,6 +514,31 @@ public class Context extends ASTObject implements URLParam {
         return table.get(name);
     }
     
+    public List<String> getStringList(String name) {
+        IDatatype dt = get(name);
+        if (dt == null) {
+            return null;
+        }
+        return DatatypeMap.toStringList(dt);
+    }
+    
+    /**
+     * 
+     * mode -> ((key value) (key value))
+     */
+    public IDatatype getValueInList(String mode, String name) {
+        IDatatype dt = get(mode);
+        if (dt != null && dt.isList()) {
+            for (IDatatype pair : dt) {
+                if (pair.isList() && pair.size()>=2 &&
+                        pair.get(0).getLabel().equals(name)) {
+                    return pair.get(1);
+                }
+            }
+        }
+        return null;
+    }
+
     public IDatatype getFirst(String name) {
         IDatatype dt = table.get(name);
         if (dt == null) {
@@ -765,6 +799,19 @@ public class Context extends ASTObject implements URLParam {
         return uri;
     }
 
+    public String getKey() {
+        return key;
+    }
 
+    public void setKey(String key) {
+        this.key = key;
+    }
+
+    public String getCreateKey() {
+        if (getKey() == null) {
+            setKey(UUID.randomUUID().toString());
+        }
+        return getKey();
+    }
 
 }

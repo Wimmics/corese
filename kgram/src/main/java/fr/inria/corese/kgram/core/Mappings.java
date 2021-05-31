@@ -66,8 +66,8 @@ public class Mappings extends PointerObject
     private Node templateResult;
     private boolean isFake = false;
     private boolean error = false;
-    private Mapping sm1;
-    private Mapping sm2;
+//    private Mapping sm1;
+//    private Mapping sm2;
     private Node result;
     private Binder binding;
     private Object provenance;
@@ -650,26 +650,14 @@ public class Mappings extends PointerObject
         return n1.compare(n2);
     }
     
-    
-//    int comparator2(Node n1, Node n2) {       
-//        if (getEval() != null) {
-//            return getEval().compare(n1, n2);
-//        }
-//        return n1.compare(n2);
-//    }
 
     @Override
     public int compare(Mapping m1, Mapping m2) {
-        sm1 = m1;
-        sm2 = m2;
+//        sm1 = m1;
+//        sm2 = m2;
         Node[] order1 = m1.getOrderBy();
         Node[] order2 = m2.getOrderBy();
-        
-//        for (Node n : order1) { System.out.print(n + " " );}
-//        System.out.println();
-//        for (Node n : order2) { System.out.print(n + " " );}
-//        System.out.println();
-        
+                
         List<Exp> orderBy = query.getOrderBy();
 
         int res = 0;

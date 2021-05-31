@@ -475,8 +475,13 @@ public class Eval implements ExpType, Plugin {
             } else {
                 Message.log(Message.FAIL_AT);
                 Message.log(maxExp);
+                getTrace().append(String.format("SPARQL fail at: %s", maxExp)).append(Message.NL);
             }
         }
+    }
+    
+    StringBuilder getTrace() {
+        return getMemory().getBind().getTrace();
     }
 
     /**
@@ -926,6 +931,7 @@ public class Eval implements ExpType, Plugin {
                     maxExp = stack.get(n);
                     String s = String.format("%02d", n);
                     Message.log(Message.EVAL, s + " " + maxExp);
+                    getTrace().append(String.format("Eval: %02d %s", n, maxExp)).append(Message.NL);
                 }
             }
         }

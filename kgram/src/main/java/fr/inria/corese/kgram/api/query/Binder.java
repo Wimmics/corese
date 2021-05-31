@@ -26,4 +26,5 @@ public interface Binder {
     void share(Binder b);
     void setVisitor(ProcessVisitor vis);
     ProcessVisitor getVisitor();
+    StringBuilder getTrace();
 }

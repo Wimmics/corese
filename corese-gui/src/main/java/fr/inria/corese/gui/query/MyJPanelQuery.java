@@ -4,7 +4,6 @@ import java.awt.BorderLayout;
 import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
-import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.FocusEvent;
@@ -41,6 +40,7 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.XMLFormat;
 import fr.inria.corese.core.transform.Transformer;
@@ -496,7 +496,7 @@ public final class MyJPanelQuery extends JPanel {
                     str = "";
                 }
                 if (map.size() > maxResXML()) {
-                    System.out.println(String.format("Display %s xml results out of %s", maxResXML(), map.size()));
+                    System.out.println(String.format("GUI display %s XML results out of %s", maxResXML(), map.size()));
                 }
                 if (str.isEmpty() && ast.getErrors() != null) {
                     return ast.getErrorString();
@@ -614,9 +614,8 @@ public final class MyJPanelQuery extends JPanel {
         Query q = map.getQuery();
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean oneValue = !map.getQuery().isListGroup();
-        //resultXML = toString(map);
         getTextAreaXMLResult().setText(toString(map));
-        //System.out.println("XML Results string size: " + getResultText().length());
+        linkedResult(map);
 
         // On affiche la version en arbre du résultat dans l'onglet Tree
         // crée un arbre de racine "root"
@@ -645,7 +644,14 @@ public final class MyJPanelQuery extends JPanel {
         else if (map.getQuery().isTemplate() && map.getQuery().isPragma(KGGRAPH)) {
             display(map, ast.getNSM());
         }
-
+    }
+    
+    void linkedResult(Mappings map) {
+        for (String url : map.getLinkList()) {
+            Service serv = new Service();
+            mainFrame.appendMsg(serv.getString(url));
+            mainFrame.appendMsg(NL);
+        }
     }
 
     /**

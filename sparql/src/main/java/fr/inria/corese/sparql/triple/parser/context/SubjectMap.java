@@ -8,6 +8,7 @@ import fr.inria.corese.sparql.triple.cst.LogKey;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -122,7 +123,32 @@ public class SubjectMap extends HashMap<String, PropertyMap> implements LogKey {
     ArrayList<String> sort(Collection<String> set) {
         ArrayList<String> list = new ArrayList<>();
         list.addAll(set);
-        Collections.sort(list);
+        Collections.sort(list, new Comparator<String>() {
+            public int compare(String s1, String s2) {
+                int n1 = index(s1);
+                int n2 = index(s2);
+                int res = Integer.compare(n1, n2);
+                if (res == 0) {
+                    return s1.compareTo(s2);
+                }
+                return res;
+            }
+
+            int index(String s) {
+                if (s.contains(".")) {
+                    String end = s.substring(1 + s.lastIndexOf("."));
+                    try {
+                        return Integer.valueOf(end);
+                    } catch (Exception e) {
+                        return -1;
+                    }
+                } else {
+                    return -1;
+                }
+            }
+        });
         return list;
     }
+    
+    
 }

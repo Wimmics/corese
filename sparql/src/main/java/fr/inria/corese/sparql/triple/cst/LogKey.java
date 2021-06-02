@@ -23,6 +23,7 @@ public interface LogKey {
     static final String INFO = "ns:info";
     static final String URL = "ns:url";
     static final String LOG = "ns:log";
+    static final String LINK = "ns:link";
     static final String INPUT_CARD = "ns:inputCard";
     static final String OUTPUT_CARD = "ns:outputCard";
     static final String OUTPUT_SIZE = "ns:outputLength";

@@ -763,12 +763,14 @@ public class Context extends ASTObject implements URLParam {
      * Use case: FederateVisitor
      */
     public String tune(String uri) {
-        for (IDatatype mode : get(MODE)) {
-            switch (mode.getLabel()) {
-                case DEBUG:
-                case TRACE:
-                    uri = complete(uri, MODE, mode.getLabel()); 
-                    break;                
+        if (hasValue(MODE)) {
+            for (IDatatype mode : get(MODE)) {
+                switch (mode.getLabel()) {
+                    case DEBUG:
+                    case TRACE:
+                        uri = complete(uri, MODE, mode.getLabel());
+                        break;
+                }
             }
         }
         

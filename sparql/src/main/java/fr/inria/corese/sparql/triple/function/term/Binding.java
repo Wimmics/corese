@@ -9,6 +9,7 @@ import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.VariableLocal;
@@ -56,6 +57,7 @@ public class Binding implements Binder {
     private boolean coalesce = false;
     private Access.Level accessLevel = Access.Level.USER_DEFAULT;
     private ContextLog contextLog;
+    private Context context;
     private IDatatype datatypeValue;
     
     private static Binding singleton;
@@ -559,6 +561,9 @@ public class Binding implements Binder {
         if (b.getLog()!=null) {
             setLog(b.getLog());
         }
+        if (b.getContext()!=null) {
+            setContext(b.getContext());
+        }
     }
     
     void shareGlobalVariable(Binding b) {
@@ -776,6 +781,14 @@ public class Binding implements Binder {
     public static int getDefaultValue(String name, int value) {
         IDatatype dt = getStaticVariable(name);
         return (dt == null) ? value: dt.intValue();
+    }
+
+    public Context getContext() {
+        return context;
+    }
+
+    public void setContext(Context context) {
+        this.context = context;
     }
     
 }

@@ -931,7 +931,8 @@ public class Eval implements ExpType, Plugin {
                     maxExp = stack.get(n);
                     String s = String.format("%02d", n);
                     Message.log(Message.EVAL, s + " " + maxExp);
-                    getTrace().append(String.format("Eval: %02d %s", n, maxExp)).append(Message.NL);
+                    getTrace().append(String.format("Eval: %02d %s", n, maxExp))
+                            .append(Message.NL).append(Message.NL);
                 }
             }
         }

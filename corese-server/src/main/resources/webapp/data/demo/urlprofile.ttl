@@ -1,28 +1,116 @@
 @prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
 
 
+#
+# Define transform URL parameter equivalence
+#
 
-<http://localhost:8080/map/psparql> st:param
-(("mode" "link") ("transform" navlab:mapper))
+st:map st:equivalent (navlab:mapper)
+
+st:all st:equivalent (st:xml st:rdf st:json) .
+
+d3:all st:equivalent (d3:graphic d3:hierarchy) .
+
+
+
+#
+# Define mode with parameter list
+# This part is managed by Profile and query urlmode.rq
+# Then when HTTP request occur with mode=mmm, 
+# parameter list of values of mmm is recorded in request Context and processed by SPARQLResult
+# some parameters have meaning for server: mode transform query
+# some parameters have meaning for transformation: st:hierarchy
+#
+
+#
+# default parameters added to every sparql service by specifying mode "*" here
+#
+[] st:mode "joker" ;
+st:param (
+("mode"         "logquery" "log" "link")
+("transform"    st:all)
+("document"     <http://project.inria.fr/corese>)
+("query"        "select * where {?s ?p ?o} limit 10")
+) .
+
+
+
+[] st:mode "map" ;
+st:param (
+("mode" "link") 
+("transform" st:map)) .
+
+
+
+[] st:mode "demoformat" ;
+st:param (
+("mode" "logquery")
+("mode" "link")
+("transform" st:all)
+("query"
+"""select ?n (count(?o) as ?c) 
+where {?s ?p ?n ; ?q ?o filter regex(?p, 'name') } 
+group by ?s order by ?c
+"""
+)) .
+
+
+[] st:mode "demomap" ;
+st:param (
+("mode" "logquery")
+("mode" "link")
+("transform" st:map st:all)
+("query"
+"""prefix dbo: <http://fr.dbpedia.org/ontology/> 
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+select * where {graph st:geo {db:Amérique dbo:include ?location} 
+service <http://fr.dbpedia.org/sparql> {
+select * where {?location geo:lat ?lat ; geo:long ?lon}
+}}
+""")) .
+
+
+
+@prefix h: <http://www.inria.fr/2015/humans#>
+
+[] st:mode "demohierarchy" ;
+st:param (
+("mode" "logquery" "link")
+("transform" d3:hierarchy)
+(st:hierarchy h:hasMother h:hasFather h:hasParent h:hasFriend h:hasBrother h:hasSister h:hasChild)
+("query"
+"""prefix h: <http://www.inria.fr/2015/humans#> 
+construct {?s ?p ?o} 
+where {
+values ?p {h:hasMother h:hasFather h:hasParent h:hasFriend h:hasBrother h:hasSister h:hasChild} 
+?s ?p ?o}
+""")) .
+
+
+
+
+
+
+
+#
+# Define parameters for endpoint URL
+#
+<http://localhost:8080/map/sparql> st:param
+(("mode" "map") )
 .
 
-<http://localhost:8080/map/plsparql> st:param
-(("mode" "link") ("mode" "log") ("transform" navlab:mapper))
-.
 
-<http://corese.inria.fr/map/psparql> st:param
-(("mode" "link") ("transform" navlab:mapper))
-.
-
-<http://corese.inria.fr/map/plsparql> st:param
-(("mode" "link") ("mode" "log") ("transform" navlab:mapper))
+<http://corese.inria.fr/map/sparql> st:param
+(("mode" "map"))
 .
 
 
 <http://localhost:8080/halopendata/psparql> st:param
-(("mode" "link") ("transform" navlab:mapper))
+(("mode" "map"))
 .
 
 <http://corese.inria.fr/halopendata/psparql> st:param
-(("mode" "link") ("transform" navlab:mapper))
+(("mode" "map"))
 .
+
+

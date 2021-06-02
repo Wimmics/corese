@@ -1,0 +1,19 @@
+<?xml version="1.0"?>
+
+<doc>
+    <title>XML Transformation</title>
+    <book>
+        <title>1984</title>
+        <author>Georges Orwell</author>
+    </book>
+    
+    <book>
+        <title>The Age of Surveillance Capitalism</title>
+        <author>Shoshana Zuboff</author>
+    </book>
+    
+    <report url="http://files.inria.fr/corese/doc/ldscript.html">
+        <title>LDScript</title>
+        <author>Olivier Corby</author>
+    </report>
+</doc>

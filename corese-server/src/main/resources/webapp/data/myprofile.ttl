@@ -3,6 +3,7 @@
 #
 
 st:access st:namespace 
+<http://wasabi.inria.fr/sparql>,
 <http://localhost:8080/>, 
 <http://antipolis:8080/>,
 <https://makg.org/sparql>,

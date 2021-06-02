@@ -16,6 +16,7 @@ import fr.inria.corese.sparql.triple.parser.URLServer;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Date;
 import java.util.concurrent.TimeUnit;
 import javax.ws.rs.RedirectionException;
 import javax.ws.rs.client.Client;
@@ -48,7 +49,7 @@ public class Service implements URLParam {
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
     private ClientBuilder clientBuilder;
 
-    boolean isDebug = !true;
+    private boolean isDebug = false;
     private boolean post = true;
     private boolean showResult = false;
     private boolean trap = false;
@@ -124,7 +125,7 @@ public class Service implements URLParam {
     
     // https://docs.oracle.com/javaee/7/api/index.html
     public String post(String url, String query, String mime) {
-        if (isDebug) {
+        if (isDebug()) {
             System.out.println("service post " + url);
             System.out.println(query);
         }
@@ -142,9 +143,27 @@ public class Service implements URLParam {
             
             Builder rb = target.request(mime); // .cookie(cook)
             setHeader(rb);
+            
+            Date d1 = new Date();
+            if (isDebug()) {
+                logger.info("Post " + getURL().getURL());
+            }
+            
             Response resp =  rb.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
-            String res = resp.readEntity(String.class);
+            
+            if (isDebug()) {
+                Date d2 = new Date();
+                logger.info("After post: " + resp.getStatus() + " " + resp.getStatusInfo());
+                logger.info("Time post: " + ((d2.getTime()-d1.getTime())/1000.0));
+            }
 
+            String res = resp.readEntity(String.class);
+            
+            if (isDebug()) {
+                Date d2 = new Date();
+                logger.info("Time read: " + ((d2.getTime() - d1.getTime()) / 1000.0));
+            }
+            
             if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
                 String myUrl = resp.getLocation().toString();
                 logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
@@ -259,7 +278,7 @@ public class Service implements URLParam {
     }
 
     public String get(String uri, String query, String mime) {
-        if (isDebug) {
+        if (isDebug()) {
             System.out.println(query);
         }
         String url;
@@ -319,6 +338,10 @@ public class Service implements URLParam {
         WebTarget target = client.target(uri);
         Response res = target.request().get();
         return res;
+    }
+    
+    public String getString(String uri) {
+        return get(uri).readEntity(String.class);
     }
 
     String encoding(ASTQuery ast) {
@@ -496,6 +519,14 @@ public class Service implements URLParam {
      */
     public void setParser(ServiceParser parser) {
         this.parser = parser;
+    }
+
+    public boolean isDebug() {
+        return isDebug;
+    }
+
+    public void setDebug(boolean isDebug) {
+        this.isDebug = isDebug;
     }
     
 }

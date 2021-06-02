@@ -27,6 +27,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
+import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
@@ -143,9 +144,11 @@ public class ProviderService implements URLParam {
         int timeout = getTimeout(serviceNode);
         // by default in parallel 
         boolean parallel = q.getOuterQuery().isParallel(); 
-        
+
         for (Node service : serverList) {
-            URLServer url = new URLServer(service);
+            String name = service.getLabel();
+            URLServer url = new URLServer(name);
+            url.setNode(service);
             url.setNumber(getServiceExp().getNumber());
             // /sparql?param={?this} 
             // get ?this=value in Binding global variable and set param=value
@@ -585,6 +588,7 @@ public class ProviderService implements URLParam {
             service.setTimeout(timeout);
             service.setCount(count);
             service.setBind(b);
+            service.setDebug(q.isRecDebug());
             Mappings map = service.query(q, ast, null);
             return map;
         } catch (LoadException ex) {
@@ -682,6 +686,10 @@ public class ProviderService implements URLParam {
     
     boolean isSparql0(Node node) {
         return getProvider().isSparql0(node);
+    }
+    
+    Context getContext() {
+        return getBinding().getContext();
     }
     
 }

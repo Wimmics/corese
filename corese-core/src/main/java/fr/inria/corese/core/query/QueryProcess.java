@@ -682,7 +682,7 @@ public class QueryProcess extends QuerySolver {
                     b = Binding.create();
                     m.setBind(b);
                 }
-                //b.setDebug(c.isDebug());
+                b.setContext(c);
                 //share Context access level
                 b.setAccessLevel(c.getLevel());
                 if (c.getAccessRight() != null) {
@@ -714,6 +714,9 @@ public class QueryProcess extends QuerySolver {
         }
         if (getAST(q).hasMetadata(Metadata.LOG)) {
             System.out.println(getLogManager(map));
+        }
+        if (!getLog().getLinkList().isEmpty()) {
+            map.setLinkList(getLog().getLinkList());
         }
     }
 

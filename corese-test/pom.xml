@@ -1,7 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	 xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	 xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<parent>
 		<artifactId>corese-parent</artifactId>
 		<groupId>fr.inria.corese</groupId>
@@ -11,16 +10,16 @@
 
 	<artifactId>corese-test</artifactId>
 	<name>corese-test</name>
-        <properties>
-        <maven.test.skip>false</maven.test.skip>
-        </properties>
+	<properties>
+		<maven.test.skip>false</maven.test.skip>
+	</properties>
 	<dependencies>
-            <dependency>
-                <groupId>fr.inria.lille.shexjava</groupId>
-                <artifactId>shexjava-core</artifactId>
-                <version>1.0</version>
-            </dependency>
-<!--            <dependency>
+		<dependency>
+			<groupId>fr.inria.lille.shexjava</groupId>
+			<artifactId>shexjava-core</artifactId>
+			<version>1.0</version>
+		</dependency>
+		<!--            <dependency>
                 <groupId>org.apache.commons</groupId>
                 <artifactId>commons-rdf-simple</artifactId>
                 <version>0.5.0</version>
@@ -33,10 +32,10 @@
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>kgram</artifactId>
-		 <!--<version>4.1.1-jdk8</version>-->
-		 <!--<type>jar</type>-->
+			<!--<version>4.1.1-jdk8</version>-->
+			<!--<type>jar</type>-->
 		</dependency>
-<!--                <dependency>
+		<!--                <dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>shex</artifactId>
 		</dependency>-->
@@ -77,13 +76,17 @@
 			<artifactId>javax.annotation-api</artifactId>
 			<version>1.3.1</version>
 		</dependency>
-                <!-- https://mvnrepository.com/artifact/org.json/json -->
-                <dependency>
-                    <groupId>org.json</groupId>
-                    <artifactId>json</artifactId>
-                    <version>20180813</version>
-                </dependency>
-
+		<!-- https://mvnrepository.com/artifact/org.json/json -->
+		<dependency>
+			<groupId>org.json</groupId>
+			<artifactId>json</artifactId>
+			<version>20180813</version>
+		</dependency>
+		<dependency>
+			<groupId>javax.xml.bind</groupId>
+			<artifactId>jaxb-api</artifactId>
+			<version>2.3.1</version>
+		</dependency>
 	</dependencies>
 	<build>
 		<plugins>

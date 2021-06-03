@@ -8,7 +8,7 @@ module fr.inria.corese.corese_core {
     requires jsonld.java;
     requires semargl.core;
     requires sesame.model;
-    //requires fr.inria.corese.arp;
+    // requires fr.inria.corese.arp;
     requires arp;
     requires java.logging;
     requires java.sql;
@@ -31,18 +31,20 @@ module fr.inria.corese.corese_core {
     exports fr.inria.corese.core.edge;
     exports fr.inria.corese.core.logic;
     exports fr.inria.corese.core.producer;
+    exports fr.inria.corese.core.shacl;
+    exports fr.inria.corese.core.extension;
 
-//    requires fr.inria.corese.compiler;
-//    requires org.slf4j;
-//    requires jsonld.java;
-//    requires arp;
-//    requires java.sql;
-//    requires semargl.core;
-//    requires semargl.rdfa;
-//    requires fr.inria.corese.kgram;
-//    requires fr.inria.corese.sparql;
-//    requires sesame.model;
-//    requires sesame.rio.api;
-//    requires java.ws.rs;
-//    requires commons.lang;
+    // requires fr.inria.corese.compiler;
+    // requires org.slf4j;
+    // requires jsonld.java;
+    // requires arp;
+    // requires java.sql;
+    // requires semargl.core;
+    // requires semargl.rdfa;
+    // requires fr.inria.corese.kgram;
+    // requires fr.inria.corese.sparql;
+    // requires sesame.model;
+    // requires sesame.rio.api;
+    // requires java.ws.rs;
+    // requires commons.lang;
 }

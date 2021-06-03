@@ -8,4 +8,5 @@ module fr.inria.corese.compiler {
 	exports fr.inria.corese.compiler.eval;
 	exports fr.inria.corese.compiler.api;
     exports fr.inria.corese.compiler.result;
+	exports fr.inria.corese.compiler.federate;
 }

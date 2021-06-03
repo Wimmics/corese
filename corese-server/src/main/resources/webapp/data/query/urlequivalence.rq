@@ -1,0 +1,10 @@
+#
+# Define URL equivalence e.g. for transform parameter
+# Used in Profile.java
+#
+
+select ?url (aggregate(?val) as ?list) 
+where {
+    ?url st:equivalent/rdf:rest*/rdf:first ?val
+}
+group by ?url 

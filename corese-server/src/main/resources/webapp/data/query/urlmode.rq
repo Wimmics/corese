@@ -1,0 +1,16 @@
+#
+# Define mode as parameter list
+# Used in Profile.java
+#
+
+# ?url is a literal in this case
+select ?url (aggregate(?plist) as ?list) 
+where {
+    [] st:mode ?url ;
+       st:param/rdf:rest*/rdf:first ?keyval .
+       
+    {select ?keyval (aggregate(?val) as ?plist) 
+     where {?keyval rdf:rest*/rdf:first ?val}
+     group by ?keyval}
+}
+group by ?url 

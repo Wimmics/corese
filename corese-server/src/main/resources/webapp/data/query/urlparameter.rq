@@ -5,7 +5,8 @@
 
 select ?url (aggregate(xt:list(?key, ?val)) as ?list) 
 where {
-    ?url st:param/rdf:rest*/rdf:first ?pair .
+    ?url st:param/rdf:rest*/rdf:first ?pair 
+    minus { ?url st:mode ?mode }
     ?pair rdf:first ?key ; rdf:rest/rdf:first ?val
 }
 group by ?url 

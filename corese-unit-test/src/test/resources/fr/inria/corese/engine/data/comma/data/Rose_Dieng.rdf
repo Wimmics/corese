@@ -1,0 +1,24 @@
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:rdfs="http://www.w3.org/TR/1999/PR-rdf-schema-19990303#" 
+  xmlns:CoMMA="http://www.inria.fr/acacia/comma#"> 
+ 
+ <CoMMA:IndividualProfile rdf:about="#">
+  <CoMMA:Title>Employee profile of Rose Dieng</CoMMA:Title>
+ </CoMMA:IndividualProfile>
+
+ <CoMMA:Employee rdf:about = "http://www.inria.fr/rose.dieng">
+  <CoMMA:FamilyName>Dieng</CoMMA:FamilyName>
+  <CoMMA:FirstName>Rose</CoMMA:FirstName>
+  <CoMMA:HasForWorkInterest><CoMMA:ArtificialIntelligenceTopic/></CoMMA:HasForWorkInterest>
+  <CoMMA:HasForPersonnalInterest><CoMMA:MusicTopic/></CoMMA:HasForPersonnalInterest>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:KnowledgeEngineeringTopic/></CoMMA:HasForOntologicalEntrancePoint>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:ArtificialIntelligenceTopic/></CoMMA:HasForOntologicalEntrancePoint>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:Document/></CoMMA:HasForOntologicalEntrancePoint>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:Person/></CoMMA:HasForOntologicalEntrancePoint>
+  <CoMMA:HasForOntologicalEntrancePoint><CoMMA:OrganizationGroup/></CoMMA:HasForOntologicalEntrancePoint>
+ </CoMMA:Employee>
+
+
+
+</rdf:RDF>

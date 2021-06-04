@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3915.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/roberto.m.">
+         <c:FamilyName>M.</c:FamilyName>
+         <c:FirstName>Roberto</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/mimosa.en.html">
+         <c:Designation>Mimosa</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>3-2000</c:CreationDate>
+   <c:Title>On the reachability problem   in cryptographic protocols </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

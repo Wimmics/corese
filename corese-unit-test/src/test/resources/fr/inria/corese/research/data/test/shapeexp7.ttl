@@ -1,0 +1,9 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsh: <http://www.w3.org/ns/shacl#> .
+@prefix h:  <http://www.inria.fr/2015/humans#>
+
+
+us:test1 a sh:NodeShape ;
+xsh:targetFunction [ us:test (h:Person) ] ;
+sh:class h:Person
+.

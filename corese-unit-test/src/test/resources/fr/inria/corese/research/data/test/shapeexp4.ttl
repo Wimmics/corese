@@ -1,0 +1,11 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsh: <http://www.w3.org/ns/shacl#> .
+@prefix h:  <http://www.inria.fr/2015/humans#>
+
+
+us:test1 a sh:NodeShape ;
+sh:targetClass h:Man, h:Woman ;
+xsh:function [ 
+us:disjoint ([ sh:oneOrMorePath h:hasFriend ] [ sh:oneOrMorePath h:hasChild ]) ] 
+
+.

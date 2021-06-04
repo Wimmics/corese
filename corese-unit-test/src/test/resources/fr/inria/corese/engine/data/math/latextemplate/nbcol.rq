@@ -1,0 +1,11 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template kg:nbcol {
+  "c"
+}
+where {
+  ?in a m:Matrix ;
+  m:args/rdf:first ?row
+  ?row rdf:rest*/rdf:first ?e
+}
+

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2023.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/katrin.dobrindt">
+         <c:FamilyName>Dobrindt</c:FamilyName>
+         <c:FirstName>Katrin</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/kurt.mehlhorn">
+         <c:FamilyName>Mehlhorn</c:FamilyName>
+         <c:FirstName>Kurt</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/mariette.yvinec">
+         <c:FamilyName>Yvinec</c:FamilyName>
+         <c:FirstName>Mariette</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/prisme.en.html">
+         <c:Designation>Prisme</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>9-1993</c:CreationDate>
+   <c:Title>A Complete and efficient algorithm for the intersection of a genera l ans a convex polyhedron</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

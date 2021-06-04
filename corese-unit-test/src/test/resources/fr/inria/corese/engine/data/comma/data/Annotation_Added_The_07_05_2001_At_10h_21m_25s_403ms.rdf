@@ -1,0 +1,19 @@
+<?xml version ="1.0"?>
+<rdf:RDF xml:lang="en"
+         xmlns:rdf= "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+         xmlns:comma="http://www.inria.fr/acacia/comma#">
+
+<comma:Magazine rdf:about="http://www.cstb.fr/cstb_mag/tmag01.htm">
+  <comma:CreationDate>2001</comma:CreationDate>
+  <comma:Title>CSTB MAGAZINE</comma:Title>
+</comma:Magazine>
+<comma:Magazine rdf:about="http://www.cstb.fr/cstb_mag/TMag00.htm">
+  <comma:CreationDate>2000</comma:CreationDate>
+  <comma:Title>CSTB MAGAZINE</comma:Title>
+</comma:Magazine>
+<comma:Magazine rdf:about="http://www.cstb.fr/cstb_mag/TMag99.htm">
+  <comma:CreationDate>1999</comma:CreationDate>
+  <comma:Title>CSTB MAGAZINE</comma:Title>
+</comma:Magazine>
+</rdf:RDF>
+

@@ -1,0 +1,45 @@
+<!DOCTYPE rdf:RDF [
+	  <!ENTITY cos   "http://www.inria.fr/acacia/corese#">
+	  <!ENTITY rdf   "http://www.w3.org/1999/02/22-rdf-syntax-ns#">
+	  <!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema#">
+	  <!ENTITY c      "http://www.inria.fr/acacia/comma#">
+	  <!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+	  <!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+	  ]>
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:rdfs="&rdfs;" 
+  xmlns:c="http://www.inria.fr/acacia/comma#"
+> 
+ 
+ <c:IndividualProfile rdf:about="#a">
+<c:CreationDate>1988</c:CreationDate>
+<c:CreationDate>1998</c:CreationDate>
+<c:CreationDate>an 2000</c:CreationDate>
+  <c:Title>Employee profile of Olivier Corby</c:Title>
+  <c:path>/rdf:RDF//c:Title/text()</c:path>
+
+</c:IndividualProfile>
+
+ <c:Employee rdf:about = "http://www-sop.inria.fr/acacia/personnel/corby/">
+  <c:FamilyName>Corby</c:FamilyName>
+  <c:FirstName>Olivier</c:FirstName>
+  <c:FirstName>?Olivier</c:FirstName>
+  <c:FirstName>"Olivier"</c:FirstName>
+  <c:FirstName>"?Olivier"</c:FirstName>
+
+  <c:age>45</c:age>
+
+  <c:HasForOntologicalEntrancePoint><c:KnowledgeModelingTopic/></c:HasForOntologicalEntrancePoint>
+  <c:HasForOntologicalEntrancePoint><c:ObjectProgrammingTopic/></c:HasForOntologicalEntrancePoint>
+  <c:HasForOntologicalEntrancePoint><c:Document/></c:HasForOntologicalEntrancePoint>
+  <c:HasForOntologicalEntrancePoint><c:Person/></c:HasForOntologicalEntrancePoint>
+  <c:HasForOntologicalEntrancePoint><c:OrganizationGroup/></c:HasForOntologicalEntrancePoint>
+ </c:Employee>
+
+ <!--<c:Employee rdf:about = "http://www-sop.inria.fr/acacia/personnel">
+  <c:age>45</c:age>
+ </c:Employee>-->
+
+
+</rdf:RDF>

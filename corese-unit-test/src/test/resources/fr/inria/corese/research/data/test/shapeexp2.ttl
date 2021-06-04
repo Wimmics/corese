@@ -1,0 +1,20 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsh: <http://www.w3.org/ns/shacl#> .
+@prefix h:  <http://www.inria.fr/2015/humans#>
+
+
+us:test1 a sh:NodeShape ;
+sh:targetSubjectsOf rdf:type ;
+sh:property [
+sh:path (rdf:type [xsh:filter([sh:pattern h:])]);
+
+xsh:evaluate (xt:member (rq:self) 
+(rq:list h:Lecturer h:Researcher h:Man h:Woman h:Person)
+) 
+
+]
+   
+.
+
+
+

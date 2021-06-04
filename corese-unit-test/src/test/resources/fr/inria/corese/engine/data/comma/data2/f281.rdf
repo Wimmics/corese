@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2051.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/vladimir.kostov">
+         <c:FamilyName>Kostov</c:FamilyName>
+         <c:FirstName>Vladimir</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/elena.degtiariova-kostova">
+         <c:FamilyName>Degtiariova-Kostova</c:FamilyName>
+         <c:FirstName>Elena</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/prisme.en.html">
+         <c:Designation>Prisme</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>9-1993</c:CreationDate>
+   <c:Title>Suboptimal paths in the problem of a planar motion with bounded der ivative of the curvature</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

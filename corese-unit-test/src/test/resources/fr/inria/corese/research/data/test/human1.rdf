@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE rdf:RDF [
+   <!ENTITY humans   "http://www.inria.fr/2015/humans"> 
+   <!ENTITY xsd      "http://www.w3.org/2001/XMLSchema#"> ]>
+ 
+<rdf:RDF  
+   xmlns:rdf ="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+   xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#"
+   xmlns:st  ="http://ns.inria.fr/sparql-template/"
+   xmlns:xsd ="&xsd;" 
+   xmlns     ="&humans;#" 
+   xml:base  ="&humans;-instances" >
+   
+<rdf:Description rdf:about='http://ns.inria.fr/sparql-template/data1'>
+   <date rdf:datatype='&xsd;date'>2015-01-29</date>
+</rdf:Description>
+   
+<Man rdf:ID="Harry">
+  <name>Harry</name>
+  <hasChild rdf:resource="#John"/>
+  <hasSpouse rdf:resource="#Sophie"/>
+  <phoneNumber rdf:datatype='&humans;#PhoneNumber'>32 08 98</phoneNumber>
+</Man>
+ 
+   
+<Person rdf:ID="John">
+  <name>John</name>
+	<shoesize rdf:datatype="&xsd;integer" >14</shoesize>
+	<age rdf:datatype="&xsd;integer" >37</age>
+</Person>
+
+<Person rdf:ID="Mark">
+  <name>Mark</name>
+	<shoesize rdf:datatype="&xsd;integer" >8</shoesize>
+	<age rdf:datatype="&xsd;integer" >14</age>
+	<shirtsize rdf:datatype="&xsd;integer" >9</shirtsize>
+	<trouserssize rdf:datatype="&xsd;integer" >36</trouserssize>
+	<hasFather rdf:resource="#John"/>
+</Person>
+
+<Person rdf:ID="Eve">
+  <rdf:type rdf:resource="&humans;#Lecturer"/>
+	<hasSpouse rdf:resource="#David"/>
+	<name>Eve</name>
+	<hasFriend rdf:resource="#Alice"/>
+</Person>
+
+<Person rdf:ID="David">
+  <rdf:type rdf:resource="&humans;#Researcher"/>
+  <hasFriend rdf:resource="#Gaston"/>
+	<name>David</name>
+</Person>
+
+<Woman rdf:ID="Alice">
+	<hasFriend rdf:resource="#John"/>
+	<name>Alice</name>
+</Woman>
+
+<Man rdf:ID="Jack">
+	<hasFriend rdf:resource="#Alice"/>
+	<hasChild rdf:resource="#Harry"/>
+	<name>Jack</name>
+</Man>
+
+<Woman rdf:ID="Flora">
+  <age rdf:datatype="&xsd;integer" >95</age>
+	<hasSpouse rdf:resource="#Gaston"/>
+	<hasChild rdf:resource="#Pierre"/>
+	<name>Flora</name>
+</Woman>
+
+<Person rdf:ID="Laura">
+	<hasFriend rdf:resource="#Alice"/>
+	<name>Laura</name>
+</Person>
+
+<Woman rdf:ID="Jennifer">
+	<hasSpouse rdf:resource="#John"/>
+	<name>Jennifer</name>
+</Woman>
+
+
+</rdf:RDF>

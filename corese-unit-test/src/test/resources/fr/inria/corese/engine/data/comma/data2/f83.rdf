@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2567.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/fabien.campillo">
+         <c:FamilyName>Campillo</c:FamilyName>
+         <c:FirstName>Fabien</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/frédéric.cérou">
+         <c:FamilyName>Cérou</c:FamilyName>
+         <c:FirstName>Frédéric</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/françois.le">
+         <c:FamilyName>Le</c:FamilyName>
+         <c:FirstName>François</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/equipes/mefisto-eng.html">
+         <c:Designation>Mefisto</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>6-1995</c:CreationDate>
+   <c:Title>Particle and cell approximationsfor nonlinear filtering</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

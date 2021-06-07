@@ -29,8 +29,10 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,6 +62,7 @@ public class ProviderService implements URLParam {
     private Eval eval;
     private CompileService compiler;
     private Binding binding;
+    private boolean bind = true;
 
     /**
      * 
@@ -86,6 +89,9 @@ public class ProviderService implements URLParam {
         // federate visitor may have recorded data in AST Context
         // share it with Binding Context Log
         getLog().share(getGlobalAST().getLog());
+        if (getGlobalAST().hasMetadata(Metadata.BINDING, Metadata.SKIP_STR)) {
+            setBind(false);
+        }
     }
     
     /**
@@ -93,21 +99,64 @@ public class ProviderService implements URLParam {
      * exp: service statement
      */
     Mappings send(Node serv, Exp exp) throws EngineException {
+        Mappings res = basicSend(serv, exp);
+               
+        if (getServiceExp().getNumber()>0 && res!=null && res.isEmpty() && isBind() &&
+             hasValue(WHY)) {
+            // generate a log, skip the result
+            //debugSend(serv, exp);
+        }
+        
+        return res;
+    }
+    
+    Mappings basicSend(Node serv, Exp exp) throws EngineException {
         setServiceExp(exp);
         // share prefix
         int slice = getSlice(serv, getMappings()); 
-        //boolean hasValues = ast.getValues() != null;
-        boolean skipBind = getGlobalAST().hasMetadata(Metadata.BINDING, Metadata.SKIP_STR);
         // when servive variable is unbound, get service URL (list) from Environment or Mappings
         List<Node> serviceList = getServerList(exp, getMappings());
-        boolean bslice = ! (getMappings() == null || slice <= 0  || skipBind); 
+        boolean bslice = ! (getMappings() == null || slice <= 0  || !isBind()); 
         // slice by default
-        Mappings res = send(serviceList, serv, (skipBind) ? null : getMappings(), bslice, slice);
+        Mappings res = send(serviceList, serv, (isBind()) ? getMappings() : null, bslice, slice);
         restore(getAST());
         if (res != null) {
             res.limit(getAST().getLimit());
         }
         return res;
+    }
+    
+    /**
+     * @draft: try again by relaxing the query
+     * 1) without binding to see the kind of results we could have
+     * and try to understand the failure
+     * 2) @todo: remove filter if any
+     *
+     */
+    Mappings debugSend(Node serv, Exp exp) throws EngineException {
+        // no binding:
+        setBind(false);
+        // upgrade service number in case of log to keep service std log
+        getServiceExp().setNumber(getServiceExp().getNumber() * 10);
+        getAST().setLimit(20);
+        Mappings res = basicSend(serv, exp);
+        return res;
+    }
+    
+    // draft
+    void variableSend(Node serv, Exp exp) throws EngineException {
+        setBind(true);
+        getServiceExp().setNumber(getServiceExp().getNumber() * 10);
+        fr.inria.corese.sparql.triple.parser.Exp body = getAST().getBody();
+        
+        if (body.size()>0 && body.get(0).isTriple()) {
+            Triple t = body.get(0).getTriple();
+            if (t.getPredicate().isConstant()) {
+                t.setPredicate(new Variable("?_pred_"));
+                System.out.println("PS:\n" + getAST());
+                Mappings res = basicSend(serv, exp);
+            }
+        }
     }
     
     void restore(ASTQuery ast) {
@@ -173,7 +222,9 @@ public class ProviderService implements URLParam {
             
             if (slice) {
                 // default behaviour when map != null
-                // select appropriate subset of distinct Mappings with service URL 
+                // service is variable: select appropriate subset of distinct Mappings with service URL
+                // service is URL: consider all Mappings. 
+                // Hint: Mappings are already result of former select distinct
                 input = getMappings(q, getServiceExp(), getServiceExp().getServiceNode(), service, map);
                 if (input.size() > 0) {
                     g.getEventManager().process(Event.Service, "input: \n" + input.toString(true, false, 10));
@@ -238,6 +289,7 @@ public class ProviderService implements URLParam {
         int size = 0, count = 0;        
         traceInput(service, map);
         Date d1 = new Date();
+        
         if (slice) {
             boolean debug = service.hasParameter(MODE, DEBUG) || getQuery().isRecDebug();
             
@@ -691,5 +743,16 @@ public class ProviderService implements URLParam {
     Context getContext() {
         return getBinding().getContext();
     }
+
+    public boolean isBind() {
+        return bind;
+    }
+
+    public void setBind(boolean bind) {
+        this.bind = bind;
+    }
     
+    boolean hasValue(String key) {
+        return getContext() != null && getContext().hasValue(key);    
+    }      
 }

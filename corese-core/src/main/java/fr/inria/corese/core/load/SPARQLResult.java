@@ -17,6 +17,10 @@ public class SPARQLResult extends XMLResult {
         local = Graph.create();
     }
 
+    public static SPARQLResult create() {
+        return new SPARQLResult(Graph.create());
+    }
+    
     public static SPARQLResult create(Graph g) {
         return new SPARQLResult(g);
     }

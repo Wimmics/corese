@@ -101,7 +101,7 @@ public class XMLResult {
             return var;
         }
     }
-
+   
     /**
      * parse SPARQL XML Result as Mappings
      */
@@ -112,8 +112,7 @@ public class XMLResult {
             String str = read(stream);
             System.out.println(str);
             setShowResult(false);
-            InputStream inputStream = new ByteArrayInputStream(str.getBytes());
-            return parse(inputStream);
+            return parseString(str);
         }
         
         if (debug) {

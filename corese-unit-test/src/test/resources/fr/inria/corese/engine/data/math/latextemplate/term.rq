@@ -1,0 +1,12 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template {
+  ?f " " ?t " " ?r
+}
+where {
+  ?in a ?t 
+  filter(?t in (
+  m:Plus, m:Minus, m:Mult,  
+  m:Eq, m:Lt, m:Le, m:Ne, m:Gt, m:Ge))
+  ?in m:args(?f ?r)
+}

@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3826.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/olivier.devillers">
+         <c:FamilyName>Devillers</c:FamilyName>
+         <c:FirstName>Olivier</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/alexandra.fronville">
+         <c:FamilyName>Fronville</c:FamilyName>
+         <c:FirstName>Alexandra</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/bernard.mourrain">
+         <c:FamilyName>Mourrain</c:FamilyName>
+         <c:FirstName>Bernard</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/monique.teillaud">
+         <c:FamilyName>Teillaud</c:FamilyName>
+         <c:FirstName>Monique</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/saga.en.html">
+         <c:Designation>Saga</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/prisme.en.html">
+         <c:Designation>Prisme</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>12-1999</c:CreationDate>
+   <c:Title>Algebraic methods and arithmetic filtering for exact predicates on circle arcs </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

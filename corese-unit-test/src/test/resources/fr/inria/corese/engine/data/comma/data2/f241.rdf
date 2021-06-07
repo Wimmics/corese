@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2180.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/mireille.bossy">
+         <c:FamilyName>Bossy</c:FamilyName>
+         <c:FirstName>Mireille</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/denis.talay">
+         <c:FamilyName>Talay</c:FamilyName>
+         <c:FirstName>Denis</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/omega.en.html">
+         <c:Designation>Omega</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>2-1994</c:CreationDate>
+   <c:Title>Convergence rate for the approximation of the limit law of weakly i nteracting particles 1: smooth interacting kernels</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

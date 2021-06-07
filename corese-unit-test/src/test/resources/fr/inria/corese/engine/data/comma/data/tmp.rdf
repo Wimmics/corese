@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rdf:RDF 
+  xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" 
+  xmlns:rdfs="http://www.w3.org/TR/1999/PR-rdf-schema-19990303#" 
+  xmlns:CoMMA="http://www.inria.fr/acacia/comma#"> 
+  <CoMMA:Document rdf:about="http://www.easysol.com/thedocument.html">
+    <CoMMA:Title>Pink elephants in the trees</CoMMA:Title>
+    <CoMMA:CreationDate>2000</CoMMA:CreationDate>
+    <CoMMA:CreatedBy>
+      <CoMMA:Person rdf:about="http://www.easysol.com/thecreator.html">
+        <CoMMA:FamilyName>Smith</CoMMA:FamilyName>
+        <CoMMA:FirstName>John</CoMMA:FirstName>
+      </CoMMA:Person>
+    </CoMMA:CreatedBy>
+    <CoMMA:Target>
+      <CoMMA:Person rdf:about="http://www.easysol.com/thetargetr.html">
+        <CoMMA:FamilyName>Ander</CoMMA:FamilyName>
+        <CoMMA:FirstName>Steve</CoMMA:FirstName>
+        <CoMMA:Colleague>
+          <CoMMA:Person
+rdf:about="http://www.easysol.com/thecolleague.html">
+            <CoMMA:FamilyName>Toto</CoMMA:FamilyName>
+            <CoMMA:MobileNumber>04573827</CoMMA:MobileNumber>
+            <CoMMA:BirthDate>311273</CoMMA:BirthDate>
+          </CoMMA:Person>     
+        </CoMMA:Colleague>
+      </CoMMA:Person>
+    </CoMMA:Target>
+    <CoMMA:Concern>
+      <CoMMA:ComputerScienceTopic />
+    </CoMMA:Concern>
+    <CoMMA:Summary>This is the abstract of the document and it is in two
+lines</CoMMA:Summary>
+  </CoMMA:Document>
+  
+  
+  
+  
+  
+  <!--<CoMMA:LocalOrganizationGroup rdf:about="http://www.cstb.fr/">
+	  <CoMMA:Include><rdf:Description/></CoMMA:Include> 
+  </CoMMA:LocalOrganizationGroup>-->
+  
+</rdf:RDF>

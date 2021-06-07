@@ -1,0 +1,27 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix h:  <http://www.inria.fr/2015/humans#>
+
+
+us:test1 a sh:NodeShape ;
+sh:targetClass h:Person ;
+sh:property  [
+    sh:path h:age ;
+    sh:evaluate (rq:gt (rq:self) 18) 
+] ;
+#sh:function [ sh:name us:testlist ; sh:value ((h:age 50)(h:shoesize 10)) ] ;
+# sh:evaluate return true if property is missing
+# sh:compute return error()
+
+sh:evaluate2 (rq:gt h:age (rq:mult 1 h:shoesize)) ;
+
+sh:evaluate2
+    (rq:lt h:shoesize (rq:if (rq:gt h:age 15) h:shirtsize (rq:coalesce h:undef h:unedf2 h:age))) ;
+    
+sh:evaluate2 (xt:member rdf:type (xt:list (rq:self h:Lecturer) (rq:self h:Man) (rq:self h:Person))) ;
+    
+sh:function2 us:mytest  ;
+
+sh:function2 [ sh:name sh:evaluate ; sh:value (rq:gt h:age (rq:mult 2 h:shoesize)) ] ;
+
+sh:function2 [ sh:name sh:evaluate ; sh:value (rq:ne (rq:self) (rq:self us:JohnDoe)) ]
+.

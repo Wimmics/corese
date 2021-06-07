@@ -1,0 +1,12 @@
+prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix h: <http://www.inria.fr/2015/humans#>
+
+@public 
+function us:test(subject, node, exp) {
+    let (predicate = h:hasChild,
+         select ?node ?predicate (aggregate(distinct ?object) as ?list) 
+         where { ?node ?predicate ?object }
+    ) {
+    return (list)
+    }
+}

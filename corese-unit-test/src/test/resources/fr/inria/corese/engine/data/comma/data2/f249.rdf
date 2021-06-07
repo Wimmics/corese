@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:Report rdf:about="http://www.inria.fr/rapports/sophia/CERMICS-93-17.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/s..piperno">
+         <c:FamilyName>Piperno</c:FamilyName>
+         <c:FirstName>S.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/b..larrouturou">
+         <c:FamilyName>Larrouturou</c:FamilyName>
+         <c:FirstName>B.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/et.m.">
+         <c:FamilyName>M.</c:FamilyName>
+         <c:FirstName>et</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreationDate>6-1993</c:CreationDate>
+   <c:Title>Analysis and Compensation of Numerical Damping in a one-dimensional Aeroelastic Problem</c:Title>
+</c:Report> 
+</rdf:RDF>

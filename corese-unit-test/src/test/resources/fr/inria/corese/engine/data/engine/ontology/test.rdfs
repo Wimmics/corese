@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="iso-8859-1"?>
+<!DOCTYPE rdf:RDF [
+<!ENTITY rule   "http://ns.inria.fr/corese/2008/rule"> 
+<!ENTITY cos    "http://www.inria.fr/acacia/corese">
+<!ENTITY rdf    "http://www.w3.org/1999/02/22-rdf-syntax-ns">
+<!ENTITY rdfs   "http://www.w3.org/2000/01/rdf-schema">
+<!ENTITY xsd    "http://www.w3.org/2001/XMLSchema#">
+<!ENTITY c      "http://www.inria.fr/acacia/comma#">
+<!ENTITY owl    "http://www.w3.org/2002/07/owl#">
+]>
+
+<rdf:RDF 
+    xmlns:rdf  ="&rdf;#"
+    xmlns:rdfs ="&rdfs;#"
+    xmlns:xsd  ="&xsd;" 
+    xmlns:cos  ="&cos;#"  
+    xmlns:rule ="&rule;#"
+        xmlns:c ="&c;"
+
+    xml:base      ="&c;" 
+>
+
+ <rdfs:Class rdf:ID='Man' />
+ 
+ <rdfs:Class rdf:ID='Woman' />
+
+    
+<rdf:Property rdf:ID='hasRelated'>
+  <rdf:type rdf:resource='&owl;TransitiveProperty' />
+</rdf:Property>
+
+<rdf:Property rdf:ID='hasGrandParent'>
+  <rdfs:subPropertyOf rdf:resource='#hasRelated' />
+</rdf:Property>
+
+<rdf:Property rdf:ID='hasParent'>
+  <rdfs:subPropertyOf rdf:resource='#hasRelated' />
+</rdf:Property>
+
+<rdf:Property rdf:ID='hasFather'>
+  <rdfs:subPropertyOf rdf:resource='#hasParent' />
+</rdf:Property>
+
+<rdf:Property rdf:ID='hasMother'>
+  <rdfs:subPropertyOf rdf:resource='#hasParent' />
+</rdf:Property>
+
+
+<rdf:Property rdf:ID='hasUncle'>
+  <rdfs:subPropertyOf rdf:resource='#hasRelated' />
+</rdf:Property>
+
+<rdf:Property rdf:ID='hasAunt'>
+  <rdfs:subPropertyOf rdf:resource='#hasRelated' />
+</rdf:Property>
+
+
+<rdf:Property rdf:ID='hasBrotherSister'>
+  <rdf:type rdf:resource='&owl;SymmetricProperty' />
+  <rdfs:subPropertyOf rdf:resource='#hasRelated' />
+</rdf:Property>
+
+<rdf:Property rdf:ID='hasBrother'>
+  <rdfs:subPropertyOf rdf:resource='#hasBrotherSister' />
+</rdf:Property>
+
+<rdf:Property rdf:ID='hasSister'>
+  <rdfs:subPropertyOf rdf:resource='#hasBrotherSister' />
+</rdf:Property>
+
+<rdf:Property rdf:ID='hasCousin'>
+  <rdfs:subPropertyOf rdf:resource='#hasRelated' />
+</rdf:Property>
+
+<rdf:Property rdf:ID='hasID'>
+</rdf:Property>
+
+<rdf:Property rdf:ID='hasRelation'>
+</rdf:Property>
+
+
+</rdf:RDF>
+

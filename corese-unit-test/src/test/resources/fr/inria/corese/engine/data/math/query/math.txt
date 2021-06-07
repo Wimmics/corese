@@ -1,0 +1,9 @@
+prefix m: <http://ns.inria.fr/2013/math#>
+template  {
+  kg:pprintWith(?p)
+}
+where {
+
+?p a m:PrettyPrinter
+
+}

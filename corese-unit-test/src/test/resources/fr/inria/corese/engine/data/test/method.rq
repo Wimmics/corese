@@ -1,0 +1,110 @@
+#
+# Method definition and method call
+#
+@method 
+select * 
+#(xt:method(us:area, us:Circle, ?x) as ?aa) 
+(method(us:area, ?x) as ?a) 
+(method(us:perimeter, ?x) as ?p) 
+where {
+    ?x a us:Circle 
+}
+
+
+@type dt:literal 
+function us:area(?x) {
+    xt:display("area: ", ?x) ;
+    return (0)
+}
+
+function us:area(?x) {
+    xt:display("area: ", ?x) ;
+    return (0)
+}
+
+function us:perimeter(?x) {
+    xt:display("perimeter: ", ?x) ;
+    return (0)
+}
+
+
+
+
+@type us:Composite 
+function us:area(?x) {
+    method(us:compose, ?x, us:area)
+}
+
+@type us:Composite 
+function us:perimeter(?x) {
+    method(us:compose, ?x, us:perimeter)
+}
+
+@type us:Composite 
+function us:compose(?x, ?fun) {
+    let (select * (sum(method(?fun, ?e)) as ?sum) 
+         where { ?x us:member/rdf:rest*/rdf:first ?e }) {
+        ?sum
+    }
+}
+
+
+
+
+
+@type us:Rectangle 
+function us:area(?x) {
+    method(us:compose, ?x, lambda(?w, ?l) { ?w * ?l })
+}
+
+@type us:Rectangle 
+function us:perimeter(?x) {
+    method(us:compose, ?x, lambda(?w, ?l) { 2 * (?w + ?l) })
+
+}
+
+@type us:Rectangle 
+function us:compose(?x, ?fun) {
+    let (select * where { ?x us:width ?w ; us:length ?l }) {
+        funcall(?fun, ?w, ?l)
+    }
+}
+
+
+
+
+@type us:Square 
+function us:area(?x) {
+    method(us:compose, ?x, us:size, lambda(?s) { ?s * ?s })
+}
+
+
+@type us:Square 
+function us:perimeter(?x) {
+    method(us:compose, ?x, us:size, lambda(?s) { 4 * ?s })
+}
+
+
+@type us:Circle
+function us:area(?x) {
+     method(us:compose, ?x, us:radius, lambda(?r) { 3.1416 * ?r * ?r })
+}
+
+@type us:Circle
+function us:perimeter(?x) {
+     method(us:compose, ?x, us:radius, lambda(?r) { 2 * 3.1416 * ?r})
+}
+
+
+
+
+@type us:Figure
+function us:compose(?x, ?p, ?fun) {
+   let (select * where { ?x ?p ?s }) {
+        funcall(?fun, ?s)
+    }
+}
+
+
+
+

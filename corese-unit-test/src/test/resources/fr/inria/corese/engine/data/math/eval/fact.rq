@@ -1,0 +1,8 @@
+@prefix m:  <http://ns.inria.fr/2013/math#>
+
+template  {
+  kg:template(kg:recfact, kg:eval(?n)) 
+}
+where {
+  ?in a m:Fact ; m:args (?n)
+}

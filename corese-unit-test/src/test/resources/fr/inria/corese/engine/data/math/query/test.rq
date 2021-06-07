@@ -1,0 +1,16 @@
+prefix m: <http://ns.inria.fr/2013/math#>
+select ?g
+where
+{
+graph ?g {?x a m:Integral }
+?x m:vars ([m:name ?var]) ;
+(m:args|rdf:rest|rdf:first)*
+[a m:Power; m:args([m:name ?var] ?n)]
+
+?x m:author ?y ; m:label ?l
+
+graph ?g {?a ?p ?b}
+}
+pragma {
+#kg:display kg:template </home/corby/AData/math/template>
+}

@@ -1,0 +1,4 @@
+@base <http://www.inria.fr/test/> .
+@prefix c: <http://www.inria.fr/test/> .
+
+<Jack> c:name "José"

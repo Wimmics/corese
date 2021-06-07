@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-4079.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/alain.rapaport">
+         <c:FamilyName>Rapaport</c:FamilyName>
+         <c:FirstName>Alain</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean-luc.gouzé">
+         <c:FamilyName>Gouzé</c:FamilyName>
+         <c:FirstName>Jean-Luc</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/comore.en.html">
+         <c:Designation>Comore</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-2000</c:CreationDate>
+   <c:Title>Practical and polytopic observers for nonlinear uncertain systems </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

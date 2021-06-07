@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-4178.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jacques.massoni">
+         <c:FamilyName>Massoni</c:FamilyName>
+         <c:FirstName>Jacques</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/richard.saurel">
+         <c:FamilyName>Saurel</c:FamilyName>
+         <c:FirstName>Richard</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/boniface.nkonga">
+         <c:FamilyName>Nkonga</c:FamilyName>
+         <c:FirstName>Boniface</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/rémi.abgrall">
+         <c:FamilyName>Abgrall</c:FamilyName>
+         <c:FirstName>Rémi</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/smash.en.html">
+         <c:Designation>Smash</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>4-2001</c:CreationDate>
+   <c:Title>Propositions de méthodes et modèles eulériens pour les   problèmes à interfaces entre fluides compressibles en présence  de transfert de chaleur </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

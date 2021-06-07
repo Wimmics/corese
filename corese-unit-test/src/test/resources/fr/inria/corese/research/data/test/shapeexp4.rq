@@ -1,0 +1,11 @@
+prefix sh: <http://www.w3.org/ns/shacl#> .
+
+@public 
+function us:disjoint(node, exp) {
+    let ((path1 path2) = exp,
+        list1 = sh:pathfinder(path1, node),
+        list2 = sh:pathfinder(path2, node),
+        res =  mapany(xt:member, list1, xt:list(list2))) {
+            return (! res)
+    }
+}

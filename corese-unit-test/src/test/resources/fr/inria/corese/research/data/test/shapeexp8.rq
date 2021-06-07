@@ -1,0 +1,11 @@
+prefix sh: <http://www.w3.org/ns/shacl#> .
+
+@public 
+function us:test(subject, node, exp) {
+    let ((predicate) = exp,
+         select ?node ?predicate (aggregate(distinct ?object) as ?list) 
+         where { ?node ?predicate ?object }
+    ) {
+    return (list)
+    }
+}

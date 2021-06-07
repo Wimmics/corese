@@ -1,0 +1,42 @@
+@prefix sh:   <http://www.w3.org/ns/shacl#> .
+@prefix foaf: <http://xmlns.com/foaf/0.1/> .
+
+us:test1 a sh:NodeShape ;
+sh:targetClass foaf:Person ;
+sh:property [
+    sh:path foaf:knows;
+    sh:minCount 1;
+    sh:class foaf:Person;
+    sh:message "Object of foaf:knows should be of type foaf:Person"
+]
+.
+
+
+us:test2 a sh:NodeShape ;
+sh:targetObjectsOf foaf:knows ;
+sh:property [
+    sh:path [ sh:inversePath foaf:knows ] ;
+    sh:class foaf:Person ;
+    sh:message "Subject of foaf:knows should be of type foaf:Person"
+]
+.
+
+us:test3 a sh:NodeShape ;
+sh:targetObjectsOf foaf:knowsss ;
+sh:property [
+    sh:path [ sh:inversePath foaf:knows ] ;
+    sh:class foaf:Person ;
+    sh:message "Subject of foaf:knows should be of type foaf:Person"
+]
+.
+
+us:John a foaf:Person ;
+foaf:knows us:James
+.
+
+us:James a foaf:Person ;
+foaf:knows us:John, us:Jim
+.
+
+
+us:Jesse foaf:knows us:James .

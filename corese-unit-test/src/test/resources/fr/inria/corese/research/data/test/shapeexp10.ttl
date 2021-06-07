@@ -1,0 +1,23 @@
+@prefix sh: <http://www.w3.org/ns/shacl#> .
+@prefix xsh: <http://www.w3.org/ns/shacl#> .
+@prefix h:  <http://www.inria.fr/2015/humans#>
+
+
+us:test1 a sh:NodeShape ;
+sh:targetClass h:Person ;
+
+sh:property [
+    sh:path h:hasFather ;
+    sh:qualifiedValueShape [
+        sh:class h:Male
+    ] ;
+    sh:qualifiedMinCount 1
+] ;
+sh:property [
+    sh:path h:hasMother ;
+    sh:qualifiedValueShape [
+        sh:class h:Female
+    ] ;
+    sh:qualifiedMinCount 1
+] 
+.

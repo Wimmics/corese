@@ -387,15 +387,15 @@ public class MainFrame extends JFrame implements ActionListener {
         getConteneurOnglets().setSelectedIndex(0);
     }
 
-    void execPlus() {
-        execPlus("", defaultQuery);
+    public MyJPanelQuery execPlus() {
+        return execPlus("", defaultQuery);
     }
 
-    void execPlus(String name, String str) {
+    MyJPanelQuery execPlus(String name, String str) {
         // s : texte par défaut dans la requête
         textQuery = str;
         //Crée un nouvel onglet Query
-        newQuery(str, name);
+        return newQuery(str, name);
     }
 
     void setStyleSheet() {

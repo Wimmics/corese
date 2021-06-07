@@ -33,6 +33,7 @@ import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.compiler.parser.Pragma;
+import fr.inria.corese.compiler.result.XMLResult;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -40,12 +41,15 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.XMLFormat;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.URLParam;
+import java.io.IOException;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 
@@ -53,6 +57,7 @@ import org.apache.logging.log4j.Level;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
+import javax.xml.parsers.ParserConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.graphstream.graph.Edge;
@@ -62,6 +67,7 @@ import org.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
 import org.graphstream.ui.layout.springbox.implementations.LinLog;
 import org.graphstream.ui.swingViewer.View;
 import org.graphstream.ui.swingViewer.Viewer;
+import org.xml.sax.SAXException;
 
 /**
  * Onglet Query avec tout ce qu'il contient.
@@ -615,7 +621,6 @@ public final class MyJPanelQuery extends JPanel {
         ASTQuery ast = (ASTQuery) q.getAST();
         boolean oneValue = !map.getQuery().isListGroup();
         getTextAreaXMLResult().setText(toString(map));
-        linkedResult(map);
 
         // On affiche la version en arbre du résultat dans l'onglet Tree
         // crée un arbre de racine "root"
@@ -644,13 +649,30 @@ public final class MyJPanelQuery extends JPanel {
         else if (map.getQuery().isTemplate() && map.getQuery().isPragma(KGGRAPH)) {
             display(map, ast.getNSM());
         }
+        
+        linkedResult(map);
     }
     
     void linkedResult(Mappings map) {
         for (String url : map.getLinkList()) {
             Service serv = new Service();
-            mainFrame.appendMsg(serv.getString(url));
+            String text = serv.getString(url);
+            mainFrame.appendMsg(text);
             mainFrame.appendMsg(NL);
+            process(url, text);
+        }
+    }
+    
+    void process(String url, String text) {
+        if (url.contains(URLParam.INPUT)) {
+            SPARQLResult parser =  SPARQLResult.create();
+            try {
+                Mappings map = parser.parseString(text);
+                MyJPanelQuery panel = mainFrame.execPlus();
+                panel.display(map, mainFrame);
+            } catch (ParserConfigurationException | SAXException | IOException ex) {
+                logger.error(ex.getMessage());
+            }
         }
     }
 

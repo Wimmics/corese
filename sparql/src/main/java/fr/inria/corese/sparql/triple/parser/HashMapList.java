@@ -28,4 +28,11 @@ public class HashMapList<T> extends HashMap<String, List<T>> {
         List<T> list = getCreate(key);
         list.set(0, val);
     }
+    
+    public void add(String key, T val) {
+        List<T> list = getCreate(key);
+        if (!list.contains(val)) {
+            list.add(val);
+        }
+    }
 }

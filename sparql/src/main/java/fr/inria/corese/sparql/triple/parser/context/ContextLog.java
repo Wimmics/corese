@@ -2,9 +2,6 @@ package fr.inria.corese.sparql.triple.parser.context;
 
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
-import static fr.inria.corese.sparql.datatype.DatatypeMap.createObject;
-import static fr.inria.corese.sparql.datatype.DatatypeMap.newInstance;
-import static fr.inria.corese.sparql.datatype.DatatypeMap.newResource;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.cst.LogKey;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -20,6 +17,7 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2021
  */
 public class ContextLog implements URLParam, LogKey {
+    static final int nbshow=10;
 
     // log service exception list
     private List<EngineException> exceptionList;
@@ -34,6 +32,7 @@ public class ContextLog implements URLParam, LogKey {
     // federated visitor endpoint selector Mappings
     private ASTQuery astSelect;
     private StringBuilder trace; 
+    private URLServer lastInput;
 
     public ContextLog() {
         init();
@@ -151,8 +150,9 @@ public class ContextLog implements URLParam, LogKey {
 
     void addURLInput(URLServer url, Mappings map) {
         incr(url.getLogURLNumber(), INPUT_CARD, mapSize(map));
-        if (url.hasAnyParameter(NBINPUT, DETAIL) && map != null && !map.isEmpty()) {
-            map.setDisplay(url.intValue(NBINPUT, 5));
+        if (map != null && !map.isEmpty()) {
+            setLastInput(url);
+            map.setDisplay(url.intValue(NBINPUT, nbshow));
             set(url.getLogURLNumber(), LogKey.INPUT, map);
         }
     }
@@ -160,10 +160,10 @@ public class ContextLog implements URLParam, LogKey {
     void addURLOutput(URLServer url, Mappings map) {
         incr(url.getLogURLNumber(), OUTPUT_CARD, mapSize(map));
 
-        if (url.hasAnyParameter(NBRESULT, DETAIL) && map!=null && !map.isEmpty()) {
+        if (map!=null && !map.isEmpty()) {
             if (!url.hasParameter(URLParam.RESULT) || url.getLogURLNumber().contains(url.getParameter(URLParam.RESULT))) {
                 // we may filter the endpoint for which we ask results  
-                map.setDisplay(url.intValue(NBRESULT, 5));
+                map.setDisplay(url.intValue(NBRESULT, nbshow));
                 set(url.getLogURLNumber(), LogKey.RESULT, map);
             }
         }
@@ -256,5 +256,24 @@ public class ContextLog implements URLParam, LogKey {
 
     public void setTrace(StringBuilder trace) {
         this.trace = trace;
+    }
+    
+    public Mappings getLastInputMappings() {
+        URLServer last = getLastInput();
+        if (last != null) {
+            IDatatype dt = getSubjectMap().get(last.getLogURLNumber(), LogKey.INPUT);
+            if (dt != null) {
+                return dt.getPointerObject().getMappings();
+            }
+        }
+        return null;
+    }
+
+    public URLServer getLastInput() {
+        return lastInput;
+    }
+
+    public void setLastInput(URLServer lastInput) {
+        this.lastInput = lastInput;
     }
 }

@@ -114,6 +114,9 @@ public class URLServer implements URLParam {
      * var not in skip AND/OR var in focus
      */
     public boolean accept(String var) {
+        if (var.startsWith("?")) {
+            var = var.substring(1);
+        }
         List<String> focus = getParameterList(FOCUS);
         List<String> skip  = getParameterList(SKIP);
         if (skip != null && skip.contains(var)) {
@@ -198,15 +201,21 @@ public class URLServer implements URLParam {
     HashMapList hashmap(String param) {
         HashMapList<String> map = new HashMapList();
         String[] params = param.split("&");
+        
         for (String str : params) {
             //System.out.println("URL param: " + str);
             String[] keyval = str.split("=");
+            
             if (keyval.length>=2)   {
                 String key = keyval[0];
                 String val = keyval[1];
-                List<String> list = map.getCreate(key);               
-                if (! list.contains(val)) {
-                    list.add(val);
+                if (val.contains(";")) {
+                    for (String aval : val.split(";")) {
+                        map.add(key, aval);
+                    }
+                }
+                else {
+                    map.add(key, val);
                 }
             }
         }

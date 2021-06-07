@@ -73,6 +73,8 @@ public interface URLParam {
     static final String PREFIX = "prefix";
     static final String TO_SPIN = "spin";
     static final String EXPLAIN = "explain";
+    static final String WHY = "why";
+    static final String INPUT = "input";
 
     // values of binding=
     static final String VALUES = "values";

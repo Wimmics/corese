@@ -54,10 +54,13 @@ import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.shex.shacl.Shex;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.Access;
@@ -68,6 +71,7 @@ import java.io.InputStreamReader;
 import java.nio.charset.Charset;
 import java.util.Date;
 import java.util.HashMap;
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
@@ -75,6 +79,7 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.core.LoggerContext;
 import org.apache.logging.log4j.core.config.Configuration;
 import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.xml.sax.SAXException;
 
 /**
  * Fenêtre principale, avec le conteneur d'onglets et le menu
@@ -87,7 +92,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.2 - Wimmics INRIA I3S - 2021-05-01";
+    private static final String TITLE = "Corese 4.2 - Wimmics INRIA I3S - 2021-06-06";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -105,6 +110,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem loadSHACL, loadShex;
     private JMenuItem loadSHACLShape;
     private JMenuItem loadQuery;
+    private JMenuItem loadResult;
     private JMenuItem execWorkflow, loadWorkflow, loadRunWorkflow;
     private JMenuItem loadRule;
     private JMenuItem loadStyle;
@@ -391,7 +397,7 @@ public class MainFrame extends JFrame implements ActionListener {
         return execPlus("", defaultQuery);
     }
 
-    MyJPanelQuery execPlus(String name, String str) {
+    public MyJPanelQuery execPlus(String name, String str) {
         // s : texte par défaut dans la requête
         textQuery = str;
         //Crée un nouvel onglet Query
@@ -425,6 +431,12 @@ public class MainFrame extends JFrame implements ActionListener {
             LOGGER.fatal("Output capture problem:", innerException);
         }
     }
+    
+    public MainFrame msg(String msg) {
+        appendMsg(msg);
+        return this;
+    }
+
 
     /**
      * Crée un onglet Query *
@@ -500,6 +512,8 @@ public class MainFrame extends JFrame implements ActionListener {
         
         loadQuery = new JMenuItem("Query");
         loadQuery.addActionListener(this);
+        loadResult = new JMenuItem("Result");
+        loadResult.addActionListener(this);
         
         loadShex = new JMenuItem("Shex");
         loadShex.addActionListener(this);
@@ -675,7 +689,7 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu aboutMenu = new JMenu("?");
         
         JMenu fileMenuLoad = new JMenu("Load");
-        JMenu fileMenuSaveGraph = new JMenu("Savge graph");
+        JMenu fileMenuSaveGraph = new JMenu("Save Graph");
 
         //On ajoute tout au menu
         fileMenu.add(fileMenuLoad);
@@ -685,6 +699,7 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenuLoad.add(loadSHACL);
         fileMenuLoad.add(loadSHACLShape);
         fileMenuLoad.add(loadQuery);
+        fileMenuLoad.add(loadResult);
         fileMenuLoad.add(loadShex);
         fileMenuLoad.add(loadWorkflow);
         fileMenuLoad.add(loadRunWorkflow);
@@ -1064,7 +1079,10 @@ public class MainFrame extends JFrame implements ActionListener {
     //Actions du menu
     @Override
     public void actionPerformed(ActionEvent e) {
-        if (e.getSource() == loadQuery) {
+        if (e.getSource() == loadResult) {
+            loadResult();
+        }
+        else if (e.getSource() == loadQuery) {
             loadQuery();
         } else if (e.getSource() == loadRule) {
             loadRule();
@@ -1318,7 +1336,9 @@ public class MainFrame extends JFrame implements ActionListener {
         // Si l’utilisateur clique sur le bouton enregistrer
         if (resultatEnregistrer == JFileChooser.APPROVE_OPTION) {
             // Récupérer le nom du fichier qu’il a spécifié
-            String myFile = filechoose.getSelectedFile().toString();
+            File f = filechoose.getSelectedFile();
+            String myFile = f.toString();
+            lCurrentPath = f.getParent();
             try {
                 write(str, myFile);
             } catch (IOException ex) {
@@ -1736,6 +1756,22 @@ public class MainFrame extends JFrame implements ActionListener {
         newQuery(textQuery, getFileName());
     }
     
+    void loadResult()  {
+        try {
+            loadResultWE();
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            LOGGER.error(ex.getMessage());
+        }
+    }
+    
+    void loadResultWE() throws ParserConfigurationException, SAXException, IOException {
+        String path = selectPath("Load Query Result", ".xml");
+        SPARQLResult parser = SPARQLResult.create();
+        Mappings map = parser.parse(path);
+        MyJPanelQuery panel = execPlus(path, "");
+        panel.display(map, this);
+    }
+    
     void defQuery(String text, String name, boolean run){
         textQuery = text;
         MyJPanelQuery panel = newQuery(textQuery, name);
@@ -1836,6 +1872,17 @@ public class MainFrame extends JFrame implements ActionListener {
             init();
         } catch (EngineException ex) {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+        }
+        
+        if (cmd.getQuery() !=null) {
+            QueryLoad ql = QueryLoad.create();
+            String query;
+            try {
+                query = ql.readWE(cmd.getQuery());
+                defQuery(query, cmd.getQuery(), false);
+            } catch (LoadException ex) {
+                LOGGER.error(ex.getMessage());
+            }
         }
     }
     

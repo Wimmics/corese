@@ -33,7 +33,6 @@ import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.compiler.parser.Pragma;
-import fr.inria.corese.compiler.result.XMLResult;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -41,15 +40,11 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.load.SPARQLResult;
-import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.XMLFormat;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.parser.URLParam;
-import java.io.IOException;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 
@@ -57,7 +52,6 @@ import org.apache.logging.log4j.Level;
 import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
-import javax.xml.parsers.ParserConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.graphstream.graph.Edge;
@@ -67,7 +61,6 @@ import org.graphstream.ui.graphicGraph.stylesheet.StyleSheet;
 import org.graphstream.ui.layout.springbox.implementations.LinLog;
 import org.graphstream.ui.swingViewer.View;
 import org.graphstream.ui.swingViewer.Viewer;
-import org.xml.sax.SAXException;
 
 /**
  * Onglet Query avec tout ce qu'il contient.
@@ -123,6 +116,7 @@ public final class MyJPanelQuery extends JPanel {
     private static final String KGSTYLE = ExpType.KGRAM + "style";
     private static final String KGGRAPH = Pragma.GRAPH;
     private static final Logger logger = LogManager.getLogger(MyJPanelQuery.class.getName());
+    private boolean displayLink = true;
 
     public MyJPanelQuery() {
         super();
@@ -526,6 +520,10 @@ public final class MyJPanelQuery extends JPanel {
     }
 
     void fillTable(Mappings map) {
+        fillTable(map, -1);
+    }
+    
+    void fillTable(Mappings map, int sort) {
         Query q = map.getQuery();
         List<fr.inria.corese.kgram.api.core.Node> vars = q.getSelect();
         if (q.isUpdate() && map.size() > 0){            
@@ -559,6 +557,10 @@ public final class MyJPanelQuery extends JPanel {
                 }
             }
             model.addColumn(columnName, colmunData);
+        }
+        
+        if (sort>=0) {
+            sort(model, sort);
         }
         
         this.tableResults.setModel(model);
@@ -611,7 +613,12 @@ public final class MyJPanelQuery extends JPanel {
         return getTextAreaXMLResult().getText();
     }
 
-    void display(Mappings map, MainFrame coreseFrame) {
+    public void display(Mappings map, MainFrame coreseFrame) {
+        display(map, coreseFrame, -1);
+    }
+    
+    
+    void display(Mappings map, MainFrame coreseFrame, int sort) {
         if (map == null) {
             // go to XML for error message
             tabbedPaneResults.setSelectedIndex(XML_PANEL);
@@ -639,7 +646,7 @@ public final class MyJPanelQuery extends JPanel {
         if (q.isTemplate() || ast.isAsk() || ast.getErrors() != null){
             tabbedPaneResults.setSelectedIndex(XML_PANEL);
         } else{
-            this.fillTable(map);
+            this.fillTable(map, sort);
             tabbedPaneResults.setSelectedIndex(TABLE_PANEL);
         }
 
@@ -650,31 +657,12 @@ public final class MyJPanelQuery extends JPanel {
             display(map, ast.getNSM());
         }
         
-        linkedResult(map);
-    }
-    
-    void linkedResult(Mappings map) {
-        for (String url : map.getLinkList()) {
-            Service serv = new Service();
-            String text = serv.getString(url);
-            mainFrame.appendMsg(text);
-            mainFrame.appendMsg(NL);
-            process(url, text);
+        if (isDisplayLink()) {
+            new LinkedResult(mainFrame).process(map);
         }
     }
     
-    void process(String url, String text) {
-        if (url.contains(URLParam.INPUT)) {
-            SPARQLResult parser =  SPARQLResult.create();
-            try {
-                Mappings map = parser.parseString(text);
-                MyJPanelQuery panel = mainFrame.execPlus();
-                panel.display(map, mainFrame);
-            } catch (ParserConfigurationException | SAXException | IOException ex) {
-                logger.error(ex.getMessage());
-            }
-        }
-    }
+    
 
     /**
      * template return turtle graph description display as graph
@@ -949,5 +937,13 @@ public final class MyJPanelQuery extends JPanel {
 
     public JTextArea getTextAreaLines() {
         return sparqlQueryEditor.getTextAreaLines();
+    }
+
+    public boolean isDisplayLink() {
+        return displayLink;
+    }
+
+    public void setDisplayLink(boolean displayLink) {
+        this.displayLink = displayLink;
     }
 }

@@ -23,8 +23,10 @@ public class Command extends HashMap<String, String> {
     public static final String ACCESS           = "-access";
     public static final String PARAM            = "-param";
     public static final String LOAD             = "-load";
+    public static final String LOAD_QUERY       = "-query";
         
     String[] args;
+    private String query;
     
     Command (String[] args) {
         this.args = args;
@@ -69,6 +71,10 @@ public class Command extends HashMap<String, String> {
                     put(LOAD, args[i++]);
                     break;
                     
+                case LOAD_QUERY:
+                    setQuery(args[i++]);
+                    break;
+                    
                  case RDF_STAR:
                     put(RDF_STAR, "true");
                     Graph.setEdgeMetadataDefault(true);
@@ -80,6 +86,14 @@ public class Command extends HashMap<String, String> {
             }
         }        
         return this;
+    }
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
     }
     
 

@@ -1451,6 +1451,43 @@ public class Mappings extends PointerObject
         return list;
     }
     
+    /**
+     * Analyse results of source selection query
+     * For each boolean variable, count number of true
+     */
+    public HashMap <String, Integer> countBooleanValue() {
+        HashMap <String, Integer> cmap = new HashMap<>();
+        
+        for (Node node : getSelect()) {
+            int count = 0;
+            boolean bool = true;
+            
+            for (Mapping m : this) {
+                Node val = m.getNode(node);
+                
+                if (val != null) {
+                    DatatypeValue value = val.getDatatypeValue();
+                    
+                    if (value.isBoolean() || value.isNumber()) {
+                        if (value.booleanValue()) {
+                            count++;
+                        }
+                    }
+                    else {
+                        bool = false;
+                        break;
+                    }
+                }
+            }
+            
+            if (bool) {
+                cmap.put(node.getLabel(), count);
+            }
+        }
+        
+        return cmap;
+    }
+    
     public Mappings limit(int n) {
         while (size()>n) {
             remove(size()-1);

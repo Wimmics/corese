@@ -148,19 +148,14 @@ public class ProviderImpl implements Provider, URLParam {
             ps.setDefault(getDefault());
             Mappings map = ps.send(serv, exp);
            
-            if (map != null) {
-                return map;
-            }
-
-            if (getDefault() == null) {
+            if (map == null) {
                 map = Mappings.create(q);
                 if (q.isSilent()) {
                     map.add(Mapping.create());
                 }
-                return map;
-            } else {
-                exec = getDefault();
             }
+
+            return map;
         }
 
         ASTQuery ast = exec.getAST(q);

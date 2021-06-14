@@ -75,9 +75,13 @@ public interface URLParam {
     static final String EXPLAIN = "explain";
     static final String WHY = "why";
     static final String INPUT = "input";
+    static final String OUTPUT = "output";
 
     // values of binding=
     static final String VALUES = "values";
     static final String FILTER = "filter";
+    
+    static final String REW = "rewrite";
+    static final String SEL = "select";
 
 }

@@ -17,6 +17,7 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2021
  */
 public class ContextLog implements URLParam, LogKey {
+
     static final int nbshow=10;
 
     // log service exception list
@@ -32,7 +33,6 @@ public class ContextLog implements URLParam, LogKey {
     // federated visitor endpoint selector Mappings
     private ASTQuery astSelect;
     private StringBuilder trace; 
-    private URLServer lastInput;
 
     public ContextLog() {
         init();
@@ -54,6 +54,18 @@ public class ContextLog implements URLParam, LogKey {
 
     public IDatatype get(String subject, String property) {
         return getSubjectMap().get(subject, property);
+    }
+    
+    public List<String> getStringList(String subject, String property) {
+        return getSubjectMap().getStringList(subject, property);
+    }
+    
+    public List<String> getStringList(String property) {
+        return getSubjectMap().getStringList(getSubject(), property);
+    }
+    
+    public IDatatype get(String property) {
+        return getSubjectMap().get(getSubject(), property);
     }
 
     public void set(String property, String value) {
@@ -87,6 +99,11 @@ public class ContextLog implements URLParam, LogKey {
     public void set(String subject, String property, Object value) {
         getSubjectMap().set(subject, property, value);
     }
+    
+    public boolean hasValue(String subject, String property) {
+        IDatatype dt = getSubjectMap().get(subject, property);
+        return dt != null;
+    }
 
     public void add(String property, String value) {
         getSubjectMap().add(getSubject(), property, value);
@@ -106,6 +123,9 @@ public class ContextLog implements URLParam, LogKey {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("Link List: %s\n", getLinkList().toString()));
         sb.append(getSubjectMap());
+        if (getASTSelect()!=null) {
+            sb.append(getASTSelect()).append(NL);
+        }
         return sb.toString();
     }
 
@@ -151,7 +171,6 @@ public class ContextLog implements URLParam, LogKey {
     void addURLInput(URLServer url, Mappings map) {
         incr(url.getLogURLNumber(), INPUT_CARD, mapSize(map));
         if (map != null && !map.isEmpty()) {
-            setLastInput(url);
             map.setDisplay(url.intValue(NBINPUT, nbshow));
             set(url.getLogURLNumber(), LogKey.INPUT, map);
         }
@@ -182,8 +201,13 @@ public class ContextLog implements URLParam, LogKey {
         set(serv.getLogURLNumber(), LogKey.TIME, time);
     }
     
+    /**
+     * Record first occurrence of service ast query
+     */
     public void traceAST(URLServer serv, ASTQuery ast) {
-        set(serv.getLogURLNumber(), LogKey.AST_SERVICE, ast);
+        if (! hasValue(serv.getLogURLNumber(), LogKey.AST_SERVICE)) {
+            set(serv.getLogURLNumber(), LogKey.AST_SERVICE, ast);
+        }
     }
     
     public void traceResult(URLServer serv, String result) {
@@ -259,9 +283,9 @@ public class ContextLog implements URLParam, LogKey {
     }
     
     public Mappings getLastInputMappings() {
-        URLServer last = getLastInput();
+        String last = getLast(ENDPOINT_CALL);
         if (last != null) {
-            IDatatype dt = getSubjectMap().get(last.getLogURLNumber(), LogKey.INPUT);
+            IDatatype dt = get(last, LogKey.INPUT);
             if (dt != null) {
                 return dt.getPointerObject().getMappings();
             }
@@ -269,11 +293,12 @@ public class ContextLog implements URLParam, LogKey {
         return null;
     }
 
-    public URLServer getLastInput() {
-        return lastInput;
-    }
+    public String getLast(String name) {
+        IDatatype list = get(name);
+        if (list == null || list.size() == 0) {
+            return null;
+        }
+        return list.get(list.size()-1).getLabel();
+    }   
 
-    public void setLastInput(URLServer lastInput) {
-        this.lastInput = lastInput;
-    }
 }

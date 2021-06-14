@@ -11,6 +11,7 @@ public interface LogKey {
     static final String EVALUATION_REPORT = "ns:EvaluationReport";
     static final String REPORT = "ns:ServiceReport";
     static final String ENDPOINT = "ns:endpoint";
+    static final String ENDPOINT_CALL = "ns:endpointCall";
     static final String QUERY = "ns:query";
     static final String AST = "ns:ast";
     static final String AST_SELECT = "ns:astSelect";
@@ -30,7 +31,8 @@ public interface LogKey {
     static final String TIME = "ns:time";
     static final String NBCALL = "ns:nbcall";
     static final String INPUT = "ns:input";
-    static final String RESULT = "ns:output";
+    static final String OUTPUT = "ns:output";
+    static final String RESULT = OUTPUT;
     static final String RESULT_TEXT = "ns:outputText";
     static final String RESULT_SELECT = "ns:outputSelect";
     static final String BNODE = "ns:bnode";

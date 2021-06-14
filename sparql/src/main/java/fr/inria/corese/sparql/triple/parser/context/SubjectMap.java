@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.parser.context;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import static fr.inria.corese.sparql.datatype.DatatypeMap.createObject;
 import static fr.inria.corese.sparql.datatype.DatatypeMap.newInstance;
 import static fr.inria.corese.sparql.datatype.DatatypeMap.newResource;
@@ -52,6 +53,14 @@ public class SubjectMap extends HashMap<String, PropertyMap> implements LogKey {
 
     public IDatatype get(String subject, String property) {
         return getPropertyMap(subject).get(property);
+    }
+    
+    public List<String> getStringList(String subject, String property) {
+        IDatatype dt = getPropertyMap(subject).get(property);
+        if (dt == null) {
+            return new ArrayList<>(0);
+        }
+        return DatatypeMap.toStringList(dt);
     }
 
     public void incr(String subject, String property, int value) {

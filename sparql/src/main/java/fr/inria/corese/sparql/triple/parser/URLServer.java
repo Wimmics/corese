@@ -29,6 +29,7 @@ public class URLServer implements URLParam {
     private Node node;
     private Graph graph;
     private int number = -1;
+    private boolean undefined = false;
     
     static {
         start();
@@ -462,6 +463,14 @@ public class URLServer implements URLParam {
      */
     public void setNumber(int number) {
         this.number = number;
+    }
+
+    public boolean isUndefined() {
+        return undefined;
+    }
+
+    public void setUndefined(boolean undefined) {
+        this.undefined = undefined;
     }
     
 }

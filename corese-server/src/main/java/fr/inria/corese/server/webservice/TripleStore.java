@@ -10,7 +10,6 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
-import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.shacl.Shacl;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.kgram.core.Query;
@@ -20,7 +19,6 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.URLParam;
-import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.util.Enumeration;
 import java.util.HashMap;
 import javax.servlet.http.Cookie;
@@ -209,15 +207,16 @@ public class TripleStore implements URLParam {
         Mappings map;
         try {
             before(exec, query, ds);
+            TripleStoreLog tsl = new TripleStoreLog(exec, ds.getContext());
             
             if (isFederate(ds)) {
                 // federate sparql query with @federate uri
                 if (isCompile(c)) {
                     Query qq = exec.compile(federate(query, ds), ds);
-                    map = logCompile(ds.getContext(), exec);
+                    map = tsl.logCompile();
                 } else {
                     map = exec.query(federate(query, ds), ds);
-                    log(exec, map, ds.getContext());
+                    tsl.log(map);
                 }
             } else if (isShacl(c)) {
                 map = shacl(query, ds);
@@ -229,10 +228,10 @@ public class TripleStore implements URLParam {
             }
             else {
                 map = exec.query(query, ds);
-                log(exec, map, ds.getContext());
+                tsl.log(map);
             }
             
-            logQuery(map, c);
+            tsl.logQuery(map);
             
             after(exec, query, ds);
         } catch (LoadException ex) {
@@ -241,55 +240,7 @@ public class TripleStore implements URLParam {
         return map;
     }
     
-    Mappings logCompile(Context ct, QueryProcess exec) {
-        ContextLog log = exec.getLog();
-        Mappings map     = log.getSelectMap();
-        ASTQuery select  = log.getASTSelect();
-        ASTQuery rewrite = log.getAST();
-        String uri1 = document(ct, select.toString(),  "select");
-        String uri2 = document(ct, rewrite.toString(), "rewrite");
-        map.addLink(uri1);
-        map.addLink(uri2);
-        return map;
-    }
-    
-    /**
-     * Generate RDF error report, write it in /log/
-     * generate an URL for report and set URL as Mappings link
-     */
-    void log(QueryProcess exec, Mappings map, Context ct) {
-        if (ct.hasValue(PROVENANCE) || ct.hasValue(LOG)) {
-            if (exec.getLog(map).isEmpty()) {
-               System.out.println("log is empty" );
-            }
-            else {
-                LogManager log = new LogManager(exec.getLog(map));
-                String uri = document(ct, log.toString(), "log", ".ttl");
-                map.addLink(uri);               
-                System.out.println("server report: " + uri);
-            }
-        }
-    }
-    
-    void logQuery(Mappings map, Context ct) {
-        if (ct.hasValue(LOG_QUERY)) {
-            String uri = document(ct, map.getQuery().getAST().toString(), "query");
-            map.addLink(uri);
-        }
-    }
-    
-    /**
-     * Save content as document in HTTP server, return URL for this document 
-     */
-    String document(Context ct, String str, String name) {
-        return document(ct, str, name, "");
-    }
-
-    String document(Context ct, String str, String name, String ext) {
-        LinkedResult lr = new LinkedResult(name, ext, ct.getCreateKey());
-        lr.write(str);
-        return lr.getURL();
-    }
+   
     
     void before(QueryProcess exec, String query, Dataset ds) throws LoadException, EngineException {
         if (isBefore(ds.getContext())) {
@@ -471,7 +422,8 @@ public class TripleStore implements URLParam {
             String name = enh.nextElement();
             System.out.println("header: " + name + ": " + request.getHeader(name));
         }
-        for (String name : request.getParameterMap().keySet()) {
+        for (Object obj : request.getParameterMap().keySet()) {
+            String name = obj.toString();
             System.out.println("param: " + name + "=" + request.getParameter(name));
         }
     }

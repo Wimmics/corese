@@ -2,6 +2,7 @@ package fr.inria.corese.server.webservice;
 
 import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.query.ProviderService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -10,7 +11,13 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.cst.LogKey;
+import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_AST;
+import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_URL;
+import static fr.inria.corese.sparql.triple.parser.Context.URL;
+import fr.inria.corese.sparql.triple.parser.context.LinkedResultLog;
 import java.util.List;
+import org.json.JSONObject;
+
 
 /**
  *
@@ -19,13 +26,15 @@ public class TripleStoreLog implements URLParam {
     
     private QueryProcess queryProcess;
     private Context context;
+    // Linked Result contain URLs of query/result, sent as json object
+    private LinkedResultLog json;
     
     TripleStoreLog (QueryProcess e, Context c) {
         setQueryProcess(e);
         setContext(c);
     }
     
-     Mappings logCompile() {
+    Mappings logCompile() {
         ContextLog log = getQueryProcess().getLog();
         Mappings map     = log.getSelectMap();
         ASTQuery select  = log.getASTSelect();
@@ -44,72 +53,182 @@ public class TripleStoreLog implements URLParam {
     void log(Mappings map) {
         if (getContext().hasAnyValue(PROVENANCE, LOG, WHY)) {
             ContextLog clog = getQueryProcess().getLog(map);
+            if (getContext().get(URL) != null) {
+                clog.set(SERVICE_URL, getContext().get(URL).getLabel());
+            }
+            clog.set(SERVICE_AST, getContext().get(QUERY).getLabel());
             LogManager log = new LogManager(clog);
             String uri = document(log.toString(), "log", ".ttl");
             map.addLink(uri);
             System.out.println("server report: " + uri);
             logWhy(map, clog);
         }
+        if (getContext().hasValue(MES)) {
+            messageContext(map);
+        }
+
     }
     
+    /**
+     * Log intermediate service and results for federated endpoint
+     * and mode=why
+     * Generate LinkedResult for service and result if any
+     */
     void logWhy(Mappings map, ContextLog log) {
         if (getContext().hasValue(WHY)) {
+            messageContext(map);
+            setJson(new LinkedResultLog());
             logSelect(map, log);
-            List<String> list = log.getStringList(LogKey.ENDPOINT_CALL);
-
-            int i = 0;
-            for (String name : list) {
-                IDatatype qdt = log.get(name, LogKey.AST_SERVICE);
-                IDatatype rdt = log.get(name, LogKey.OUTPUT);
-
-                if (qdt != null) {
-                    ASTQuery ast = (ASTQuery) qdt.getPointerObject();
-                    String query = ast.toString();
-                    if (rdt == null) {
-                        query = String.format("# @federate <%s>\n%s", name, query);
-                    }
-                    String url1 = document(query, QUERY.concat(Integer.toString(i)), "");
-                    map.addLink(url1);
-                }
-                
-                if (rdt == null) {
-                    // no result
-                }
-                else {
-                    Mappings mymap = rdt.getPointerObject().getMappings();
-                    // set endpoint URL as link in query results
-                    // use case: GUI federated debugger
-                    mymap.addLink(name);
-                    ResultFormat fm = ResultFormat.create(mymap);
-                    fm.setNbResult(mymap.getDisplay());
-                    String url2 = document(fm.toString(), OUTPUT.concat(Integer.toString(i)), "");
-                    map.addLink(url2);
-                }
-
-                i++;
-            }
+            logService(map, log);
+            messageExplain(map);
+            //messageContext(map);
         }
     }
     
+    /**
+     * Create json object with URLs of explain Linked Results
+     * Return json object as Linked Result to client
+     */
+    void messageExplain(Mappings map) {
+        String url = document(getJson().toString(), WHY, "");
+        map.addLink(url);
+    }
+    
+    /**
+     * JSON object with param=value sent back to client as Linked Result as "message"
+     * @Draft: return context as json object
+     * Use case: URL contain parameter to be interpreted by client GUI, e.g. mode=all
+     */
+    void messageContext(Mappings map) {
+        JSONObject json = getContext().json();
+        if (map.isEmpty()) {
+            // try to explain why the query fails
+            // add explanation json object into json message
+            JSONObject obj = new TripleStoreExplain(getQueryProcess(), getContext(), map).process();
+            if (! obj.isEmpty()) {
+                json.put(URLParam.EXPLAIN, obj);
+            }
+        }
+        String url = document(json.toString(), MES, "");
+        map.addLink(url);
+    }
+    
+    void addLink(Mappings map, String url) {
+        //map.addLink(url);
+    }
+    
+    
+    void logService(Mappings map, ContextLog log) {
+        // list of URL of service calls in order, with number
+        List<String> list = log.getStringList(LogKey.ENDPOINT_CALL);
+
+        int i = 0;
+        for (String name : list) {
+            IDatatype qdt = log.get(name, LogKey.AST_SERVICE);
+            IDatatype rdt = log.get(name, LogKey.OUTPUT);
+            String query = null, result = null;
+            
+            if (qdt != null) {
+                ASTQuery ast = (ASTQuery) qdt.getPointerObject();
+                query = ast.toString();
+                
+                if (rdt == null) {
+                    if (name.startsWith(ProviderService.UNDEFINED_SERVICE)
+                            && log.getString(SERVICE_URL) != null) {
+                        // replace undefined service by source service URL
+                        name = log.getString(SERVICE_URL);
+                    }
+                    query = String.format("# @federate <%s>\n%s", name, query);
+                }
+                
+            }
+
+            if (rdt == null) {
+                // no result
+            } else {
+                Mappings mymap = rdt.getPointerObject().getMappings();
+                // set endpoint URL as link in query results
+                // use case: GUI federated debugger
+                mymap.addLink(name);
+                ResultFormat fm = ResultFormat.create(mymap);
+                fm.setNbResult(mymap.getDisplay());
+                result = fm.toString();
+                
+            }
+
+            String url1 = document(query, QUERY.concat(Integer.toString(i)), "");
+            String url2 = null;
+            addLink(map, url1);
+            if (result != null) {
+                url2 = document(result, OUTPUT.concat(Integer.toString(i)), "");
+                addLink(map, url2);
+            }
+            
+            getJson().addLink(WORKFLOW, create(url1, url2));
+            
+            i++;
+        }
+    }
+    
+    JSONObject create(String query) {
+        return getJson().create(query);
+    }
+    
+    JSONObject create(String query, String result) {
+        return getJson().create(query, result);        
+    }
+    
+       
+    /**
+     * Log intermediate service and results for federated endpoint
+     * and mode=why
+     * Generate LinkedResult for source selection query and results
+     * and for query rewrite with service clause
+     */
     void logSelect(Mappings map, ContextLog log) {
+        String sourceQuery = log.getString(LogKey.SERVICE_AST);
+        
+        if (sourceQuery != null) {
+            String sourceURL = log.getString(LogKey.SERVICE_URL);
+            if (sourceURL!=null) {
+                // first link is source service URL
+                map.addLink(sourceURL);
+                sourceQuery = String.format("# <%s>\n%s", sourceURL, sourceQuery);
+            }
+            sourceQuery = String.format("# source query \n%s", sourceQuery);
+            String url = document(sourceQuery, QUERY.concat(SRC), "");
+            addLink(map, url);
+            getJson().setLink(SRC, create(url));
+        }
+        
         if (log.getASTSelect() != null) {
             String query = log.getASTSelect().toString();
             query = String.format("# source selection query \n%s", query);
-            String url1 = document(query, QUERY.concat(SEL), "");
-            map.addLink(url1);
-            
+            String result = null;
+                                   
             if (log.getSelectMap() != null) {
                 ResultFormat fm = ResultFormat.create(log.getSelectMap());
-                String url2 = document(fm.toString(), OUTPUT, "");
-                map.addLink(url2);
+                result = fm.toString();               
             }
+            
+            String url1 = document(query, QUERY.concat(SEL), "");
+            String url2 = null;
+            addLink(map, url1);
+            if (result != null) {
+                url2 = document(result, OUTPUT, "");
+                addLink(map, url2);
+            }
+            
+            getJson().setLink(SEL, create(url1, url2));
+
         }
         
         if (log.getAST() != null) {
             String query = log.getAST().toString();
             query = String.format("# federated query \n%s", query);
             String url = document(query, QUERY.concat(REW), "");
-            map.addLink(url);            
+            addLink(map, url); 
+            getJson().setLink(REW, create(url));
         }
     }
     
@@ -156,6 +275,14 @@ public class TripleStoreLog implements URLParam {
 
     public void setContext(Context context) {
         this.context = context;
+    }
+
+    public LinkedResultLog getJson() {
+        return json;
+    }
+
+    public void setJson(LinkedResultLog json) {
+        this.json = json;
     }
     
     

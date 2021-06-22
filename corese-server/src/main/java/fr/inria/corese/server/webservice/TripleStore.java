@@ -19,6 +19,7 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.URLParam;
+import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
 import javax.servlet.http.Cookie;
@@ -207,7 +208,9 @@ public class TripleStore implements URLParam {
         Mappings map;
         try {
             before(exec, query, ds);
-            TripleStoreLog tsl = new TripleStoreLog(exec, ds.getContext());
+            TripleStoreLog tsl = new TripleStoreLog(exec, c);
+            
+            Date d1 = new Date();
             
             if (isFederate(ds)) {
                 // federate sparql query with @federate uri
@@ -216,7 +219,7 @@ public class TripleStore implements URLParam {
                     map = tsl.logCompile();
                 } else {
                     map = exec.query(federate(query, ds), ds);
-                    tsl.log(map);
+                    //tsl.log(map);
                 }
             } else if (isShacl(c)) {
                 map = shacl(query, ds);
@@ -228,9 +231,17 @@ public class TripleStore implements URLParam {
             }
             else {
                 map = exec.query(query, ds);
-                tsl.log(map);
+                //tsl.log(map);
             }
             
+            // add param=value parameter to Context
+            // Context is sent back to client as JSON message Linked Result
+            // when mode=message
+            Date d2 = new Date();
+            double time = (d2.getTime() - d1.getTime()) /1000.0;
+            c.set(URLParam.TIME, DatatypeMap.newInstance(time));
+            
+            tsl.log(map);
             tsl.logQuery(map);
             
             after(exec, query, ds);
@@ -254,6 +265,7 @@ public class TripleStore implements URLParam {
         if (ds.getContext().hasValue(EXPLAIN)) {
             exec.setDebug(true);
         }
+        ds.getContext().set(QUERY, query);
     }
     
     void after(QueryProcess exec, String query, Dataset ds) throws LoadException, EngineException {

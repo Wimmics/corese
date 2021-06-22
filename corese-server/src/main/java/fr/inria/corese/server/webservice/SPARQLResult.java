@@ -34,7 +34,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
     private static final String headerAccept = "Access-Control-Allow-Origin";
     private static final String ERROR_ENDPOINT = "Error while querying Corese SPARQL endpoint";
     private static final String OPER = "operation";    
-    private static final String URL = "url";   
+    private static final String URL = Context.URL;   
     static final int ERROR = 500;
     private static SPARQLResult singleton;
     

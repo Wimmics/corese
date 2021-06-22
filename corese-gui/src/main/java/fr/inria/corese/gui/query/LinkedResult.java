@@ -5,27 +5,22 @@ import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.query.ProviderService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.gui.core.MainFrame;
-import fr.inria.corese.kgram.api.core.DatatypeValue;
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.Bind;
 import fr.inria.corese.sparql.triple.parser.Binding;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
-import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.List;
-import java.util.logging.Level;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
+import org.json.JSONArray;
+import org.json.JSONObject;
 import org.xml.sax.SAXException;
 
 /**
@@ -34,13 +29,15 @@ import org.xml.sax.SAXException;
  * Display query in new query panel and display results below
  * use case: federated service with URL parameter mode=why
  */
-public class LinkedResult {
+public class LinkedResult implements URLParam {
     private static final Logger logger = LogManager.getLogger(LinkedResult.class.getName());
     static final String NL = System.getProperty("line.separator");
     
     MainFrame frame;
     private Mappings sourceSelectionMappings;
     private ASTQuery sourceSelectionAST;
+    private String serviceURL;
+    private boolean displayAll = false;
     
     
     LinkedResult(MainFrame f) {
@@ -51,61 +48,126 @@ public class LinkedResult {
         linkedResult(map);
         analyseSelection();
     }
-
-    
-    
+  
     
     /**
-     * When Mappings contains link
-     * Consider link of federated query and result
-     * Parse result
-     * Display query and result in additional query panel
+     * When Mappings contains explain link
+     * Parse intermediate query/result
+     * Display query/result in additional query panel
      */
     void linkedResult(Mappings map) {
-        List<String> list = map.getLinkList();
-
-        for (int i = 0; i < list.size(); i++) {
-            String url = list.get(i);
+        String mes = map.getLink(MES);
+        if (mes != null) {
+            // url with message is a json message to be processed
+            // actually it is the context, hence it contains URL parameters
+            // we can tune result processing
+            processMessage(mes);
+        }
+        
+        String url = map.getLink(WHY);
+        if (url != null) {
+            // url of a json document that contains url of query/result documents
+            String text = new Service().getString(url);
+            JSONObject json = new JSONObject(text);
+            System.out.println("LR explain why");
+            display(json);
+            linkedResult(json);
+        }
+        
+        String log = getURL("log/log");
+        if (log != null) {
+            String g = new Service().getString(log);
+            frame.msg(url).msg(NL);
+            frame.msg(g).msg(NL);
+        }
+    }
+    
+    void linkedResult(JSONObject json) {
+        // original query
+        process(json, SRC, true);
+        // source selection query
+        process(json, SEL, true);
+        // rewritten federated query
+        process(json, REW, true);
+        
+        if (json.has(WORKFLOW)) {
+            JSONArray arr = json.getJSONArray(WORKFLOW);
             
-            if (url.contains(URLParam.LOG)) {
-                String text = new Service().getString(url);
-
-                if (url.contains(URLParam.QUERY)) {
-                    
-                    if (i + 1 < list.size()) {
-                        String next = list.get(i + 1);
-
-                        if (next.contains(URLParam.OUTPUT)) {
-                            Mappings amap = getMappings(next);
-                            
-                            if (amap != null) {
-                                analyse(url, text, amap);
-                                display(url, prepare(url, text, amap), amap);
-                            }
-                                                       
-                            i++;
-                        } else if (url.contains(URLParam.REW)) {
-                            // federated query, result of rewrite query by FederateVisitor
-                            display(url, text);
-                        }
-                    }
-                    else {                      
-                        // query starts with # @federate <qurl>
-                        String uri = getURL(text);
-                        if (uri != null) {
-                            display(url, rewriteQuery(url, uri, text));
-                        }
-                    }
-                } else {
-                    // log document
-                    frame.msg(url).msg(NL);
-                    frame.msg(text).msg(NL);
-                }
+            for (int i = 0; i<arr.length(); i++) {
+                // list of intermediate query/result
+                JSONObject obj = arr.getJSONObject(i);
+                boolean display = isDisplayAll() || (i+1==arr.length());
+                processElement(obj, WORKFLOW, display);
             }
         }
     }
     
+    void process(JSONObject json, String name, boolean display) {
+        if (json.has(name)) {
+            processElement(json.getJSONObject(name), name, display);
+        }
+    }
+        
+    // json: query=url;result=url            
+    void processElement(JSONObject json, String name, boolean display) {
+        String url = json.getString(QUERY);
+        String query = new Service().getString(url);
+        
+        if (json.has(RESULT)) {
+            String next = json.getString(RESULT);
+            Mappings map = getMappings(next);
+            if (map != null) {
+                analyse(name, query, map);
+                display(url, prepare(url, query, map), map);
+            }
+        }  
+        else if (display) { 
+            display(url, query);
+        }
+    }
+         
+    void processMessage(String url) {
+        String text = new Service().getString(url);
+        message(url, new JSONObject(text));
+    }
     
+    void display(JSONObject json) {
+        for (String key : json.keySet()) {
+            System.out.println(key + " = " + json.get(key));
+        }
+    }
+    
+    /**
+     * json is a JSON representation of server Context
+     * it contains URL parameters such as mode
+     */
+    void message(String url, JSONObject json) {
+        //System.out.println("LR:");
+        
+        //display(json);
+
+        if (json.has(URLParam.MODE)) {
+            JSONArray arr = json.getJSONArray(URLParam.MODE);
+            if (arr != null) {
+                mode(arr);
+            }
+        }
+    }
+    
+    /**
+     * mode=all display all query even if no result
+     */
+    void mode(JSONArray arr) {
+        for (Object mode : arr) {
+            if (mode.equals(URLParam.ALL)) {
+                setDisplayAll(true);
+            }
+        }
+    }
+    
+    /**
+     * Store source selection query/result
+     */
     void analyse(String url, String query, Mappings map) {
         if (url.contains(URLParam.SEL)) {
             QueryProcess exec = QueryProcess.create();
@@ -119,7 +181,7 @@ public class LinkedResult {
     }
     
     /**
-     * Analyse source selection Mappings
+     * Analyse source selection query result
      */
     void analyseSelection() {
         if (getSourceSelectionAST() == null || getSourceSelectionMappings() == null) {
@@ -193,7 +255,7 @@ public class LinkedResult {
         if (query.startsWith("#")) {
             // query starts with: # @federate <url>
             String url = query.substring(1 + query.indexOf("<"), query.indexOf(">"));
-            url = clean(url);
+            //url = clean(url);
             return url;
         }
         return null;
@@ -263,6 +325,62 @@ public class LinkedResult {
         as.setSelectAll(true);
         return as;
     }
+    
+//   void complete(String url, String text) {
+//        if (url.contains(URLParam.MES)) {
+//            message(url, new JSONObject(text));
+//        }
+//    }
+        
+    //    void linkedResult2(Mappings map) {
+//        List<String> list = map.getLinkList();
+//        for (int i = 0; i < list.size(); i++) {
+//            String url = list.get(i);
+//            
+//            if (url.contains(URLParam.LOG)) {
+//                String text = new Service().getString(url);
+//
+//                if (url.contains(URLParam.QUERY)) {
+//                    
+//                    if (i + 1 < list.size()) {
+//                        String next = list.get(i + 1);
+//
+//                        if (next.contains(URLParam.OUTPUT)) {
+//                            Mappings amap = getMappings(next);
+//                            
+//                            if (amap != null) {
+//                                analyse(url, text, amap);
+//                                display(url, prepare(url, text, amap), amap);
+//                            }
+//                                                       
+//                            i++;
+//                        } else if (isDisplayAll() || url.contains(URLParam.REW) || url.contains(SRC)) {
+//                            // federated query, result of rewrite query by FederateVisitor
+//                            display(url, text);
+//                        }
+//                    }
+//                    else {                      
+//                        // query starts with # @federate <qurl>
+//                        String uri = getURL(text);
+//                        if (uri != null) {
+//                            display(url, rewriteQuery(url, uri, text));
+//                        }
+//                    }
+//                } else {
+//                    // log document
+//                    frame.msg(url).msg(NL);
+//                    frame.msg(text).msg(NL);
+//                    complete(url, text);                   
+//                }
+//            }
+//            else {
+//                if (getServiceURL() == null) {
+//                    setServiceURL(url);
+//                }
+//            }
+//        }
+//    }
+    
 
     public Mappings getSourceSelectionMappings() {
         return sourceSelectionMappings;
@@ -278,6 +396,22 @@ public class LinkedResult {
 
     public void setSourceSelectionAST(ASTQuery sourceSelectionAST) {
         this.sourceSelectionAST = sourceSelectionAST;
+    }
+
+    public String getServiceURL() {
+        return serviceURL;
+    }
+
+    public void setServiceURL(String serviceURL) {
+        this.serviceURL = serviceURL;
+    }
+
+    public boolean isDisplayAll() {
+        return displayAll;
+    }
+
+    public void setDisplayAll(boolean displayAll) {
+        this.displayAll = displayAll;
     }
          
 

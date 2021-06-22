@@ -32,7 +32,7 @@ public class SaveButton extends Button {
 
                 String shaclEditorContent = SaveButton.this.editor.getContent();
 
-                JFileChooser fileChooser = new JFileChooser(SaveButton.this.mainFrame.getLCurrentPath());
+                JFileChooser fileChooser = new JFileChooser(SaveButton.this.mainFrame.getPath());
                 int resultatEnregistrer = fileChooser.showDialog(fileChooser, "Save");
 
                 // If user clicks on save button
@@ -40,7 +40,7 @@ public class SaveButton extends Button {
                     File selectedFile = fileChooser.getSelectedFile();
 
                     // save current path
-                    SaveButton.this.mainFrame.setLCurrentPath(selectedFile.getParent());
+                    SaveButton.this.mainFrame.setPath(selectedFile.getParent());
 
                     String pathSelectFile = selectedFile.toString();
                     // Write file

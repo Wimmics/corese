@@ -47,7 +47,7 @@ public class OpenButton extends Button {
             @Override
             public void actionPerformed(ActionEvent e) {
 
-                JFileChooser fileChooser = new JFileChooser(OpenButton.this.mainFrame.getLCurrentPath());
+                JFileChooser fileChooser = new JFileChooser(OpenButton.this.mainFrame.getPath());
                 fileChooser.setDialogTitle(OpenButton.this.dialogTitle);
 
                 if (OpenButton.this.hasFilter) {
@@ -63,7 +63,7 @@ public class OpenButton extends Button {
                     File selectedFile = fileChooser.getSelectedFile();
 
                     // save current path
-                    OpenButton.this.mainFrame.setLCurrentPath(selectedFile.getParent());
+                    OpenButton.this.mainFrame.setPath(selectedFile.getParent());
 
                     String pathSelectFile = selectedFile.toString();
                     String content = null;

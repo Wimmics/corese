@@ -92,11 +92,11 @@ public class MainFrame extends JFrame implements ActionListener {
     private static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.2 - Wimmics INRIA I3S - 2021-06-06";
+    private static final String TITLE = "Corese 4.2 - Wimmics INRIA I3S - 2021-06-21";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
-    private ArrayList<Integer> nbreTab = new ArrayList<Integer>();
+    private ArrayList<Integer> nbreTab = new ArrayList<>();
     private String lCurrentPath = "user/home";
     private String lCurrentRule = "user/home";
 
@@ -293,7 +293,7 @@ public class MainFrame extends JFrame implements ActionListener {
         this.getContentPane().add(conteneurOnglets, BorderLayout.CENTER);
 
         //Création et ajout des deux onglets "Listener" et "+"
-        monTabOnglet = new ArrayList<MyJPanelQuery>();
+        monTabOnglet = new ArrayList<>();
         ongletListener = new MyJPanelListener(this);
         ongletShacl = new ShaclEditor(this);
         ongletTurtle = new TurtleEditor(this);
@@ -1005,14 +1005,14 @@ public class MainFrame extends JFrame implements ActionListener {
             @Override
             public void actionPerformed(ActionEvent l_Event) {
                 lPath = null;
-                JFileChooser fileChooser = new JFileChooser(lCurrentPath);
+                JFileChooser fileChooser = new JFileChooser(getPath());
                 fileChooser.setMultiSelectionEnabled(true);
                 int returnValue = fileChooser.showOpenDialog(null);
                 if (returnValue == JFileChooser.APPROVE_OPTION) {
                     File l_Files[] = fileChooser.getSelectedFiles();
                     for (File f : l_Files) {
                         lPath = f.getAbsolutePath();
-                        lCurrentPath = f.getParent();   //recupere le dossier parent du fichier que l'on charge
+                        setPath(f.getParent());   //recupere le dossier parent du fichier que l'on charge
                     }
                 }
             }
@@ -1243,7 +1243,7 @@ public class MainFrame extends JFrame implements ActionListener {
     
     void loadRunRule() {
         String lPath = null;
-        JFileChooser fileChooser = new JFileChooser(lCurrentPath);
+        JFileChooser fileChooser = new JFileChooser(getPath());
         fileChooser.setMultiSelectionEnabled(true);
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
@@ -1252,7 +1252,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 lPath = f.getAbsolutePath();
                 if (lPath != null) {
                     try {
-                        lCurrentPath = f.getParent(); 
+                        setPath(f.getParent()); 
                         myCorese.load(lPath);
                         appendMsg("Loading file from path : " + f.getAbsolutePath() + "\n");
                         appendMsg(myCapturer.getContent() + "\ndone.\n\n");
@@ -1287,14 +1287,14 @@ public class MainFrame extends JFrame implements ActionListener {
     
     void saveQuery() {
         // Créer un JFileChooser
-        JFileChooser filechoose = new JFileChooser(lCurrentPath);
+        JFileChooser filechoose = new JFileChooser(getPath());
         // Le bouton pour valider l’enregistrement portera la mention enregistrer
         String approve = "Save";
         int resultatEnregistrer = filechoose.showDialog(filechoose, approve); // Pour afficher le JFileChooser…
         // Si l’utilisateur clique sur le bouton enregistrer
         if (resultatEnregistrer == JFileChooser.APPROVE_OPTION) {
             File file = filechoose.getSelectedFile();
-            lCurrentPath = file.getParent();
+            setPath(file.getParent());
             // Récupérer le nom du fichier qu’il a spécifié
             String myFile = file.toString();
 
@@ -1329,7 +1329,7 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     void save(String str) {
-        JFileChooser filechoose = new JFileChooser(lCurrentPath);
+        JFileChooser filechoose = new JFileChooser(getPath());
         // Le bouton pour valider l’enregistrement portera la mention enregistrer
         String approve = "Save";
         int resultatEnregistrer = filechoose.showDialog(filechoose, approve); // Pour afficher le JFileChooser…
@@ -1338,7 +1338,7 @@ public class MainFrame extends JFrame implements ActionListener {
             // Récupérer le nom du fichier qu’il a spécifié
             File f = filechoose.getSelectedFile();
             String myFile = f.toString();
-            lCurrentPath = f.getParent();
+            setPath(f.getParent());
             try {
                 write(str, myFile);
             } catch (IOException ex) {
@@ -1477,7 +1477,7 @@ public class MainFrame extends JFrame implements ActionListener {
     void load(boolean wf, boolean exec, boolean run, Filter... filter) {
         controler(LOAD);
         lPath = null;
-        JFileChooser fileChooser = new JFileChooser(lCurrentPath);
+        JFileChooser fileChooser = new JFileChooser(getPath());
         fileChooser.setMultiSelectionEnabled(true);
         for (Filter f : filter){
             fileChooser.addChoosableFileFilter(f);
@@ -1493,7 +1493,7 @@ public class MainFrame extends JFrame implements ActionListener {
                     continue;
                 }
 
-                lCurrentPath = f.getParent();
+                setPath(f.getParent());
 
                 if (!model.contains(lPath) && !wf) {
                     model.addElement(lPath);
@@ -1585,7 +1585,7 @@ public class MainFrame extends JFrame implements ActionListener {
     
     String selectPath(String title, String... ext) {
         lPath = null;
-        JFileChooser fileChooser = new JFileChooser(lCurrentPath);
+        JFileChooser fileChooser = new JFileChooser(getPath());
         
         if (ext != null && ext.length>0) {
             Filter filter = new Filter(title, ext);
@@ -1602,7 +1602,7 @@ public class MainFrame extends JFrame implements ActionListener {
             DefaultListModel model = getOngletListener().getModel();
             for (File f : l_Files) {
                 lPath = f.getAbsolutePath();
-                lCurrentPath = f.getParent();
+                setPath(f.getParent());
                 return lPath;
             }
         }
@@ -1616,7 +1616,7 @@ public class MainFrame extends JFrame implements ActionListener {
      */
     public void compile() {
         lPath = null;
-        JFileChooser fileChooser = new JFileChooser(lCurrentPath);
+        JFileChooser fileChooser = new JFileChooser(getPath());
         fileChooser.setMultiSelectionEnabled(true);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         int returnValue = fileChooser.showOpenDialog(null);
@@ -1626,7 +1626,7 @@ public class MainFrame extends JFrame implements ActionListener {
             DefaultListModel model = getOngletListener().getModel();
             for (File f : l_Files) {
                 lPath = f.getAbsolutePath();
-                lCurrentPath = f.getParent();
+                setPath(f.getParent());
                 if (lPath != null) {
                     appendMsg("Compile " + lPath + "\n");
                     compile(lPath);
@@ -1707,7 +1707,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
     public String loadText(String title, String... ext) {
         String str = "";
-        JFileChooser fileChooser = new JFileChooser(lCurrentPath);
+        JFileChooser fileChooser = new JFileChooser(getPath());
         
         if (ext != null && ext.length>0) {
             Filter filter = new Filter(title, ext);
@@ -1720,7 +1720,7 @@ public class MainFrame extends JFrame implements ActionListener {
             //Voici le fichier qu'on a selectionné
             selectedFile = fileChooser.getSelectedFile();
             setFileName(selectedFile.getName());
-            lCurrentPath = selectedFile.getParent();
+            setPath(selectedFile.getParent());
             FileInputStream fis = null;
             try {
                 fis = new FileInputStream(selectedFile);
@@ -1783,14 +1783,14 @@ public class MainFrame extends JFrame implements ActionListener {
     public void loadPipe() {
         //Load and run a pipeline
         Filter FilterRUL = new Filter("RDF", "rdf", "ttl");
-        JFileChooser fileChooser = new JFileChooser(lCurrentPath);
+        JFileChooser fileChooser = new JFileChooser(getPath());
         fileChooser.addChoosableFileFilter(FilterRUL);
         File selectedFile;
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             //Voici le fichier qu'on a selectionné
             selectedFile = fileChooser.getSelectedFile();
-            lCurrentPath = selectedFile.getParent();
+            setPath(selectedFile.getParent());
             myCorese.runPipeline(selectedFile.getAbsolutePath());
         }
     }
@@ -1879,6 +1879,8 @@ public class MainFrame extends JFrame implements ActionListener {
             String query;
             try {
                 query = ql.readWE(cmd.getQuery());
+                File f = new File(cmd.getQuery());
+                setPath(f.getParent());
                 defQuery(query, cmd.getQuery(), false);
             } catch (LoadException ex) {
                 LOGGER.error(ex.getMessage());
@@ -1981,14 +1983,14 @@ public class MainFrame extends JFrame implements ActionListener {
     public void setEvalListener(MyEvalListener el) {
         this.el = el;
     }
-
-    public String getLCurrentPath() {
-        return this.lCurrentPath;
+    
+    public void setPath(String path) {
+        this.lCurrentPath = path;
     }
-
-    public void setLCurrentPath(String lCurrentPath) {
-        this.lCurrentPath = lCurrentPath;
-    }
+    
+    public String getPath() {
+        return lCurrentPath;
+    } 
 
     /**
      *

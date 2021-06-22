@@ -31,6 +31,7 @@ import javax.ws.rs.core.MultivaluedHashMap;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Cookie;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -342,6 +343,14 @@ public class Service implements URLParam {
     
     public String getString(String uri) {
         return get(uri).readEntity(String.class);
+    }
+    
+    public JSONObject getJson(String uri) {
+        String text = getString(uri);
+        if (text != null && ! text.isEmpty()) {
+            return new JSONObject(text);
+        }
+        return null;
     }
 
     String encoding(ASTQuery ast) {

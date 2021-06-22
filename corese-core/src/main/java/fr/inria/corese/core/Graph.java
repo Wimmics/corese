@@ -51,8 +51,11 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.Collection;
+import org.apache.commons.text.similarity.LevenshteinDistance;
+import org.json.JSONObject;
 
 /**
  * Graph Manager Edges are stored in an index An index is a table: predicate ->
@@ -3531,6 +3534,80 @@ public class Graph extends GraphObject implements
      */
     public void setMetadata(boolean metadata) {
         this.metadata = metadata;
+    }
+    
+    /**
+     * @Draft 
+     * For each triple pattern: 
+     * Search if there exists subject, property, object in the graph
+     * with similar label 
+     * mode=message&param=sv:distance~n  => levenshtein distance <= n
+     */
+    public JSONObject match(ASTQuery ast, int distance) {
+        JSONObject obj = new JSONObject();
+        NSManager nsm = ast.getNSM();
+        
+        for (var t : ast.getTripleList()) {
+            
+            if (t.getPredicate().isConstant()) {
+                String label = t.getPredicate().getLabel();
+                String name  = nsm.nstrip(label);
+
+                for (var p : getProperties()) {
+                    if (similar(nsm, name, label, p.getLabel(), distance)) {
+                        obj.put(label, p.getLabel());
+                        break;
+                    } 
+                }
+            }
+            
+            if (t.getSubject().isConstant()) {
+                String label = t.getSubject().getLabel();
+                String name = nsm.nstrip(label);
+
+                for (var node : getNodes()) {
+                    if (similar(nsm, name, label, node.getLabel(), distance)) {
+                        obj.put(label, node.getLabel());
+                        break;
+                    } 
+                }
+            }
+            
+            if (t.getObject().isConstant() && t.getObject().getDatatypeValue().isURI()) {
+                String label = t.getObject().getLabel();
+                String name = nsm.nstrip(label);
+
+                for (var node : getNodes()) {
+                    if (similar(nsm, name, label, node.getLabel(), distance)) {
+                        obj.put(label, node.getLabel());
+                        break;
+                    } 
+                }
+            }   
+        }
+        
+        return obj;
+    }
+    
+    boolean similar(NSManager nsm, String n1, String l1, String l2, int d) {
+        if (l1.equals(l2)) {
+            // we want approximation only
+            return false;
+        }
+        // distance including namespace
+        Integer i = LevenshteinDistance.getDefaultInstance().apply(l1, l2);
+
+        if (i <= d) {
+            return true;
+        } else {
+            // distance with name only
+            String n2 = nsm.nstrip(l2);
+            i = LevenshteinDistance.getDefaultInstance().apply(n1, n2);
+            if (i <= d) {
+                return true;
+            }
+        }
+        return false;
     }
 
         

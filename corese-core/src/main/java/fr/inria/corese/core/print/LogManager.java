@@ -172,6 +172,13 @@ public class LogManager implements LogKey {
         }
     }
 
+    public String display() {
+        sb = new StringBuilder();
+        processMap();
+        return sb.toString();
+    }
+    
+    
     void processMap() {
         getLog().getSubjectMap().display(sb);
     }

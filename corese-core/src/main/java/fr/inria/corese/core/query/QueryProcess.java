@@ -47,11 +47,13 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import java.util.List;
+import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -718,6 +720,31 @@ public class QueryProcess extends QuerySolver {
         if (!getLog().getLinkList().isEmpty()) {
             map.setLinkList(getLog().getLinkList());
         }
+        
+        processMessage(map);
+    }
+    
+    /**
+     * When query has service clause, endpoint may have sent a message to client
+     * Message is a json object sent as Linked Result (link url in query result) 
+     * Here we get the message if any 
+     * By default, corese message is server Context as json object.
+     */
+    void processMessage(Mappings map) {
+        JSONObject json = getMessage(map);
+        
+        if (json != null) {
+            System.out.println("QP: message");
+            
+            for (var key : json.keySet()) {
+                System.out.println(key + " = " + json.get(key));
+            } 
+            
+            if (json.has(URLParam.TEST)) {
+                System.out.println();
+                System.out.println(getStringMessage(map));
+            }
+        }
     }
 
     Mappings synQuery(Node gNode, Query query, Mapping m) throws EngineException {
@@ -1305,6 +1332,22 @@ public class QueryProcess extends QuerySolver {
      */
     public LogManager getLogManager(Mappings map) {
         return new LogManager(getLog(map));
+    }
+    
+    public JSONObject getMessage(Mappings map) {       
+        String text = getStringMessage(map);
+        if (text == null) {
+            return null;
+        }
+        return new JSONObject(text);
+    }
+    
+    public String getStringMessage(Mappings map) {
+        String url = map.getLink(URLParam.MES);
+        if (url == null) {
+            return null;
+        }
+        return new Service().getString(url);
     }
             
     /***********************************************************************/

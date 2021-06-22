@@ -41,6 +41,7 @@ import java.util.Date;
 import java.util.List;
 import javax.ws.rs.ProcessingException;
 import javax.ws.rs.client.ResponseProcessingException;
+import org.json.JSONObject;
 
 /**
  * Service call
@@ -195,9 +196,9 @@ public class ProviderService implements URLParam {
         ArrayList<Mappings> mapList = new ArrayList<>();
         ArrayList<ProviderThread> pList = new ArrayList<>();
         int timeout = getTimeout(serviceNode);
-        // by default in parallel 
-        boolean parallel = q.getOuterQuery().isParallel();
-
+        // by default in parallel (unless mode=sequence)
+        boolean parallel = q.getOuterQuery().isParallel() && ! hasValue(SEQUENCE);
+        
         for (Node service : serverList) {
 
             String name = service.getLabel();
@@ -423,9 +424,14 @@ public class ProviderService implements URLParam {
             g = (Graph) serv.getGraph();
         } else {
             res = eval(ast, serv, timeout, count);
-            if (!res.getLinkList().isEmpty()) {
-                getLog().addLink(res.getLinkList());
-            }
+            
+            // @draft
+//            boolean suc = processMessage(res);
+//            if (! suc) {
+//                res = eval(ast, serv, timeout, count);
+//            }
+            
+            processLinkList(res.getLinkList());
             g = (Graph) res.getGraph();
         }
 
@@ -440,6 +446,32 @@ public class ProviderService implements URLParam {
         }
 
         return res;
+    }
+    
+    void processLinkList(List<String> list) {
+        if (! list.isEmpty()) {
+            getLog().addLink(list);                        
+        }
+    }
+    
+    boolean processMessage(Mappings map) {
+        String url = map.getLink(URLParam.MES);
+        if (url != null) {
+            return processMessage(url);
+        }
+        return true;
+    }
+    
+    boolean processMessage(String url) {
+        String text = new Service().getString(url);
+        JSONObject obj = new JSONObject(text);
+
+        System.out.println("PS: message");
+        for (String key : obj.keySet()) {
+            System.out.println(key + " " + obj.get(key));
+        }
+        
+        return true;
     }
 
     // is there a limit on size of input
@@ -503,6 +535,12 @@ public class ProviderService implements URLParam {
             }
         }
     }
+    
+    void addResultBasic(Mappings sol, Mappings res) {
+        if (res != null) {
+            sol.add(res);           
+        }
+    }
 
     /**
      * Return final result Mappings mapList is the list of result Mappings of
@@ -514,15 +552,19 @@ public class ProviderService implements URLParam {
             return mapList.get(0);
         }
         Mappings res = null;
-        int n = 0;
-
-        for (Mappings m : mapList) {
-            if (res == null) {
-                res = m;
-            } else {
-                res.add(m);
+        
+        if (!mapList.isEmpty()) {
+            res = new Mappings();
+            
+            for (Mappings m : mapList) {
+                if (res.getQuery() == null && m.getQuery()!=null) {
+                    res.setQuery(m.getQuery());
+                    res.init(m.getQuery());
+                }
+                addResultBasic(res, m);
             }
         }
+    
         boolean distinct = !getGlobalAST().hasMetadata(Metadata.DUPLICATE);
         // TODO: if two Mappings have their own duplicates, they are removed
         if (res != null && res.getSelect() != null && distinct) {

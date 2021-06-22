@@ -1776,6 +1776,15 @@ public class Mappings extends PointerObject
             m.setNamedGraph(node);
         }
     }
+    
+    public String getLink(String name) {
+        for (var url : getLinkList()) {
+            if (url.contains(name)) {
+                return url;
+            }
+        }
+        return null;
+    }
 
     public String getLink() {
         if (getLinkList().isEmpty()) {

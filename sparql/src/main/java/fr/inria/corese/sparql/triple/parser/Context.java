@@ -17,6 +17,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.UUID;
+import org.json.JSONObject;
 
 /**
  * Execution Context for SPARQL Query and Template
@@ -80,6 +81,7 @@ public class Context extends ASTObject implements URLParam {
     public static final String STL_HIERARCHY      = STL + "hierarchy";
     public static final String STL_LINK           = STL + "link";
    
+    public static final String URL = "url";   
     
     
     HashMap<String, IDatatype> table;
@@ -541,6 +543,7 @@ public class Context extends ASTObject implements URLParam {
 
     public IDatatype getFirst(String name) {
         IDatatype dt = table.get(name);
+        System.out.println("first: " + dt);
         if (dt == null) {
             return null;
         }
@@ -814,6 +817,47 @@ public class Context extends ASTObject implements URLParam {
             setKey(UUID.randomUUID().toString());
         }
         return getKey();
+    }
+    
+    public HashMap<String, IDatatype> getHashMap() {
+        return table;
+    }
+    
+    public Collection<String> keySet() {
+        return getHashMap().keySet();
+    }
+    
+    public JSONObject json() {
+        JSONObject json = new JSONObject();
+        
+        for (String key : keySet()) {
+            IDatatype dt = get(key);
+            set(json, key, dt);
+        }
+        
+        return json;
+    }
+    
+    void set(JSONObject json, String key, IDatatype dt) {
+        if (dt.isList()) {
+            json.put(key, getStringList(key));
+        } else if (dt.isNumber()) {
+            setNumber(json, key, dt);
+        } else if (dt.isBoolean()) {
+            json.put(key, dt.booleanValue());
+        }        
+        else {
+            json.put(key, dt.getLabel());
+        }
+    }
+    
+    void setNumber(JSONObject json, String key, IDatatype dt) {
+        switch (dt.getCode()) {
+            case IDatatype.DECIMAL: json.put(key, dt.doubleValue()); break;
+            case IDatatype.DOUBLE:  json.put(key, dt.doubleValue()); break;
+            case IDatatype.FLOAT:   json.put(key, dt.floatValue()); break;
+            default: json.put(key, dt.intValue()); break;
+        }
     }
 
 }

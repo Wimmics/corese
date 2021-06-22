@@ -56,6 +56,14 @@ public class ContextLog implements URLParam, LogKey {
         return getSubjectMap().get(subject, property);
     }
     
+    public String getString(String subject, String property) {
+        IDatatype dt = get(subject, property);
+        if (dt == null) {
+            return null;
+        }
+        return dt.getLabel();
+    }
+    
     public List<String> getStringList(String subject, String property) {
         return getSubjectMap().getStringList(subject, property);
     }
@@ -66,6 +74,10 @@ public class ContextLog implements URLParam, LogKey {
     
     public IDatatype get(String property) {
         return getSubjectMap().get(getSubject(), property);
+    }
+    
+    public String getString(String property) {
+        return getString(getSubject(), property);
     }
 
     public void set(String property, String value) {

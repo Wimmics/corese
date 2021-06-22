@@ -76,6 +76,7 @@ public interface URLParam {
     static final String WHY = "why";
     static final String INPUT = "input";
     static final String OUTPUT = "output";
+    static final String SEQUENCE = "sequence";
 
     // values of binding=
     static final String VALUES = "values";
@@ -83,5 +84,12 @@ public interface URLParam {
     
     static final String REW = "rewrite";
     static final String SEL = "select";
+    static final String SRC = "source";
+    static final String MES = "message";
+    static final String ALL = "all";
+    static final String WORKFLOW = "workflow";
+    static final String TEST = "test";
+    static final String DISTANCE = "distance";
+    
 
 }

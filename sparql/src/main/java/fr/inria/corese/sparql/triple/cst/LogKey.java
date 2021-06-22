@@ -10,11 +10,21 @@ public interface LogKey {
     static final String SUBJECT = NS+"report" ;
     static final String EVALUATION_REPORT = "ns:EvaluationReport";
     static final String REPORT = "ns:ServiceReport";
+    
+    // initial service URL
+    static final String SERVICE_URL = "ns:serviceURL";
+    // initial service AST
+    static final String SERVICE_AST = "ns:serviceAST"; 
+    // list of endpoints
     static final String ENDPOINT = "ns:endpoint";
     static final String ENDPOINT_CALL = "ns:endpointCall";
+    // query that generated an exception 
     static final String QUERY = "ns:query";
+    // federate query result of federate rewrite
     static final String AST = "ns:ast";
+    // federate source selection
     static final String AST_SELECT = "ns:astSelect";
+    // intermediate service call:
     static final String AST_SERVICE = "ns:astService";
     static final String INPUT_SIZE = "ns:astServiceLength";
     static final String MESSAGE = "ns:message";

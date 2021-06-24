@@ -1,5 +1,6 @@
 package fr.inria.corese.server.webservice;
 
+import fr.inria.corese.server.webservice.message.LinkedResult;
 import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.kgram.core.Mappings;
@@ -200,10 +201,19 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
                     // declare federate mode for TripleStore query()
                     mode.add(FEDERATE);
                     // federation URL defined in /webapp/data/demo/fedprofile.ttl
-                    //uri.add(ds.getContext().get(URL).getLabel());
                     federation.add(ds.getContext().get(URL).getLabel());
                     defineFederation(ds, federation);
                     // additional parameters attached to URL in urlparameter.ttl 
+                    context(ds.getContext());
+                    break;
+                    
+                case COMPILE:
+                    //    /test/compile?uri=http://myendpoint/sparql
+                    mode = leverage(mode);
+                    mode.add(FEDERATE);
+                    mode.add(COMPILE);
+                    federation.addAll(uri);
+                    defineFederation(ds, federation);
                     context(ds.getContext());
                     break;
                     
@@ -319,7 +329,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
     
     void defineFederation(Dataset ds, List<String> federation) {
         ds.setUriList(federation);
-        ds.getContext().set(FEDERATION, DatatypeMap.listResource(federation));
+        //ds.getContext().set(FEDERATION, DatatypeMap.listResource(federation));
     }
     
     String decode(String value) {

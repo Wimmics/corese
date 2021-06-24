@@ -1,6 +1,8 @@
-package fr.inria.corese.server.webservice;
+package fr.inria.corese.server.webservice.message;
 
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.server.webservice.EmbeddedJettyServer;
+import fr.inria.corese.server.webservice.Profile;
 import java.net.UnknownHostException;
 import java.util.UUID;
 import org.slf4j.Logger;
@@ -28,7 +30,7 @@ public class LinkedResult {
         init(name, ext, getCreateSeed());
     }
     
-    LinkedResult(String name, String ext, String seed) {
+    public LinkedResult(String name, String ext, String seed) {
         init(name, ext, seed);
     }
     
@@ -50,7 +52,7 @@ public class LinkedResult {
         setURL(uri);
     }
     
-    void write(String str) {
+    public void write(String str) {
         QueryLoad ql = QueryLoad.create();
         ql.write(getFile(), str);
     }

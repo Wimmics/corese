@@ -1,4 +1,4 @@
-package fr.inria.corese.server.webservice;
+package fr.inria.corese.server.webservice.message;
 
 import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.print.ResultFormat;
@@ -29,12 +29,13 @@ public class TripleStoreLog implements URLParam {
     // Linked Result contain URLs of query/result, sent as json object
     private LinkedResultLog json;
     
-    TripleStoreLog (QueryProcess e, Context c) {
+    public TripleStoreLog (QueryProcess e, Context c) {
         setQueryProcess(e);
         setContext(c);
     }
     
-    Mappings logCompile() {
+    @Deprecated
+    public Mappings logCompile() {
         ContextLog log = getQueryProcess().getLog();
         Mappings map     = log.getSelectMap();
         ASTQuery select  = log.getASTSelect();
@@ -47,42 +48,81 @@ public class TripleStoreLog implements URLParam {
     }
     
     /**
-     * Generate RDF error report, write it in /log/
+     * Generate log report, write it in /log/
      * generate an URL for report and set URL as Mappings link
      */
-    void log(Mappings map) {
-        if (getContext().hasAnyValue(PROVENANCE, LOG, WHY)) {
-            ContextLog clog = getQueryProcess().getLog(map);
-            if (getContext().get(URL) != null) {
-                clog.set(SERVICE_URL, getContext().get(URL).getLabel());
-            }
-            clog.set(SERVICE_AST, getContext().get(QUERY).getLabel());
-            LogManager log = new LogManager(clog);
-            String uri = document(log.toString(), "log", ".ttl");
-            map.addLink(uri);
-            System.out.println("server report: " + uri);
-            logWhy(map, clog);
-        }
-        if (getContext().hasValue(MES)) {
-            messageContext(map);
+    public void log(Mappings map) {
+        if (getContext().hasAnyValue(COMPILE, PROVENANCE, LOG, WHY)) {
+            processLog(map);
+            logWhy(map, getQueryProcess().getLog(map));
         }
 
+        if (getContext().hasValue(MES)) {
+            messageContext(map, getQueryProcess().getLog(map));
+        }
+    }
+
+    /**
+     * Generate log report, write it in /log/
+     */
+    public void processLog(Mappings map) {
+        ContextLog clog = getQueryProcess().getLog(map);
+        if (getContext().get(URL) != null) {
+            clog.set(SERVICE_URL, getContext().get(URL).getLabel());
+        }
+        clog.set(SERVICE_AST, getContext().get(QUERY).getLabel());
+
+        LogManager log = new LogManager(clog);
+        String uri = document(log.toString(), "log", ".ttl");
+        map.addLink(uri);
+        System.out.println("server report: " + uri);
+    }
+
+    
+    
+    /**
+     * Generate message with Context as JSON object
+     * Complete with explanation such as 
+     * - service exceptions
+     * - why query fails
+     * 
+     */
+    void messageContext(Mappings map, ContextLog log) {
+        // basic message
+        JSONObject json = new TripleStoreMessage(getContext(), log).process();
+        // explanation about query failure
+        messageMappings(map, json);
+        
+        // publish message as LinkedResult
+        String url = document(json.toString(), URLParam.MES, "");
+        map.addLink(url);
     }
     
     /**
-     * Log intermediate service and results for federated endpoint
-     * and mode=why
+     * Try to explain why the query fails 
+     * add explanation json object into json message
+     *
+     */
+    void messageMappings(Mappings map, JSONObject json) {
+        if (map.isEmpty()) {
+            JSONObject obj = new TripleStoreExplain(getQueryProcess(), getContext(), map).process();
+            if (!obj.isEmpty()) {
+                json.put(URLParam.EXPLAIN, obj);
+            }
+        }
+    }
+    
+    /**
+     * Log intermediate service query/results for federated endpoint
+     * when mode=why
      * Generate LinkedResult for service and result if any
      */
     void logWhy(Mappings map, ContextLog log) {
-        if (getContext().hasValue(WHY)) {
-            messageContext(map);
-            setJson(new LinkedResultLog());
-            logSelect(map, log);
-            logService(map, log);
-            messageExplain(map);
-            //messageContext(map);
-        }
+        messageContext(map, log);
+        setJson(new LinkedResultLog());
+        logSelect(map, log);
+        logService(map, log);
+        messageExplain(map);
     }
     
     /**
@@ -94,24 +134,7 @@ public class TripleStoreLog implements URLParam {
         map.addLink(url);
     }
     
-    /**
-     * JSON object with param=value sent back to client as Linked Result as "message"
-     * @Draft: return context as json object
-     * Use case: URL contain parameter to be interpreted by client GUI, e.g. mode=all
-     */
-    void messageContext(Mappings map) {
-        JSONObject json = getContext().json();
-        if (map.isEmpty()) {
-            // try to explain why the query fails
-            // add explanation json object into json message
-            JSONObject obj = new TripleStoreExplain(getQueryProcess(), getContext(), map).process();
-            if (! obj.isEmpty()) {
-                json.put(URLParam.EXPLAIN, obj);
-            }
-        }
-        String url = document(json.toString(), MES, "");
-        map.addLink(url);
-    }
+   
     
     void addLink(Mappings map, String url) {
         //map.addLink(url);
@@ -232,7 +255,7 @@ public class TripleStoreLog implements URLParam {
         }
     }
     
-    void logQuery(Mappings map) {
+    public void logQuery(Mappings map) {
         if (getContext().hasValue(LOG_QUERY)) {
             String uri = document(map.getQuery().getAST().toString(), "query");
             map.addLink(uri);

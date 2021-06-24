@@ -1,4 +1,4 @@
-package fr.inria.corese.server.webservice;
+package fr.inria.corese.server.webservice.message;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;

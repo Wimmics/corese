@@ -1,5 +1,6 @@
 package fr.inria.corese.server.webservice;
 
+import fr.inria.corese.server.webservice.message.TripleStoreLog;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.kgram.core.Mappings;
@@ -216,7 +217,8 @@ public class TripleStore implements URLParam {
                 // federate sparql query with @federate uri
                 if (isCompile(c)) {
                     Query qq = exec.compile(federate(query, ds), ds);
-                    map = tsl.logCompile();
+                    //map = tsl.logCompile();
+                    map = Mappings.create(qq);
                 } else {
                     map = exec.query(federate(query, ds), ds);
                     //tsl.log(map);
@@ -239,8 +241,11 @@ public class TripleStore implements URLParam {
             // when mode=message
             Date d2 = new Date();
             double time = (d2.getTime() - d1.getTime()) /1000.0;
-            c.set(URLParam.TIME, DatatypeMap.newInstance(time));
             
+            c.set(URLParam.TIME, DatatypeMap.newInstance(time));
+            c.set(URLParam.DATE, DatatypeMap.newDate());
+            
+            // generate log, explanation and message as LinkedResult in map
             tsl.log(map);
             tsl.logQuery(map);
             
@@ -394,9 +399,8 @@ public class TripleStore implements URLParam {
      */
     Metadata metadata(ASTQuery ast, Dataset ds) {
         Metadata meta = new Metadata();
-        // one URI: URI of federation
-        // several URI: list of endpoint URI
-        int type = (ds.getUriList().size() > 1) ? Metadata.FEDERATE : Metadata.FEDERATION;
+        //int type = (ds.getUriList().size() > 1) ? Metadata.FEDERATE : Metadata.FEDERATION;
+        int type = Metadata.FEDERATION;
         meta.set(type, ds.getUriList());
                 
         for (String key : metaMap.keySet()) {

@@ -57,11 +57,19 @@ public class LinkedResult implements URLParam {
      */
     void linkedResult(Mappings map) {
         String mes = map.getLink(MES);
+        JSONObject jsonMessage = null;
         if (mes != null) {
             // url with message is a json message to be processed
             // actually it is the context, hence it contains URL parameters
             // we can tune result processing
-            processMessage(mes);
+            jsonMessage = processMessage(mes);
+        }
+        
+        String log = map.getLink("log/log");
+        if (log != null) {
+            String g = new Service().getString(log);
+            msg(log).msg(NL);
+            msg(g).msg(NL);
         }
         
         String url = map.getLink(WHY);
@@ -69,16 +77,14 @@ public class LinkedResult implements URLParam {
             // url of a json document that contains url of query/result documents
             String text = new Service().getString(url);
             JSONObject json = new JSONObject(text);
-            System.out.println("LR explain why");
+            msg(NL).msg("LinkedResult Explain Index").msg(NL);
             display(json);
             linkedResult(json);
         }
         
-        String log = getURL("log/log");
-        if (log != null) {
-            String g = new Service().getString(log);
-            frame.msg(url).msg(NL);
-            frame.msg(g).msg(NL);
+        if (jsonMessage != null) {
+            msg(NL).msg("Message").msg(NL);
+            display(jsonMessage);
         }
     }
     
@@ -126,14 +132,31 @@ public class LinkedResult implements URLParam {
         }
     }
          
-    void processMessage(String url) {
+    JSONObject processMessage(String url) {
         String text = new Service().getString(url);
-        message(url, new JSONObject(text));
+        JSONObject json = new JSONObject(text);
+        message(url, json);
+        return json;
+    }
+    
+    LinkedResult msg(String mes) {
+        frame.msg(mes);
+        return this;
     }
     
     void display(JSONObject json) {
         for (String key : json.keySet()) {
-            System.out.println(key + " = " + json.get(key));
+            //System.out.println(key + " = " + json.get(key));
+            msg(key + " = " + json.get(key)).msg(NL);
+        }
+        
+        if (json.has(ERROR) && json.get(ERROR) instanceof JSONArray) {
+            JSONArray arr = json.getJSONArray(ERROR);
+            
+            for (var error : arr) {
+                msg(NL).msg("Server error:").msg(NL);
+                display((JSONObject) error);
+            }
         }
     }
     
@@ -197,7 +220,7 @@ public class LinkedResult implements URLParam {
                     Binding b = exp.getBind();
                     Integer count = res.get(b.getVariable().getLabel());
                     if (count != null && count == 0) {
-                        frame.msg(String.format("Triple pattern not found in federation: %s", b.getFilter())).msg(NL);
+                        msg(String.format("Triple pattern not found in federation: %s", b.getFilter())).msg(NL);
                     }
                 }
             }
@@ -368,8 +391,8 @@ public class LinkedResult implements URLParam {
 //                    }
 //                } else {
 //                    // log document
-//                    frame.msg(url).msg(NL);
-//                    frame.msg(text).msg(NL);
+//                    msg(url).msg(NL);
+//                    msg(text).msg(NL);
 //                    complete(url, text);                   
 //                }
 //            }

@@ -115,8 +115,10 @@ public class Selector {
         
         exec.getLog().setASTSelect(aa);
         exec.getLog().setSelectMap(map);
+        
         ast.getLog().setASTSelect(aa);
         ast.getLog().setSelectMap(map);
+        ast.getLog().setExceptionList(exec.getLog().getExceptionList());
         
         for (Mapping m : map) {
             IDatatype serv = (IDatatype) m.getValue(SERVER_VAR);

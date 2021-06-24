@@ -184,6 +184,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         if (ast.hasMetadata(Metadata.FEDERATION)) {
             List<String> list = ast.getMetadata().getValues(Metadata.FEDERATION);
             List<Atom> serviceList;
+            
             if (list.isEmpty()) {
                 return false;
             }
@@ -191,10 +192,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 // refer to federation
                 serviceList = getFederation().get(list.get(0));
                 setURL(new URLServer(list.get(0)));
+                
                 if (serviceList == null) {
-                    logger.error("Undefined federation: " + list.get(0));
-                    return false;
+                    logger.info("Undefined federation: " + list.get(0));
+                    //return false;
+                    serviceList = new ArrayList<>();
+                    serviceList.add(Constant.createResource(list.get(0)));
                 }
+                
             } else {
                 // define federation
                 serviceList = new ArrayList<>();

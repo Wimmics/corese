@@ -245,6 +245,9 @@ public class ContextLog implements URLParam, LogKey {
         if (getSelectMap() == null) {
             setSelectMap(log.getSelectMap());
         }
+        if (getExceptionList().isEmpty()) {
+            getExceptionList().addAll(log.getExceptionList());
+        }
     }
 
     public ASTQuery getAST() {

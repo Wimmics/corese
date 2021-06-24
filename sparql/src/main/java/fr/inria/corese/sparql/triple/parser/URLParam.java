@@ -17,6 +17,7 @@ public interface URLParam {
     static final String DECODE = "decode";
     static final String PARAM = "param";
     static final String URI = "uri";
+    static final String URL = "url";
     static final String DEFAULT_GRAPH = "default-graph-uri";
     static final String NAMED_GRAPH = "named-graph-uri";
 
@@ -90,6 +91,8 @@ public interface URLParam {
     static final String WORKFLOW = "workflow";
     static final String TEST = "test";
     static final String DISTANCE = "distance";
+    static final String ERROR = "error";
+    static final String DATE = "date";
     
 
 }

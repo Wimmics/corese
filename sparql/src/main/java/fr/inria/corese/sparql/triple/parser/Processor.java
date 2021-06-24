@@ -921,6 +921,7 @@ public class Processor {
                 defoper(STL_AGGREGATE,   ExprType.STL_AGGREGATE);
                 defsysoper(AGGREGATE,       ExprType.AGGREGATE);
 
+		defoper(EXT+"distance", ExprType.XT_DISTANCE);
 		defoper(SIMILAR, ExprType.SIM);
                 defoper(EXT+"similarity", ExprType.SIM);
 		defoper(CSIMILAR, ExprType.SIM);

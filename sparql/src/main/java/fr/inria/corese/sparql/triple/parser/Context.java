@@ -845,7 +845,10 @@ public class Context extends ASTObject implements URLParam {
             setNumber(json, key, dt);
         } else if (dt.isBoolean()) {
             json.put(key, dt.booleanValue());
-        }        
+        } 
+        else if (dt.isPointer() || dt.isExtension()) {
+            json.put(key, dt.getContent());
+        }
         else {
             json.put(key, dt.getLabel());
         }

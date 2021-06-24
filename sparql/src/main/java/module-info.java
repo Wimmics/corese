@@ -2,7 +2,8 @@ module fr.inria.corese.sparql {
 	requires fr.inria.corese.kgram;
 	requires org.slf4j;
 	requires java.sql;
-    requires org.json;
+        requires org.json;
+        requires org.apache.commons.text;
 
 	exports fr.inria.corese.sparql.triple.parser;
 	exports fr.inria.corese.sparql.triple.parser.visitor;

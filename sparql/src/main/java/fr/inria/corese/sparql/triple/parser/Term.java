@@ -359,6 +359,7 @@ public class Term extends Expression {
             case ExprType.EXTEQUAL:
             case ExprType.XPATH:
             case ExprType.XT_COMPARE:
+            case ExprType.XT_DISTANCE:
                 return new BinaryExtension(name);
                 
             case ExprType.XT_REPLACE:

@@ -211,8 +211,9 @@ public class ProviderService implements URLParam {
             // /sparql?param={?this} 
             // get ?this=value in Binding global variable and set param=value
             url.complete(getBinding());
+            url.complete(getContext());
             url.encode();
-            getLog().add(LogKey.ENDPOINT, url.getLogURL());
+            getLog().add(LogKey.ENDPOINT, url.getServer());
             getLog().add(LogKey.ENDPOINT_CALL, url.getLogURLNumber());
             
             if (ok && Access.reject(Feature.SPARQL_SERVICE, getBinding().getAccessLevel(), service.getLabel())) {

@@ -244,6 +244,17 @@ public class URLServer implements URLParam {
         }
     }
     
+    public void complete(Context c) {
+        if (c == null) {
+            return;
+        }
+        if (getMap() == null) {
+            setMap(new HashMapList<>());
+        }
+        c.tune(this);
+    }
+
+    
     
     static void start() {
         encode = new HashMap<>();
@@ -370,6 +381,19 @@ public class URLServer implements URLParam {
     public boolean isGET() {
         String method = getParameter("method");
         return method != null && method.equals("get");
+    }
+    
+    // remove trailing ".n" if any
+    public static String clean(String uri) {
+        if (uri.contains(".")) {
+            for (int i=1+uri.lastIndexOf("."); i<uri.length(); i++) {
+                if (!(uri.charAt(i) >= '0' && uri.charAt(i) <= '9')) {
+                    return uri;
+                }
+            }
+            return uri.substring(0, uri.lastIndexOf("."));
+        }
+        return uri;
     }
     
     /**

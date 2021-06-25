@@ -12,7 +12,8 @@ import java.util.List;
 
 /**
  * Service logger Used by corese core ProviderService and Service Stored in
- * Binding and federated query AST.
+ * Binding and federated query AST
+ * Designed to be serialized as RDF.
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2021
  */
@@ -72,8 +73,61 @@ public class ContextLog implements URLParam, LogKey {
         return getSubjectMap().getStringList(getSubject(), property);
     }
     
+     public String getStringElement(String property, int n) {
+        List<String> list = getSubjectMap().getStringList(getSubject(), property);
+        if (n < list.size()) {
+            return list.get(n);
+        }
+        return null;
+    }
+    
+    
+    public List<String> getStringListDistinct(String property) {
+        return distinct(getSubjectMap().getStringList(getSubject(), property));
+    }
+    
+    public List<String> distinct(List<String> list) {
+        ArrayList<String> alist = new ArrayList<>();
+        for (String str : list) {
+            if (! alist.contains(str)) {
+                alist.add(str);
+            }
+        }
+        return alist;
+    }
+    
     public IDatatype get(String property) {
         return getSubjectMap().get(getSubject(), property);
+    }
+    
+    public Mappings getMappings(String property) {
+        return getMappings(getSubject(), property);
+    } 
+    
+    public Mappings getMappings(String subject, String property) {
+        IDatatype dt = getSubjectMap().get(subject, property);
+        if (dt == null) {
+            return null;
+        }
+        if (dt.getPointerObject() instanceof Mappings) {
+            return dt.getPointerObject().getMappings();
+        }
+        return null;
+    }
+
+    public ASTQuery getAST(String property) {
+        return getAST(getSubject(), property);
+    }
+
+    public ASTQuery getAST(String subject, String property) {
+        IDatatype dt = getSubjectMap().get(subject, property);
+        if (dt == null) {
+            return null;
+        }
+        if (dt.getPointerObject() instanceof ASTQuery) {
+            return (ASTQuery) dt.getPointerObject();
+        }
+        return null;
     }
     
     public String getString(String property) {
@@ -110,6 +164,10 @@ public class ContextLog implements URLParam, LogKey {
 
     public void set(String subject, String property, Object value) {
         getSubjectMap().set(subject, property, value);
+    }
+    
+    public void set(String property, Object value) {
+        getSubjectMap().set(getSubject(), property, value);
     }
     
     public boolean hasValue(String subject, String property) {

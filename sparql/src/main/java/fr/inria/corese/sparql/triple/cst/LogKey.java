@@ -15,6 +15,8 @@ public interface LogKey {
     static final String SERVICE_URL = "ns:serviceURL";
     // initial service AST
     static final String SERVICE_AST = "ns:serviceAST"; 
+    // initial service result
+    static final String SERVICE_OUTPUT = "ns:serviceOutput"; 
     // list of endpoints
     static final String ENDPOINT = "ns:endpoint";
     static final String ENDPOINT_CALL = "ns:endpointCall";

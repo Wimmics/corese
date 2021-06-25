@@ -61,7 +61,7 @@ public class SubjectMap extends HashMap<String, PropertyMap> implements LogKey {
             return new ArrayList<>(0);
         }
         return DatatypeMap.toStringList(dt);
-    }
+    }      
 
     public void incr(String subject, String property, int value) {
         IDatatype dt = get(subject, property);

@@ -543,7 +543,6 @@ public class Context extends ASTObject implements URLParam {
 
     public IDatatype getFirst(String name) {
         IDatatype dt = table.get(name);
-        System.out.println("first: " + dt);
         if (dt == null) {
             return null;
         }
@@ -761,17 +760,22 @@ public class Context extends ASTObject implements URLParam {
     }
     
     
-    /**
-     * Complete Service URI with information from context
-     * Use case: FederateVisitor
-     */
+
     public String tune(String uri) {
+        return uri;
+    }
+    
+    /**
+     * Complete Service URL parameters with data from context
+     * Use case: federated query with sv:nboutput=100
+     */   
+    public URLServer tune(URLServer url) {
         if (hasValue(MODE)) {
             for (IDatatype mode : get(MODE)) {
                 switch (mode.getLabel()) {
                     case DEBUG:
                     case TRACE:
-                        uri = complete(uri, MODE, mode.getLabel());
+                        url.getMap().add(MODE, mode.getLabel());
                         break;
                 }
             }
@@ -781,19 +785,45 @@ public class Context extends ASTObject implements URLParam {
             // defined by URLServer decode
             // share parameters such as timeout=1000
             for (IDatatype key : get(EXPORT)) {
-                uri = complete(uri, key.getLabel(), getFirst(key.getLabel()).getLabel()); 
+                url.getMap().add(key.getLabel(), getFirst(key.getLabel()).getLabel());
             }
         }
-                                              
+        
         if (hasValue(URI)) {
             for (IDatatype dt : get(URI)) {
-                uri=complete(uri, URI, dt.getLabel());
+                url.getMap().add(URI, dt.getLabel());
             }
         }
-        return uri;
+        return url;
     }
     
-    
+//        public String tune(String uri) {
+//        if (hasValue(MODE)) {
+//            for (IDatatype mode : get(MODE)) {
+//                switch (mode.getLabel()) {
+//                    case DEBUG:
+//                    case TRACE:
+//                        uri = complete(uri, MODE, mode.getLabel());
+//                        break;
+//                }
+//            }
+//        }
+        
+//        if (hasValue(EXPORT)) {
+//            // defined by URLServer decode
+//            // share parameters such as timeout=1000
+//            for (IDatatype key : get(EXPORT)) {
+//                uri = complete(uri, key.getLabel(), getFirst(key.getLabel()).getLabel()); 
+//            }
+//        }
+                                              
+//        if (hasValue(URI)) {
+//            for (IDatatype dt : get(URI)) {
+//                uri=complete(uri, URI, dt.getLabel());
+//            }
+//        }
+//        return uri;
+//    }
     
     String complete(String uri, String key, String val) {
         if (uri.contains("?")) {

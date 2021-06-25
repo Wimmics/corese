@@ -23,6 +23,7 @@ import fr.inria.corese.sparql.triple.update.ASTUpdate;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.ASTQ;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.api.Walker;
@@ -2164,11 +2165,15 @@ public class ASTQuery
      */
     public Triple triple(Expression subject, Atom predicate, Expression object) {
         Triple t = Triple.create(subject, predicate, object);
-        getGlobalAST().submit(t);
+        submit(t);
         return t;
     }
     
     void submit(Triple t) {
+        getGlobalAST().basicSubmit(t);
+    }
+       
+    void basicSubmit(Triple t) {
         if (t.isPath()) {
             for (Constant pred : t.getRegex().getPredicateList()) {
                 submit(pred);
@@ -3946,6 +3951,45 @@ public class ASTQuery
      */
     public HashMap<String, Expression> getGroupByMap() {
         return groupBy;
+    }
+    
+    /**
+     * Find triple s p o that are undefined in federation
+     * Mappings map is result of source selection
+     */
+    public ArrayList<Expression> getUndefinedTriple(Mappings map) {
+        HashMap<String, Integer> res = map.countBooleanValue();
+        Exp body = getServiceBody();
+        ArrayList<Expression> list = new ArrayList<>();
+        
+        if (body != null) {
+            for (Exp exp : body.getBody()) {
+                if (exp.isBind()) {
+                    // bind (exists {s p o} as ?b)
+                    Binding b = exp.getBind();
+                    // number of server where triple s p o exist 
+                    Integer count = res.get(b.getVariable().getLabel());
+                    if (count != null && count == 0) {
+                        // no server contain triple s p o
+                        list.add(b.getFilter());
+                    }
+                }
+            }
+        }
+        
+        return list;
+    }
+    
+    /**
+     * return bgp(bind exists{} as ?b)
+     */
+    Exp getServiceBody() {
+        for (Exp exp : getBody().getBody()) {
+            if (exp.isService()) {
+                return exp.getService().getBodyExp();
+            }
+        }
+        return null;
     }
        
 }

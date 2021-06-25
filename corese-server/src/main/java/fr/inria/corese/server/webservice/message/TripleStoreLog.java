@@ -12,6 +12,7 @@ import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.cst.LogKey;
 import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_AST;
+import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_OUTPUT;
 import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_URL;
 import static fr.inria.corese.sparql.triple.parser.Context.URL;
 import fr.inria.corese.sparql.triple.parser.context.LinkedResultLog;
@@ -52,26 +53,32 @@ public class TripleStoreLog implements URLParam {
      * generate an URL for report and set URL as Mappings link
      */
     public void log(Mappings map) {
-        if (getContext().hasAnyValue(COMPILE, PROVENANCE, LOG, WHY)) {
-            processLog(map);
+        ContextLog log = getQueryProcess().getLog(map);
+        complete(map, log);
+        
+        if (getContext().hasAnyValue(LOG)) {
+            processLog(map, log);
+        }
+        if (getContext().hasAnyValue(COMPILE, WHY)) {
             logWhy(map, getQueryProcess().getLog(map));
         }
-
         if (getContext().hasValue(MES)) {
             messageContext(map, getQueryProcess().getLog(map));
         }
+    }
+    
+    void complete(Mappings map, ContextLog clog) {
+        if (getContext().get(URL) != null) {
+            clog.set(SERVICE_URL, getContext().get(URL).getLabel());
+        }
+        clog.set(SERVICE_AST, getContext().get(QUERY).getLabel());
+        clog.set(SERVICE_OUTPUT, map);
     }
 
     /**
      * Generate log report, write it in /log/
      */
-    public void processLog(Mappings map) {
-        ContextLog clog = getQueryProcess().getLog(map);
-        if (getContext().get(URL) != null) {
-            clog.set(SERVICE_URL, getContext().get(URL).getLabel());
-        }
-        clog.set(SERVICE_AST, getContext().get(QUERY).getLabel());
-
+    public void processLog(Mappings map, ContextLog clog) {        
         LogManager log = new LogManager(clog);
         String uri = document(log.toString(), "log", ".ttl");
         map.addLink(uri);

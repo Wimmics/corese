@@ -1,9 +1,16 @@
 package fr.inria.corese.server.webservice.message;
 
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.URLParam;
+import fr.inria.corese.sparql.triple.cst.LogKey;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.URLServer;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
+import java.util.ArrayList;
+import java.util.List;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.Response;
 import org.json.JSONArray;
@@ -32,6 +39,8 @@ public class TripleStoreMessage {
         
         // select data from ContextLog
         messageLog(getLog());
+        // missing triple in source selection 
+        messageSourceSelection(getLog());
         
         return getJson();        
     }
@@ -41,17 +50,80 @@ public class TripleStoreMessage {
      * Copy endpoint exceptions
      */
     void messageLog(ContextLog log) {
-        if (! log.getExceptionList().isEmpty()) {            
+        messageException(log);
+        
+        // list of distinct endpoint call
+        List<String> list = log.getStringListDistinct(LogKey.ENDPOINT);
+        if (!list.isEmpty()) {
+            JSONArray arr = new JSONArray(list);
+            getJson().put(URLParam.ENDPOINT, arr);
+        }
+        
+        messageFail(log);
+    }
+    
+    void messageException(ContextLog log) {
+        if (!log.getExceptionList().isEmpty()) {
             JSONArray arr = new JSONArray();
-            
+
             for (var ex : log.getExceptionList()) {
                 JSONObject obj = message(ex);
                 arr.put(obj);
             }
-            
+
             getJson().put(URLParam.ERROR, arr);
         }
     }
+
+    /**
+     * federated query fail
+     * show last service that fail
+     */
+    void messageFail(ContextLog log) {
+        Mappings map = log.getMappings(LogKey.SERVICE_OUTPUT);
+        
+        if (map != null && map.isEmpty()) {
+            List<String> alist = log.getStringList(LogKey.ENDPOINT_CALL);
+            
+            if (!alist.isEmpty()) {
+                String serv = alist.get(alist.size() - 1);
+                ASTQuery ast = log.getAST(serv, LogKey.AST_SERVICE);
+                Mappings res = log.getMappings(serv, LogKey.OUTPUT);
+                
+                if (ast != null && (res == null || res.isEmpty())) {
+                    JSONObject obj = new JSONObject();
+                    obj.put(URLParam.URL, URLServer.clean(serv));
+                    obj.put(URLParam.QUERY, ast);
+                    getJson().put(URLParam.FAIL, obj);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Check source selection in federated query
+     * Find undefined triples in federation
+     */
+    void messageSourceSelection(ContextLog log) {
+        ASTQuery ast = log.getASTSelect();
+        Mappings map = log.getSelectMap();
+        if (ast == null || map == null) {
+            return;
+        }
+        
+        ArrayList<Expression> list = ast.getUndefinedTriple(map);
+        
+        if (!list.isEmpty()) {
+            JSONArray arr = new JSONArray();
+            
+            for (Expression exp : list) {
+                arr.put(exp);
+            }
+            getJson().put(URLParam.UNDEF, arr);
+        }
+    }
+
+    
     
     JSONObject message(EngineException e) {
         JSONObject json = new JSONObject();

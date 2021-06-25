@@ -9,13 +9,12 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.Binding;
 import fr.inria.corese.sparql.triple.parser.Constant;
-import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.URLParam;
+import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.io.IOException;
-import java.util.HashMap;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -46,7 +45,7 @@ public class LinkedResult implements URLParam {
     
     void process(Mappings map) {
         linkedResult(map);
-        analyseSelection();
+        //analyseSelection();
     }
   
     
@@ -144,20 +143,33 @@ public class LinkedResult implements URLParam {
         return this;
     }
     
+    // display json message
     void display(JSONObject json) {
         for (String key : json.keySet()) {
             //System.out.println(key + " = " + json.get(key));
             msg(key + " = " + json.get(key)).msg(NL);
         }
         
-        if (json.has(ERROR) && json.get(ERROR) instanceof JSONArray) {
-            JSONArray arr = json.getJSONArray(ERROR);
-            
-            for (var error : arr) {
+        if (json.has(ERROR) && json.get(ERROR) instanceof JSONArray) {            
+            for (var error : json.getJSONArray(ERROR)) {
                 msg(NL).msg("Server error:").msg(NL);
                 display((JSONObject) error);
             }
         }
+        
+        if (json.has(UNDEF) && json.get(UNDEF) instanceof JSONArray) {            
+            for (var undef : json.getJSONArray(UNDEF)) {
+                msg(NL).msg(String.format("Undefined triple: %s", undef.toString())).msg(NL);
+            }
+        }
+        
+        if (json.has(FAIL) && json.get(FAIL) instanceof JSONObject) {    
+            JSONObject obj = json.getJSONObject(FAIL);
+            msg(NL);
+            msg(String.format("Query fail at: %s", obj.getString(URL))).msg(NL);
+            msg(obj.getString(QUERY)).msg(NL);
+        }        
+
     }
     
     /**
@@ -210,34 +222,11 @@ public class LinkedResult implements URLParam {
         if (getSourceSelectionAST() == null || getSourceSelectionMappings() == null) {
             return;
         }
-
-        HashMap<String, Integer> res = getSourceSelectionMappings().countBooleanValue();
-        Exp body = getServiceBody(getSourceSelectionAST());
-        
-        if (body != null) {
-            for (Exp exp : body.getBody()) {
-                if (exp.isBind()) {
-                    Binding b = exp.getBind();
-                    Integer count = res.get(b.getVariable().getLabel());
-                    if (count != null && count == 0) {
-                        msg(String.format("Triple pattern not found in federation: %s", b.getFilter())).msg(NL);
-                    }
-                }
-            }
+        for (Expression exp : getSourceSelectionAST().getUndefinedTriple(getSourceSelectionMappings())) {
+            msg(String.format("Triple pattern not found in federation: %s", exp)).msg(NL);
         }
     }
-
-    /**
-     * return bgp(bind exists{} as ?b)
-     */
-    Exp getServiceBody(ASTQuery ast) {
-        for (Exp exp : ast.getBody().getBody()) {
-            if (exp.isService()) {
-                return exp.getService().getBodyExp();
-            }
-        }
-        return null;
-    }
+  
     
     MyJPanelQuery display(String url, String query) {
         MyJPanelQuery panel = frame.execPlus(url, query);
@@ -270,7 +259,7 @@ public class LinkedResult implements URLParam {
 
     
     String clean(String uri) {
-        return uri.substring(0, uri.lastIndexOf("."));
+        return URLServer.clean(uri);
     }
     
     

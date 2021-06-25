@@ -722,7 +722,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     List<Atom> getServiceList(Constant p) {          
         if (select) {
             List<Atom> list = selector.getPredicateService(p);
-            if (! list.isEmpty()) {
+            if (list != null && ! list.isEmpty()) {
                 return list;
             }
         }

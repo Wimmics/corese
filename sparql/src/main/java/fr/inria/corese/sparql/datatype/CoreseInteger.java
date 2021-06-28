@@ -371,4 +371,9 @@ public class CoreseInteger extends CoreseNumber {
         }
         return str;
     }
+
+    @Override
+    public boolean isInteger() {
+        return true;
+    }
 }

@@ -2,6 +2,7 @@ package fr.inria.corese.sparql.datatype;
 
 import java.util.Hashtable;
 
+import org.eclipse.rdf4j.model.Value;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -11,6 +12,7 @@ import static fr.inria.corese.sparql.datatype.Cst.jTypeInteger;
 import static fr.inria.corese.sparql.datatype.Cst.jTypeGenericInteger;
 import static fr.inria.corese.sparql.datatype.RDF.RDF_HTML;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
 import fr.inria.corese.sparql.storage.api.IStorage;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.Constant;
@@ -1404,5 +1406,8 @@ public class CoreseDatatype
         return publicDatatypeValue;
     }
 
-    
+    @Override
+    public Value getRdf4jValue() {
+        return CoreseDatatypeToRdf4jValue.convert(this);
+    }
 }

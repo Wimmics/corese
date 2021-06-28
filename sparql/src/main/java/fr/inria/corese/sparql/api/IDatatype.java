@@ -96,6 +96,10 @@ public interface IDatatype
 
     boolean isLoop();
 
+    default boolean isDateElement() {
+        return false;
+    }
+
     List<IDatatype> getValues();
 
     @Override

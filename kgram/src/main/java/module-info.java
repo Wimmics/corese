@@ -1,6 +1,7 @@
 module fr.inria.corese.kgram {
 	requires java.desktop;
 	requires org.slf4j;
+	requires transitive rdf4j.model.api;
 
 	exports fr.inria.corese.kgram.core;
 	exports fr.inria.corese.kgram.api.core;

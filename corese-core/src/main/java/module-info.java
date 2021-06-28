@@ -1,10 +1,11 @@
 module fr.inria.corese.corese_core {
     requires fr.inria.corese.kgram;
     requires fr.inria.corese.sparql;
+    requires fr.inria.corese.compiler;
     requires org.slf4j;
+    requires org.apache.commons.text;
     requires sesame.rio.api;
     requires java.xml;
-    requires fr.inria.corese.compiler;
     requires jsonld.java;
     requires semargl.core;
     requires sesame.model;
@@ -33,6 +34,8 @@ module fr.inria.corese.corese_core {
     exports fr.inria.corese.core.producer;
     exports fr.inria.corese.core.shacl;
     exports fr.inria.corese.core.extension;
+    exports fr.inria.corese.core.visitor.ldpath;
+    exports fr.inria.corese.core.visitor.solver;
 
     // requires fr.inria.corese.compiler;
     // requires org.slf4j;

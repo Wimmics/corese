@@ -1,0 +1,533 @@
+#
+# SHACL Shex Interpreter 
+# Implement shex semantics for qualifiedValueShape with a partition of values
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2020
+#
+
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix xsh: <http://www.w3.org/ns/shacl#> 
+prefix msh: <http://ns.inria.fr/shacl/>
+prefix shex: <http://ns.inria.fr/shex/shacl#>
+
+@import <cardinality.rq>
+
+function sh:dsp(x) {
+    if (sh:isdsp(), xt:print(x), true)
+}
+function sh:dsp(x, y) {
+    if (sh:isdsp(), xt:print(x, y), true)
+}
+function sh:dsp(x, y, z) {
+    if (sh:isdsp(), xt:print(x, y, z), true)
+}
+function sh:isdsp() {
+    coalesce(isdsp, false) # ; true
+}
+function sh:setdsp(bb) {
+    set(isdsp=bb)
+}
+
+
+#
+# sh : sh:property [ sh:path path ; sh:qualifiedValueShape qsh ]
+# nodeList : subject path target node list
+# cstList : list(qsh)
+# shex semantics: 
+# consider sibling qualifiedValueShape with same path if any, 
+# compute a partition of relevant subset of nodeList that matches cardinality constraint of each sibling qvs
+#
+function sh:partitionValueShape(report, sh, vis, subject, path, nodeList, cstList) {
+    let (res = true) {
+        for ((oper qsh disjoint amin amax extra) in cstList) {
+            # there is one qvs in cstList
+            let (suc = coalesce(                    
+                sh:partitionValueShape(report, sh, vis, extra, subject, path, qsh, disjoint, amin, amax, nodeList) , 
+                false) ) {
+                if (! suc, set(res = false), true) 
+            }
+        };
+        return (res)
+    }
+}
+
+
+#
+# sh: property shape ; qsh: qualified shape ; nodeList: subject path object node list
+# extra = true: extra values authorized for subject path  in addition to qualified values
+#
+function sh:partitionValueShape (report, sh, vis, extra, subject, path, qsh, disjoint, amin, amax, nodeList) {
+        # list = node list that match qualified shape
+        sh:dsp("shex partition:");
+        sh:dsp(subject, path, nodeList);
+        
+        let (opt = sh:getShapeConstraint(sh:optional, sh),
+            list = mapfindlist(sh:qualifiedShape, nodeList,  qsh, report),
+            (partList cardList) = sh:partitionSiblingNodeList(report, qsh, subject, path, nodeList),
+            candidate   = xt:cons(list, partList),
+            cardinality = xt:cons(xt:list(amin, amax), cardList)) {
+            
+            sh:dsp("first candidate:", list);
+            sh:dsp(xt:turtle(qsh));
+            
+            if (! extra) {
+                # check there is no extra node in nodeList that does not match any qvs
+                let (res = ! sh:extra(nodeList, candidate)) {
+                    sh:dsp("extra:", res);
+                    sh:report(report, shex:extra, sh, subject, path, subject, res, vis) ;
+                }
+            } ;
+            
+            # use case: shex optional
+            if (opt && xt:size(list) = 0, return(true), true);    
+                
+            let (res = sh:prepare(candidate, cardinality)) {
+                sh:dsp("partition:", res);
+                sh:report(report, shex:qualifiedValueShape, sh, subject, path, subject, res, vis) ;
+                return (res)
+            }
+        }
+}
+
+# return true if there is  extra node in nodeList wrt candidate
+function sh:extra(nodeList, candidate) {
+    for (node in nodeList) {
+        if (mapany (xt:member, node, candidate), true, return(true))
+    } ;
+    return (false)
+}
+
+#
+# return list of sibling shape with same path qualified node list 
+#
+function sh:partitionSiblingNodeList(report, qsh, subject, currentPath, nodeList) {
+    let (siblingNodeList = xt:list(), cardList = xt:list(),
+        cstList = coalesce(sh:getConstraint(sh:sibling, qsh), xt:list())) {
+        for ((sh, path, amin, amax) in cstList) {
+            if (coalesce(sh:samePath(currentPath, path), false)) {
+                let (targetQualified =  mapfindlist(sh:qualifiedShape, nodeList,  sh, report)) {
+                    xt:add(siblingNodeList, targetQualified) ;
+                    xt:add(cardList, xt:list(amin, amax))
+                }
+            }
+        } ;
+        return (xt:list(siblingNodeList, cardList))
+    }
+}
+
+
+
+
+#
+# partList : list of qualified node list
+# cardList : list of cardinality min max
+# check that there exists a partition of partList that matches cardinality constraints
+# remove duplicates from partList except one occcurrence of each duplicate into at most one list
+# ((1 2) (2 3)) -> ((1) (2 3)) or ((1 2) (3))
+#
+function sh:prepare(partList, cardList) {
+    sh:dsp("candidate:", partList);
+    sh:dsp("min max:", cardList);            
+    let ((suc partListCopy cardListCopy) = sh:partition(partList, cardList)) {
+        #return(suc)
+        if (suc, suc, 
+        if (coalesce(testPartition, false), sh:partition2(partListCopy, cardListCopy),
+        suc))
+    }
+}
+
+
+#
+# partList: list of qualified nodeList
+# cardList:  cardinality constraints for each nodeList 
+# check if we can find a partition of partList that matches cardinality constraint
+# Compute intersection of pairs of nodeList in partList
+# Remove intersection from each nodeList
+# TODO: Check size <= max ; i size > max : fail ; if size = max, remove the nodeList
+# for elem in intersection(A, B) : put elem -> { A, B } 
+# mapInter:      nodeList -> list of intersections with other nodeList
+# mapInterList : nodeList -> list of nodeList with intersection not empty
+# mapCand:  elem -> map of nodeList where elem is member of an intersection of nodeList
+# amap: elem -> list of nodeList
+# compute a partition with constraint on amap
+# 
+function sh:partition(partList, cardList) {
+        let (nodeList = xt:get(partList, 0),
+            checkMin = sh:checkMinCardFst(partList, cardList),
+            checkMax = sh:checkMaxCardFst(partList, cardList),
+            
+            mapCard  = sh:cardinalityMap(partList, cardList),
+            (mapInter mapInterList) = sh:intersection(partList),
+            # subset of partList that have transitive intersection with current nodeList
+            transitiveIntersection = 
+                xt:cons(nodeList, 
+                    sh:transitiveIntersection(nodeList, mapInterList))) {
+                        
+             # reduce candidates to node lists with transitive intersection with nodeList 
+             set (partList = transitiveIntersection);
+             
+             # remove node lists without transitive intersection with nodeList
+             sh:clean(mapInter, transitiveIntersection);
+            
+            let (
+                # draft cardinality
+                 partListCopy = sh:copy(partList),
+                 cardListCopy = sh:cardinality(partList, mapCard),
+                
+                # check that every candidate has minimal elements
+                checkMinAll = sh:checkMinAll(partList, mapCard),
+                # remove intersections from partList
+                mapCand     = sh:processIntersection(mapInter),
+                # map of list
+                amap        = sh:mapList(mapCand)) {
+                
+                sh:show(amap);
+                sh:show(mapCard);
+                
+                if (checkMin) {
+                    # current nodeList has min elements
+                    if (xt:size(mapCand) = 0 || ! xt:has(mapInter, nodeList)) {
+                        # no intersection, check max on current nodeList 
+                        let (res = checkMax) {
+                            # current nodeList has max elements ?
+                            return (xt:list(res, partListCopy, cardListCopy));
+                        }
+                    }
+                    else if (checkMinAll) {
+                        # compute partition
+                        let (res  = sh:assign(amap, mapCard)) {
+                            sh:show (amap);
+                            return (xt:list(res, partListCopy, cardListCopy));
+                        }
+                    }
+                    else {
+                        # other cst min fail: process them in future call
+                        return (xt:list(true, partListCopy, cardListCopy));
+                    }
+                }
+                else {
+                    # current nodeList does not have min elements
+                    return (xt:list(false, partListCopy, cardListCopy));
+                }
+            }
+        }
+}
+
+#
+# mapInter: nodeList -> list of intersections with other node lists
+# transitiveIntersection: list of node list with transitive intersection with current nodeList
+# remove from mapInter entries the node list with no transitive intersection with current nodeList
+#
+function sh:clean(mapInter, transitiveIntersection) {
+   let (remove = xt:list()) {
+        for ((alist interList) in mapInter) {
+            if (! xt:member(alist, transitiveIntersection)) {
+                xt:add(remove, alist)
+            }
+        } ;
+        for (list in remove) {
+            xt:remove(mapInter, list)
+        }
+    }
+}
+
+#
+# nodeList: current qualified node list
+# mapInterList: map: nodeList -> list of nodeList with intersection 
+# return sublist of candidates that transitively have intersection with nodeList
+#
+function sh:transitiveIntersection(nodeList, mapInterList) {
+    if (xt:has(mapInterList, nodeList)) {
+        let (list = xt:get(mapInterList, nodeList),
+            tmp = xt:remove(mapInterList, nodeList),
+            fst = maplist(rq:self, list),
+            #rst = maplist(sh:transitiveIntersection, list, xt:list(mapInterList))) {
+            rst = maplist(sh:transitiveIntersection, list, mapInterList)) {
+            return (xt:merge(fst, reduce(xt:merge, rst)))
+        }
+    }
+    else {
+        xt:list()
+    }
+}
+
+
+
+
+
+
+function sh:show(amap) {
+    for ((elem list) in amap) {
+        sh:dsp(elem, list)
+    }
+}
+
+#
+# mapInter: nodeList -> list of intersections with other nodeLists
+# amap:     nodeList -> list of nodeList with intersection not empty
+#
+function sh:intersection(partList) {
+    #sh:dsp("intersection: ", partList);
+    let (mapInter = xt:map(), amap = xt:map()) {
+        if (xt:size(partList) = 1) {
+            xt:set(mapInter, xt:get(partList, 0), xt:list(maplist(rq:self, xt:get(partList, 0))))
+        }
+        else {
+            for (i in xt:iterate(0, xt:size(partList) - 2)) {
+                let (l1 = xt:get(partList, i)) {
+                    for (j in xt:iterate(i+1, xt:size(partList) - 1)) {
+                        let (l2 = xt:get(partList, j)) {
+                            let (inter = sh:intersection(l1, l2)) {
+                                if (xt:size(inter) > 0) {
+                                    xt:add(sh:getset(mapInter, l1), inter);
+                                    xt:add(sh:getset(mapInter, l2), inter);
+                                    xt:add(sh:getset(amap, l1), l2);
+                                    if (i != 0) {
+                                        xt:add(sh:getset(amap, l2), l1);
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+            } 
+        };
+        sh:show(mapInter);
+        return (xt:list(mapInter, amap))
+    }
+}
+
+
+# amap: nodeList -> list of intersections with other nodeLists
+# return map: elem -> map of all nodeList where elem is member of (elem is member of intersection) 
+# AND remove elem from these nodeList
+# result is a data structure elem -> map of nodeList where elem can be added in one of the nodeList
+# to build a partition.
+#
+function sh:processIntersection(amap) {
+    sh:dsp("process intersection");
+    let (candMap = xt:map()) {
+        for ((nodeList interList) in amap) {
+            for (inter in interList) {
+                for (elem in inter) {
+                    xt:remove(nodeList, elem);
+                    xt:set(sh:getMap(candMap, elem), nodeList, nodeList)
+                }
+            }
+        } ;
+        return (candMap)
+    } 
+}
+
+# amap:  elem -> map of nodeList
+# return elem -> list of nodeList
+# result is the data structure elem -> list of nodeList where elem can be added in one of the nodeList
+# to build a partition.
+#
+function sh:mapList(amap) {
+    let (res = xt:map()) {
+        for ((elem themap) in amap) {
+            xt:set(res, elem, maplist(function((key, val)) { val }, themap))
+        } ;
+        return (res)
+    }
+}
+
+#
+# amap : elem -> list of nodeList
+#
+function sh:assign(amap, cardList) {
+    sh:assign(sh:keys(amap), 0, amap, cardList)
+}
+
+#
+# The partition algorithm
+#
+# elemList : list of elem
+# i = index of current elem
+# amap : elem -> list of nodeList
+# assign each elem into one of its possible nodeList ; check  min <= size(nodeList) <= max 
+# try every combinaison until one of them succeeds with min and max
+#
+function sh:assign(elemList, i, amap, cardMap) {
+    sh:dsp("assign:", i, elemList);
+    if (i = xt:size(elemList)) {
+        return (sh:checkMin(amap, cardMap) && sh:checkMax(amap, cardMap));
+    }
+    else {
+        let (elem = xt:get(elemList, i)) {
+            for (nodeList in xt:get(amap, elem)) {
+                if (xt:size(nodeList) < sh:max(nodeList, cardMap)) {
+                    xt:add(nodeList, elem);
+                    let (res = sh:assign(elemList, i+1, amap, cardMap)) {
+                        if (res) {
+                            return (true);
+                        }
+                        else {
+                            xt:remove(nodeList, elem)
+                        }
+                    }
+                }
+                # else try next nodeList
+            } ;
+            return (false)
+        }
+    }
+}
+
+#
+# create map: nodeList -> (min, max)
+#
+function sh:cardinalityMap(partList, cardList) {
+    let (amap = xt:map(), i = 0) {
+        for (nodeList in partList) {
+            xt:set(amap, nodeList, xt:get(cardList, i));
+            set (i = i+1)
+        } ;
+        return (amap)
+    }
+}
+
+# regenerate card list from map where partList is a subset of genuine candidates
+function sh:cardinality(partList, cardMap) {
+    let (list = xt:list()) {
+        for (alist in partList) {
+            xt:add(list, xt:get(cardMap, alist))
+        } ;
+        return (list)
+    }
+}
+
+
+
+function sh:getMap(amap, elem) {
+    if (! xt:has(amap, elem)) {
+        xt:set(amap, elem, xt:map())
+    } ;
+    return (xt:get(amap, elem))
+}
+
+function sh:getset(amap, nodeList) {
+    if (! xt:has(amap, nodeList)) {
+        xt:set(amap, nodeList, xt:list())
+    } ;
+    return (xt:get(amap, nodeList))
+}
+
+function sh:intersection(l1, l2) {
+    let (inter = xt:list()) {
+        for (ee in l1) {
+            if (xt:member(ee, l2)) {
+                xt:add(inter, ee)
+            }
+        } ;
+        return (inter)
+    }
+}
+
+
+
+function sh:keys(amap) {
+    maplist(lambda((elem, list)) { elem }, amap)
+}
+
+function sh:checkMinCardFst(candidate, cardinality) {
+    xt:size(xt:get(candidate, 0)) >= xt:get(xt:get(cardinality, 0), 0)
+}
+
+
+function sh:checkMaxCardFst(candidate, cardinality) {
+    xt:size(xt:get(candidate, 0)) <= xt:get(xt:get(cardinality, 0), 1)
+}
+
+
+function sh:checkMinCard(candidate, cardinality) {
+    let (i = 0) {
+        for (nodeList in candidate) {
+            if (xt:size(nodeList) < xt:get(xt:get(cardinality, i), 0)) {
+                return (false)
+            }
+            else {
+                set(i = i+1)
+            }
+        } ;
+        return (true)
+    }
+}
+
+function sh:checkMinAll(candidate, cardMap) {
+        for (nodeList in candidate) {
+            if (xt:size(nodeList) < sh:min(nodeList, cardMap)) {
+                return (false)
+            }
+        } ;
+        return (true)
+}
+
+function sh:checkMaxAll(candidate, cardMap) {
+        for (nodeList in candidate) {
+            if (xt:size(nodeList) > sh:max(nodeList, cardMap)) {
+                return (false)
+            }
+        } ;
+        return (true)
+}
+
+function sh:checkMaxCard(candidate, cardinality) {
+    let (i = 0) {
+        for (nodeList in candidate) {
+            let (amax = xt:get(xt:get(cardinality, i), 1)) {
+                if (amax >= 0 && xt:size(nodeList) > amax) {
+                    return (false)
+                }
+                else {
+                    set(i = i+1)
+                }
+            }
+        } ;
+        return (true)
+    }
+}
+
+
+function sh:checkMin(amap, cardMap) {
+    for ((elem list) in amap) {
+        for (nodeList in list) {
+            sh:dsp("min:", nodeList, sh:min(nodeList, cardMap));
+            if (xt:size(nodeList) < sh:min(nodeList, cardMap)) {
+                return (false)
+            }
+        }
+    } ;
+    return (true)
+}
+
+function sh:checkMax(amap, cardMap) {
+    for ((elem list) in amap) {
+        for (nodeList in list) {
+            sh:dsp("max:", nodeList, sh:max(nodeList, cardMap));
+            if (xt:size(nodeList) > sh:max(nodeList, cardMap)) {
+                return (false)
+            }
+        }
+    } ;
+    return (true)
+}
+
+function sh:min(nodeList, cardMap) {
+    let ((amin amax) = xt:get(cardMap, nodeList)) {
+        return (amin)
+    }
+}
+
+function sh:max(nodeList, cardMap) {
+    let ((amin amax) = xt:get(cardMap, nodeList)) {
+        return (amax)
+    }
+}
+
+
+# check size >= min ; if size < min : fail
+function sh:minCardinality(partList, cardList) {
+    
+}

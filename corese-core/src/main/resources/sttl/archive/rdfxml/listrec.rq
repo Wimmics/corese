@@ -1,0 +1,21 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:listrec(?y) {
+format {
+    us:format(ft:desc.html)  
+   
+   box {
+    
+   st:call-template(st:triple, ?y, rdf:first, ?f)
+   st:nl()
+   
+   if (?r = rdf:nil, 
+      st:apply-templates(?y, rdf:rest, ?r),
+      st:call-template(st:listrecrest, ?r))   
+   }
+}
+}
+where {
+  ?y rdf:first ?f ;
+     rdf:rest  ?r
+}

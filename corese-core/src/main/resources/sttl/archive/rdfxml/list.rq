@@ -1,0 +1,11 @@
+template st:list {
+
+if (isBlank(?e) && ! st:visited(?e),
+  st:call-template(st:blank, ?r, rdf:first, ?e),
+  st:call-template(st:resourceref, ?e))
+  
+}
+where {
+  ?in rdf:rest* ?r 
+  ?r  rdf:first ?e
+}

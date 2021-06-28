@@ -1,0 +1,196 @@
+#
+# SHACL Interpreter 
+# Constraint Operator
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
+
+
+
+function sh:count(s, p){
+  let (select ?s ?p (count(*) as ?c) where { ?s ?p ?o })
+  { return(?c) }
+}
+
+function sh:invCount(?o, ?p){
+  let (select ?o ?p (count(*) as ?c) where { ?s ?p ?o })
+  { return(?c) }
+}
+
+function sh:minCount(s, p, m){
+    sh:count(s, p) >= m
+}
+
+function sh:maxCount(s, p, m){
+    sh:count(s, p) <= m
+}
+
+function sh:pattern( node, exp) {
+    #xt:print("pattern:", node, exp);
+    let ((arg flag) = exp) {
+        !isBlank(node) && 
+        if (bound(flag), regex(node, arg, flag), regex(node, arg))
+    }
+}
+
+function sh:patternIn( node, exp) {
+    !isBlank(node) && mapany(rq:regex, node, exp)
+}
+
+
+function xsd:boolean sh:nodeKind(dt:graph  value, dt:uri kind){
+    (isURI(value)     && kind IN ( sh:IRI, sh:BlankNodeOrIRI, sh:IRIOrLiteral ) ) ||
+    (isLiteral(value) && kind IN ( sh:Literal, sh:BlankNodeOrLiteral, sh:IRIOrLiteral ) ) ||
+    (isBlank(value)   && kind IN ( sh:BlankNode, sh:BlankNodeOrIRI, sh:BlankNodeOrLiteral ) )  
+}
+
+function xsd:boolean sh:minLength(dt:graph  s, m){
+    ! isBlank(s) && coalesce(strlen(s) >= m, false) 
+}
+
+function xsd:boolean sh:maxLength( s, m){
+    ! isBlank(s) && coalesce(strlen(s) <= m, false) 
+}
+
+function xsd:boolean sh:minInclusive( o, m){
+    o >= m
+}
+
+function xsd:boolean sh:minExclusive( o, m){
+    o > m
+}
+
+function xsd:boolean sh:maxInclusive( o, m){
+    o <= m
+}
+
+function xsd:boolean sh:maxExclusive( o, m){
+    o < m
+}
+
+
+function xsd:boolean sh:datatype(o, dt){
+    if (isLiteral(o), return(datatype(o) = dt && isWellFormed(o)), false)
+}
+
+function xsd:boolean sh:minCount(s, m){
+    s >= m
+}
+
+function xsd:boolean sh:maxCount(s, m){
+    s <= m
+}
+
+function xsd:boolean sh:hasValue( s, v) {
+    s = v
+}
+
+function xsd:boolean sh:myclass(?o, ?c){
+    if (sh:isSetup(sh:type), sh:type(?o, ?c), 
+        exists { ?o rdf:type/rdfs:subClassOf* ?c })
+}
+
+function sh:class(object, class) {
+    exists { ?object rdf:type/rdfs:subClassOf* ?class }
+}
+
+function sh:type(object, class) {
+    exists { ?object rdf:type ?class }
+}
+
+
+function xsd:boolean sh:in(?object, ?list) {
+        for (value in list) { 
+            if (object = value && if (isLiteral(object), datatype(object) = datatype(value), true)) {
+                return (true)
+            } 
+        } ;
+        return (false)
+}
+
+function xsd:boolean sh:in2(?object, ?lv) {
+    let (list = sh:getShapeConstraint(sh:incst, lv)) {
+        for (value in list) { 
+            if (object = value && if (isLiteral(object), datatype(object) = datatype(value), true)) {
+                return (true)
+            } 
+        } ;
+        return (false)
+    }
+}
+
+function sh:incst(shape, sh) {
+    let (select * (aggregate(?val) as ?list)
+         where { graph ?shape { ?sh rdf:rest*/rdf:first ?val } } ) {
+         return(list)
+    }
+}
+
+function xsd:boolean sh:languageIn(?object, ?list){
+   if (isLiteral(object)) {
+        let (lan = lang(object)) {
+            for (value in list) { 
+                if (langMatches(lan, value)) {
+                    return (true)
+                } 
+            } ;
+            return (false)
+        }
+    }
+    else {
+        return (false)
+    }
+}
+function xsd:boolean sh:languageIn2(?object, ?lv){
+   if (isLiteral(object)) {
+        let (lan = lang(object), list = sh:getShapeConstraint(sh:incst, lv)) {
+            for (value in list) { 
+                if (langMatches(lan, value)) {
+                    return (true)
+                } 
+            } ;
+            return (false)
+        }
+    }
+    else {
+        return (false)
+    }
+}
+
+
+#function xsd:boolean sh:node(report, o, cst){
+#    sh:core(report, cst, sh:isSetup(sh:nodeDetail), o)
+#}
+
+function xsd:boolean sh:node(report, o, cst, present, vis){
+    sh:core(report, cst, vis, o, present)
+}
+
+# TODO: why vis = true ?
+function xsd:boolean sh:property(report, o, cst){
+    sh:core(report, cst, true, o)
+}
+
+
+function xsd:boolean sh:property(report, o, cst, present){
+    sh:core(report, cst, true, o, present)
+}
+
+
+
+function xsd:boolean sh:disjoint(dt:list l1, dt:list l2){
+    for (x in l1){
+            if (xt:member(x, l2)){
+                return(false) 
+            }     
+    } ;
+    return(true)
+}
+
+function xsd:boolean sh:equal(dt:list l1, dt:list l2){
+    return (l1 = l2)
+}
+

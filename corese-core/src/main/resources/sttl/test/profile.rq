@@ -1,0 +1,7 @@
+@import <function/datashape.rq>
+
+template st:profile {
+
+}
+where {
+}

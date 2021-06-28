@@ -1,0 +1,307 @@
+#
+# SHACL Interpreter 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix xsh: <http://www.w3.org/ns/shacl#> 
+
+
+
+# targetFunction return triples of predicate 
+function xsh:triple(exp) {
+    let ((predicate) = exp) {
+        xt:edges(predicate)
+    }
+}
+
+
+#
+# Return mappings of (sh=shape; list=target node list)
+#
+function  sh:focus(dt:graph ?shape) {
+query (
+   select ?shape ?sh  (aggregate(distinct ?s) as ?list) 
+   where { 
+  
+    {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p 	filter isURI(?p)			
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s ?p ?o}
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p filter isBlank(?p)
+        filter not exists { ?p xsh:graph ?g }
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s ?q ?o}
+     
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p filter isBlank(?p)			
+        filter not exists { ?sh sh:deactivated true } 
+        ?p xsh:graph ?g  optional { ?p xsh:predicate ?q } }
+        
+     graph ?g { ?s ?q ?o } }
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p filter isURI(?p)				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?x ?p ?s}
+     
+     union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p filter isBlank(?p)			
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?x ?q ?s}
+    
+    union 
+    
+    {graph ?shape {
+        ?sh sh:targetClass ?c 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?c}
+     
+     union 
+    
+    {graph ?shape {
+        ?sh a sh:NodeShape, rdfs:Class 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?sh} 
+     
+    union 
+     
+    {graph ?shape {
+        ?sh sh:targetNode ?s
+        filter not exists { ?sh sh:deactivated true} }
+    }
+    
+    union {
+        graph ?shape { 
+            ?sh xsh:targetFunction ?fun 
+            optional { ?fun ?oper ?param filter (?oper != owl:sameAs) } 
+            bind (coalesce(?oper, ?fun) as ?name)
+            bind (coalesce(?param, xt:list()) as ?value)
+            bind (sh:getValueList(?value) as ?arg)
+        }
+        values ?s { unnest(funcall(?name, ?arg)) }
+    }
+    union {
+        graph ?shape { 
+            ?sh xsh:targetTriplesOf ?prop 
+            filter not exists { ?sh xsh:targetGraph ?g }
+        }
+        values ?s { unnest(sh:getEdges(?prop)) }
+    }
+    union {
+        graph ?shape { 
+            ?sh xsh:targetTriplesOf ?prop .
+            ?sh xsh:targetGraph ?g
+        }
+        graph ?g {
+            values ?prop {UNDEF}
+            values ?s { unnest(sh:getEdges(?prop)) }
+        }
+    } 
+    union {
+        select distinct ?sh ?s {
+            graph ?shape { 
+                ?sh xsh:targetPredicatesOf ?ns .
+            }
+            ?n ?s ?o  filter if (isBlank(?ns), true, regex(?s, ?ns))
+        }
+    }
+                      
+  } 
+  group by ?sh 
+  ) 
+}
+
+
+
+function sh:getEdges(predicate) {
+    xt:edges(if (isBlank(predicate), bnode(), predicate))
+}
+
+#
+# focus on specific shape sh
+#
+function  sh:focus(dt:graph shape, sh) {
+query (
+   select ?shape ?sh  (aggregate(distinct ?s) as ?list) 
+   where { 
+  
+    {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p 			
+        filter not exists { ?sh sh:deactivated true} }
+     ?s ?p ?o 	
+     }
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p 			
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?x ?p ?s}
+    
+    union 
+    
+    {graph ?shape {
+        ?sh sh:targetClass ?c 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?c}
+     
+     union 
+    
+    {graph ?shape {
+        ?sh a sh:NodeShape, rdfs:Class 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?sh} 
+     
+    union 
+     
+    {graph ?shape {
+        ?sh sh:targetNode ?s
+        filter not exists { ?sh sh:deactivated true} }
+    }
+                      
+  } 
+  group by ?sh 
+  ) 
+}
+
+#
+# focus on specific shape sh and node s
+#
+function  sh:focus(dt:graph shape, sh, s) {
+query (
+   select ?shape ?sh ?s (aggregate(distinct ?s) as ?list) 
+   where { 
+  
+    {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p 			
+        filter not exists { ?sh sh:deactivated true} }
+     ?s ?p ?o 	
+     }
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?x ?p ?s}
+    
+    union 
+    
+    {graph ?shape {
+        ?sh sh:targetClass ?c 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?c}
+     
+     union 
+    
+    {graph ?shape {
+        ?sh a sh:NodeShape, rdfs:Class 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?sh} 
+     
+    union 
+     
+    {graph ?shape {
+        ?sh sh:targetNode ?s
+        filter not exists { ?sh sh:deactivated true} }
+    }
+                      
+  } 
+  group by ?sh 
+  ) 
+}
+
+#
+# focus on specific node s
+#
+function sh:focusnode(dt:graph shape, s) {
+query (
+   select ?shape ?sh ?s (aggregate(distinct ?s) as ?list) 
+   where { 
+  
+    { graph ?shape {
+        ?sh sh:targetSubjectsOf ?p 	
+        filter not exists { ?sh sh:deactivated true} }
+     ?s ?p ?o 	
+     }
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p  					
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?x ?p ?s 
+     }
+    
+    union 
+    
+    {graph ?shape {
+        ?sh sh:targetClass ?c 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?c}
+     
+     union 
+    
+    {graph ?shape {
+        ?sh a sh:NodeShape, rdfs:Class 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?sh} 
+     
+    union 
+     
+    {graph ?shape {
+        ?sh sh:targetNode ?s
+        filter not exists { ?sh sh:deactivated true} }
+    }
+                      
+  } 
+  group by ?sh 
+  ) 
+}
+
+
+function sh:targetObjectsOf(shape, sh) {
+    let (select * (aggregate(xt:list(?sh, ?p)) as ?list) where {
+        graph ?shape {
+            ?sh sh:targetObjectsOf ?p  					
+            filter not exists { ?sh sh:deactivated true} }
+        } ) {
+        return (list)
+    }
+}
+
+function sh:list(focus) {
+    mapmerge(lambda((sh, list)) { 
+        return(if (bound(sh) && xt:size(list) > 0, 
+            xt:list(xt:list(sh, list)), 
+            xt:list())) }, 
+        focus)
+}
+

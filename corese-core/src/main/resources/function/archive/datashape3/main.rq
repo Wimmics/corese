@@ -1,0 +1,709 @@
+#
+# SHACL Interpreter 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
+prefix shex: <http://ns.inria.fr/shex/shacl#>
+
+@import  <api/define.rq> <focus.rq> <ppathparser.rq> <ppath.rq> <operator.rq> <operatorext.rq> <core.rq>  <path.rq> <constraint.rq>  <target.rq> <report.rq>
+
+
+#
+# main function
+# Current graph is RDF graph
+# shape is SHACL Shape graph (they can be the same graph)
+# return validation report graph
+#
+function dt:graph sh:shacl() {
+   if (sh:trace(), xt:print("shacl:"), true);
+   sh:java(false);
+   sh:shacl(xt:graph(), sh:focus(xt:graph()))
+}
+
+function dt:graph sh:shex() {
+   sh:shexSemantics(true);
+   sh:shacl()
+}
+
+function sh:shexSemantics(bool) {
+   set(shaclshex=bool);
+}
+
+function sh:isShex() {
+    bound(shaclshex) && shaclshex
+}
+
+function dt:graph sh:shacljava() {
+   if (sh:trace(), xt:print("shacl:"), true);
+   sh:java(true);
+   sh:shacl(xt:graph(), sh:focus(xt:graph()))
+}
+
+function dt:graph sh:shacl(dt:graph shape) {
+   if (sh:trace(), xt:print("shacl:"), true);
+   sh:java(false);
+   sh:shacl(shape, sh:focus(shape))
+}
+
+function dt:graph sh:shex(dt:graph shape) {
+   sh:shexSemantics(true);
+   sh:shacl(shape) 
+}
+
+
+function dt:graph sh:shaclshape(sh) {
+   if (sh:trace(), xt:print("shaclshape:", sh), true);
+   sh:java(false);
+   sh:shacl(xt:graph(), sh:focus(xt:graph(), sh))
+}
+
+#
+# evaluate sh(node) even if node is not into sh target
+#
+function dt:graph sh:shaclshape(sh, node) {
+   if (sh:trace(), xt:print("shaclshape:", sh, node), true);
+   sh:java(false);
+   sh:shacl(xt:graph(), xt:list(xt:list(sh, xt:list(node))))
+}
+
+function dt:graph sh:shaclnode(node) {
+   if (sh:trace(), xt:print("shaclnode:", node), true);
+   sh:java(false);
+   sh:shacl(xt:graph(), sh:focusnode(xt:graph(), node))
+}
+
+#
+# focus = mappings or list(sh=nodeShape; list=targetNodeList)
+#
+function dt:graph sh:shacl(dt:graph shape, focus) {
+    xt:event("@beforeShacl", focus);
+    sh:start(shape) ;
+    let (suc = sh:shacleval(shape, focus)) {
+        sh:success(suc);
+        sh:finish() ;
+        xt:event("@afterShacl", sh:validationReport());
+        return (sh:validationReport())
+    }
+}
+
+#
+# focus = mappings or list(sh=nodeShape; list=targetNodeList)
+#
+function sh:shacleval(shape, focus) {
+    let (suc = true) {
+        for ((sh list) in focus) {
+            if (sh:trace(), 
+                xt:print("target:", coalesce(sh, "undef"), xt:size(list), list), true);
+            if (bound(sh) && xt:size(list) > 0) {
+                let (res = sh:core(sh:validationReport(), sh, true, list)) {
+                    if (res, true, set(suc = false))
+                }
+            }
+        } ;
+        return (suc)
+    }
+}
+
+function sh:focus() {
+    sh:focuslist(xt:graph())
+}
+
+function sh:focuslist(dt:graph shape) {
+    sh:list(sh:focus(shape))
+}
+
+function sh:java(xsd:boolean bb) {
+    set(java = bb)
+}
+
+function xsd:boolean sh:java() {
+    return (coalesce(java, true))
+}
+
+
+function xsd:boolean sh:conform(?g) {
+    let (select * where { graph ?g { ?x sh:conforms ?b } } ) {
+        return(?b)
+    }
+}
+
+
+function sh:show(shape, mapmap) {
+        for ((key val) in mapmap) {
+            if (key != sh:def) {
+                xt:print(key);
+                for ((sh list) in val) {
+                    if (isExtension(list) && xt:size(list) > 0) {
+                        xt:print(sh, ":", list);
+                        if (isBlank(sh)) {
+                            xt:print(xt:turtle(shape, sh))
+                        }
+                    }
+                } ;
+                xt:print("__")
+            }
+        } ;
+        return (true)
+}
+
+
+
+
+# start
+function sh:start(shape) {
+    if (coalesce(! donestart, true)) {
+        set(donestart = true) ;
+        sh:dostart(shape)
+    }
+}
+
+function sh:dostart(shape) {
+    # transformer visitor for legacy
+    st:visit(st:start, st:trace) ;
+    sh:shaclGraph(shape);
+    sh:initvariable();
+    sh:init();
+    if (bound(fast), true, sh:fast(false));
+    sh:defShape();
+    sh:defun();
+    if (shape = xt:graph(), sh:sibling(), xt:focus(shape, sh:sibling())) ;
+    sh:before();
+    sh:initMap();
+    return (true)
+}
+
+function sh:initMap() {
+    # record shape result map shape -> map node -> boolean
+    set (shapeMap = xt:map())
+}
+
+
+
+
+function sh:fast(bb) {
+    set(fast = bb)
+}
+
+function sh:isFast() {
+    fast
+}
+
+
+# place holder
+function sh:before() {
+   if (bound(?before) && ?before && coalesce(! done, true)) {
+      set(done = true);
+      sh:testDefShape()
+   }
+}
+
+
+
+function sh:shaclGraph(shacl) {
+    set(shaclGraph = shacl)
+}
+
+function sh:shaclGraph() {
+    return (shaclGraph) 
+}
+
+function sh:initvariable() {
+    # validation report graph
+    sh:createValidationReport() ;
+    set(stack = xt:list());
+    set(bnodeid = bnode()) ;
+    set(mapmap = xt:map()) ;
+    set(mapshape = coalesce(mapshape, xt:map())) ;
+    set(recordmapsuc  = coalesce(recordmapsuc,  xt:map()));
+    set(recordmapfail = coalesce(recordmapfail, xt:map()));
+    set(mapfun = xt:map());
+    sh:initsetup();
+    coalesce(sh:trace(), sh:trace(!true))
+}
+
+function sh:push(sh, object) {
+    xt:add(stack, xt:list(sh, object))
+}
+
+function sh:pop() {
+    xt:removeindex(stack, xt:size(stack) - 1)
+}
+
+function sh:contains(sh, object) {
+    for ((name value) in stack) {
+        if (name = sh, return(true), true)
+    } ;
+    return (false)
+}
+
+function sh:setup() {
+    set(setup = coalesce(setup, xt:map())) 
+}
+
+function sh:initsetup() {
+   sh:setup() ; 
+   let (select * where {
+            optional { [] sh:nodeDetail ?node }
+            optional { [] sh:booleanDetail ?bool }
+        }) {
+        if (bound(?node), sh:setup(sh:nodeDetail, ?node), true) ;
+        if (bound(?bool), sh:setup(sh:booleanDetail, ?bool), true) ;        
+    }
+}
+
+function sh:setup(name, value) {
+    xt:set(sh:setup(), name, value)
+}
+
+function sh:setup(name) {
+    xt:get(setup, name)
+}
+
+function sh:hasSetup(name) {
+    return (xt:has(setup, name))
+}
+
+
+function sh:isSetup(name) {
+    coalesce(xt:get(setup, name), false)
+}
+
+function sh:createValidationReport() {
+    sh:validationReport(xt:create(dt:graph)) ;
+}
+
+function sh:subValidationReport(detail) {
+    if (detail) {
+        let (save = sh:validationReport()) {
+            sh:createValidationReport();
+            return (save);
+        }
+    }
+    else {
+        return (sh:validationReport())
+    }
+}
+
+
+function sh:restoreValidationReport(detail, save) {
+    if (detail) {
+        # record additional report  
+        set (myreport = sh:validationReport());
+        # restore global report
+        sh:validationReport(save)
+    }
+}
+
+function sh:validationReport(g) {
+    set (validationReport = g)
+}
+
+
+function sh:validationReport() {
+    return (validationReport)
+}
+
+# declare report graph to transformer visitor graph, use case: shape workflow
+function sh:finish() {
+    #sh:tracefinish();
+    st:visit(st:trace, st:graph, sh:validationReport()) 
+}
+
+
+function xsd:boolean sh:hasShape(dt:graph shape, sh:NodeShape sh, xsd:boolean vis, ls) {
+    sh:core(sh:validationReport(), sh, vis, ls)
+}
+
+
+function sh:defShape() {
+    sh:setShape(sh:path1, sh:defShapePath1()) ;
+    sh:setShape(sh:path2, sh:defShapePath2()) ;
+    sh:setShape(sh:pathextension, sh:defShapePathExtension()) ;
+    sh:setShape(sh:node1, sh:defShapeNode1()) ;
+    sh:setShape(sh:node2, sh:defShapeNode2()) ;
+    sh:setShape(sh:nodeextension, sh:defShapeNodeExtension()) ;
+    sh:setShape(sh:boolean, sh:defShapeBoolean()) 
+}
+
+
+# funcall(oper, shape, o, val)
+function sh:defShapePath1() {
+    let (alist = @(sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive       
+            sh:maxInclusive sh:maxExclusive sh:nodeKind sh:in sh:languageIn sh:node 
+            sh:class sh:property sh:pattern sh:patternIn
+            sh:type)) {        
+        alist 
+    }
+}
+
+# funcall(oper, shape, sh, vis, s, p, val)
+function sh:defShapePath2() {
+    let (alist = @(sh:equals sh:disjoint 
+            sh:and sh:or sh:xone sh:not
+            sh:maxCount sh:minCount
+            sh:hasValue sh:uniqueLang sh:lessThan sh:lessThanOrEquals)) {
+        alist 
+    }
+}
+
+# path step as function
+# [xsh:exist (exp)] ::= [xsh:function [xsh:exist(exp)]]
+#
+function sh:defShapePathExtension() {
+    let (alist = @(xsh:evaluate xsh:compute xsh:trace xsh:funeval 
+        xsh:exist xsh:notExist xsh:filter xsh:notFilter 
+        xsh:equal xsh:notEqual 
+        xsh:predicatePath xsh:triplePath xsh:nodePath
+        xsh:node xsh:subject xsh:predicate xsh:object xsh:graph
+        xsh:from 
+        xsh:success xsh:failure xsh:display
+        xsh:extension
+        )) {        
+        alist 
+    }
+}
+
+function sh:defShapeNodeExtension() {
+    let (alist = @(xsh:evaluate xsh:compute xsh:trace xsh:funeval 
+        xsh:exist xsh:notExist xsh:filter xsh:notFilter 
+        xsh:equal xsh:notEqual 
+        xsh:triplePath xsh:subject xsh:predicate xsh:object xsh:graph
+        # xsh:node sh:node [constraint ] is not a function, it is std SHACL
+        xsh:success xsh:failure
+        )) {        
+        alist 
+    }
+}
+
+function sh:defShapeNode1() {
+    let (alist = @(sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive 
+            sh:maxInclusive sh:maxExclusive sh:nodeKind sh:in sh:languageIn sh:node 
+            sh:hasValue sh:pattern sh:patternIn)) {
+        alist
+    }
+}
+
+function sh:defShapeNode2() {
+    let (alist = @(sh:class sh:equals sh:disjoint 
+            sh:type )) {
+        alist
+    }
+}
+
+function sh:defShapeBoolean() {
+    let (alist = @(sh:and sh:or sh:xone sh:not shex:count )) {
+        alist
+    }
+}
+
+# sh:path1 = (sh:minLength sh:maxLength ...)
+function sh:getShape(name) {
+    xt:get(mapshape, name)
+}
+
+function sh:setShape(name, list) {
+    if (xt:has(mapshape, name), 
+        xt:set(mapshape, name, xt:merge(xt:get(mapshape, name), list)), 
+        xt:set(mapshape, name, list))
+}
+
+# user api
+function sh:defShape(name, value) {
+    set (mapshape = coalesce(mapshape, xt:map())) ;
+    sh:setShape(name, dt:list(value)) 
+}
+
+#
+# record relevant properties of sh  in a map
+#
+function sh:getShapeConstraint(name, sh) {
+    return (if (sh:hasConstraint(name, sh), 
+        sh:getConstraint(name, sh), 
+        sh:setConstraint(name, sh, funcall(name, sh:shaclGraph(), sh))))
+}
+
+function sh:hasConstraint(name, sh) {
+    xt:has(sh:getmap(name), sh)
+}
+
+# get relevant properties of sh  in a table
+function sh:getConstraint(name, sh) {
+    xt:get(sh:getmap(name), sh)
+}
+
+# record relevant properties of sh  in a table
+function sh:setConstraint(name, sh, value) {
+    #xt:print("setConstraint:", name, sh, value);
+    xt:set(sh:getmap(name), sh, value)
+}
+
+function sh:addConstraint(name, sh, value) {
+    #xt:print("addConstraint:", name, sh, value);
+    if (sh:hasConstraint(name, sh), 
+        xt:set(sh:getmap(name), sh, xt:append(sh:getConstraint(name, sh), value)), 
+        xt:set(sh:getmap(name), sh, value))
+}
+
+# user api
+# name = sh:hasValue  ; value = 10 
+# return [xsh:function [xsh:filter ([sh:hasValue 10])]]
+# use case: define new path operator implemented as filter
+# [xsh:nodeAxis URI] -> [xsh:triple (xsh:predicate)] 
+#   [xsh:nodePath xsh:object] [xsh:filter ([sh:hasValue URI])]
+#
+function sh:defFilter(sh) {
+    sh:funpath(xsh:filter, xt:list(sh))
+}
+
+
+# node constraint
+#
+function sh:defConstraint(name, value) {
+    let (sh = bnode()) {
+        sh:defNodeConstraint(sh, name, value)
+    }
+}
+
+function sh:defNodeConstraint(sh, name, value) {
+    let (class = sh:getConstraintClass(name),
+         exp   = sh:parameter(class, name, value)) {
+        sh:setConstraint(sh:constraintcore, sh, true) ;
+        sh:setConstraint(class, sh, exp) ;
+        sh
+    }
+}
+
+
+# path constraint
+# sh:property [sh:path path ; name value]
+# path is a compiled path expression
+# 
+function sh:defPathConstraint(path, name, value) {
+    let (sh = bnode()) {
+        sh:defPathConstraint(sh, path, name, value)
+    }
+}
+
+function sh:defPathConstraint(sh, path, name, value) {
+    #xt:print("defpath:", path, name, value);
+    let (cst = bnode(), class = sh:getPathConstraintClass(name)) {
+        sh:setConstraint(sh:path, path, path);
+        sh:setConstraint(sh:pathcore, sh, xt:list(xt:list(cst, path))) ;
+        sh:setConstraint(class, cst, sh:parameter(class, name, value)) ;
+        sh
+    }
+}
+
+
+function sh:parameter(class, name, value) {
+    if (class in (sh:nodeextension, sh:pathextension), 
+        xt:list(xt:list(xsh:function, name, value, true)),
+        xt:list(xt:list(name, value)))
+}
+
+# sh:cstgeneric1 | sh:cstgeneric2
+function sh:getConstraintClass(name) {
+    if (xt:member(name, sh:getShape(sh:node1)), sh:cstgeneric1, 
+    if (xt:member(name, sh:getShape(sh:node2)), sh:cstgeneric2,
+    sh:nodeextension))
+}
+
+function sh:getPathConstraintClass(name) {
+    if (xt:member(name, sh:getShape(sh:path1)), sh:path1, 
+    if (xt:member(name, sh:getShape(sh:path2)), sh:path2, 
+    if (name = sh:qualifiedValueShape,          sh:path3,
+    sh:pathextension)))
+}
+
+
+
+
+
+function sh:defBoolean(oper, exp) {
+    if (oper = sh:not, sh:defBooleanNot(oper, exp), sh:defBooleanBasic(oper, exp))
+}
+
+function sh:defBooleanNot(oper, exp) {
+    let (sh = bnode()) {
+        sh:setConstraint(sh:booleancore, sh, xt:list(xt:list(oper, exp)));
+        sh
+    }
+}
+
+# expList is a list of compiled  constraints
+#
+function sh:defBooleanBasic(oper, expList) {
+    let (sh = bnode(), bn = bnode()) {
+        sh:setConstraint(sh:booleancore, sh, xt:list(xt:list(oper, bn)));
+        sh:setConstraint(sh:coreboolean, bn, expList);
+        sh
+    }
+}
+
+
+
+
+function sh:getmap(name) {
+    if (xt:has(mapmap, name), xt:get(mapmap, name), xt:set(mapmap, name, xt:map()))
+}
+
+function sh:getrecordmap(name, suc) {
+if (suc,
+    if (xt:has(recordmapsuc, name),  xt:get(recordmapsuc, name),  xt:set(recordmapsuc, name, xt:map())),
+    if (xt:has(recordmapfail, name), xt:get(recordmapfail, name), xt:set(recordmapfail, name, xt:map())))   
+}
+
+
+function xsd:boolean sh:safe(dt:graph shape, sh, xsd:boolean suc) {
+    suc
+}
+
+
+
+
+function sh:value(v){
+    return(if (isURI(v) && v = sh:null, error(), v))
+}
+
+function sh:isValue(v){
+    return (! (isURI(v) && v = sh:null))
+}
+
+function xsd:boolean sh:trace() {
+    return (coalesce(shaclTrace, false))
+}
+
+function xsd:boolean sh:trace(xsd:boolean bb) {
+    set (shaclTrace = bb )
+}
+
+
+
+function sh:bnodeid2(){
+    coalesce(bnodeid, set(bnodeid = bnode()))
+}
+
+function sh:prettyNodeOrList(shape, var) {
+    if (isExtension(var),
+        strdt(sh:fun2rdf(var), xt:graph),
+        sh:graphdt(shape, var))
+}
+
+# trick datatype for st:turtle transformation to pprint a graph in Turtle format
+function sh:graphdt(shape, var){
+    if (isBlank(var), 
+        return(strdt(sh:turtle(shape, var), xt:graph)), 
+        var)
+}
+
+function sh:turtle(shape, var) {
+    xt:turtle(shape, var)
+    #xt:syntax(st:turtle, shape, var)
+}
+
+#
+#
+function sh:document(sh) {
+    xt:print("document:", sh);
+    for ((name amap) in mapmap) {
+        if (xt:has(amap, sh)) {
+            let (value = xt:get(amap, sh)) {
+                if (! isExtension(value) || xt:size(value) > 0, xt:print(sh, value), true) ;
+                coalesce(sh:documentBasic(value), true) ;
+                for (elem in value) {
+                    if (isBlank(elem)) {
+                        sh:document(elem)
+                    }
+                }
+            }
+        }
+    }
+}
+
+function sh:documentBasic(list) {
+    for ((key val) in list) {
+        if (isBlank(key)) {
+            sh:document(key)
+        } ;
+        if (isBlank(val)) {
+            sh:document(val)
+        }
+    } 
+}
+
+
+function sh:graphbnode(shape, var){
+    if (isBlank(var),  
+        return(sh:graphdt(shape, var)),
+        return(error()))
+}
+
+
+function sh:init(){
+    map (sh:define, sh:def())
+}
+
+function sh:define(def){
+    let ((name, value) = def){
+        sh:setConstraint(sh:def, name, value)
+    } ;
+    return(true)
+}
+
+function dt:list sh:def(){
+    let (list = @(
+        (xsh:function       xsh:FunctionConstraintComponent)
+        (sh:class           sh:ClassConstraintComponent)
+        (sh:datatype        sh:DatatypeConstraintComponent)
+        (sh:nodeKind        sh:NodeKindConstraintComponent)
+        (sh:minCount        sh:MinCountConstraintComponent)
+        (sh:maxCount        sh:MaxCountConstraintComponent)
+        
+        (sh:minExclusive	sh:MinExclusiveConstraintComponent)
+        (sh:minInclusive	sh:MinInclusiveConstraintComponent)
+        (sh:maxExclusive    sh:MaxExclusiveConstraintComponent)
+        (sh:maxInclusive    sh:MaxInclusiveConstraintComponent)
+        (sh:minLength       sh:MinLengthConstraintComponent)
+        (sh:maxLength       sh:MaxLengthConstraintComponent)
+        (sh:pattern	        sh:PatternConstraintComponent)
+        (sh:languageIn      sh:LanguageInConstraintComponent)
+        (sh:uniqueLang      sh:UniqueLangConstraintComponent)
+        (sh:equals          sh:EqualsConstraintComponent)
+        (sh:disjoint        sh:DisjointConstraintComponent)
+        (sh:lessThan        sh:LessThanConstraintComponent)
+        (sh:lessThanOrEquals sh:LessThanOrEqualsConstraintComponent)
+        (sh:not             sh:NotConstraintComponent)
+        (sh:and             sh:AndConstraintComponent)
+        (sh:or              sh:OrConstraintComponent)
+        (sh:xone            sh:XoneConstraintComponent)
+        (sh:node            sh:NodeConstraintComponent)
+        (sh:qualifiedValueShape sh:QualifiedValueShapeConstraintComponent)
+        (sh:qualifiedMinCount   sh:QualifiedMinCountConstraintComponent)
+        (sh:qualifiedMaxCount   sh:QualifiedMaxCountConstraintComponent)
+        (sh:qualifiedValueShapesDisjoint sh:qualifiedValueShapesDisjointConstraintComponent)
+        (sh:closed      sh:ClosedConstraintComponent)
+        (sh:hasValue    sh:HasValueConstraintComponent)
+        (sh:in          sh:InConstraintComponent)
+        
+        (sh:sparql      sh:SPARQLConstraintComponent)
+    ) ) {
+        return(?list)
+    } 
+} 
+
+
+
+function sh:isdefby(name){
+    sh:checkinit() ;
+    let (amap = sh:getmap(sh:def)) {
+        return (sh:getConstraint(sh:def, name))
+    }
+}
+
+function sh:checkinit() {
+    if (bound(mapmap), true, sh:start(xt:graph()))
+}
+
+

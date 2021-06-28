@@ -1,0 +1,22 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template  {
+  str(?triple)     
+  
+  str(?tuple)
+  
+}
+where { 
+  ?in ?pp ?y   
+  filter isURI(?in)
+  
+  bind (st:call-template(st:urivalue, ?in) as ?pvalue) 
+  bind (st:call-template(st:tuple, ?in)    as ?tuple)
+  
+  bind (if (strlen(?pvalue) > 0, 
+    st:format("%s %s%s", st:turtle(?in), ?pvalue, if (strlen(?tuple) > 0, " .", "")), 
+    "") as ?triple)
+}
+limit 1

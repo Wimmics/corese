@@ -1,0 +1,130 @@
+#
+# SHACL Property Path Interpreter Extension Function
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
+
+
+# PPath interpreter Extension 
+
+
+# Generic extension function, for interpreter extension and user extension
+# Used in path 
+# function for [xsh:function [ us:foo(arg) ]] path element
+# exp = (us:foo (arg))
+# function name defined in operator, eg: xsh:exist, xsh:filter
+# focus = from(us:g1 us:g2) may be empty
+#
+function dt:list xsh:function(focus, subject, node, exp, inv, url) {
+   #xt:print("function:", node, exp);
+    let ((name param) = exp) {
+        if (name in (xsh:triplePath, xsh:tripleExtension, xsh:predicatePath), 
+            funcall(name, focus, subject, node, param),
+            funcall(name, subject, node, param))
+    }
+}
+
+
+
+# ***********************************************
+
+
+# sh:path (us:location [ xsh:ldpath (rdf:type) ])
+# ?path = (rdf:type)
+function dt:list xsh:ldpath(focus, subject, ?s, ?path, ?inv, url) {
+    let ((?p ?q) = ?path) {
+    if (bound(?q), 
+        return(sh:myldpath(?s, ?p, ?q)), 
+        return(sh:myldpath(?s, ?p)))
+    }
+}
+
+# dereference URI ?s and compute path ?p on graph URI
+function dt:list sh:myldpath(?s, ?p){
+    let (?g = xt:load(?s, st:nt, st:turtle)) {
+        let (select ?g ?s ?p (aggregate(?o) as ?l) where  { graph ?g { ?s ?p ?o }}){
+            if (us:trace(), xt:print("ldpath:", ?s, ?p, ?l), false);
+            return(?l)
+        }
+    }
+}
+
+function dt:list sh:myldpath(?s, ?p, ?q){
+    let (?g = xt:load(?s, st:nt, st:nt)) {
+        let (select ?g ?s ?p ?q (aggregate(?o) as ?l) where  { graph ?g { ?s ?p [ ?q ?o ] }}){
+        if (us:trace(), xt:print("ldpath:", ?s, ?p, ?q, ?l), false);
+            return(?l)
+        }
+    }
+}
+
+function us:trace() {
+    return (coalesce(traceService, set(traceService = false)))
+}
+
+
+
+# ***********************************************
+# xsh:service (<uri> rdf:type)
+
+
+
+#
+# (ai:location [ <http://dbpedia.org/sparql> (rdf:type ) ] )
+# arg = (<http://dbpedia.org/sparql> rdf:type )
+#
+# Path p and p/q are processed here. 
+# Other path processed recursively by ppath interpreter with argument url = server URI
+#
+function dt:list xsh:service(focus, subject, node, arg, inv, url) {
+    #if (us:trace(), xt:print("service1:", node, arg), false);
+    if (isBlank(node)) { return (xt:list()) } ;
+    let ((server | path) = arg,
+         (pp qq)  = path) {
+         if (us:trace()) { xt:print("service:", server, node, path) };
+         let (list = 
+                if (xt:size(path) = 2 && isURI(pp) && isURI(qq), 
+                    sh:myservice(server, node, pp, qq), 
+                if (xt:size(path) = 1 && isURI(pp), 
+                    sh:myservice(server, node, pp),
+                sh:evalpath(focus, subject, node, sh:sequence(path), inv, server)))) 
+            {
+            if (us:trace()) {xt:print("service list:", list) } ;
+            return (list)
+        }
+    }
+}
+
+# Simple path p
+function dt:list sh:myservice(?uri, ?s, ?p) {
+    let (select * (aggregate(?o) as ?l) where { service ?uri { ?s ?p ?o } }) {
+        return (?l)
+    }
+}
+
+# Simple path p/q
+function dt:list sh:myservice(?uri, ?s, ?p, ?q) {
+    #if (us:trace(), xt:print("service2:", ?p, ?q), false);
+    let (select * (aggregate(?o) as ?l) where { service ?uri { ?s ?p [ ?q ?o ] } }) {
+        return (?l)
+    }
+}
+
+
+# (ai:location [ <http://dbpedia.org/sparql> (rdf:type ) ] )
+# ?arg = (<http://dbpedia.org/sparql> rdf:type )
+#
+function dt:list xsh:service2(focus, subject, node, arg, inv, url) {
+    #if (us:trace(), xt:print("service1:", node, ?arg), false);
+    
+    let ((server | path) = arg) {
+        xt:print("service:", node, server, arg); 
+        return(sh:evalpath(focus, subject, node, sh:sequence(path), inv, server))
+    }
+}
+
+
+

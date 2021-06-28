@@ -1,0 +1,15 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:all {
+  st:apply-templates(?x)
+  ; separator = "\n\n"
+}
+where {
+  select distinct ?x where { 
+    ?x ?p ?y 
+    filter ( isURI(?x) || not exists { ?z ?q ?x } )
+  }
+}
+order by ?x

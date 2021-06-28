@@ -1,0 +1,15 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:resourcetype(?in, ?t) {
+format {
+    us:format(if (?bnode, ft:tagbn.html, ft:tag.html))
+    
+    st:turtle(?t, true)
+    st:linkuri(?in)
+    box { st:call-template(st:property, ?in, ?t) }
+}
+}
+where {
+   bind (isBlank(?in) as ?bnode)
+}
+

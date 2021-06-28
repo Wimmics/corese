@@ -1,0 +1,159 @@
+#
+# SHACL Interpreter function entry point
+# Select target nodes
+# for each shape ?sh, aggregate target nodes in ?list
+# call sh:hasShape for each shape ?sh with list of target nodes ?list
+# sh:hasShape defined in main.rq
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+
+  
+function xsd:boolean sh:shapeNode(dt:graph ?shape, ?s) {
+query(
+   select ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) 
+   where { 
+   
+    values ?s {UNDEF}
+    
+    {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     {?s ?p ?o} union {?a ?p ?s}
+     }
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     {?x ?p ?s} union {?s ?p ?a}
+     }
+    
+    union 
+    
+    {graph ?shape {
+        ?sh sh:targetClass ?c 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?c}
+     
+     union 
+    
+    {graph ?shape {
+        ?sh a sh:NodeShape, rdfs:Class
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?sh} 
+     
+    union 
+     
+    {graph ?shape {
+        ?sh sh:targetNode ?s
+        filter not exists { ?sh sh:deactivated true} }
+    }
+                      
+  } group by ?sh ) 
+} 
+
+
+function sh:shapeNode(?shape, ?s, ?sh) {
+query (
+   select ?shape ?sh ?s (aggregate(distinct coalesce(?a, ?s)) as ?list) 
+   where { 
+   
+    values (?shape ?s ?sh) { (UNDEF UNDEF UNDEF) }
+    
+    
+   {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     {?s ?p ?o} union {?a ?p ?s}
+    }    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     {?x ?p ?s} union {?s ?p ?a}
+     }
+    
+    union 
+    
+    {graph ?shape {
+        ?sh sh:targetClass ?c 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?c}
+     
+     union 
+    
+    {graph ?shape {
+        ?sh a sh:NodeShape, rdfs:Class
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?sh} 
+     
+    union 
+     
+    {graph ?shape {
+        ?sh sh:targetNode ?s
+        filter not exists { ?sh sh:deactivated true} }
+    }
+                          
+  } group by ?sh ) 
+} 
+
+
+
+function sh:shapeGraph(?shape, ?sh) {
+query (
+   select ?shape ?sh ?s (aggregate(distinct ?s) as ?list) 
+   where { 
+   
+    values ?sh {UNDEF}
+    
+    {graph ?shape {
+        ?sh sh:targetSubjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s ?p ?o}
+    
+    union
+    
+    {graph ?shape {
+        ?sh sh:targetObjectsOf ?p 				
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?x ?p ?s}
+    
+    union 
+    
+    {graph ?shape {
+        ?sh sh:targetClass ?c 
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?c}
+     
+     union 
+    
+    {graph ?shape {
+        ?sh a sh:NodeShape, rdfs:Class
+        filter not exists { ?sh sh:deactivated true} }
+        
+     ?s rdf:type/rdfs:subClassOf* ?sh} 
+     
+    union 
+     
+    {graph ?shape {
+        ?sh sh:targetNode ?s
+        filter not exists { ?sh sh:deactivated true} }
+    }
+                      
+  } group by ?sh )
+}  

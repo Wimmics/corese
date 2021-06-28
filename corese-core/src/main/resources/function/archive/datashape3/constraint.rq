@@ -1,0 +1,336 @@
+#
+# SHACL Interpreter 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix xsh: <http://www.w3.org/ns/shacl#> 
+prefix sx:  <http://www.w3.org/ns/shacl/function#> 
+prefix sm:  <http://www.w3.org/ns/shacl/message#> 
+prefix sr:  <http://www.w3.org/ns/shacl/result> 
+prefix msh: <http://ns.inria.fr/shacl/>
+
+function sh:constraint(report, sh, vis, nodeList, present) {
+    let (cstList1 = sh:getShapeConstraint(sh:cstgeneric1, sh),
+         cstList2 = sh:getShapeConstraint(sh:cstgeneric2, sh),         
+         cstList3 = sh:getShapeConstraint(sh:cstsparql, sh),         
+         cstList4 = sh:getShapeConstraint(sh:nodeextension, sh)) {
+         if (xt:size(cstList1)>0 || xt:size(cstList2)>0 || xt:size(cstList3)>0 ||xt:size(cstList4)>0) {
+            xt:event("@nodeShacl", sh, nodeList, cstList1, cstList2, cstList3, cstList4)
+         } ;
+         let (
+            b1 = sh:constraint1  (report, sh, vis, nodeList, cstList1, present),
+            b2 = sh:constraint2  (report, sh, vis, nodeList, cstList2),
+            b4 = sh:nodeextension(report, sh, vis, nodeList, cstList4),
+            b5 = sh:cstsparql    (report, sh, vis, nodeList, cstList3)) {
+        #xt:print("res:", b1 && b2 && b4 && b5);
+        return (b1 && b2 && b4 && b5)
+    }
+    }
+}
+
+# shape sh has several operators with value, ex: oper=sh:datatype value=xsd:string
+# operator defined as a function (in operator.rq) with same name
+# operator executed as funcall(oper, value)
+# list of (oper value) is computed once for each shape sh and stored in a table 
+# sh:getConstraint retrieve the list (oper value)
+# nodeList is either a list of nodes or a single node
+# sh:report generates a validation report in case of error
+#
+function sh:constraint1 (report, sh, vis, nodeList, cstList, present) {
+    let (res = true) {
+        for ((oper value) in cstList) {  
+            for (node in dt:list(nodeList)) {   
+                if (sh:contains(sh, node)) {}
+                else {
+                sh:push(sh, node);
+                let (suc = coalesce(
+                        if (oper = sh:node, 
+                            sh:node(report, node, value, present, false), 
+                            funcall(oper, node, value)),
+                        false)) {
+                        sh:report(report, oper, sh, if (oper = sh:node, value, sh:null),  node, sh:null, node, suc, vis) ;
+                        if (suc, true, set(res = false))
+                }
+                ; sh:pop()
+                }
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+# oper = xsh:function
+function sh:nodeextension (report, sh, vis, nodeList, cstList) {
+    let (res = true) {
+        for ((oper name value ternary) in cstList) {  
+            for (node in dt:list(nodeList)) {  
+                let (suc = coalesce(
+                        if (ternary, funcall(name, node, node, value), funcall(name, node, value)),
+                        false)) {
+                        sh:report(report, oper, sh, name, node, sh:null, node, suc, vis) ;
+                        if (suc, true, set(res = false))
+                    }
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+function sh:constraint2 (report, sh, vis, nodeList, cstList) {
+    let (res = true) {
+        for ((oper value) in cstList) {  
+            for (node in dt:list(nodeList)) {    
+                let (suc = coalesce(funcall(oper, report, sh, vis, node, value), false)) {
+                    if (suc, true, set(res = false))
+                }
+            }
+        } ;
+        return (res)
+    }
+}
+
+#
+# list: list of statements to retrieve in shape sh
+# return list of (oper list(arg))
+#
+function sh:getGenericShape(shape, sh, list) {
+    let (select ?shape ?sh ?list 
+        (aggregate(xt:list(?oper, ?arg)) as ?res) 
+        where {
+        graph ?shape {  
+            values ?list {UNDEF}
+            values ?oper { unnest(?list) }
+            ?sh ?oper ?val 
+            optional { ?sh sh:flags ?flag }
+            bind (
+                if (?oper = sh:pattern,   coalesce(xt:list(?val, ?flag), xt:list(?val)),
+                if (sh:isListOperator(?oper), sh:getValueList(?val),
+                ?val))            
+            as ?arg)
+        }
+    } ) {
+        return(res)
+    }
+}
+
+
+function sh:isListOperator(oper) {
+    oper in (sh:patternIn, sh:in, sh:languageIn)
+}
+
+
+# xsh:function [ us:fun (h:age 50) ]
+# xsh:function [ us:fun () ]
+# xsh:function us:fun
+# xsh:evaluate (rq:gt h:age (rq:mult 2 h:shoesize)) -> xsh:function [ ... ]
+# list = (sh:evaluate sh:compute ...)
+#
+function sh:getShapeExtension(shacl, sh, list) {
+    let (select ?shacl ?sh ?list
+            (aggregate(
+                #xt:list(xsh:function, ?name, ?arg, ?ternary)
+                xt:list(?ext, ?name, ?arg, ?ternary)
+            ) as ?res) 
+        where {
+            graph ?shacl {  
+                {   values ?list {UNDEF}
+                    ?sh ?name ?value 
+                    filter xt:member(?name, ?list)
+                    bind (xsh:function as ?ext)
+                }
+                union { 
+                    values ?list {UNDEF}
+                    
+                    {?sh xsh:function|xsh:nodeFunction ?fun 
+                     optional { ?fun ?oper ?param } 
+                     bind (xsh:function as ?ext) } 
+                     
+                     union 
+                     
+                     {?sh ?oper ?param filter strstarts(?oper, sx:)  
+                     bind (xsh:function as ?ext) } 
+                     
+                     union 
+                     
+                     {?sh ?oper ?param filter strstarts(?oper, sxp:)  
+                     bind (xsh:pathFunction as ?ext) } 
+                     
+                     union
+                     
+                    {?sh xsh:pathFunction ?fun              
+                     optional { ?fun ?oper ?param } 
+                     bind (xsh:pathFunction as ?ext) }
+                     
+                    bind (coalesce(?oper, ?fun) as ?name)
+                    bind (coalesce(?param, xt:list()) as ?value)
+                }
+                # in this context, sh:node is not a function, it is a std SHACL constraint
+                filter (?name != sh:node) 
+                bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
+                # used in path.rq
+                bind (xt:isFunction(?name, 2) as ?binary)
+                bind (xt:isFunction(?name, 3) as ?ternary)
+                filter (?binary || ?ternary) # function is defined
+            }
+        } ) {
+        return(res)
+    }
+}
+
+# xsh:messageFunction [ us:mess() ]
+function sh:getFunctionExtension(shacl, sh) {
+    let (select ?shacl ?sh 
+            (aggregate (xt:list(?ext, ?name, ?arg)) as ?res) 
+        where {
+            graph ?shacl {  
+                {?sh xsh:messageFunction ?fun . ?fun ?name ?value} union 
+                {?sh ?name ?value filter strstarts(?name, sm:)}
+                bind (xsh:messageFunction as ?ext) 
+                bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
+            }
+        } ) {
+        return(res)
+    }
+}
+
+# xsh:resultFunction [ us:mess() ]
+function sh:getResultExtension(shacl, sh) {
+    let (select ?shacl ?sh 
+            (aggregate (xt:list(?ext, ?name, ?arg)) as ?res) 
+        where {
+            graph ?shacl {  
+                {?sh xsh:resultFunction ?fun . ?fun ?name ?value}  
+                union {?sh ?name ?value filter strstarts(?name, sr:)}
+                bind (xsh:messageResult as ?ext) 
+                bind (sh:compile(?name, sh:getValueList(?value)) as ?arg)
+            }
+        } ) {
+        return(res)
+    }
+}
+
+# (fun x y) -> (fun (x y))
+function sh:compile(name, exp) {
+    if (name in (xsh:evaluate, xsh:compute), sh:compile(exp), exp)
+}
+
+
+# (fun x1 x2) -> (fun (x1 x2))
+#
+function sh:compile(exp) {
+    if (isExtension(exp)) {
+        if (xt:size(exp) = 0) {
+            return (exp)
+        }
+        else {
+            let ((oper | param) = exp) {
+                xt:list(oper, maplist(sh:compile, param))
+            }
+        }
+    }
+    else {
+        exp
+    }
+}
+
+function sh:getValueList(value) {
+    if (isBlank(value)) {
+       coalesce(sh:reclist(value), value)
+    }
+    else if (isURI(value) && value = rdf:nil) {
+        return (xt:list())
+    }
+    else {
+        return(value)
+    }
+}
+
+function sh:reclist(l) {
+  let (select ?l 
+       (aggregate (if (?b, sh:reclist(?e), 
+                   ?e)) as ?list) 
+                   #if (?e = rdf:nil, xt:list(), ?e))) as ?list) 
+        where {
+            ?l rdf:rest*/rdf:first ?e
+            bind (exists { ?e rdf:rest ?a } as ?b)
+        } ) {
+    return (list)
+  }
+}
+
+
+function sh:cstgeneric1(shape, sh) {
+    sh:getGenericShape(shape, sh, sh:getShape(sh:node1))
+}
+
+function sh:cstgeneric2(shape, sh) {
+    sh:getGenericShape(shape, sh, sh:getShape(sh:node2))
+}
+
+function sh:nodeextension(shape, sh) {
+    sh:getShapeExtension(shape, sh, sh:getShape(sh:nodeextension))
+}
+
+
+function sh:class (report, sh, vis, s, ?c) {
+    let (suc = exists { ?s rdf:type/rdfs:subClassOf* ?c } ) {
+        sh:report(report, sh:class, sh, s, rdf:type, s, suc, vis) ;
+        return (suc)
+    }
+}
+
+function sh:type (report, sh, vis, s, ?c) {
+    let (suc = exists { ?s rdf:type ?c } ) {
+        sh:report(report, sh:type, sh, s, rdf:type, s, suc, vis) ;
+        return (suc)
+    }
+}
+
+function sh:disjoint (report, sh, vis, s, p) {
+    let (l = sh:ppath(s, p), suc = ! xt:member(s, l)) {
+        sh:report(report, sh:disjoint, sh, s, p, s, suc, vis) ;
+        return (suc)
+    }
+}
+
+function sh:equals (report, sh, vis, s, p) {
+    let (l  = sh:ppath(s, p),
+         b1 = sh:equals1(report, sh, vis, s, p, l),
+         b2 = sh:equals2(report, sh, vis, s, p, l)) {
+            return (b1 && b2)
+    }
+}
+
+
+function sh:equals1 (report, sh, vis, s, p, l) {
+    let (suc = xt:member(s, l)) {
+        sh:report(report, sh:equals, sh, s, p, s, suc, vis);
+        return (suc)
+    }
+}
+
+function sh:equals2 (report, sh, vis, s, p, l) {
+    let (res = true) {
+        for (m in l) {
+            let (suc = s = m) {
+                sh:report(report, sh:equals, sh, s, p, m, suc, vis);
+                set (res = res && suc)
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+
+
+
+
+
+
+
+

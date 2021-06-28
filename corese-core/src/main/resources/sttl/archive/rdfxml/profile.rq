@@ -1,0 +1,62 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+prefix ht: <http://ns.inria.fr/sparql-template/format/rdfxmlhtml/>
+
+template st:profile {}
+where {}
+
+function st:literal(?x){
+    if (st:get(st:html, true), 
+        ?x, 
+        #st:format("<span class='literal'>%s</span>", ?x), 
+        ?x)
+}
+
+function us:clean(?x) {
+    ?x
+}
+
+function st:clean(?x) {
+   replace(replace(?x, "&", "&amp;"), "<", "&lt;") 
+}
+
+function st:html(?x){
+    if (st:get(st:html, true), st:clean(?x), ?x)
+}
+
+function us:format(?name){
+    if (st:get(st:html, true), uri(replace(?name, "rdfxml", "rdfxmlhtml")), ?name)
+}
+
+function st:linkuri(?x){
+    if (isURI(?x) && st:get(st:html, true) && st:get(st:hyperlink, true),
+        st:display(?x), str(?x))
+}
+
+# LOD URI hypertext link generated as is 
+# set by profile.ttl : st:param [ st:lod (URI) ]
+#
+function st:lod(?x){
+     coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
+}
+    
+function us:prepare(?uri){
+    ?uri
+#    coalesce(funcall(st:get(st:prepare), ?uri), ?uri)
+}
+
+
+
+# display resource uri
+function st:display(?x){
+    let (?profile = coalesce(st:get(st:profile), st:null)){
+      if (?profile = st:null){ 
+        str(?x) 
+      }
+      else if (st:lod(?x) || coalesce(st:getprofile(?x) = st:lod, false) ){
+        st:call-template(st:link, str(?x), str(?x))
+      }
+      else {
+        st:call-template(st:link, coalesce(st:pplink(us:prepare(?x)), us:prepare(?x)), str(?x))
+      }     
+    }
+}

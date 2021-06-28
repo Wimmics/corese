@@ -1,0 +1,12 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template st:resourceref(?in) {
+format {
+  us:format(if (?bnode, ft:resourcerefbn.html, ft:resourceref.html)) 
+  
+  st:linkuri(?in)
+}
+}
+where {
+   bind (isBlank(?in) as ?bnode)
+}
+

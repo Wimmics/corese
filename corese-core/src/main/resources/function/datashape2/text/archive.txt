@@ -1,0 +1,7 @@
+for ((oper val disjoint amin amax) in cstList3) {
+                            let (suc = coalesce(                    
+                                    sh:qualifiedValueShape(sh, vis, s, p, val, disjoint, amin, amax, targetList) , 
+                                    false) ) {
+                               if (! suc, set(res = false), true) 
+                            }
+                        }

@@ -1,0 +1,86 @@
+
+# input syntax: (name arg1 .. argn)
+# rewritten as explicit argList before processing:
+# (name (arg1 .. argn))
+
+(sh:property 
+(sh:path sh:knows) 
+(sh:qualifiedValueShape 
+    (sh:class foaf:Person)
+    (sh:qualifiedMinCount 1)
+    (sh:qualifiedMaxCount 1)
+    (sh:qualifiedValueShapesDisjoint true)
+)
+)
+
+
+function sh:testDefine() {
+    let (shape = @(sh:shape us:test
+        (sh:target (sh:targetClasss foaf:Person))
+        (sh:property (sh:path sh:foaf:knows) (sh:class foaf:Person))
+    )) {
+        shape
+    }
+}
+
+
+SHAPE ::=
+
+@(sh:shape ID
+
+(sh:target (TARGET TERM+)+ )?
+
+(sh:header
+    (sh:closed true) ?
+    (sh:ignoreProperties URI+) ?
+    (sh:desactivate true) ?
+)
+
+(PROPERTY_SHAPE | NODE_SHAPE) +
+
+)
+    
+
+PROPERTY_SHAPE ::=
+(sh:property 
+    (sh:path PATH)
+    (NODE_SHAPE|PROPERTY_SHAPE|PROPERTY_CST)+
+)
+
+NODE_SHAPE ::= BOOLEAN|CST
+
+BOOLEAN ::= (BOOL_OPER (PROPERTY_SHAPE | NODE_SHAPE)+)
+
+CST ::= (ATOM_OPER value+)  
+
+PROPERTY_CST ::= (PROP_OPER  value+)  
+
+
+
+
+
+TARGET ::= sh:targetClass sh:targetNode sh:targetObjectsOf sh:targetSubjectsOf
+
+
+BOOL_OPER ::= sh:and sh:or sh:not sh:xone
+
+ATOM_OPER ::=
+sh:minLength sh:maxLength sh:datatype sh:minInclusive sh:minExclusive       
+            sh:maxInclusive sh:maxExclusive sh:nodeKind sh:in sh:languageIn sh:node 
+            sh:class  sh:pattern 
+            sh:hasValue
+            sh:type sh:patternIn
+            
+
+PROP_OPER ::=
+sh:uniqueLang sh:minCount sh:maxCount sh:equals sh:disjoint sh:less sh:lessthan sh:qualifiedValueShape
+
+#(sh:qualifiedValueShape shape min max distinct)
+
+
+PATH ::=
+URI 
+(PATH_OPER PATH+)
+
+PATH_OPER ::=
+sh:sequencePath sh:alternativePath ...

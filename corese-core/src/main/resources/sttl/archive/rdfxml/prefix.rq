@@ -1,0 +1,13 @@
+template st:prefix {
+
+ st:nl()  
+ format { 
+    "xmlns:%s='%s'"  
+    str(?p) str(?n) 
+ }
+ ; separator = ""
+
+}
+where {
+  bind( kg:unnest(st:prefix()) as (?p, ?n))
+}

@@ -1,0 +1,455 @@
+#
+# SHACL Interpreter 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix xsh: <http://www.w3.org/ns/shacl#> 
+prefix msh: <http://ns.inria.fr/shacl/>
+prefix shex: <http://ns.inria.fr/shex/shacl#>
+
+@import <sparql.rq> <qualified.rq>
+
+
+#
+# shape: shacl graph
+# sh: current shape
+# vis: true if report is needed
+# nodeList:  list of target nodes of shape sh
+# path: path expression
+# present=true: fail when path is empty, use case: qualified value shape
+# 
+function sh:path(sh, vis, nodeList, path, present) {
+    if (sh:trace(), xt:print("path:", sh, path, nodeList), true);
+   let (b1 = sh:pathBasic(sh, vis, nodeList, path, present), 
+        b6 = sh:sparql(sh, vis, nodeList, path)
+       ) {
+       return (b1 &&  b6)
+    }
+}
+
+
+#
+# nodeList: target node list 
+# p: the path
+# oper=sh:nodeKind ; val=sh:IRI
+# present = true: return false when path is empty; use case: qualified value shape
+#
+
+function sh:pathBasic(sh, vis, nodeList, p, present) {
+    #xt:print("path", sh, p, nodeList);
+    let (res = true, 
+        opt      = sh:getShapeConstraint(sh:optional, sh),
+        cstList1 = sh:getShapeConstraint(sh:path1, sh),
+        cstList2 = sh:getShapeConstraint(sh:path2, sh),
+        cstList3 = sh:getShapeConstraint(sh:path3, sh),
+        cstList4 = sh:getShapeConstraint(sh:pathextension, sh),
+        b1 = xt:size(cstList1) > 0,
+        b2 = xt:size(cstList2) > 0,
+        b3 = xt:size(cstList3) > 0,
+        b4 = xt:size(cstList4) > 0) {
+        #xt:print("path:",  cstList1);
+        if (! (b1 || b2 || b3 || b4)) {
+            if (sh:trace(), xt:print("path:", sh, "no path constraint"), true)
+        }
+        else {
+            #xt:print("path:", p, nodeList, opt);
+            #xt:print("path:", nodeList, p);
+            if (sh:trace()) {
+                xt:print("path cst1:", cstList1);
+                xt:print("path cst2:", cstList2);
+                xt:print("path cst3:", cstList3);
+                xt:print("path cst4:", cstList4)
+            } ;
+            xt:event("@pathShacl", sh, nodeList, p, cstList1, cstList2, cstList3, cstList4);
+                        
+            for (s in dt:list(nodeList)) {
+                            
+                let (targetList = sh:ppath(s, p)) {
+                    #xt:print("path:", s, p, targetList, present);
+                    
+                    if (b1) {
+                        # present: special case for qualified value shape
+                        if (present && xt:size(targetList) = 0) {
+                            return(false)
+                        } ;
+                        
+                        # use case: shex optional statement
+                        if (opt     && xt:size(targetList) = 0) {
+                            return (true)
+                        } ;
+                        
+                        for (o in targetList) {
+                            if (sh:contains(sh, o)) {}
+                            else {
+                            sh:push(sh, o);
+                            
+                            for ((oper val) in cstList1) {
+                                if (oper = sh:node) {
+                                    sh:initSubReport();
+                                    let (detail = sh:isSetup(sh:nodeDetail), 
+                                        save    = sh:subValidationReport(detail),
+                                        suc = coalesce(sh:node(o, val, present), false)) {
+                                        sh:restoreValidationReport(detail, save);
+                                        sh:reportDetail(oper, sh, val, s, p, o, suc, vis) ;
+                                        if (! suc, set(res = false), true) 
+                                    }
+                                }
+                                else {
+                                    let (suc = coalesce(
+                                                if (oper in (sh:property), 
+                                                    funcall(oper, o, val, present), 
+                                                    funcall(oper, o, val)),
+                                                false)) {
+                                                
+                                            if (oper in (sh:property), true, 
+                                                sh:report(oper, sh, s, p, o, suc, vis)) ;
+                                            if (! suc, set(res = false), true) 
+                                    }
+                                }
+                            }
+                            
+                            ; sh:pop()
+                            } ;
+                            
+                            #xt:print("res1:", sh, s, p, o, res)
+                        } 
+                    } ;
+                                                           
+                    if (b2) {
+                        # sh:minCount sh:and sh:or ...
+                         # use case: shex optional statement
+                        if (opt     && xt:size(targetList) = 0, return (true), true);
+                        
+                        for ((oper val) in cstList2) {
+                            let (suc = coalesce(
+                            if (oper in (sh:and, sh:or, sh:xone, sh:not),  
+                                funcall(oper, sh, vis, s, p, val, targetList, present),   
+                                funcall(oper, sh, vis, s, p, val, targetList)),   
+                            false)) {
+                                if (! suc) {
+                                    set(res = false) 
+                                }
+                            } ;
+                            
+                           # xt:print("res2:", sh, oper, val, s, p, res)
+                        } ;
+                        
+                    } ;
+                    
+                    if (b3) {
+                        # use case: shex optional statement
+                        if (opt     && xt:size(targetList) = 0, return (true), true);
+                        
+                        let (suc = sh:qualifiedValueShape(sh, vis, s, p, targetList, cstList3)) {
+                            if (! suc, set (res = false), true) ;
+                            #xt:print("res3:", sh, s, p, res)
+                        }
+                    } ;
+                    
+                    if (b4) {
+                        # xsh:function [ us:test(term) ]
+                        # oper = xsh:function
+                        # name = us:test 
+                        # value = (term)
+                        for ((oper name value ternary) in cstList4) {
+                            if (name = sh:display) {
+                                funcall(name, s, targetList, value)
+                            }
+                            else if (oper = xsh:pathFunction) {
+                                let (suc = coalesce(funcall(name, s, targetList, value), false)) {
+                                    sh:report(oper, sh, name, s, p, targetList, suc, vis) ;
+                                    if (! suc, set(res = false), true) 
+                                }
+                            }
+                            else {
+                                for (o in targetList) {
+                                    let (suc = coalesce(
+                                        if (ternary, funcall(name, s, o, value), 
+                                            funcall(name, o, value)), 
+                                            false)) {
+                                            sh:report(oper, sh, name, s, p, o, suc, vis) ;
+                                            if (! suc, set(res = false), true) 
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    
+                }
+            }
+        };
+        
+        xt:event("@pathShacl", sh, nodeList, p, cstList1, cstList2, cstList3, cstList4, res);
+        return (res)
+    }
+}
+
+
+
+# *******************************************
+
+
+#
+# Retrieve properties of constraint sh using a query, do it once
+# they are stored as a list in a map by sh:getConstraint defined in core.rq
+#
+
+function sh:getPathShape(shape, sh, shapeList) {
+    let (select ?shape ?sh ?shapeList 
+    (aggregate (xt:list(?oper, ?arg)) as ?list) 
+    where {
+            graph ?shape { 
+                values ?shapeList {UNDEF}
+                values ?oper { unnest(?shapeList) }
+                ?sh ?oper ?val 
+                optional { ?sh sh:flags ?flag }
+                bind (
+                    if (?oper = sh:pattern,   coalesce(xt:list(?val, ?flag), xt:list(?val)),
+                    if (sh:isListOperator(?oper), sh:getValueList(?val),
+                    ?val))
+                as ?arg)
+                filter if (?oper = sh:uniqueLang, sameTerm(?val, true), true)
+            }
+        } ) {
+        return(list)
+    }
+}
+
+
+function sh:optional(shape, sh) { 
+    exists { ?sh shex:optional true }
+}
+
+
+function sh:pathextension(shape, sh) {
+    sh:getShapeExtension(shape, sh, sh:getShape(sh:pathextension))
+}
+        
+function sh:path1(shape, sh) {
+    sh:getPathShape(shape, sh, sh:getShape(sh:path1))
+}
+
+function sh:path2(shape, sh) {
+    sh:getPathShape(shape, sh, sh:getShape(sh:path2))
+}
+
+
+
+function sh:lessThan(sh, vis, s, p, q, nodeList){
+    sh:lessThanList(sh, vis, s, p, q, false, sh:lessThan, nodeList)
+}
+
+function sh:lessThanOrEquals(sh, vis, s, p, q, nodeList){
+    sh:lessThanList(sh, vis, s, p, q, true, sh:lessThanOrEquals, nodeList)
+}
+
+function sh:lessThanList(sh, vis, s, p, q, leq, oper, nodeList){
+    let (suc = true, targetList = xt:objects(s, q)) {
+        for (o in nodeList) { 
+            for (v in targetList) {
+                let (res = coalesce(if (leq, o <= v, o < v), false)) {
+                    sh:report(oper, sh, s, p, o, res, vis) ;
+                    if (! res) {
+                        set(suc = false)
+                    } 
+                }
+            }
+        } ;
+        return (suc)
+    }
+}
+
+
+function sh:uniqueLang (sh, vis, s, p, v, nodeList){
+    let (suc = true, amap = xt:map(),
+         nodeLang = mapfindlist(lambda(value) { coalesce(lang(value) != "", false) }, nodeList)) {
+         
+         for (value in nodeLang) {
+            let (lan = lang(value)) {
+                xt:set(amap, lan, coalesce(xt:get(amap, lan), 0) + 1)
+            }
+         } ;
+         
+         for ((lan value) in amap) {
+            let (res = value = 1) {
+                if (res, true, set(suc = false));
+                sh:report(sh:uniqueLang, sh, s, p, lan, res, vis)
+            }
+         } ;
+         
+        return (suc)
+    }
+}
+
+
+
+function sh:hasValue (sh, vis, s, p, v, nodeList) {
+    let (suc = sh:hasValueList(v, nodeList)) {
+        sh:report(sh:hasValue, sh, s, p, v, suc, vis) ;
+        return (suc)
+    }
+}
+
+function sh:hasValueList (object, list) {
+    for (value in list) {
+        if (coalesce(object = value, false), return(true), true)
+    } ;
+    return (false)
+}
+
+
+function sh:minCount (sh, vis, s, p, m, nodeList) {
+    let (val = xt:size(nodeList),
+         suc = val >= m) { 
+        sh:report(sh:minCount, sh, s, p, val, suc, vis);
+        return(suc)
+    }
+}
+
+function sh:maxCount (sh, vis, s, p, m, nodeList) {
+    let (val = xt:size(nodeList),
+         suc = val <= m) { 
+        sh:report(sh:maxCount, sh, s, p, val, suc, vis);
+        return(suc)
+    }
+}
+
+
+
+
+
+function sh:disjoint (sh, vis, s, p, q, nodeList) {
+    let (res = true, 
+         l1 = nodeList,
+         l2 = sh:ppath(s, q)) {
+        for (o in l1) {
+            let (suc = ! xt:member(o, l2)) {
+                sh:report(sh:disjoint, sh, s, p, o, suc, vis) ;
+                set (res = res && suc)
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+
+function sh:equals (sh, vis, s, p, q, nodeList) {
+    let (l1 = nodeList, 
+         l2 = sh:ppath(s, q)) {         
+         let (b1 = sh:myequals (sh, vis, s, p, q, l1, l2),
+              b2 = sh:myequals (sh, vis, s, p, q, l2, l1)) {
+        return (b1 && b2)
+        }
+    }
+}
+
+function sh:myequals (sh, vis, s, p, q, l1, l2) {
+    let (res = true) {
+        for (o in l1) {
+            let (suc = xt:member(o, l2)) {
+                 sh:report(sh:equals, sh, s, p, o, suc, vis) ;
+                 set(res = res && suc) 
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+
+
+#
+# Boolean operators 
+#
+
+function sh:not (sh, vis, s, p, cst, nodeList, present) {
+    let (res = true) {
+        for (o in nodeList) {
+            let (suc = ! sh:core(cst, false, xt:list(o), present )) { 
+                sh:report(sh:not, sh, s, p, o, suc, vis);
+                set (res = res && suc)
+            }
+        } ;
+        return (res)
+    }
+}
+
+#
+# basic sh:and sh:or sh:xone defined in core.rq
+# cst is the bnode start list of shapes of boolean shape sh
+# sh sh:and cst where cst = (sh1 .. shn)
+#
+function sh:and (sh, vis, s, p, cst, nodeList, present) {
+    let (res = true, shList = sh:getShapeConstraint(sh:pathboolean,  cst)) {
+        if (sh:trace(), xt:print("and:", sh, shList, nodeList), true);
+        for (o in nodeList) {
+            sh:initSubReport();
+            let (suc = coalesce(sh:and(cst, shList, o, present), false)) { 
+                if (suc, true, sh:reportDetail(sh:and, sh, s, p, o, suc, vis));
+                set (res = res && suc)
+            }
+        };
+        return (res)
+    }
+}
+
+function sh:or (sh, vis, s, p, cst, nodeList, present) {
+    let (res = true, shList = sh:getShapeConstraint(sh:pathboolean, cst)) {
+        for (o in nodeList) {
+            sh:initSubReport();
+            let (suc = coalesce(sh:or(cst, shList, o, present), false)) { 
+                if (suc, true, sh:reportDetail(sh:or, sh, s, p, o, suc, vis));
+                set (res = res && suc)
+            }
+        };
+        return (res)
+    }
+}
+
+function sh:xone (sh, vis, s, p, cst, nodeList, present) {
+    let (res = true, shList = sh:getShapeConstraint(sh:pathboolean,  cst)) {
+        for (o in nodeList) {
+            sh:initSubReport();
+            let (suc = coalesce(sh:xone(cst, shList, o, present), false)) { 
+                if (suc, true, sh:reportDetail(sh:xone, sh, s, p, o, suc, vis));
+                set (res = res && suc)
+            }
+        };
+        return (res)
+    }
+}
+
+
+
+
+#
+# cst is the bnode start of the list of shapes of the boolean operator
+# and (sh1 .. shn) ; cst = (sh1 .. shn)
+# Return the list of shapes of the boolean operator
+#
+function sh:pathboolean(shape, cst) {
+     let ( 
+        SELECT ?cst  ?shape (aggregate(?sh) as ?list)
+		WHERE {
+            graph ?shape { 
+                ?cst rdf:rest*/rdf:first ?sh
+            } } ) { 
+            return (list)
+        }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

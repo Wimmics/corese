@@ -1,0 +1,187 @@
+#
+# LDScript Turtle Transformation
+# Olivier Corby - Inria 2018
+#
+
+@share @event 
+select (us:apply-templates() as ?out) 
+where {
+}
+
+
+# Utility functions
+function us:apply-templates() {
+    us:apply-templates-list(xt:list())
+}
+
+function us:apply-templates(x) {
+    us:apply-templates-list(xt:list(x))
+}
+
+function us:apply-templates(x, y) {
+    us:apply-templates-list(xt:list(x, y))
+}
+
+
+# Transformation Engine
+function us:apply-templates-list(list) {
+    for (q in us:templates()) {
+        coalesce(
+            let (amap = apply(q, list), ((res, out)) = amap) {
+                if (bound(res)) {
+                    return (out)
+                }
+            } , 
+            true)
+    } ;
+    return (st:turtle(list))
+}
+
+
+# Return template list
+function us:templates() {
+    let (list = xt:list(
+    
+        lambda() { 
+        query (
+            select (us:apply-templates(?x) as ?res) 
+                (group_concat(?res ; separator="\n\n")  as ?out)
+            where {
+                select distinct ?x where {
+                    ?x ?p ?y 
+                    filter (isURI(?x) || ! us:isSimpleRef(?x) )
+                }
+            }
+        ) } 
+        
+        ,
+        
+        lambda(?in) { 
+        query(
+            select ?in 
+                (us:apply-templates(?in, ?p)  as ?res) 
+                (concat(us:open(?in), group_concat(?res ; separator=" ; \n"), us:close(?in)) 
+                    as ?out)   
+            where {
+                select distinct ?in ?p
+                where { 
+                    ?in ?p ?y  filter not exists { ?in rdf:rest ?e }
+                } 
+                order by if (?p = rdf:type, 0, 1) ?p 
+            }
+            ) }   
+            
+          ,
+          
+          lambda(?in) {
+          query(
+                select ?in (true as ?res)
+                (concat( "(", group_concat(us:process(?e)), ")" ) as ?out)
+                where {
+                    ?in rdf:rest*/rdf:first ?e
+                }
+            )
+          }
+                    
+          ,
+          
+          lambda(?in, ?p) { 
+          query(
+            select ?in ?p           
+                (concat(st:turtle(?p), " ") as ?res) 
+                (concat(?res,  group_concat(us:process(?y) ; separator=", ")) as ?out)
+            where { 
+                ?in ?p ?y  
+            } 
+            ) }   
+                    
+                 
+        ) ) {
+            return (list)
+        }
+        
+}
+
+
+
+
+
+# x is object of a triple
+function us:process(x) {
+    if (isBlank(x), 
+        if (us:isSimpleRef(x), 
+            us:apply-templates(x), 
+            st:turtle(x)),
+        st:turtle(x))
+}
+
+# e is object of one triple ?
+function us:isSimpleRef(?e) {
+    exists { ?x ?p ?e  filter not exists { ?y ?q ?e filter (?x != ?y || ?p != ?q ) } }
+}
+
+# ?e is object of two triples ?
+function us:isMultiRef(?e) {
+    exists { ?x ?p ?e  ?y ?q ?e  filter (?x != ?y || ?p != ?q ) } 
+}
+
+function us:open(x) {
+    if (isBlank(x), 
+        if (us:isMultiRef(x), concat(st:turtle(x), " "), "["), 
+        concat(st:turtle(x), " "))
+}
+
+function us:close(x) {
+    if (isBlank(x), 
+        if (us:isMultiRef(x), " .", if (us:isSimpleRef(x), "]", "].")), 
+        " .")
+}
+
+
+#####################
+
+@before 
+function us:before(q) {
+    set(acount = 0)
+}
+
+@finishh
+function us:finish(amap) {
+    let (((out)) = amap) { xt:print(out) }    
+}
+
+@function 
+function us:function(ee, ff) {
+    set(acount = 1 + acount) ;
+    xt:print(acount, ff) 
+}
+
+@after 
+function us:after(amap) {
+    let (((out)) = amap) { 
+        xt:print(out) 
+        #; xt:write("/user/corby/home/AADemo/ldscript/tmp.ttl", out)
+    };
+    xt:print('nb:', acount)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

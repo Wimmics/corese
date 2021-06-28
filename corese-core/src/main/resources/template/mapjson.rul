@@ -1,0 +1,75 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Jun 21 13:43:42 CEST 2019
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+    
+    
+    
+<rule>
+<body>
+<![CDATA[
+template st:start {
+    st:call-template(st:json, ?map)
+} 
+where {
+    bind (xt:print("json transformation") as ?trace)
+    bind (xt:mappings() as ?map)
+}
+]]>
+</body>
+</rule>
+
+  
+    
+<rule>
+<body>
+<![CDATA[
+template st:main(?map) {
+    xt:json(?map)       
+} 
+where {
+}
+]]>
+</body>
+</rule>
+
+
+<rule>
+<body>
+<![CDATA[
+template st:json(?map) {
+    xt:content(?json)
+} 
+where {
+    bind (us:json(?map) as ?json)
+}
+
+function us:json(amap) {
+    let (json = xt:json(), list = xt:list()) {
+        for (res in amap) {
+            let (jsmap = xt:json()) {
+                for ((var val) in res) {
+                    xt:set(jsmap, var, val)
+                } ;
+                xt:print("json:", jsmap);
+                xt:add(list, jsmap)
+            }
+        } ;
+        xt:print("json", list);
+        xt:set(json, "results",  list) ;
+        xt:print("res:", json);
+        return (json)
+    }
+}
+]]>
+</body>
+</rule>
+
+
+
+
+</rdf:RDF>

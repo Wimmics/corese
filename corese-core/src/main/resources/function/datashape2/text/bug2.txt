@@ -1,0 +1,43 @@
+(sh:property 
+(sh:path sh:path ) 
+(sh:maxCount 1 ) 
+(sh:minCount 1 )
+
+(sh:node 
+(sh:property 
+(sh:path (sh:zeroOrMorePath (sh:alternativePath ((sh:sequencePath ((sh:zeroOrMorePath rdf:rest ) rdf:first ) ) (sh:sequencePath (sh:alternativePath (sh:zeroOrMorePath rdf:rest ) rdf:first ) ) sh:inversePath sh:zeroOrMorePath sh:oneOrMorePath sh:zeroOrOnePath ) ) ) ) 
+(sh:node 
+(sh:xone 
+
+(sh:nodeKind sh:IRI ) 
+
+(sh:and (sh:nodeKind sh:BlankNode ) 
+(sh:node (sh:property (sh:path (sh:oneOrMorePath rdf:rest ) ) (sh:minCount 2 ) ) 
+(sh:node (sh:property (sh:path (sh:zeroOrMorePath rdf:rest ) ) (sh:hasValue rdf:nil ) 
+(sh:node (sh:or (sh:and (sh:property (sh:path rdf:first ) (sh:maxCount 0 ) )
+(sh:property (sh:path rdf:rest ) (sh:maxCount 0 ) ) 
+(sh:hasValue rdf:nil ) ) 
+(sh:and (sh:property (sh:path rdf:first ) (sh:maxCount 1 ) (sh:minCount 1 ) )
+(sh:property (sh:path rdf:rest ) (sh:maxCount 1 ) (sh:minCount 1 ) ) 
+(sh:not (sh:hasValue rdf:nil ) ) ) ) ) ) ) ) ) 
+
+(sh:and (sh:property (sh:path sh:alternativePath ) (sh:maxCount 1 ) (sh:minCount 1 ) 
+(sh:node (sh:property (sh:path (sh:oneOrMorePath rdf:rest ) ) (sh:minCount 2 ) )
+(sh:node (sh:property (sh:path (sh:zeroOrMorePath rdf:rest ) ) (sh:hasValue rdf:nil ) 
+(sh:node (sh:or (sh:and (sh:property (sh:path rdf:first ) (sh:maxCount 0 ) ) 
+(sh:property (sh:path rdf:rest ) (sh:maxCount 0 ) ) (sh:hasValue rdf:nil ) ) 
+(sh:and (sh:property (sh:path rdf:first ) (sh:maxCount 1 ) (sh:minCount 1 ) ) 
+(sh:property (sh:path rdf:rest ) (sh:maxCount 1 ) (sh:minCount 1 ) ) (sh:not (sh:hasValue rdf:nil ) ) ) ) ) ) ) ) )
+(sh:closed true ) (sh:nodeKind sh:BlankNode ) )
+
+(sh:and (sh:property (sh:path sh:inversePath ) (sh:maxCount 1 ) (sh:minCount 1 ) )
+(sh:closed true ) 
+(sh:nodeKind sh:BlankNode ) )
+
+(sh:and (sh:property (sh:path sh:zeroOrMorePath ) (sh:maxCount 1 ) (sh:minCount 1 ) ) (sh:closed true ) (sh:nodeKind sh:BlankNode ) )
+
+(sh:and (sh:property (sh:path sh:oneOrMorePath ) (sh:maxCount 1 ) (sh:minCount 1 ) ) (sh:closed true ) (sh:nodeKind sh:BlankNode ) )
+
+(sh:and (sh:property (sh:path sh:zeroOrOnePath ) (sh:maxCount 1 ) (sh:minCount 1 ) ) (sh:closed true ) (sh:nodeKind sh:BlankNode ) ) ) ) ) ) 
+
+)

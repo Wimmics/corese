@@ -1,0 +1,15 @@
+sh:closedcore
+sh:deactivated
+sh:isclosedcore
+sh:path
+sh:sibling
+
+sh:path1
+sh:path2
+sh:pathextension
+
+sh:node1
+sh:node2
+sh:nodeextension
+
+sh:boolean

@@ -1,0 +1,319 @@
+#
+# SHACL Interpreter 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2020
+#
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
+prefix shex: <http://ns.inria.fr/shex/shacl#>
+
+function xsd:boolean sh:report(name, s, xsd:boolean suc, xsd:boolean vis) {
+    if (vis) {
+        sh:visit(name, s, suc)
+    } ;
+    return (true)
+}
+
+#
+# suc is success/failure of the shape
+# vis true means generate a ValidationResult
+#
+function xsd:boolean sh:report(name, sh, s, suc, vis){
+    sh:report(name, sh, st:null, s, st:null, st:null, suc, vis, st:null)
+}
+
+function xsd:boolean sh:report(name, sh, s, p, o, suc, vis){
+    sh:report(name, sh, st:null, s, p, o, suc, vis, st:null)
+}
+
+function xsd:boolean sh:report(name, sh, cst, s, p, o, suc, vis){
+    sh:report(name, sh, cst, s, p, o, suc, vis, st:null)
+}
+
+function xsd:boolean sh:report(name, sh, cst, s, p, o, suc, vis, message){
+    sh:record(name,  sh, cst, sh:shaclGraph(), s, p, o, suc, vis);
+    if (vis && ! suc) { 
+        sh:visit(name, s, suc) ;
+        return (sh:result(name, sh, cst, sh:shaclGraph(), s,  p, o, message)) ;
+    } ;
+    return(true)
+}
+
+
+
+#
+# create a validation result  graph
+# sh :  the shape
+# cst : the constraint in case of sh:node
+#
+function xsd:boolean sh:result(name, sh, cst, dt:graph shape, foc, path, node, message){
+    let (res = uuid(),
+        def = coalesce(sh:isdefby(name), name),
+        sev = coalesce(xt:value(shape, sh, sh:severity), sh:Violation),
+        mes = sh:getTheMessage(shape, sh, cst, foc, node),
+        mesfun = sh:messageFunction(shape, sh, cst, foc, node),
+        abnode = sh:bnodeid(),
+        rep = sh:validationReport()
+        ) {
+
+       sh:store(rep, abnode, rdf:type, sh:ValidationReport);
+       sh:store(rep, abnode, sh:result, res);
+       sh:store(rep, abnode, sh:conforms, false);
+       
+       
+       sh:store(rep, res, rdf:type, sh:ValidationResult);
+       sh:store(rep, res, sh:resultSeverity, sev);
+       sh:store(rep, res, sh:focusNode, foc);
+       sh:store(rep, res, sh:resultMessage, mes) ;
+       if (coalesce(mesfun = "", false), true,  
+            sh:store(rep, res, sh:resultMessage2, mesfun)) ;
+       sh:store(rep, res, sh:sourceConstraintComponent, def) ;
+       sh:store(rep, res, sh:sourceShape, sh) ;
+                                              
+       if (sh:isValue(path)) {
+            sh:store(rep, res, sh:resultPath, sh:prettyNodeOrList(shape, path))
+       } ; 
+       if (sh:isValue(node)) {
+            sh:store(rep, res, sh:value, node) 
+       } ;
+       
+       if (isBlank(node)) {
+            sh:store(rep, res, sh:valueDetail, sh:graphdt(shape, node)) 
+       } ;
+       if (isBlank(foc) && ! sh:isFast()) {
+            sh:store(rep, res, sh:focusNodeDetail, sh:graphdt(shape, foc)) 
+       };
+       if (isBlank(sh)) {
+            #sh:document(sh);
+            coalesce(sh:store(rep, res, sh:sourceShapeDetail, sh:getDefinition(sh)), true)
+       };
+       return (res)
+
+    } ;
+    #return (true)
+}
+
+
+
+
+
+
+#
+# Additional report
+#
+function sh:record(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc, xsd:boolean vis) {
+    if (vis) {
+        sh:userreport(name,  sh, cst, shape, foc, p, o, suc);
+        let (amap = sh:getrecordmap(name, suc)) {
+            xt:set(amap, sh,          coalesce(xt:get(amap, sh), 0) + 1) ;
+            xt:set(amap, sh:subtotal, coalesce(xt:get(amap, sh:subtotal), 0) + 1)  
+        } ;
+        let (bmap = sh:getrecordmap(sh:total, suc)) {
+             xt:set(bmap, sh:total, coalesce(xt:get(bmap, sh:total), 0) + 1)
+        }         
+    } ;
+    return(true)
+}
+
+function sh:userreport(name,  sh, cst, dt:graph shape, foc, p, o, xsd:boolean suc) {
+    if (sh:hasSetup(sh:callback), 
+        funcall(sh:setup(sh:callback), shape, sh, cst, name, foc, p, o, suc), 
+        true) 
+}
+
+function sh:tracerecord(shape, mapmap) {
+        for ((key val) in mapmap) {
+            if (key != sh:def) {
+                xt:print(key);
+                for ((sh value) in val) {
+                        xt:print(sh, ":", value) ;
+                        if (isBlank(sh)) {
+                            xt:print(xt:turtle(shape, sh))
+                        }
+                } ;
+                xt:print("__")
+            }
+        } ;
+        return (true)
+}
+
+# finish
+function xsd:boolean sh:success(xsd:boolean bb) {
+    if (bb) {
+        let (g = 
+            construct { [] a sh:ValidationReport ; sh:conforms true }
+            where { }
+            ) {
+            sh:insert(g, sh:validationReport())
+        }
+    } ;
+    return (true)
+}
+
+# insert report element g into report
+function sh:insert(dt:graph g, dt:graph report) {
+    for ((s p o) in g) {
+       #xt:focus(report, xt:insert(s, p, o))
+        xt:insert(report, s, p, o)
+    } 
+}
+
+
+function sh:store(gg, sub, pred, obj) {
+    xt:insert(gg, sub, pred, obj)
+}
+
+function sh:store2(gg, sub, pred, obj) {
+    xt:add(gg, xt:list(sub, pred, obj))
+}
+
+function sh:myvalidationReport() {
+    coalesce(tripleList, set(tripleList = xt:list()))
+}
+
+
+
+function sh:getTheMessage(shape, sh, cst, node, value) {
+    sh:basicMessage(shape, sh, cst)
+}
+
+#
+# when shape sh has xsh:messageFunction[ us:mess(param) ]
+# return  funcall(us:mess, sh, node, value, param)
+# use case: return contextual object in the neighborhood of node
+#
+function sh:messageFunction(shape, sh, cst, node, value) {
+    let (mf = sh:getMessageExtension(sh)) {
+        for ((oper name param) in mf) {
+            let (res = funcall(name, sh, node, value, param)) {
+                return (res)
+            }
+        }
+    } ;
+    return ("")
+}
+
+
+# ((xsh:messageFunction name param))
+function sh:getMessageExtension(sh) {
+    sh:getShapeConstraint(sh:messageExtension, sh)
+}
+
+
+# ((xsh:messageFunction name param))
+# sh:getFunctionExtension in constraint.rq
+function sh:messageExtension(shape, sh) {
+    sh:getFunctionExtension(shape, sh)
+}
+
+
+
+function sh:basicMessage(shape, sh, cst) {
+    coalesce (sh:getMessage(shape, sh, cst), 
+              concat("Fail at: ", sh:createMessage(shape, sh, cst)))
+}
+
+function sh:createMessage(shape, sh, cst) {
+    if (sh:isValue(cst), 
+        xt:turtle(shape, cst),
+        xt:turtle(shape, sh)  
+    )
+}
+
+function sh:getMessage(shape, sh, cst) {
+    if (sh:isValue(cst), 
+        coalesce(xt:value(shape, cst, sh:message), xt:value(shape, sh, sh:message)),
+        xt:value(shape, sh, sh:message)  
+        )
+}
+
+
+function sh:tracefinish() {
+    xt:print(xt:turtle(sh:validationReport()))
+}
+
+# when suc = false, declare error on node (for future pprint)
+function sh:visit(name, node, suc) {
+    st:visit(name, node, suc)
+}
+
+# within graph shape {}
+function dt:uri sh:severity(sh) {
+    coalesce(xt:value(sh, sh:severity), sh:Violation)
+}
+
+function sh:message(sh){
+    xt:value(sh, sh:message)
+}
+
+function sh:bnodeid(){
+    return(bnodeid) 
+}
+
+
+
+
+
+
+
+
+function sh:initSubReport() {
+    set (myreport = st:null)
+}
+
+#
+# Generate a validation result and join sub reports if any with sh:detail property
+# sub reports are stored in a specific graph in myreport
+#
+function sh:reportDetail(oper, sh, s, p, o, suc, vis) {
+    let (url = sh:report(oper, sh, s, p, o, suc, vis)) {
+         sh:reportDetail(url, suc, vis)
+    } 
+}
+
+function sh:reportDetail(oper, sh, cst, s, p, o, suc, vis) {
+    let (url = sh:report(oper, sh, cst, s, p, o, suc, vis)) {
+        sh:reportDetail(url, suc, vis)
+    } 
+}
+
+function sh:reportDetail(url, suc, vis) {
+    if (! suc && vis && sh:isValue(myreport)) {
+        sh:validationReportAdd(url, myreport);
+        set (myreport = st:null);
+    } 
+}
+
+
+#
+# url: uri of current validation result
+# g : validation report graph of substatement (node, boolean)
+# add additional reports and url sh:detail uri
+#
+function sh:validationReportAdd(url, g) {
+    letdyn (list = xt:focus(g, sh:collecturl()), res = url) {
+        sh:validationReport(xt:union(sh:validationReport(), g)) ;
+        map (function(id) { 
+                sh:store(sh:validationReport(), res, sh:detail, id); 
+             }, list)
+    }
+}
+
+function sh:collecturl() {
+    let (select (aggregate(?url) as ?list) where { ?url a sh:ValidationResult } ) {
+        return (list)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+

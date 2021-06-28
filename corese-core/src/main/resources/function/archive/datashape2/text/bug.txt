@@ -1,0 +1,11 @@
+setConstraint: sh:pathcore us:test ((_:bb1 h:hasFriend ) ) 
+
+setConstraint: sh:pathcore _:bb1 ((_:bb2 h:hasChild ) ) 
+setConstraint: sh:path1    _:bb2 ((sh:class h:Person ) )  
+
+
+setConstraint: sh:pathcore us:test ((_:b3 h:hasFriend ) ) 
+setConstraint: sh:path1 _:b3 ((sh:property _:b4 ) ) 
+
+setConstraint: sh:pathcore _:b4 ((_:b4 h:hasChild ) ) 
+setConstraint: sh:path1    _:b4 ((sh:class h:Person ) ) 

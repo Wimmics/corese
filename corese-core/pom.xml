@@ -14,8 +14,15 @@
     <artifactId>corese-core</artifactId>
 
     <name>corese-core</name>
-
+<properties>
+        <maven.test.skip>true</maven.test.skip>
+</properties>
     <dependencies>
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-text</artifactId>
+            <version>1.9</version>
+        </dependency>
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
@@ -41,6 +48,7 @@
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>sparql</artifactId>
+	    <version>${project.parent.version}</version>
         </dependency>
         <!--<dependency>-->
             <!--<groupId>xerces</groupId>-->

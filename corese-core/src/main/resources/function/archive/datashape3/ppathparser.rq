@@ -1,0 +1,369 @@
+#
+# Data Shape Property Path Interpreter
+# PP expressions are searched in graph ?shape 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
+prefix jc:   <function://fr.inria.corese.core.extension.SHACL>
+prefix h:    <http://www.inria.fr/2015/humans#>
+#
+# SHACL Path Compiler from RDF graph to list expression
+#
+
+#
+# Rewrite Property Path shape expression as a LDScript list
+#
+# ([sh:zeroOrMorePath rdf:rest] rdf:first)
+# ->
+# (sh:sequence ((sh:zeroOrMorePath rdf:rest) rdf:first))
+# URI may be URI of a subpath such as:
+# [sh:path ex:parent] .
+# ex:parent sh:alternativePath (ex:father ex:mother)
+# sh:path (ai:location [ xsh:service (<http://dbpedia.org/sparql> rdf:type ) )
+
+@import <ppathext.rq>
+
+
+function sh:pathparser(exp) {
+    let (path = sh:path(sh:shaclGraph(), exp)) {
+        path
+    }
+}
+
+function sh:pathparser(dt:graph shape, exp) {
+    sh:path(shape, exp)
+}
+
+
+function sh:path(dt:graph shape, exp) {
+  if (isURI(exp)) {
+    return (exp)
+  }
+  else if (isExtension(exp)) {
+        # exp is a list
+        letdyn (shacl = shape) {
+            let (list = maplist(lambda(term) { 
+                    sh:path(shacl, term) }, exp)) {
+                return (sh:sequence(list))
+            }
+        }
+  }
+  else if (isLiteral(exp)) { 
+     return (exp)
+  }
+  else {
+    let (select ?shape ?exp ?q ?path  where {
+            graph ?shape { 
+                ?exp ?q ?path   filter (?q not in (rdf:first, owl:sameAs))
+            }
+        } ) {
+        
+        if (! bound(q)) {
+            return(error())   
+        } else if (q = rdf:rest)  { 
+            return (sh:sequence(sh:listsh(shape, exp))) 
+        } else if (sh:extension(exp, q)) {
+            return (sh:extension(shape, q, path)) 
+        } else { 
+            let (res = sh:path(shape, path)) {
+                if (q = sh:alternativePath && xt:size(res) = 2 && xt:get(res, 0) = sh:sequencePath) {
+                    return (xt:list(q, xt:get(res, 1)))
+                }
+                else {
+                    return (xt:list(q, res))
+                }
+            }
+        }
+    }
+  }
+}
+
+function sh:sequence(list) {
+    return (xt:list(sh:sequencePath, list))
+}
+
+
+# [<http://dbpedia.org/sparql> (rdf:type)]
+# test isBlank because a path element may be an URI which may have properties
+# focus on local bnode 
+function sh:extension(exp, q) {
+    return (sh:statement(q) || sh:operator(q) || (isBlank(exp) && sh:usernamespace(q)))
+}
+
+function sh:statement(oper) {
+    oper in (xsh:service, xsh:ldpath)
+}
+
+function sh:operator(oper) {
+    sh:isFunction(oper)
+}
+
+
+function sh:isFunction(oper) {
+    oper = xsh:function || sh:isFunctionName(oper)
+}
+
+function sh:isFunctionName(oper) {
+     xt:member(oper, sh:defShapePathExtension()) || strstarts(oper, sx:)
+}
+
+function sh:usernamespace2(oper) {
+    ! mapany(rq:strstarts, oper, xt:list(rdf:, rdfs:, owl:, sh:))
+}
+
+function sh:usernamespace(oper) {
+    for (pref in xt:list(rdf:, rdfs:, owl:, sh:, xsh:)) {
+        if (strstarts(oper, pref)) {
+            return (false)
+        }
+    } ;
+    return (true)
+}
+
+#
+# (us:location [sh:pattern 'dbpedia'] [<http://dbpedia.org/sparql> (rdf:type) ] ) 
+#
+function sh:extension(shape, oper, path) {
+         if (sh:statement(oper))     { return (xt:list(oper,   sh:listsh(shape, path))) }
+    else if (sh:operator(oper))      { return (sh:parseOperator(shape, oper, path)) }
+    else if (sh:usernamespace(oper)) { return (xt:list(xsh:service, xt:cons(oper, sh:listsh(shape, path)))) }
+}
+
+
+
+# return [xsh:function [ xsh:name ( arg )]]
+function sh:parseOperator(shape, oper, path) {
+    if (sh:isFunction(oper), sh:parseFunction(shape, oper, path),
+    xt:list())
+}
+
+# extended path for triple
+# [xsh:node xsh:subject] [xsh:triple xsh:predicate]
+# oper = xsh:node|xsh:triple ; path = xsh:subject|xsh:predicate|xsh:object
+# oper and path can be switched
+#
+function sh:parsePathTriple(shape, oper, path) {
+    if (oper in (xsh:nodePath, xsh:triplePath),
+        xt:list(sh:pathtriple, xt:list(oper, sh:pathfun(path))),
+        xt:list(sh:pathtriple, xt:list(path, sh:pathfun(oper))))
+}
+
+# [xsh:node path]
+#
+function sh:pathfun(path) {
+    if (path = xsh:subject,   xt:subject,
+    if (path = xsh:object,    xt:object, 
+    if (path = xsh:predicate, xt:predicate,
+    if (path = xsh:graph,     xt:graph,
+    if (isBlank(path),        maplist(sh:pathfun, sh:tolist(path)),     
+    xsh:undef)))))
+}
+
+# [ xsh:function [ us:fun (arg) ] ]
+# [ xsh:function us:fun ]
+# us:fun (arg) where oper = us:fun ; fun = (arg)
+# 
+function sh:parseFunction(shape, oper, fun) {
+    let (select * where {
+        graph ?shape { 
+            {
+                [] xsh:function ?fun 
+                optional { ?fun ?pred ?param filter (?pred != owl:sameAs) }             
+                bind (coalesce(?pred, ?fun) as ?name)
+                bind (coalesce(?param, xt:list()) as ?value)
+                bind (sh:getExtValueList(?value) as ?arg)
+            }
+            union {
+                [] ?oper ?fun 
+                filter (?oper not in (owl:sameAs, xsh:function))
+                bind (?oper as ?name)
+                bind (sh:getExtValueList(?fun) as ?arg)
+            }
+            filter (sh:isFunctionName(name) || xt:isFunction(name, 3)) 
+        }}){
+        sh:defineFunction(name, arg)
+    }
+}
+
+
+function sh:defineFunction(name, arg) {
+    if (name = xsh:triplePath, sh:defineFunctionTriple(name, arg),
+    if (name = xsh:extension,  sh:defineExtension(name, arg),
+        sh:funpath(name, arg)))
+}
+
+# place holder to test extension that generate new path code
+# [xsh:extension (xsh:filter sh:hasValue h:hasParent) ]
+# [xsh:extension (xsh:property pathExpression sh:hasValue h:hasParent) ]
+#
+function sh:defineExtension(fun, exp) {
+    let ((name oper value) = exp) {
+        if (name = xsh:filter, 
+            sh:defFilter(sh:defConstraint(oper, value)),
+        if (name in (sh:and, sh:or, sh:xone), 
+            sh:defFilter(sh:extBoolean(fun, exp)),
+        if (name = sh:not,  
+            sh:defFilter(sh:extNot(fun, exp)),
+        if (name = xsh:property, 
+            sh:defFilter(sh:defProperty(fun, exp)), 
+        xt:list()))))
+    }   
+}
+
+
+# [xsh:extension (xsh:property pathExpression sh:hasValue h:hasParent) ]
+#
+function sh:defProperty(fun, exp) {
+    let ((name path oper value) = exp) {
+        sh:defPathConstraint(path, oper, value)
+    }
+}
+
+#
+# [xsh:extension (sh:not (sh:hasValue h:hasParent)) ]
+function sh:extNot(fun, exp) {
+    let ((name exp1) = exp,
+         (op1 val1) = exp1,
+         e1 = sh:defConstraint(op1, val1)){
+        sh:defBoolean(name, e1)
+    }
+}
+
+#
+# [xsh:extension (sh:or (sh:hasValue h:hasParent)(sh:hasValue h:hasChild)) ]
+function sh:extBoolean(fun, exp) {
+    let ((name exp1 exp2) = exp,
+         (op1 val1) = exp1,
+         (op2 val2) = exp2,
+         e1 = sh:defConstraint(op1, val1),
+         e2 = sh:defConstraint(op2, val2)) {
+        sh:defBoolean(name, xt:list(e1, e2))
+    }
+}
+
+
+function sh:funpath(name, arg) {
+    xt:list(xsh:function, xt:list(name, arg))
+}
+
+# xsh:tripleExtension((xsh:preceding xsh:subject)) OR xsh:triplePath(xsh:subject)  
+#
+function sh:getFunctionTriple(name, arg) {
+    if (mapany(sh:isExtensionTriple, arg),
+        sh:tripleExtension, sh:triplePath)
+}
+
+# xsh:tripleExtension((xsh:preceding xsh:subject)) OR xsh:triplePath(xsh:subject)  
+#
+function sh:getFunctionTripleBasic(name, arg) {
+    let ((subject predicate object) = arg) {
+        if (coalesce(sh:isExtensionTriple(subject) || sh:isExtensionTriple(object), false),
+            sh:tripleExtension, sh:triplePath)
+    }
+}
+
+# node = (xsh:preceding xsh:subject) || (xsh:exist (exp))
+#
+function sh:isExtensionTriple(node) {
+    isExtension(node)
+}
+
+# predicate is a nested constraint
+#
+function sh:isNestedPredicate(name, arg) {
+    let ((subject predicate) = arg) {
+       coalesce(sh:isExtensionTriple(predicate) && xt:first(predicate) in  (xsh:exist, xsh:filter), false)
+    }
+}
+
+# name = xsh:triplePath
+#
+function sh:defineFunctionTriple(name, arg) {
+    if (sh:isNestedPredicate(name, arg),
+        # predicate nested constraint = (xsh:exist (subPropertyOf* hasAncestor))
+        sh:nest(name, arg),
+        sh:funpath(sh:getFunctionTriple(name, arg), arg))
+}
+
+
+
+#
+# predicate is a nested constraint: subPropertyOf* hasAncestor
+# name = xsh:triplePath ; 
+# arg = (xsh:subject (xsh:exist ([sh:zeroOrMorePath rdfs:subPropertyOf] [xsh:object h:hasAncestor])))
+# predicate = (xsh:exist  ([sh:zeroOrMorePath rdfs:subPropertyOf] [xsh:object h:hasAncestor]))
+# predicate = (xsh:filter ([sh:pattern rdf:]))
+# compile and move nested constraint after xsh:triplePath
+# compiled as:
+#  (xsh:triplePath (xsh:subject)) 
+#  (xsh:exist  ((xsh:nodePath xsh:predicate)(rdfs:subPropertyOf*)(xsh:object h:hasAncestor)))
+#
+function sh:nest(name, arg) {
+    let ((subject predicate object) = arg, 
+          (oper value) = predicate,
+          exist   = (oper = xsh:exist),
+          aname   = sh:getFunctionTripleBasic(name, arg),
+          atriple = sh:funpath(aname, xt:list(subject, bnode(), coalesce(object, bnode()))),
+          proj    = sh:funpath(xsh:nodePath,   xt:list(xsh:predicate)),
+          pred    = if (exist, sh:path(sh:shaclGraph(), value), value),
+          test    = if (exist, xt:cons(proj, xt:get(pred, 1)), xt:list(proj, sh:funpath(oper, value))),
+          path    = sh:sequence(test)
+          ) {
+        # record exist path has already compiled
+        sh:setConstraint(sh:path, path, path);
+        sh:sequence(xt:list(atriple, sh:funpath(xsh:exist, xt:list(path))))
+    }
+}
+
+
+function sh:getExtValueList(value) {
+    if (isBlank(value)) {
+       coalesce(sh:reclist(value), value)
+    }
+    else {
+        return(xt:list(value))
+    }
+}
+
+#
+# Rewrite recursively RDF path list ?exp as a list
+#
+function dt:list sh:listsh(dt:graph ?shape, ?exp){
+   let (select ?shape ?exp (aggregate(sh:path(?shape, ?e)) as ?l)  
+        where { graph ?shape { ?exp rdf:rest*/rdf:first ?e }}) {
+        return (?l)
+    }
+}
+
+function dt:list sh:tolist(exp){
+     sh:tolist(sh:shaclGraph(), exp)   
+}
+
+function dt:list sh:tolist(dt:graph shape, exp){
+   let (select ?shape ?exp (aggregate(?e) as ?l)  
+        where { graph ?shape { ?exp rdf:rest*/rdf:first ?e }}) {
+        return(?l)
+    }
+}
+
+
+#
+# rewrite PP once as a list and record it
+#
+function sh:getPPath(p){
+   return (if (sh:hasConstraint(sh:path, p), 
+     sh:getConstraint(sh:path, p), 
+     sh:setConstraint(sh:path, p, sh:pathparser(p))))
+}
+
+#
+# rewrite PP once as a list and record it
+#
+function sh:getPath(dt:graph shape, p){
+   return (if (sh:hasConstraint(sh:path, p), 
+     sh:getConstraint(sh:path, p), 
+     sh:setConstraint(sh:path, p, sh:path(shape, p))))
+}
+

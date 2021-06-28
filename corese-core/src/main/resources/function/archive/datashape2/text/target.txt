@@ -1,0 +1,18 @@
+{graph ?shape {
+        ?sh sh:targetSubjectsOf ?p filter isBlank(?p)
+        filter not exists { ?p xsh:graph ?g }
+        filter not exists { ?sh sh:deactivated true} }
+        
+     bind (sh:ppath(?s, ?p) as ?nodeList)
+}
+
+?x a/<http://www.w3.org/2000/01/rdf-schema#subClassOf> <http://purl.obolibrary.org/obo/GO_0005215>
+
+
+
+ex:meta a sh:NodeShape ;
+sh:targetNode <http://purl.obolibrary.org/obo/GO_0005215>;
+sh:property [
+    sh:path [sh:inversePath (rdf:type rdfs:subClassOf) ] ;
+    sh:node <http://purl.obolibrary.org/obo/go/shapes/TransporterActivity>
+]

@@ -1,0 +1,6 @@
+template st:main {
+    st:apply-templates(?sh)
+}
+where {
+    ?sh a sh:NodeShape
+}   

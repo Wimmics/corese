@@ -1,0 +1,17 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template (?x, ?p, ?y) {
+format {
+  us:format(ft:property.html)
+  
+  st:turtle(?p, true)
+  box {  
+      if (st:visited(?y),
+        st:call-template(st:resourceref, ?y),
+        st:call-template(st:blank, ?x, ?p, ?y))
+    }
+ } 
+}
+where {
+   ?x ?p ?y
+   filter isBlank(?y)
+}

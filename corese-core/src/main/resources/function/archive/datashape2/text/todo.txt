@@ -1,0 +1,33 @@
+TODO
+
+BUG: reduce(rq:merge, list)  when list is empty
+
+
+recursive shapes that lead to stack overflow
+
+inversePath triplePath 
+
+
+sh:inversePath [xsh:triplePath (xsh:subject) ]
+
+
+
+from exist
+
+
+
+
+nSPARQL axis 
+
+edge:: subject   to predicates       
+node:: predicate to objects        
+next:: subject   to objects          
+
+
+edge::   [xsh:predicatePath (xsh:subject)]
+node::   [xsh:triplePath    (xsh:predicate)] [xsh:nodePath (xsh:object) ]
+next::   [xsh:triplePath    (xsh:subject)]   [xsh:nodePath (xsh:object) ]
+
+edge::a  [xsh:predicatePath (xsh:subject a)]
+node::a  [xsh:triplePath    (xsh:predicate)] [xsh:nodePath (xsh:object) ]  [xsh:filter ( [sh:hasValue a] ) ]
+next::a  [xsh:triplePath    (xsh:subject [] a)]   [xsh:nodePath (xsh:object) ]

@@ -1,0 +1,14 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template st:listrecrest(?y) {  
+format {
+   us:format(ft:property.html) 
+   
+   st:turtle(rdf:rest)
+   box {
+      st:call-template(st:listrec, ?y)
+    }
+}
+}
+where {
+  
+}

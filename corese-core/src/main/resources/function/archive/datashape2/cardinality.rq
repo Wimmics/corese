@@ -1,0 +1,96 @@
+#
+# SHACL Shex Interpreter 
+# Implement shex semantics for qualifiedValueShape with a partition of values
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2020
+#
+
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
+prefix msh:  <http://ns.inria.fr/shacl/>
+prefix shex: <http://ns.inria.fr/shex/shacl#>
+
+#
+# use case: (A|B)+
+# partList = list of nodeList candidates for A B 
+# A B fails
+# We need several occurrences of A (resp. B) to obtain a successful partition of partList
+# Try combinations of several occurrences of A (resp. B) : A A B, A B B, etc.
+#
+#
+function sh:partition2(partList, cardList) {
+    let (nb    = xt:size(partList) - 1,
+         fst   = maplist (xt:list, xt:iota(0, nb)),
+         ilist = xt:append(fst, sh:indexList(fst, 1, nb, coalesce(nbPartition, 2)))) {
+         xt:print("part", partList);
+         xt:print("ilist", ilist);
+        sh:partition(partList, cardList, ilist)
+    }
+}
+
+#
+# draft
+# use case: (A|B)*
+# inject a copy of A, then B, nodeList to emulate another occurrence of A (resp. B)
+#
+function sh:partition(partList, cardList, indexListList) {
+    sh:dsp("candidate:", partList);
+    sh:dsp("min max:", cardList);  
+    
+    for (indexList in indexListList) {
+        #xt:print("indexList", indexList);
+        let  ((list card) = sh:copy(partList, cardList, indexList)) {
+            xt:print("copy list", list);
+            let ((suc) = sh:partition(list, card)) {
+                if (suc, return (suc), true);
+            }
+        }
+    } ;
+        
+    return (false)
+}
+
+# n: size of list - 1 ; m: max length
+# n=2 -> ((0) (1) (0 0) (0 1) (1 1))
+function sh:indexList(list, i, n, m) {
+    if (i > m) {
+        return (xt:list())
+    }
+    else {
+        let (res = xt:list()) {
+            for (j in xt:iota(0, n)) {
+                let (doit = false) {
+                    for (elem in list) {
+                        if (j = xt:get(elem, 0), set(doit = true), false);
+                        if (doit) {
+                            xt:add(res, xt:cons(j, elem));
+                        }
+                    }
+                } 
+            } ;
+            xt:append(res, sh:indexList(res, i+1, n, m))
+        }
+    }
+}
+
+# ((0) (1) ... (n))
+function sh:indexStart(n) {
+    maplist (xt:list, xt:iota(0, n))
+}
+
+function sh:copy(partList, cardList, indexList) {
+    let (list = sh:copy(partList), card = sh:copy(cardList)) {
+        for (i in indexList) {
+            xt:add(list, sh:copy(xt:get(partList, i))) ;
+            xt:add(card, xt:get(cardList, i)) ;
+        } ;
+        return (xt:list(list, card))
+    }
+}
+
+
+function sh:copy(list) {
+if (xt:isList(list), 
+    maplist (sh:copy, list),
+    list)
+}

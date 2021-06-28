@@ -1,0 +1,29 @@
+#
+# select top level terms ?in
+# URI
+# Top level bnodes (not object of a property)
+#
+template st:main(?in) {
+   if (bound(?t), 
+        st:call-template(st:resourcetype, ?in, ?t),
+        st:call-template(st:resource, ?in))
+    
+   ; separator = "\n\n"
+}
+where {
+   select distinct ?in ?t where {
+     bind (st:focus() as ?in)
+     ?in ?p ?y
+     
+     filter (isURI(?in) || not exists { ?x ?q ?in filter (?x != ?in) } )
+     
+     optional {
+        select ?in ?t where {
+            ?in a ?t  
+            filter (! isBlank(?t))
+        } limit 1
+     }
+     
+   }
+   order by ?in
+}

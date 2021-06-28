@@ -1,0 +1,17 @@
+#
+# Generic template for triples
+# Detect if object is a list
+#
+template st:triple(?in, ?p, ?y) {
+
+  if (?list,
+    st:call-template(st:listchoice, ?in, ?p, ?y),
+    st:apply-templates(?in, ?p, ?y))
+}
+where {
+     
+   bind (isBlank(?y) &&  exists { ?y rdf:rest ?z }
+   as ?list)
+   
+}
+

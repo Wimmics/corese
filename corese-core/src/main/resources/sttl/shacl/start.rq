@@ -1,0 +1,6 @@
+template st:start {
+    st:call-template(st:main)
+}
+where {
+     
+}

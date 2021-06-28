@@ -1,0 +1,12 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template (?x, ?p, ?y) {
+format {
+   us:format(ft:resource.html)
+   st:turtle(?p, true)
+   st:linkuri(?y)
+}
+}
+where {
+   ?x ?p ?y
+   filter isURI(?y)
+}

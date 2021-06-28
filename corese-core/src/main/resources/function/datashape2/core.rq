@@ -1,0 +1,307 @@
+#
+# SHACL Interpreter 
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2019
+#
+
+prefix sh:  <http://www.w3.org/ns/shacl#> 
+prefix msh: <http://ns.inria.fr/shacl/>
+prefix shex: <http://ns.inria.fr/shex/shacl#>
+
+function sh:core(report, sh, vis, nodeList) {
+    sh:core(report, sh, vis, nodeList, false)
+}
+
+#
+# main function
+# sh: current shape
+# vis: true if report is needed
+# nodeList:  list of target nodes of shape sh
+# present=true: fail if path is empty (when there is a path)
+#
+function sh:core(report, sh, vis, nodeList, present) {
+    if (sh:trace(), xt:print("core:", sh, nodeList, present), true);
+    let (res = sh:pathcore(report, sh, vis, nodeList, present)) {
+        if (res || vis, set (res = sh:booleancore   (report, sh, vis, nodeList, present) && res), true) ;
+        if (res || vis, set (res = sh:constraintcore(report, sh, vis, nodeList, present) && res), true);
+        if (res || vis, set (res = sh:closedcore    (report, sh, vis, nodeList) && res), true); 
+        return (res)    
+    }
+}
+
+
+# user api
+function sh:eval(shape, node) {
+    sh:core(sh:validationReport(), shape, false, dt:list(node), false)
+}
+
+function sh:closedcore(report, sh, vis, nodeList) {
+    let (res = true) {
+        if (sh:isClosed(sh)) {
+            let (anypred = bnode(), predList = sh:getPredicates(sh)) {
+                #xt:print("closed:", sh, predList);
+                if (sh:trace(), xt:print("core closed:", sh, nodeList), true); 
+                for (node in dt:list(nodeList)) {
+                    for ((s p o) in xt:edges(node, anypred)) {
+                        let (suc = xt:member(p, predList)) {
+                            #if (suc, true, xt:print("closed fail:", s, p, o, vis, sh, predList));
+                            if (suc, true, set(res = false));
+                            sh:report(report, sh:closed, sh, s, p, o, suc, vis)
+                        }
+                    }
+                }
+            }
+        } ;
+        return (res)
+    } 
+}
+ 
+
+function sh:pathcore(report, sh, vis, nodeList, present) {
+    let (res = true, cstList = sh:getShapeConstraint(sh:pathcore, sh)) {
+        if (sh:trace(), xt:print("core path:", sh, cstList, present), true);
+        for ((cst path) in cstList) {
+            if (sh:trace(), xt:print("core path:", sh, nodeList), true); 
+            let (suc = coalesce(sh:path(report, cst, vis, nodeList, path, present), false)) {
+                if (suc, true, set(res = false))
+            }
+        } ;
+        return (res)
+    }
+}
+
+
+function sh:booleancore(report, sh, vis, nodeList, present) {
+    #xt:print("core boolean:", sh, sh:getShapeConstraint(sh:booleancore,  sh));
+    let (res = true) {
+        for ((bool cst) in sh:getShapeConstraint(sh:booleancore,  sh)) {
+            if (sh:trace(), xt:print("core boolean:", sh, nodeList), true); 
+            let (suc = coalesce(funcall(msh:fun(bool), report, bool, sh, cst, vis, nodeList, present), false)) {
+                if (suc, true, set(res = false))
+            }
+        } ;
+        return (res)
+    }
+}
+
+function sh:constraintcore(report, sh, vis, nodeList, present) {
+    let (cst = sh:getShapeConstraint(sh:constraintcore, sh)) {
+        if (cst) {
+            if (sh:trace(), xt:print("core constraint:", sh, nodeList), true); 
+            let (suc = sh:constraint(report, sh, vis, nodeList, present)) {
+                return (suc)
+            }
+        }
+        else {
+            return (true)
+        }
+    }
+}
+
+
+
+
+
+
+function sh:getConstraint(name, shape, sh) {
+    sh:getShapeConstraint(name,  sh)
+}
+
+function sh:isClosed(sh) {
+    sh:getShapeConstraint(sh:isclosedcore, sh)
+}
+
+function sh:getPredicates(sh) {
+    sh:getShapeConstraint(sh:closedcore, sh)
+}
+
+function sh:isclosedcore(shape, sh) {
+    let (suc = exists { graph ?shape { ?sh sh:closed true } } ) {
+        return (suc)
+    }
+}
+
+function sh:closedcore(shape, sh) {
+    let (select * (aggregate(distinct ?p) as ?list)
+         where {
+            graph ?shape {    
+                ?sh sh:closed true                 
+                { ?sh sh:property [ sh:path ?p ] filter isURI(?p) }
+                union
+                { ?sh sh:ignoredProperties/rdf:rest*/rdf:first ?p }
+            }
+         } ) {
+         return (list)
+    }
+}
+
+function sh:constraintcore(shape, sh) {
+    let (suc = exists { graph ?shape { values ?sh { UNDEF } filter not exists { ?sh sh:path ?ppp } } } ) {
+        return (suc)
+    }
+}
+
+
+
+function sh:pathcore(shape, sh) {
+    let (select * (aggregate(xt:list(coalesce(?cst, ?sh), ?p)) as ?list) 
+        where {
+            graph ?shape {  
+                {?sh sh:property ?cst . ?cst sh:path ?p 
+                filter not exists { ?cst sh:deactivated true } }
+                union
+                {?sh sh:path ?p  filter not exists { ?sh sh:deactivated true}}
+            } } ) {
+        return (list)
+    }
+}
+
+
+function sh:booleancore(shape, sh) {
+    sh:getGenericShape(shape, sh, sh:getShape(sh:boolean))
+}
+
+function sh:isdetail(sh) {
+    sh:getShapeConstraint(sh:detail, sh)
+}
+
+function sh:detail(shape, sh) {
+    let (select * where {
+            graph ?shape {  
+                ?sh sh:detail ?bb
+            }
+        }) {
+        bound(bb) && bb 
+    }
+}
+
+
+
+
+function msh:fun(name) {
+    if (name = sh:not, msh:not, msh:boolean)
+}
+
+#
+# sh : main shape
+# cst : shape argument of sh:not [ cst ]
+#
+function msh:not (report, oper, sh, cst, vis, ls, present) {
+    let (res = true) {
+        for (s in dt:list(ls)) {
+            let (suc = coalesce(! sh:core(report, cst, false, s, present), false)) {
+                if (suc, true, set(res = false));
+                sh:report(report, sh:not, sh, s, sh:null, s,  suc, vis)
+            }
+        };
+        return (res)
+    }
+}
+
+#
+# oper = sh:and | sh:or | sh:xone 
+# sh:  main shape
+# cst: boolean shape, i.e. bnode value of sh:or ()
+#
+function msh:boolean (report, oper, sh, cst, vis, ls, present) {
+    let (res = true) {
+        for (s in dt:list(ls)) {
+                    
+            let (suc = coalesce(
+                    funcall(oper, report, sh, cst, sh:getCstList(oper, cst), s, sh:null, s, vis, present), 
+                    false)) {
+    
+                #sh:report(report, oper, sh, s, sh:null, s, suc, vis); 
+                                                
+                if (suc, true, set (res = false))
+            }
+        } ;
+        return(res)
+    }
+}
+
+#
+# these boolean functions are called by core and path, hence we need s p o
+#
+
+# count fail
+function xsd:boolean sh:and(report, sh, cst, cstList, s, p, o, vis, present) {
+    sh:bool(report, sh:and, sh, cst, cstList, s, p, o, vis, present, 
+        function (suc) {if (suc, 0, 1)}, function (nb) {nb = 0})
+}
+
+
+# count success
+function xsd:boolean sh:or(report, sh, cst, cstList, s, p, o, vis, present) {
+    sh:bool(report, sh:or, sh, cst, cstList, s, p, o, vis, present, 
+        function (suc) {if (suc, 1, 0)}, function(nb) {nb > 0})
+}
+
+
+# count success
+function xsd:boolean sh:xone(report, sh, cst, cstList, s, p, o, vis, present) {
+    sh:bool(report, sh:xone, sh, cst, cstList, s, p, o, vis, present, 
+        function (suc) {if (suc, 1, 0)}, function(nb) {nb = 1}) 
+}
+
+
+#  
+# oper:  boolean operator
+# cst: boolean shape, i.e. bnode value of sh:or ()
+# cstList: list of statements of boolean shape
+# detail:  [] sh:booleanDetail true   
+# sh:isdetail(cst): cst sh:detail true
+#
+function xsd:integer sh:bool(report, oper, sh, cst, cstList, s, p, o, vis, present, funincr, funsuc) {
+   let (cc = 0, nodeList = xt:list(o), 
+        detail      = vis && sh:isSetup(sh:booleanDetail),
+        subReport   = sh:detailReport(report, detail)) {
+                
+        for (cst in cstList) {
+            let (res = sh:core(subReport, cst, detail #&& sh:isdetail(cst)
+                , nodeList, present)) {  
+                 set (cc = cc +  funcall(funincr, res))  
+            }
+        } ;
+                
+        let (suc = funcall(funsuc, cc)) {
+            if (vis, sh:reportDetail(report, subReport, oper, sh, s, p, o, suc, vis, detail), true); 
+            return(suc)
+        }
+    }
+}
+
+
+
+
+function sh:getCstList(oper, cst) {
+    sh:getShapeConstraint(if (oper = shex:count, sh:countboolean, sh:coreboolean), cst)
+}
+
+
+function sh:coreboolean(shape, cst) {
+     let ( 
+        SELECT ?cst  ?shape (aggregate(?sh) as ?list)
+		WHERE {
+            graph ?shape { 
+                ?cst rdf:rest*/rdf:first ?sh
+            } } ) {  
+            return (list)
+        }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

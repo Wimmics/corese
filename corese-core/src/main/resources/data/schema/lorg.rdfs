@@ -1,0 +1,108 @@
+#
+# Service Log Schema
+#
+prefix ns: <http://ns.inria.fr/corese/log/>
+
+
+ns:EvaluationReport a rdfs:Class ; 
+rdfs:label "" .
+
+
+ns:ServiceReport a rdfs:Class ; 
+rdfs:label "" .
+
+
+
+
+ns:endpoint a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:query a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:ast a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:astSelect a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:astService a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:astServiceLength a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:message a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:date a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:server a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:status a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:info a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:url a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:log a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:inputCard a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:outputCard a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:outputLength a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:time a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:nbcall a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:input a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:output a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:outputText a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:outputSelect a rdf:Property ; 
+rdfs:label "" .
+
+
+ns:bnode a rdf:Property ; 
+rdfs:label "" .
+
+

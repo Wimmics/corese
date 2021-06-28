@@ -1,0 +1,18 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template (?x, ?p, ?y) {
+format {
+   us:format(ft:propertydt.html) 
+   
+   st:turtle(?p, true)
+   if (strstarts(datatype(?y), xsd:), replace(datatype(?y), xsd:, st:html("&xsd;")), datatype(?y)) 
+   st:literal(str(?y)) 
+}
+}
+where {
+   ?x ?p ?z 
+   # must distinguish 12 and 012
+   filter sameTerm(?z, ?y)
+   filter (isLiteral(?z) 
+   && datatype(?z) != rdf:langString
+   && datatype(?z) != xsd:string)
+}

@@ -1,0 +1,14 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template (?x, ?p, ?y) {
+format {
+   us:format(ft:propertylang.html) 
+   
+   st:turtle(?p, true)
+   lang(?y)
+   st:literal(str(?y))
+}   
+}
+where {
+   ?x ?p ?y
+   filter (isLiteral(?y) && datatype(?y) = rdf:langString)
+}

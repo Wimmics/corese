@@ -1,0 +1,63 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Tue May 18 18:02:54 CEST 2021
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+template st:ast {
+    xt:replace(xt:content(?ast), "<", "&lt;")
+}
+where {
+    bind (java:getAST(java:getQuery(xt:mappings())) as ?ast)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:start {
+    format { "<pre>%s</pre>" st:call-template(st:ast) }
+    format { "<pre>%s</pre>" st:call-template(st:main, ?map) }
+}
+where {
+    bind (xt:solution() as ?map)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:main(?map) {
+    st:call-template(st:result, ?res)
+    st:nl()
+}
+where {
+    values ?res { unnest(?map) }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:result(?res) {
+    str(?val) ; separator = "; "
+}
+where {
+    values (?var ?val) { unnest(?res) }
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

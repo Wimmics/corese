@@ -1,0 +1,313 @@
+#
+# SHACL Interpreter 
+# Parse a shacl RDF graph, return a list of shape expressions
+#
+# Olivier Corby - Wimmics Inria I3S - 2016-2020
+#
+prefix sh:   <http://www.w3.org/ns/shacl#> 
+prefix xsh:  <http://www.w3.org/ns/shacl#> 
+prefix pr:  <http://www.w3.org/ns/shacl/parser#> 
+
+#
+# Generate lisp-like abstract syntax from shacl graph
+#
+function sh:funparse() {
+    let (list = xt:list()) {
+        for (select distinct ?sh
+            where { 
+                { ?sh a sh:NodeShape } 
+                union
+                { ?sh a sh:PropertyShape minus { ?xx sh:property ?sh } }
+                union 
+                { ?sh sh:targetClass|sh:targetNode|sh:targetSubjectsOf|sh:targetObjectsOf ?t 
+                  minus { ?sh a ?type } 
+                }
+            }) {
+            let (shape = sh:parse(sh)) {
+                #xt:print("shape:", shape);
+                xt:add(list, shape)
+            }
+        } ;
+        
+        return (list)
+    }
+}
+
+function sh:parse() {
+    sh:funparse()
+}
+
+
+
+function sh:parse(sh) {
+    let (target   = pr:target(sh),
+         property = pr:property(sh),
+         node     = pr:node(sh)
+         ) {
+         #xt:print("target:", target);
+         #xt:print("property:", property);
+         #xt:print("node:", node);
+        xt:cons(sh:shape, xt:cons(sh, xt:append(target, xt:append(property, node))))    
+    }
+}
+
+function sh:empty(list) {
+    xt:size(list) = 0
+}
+
+function pr:subparse(sh) {
+    let (property = pr:property(sh),
+         node     = pr:node(sh)
+         ) {
+         #xt:print("property:", property);
+         #xt:print("node:", node);
+        xt:append(property, node)      
+    }
+}
+
+function pr:target(sh) {
+    let (select sh
+        (aggregate (distinct ?c) as ?class)
+        (aggregate (distinct ?n) as ?node)
+        (aggregate (distinct ?p) as ?sub)
+        (aggregate (distinct ?q) as ?obj)
+       where {
+        {?sh sh:targetClass ?c } 
+        union { ?sh a rdfs:Class  bind (?sh as ?c)} 
+        union { ?sh sh:targetNode  ?n }
+        union { ?sh sh:targetSubjectsOf ?p }
+        union { ?sh sh:targetObjectsOf  ?q }
+    }) {
+    #xt:print("target:", sh, ?class, ?node, ?sub, ?obj);
+    let (tclass = if (sh:empty(?class), ?class, xt:list(xt:cons(sh:targetClass, ?class))),
+         tnode  = if (sh:empty(?node), ?node,   xt:list(xt:cons(sh:targetNode, ?node))),
+         tsub   = if (sh:empty(?sub), ?sub,     xt:list(xt:cons(sh:targetSubjectsOf, ?sub))),
+         tobj   = if (sh:empty(?obj), ?obj,     xt:list(xt:cons(sh:targetObjectsOf, ?obj)))
+        ) {
+        xt:append(tclass, xt:append(tnode, xt:append(tsub, tobj)))
+        }
+    }
+}
+
+
+function pr:parsepath(path) {
+    let (res = sh:path(xt:graph(), path)) {
+        #if (isBlank(path), xt:print("path:", res), true) ;
+        res
+    }
+}
+
+# sh : shape 
+# parse sh:property constraints
+#
+function pr:property(sh) {
+    xt:append(pr:propertyWithCst(sh), pr:propertyWithoutCst(sh))
+}
+
+function pr:defProperty(name, path, list) {
+    #xt:append(xt:list(sh:property), xt:cons(xt:list(sh:path, path), list))
+    xt:append(xt:list(sh:property, name), xt:cons(xt:list(sh:path, path), list))
+}
+
+function pr:propertyWithCst(sh) {
+    let (result = xt:list()) {
+    for (select sh 
+    
+        (reduce(xt:append, aggregate(?list)) as ?agg)
+        (if (sh:empty(?agg), ?agg, pr:defProperty(?p, pr:parsepath(?path), ?agg)) as ?res)
+        
+        where {
+        
+            { ?sh sh:property ?p . ?p  sh:path ?path }
+            union 
+            { ?sh sh:path ?path  minus { ?xx sh:property ?sh }  bind (?sh as ?p) }
+            
+            
+            
+            {
+             select ?p 
+             
+            (if (?const = sh:pattern && bound(?flag), xt:list(?const, ?value, ?flag), 
+             if (?const in (sh:in, sh:languageIn),    xt:list(?const, sh:reclist(?value)),
+             if (?const = sh:uniqueLang,              xt:list(?const, sameTerm(?val, true)),
+                xt:list(?const, ?value))))
+             as ?elem)
+             
+            (aggregate (?elem) as ?list)
+             where {
+                ?p ?const ?value 
+                
+                filter (?const not in (sh:path, sh:and, sh:or, sh:not, sh:and, sh:xone, sh:flags, sh:node, sh:property)) 
+                filter (! regex(?const, "qualified"))
+                filter pr:isConstraint(?const)
+                
+                optional { ?p sh:flags ?flag }
+             }
+             group by ?p
+            }
+            
+             union
+            
+            {select  ?p 
+            (pr:property(?p) as ?list)
+             where {
+                ?sh sh:property ?p  filter exists { ?p sh:property ?value }
+             }
+             group by ?p
+            }
+            
+            union
+            
+            {select ?p 
+            (pr:merge(?oper, pr:subparse(?value)) as ?elem)
+            (aggregate (?elem) as ?list)
+             where {
+                ?p sh:node|sh:not ?value ; ?oper ?value
+             }
+             group by ?p
+            }
+            
+            union
+            
+            {select ?p 
+            (xt:list(sh:qualifiedValueShape, xt:first(pr:subparse(?value)),
+                xt:list(sh:qualifiedValueShapesDisjoint, coalesce(?dis, false)), 
+                xt:list(sh:qualifiedMinCount, coalesce(?min, 0)), 
+                xt:list(sh:qualifiedMaxCount, coalesce(?max, -1)))
+            as ?elem)
+            (aggregate (?elem) as ?list)
+             where {
+                ?p sh:qualifiedValueShape ?value 
+                optional { ?p sh:qualifiedMinCount ?min }
+                optional { ?p sh:qualifiedMaxCount ?max }
+                optional { ?p sh:qualifiedValueShapesDisjoint ?dis }
+             }
+             group by ?p
+            }
+            
+            union 
+            
+            {select ?p 
+            (aggregate (pr:subparse(?cst)) as ?agg)
+            (xt:list(xt:cons(?const, pr:merge(?agg))) as ?list)
+             where {
+                ?p ?const ?value
+                filter (?const  in (sh:and, sh:or, sh:and, sh:xone))
+                ?value rdf:rest*/rdf:first ?cst 
+             }
+             group by ?p ?const
+            }
+        }
+        group by ?p
+        ) {
+            if (sh:empty(res), res, xt:add(result, res))
+        } ;
+        return (result)
+    }
+}
+
+
+# sh:property [ sh:path uri ] -- with no constraint
+#
+function pr:propertyWithoutCst(sh) {
+    let (select sh 
+        
+           (aggregate (xt:list(sh:property, xt:list(sh:path, ?path))) as ?list)
+            
+            where {
+            
+                ?sh sh:property ?p . ?p  sh:path ?path
+                minus { ?p ?oper ?value filter (?oper != sh:path) }
+                
+            }
+            ) {
+        return (list)
+    } 
+}
+
+# sh:node | sh:not
+# rewrite (sh:not arg1 .. argn) as (sh:not (sh:shape arg1 .. argn))
+#
+function pr:merge(oper, expList) {
+    if (oper = sh:not && xt:size(expList) > 1, 
+        xt:list(?oper, pr:defMerge(expList)),
+        xt:cons(?oper, expList))
+}
+
+# sh:and sh:or sh:xone
+# rewrite (sh:and (e1 e2) (e3)) as (sh:and (sh:shape e1 e2) e3)
+#
+function pr:merge(expList) {
+    let (list = xt:list()) {
+        for (exp in expList) {
+            if (xt:size(exp) = 1, 
+                xt:add(list, xt:first(exp)),
+                xt:add(list, pr:defMerge(exp)))
+        } ;
+        #xt:print("merge:", expList);
+        #xt:print("merge:", list);
+        return (list)
+    }
+}
+
+function pr:defMerge(exp) {
+    xt:cons(sh:shape, xt:cons(bnode(), exp))
+}
+
+
+function pr:isConstraint(name) {
+      strstarts(name, sh:) &&
+    ! strstarts(name, rdf:) && 
+    ! strstarts(name, rdfs:) && 
+    ! strstarts(name, sh:target) &&
+    name not in (sh:message, sh:severity)
+}
+
+function pr:node(sh) {
+    let (result = xt:list()) {
+        for (select *
+        where {
+                {select ?sh 
+                 (if (?const = sh:pattern && bound(?flag), xt:list(?const, ?value, ?flag), 
+                  if (?const in (sh:in, sh:languageIn, sh:ignoredProperties),    xt:list(?const, sh:reclist(?value)),
+                  xt:list(?const, ?value)))
+                  as ?elem)
+                (aggregate (?elem) as ?list)
+                where {
+                    ?sh ?const ?value
+                    filter (?const not in (sh:flags, sh:property, sh:node, sh:path, sh:and, sh:or, sh:and, sh:not, sh:xone
+                    ))
+                    filter pr:isConstraint(?const)
+                    optional { ?sh sh:flags ?flag }
+
+                }}
+                
+                union
+            
+                {select ?sh 
+                (pr:merge(?oper, pr:subparse(?value)) as ?elem)
+                (aggregate (?elem) as ?list)
+                where {
+                    ?sh sh:node|sh:not ?value ; ?oper ?value
+                }}
+                
+                union
+                
+                 {select ?sh 
+                    (aggregate (pr:subparse(?cst)) as ?agg)
+                    (if (sh:empty(?agg), ?agg, 
+                        (xt:list(xt:cons(?const, pr:merge(?agg))))) as ?list)
+                    where {
+                        ?sh ?const ?value
+                        filter (?const  in (sh:and, sh:or, sh:and, sh:xone))
+                        ?value rdf:rest*/rdf:first ?cst 
+                    }
+                 }
+        }
+        ) { 
+            if (sh:empty(list), list, set(result = xt:append(result, list))) 
+        } ;
+        #xt:print("node:", result) ;
+        return (result)
+    }
+}

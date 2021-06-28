@@ -1,0 +1,591 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Thu Sep 17 11:39:02 CEST 2020
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+#
+# Generic template for triples
+# Detect if object is a list
+#
+template st:triple(?in, ?p, ?y) {
+
+  if (?list,
+    st:call-template(st:listchoice, ?in, ?p, ?y),
+    st:apply-templates(?in, ?p, ?y))
+}
+where {
+     
+   bind (isBlank(?y) &&  exists { ?y rdf:rest ?z }
+   as ?list)
+   
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:resourcetype(?in, ?t) {
+format {
+    us:format(if (?bnode, ft:tagbn.html, ft:tag.html))
+    
+    st:turtle(?t, true)
+    st:linkuri(?in)
+    box { st:call-template(st:property, ?in, ?t) }
+}
+}
+where {
+   bind (isBlank(?in) as ?bnode)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:link(?uri, ?title) {
+   format {
+#    us:format("link.html")
+"<a href='%s'>%s</a>"    str(?uri) str(?title)
+   }
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# RDF/XML Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:start(?in) {
+format {
+  us:format(ft:head.html)  
+  ibox { st:call-template(st:prefix) }
+  str(?body)  
+}
+}
+where {
+   bind(
+    if (bound(?in), st:call-template(st:main, ?in), st:call-template(st:main)) 
+   as ?body )
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# select top level terms ?in
+# URI
+# Top level bnodes (not object of a property)
+#
+template st:main(?in) {
+   if (bound(?t), 
+        st:call-template(st:resourcetype, ?in, ?t),
+        st:call-template(st:resource, ?in))
+    
+   ; separator = "\n\n"
+}
+where {
+   select distinct ?in ?t where {
+     bind (st:focus() as ?in)
+     ?in ?p ?y
+     
+     filter (isURI(?in) || not exists { ?x ?q ?in filter (?x != ?in) } )
+     
+     optional {
+        select ?in ?t where {
+            ?in a ?t  
+            filter (! isBlank(?t))
+        } limit 1
+     }
+     
+   }
+   order by ?in
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template st:listtriple(?x, ?p, ?y) {
+format {
+   us:format(ft:property.html) 
+   
+   st:turtle(?p, true)
+   box { st:call-template(st:listrec, ?y) }
+}
+}
+where {
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# RDF/XML Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+
+template st:result {
+  format { 
+    """<h3>RDF/XML</h3>
+    <pre>%s</pre>"""
+    us:clean(st:call-template(st:start))
+  }
+  
+}
+where {
+    bind (st:set(st:html, true) as ?b)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template st:resourceref(?in) {
+format {
+  us:format(if (?bnode, ft:resourcerefbn.html, ft:resourceref.html)) 
+  
+  st:linkuri(?in)
+}
+}
+where {
+   bind (isBlank(?in) as ?bnode)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:collection(?x, ?p, ?y) {
+format {
+    us:format(ft:collection.html)   
+    st:turtle(?p, true)
+    box { st:call-template(st:list, ?y) }    
+   }
+}
+where {
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# RDF/XML Transformation
+#
+# Olivier Corby - Wimmics INRIA I3S - 2015
+#
+
+template st:focus(?in) {
+  format { 
+    """<pre>%s</pre>"""
+    us:clean(st:call-template(st:start, ?in))
+  }
+  
+}
+where {
+    bind (st:set(st:html, true) as ?b)
+    bind (st:set(st:focus, false) as ?foc)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+prefix ht: <http://ns.inria.fr/sparql-template/format/rdfxmlhtml/>
+
+template st:profile {}
+where {}
+
+function st:literal(?x){
+    if (st:get(st:html, true), 
+        ?x, 
+        #st:format("<span class='literal'>%s</span>", ?x), 
+        ?x)
+}
+
+function us:clean(?x) {
+    ?x
+}
+
+function st:clean(?x) {
+   replace(replace(?x, "&", "&amp;"), "<", "&lt;") 
+}
+
+function st:html(?x){
+    if (st:get(st:html, true), st:clean(?x), ?x)
+}
+
+function us:format(?name){
+    if (st:get(st:html, true), uri(replace(?name, "rdfxml", "rdfxmlhtml")), ?name)
+}
+
+function st:linkuri(?x){
+    if (isURI(?x) && st:get(st:html, true) && st:get(st:hyperlink, true),
+        st:display(?x), str(?x))
+}
+
+# LOD URI hypertext link generated as is 
+# set by profile.ttl : st:param [ st:lod (URI) ]
+#
+function st:lod(?x){
+     coalesce(mapany(rq:strstarts, ?x, st:get(st:lod)), false)
+}
+    
+function us:prepare(?uri){
+    ?uri
+#    coalesce(funcall(st:get(st:prepare), ?uri), ?uri)
+}
+
+
+
+# display resource uri
+function st:display(?x){
+    let (?profile = coalesce(st:get(st:profile), st:null)){
+      if (?profile = st:null){ 
+        str(?x) 
+      }
+      else if (st:lod(?x) || coalesce(st:getprofile(?x) = st:lod, false) ){
+        st:call-template(st:link, str(?x), str(?x))
+      }
+      else {
+        st:call-template(st:link, coalesce(st:pplink(us:prepare(?x)), us:prepare(?x)), str(?x))
+      }     
+    }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:resource(?in) {
+format {
+    us:format(if (?bnode, ft:descriptionbn.html, ft:description.html))
+    
+    st:linkuri(?in)
+    box { st:call-template(st:property, ?in) }
+}
+}
+where {
+   bind (isBlank(?in) as ?bnode)
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:blank (?x, ?p, ?y) {
+
+   if (bound(?t), 
+     st:call-template(st:resourcetype, ?y, ?t),
+     st:call-template(st:resource, ?y))
+
+}
+where {
+   ?x ?p ?y
+   optional {
+        select ?y ?t where {
+            ?y a ?t  filter (! isBlank(?t))
+        } limit 1
+     }
+    filter st:visit(?y)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:list {
+
+if (isBlank(?e) && ! st:visited(?e),
+  st:call-template(st:blank, ?r, rdf:first, ?e),
+  st:call-template(st:resourceref, ?e))
+  
+}
+where {
+  ?in rdf:rest* ?r 
+  ?r  rdf:first ?e
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# List that contains a literal rendered with rdf:first/rdf:rest
+# otherwise as a Collection
+#
+template st:listchoice(?in, ?p, ?y) {
+
+    st:call-template(?temp, ?in, ?p, ?y)
+    
+}
+where {
+   ?in ?p ?y
+   
+   bind (
+      if (exists { ?y rdf:rest*/rdf:first ?z filter isLiteral(?z) },
+	st:listtriple, st:collection)
+   as ?temp)
+      
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:listrec(?y) {
+format {
+    us:format(ft:desc.html)  
+   
+   box {
+    
+   st:call-template(st:triple, ?y, rdf:first, ?f)
+   st:nl()
+   
+   if (?r = rdf:nil, 
+      st:apply-templates(?y, rdf:rest, ?r),
+      st:call-template(st:listrecrest, ?r))   
+   }
+}
+}
+where {
+  ?y rdf:first ?f ;
+     rdf:rest  ?r
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:prefix {
+
+ st:nl()  
+ format { 
+    "xmlns:%s='%s'"  
+    str(?p) str(?n) 
+ }
+ ; separator = ""
+
+}
+where {
+  bind( kg:unnest(st:prefix()) as (?p, ?n))
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:property(?in, ?t) {
+
+   st:call-template(st:triple, ?in, ?p, ?y)
+
+}
+where {
+   ?in ?p ?y 
+   filter if (bound(?t), !(?p = rdf:type && ?y = ?t), true)
+}
+order by ?p ?y
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template st:listrecrest(?y) {  
+format {
+   us:format(ft:property.html) 
+   
+   st:turtle(rdf:rest)
+   box {
+      st:call-template(st:listrec, ?y)
+    }
+}
+}
+where {
+  
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template (?x, ?p, ?y) {
+format {
+   us:format(ft:property.html) 
+   
+   st:turtle(?p, true)
+   st:literal(str(?y)) 
+   }
+}
+where {
+   ?x ?p ?y
+   filter (isLiteral(?y) && datatype(?y) = xsd:string)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template (?x, ?p, ?y) {
+format {
+   us:format(ft:propertylang.html) 
+   
+   st:turtle(?p, true)
+   lang(?y)
+   st:literal(str(?y))
+}   
+}
+where {
+   ?x ?p ?y
+   filter (isLiteral(?y) && datatype(?y) = rdf:langString)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template (?x, ?p, ?y) {
+format {
+   us:format(ft:resource.html)
+   st:turtle(?p, true)
+   st:linkuri(?y)
+}
+}
+where {
+   ?x ?p ?y
+   filter isURI(?y)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template (?x, ?p, ?y) {
+format {
+   us:format(ft:propertydt.html) 
+   
+   st:turtle(?p, true)
+   if (strstarts(datatype(?y), xsd:), replace(datatype(?y), xsd:, st:html("&xsd;")), datatype(?y)) 
+   st:literal(str(?y)) 
+}
+}
+where {
+   ?x ?p ?z 
+   # must distinguish 12 and 012
+   filter sameTerm(?z, ?y)
+   filter (isLiteral(?z) 
+   && datatype(?z) != rdf:langString
+   && datatype(?z) != xsd:string)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+template (?x, ?p, ?y) {
+format {
+  us:format(ft:property.html)
+  
+  st:turtle(?p, true)
+  box {  
+      if (st:visited(?y),
+        st:call-template(st:resourceref, ?y),
+        st:call-template(st:blank, ?x, ?p, ?y))
+    }
+ } 
+}
+where {
+   ?x ?p ?y
+   filter isBlank(?y)
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

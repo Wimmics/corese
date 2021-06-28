@@ -1,0 +1,15 @@
+#
+# Turtle Pretty Printer
+# Olivier Corby, Wimmics Inria I3S, 2013
+#
+template st:start {
+  st:prolog("@prefix")
+  st:nl()
+  str(?main)
+}
+where {
+  bind (st:set(st:allgraph, true)  as ?s1)
+  bind (st:call-template(st:main)  as ?main)
+  bind (st:set(st:allgraph, false) as ?s2)
+}
+

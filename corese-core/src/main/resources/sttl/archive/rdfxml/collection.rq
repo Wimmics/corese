@@ -1,0 +1,12 @@
+prefix ft: <http://ns.inria.fr/sparql-template/format/rdfxml/>
+
+template st:collection(?x, ?p, ?y) {
+format {
+    us:format(ft:collection.html)   
+    st:turtle(?p, true)
+    box { st:call-template(st:list, ?y) }    
+   }
+}
+where {
+  
+}

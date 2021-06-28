@@ -128,10 +128,11 @@ prefix geo:  <http://www.w3.org/2003/01/geo/wgs84_pos#>
 prefix sosa: <http://www.w3.org/ns/sosa/> 
 prefix ex:   <http://example.org/> .
 prefix aqio: <https://ci.mines-stetienne.fr/aqi/ontology#> .
+prefix ft:   <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template st:place {
 
-    st:call-template-with(st:navlab, st:maplist,  ?list)  
+    st:call-template-with(st:navlab, st:maplist, ft:map.html, ?list, "")  
     
 }
 where {

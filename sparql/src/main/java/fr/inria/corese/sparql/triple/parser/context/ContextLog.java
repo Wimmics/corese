@@ -5,10 +5,13 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.cst.LogKey;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.ArrayList;
 import java.util.List;
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 /**
  * Service logger Used by corese core ProviderService and Service Stored in
@@ -307,6 +310,100 @@ public class ContextLog implements URLParam, LogKey {
             getExceptionList().addAll(log.getExceptionList());
         }
     }
+    
+    
+    
+    
+    /*****************************
+     * 
+     * JSON message
+     * 
+     *****************************/
+    
+    
+    
+    /**
+     * Copy data from ContextLog into json message
+     * Copy endpoint exceptions
+     */
+    public JSONObject message() {
+        return message(new JSONObject());
+    }
+
+    public JSONObject message(JSONObject json) {
+        messageHeader(json);
+        // show last service that fail        
+        messageFail(json);
+        // missing triple in source selection 
+        messageSourceSelection(json);
+        return json;
+    }
+    
+    void messageHeader(JSONObject json) {
+        // list of distinct endpoint call
+        List<String> list = getStringListDistinct(LogKey.ENDPOINT);
+        if (!list.isEmpty()) {
+            JSONArray arr = new JSONArray(list);
+            json.put(URLParam.ENDPOINT, arr);
+        }
+    }
+
+    /**
+     * federated query fail
+     * show last service that fail
+     */
+    void messageFail(JSONObject json) {
+        Mappings map = getMappings(LogKey.SERVICE_OUTPUT);
+        
+        if (map != null && map.isEmpty()) {
+            List<String> alist = getStringList(LogKey.ENDPOINT_CALL);
+            
+            if (!alist.isEmpty()) {
+                String serv = alist.get(alist.size() - 1);
+                ASTQuery ast = getAST(serv, LogKey.AST_SERVICE);
+                Mappings res = getMappings(serv, LogKey.OUTPUT);
+                
+                if (ast != null && (res == null || res.isEmpty())) {
+                    JSONObject obj = new JSONObject();
+                    obj.put(URLParam.URL, URLServer.clean(serv));
+                    obj.put(URLParam.QUERY, ast);
+                    json.put(URLParam.FAIL, obj);
+                }
+            }
+        }
+    }
+    
+    /**
+     * Check source selection in federated query
+     * Find undefined triples in federation
+     */
+    void messageSourceSelection(JSONObject json) {
+        ASTQuery ast = getASTSelect();
+        Mappings map = getSelectMap();
+        if (ast == null || map == null) {
+            return;
+        }
+        
+        ArrayList<Expression> list = ast.getUndefinedTriple(map);
+        
+        if (!list.isEmpty()) {
+            JSONArray arr = new JSONArray();
+            
+            for (Expression exp : list) {
+                arr.put(exp);
+            }
+            json.put(URLParam.UNDEF, arr);
+        }
+    }
+    
+    
+    
+    
+    
+    
+    
+    
+    
 
     public ASTQuery getAST() {
         return ast;

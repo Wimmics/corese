@@ -45,6 +45,7 @@ import fr.inria.corese.core.print.XMLFormat;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 
@@ -657,8 +658,11 @@ public final class MyJPanelQuery extends JPanel {
             display(map, ast.getNSM());
         }
         
-        if (isDisplayLink()) {
+        if (isDisplayLink() && ! map.getLinkList().isEmpty()) {
             new LinkedResult(mainFrame).process(map);
+        }
+        if (ast.hasMetadata(Metadata.EXPLAIN)) {
+            new DocumentResult(mainFrame).process(map);
         }
     }
     

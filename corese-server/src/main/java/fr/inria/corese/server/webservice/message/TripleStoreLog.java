@@ -5,7 +5,6 @@ import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.ProviderService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
@@ -151,18 +150,17 @@ public class TripleStoreLog implements URLParam {
     void logService(Mappings map, ContextLog log) {
         // list of URL of service calls in order, with number
         List<String> list = log.getStringList(LogKey.ENDPOINT_CALL);
-
         int i = 0;
+        
         for (String name : list) {
-            IDatatype qdt = log.get(name, LogKey.AST_SERVICE);
-            IDatatype rdt = log.get(name, LogKey.OUTPUT);
+            ASTQuery ast   = log.getAST(name, LogKey.AST_SERVICE);
+            Mappings mymap = log.getMappings(name, LogKey.OUTPUT);
             String query = null, result = null;
             
-            if (qdt != null) {
-                ASTQuery ast = (ASTQuery) qdt.getPointerObject();
+            if (ast != null) {
                 query = ast.toString();
                 
-                if (rdt == null) {
+                if (mymap == null) {
                     if (name.startsWith(ProviderService.UNDEFINED_SERVICE)
                             && log.getString(SERVICE_URL) != null) {
                         // replace undefined service by source service URL
@@ -170,20 +168,17 @@ public class TripleStoreLog implements URLParam {
                     }
                     query = String.format("# @federate <%s>\n%s", name, query);
                 }
-                
             }
 
-            if (rdt == null) {
+            if (mymap == null) {
                 // no result
             } else {
-                Mappings mymap = rdt.getPointerObject().getMappings();
                 // set endpoint URL as link in query results
                 // use case: GUI federated debugger
                 mymap.addLink(name);
                 ResultFormat fm = ResultFormat.create(mymap);
                 fm.setNbResult(mymap.getDisplay());
-                result = fm.toString();
-                
+                result = fm.toString();                
             }
 
             String url1 = document(query, QUERY.concat(Integer.toString(i)), "");

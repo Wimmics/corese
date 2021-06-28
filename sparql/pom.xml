@@ -4,15 +4,15 @@
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
-		<groupId>fr.inria.corese</groupId>
 		<artifactId>corese-parent</artifactId>
+		<groupId>fr.inria.corese</groupId>
 		<version>${revision}</version>
 		<relativePath>..</relativePath>
 	</parent>
 
 	<artifactId>sparql</artifactId>
 	<name>sparql</name>
-
+        
 	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
@@ -32,6 +32,11 @@
                     <groupId>org.json</groupId>
                     <artifactId>json</artifactId>
                     <version>20180813</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.commons</groupId>
+                    <artifactId>commons-text</artifactId>
+                    <version>1.9</version>
                 </dependency>
 	</dependencies>
 

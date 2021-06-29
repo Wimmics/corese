@@ -1769,7 +1769,7 @@ public class MainFrame extends JFrame implements ActionListener {
         SPARQLResult parser = SPARQLResult.create();
         Mappings map = parser.parse(path);
         MyJPanelQuery panel = execPlus(path, "");
-        panel.display(map, this);
+        panel.display(map);
     }
     
     void defQuery(String text, String name, boolean run){

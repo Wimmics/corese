@@ -239,7 +239,7 @@ public class LinkedResult implements URLParam {
     MyJPanelQuery display(String url, String query, Mappings map) {
         MyJPanelQuery panel = display(url, query);
         panel.setDisplayLink(false);
-        panel.display(map, frame);
+        panel.display(map);
         return panel;
     }
     

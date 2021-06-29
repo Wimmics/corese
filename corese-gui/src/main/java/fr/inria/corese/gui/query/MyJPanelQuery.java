@@ -46,6 +46,7 @@ import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 
@@ -614,12 +615,15 @@ public final class MyJPanelQuery extends JPanel {
         return getTextAreaXMLResult().getText();
     }
 
-    public void display(Mappings map, MainFrame coreseFrame) {
-        display(map, coreseFrame, -1);
+    public void display(Mappings map) {
+        display(map, null, -1);
     }
     
+    public void display(Mappings map, ContextLog log) {
+        display(map, log, -1);
+    }
     
-    void display(Mappings map, MainFrame coreseFrame, int sort) {
+    void display(Mappings map, ContextLog log, int sort) {
         if (map == null) {
             // go to XML for error message
             tabbedPaneResults.setSelectedIndex(XML_PANEL);
@@ -658,15 +662,26 @@ public final class MyJPanelQuery extends JPanel {
             display(map, ast.getNSM());
         }
         
-        if (isDisplayLink() && ! map.getLinkList().isEmpty()) {
+        linkedResult(ast, map, log);
+    }
+    
+    void linkedResult(ASTQuery ast, Mappings map, ContextLog log) {
+        if (isDisplayLink() && !map.getLinkList().isEmpty()) {
             new LinkedResult(mainFrame).process(map);
         }
         if (ast.hasMetadata(Metadata.EXPLAIN)) {
             new DocumentResult(mainFrame).process(map);
         }
+        if (ast.hasMetadata(Metadata.WHY) && log!=null) {
+            new LocalResult(mainFrame).process(log);
+            new LocalResult(mainFrame).message(log);
+        }
+        if (ast.hasMetadata(Metadata.MESSAGE) && log!=null) {
+            new LocalResult(mainFrame).message(log);
+        }
     }
     
-    
+  
 
     /**
      * template return turtle graph description display as graph

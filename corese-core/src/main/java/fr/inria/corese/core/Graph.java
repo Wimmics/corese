@@ -3548,66 +3548,62 @@ public class Graph extends GraphObject implements
         NSManager nsm = ast.getNSM();
         
         for (var t : ast.getTripleList()) {
+                                    
+            match(obj, nsm, getProperties(), t.predicate().getDatatypeValue(), distance);
             
-            if (t.getPredicate().isConstant()) {
-                String label = t.getPredicate().getLabel();
-                String name  = nsm.nstrip(label);
-
-                for (var p : getProperties()) {
-                    if (similar(nsm, name, label, p.getLabel(), distance)) {
-                        obj.put(label, p.getLabel());
-                        break;
-                    } 
-                }
-            }
-            
-            if (t.getSubject().isConstant()) {
-                String label = t.getSubject().getLabel();
-                String name = nsm.nstrip(label);
-
-                for (var node : getNodes()) {
-                    if (similar(nsm, name, label, node.getLabel(), distance)) {
-                        obj.put(label, node.getLabel());
-                        break;
-                    } 
-                }
-            }
+            if (t.getSubject().isConstant() && t.getSubject().getDatatypeValue().isURI()) {
+                match(obj, nsm, getNodes(), t.getSubject().getDatatypeValue(), distance);
+            } 
             
             if (t.getObject().isConstant() && t.getObject().getDatatypeValue().isURI()) {
-                String label = t.getObject().getLabel();
-                String name = nsm.nstrip(label);
-
-                for (var node : getNodes()) {
-                    if (similar(nsm, name, label, node.getLabel(), distance)) {
-                        obj.put(label, node.getLabel());
-                        break;
-                    } 
-                }
+                match(obj, nsm, getNodes(), t.getObject().getDatatypeValue(), distance);
             }   
         }
         
         return obj;
     }
     
-    boolean similar(NSManager nsm, String n1, String l1, String l2, int d) {
+    
+    void match(JSONObject obj, NSManager nsm, Iterable<Node> it, IDatatype dt, int distance) {
+        String label = dt.getLabel();
+        String name  = nsm.nstrip(label);
+
+        int min = Integer.MAX_VALUE;
+        String closeLabel = label;
+        
+        for (var node : it) {
+            int dist = distance(nsm, name, label, node.getLabel(), distance);
+            
+            if (dist == 0) {
+                return;
+            }
+            if (dist<min) {
+                min = dist;
+                closeLabel = node.getLabel();
+            }
+        }
+        
+        if (min <= distance) {
+            obj.put(label, closeLabel);
+        }
+    }
+
+    
+    int distance(NSManager nsm, String n1, String l1, String l2, int d) {
         if (l1.equals(l2)) {
             // we want approximation only
-            return false;
+            return 0;
         }
         // distance including namespace
         Integer i = LevenshteinDistance.getDefaultInstance().apply(l1, l2);
 
         if (i <= d) {
-            return true;
+            return i;
         } else {
             // distance with name only
             String n2 = nsm.nstrip(l2);
-            i = LevenshteinDistance.getDefaultInstance().apply(n1, n2);
-            if (i <= d) {
-                return true;
-            }
+            return LevenshteinDistance.getDefaultInstance().apply(n1, n2);            
         }
-        return false;
     }
 
         

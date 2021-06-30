@@ -782,6 +782,13 @@ public class Binding implements Binder {
         IDatatype dt = getStaticVariable(name);
         return (dt == null) ? value: dt.intValue();
     }
+    
+    public Context getCreateContext() {
+        if (getContext() == null) {
+            setContext(new Context());
+        }
+        return getContext();
+    }
 
     public Context getContext() {
         return context;

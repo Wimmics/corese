@@ -60,10 +60,10 @@ public class TripleStoreLog implements URLParam {
             processLog(map, log);
         }
         if (getContext().hasAnyValue(COMPILE, WHY)) {
-            logWhy(map, getQueryProcess().getLog(map));
+            logWhy(map, log);
         }
         if (getContext().hasValue(MES)) {
-            messageContext(map, getQueryProcess().getLog(map));
+            messageContext(map, log);
         }
     }
     

@@ -81,7 +81,7 @@ public class PluginTransform implements ComputerProxy {
      */
     @Override
     public Context getContext(Binding b, Environment env, Producer p) {
-        Context c = getQueryContext(env, p);
+        Context c = getQueryContext(b, env, p);
         if (c == null) {
             try {
                 c = getTransformerContext(b, env, p);
@@ -89,6 +89,9 @@ public class PluginTransform implements ComputerProxy {
                 c = new Context();
             }
             env.getQuery().setContext(c);
+            if (b.getContext() == null) {
+                b.setContext(c);
+            }
         }
         return c;
     }
@@ -105,13 +108,16 @@ public class PluginTransform implements ComputerProxy {
         return plugin.getProducer();
     }
 
-    Context getQueryContext(Environment env, Producer p) {
+    Context getQueryContext(Binding b, Environment env, Producer p) {
         Query q = env.getQuery().getGlobalQuery();
         Context c = (Context) q.getContext();
         if (c == null && !q.isTransformationTemplate()) {
             //  std Query or Template alone
             c = new Context();
             q.setContext(c);
+            if (b.getContext() == null) {
+                b.setContext(c);
+            }
         }
         return c;
     }

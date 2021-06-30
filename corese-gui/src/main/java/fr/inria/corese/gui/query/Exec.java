@@ -76,7 +76,7 @@ public class Exec extends Thread {
             res = query();
         }
         frame.setBuffer(null);
-        panel.display(res, getQueryExec().getLog());
+        panel.display(res, getQueryExec().getQueryProcess().getBinding());
     }
 
     public void finish(boolean kill) {

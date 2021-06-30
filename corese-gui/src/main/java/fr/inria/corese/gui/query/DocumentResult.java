@@ -41,7 +41,7 @@ public class DocumentResult {
         msg(NL);
         for (String key : json.keySet()) {
             //System.out.println(key + " = " + json.get(key));
-            msg(key + " = " + json.get(key)).msg(NL);
+            msg(key + " -> " + json.get(key)).msg(NL);
         }
     }
     

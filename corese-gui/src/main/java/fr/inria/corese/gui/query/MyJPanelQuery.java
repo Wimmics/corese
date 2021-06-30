@@ -619,11 +619,11 @@ public final class MyJPanelQuery extends JPanel {
         display(map, null, -1);
     }
     
-    public void display(Mappings map, ContextLog log) {
-        display(map, log, -1);
+    public void display(Mappings map, Binding bind) {
+        display(map, bind, -1);
     }
     
-    void display(Mappings map, ContextLog log, int sort) {
+    void display(Mappings map, Binding bind, int sort) {
         if (map == null) {
             // go to XML for error message
             tabbedPaneResults.setSelectedIndex(XML_PANEL);
@@ -662,22 +662,22 @@ public final class MyJPanelQuery extends JPanel {
             display(map, ast.getNSM());
         }
         
-        linkedResult(ast, map, log);
+        linkedResult(ast, map, bind);
     }
     
-    void linkedResult(ASTQuery ast, Mappings map, ContextLog log) {
+    void linkedResult(ASTQuery ast, Mappings map, Binding bind) {
         if (isDisplayLink() && !map.getLinkList().isEmpty()) {
             new LinkedResult(mainFrame).process(map);
         }
         if (ast.hasMetadata(Metadata.EXPLAIN)) {
             new DocumentResult(mainFrame).process(map);
         }
-        if (ast.hasMetadata(Metadata.WHY) && log!=null) {
-            new LocalResult(mainFrame).process(log);
-            new LocalResult(mainFrame).message(log);
+        if (ast.hasMetadata(Metadata.WHY) && bind.getLog()!=null) {
+            new LocalResult(mainFrame).process(bind.getLog());
+            new LocalResult(mainFrame).message(bind);
         }
-        if (ast.hasMetadata(Metadata.MESSAGE) && log!=null) {
-            new LocalResult(mainFrame).message(log);
+        if (ast.hasMetadata(Metadata.MESSAGE) && bind.getLog()!=null) {
+            new LocalResult(mainFrame).message(bind);
         }
     }
     

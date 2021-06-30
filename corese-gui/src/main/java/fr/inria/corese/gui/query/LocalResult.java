@@ -5,6 +5,7 @@ import fr.inria.corese.core.query.ServiceMessage;
 import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.cst.LogKey;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
@@ -30,8 +31,8 @@ public class LocalResult {
         logService(log);
     }
     
-    void message(ContextLog log) {
-        message(null, log);
+    void message(Binding bind) {
+        message(bind.getContext(), bind.getLog());
     }
 
     void message(Context c, ContextLog log) {

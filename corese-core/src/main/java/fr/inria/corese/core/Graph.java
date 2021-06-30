@@ -3568,26 +3568,45 @@ public class Graph extends GraphObject implements
         String label = dt.getLabel();
         String name  = nsm.nstrip(label);
 
-        int min = Integer.MAX_VALUE;
+        int minLabel = Integer.MAX_VALUE;
+        int minName  = Integer.MAX_VALUE;
         String closeLabel = label;
+        String closeName  = label;
         
         for (var node : it) {
-            int dist = distance(nsm, name, label, node.getLabel(), distance);
+            int dist = distance(label, node.getLabel());
             
             if (dist == 0) {
                 return;
             }
-            if (dist<min) {
-                min = dist;
+            
+            if (dist < minLabel) {
+                minLabel = dist;
                 closeLabel = node.getLabel();
             }
+            
+            String name2 = nsm.nstrip(node.getLabel());
+            int dist2 = distance(name, name2);
+            
+            if (dist2 < minName) {
+                minName = dist2;
+                closeName = name2;
+            }           
         }
         
-        if (min <= distance) {
+        // distance with namespace
+        if (minLabel <= distance) {
+            obj.put(label, closeLabel);
+        }
+        // distance with just the name
+        else if (minName <= distance) {
             obj.put(label, closeLabel);
         }
     }
 
+    public int distance (String l1, String l2) {
+        return LevenshteinDistance.getDefaultInstance().apply(l1, l2);
+    }
     
     int distance(NSManager nsm, String n1, String l1, String l2, int d) {
         if (l1.equals(l2)) {
@@ -3595,14 +3614,14 @@ public class Graph extends GraphObject implements
             return 0;
         }
         // distance including namespace
-        Integer i = LevenshteinDistance.getDefaultInstance().apply(l1, l2);
+        Integer i = distance(l1, l2);
 
         if (i <= d) {
             return i;
         } else {
             // distance with name only
             String n2 = nsm.nstrip(l2);
-            return LevenshteinDistance.getDefaultInstance().apply(n1, n2);            
+            return distance(n1, n2);            
         }
     }
 

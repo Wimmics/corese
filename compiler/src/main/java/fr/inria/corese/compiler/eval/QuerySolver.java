@@ -41,6 +41,7 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 
 /**
@@ -355,6 +356,10 @@ public class QuerySolver implements SPARQLEngine {
             return Binding.create();
         }
         return (Binding) getCurrentEval().getEnvironment().getBind();
+    }
+    
+    public Context getContext() {
+        return getBinding().getCreateContext();
     }
 
     public void finish() {

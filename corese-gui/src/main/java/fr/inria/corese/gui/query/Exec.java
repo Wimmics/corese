@@ -121,6 +121,7 @@ public class Exec extends Thread {
 
     Mappings compile() {
         QueryExec exec = QueryExec.create(frame.getMyCorese());
+        setCurrent(exec);
         if (debug) {
             debug(exec);
         }

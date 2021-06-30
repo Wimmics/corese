@@ -32,7 +32,10 @@ public class DocumentResult {
     }
     
     void explain() {
-        int distance = Math.max(1, getAst().getMetadata().intValue(Metadata.EXPLAIN));
+        int distance = getAst().getMetadata().intValue(Metadata.EXPLAIN);
+        if (distance < 0) {
+            distance = 2;
+        }
         JSONObject json = getGraph().match(getAst(), distance);
         display(json);
     }

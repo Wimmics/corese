@@ -2191,6 +2191,19 @@ public class ASTQuery
         tripleList.add(t);
     }
     
+    public List<Constant> getConstantNodeList() {
+        ArrayList<Constant> list = new ArrayList<>();
+        for (Triple t : getTripleList()) {
+            if (t.getSubject().isConstant() && ! list.contains(t.getSubject().getConstant())) {
+                list.add(t.getSubject().getConstant());
+            }
+            if (t.getObject().isConstant() && ! list.contains(t.getObject().getConstant())) {
+                list.add(t.getObject().getConstant());
+            }
+        }
+        return list;
+    }
+    
     public List<Triple> getTripleList() {
         return tripleList;
     }
@@ -3990,6 +4003,43 @@ public class ASTQuery
             }
         }
         return null;
+    }
+    
+    public List<Constant> getConstantGraphList() {
+        List<Constant> list = new ArrayList<>();
+        list.addAll(getFrom());
+        
+        for (Constant node : getNamed()) {
+            if (! list.contains(node)) {
+                list.add(node);
+            }
+        }
+        
+        for (Constant node : getGraphList()) {
+            if (! list.contains(node)) {
+                list.add(node);
+            }
+        }
+        return list;
+    }
+
+    
+    public List<Constant> getGraphList() {
+        List<Constant> list = new ArrayList<>();
+        
+        Walker myWalker = new Walker() {
+            public void enter(Exp exp) {
+                if (exp.isGraph() && exp.getNamedGraph().getSource().isConstant()) {
+                    Constant src = exp.getNamedGraph().getSource().getConstant();
+                    if (! list.contains(src)) {
+                        list.add(src);
+                    }
+                }
+            }
+        };
+        
+        process(myWalker);
+        return list;       
     }
        
 }

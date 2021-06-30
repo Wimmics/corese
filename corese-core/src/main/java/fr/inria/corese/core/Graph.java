@@ -3539,77 +3539,16 @@ public class Graph extends GraphObject implements
     /**
      * @Draft 
      * For each triple pattern: 
-     * Search if there exists subject, property, object in the graph
-     * with similar label 
+     * Search if there exists graph name, subject, property, object in the graph
+     * with similar URI 
      * mode=message&param=sv:distance~n  => levenshtein distance <= n
      */
     public JSONObject match(ASTQuery ast) {
         return match(ast, 1);
     }
     
-    public JSONObject match(ASTQuery ast, int distance) {
-        JSONObject obj = new JSONObject();
-        NSManager nsm = ast.getNSM();
-        
-        for (var t : ast.getTripleList()) {
-                                    
-            match(obj, nsm, getProperties(), t.predicate().getDatatypeValue(), distance);
-            
-            if (t.getSubject().isConstant() && t.getSubject().getDatatypeValue().isURI()) {
-                match(obj, nsm, getNodes(), t.getSubject().getDatatypeValue(), distance);
-            } 
-            
-            if (t.getObject().isConstant() && t.getObject().getDatatypeValue().isURI()) {
-                match(obj, nsm, getNodes(), t.getObject().getDatatypeValue(), distance);
-            }   
-        }
-        
-        return obj;
+    public JSONObject match(ASTQuery ast, int d) {
+        return new GraphDistance(this).match(ast, d);
     }
-    
-    
-    void match(JSONObject obj, NSManager nsm, Iterable<Node> it, IDatatype dt, int distance) {
-        String label = dt.getLabel();
-        String name  = nsm.nstrip(label);
-
-        int minLabel = Integer.MAX_VALUE;
-        int minName  = Integer.MAX_VALUE;
-        String closeLabel = label;
-        String closeName  = label;
-        
-        for (var node : it) {
-            int dist = distance(label, node.getLabel());
-            
-            if (dist == 0) {
-                return;
-            }
-            
-            if (dist < minLabel) {
-                minLabel = dist;
-                closeLabel = node.getLabel();
-            }
-            
-            String name2 = nsm.nstrip(node.getLabel());
-            int dist2 = distance(name, name2);
-            
-            if (dist2 < minName) {
-                minName = dist2;
-                closeName = node.getLabel();;
-            }           
-        }
-        
-        // distance with namespace
-        if (minLabel <= distance) {
-            obj.put(label, closeLabel);
-        }
-        // distance with just the name
-        else if (minName <= distance) {
-            obj.put(label, closeName);
-        }
-    }
-
-    public int distance (String l1, String l2) {
-        return LevenshteinDistance.getDefaultInstance().apply(l1, l2);
-    }      
         
 }

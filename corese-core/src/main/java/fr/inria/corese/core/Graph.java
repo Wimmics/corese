@@ -3543,6 +3543,10 @@ public class Graph extends GraphObject implements
      * with similar label 
      * mode=message&param=sv:distance~n  => levenshtein distance <= n
      */
+    public JSONObject match(ASTQuery ast) {
+        return match(ast, 1);
+    }
+    
     public JSONObject match(ASTQuery ast, int distance) {
         JSONObject obj = new JSONObject();
         NSManager nsm = ast.getNSM();
@@ -3590,7 +3594,7 @@ public class Graph extends GraphObject implements
             
             if (dist2 < minName) {
                 minName = dist2;
-                closeName = name2;
+                closeName = node.getLabel();;
             }           
         }
         
@@ -3600,30 +3604,12 @@ public class Graph extends GraphObject implements
         }
         // distance with just the name
         else if (minName <= distance) {
-            obj.put(label, closeLabel);
+            obj.put(label, closeName);
         }
     }
 
     public int distance (String l1, String l2) {
         return LevenshteinDistance.getDefaultInstance().apply(l1, l2);
-    }
-    
-    int distance(NSManager nsm, String n1, String l1, String l2, int d) {
-        if (l1.equals(l2)) {
-            // we want approximation only
-            return 0;
-        }
-        // distance including namespace
-        Integer i = distance(l1, l2);
-
-        if (i <= d) {
-            return i;
-        } else {
-            // distance with name only
-            String n2 = nsm.nstrip(l2);
-            return distance(n1, n2);            
-        }
-    }
-
+    }      
         
 }

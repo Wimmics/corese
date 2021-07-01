@@ -283,7 +283,8 @@ public class ASTQuery
     private String service;
     private List<Atom> serviceList;
     private List<Constant> predicateList;
-    private List<Triple> tripleList;
+    // triple without path, triple with path
+    private List<Triple> tripleList, pathList;
     private fr.inria.corese.kgram.core.Query updateQuery;
     private AccessRight accessRight;
 
@@ -450,6 +451,7 @@ public class ASTQuery
         undefined = new HashMap();
         predicateList = new ArrayList<>();
         tripleList = new ArrayList<>();
+        pathList = new ArrayList<>();
         visitList = new ArrayList<>();
     }
 
@@ -1278,6 +1280,10 @@ public class ASTQuery
          metadata = m;
     }
     
+    public void setMetadata(int type) {
+        getCreateMetadata().add(type);
+    }
+    
     public void setAnnotation(Metadata m){
          if (m != null) {
             setMetadata(m);
@@ -1301,6 +1307,12 @@ public class ASTQuery
         return metadata;
     }
     
+    public Metadata getCreateMetadata() {
+        if (getMetadata() == null) {
+            setMetadata(new Metadata());
+        }
+        return getMetadata();
+    }
         
     public String getMetadataValue(int type) {
         return metadata.getValue(type);
@@ -2178,30 +2190,44 @@ public class ASTQuery
             for (Constant pred : t.getRegex().getPredicateList()) {
                 submit(pred);
             }
+            recordPath(t);
         }
         else {
             if (t.getPredicate().isConstant()) {
                 submit(t.getPredicate().getConstant());
             }
-            record(t);
+            recordTriple(t);
         }
     }
     
-    void record(Triple t) {
-        tripleList.add(t);
+    void recordTriple(Triple t) {
+        getTripleList().add(t);
+    }
+    
+    void recordPath(Triple t) {
+        getPathList().add(t);
     }
     
     public List<Constant> getConstantNodeList() {
         ArrayList<Constant> list = new ArrayList<>();
+        
         for (Triple t : getTripleList()) {
-            if (t.getSubject().isConstant() && ! list.contains(t.getSubject().getConstant())) {
-                list.add(t.getSubject().getConstant());
-            }
-            if (t.getObject().isConstant() && ! list.contains(t.getObject().getConstant())) {
-                list.add(t.getObject().getConstant());
-            }
+            getConstantNodeList(t, list);
         }
+        for (Triple t : getPathList()) {
+            getConstantNodeList(t, list);
+        }
+        
         return list;
+    }
+    
+    void getConstantNodeList(Triple t, List<Constant> list) {
+        if (t.getSubject().isConstant() && !list.contains(t.getSubject().getConstant())) {
+            list.add(t.getSubject().getConstant());
+        }
+        if (t.getObject().isConstant() && !list.contains(t.getObject().getConstant())) {
+            list.add(t.getObject().getConstant());
+        }
     }
     
     public List<Triple> getTripleList() {
@@ -4040,6 +4066,14 @@ public class ASTQuery
         
         process(myWalker);
         return list;       
+    }
+
+    public List<Triple> getPathList() {
+        return pathList;
+    }
+
+    public void setPathList(List<Triple> pathList) {
+        this.pathList = pathList;
     }
        
 }

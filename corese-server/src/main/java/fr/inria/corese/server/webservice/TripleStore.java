@@ -25,6 +25,7 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -192,16 +193,8 @@ public class TripleStore implements URLParam {
         if (ds == null) {
             ds = new Dataset();
         }
-        Context c = ds.getCreateContext();
-        c.setService(getName());
-        c.setUserQuery(true);
-        c.setRemoteHost(request.getRemoteHost());
-        c.set(REQUEST, DatatypeMap.createObject(request));
-        String platform = getCookie(request, PLATFORM);
-        if (platform != null) {
-            // calling platform
-            c.set(PLATFORM, platform);
-        }
+        Context c = ds.getContext();
+        complete(c, request);        
         Profile.getEventManager().call(ds.getContext());
         QueryProcess exec = getQueryProcess();
         exec.setDebug(c.isDebug());
@@ -256,8 +249,19 @@ public class TripleStore implements URLParam {
         return map;
     }
     
-   
+    void complete(Context c, HttpServletRequest request) {
+        c.setService(getName());
+        c.setUserQuery(true);
+        c.setRemoteHost(request.getRemoteHost());
+        c.set(REQUEST, DatatypeMap.createObject(request));
+        String platform = getCookie(request, PLATFORM);
+        if (platform != null) {
+            // calling platform
+            c.set(PLATFORM, platform);
+        }
+    }
     
+
     void before(QueryProcess exec, String query, Dataset ds) throws LoadException, EngineException {
         if (isBefore(ds.getContext())) {
             IDatatype dt = getBefore(ds.getContext());

@@ -1,6 +1,7 @@
 package fr.inria.corese.server.webservice.message;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.GraphDistance;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
@@ -35,9 +36,10 @@ public class TripleStoreExplain {
     
     
     JSONObject process() {
-        int distance = 1;
+        int distance = GraphDistance.DISTANCE;
         
         if (getContext().hasValue(URLParam.DISTANCE)) {
+            // URL parameter sv:distance=n
             IDatatype dt = getContext().getFirst(URLParam.DISTANCE);
             distance = Integer.valueOf(dt.getLabel());
         }

@@ -6,6 +6,7 @@ import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.ProviderService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
@@ -16,8 +17,11 @@ import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_OUTPUT;
 import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_URL;
 import static fr.inria.corese.sparql.triple.parser.Context.URL;
 import fr.inria.corese.sparql.triple.parser.context.LinkedResultLog;
+import java.util.Enumeration;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
+import org.testng.internal.annotations.IDataProvidable;
 
 
 /**
@@ -97,12 +101,27 @@ public class TripleStoreLog implements URLParam {
     void messageContext(Mappings map, ContextLog log) {
         // basic message
         JSONObject json = new ServiceMessage(getContext(), log).process();
+        header(json);
         // explanation about query failure
         messageMappings(map, json);
         
         // publish message as LinkedResult
         String url = document(json.toString(), URLParam.MES, "");
         map.addLink(url);
+    }
+    
+    void header(JSONObject json) {
+        IDatatype dt = getContext().get(REQUEST);
+        HttpServletRequest request = (HttpServletRequest) dt.getPointerObject().getPointerObject();
+        JSONObject obj = new JSONObject();
+        Enumeration<String> enh = request.getHeaderNames();
+        
+        while (enh.hasMoreElements()) {
+            String name = enh.nextElement();
+            obj.put(name, request.getHeader(name));
+        }
+        
+        json.put(HEADER, obj);
     }
     
     /**

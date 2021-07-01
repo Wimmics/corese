@@ -37,6 +37,8 @@ public class LocalResult {
 
     void message(Context c, ContextLog log) {
         JSONObject json = new ServiceMessage(c, log).process();
+        frame.msg(NL);
+        frame.msg("Local Message").msg(NL);
         for (String key : json.keySet()) {
             frame.msg(String.format("%s = %s", key, json.get(key))).msg(NL);
         }

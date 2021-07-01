@@ -15,6 +15,8 @@ import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.util.SPINProcess;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import org.apache.logging.log4j.Level;
 
 /**
@@ -130,6 +132,11 @@ public class Exec extends Thread {
             Query q = exec.compile(query);
             q.setValidate(true);
             Mappings map = exec.SPARQLQuery(q);
+            ASTQuery ast = exec.getQueryProcess().getAST(map);
+            if (ast!=null && !ast.hasMetadata(Metadata.EXPLAIN)) {
+                // display mappings will check existence of query resource URI in the graph
+                ast.setMetadata(Metadata.EXPLAIN);
+            }
             Date d2 = new Date();
             System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
             return map;

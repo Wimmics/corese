@@ -12,6 +12,7 @@ import org.json.JSONObject;
  *
  */
 public class GraphDistance {
+    public static int DISTANCE = 2;
     private Graph graph;
     private JSONObject json;
     private NSManager nsm;
@@ -29,7 +30,7 @@ public class GraphDistance {
     }
     
     public JSONObject match(ASTQuery ast) {
-        return match(ast, 1);
+        return match(ast, DISTANCE);
     }
    
     public JSONObject match(ASTQuery ast, int distance) {
@@ -48,7 +49,9 @@ public class GraphDistance {
         }
                 
         for (Constant name : ast.getConstantGraphList()) {
-            match(getGraph().getGraphNodes(), name.getDatatypeValue(), distance);
+            if (getGraph().getGraphNode(name.getLabel()) == null) {
+                match(getGraph().getGraphNodes(), name.getDatatypeValue(), distance);
+            }
         }
         
         return getJson();
@@ -81,7 +84,7 @@ public class GraphDistance {
             
             if (dist2 < minName) {
                 minName = dist2;
-                closeName = node.getLabel();;
+                closeName = node.getLabel();
             }           
         }
         

@@ -197,7 +197,7 @@ public class GraphSpecificFunction extends LDScript {
                 }
 
             case READ:
-                check(Feature.READ_WRITE, b, READ_MESS);
+                check(Feature.READ, b, path, READ_MESS);
                 if (isFile(path)) {
                     check(Feature.READ_FILE, b, path, READ_MESS);
                 }

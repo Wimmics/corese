@@ -101,7 +101,7 @@ public class Access {
         // sparql query in LDScript: xt:sparql, query(select where), let (select where)
         LDSCRIPT_SPARQL, 
         // xt:read xt:write,  xt:load
-        READ_WRITE, READ_FILE, SUPER_WRITE,
+        READ, WRITE, READ_WRITE, READ_FILE, SUPER_WRITE,
         LOAD_FILE,
         // xt:http:get
         HTTP,
@@ -399,6 +399,7 @@ public class Access {
     void initServer() {
         init();
         deny(READ_WRITE);
+        deny(WRITE);
         deny(SUPER_WRITE);
         deny(READ_FILE);
         deny(LOAD_FILE);
@@ -433,6 +434,7 @@ public class Access {
     public static void protect() {
         setProtect(true);
         deny(READ_WRITE);
+        deny(WRITE);
         deny(SUPER_WRITE);
         deny(HTTP);
         deny(JAVA_FUNCTION);

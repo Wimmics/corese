@@ -1,88 +1,44 @@
 #
-# Functions for st:logger
+# Functions for transformation st:logger
+# Generate map and charts from connection history
+# History recorded by server EventManager in ldscript static variable ?staticEventManagerMap 
+#
+# use case: http://localhost:8080/srv/service/log
 #
 
-
-# generate a list of json description of IP address
+#
+# generate a list of json description of IP address location
+#
 function us:jsonlist() {
-    let (amap = ds:getPublicDatatypeValue(true),
-         #host = xt:get(amap, st:host),
-         host = us:map(),
-         iplist   = us:iplist(host),
-         jsonlist = maplist(us:describe, iplist)) {
-        return(jsonlist)
-    }
-}
-
-function us:jsonlist2() {
     letdyn (iplist   = us:hostlist(),
-         ccount = 0, card = xt:size(iplist),
-         jsonlist = maplist(us:describe, iplist)) {
-        return(jsonlist)
+         ccount = 0, card = xt:size(iplist)) {
+        let (jsonlist = maplist(us:mydescribe, iplist)) {
+            return(jsonlist)
+        }
     }
 }
 
 
-function us:describe(ip) {
+function us:mydescribe(ip) {
     xt:print(set(ccount = ccount + 1), "/", card);
-    us:describe2(ip)
+    us:describe(ip)
 }
 
-
-function us:hostlist() {
-    let (select (aggregate(?key) as ?list) 
-         where { 
-          service <http://corese.inria.fr/sparql> {
-            select * where {
-                bind (ds:getPublicDatatypeValue(true) as ?map)
-                bind (xt:get(?map, st:host) as ?host)
-                values (?key ?value) { unnest(?host) }
-            } 
-            limit 999
-         }}) {
-    ?list
+#
+# call service to get json description of IP address
+#
+function us:describe(ip) {
+ let (res  = xt:read(concat("https://geo.ipify.org/api/v1?apiKey=at_XoGzTcrWBTSvdYhyQygXxP2NgBCNJ&ipAddress=", ip)),
+      json = xt:json(res)) {
+      xt:print(json, "\n") ;
+      return (us:compile(json))
     }
-}
-
-
-# list of location of IP address
-function us:location(jsonlist) {
-    maplist(us:locate, jsonlist)
-}
-
-# map(ip->nb)
-# generate a list of IP address
-function us:iplist(amap) {
-    maplist(lambda((key, value)) { key }, amap)
-}
-
-
-
-# extract location from json description of IP address
-function us:locate(json) {
-    let (ip  = xt:get(json, "ip"),
-         lat = xt:get(json, "lat"),
-         lon = xt:get(json, "lon")
-         ) {
-         xt:list(ip, xsd:decimal(lat), xsd:decimal(lon))
-    }
-}
-
-# ipinfo.io
-# extract location from json description of IP address
-function us:compile1(json) {
-    let (pair = xt:get(json, "loc"),
-         lat  = strbefore(pair, ","),
-         lon  = strafter(pair,  ",")) {
-         xt:set(json, "lon", lon);
-         xt:set(json, "lat", lat)
-    } ;
-    return(json)
 }
 
 # geo.ipify.org
 # extract location from json description of IP address
-function us:compile2(json) {
+#
+function us:compile(json) {
     let (pair = xt:get(json, "location"),
          lat  = xt:get(pair, "lat"),
          lon  = xt:get(pair, "lng"),
@@ -92,28 +48,65 @@ function us:compile2(json) {
         xt:set(json, "lat", lat);   
         xt:set(json, "country", country)  
     } ;
-    return(json)
+    return (json)
 }
 
-
-
-# call a service to get a json description of IP address
-function us:describe1(ip) {
- let (res  = xt:read(concat("https://ipinfo.io/", ip)),
-      json = xt:json(res)) {
-      xt:print(json, "\n") ;
-      return(us:compile1(json))
+#
+# get host list from connection history
+# history is recorded in ldscript static variable by server EventManager
+# history is retrieved by function us:eventMap()
+# function is written to be executed on localhost by /srv/service/log 
+# to query corese.inria.fr server history
+#
+function us:hostlist() {
+    let (select (aggregate(?key) as ?list) 
+         where { 
+          service <http://corese.inria.fr/sparql> {
+          #service <http://localhost:8080/sparql> {
+            select * where {
+                bind (us:eventMap() as ?map)
+                bind (xt:get(?map, st:host) as ?host)
+                values (?key ?value) { unnest(?host) }
+            } 
+            limit 999
+         }}) {
+    ?list
     }
 }
 
-# call a service to get a json description of IP address
-function us:describe2(ip) {
- let (res  = xt:read(concat("https://geo.ipify.org/api/v1?apiKey=at_XoGzTcrWBTSvdYhyQygXxP2NgBCNJ&ipAddress=", ip)),
-      json = xt:json(res)) {
-      xt:print(json, "\n") ;
-      return(us:compile2(json))
+#
+# static variable set by server EventManager
+#
+@public 
+function us:eventMap() {
+    return (?staticEventManagerMap)
+}
+
+
+
+#
+# list of location of IP address from my json
+# use case: st:map in logger.rul
+#
+function us:location(jsonlist) {
+    maplist(us:locate, jsonlist)
+}
+
+#
+# extract location from my json description of IP address
+#
+function us:locate(json) {
+    let (location  = xt:get(json, "country"),
+         lat = xt:get(json, "lat"),
+         lon = xt:get(json, "lon")
+         ) {
+         xt:list(location, xsd:decimal(lat), xsd:decimal(lon))
     }
 }
+
+
+
+
 
 # 'https://api.ipgeolocation.io/ipgeo?apiKey=03b3bee276c244b596e42f6be03290e4&ip='
 
@@ -121,6 +114,8 @@ function us:describe2(ip) {
 #
 # jsonlist: list of json description of IP address
 # generate a map(slotvalue->nb)
+# use case: logger chart.rq
+#
 function us:nbmap(jsonlist, key) {
     let (amap = xt:map()) {
         for (json in jsonlist) {

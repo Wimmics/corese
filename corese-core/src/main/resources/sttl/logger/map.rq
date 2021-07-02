@@ -1,5 +1,7 @@
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
 template st:map(?jsonlist) {
-   st:call-template-with(st:navlab, st:maplist, ?list)
+   st:call-template-with(st:navlab, st:maplist, ft:map.html, ?list, "")
 }
 where {
    bind (us:location(?jsonlist) as ?list)

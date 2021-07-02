@@ -9,13 +9,14 @@ Thu Aug 22 14:23:23 CEST 2019
 <rule>
 <body>
 <![CDATA[
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
 template st:map(?jsonlist) {
-   st:call-template-with(st:navlab, st:maplist, ?list)
+   st:call-template-with(st:navlab, st:maplist, ft:map.html, ?list, "")
 }
 where {
    bind (us:location(?jsonlist) as ?list)
 }
-
 ]]>
 </body>
 </rule>
@@ -32,7 +33,7 @@ template st:start {
 }
 where {
     # list of json descriptions of IP address
-    bind (us:jsonlist2() as ?jsonlist)
+    bind (us:jsonlist() as ?jsonlist)
 }
 
 ]]>

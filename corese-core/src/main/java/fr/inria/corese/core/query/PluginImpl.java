@@ -74,6 +74,8 @@ import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.URLServer;
+import java.net.URLEncoder;
 import javax.ws.rs.core.Response;
 
 /**
@@ -1184,6 +1186,23 @@ public class PluginImpl
             Service s = new Service();
             Response res = s.get(uri.getLabel());
             String str = res.readEntity(String.class);
+            return DatatypeMap.newInstance(str);
+        } catch (Exception e) {
+            logger.error(e.getMessage() + "\n" + uri.getLabel(), "");
+        }
+        return null;
+    }
+    
+    @Override
+    public IDatatype httpget(IDatatype uri, IDatatype accept) {
+        try {
+            Service s = new Service();
+            String format = ResultFormat.TEXT;
+            if (accept != null) {
+                format = ResultFormat.decodeOrText(accept.getLabel());
+            }
+            String url = new URLServer(uri.getLabel()).encoder();
+            String str = s.getBasic(url, format);
             return DatatypeMap.newInstance(str);
         } catch (Exception e) {
             logger.error(e.getMessage() + "\n" + uri.getLabel(), "");

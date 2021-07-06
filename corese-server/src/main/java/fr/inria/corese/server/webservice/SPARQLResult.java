@@ -113,7 +113,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             }
             Response resp = rb.entity(res).build();
             
-            afterRequest(getRequest(), resp, query, map, res);  
+            afterRequest(getRequest(), resp, query, map, res, ds);  
                                  
             return resp;
         } catch (Exception ex) {
@@ -164,7 +164,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
         else {
             ds = new Dataset();
         }
-        boolean b = SPARQLRestAPI.hasKey(access);
+        boolean b = SPARQLRestAPI.hasKey(request, access);
         if (b) {
             System.out.println("has key access");
         }
@@ -437,8 +437,15 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
         getVisitor().afterRequest(request, query, map);
     }
     
-    void afterRequest(HttpServletRequest request, Response resp, String query, Mappings map, String res) {
+    void afterRequest(HttpServletRequest request, Response resp, String query, Mappings map, String res, Dataset ds) {
+        afterRequest(map, ds, res);
         getVisitor().afterRequest(request, resp, query, map, res);
+    }
+    
+    void afterRequest(Mappings map, Dataset ds, String res) {
+        if (ds.getContext().hasValue(TRACE)) {
+            System.out.println(res);
+        }
     }
     
          

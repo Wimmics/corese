@@ -25,7 +25,6 @@ import java.util.Enumeration;
 import java.util.HashMap;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
-import org.json.JSONObject;
 import org.slf4j.LoggerFactory;
 
 /**
@@ -195,7 +194,7 @@ public class TripleStore implements URLParam {
         }
         Context c = ds.getContext();
         complete(c, request);        
-        Profile.getEventManager().call(ds.getContext());
+        EventManager.getSingleton().call(ds.getContext());
         QueryProcess exec = getQueryProcess();
         exec.setDebug(c.isDebug());
         

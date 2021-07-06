@@ -22,8 +22,14 @@ public class EventManager {
     static final String date  = NSManager.STL+"date";
     static final String host  = NSManager.STL+"host";
     static final String template = "/template";
+    private static EventManager singleton;
+    
     // service|profile -> count
     private CoreseMap globalMap, countMap, dateMap, hostMap;
+    
+    static {
+        setSingleton(new EventManager());
+    }
     
     EventManager() {
         init();
@@ -131,6 +137,14 @@ public class EventManager {
      */
     void setCountMap(CoreseMap countMap) {
         this.countMap = countMap;
+    }
+
+    public static EventManager getSingleton() {
+        return singleton;
+    }
+
+    public static void setSingleton(EventManager aSingleton) {
+        singleton = aSingleton;
     }
     
 }

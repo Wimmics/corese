@@ -170,7 +170,7 @@ public class Transformer {
             
             TransformerEngine engine = new TransformerEngine(store.getGraph(), Profile.getProfile().getProfileGraph(), par);
             engine.setDebug(EmbeddedJettyServer.isDebug());
-            engine.setEventManager(Profile.getEventManager());
+            engine.setEventManager(EventManager.getSingleton());
             context = engine.getContext();
             
             Level level = par.getLevel(); //Access.getQueryAccessLevel(true);

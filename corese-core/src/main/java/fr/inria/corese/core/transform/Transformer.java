@@ -635,6 +635,9 @@ public class Transformer implements TransformProcessor {
             return transform();
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
+            if (ex.getAST() != null) {
+                logger.error(ex.getAST().toString());
+            }
             return "";
         }
     }

@@ -22,6 +22,7 @@ public interface GraphProcessor {
     
     IDatatype read(IDatatype dt); 
     IDatatype httpget(IDatatype dt); 
+    IDatatype httpget(IDatatype dt, IDatatype format); 
     
     IDatatype format(IDatatype[] ldt);
     

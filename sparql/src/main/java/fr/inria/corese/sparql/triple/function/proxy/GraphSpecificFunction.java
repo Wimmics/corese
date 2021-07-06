@@ -201,10 +201,14 @@ public class GraphSpecificFunction extends LDScript {
                 if (isFile(path)) {
                     check(Feature.READ_FILE, b, path, READ_MESS);
                 }
-                return proc.read(dt);
+                IDatatype res = proc.read(dt);
+                return  res;
                 
             case XT_HTTP_GET:
                 check(Feature.HTTP, b, READ_MESS);
+                if (param.length>=2) {
+                    return proc.httpget(dt, param[1]);
+                }
                 return proc.httpget(dt);    
                 
             default: return null;

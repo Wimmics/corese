@@ -96,6 +96,7 @@ public interface URLParam {
     static final String DATE = "date";
     static final String ENDPOINT = "endpoint";
     static final String FAIL = "fail";
+    static final String HISTORY = "history";
     
 
 }

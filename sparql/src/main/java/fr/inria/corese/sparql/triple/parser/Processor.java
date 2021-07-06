@@ -812,7 +812,6 @@ public class Processor {
 		
 		defoper(EXT+"read",     ExprType.READ);
 		defoper(EXT+"httpget",  ExprType.XT_HTTP_GET);
-		defoper(NSManager.HTTP+"get",  ExprType.XT_HTTP_GET);
 		defoper(READ,           ExprType.READ);
 		defoper(EXT+"write",    ExprType.WRITE);
 		defoper(WRITE,          ExprType.WRITE);

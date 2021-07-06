@@ -146,7 +146,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem success;
     private JMenuItem quit;
     private JMenuItem iselect, iselecttuple, igraph, iconstruct, iask, idescribe,
-            iserviceCorese, iserviceDBpedia, ifederate,
+            iserviceLocal, iserviceCorese, iserviceDBpedia, ifederate,
             iinsert, iinsertdata, idelete, ideleteinsert,
             iturtle, in3, irdfxml, ijson, itrig, ispin, iowl, 
             ientailment, irule, ierror, ifunction, ical, iowlrl;
@@ -574,6 +574,7 @@ public class MainFrame extends JFrame implements ActionListener {
         iconstruct = defItem("Construct", DEFAULT_CONSTRUCT_QUERY);
         iask = defItem("Ask", DEFAULT_ASK_QUERY);
         idescribe = defItem("Describe", DEFAULT_DESCRIBE_QUERY);
+        iserviceLocal = defItem("Service Local", "servicelocal.rq");
         iserviceCorese = defItem("Service Corese", DEFAULT_SERVICE_CORESE_QUERY);
         iserviceDBpedia = defItem("Service DBpedia", DEFAULT_SERVICE_DBPEDIA_QUERY);
         ifederate = defItem("Federate", "federate.rq");
@@ -727,6 +728,7 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(iconstruct);
         queryMenu.add(iask);
         queryMenu.add(idescribe);
+        queryMenu.add(iserviceLocal);
         queryMenu.add(iserviceCorese);
         queryMenu.add(iserviceDBpedia);
         queryMenu.add(ifederate);

@@ -14,7 +14,9 @@ import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import java.io.BufferedReader;
 import java.io.IOException;
+import java.io.InputStreamReader;
 import javax.xml.parsers.ParserConfigurationException;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -168,8 +170,32 @@ public class LinkedResult implements URLParam {
             msg(NL);
             msg(String.format("Query fail at: %s", obj.getString(URL))).msg(NL);
             msg(obj.getString(QUERY)).msg(NL);
-        }        
-
+        }  
+        
+        if (json.has(HISTORY) && json.get(HISTORY) instanceof JSONObject) {
+            JSONObject history = json.getJSONObject(HISTORY);
+            //displayHistory(history);            
+        }
+    }
+    
+    // map: IP -> counter
+    void displayHistory(JSONObject history) {
+        for (String ip : history.keySet()) {
+            System.out.println("GUI: " + ip);
+            String command = String.format("whois %s", ip);
+            try {
+                Process process = Runtime.getRuntime().exec(command);
+                BufferedReader reader = new BufferedReader(
+                        new InputStreamReader(process.getInputStream()));
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    System.out.println(line);
+                }
+                reader.close();
+            } catch (IOException e) {
+                logger.error(e);
+            }
+        }
     }
     
     /**

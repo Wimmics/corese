@@ -107,6 +107,16 @@ public class ContextLog implements URLParam, LogKey {
         return getMappings(getSubject(), property);
     } 
     
+    public String getMessage() {       
+        for (int i = getLinkList().size()-1; i>=0; i--) {
+            String url = getLinkList().get(i);
+            if (url.contains(MES)) {
+                return url;
+            }
+        }
+        return null;
+    }
+    
     public Mappings getMappings(String subject, String property) {
         IDatatype dt = getSubjectMap().get(subject, property);
         if (dt == null) {

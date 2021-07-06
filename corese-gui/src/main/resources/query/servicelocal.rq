@@ -1,0 +1,9 @@
+select * 
+where {
+  service <http://localhost:8080/sparql> {
+     select * where {
+       ?x ?p ?y 
+     } 
+     limit 10
+  }
+}

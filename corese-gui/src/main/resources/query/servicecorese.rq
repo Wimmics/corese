@@ -1,6 +1,6 @@
 select * 
 where {
-  service <http://localhost:8080/sparql/> {
+  service <http://corese.inria.fr/sparql?mode=message> {
      select * where {
        ?x ?p ?y 
      } 

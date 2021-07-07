@@ -674,10 +674,10 @@ public final class MyJPanelQuery extends JPanel {
         }
         if (ast.hasMetadata(Metadata.WHY) && bind.getLog()!=null) {
             new LocalResult(mainFrame).process(bind.getLog());
-            new LocalResult(mainFrame).message(bind);
+            new LocalResult(mainFrame).message(map, bind);
         }
-        if (ast.hasMetadata(Metadata.MESSAGE) && bind.getLog()!=null) {
-            new LocalResult(mainFrame).message(bind);
+        if (ast.hasMetadata(Metadata.MESSAGE)) {
+            new LocalResult(mainFrame).message(map, bind);
         }
     }
     

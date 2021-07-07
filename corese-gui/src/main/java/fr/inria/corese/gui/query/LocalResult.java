@@ -1,7 +1,8 @@
 package fr.inria.corese.gui.query;
 
+import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.ProviderService;
-import fr.inria.corese.core.query.ServiceMessage;
+import fr.inria.corese.core.query.ResultMessage;
 import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.cst.LogKey;
@@ -25,23 +26,32 @@ public class LocalResult {
     }
     
     
-    
+    /**
+     * Process Federated query log, display in GUI
+     */
     void process(ContextLog log) {
         logSelect(log);
         logService(log);
     }
     
-    void message(Binding bind) {
-        message(bind.getContext(), bind.getLog());
+    /**
+     * 
+     */
+    void message(Mappings map, Binding bind) {
+        message(map, bind.getContext(), bind.getLog());
     }
 
-    void message(Context c, ContextLog log) {
-        JSONObject json = new ServiceMessage(c, log).process();
+    void message(Mappings map, Context c, ContextLog log) {
+        JSONObject json = new ResultMessage(getGraph(),  c, log).process(map);
         frame.msg(NL);
         frame.msg("Local Message").msg(NL);
         for (String key : json.keySet()) {
             frame.msg(String.format("%s = %s", key, json.get(key))).msg(NL);
         }
+    }
+    
+    Graph getGraph() {
+        return frame.getMyCorese().getGraph();
     }
 
     

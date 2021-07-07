@@ -1,6 +1,7 @@
 package fr.inria.corese.server.webservice.message;
 
-import fr.inria.corese.core.query.ServiceMessage;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.ResultMessage;
 import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.ProviderService;
@@ -101,10 +102,8 @@ public class TripleStoreLog implements URLParam {
      */
     void messageContext(Mappings map, ContextLog log) {
         // basic message
-        JSONObject json = new ServiceMessage(getContext(), log).process();
+        JSONObject json = new ResultMessage(getGraph(), getContext(), log).process(map);
         header(getRequest(), json);
-        // explanation about query failure
-        messageMappings(map, json);       
         completeMessage(json); 
         
         // publish message as LinkedResult
@@ -116,6 +115,7 @@ public class TripleStoreLog implements URLParam {
         CoreseMap amap = EventManager.getSingleton().getHostMap();
         json.put(HISTORY, amap.toJSON());
     }
+            
     
     HttpServletRequest getRequest() {
         IDatatype dt = getContext().get(REQUEST);
@@ -133,21 +133,7 @@ public class TripleStoreLog implements URLParam {
         
         json.put(HEADER, obj);
     }
-    
-    /**
-     * Try to explain why the query fails 
-     * add explanation json object into json message
-     *
-     */
-    void messageMappings(Mappings map, JSONObject json) {
-        if (map.isEmpty()) {
-            JSONObject obj = new TripleStoreExplain(getQueryProcess(), getContext(), map).process();
-            if (!obj.isEmpty()) {
-                json.put(URLParam.EXPLAIN, obj);
-            }
-        }
-    }
-    
+      
     /**
      * Log intermediate service query/results for federated endpoint
      * when mode=why
@@ -313,6 +299,10 @@ public class TripleStoreLog implements URLParam {
 
     public QueryProcess getQueryProcess() {
         return queryProcess;
+    }
+    
+    Graph getGraph() {
+        return getQueryProcess().getGraph();
     }
 
     public void setQueryProcess(QueryProcess queryProcess) {

@@ -205,27 +205,35 @@ public class TripleStore implements URLParam {
             
             Date d1 = new Date();
             
-            if (isFederate(ds)) {
-                // federate sparql query with @federate uri
-                if (isCompile(c)) {
-                    Query qq = exec.compile(federate(query, ds), ds);
-                    //map = tsl.logCompile();
-                    map = Mappings.create(qq);
+            try {
+                if (isFederate(ds)) {
+                    // federate sparql query with @federate uri
+                    if (isCompile(c)) {
+                        Query qq = exec.compile(federate(query, ds), ds);
+                        //map = tsl.logCompile();
+                        map = Mappings.create(qq);
+                    } else {
+                        map = exec.query(federate(query, ds), ds);
+                        //tsl.log(map);
+                    }
+                } else if (isShacl(c)) {
+                    map = shacl(query, ds);
+                } else if (isConstruct(c)) {
+                    map = construct(query, ds);
+                } else if (isSpin(c)) {
+                    map = spin(query, ds);
                 } else {
-                    map = exec.query(federate(query, ds), ds);
-                    //tsl.log(map);
+                    map = exec.query(query, ds);
                 }
-            } else if (isShacl(c)) {
-                map = shacl(query, ds);
-            } else if (isConstruct(c)) {
-                map = construct(query, ds);
-            } 
-            else if (isSpin(c)) {
-                map = spin(query, ds);
-            }
-            else {
-                map = exec.query(query, ds);
-                //tsl.log(map);
+            } catch (EngineException e) {
+                if (c.hasEveryValue(MES,CATCH)) {
+                    // mode=message;error
+                    // return empty Mappings with message/log etc. 
+                    Query q = exec.compile(query, ds);
+                    map = Mappings.create(q);
+                } else {
+                    throw e;
+                }
             }
             
             // add param=value parameter to Context

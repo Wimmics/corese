@@ -35,7 +35,7 @@ public class TripleStoreExplain {
     }
     
     
-    JSONObject process() {
+    JSONObject distance() {
         int distance = GraphDistance.DISTANCE;
         
         if (getContext().hasValue(URLParam.DISTANCE)) {
@@ -47,7 +47,7 @@ public class TripleStoreExplain {
         JSONObject obj = getGraph().match(getAst(), distance);                        
         return obj;
     }
-    
+      
     Graph getGraph() {
         return getQueryProcess().getGraph();
     }

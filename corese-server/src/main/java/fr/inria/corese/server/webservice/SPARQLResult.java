@@ -7,6 +7,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.ResultFormatDef;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.Context;
@@ -91,7 +92,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             
             query = getQuery(query, mode);
             if (query == null) {
-                throw new Exception("Undefined query parameter ");
+                throw new EngineException("Undefined query parameter ");
             }
 
             beforeRequest(getRequest(), query);
@@ -116,9 +117,12 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             afterRequest(getRequest(), resp, query, map, res, ds);  
                                  
             return resp;
-        } catch (Exception ex) {
+        } catch (EngineException ex) {
+            logger.error("query:");
+            logger.error(query);
             logger.error(ERROR_ENDPOINT, ex);
-            return Response.status(ERROR).header(headerAccept, "*").entity(ERROR_ENDPOINT).build();
+            String message = String.format("%s\n%s", ERROR_ENDPOINT, ex.getMessage());
+            return Response.status(ERROR).header(headerAccept, "*").entity(message).build();
         }
     }
     

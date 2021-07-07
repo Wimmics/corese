@@ -582,6 +582,15 @@ public class Context extends ASTObject implements URLParam {
         return get(name) != null;
     }
     
+    public boolean hasEveryValue(String... name) {
+        for (String key : name) {
+            if (! hasValue(key)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     public boolean hasAnyValue(String... name) {
         for (String key : name) {
             if (hasValue(key)) {

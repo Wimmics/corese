@@ -92,11 +92,14 @@ public interface URLParam {
     static final String TEST = "test";
     static final String DISTANCE = "distance";
     static final String ERROR = "error";
+    static final String CATCH = "catch";
     static final String UNDEF = "undefined";
     static final String DATE = "date";
     static final String ENDPOINT = "endpoint";
     static final String FAIL = "fail";
     static final String HISTORY = "history";
+    static final String CARDINALITY = "cardinality";
+    static final String GRAPH_SIZE = "graphSize";
     
 
 }

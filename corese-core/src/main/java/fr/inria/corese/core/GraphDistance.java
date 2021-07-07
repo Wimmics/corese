@@ -114,7 +114,26 @@ public class GraphDistance {
 
     public int distance (String l1, String l2) {
         return LevenshteinDistance.getDefaultInstance().apply(l1, l2);
-    }      
+    }  
+
+
+   
+    public JSONObject cardinality(ASTQuery ast) {
+        JSONObject json = new JSONObject();
+        
+        for (Constant name : ast.getPredicateList()) {
+            Node pred = getGraph().getPropertyNode(name.getLabel());
+            if (pred == null) {
+                json.put(name.getLabel(), 0);
+            }
+            else {
+                json.put(name.getLabel(), getGraph().getIndex().size(pred));
+            }
+        }
+        
+        return json;
+    }
+    
 
     public Graph getGraph() {
         return graph;

@@ -3550,5 +3550,9 @@ public class Graph extends GraphObject implements
     public JSONObject match(ASTQuery ast, int d) {
         return new GraphDistance(this).match(ast, d);
     }
+    
+    public JSONObject cardinality(ASTQuery ast) {
+        return new GraphDistance(this).cardinality(ast);
+    }
         
 }

@@ -54,9 +54,9 @@ public class EvalOptional {
         if (map1.isEmpty()) {
             return backtrack;
         }
-        MappingSet set1 = new MappingSet(map1);
+        MappingSet set1 = new MappingSet(getQuery(), map1);
         //Exp rest = eval.prepareRest(exp, set1);
-        Mappings map = eval.prepareMappings(exp, set1);
+        Mappings map = set1.prepareMappings(exp);
         if (map != null  && exp.getInscopeFilter() != null) {
             /**
              * Use case: BGP1 optional { filter(exp) BGP2} all var in
@@ -92,13 +92,14 @@ public class EvalOptional {
             map2 = Mappings.create(env.getQuery());
         }
         else {
-            rest = eval.getRest(exp, set1, map);        
+            rest = set1.getRest(exp, map);        
             map2 = eval.subEval(p, gNode, queryNode, rest, exp, set1.getJoinMappings());
         }
 
         eval.getVisitor().optional(eval, eval.getGraphNode(gNode), exp, map1, map2);
 
-        MappingSet set = new MappingSet(exp, set1, new MappingSet(map2));
+        MappingSet set = new MappingSet(getQuery(), exp, set1, 
+                new MappingSet(getQuery(), map2));
         set.setDebug(env.getQuery().isDebug());
         set.start();
 
@@ -219,5 +220,7 @@ public class EvalOptional {
         return true;
     }
 
-    
+    Query getQuery() {
+        return eval.getMemory().getQuery();
+    }
 }

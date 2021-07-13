@@ -12,16 +12,19 @@ import java.util.List;
 public class EvalGraph {
     
     Eval eval;
+    boolean stop = false;
     
     EvalGraph(Eval e) {
         eval = e;
     }
     
+    void setStop(boolean b) {
+        stop = b;
+    }
     
-    int namedGraph(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
+    int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
         Node graphNode = exp.getGraphName();
-        Node queryNode = eval.getQuery().getGraphNode();
         Node graph     = eval.getNode(p, graphNode);
         Mappings res;
 
@@ -37,9 +40,9 @@ public class EvalGraph {
         Memory env = eval.getMemory();
 
         for (Mapping m : res) {
-//            if (stop) {
-//                return STOP;
-//            }            
+            if (stop) {
+                return eval.STOP;
+            }            
             
             Node namedGraph = null;
             if (graphNode.isVariable()) {
@@ -53,9 +56,6 @@ public class EvalGraph {
             
             if (env.push(m, n)) {
                 boolean pop = false;                               
-                if (queryNode != null) {
-                    env.pop(queryNode);
-                }
                 if (env.push(graphNode, m.getNamedGraph())) {
                     pop = true;
                 } else {
@@ -97,9 +97,7 @@ public class EvalGraph {
         }
 
         for (Node graph : graphNodes) {
-            if (mm.match(name, graph, env)
-                    && env.push(name, graph, n)
-                    ) {
+            if (mm.match(name, graph, env)) {
                 Mappings m = graph(p, graph, exp, map, n);
                 if (res == null) {
                     res = m;
@@ -112,36 +110,49 @@ public class EvalGraph {
         return res;
     }
 
+    /**
+     * Node graph: graph URI or Node graph pointer or Node path pointer
+     * Exp exp: graph name { BGP }
+     */
     private Mappings graph(Producer p, Node graph, Exp exp, Mappings map, int n) throws SparqlException {
         int backtrack = n - 1;
         boolean external = false;
         Node graphNode = exp.getGraphName();
-        Node queryNode = eval.getQuery().getGraphNode();
         Producer np = p;
         if (graph != null && p.isProducer(graph)) {
             // graph ?g { }
             // named graph in GraphStore 
             np = p.getProducer(graph, eval.getMemory());
-            np.setGraphNode(graphNode);  // the new gNode
-            // use graphNode variable (instead of queryNode ?_kgram_0)
-            // use case: graph $path { ... }
-            queryNode = null;
+            np.setGraphNode(graph);  // the new gNode
+            external = true;
         }
 
         Exp main = exp;
         Exp body = exp.rest();
         Mappings res;
-              
+        Node var = null, target = graph;
+        
+        if (external) {
+            if (graphNode.isVariable() && graph.getDatatypeValue().isExtension()) {
+                var    = graphNode;
+            }
+            else {
+                target = null;
+            }
+        }
+        
         if (eval.isFederate(exp)) {
-            res = eval.subEval(np, graphNode, queryNode, body, main, map);
+            res = eval.subEvalNew(np, target, var, body, main, map, null, false, external);
         } 
         else {
             // exp += values(var, map)
             Exp ee = body;
             if (graph.getPath() == null) {
-                ee = eval.complete(body, map);
+                // not a path pointer
+                ee = body.complete(map);
             }
-            res = eval.subEval(np, graphNode, queryNode, ee, main);
+            // function call below can be reused with np = new Producer(graph) target=null var=null external=true
+            res = eval.subEvalNew(np, target, var, ee, main, (Mappings)null, (Mapping)null, false, external);
         }
         res.setNamedGraph(graph);
 

@@ -58,7 +58,7 @@ public class Memory extends PointerObject implements Environment {
     Query query;
     Node gNode;
     // to evaluate aggregates such as count(?x)
-    Mappings results, group, join;
+    Mappings results, group; //, join;
     Mapping mapping;
     // true when processing aggregate at the end 
     boolean isAggregate = false;
@@ -264,7 +264,7 @@ public class Memory extends PointerObject implements Environment {
             // exists {}
            copyInto(mem, exp);
         } // subquery
-        else if (eval.getMode() == Evaluator.SPARQL_MODE){ //&& !sub.isBind()
+        else if (eval.getMode() == Evaluator.SPARQL_MODE){ 
             // SPARQL does not bind args
         } else {
             // bind subquery select nodes
@@ -276,8 +276,6 @@ public class Memory extends PointerObject implements Environment {
             // ?x in sub query is not the same as ?x in outer query (it is not bound here)
             // only ?z is the same
             for (Node subNode : sub.getSelect()) {
-//                Node outNode = query.getOuterNodeSelf(subNode);
-//                copyInto(outNode, subNode, mem, n);
                 copyInto(subNode, mem, n);
                 n++;
             }
@@ -304,12 +302,17 @@ public class Memory extends PointerObject implements Environment {
      */
     void copyInto(Memory mem, Exp exp) {
         if (hasBind()) {
+            // bind ldscript variables as sparql 
+            // pattern matching variables
             mem.copy(getBind(), exp);
         } 
         mem.share(this);
         copyInto(mem);
     }
     
+    /**
+     * Share global variable, context, etc.
+     */
     public void share(Binder target, Binder source) {
         if (source != null && target != null) {
             target.share(source);
@@ -321,8 +324,8 @@ public class Memory extends PointerObject implements Environment {
     }
     
     /**
-     * Copy this Bind local variable stack into this memory Use case: function
-     * xt:foo(?x) { exists { ?x ex:pp ?y } }
+     * Copy this Bind local variable stack into this memory 
+     * Use case: function xt:foo(?x) { exists { ?x ex:pp ?y } }
      */
     void copy(Binder bind, Exp exp) {
         List<Node> list = exp.getNodes();
@@ -353,28 +356,7 @@ public class Memory extends PointerObject implements Environment {
             }
         }
     }
-    
-       
-    /**
-     * outNode is query Node in this Memory 
-     * subNode is query Node in mem Memory
-     */
-//    void copyInto(Node outNode, Node subNode, Memory mem, int n) {
-//        if (outNode != null) {
-//            Node qnode = outNode;
-//            if (getNode(subNode) != null) {
-//                // subNode may be prebound (use case: function with exists { select })
-//                qnode = subNode;
-//            }
-//            if (qnode != null) {
-//                Node tNode = getNode(qnode);
-//                if (tNode != null) {
-//                    mem.push(subNode, tNode, -1);
-//                }
-//            }
-//        }
-//    }
-
+              
     /**
      * Store a new result: take a picture of the stack as a Mapping
      */
@@ -1156,19 +1138,19 @@ public class Memory extends PointerObject implements Environment {
         return current();
     }
     
-    Mappings getJoinMappings() {
-        return join;
-    }
-    
-    Mappings getResetJoinMappings() {
-        Mappings map = getJoinMappings();
-        setJoinMappings(null);
-        return map;
-    }
-    
-    void setJoinMappings(Mappings m) {
-        join = m;
-    }
+//    Mappings getJoinMappings() {
+//        return join;
+//    }
+//    
+//    Mappings getResetJoinMappings() {
+//        Mappings map = getJoinMappings();
+//        setJoinMappings(null);
+//        return map;
+//    }
+//    
+//    void setJoinMappings(Mappings m) {
+//        join = m;
+//    }
     
     /**
      * Iterate Mappings for aggregate

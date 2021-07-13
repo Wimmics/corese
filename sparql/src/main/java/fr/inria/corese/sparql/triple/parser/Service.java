@@ -143,17 +143,18 @@ public class Service extends SourceExp {
         }
     }
 
-    /**
-     * @return the serviceList
-     */
     public List<Atom> getServiceList() {
         return serviceList;
     }
 
-    /**
-     * @param serviceList the serviceList to set
-     */
     public void setServiceList(List<Atom> serviceList) {
         this.serviceList = serviceList;
     }
+    
+    public void setURLList(List<Atom> serviceList) {
+        setServiceList(serviceList);
+        setSource(serviceList.get(0));
+    }
+    
+    
 }

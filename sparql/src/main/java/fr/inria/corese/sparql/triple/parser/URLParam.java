@@ -100,6 +100,7 @@ public interface URLParam {
     static final String HISTORY = "history";
     static final String CARDINALITY = "cardinality";
     static final String GRAPH_SIZE = "graphSize";
+    static final String MERGE = "merge";
     
 
 }

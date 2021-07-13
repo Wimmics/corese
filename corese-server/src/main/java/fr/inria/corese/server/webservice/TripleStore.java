@@ -413,6 +413,10 @@ public class TripleStore implements URLParam {
         //int type = (ds.getUriList().size() > 1) ? Metadata.FEDERATE : Metadata.FEDERATION;
         int type = Metadata.FEDERATION;
         meta.set(type, ds.getUriList());
+        if (ds.getContext().hasValue(MERGE)) {
+            // heuristic to merge services on the intersection of service URLs
+            meta.add(Metadata.MERGE_SERVICE);
+        }
                 
         for (String key : metaMap.keySet()) {
             if (ds.getContext().hasValue(key)) {

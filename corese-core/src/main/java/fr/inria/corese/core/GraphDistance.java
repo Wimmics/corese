@@ -5,6 +5,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.math.BigDecimal;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONObject;
 
@@ -63,12 +64,12 @@ public class GraphDistance {
         String name  = getNsm().nstrip(label);
 
         int minLabel = Integer.MAX_VALUE;
-        int minName  = Integer.MAX_VALUE;
+        double minName  = Double.MAX_VALUE;
         String closeLabel = label;
         String closeName  = label;
         
         for (var node : it) {
-            int dist = distance(label, node.getLabel());
+            int dist = urlDistance(label, node.getLabel());
             
             if (dist == 0) {
                 return;
@@ -80,12 +81,12 @@ public class GraphDistance {
             }
             
             String name2 = getNsm().nstrip(node.getLabel());
-            int dist2 = distance(name, name2);
+            double dist2 = nameDistance(name, name2);
             
             if (dist2 < minName) {
                 minName = dist2;
                 closeName = node.getLabel();
-            }           
+            } 
         }
         
         switch (getMode()) {
@@ -102,13 +103,31 @@ public class GraphDistance {
                 break;
                 
             case DEFAULT:
-                // distance with namespace
-                if (minLabel <= distance) {
-                    getJson().put(label, closeLabel);
-                } // distance with just the name
-                else if (minName <= distance) {
+//                System.out.println("GD: " + label);
+//                System.out.println("GD label: " + closeLabel + " " + minLabel);
+//                System.out.println("GD name: " + closeName + " " + minName);
+
+                if (minName < minLabel) {
                     getJson().put(label, closeName);
+                } 
+                else {
+                    getJson().put(label, closeLabel);
                 }
+                
+                // distance with namespace
+//                if (minName == 0) {
+//                    // same name in other namespace
+//                    getJson().put(label, closeName);
+//                }                
+//                else if (minLabel <= distance) {
+//                    getJson().put(label, closeLabel);
+//                } // distance with name
+//                else if (minName <= distance) {
+//                    getJson().put(label, closeName);
+//                }
+                
+                
+                
         }              
     }
 
@@ -116,7 +135,38 @@ public class GraphDistance {
         return LevenshteinDistance.getDefaultInstance().apply(l1, l2);
     }  
 
-
+    // levenshtein distance
+    public int urlDistance (String l1, String l2) {
+        return distance(l1, l2);
+    } 
+    
+    boolean containWithoutCase(String l1, String l2) {
+        return containWithCase(l1.toLowerCase(), l2.toLowerCase());
+    }
+    
+    boolean containWithCase(String l1, String l2) {
+        return l1.contains(l2) || l2.contains(l1);
+    }
+    
+    // ameliorated levenshtein distance
+    public double nameDistance (String l1, String l2) {
+        if (l1.equals(l2)) {
+            return 0;
+        }
+        // same name without case: better than any other distance
+        if (l1.toLowerCase().equals(l2.toLowerCase())) {
+            return 0.3;
+        }
+        // distance when one name contain other name is less than
+        // same distance when no one contain the other
+        // prefLabel: label considered better than prepare 
+        if (containWithoutCase(l1, l2)) {
+            return distance(l1.toLowerCase(), l2.toLowerCase()) - 0.3;
+        }
+        return distance(l1, l2);
+    } 
+    
+    
    
     public JSONObject cardinality(ASTQuery ast) {
         JSONObject json = new JSONObject();

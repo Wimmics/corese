@@ -2,7 +2,6 @@ package fr.inria.corese.core.extension;
 
 import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.logic.Distance;
@@ -83,6 +82,18 @@ public class Extension extends Core {
             return null;
         }
         return DatatypeMap.createObject(getLog());
+    }
+    
+    public IDatatype getMessage() {
+        String url = getLog().getMessage();
+        if (url == null) {
+            return null;
+        }
+        String text = new Service().getString(url);
+        if (text == null || text.isEmpty()) {
+            return null;
+        }
+        return DatatypeMap.json(text);
     }
     
     /**

@@ -41,8 +41,8 @@ public class EvalJoin {
             // data may be relevant for service
             arg = map1.join(data);
         }
-        MappingSet set1 = new MappingSet(arg);
-        Exp rest = eval.prepareRest(exp, set1);
+        MappingSet set1 = new MappingSet(getQuery(), arg);
+        Exp rest = set1.prepareRest(exp);
         Date d2 = new Date();
         if (stop) {
             return STOP;
@@ -57,6 +57,10 @@ public class EvalJoin {
         }
        
         return join(p, gNode, stack, env, map1, map2, n);
+    }
+    
+    Query getQuery() {
+        return eval.getMemory().getQuery();
     }
     
     // use case: join(data, and(values ?s { <uri> }), service ?s { })

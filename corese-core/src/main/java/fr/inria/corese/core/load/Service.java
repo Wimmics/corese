@@ -313,7 +313,7 @@ public class Service implements URLParam {
         return sb.toString();
     }
         
-    String getBasic(String url, String mime) {
+    public String getBasic(String url, String mime) {
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build();
         WebTarget target = client.target(url);
@@ -439,7 +439,9 @@ public class Service implements URLParam {
      */
     public void setFormat(String format) {
         this.format = format;
-        getParser().setFormat(format);
+        if (getParser()!=null) {
+            getParser().setFormat(format);
+        }
     }
 
     /**

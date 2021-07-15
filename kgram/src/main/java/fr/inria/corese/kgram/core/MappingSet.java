@@ -15,7 +15,7 @@ import java.util.List;
  *
  */
 public class MappingSet {
-
+    private Query query;
     Mappings map;
     private Mappings targetMapping;
     Exp exp;
@@ -28,16 +28,18 @@ public class MappingSet {
     private boolean debug= false;
     
   
-    MappingSet(Mappings map1, Mappings map2) {
-        set1 = new MappingSet(map1);
-        set2 = new MappingSet(map2);
+    MappingSet(Query q, Mappings map1, Mappings map2) {
+        set1 = new MappingSet(q, map1);
+        set2 = new MappingSet(q, map2);
+        setQuery(q);
     }
     
     
-    MappingSet(Exp exp, MappingSet s1, MappingSet s2) {
+    MappingSet(Query q, Exp exp, MappingSet s1, MappingSet s2) {
         this.exp = exp;
         this.set1 = s1;
         this.set2 = s2;
+        setQuery(q);
     }
     
     Mappings getMappings() {
@@ -175,10 +177,11 @@ public class MappingSet {
     
     //------------------------------------------------------
     
-    MappingSet(Mappings map) {
+    MappingSet(Query q, Mappings map) {
         this.map = map;
         union = new HashMap<>();
         intersection = new HashMap<>();
+        setQuery(q);
         process();
     }
   
@@ -270,6 +273,61 @@ public class MappingSet {
      */
     public void setJoinMappings(Mappings targetMapping) {
         this.targetMapping = targetMapping;
+    }
+    
+    
+     /**
+     * exp a Join, Minus, Optional, Union
+     */
+    Exp prepareRest(Exp exp) {
+        Mappings map = prepareMappings(exp);
+        return getRest(exp, map);
+    }
+    
+    Exp getRest(Exp exp, Mappings map) {
+        return (map == null) ? exp.rest(): setMappings(exp, map);
+    }
+    
+    Exp setMappings(Exp exp, Mappings map) {
+        Exp rest = exp.rest();
+        if (exp.isJoin() || rest.isAndJoinRec() || 
+                isFederate() || exp.isRecFederate()) {
+            // service clause in rest may take Mappings into account
+            setJoinMappings(map);
+        } else {
+            // inject Mappings in copy of rest as a values clause            
+            rest = rest.complete(map);
+        }
+        return rest;
+    }
+    
+    boolean isFederate() {
+        return getQuery().getGlobalQuery().isFederate();        
+    }
+    
+    Mappings prepareMappings(Exp exp) {
+        Exp rest = exp.rest();
+        // in-scope variables in rest
+        // except those that are only in right arg of an optional in rest
+        List<Node> nodeListInScope = rest.getRecordInScopeNodesWithoutBind();
+        if (!nodeListInScope.isEmpty() && hasIntersection(nodeListInScope)) {
+            // generate values when at least one variable in-subscope is always 
+            // bound in map1, otherwise it would generate duplicates in map2
+            // or impose irrelevant bindings 
+            // map = select distinct map1 wrt exp inscope nodes 
+            Mappings map = getMappings().distinct(nodeListInScope);
+            map.setNodeList(nodeListInScope);
+            return map;           
+        }
+        return null;
+    }
+
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
     }
     
 

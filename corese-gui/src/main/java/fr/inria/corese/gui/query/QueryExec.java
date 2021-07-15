@@ -10,6 +10,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.EventListener;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 
 /**
  * Evaluator of SPARQL query by KGRAM Implement KGRAM on top of Corese with
@@ -46,6 +47,10 @@ public class QueryExec {
         if (exec != null) {
             exec.finish();
         }
+    }
+    
+    public ContextLog getLog() {
+        return getQueryProcess().getLog();            
     }
 
     /**
@@ -130,6 +135,10 @@ public class QueryExec {
     public Mappings SPARQLQuery(ASTQuery ast) throws EngineException {
         Mappings map = exec.query(ast);
         return map;
+    }
+    
+    public QueryProcess getQueryProcess() {
+        return exec;
     }
 
 }

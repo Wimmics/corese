@@ -192,17 +192,9 @@ public class TripleStore implements URLParam {
         if (ds == null) {
             ds = new Dataset();
         }
-        Context c = ds.getCreateContext();
-        c.setService(getName());
-        c.setUserQuery(true);
-        c.setRemoteHost(request.getRemoteHost());
-        c.set(REQUEST, DatatypeMap.createObject(request));
-        String platform = getCookie(request, PLATFORM);
-        if (platform != null) {
-            // calling platform
-            c.set(PLATFORM, platform);
-        }
-        Profile.getEventManager().call(ds.getContext());
+        Context c = ds.getContext();
+        complete(c, request);        
+        EventManager.getSingleton().call(ds.getContext());
         QueryProcess exec = getQueryProcess();
         exec.setDebug(c.isDebug());
         
@@ -213,27 +205,35 @@ public class TripleStore implements URLParam {
             
             Date d1 = new Date();
             
-            if (isFederate(ds)) {
-                // federate sparql query with @federate uri
-                if (isCompile(c)) {
-                    Query qq = exec.compile(federate(query, ds), ds);
-                    //map = tsl.logCompile();
-                    map = Mappings.create(qq);
+            try {
+                if (isFederate(ds)) {
+                    // federate sparql query with @federate uri
+                    if (isCompile(c)) {
+                        Query qq = exec.compile(federate(query, ds), ds);
+                        //map = tsl.logCompile();
+                        map = Mappings.create(qq);
+                    } else {
+                        map = exec.query(federate(query, ds), ds);
+                        //tsl.log(map);
+                    }
+                } else if (isShacl(c)) {
+                    map = shacl(query, ds);
+                } else if (isConstruct(c)) {
+                    map = construct(query, ds);
+                } else if (isSpin(c)) {
+                    map = spin(query, ds);
                 } else {
-                    map = exec.query(federate(query, ds), ds);
-                    //tsl.log(map);
+                    map = exec.query(query, ds);
                 }
-            } else if (isShacl(c)) {
-                map = shacl(query, ds);
-            } else if (isConstruct(c)) {
-                map = construct(query, ds);
-            } 
-            else if (isSpin(c)) {
-                map = spin(query, ds);
-            }
-            else {
-                map = exec.query(query, ds);
-                //tsl.log(map);
+            } catch (EngineException e) {
+                if (c.hasEveryValue(MES,CATCH)) {
+                    // mode=message;error
+                    // return empty Mappings with message/log etc. 
+                    Query q = exec.compile(query, ds);
+                    map = Mappings.create(q);
+                } else {
+                    throw e;
+                }
             }
             
             // add param=value parameter to Context
@@ -256,8 +256,19 @@ public class TripleStore implements URLParam {
         return map;
     }
     
-   
+    void complete(Context c, HttpServletRequest request) {
+        c.setService(getName());
+        c.setUserQuery(true);
+        c.setRemoteHost(request.getRemoteHost());
+        c.set(REQUEST, DatatypeMap.createObject(request));
+        String platform = getCookie(request, PLATFORM);
+        if (platform != null) {
+            // calling platform
+            c.set(PLATFORM, platform);
+        }
+    }
     
+
     void before(QueryProcess exec, String query, Dataset ds) throws LoadException, EngineException {
         if (isBefore(ds.getContext())) {
             IDatatype dt = getBefore(ds.getContext());
@@ -402,6 +413,10 @@ public class TripleStore implements URLParam {
         //int type = (ds.getUriList().size() > 1) ? Metadata.FEDERATE : Metadata.FEDERATION;
         int type = Metadata.FEDERATION;
         meta.set(type, ds.getUriList());
+        if (ds.getContext().hasValue(MERGE)) {
+            // heuristic to merge services on the intersection of service URLs
+            meta.add(Metadata.MERGE_SERVICE);
+        }
                 
         for (String key : metaMap.keySet()) {
             if (ds.getContext().hasValue(key)) {

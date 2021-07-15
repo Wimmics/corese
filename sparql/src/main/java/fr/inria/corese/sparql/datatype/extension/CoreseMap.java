@@ -7,6 +7,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.TreeMap;
+import org.json.JSONObject;
 
 /**
  *
@@ -124,6 +125,24 @@ public class CoreseMap extends CoreseExtension {
     @Override
     public boolean isLoop() {
         return true;
+    }
+    
+    public JSONObject toJSON() {
+        return jsonCast().getObject();
+    }
+    
+    public CoreseJSON jsonCast() {
+        CoreseJSON dt = new CoreseJSON(new JSONObject());
+
+        for (IDatatype key : map.keySet()) {
+            dt.set(key, map.get(key));
+        }
+
+        return dt;
+    }
+    
+    public IDatatype toJSONDatatype() {
+        return jsonCast();
     }
     
     @Override

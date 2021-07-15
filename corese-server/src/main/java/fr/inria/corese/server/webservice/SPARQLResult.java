@@ -7,6 +7,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.ResultFormatDef;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.Context;
@@ -91,7 +92,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             
             query = getQuery(query, mode);
             if (query == null) {
-                throw new Exception("Undefined query parameter ");
+                throw new EngineException("Undefined query parameter ");
             }
 
             beforeRequest(getRequest(), query);
@@ -113,12 +114,15 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             }
             Response resp = rb.entity(res).build();
             
-            afterRequest(getRequest(), resp, query, map, res);  
+            afterRequest(getRequest(), resp, query, map, res, ds);  
                                  
             return resp;
-        } catch (Exception ex) {
+        } catch (EngineException ex) {
+            logger.error("query:");
+            logger.error(query);
             logger.error(ERROR_ENDPOINT, ex);
-            return Response.status(ERROR).header(headerAccept, "*").entity(ERROR_ENDPOINT).build();
+            String message = String.format("%s\n%s", ERROR_ENDPOINT, ex.getMessage());
+            return Response.status(ERROR).header(headerAccept, "*").entity(message).build();
         }
     }
     
@@ -164,7 +168,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
         else {
             ds = new Dataset();
         }
-        boolean b = SPARQLRestAPI.hasKey(access);
+        boolean b = SPARQLRestAPI.hasKey(request, access);
         if (b) {
             System.out.println("has key access");
         }
@@ -437,8 +441,15 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
         getVisitor().afterRequest(request, query, map);
     }
     
-    void afterRequest(HttpServletRequest request, Response resp, String query, Mappings map, String res) {
+    void afterRequest(HttpServletRequest request, Response resp, String query, Mappings map, String res, Dataset ds) {
+        afterRequest(map, ds, res);
         getVisitor().afterRequest(request, resp, query, map, res);
+    }
+    
+    void afterRequest(Mappings map, Dataset ds, String res) {
+        if (ds.getContext().hasValue(TRACE)) {
+            System.out.println(res);
+        }
     }
     
          

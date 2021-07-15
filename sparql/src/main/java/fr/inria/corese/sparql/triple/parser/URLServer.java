@@ -4,6 +4,8 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.Graph;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 
@@ -307,7 +309,30 @@ public class URLServer implements URLParam {
         }
     }
     
-    
+    public String encoder() {
+        if (getMap() == null) {
+            return getServer();
+        }
+        
+        String url = String.format("%s?", getServer());
+        int i = 0;
+        
+        for (String key : getMap().keySet()) {
+            String format = "%s%s=%s";
+            if (i++ > 0) {
+                format = "%s&%s=%s";
+            }
+            try {
+                url = String.format(format, url, key, URLEncoder.encode(getMap().getFirst(key), "UTF-8"));
+            } catch (UnsupportedEncodingException ex) {
+                
+            }
+        }
+        
+        return url;
+    }
+
+
     /**
      * Use case: corese server process HTTP request 
      * Decode parameter  param=sv:key~val as key=val in Context

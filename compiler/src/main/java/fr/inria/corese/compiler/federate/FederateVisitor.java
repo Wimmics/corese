@@ -73,6 +73,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean merge = true;
     // factorize unique service in optional/minus/union
     boolean simplify  = true;
+    private boolean mergeService = false;
     boolean exist = true;
     private boolean bounce = false;
     boolean verbose = false;
@@ -258,6 +259,9 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
         if (skip(Metadata.EXIST)) {
             exist = false;
+        }
+        if (ast.hasMetadata(Metadata.MERGE_SERVICE)) {
+            setMergeService(true);
         }
         if (ast.hasMetadata(Metadata.BOUNCE)) {
             bounce = true;
@@ -498,7 +502,13 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             sim.simplifyBGP(body);
             bind(body);
             filter(body);
-            new Sorter().process(body);
+            new Sorter().process(body);           
+
+            if (isMergeService()) {
+                body = new SimplifyService().simplify(body);
+                new Sorter().process(body);           
+            }
+            
         }
                 
         return body;
@@ -938,6 +948,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
      */
     public void setURL(URLServer url) {
         this.url = url;
+    }
+
+    public boolean isMergeService() {
+        return mergeService;
+    }
+
+    public void setMergeService(boolean mergeService) {
+        this.mergeService = mergeService;
     }
 
    

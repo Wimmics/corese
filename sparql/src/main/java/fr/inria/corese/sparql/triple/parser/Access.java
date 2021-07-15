@@ -101,7 +101,7 @@ public class Access {
         // sparql query in LDScript: xt:sparql, query(select where), let (select where)
         LDSCRIPT_SPARQL, 
         // xt:read xt:write,  xt:load
-        READ_WRITE, READ_FILE, SUPER_WRITE,
+        READ, WRITE, READ_WRITE, READ_FILE, SUPER_WRITE,
         LOAD_FILE,
         // xt:http:get
         HTTP,
@@ -399,14 +399,21 @@ public class Access {
     void initServer() {
         init();
         deny(READ_WRITE);
+        deny(WRITE);
         deny(SUPER_WRITE);
         deny(READ_FILE);
         deny(LOAD_FILE);
         deny(JAVA_FUNCTION);
-        // user query on protected server may have parameter access=key 
-        // that grants RESTRICTED access level instead of USER
-        // hence key give access to Update
+        // user query on protected server have USER access level
+        // user query with parameter access=key 
+        // is granted RESTRICTED access level instead of USER level
+        // features below require RESTRICTED access level instead of PRIVATE level
+        // hence they are accessible for user query with access key
         set(SPARQL_UPDATE, RESTRICTED);
+        // draft test for st:logger
+        set(LDSCRIPT_SPARQL, RESTRICTED);
+        set(DEFINE_FUNCTION, RESTRICTED);
+        set(READ, RESTRICTED);
     }
     
     /**
@@ -433,6 +440,7 @@ public class Access {
     public static void protect() {
         setProtect(true);
         deny(READ_WRITE);
+        deny(WRITE);
         deny(SUPER_WRITE);
         deny(HTTP);
         deny(JAVA_FUNCTION);

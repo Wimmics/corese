@@ -49,19 +49,6 @@ public class Profile {
     static final String ACCESS = NSManager.STL+"access";
     static final String NS = NSManager.STL+"namespace";
     private static Logger logger = LogManager.getLogger(Profile.class);
-    /**
-     * @return the eventManager
-     */
-    public static EventManager getEventManager() {
-        return eventManager;
-    }
-
-    /**
-     * @param aEventManager the eventManager to set
-     */
-    public static void setEventManager(EventManager aEventManager) {
-        eventManager = aEventManager;
-    }
 
     static final String NL = System.getProperty("line.separator");
     
@@ -78,11 +65,7 @@ public class Profile {
     private Context context;
 
     boolean isProtected = false;
-
-    static {
-        setEventManager(new EventManager());
-    }
-    
+   
     public static String stdLocalhost() {
         return "http://localhost:" + EmbeddedJettyServer.port;
     }

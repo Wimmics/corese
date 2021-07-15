@@ -82,11 +82,10 @@ public class Eval implements ExpType, Plugin {
             initialResults;
     EvalSPARQL evalSparql;
     CompleteSPARQL completeSparql;
-    List<Node> empty = new ArrayList<Node>(0);
-    HashMap<String, Boolean> local;
+    List<Node> empty = new ArrayList<>(0);
+    //HashMap<String, Boolean> local;
     
-    EvalGraphNew evalGraphNew;
-    EvalGraph evalGraph;
+    EvalGraph evalGraphNew;
     EvalJoin join;
     EvalOptional optional;
 
@@ -114,9 +113,6 @@ public class Eval implements ExpType, Plugin {
             hasProduce = false;
     private boolean stop = false;
     
-    boolean newGraph = true;
-
-    //Edge previous;
     public Eval() {
     }
 
@@ -132,19 +128,13 @@ public class Eval implements ExpType, Plugin {
         evaluator = e;
         match = m;
         plugin = this;
-        lPathFinder = new ArrayList<PathFinder>();
+        lPathFinder = new ArrayList<>();
         setVisitor(new ProcessVisitorDefault());
         e.setKGRAM(this);
-        initCallback();
-        evalGraph    = new EvalGraph(this);
-        evalGraphNew = new EvalGraphNew(this);
+        evalGraphNew = new EvalGraph(this);
         join = new EvalJoin(this);
         optional = new EvalOptional(this);
 
-    }
-
-    void initCallback() {
-        local = new HashMap<>();
     }
 
     public static Eval create(Producer p, Evaluator e, Matcher m) {
@@ -177,7 +167,7 @@ public class Eval implements ExpType, Plugin {
      * shares the memory with outer eval
      */
     public Mappings query(Query q) throws SparqlException {
-        return query(null, q, null);
+        return query(null, q, (Mapping) null);
     }
     
     public Mappings query(Query q, Mapping m) throws SparqlException {
@@ -237,6 +227,10 @@ public class Eval implements ExpType, Plugin {
     }
 
     public Mappings eval(Node gNode, Query q, Mapping map) throws SparqlException {
+        return eval(gNode, q, map, null);
+    }
+    
+    Mappings eval(Node gNode, Query q, Mapping map, Mappings amap) throws SparqlException {
         init(q);
         if (q.isValidate()) {
             // just compile and complete query
@@ -252,7 +246,7 @@ public class Eval implements ExpType, Plugin {
             bind(map);
         }
         if (!q.isFail()) {           
-            queryWE(gNode, q);
+            queryWE(gNode, q, amap);
 
             if (q.getQueryProfile() == Query.COUNT_PROFILE) {
                 countProfile();
@@ -275,9 +269,9 @@ public class Eval implements ExpType, Plugin {
         return results;
     }
     
-    int queryWE(Node gNode, Query q) throws SparqlException {
+    int queryWE(Node gNode, Query q, Mappings map) throws SparqlException {
         try {
-            return query(gNode, q);
+            return query(gNode, q, map);
         } catch (SparqlException ex) {
             if (ex.isStop()) {
                 // LDScriptException stop means stop query processing
@@ -297,7 +291,7 @@ public class Eval implements ExpType, Plugin {
         results.add(m);
     }
 
-    int query(Node gNode, Query q) throws SparqlException {
+    int query(Node gNode, Query q, Mappings map) throws SparqlException {
         if (q.getValues() != null) {
             Exp values = q.getValues();
             if (!values.isPostpone() && !q.isAlgebra()) {
@@ -306,7 +300,7 @@ public class Eval implements ExpType, Plugin {
                         return STOP;
                     }
                     if (binding(values.getNodeList(), m)) {
-                        eval(gNode, q);
+                        eval(gNode, q, map);
                         free(values.getNodeList(), m);
                     }
                 }
@@ -314,7 +308,7 @@ public class Eval implements ExpType, Plugin {
             }
         }
 
-        return eval(gNode, q);
+        return eval(gNode, q, map);
     }
 
     public Mappings filter(Mappings map, Query q) throws SparqlException {
@@ -328,7 +322,7 @@ public class Eval implements ExpType, Plugin {
         return map;
     }
 
-    int eval(Node gNode, Query q) throws SparqlException {
+    int eval(Node gNode, Query q, Mappings map) throws SparqlException {
         if (q.isFunctional()) {
             // select xpath() as ?val
             // select unnest(fun()) as ?x
@@ -337,7 +331,7 @@ public class Eval implements ExpType, Plugin {
         } else {
             Stack stack = Stack.create(q.getBody());
             set(stack);
-            return eval(gNode, stack, 0);
+            return eval(gNode, stack, map, 0);
         }
     }
 
@@ -437,14 +431,18 @@ public class Eval implements ExpType, Plugin {
 
     /**
      * this eval is a fresh copy
-     */
+     */   
     public Mappings subEval(Query q, Node gNode, Stack stack, int n) throws SparqlException {
+        return subEval(q, gNode, stack, null, n);
+    }
+    
+    Mappings subEval(Query q, Node gNode, Stack stack, Mappings map, int n) throws SparqlException {
         setSubEval(true);
         starter(q);
         if (q.isDebug()) {
             debug = true;
         }
-        eval(gNode, stack, n);
+        eval(gNode, stack, map, n);
 
         //memory.setResults(save);
         return results;
@@ -498,9 +496,7 @@ public class Eval implements ExpType, Plugin {
     }
 
     Mappings subEval(Producer p, Node gNode, Node queryNode, Exp exp, Exp main, Mappings map, Mapping m, boolean bind) throws SparqlException {
-       return (newGraph) ? 
-                 subEvalNew(p, gNode, queryNode, exp, main, map, m, bind, false) :
-                 subEvalOld(p, gNode, queryNode, exp, main, map, m, bind);
+       return subEvalNew(p, gNode, queryNode, exp, main, map, m, bind, false) ;
     }
     
     /**
@@ -525,22 +521,9 @@ public class Eval implements ExpType, Plugin {
             gNode = null;
         }
         bind(mem, exp, main, map, m, bind);
-        Mappings lMap = eval.subEval(query, gNode, Stack.create(exp), 0);
+        Mappings lMap = eval.subEval(query, gNode, Stack.create(exp), map, 0);
         return lMap;
-    }
-    
-    Mappings subEvalOld(Producer p, Node gNode, Node queryNode, Exp exp, Exp main, Mappings map, Mapping m, boolean bind) throws SparqlException {    
-        Memory mem = new Memory(match, getEvaluator());
-        getEvaluator().init(mem);
-        mem.share(memory);
-        mem.init(query);
-        mem.setAppxSearchEnv(this.memory.getAppxSearchEnv());
-        Eval eval = copy(mem, p);
-        graphNode(p, gNode, queryNode, mem);
-        bind(mem, exp, main, map, m, bind);
-        Mappings lMap = eval.subEval(query, queryNode, Stack.create(exp), 0);
-        return lMap;
-    }
+    }        
 
     /**
      *
@@ -903,13 +886,21 @@ public class Eval implements ExpType, Plugin {
      *
      */
     private int eval(Node gNode, Stack stack, int n) throws SparqlException {
-        return eval(producer, gNode, stack, n);
+        return eval(producer, gNode, stack, null, n);
+    }
+    
+    private int eval(Node gNode, Stack stack, Mappings map, int n) throws SparqlException {
+        return eval(producer, gNode, stack, map, n);
     }
 
     /**
      * gNode is the query graph name if any, may be null
      */
-   int eval(Producer p, Node gNode, Stack stack, int n) throws SparqlException {
+    int eval(Producer p, Node gNode, Stack stack, int n) throws SparqlException {
+        return eval(p, gNode, stack, null, n);
+    }
+   
+    int eval(Producer p, Node gNode, Stack stack, Mappings map, int n) throws SparqlException {
         int backtrack = n - 1;
         boolean isEvent = hasEvent;
         Memory env = memory;
@@ -989,7 +980,7 @@ public class Eval implements ExpType, Plugin {
                         break;
 
                     case AND:                        
-                        backtrack = and(p, gNode, exp, stack, n);
+                        backtrack = and(p, gNode, exp, stack, map, n);
                         break;
 
                     case BGP:
@@ -997,32 +988,29 @@ public class Eval implements ExpType, Plugin {
                         break;
 
                     case SERVICE:
-                        backtrack = service(p, gNode, exp, getMappings(), stack, n);
+                        backtrack = service(p, gNode, exp, map, stack, n);
                         break;
 
                     case GRAPH:
                         backtrack = 
-                                (newGraph) ?
-                                evalGraphNew.eval(p, gNode, exp, getMappings(), stack, n) :
-                                evalGraph.namedGraph(p, gNode, exp, getMappings(), stack, n)
-                                ;
+                                evalGraphNew.eval(p, gNode, exp, map, stack, n);
                         break;
 
                     case UNION:
-                        backtrack = union(p, gNode, exp, getMappings(), stack, n);
+                        backtrack = union(p, gNode, exp, map, stack, n);
                         break;
                     
                     case OPTIONAL:
-                        backtrack = optional.eval(p, gNode, exp, getMappings(), stack, n);
+                        backtrack = optional.eval(p, gNode, exp, map, stack, n);
                         break;
                     case MINUS:
-                        backtrack = minus(p, gNode, exp, getMappings(), stack, n);
+                        backtrack = minus(p, gNode, exp, map, stack, n);
                         break;
                     case JOIN:
-                        backtrack = join.eval(p, gNode, exp, getMappings(), stack, n);
+                        backtrack = join.eval(p, gNode, exp, map, stack, n);
                         break;
                     case QUERY:
-                        backtrack = query(p, gNode, exp, getMappings(), stack, n); 
+                        backtrack = query(p, gNode, exp, map, stack, n); 
                         break;    
                     case FILTER:
                         backtrack = filter(p, gNode, exp, stack, n);
@@ -1059,20 +1047,8 @@ public class Eval implements ExpType, Plugin {
                         /**
                          * use case: ?x p ?y FILTER ?t = ?y BIND(?t, ?y) ?z q ?t
                          *
-                         */
+                         */                       
                         backtrack = optBind(p, gNode, exp, stack, n);
-                        break;
-
-//                    case EVAL:
-//
-//                        // ?doc xpath('/book/title/text()') ?title
-//                        backtrack = eval(gNode, exp, stack, n);
-//                        break;
-
-                    case SCOPE:
-
-                        backtrack = eval(p, gNode, stack.copy(exp.get(0), n), n);
-
                         break;
 
                     case ACCEPT:
@@ -1088,25 +1064,7 @@ public class Eval implements ExpType, Plugin {
                         } else {
                             backtrack = eval(p, gNode, stack, n + 1);
                         }
-                        break;
-
-                    case EXTERN:
-
-                        // draft trace expression
-                        plugin.exec(exp, env, n);
-                        backtrack = eval(p, gNode, stack, n + 1);
-                        break;
-
-                    case SCAN:
-                        // scan a partial result (for trace/debug)
-
-                        Mapping scan = env.store(query, p);
-                        if (scan != null) {
-                            logger.debug(scan.toString());
-                        }
-                        backtrack = eval(p, gNode, stack, n + 1);
-                        break;
-
+                        break;                                     
                 }
             }
         }
@@ -1119,9 +1077,9 @@ public class Eval implements ExpType, Plugin {
 
     }
     
-    Mappings getMappings() {
-        return memory.getResetJoinMappings();
-    }
+//    Mappings getMappings() {
+//        return memory.getResetJoinMappings();
+//    }
 
 
     /**
@@ -1242,7 +1200,7 @@ public class Eval implements ExpType, Plugin {
 
         if (main.isGraph() && main.getNodeList() != null) {
             bindExpNodeList(mem, main, main.getGraphName());
-        } else if ((bind || main.isBinary()) && exp.getNodeList() != null) {
+        } else if ((bind || main.isBinary()) && exp.getNodeList() != null) {           
             // A optional B
             // bind variables of A from environment
             bindExpNodeList(mem, exp, null);
@@ -1262,7 +1220,7 @@ public class Eval implements ExpType, Plugin {
             case Exp.JOIN:
                 service(exp, mem);
         }
-        mem.setJoinMappings(map);
+        //mem.setJoinMappings(map);
     }
 
     // except may be a graphNode: do not bind it here 
@@ -1272,7 +1230,8 @@ public class Eval implements ExpType, Plugin {
             // getOuterNodeSelf use case: join(subquery, exp)  -- federated query use case
             // qnode in subquery is not the same as qnode in memory
             if (except == null || qnode != except) {
-                Node node = memory.getNode(memory.getQuery().getOuterNodeSelf(qnode));
+                Node myqnode = memory.getQuery().getOuterNodeSelf(qnode);               
+                Node node = memory.getNode(myqnode);
                 if (node != null) {
                     mem.push(qnode, node, -1);
                 }
@@ -1350,13 +1309,13 @@ public class Eval implements ExpType, Plugin {
             return backtrack;
         }
 
-        MappingSet set1 = new MappingSet(map1);
-        Exp rest = prepareRest(exp, set1);
+        MappingSet set1 = new MappingSet(memory.getQuery(), map1);
+        Exp rest = set1.prepareRest(exp);
         Mappings map2 = subEval(p, gNode, node2, rest, exp, set1.getJoinMappings());
 
         getVisitor().minus(this, getGraphNode(gNode), exp, map1, map2);
 
-        MappingSet set = new MappingSet(exp, set1, new MappingSet(map2));
+        MappingSet set = new MappingSet(memory.getQuery(), exp, set1, new MappingSet(memory.getQuery(), map2));
         set.setDebug(query.isDebug());
         set.start();
         
@@ -1369,10 +1328,10 @@ public class Eval implements ExpType, Plugin {
                 if (env.push(map, n)) {
                     // query fake graph node must not be bound
                     // for further minus ...
-                    if (newGraph) { } //do nothing
-                    else if (hasGraph) {
-                        env.pop(queryNode);
-                    }
+//                    if (newGraph) { } //do nothing
+//                    else if (hasGraph) {
+//                        env.pop(queryNode);
+//                    }
                     backtrack = eval(p, gNode, stack, n + 1);
                     env.pop(map);
                     if (backtrack < n) {
@@ -1384,109 +1343,15 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
-    /**
-     * exp a Join, Minus, Optional, Union
-     */
-    Exp prepareRest(Exp exp, MappingSet set1) {
-        Mappings map = prepareMappings(exp, set1);
-        return getRest(exp, set1, map);
-    }
-    
-    Exp getRest(Exp exp, MappingSet set1, Mappings map) {
-        return (map == null) ? exp.rest(): setMappings(exp, set1, map);
-    }
-    
-    Exp setMappings(Exp exp, MappingSet set1, Mappings map) {
-        Exp rest = exp.rest();
-        if (exp.isJoin() || isAndJoin(rest) || isFederate(rest)) {
-            // service clause in rest may take Mappings into account
-            set1.setJoinMappings(map);
-        } else {
-            // inject Mappings in copy of rest as a values clause            
-            rest = complete(rest, map);
-        }
-        return rest;
-    }
-    
-    Mappings prepareMappings(Exp exp, MappingSet set1) {
-        Exp rest = exp.rest();
-        // in-scope variables in rest
-        // except those that are only in right arg of an optional in rest
-        List<Node> nodeListInScope = rest.getRecordInScopeNodesWithoutBind();
-        if (!nodeListInScope.isEmpty() && set1.hasIntersection(nodeListInScope)) {
-            // generate values when at least one variable in-subscope is always 
-            // bound in map1, otherwise it would generate duplicates in map2
-            // or impose irrelevant bindings 
-            // map = select distinct map1 wrt exp inscope nodes 
-            Mappings map = set1.getMappings().distinct(nodeListInScope);
-            map.setNodeList(nodeListInScope);
-            return map;           
-        }
-        return null;
-    }
-    
-    
-    // exp = and(join(and(edge) service()))
-    boolean isAndJoin(Exp exp){
-        if (exp.isAnd()) {
-            if (exp.size() != 1) {
-                return false;
-            }
-            return isAndJoin(exp.get(0));
-        }
-        else if (exp.isJoin()) {
-            Exp fst = exp.get(0);
-            if (fst.isAnd() && fst.size() > 0 && fst.get(0).isEdgePath()) {
-                fst.setMappings(true);
-                return true;
-            }
-        }
-        return false;
-    }
-
+   
     boolean isFederate(Exp exp) {
         if (memory.getQuery().getGlobalQuery().isFederate()) {
             return true;
         }
-        return isRecFederate(exp);
+        return exp.isRecFederate();
     }
         
-    /**
-     * exp is rest of minus, optional, union: exp is AND
-     * exp is rest of join: AND is not mandatory, it may be a service
-     * 
-     */ 
-    boolean isRecFederate(Exp exp){ 
-        if (exp.isService()) {
-            return true;
-        }
-        if (exp.size() == 1) {
-            Exp ee = exp.get(0);
-            return  (ee.isService() ||  (ee.isBinary() &&  isFederate2(ee)));        
-        }
-        else if (exp.isBGPAnd() && exp.size() > 0) {
-            Exp ee = exp.get(0);
-            return  (ee.isService() ||  (ee.isBinary() &&  isFederate2(ee))); 
-        }
-        else {
-            return false;
-        }
-    }
-       
-    // binary such as union
-    boolean isFederate2(Exp exp) {
-        return exp.size() == 2 && isRecFederate(exp.get(0)) && isRecFederate(exp.get(1));
-    }
 
-    Exp complete(Exp exp, Mappings map) {
-        if (map == null || !map.isNodeList()) {
-            return exp;
-        }
-        Exp values = Exp.createValues(map.getNodeList(), map);
-        Exp res = exp.duplicate();
-        res.getExpList().add(0, values);
-        return res;
-    }
 
     // new 
     private int union(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
@@ -1521,7 +1386,7 @@ public class Eval implements ExpType, Plugin {
             return subEval(p, gNode, queryNode, exp, main, map);
         } else {
             // exp += values(var, map)
-            Exp ee = complete(exp, map);
+            Exp ee = exp.complete(map);
             return subEval(p, gNode, queryNode, ee, main);
         }
     }
@@ -1546,30 +1411,12 @@ public class Eval implements ExpType, Plugin {
         }
         return backtrack;
     }
-
-   
-    private int service2(Node gNode, Exp exp, Stack stack, int n) throws SparqlException {
-        stack = stack.and(exp.rest(), n);
-        int backtrack = eval(gNode, stack, n);
-        return backtrack;
-    }
-
-    private Mappings service(Node serv, Exp exp) throws SparqlException {
-        Memory mem = new Memory(match, evaluator);
-        mem.init(query);
-        mem.share(memory);
-        Eval eval = copy(mem, producer);
-        Mappings lMap = eval.subEval(query, null, Stack.create(exp), 0);
-        return lMap;
-    }
-    
-    
-    private int and(Producer p, Node gNode, Exp exp, Stack stack, int n) throws SparqlException {
+        
+    private int and(Producer p, Node gNode, Exp exp, Stack stack, Mappings data, int n) throws SparqlException {
         getVisitor().bgp(this, getGraphNode(gNode), exp, null);
         if (exp.isMappings()) {
-            Mappings data = getMappings();
             if (data != null) {
-                exp = complete(exp, data);
+                exp = exp.complete(data);
             }
         }
         stack = stack.and(exp, n);
@@ -1748,6 +1595,10 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
+    /**
+     * values (?x ?y) { unnest(exp) }
+     * compiled as extended bind 
+     */
     private int extBind(Producer p, Node gNode, Exp exp, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
         Memory env = memory;
@@ -1775,7 +1626,7 @@ public class Eval implements ExpType, Plugin {
     }
 
     HashMap<String, Node> toMap(List<Node> list) {
-        HashMap<String, Node> m = new HashMap<String, Node>();
+        HashMap<String, Node> m = new HashMap<>();
         for (Node node : list) {
             m.put(node.getLabel(), node);
         }
@@ -1937,7 +1788,7 @@ public class Eval implements ExpType, Plugin {
 
     boolean popBinding(List<Node> varList, Mapping map, int i) {
         int j = 0;
-        for (Node qq : varList) { //map.getQueryNodes()) {
+        for (Node qq : varList) { 
             Node nn = map.getNode(qq);
             if (nn != null) {
                 if (j >= i) {
@@ -2103,6 +1954,9 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
 
+    /**
+     * Draf extension where a Visitor provides Edge iterator
+     */
     Iterable<Edge> produce(Producer p, Node gNode, List<Node> from, Edge edge) {
         DatatypeValue res = getVisitor().produce(this, gNode, edge);
         if (res == null) {
@@ -2118,39 +1972,19 @@ public class Eval implements ExpType, Plugin {
         }
         return null;
     }
+   
 
-    /**
-     * eval callback by name Only with functions defined in the query name is
-     * not an export function, but it can call export functions
-     *
-     * @param name
-     * @return
-     * @throws EngineException 
-         *
-     */
-//    public Object eval(String name, Object[] param) {
-//        Expr exp = getExpression(name);
-//        if (exp != null) {
-//            return eval(exp, param);
-//        }
-//        return null;
+//    Expr getExpression(String name) {
+//        return getExpression(query, name);
 //    }
 //
-//    public Object eval(Expr exp, Object[] param) {
-//        return evaluator.eval(exp, memory, producer, param);
+//    Expr getExpression(Query q, String name) {
+//        return q.getExpression(name, inherit(q, name));
 //    }
-
-    Expr getExpression(String name) {
-        return getExpression(query, name);
-    }
-
-    Expr getExpression(Query q, String name) {
-        return q.getExpression(name, inherit(q, name));
-    }
-
-    boolean inherit(Query q, String name) {
-        return !(q.isFun() && local.containsKey(name));
-    }
+//
+//    boolean inherit(Query q, String name) {
+//        return !(q.isFun() && local.containsKey(name));
+//    }
 
     /**
      * select * where {{select distinct ?y where {?x p ?y}} . ?y q ?z} new eval,
@@ -2159,16 +1993,7 @@ public class Eval implements ExpType, Plugin {
      */
     private int query(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         return query(p, p, gNode, exp, data, stack, n);
-    }
-    
-    
-    public Mappings query(Producer p, Node gNode, Exp exp, Mappings data) throws SparqlException {
-        Query subQuery = exp.getQuery();
-        Eval ev = copy(copyMemory(memory, query, subQuery, null), p, evaluator, subQuery, false);
-        ev.getMemory().setJoinMappings(data); 
-        Mappings map = ev.eval(gNode, subQuery, null);
-        return map;
-    }
+    }       
 
     private int query(Producer p1, Producer p2, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1, evENUM = Event.ENUM;
@@ -2179,23 +2004,8 @@ public class Eval implements ExpType, Plugin {
 
         // copy current Eval,  new stack
         // bind sub query select nodes in new memory
-        Eval ev = copy(copyMemory(memory, query, subQuery, null), p1, evaluator, subQuery, false);
-        // draft federated query
-        ev.getMemory().setJoinMappings(data); 
-//        Node subNode = null;
-//
-//        if (newGraph) {}
-//        else if (gNode != null) {
-//            // find equivalent gNode in subquery 
-//            subNode = subQuery.getGraphNode(gNode);
-//            if (env.isBound(gNode)) {
-//                // bind outer gNode as graph node
-//                ev.getMemory().push(subNode, env.getNode(gNode));
-//            }
-//        }
-
-        //Node gg = newGraph ? gNode : subNode;
-        Mappings lMap = ev.eval(gNode, subQuery, null);
+        Eval ev = copy(copyMemory(memory, query, subQuery, null), p1, evaluator, subQuery, false);      
+        Mappings lMap = ev.eval(gNode, subQuery, null, data);
 
         getVisitor().query(this, getGraphNode(gNode), exp, lMap);
         getVisitor().finish(lMap);
@@ -2236,36 +2046,7 @@ public class Eval implements ExpType, Plugin {
         }
         return eval(gNode, stack, n + 1);
     }
-
-    /**
-     * Edge as Function use case: ?x xpath('/book/title') ?y
-     */
-//    private int eval(Node gNode, Exp exp, Stack stack, int n) {
-//        int backtrack = n - 1;
-//        Edge qEdge = exp.getEdge();
-//        Node qNode = qEdge.getNode(1);
-//        Memory env = memory;
-//        Evaluator ev = evaluator;
-//        Matcher mm = match;
-//
-//        for (Node node : ev.evalList(exp.getFilter(), env)) {
-//
-//            if (mm.match(qNode, node, env) && env.push(qNode, node)) {
-//
-//                backtrack = eval(gNode, stack, n + 1);
-//                env.pop(qNode);
-//                if (backtrack < n) {
-////					if (hasEvent){
-////						send(Event.FINISH, exp, gNode, stack);
-////					}
-//                    return backtrack;
-//                }
-//            }
-//        }
-//        return backtrack;
-//    }
-
-    
+     
     /**
      * res is a result of sub query bind the select nodes of sub query into
      * current memory retrieve outer node that correspond to sub node
@@ -2330,29 +2111,9 @@ public class Eval implements ExpType, Plugin {
         }
     }
 
-    /**
-     * Is one node of subquery select already bound in memory ?
-     */
-    private boolean isBound(Query subQuery, Memory env) {
-        Query qq = query;
-
-        for (Node subNode : subQuery.getSelect()) {
-            if (env.isBound(subNode)) {
-                return true;
-            }
-            // get outer node:
-            Node outNode = qq.getOuterNodeSelf(subNode);
-            if (outNode != null && env.isBound(outNode)) {
-                return true;
-            }
-            if (env.getBind() != null && env.getBind().isBound(subNode.getLabel())) {
-                return true;
-            }
-        }
-        return false;
-    }
 
     @Override
+    @Deprecated
     public void exec(Exp exp, Environment env, int n) {
         if (exp.getObject() instanceof String) {
             String label = (String) exp.getObject();

@@ -3,6 +3,7 @@ package fr.inria.corese.server.webservice;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.extension.CoreseMap;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import org.apache.logging.log4j.LogManager;
@@ -21,8 +22,14 @@ public class EventManager {
     static final String date  = NSManager.STL+"date";
     static final String host  = NSManager.STL+"host";
     static final String template = "/template";
+    private static EventManager singleton;
+    
     // service|profile -> count
-    private CoreseMap countMap, dateMap, hostMap;
+    private CoreseMap globalMap, countMap, dateMap, hostMap;
+    
+    static {
+        setSingleton(new EventManager());
+    }
     
     EventManager() {
         init();
@@ -33,8 +40,9 @@ public class EventManager {
         setDateMap(map());
         setHostMap(map());
         
-        CoreseMap globalMap = map();
+        globalMap = map();
         DatatypeMap.setPublicDatatypeValue(globalMap);
+        Binding.setStaticVariable("?staticEventManagerMap", globalMap);
         
         globalMap.set(count, getCountMap());
         globalMap.set(date,  getDateMap());
@@ -55,7 +63,10 @@ public class EventManager {
     
     void log(Context context) {
         logger.info("Workflow Context:\n" + context);
+        logger.info(globalMap.getMap());
         logger.info(getCountMap().getMap());
+        logger.info(getDateMap().getMap());
+        logger.info(getHostMap().getMap());
     }
     
     /**
@@ -126,6 +137,14 @@ public class EventManager {
      */
     void setCountMap(CoreseMap countMap) {
         this.countMap = countMap;
+    }
+
+    public static EventManager getSingleton() {
+        return singleton;
+    }
+
+    public static void setSingleton(EventManager aSingleton) {
+        singleton = aSingleton;
     }
     
 }

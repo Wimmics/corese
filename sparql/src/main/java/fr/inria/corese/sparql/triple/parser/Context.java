@@ -582,6 +582,15 @@ public class Context extends ASTObject implements URLParam {
         return get(name) != null;
     }
     
+    public boolean hasEveryValue(String... name) {
+        for (String key : name) {
+            if (! hasValue(key)) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     public boolean hasAnyValue(String... name) {
         for (String key : name) {
             if (hasValue(key)) {
@@ -862,35 +871,10 @@ public class Context extends ASTObject implements URLParam {
         
         for (String key : keySet()) {
             IDatatype dt = get(key);
-            set(json, key, dt);
+            DatatypeMap.set(json, key, dt);
         }
         
         return json;
     }
     
-    void set(JSONObject json, String key, IDatatype dt) {
-        if (dt.isList()) {
-            json.put(key, getStringList(key));
-        } else if (dt.isNumber()) {
-            setNumber(json, key, dt);
-        } else if (dt.isBoolean()) {
-            json.put(key, dt.booleanValue());
-        } 
-        else if (dt.isPointer() || dt.isExtension()) {
-            json.put(key, dt.getContent());
-        }
-        else {
-            json.put(key, dt.getLabel());
-        }
-    }
-    
-    void setNumber(JSONObject json, String key, IDatatype dt) {
-        switch (dt.getCode()) {
-            case IDatatype.DECIMAL: json.put(key, dt.doubleValue()); break;
-            case IDatatype.DOUBLE:  json.put(key, dt.doubleValue()); break;
-            case IDatatype.FLOAT:   json.put(key, dt.floatValue()); break;
-            default: json.put(key, dt.intValue()); break;
-        }
-    }
-
 }

@@ -1,3 +1,10 @@
+#
+# Display connection history as map and charts
+# History recorded by server EventManager in ldscript static variable ?staticEventManagerMap 
+# Functions defined in corese core function/logger.rq
+#
+# use case: http://localhost:8080/srv/service/log
+#
 template st:start {
    "<h2>Server Log</h2>"
    
@@ -7,6 +14,6 @@ template st:start {
 }
 where {
     # list of json descriptions of IP address
-    bind (us:jsonlist2() as ?jsonlist)
+    bind (us:jsonlist() as ?jsonlist)
 }
 

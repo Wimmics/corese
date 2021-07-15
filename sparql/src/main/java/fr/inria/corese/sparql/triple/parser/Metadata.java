@@ -69,6 +69,10 @@ public class Metadata extends ASTObject
     public static final int BINDING   = 50; // service binding
     public static final int INDEX     = 51; // service binding
     public static final int LOG       = 52; 
+    public static final int EXPLAIN   = 53; 
+    public static final int WHY       = 54; 
+    public static final int MESSAGE   = 55; 
+    public static final int MERGE_SERVICE = 56; 
 
     
     
@@ -187,6 +191,10 @@ public class Metadata extends ASTObject
         define("@unlock",   UNLOCK); 
         define("@graph",    GRAPH); 
         define("@from",     FROM); 
+        define("@explain",  EXPLAIN); 
+        define("@why",      WHY); 
+        define("@message",  MESSAGE); 
+        define("@merge",    MERGE_SERVICE); 
                       
         define("@update",    UPDATE);  
         define("@event",    EVENT);  
@@ -359,6 +367,14 @@ public class Metadata extends ASTObject
     
     public IDatatype getDatatypeValue(String type) {       
         return literal.get(type);
+    }
+    
+    public int intValue(int type) {       
+        IDatatype dt = getDatatypeValue(type);
+        if (dt == null) {
+            return -1;
+        }
+        return dt.intValue();
     }
     
     public boolean hasDatatypeValue(int type) {

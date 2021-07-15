@@ -1,6 +1,7 @@
 package fr.inria.corese.gui.query;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.GraphDistance;
 import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -32,16 +33,24 @@ public class DocumentResult {
     }
     
     void explain() {
-        int distance = Math.max(1, getAst().getMetadata().intValue(Metadata.EXPLAIN));
+        int distance = getAst().getMetadata().intValue(Metadata.EXPLAIN);
+        if (distance < 0) {
+            distance = GraphDistance.DISTANCE;
+        }
+        
         JSONObject json = getGraph().match(getAst(), distance);
-        display(json);
+        
+        if (! json.isEmpty()) {
+            display(json);
+        }
     }
     
     void display(JSONObject json) {
         msg(NL);
+        msg("Resource URI found in the graph").msg(NL); 
         for (String key : json.keySet()) {
             //System.out.println(key + " = " + json.get(key));
-            msg(key + " = " + json.get(key)).msg(NL);
+            msg(key + " -> " + json.get(key)).msg(NL);
         }
     }
     

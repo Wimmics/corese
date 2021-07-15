@@ -180,11 +180,17 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         return uuid.toString();
     }
     
-        // access key gives special access level (RESTRICTED vs PUBLIC)
-    static boolean hasKey(String access) {
-        return access!=null && getKey() != null && getKey().equals(access);
+    // access key gives special access level (RESTRICTED vs PUBLIC)
+    static boolean hasKey(HttpServletRequest request, String access) {
+        EventManager.getSingleton().getHostMap();
+        request.getRemoteHost();
+        return hasKey(access);
     }
     
+    static boolean hasKey(String access) {
+        return access != null && getKey() != null && getKey().equals(access);
+    }
+
     
     void init(boolean localhost) {
         mprofile = new Profile(localhost);

@@ -1,10 +1,15 @@
 package fr.inria.corese.server.webservice.message;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.ResultMessage;
 import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.ProviderService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.server.webservice.EventManager;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.extension.CoreseMap;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
@@ -15,7 +20,9 @@ import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_OUTPUT;
 import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_URL;
 import static fr.inria.corese.sparql.triple.parser.Context.URL;
 import fr.inria.corese.sparql.triple.parser.context.LinkedResultLog;
+import java.util.Enumeration;
 import java.util.List;
+import javax.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 
 
@@ -59,10 +66,10 @@ public class TripleStoreLog implements URLParam {
             processLog(map, log);
         }
         if (getContext().hasAnyValue(COMPILE, WHY)) {
-            logWhy(map, getQueryProcess().getLog(map));
+            logWhy(map, log);
         }
         if (getContext().hasValue(MES)) {
-            messageContext(map, getQueryProcess().getLog(map));
+            messageContext(map, log);
         }
     }
     
@@ -95,29 +102,38 @@ public class TripleStoreLog implements URLParam {
      */
     void messageContext(Mappings map, ContextLog log) {
         // basic message
-        JSONObject json = new TripleStoreMessage(getContext(), log).process();
-        // explanation about query failure
-        messageMappings(map, json);
+        JSONObject json = new ResultMessage(getGraph(), getContext(), log).process(map);
+        header(getRequest(), json);
+        completeMessage(json); 
         
         // publish message as LinkedResult
         String url = document(json.toString(), URLParam.MES, "");
         map.addLink(url);
     }
     
-    /**
-     * Try to explain why the query fails 
-     * add explanation json object into json message
-     *
-     */
-    void messageMappings(Mappings map, JSONObject json) {
-        if (map.isEmpty()) {
-            JSONObject obj = new TripleStoreExplain(getQueryProcess(), getContext(), map).process();
-            if (!obj.isEmpty()) {
-                json.put(URLParam.EXPLAIN, obj);
-            }
-        }
+    void completeMessage(JSONObject json) {
+        CoreseMap amap = EventManager.getSingleton().getHostMap();
+        json.put(HISTORY, amap.toJSON());
+    }
+            
+    
+    HttpServletRequest getRequest() {
+        IDatatype dt = getContext().get(REQUEST);
+        return (HttpServletRequest) dt.getPointerObject().getPointerObject();
     }
     
+    void header(HttpServletRequest request, JSONObject json) {
+        JSONObject obj = new JSONObject();
+        Enumeration<String> enh = request.getHeaderNames();
+        
+        while (enh.hasMoreElements()) {
+            String name = enh.nextElement();
+            obj.put(name, request.getHeader(name));
+        }
+        
+        json.put(HEADER, obj);
+    }
+      
     /**
      * Log intermediate service query/results for federated endpoint
      * when mode=why
@@ -183,24 +199,14 @@ public class TripleStoreLog implements URLParam {
 
             String url1 = document(query, QUERY.concat(Integer.toString(i)), "");
             String url2 = null;
-            addLink(map, url1);
             if (result != null) {
                 url2 = document(result, OUTPUT.concat(Integer.toString(i)), "");
-                addLink(map, url2);
             }
             
             getJson().addLink(WORKFLOW, create(url1, url2));
             
             i++;
         }
-    }
-    
-    JSONObject create(String query) {
-        return getJson().create(query);
-    }
-    
-    JSONObject create(String query, String result) {
-        return getJson().create(query, result);        
     }
     
        
@@ -222,7 +228,6 @@ public class TripleStoreLog implements URLParam {
             }
             sourceQuery = String.format("# source query \n%s", sourceQuery);
             String url = document(sourceQuery, QUERY.concat(SRC), "");
-            addLink(map, url);
             getJson().setLink(SRC, create(url));
         }
         
@@ -238,10 +243,8 @@ public class TripleStoreLog implements URLParam {
             
             String url1 = document(query, QUERY.concat(SEL), "");
             String url2 = null;
-            addLink(map, url1);
             if (result != null) {
                 url2 = document(result, OUTPUT, "");
-                addLink(map, url2);
             }
             
             getJson().setLink(SEL, create(url1, url2));
@@ -252,10 +255,18 @@ public class TripleStoreLog implements URLParam {
             String query = log.getAST().toString();
             query = String.format("# federated query \n%s", query);
             String url = document(query, QUERY.concat(REW), "");
-            addLink(map, url); 
             getJson().setLink(REW, create(url));
         }
     }
+    
+    JSONObject create(String query) {
+        return getJson().create(query);
+    }
+    
+    JSONObject create(String query, String result) {
+        return getJson().create(query, result);        
+    }
+    
     
     public void logQuery(Mappings map) {
         if (getContext().hasValue(LOG_QUERY)) {
@@ -288,6 +299,10 @@ public class TripleStoreLog implements URLParam {
 
     public QueryProcess getQueryProcess() {
         return queryProcess;
+    }
+    
+    Graph getGraph() {
+        return getQueryProcess().getGraph();
     }
 
     public void setQueryProcess(QueryProcess queryProcess) {

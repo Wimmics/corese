@@ -197,14 +197,18 @@ public class GraphSpecificFunction extends LDScript {
                 }
 
             case READ:
-                check(Feature.READ_WRITE, b, READ_MESS);
+                check(Feature.READ, b, path, READ_MESS);
                 if (isFile(path)) {
                     check(Feature.READ_FILE, b, path, READ_MESS);
                 }
-                return proc.read(dt);
+                IDatatype res = proc.read(dt);
+                return  res;
                 
             case XT_HTTP_GET:
                 check(Feature.HTTP, b, READ_MESS);
+                if (param.length>=2) {
+                    return proc.httpget(dt, param[1]);
+                }
                 return proc.httpget(dt);    
                 
             default: return null;

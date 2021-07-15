@@ -309,6 +309,13 @@ public class ResultFormat implements ResultFormatDef {
         return DEFAULT_SELECT_FORMAT;
     }
     
+    public static int getFormatUndef(String str) {
+        if (str != null && format.containsKey(str)) {
+            return format.get(str);
+        }
+        return UNDEF_FORMAT;
+    }
+    
     public static String getFormat(int type) {
         String ft = content.get(type);
         if (ft == null) {
@@ -320,6 +327,14 @@ public class ResultFormat implements ResultFormatDef {
     // json -> application/json
     public static String decode(String ft) {
         return getFormat(getFormat(ft));
+    }
+    
+    public static String decodeOrText(String ft) {
+        int type = getFormatUndef(ft);
+        if (type == UNDEF_FORMAT) {
+            return TEXT;
+        }
+        return getFormat(type);
     }
     
     static int getType(String ft) {

@@ -1399,5 +1399,31 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         }
         return newList(list);
     }
+    
+    
+    public static void set(JSONObject json, String key, IDatatype dt) {
+        if (dt.isList()) {
+            json.put(key, DatatypeMap.toStringList(dt));
+        } else if (dt.isNumber()) {
+            setNumber(json, key, dt);
+        } else if (dt.isBoolean()) {
+            json.put(key, dt.booleanValue());
+        } 
+        else if (dt.isPointer() || dt.isExtension()) {
+            json.put(key, dt.getContent());
+        }
+        else {
+            json.put(key, dt.getLabel());
+        }
+    }
+    
+    public static void setNumber(JSONObject json, String key, IDatatype dt) {
+        switch (dt.getCode()) {
+            case IDatatype.DECIMAL: json.put(key, dt.doubleValue()); break;
+            case IDatatype.DOUBLE:  json.put(key, dt.doubleValue()); break;
+            case IDatatype.FLOAT:   json.put(key, dt.floatValue()); break;
+            default: json.put(key, dt.intValue()); break;
+        }
+    }
 
 }

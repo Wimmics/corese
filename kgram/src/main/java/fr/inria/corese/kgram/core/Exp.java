@@ -2357,5 +2357,63 @@ public class Exp extends PointerObject
         this.number = number;
     }
     
+    // exp = and(join(and(edge) service()))
+    boolean isAndJoinRec(){
+        if (isAnd()) {
+            if (size() != 1) {
+                return false;
+            }
+            return get(0).isAndJoinRec();
+        }
+        else if (isJoin()) {
+            Exp fst = get(0);
+            if (fst.isAnd() && fst.size() > 0 && fst.get(0).isEdgePath()) {
+                fst.setMappings(true);
+                return true;
+            }
+        }
+        return false;
+    }
+    
+     /**
+     * exp is rest of minus, optional, union: exp is AND
+     * exp is rest of join: AND is not mandatory, it may be a service
+     * 
+     */ 
+    boolean isRecFederate(){ 
+        if (isService()) {
+            return true;
+        }
+        if (size() == 1) {
+            Exp ee = get(0);
+            return  (ee.isService() ||  
+                    (ee.isBinary() &&  ee.isFederate2()));        
+        }
+        else if (isBGPAnd() && size() > 0) {
+            Exp ee = get(0);
+            return  (ee.isService() ||  
+                    (ee.isBinary() &&  ee.isFederate2())); 
+        }
+        else {
+            return false;
+        }
+    }
+       
+    // binary such as union
+    boolean isFederate2() {
+        return size() == 2 && 
+                get(0).isRecFederate() && 
+                get(1).isRecFederate();
+    }
+
+    Exp complete(Mappings map) {
+        if (map == null || !map.isNodeList()) {
+            return this;
+        }
+        Exp values = Exp.createValues(map.getNodeList(), map);
+        Exp res = duplicate();
+        res.getExpList().add(0, values);
+        return res;
+    }
     
 }

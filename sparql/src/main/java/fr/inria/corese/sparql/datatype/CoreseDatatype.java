@@ -22,6 +22,8 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.kgram.path.Path;
+
+import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -749,6 +751,10 @@ public class CoreseDatatype
     @Override
     public long longValue() {
         return -1;
+    }
+
+    public BigDecimal decimalValue(){
+        return new BigDecimal(-1);
     }
 
     @Override

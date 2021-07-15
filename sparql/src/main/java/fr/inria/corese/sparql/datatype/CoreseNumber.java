@@ -1,5 +1,7 @@
 package fr.inria.corese.sparql.datatype;
 
+import java.math.BigDecimal;
+
 import fr.inria.corese.sparql.api.IDatatype;
 
 /**
@@ -33,13 +35,13 @@ public abstract class CoreseNumber extends CoreseDatatype {
             case INTEGER: return DatatypeMap.newInteger(longValue());
             case DOUBLE:  return DatatypeMap.newInstance(doubleValue());
             case FLOAT:   return DatatypeMap.newInstance(floatValue());
-            case DECIMAL: return DatatypeMap.newDecimal(doubleValue());
+            case DECIMAL: return DatatypeMap.newDecimal(decimalValue());
             case GENERIC_INTEGER: 
                 return DatatypeMap.newInstance(Integer.toString(intValue()), target); 
                 
             case STRING:  return DatatypeMap.newInstance(getLabel());
             case BOOLEAN: return castBoolean();
-               
+   
             default:                                               
                 return super.cast(target);
         }        
@@ -84,6 +86,8 @@ public abstract class CoreseNumber extends CoreseDatatype {
 
             case FLOAT:
                 switch (dt.getCode()) {
+                    case DECIMAL: 
+                        return CoreseDecimal.create(BigDecimal.valueOf(floatValue()).add(dt.decimalValue()));
                     case DOUBLE:
                         return CoreseDouble.create(doubleValue() + dt.doubleValue());
                     default:
@@ -96,8 +100,11 @@ public abstract class CoreseNumber extends CoreseDatatype {
                         return CoreseDouble.create(doubleValue() + dt.doubleValue());
                     case FLOAT:
                         return CoreseFloat.create(floatValue() + dt.floatValue());
+                    case DECIMAL:
+                        return CoreseDecimal.create(decimalValue().add(dt.decimalValue()));
                     default:
-                        return CoreseDecimal.create(doubleValue() + dt.doubleValue());
+                        return CoreseDecimal.create(decimalValue().add(BigDecimal.valueOf(dt.doubleValue())));
+                        // TODO Ajouter le cas deeccimal
                 }
            
             case INTEGER:
@@ -107,7 +114,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
                     case FLOAT:
                         return CoreseFloat.create(floatValue() + dt.floatValue());
                     case DECIMAL:
-                        return CoreseDecimal.create(doubleValue() + dt.doubleValue());
+                        return CoreseDecimal.create(BigDecimal.valueOf(intValue()).add(dt.decimalValue()));
                     case INTEGER:
                         try {
                             long l = Math.addExact(longValue(), dt.longValue());
@@ -129,7 +136,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
             case FLOAT:
                 return CoreseFloat.create(floatValue() - val);
             case DECIMAL:
-                return CoreseDecimal.create(doubleValue() - val);
+                return CoreseDecimal.create(decimalValue().min(new BigDecimal(val)));
             case INTEGER:
                 return CoreseInteger.create(longValue() - val);
         }
@@ -140,12 +147,19 @@ public abstract class CoreseNumber extends CoreseDatatype {
     public IDatatype minus(IDatatype dt) {
         switch (getCode()) {
             case DOUBLE:
-                return CoreseDouble.create(doubleValue() - dt.doubleValue());
+                switch (dt.getCode()) {
+                case DECIMAL:
+                    return CoreseDecimal.create(BigDecimal.valueOf(doubleValue()).min(dt.decimalValue()));
+                default:
+                    return CoreseDouble.create(doubleValue() - dt.doubleValue());
+                }
 
             case FLOAT:
                 switch (dt.getCode()) {
                     case DOUBLE:
                         return CoreseDouble.create(doubleValue() - dt.doubleValue());
+                    case DECIMAL:
+                        return CoreseDecimal.create(BigDecimal.valueOf(floatValue()).min(dt.decimalValue()));
                     default:
                         return CoreseFloat.create(floatValue() - dt.floatValue());
                 }
@@ -156,6 +170,8 @@ public abstract class CoreseNumber extends CoreseDatatype {
                         return CoreseDouble.create(doubleValue() - dt.doubleValue());
                     case FLOAT:
                         return CoreseFloat.create(floatValue() - dt.floatValue());
+                    case DECIMAL:
+                        return CoreseDecimal.create(decimalValue().min(dt.decimalValue()));
                     default:
                         return CoreseDecimal.create(doubleValue() - dt.doubleValue());
                 }          
@@ -167,7 +183,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
                     case FLOAT:
                         return CoreseFloat.create(floatValue() - dt.floatValue());
                     case DECIMAL:
-                        return CoreseDecimal.create(doubleValue() - dt.doubleValue());
+                        return CoreseDecimal.create(BigDecimal.valueOf(intValue()).min(dt.decimalValue()));
                     case INTEGER:
                         try {
                             long l = Math.subtractExact(longValue(), dt.longValue());
@@ -186,12 +202,19 @@ public abstract class CoreseNumber extends CoreseDatatype {
     public IDatatype mult(IDatatype dt) {
         switch (getCode()) {
             case DOUBLE:
-                return CoreseDouble.create(doubleValue() * dt.doubleValue());
+                switch (dt.getCode()) {
+                    case DECIMAL:
+                        return CoreseDecimal.create(BigDecimal.valueOf(doubleValue()).multiply(dt.decimalValue()));
+                    default:
+                        return CoreseDouble.create(doubleValue() * dt.doubleValue());
+                }
 
             case FLOAT:
                 switch (dt.getCode()) {
                     case DOUBLE:
                         return CoreseDouble.create(doubleValue() * dt.doubleValue());
+                    case DECIMAL:
+                        return CoreseDecimal.create(BigDecimal.valueOf(floatValue()).multiply(dt.decimalValue()));
                     default:
                         return CoreseFloat.create(floatValue() * dt.floatValue());
                 }
@@ -202,6 +225,8 @@ public abstract class CoreseNumber extends CoreseDatatype {
                         return CoreseDouble.create(doubleValue() * dt.doubleValue());
                     case FLOAT:
                         return CoreseFloat.create(floatValue() * dt.floatValue());
+                    case DECIMAL:
+                        return CoreseDecimal.create(decimalValue().multiply(dt.decimalValue()));
                     default:
                         return CoreseDecimal.create(doubleValue() * dt.doubleValue());
                 }          
@@ -213,7 +238,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
                     case FLOAT:
                         return CoreseFloat.create(floatValue() * dt.floatValue());
                     case DECIMAL:
-                        return CoreseDecimal.create(doubleValue() * dt.doubleValue());
+                        return CoreseDecimal.create(BigDecimal.valueOf(intValue()).multiply(dt.decimalValue()));
                     case INTEGER:
                         try {
                             long l = Math.multiplyExact(longValue(), dt.longValue());
@@ -238,12 +263,19 @@ public abstract class CoreseNumber extends CoreseDatatype {
 
             switch (getCode()) {
                 case DOUBLE:
-                    return CoreseDouble.create(doubleValue() / dt.doubleValue());
+                    switch (dt.getCode()) {
+                        case DECIMAL:
+                            return CoreseDecimal.create(BigDecimal.valueOf(doubleValue()).divide(dt.decimalValue()));
+                        default:
+                            return CoreseDouble.create(doubleValue() / dt.doubleValue());
+                    }
 
                 case FLOAT:
                     switch (dt.getCode()) {
                         case DOUBLE:
                             return CoreseDouble.create(doubleValue() / dt.doubleValue());
+                        case DECIMAL:
+                            return CoreseDecimal.create(BigDecimal.valueOf(floatValue()).divide(dt.decimalValue()));
                         default:
                             return CoreseFloat.create(floatValue() / dt.floatValue());
                     }
@@ -254,6 +286,8 @@ public abstract class CoreseNumber extends CoreseDatatype {
                             return CoreseDouble.create(doubleValue() / dt.doubleValue());
                         case FLOAT:
                             return CoreseFloat.create(floatValue() / dt.floatValue());
+                        case DECIMAL:
+                            return CoreseDecimal.create(decimalValue().divide(dt.decimalValue()));
                         default:
                             return CoreseDecimal.create(doubleValue() / dt.doubleValue());
                     }
@@ -263,7 +297,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
                         case DOUBLE:
                             return CoreseDouble.create(doubleValue() / dt.doubleValue());
                         case FLOAT:
-                            return CoreseFloat.create(floatValue() / dt.floatValue());
+                            return CoreseDecimal.create(BigDecimal.valueOf(intValue()).divide(dt.decimalValue()));
                         case DECIMAL:
                             return CoreseDecimal.create(doubleValue() / dt.doubleValue());
                         case INTEGER:                            

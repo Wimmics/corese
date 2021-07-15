@@ -1,6 +1,7 @@
 
 package fr.inria.corese.kgram.api.core;
 
+import java.math.BigDecimal;
 import java.util.List;
 
 import org.eclipse.rdf4j.model.Value;
@@ -22,6 +23,8 @@ public interface DatatypeValue {
     double doubleValue();
     
     float floatValue();
+
+    BigDecimal decimalValue();
     
     Object objectValue();
     

@@ -20,6 +20,7 @@ import fr.inria.corese.sparql.datatype.extension.CoreseXML;
 import fr.inria.corese.sparql.datatype.extension.CoresePointer;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.UnsupportedEncodingException;
+import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -409,6 +410,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return getValue(result);
     }
 
+    public static IDatatype newInstance(BigDecimal result) {
+        return new CoreseDecimal(result);
+    }
+
     /**
      * Use case: LDScript Java compiler
      */
@@ -438,6 +443,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
 
     public static IDatatype newDecimal(double result) {
         return new CoreseDecimal(result);
+    }
+
+    public static IDatatype newDecimal(BigDecimal result) {
+        return newInstance(result);
     }
 
     static IDatatype getValue(long value) {

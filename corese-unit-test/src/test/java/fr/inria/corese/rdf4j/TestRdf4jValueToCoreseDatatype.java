@@ -495,6 +495,20 @@ public class TestRdf4jValueToCoreseDatatype {
     }
 
     @Test
+    public void convertDateTimeMilisecond() {
+        String value = "2021-07-16T16:28:36.47766";
+
+        // Build RDF4J date and time
+        Literal rdf4j_date_time = rdf4j_factory.createLiteral(value, XSD.DATETIME);
+
+        // Convert RDF4J date and time to Corese date and time
+        IDatatype corese_date_time_value = Rdf4jValueToCoreseDatatype.convert(rdf4j_date_time);
+
+        assertEquals(value, rdf4j_date_time.getLabel());
+        assertEquals(value, corese_date_time_value.stringValue());
+    }
+
+    @Test
     public void convertLiteralLang() {
         String value = "Un super test";
         String lang = "fr";
@@ -543,7 +557,6 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Convert RDF4J undef and time to Corese undef
         IDatatype corese_string_value = Rdf4jValueToCoreseDatatype.convert(rdf4j_string);
-        System.out.println(corese_string_value.getDatatypeURI());
         CoreseUndefLiteral corese_string = (CoreseUndefLiteral) corese_string_value;
 
         // Checks

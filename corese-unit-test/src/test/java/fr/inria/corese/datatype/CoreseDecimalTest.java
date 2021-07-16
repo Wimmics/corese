@@ -299,8 +299,3 @@ public class CoreseDecimalTest {
     }
 
 }
-
-// Corese date -> RDF4J date -> Corese date (pas égal) car miliseconde pas
-// préservé
-// Cretae decimal value dans les autre nombre,
-// Ajouter une fonction convert Literal, 3 fonctions

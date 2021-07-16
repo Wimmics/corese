@@ -226,6 +226,21 @@ public class TestCoreseDatatypeToRdf4jValue {
     }
 
     @Test
+    public void convertDateTimeMilisecond() {
+
+        String value = "2021-07-16T16:28:36.47766";
+
+        // Build Corese date and time
+        CoreseDateTime corese_date_time = (CoreseDateTime) DatatypeMap.newDateTime(value);
+
+        // Convert Corese date to RDF4J date
+        Value rdf4j_date_time_value = CoreseDatatypeToRdf4jValue.convert(corese_date_time);
+        
+        assertEquals(value, corese_date_time.getLabel());
+        assertEquals(value, rdf4j_date_time_value.stringValue());
+    }
+
+    @Test
     public void convertLiteralLang() {
         String value = "Un super test";
         String lang = "fr";

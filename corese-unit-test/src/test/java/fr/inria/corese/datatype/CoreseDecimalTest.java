@@ -279,11 +279,28 @@ public class CoreseDecimalTest {
         assertEquals(number_decimal, cd_decimal.decimalValue());
     }
 
+    @Test
+    public void decimalValueNumbers() {
+        String number_string = "1.22222222222222222222";
+        Double number_double = Double.valueOf(number_string);
+        Float number_float = Float.valueOf(number_string);
+        BigDecimal number_decimal = new BigDecimal(number_string);
+        int number_integer = 1;
+
+        IDatatype corese_double = DatatypeMap.newDouble(number_double);
+        IDatatype corese_float = DatatypeMap.newFloat(number_float);
+        IDatatype corese_decimal = DatatypeMap.newDecimal(number_decimal);
+        IDatatype corese_integer = DatatypeMap.newInteger(number_integer);
+
+        assertEquals(BigDecimal.valueOf(number_double), corese_double.decimalValue());
+        assertEquals(BigDecimal.valueOf(number_float), corese_float.decimalValue());
+        assertEquals(number_decimal, corese_decimal.decimalValue());
+        assertEquals(BigDecimal.valueOf(number_integer), corese_integer.decimalValue());
+    }
+
 }
 
-// Label du decimal, tous les cas label du decimal
 // Corese date -> RDF4J date -> Corese date (pas égal) car miliseconde pas
 // préservé
 // Cretae decimal value dans les autre nombre,
-// Ajouter les OverRide, CoreseDatatype, decimal value
 // Ajouter une fonction convert Literal, 3 fonctions

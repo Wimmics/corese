@@ -1,5 +1,7 @@
 package fr.inria.corese.sparql.datatype;
 
+import java.math.BigDecimal;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -102,6 +104,11 @@ public class CoreseInteger extends CoreseNumber {
     
     void setValue(long n){
         lvalue = n;
+    }
+
+    @Override
+    public BigDecimal decimalValue() {
+        return BigDecimal.valueOf(lvalue);
     }
 
     @Override

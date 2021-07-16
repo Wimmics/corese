@@ -1,5 +1,7 @@
 package fr.inria.corese.sparql.datatype;
 
+import java.math.BigDecimal;
+
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
@@ -57,6 +59,11 @@ public class CoreseDouble extends CoreseNumber {
     @Override
     public boolean isTrue() {
         return booleanValue();
+    }
+
+    @Override
+    public BigDecimal decimalValue() {
+        return BigDecimal.valueOf(dvalue);
     }
 
     @Override

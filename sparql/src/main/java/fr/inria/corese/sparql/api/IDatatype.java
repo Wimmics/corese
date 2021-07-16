@@ -8,6 +8,8 @@ import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.Loopable;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.sparql.storage.api.IStorage;
+
+import java.math.BigDecimal;
 import java.util.List;
 import java.util.Map;
 
@@ -240,6 +242,8 @@ public interface IDatatype
     void setVariable(boolean b);
 
     void setValue(int n);
+
+    void setValue(BigDecimal n);
 
     /**
      * ************************************************************************

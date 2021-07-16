@@ -664,6 +664,10 @@ public class CoreseDatatype
     }
     
     @Override
+    public void setValue(BigDecimal bd) {
+    }
+
+    @Override
     public void setValue(int n) {
     }
 

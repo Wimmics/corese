@@ -35,51 +35,48 @@ public class CoreseDecimal extends CoreseDouble {
 	}
 
 	public CoreseDecimal(String value) throws CoreseDatatypeException {
-		super(value);
-		this.bdValue = new BigDecimal(value);
 		// no exponent in decimal:
 		if (value.indexOf("e") != -1 || value.indexOf("E") != -1) {
 			throw new CoreseDatatypeException("Decimal", value);
 		}
+		this.setValue(value);
 	}
 
 	public CoreseDecimal(double value) {
-		super(value);
-		this.bdValue = new BigDecimal(value);
+		this.setValue(value);
 	}
 
 	public CoreseDecimal(BigDecimal value) {
-
-		// initialise double
-		this.dvalue = value.doubleValue();
-		setLabel(getNormalizedLabel());
-		
-		// initialise decimal
-		this.bdValue = value;
-		this.setLabel(this.bdValue.toString());
+		this.setValue(value);
 	}
 
 	public static CoreseDecimal create(double value) {
-		CoreseDecimal dt = new CoreseDecimal();
-		dt.setValue(value);
-		return dt;
+		return new CoreseDecimal(value);
 	}
 
 	public static CoreseDecimal create(BigDecimal value) {
-		CoreseDecimal dt = new CoreseDecimal();
-		dt.setValue(value);
-		return dt;
+		return new CoreseDecimal(value);
 	}
 
 	@Override
 	public void setValue(double value) {
 		super.setValue(value);
-		this.bdValue = new BigDecimal(value);
+		this.bdValue = BigDecimal.valueOf(value);
+		this.setLabel(String.valueOf(value));
 	}
 
+	@Override
 	public void setValue(BigDecimal value) {
 		this.dvalue = value.doubleValue();
 		this.bdValue = value;
+		this.setLabel(String.valueOf(value));
+	}
+
+	@Override
+	public void setValue(String value) {
+		this.dvalue = Double.parseDouble(value);
+		this.bdValue = new BigDecimal(value);
+		this.setLabel(value);
 	}
 
 	@Override

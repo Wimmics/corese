@@ -12,6 +12,7 @@ import fr.inria.corese.sparql.datatype.CoreseDouble;
 import fr.inria.corese.sparql.datatype.CoreseFloat;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.XSD;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
 public class CoreseDecimalTest {
 
@@ -253,15 +254,29 @@ public class CoreseDecimalTest {
     }
 
     @Test
-    public void decimalLabel() {
+    public void decimalLabel() throws CoreseDatatypeException {
         String number_string = "1.22222222222222222222";
         Double number_double = Double.valueOf(number_string);
-        BigDecimal number_decimal = BigDecimal.valueOf(number_string);
+        BigDecimal number_decimal = new BigDecimal(number_string);
 
+        // From Constructors
+        CoreseDecimal cd_string = new CoreseDecimal(number_string);
+        CoreseDecimal cd_double = new CoreseDecimal(number_double);
+        CoreseDecimal cd_decimal = new CoreseDecimal(number_decimal);
 
-
-
+        // Tests
+        assertEquals(XSD.xsddecimal, cd_string.getDatatypeURI());
+        assertEquals(XSD.xsddecimal, cd_double.getDatatypeURI());
+        assertEquals(XSD.xsddecimal, cd_decimal.getDatatypeURI());
         
+        assertEquals(number_string, cd_string.getLabel());
+        assertEquals(number_decimal, cd_string.decimalValue());
+        
+        assertEquals(number_double.toString(), cd_double.getLabel());
+        assertEquals(BigDecimal.valueOf(number_double), cd_double.decimalValue());
+
+        assertEquals(number_string, cd_decimal.getLabel());
+        assertEquals(number_decimal, cd_decimal.decimalValue());
     }
 
 }

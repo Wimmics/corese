@@ -661,4 +661,16 @@ public class TestCoreseDatatypeToRdf4jValue {
         assertEquals(XSD.DATE, rdf4j_date.getDatatype());
         assertEquals(XSD.DATE.stringValue(), corese_date.getDatatype().stringValue());
     }
+
+    @Test(expected = ClassCastException.class)
+    public void wrongConvert() {
+        String string_iri = "http://example.org/bob";
+
+        // Build Corese URI
+        IDatatype corese_uri = DatatypeMap.createResource(string_iri);
+
+        // Convert Corese URI to RDF4J IRI
+        CoreseDatatypeToRdf4jValue.convertLiteral(corese_uri);
+
+    }
 }

@@ -6,11 +6,14 @@ import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
 
+import org.eclipse.rdf4j.model.Literal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
+
 import java.util.TimeZone;
 import org.slf4j.Marker;
 import org.slf4j.MarkerFactory;
@@ -545,5 +548,10 @@ public class CoreseDate extends CoreseDatatype {
         if (DatatypeMap.SPARQLCompliant && getClass() != icod.getClass()) {
             throw failure();
         }
+    }
+
+    @Override
+    public Literal getRdf4jValue() {
+        return CoreseDatatypeToRdf4jValue.convertLiteral(this);
     }
 }

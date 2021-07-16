@@ -2,7 +2,10 @@ package fr.inria.corese.sparql.datatype;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
 import fr.inria.corese.sparql.storage.api.IStorage;
+
+import org.eclipse.rdf4j.model.Literal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -143,5 +146,10 @@ public class CoreseStringLiteral extends CoreseStringableImpl {
      */
     public void setManager(IStorage manager) {
         this.manager = manager;
+    }
+
+    @Override
+    public Literal getRdf4jValue() {
+        return CoreseDatatypeToRdf4jValue.convertLiteral(this);
     }
 }

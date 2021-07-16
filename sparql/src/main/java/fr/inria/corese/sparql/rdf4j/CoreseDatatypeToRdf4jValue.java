@@ -120,12 +120,22 @@ public class CoreseDatatypeToRdf4jValue {
     }
 
     /**
+     * Convert Corese datatype to equivalent RDF4J Literal
+     * 
+     * @param corese_datatype the Corese datatype to convert
+     * @return RDF4J Literal equivalent
+     */
+    public static Literal convertLiteral(IDatatype corese_datatype) {
+        return (Literal) CoreseDatatypeToRdf4jValue.convert(corese_datatype);
+    }
+
+    /**
      * Convert Corese URI to equivalent RDF4J IRI
      * 
      * @param corese_uri the Corese URI to convert
      * @return equivalent RDF4J IRI
      */
-    private static IRI convertIri(IDatatype corese_uri) {
+    public static IRI convertIri(IDatatype corese_uri) {
         String string_iri = corese_uri.getLabel();
         return rdf4j_factory.createIRI(string_iri);
     }
@@ -136,7 +146,7 @@ public class CoreseDatatypeToRdf4jValue {
      * @param corese_blank the Corese blank node to convert
      * @return equivalent RDF4J blank node BNode
      */
-    private static BNode convertBNode(IDatatype corese_blank) {
+    public static BNode convertBNode(IDatatype corese_blank) {
         String id = corese_blank.getLabel();
         return rdf4j_factory.createBNode(id);
     }

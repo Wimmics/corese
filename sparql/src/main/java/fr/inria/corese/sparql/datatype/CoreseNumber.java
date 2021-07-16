@@ -2,7 +2,10 @@ package fr.inria.corese.sparql.datatype;
 
 import java.math.BigDecimal;
 
+import org.eclipse.rdf4j.model.Literal;
+
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
 
 /**
  * <p>Title: Corese</p>
@@ -298,5 +301,10 @@ public abstract class CoreseNumber extends CoreseDatatype {
      */
     public void setLabel(String label) {
         this.label = label;
+    }
+
+    @Override
+    public Literal getRdf4jValue() {
+        return CoreseDatatypeToRdf4jValue.convertLiteral(this);
     }
 }

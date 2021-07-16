@@ -757,6 +757,7 @@ public class CoreseDatatype
         return -1;
     }
 
+    @Override
     public BigDecimal decimalValue(){
         return new BigDecimal(-1);
     }

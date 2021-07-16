@@ -49,7 +49,7 @@ public class CoreseDecimal extends CoreseDouble {
 	public CoreseDecimal(BigDecimal value) {
 		this.setValue(value);
 	}
-
+	
 	public static CoreseDecimal create(double value) {
 		return new CoreseDecimal(value);
 	}
@@ -94,6 +94,7 @@ public class CoreseDecimal extends CoreseDouble {
 		return true;
 	}
 
+	@Override
 	public BigDecimal decimalValue() {
 		return this.bdValue;
 	}

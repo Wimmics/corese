@@ -449,6 +449,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return newInstance(result);
     }
 
+    public static IDatatype newDecimal(int result) {
+        return newInstance(result);
+    }
+
     static IDatatype getValue(long value) {
         if (value >= 0 && value < INTMAX) {
             return getValueCache((int) value);

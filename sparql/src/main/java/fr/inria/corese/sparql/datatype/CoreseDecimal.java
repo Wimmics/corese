@@ -49,7 +49,7 @@ public class CoreseDecimal extends CoreseDouble {
 	public CoreseDecimal(BigDecimal value) {
 		this.setValue(value);
 	}
-	
+
 	public static CoreseDecimal create(double value) {
 		return new CoreseDecimal(value);
 	}
@@ -62,21 +62,21 @@ public class CoreseDecimal extends CoreseDouble {
 	public void setValue(double value) {
 		super.setValue(value);
 		this.bdValue = BigDecimal.valueOf(value);
-		this.setLabel(String.valueOf(value));
+		this.setLabel(String.valueOf(bdValue));
 	}
 
 	@Override
 	public void setValue(BigDecimal value) {
-		this.dvalue = value.doubleValue();
+		super.setValue(value.doubleValue());
 		this.bdValue = value;
-		this.setLabel(String.valueOf(value));
+		this.setLabel(String.valueOf(bdValue));
 	}
 
 	@Override
 	public void setValue(String value) {
-		this.dvalue = Double.parseDouble(value);
+		super.setValue(Double.parseDouble(value));
 		this.bdValue = new BigDecimal(value);
-		this.setLabel(value);
+		this.setLabel(String.valueOf(bdValue));
 	}
 
 	@Override

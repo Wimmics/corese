@@ -198,30 +198,25 @@ public class CoreseDate extends CoreseDatatype {
             String time = strtime.substring(0, size);
             String[] thetime = time.split(":");
 
-            int[] fields = {
-                GregorianCalendar.HOUR_OF_DAY, GregorianCalendar.MINUTE,
-                GregorianCalendar.SECOND};
             int tt;
                       
             for (int i = 0; i < thetime.length; i++) {
                 try {
                     tt = Integer.parseInt(thetime[i]);
-                    //cal.set(fields[i], tt);
+                    // set integer number of sec
                     atime[i] = tt;
                 } catch (Exception e) {
                     if (i == 2) {
                         // there may be a float number of seconds : 12:34:05.5
                         milliF = Float.parseFloat(thetime[i]);
+
                         // set integer number of sec
-                        //cal.set(fields[i], f.intValue());
                         atime[2] = milliF.intValue();
-                        Float dec = milliF - (float) milliF.intValue(); // dec = 0.5
-                        float fmilli = dec * (float) 1000; //  milliseconds
-                        if (fmilli >= 1) {
-                            milli = (int) fmilli;
-//                            cal.setSeconds(f);
-//                            cal.setTimeInMillis(cal.getTimeInMillis() + milli); // add the millisec
-                        }
+                        
+                        // set integer number of millisec
+                        String milliF_string = String.format("%.3f", milliF);
+                        int indexOfDecimal = milliF_string.indexOf(".") + 1;
+                        milli = Integer.valueOf(milliF_string.substring(indexOfDecimal));
                     } else {
                         throw new CoreseDatatypeException("xsd:dateTime", date);
                     }

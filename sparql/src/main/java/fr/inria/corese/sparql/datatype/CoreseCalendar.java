@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.datatype;
 
+import java.util.Calendar;
 import java.util.GregorianCalendar;
 import java.util.TimeZone;
 
@@ -25,7 +26,12 @@ public class CoreseCalendar extends GregorianCalendar {
       private boolean bzone = false;
       String num = null, zone = "";
       
-      CoreseCalendar(){}
+      CoreseCalendar(){
+        super();
+        int sec = this.get(Calendar.SECOND);
+        int mill_sec = this.get(Calendar.MILLISECOND);
+        rest = sec + (mill_sec / 1000f);
+      }
 
       CoreseCalendar(int yy, int mm, int dd){
         super(yy, mm, dd);

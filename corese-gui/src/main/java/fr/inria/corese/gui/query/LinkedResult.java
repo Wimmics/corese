@@ -57,7 +57,7 @@ public class LinkedResult implements URLParam {
      * Display query/result in additional query panel
      */
     void linkedResult(Mappings map) {
-        String mes = map.getLink(MES);
+        String mes = map.getLastLink(MES);
         JSONObject jsonMessage = null;
         if (mes != null) {
             // url with message is a json message to be processed

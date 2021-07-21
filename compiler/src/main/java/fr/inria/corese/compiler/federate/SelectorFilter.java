@@ -104,7 +104,7 @@ public class SelectorFilter {
     }
     
     boolean accept(Expression exp) {
-        Boolean b = map.get(exp.getName());
+        Boolean b = map.get(exp.getName().toLowerCase());
         return b!= null && b;
     }
     

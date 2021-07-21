@@ -62,6 +62,10 @@ public class CoreseDecimal extends CoreseDouble {
 		return new CoreseDecimal(value);
 	}
 
+	public static CoreseDecimal create(int value) {
+		return new CoreseDecimal(value);
+	}
+
 	@Override
 	public void setValue(double value) {
 		super.setValue(value);

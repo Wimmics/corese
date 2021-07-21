@@ -84,7 +84,7 @@ public class QuerySolver implements SPARQLEngine {
     private List<Atom> serviceList;
 
     boolean isListGroup = false,
-            isListPath = false,
+            isListPath = true,
             isCountPath = false,
             isCheckLoop = false,
             isDebug = false,

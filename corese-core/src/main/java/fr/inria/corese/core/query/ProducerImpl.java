@@ -32,6 +32,8 @@ import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.producer.DataProducer;
 import fr.inria.corese.core.Index;
+import fr.inria.corese.core.api.DataManager;
+import fr.inria.corese.core.api.DataManagerFactory;
 import fr.inria.corese.core.util.ValueCache;
 import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
 import fr.inria.corese.kgram.core.SparqlException;
@@ -47,16 +49,17 @@ import java.util.HashMap;
  * @author Olivier Corby, Edelweiss INRIA 2010ta
  *
  */
-public class ProducerImpl implements Producer, IProducerQP {
+public class ProducerImpl implements Producer, IProducerQP, DataManagerFactory {
 
     public static final int OWL_RL = 1;
 
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST = Graph.ILIST;
     public static final String TOPREL = Graph.TOPREL;
-    List<Edge> empty = new ArrayList<Edge>(0);
-    List<Node> emptyFrom = new ArrayList<Node>(0);
+    List<Edge> empty = new ArrayList<>(0);
+    List<Node> emptyFrom = new ArrayList<>(0);
     DataProducer ei;
+    private DataManagerFactory dataManagerFactory;
     Graph graph,
             // cache for handling (fun() as var) created Nodes
             local;
@@ -83,6 +86,7 @@ public class ProducerImpl implements Producer, IProducerQP {
 
     public ProducerImpl() {
         this(Graph.create());
+        setDataManagerFactory(this);
     }
 
     public ProducerImpl(Graph g) {
@@ -92,8 +96,9 @@ public class ProducerImpl implements Producer, IProducerQP {
         ei = DataProducer.create(g);
         toRDF = new RDFizer();
         vcache = new ValueCache();
-        cache = new HashMap<Edge, DataProducer>();
+        cache = new HashMap<>();
         pn = new ProducerImplNode(this);
+        setDataManagerFactory(this);
     }
 
     public static ProducerImpl create(Graph g) {
@@ -340,18 +345,34 @@ public class ProducerImpl implements Producer, IProducerQP {
 
     /**
      * Enumerate candidate edges either from default graph or from named graphs
+     * predicate: property name or Graph.TOPREL when predicate is unbound variable
+     * focusNode: subject/object/graph node if any of them is known (constant or bound variable), otherwise null
+     * int n:  the index of focusNode in the triple: subject=0, object=1, graph=Graph.IGRAPH
      */
     public Iterable<Edge> getEdges(Node gNode, Node sNode, List<Node> from,
             Node predicate, Node focusNode, Node objectNode, int n, boolean skip, AccessRight access) {
-        return dataProducer(gNode, from, sNode, skip, access).iterate(predicate, focusNode, n);
+        return getDataManagerFactory().newInstance(gNode, sNode, from, skip, access).iterate(predicate, focusNode, n);
     }
     
-//    Iterable<Edge> getEdges(Node gNode, Node sNode, List<Node> from,
-//            Node predicate, Node focusNode, Node objectNode, int n, boolean skip) {
-//        return dataProducer(gNode, from, sNode, skip, null).iterate(predicate, focusNode, n);
-//    }
+    /**
+     * User may provide another DataManager factory 
+     */
+    @Override
+    public DataManager newInstance(Node queryGraphNode, Node targetGraphNode, List<Node> dataset, boolean skipMetadataNode, AccessRight access) {
+        return getDataProducer(queryGraphNode, targetGraphNode, dataset, skipMetadataNode, access);
+    }
+    
 
-    DataProducer dataProducer(Node gNode, List<Node> from, Node sNode, boolean skip, AccessRight access) {
+    /**
+     * 
+     * @param gNode: named graph or null (query node)
+     * @param from:  from or from named or null
+     * @param sNode: target named graph  (graph node)
+     * @param skip: skip nodes other than subject/object/graph to determine that triples are different (default false)
+     * @param access: access right to skip triples whose access would be forbidden
+     * @return DataProducer
+     */
+    DataProducer getDataProducer(Node gNode, Node sNode, List<Node> from, boolean skip, AccessRight access) {
         DataProducer dp;
         if (gNode == null) {
             dp = graph.getDataStore().getDefault(from).setSkipEdgeMetadata(skip);
@@ -932,7 +953,16 @@ public class ProducerImpl implements Producer, IProducerQP {
 
     }
     
+    @Override
     public DatatypeValueFactory getDatatypeValueFactory() {
         return DatatypeMap.getDatatypeMap();
+    }
+
+    public DataManagerFactory getDataManagerFactory() {
+        return dataManagerFactory;
+    }
+
+    public void setDataManagerFactory(DataManagerFactory dataManager) {
+        this.dataManagerFactory = dataManager;
     }
 }

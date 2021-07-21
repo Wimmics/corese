@@ -10,6 +10,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.tool.MetaIterator;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphObject;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.edge.EdgeTop;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.PRODUCER;
@@ -30,7 +31,8 @@ import java.util.ArrayList;
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  */
-public class DataProducer extends GraphObject implements Iterable<Edge>, Iterator<Edge> {
+public class DataProducer extends GraphObject 
+        implements DataManager, Iterable<Edge>, Iterator<Edge> {
 
     static final List<Edge> empty     = new ArrayList<Edge>(0);
     

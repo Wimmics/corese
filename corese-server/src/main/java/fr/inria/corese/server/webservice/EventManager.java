@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -21,11 +22,13 @@ public class EventManager {
     static final String count = NSManager.STL+"count";
     static final String date  = NSManager.STL+"date";
     static final String host  = NSManager.STL+"host";
+    static final String hostLite  = NSManager.STL+"hostlite";
     static final String template = "/template";
     private static EventManager singleton;
     
     // service|profile -> count
-    private CoreseMap globalMap, countMap, dateMap, hostMap;
+    private CoreseMap globalMap, countMap, dateMap, hostMap, hostLiteMap;
+    HashMap <String, IDatatype> ipmap;
     
     static {
         setSingleton(new EventManager());
@@ -39,14 +42,18 @@ public class EventManager {
         setCountMap(map());
         setDateMap(map());
         setHostMap(map());
-        
+        // aggregate IP address that differ only by last number
+        hostLiteMap = map();        
         globalMap = map();
+        ipmap = new HashMap<>();
+        
         DatatypeMap.setPublicDatatypeValue(globalMap);
         Binding.setStaticVariable("?staticEventManagerMap", globalMap);
         
         globalMap.set(count, getCountMap());
         globalMap.set(date,  getDateMap());
         globalMap.set(host,  getHostMap());
+        globalMap.set(hostLite,  hostLiteMap);
     }
     
     CoreseMap map () {
@@ -65,8 +72,8 @@ public class EventManager {
         logger.info("Workflow Context:\n" + context);
         logger.info(globalMap.getMap());
         logger.info(getCountMap().getMap());
-        logger.info(getDateMap().getMap());
-        logger.info(getHostMap().getMap());
+        //logger.info(getDateMap().getMap());
+        logger.info(hostLiteMap.getMap());
     }
     
     /**
@@ -81,8 +88,19 @@ public class EventManager {
 
         IDatatype dthost = c.get(Context.STL_REMOTE_HOST);
         if (dthost != null) {
-            getHostMap().incr(dthost);           
+            getHostMap().incr(dthost);  
+            incrHostLite(dthost);
         }
+    }
+    
+    void incrHostLite(IDatatype dt) {
+        String ip = dt.getLabel().substring(0, dt.getLabel().lastIndexOf("."));
+        IDatatype adt = ipmap.get(ip);
+        if (adt == null) {
+            adt = dt;
+            ipmap.put(ip, adt);
+        }
+        hostLiteMap.incr(adt);
     }
       
     IDatatype getService(Context c) {

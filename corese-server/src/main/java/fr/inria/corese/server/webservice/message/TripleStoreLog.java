@@ -8,6 +8,7 @@ import fr.inria.corese.core.query.ProviderService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.server.webservice.EventManager;
+import fr.inria.corese.server.webservice.TripleStore;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.extension.CoreseMap;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -173,9 +174,12 @@ public class TripleStoreLog implements URLParam {
             Mappings mymap = log.getMappings(name, LogKey.OUTPUT);
             String query = null, result = null;
             
-            if (ast != null) {
+            if (ast == null) {
+                TripleStore.logger.error("Undefined Query AST: " + name);
+            }
+            else {
                 query = ast.toString();
-                
+
                 if (mymap == null) {
                     if (name.startsWith(ProviderService.UNDEFINED_SERVICE)
                             && log.getString(SERVICE_URL) != null) {
@@ -184,28 +188,28 @@ public class TripleStoreLog implements URLParam {
                     }
                     query = String.format("# @federate <%s>\n%s", name, query);
                 }
-            }
 
-            if (mymap == null) {
-                // no result
-            } else {
-                // set endpoint URL as link in query results
-                // use case: GUI federated debugger
-                mymap.addLink(name);
-                ResultFormat fm = ResultFormat.create(mymap);
-                fm.setNbResult(mymap.getDisplay());
-                result = fm.toString();                
-            }
+                if (mymap == null) {
+                    // no result
+                } else {
+                    // set endpoint URL as link in query results
+                    // use case: GUI federated debugger
+                    mymap.addLink(name);
+                    ResultFormat fm = ResultFormat.create(mymap);
+                    fm.setNbResult(mymap.getDisplay());
+                    result = fm.toString();
+                }
 
-            String url1 = document(query, QUERY.concat(Integer.toString(i)), "");
-            String url2 = null;
-            if (result != null) {
-                url2 = document(result, OUTPUT.concat(Integer.toString(i)), "");
+                String url1 = document(query, QUERY.concat(Integer.toString(i)), "");
+                String url2 = null;
+                if (result != null) {
+                    url2 = document(result, OUTPUT.concat(Integer.toString(i)), "");
+                }
+
+                getJson().addLink(WORKFLOW, create(url1, url2));
+
+                i++;
             }
-            
-            getJson().addLink(WORKFLOW, create(url1, url2));
-            
-            i++;
         }
     }
     

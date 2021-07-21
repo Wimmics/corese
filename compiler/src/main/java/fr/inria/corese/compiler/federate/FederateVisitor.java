@@ -713,12 +713,26 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         return getServiceListTriple(t);
     }
     
+    List<Atom> getServiceListTriple(Triple t) {     
+        if (select) {
+            List<Atom> list = selector.getPredicateService(t);
+            if (list != null && ! list.isEmpty()) {
+                return list;
+            }
+        }
+        return getDefaultServiceList();
+    }
+
     List<Atom> getServiceListPath(Triple t) {
         List<Atom> serviceList = new ArrayList<>();
+        
         for (Constant p : t.getRegex().getPredicateList()) {
-            for (Atom serv : getServiceList(p)) {
+            for (Atom serv : getServiceListBasic(p)) {
                 add(serviceList, serv);
             }
+        }
+        if (serviceList.isEmpty()) {
+            return getDefaultServiceList();
         }
         return serviceList;
     }
@@ -727,6 +741,17 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         if (! list.contains(at)) {
             list.add(at);
         }
+    }
+    
+    List<Atom> getServiceListBasic(Constant p) {          
+        if (select) {
+            List<Atom> list = selector.getPredicateService(p);
+            if (list == null) {
+                return new ArrayList<>(0);
+            }
+            return list;
+        }
+        return getDefaultServiceList();
     }
        
     List<Atom> getServiceList(Constant p) {          
@@ -739,15 +764,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         return getDefaultServiceList();
     }
     
-    List<Atom> getServiceListTriple(Triple t) {     
-        if (select) {
-            List<Atom> list = selector.getPredicateService(t);
-            if (list != null && ! list.isEmpty()) {
-                return list;
-            }
-        }
-        return getDefaultServiceList();
-    }
+
     
     // when there is no service for a triple
     List<Atom> getDefaultServiceList() {

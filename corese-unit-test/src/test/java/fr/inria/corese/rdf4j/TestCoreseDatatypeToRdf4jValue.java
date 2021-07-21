@@ -25,7 +25,6 @@ import fr.inria.corese.sparql.datatype.CoreseYear;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
-import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
 public class TestCoreseDatatypeToRdf4jValue {
 
@@ -672,14 +671,5 @@ public class TestCoreseDatatypeToRdf4jValue {
 
         // Convert Corese URI to RDF4J IRI
         CoreseDatatypeToRdf4jValue.convertLiteral(corese_uri);
-    }
-
-    @Test
-    public void testDoubleConversionDate() {
-        CoreseDate corese_dt = (CoreseDate) DatatypeMap.newDate();
-        Literal rdf4j_dt = (Literal) CoreseDatatypeToRdf4jValue.convert(corese_dt);
-        CoreseDate corese_dt_2 = (CoreseDate) Rdf4jValueToCoreseDatatype.convert(rdf4j_dt);
-
-        assertEquals(corese_dt, corese_dt_2);
     }
 }

@@ -17,94 +17,89 @@ import java.util.TimeZone;
  */
 
 public class CoreseCalendar extends GregorianCalendar {
-	
-	/** Use to keep the class version, to be consistent with the interface Serializable.java */
-	private static final long serialVersionUID = 1L;
-	
-      float rest = 0; // if float number of seconds, numbers after 0.
-      boolean Z = false;
-      private boolean bzone = false;
-      String num = null, zone = "";
-      
-      CoreseCalendar(){
-        super();
+
+    /**
+     * Use to keep the class version, to be consistent with the interface
+     * Serializable.java
+     */
+    private static final long serialVersionUID = 1L;
+
+    boolean Z = false;
+    private boolean bzone = false;
+    String zone = "";
+
+    CoreseCalendar() {
+    }
+
+    CoreseCalendar(int yy, int mm, int dd) {
+        super(yy, mm, dd);
+    }
+
+    CoreseCalendar(int yy, int mm, int dd, int hh, int min, int ss) {
+        super(yy, mm, dd, hh, min, ss);
+    }
+
+    public CoreseCalendar duplicate() {
+        return (CoreseCalendar) clone();
+    }
+
+    public CoreseCalendar duplicate(String tz) {
+        CoreseCalendar cal = duplicate();
+        cal.setTimeZone(TimeZone.getTimeZone("GMT" + tz));
+        cal.setDZone(tz);
+        cal.setZ(cal.getRawOffset() == 0);
+        return cal;
+    }
+
+    public int getRawOffset() {
+        return getTimeZone().getRawOffset();
+    }
+
+    boolean sameDate(CoreseCalendar cal) {
+        return get(YEAR) == cal.get(YEAR) && get(MONTH) == cal.get(MONTH) && get(DAY_OF_MONTH) == cal.get(DAY_OF_MONTH);
+    }
+
+    void setZ(boolean z) {
+        this.Z = z;
+    }
+
+    boolean getZ() {
+        return Z;
+    }
+
+    void setDZone(String z) {
+        this.zone = z;
+    }
+
+    String getDZone() {
+        return zone;
+    }
+
+    void setSeconds(float f) {
+        this.set(Calendar.SECOND, (int) f);
+
+        String milli_string = String.format("%.3f", f);
+        int indexOfDecimal = milli_string.indexOf(".") + 1;
+        this.set(Calendar.MILLISECOND, Integer.valueOf(milli_string.substring(indexOfDecimal)));
+    }
+
+    float getSeconds() {
         int sec = this.get(Calendar.SECOND);
         int mill_sec = this.get(Calendar.MILLISECOND);
-        rest = sec + (mill_sec / 1000f);
-      }
+        return sec + (mill_sec / 1000f);
+    }
 
-      CoreseCalendar(int yy, int mm, int dd){
-        super(yy, mm, dd);
-      }
-      
-      CoreseCalendar(int yy, int mm, int dd, int hh, int min, int ss){
-        super(yy, mm, dd, hh, min, ss);
-      }
-      
-      public CoreseCalendar duplicate(){
-          return new CoreseCalendar(get(YEAR), get(MONTH), get(DAY_OF_MONTH), get(HOUR_OF_DAY), get(MINUTE), get(SECOND));
-          //return (CoreseCalendar) clone();
-      }
-      
-      public CoreseCalendar duplicate(String tz){
-          CoreseCalendar cal = duplicate();
-          cal.setTimeZone(TimeZone.getTimeZone("GMT"+tz));
-          cal.setDZone(tz);
-          cal.setZ(cal.getRawOffset() == 0);
-          return cal;
-      }
-      
-      public int getRawOffset(){
-          return getTimeZone().getRawOffset();
-      }
-      
-      boolean sameDate(CoreseCalendar cal){
-          return get(YEAR) == cal.get(YEAR) && get(MONTH) == cal.get(MONTH) && get(DAY_OF_MONTH) == cal.get(DAY_OF_MONTH);
-      }
-      
-      void setZ(boolean z){
-    	  this.Z = z;
-      }
-      
-      boolean getZ(){
-    	  return Z;
-      }
-      
-      void setDZone(String z){
-    	  this.zone = z;
-      }
-      
-      String getDZone(){
-    	  return zone;
-      }
-      
-      void setNum(String n){
-    	  this.num = n;
-      }
-      
-      String getNum(){
-    	  return num;
-      }
-
-      void setSeconds(float f){
-        rest = f;
-      }
-
-      float getSeconds(){
-        return rest;
-      }
-      
-      /**
-         * 1 BC -> -1
-         * 2 BC -> -2
-         */
-        int theYear(){
-            int year = get(GregorianCalendar.YEAR);
-            if (get(GregorianCalendar.ERA) == GregorianCalendar.BC){
-                year = -year;
-            }
-            return year;
+    /**
+     * 1 BC -> -1
+     * 2 BC -> -2
+     */
+    int theYear() {
+        int year = get(GregorianCalendar.YEAR);
+        if (get(GregorianCalendar.ERA) == GregorianCalendar.BC) {
+            year = -year;
         }
+        return year;
+    }
 
     /**
      * @return the bzone
@@ -120,6 +115,4 @@ public class CoreseCalendar extends GregorianCalendar {
         this.bzone = bzone;
     }
 
-  }
-
-
+}

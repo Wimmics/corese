@@ -91,8 +91,7 @@ public class CoreseDate extends CoreseDatatype {
     }
 
     public CoreseDecimal getSecond() {
-        int sec = cal.get(GregorianCalendar.SECOND);
-        return new CoreseDecimal(sec);
+        return new CoreseDecimal(this.cal.getSeconds());
     }
 
     void test(String label, String format) {

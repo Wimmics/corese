@@ -48,11 +48,9 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.URLParam;
-import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
-import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1322,7 +1320,7 @@ public class QueryProcess extends QuerySolver {
     }
     
     public String getStringMessage(Mappings map) {
-        String url = map.getLink(URLParam.MES);
+        String url = map.getLastLink(URLParam.MES);
         if (url == null) {
             return null;
         }

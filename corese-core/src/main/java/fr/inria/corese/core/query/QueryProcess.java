@@ -659,43 +659,22 @@ public class QueryProcess extends QuerySolver {
     }
     
     /**
-     * Dataset may contain workflow Binding or Context access level
-     * Share Binding or access level
+     * Dataset may contain workflow Binding or Context access level Share
+     * Binding or access level
      */
     Mapping completeMappings(Mapping m, Dataset ds) {
         if (ds != null) {
-            if (ds.getBinding() != null) {
-                // use case: share workflow Binding
+            if (ds.getBinding() != null || ds.getContext() != null) {
                 if (m == null) {
                     m = new Mapping();
                 }
-                if (m.getBind() == null) {
-                    m.setBind(ds.getBinding());
-                }
-            }
-            Context c = ds.getContext();
-            if (c != null) {
-                // use case: query with Context
-                if (m == null) {
-                    m = new Mapping();
-                }
-                Binding b = (Binding) m.getBind();
-                if (b == null) {
-                    b = Binding.create();
-                    m.setBind(b);
-                }
-                b.setContext(c);
-                //share Context access level
-                b.setAccessLevel(c.getLevel());
-                if (c.getAccessRight() != null) {
-                    b.setAccessRight(c.getAccessRight());
-                }
+                return ds.call(m);
             }
         }
         return m;
     }
     
-
+ 
     void dbProducer(Query q) {
         ASTQuery ast = getAST(q);
         if (ast.hasMetadata(Metadata.DB)) {

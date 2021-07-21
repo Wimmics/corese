@@ -1778,7 +1778,17 @@ public class Mappings extends PointerObject
     }
     
     public String getLink(String name) {
-        for (var url : getLinkList()) {
+        for (var url : getLinkList()) {           
+            if (url.contains(name)) {
+                return url;
+            }
+        }
+        return null;
+    }
+    
+    public String getLastLink(String name) {
+        for (int i = getLinkList().size()-1; i>=0; i--) {
+            var url = getLinkList().get(i);
             if (url.contains(name)) {
                 return url;
             }

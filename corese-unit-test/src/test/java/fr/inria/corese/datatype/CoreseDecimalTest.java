@@ -41,6 +41,18 @@ public class CoreseDecimalTest {
     }
 
     @Test
+    public void newInstanceIntTest() {
+        String number = "5";
+        int int_number = Integer.valueOf(number);
+
+        IDatatype corese_decimal = DatatypeMap.newDecimal(int_number);
+
+        assertEquals(int_number, corese_decimal.decimalValue().doubleValue(), 0);
+        assertEquals(int_number, corese_decimal.doubleValue(), 0);
+        assertEquals(int_number, corese_decimal.intValue());
+    }
+
+    @Test
     public void addDecimalDecimal() {
         String number = "1.22222222222222222222";
 

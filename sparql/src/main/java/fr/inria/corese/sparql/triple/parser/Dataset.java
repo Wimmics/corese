@@ -9,6 +9,7 @@ import java.util.List;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.DATASET;
+import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 /**
@@ -285,6 +286,24 @@ public class Dataset extends ASTObject {
             }
         }
         return DatatypeMap.createList(list);
+    }
+    
+    public Mapping call(Mapping m) {
+        if (getBinding() != null) {
+            // use case: share workflow Binding
+            if (m.getBind() == null) {
+                m.setBind(getBinding());
+            }
+        }
+        if (getContext() != null) {
+            Binding b = (Binding) m.getBind();
+            if (b == null) {
+                b = Binding.create();
+                m.setBind(b);
+            }
+            b.set(getContext());
+        }
+        return m;
     }
 
     public void setTemplateVisitor(Object vis) {

@@ -798,4 +798,12 @@ public class Binding implements Binder {
         this.context = context;
     }
     
+    public void set(Context c) {
+        setContext(c);
+        setAccessLevel(c.getLevel());
+        if (c.getAccessRight() != null) {
+            setAccessRight(c.getAccessRight());
+        }
+    }
+    
 }

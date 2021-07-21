@@ -342,6 +342,9 @@ public class ContextLog implements URLParam, LogKey {
 
     public JSONObject message(JSONObject json) {
         messageHeader(json);
+        if (getAST()!=null) {
+            json.put(REW, getAST().toString());
+        }
         // show last service that fail        
         messageFail(json);
         // missing triple in source selection 

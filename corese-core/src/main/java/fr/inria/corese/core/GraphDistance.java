@@ -103,31 +103,12 @@ public class GraphDistance {
                 break;
                 
             case DEFAULT:
-//                System.out.println("GD: " + label);
-//                System.out.println("GD label: " + closeLabel + " " + minLabel);
-//                System.out.println("GD name: " + closeName + " " + minName);
-
                 if (minName < minLabel) {
                     getJson().put(label, closeName);
                 } 
-                else {
+                else if (!closeLabel.equals(label)) {
                     getJson().put(label, closeLabel);
-                }
-                
-                // distance with namespace
-//                if (minName == 0) {
-//                    // same name in other namespace
-//                    getJson().put(label, closeName);
-//                }                
-//                else if (minLabel <= distance) {
-//                    getJson().put(label, closeLabel);
-//                } // distance with name
-//                else if (minName <= distance) {
-//                    getJson().put(label, closeName);
-//                }
-                
-                
-                
+                }                                                
         }              
     }
 

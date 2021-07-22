@@ -75,14 +75,6 @@ public class CoreseCalendar extends GregorianCalendar {
         return zone;
     }
 
-    void setSeconds(float f) {
-        this.set(Calendar.SECOND, (int) f);
-
-        String milli_string = String.format("%.3f", f);
-        int indexOfDecimal = milli_string.indexOf(".") + 1;
-        this.set(Calendar.MILLISECOND, Integer.valueOf(milli_string.substring(indexOfDecimal)));
-    }
-
     float getSeconds() {
         int sec = this.get(Calendar.SECOND);
         int mill_sec = this.get(Calendar.MILLISECOND);

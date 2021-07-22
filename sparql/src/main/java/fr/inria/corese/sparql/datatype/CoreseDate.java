@@ -5,18 +5,17 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.GregorianCalendar;
+import java.util.TimeZone;
 
 import org.eclipse.rdf4j.model.Literal;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.slf4j.Marker;
+import org.slf4j.MarkerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
-
-import java.util.TimeZone;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 
 /**
  * <p>Title: Corese</p>
@@ -91,7 +90,8 @@ public class CoreseDate extends CoreseDatatype {
     }
 
     public CoreseDecimal getSecond() {
-        return new CoreseDecimal(this.cal.getSeconds());
+        Double value = Double.valueOf(Float.toString(this.cal.getSeconds()));
+        return new CoreseDecimal(value);
     }
 
     void test(String label, String format) {
@@ -252,8 +252,7 @@ public class CoreseDate extends CoreseDatatype {
         }
         
         if (milli != 0){
-            cal.setTimeInMillis(cal.getTimeInMillis() + milli);
-            cal.setSeconds(milliF);
+            cal.set(Calendar.MILLISECOND, milli);
         }
         
         return cal;

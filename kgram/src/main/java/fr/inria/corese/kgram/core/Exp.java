@@ -2276,7 +2276,7 @@ public class Exp extends PointerObject
         addVariable(list, getEdge().getNode(0));
         addVariable(list, getEdge().getNode(1));
         if (! isPath()) {
-            addVariable(list, getEdge().getPredicate());
+            addVariable(list, getEdge().getProperty());
         }
     }
     

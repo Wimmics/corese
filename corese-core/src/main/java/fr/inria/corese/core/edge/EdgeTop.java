@@ -58,7 +58,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     }
     
     @Override
-    public Node getPredicate(){
+    public Node getProperty(){
         return getEdgeNode();
     }
 

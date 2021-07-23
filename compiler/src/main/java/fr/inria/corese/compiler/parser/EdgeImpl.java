@@ -100,7 +100,7 @@ public class EdgeImpl extends PointerObject implements Edge {
             case 0:
                 return getNode(0).getDatatypeValue();
             case 1:
-                return getPredicate().getDatatypeValue();
+                return getProperty().getDatatypeValue();
             default:
                 if (n <= nodes.size()) {
                     return getNode(n - 1).getDatatypeValue();
@@ -187,7 +187,7 @@ public class EdgeImpl extends PointerObject implements Edge {
     }
 
     @Override
-    public Node getPredicate() {
+    public Node getProperty() {
         if (edgeVariable == null) {
             return edgeNode;
         }

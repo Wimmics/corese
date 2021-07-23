@@ -97,8 +97,8 @@ public class EdgeInv extends PointerObject implements Edge{
     }
     
     @Override
-    public Node getPredicate() {
-        return edge.getPredicate();
+    public Node getProperty() {
+        return edge.getProperty();
     }
 
 

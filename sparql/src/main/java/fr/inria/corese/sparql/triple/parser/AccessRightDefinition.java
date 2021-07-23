@@ -225,7 +225,7 @@ public class AccessRightDefinition {
   
     // return null when there is no uri access right
     Byte getPredicate(Edge edge) {
-        return getPredicate().getAccess(edge.getPredicate());
+        return getPredicate().getAccess(edge.getProperty());
     }
     
     Byte getGraph(Edge edge) {

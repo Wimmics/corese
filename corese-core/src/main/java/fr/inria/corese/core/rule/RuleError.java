@@ -32,7 +32,7 @@ public class RuleError {
         
         if (isEdge()){
             for (Edge edge : getEdgeList()) {
-                sb.append(String.format("%s %s\n", edge.getPredicate(), edge.getNode(1)));
+                sb.append(String.format("%s %s\n", edge.getProperty(), edge.getNode(1)));
             }
             sb.append("\n");
         }

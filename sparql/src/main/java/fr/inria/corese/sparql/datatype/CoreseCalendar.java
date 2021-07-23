@@ -40,7 +40,8 @@ public class CoreseCalendar extends GregorianCalendar {
     }
 
     public CoreseCalendar duplicate() {
-        return (CoreseCalendar) clone();
+        return new CoreseCalendar(get(YEAR), get(MONTH), get(DAY_OF_MONTH), get(HOUR_OF_DAY), get(MINUTE), get(SECOND));
+        // return (CoreseCalendar) clone();
     }
 
     public CoreseCalendar duplicate(String tz) {

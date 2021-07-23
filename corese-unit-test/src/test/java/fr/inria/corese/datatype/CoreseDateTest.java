@@ -7,6 +7,7 @@ import com.ibm.icu.util.Calendar;
 import org.eclipse.rdf4j.model.Literal;
 import org.junit.Test;
 
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.CoreseCalendar;
 import fr.inria.corese.sparql.datatype.CoreseDate;
 import fr.inria.corese.sparql.datatype.CoreseDecimal;
@@ -53,6 +54,21 @@ public class CoreseDateTest {
     public void testGetSecond() {
         CoreseDate corese_dt = (CoreseDate) DatatypeMap.newDate("2021-07-20T10:00:00.12");
         assertEquals(new CoreseDecimal(0.12), corese_dt.getSecond());
+    }
+
+    @Test
+    public void w3c() {
+        IDatatype dt = DatatypeMap.newDate("2002-10-10T12:00:00");
+
+        IDatatype dt1 = DatatypeMap.newDate("2002-10-10T12:00:00-05:00");
+        IDatatype dt2 = DatatypeMap.newDate("2002-10-10T12:00:01-05:00");
+        IDatatype dt3 = DatatypeMap.newDate("2002-10-09T12:00:00-05:00");
+        IDatatype dt4 = DatatypeMap.newDate("2002-10-10T12:00:00");
+
+        assertEquals(false, dt.le(dt1).booleanValue());
+        assertEquals(false, dt.le(dt2).booleanValue());
+        assertEquals(false, dt.le(dt3).booleanValue());
+        assertEquals(true, dt.le(dt4).booleanValue());
     }
 
 }

@@ -27,6 +27,9 @@ import java.util.Collection;
 import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.w3c.dom.NodeList;
@@ -524,6 +527,16 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return null;
     }
 
+    public static IDatatype newDateNew() {
+        try {
+            return new CoreseDateTimeNew();
+        } catch (DatatypeConfigurationException e) {
+            e.printStackTrace();
+        }
+
+        return null;
+    }
+
     public static IDatatype newDate(String date) {
         try {
             return new CoreseDate(date);
@@ -533,10 +546,28 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return null;
     }
 
+    public static IDatatype newDateNew(String date) {
+        try {
+            return new CoreseDateNew(date);
+        } catch (DatatypeConfigurationException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
     public static IDatatype newDateTime(String date) {
         try {
             return new CoreseDateTime(date);
         } catch (CoreseDatatypeException e) {
+            e.printStackTrace();
+        }
+        return null;
+    }
+
+    public static IDatatype newDateTimeNew(String date) {
+        try {
+            return new CoreseDateTimeNew(date);
+        } catch (DatatypeConfigurationException e) {
             e.printStackTrace();
         }
         return null;
@@ -959,6 +990,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
 
     static CoreseDate getDate(IDatatype dt) {
         return (CoreseDate) dt;
+    }
+
+    static CoreseDateNew getDateNew(IDatatype dt) {
+        return (CoreseDateNew) dt;
     }
 
     public static IDatatype getTimezone(IDatatype dt) {

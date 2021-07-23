@@ -8,7 +8,6 @@ import org.eclipse.rdf4j.model.Literal;
 import org.junit.Test;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.CoreseCalendar;
 import fr.inria.corese.sparql.datatype.CoreseDate;
 import fr.inria.corese.sparql.datatype.CoreseDecimal;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -40,16 +39,6 @@ public class CoreseDateTest {
         assertEquals(corese_dt, corese_dt_2);
     }
 
-    @Test
-    public void testDuplicateCalendar() {
-        CoreseDate corese_dt = (CoreseDate) DatatypeMap.newDate("2021-07-21T08:08:08.4");
-
-        CoreseCalendar cal_1 = corese_dt.getCalendar();
-        CoreseCalendar cal_2 = cal_1.duplicate();
-
-        assertEquals(cal_1, cal_2);
-    }
-    
     @Test
     public void testGetSecond() {
         CoreseDate corese_dt = (CoreseDate) DatatypeMap.newDate("2021-07-20T10:00:00.12");

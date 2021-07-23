@@ -660,7 +660,7 @@ public class CoreseDatatype
     }
 
     @Override
-    public void setValue(String str) {
+    public void setValue(String str) throws CoreseDatatypeException {
     }
     
     @Override

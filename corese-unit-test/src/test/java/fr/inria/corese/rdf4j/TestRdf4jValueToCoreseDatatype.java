@@ -479,7 +479,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
     @Test
     public void convertDateTime() {
-        String value = "2021-06-17T07:12:19Z";
+        String value = "2021-06-17T07:12:19.0";
 
         // Build RDF4J date and time
         Literal rdf4j_date_time = rdf4j_factory.createLiteral(value, XSD.DATETIME);
@@ -496,7 +496,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
     @Test
     public void convertDateTimeMilisecond() {
-        String value = "2021-07-16T16:28:36.47766";
+        String value = "2021-07-16T16:28:36.477";
 
         // Build RDF4J date and time
         Literal rdf4j_date_time = rdf4j_factory.createLiteral(value, XSD.DATETIME);

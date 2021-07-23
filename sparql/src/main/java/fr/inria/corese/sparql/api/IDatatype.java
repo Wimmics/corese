@@ -436,7 +436,7 @@ public interface IDatatype
 
     void setDatatype(String uri);
 
-    void setValue(String str);
+    void setValue(String str) throws CoreseDatatypeException;
 
     void setValue(String str, int id, IStorage pmgr);
 

@@ -209,7 +209,7 @@ public class TestCoreseDatatypeToRdf4jValue {
 
     @Test
     public void convertDateTime() {
-        String value = "2021-06-17T07:12:19Z";
+        String value = "2021-06-17T07:12:19.0";
 
         // Build Corese date and time
         CoreseDateTime corese_date_time = (CoreseDateTime) DatatypeMap.newDateTime(value);
@@ -228,7 +228,7 @@ public class TestCoreseDatatypeToRdf4jValue {
     @Test
     public void convertDateTimeMilisecond() {
 
-        String value = "2021-07-16T16:28:36.47766";
+        String value = "2021-07-16T16:28:36.477";
 
         // Build Corese date and time
         CoreseDateTime corese_date_time = (CoreseDateTime) DatatypeMap.newDateTime(value);

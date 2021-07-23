@@ -35,11 +35,15 @@ public class CoreseDecimal extends CoreseDouble {
 	}
 
 	public CoreseDecimal(String value) throws CoreseDatatypeException {
+		this.checkNoExposant(value);
+		this.setValue(value);
+	}
+
+	private void checkNoExposant(String value) throws CoreseDatatypeException {
 		// no exponent in decimal:
 		if (value.indexOf("e") != -1 || value.indexOf("E") != -1) {
 			throw new CoreseDatatypeException("Decimal", value);
 		}
-		this.setValue(value);
 	}
 
 	public CoreseDecimal(double value) {
@@ -66,6 +70,10 @@ public class CoreseDecimal extends CoreseDouble {
 		return new CoreseDecimal(value);
 	}
 
+	public static CoreseDecimal create(String value) throws CoreseDatatypeException {
+		return new CoreseDecimal(value);
+	}
+
 	@Override
 	public void setValue(double value) {
 		super.setValue(value);
@@ -79,12 +87,13 @@ public class CoreseDecimal extends CoreseDouble {
 		this.bdValue = value;
 		this.setLabel(String.valueOf(bdValue));
 	}
-
+	
 	@Override
-	public void setValue(String value) {
+	public void setValue(String value) throws CoreseDatatypeException {
+		this.checkNoExposant(value);
 		super.setValue(Double.parseDouble(value));
 		this.bdValue = new BigDecimal(value);
-		this.setLabel(String.valueOf(bdValue));
+		this.setLabel(String.valueOf(value));
 	}
 
 	@Override

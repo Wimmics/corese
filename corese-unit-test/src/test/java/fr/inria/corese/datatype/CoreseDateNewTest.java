@@ -109,13 +109,13 @@ public class CoreseDateNewTest {
 
     @Test
     public void getters() throws DatatypeConfigurationException {
-        CoreseDateTimeNew date = (CoreseDateTimeNew) DatatypeMap.newDateTimeNew("2021-07-20T10:23:54.5-05:00");
+        CoreseDateTimeNew date = (CoreseDateTimeNew) DatatypeMap.newDateTimeNew("2021-07-20T10:23:54.005-05:00");
         assertEquals(DatatypeMap.newInstance(2021), date.getYear());
         assertEquals(DatatypeMap.newInstance(07), date.getMonth());
         assertEquals(DatatypeMap.newInstance(20), date.getDay());
         assertEquals(DatatypeMap.newInstance(10), date.getHour());
         assertEquals(DatatypeMap.newInstance(23), date.getMinute());
-        assertEquals(DatatypeMap.newDecimal(54.5), date.getSecond());
+        assertEquals(DatatypeMap.newDecimal(54.005), date.getSecond());
     }
 
     @Test

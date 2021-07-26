@@ -108,10 +108,10 @@ public class CoreseDateNew extends CoreseDatatype {
     }
 
     public CoreseDecimal getSecond() {
-        String second = String.valueOf(cal.getSecond());
-        String millisecond = String.valueOf(cal.getMillisecond());
+        int second = cal.getSecond();
+        int millisecond = cal.getMillisecond();
         try {
-            return new CoreseDecimal(String.format("%s.%s", second, millisecond));
+            return new CoreseDecimal(String.format("%d.%03d", second, millisecond));
         } catch (CoreseDatatypeException e) {
             e.printStackTrace();
         }

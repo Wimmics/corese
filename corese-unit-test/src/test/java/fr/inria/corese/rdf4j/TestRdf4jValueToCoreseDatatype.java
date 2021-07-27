@@ -15,7 +15,7 @@ import org.junit.Test;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.CoreseBlankNode;
 import fr.inria.corese.sparql.datatype.CoreseBoolean;
-import fr.inria.corese.sparql.datatype.CoreseDateOld;
+import fr.inria.corese.sparql.datatype.CoreseDate;
 import fr.inria.corese.sparql.datatype.CoreseDay;
 import fr.inria.corese.sparql.datatype.CoreseDecimal;
 import fr.inria.corese.sparql.datatype.CoreseDouble;
@@ -469,7 +469,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Convert RDF4J date to Corese date
         IDatatype corese_date_value = Rdf4jValueToCoreseDatatype.convert(rdf4j_date);
-        CoreseDateOld corese_date = (CoreseDateOld) corese_date_value;
+        CoreseDate corese_date = (CoreseDate) corese_date_value;
 
         // Checks
         assertEquals(value, corese_date.getStringValue());
@@ -486,7 +486,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Convert RDF4J date and time to Corese date and time
         IDatatype corese_date_time_value = Rdf4jValueToCoreseDatatype.convert(rdf4j_date_time);
-        CoreseDateOld corese_date_time = (CoreseDateOld) corese_date_time_value;
+        CoreseDate corese_date_time = (CoreseDate) corese_date_time_value;
 
         // Checks
         assertEquals(value, corese_date_time.getStringValue());

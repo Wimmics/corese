@@ -83,7 +83,7 @@ public class EventManager {
         IDatatype dtserv = getService(c);
         if (dtserv != null) {
            getCountMap().incr(dtserv);
-           getDateMap().set(dtserv, DatatypeMap.newDateOld());
+           getDateMap().set(dtserv, DatatypeMap.newDate());
         }
 
         IDatatype dthost = c.get(Context.STL_REMOTE_HOST);

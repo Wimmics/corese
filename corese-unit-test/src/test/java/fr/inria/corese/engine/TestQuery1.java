@@ -25,7 +25,6 @@ import fr.inria.corese.core.util.QueryManager;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.datatype.RDF;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.corese.sparql.api.IDatatype;

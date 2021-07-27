@@ -28,7 +28,7 @@ public class ZeroaryFunction extends TermEval {
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         switch (oper()){
             case ExprType.RANDOM:   return CoreseDouble.create(Math.random());
-            case ExprType.NOW:      return DatatypeMap.newDateOld();
+            case ExprType.NOW:      return DatatypeMap.newDate();
         } 
         return null;
     }

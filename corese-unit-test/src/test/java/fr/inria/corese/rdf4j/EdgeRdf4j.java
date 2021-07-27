@@ -2,7 +2,6 @@ package fr.inria.corese.rdf4j;
 
 import static org.junit.Assert.assertEquals;
 
-import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Value;
 import org.junit.BeforeClass;
 import org.junit.Test;

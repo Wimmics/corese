@@ -39,11 +39,11 @@ public class Earl {
 	}
 	
 	void define(String test, boolean res){
-		fmt.format(pattern, test, result(res), DatatypeMap.newDateOld().toSparql());
+		fmt.format(pattern, test, result(res), DatatypeMap.newDate().toSparql());
 	}
 	
 	void  skip(String test){
-		fmt.format(pattern, test, "earl:untested", DatatypeMap.newDateOld().toSparql());
+		fmt.format(pattern, test, "earl:untested", DatatypeMap.newDate().toSparql());
 	}
 	
 	String result(boolean res){

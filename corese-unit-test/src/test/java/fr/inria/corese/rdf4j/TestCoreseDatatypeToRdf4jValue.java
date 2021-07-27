@@ -13,8 +13,8 @@ import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.junit.Test;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.CoreseDateOld;
-import fr.inria.corese.sparql.datatype.CoreseDateTimeOld;
+import fr.inria.corese.sparql.datatype.CoreseDate;
+import fr.inria.corese.sparql.datatype.CoreseDateTime;
 import fr.inria.corese.sparql.datatype.CoreseDay;
 import fr.inria.corese.sparql.datatype.CoreseGenericInteger;
 import fr.inria.corese.sparql.datatype.CoreseLiteral;
@@ -194,7 +194,7 @@ public class TestCoreseDatatypeToRdf4jValue {
         String value = "2021-06-16";
 
         // Build Corese date
-        CoreseDateOld corese_date = (CoreseDateOld) DatatypeMap.newDateOld(value);
+        CoreseDate corese_date = (CoreseDate) DatatypeMap.newDate(value);
 
         // Convert Corese date to RDF4J date
         Value rdf4j_date_value = CoreseDatatypeToRdf4jValue.convert(corese_date);
@@ -212,7 +212,7 @@ public class TestCoreseDatatypeToRdf4jValue {
         String value = "2021-06-17T07:12:19.0";
 
         // Build Corese date and time
-        CoreseDateTimeOld corese_date_time = (CoreseDateTimeOld) DatatypeMap.newDateTimeOld(value);
+        CoreseDateTime corese_date_time = (CoreseDateTime) DatatypeMap.newDateTime(value);
 
         // Convert Corese date to RDF4J date
         Value rdf4j_date_time_value = CoreseDatatypeToRdf4jValue.convert(corese_date_time);
@@ -231,11 +231,11 @@ public class TestCoreseDatatypeToRdf4jValue {
         String value = "2021-07-16T16:28:36.477";
 
         // Build Corese date and time
-        CoreseDateTimeOld corese_date_time = (CoreseDateTimeOld) DatatypeMap.newDateTimeOld(value);
+        CoreseDateTime corese_date_time = (CoreseDateTime) DatatypeMap.newDateTime(value);
 
         // Convert Corese date to RDF4J date
         Value rdf4j_date_time_value = CoreseDatatypeToRdf4jValue.convert(corese_date_time);
-        
+
         assertEquals(value, corese_date_time.getLabel());
         assertEquals(value, rdf4j_date_time_value.stringValue());
     }
@@ -649,7 +649,7 @@ public class TestCoreseDatatypeToRdf4jValue {
         String value = "2021-06-16";
 
         // Build Corese date
-        CoreseDateOld corese_date = (CoreseDateOld) DatatypeMap.newDateOld(value);
+        CoreseDate corese_date = (CoreseDate) DatatypeMap.newDate(value);
 
         // Convert Corese date to RDF4J date
         Value rdf4j_date_value = corese_date.getRdf4jValue();

@@ -985,7 +985,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         if (!dt.isDate()) {
             return null;
         }
-        return getDateOld(dt).getTZ();
+        return getDate(dt).getTZ();
     }
 
     static CoreseDateOld getDateOld(IDatatype dt) {
@@ -1000,49 +1000,49 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         if (!dt.isDate()) {
             return null;
         }
-        return getDateOld(dt).getTimezone();
+        return getDate(dt).getTimezone();
     }
 
     public static IDatatype getYear(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDateOld(dt).getYear();
+        return getDate(dt).getYear();
     }
 
     public static IDatatype getMonth(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDateOld(dt).getMonth();
+        return getDate(dt).getMonth();
     }
 
     public static IDatatype getDay(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDateOld(dt).getDay();
+        return getDate(dt).getDay();
     }
 
     public static IDatatype getHour(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDateOld(dt).getHour();
+        return getDate(dt).getHour();
     }
 
     public static IDatatype getMinute(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDateOld(dt).getMinute();
+        return getDate(dt).getMinute();
     }
 
     public static IDatatype getSecond(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDateOld(dt).getSecond();
+        return getDate(dt).getSecond();
     }
 
     // for literal only

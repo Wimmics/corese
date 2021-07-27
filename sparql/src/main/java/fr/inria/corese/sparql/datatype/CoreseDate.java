@@ -40,12 +40,13 @@ public class CoreseDate extends CoreseDatatype {
         }
     }
 
-    public static CoreseDateOld today() {
-        try {
-            return new CoreseDateOld(TODAY);
-        } catch (CoreseDatatypeException e) {
-            return null; // never happens
-        }
+    public static CoreseDate today() {
+            try {
+                return new CoreseDate(TODAY);
+            } catch (DatatypeConfigurationException e) {
+                e.printStackTrace();
+                return null; // never happens
+            }
     }
 
     @Override
@@ -89,23 +90,23 @@ public class CoreseDate extends CoreseDatatype {
     }
 
     public IDatatype getYear() {
-        return DatatypeMap.newInstance(this.cal.getYear(), RDF.xsdint);
+        return DatatypeMap.newInstance(this.cal.getYear(), RDF.xsdinteger);
     }
 
     public IDatatype getMonth() {
-        return DatatypeMap.newInstance(this.cal.getMonth(), RDF.xsdint);
+        return DatatypeMap.newInstance(this.cal.getMonth(), RDF.xsdinteger);
     }
 
     public IDatatype getDay() {
-        return DatatypeMap.newInstance(this.cal.getDay(), RDF.xsdint);
+        return DatatypeMap.newInstance(this.cal.getDay(), RDF.xsdinteger);
     }
 
     public IDatatype getHour() {
-        return DatatypeMap.newInstance(this.cal.getHour(), RDF.xsdint);
+        return DatatypeMap.newInstance(this.cal.getHour(), RDF.xsdinteger);
     }
 
     public IDatatype getMinute() {
-        return DatatypeMap.newInstance(this.cal.getMinute(), RDF.xsdint);
+        return DatatypeMap.newInstance(this.cal.getMinute(), RDF.xsdinteger);
     }
 
     public CoreseDecimal getSecond() {

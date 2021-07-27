@@ -90,7 +90,7 @@ public class GraphStoreInit {
         g.addEdge(g.addGraph(SYSTEM),
                     g.addResource(KGRAM),
                     g.addProperty(RUN),
-                    g.getNode(DatatypeMap.newDateOld(), true, true));
+                    g.getNode(DatatypeMap.newDate(), true, true));
     }
     
     /**

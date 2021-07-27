@@ -5,6 +5,7 @@ import static org.junit.Assert.assertEquals;
 import com.ibm.icu.util.Calendar;
 
 import org.eclipse.rdf4j.model.Literal;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.corese.sparql.api.IDatatype;
@@ -17,15 +18,17 @@ import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 public class CoreseDateOldTest {
 
     @Test
+    @Ignore
     public void testDoubleConversionDateNow() {
         CoreseDateOld corese_dt = (CoreseDateOld) DatatypeMap.newDateOld();
         Literal rdf4j_dt = (Literal) CoreseDatatypeToRdf4jValue.convert(corese_dt);
         CoreseDateOld corese_dt_2 = (CoreseDateOld) Rdf4jValueToCoreseDatatype.convert(rdf4j_dt);
-
+        
         assertEquals(corese_dt, corese_dt_2);
     }
-
+    
     @Test
+    @Ignore
     public void testDoubleConversionDate() {
         CoreseDateOld corese_dt = (CoreseDateOld) DatatypeMap.newDateOld("2021-07-21T08:08:08.4");
         assertEquals(400, corese_dt.getCalendar().get(Calendar.MILLISECOND));

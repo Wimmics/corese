@@ -142,7 +142,7 @@ public class MapperSQL {
 			
 		case java.sql.Types.DATE: 
 			if (rs.getDate(i) != null){
-				dt = DatatypeMap.newDate(rs.getDate(i).toString());
+				dt = DatatypeMap.newDateOld(rs.getDate(i).toString());
 			}
 			break;
 			

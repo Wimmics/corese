@@ -43,7 +43,7 @@ public class ResultMessage {
     public ResultMessage(Graph g, Context ct, ContextLog log) {
         if (ct == null) {
             ct = new Context();
-            ct.set(URLParam.DATE, DatatypeMap.newDate());
+            ct.set(URLParam.DATE, DatatypeMap.newDateOld());
         }
         setContext(ct);
         setLog(log);

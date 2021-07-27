@@ -987,7 +987,7 @@ public class Graph extends GraphObject implements
             sb.appendPNL("kg:nbSubject  ", getNodeManager().size());
             sb.appendPNL("kg:nbProperty  ", getNodeManager().count());
         }
-        sb.appendPNL("kg:date     ", DatatypeMap.newDate());
+        sb.appendPNL("kg:date     ", DatatypeMap.newDateOld());
 
         sb.close();
 

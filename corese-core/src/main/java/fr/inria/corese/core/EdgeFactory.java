@@ -323,7 +323,7 @@ public class EdgeFactory {
 
     // with time stamp
     public Edge timeCreate(Node source, Node subject, Node predicate, Node value) {
-        Node time = graph.getNode(DatatypeMap.newDate(), true, true);
+        Node time = graph.getNode(DatatypeMap.newDateOld(), true, true);
         Edge edge = new EdgeImpl(source, predicate, subject, value, time);
         return edge;
     }

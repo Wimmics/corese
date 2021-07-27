@@ -518,38 +518,47 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return newResource(ns + name);
     }
 
-    public static IDatatype newDate() {
+    public static IDatatype newDateOld() {
         try {
-            return new CoreseDateTime();
+            return new CoreseDateTimeOld();
         } catch (CoreseDatatypeException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static IDatatype newDateNew() {
+    public static IDatatype newDate() {
         try {
-            return new CoreseDateTimeNew();
+            return new CoreseDateTime();
         } catch (DatatypeConfigurationException e) {
             e.printStackTrace();
         }
 
+        return null;
+    }
+
+    public static IDatatype newDateOld(String date) {
+        try {
+            return new CoreseDateOld(date);
+        } catch (CoreseDatatypeException e) {
+            e.printStackTrace();
+        }
         return null;
     }
 
     public static IDatatype newDate(String date) {
         try {
             return new CoreseDate(date);
-        } catch (CoreseDatatypeException e) {
+        } catch (DatatypeConfigurationException e) {
             e.printStackTrace();
         }
         return null;
     }
 
-    public static IDatatype newDateNew(String date) {
+    public static IDatatype newDateTimeOld(String date) {
         try {
-            return new CoreseDateNew(date);
-        } catch (DatatypeConfigurationException e) {
+            return new CoreseDateTimeOld(date);
+        } catch (CoreseDatatypeException e) {
             e.printStackTrace();
         }
         return null;
@@ -558,15 +567,6 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     public static IDatatype newDateTime(String date) {
         try {
             return new CoreseDateTime(date);
-        } catch (CoreseDatatypeException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static IDatatype newDateTimeNew(String date) {
-        try {
-            return new CoreseDateTimeNew(date);
         } catch (DatatypeConfigurationException e) {
             e.printStackTrace();
         }
@@ -985,64 +985,64 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         if (!dt.isDate()) {
             return null;
         }
-        return getDate(dt).getTZ();
+        return getDateOld(dt).getTZ();
+    }
+
+    static CoreseDateOld getDateOld(IDatatype dt) {
+        return (CoreseDateOld) dt;
     }
 
     static CoreseDate getDate(IDatatype dt) {
         return (CoreseDate) dt;
     }
 
-    static CoreseDateNew getDateNew(IDatatype dt) {
-        return (CoreseDateNew) dt;
-    }
-
     public static IDatatype getTimezone(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDate(dt).getTimezone();
+        return getDateOld(dt).getTimezone();
     }
 
     public static IDatatype getYear(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDate(dt).getYear();
+        return getDateOld(dt).getYear();
     }
 
     public static IDatatype getMonth(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDate(dt).getMonth();
+        return getDateOld(dt).getMonth();
     }
 
     public static IDatatype getDay(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDate(dt).getDay();
+        return getDateOld(dt).getDay();
     }
 
     public static IDatatype getHour(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDate(dt).getHour();
+        return getDateOld(dt).getHour();
     }
 
     public static IDatatype getMinute(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDate(dt).getMinute();
+        return getDateOld(dt).getMinute();
     }
 
     public static IDatatype getSecond(IDatatype dt) {
         if (!dt.isDate()) {
             return null;
         }
-        return getDate(dt).getSecond();
+        return getDateOld(dt).getSecond();
     }
 
     // for literal only

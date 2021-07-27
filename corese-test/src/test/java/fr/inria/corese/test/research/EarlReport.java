@@ -50,7 +50,7 @@ public class EarlReport {
 
     EarlReport(String path) {
         sb = new StringBuilder();
-        sb.append(String.format(header, DatatypeMap.newDate()));
+        sb.append(String.format(header, DatatypeMap.newDateOld()));
         this.path = path;
     }
 

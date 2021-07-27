@@ -243,7 +243,7 @@ public class TripleStore implements URLParam {
             double time = (d2.getTime() - d1.getTime()) /1000.0;
             
             c.set(URLParam.TIME, DatatypeMap.newInstance(time));
-            c.set(URLParam.DATE, DatatypeMap.newDate());
+            c.set(URLParam.DATE, DatatypeMap.newDateOld());
             
             // generate log, explanation and message as LinkedResult in map
             tsl.log(map);

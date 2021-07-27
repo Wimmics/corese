@@ -1,311 +1,61 @@
 package fr.inria.corese.sparql.datatype;
 
-import java.text.ParseException;
-import java.text.SimpleDateFormat;
-import java.util.Calendar;
-import java.util.Date;
+import java.math.BigDecimal;
 import java.util.GregorianCalendar;
-import java.util.TimeZone;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeConstants;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.eclipse.rdf4j.model.Literal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Marker;
-import org.slf4j.MarkerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
 
 /**
- * <p>Title: Corese</p>
- * <p>Description: A Semantic Search Engine</p>
- * <p>Copyright: Copyright INRIA (c) 2007</p>
- * <p>Company: INRIA</p>
- * <p>Project: Acacia</p>
- * <br>
  * An implementation of the xsd:date datatype used by Corese
- * <br>
- *
- * @author Olivier Savoie
  */
 public class CoreseDate extends CoreseDatatype {
 
-    /**
-     * logger from log4j
-     */
-    private static Logger logger = LoggerFactory.getLogger(CoreseDate.class);
-    private Marker fatal = MarkerFactory.getMarker("FATAL");
-    static int code = DATE;
-    static final String TODAY = "today";
-    public static final String MINUS_BOUND = "-14:00";
-    public static final String PLUS_BOUND  = "+14:00";
-    protected CoreseCalendar cal = null;
-    protected String normalizedLabel = "";
-    static final CoreseURI datatype = new CoreseURI(RDF.xsddate);
+    private XMLGregorianCalendar cal;
+    private static final String TODAY = "today";
+    private static int code = DATE;
+    private static final CoreseURI datatype = new CoreseURI(RDF.xsddate);
 
-    public CoreseDate() throws CoreseDatatypeException {
-         this(new CoreseCalendar());
-   }
-    
-    public CoreseDate(CoreseCalendar cal){
+    public CoreseDate() throws DatatypeConfigurationException {
+        this.cal = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
+    }
+
+    public CoreseDate(XMLGregorianCalendar cal) {
         this.cal = cal;
-        normalizedLabel = toString(cal);
     }
 
-    public CoreseDate(String label) throws CoreseDatatypeException {
-        this(label.equals(TODAY) ? new CoreseCalendar() : parse(label));
+    public CoreseDate(String label) throws DatatypeConfigurationException {
+        if (label.equals(TODAY)) {
+            this.cal = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
+        } else {
+            this.cal = DatatypeFactory.newInstance().newXMLGregorianCalendar(label);
+        }
     }
-    
+
+    public static CoreseDateOld today() {
+        try {
+            return new CoreseDateOld(TODAY);
+        } catch (CoreseDatatypeException e) {
+            return null; // never happens
+        }
+    }
+
     @Override
     public int getCode() {
         return code;
     }
-    
-     @Override 
-    public boolean isDate(){
-        return true;
-    }
-
-    public IDatatype getYear() {
-        return DatatypeMap.newInstance(cal.theYear());
-    }
-
-    public IDatatype getMonth() {
-        return DatatypeMap.newInstance(cal.get(GregorianCalendar.MONTH) + 1);
-    }
-
-    public IDatatype getDay() {
-        return DatatypeMap.newInstance(cal.get(GregorianCalendar.DAY_OF_MONTH));
-    }
-
-    public IDatatype getHour() {
-        int hour = cal.get(GregorianCalendar.HOUR_OF_DAY);
-        return DatatypeMap.newInstance(hour);
-    }
-
-    public IDatatype getMinute() {
-        int min = cal.get(GregorianCalendar.MINUTE);
-        return DatatypeMap.newInstance(min);
-    }
-
-    public CoreseDecimal getSecond() {
-        Double value = Double.valueOf(Float.toString(this.cal.getSeconds()));
-        return new CoreseDecimal(value);
-    }
-
-    void test(String label, String format) {
-        try {
-            SimpleDateFormat df = new SimpleDateFormat(format);
-            Date date = df.parse(label);
-            String buf = df.format(date);
-            logger.debug("** date " + buf + " " + date);
-        } catch (ParseException e) {
-            logger.error(fatal, e.getMessage());
-        } catch (Exception e) {
-            logger.error(fatal, e.getMessage());
-        }
-    }
 
     @Override
-    public IDatatype getDatatype() {
-        return datatype;
-    }
-
-    /**
-     * Negative years: "-1-10-12"^^xsd:date represents year -1 year 0 is not a
-     * correct lexical date (http://www.w3.org/TR/xmlschema-2/#dateTime) in this
-     * implementation it is considered as year +1
-     */
-    static CoreseCalendar parse(String date) throws CoreseDatatypeException {
-        boolean Z = false;
-        boolean isTime = false;
-        String zone = null;
-
-        if (date.endsWith("Z")) {
-            Z = true;
-            date = date.substring(0, date.length() - 1);
-        }
-        
-        String[] items = date.split("T");
-        if (items.length == 0) {
-            throw new CoreseDatatypeException("xsd:dateTime", date);
-        }
-        String thedate = items[0];
-
-        boolean bp = false;
-        if (thedate.startsWith("-")) {
-            // Negative year Before Present
-            bp = true;
-            thedate = thedate.substring(1);
-        }
-
-        String[] elem = thedate.split("-");
-        if (elem.length != 3) {
-            throw new CoreseDatatypeException("xsd:dateTime", date);
-        }
-
-        int year = Integer.parseInt(elem[0]);
-
-        if (year == 0) {
-            bp = true;
-        }
-
-        int month = Integer.parseInt(elem[1]) -1;
-
-        int ind = elem[2].indexOf("+");
-        if (ind != -1) {
-            // "2006-08-23+00:00"  skip the numbers ...
-            zone = elem[2].substring(ind);
-            elem[2] = elem[2].substring(0, ind);
-        }
-
-        int day = Integer.parseInt(elem[2]);
-        
-        //cal.setNum(num);
-
-        
-        int[] atime = new int[3];
-        int milli = 0;
-        Float milliF = (float)0;
-        
-        if (items.length == 2) { // parse time : 12:34:05
-            isTime = true;
-
-            // [-]CCYY-MM-DD T hh:mm:ss[Z|(+|-)hh:mm]
-            // time :  hh:mm:ss 
-            // zone : [Z|(+|-)hh:mm]
-
-            String strtime = items[1];
-
-            int size = 8;
-
-            if (strtime.length() > 9 && strtime.charAt(8) == '.') {
-                // check milliseconds:  12:13:14.56
-                // set size as length of time + ms
-                for (int i = 9; i < strtime.length(); i++) {
-                    char next = strtime.charAt(i);
-
-                    if (!(next >= '0' && next <= '9')) {
-                        break;
-                    } else {
-                        size = i + 1;
-                    }
-                }
-            }
-
-            String time = strtime.substring(0, size);
-            String[] thetime = time.split(":");
-
-            int tt;
-                      
-            for (int i = 0; i < thetime.length; i++) {
-                try {
-                    tt = Integer.parseInt(thetime[i]);
-                    // set integer number of sec
-                    atime[i] = tt;
-                } catch (Exception e) {
-                    if (i == 2) {
-                        // there may be a float number of seconds : 12:34:05.5
-                        milliF = Float.parseFloat(thetime[i]);
-
-                        // set integer number of sec
-                        atime[2] = milliF.intValue();
-                        
-                        // set integer number of millisec
-                        String milliF_string = String.format("%.3f", milliF);
-                        int indexOfDecimal = milliF_string.indexOf(".") + 1;
-                        milli = Integer.valueOf(milliF_string.substring(indexOfDecimal));
-                    } else {
-                        throw new CoreseDatatypeException("xsd:dateTime", date);
-                    }
-                }
-            }
-            
-            //System.out.println("hour1: " + cal.get(Calendar.HOUR_OF_DAY));
-            zone = strtime.substring(size, strtime.length());
-        }
-        
-        CoreseCalendar cal;
-        if (isTime){
-            cal = new CoreseCalendar(year, month, day, atime[0], atime[1], atime[2]);
-        }
-        else {
-             cal = new CoreseCalendar(year, month, day);
-        }
-        
-        if (bp) {
-            cal.set(GregorianCalendar.ERA, GregorianCalendar.BC);
-        }
-        
-        cal.setZ(Z);
-        
-        if (zone != null && zone.length() > 0) {
-            // 2002-10-10T12:00:00-05:00 = 2002-10-10T17:00:00Z, five hours later that GMT+00:00
-            cal.setDZone(zone);
-            cal.setTimeZone(TimeZone.getTimeZone("GMT" + zone));
-            cal.setZone(true);
-        } 
-        else if (Z) {
-            cal.setDZone("Z");
-            cal.setTimeZone(TimeZone.getTimeZone("GMT+00:00"));
-        }
-        
-        if (milli != 0){
-            cal.set(Calendar.MILLISECOND, milli);
-        }
-        
-        return cal;
-    }
-
-    public IDatatype getTZ() {
-        return DatatypeMap.newLiteral(cal.getDZone());
-    }
-
-    public IDatatype getTimezone() {
-        String str = cal.getDZone();
-        if (str == "") {
-            return null;
-        }
-        if (str.equals("Z")) {
-            return DatatypeMap.newInstance("PT0S", RDF.xsddaytimeduration);
-        }
-        String[] zone = str.split(":");
-        String item = zone[0];
-        String sign = "+";
-        if (item.startsWith("-")) {
-            sign = "-";
-        }
-        item = item.substring(1);
-        if (item.startsWith("0")) {
-            item = item.substring(1);
-        }
-        String res = sign + "PT" + item + "H";
-        return DatatypeMap.newInstance(res, RDF.xsddaytimeduration);
-    }
-
-    public CoreseCalendar getCalendar() {
-        return cal;
-    }
-    
-    public CoreseCalendar getCalendar(String zone) {
-        return getCalendar().duplicate(zone);
-    }
-
-    public int getRawOffset() {
-        return getCalendar().getTimeZone().getRawOffset();
-    }
-    
-    public boolean isZone(){
-        return getCalendar().isZone();
-    }
-
-    long getTimeInMillis() {
-        return getCalendar().getTimeInMillis();
-    }
-    
-    long getTimeInMillis(String zone) {
-        return getCalendar(zone).getTimeInMillis();
+    public boolean isDate() {
+        return true;
     }
 
     @Override
@@ -314,210 +64,178 @@ public class CoreseDate extends CoreseDatatype {
     }
 
     @Override
-    public int compare(IDatatype iod) throws CoreseDatatypeException {
-        switch (iod.getCode()) {
-            case DATE:
-            case DATETIME:
-                CoreseDate dt = (CoreseDate) iod;
-                long l1 = getCalendar().getTimeInMillis();
-                long l2 = dt.getCalendar().getTimeInMillis();
-                return Long.compare(l1, l2);
-        }
-        throw failure();
+    public IDatatype getDatatype() {
+        return datatype;
     }
 
-    /**
-     *
-     * C.Otherwise, if P contains a time zone and Q does not, compare as
-     * follows:
-     *
-     * P < Q if P < (Q with time zone +14:00) 
-     * P > Q if P > (Q with time zone -14:00) 
-     * P <> Q otherwise, that is, 
-     * if (Q with time zone +14:00) < P < (Q with time zone -14:00)
-     *
-     * D. Otherwise, if P does not contain a time zone and Q does, compare as
-     * follows:
-     *
-     * P < Q if (P with time zone -14:00) < Q. 
-     * P > Q if (P with time zone +14:00) > Q. 
-     * P <> Q otherwise, that is, 
-     * if (P with time zone +14:00) < Q < (P with time zone -14:00)
-     */
     @Override
-    public boolean less(IDatatype iod) throws CoreseDatatypeException {
-      switch (iod.getCode()) {
-            case DATE:
-            case DATETIME:
-                check(iod);
-                CoreseDate dt = (CoreseDate) iod;
-                
-                if (isZone() == dt.isZone()){
-                    return getTimeInMillis() < dt.getTimeInMillis();
-                }
-                else if (isZone()){
-                    return getTimeInMillis() < dt.getTimeInMillis(PLUS_BOUND);                    
-                }
-                else {
-                    return getTimeInMillis(MINUS_BOUND) < dt.getTimeInMillis();
-                }
-        }
-        throw failure();
+    public String getLabel() {
+        return this.cal.toString();
     }
-    
-    
-    @Override
-     public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
-      switch (iod.getCode()) {
-            case DATE:
-            case DATETIME:
-                check(iod);
-                CoreseDate dt = (CoreseDate) iod;
-                
-                if (isZone() == dt.isZone()){
-                    return getTimeInMillis() <= dt.getTimeInMillis();
-                }
-                else if (isZone()){
-                    return getTimeInMillis() <= dt.getTimeInMillis(PLUS_BOUND);                    
-                }
-                else {
-                    return getTimeInMillis(MINUS_BOUND) <= dt.getTimeInMillis();
-                }               
-        }
-        throw failure();
-    }
-    
-        @Override
-    public boolean greater(IDatatype iod) throws CoreseDatatypeException {
-        switch (iod.getCode()) {
-            case DATE:
-            case DATETIME:
-                check(iod);
-                CoreseDate dt = (CoreseDate) iod;
-                
-                if (isZone() == dt.isZone()){
-                    return getTimeInMillis() > dt.getTimeInMillis();
-                }
-                else if (isZone()){
-                    return getTimeInMillis() > dt.getTimeInMillis(MINUS_BOUND);
-                }
-                else {
-                    return getTimeInMillis(PLUS_BOUND) > dt.getTimeInMillis();
-                }
-        }
-        throw failure();
-    }
-
-    
-    @Override
-    public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
-        switch (iod.getCode()) {
-            case DATE:
-            case DATETIME:
-                check(iod);
-                CoreseDate dt = (CoreseDate) iod;
-                
-                if (isZone() == dt.isZone()){
-                    return getTimeInMillis() >= dt.getTimeInMillis();
-                }
-                else if (isZone()){
-                    return getTimeInMillis() >= dt.getTimeInMillis(MINUS_BOUND);
-                }
-                else {
-                    return getTimeInMillis(PLUS_BOUND) >= dt.getTimeInMillis();
-                }               
-        }
-        throw failure();
-    }
-
 
     @Override
     public String getNormalizedLabel() {
-        return getLabel();
+        return this.getLabel();
     }
-    
+
     @Override
-    public String getLabel() {
-        return normalizedLabel;
+    public String getLowerCaseLabel() {
+        return this.getLabel();
     }
 
-    public static CoreseDate today() {
-        try {
-            return new CoreseDate(TODAY);
-        } catch (CoreseDatatypeException e) {
-            return null; // never happens
-        }
+    @Override
+    public Literal getRdf4jValue() {
+        return CoreseDatatypeToRdf4jValue.convertLiteral(this);
     }
 
-    public static String toString(CoreseCalendar cal) {
-        int day = cal.get(Calendar.DAY_OF_MONTH);
-        int month = cal.get(Calendar.MONTH) + 1;
-        int year = cal.theYear();
-        String res = Integer.toString(year) + "-";
-        if (month < 10) {
-            res += "0";
+    public IDatatype getYear() {
+        return DatatypeMap.newInstance(this.cal.getYear(), RDF.xsdint);
+    }
+
+    public IDatatype getMonth() {
+        return DatatypeMap.newInstance(this.cal.getMonth(), RDF.xsdint);
+    }
+
+    public IDatatype getDay() {
+        return DatatypeMap.newInstance(this.cal.getDay(), RDF.xsdint);
+    }
+
+    public IDatatype getHour() {
+        return DatatypeMap.newInstance(this.cal.getHour(), RDF.xsdint);
+    }
+
+    public IDatatype getMinute() {
+        return DatatypeMap.newInstance(this.cal.getMinute(), RDF.xsdint);
+    }
+
+    public CoreseDecimal getSecond() {
+        if (this.cal.getFractionalSecond() == null) {
+            return new CoreseDecimal(this.cal.getSecond());
         }
-        res += Integer.toString(month) + "-";
-        if (day < 10) {
-            res += "0";
-        }
-        res += Integer.toString(day);
-        int hour = cal.get(Calendar.HOUR_OF_DAY);
-        int min = cal.get(Calendar.MINUTE);
-        int sec = cal.get(Calendar.SECOND);
-        String time = "";
-        if (hour > 0 || min > 0 || sec > 0 || cal.getSeconds() > 0) {
+        return new CoreseDecimal(BigDecimal.valueOf(this.cal.getSecond()).add(this.cal.getFractionalSecond()));
+    }
 
-            if (hour < 10) {
-                time += "0";
-            }
-            time += hour + ":";
-
-            if (min < 10) {
-                time += "0";
-            }
-            time += min + ":";
-
-            if (cal.getSeconds() > 0) {
-                // float number of sec
-                if (cal.getSeconds() < 10) {
-                    time += "0";
-                }
-                time += cal.getSeconds();
+    public IDatatype getTZ() {
+        if (cal.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
+            return DatatypeMap.newLiteral("");
+        } else if (cal.getTimezone() == 0) {
+            return DatatypeMap.newLiteral("Z");
+        } else {
+            int tz = cal.getTimezone() / 60;
+            String result;
+            if (tz > 0) {
+                result = String.format("+%02d:00", tz);
             } else {
-                if (sec < 10) {
-                    time += "0";
-                }
-                time += sec;
+                result = String.format("%03d:00", tz);
             }
+            return DatatypeMap.newLiteral(result);
+        }
+    }
 
-            res += "T" + time;
+    public IDatatype getTimezone() {
+        if (cal.getTimezone() == DatatypeConstants.FIELD_UNDEFINED) {
+            return null;
+        } else if (cal.getTimezone() == 0) {
+            return DatatypeMap.newInstance("PT0S", RDF.xsddaytimeduration);
+        } else {
+            int tz = cal.getTimezone() / 60;
+            String result;
+            if (tz > 0) {
+                result = String.format("+PT%dH", tz);
+            } else {
+                result = String.format("-PT%dH", Math.abs(tz));
+            }
+            return DatatypeMap.newInstance(result, RDF.xsddaytimeduration);
         }
 
-        if (cal.getZ()) {
-            res += "Z";
-        } else if (cal.getDZone() != null) {
-            res += cal.getDZone();
+    }
+
+    public XMLGregorianCalendar getCalendar() {
+        return cal;
+    }
+
+    int compare(XMLGregorianCalendar cal1, XMLGregorianCalendar cal2) throws CoreseDatatypeException {
+        int res = cal1.compare(cal2);
+        if (res == DatatypeConstants.INDETERMINATE) {
+            throw failure();
         }
 
         return res;
     }
 
-    static String getNormalizedLabel(String label) {
-        //if (true) return label;
-        CoreseCalendar cal = null;
-        try {
-            cal = parse(label);
-        } catch (CoreseDatatypeException e) {
-            return label;
+    void check(IDatatype icod) throws CoreseDatatypeException {
+        if (DatatypeMap.SPARQLCompliant && this.getClass() != icod.getClass()) {
+            throw failure();
         }
-
-        return toString(cal);
     }
 
     @Override
-    public String getLowerCaseLabel() {
-        return getLabel();
+    public int compare(IDatatype iod) throws CoreseDatatypeException {
+        switch (iod.getCode()) {
+            case DATE:
+            case DATETIME:
+                CoreseDate dt = (CoreseDate) iod;
+                XMLGregorianCalendar cal1 = this.getCalendar();
+                XMLGregorianCalendar cal2 = dt.getCalendar();
+                return this.compare(cal1, cal2);
+        }
+        throw failure();
+    }
+
+    @Override
+    public boolean less(IDatatype iod) throws CoreseDatatypeException {
+        switch (iod.getCode()) {
+            case DATE:
+            case DATETIME:
+                this.check(iod);
+                CoreseDate dt = (CoreseDate) iod;
+                XMLGregorianCalendar cal1 = this.getCalendar();
+                XMLGregorianCalendar cal2 = dt.getCalendar();
+                return this.compare(cal1, cal2) < 0;
+        }
+        throw failure();
+    }
+
+    @Override
+    public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
+        switch (iod.getCode()) {
+            case DATE:
+            case DATETIME:
+                this.check(iod);
+                CoreseDate dt = (CoreseDate) iod;
+                XMLGregorianCalendar cal1 = this.getCalendar();
+                XMLGregorianCalendar cal2 = dt.getCalendar();
+                return this.compare(cal1, cal2) <= 0;
+        }
+        throw failure();
+    }
+
+    @Override
+    public boolean greater(IDatatype iod) throws CoreseDatatypeException {
+        switch (iod.getCode()) {
+            case DATE:
+            case DATETIME:
+                this.check(iod);
+                CoreseDate dt = (CoreseDate) iod;
+                XMLGregorianCalendar cal1 = this.getCalendar();
+                XMLGregorianCalendar cal2 = dt.getCalendar();
+                return this.compare(cal1, cal2) > 0;
+        }
+        throw failure();
+    }
+
+    @Override
+    public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
+        switch (iod.getCode()) {
+            case DATE:
+            case DATETIME:
+                this.check(iod);
+                CoreseDate dt = (CoreseDate) iod;
+                XMLGregorianCalendar cal1 = this.getCalendar();
+                XMLGregorianCalendar cal2 = dt.getCalendar();
+                return this.compare(cal1, cal2) >= 0;
+        }
+        throw failure();
     }
 
     @Override
@@ -525,10 +243,10 @@ public class CoreseDate extends CoreseDatatype {
         switch (iod.getCode()) {
             case DATE:
             case DATETIME:
-                //check(iod);
                 CoreseDate dt = (CoreseDate) iod;
-                boolean b = getTimeInMillis() == dt.getTimeInMillis();
-                return b;
+                XMLGregorianCalendar cal1 = this.getCalendar();
+                XMLGregorianCalendar cal2 = dt.getCalendar();
+                return this.compare(cal1, cal2) == 0;
 
             case URI:
             case BLANK:
@@ -536,15 +254,5 @@ public class CoreseDate extends CoreseDatatype {
         }
         throw failure();
     }
-  
-    void check(IDatatype icod) throws CoreseDatatypeException {
-        if (DatatypeMap.SPARQLCompliant && getClass() != icod.getClass()) {
-            throw failure();
-        }
-    }
 
-    @Override
-    public Literal getRdf4jValue() {
-        return CoreseDatatypeToRdf4jValue.convertLiteral(this);
-    }
 }

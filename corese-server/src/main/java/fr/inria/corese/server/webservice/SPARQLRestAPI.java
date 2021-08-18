@@ -597,7 +597,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         
         logger.info("getTriplesXMLForPost");
         query = getQuery(query, message);
-
+              
         String ft = request.getHeader("Accept");
         if (ft.contains(SPARQL_RESULTS_XML) || ft.contains(XML)) {
             format = SPARQL_RESULTS_XML;
@@ -828,14 +828,14 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             logger.info("updateTriplesDirect");  
             Mappings map = null;
             if (message != null) {
-                logger.debug(message);
+                logger.info(message);
                 beforeRequest(request, message);
                 map = getTripleStore(name).query(request, message, createDataset(request, defaut, named, access));
             } else {
                 logger.warn("Null update query !");
             }
 
-            Response resp = Response.status(200).header(headerAccept, "*").build();
+            Response resp = Response.status(200).header(headerAccept, "*").entity("").build();
             afterRequest(request, resp, message, map, resp.getEntity().toString());
             return resp;
         } catch (Exception ex) {

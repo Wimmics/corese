@@ -94,6 +94,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             if (query == null) {
                 throw new EngineException("Undefined query parameter ");
             }
+            logger.info("Query: " + query);
 
             beforeRequest(getRequest(), query);
             Dataset ds = createDataset(getRequest(), defaut, named, access);

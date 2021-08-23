@@ -11,6 +11,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
@@ -86,6 +87,17 @@ public class LinkedResult implements URLParam {
         if (jsonMessage != null) {
             msg(NL).msg("Message").msg(NL);
             display(jsonMessage);
+        }
+        
+        ASTQuery ast = (ASTQuery) map.getAST();
+        if (ast.hasMetadata(Metadata.BROWSE)) {
+            browse(map);
+        }
+    }
+    
+    void browse(Mappings map) {
+        for (String url : map.getLinkList()) {
+            frame.browse(url);
         }
     }
     

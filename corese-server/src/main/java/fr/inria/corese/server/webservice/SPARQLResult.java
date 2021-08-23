@@ -14,7 +14,6 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.io.UnsupportedEncodingException;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
@@ -99,7 +98,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             beforeRequest(getRequest(), query);
             Dataset ds = createDataset(getRequest(), defaut, named, access);
                                   
-            beforeParameter(ds, oper, uri, param, mode);
+            beforeParameter(ds, oper, uri, param, mode, transform);
             Mappings map = getTripleStore(name).query(getRequest(), query, ds);
             complete(map, ds.getContext());
             afterParameter(ds, map);
@@ -129,7 +128,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
     
     String getQuery(String query, List<String> mode) {
         if (query == null && mode != null) {
-            query = getDefaultValue(mode, QUERY);
+            query = getContext().getDefaultValue(mode, QUERY);
         }
         return query;
     }
@@ -189,7 +188,8 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
      * name = d2kab ; oper = sparql|federate
      * parameter recorded in context 
      */
-    Dataset beforeParameter(Dataset ds, String oper, List<String> uri, List<String> param, List<String> mode) {
+    Dataset beforeParameter(Dataset ds, String oper, List<String> uri, 
+            List<String> param, List<String> mode, List<String> transform) {
         if (oper != null) {
             ds.getContext().set(OPER, oper);
             List<String> federation = new ArrayList<>();
@@ -209,7 +209,6 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
                     federation.add(ds.getContext().get(URL).getLabel());
                     defineFederation(ds, federation);
                     // additional parameters attached to URL in urlparameter.ttl 
-                    context(ds.getContext());
                     break;
                     
                 case COMPILE:
@@ -219,7 +218,6 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
                     mode.add(COMPILE);
                     federation.addAll(uri);
                     defineFederation(ds, federation);
-                    context(ds.getContext());
                     break;
                     
                 case SPARQL:
@@ -244,8 +242,6 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
                         federation.add(furl);
                         defineFederation(ds, federation);
                     }
-                    // get additional parameters attached to URL in urlparameter.ttl 
-                    context(ds.getContext());
                     break;
                     
                 // default:
@@ -253,13 +249,14 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
                 // with server name if any  
                 default:
                     //  /map/sparql
-                    //  get additional parameters attached to URL in urlparameter.ttl 
-                    context(ds.getContext());
+                    
             }
+            //  get additional parameters attached to URL in urlprofile.ttl 
+            context(ds.getContext(), getContext());
         }
         
-        // get default parameters attached to joker mode * in urlparameter.ttl 
-        context(ds.getContext(), STAR);
+        // get default parameters attached to joker mode * in urlprofile.ttl 
+        //ds.getContext().context(getContext(), STAR);
         
         if (uri!=null && !uri.isEmpty()) {
             // list of URI given as parameter uri= 
@@ -269,15 +266,25 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
         if (param != null) {
             for (String kw : param) {
                 // decode param=key~val;val
-                mode(ds.getContext(), PARAM, decode(kw));
+                ds.getContext().mode(getContext(), PARAM, decode(kw));
             }
         }
         
         if (mode != null) {
             for (String kw : mode) {
                 // decode mode=map
-                mode(ds.getContext(), MODE, decode(kw));
+                ds.getContext().mode(getContext(), MODE, decode(kw));
             }
+        }
+        
+        if (!ds.getContext().hasValue(USER)) {
+            // mode=user means skip mode=*
+            // get default parameters attached to joker mode * in urlprofile.ttl 
+            ds.getContext().context(getContext(), STAR);
+        }
+        
+        if (transform != null && ! transform.isEmpty()) {
+            ds.getContext().set(URLParam.TRANSFORM, DatatypeMap.newStringList(transform));
         }
         
         beforeParameter(ds);
@@ -289,39 +296,12 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
      * urlprofile.ttl may predefine parameters for endpoint URL eg /psparql
      * complete Context accordingly as if it were URL parameters
      */
-    void context(Context c) {
-        context(c, c.get(URL).getLabel());
+    void context(Context c, Context gc) {
+        c.context(gc, c.get(URL).getLabel());
     }
     
-    /**
-     * Get parameters associated to endpoint URL or to mode in server Context
-     * Complete current context with such parameters
-     * two use case, with name is url or name is mode:
-     * a) url = http://corese.inria.fr/psparql          -> name = url
-     * b) url = http://corese.inria.fr/sparql?mode=demo -> name = demo
-     * 
-     * @fixit: may loop when mode refers to mode.
-     */
-    void context(Context ct, String name) {
-        // Consult Profile Context to get predefined parameters associated to name
-        // name is url or mode
-        IDatatype dt = getContext().get(name);
-        if (dt != null) {
-            // dt is list of (key value value)
-            for (IDatatype pair : dt) {
-                String key = pair.get(0).getLabel();
-                
-                for (IDatatype val : pair.getList().rest()) {
-                    if (key.equals(MODE) || key.equals(PARAM)) {
-                        mode(ct, key, val.getLabel());
-                    } else {
-                        ct.add(key, val);
-                    }
-                }
-            }
-            System.out.println("Context:\n" + ct);
-        }
-    }
+   
+       
 
     /**
      * Server Context build from urlprofile.ttl
@@ -362,50 +342,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
             ds.getContext().set(NAMED_GRAPH, named);
         }
     }   
-    
-    /**
-     * name:  param | mode
-     * value: debug | trace.
-     */
-    void mode(Context c, String name, String value) {
-        if (value.contains(";")) {
-            for (String val : value.split(";")) {
-                basicMode(c, name, val);
-            }
-        }
-        else {
-            basicMode(c, name, value);
-        }
-    }
-
-    void basicMode(Context c, String name, String value) {
-        // mode = value
-        c.add(name, value);
-
-        switch (name) {
-            case MODE:
-                switch (value) {
-                    case DEBUG:
-                        c.setDebug(true);
-                    // continue
-
-                    default:
-                        // get definition of mode=value if any
-                        // defined in urlprofile.ttl
-                        context(c, value);
-                        c.set(value, true);
-                        break;
-                }
-                break;
-
-            case PARAM:
-                // decode param=key~val;val
-                URLServer.decode(c, value);
-                break;
-        }
-    }
-       
-    
+        
     void afterParameter(Dataset ds, Mappings map) {
         if (ds.getContext().hasValue(TRACE)) {
             System.out.println("SPARQL endpoint");
@@ -456,12 +393,12 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
          
     ResultFormat getFormat(Mappings map, Dataset ds, String format, int type, List<String> transformList) {
         // predefined parameter associated to URL/mode in urlparameter.ttl
-        transformList = getValue(ds.getContext(), TRANSFORM, transformList);
+        transformList = selectTransformation(ds.getContext(), getValue(ds.getContext(), TRANSFORM, transformList));
         
         if (transformList == null || transformList.isEmpty()) {
             return getFormatSimple(map, ds, format, type);
         } else {
-            return getFormatTransform( map,  ds,  format,  type, prepare(ds.getContext(), transformList));           
+            return getFormatTransform( map,  ds,  format,  type, transformList);           
         }
     }
     
@@ -608,78 +545,52 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
     }
     
     /**
-     * predefined parameter associated to url/mode in urlparameter.ttl
+     * predefined parameter associated to url/mode in urlprofile.ttl
      */
     List<String> getValue(Context ct, String name, List<String> value) {
         if (value != null && !value.isEmpty()) {
             return value;
         }
-        IDatatype dt = ct.get(name);
-        if (dt == null) {
-            return null;
-        }
-        return DatatypeMap.toStringList(dt);
+        return ct.getStringList(name);
     }
     
     /**
-     * mode=demo > 
-     * get parameter list of demo
-     * get value of parameter name in parameter list
+     * select authorized transformations
      */
-    String getDefaultValue(List<String> modeList, String name) {
-        for (String mode : modeList) {
-            // get value of parameter name in parameter list of mode
-            IDatatype dt = getContext().getValueInList(mode, name);
-            if (dt != null) {
-                return dt.getLabel();
-            }
+    List<String> selectTransformation(Context ct, List<String> list) {
+        if (list == null || list.isEmpty()) {
+            return list;
         }
-        // try default mode (use case: query parameter is required before any context & default processing) 
-        IDatatype dt = getContext().getValueInList(STAR, name);
-        if (dt != null) {
-            return dt.getLabel();
-        }
-        return null;
+        // predefined transform st:all = (st:xml st:json)
+        List<String> alist = prepare(list);
+        // check authorized transformation
+        return Access.selectNamespace(Access.Feature.LINKED_TRANSFORMATION, ct.getLevel(), alist);
     }
+    
+    
     
     /**
      * trans;trans -> list of trans
      * st:all -> st:xml st:json
      */
-    List<String> prepare(Context c, List<String> transformList) {
+    List<String> prepare(List<String> transformList) {
         List<String> list = new ArrayList<>();
         
         for (String name : transformList) {
             if (name.contains(";")) {
                 for (String key : name.split(";")) {
-                    prepare(c, key, list);
+                    getContext().prepare(key, list);
                 }
             }
             else {
-                prepare(c, name, list);
+                getContext().prepare(name, list);
             }
         }
 
         return list;
     }
     
-    /**
-     * name = st:all
-     * return (st:xml st:json) 
-     * from urlprofile.ttl transformation st:equivalent definition
-     */
-    void prepare(Context c, String name, List<String> list) {
-        name = c.nsm().toNamespace(name);
-        List<String> alist = getContext().getStringList(name);
-        if (alist == null) {
-            list.add(name);
-        } else {
-            list.addAll(alist);
-        }
-    }
-    
-   
-    
+  
     String getName(String transform) {
         if (transform.contains("#")) {
             return transform.substring(1+transform.indexOf("#"));

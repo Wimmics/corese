@@ -9,6 +9,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 import java.util.HashMap;
 import java.util.List;
 import javax.servlet.http.HttpServletRequest;
@@ -202,6 +203,11 @@ public class Transformer {
     
     public Response process(Data data, Param par, Context ctx) {
         try {
+            if (ctx.hasValue(Context.STL_MODE, URLParam.DEBUG)) {
+                System.out.println("Result:");
+                System.out.println(ctx);
+                System.out.println(data.stringValue());
+            }
             ResponseBuilder rb = Response.status(200).header(headerAccept, "*").entity(result(par, data.stringValue()));
             String format = getContentType(data);
             if (format != null && !ctx.getService().contains("srv")) {

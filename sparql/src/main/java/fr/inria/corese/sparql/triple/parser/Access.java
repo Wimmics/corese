@@ -5,7 +5,9 @@ import fr.inria.corese.sparql.exceptions.SafetyException;
 import static fr.inria.corese.sparql.triple.parser.Access.Feature.*;
 import static fr.inria.corese.sparql.triple.parser.Access.Level.*;
 import static fr.inria.corese.sparql.triple.parser.Access.Mode.SERVER;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  *
@@ -255,6 +257,16 @@ public class Access {
             // action level < DEFAULT -> access to explicitely authorized namespace only
             return accept(uri, false);
         }
+    }
+    
+    public static List<String> selectNamespace(Feature feature, Level level, List<String> list) {
+        ArrayList<String> alist = new ArrayList<>();
+        for (String uri : list) {
+            if (acceptNamespace(feature, level, uri)) {
+                alist.add(uri);
+            }
+        }
+        return alist;
     }
     
     static boolean accept(String uri, boolean resultWhenEmptyAccept) {

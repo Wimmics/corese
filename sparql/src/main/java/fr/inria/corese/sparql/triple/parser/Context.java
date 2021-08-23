@@ -806,33 +806,116 @@ public class Context extends ASTObject implements URLParam {
         return url;
     }
     
-//        public String tune(String uri) {
-//        if (hasValue(MODE)) {
-//            for (IDatatype mode : get(MODE)) {
-//                switch (mode.getLabel()) {
-//                    case DEBUG:
-//                    case TRACE:
-//                        uri = complete(uri, MODE, mode.getLabel());
-//                        break;
-//                }
-//            }
-//        }
-        
-//        if (hasValue(EXPORT)) {
-//            // defined by URLServer decode
-//            // share parameters such as timeout=1000
-//            for (IDatatype key : get(EXPORT)) {
-//                uri = complete(uri, key.getLabel(), getFirst(key.getLabel()).getLabel()); 
-//            }
-//        }
-                                              
-//        if (hasValue(URI)) {
-//            for (IDatatype dt : get(URI)) {
-//                uri=complete(uri, URI, dt.getLabel());
-//            }
-//        }
-//        return uri;
-//    }
+    
+    /**
+     * mode=demo 
+     * get parameter value list of demo (from global Context from urlprofile.ttl)
+     * get value of parameter name in parameter value list
+     */
+    public String getDefaultValue(List<String> modeList, String name) {
+        for (String mode : modeList) {
+            // get value of parameter name in parameter list of mode
+            IDatatype dt = getValueInList(mode, name);
+            if (dt != null) {
+                return dt.getLabel();
+            }
+        }
+        // try default mode * (use case: query parameter is required before any context & default processing) 
+        IDatatype dt = getValueInList(STAR, name);
+        if (dt != null) {
+            return dt.getLabel();
+        }
+        return null;
+    }
+    
+     /**
+     * Get parameter values associated to endpoint URL or to mode in server global Context gc
+     * Complete current context with such parameter values
+     * two use case, with name is url or name is mode:
+     * a) url = http://corese.inria.fr/psparql          -> name = url
+     * b) url = http://corese.inria.fr/sparql?mode=demo -> name = demo
+     * 
+     * @fixit: may loop when mode recursively refers to mode.
+     */
+    public void context(Context gc, String name) {
+        // Consult Profile Context to get predefined parameters associated to name
+        // name is url or mode
+        IDatatype dt = gc.get(name);
+        if (dt != null) {
+            // dt is list of (key value value)
+            for (IDatatype pair : dt) {
+                String key = pair.get(0).getLabel();
+                
+                for (IDatatype val : pair.getList().rest()) {
+                    if (key.equals(MODE) || key.equals(PARAM)) {
+                        mode(gc, key, val.getLabel());
+                    } else {
+                        add(key, val);
+                    }
+                }
+            }
+        }
+    }
+    
+    /**
+     * name:  param | mode
+     * value: debug | trace.
+     */
+    public void mode(Context gc, String name, String value) {
+        if (value.contains(";")) {
+            for (String val : value.split(";")) {
+                basicMode(gc, name, val);
+            }
+        }
+        else {
+            basicMode(gc, name, value);
+        }
+    }
+    
+    
+
+    void basicMode(Context gc, String name, String value) {
+        // mode = value
+        add(name, value);
+
+        switch (name) {
+            case MODE:
+                switch (value) {
+                    case DEBUG:
+                        setDebug(true);
+                    // continue
+
+                    default:
+                        // get definition of mode=value if any
+                        // defined in urlprofile.ttl
+                        context(gc, value);
+                        set(value, true);
+                        break;
+                }
+                break;
+
+            case PARAM:
+                // decode param=key~val;val
+                URLServer.decode(this, value);
+                break;
+        }
+    }
+    
+    /**
+     * name = st:all
+     * return (st:xml st:json) 
+     * from urlprofile.ttl transformation st:equivalent definition
+     * PRAGMA: this Context is server global Context
+     */
+    public void prepare(String name, List<String> list) {
+        name = nsm().toNamespace(name);
+        List<String> alist = getStringList(name);
+        if (alist == null) {
+            list.add(name);
+        } else {
+            list.addAll(alist);
+        }
+    }
     
     String complete(String uri, String key, String val) {
         if (uri.contains("?")) {

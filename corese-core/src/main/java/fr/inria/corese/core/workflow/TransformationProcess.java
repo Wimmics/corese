@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 
 /**
  *
@@ -57,6 +58,9 @@ public class TransformationProcess extends  WorkflowProcess {
         }
         Transformer t = Transformer.create(data.getGraph(), getPath());
         t.setDebug(isDebug());
+        if (getContext().hasValue(Context.STL_MODE, URLParam.DEBUG)) {
+            t.setDebug(true);
+        }
         if (isDebug()) {
             System.out.println("Transformer graph size: " + data.getGraph().size());
         }

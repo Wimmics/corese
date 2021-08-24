@@ -55,7 +55,7 @@ public class EditorPane {
                 }
                 lineCounter.setText(text);
 
-                lineCounter.setColumns(Integer.toString(nb_line).length());
+                lineCounter.setColumns(Integer.toString(nb_line - 1).length());
             }
 
             @Override

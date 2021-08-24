@@ -3,6 +3,11 @@
 #
 
 st:access st:namespace 
+# read by event manager function/logger.rq
+<https://geo.ipify.org>,
+<http://ontology.inrae.fr/ppdo/sparql>,
+<https://taxref.mnhn.fr/sparql>,
+<http://graph.i3s.unice.fr/repositories/geves>,
 <http://wasabi.inria.fr/sparql>,
 <http://localhost:8080/>, 
 <http://antipolis:8080/>,

@@ -59,16 +59,26 @@ function cal:shift(?date, ?day, ?shift) {
 }
 	
 function cal:add(?date, ?n) { 
-  cal:date (year(?date), month(?date), day(?date) + ?n)}
+  cal:date (year(?date), month(?date), day(?date) + ?n)
+}
   
 function cal:date(?y, ?m, ?d) { 
-  xsd:date(concat(?y, "-", ?m, "-", ?d))}
+  xt:date(?y, ?m, ?d)
+}
+
+function xt:date(?y, ?m, ?d) {
+    xsd:date(concat(?y, "-", 
+        if (?m<10, concat("0", ?m), ?m), "-", 
+        if (?d<10, concat("0", ?d), ?d)))
+}
 
 function cal:dayname(?n) { 
-   xt:get(xt:list("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), ?n - 1)}
+   xt:get(xt:list("Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"), ?n - 1)
+}
   
 function cal:nomjour(?n) { 
-    xt:get(xt:list("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"), ?n - 1)}
+    xt:get(xt:list("Lundi", "Mardi", "Mercredi", "Jeudi", "Vendredi", "Samedi", "Dimanche"), ?n - 1)
+}
     
 function cal:daynum(?d) {  cal:num(?d) }
 

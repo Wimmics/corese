@@ -10,8 +10,8 @@ where {
   bind (st:get(st:uri) as ?uri)
   bind (st:set(st:year, xsd:integer(substr(?uri, strlen(st:) + 2))) as ?y)
 
-  bind (xsd:date(concat(?y, "-", 1, "-", 1,   "+02:00")) as ?start)
-  bind (xsd:date(concat(?y, "-", 12, "-", 31, "+02:00")) as ?end)
+  bind (xsd:date(concat(?y, "-01-01+02:00")) as ?start)
+  bind (xsd:date(concat(?y, "-12-31+02:00")) as ?end)
 
   service <http://fr.dbpedia.org/sparql/> { 
     select ?x ?p ?d ?start ?end ?l where {  

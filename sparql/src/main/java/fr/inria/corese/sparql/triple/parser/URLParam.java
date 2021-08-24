@@ -6,6 +6,7 @@ package fr.inria.corese.sparql.triple.parser;
 public interface URLParam {
     
     static final String STAR = "*";
+    static final String USER = "user";
     static final String SEPARATOR = "~";
     static final String CLIENT = "cn:";
     static final String SERVER = "sv:";

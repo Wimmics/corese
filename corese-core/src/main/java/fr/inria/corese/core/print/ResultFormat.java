@@ -18,6 +18,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 import static fr.inria.corese.sparql.triple.parser.URLParam.LINK;
 import java.util.HashMap;
 
@@ -359,6 +360,9 @@ public class ResultFormat implements ResultFormatDef {
         Transformer t = Transformer.create(theGraph(), getMappings(), getTransformation());
         if (getContext() != null) {
             t.setContext(getContext());
+            if (getContext().hasValue(URLParam.DEBUG)) {
+                t.setDebug(true);
+            }
         }
         if (getBind() != null) {
             t.setBinding(getBind());

@@ -352,6 +352,12 @@ public class ContextLog implements URLParam, LogKey {
         return json;
     }
     
+    void pretty(JSONObject json) {
+        for (String key : json.keySet()) {
+            System.out.println(key + " = " + json.get(key));
+        }
+    }
+    
     void messageHeader(JSONObject json) {
         // list of distinct endpoint call
         List<String> list = getStringListDistinct(LogKey.ENDPOINT);

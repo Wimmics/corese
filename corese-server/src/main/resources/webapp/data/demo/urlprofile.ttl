@@ -25,6 +25,13 @@ d3:all st:equivalent (d3:graphic d3:hierarchy) .
 #
 # default parameters added to every sparql service by specifying mode "*" here
 #
+[] st:mode "star" ;
+st:param (
+("mode"         "message")
+)
+.
+
+
 [] st:mode "joker" ;
 st:param (
 ("mode"         "logquery" "log" "link")
@@ -33,19 +40,19 @@ st:param (
 ("query"        "select * where {?s ?p ?o} limit 10")
 ) .
 
-
-
+#
+# mode=user means skip mode=*
+#
 [] st:mode "map" ;
 st:param (
-("mode" "link") 
+("mode" "user" "link") 
 ("transform" st:map)) .
 
 
 
 [] st:mode "demoformat" ;
 st:param (
-("mode" "logquery")
-("mode" "link")
+("mode" "logquery" "link")
 ("transform" st:all)
 ("query"
 """select ?n (count(?o) as ?c) 
@@ -57,9 +64,8 @@ group by ?s order by ?c
 
 [] st:mode "demomap" ;
 st:param (
-("mode" "logquery")
-("mode" "link")
-("transform" st:map st:all)
+("mode" "logquery" "link")
+("transform" st:map)
 ("query"
 """prefix dbo: <http://fr.dbpedia.org/ontology/> 
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
@@ -68,6 +74,52 @@ service <http://fr.dbpedia.org/sparql> {
 select * where {?location geo:lat ?lat ; geo:long ?lon}
 }}
 """)) .
+
+
+
+[] st:mode "demolog" ;
+st:param (
+("mode" "log")
+("query"
+"""prefix dbo: <http://fr.dbpedia.org/ontology/> 
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+select * where {
+graph st:geo {db:Amérique dbo:include ?location} 
+service <http://fr.dbpedia.org/sparql?nboutput=10> {
+select * where {?location geo:lat ?lat ; geo:long ?lon}}}
+""")) .
+
+
+[] st:mode "demochart" ;
+st:param (
+("mode" "link" "logquery")
+("transform" d3:chart)
+("query"
+"""select ?n (count(?o) as ?c) where {
+?s ?p ?n ; ?q ?o filter regex(?p, 'name') } 
+group by ?s order by ?c
+""")) .
+
+
+[] st:mode "demographic" ;
+st:param (
+("mode" "link")
+("transform" d3:graphic)
+("query"
+"""construct where {?s ?p ?o} group by ?s
+""")) .
+
+
+[] st:mode "demospin" ;
+st:param (
+("mode" "link" "spin")
+("transform" st:turtle st:spin)
+("query"
+"""select * where {?s rdfs:label ?l optional {?s ?p ?o}}
+""")) .
+                     
+                 
+
 
 
 

@@ -92,7 +92,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.2 - Wimmics INRIA I3S - 2021-06-21";
+    private static final String TITLE = "Corese 4.2 - Wimmics INRIA I3S - 2021-08-15";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -1216,19 +1216,11 @@ public class MainFrame extends JFrame implements ActionListener {
         else if (e.getSource() == refresh) {
             ongletListener.refresh(this);
         } else if (e.getSource() == apropos || e.getSource() == tuto || e.getSource() == doc) {
-            if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-                try {
-                    String uri = URI_CORESE;
-                    if (e.getSource() == doc) {
-                        uri = URI_GRAPHSTREAM;
-                    }
-                    Desktop.getDesktop().browse(new URI(uri));
-                } catch (IOException e1) {
-                    LOGGER.error(e1);
-                } catch (URISyntaxException e1) {
-                    LOGGER.error(e1);
-                }
+            String uri = URI_CORESE;
+            if (e.getSource() == doc) {
+                uri = URI_GRAPHSTREAM;
             }
+            browse(uri);
         } else if (e.getSource() == kgramBox) {
             isKgram = true;
             //DatatypeMap.setLiteralAsString(true);
@@ -1240,6 +1232,17 @@ public class MainFrame extends JFrame implements ActionListener {
             // Button Explain
             DefQuery def = itable.get(e.getSource());
             execPlus(def.getName(), def.getQuery());
+        }
+    }
+    
+    
+    public void browse(String url) {
+        if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
+            try {                
+                Desktop.getDesktop().browse(new URI(url));
+            } catch (IOException | URISyntaxException e) {
+                LOGGER.error(e);
+            }
         }
     }
     

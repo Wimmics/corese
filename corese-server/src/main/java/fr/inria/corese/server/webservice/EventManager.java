@@ -94,13 +94,16 @@ public class EventManager {
     }
     
     void incrHostLite(IDatatype dt) {
-        String ip = dt.getLabel().substring(0, dt.getLabel().lastIndexOf("."));
-        IDatatype adt = ipmap.get(ip);
-        if (adt == null) {
-            adt = dt;
-            ipmap.put(ip, adt);
+        int index = dt.getLabel().lastIndexOf(".");
+        if (index != -1) {
+            String ip = dt.getLabel().substring(0, index);
+            IDatatype adt = ipmap.get(ip);
+            if (adt == null) {
+                adt = dt;
+                ipmap.put(ip, adt);
+            }
+            hostLiteMap.incr(adt);
         }
-        hostLiteMap.incr(adt);
     }
       
     IDatatype getService(Context c) {

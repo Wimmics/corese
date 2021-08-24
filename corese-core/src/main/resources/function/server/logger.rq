@@ -65,7 +65,7 @@ function us:hostlist() {
           #service <http://localhost:8080/sparql> {
             select * where {
                 bind (us:eventMap() as ?map)
-                bind (xt:get(?map, st:host) as ?host)
+                bind (xt:get(?map, st:hostlite) as ?host)
                 values (?key ?value) { unnest(?host) }
             } 
             limit 999

@@ -2357,6 +2357,10 @@ public class Exp extends PointerObject
         this.number = number;
     }
     
+    boolean isEvaluableWithMappings() {
+        return isAndJoinRec() || isRecFederate();
+    }
+    
     // exp = and(join(and(edge) service()))
     boolean isAndJoinRec(){
         if (isAnd()) {
@@ -2385,18 +2389,18 @@ public class Exp extends PointerObject
             return true;
         }
         if (size() == 1) {
-            Exp ee = get(0);
-            return  (ee.isService() ||  
-                    (ee.isBinary() &&  ee.isFederate2()));        
+            return get(0).isRecService();
         }
         else if (isBGPAnd() && size() > 0) {
-            Exp ee = get(0);
-            return  (ee.isService() ||  
-                    (ee.isBinary() &&  ee.isFederate2())); 
+            return get(0).isRecService();
         }
         else {
             return false;
         }
+    }
+    
+    boolean isRecService() {
+        return isService() ||  (isBinary() &&  isFederate2());        
     }
        
     // binary such as union

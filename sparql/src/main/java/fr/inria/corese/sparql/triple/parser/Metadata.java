@@ -73,6 +73,7 @@ public class Metadata extends ASTObject
     public static final int WHY       = 54; 
     public static final int MESSAGE   = 55; 
     public static final int MERGE_SERVICE = 56; 
+    public static final int BROWSE = 57; 
 
     
     
@@ -194,6 +195,7 @@ public class Metadata extends ASTObject
         define("@explain",  EXPLAIN); 
         define("@why",      WHY); 
         define("@message",  MESSAGE); 
+        define("@browse",   BROWSE); 
         define("@merge",    MERGE_SERVICE); 
                       
         define("@update",    UPDATE);  

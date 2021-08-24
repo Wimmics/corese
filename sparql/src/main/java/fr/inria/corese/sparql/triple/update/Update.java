@@ -119,8 +119,8 @@ public class Update extends TopExp {
      *
      */
     public NSManager getNSM() {
-        if (nsm != null) {
-            return nsm;
+        if (getLocalNSM() != null && getLocalNSM().isUserDefine()) {
+            return getLocalNSM();
         } else {
             return getGlobalNSM();
         }
@@ -129,4 +129,5 @@ public class Update extends TopExp {
     public NSManager getGlobalNSM() {
         return astu.getNSM();
     }
+    
 }

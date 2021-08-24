@@ -52,7 +52,9 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.util.Arrays;
 import java.util.Collection;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONObject;
@@ -412,7 +414,29 @@ public class Graph extends GraphObject implements
             }           
         };
     }
+    
+    DataProducer getDataProducer(Node... from) {
+        DataProducer dp;
+        if (from.length==0) {
+            dp = getDataStore().getDefault(Arrays.asList(from));
+        } else {
+            dp = getDataStore().getNamed(Arrays.asList(from), null);
+        }       
+        return dp;
+    }
+    
+    public Iterable<Edge> getEdges(Node s, Node p, Node o, Node... g) {
+        DataProducer dp = getDataProducer(g);
+        return dp.iterate(bnvalue(s), bnvalue(p), bnvalue(o));
+    }
 
+    IDatatype bnvalue(Node n) {
+        if (n == null) {
+            return DatatypeMap.createBlank();
+        }
+        return (IDatatype)n.getDatatypeValue();
+    }
+    
     /**
      * Iterate graph edges
      * Successive edges of the same property are returned in the "same physical" Edge object

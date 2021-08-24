@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri May 21 15:23:49 CEST 2021
+Thu Aug 19 13:27:10 CEST 2021
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -94,9 +94,7 @@ template st:link {
     }
 }
 where {
-    bind (xt:print("link:", coalesce(st:get(st:link), "undef")) as ?aa)
     values ?url { unnest(st:get(st:link)) }
-    bind (xt:print("link:", ?url) as ?tmp)
 }
 ]]>
 </body>
@@ -570,7 +568,7 @@ prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template st:omap(?r, ?lat, ?lon, ?list) {
   
-    st:call-template(st:maplist, xt:cons(xt:list(?r, ?lat, ?lon), ?list))
+    st:call-template(st:maplist, ft:map.html, xt:cons(xt:list(?r, ?lat, ?lon), ?list), "")
 }
 where {
 

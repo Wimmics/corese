@@ -88,18 +88,25 @@
                 </ul>
             </li>
 
+            <!-- mode demo parameter values specified in webapp/data/demo/urlprofile.ttl -->
             <li class="dropdown">
                 <a href="#" class="dropdown-toggle" data-toggle="dropdown" role="button" aria-expanded="false">Extended Service<span class="caret"></span></a>
                 <ul class="dropdown-menu" role="menu"> 
                     <li><a href="/sparql?mode=demoformat">SPARQL+Formats</a></li>
                     <li><a href="/halopendata/sparql?mode=demomap">SPARQL+Map</a></li>
-                    <li><a href="/halopendata/sparql?mode=log&query=prefix dbo: <http://fr.dbpedia.org/ontology%2F> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos%23>select * where {graph st:geo {db:Amérique dbo:include ?location} service <http://fr.dbpedia.org/sparql?nboutput=10> {select * where {?location geo:lat ?lat ; geo:long ?lon}}}">SPARQL+Log</a></li>
-                    <li><a href="/sparql?mode=link&transform=d3:chart&query=select ?n (count(?o) as ?c) where {?s ?p ?n ; ?q ?o filter regex(?p, 'name') } group by ?s order by ?c">SPARQL+Chart</a></li>
-                    <li><a href="/sparql?mode=link&transform=d3:graphic&query=construct where {?s ?p ?o} group by ?s">SPARQL+Graphic</a></li>
+                    <li><a href="/halopendata/sparql?mode=demolog">SPARQL+Log</a></li>
+                    <li><a href="/sparql?mode=demochart">SPARQL+Chart</a></li>
+                    <li><a href="/sparql?mode=demographic">SPARQL+Graphic</a></li>
                     <li><a href="/sparql?mode=demohierarchy">SPARQL+Hierarchy</a></li>
-                    <li><a href="/sparql?mode=link;spin&transform=st:turtle&query= select * where {?s rdfs:label ?l optional {?s ?p ?o}}">SPARQL to SPIN</a></li>
+                    <li><a href="/sparql?mode=demospin">SPARQL to SPIN</a></li>
                 </ul>
             </li>
+
+
+            <!-- <li><a href="/halopendata/sparql?mode=log&query=prefix dbo: <http://fr.dbpedia.org/ontology%2F> prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos%23>select * where {graph st:geo {db:Amérique dbo:include ?location} service <http://fr.dbpedia.org/sparql?nboutput=10> {select * where {?location geo:lat ?lat ; geo:long ?lon}}}">SPARQL+Log</a></li>-->
+            <!-- <li><a href="/sparql?mode=link&transform=d3:chart&query=select ?n (count(?o) as ?c) where {?s ?p ?n ; ?q ?o filter regex(?p, 'name') } group by ?s order by ?c">SPARQL+Chart</a></li>-->
+            <!-- <li><a href="/sparql?mode=link&transform=d3:graphic&query=construct where {?s ?p ?o} group by ?s">SPARQL+Graphic</a></li>-->
+            <!-- <li><a href="/sparql?mode=link;spin&transform=st:turtle&query= select * where {?s rdfs:label ?l optional {?s ?p ?o}}">SPARQL to SPIN</a></li>-->
 
 
             <li class="dropdown">

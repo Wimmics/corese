@@ -27,5 +27,5 @@ where {
     bind (cal:num(xt:day(cal:date(?y, ?m, 1))) as ?first)
     bind (unnest(xt:iota(?days)) as ?n)
     bind (cal:date(?y, ?m, ?n)   as ?date)
-    bind (xt:day(?date)          as ?day)        
+    bind (xt:day(?date)          as ?day) 
 }

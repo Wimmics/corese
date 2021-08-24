@@ -288,14 +288,21 @@ public class MappingSet {
         return (map == null) ? exp.rest(): setMappings(exp, map);
     }
     
+    /**
+     * Take care of intermediate Mappings
+     * either as parameter of eval(rest, map)
+     * or as values clause inserted in rest
+     */
     Exp setMappings(Exp exp, Mappings map) {
         Exp rest = exp.rest();
-        if (exp.isJoin() || rest.isAndJoinRec() || 
-                isFederate() || exp.isRecFederate()) {
-            // service clause in rest may take Mappings into account
+        if (exp.isJoin() || rest.isEvaluableWithMappings() || 
+            isFederate() ) {
+            // eval(rest, map) may take Mappings map argument into account
+            // e.g. join or service -
             setJoinMappings(map);
         } else {
-            // inject Mappings in copy of rest as a values clause            
+            // inject Mappings map in copy of rest as a values clause
+            // eval(rest)
             rest = rest.complete(map);
         }
         return rest;

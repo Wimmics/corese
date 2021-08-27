@@ -421,12 +421,20 @@ public class Graph extends GraphObject implements
             dp = getDataStore().getDefault(Arrays.asList(from));
         } else {
             dp = getDataStore().getNamed(Arrays.asList(from), null);
-        }       
+       }       
         return dp;
     }
     
-    public Iterable<Edge> getEdges(Node s, Node p, Node o, Node... g) {
+    public Iterable<Edge> getEdgesRDF4J(Node s, Node p, Node o, Node... g) {
         DataProducer dp = getDataProducer(g);
+        return dp.iterate(bnvalue(s), bnvalue(p), bnvalue(o));
+    }
+    
+    /**
+     * All occurrences of triples in every named graph
+     */
+    public Iterable<Edge> getEdgesRDF4J(Node s, Node p, Node o) {
+        DataProducer dp = getDataStore().getNamed(null, null);
         return dp.iterate(bnvalue(s), bnvalue(p), bnvalue(o));
     }
 

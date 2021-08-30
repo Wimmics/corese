@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -17,12 +18,12 @@
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>sparql</artifactId>
-		</dependency>	
+		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgram</artifactId>
 		</dependency>
-		
+
 		<dependency>
 			<groupId>org.hamcrest</groupId>
 			<artifactId>hamcrest-core</artifactId>
@@ -36,6 +37,7 @@
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>
+			<version>4.13.2</version>
 			<scope>test</scope>
 		</dependency>
 		<dependency>
@@ -67,22 +69,22 @@
 		</plugins>
 	</build>
 
-	<profiles> 
-		<profile> 
-			<id>jenkins</id> 
-			<activation> 
-				<property> 
-					<name>env.BUILD_NUMBER</name> 
-				</property> 
-			</activation> 
-			<build> 
-				<plugins> 
+	<profiles>
+		<profile>
+			<id>jenkins</id>
+			<activation>
+				<property>
+					<name>env.BUILD_NUMBER</name>
+				</property>
+			</activation>
+			<build>
+				<plugins>
 					<plugin>
 						<groupId>org.codehaus.mojo</groupId>
 						<artifactId>cobertura-maven-plugin</artifactId>
-					</plugin> 
-				</plugins> 
-			</build> 
-		</profile> 
+					</plugin>
+				</plugins>
+			</build>
+		</profile>
 	</profiles>
 </project>

@@ -3000,23 +3000,23 @@ public class Graph extends GraphObject implements
     }
 
     public boolean dropGraphNames() {
-        graph.clear();
-        clearNamedGraph();
+
+        if (this.graph.isEmpty()) {
+            return false;
+        }
+
+        this.graph.clear();
         return true;
-    }
-    
-    void clearNamedGraph(){
-        
     }
 
     public boolean clear(String uri, boolean isSilent) {
-        if (uri != null) {
-            Node gg = getGraphNode(uri);
-//            if (isDebug) {
-//                logger.debug("** clear: " + gg);
-//            }
+        return this.clear(uri);
+    }
+
+    public boolean clear(String graph_name) {
+        if (graph_name != null) {
+            Node gg = getGraphNode(graph_name);
             if (gg != null) {
-                //setDelete(true);
                 getEventManager().process(Event.Delete, gg);
                 getIndex(IGRAPH).clear(gg);
             }

@@ -1,4 +1,4 @@
-package fr.inria.corese.rdf4j;
+package fr.inria.corese.rdf4jimpl.convertDatatype;
 
 import static org.junit.Assert.assertEquals;
 

@@ -112,7 +112,6 @@ public class Rdf4jValueToCoreseDatatype {
                     return convertLiteral(label, RDF.xsdstring);
 
                 default:
-                    System.out.println("default case");
                     return convertLiteral(label, rdf4j_literal.getDatatype().stringValue());
             }
         }

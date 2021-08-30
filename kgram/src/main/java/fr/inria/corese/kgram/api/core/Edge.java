@@ -5,7 +5,6 @@ import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 
-
 /**
  * Interface for Producer iterator that encapsulate Edge or Node with its Graph
  * Node
@@ -130,7 +129,7 @@ public interface Edge extends Pointerable, Statement {
 	}
 
 	@Override
-	default Value getObject() {
+	public default Value getObject() {
 		return this.getNode(1).getDatatypeValue().getRdf4jValue();
 	}
 

@@ -1,4 +1,4 @@
-package fr.inria.corese.rdf4j;
+package fr.inria.corese.rdf4jimpl;
 
 import static org.junit.Assert.assertEquals;
 
@@ -11,7 +11,7 @@ import fr.inria.corese.core.logic.RDF;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 
-public class EdgeRdf4j {
+public class CoreseStatementTest {
 
     public static Node edith_piaf;
 
@@ -26,7 +26,7 @@ public class EdgeRdf4j {
     public static Node context_singer;
     public static Node context_edith;
     public static Node context_piaf;
-    
+
     @BeforeClass
     public static void buildGraph() {
         // Define the namespace ex
@@ -59,7 +59,7 @@ public class EdgeRdf4j {
     @Test
     public void getSubject() {
         Value subject = edith_piaf.getDatatypeValue().getRdf4jValue();
-        
+
         assertEquals(subject, edge_edit_singer.getSubject());
         assertEquals(subject, edge_edit_fname.getSubject());
         assertEquals(subject, edge_edit_lname.getSubject());
@@ -86,7 +86,5 @@ public class EdgeRdf4j {
         assertEquals(edith, edge_edit_fname.getObject());
         assertEquals(piaf, edge_edit_lname.getObject());
     }
-    
 
-    
 }

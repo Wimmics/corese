@@ -25,8 +25,8 @@ module fr.inria.corese.corese_server {
     requires java.ws.rs;
 
     requires commons.cli;
-    requires commons.io;
     requires commons.vfs;
+    requires org.apache.commons.io;
 
     requires java.logging;
 

@@ -32,6 +32,8 @@ import java.util.List;
 public class CompileService implements URLParam {
     public static final String KG_VALUES = NSManager.KGRAM + "values";
     public static final String KG_FILTER = NSManager.KGRAM + "filter";
+    // default binding
+    public static boolean BINDING_VALUES = true;
 
     private ProviderService provider;
     List<List<Term>> termList;
@@ -45,6 +47,19 @@ public class CompileService implements URLParam {
 
     public CompileService() {
         termList = new ArrayList<>();
+    }
+    
+    public static void setBinding(String value) {
+        if (value.equals("values")) {
+            setBinding(true);
+        }
+        else if (value.equals("filter")) {
+            setBinding(false);
+        }
+    }
+    
+    public static void setBinding(boolean value) {
+        BINDING_VALUES = value;
     }
 
     /**
@@ -62,8 +77,9 @@ public class CompileService implements URLParam {
         ASTQuery ast = getAST(q);
         complete(serv, q, ast);
         Query out = q.getOuterQuery();
-        boolean isValues = isValues(serv, out) || 
-                (!isFilter(serv, out) && !getProvider().isSparql0(serv.getNode()));
+//        boolean isValues = isValues(serv, out) || 
+//                (!isFilter(serv, out) && !getProvider().isSparql0(serv.getNode()));
+        boolean isValues = getIsValues(serv, out);
         if (map == null || (map.size() == 1 && map.get(0).size() == 0)) {
             // lmap may contain one empty Mapping
             // use env because it may have bindings
@@ -78,7 +94,7 @@ public class CompileService implements URLParam {
             return filter(serv, q, map, start, limit);
         } 
     }
-    
+       
     void complete(URLServer serv, Query q, ASTQuery ast) {
         int myLimit = serv.intValue(LIMIT);
         if (myLimit >= 0) {
@@ -93,6 +109,24 @@ public class CompileService implements URLParam {
                 }
                 ast.setLimit(Math.min(limit, ast.getLimit()));
             }
+        }
+    }
+
+    boolean getIsValues(URLServer serv, Query q) {
+        if (serv.hasParameter(BINDING, VALUES)) {
+            return true;
+        } 
+        else if (serv.hasParameter(BINDING, FILTER)) {
+            return false;
+        }
+        else if (hasRecMetaData(q, Metadata.BINDING, KG_VALUES)) {
+            return true;
+        }
+        else if (hasRecMetaData(q, Metadata.BINDING, KG_FILTER)) {
+            return false;
+        }
+        else {
+            return BINDING_VALUES;
         }
     }
 

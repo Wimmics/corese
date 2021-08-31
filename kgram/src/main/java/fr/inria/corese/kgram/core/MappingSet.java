@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.core;
 
+import static fr.inria.corese.kgram.api.core.ExpType.UNION;
 import fr.inria.corese.kgram.api.core.Node;
 import static fr.inria.corese.kgram.tool.Message.NL;
 import java.util.ArrayList;
@@ -197,7 +198,7 @@ public class MappingSet {
     }
     
     boolean inIntersection(List<String> varList) {
-        return inSet(varList, intersection);
+        return inSet(varList, getIntersection());
     }
     
     boolean inSet(List<String> varList, HashMap<String, String> table) {
@@ -289,20 +290,46 @@ public class MappingSet {
     }
     
     /**
-     * Take care of intermediate Mappings
+     * Process intermediate Mappings
      * either as parameter of eval(rest, map)
      * or as values clause inserted in rest
+     * exp is A optional B | A minus B | A join B
      */
     Exp setMappings(Exp exp, Mappings map) {
+        setJoinMappings(map);
+        return exp.rest();
+    }
+    
+    /**
+     * Process intermediate Mappings
+     * either as parameter of eval(rest, map)
+     * or as values clause inserted in rest
+     * exp is A optional B | A minus B | A join B
+     */
+    Exp setMappings2(Exp exp, Mappings map) {
         Exp rest = exp.rest();
-        if (exp.isJoin() || rest.isEvaluableWithMappings() || 
-            isFederate() ) {
+        if (exp.isJoin()){ 
+            // join is generated to enable us to pass 
+            // Mappings map as parameter to right argument
+            // join (A, bgp(B))
+            // join (A, union(B, C))
+            // join (A, graph(B))
+            // join (A, service)
+            setJoinMappings(map);
+        }
+        else if (isFederate() || rest.isEvaluableWithMappings()) {
+            // user case: 
+            // A optional rest | A minus rest
+            // and 1) rest recursively starts with service clause 
+            // or  2) rest recursively starts with edge/path 
+            // --2) special case taken into account in eval and()
             // eval(rest, map) may take Mappings map argument into account
-            // e.g. join or service -
+            //System.out.println("parameter");
             setJoinMappings(map);
         } else {
             // inject Mappings map in copy of rest as a values clause
-            // eval(rest)
+            // eval(values+rest)
+            // use case: exp = optional, minus
             rest = rest.complete(map);
         }
         return rest;
@@ -313,10 +340,14 @@ public class MappingSet {
     }
     
     Mappings prepareMappings(Exp exp) {
-        Exp rest = exp.rest();
-        // in-scope variables in rest
+        return prepareMappingsRest(exp.rest());
+    }
+    
+    Mappings prepareMappingsRest(Exp exp) {
+        // in-scope variables in rest except bind
         // except those that are only in right arg of an optional in rest
-        List<Node> nodeListInScope = rest.getRecordInScopeNodesWithoutBind();
+        // and skip statements after first union/minus/optional/graph in rest
+        List<Node> nodeListInScope = exp.getRecordInScopeNodesWithoutBind();
         if (!nodeListInScope.isEmpty() && hasIntersection(nodeListInScope)) {
             // generate values when at least one variable in-subscope is always 
             // bound in map1, otherwise it would generate duplicates in map2
@@ -328,6 +359,20 @@ public class MappingSet {
         }
         return null;
     }
+    
+    /**
+     * If exp starts with union, return Mappings as is
+     * union() will process Mappings in both branch
+     */
+    Mappings prepareMappingsRestWithUnion(Exp exp) {
+        if (exp.isFirstWith(UNION)) {
+            return getMappings();
+        }
+        else {
+            return prepareMappingsRest(exp);
+        }
+    }
+
 
     public Query getQuery() {
         return query;

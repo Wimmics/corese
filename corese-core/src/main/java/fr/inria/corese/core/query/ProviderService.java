@@ -123,9 +123,9 @@ public class ProviderService implements URLParam {
         // slice by default
         Mappings res = send(serviceList, serv, (isBind()) ? getMappings() : null, bslice, slice);
         restore(getAST());
-        if (res != null) {
-            res.limit(getAST().getLimit());
-        }
+//        if (res != null) {
+//            res.limit(getAST().getLimit());
+//        }
         return res;
     }
 

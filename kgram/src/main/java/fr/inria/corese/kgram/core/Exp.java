@@ -1493,7 +1493,7 @@ public class Exp extends PointerObject
                 if (h.isInSubScope()) {
                     // in-subscope record nodes that are bound in both branches of union
                     List<Node> left  = first().getTheNodes(h.copy());
-                    List<Node> right =  rest().getTheNodes(h.copy());
+                    List<Node> right = rest().getTheNodes(h.copy());
                     for (Node node : left) {
                         if (right.contains(node)) {
                             h.add(node);
@@ -2361,7 +2361,10 @@ public class Exp extends PointerObject
         return isAndJoinRec() || isRecFederate();
     }
     
-    // exp = and(join(and(edge) service()))
+    /**
+     * if exp = and(join(and(edge) service()))
+     * then pass Mappings map as parameter
+     */
     boolean isAndJoinRec(){
         if (isAnd()) {
             if (size() != 1) {
@@ -2372,7 +2375,6 @@ public class Exp extends PointerObject
         else if (isJoin()) {
             Exp fst = get(0);
             if (fst.isAnd() && fst.size() > 0 && fst.get(0).isEdgePath()) {
-                fst.setMappings(true);
                 return true;
             }
         }
@@ -2380,9 +2382,10 @@ public class Exp extends PointerObject
     }
     
      /**
-     * exp is rest of minus, optional, union: exp is AND
+     * exp is rest of minus, optional: exp is AND
      * exp is rest of join: AND is not mandatory, it may be a service
-     * 
+     * if exp is, or starts with, a service, 
+     * pass Mappings map as parameter 
      */ 
     boolean isRecFederate(){ 
         if (isService()) {
@@ -2409,15 +2412,30 @@ public class Exp extends PointerObject
                 get(0).isRecFederate() && 
                 get(1).isRecFederate();
     }
+    
+    boolean isFirstWith(int type) {
+        return type() == type || (isBGPAnd() && size()>0 && get(0).type() == type);
+    }
+    
+    boolean isGraphFirstWith(int type) {
+        return type()==GRAPH && size()>1 && get(1).isFirstWith(type);
+    }
+    
+    boolean isJoinFirstWith(int type) {
+        return isFirstWith(type) || isGraphFirstWith(type);
+    }
 
     Exp complete(Mappings map) {
         if (map == null || !map.isNodeList()) {
             return this;
         }
-        Exp values = Exp.createValues(map.getNodeList(), map);
         Exp res = duplicate();
-        res.getExpList().add(0, values);
+        res.getExpList().add(0, getValues(map));
         return res;
+    }
+    
+    Exp getValues(Mappings map) {
+        return createValues(map.getNodeList(), map);
     }
     
 }

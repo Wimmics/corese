@@ -83,7 +83,13 @@ public class Stack extends ArrayList<Exp> implements ExpType {
 		}
 		return this;
 	}
-	
+                
+        Stack addCopy(int n, Exp exp) {
+            Stack copy = copy();
+            copy.add(n, exp);
+            return copy;
+        }
+        
 	void reset(int n, Exp exp){
 		while (size()-1 > n){
 			remove(size()-1);

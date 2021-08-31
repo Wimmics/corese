@@ -145,14 +145,24 @@ public class EvalGraph {
             res = eval.subEvalNew(np, target, var, body, main, map, null, false, external);
         } 
         else {
-            // exp += values(var, map)
             Exp ee = body;
+            Mappings data = null; 
+            
             if (graph.getPath() == null) {
                 // not a path pointer
-                ee = body.complete(map);
+                if (Eval.isParameterGraphMappings()) {
+                    // eval graph body with parameter map
+                    // pro: if body is optional, eval it with parameter map
+                    data = map;
+                }
+                else {
+                    // eval graph body with values(map)
+                    ee = body.complete(map);
+                }
             }
+            
             // function call below can be reused with np = new Producer(graph) target=null var=null external=true
-            res = eval.subEvalNew(np, target, var, ee, main, (Mappings)null, (Mapping)null, false, external);
+            res = eval.subEvalNew(np, target, var, ee, main, data, (Mapping)null, false, external);
         }
         res.setNamedGraph(graph);
 

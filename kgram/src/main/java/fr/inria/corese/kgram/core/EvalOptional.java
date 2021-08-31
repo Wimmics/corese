@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.core;
 
+import static fr.inria.corese.kgram.api.core.ExpType.UNION;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -24,15 +25,14 @@ public class EvalOptional {
     public void setStop(boolean stop) {
         this.stop = stop;
     }
-    
+
     private boolean stop = false;
     Eval eval;
-    
+
     EvalOptional(Eval e) {
         eval = e;
     }
-    
-    
+
     /**
      *
      * A optional B Filter F map1 = eval(A) ; map2 = eval(values Vb {
@@ -46,7 +46,7 @@ public class EvalOptional {
         boolean hasGraph = gNode != null;
         Memory env = eval.getMemory();
         Node queryNode = null;
-       
+
         Mappings map1 = eval.subEval(p, gNode, queryNode, exp.first(), exp, data);
         if (isStop()) {
             return STOP;
@@ -54,51 +54,58 @@ public class EvalOptional {
         if (map1.isEmpty()) {
             return backtrack;
         }
-        MappingSet set1 = new MappingSet(getQuery(), map1);
-        //Exp rest = eval.prepareRest(exp, set1);
-        Mappings map = set1.prepareMappings(exp);
-        if (map != null  && exp.getInscopeFilter() != null) {
-            /**
-             * Use case: BGP1 optional { filter(exp) BGP2} all var in
-             * exp.getVariables() are inscope(BGP1, BGP2) and are bound in
-             * Mappings map  =>
-             * select Mapping m in map where filter (exp) succeed 
-             * and skip Mapping m otherwise
-             *
-             */
-            
-            Mappings nmap = filter(gNode, exp, env, p, map);
-            map = nmap;
-        }
 
-        /**
-         * Push bindings from map1 into rest when there is at least one variable
-         * in-subscope of rest that is always bound in map1 ?x p ?y optional {
-         * ?y q ?z } -> values ?y { y1 yn } {?x p ?y optional { ?y q ?z }}
-         * optional { ?z r ?t } -> if ?z is not bound in every map1, generate no
-         * values
-         * 
-         * set1.getJoinMappings() = Mappings to be considered by rest
-         * Either pushed into rest or stored in Memory to be used in eval(rest) eg when rest=service.
-         */    
-        Exp rest = exp.rest();
         Mappings map2 = null;
-        
-        if (map != null && map.isEmpty()) {
-            // Every Mapping fail filter, rest() will always fail: skip optional rest()
-            if (env.getQuery().isDebug()) {
-                trace(exp);
-            }
-            map2 = Mappings.create(env.getQuery());
-        }
+        Exp rest = exp.rest();
+        MappingSet set1 = new MappingSet(getQuery(), map1);
+
+        if (rest.isFirstWith(UNION)) {
+            // union() take care of Mappings map1
+            map2 = eval.subEval(p, gNode, queryNode, rest, exp, map1);   
+        } 
         else {
-            rest = set1.getRest(exp, map);        
-            map2 = eval.subEval(p, gNode, queryNode, rest, exp, set1.getJoinMappings());
+
+            Mappings map = set1.prepareMappingsRest(rest);
+
+            if (map != null && exp.getInscopeFilter() != null) {
+                /**
+                 * Use case: BGP1 optional { filter(exp) BGP2} all var in
+                 * exp.getVariables() are inscope(BGP1, BGP2) and are bound in
+                 * Mappings map => select Mapping m in map where filter (exp)
+                 * succeed and skip Mapping m otherwise
+                 *
+                 */
+
+                Mappings nmap = filter(gNode, exp, env, p, map);
+                map = nmap;
+            }
+
+            /**
+             * Push bindings from map1 into rest when there is at least one
+             * variable in-subscope of rest that is always bound in map1 ?x p ?y
+             * optional { ?y q ?z } -> values ?y { y1 yn } {?x p ?y optional {
+             * ?y q ?z }} optional { ?z r ?t } -> if ?z is not bound in every
+             * map1, generate no values
+             *
+             * set1.getJoinMappings() = Mappings to be considered by rest Either
+             * pushed into rest or stored in Memory to be used in eval(rest) eg
+             * when rest=service.
+             */
+            if (map != null && map.isEmpty()) {
+                // Every Mapping fail filter, rest() will always fail: skip optional rest()
+                if (env.getQuery().isDebug()) {
+                    trace(exp);
+                }
+                map2 = Mappings.create(env.getQuery());
+            } else {
+                //rest = set1.getRest(exp, map); 
+                map2 = eval.subEval(p, gNode, queryNode, rest, exp, map); //set1.getJoinMappings());
+            }
         }
 
         eval.getVisitor().optional(eval, eval.getGraphNode(gNode), exp, map1, map2);
 
-        MappingSet set = new MappingSet(getQuery(), exp, set1, 
+        MappingSet set = new MappingSet(getQuery(), exp, set1,
                 new MappingSet(getQuery(), map2));
         set.setDebug(env.getQuery().isDebug());
         set.start();
@@ -109,7 +116,7 @@ public class EvalOptional {
             }
             boolean success = false;
             int nbsuc = 0;
-            
+
             for (Mapping m2 : set.getCandidateMappings(m1)) {
                 if (isStop()) {
                     return STOP;
@@ -119,7 +126,7 @@ public class EvalOptional {
                     success = filter(env, queryNode, gNode, merge, exp);
                     if (success) {
                         nbsuc++;
-                        if (env.push(merge, n)) {                                                    
+                        if (env.push(merge, n)) {
                             backtrack = eval.eval(p, gNode, stack, n + 1);
                             env.pop(merge);
                             if (backtrack < n) {
@@ -131,7 +138,7 @@ public class EvalOptional {
             }
 
             if (nbsuc == 0) {
-                if (env.push(m1, n)) {                   
+                if (env.push(m1, n)) {
                     backtrack = eval.eval(p, gNode, stack, n + 1);
                     env.pop(m1);
                     if (backtrack < n) {
@@ -143,21 +150,19 @@ public class EvalOptional {
 
         return backtrack;
     }
-    
+
     void trace(Exp exp) {
         Eval.logger.info("Optional: candidate Mappings fail filter:");
         Eval.logger.info(exp.getInscopeFilter().toString());
         Eval.logger.info("Skip optional part:");
         Eval.logger.info(exp.toString());
     }
-    
+
     /**
-     * Remove Mapping that fail in-scope filter
-     * Use case: BGP1 optional { filter(var) BGP2 }
-     * var memberOf in-scope(BGP1, BGP2) 
-     * Mappings map = eval (BGP1)
-     * skip binding Mapping m  when it fail filter(var)
-     * Remove such Mapping m from map before binding BGP2 with map
+     * Remove Mapping that fail in-scope filter Use case: BGP1 optional {
+     * filter(var) BGP2 } var memberOf in-scope(BGP1, BGP2) Mappings map = eval
+     * (BGP1) skip binding Mapping m when it fail filter(var) Remove such
+     * Mapping m from map before binding BGP2 with map
      */
     Mappings filter(Node gNode, Exp exp, Environment memory, Producer p, Mappings map) throws SparqlException {
         if (memory.getQuery().isDebug()) {
@@ -192,8 +197,6 @@ public class EvalOptional {
         }
         return map;
     }
-
-    
 
     /**
      */

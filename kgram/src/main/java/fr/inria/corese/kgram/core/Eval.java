@@ -51,7 +51,13 @@ public class Eval implements ExpType, Plugin {
     // true = new processing of named graph 
     public static boolean NAMED_GRAPH_DEFAULT = true;
     static Logger logger = LoggerFactory.getLogger(Eval.class);
-
+    // draft test: when edge() has Mappings map parameter, push clause values(map)
+    private static boolean pushEdgeMappings = true;
+    // draft test: graph() has Mappings map parameter and eval body with map parameter
+    private static boolean parameterGraphMappings = true;
+    // draft test: union() has Mappings map parameter and eval branch with map parameter
+    private static boolean parameterUnionMappings = true;
+    
     static final int STOP = -2;
     public static int count = 0;
     ResultListener listener;
@@ -88,6 +94,10 @@ public class Eval implements ExpType, Plugin {
     EvalGraph evalGraphNew;
     EvalJoin join;
     EvalOptional optional;
+    
+    static {
+        setNewMappingsVersion(true);
+    }
 
     int // count number of eval() calls
             nbEdge = 0, nbCall = 0,
@@ -917,11 +927,15 @@ public class Eval implements ExpType, Plugin {
             if (n > level
                     || (maxExp.type() == UNION)) {
                 Exp ee = stack.get(n);
-                if (ee.type() != AND) {
+                if (true){//(ee.type() != AND) {
                     level = n;
                     maxExp = stack.get(n);
                     String s = String.format("%02d", n);
                     Message.log(Message.EVAL, s + " " + maxExp);
+                    if (map!=null) {
+                        logger.warn(String.format("With mappings:\nvalues %s\n%s",
+                                map.getNodeList(), map.toString(false, false, 5)));
+                    }
                     getTrace().append(String.format("Eval: %02d %s", n, maxExp))
                             .append(Message.NL).append(Message.NL);
                 }
@@ -936,7 +950,7 @@ public class Eval implements ExpType, Plugin {
         if (hasListener) {
             exp = listener.listen(exp, n);
         }
-
+        
         if (isEvent) {
             send(Event.START, exp, gNode, stack);
         }
@@ -1016,18 +1030,18 @@ public class Eval implements ExpType, Plugin {
                         backtrack = filter(p, gNode, exp, stack, n);
                         break;
                     case BIND:
-                        backtrack = bind(p, gNode, exp, stack, n);
+                        backtrack = bind(p, gNode, exp, map, stack, n);
                         break;
 
                     case PATH:
-                        backtrack = path(p, gNode, exp, stack, n);
+                        backtrack = path(p, gNode, exp, map, stack, n);
                         break;
 
                     case EDGE:
                         if (query.getGlobalQuery().isPathType() && exp.hasPath()) {
-                            backtrack = path(p, gNode, exp.getPath(), stack, n);
+                            backtrack = path(p, gNode, exp.getPath(), map, stack, n);
                         } else {
-                            backtrack = edge(p, gNode, exp, stack, n);
+                            backtrack = edge(p, gNode, exp, map, stack, n);
                         }
                         break;
 
@@ -1310,8 +1324,10 @@ public class Eval implements ExpType, Plugin {
         }
 
         MappingSet set1 = new MappingSet(memory.getQuery(), map1);
-        Exp rest = set1.prepareRest(exp);
-        Mappings map2 = subEval(p, gNode, node2, rest, exp, set1.getJoinMappings());
+        Exp rest = exp.rest(); 
+        Mappings minusMappings = set1.prepareMappingsRestWithUnion(rest);
+        
+        Mappings map2 = subEval(p, gNode, node2, rest, exp, minusMappings); 
 
         getVisitor().minus(this, getGraphNode(gNode), exp, map1, map2);
 
@@ -1380,15 +1396,39 @@ public class Eval implements ExpType, Plugin {
      * federated case, map is included in copy of exp as a values(var, map)
      * clause
      */
-    Mappings unionBranch(Producer p, Node gNode, Exp exp, Exp main, Mappings map) throws SparqlException {
+    Mappings unionBranch(Producer p, Node gNode, Exp exp, Exp main, Mappings data) throws SparqlException {
         Node queryNode = (gNode == null) ? null : query.getGraphNode();
-        if (isFederate(exp) || exp.isUnion()) {
-            return subEval(p, gNode, queryNode, exp, main, map);
-        } else {
+        
+        if (exp.isFirstWith(UNION)) {
+            // union in union: eval inner union with parameter data as is
+            return subEval(p, gNode, queryNode, exp, main, data);
+        }
+        else if (isFederate(exp) || exp.isUnion() || isParameterUnionMappings()) {
+            Mappings unionData = unionData(exp, data);          
+            return subEval(p, gNode, queryNode, exp, main, unionData);
+        }
+        else {
             // exp += values(var, map)
-            Exp ee = exp.complete(map);
+            Exp ee = exp.complete(data);
             return subEval(p, gNode, queryNode, ee, main);
         }
+    }
+    
+    /**
+     * exp is a branch of union
+     * extract from data relevant mappings for exp in-scope variables
+     */
+    Mappings unionData(Exp exp, Mappings data) {
+        if (data != null) {
+            if (data.getNodeList() == null) {
+                MappingSet ms = new MappingSet(getQuery(), data);
+                Mappings map = ms.prepareMappingsRest(exp); 
+//                if (map!=null) System.out.println(
+//                        String.format("union branch: %s\n%s", map.getNodeList(), map.toString(true)));
+                return map;
+            }            
+        }        
+        return data;
     }
 
     /**
@@ -1411,19 +1451,25 @@ public class Eval implements ExpType, Plugin {
         }
         return backtrack;
     }
-        
+      
     private int and(Producer p, Node gNode, Exp exp, Stack stack, Mappings data, int n) throws SparqlException {
         getVisitor().bgp(this, getGraphNode(gNode), exp, null);
-        if (exp.isMappings()) {
-            if (data != null) {
-                exp = exp.complete(data);
-            }
+
+        if (data != null && exp.size() > 0 && exp.get(0).isEdgePath()) {
+            // pass Mappings data as values clause
+            exp = exp.complete(data);
+            //System.out.println(exp);
+            stack = stack.and(exp, n);
+            // Mappings data is in stack, not in parameter
+            return eval(p, gNode, stack, n);
         }
-        stack = stack.and(exp, n);
-        return eval(p, gNode, stack, n);
+        else {
+            stack = stack.and(exp, n);
+            // pass Mappings data as parameter
+            return eval(p, gNode, stack, data, n);
+        }
     }
-
-
+    
     private int bgp(Producer p, Node gNode, Exp exp, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
         List<Node> from = query.getFrom(gNode);
@@ -1571,7 +1617,7 @@ public class Eval implements ExpType, Plugin {
     /**
      * bind(exp as var)
      */
-    private int bind(Producer p, Node gNode, Exp exp, Stack stack, int n) throws SparqlException {
+    private int bind(Producer p, Node gNode, Exp exp, Mappings map, Stack stack, int n) throws SparqlException {
         if (exp.isFunctional()) {
             return extBind(p, gNode, exp, stack, n);
         }
@@ -1586,9 +1632,9 @@ public class Eval implements ExpType, Plugin {
         getVisitor().bind(this, getGraphNode(gNode), exp, node == null ? null : node.getDatatypeValue());
 
         if (node == null) {
-            backtrack = eval(p, gNode, stack, n + 1);
+            backtrack = eval(p, gNode, stack, map, n + 1);
         } else if (memory.push(exp.getNode(), node, n)) {
-            backtrack = eval(p, gNode, stack, n + 1);
+            backtrack = eval(p, gNode, stack, map, n + 1);
             memory.pop(exp.getNode());
         }
 
@@ -1674,13 +1720,20 @@ public class Eval implements ExpType, Plugin {
        return evaluator.test(f, env);
     }
 
-    private int path(Producer p, Node gNode, Exp exp, Stack stack, int n) throws SparqlException {
+    private int path(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1, evENUM = Event.ENUM;
         PathFinder path = getPathFinder(exp, p);
         Filter f = null;
         Memory env = memory;
         Query qq = query;
         boolean isEvent = hasEvent;
+        
+        if (data!=null && data.getNodeList()!=null && isPushEdgeMappings()) {   
+            // push values(data) before edge in stack
+            logger.warn(String.format("Push path mappings:\nvalue %s\n%s", 
+                 data.getNodeList(), data.toString(false, false, 5)));
+            return eval(p, gNode, stack.addCopy(n, exp.getValues(data)), n);
+        }
 
         if (stack.size() > n + 1) {
             if (stack.get(n + 1).isFilter()) {
@@ -1812,7 +1865,7 @@ public class Eval implements ExpType, Plugin {
      * Enumerate candidate edges
      *
      */
-    private int edge(Producer p, Node gNode, Exp exp, Stack stack, int n) throws SparqlException {
+    private int edge(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1, evENUM = Event.ENUM;
         boolean isSuccess = false,
                 hasGraphNode = gNode != null,
@@ -1828,6 +1881,20 @@ public class Eval implements ExpType, Plugin {
         // the backtrack gNode
         Node bNode = gNode;
         boolean matchNBNode = qEdge.isMatchArity();
+       
+        if (data != null && data.getNodeList() != null) {
+            if (isPushEdgeMappings()) {
+                // push values(data) before edge in stack
+                if (debug) {
+                    logger.warn(String.format("Push edge mappings:\nvalues %s\n%s",
+                            data.getNodeList(), data.toString(false, false, 5)));
+                }
+                return eval(p, gNode, stack.addCopy(n, exp.getValues(data)), n);
+            } else if (debug) {
+                logger.warn(String.format("Eval edge skip mappings:\nvalues %s\n%s",
+                        data.getNodeList(), data.toString(false, false, 5)));
+            }
+        }
 
         if (p.getMode() == Producer.EXTENSION) {
             // Producer is Extension only for the query that created it
@@ -1973,19 +2040,6 @@ public class Eval implements ExpType, Plugin {
         return null;
     }
    
-
-//    Expr getExpression(String name) {
-//        return getExpression(query, name);
-//    }
-//
-//    Expr getExpression(Query q, String name) {
-//        return q.getExpression(name, inherit(q, name));
-//    }
-//
-//    boolean inherit(Query q, String name) {
-//        return !(q.isFun() && local.containsKey(name));
-//    }
-
     /**
      * select * where {{select distinct ?y where {?x p ?y}} . ?y q ?z} new eval,
      * new memory, share only sub query select variables
@@ -2006,6 +2060,11 @@ public class Eval implements ExpType, Plugin {
         // bind sub query select nodes in new memory
         Eval ev = copy(copyMemory(memory, query, subQuery, null), p1, evaluator, subQuery, false);      
         Mappings lMap = ev.eval(gNode, subQuery, null, data);
+        
+        if (debug) {
+            logger.info("subquery results size:\n"+ lMap.size());
+            //logger.info(lMap.toString());
+        }
 
         getVisitor().query(this, getGraphNode(gNode), exp, lMap);
         getVisitor().finish(lMap);
@@ -2367,6 +2426,36 @@ public class Eval implements ExpType, Plugin {
         join.setStop(true);
         evalGraphNew.setStop(true);
         optional.setStop(true);
+    }
+
+    public static boolean isPushEdgeMappings() {
+        return pushEdgeMappings;
+    }
+
+    public static void setPushEdgeMappings(boolean aPushEdgeMappings) {
+        pushEdgeMappings = aPushEdgeMappings;
+    }
+
+    public static boolean isParameterGraphMappings() {
+        return parameterGraphMappings;
+    }
+
+    public static void setParameterGraphMappings(boolean aParameterGraphMappings) {
+        parameterGraphMappings = aParameterGraphMappings;
+    }
+
+    public static boolean isParameterUnionMappings() {
+        return parameterUnionMappings;
+    }
+
+    public static void setParameterUnionMappings(boolean aParameterUnionMappings) {
+        parameterUnionMappings = aParameterUnionMappings;
+    }
+    
+    public static void setNewMappingsVersion(boolean b) {
+        setPushEdgeMappings(b);
+        setParameterGraphMappings(b);
+        setParameterUnionMappings(b);
     }
 
 }

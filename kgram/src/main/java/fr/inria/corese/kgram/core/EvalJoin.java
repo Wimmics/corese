@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.core;
 
+import static fr.inria.corese.kgram.api.core.ExpType.UNION;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
 import static fr.inria.corese.kgram.core.Eval.STOP;
@@ -35,19 +36,67 @@ public class EvalJoin {
             return backtrack;
         }
         Date d1 = new Date();
-        Mappings arg = map1; 
-        if (data != null && relevant(exp)) {
-            // use case: join(data, values ?s { <uri> }, service ?s { })
-            // data may be relevant for service
-            arg = map1.join(data);
+        Mappings map1Extended = map1; 
+        if (data != null && isFirstWithValues(exp)) {
+            // use case: join(values ?s { <uri> }, service ?s { })
+            // where values specify endpoint URL for service and 
+            // previous data contains relevant bindings for service in rest
+            // let's give a chance to pass relevant data to rest (service)
+            // although there is values in between
+            map1Extended = map1.join(data);
         }
-        MappingSet set1 = new MappingSet(getQuery(), arg);
-        Exp rest = set1.prepareRest(exp);
+
         Date d2 = new Date();
         if (stop) {
             return STOP;
         }
         
+        Mappings joinMappings = map1Extended;
+        if (exp.rest().isFirstWith(UNION)) {
+            // use case: rest = union() | @todo: graph g { union() }
+            // do nothing, pass Mappings as is, union() will take care of it
+        }
+        else {
+            MappingSet set1 = new MappingSet(getQuery(), map1Extended);
+            joinMappings = set1.prepareMappingsRest(exp.rest());
+        }
+        Mappings map2 = eval.subEval(p, gNode, gNode, exp.rest(), exp, joinMappings);
+
+        eval.getVisitor().join(eval, eval.getGraphNode(gNode), exp, map1, map2);
+
+        if (map2.size() == 0) {
+            return backtrack;
+        }
+       
+        return join(p, gNode, stack, env, map1, map2, n);
+    }
+    
+    int eval2(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
+        int backtrack = n - 1;
+        Memory env = eval.getMemory();
+        Mappings map1 = eval.subEval(p, gNode, gNode, exp.first(), exp, data);
+        if (map1.size() == 0) {
+            eval.getVisitor().join(eval, eval.getGraphNode(gNode), exp, map1, map1);
+            return backtrack;
+        }
+        Date d1 = new Date();
+        Mappings map1Extended = map1; 
+        if (data != null && isFirstWithValues(exp)) {
+            // use case: join(values ?s { <uri> }, service ?s { })
+            // where values specify endpoint URL for service and 
+            // previous data contains relevant bindings for service in rest
+            // let's give a chance to pass relevant data to rest (service)
+            // although there is values in between
+            map1Extended = map1.join(data);
+        }
+
+        Date d2 = new Date();
+        if (stop) {
+            return STOP;
+        }
+        
+        MappingSet set1 = new MappingSet(getQuery(), map1Extended);
+        Exp rest = set1.prepareRest(exp);
         Mappings map2 = eval.subEval(p, gNode, gNode, rest, exp, set1.getJoinMappings());
 
         eval.getVisitor().join(eval, eval.getGraphNode(gNode), exp, map1, map2);
@@ -63,8 +112,8 @@ public class EvalJoin {
         return eval.getMemory().getQuery();
     }
     
-    // use case: join(data, and(values ?s { <uri> }), service ?s { })
-    boolean relevant(Exp exp) {
+    // use case: join(and(values ?s { <uri> }), service ?s { })
+    boolean isFirstWithValues(Exp exp) {
         Exp fst = exp.first();
         return fst.isBGPAnd() && fst.size() == 1 && fst.get(0).isValues() ;
     }

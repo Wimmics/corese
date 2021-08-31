@@ -74,7 +74,7 @@ public class DataProducer extends GraphObject
         return iterate(graph.getTopProperty(), node, n);
     }
 
-     public DataProducer iterate(Node predicate, Node node, int n) {
+    public DataProducer iterate(Node predicate, Node node, int n) {
         // optimize special cases
         if (isNamedGraph) {
             if (node == null && from != null && !from.isEmpty()) {

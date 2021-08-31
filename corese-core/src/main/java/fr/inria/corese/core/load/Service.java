@@ -126,10 +126,10 @@ public class Service implements URLParam {
     
     // https://docs.oracle.com/javaee/7/api/index.html
     public String post(String url, String query, String mime) {
-        if (isDebug()) {
-            System.out.println("service post " + url);
-            System.out.println(query);
-        }
+//        if (isDebug()) {
+//            System.out.println("service post " + url);
+//            System.out.println(query);
+//        }
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         clientBuilder.readTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build(); 

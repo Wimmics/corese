@@ -217,6 +217,7 @@ public class NSManager extends ASTObject {
         for (String p : getPrefixSet()) {
             nsm.definePrefix(p, getNamespace(p));
         }
+        nsm.setRecord(isRecord());
         return nsm;
     }
 

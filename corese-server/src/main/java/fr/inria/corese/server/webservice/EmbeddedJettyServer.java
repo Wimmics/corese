@@ -5,6 +5,7 @@
 package fr.inria.corese.server.webservice;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.util.Parameter;
 import fr.inria.corese.sparql.triple.parser.Access;
@@ -137,6 +138,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
         Option reentrant = new Option("re", "reentrant", false, "authorize reentrant query");
         Option param = new Option("param", "param", true, "read properties file");
         Option rdfstar = new Option("rdfstar", "rdfstar", false, "RDF*");
+        Option binding = new Option("binding", "binding", true, "binding values | filter");
 
         Option sslOpt = new Option("ssl", "ssl", false, "enable ssl connection ?");
         Option portSslOpt = new Option("pssl", "pssl", true, "port of ssl connection");
@@ -159,6 +161,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
         options.addOption(superUser);
         options.addOption(key);
         options.addOption(param);
+        options.addOption(binding);
         options.addOption(reentrant);
         options.addOption(rdfstar);
 
@@ -269,6 +272,14 @@ public class EmbeddedJettyServer extends ResourceConfig {
                     } catch (Exception e) {
                         logger.error(e);
                     }
+                }
+            }
+            if (cmd.hasOption("binding")) {
+                // binding=values|filter
+                String prop = cmd.getOptionValue("binding");
+                logger.info("binding = " + prop);
+                if (prop != null) {
+                    CompileService.setBinding(prop);
                 }
             }
             if (cmd.hasOption("re")) {

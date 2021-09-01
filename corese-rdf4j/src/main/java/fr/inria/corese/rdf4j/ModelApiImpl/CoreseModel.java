@@ -111,25 +111,23 @@ public class CoreseModel implements Model {
         return OtherMethods.isEmpty(this.corese_graph);
     }
 
-    /*******************
-     *******************/
+    @Override
+    public int size() {
+        return OtherMethods.size(this.corese_graph);
+    }
 
     @Override
     public Iterator<Statement> iterator() {
-        // TODO Auto-generated method stub
-        return null;
+        return OtherMethods.iterator(this.corese_graph);
     }
+
+    /*******************
+     *******************/
 
     @Override
     public boolean retainAll(Collection<?> arg0) {
         // TODO Auto-generated method stub
         return false;
-    }
-
-    @Override
-    public int size() {
-        // TODO Auto-generated method stub
-        return 0;
     }
 
     @Override

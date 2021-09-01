@@ -1,13 +1,18 @@
 package fr.inria.corese.core.edge;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.core.TripleStore;
-import fr.inria.corese.core.GraphObject;
-import java.util.ArrayList;
-import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
+
+import java.util.ArrayList;
+import java.util.Objects;
+
+import org.eclipse.rdf4j.model.Statement;
+
+import fr.inria.corese.core.GraphObject;
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.PointerType;
+import fr.inria.corese.kgram.api.core.TripleStore;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 
 /**
@@ -25,11 +30,11 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     public static Edge create(Node source, Node subject, Node predicate, Node objet) {
         return null;
     }
-    
-       // manage access right
+
+    // manage access right
     @Override
     public byte getLevel() {
-        //return -1;
+        // return -1;
         return level;
     }
 
@@ -38,12 +43,12 @@ public abstract class EdgeTop extends GraphObject implements Edge {
         level = b;
         return this;
     }
-    
+
     public Edge setLevel(int b) {
-        level = (byte)b;
+        level = (byte) b;
         return this;
     }
-    
+
     @Override
     public String getDatatypeLabel() {
         return toString();
@@ -53,12 +58,12 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     public Node getEdgeNode() {
         return null;
     }
-    
+
     public void setEdgeNode(Node pred) {
     }
-    
+
     @Override
-    public Node getProperty(){
+    public Node getProperty() {
         return getEdgeNode();
     }
 
@@ -76,10 +81,12 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     @Override
     public void setProvenance(Object o) {
     }
-    
-    public void replicate(Edge cur){}
-    
-    public void duplicate(Edge cur){}
+
+    public void replicate(Edge cur) {
+    }
+
+    public void duplicate(Edge cur) {
+    }
 
     @Override
     public Iterable<IDatatype> getLoop() {
@@ -127,28 +134,39 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     public TripleStore getTripleStore() {
         return getNode(0).getTripleStore();
     }
-    
+
     @Override
-    public boolean equals(Object obj) {
-        if (obj instanceof Edge) {
-            return equals((Edge) obj);
-        }
-        return false;
+    public int hashCode() {
+        return Objects.hash(this.getSubject(), this.getPredicate(), this.getObject(), this.getContext());
     }
-    
-    boolean equals(Edge edge) {
-        if (nbNode() != edge.nbNode()) {
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Statement)) {
             return false;
         }
-        if (! getEdgeNode().equals(edge.getEdgeNode()) ||
-            ! getGraph().equals(edge.getGraph())) {
+
+        Statement other = (Statement) o;
+
+        if (!this.getSubject().equals(other.getSubject())) {
             return false;
         }
-        for (int i = 0; i<nbNode() ; i++) {
-            if (! getNode(i).equals(edge.getNode(i))){
-                return false;
-            }
+
+        if (!this.getPredicate().equals(other.getPredicate())) {
+            return false;
         }
+
+        if (!this.getObject().equals(other.getObject())) {
+            return false;
+        }
+
+        if (!Objects.equals(this.getContext(), other.getContext())) {
+            return false;
+        }
+
         return true;
     }
 }

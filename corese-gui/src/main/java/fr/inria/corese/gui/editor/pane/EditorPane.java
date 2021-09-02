@@ -18,6 +18,8 @@ public class EditorPane {
     private Font font;
     private String title;
 
+    private int old_line_number;
+
     public EditorPane(String title) {
         this.editor = new JTextPane();
         this.lineCounter = new JTextArea(10, 1);
@@ -25,6 +27,7 @@ public class EditorPane {
         this.title = title;
         this.initLineCounter();
         this.initEditor();
+        this.old_line_number = 0;
     }
 
     private void initLineCounter() {
@@ -46,16 +49,19 @@ public class EditorPane {
                 String editor_text = editor.getText();
                 int nb_line = editor_text.length() - editor_text.replace("\n", "").length() + 2;
 
-                String text = "\n";
-                for (int i = 1; i < nb_line; i++) {
-                    text += String.valueOf(i);
-                    if (i != nb_line - 1) {
-                        text += "\n";
+                if (nb_line != old_line_number) {
+                    old_line_number = nb_line;
+                    String text = "\n";
+                    for (int i = 1; i < nb_line; i++) {
+                        text += String.valueOf(i);
+                        if (i != nb_line - 1) {
+                            text += "\n";
+                        }
                     }
-                }
-                lineCounter.setText(text);
+                    lineCounter.setText(text);
 
-                lineCounter.setColumns(Integer.toString(nb_line - 1).length());
+                    lineCounter.setColumns(Integer.toString(nb_line - 1).length());
+                }
             }
 
             @Override

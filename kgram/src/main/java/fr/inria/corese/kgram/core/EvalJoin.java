@@ -51,15 +51,8 @@ public class EvalJoin {
             return STOP;
         }
         
-        Mappings joinMappings = map1Extended;
-        if (exp.rest().isFirstWith(UNION)) {
-            // use case: rest = union() | @todo: graph g { union() }
-            // do nothing, pass Mappings as is, union() will take care of it
-        }
-        else {
-            MappingSet set1 = new MappingSet(getQuery(), map1Extended);
-            joinMappings = set1.prepareMappingsRest(exp.rest());
-        }
+        MappingSet set1 = new MappingSet(getQuery(), map1Extended);
+        Mappings joinMappings = set1.prepareMappingsRest(exp.rest());
         Mappings map2 = eval.subEval(p, gNode, gNode, exp.rest(), exp, joinMappings);
 
         eval.getVisitor().join(eval, eval.getGraphNode(gNode), exp, map1, map2);

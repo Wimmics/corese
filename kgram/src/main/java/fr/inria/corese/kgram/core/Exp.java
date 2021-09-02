@@ -1345,7 +1345,7 @@ public class Exp extends PointerObject
                 break;
 
             case QUERY:
-                ArrayList<String> lVar = new ArrayList<String>();
+                ArrayList<String> lVar = new ArrayList<>();
                 getQuery().getBody().share(filterVar, lVar);
 
                 for (Exp exp : getQuery().getSelectFun()) {
@@ -1528,8 +1528,8 @@ public class Exp extends PointerObject
                 // BGP, service, union, named graph pattern
                 for (Exp ee : this) {
                     ee.getNodes(h);
-                    if (h.isInSubScopeLimited() && (ee.isMinus() || ee.isOptional() || ee.isUnion() || ee.isGraph())) {
-                        // skip statements after optional/minus/union for in-subscope nodes
+                    if (h.isInSubScopeLimited() && ee.isSkipStatement()) {
+                        // skip statements after optional/minus/union/.. for in-subscope nodes
                         break;
                     }                    
                 }
@@ -1537,13 +1537,29 @@ public class Exp extends PointerObject
 
     }
     
+    boolean isSkipStatement() {
+        switch (type()) {
+            case JOIN:
+            case UNION:
+            case OPTIONAL:
+            case MINUS:
+            case GRAPH:
+            case QUERY:
+            case SERVICE:
+                return true;
+
+            default:
+                return false;
+        }
+    }
+
   
     void queryNodeList(List<Node> selectList, boolean inSubScope) {
         List<Node> subSelectList = getQuery().getSelectNodeList();
         if (inSubScope) {
             // focus on left optional in query body 
             // because otherwise select * includes right optional
-            List<Node> scopeList = getQuery().getBody().getInScopeNodes();
+            List<Node> scopeList = getQuery().getBody().getInScopeNodes(false);
             for (Node node : scopeList) {
                 if (subSelectList.contains(node)) {
                     add(selectList, node);

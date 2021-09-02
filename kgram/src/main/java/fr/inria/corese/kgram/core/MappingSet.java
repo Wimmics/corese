@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.core;
 
-import static fr.inria.corese.kgram.api.core.ExpType.UNION;
 import fr.inria.corese.kgram.api.core.Node;
 import static fr.inria.corese.kgram.tool.Message.NL;
 import java.util.ArrayList;
@@ -10,8 +9,20 @@ import java.util.List;
 
 /**
  *
- * Utilitary class for Minus and Optional
- * Compute common variables and whether common variables are always bound
+ * Utilitary class for Join Minus Optional
+ * Compute common variables in left and right expression 
+ * and whether common variables are always bound
+ * Select subset of Mappings from left exp relevant for right expression
+ * optional(s p o, minus(o q t, t r s)) 
+ * variable o can be used in minus expression, variable s cannot 
+ * special case for union:
+ * join(s p o, union(s q t, o q t))
+ * there is no common variable bound in branches of union
+ * return complete Mappings, then union() will process it in the branches: left s and right o
+ * In addition, in case of successful subset of Mappings, return also the original Mappings in case there is 
+ * an union in right expression
+ * If union is in subquery, the subquery may skip the original Mappings depending on its select
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */
@@ -343,10 +354,14 @@ public class MappingSet {
         return prepareMappingsRest(exp.rest());
     }
     
+    /**
+     *
+     * in-scope variables in exp except bind except those that are only in
+     * right arg of an optional in exp and skip statements after first
+     * union/minus/optional/graph in exp
+     *
+     */
     Mappings prepareMappingsRest(Exp exp) {
-        // in-scope variables in rest except bind
-        // except those that are only in right arg of an optional in rest
-        // and skip statements after first union/minus/optional/graph in rest
         List<Node> nodeListInScope = exp.getRecordInScopeNodesWithoutBind();
         if (!nodeListInScope.isEmpty() && hasIntersection(nodeListInScope)) {
             // generate values when at least one variable in-subscope is always 
@@ -355,25 +370,20 @@ public class MappingSet {
             // map = select distinct map1 wrt exp inscope nodes 
             Mappings map = getMappings().distinct(nodeListInScope);
             map.setNodeList(nodeListInScope);
+            // record original Mappings because union in exp may process it
+            // more precisely. see Eval unionData()
+            // s p o {s q r} union {o q r}
+            // map node list = {r}
+            // whereas we can get s for first branch and o for second branch
+            // this is why we record original Mappings for union in exp if any 
+            map.setJoinMappings(getMappings());
             return map;           
         }
-        return null;
+        // there is no in-scope variable.
+        // return original Mappings in case of union in exp (see comment above)
+        return getMappings(); // return null
     }
-    
-    /**
-     * If exp starts with union, return Mappings as is
-     * union() will process Mappings in both branch
-     */
-    Mappings prepareMappingsRestWithUnion(Exp exp) {
-        if (exp.isFirstWith(UNION)) {
-            return getMappings();
-        }
-        else {
-            return prepareMappingsRest(exp);
-        }
-    }
-
-
+      
     public Query getQuery() {
         return query;
     }

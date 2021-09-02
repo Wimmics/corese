@@ -527,12 +527,12 @@ public class Construct
      */
     String blankRule(Node qNode, Environment map) {
         // _:b + rule ID + "." + qNode ID
-        StringBuffer sb = new StringBuffer(root);
+        StringBuilder sb = new StringBuilder(root);
         sb.append(getIndex(qNode));
 
         for (Node qnode : map.getQueryNodes()) {
             if (qnode != null && qnode.isVariable() && !qnode.isBlank()) {
-                // node value ID
+                // node value ID   
                 sb.append(DOT);
                 sb.append(map.getNode(qnode).getIndex());
             }

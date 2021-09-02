@@ -274,6 +274,221 @@ public class TestQuery1 {
         Mappings map = exec.query(q);
     }
     
+       @Test
+    public void union5() throws EngineException, MalformedURLException, LoadException {
+        String i = "insert data {"
+                + "us:John foaf:knows us:Jack ."
+                + "us:Jack foaf:knows us:Jim ."                
+                + "us:Jim   foaf:name 'Jim' ."
+                + "us:James foaf:name 'James' ."               
+                + "}";
+        String q = "select * where {"
+                + "?x foaf:knows ?y "
+                + "minus { "
+                + "{?x foaf:name ?n filter us:incr(?x, ?n) }  union { ?y foaf:name ?n filter us:incr(?y, ?n) } "
+                + "}"
+                + "}"
+                + "function us:incr(?x, ?y) {"
+                + "set(?count = ?count+1)"
+                + "}"
+                ;
+        Graph g = Graph.create();
+        Load load = Load.create(g);
+        QueryProcess exec = QueryProcess.create(g);
+        Binding b = Binding.create();
+        b.setGlobalVariable("?count", DatatypeMap.ZERO);
+        exec.query(i);
+        Mappings map = exec.query(q, b);  
+        // Mappings parameter focus edge iteration in graph/minus to relevant resources
+        assertEquals(1, map.size());
+        assertEquals(1, b.getVariable("?count").intValue());
+    }
+    
+       @Test
+    public void union4() throws EngineException, MalformedURLException, LoadException {
+        String i = "insert data {"
+                + "us:John foaf:knows us:Jack ."
+                + "us:Jack foaf:knows us:Jim ."                
+                + "us:Jim   foaf:name 'Jim' ."
+                + "us:James foaf:name 'James' ."               
+                + "}";
+        String q = "select * where {"
+                + "?x foaf:knows ?y "
+                + "optional {"
+                + "graph ?g { "
+                + "{?x foaf:name ?n filter us:incr(?x, ?n) }  union { ?y foaf:name ?n filter us:incr(?y, ?n) } "
+                + "}}"
+                + "}"
+                + "function us:incr(?x, ?y) {"
+                + "set(?count = ?count+1)"
+                + "}"
+                ;
+        Graph g = Graph.create();
+        Load load = Load.create(g);
+        QueryProcess exec = QueryProcess.create(g);
+        Binding b = Binding.create();
+        b.setGlobalVariable("?count", DatatypeMap.ZERO);
+        exec.query(i);
+        Mappings map = exec.query(q, b);  
+        // Mappings parameter focus edge iteration in optional/graph/union to relevant resources
+        assertEquals(2, map.size());
+        assertEquals(1, b.getVariable("?count").intValue());
+    }
+    
+          @Test
+    public void union333() throws EngineException, MalformedURLException, LoadException {
+        String i = "insert data {"
+                + "us:John foaf:knows us:Jack ."
+                + "us:Jack foaf:knows us:Jim ."                
+                + "us:Jim   foaf:name 'Jim' ."
+                + "us:James foaf:name 'James' ."               
+                + "}";
+        String q = "select * where {"
+                + "?x foaf:knows ?y "
+                + "{select ?n where { "
+                + "{?y foaf:name ?n filter us:incr(?y, ?n) } union { ?y foaf:name ?n filter us:incr(?y, ?n) } "
+                + "}}"
+                + "}"
+                + "function us:incr(?x, ?y) {"
+                + "set(?count = ?count+1)"
+                + "}"
+                ;
+        Graph g = Graph.create();
+        Load load = Load.create(g);
+        QueryProcess exec = QueryProcess.create(g);
+        Binding b = Binding.create();
+        b.setGlobalVariable("?count", DatatypeMap.ZERO);
+        exec.query(i);
+        Mappings map = exec.query(q, b); 
+        //System.out.println(map);
+        // Mappings parameter do not focus edge iteration in query/union because select ?n
+        assertEquals(8, map.size());
+        assertEquals(4, b.getVariable("?count").intValue());
+    }
+    
+    
+        @Test
+    public void union33() throws EngineException, MalformedURLException, LoadException {
+        String i = "insert data {"
+                + "us:John foaf:knows us:Jack ."
+                + "us:Jack foaf:knows us:Jim ."                
+                + "us:Jim   foaf:name 'Jim' ."
+                + "us:James foaf:name 'James' ."               
+                + "}";
+        String q = "select * where {"
+                + "?x foaf:knows ?y "
+                + "{select * where { "
+                + "{?y foaf:name ?n filter us:incr(?y, ?n) } union { ?y foaf:name ?n filter us:incr(?y, ?n) } "
+                + "}}"
+                + "}"
+                + "function us:incr(?x, ?y) {"
+                + "set(?count = ?count+1)"
+                + "}"
+                ;
+        Graph g = Graph.create();
+        Load load = Load.create(g);
+        QueryProcess exec = QueryProcess.create(g);
+        Binding b = Binding.create();
+        b.setGlobalVariable("?count", DatatypeMap.ZERO);
+        exec.query(i);
+        Mappings map = exec.query(q, b); 
+        //System.out.println(map);
+        // Mappings parameter  focus edge iteration in query/union because ?y is bound in both branches
+        assertEquals(2, map.size());
+        assertEquals(2, b.getVariable("?count").intValue());
+    }
+    
+   
+       @Test
+    public void union3() throws EngineException, MalformedURLException, LoadException {
+        String i = "insert data {"
+                + "us:John foaf:knows us:Jack ."
+                + "us:Jack foaf:knows us:Jim ."                
+                + "us:Jim   foaf:name 'Jim' ."
+                + "us:James foaf:name 'James' ."               
+                + "}";
+        String q = "select * where {"
+                + "?x foaf:knows ?y "
+                + "{select * where { "
+                + "{?x foaf:name ?n filter us:incr(?x, ?n) } union { ?y foaf:name ?n filter us:incr(?y, ?n) } "
+                + "}}"
+                + "}"
+                + "function us:incr(?x, ?y) {"
+                + "set(?count = ?count+1)"
+                + "}"
+                ;
+        Graph g = Graph.create();
+        Load load = Load.create(g);
+        QueryProcess exec = QueryProcess.create(g);
+        Binding b = Binding.create();
+        b.setGlobalVariable("?count", DatatypeMap.ZERO);
+        exec.query(i);
+        Mappings map = exec.query(q, b);  
+        // Mappings parameter do not focus edge iteration in query/union because ?x and ?y are not bound in both branches
+        assertEquals(1, map.size());
+        assertEquals(4, b.getVariable("?count").intValue());
+    }
+      @Test
+    public void union2() throws EngineException, MalformedURLException, LoadException {
+        String i = "insert data {"
+                + "us:John foaf:knows us:Jack ."
+                + "us:Jack foaf:knows us:Jim ."                
+                + "us:Jim   foaf:name 'Jim' ."
+                + "us:James foaf:name 'James' ."               
+                + "}";
+        String q = "select * where {"
+                + "?x foaf:knows ?y "
+                + "graph ?g { "
+                + "{?x foaf:name ?n filter us:incr(?x, ?n) }  union { ?y foaf:name ?n filter us:incr(?y, ?n) } "
+                + "}"
+                + "}"
+                + "function us:incr(?x, ?y) {"
+                + "set(?count = ?count+1)"
+                + "}"
+                ;
+        Graph g = Graph.create();
+        Load load = Load.create(g);
+        QueryProcess exec = QueryProcess.create(g);
+        Binding b = Binding.create();
+        b.setGlobalVariable("?count", DatatypeMap.ZERO);
+        exec.query(i);
+        Mappings map = exec.query(q, b);  
+        // Mappings parameter focus edge iteration in graph/union to relevant resources
+        assertEquals(1, map.size());
+        assertEquals(1, b.getVariable("?count").intValue());
+    }
+    
+     @Test
+    public void union1() throws EngineException, MalformedURLException, LoadException {
+        String i = "insert data {"
+                + "us:John foaf:knows us:Jack ."
+                + "us:Jack foaf:knows us:Jim ."                
+                + "us:Jim   foaf:name 'Jim' ."
+                + "us:James foaf:name 'James' ."               
+                + "}";
+        String q = "select * where {"
+                + "?x foaf:knows ?y "
+                + "optional { "
+                + "{?x foaf:name ?n filter us:incr(?x, ?n) }  union { ?y foaf:name ?n filter us:incr(?y, ?n) } "
+                + "}"
+                + "}"
+                + "function us:incr(?x, ?y) {"
+                + "set(?count = ?count+1)"
+                + "}"
+                ;
+        Graph g = Graph.create();
+        Load load = Load.create(g);
+        QueryProcess exec = QueryProcess.create(g);
+        Binding b = Binding.create();
+        b.setGlobalVariable("?count", DatatypeMap.ZERO);
+        exec.query(i);
+        Mappings map = exec.query(q, b); 
+        assertEquals(2, map.size());
+        // Mappings parameter focus edge iteration in optional/union to relevant resources
+        assertEquals(1, b.getVariable("?count").intValue());
+    }
+    
+    
     //@Test
     public void format() throws EngineException {
         String i = "insert data { [] rdf:value () }";

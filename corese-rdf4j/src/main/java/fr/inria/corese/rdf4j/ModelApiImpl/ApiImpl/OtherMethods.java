@@ -1,8 +1,6 @@
 package fr.inria.corese.rdf4j.ModelApiImpl.ApiImpl;
 
-import java.util.ArrayList;
 import java.util.Iterator;
-import java.util.List;
 
 import org.eclipse.rdf4j.model.Statement;
 
@@ -39,14 +37,7 @@ public class OtherMethods {
      */
     public static Iterator<Statement> iterator(Graph corese_graph) {
         Iterator<Edge> statements = corese_graph.iterator();
-
-        List<Statement> result = new ArrayList<>();
-        while (statements.hasNext()) {
-            Edge edge_copy = corese_graph.getEdgeFactory().copy(statements.next());
-            result.add(edge_copy);
-        }
-
-        return result.iterator();
+        return Utils.convertItEdgeToItStatement(corese_graph.getEdgeFactory(), statements).iterator();
     }
 
 }

@@ -910,6 +910,19 @@ public class Eval implements ExpType, Plugin {
         return eval(p, gNode, stack, null, n);
     }
    
+    /**
+     * Mappings map, possibly null, is result of previous expression that may be used to evaluate current exp
+     * optional(s p o, o q r)
+     * map = eval(s p o); eval(o q r, map) -> can use o in map
+     * map is relevant subset of result, projected on relevant subset of variables of right expression
+     * special cases:
+     * 1) when there is no relevant subset of results wrt variables, map=full result in case exp is a union
+     * 2) relevant subset of result contains full result in case exp is a union
+     * case union: each branch of union select its own relevant subset of results from full result
+     * Mappings map is recursively passed as parameter until one exp can use it
+     * It can be passed recursively through several statements: join(A, optional(union(B, C), D))
+     * Eventually, and() edge() path() transform Mappings map into values clause
+     */
     int eval(Producer p, Node gNode, Stack stack, Mappings map, int n) throws SparqlException {
         int backtrack = n - 1;
         boolean isEvent = hasEvent;
@@ -1002,6 +1015,10 @@ public class Eval implements ExpType, Plugin {
                         break;
 
                     case SERVICE:
+                        // @note: map processing is not optimal for service with union
+                        // we pass mappings only for variables that are in-scope in 
+                        // both branches of the union
+                        // it can be bypassed with values var {undef}
                         backtrack = service(p, gNode, exp, map, stack, n);
                         break;
 
@@ -1325,7 +1342,7 @@ public class Eval implements ExpType, Plugin {
 
         MappingSet set1 = new MappingSet(memory.getQuery(), map1);
         Exp rest = exp.rest(); 
-        Mappings minusMappings = set1.prepareMappingsRestWithUnion(rest);
+        Mappings minusMappings = set1.prepareMappingsRest(rest);
         
         Mappings map2 = subEval(p, gNode, node2, rest, exp, minusMappings); 
 
@@ -1426,7 +1443,11 @@ public class Eval implements ExpType, Plugin {
 //                if (map!=null) System.out.println(
 //                        String.format("union branch: %s\n%s", map.getNodeList(), map.toString(true)));
                 return map;
-            }            
+            } 
+            else if (data.getJoinMappings()!=null) {
+                // select relevant variables from original join Mappings 
+                return unionData(exp, data.getJoinMappings());
+            }
         }        
         return data;
     }
@@ -1550,7 +1571,7 @@ public class Eval implements ExpType, Plugin {
 
         if (provider != null) {
             // service delegated to provider
-            Mappings lMap = provider.service(node, exp, data, this);
+            Mappings lMap = provider.service(node, exp, selectQueryMappings(data), this);
 
 //            if (stack.isCompleted()) {
 //                return result(p, lMap, n);
@@ -2059,7 +2080,8 @@ public class Eval implements ExpType, Plugin {
         // copy current Eval,  new stack
         // bind sub query select nodes in new memory
         Eval ev = copy(copyMemory(memory, query, subQuery, null), p1, evaluator, subQuery, false);      
-        Mappings lMap = ev.eval(gNode, subQuery, null, data);
+        ev.setDebug(debug);
+        Mappings lMap = ev.eval(gNode, subQuery, null, selectQueryMappings(data));
         
         if (debug) {
             logger.info("subquery results size:\n"+ lMap.size());
@@ -2091,6 +2113,23 @@ public class Eval implements ExpType, Plugin {
         }
 
         return backtrack;
+    }
+    
+    /**
+     * Skip Mappings with null nodeList for subquery ans service
+     */
+    Mappings selectQueryMappings(Mappings data) {
+        if (data != null) {
+            if (data.getNodeList() == null) {
+                // no variable in-scope wrt select clause
+                return null;
+            } else {
+                // forget original join Mappings (in case of union in body)
+                // because original Mappings may not fit the select clause
+                data.setJoinMappings(null);
+            }
+        }
+        return data;
     }
     
     /**

@@ -47,6 +47,7 @@ public class Mappings extends PointerObject
     boolean sortWithDesc = true;
     Query query;
     List<Mapping> list, reject;
+    private Mappings joinMappings;
     private List<Edge> insert;
     private List<Edge> delete;
     private List<Node> nodeList;
@@ -1841,6 +1842,14 @@ public class Mappings extends PointerObject
 
     public void setDisplay(int display) {
         this.display = display;
+    }
+
+    public Mappings getJoinMappings() {
+        return joinMappings;
+    }
+
+    public void setJoinMappings(Mappings joinMappings) {
+        this.joinMappings = joinMappings;
     }
 
   

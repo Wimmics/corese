@@ -4,18 +4,18 @@ import java.util.ArrayList;
 import java.util.Hashtable;
 import java.util.List;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.triple.parser.NSManager;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.inria.corese.core.Event;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.Engine;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.core.api.Engine;
-import fr.inria.corese.core.Event;
-import fr.inria.corese.core.Graph;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  * RDFS Entailment
@@ -45,7 +45,7 @@ public class Entailment implements Engine {
     static final String W3C = "http://www.w3.org";
     public static final String KGRAPH2 = "http://ns.inria.fr/edelweiss/2010/kgraph#";
     public static final String KGRAPH = ExpType.KGRAM;
-    public static String DEFAULT = KGRAPH + "default";
+    public static String DEFAULT = ExpType.DEFAULT_GRAPH;
     public static String ENTAIL = KGRAPH + "entailment";
     public static String RULE = KGRAPH + "rule";
     public static String CONSTRAINT = KGRAPH + "constraint";

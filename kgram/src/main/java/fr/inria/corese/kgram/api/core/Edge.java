@@ -137,7 +137,7 @@ public interface Edge extends Pointerable, Statement {
 	public default Resource getContext() {
 		Node context = this.getGraph();
 
-		if (context == null || context.getLabel().equals("http://ns.inria.fr/corese/kgram/default")) {
+		if (context == null || context.getLabel().equals(ExpType.DEFAULT_GRAPH)) {
 			return null;
 		}
 		return (Resource) context.getDatatypeValue().getRdf4jValue();

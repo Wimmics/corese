@@ -132,67 +132,67 @@ public class CoreseModel implements Model {
     @Override
     public boolean retainAll(Collection<?> arg0) {
         // TODO Auto-generated method stub
-        return false;
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
     public Object[] toArray() {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
     public <T> T[] toArray(T[] arg0) {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
     public Set<Namespace> getNamespaces() {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
     public CoreseModel unmodifiable() {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
     public void setNamespace(Namespace namespace) {
         // TODO Auto-generated method stub
-
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
     public Optional<Namespace> removeNamespace(String prefix) {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
     public CoreseModel filter(Resource subj, IRI pred, Value obj, Resource... contexts) {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
     public Set<Resource> subjects() {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
     public Set<IRI> predicates() {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override
     public Set<Value> objects() {
         // TODO Auto-generated method stub
-        return null;
+        throw new UnsupportedOperationException("Not implemented, yet");
     }
 
     @Override

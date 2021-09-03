@@ -35,7 +35,7 @@ public class AddMethods {
      * @param context      Context of the statement.
      * @return True if the graph is modify, else false.
      */
-    private Boolean loadInCoreseGraph(Graph corese_graph, IDatatype subj, IDatatype pred, IDatatype obj,
+    private Boolean addInCoreseGraph(Graph corese_graph, IDatatype subj, IDatatype pred, IDatatype obj,
             IDatatype context) {
 
         Node subj_node = corese_graph.addNode(subj);
@@ -76,14 +76,14 @@ public class AddMethods {
 
         // With no graph context
         if (contexts == null || contexts.length == 0) {
-            return this.loadInCoreseGraph(corese_graph, subj_corese, pred_corese, obj_corese, null);
+            return this.addInCoreseGraph(corese_graph, subj_corese, pred_corese, obj_corese, null);
         }
 
         // With one or more graph contexts
         boolean changed = false;
         for (Resource context : contexts) {
             IDatatype context_corese = Rdf4jValueToCoreseDatatype.convert(context);
-            changed |= this.loadInCoreseGraph(corese_graph, subj_corese, pred_corese, obj_corese, context_corese);
+            changed |= this.addInCoreseGraph(corese_graph, subj_corese, pred_corese, obj_corese, context_corese);
         }
         return changed;
     }

@@ -55,7 +55,7 @@ public class ContainsMethods {
         Iterable<Edge> edges = Utils.getInstance().getEdges(corese_graph, subj, pred, obj, contexts);
 
         // test if result is empty
-        if (edges == null || edges.iterator().next() == null) {
+        if (edges == null || !edges.iterator().hasNext() || edges.iterator().next() == null) {
             return false;
         }
         return true;

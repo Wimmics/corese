@@ -16,6 +16,15 @@ import fr.inria.corese.kgram.api.core.Edge;
  */
 public class ContainsMethods {
 
+    private static final ContainsMethods instance = new ContainsMethods();
+
+    private ContainsMethods() {
+    }
+
+    public static ContainsMethods getInstance() {
+        return instance;
+    }
+
     /**
      * Determines if statements with the specified subject, predicate, object and
      * (optionally) context exist in this model. The subject, predicate and object
@@ -40,10 +49,10 @@ public class ContainsMethods {
      *                     match.
      * @return true if statements match the specified pattern.
      */
-    public static boolean containsSPO(Graph corese_graph, Resource subj, IRI pred, Value obj, Resource... contexts) {
+    public boolean containsSPO(Graph corese_graph, Resource subj, IRI pred, Value obj, Resource... contexts) {
 
         // get edges
-        Iterable<Edge> edges = Utils.getEdges(corese_graph, subj, pred, obj, contexts);
+        Iterable<Edge> edges = Utils.getInstance().getEdges(corese_graph, subj, pred, obj, contexts);
 
         // test if result is empty
         if (edges == null || edges.iterator().next() == null) {
@@ -59,11 +68,10 @@ public class ContainsMethods {
      * @param o            The statement to look for.
      * @return true if statements exist in the graph, else false.
      */
-    public static boolean containsStatement(Graph corese_graph, Object o) {
+    public boolean containsStatement(Graph corese_graph, Object o) {
         if (o instanceof Statement) {
             Statement st = (Statement) o;
-            return ContainsMethods.containsSPO(corese_graph, st.getSubject(), st.getPredicate(), st.getObject(),
-                    st.getContext());
+            return this.containsSPO(corese_graph, st.getSubject(), st.getPredicate(), st.getObject(), st.getContext());
         }
         return false;
     }
@@ -75,11 +83,11 @@ public class ContainsMethods {
      * @param c            The statement to look for.
      * @return true if all statements exist in the graph, else false.
      */
-    public static boolean containsAllStatement(Graph corese_graph, Collection<?> c) {
+    public boolean containsAllStatement(Graph corese_graph, Collection<?> c) {
 
         Iterator<?> statements = c.iterator();
         while (statements.hasNext()) {
-            if (!ContainsMethods.containsStatement(corese_graph, statements.next())) {
+            if (!this.containsStatement(corese_graph, statements.next())) {
                 return false;
             }
         }

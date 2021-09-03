@@ -4,14 +4,23 @@ import org.eclipse.rdf4j.model.Resource;
 
 import fr.inria.corese.core.Graph;
 
-public abstract class ClearMethods {
+public class ClearMethods {
+
+    private static final ClearMethods instance = new ClearMethods();
+
+    private ClearMethods() {
+    }
+
+    public static ClearMethods getInstance() {
+        return instance;
+    }
 
     /**
      * Removes all statements in graph.
      * 
      * @param corese_graph The context of the statements to remove.
      */
-    public static void clearAll(Graph corese_graph) {
+    public void clearAll(Graph corese_graph) {
         corese_graph.clear();
         corese_graph.dropGraphNames();
     }
@@ -23,7 +32,7 @@ public abstract class ClearMethods {
      * @param contexts     The context of the statements to remove.
      * @return true if one or more statements have been removed.
      */
-    public static boolean clearGraph(Graph corese_graph, Resource... contexts) {
+    public boolean clearGraph(Graph corese_graph, Resource... contexts) {
 
         Boolean result = false;
 

@@ -37,17 +37,17 @@ public class CoreseModel implements Model {
 
     @Override
     public boolean add(Resource subj, IRI pred, Value obj, Resource... contexts) {
-        return AddMethods.addSPO(this.corese_graph, subj, pred, obj, contexts);
+        return AddMethods.getInstance().addSPO(this.corese_graph, subj, pred, obj, contexts);
     }
 
     @Override
     public boolean add(Statement statement) {
-        return AddMethods.addStatement(this.corese_graph, statement);
+        return AddMethods.getInstance().addStatement(this.corese_graph, statement);
     }
 
     @Override
     public boolean addAll(Collection<? extends Statement> statements) {
-        return AddMethods.addAll(this.corese_graph, statements);
+        return AddMethods.getInstance().addAll(this.corese_graph, statements);
     }
 
     /*******************
@@ -56,12 +56,12 @@ public class CoreseModel implements Model {
 
     @Override
     public void clear() {
-        ClearMethods.clearAll(this.corese_graph);
+        ClearMethods.getInstance().clearAll(this.corese_graph);
     }
 
     @Override
     public boolean clear(Resource... contexts) {
-        return ClearMethods.clearGraph(this.corese_graph, contexts);
+        return ClearMethods.getInstance().clearGraph(this.corese_graph, contexts);
     }
 
     /**********************
@@ -70,17 +70,17 @@ public class CoreseModel implements Model {
 
     @Override
     public boolean contains(Object statement) {
-        return ContainsMethods.containsStatement(corese_graph, statement);
+        return ContainsMethods.getInstance().containsStatement(corese_graph, statement);
     }
 
     @Override
     public boolean containsAll(Collection<?> statements) {
-        return ContainsMethods.containsAllStatement(corese_graph, statements);
+        return ContainsMethods.getInstance().containsAllStatement(corese_graph, statements);
     }
 
     @Override
     public boolean contains(Resource subj, IRI pred, Value obj, Resource... contexts) {
-        return ContainsMethods.containsSPO(this.corese_graph, subj, pred, obj, contexts);
+        return ContainsMethods.getInstance().containsSPO(this.corese_graph, subj, pred, obj, contexts);
     }
 
     /********************
@@ -89,17 +89,17 @@ public class CoreseModel implements Model {
 
     @Override
     public boolean remove(Resource subj, IRI pred, Value obj, Resource... contexts) {
-        return RemoveMethods.removeSPO(this.corese_graph, subj, pred, obj, contexts);
+        return RemoveMethods.getInstance().removeSPO(this.corese_graph, subj, pred, obj, contexts);
     }
 
     @Override
     public boolean remove(Object statements) {
-        return RemoveMethods.removeStatement(this.corese_graph, statements);
+        return RemoveMethods.getInstance().removeStatement(this.corese_graph, statements);
     }
 
     @Override
     public boolean removeAll(Collection<?> statements) {
-        return RemoveMethods.removeAll(this.corese_graph, statements);
+        return RemoveMethods.getInstance().removeAll(this.corese_graph, statements);
     }
 
     /*******************
@@ -108,22 +108,22 @@ public class CoreseModel implements Model {
 
     @Override
     public boolean isEmpty() {
-        return OtherMethods.isEmpty(this.corese_graph);
+        return OtherMethods.getInstance().isEmpty(this.corese_graph);
     }
 
     @Override
     public int size() {
-        return OtherMethods.size(this.corese_graph);
+        return OtherMethods.getInstance().size(this.corese_graph);
     }
 
     @Override
     public Iterator<Statement> iterator() {
-        return OtherMethods.iterator(this.corese_graph);
+        return OtherMethods.getInstance().iterator(this.corese_graph);
     }
 
     @Override
     public Iterable<Statement> getStatements(Resource subject, IRI predicate, Value object, Resource... contexts) {
-        return OtherMethods.getStatements(this.corese_graph, subject, predicate, object, contexts);
+        return OtherMethods.getInstance().getStatements(this.corese_graph, subject, predicate, object, contexts);
     }
 
     /*******************

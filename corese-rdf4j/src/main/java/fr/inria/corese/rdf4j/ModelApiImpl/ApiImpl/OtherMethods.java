@@ -12,14 +12,23 @@ import fr.inria.corese.kgram.api.core.Edge;
 
 public class OtherMethods {
 
+    private static final OtherMethods instance = new OtherMethods();
+
+    private OtherMethods() {
+    }
+
+    public static OtherMethods getInstance() {
+        return instance;
+    }
+
     /**
      * Test is the graph is empty.
      * 
      * @param corese_graph The graph to test.
      * @return True if the graph is empty, else false.
      */
-    public static boolean isEmpty(Graph corese_graph) {
-        return !ContainsMethods.containsSPO(corese_graph, null, null, null);
+    public boolean isEmpty(Graph corese_graph) {
+        return !ContainsMethods.getInstance().containsSPO(corese_graph, null, null, null);
     }
 
     /**
@@ -28,7 +37,7 @@ public class OtherMethods {
      * @param corese_graph The graph to evaluate.
      * @return Size of the graph.
      */
-    public static int size(Graph corese_graph) {
+    public int size(Graph corese_graph) {
         return corese_graph.size();
     }
 
@@ -38,9 +47,9 @@ public class OtherMethods {
      * @param corese_graph The graph to iterate.
      * @return Iterator over the elements in this graph.
      */
-    public static Iterator<Statement> iterator(Graph corese_graph) {
+    public Iterator<Statement> iterator(Graph corese_graph) {
         Iterator<Edge> statements = corese_graph.iterator();
-        return Utils.convertItEdgeToItStatement(corese_graph.getEdgeFactory(), statements).iterator();
+        return Utils.getInstance().convertItEdgeToItStatement(corese_graph.getEdgeFactory(), statements).iterator();
     }
 
     /**
@@ -67,10 +76,10 @@ public class OtherMethods {
      *                     match.
      * @return Iterator of statement that match the specified pattern.
      */
-    public static Iterable<Statement> getStatements(Graph corese_graph, Resource subj, IRI pred, Value obj,
+    public Iterable<Statement> getStatements(Graph corese_graph, Resource subj, IRI pred, Value obj,
             Resource... contexts) {
-        Iterable<Edge> edges = Utils.getEdges(corese_graph, subj, pred, obj, contexts);
-        return Utils.convertItEdgeToItStatement(corese_graph.getEdgeFactory(), edges.iterator());
+        Iterable<Edge> edges = Utils.getInstance().getEdges(corese_graph, subj, pred, obj, contexts);
+        return Utils.getInstance().convertItEdgeToItStatement(corese_graph.getEdgeFactory(), edges.iterator());
     }
 
 }

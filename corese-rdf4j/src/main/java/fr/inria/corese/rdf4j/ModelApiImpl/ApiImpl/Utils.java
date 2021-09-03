@@ -18,13 +18,22 @@ import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
 public class Utils {
 
+    private static final Utils instance = new Utils();
+
+    private Utils() {
+    }
+
+    public static Utils getInstance() {
+        return instance;
+    }
+
     /**
      * Convert a RDF4J value to a Corese node.
      * 
      * @param rdf4j_value Rdf4j value to translate.
      * @return Equivalent Corese node or null if Rdf4j value is null.
      */
-    private static Node convertRdf4jValueToCoreseNode(Value rdf4j_value) {
+    private Node convertRdf4jValueToCoreseNode(Value rdf4j_value) {
 
         if (rdf4j_value == null) {
             return null;
@@ -41,7 +50,7 @@ public class Utils {
      * @return Equivalent array of Corese Node, null if RDF4J context is empty or
      *         the default graph is RDF4J context is null .
      */
-    private static Node[] convertRdf4jContextsToCorese(Node default_graph, Resource... contexts) {
+    private Node[] convertRdf4jContextsToCorese(Node default_graph, Resource... contexts) {
 
         // if the contexts is null then the context is the default context
         if (contexts == null) {
@@ -58,7 +67,7 @@ public class Utils {
         for (Resource context : contexts) {
             // i don't want null value into corese_contexts
             if (context != null) {
-                corese_contexts.add(Utils.convertRdf4jValueToCoreseNode(context));
+                corese_contexts.add(this.convertRdf4jValueToCoreseNode(context));
             }
         }
 
@@ -96,16 +105,16 @@ public class Utils {
      *                     match.
      * @return Iterable of Edge that match the specified pattern.
      */
-    public static Iterable<Edge> getEdges(Graph corese_graph, Resource subj, IRI pred, Value obj,
+    public Iterable<Edge> getEdges(Graph corese_graph, Resource subj, IRI pred, Value obj,
             Resource... contexts) {
 
         // convert subject, predicate, object into Corese Node
-        Node subj_node = Utils.convertRdf4jValueToCoreseNode(subj);
-        Node pred_node = Utils.convertRdf4jValueToCoreseNode(pred);
-        Node obj_node = Utils.convertRdf4jValueToCoreseNode(obj);
+        Node subj_node = this.convertRdf4jValueToCoreseNode(subj);
+        Node pred_node = this.convertRdf4jValueToCoreseNode(pred);
+        Node obj_node = this.convertRdf4jValueToCoreseNode(obj);
 
         // convert contexts into Corese Nodes
-        Node[] contexts_node = Utils.convertRdf4jContextsToCorese(corese_graph.getDefaultGraphNode(), contexts);
+        Node[] contexts_node = this.convertRdf4jContextsToCorese(corese_graph.getDefaultGraphNode(), contexts);
 
         // get edges
         Iterable<Edge> result;
@@ -124,7 +133,7 @@ public class Utils {
      * @param edges        Iterator of edge to convert.
      * @return Iterable of statement equivalent.
      */
-    public static Iterable<Statement> convertItEdgeToItStatement(EdgeFactory edge_factory, Iterator<Edge> edges) {
+    public Iterable<Statement> convertItEdgeToItStatement(EdgeFactory edge_factory, Iterator<Edge> edges) {
 
         List<Statement> result = new ArrayList<>();
         while (edges.hasNext()) {

@@ -13,7 +13,16 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
-public abstract class AddMethods {
+public class AddMethods {
+
+    private static final AddMethods instance = new AddMethods();
+
+    private AddMethods() {
+    }
+
+    public static AddMethods getInstance() {
+        return instance;
+    }
 
     /**
      * Add one statement ({@code subj}, {@code pred}, {@code obj}, {@code context})
@@ -26,7 +35,7 @@ public abstract class AddMethods {
      * @param context      Context of the statement.
      * @return True if the graph is modify, else false.
      */
-    private static Boolean loadInCoreseGraph(Graph corese_graph, IDatatype subj, IDatatype pred, IDatatype obj,
+    private Boolean loadInCoreseGraph(Graph corese_graph, IDatatype subj, IDatatype pred, IDatatype obj,
             IDatatype context) {
 
         Node subj_node = corese_graph.addNode(subj);
@@ -58,7 +67,7 @@ public abstract class AddMethods {
      * @param contexts     Contexts of the statement.
      * @return True if the graph is modify, else false.
      */
-    public static boolean addSPO(Graph corese_graph, Resource subj, IRI pred, Value obj, Resource... contexts) {
+    public boolean addSPO(Graph corese_graph, Resource subj, IRI pred, Value obj, Resource... contexts) {
 
         // Convert subject, predicate, object into IDatatype
         IDatatype subj_corese = Rdf4jValueToCoreseDatatype.convert(subj);
@@ -67,14 +76,14 @@ public abstract class AddMethods {
 
         // With no graph context
         if (contexts == null || contexts.length == 0) {
-            return AddMethods.loadInCoreseGraph(corese_graph, subj_corese, pred_corese, obj_corese, null);
+            return this.loadInCoreseGraph(corese_graph, subj_corese, pred_corese, obj_corese, null);
         }
 
         // With one or more graph contexts
         boolean changed = false;
         for (Resource context : contexts) {
             IDatatype context_corese = Rdf4jValueToCoreseDatatype.convert(context);
-            changed |= AddMethods.loadInCoreseGraph(corese_graph, subj_corese, pred_corese, obj_corese, context_corese);
+            changed |= this.loadInCoreseGraph(corese_graph, subj_corese, pred_corese, obj_corese, context_corese);
         }
         return changed;
     }
@@ -86,16 +95,16 @@ public abstract class AddMethods {
      * @param statement    Statement to add.
      * @return True if the graph is modify, else false.
      */
-    public static boolean addStatement(Graph corese_graph, Statement statement) {
+    public boolean addStatement(Graph corese_graph, Statement statement) {
         Resource subject = statement.getSubject();
         IRI predicate = statement.getPredicate();
         Value object = statement.getObject();
         Resource context = statement.getContext();
 
         if (context != null) {
-            return AddMethods.addSPO(corese_graph, subject, predicate, object, context);
+            return this.addSPO(corese_graph, subject, predicate, object, context);
         } else {
-            return AddMethods.addSPO(corese_graph, subject, predicate, object);
+            return this.addSPO(corese_graph, subject, predicate, object);
         }
     }
 
@@ -106,10 +115,10 @@ public abstract class AddMethods {
      * @param statements   Collection of statements to add.
      * @return True if the graph is modify, else false.
      */
-    public static boolean addAll(Graph corese_graph, Collection<? extends Statement> statements) {
+    public boolean addAll(Graph corese_graph, Collection<? extends Statement> statements) {
         boolean modify = false;
         for (Statement statement : statements) {
-            modify |= AddMethods.addStatement(corese_graph, statement);
+            modify |= this.addStatement(corese_graph, statement);
         }
         return modify;
     }

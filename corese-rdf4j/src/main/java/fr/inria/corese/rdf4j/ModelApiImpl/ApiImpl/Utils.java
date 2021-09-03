@@ -94,7 +94,7 @@ public class Utils {
      *                     context. If one or more contexts are specified,
      *                     statements with a context matching one of these will
      *                     match.
-     * @return Edges list that match the specified pattern.
+     * @return Iterable of Edge that match the specified pattern.
      */
     public static Iterable<Edge> getEdges(Graph corese_graph, Resource subj, IRI pred, Value obj,
             Resource... contexts) {

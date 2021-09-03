@@ -4,6 +4,7 @@ import static org.junit.Assert.assertEquals;
 
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
@@ -106,5 +107,34 @@ public class OtherMethodsTest {
         // Tests
         assertEquals(true, iterator_statements.containsAll(graph_statements));
         assertEquals(true, graph_statements.containsAll(iterator_statements));
+    }
+
+    @Test
+    public void getStatements() {
+        CoreseModel model = this.buildCoreseModel();
+
+        // buil an array with graph statement
+        ValueFactory vf = SimpleValueFactory.getInstance();
+
+        Statement statement_0 = vf.createStatement(edithPiafNode, isaProperty, singerNode);
+        Statement statement_1 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context1);
+        Statement statement_2 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context2);
+        Statement statement_3 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context3);
+
+        ArrayList<Statement> graph_statements = new ArrayList<>();
+        graph_statements.add(statement_0);
+        graph_statements.add(statement_1);
+        graph_statements.add(statement_2);
+        graph_statements.add(statement_3);
+
+        // build an array with iterator result
+        Iterable<Statement> iterable_statements = model.getStatements(null, null, null);
+
+        List<Statement> result_statements = new ArrayList<>();
+        iterable_statements.forEach(result_statements::add);
+
+        // Tests
+        assertEquals(true, result_statements.containsAll(graph_statements));
+        assertEquals(true, graph_statements.containsAll(result_statements));
     }
 }

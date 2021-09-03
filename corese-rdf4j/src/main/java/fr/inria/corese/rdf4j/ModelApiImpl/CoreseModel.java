@@ -121,6 +121,11 @@ public class CoreseModel implements Model {
         return OtherMethods.iterator(this.corese_graph);
     }
 
+    @Override
+    public Iterable<Statement> getStatements(Resource subject, IRI predicate, Value object, Resource... contexts) {
+        return OtherMethods.getStatements(this.corese_graph, subject, predicate, object, contexts);
+    }
+
     /*******************
      *******************/
 

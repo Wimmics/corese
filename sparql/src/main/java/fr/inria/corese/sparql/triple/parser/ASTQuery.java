@@ -60,7 +60,7 @@ public class ASTQuery
     /**
      * logger from log4j
      */
-    private static Logger logger = LoggerFactory.getLogger(ASTQuery.class);
+    public static Logger logger = LoggerFactory.getLogger(ASTQuery.class);
 
     static String RootPropertyQN = RDFS.RootPropertyQN; // cos:Property
     static String RootPropertyURI = RDFS.RootPropertyURI; //"http://www.inria.fr/acacia/corese#Property";

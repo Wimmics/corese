@@ -303,17 +303,6 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 		else return null;
 	}
 	
-	/**
-	 * If the triples are all filter
-	 * @return
-	 */
-//	boolean isExp(){
-//		for (int i=0; i<size(); i++){
-//			if (! eget(i).isExp()) return false;
-//		}
-//		return true;
-//	}
-
 	public boolean isTriple(){
 		return false;
 	}
@@ -515,6 +504,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         }
         
         public void walk(Walker walker) {
+            //System.out.println("walk stmt: " + this);
             walker.enter(this);
             for (Exp exp : getBody()) {
                 exp.walk(walker);

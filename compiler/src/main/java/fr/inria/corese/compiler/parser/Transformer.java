@@ -266,6 +266,10 @@ public class Transformer implements ExpType {
         template(ast);
 
         Query q = compile(ast);
+        if (ast.isFail()) {
+            // Walker ASTParser detected syntax pb
+            q.setCorrect(false);
+        }
         q.setRule(ast.isRule());
         q.setAlgebra(isAlgebra());
         if (ast.getContext() != null) {

@@ -33,6 +33,7 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+
 import fr.inria.corese.gui.core.MainFrame;
 
 /**
@@ -68,7 +69,8 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
     private Highlighter highlighter;
     private MainFrame mainFrame;
     static int FontSize = 16;
-    
+    private int old_line_number = 0;
+
     ArrayList<String> listWords     = new ArrayList<>();
     ArrayList<String> listFunctions = new ArrayList<>();
    
@@ -541,7 +543,6 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
                 start = 0;
                 temp = 0;
             } catch (BadLocationException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         }
@@ -646,10 +647,13 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
         String text = "";
         Document doc2 = textComponentInput.getDocument();
         int lineCount = doc2.getDefaultRootElement().getElementCount();
-        for (int i = 1; i < lineCount + 1; i++) {
-            text += String.valueOf(i) + "\n";
+        if (lineCount != this.old_line_number) {
+            this.old_line_number = lineCount;
+            for (int i = 1; i < lineCount + 1; i++) {
+                text += String.valueOf(i) + "\n";
+            }
+            textComponentOutput.setText(text);
         }
-        textComponentOutput.setText(text);
     }
 
     public void refreshColoring() {

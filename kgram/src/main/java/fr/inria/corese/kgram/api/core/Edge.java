@@ -135,12 +135,12 @@ public interface Edge extends Pointerable, Statement {
 
 	@Override
 	public default Resource getContext() {
-		Node graph = this.getGraph();
+		Node context = this.getGraph();
 
-		if (graph == null) {
+		if (context == null || context.getLabel().equals(ExpType.DEFAULT_GRAPH)) {
 			return null;
 		}
-		return (Resource) graph.getDatatypeValue().getRdf4jValue();
+		return (Resource) context.getDatatypeValue().getRdf4jValue();
 	}
 
 }

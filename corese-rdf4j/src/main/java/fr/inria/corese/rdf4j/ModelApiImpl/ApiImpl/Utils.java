@@ -1,11 +1,15 @@
 package fr.inria.corese.rdf4j.ModelApiImpl.ApiImpl;
 
 import java.util.ArrayList;
+import java.util.Iterator;
+import java.util.List;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
+import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 
+import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.kgram.api.core.Edge;
@@ -110,6 +114,24 @@ public class Utils {
         } else {
             result = corese_graph.getEdgesRDF4J(subj_node, pred_node, obj_node, contexts_node);
         }
+        return result;
+    }
+
+    /**
+     * Convert an iterator of edge into iterable of statement.
+     * 
+     * @param edge_factory Edge factory.
+     * @param edges        Iterator of edge to convert.
+     * @return Iterable of statement equivalent.
+     */
+    public static Iterable<Statement> convertItEdgeToItStatement(EdgeFactory edge_factory, Iterator<Edge> edges) {
+
+        List<Statement> result = new ArrayList<>();
+        while (edges.hasNext()) {
+            Edge edge_copy = edge_factory.copy(edges.next());
+            result.add(edge_copy);
+        }
+
         return result;
     }
 }

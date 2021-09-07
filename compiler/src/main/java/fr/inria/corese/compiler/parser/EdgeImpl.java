@@ -1,18 +1,21 @@
 package fr.inria.corese.compiler.parser;
 
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.ArrayList;
+import java.util.Objects;
 
-import fr.inria.corese.sparql.triple.cst.RDFS;
-import fr.inria.corese.sparql.triple.parser.Atom;
-import fr.inria.corese.sparql.triple.parser.Constant;
-import fr.inria.corese.sparql.triple.parser.Triple;
-import fr.inria.corese.sparql.triple.parser.Variable;
+import org.eclipse.rdf4j.model.Statement;
+
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.core.PointerObject;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.cst.RDFS;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Variable;
 
 public class EdgeImpl extends PointerObject implements Edge {
 
@@ -56,7 +59,7 @@ public class EdgeImpl extends PointerObject implements Edge {
         edge.add(sub);
         edge.add(obj);
         if (prop.isVariable()) {
-            //edge.setEdgeNode(prop);
+            // edge.setEdgeNode(prop);
             edge.setEdgeVariable(prop);
         } else {
             edge.setEdgeNode(prop);
@@ -88,7 +91,7 @@ public class EdgeImpl extends PointerObject implements Edge {
         }
         return list;
     }
-    
+
     @Override
     public String getDatatypeLabel() {
         return toString();
@@ -108,12 +111,12 @@ public class EdgeImpl extends PointerObject implements Edge {
         }
         return null;
     }
-    
+
     @Override
     public boolean isMatchArity() {
         return matchArity;
     }
-    
+
     public void setMatchArity(boolean b) {
         matchArity = b;
     }
@@ -161,8 +164,8 @@ public class EdgeImpl extends PointerObject implements Edge {
 
     /**
      *
-     * Query edge node is stored only if it is a variable otherwise it is
-     * useless and may lead to a pb when match subproperty
+     * Query edge node is stored only if it is a variable otherwise it is useless
+     * and may lead to a pb when match subproperty
      */
     public void setEdgeNode(Node n) {
         edgeNode = n;
@@ -258,6 +261,41 @@ public class EdgeImpl extends PointerObject implements Edge {
     @Override
     public PointerType pointerType() {
         return PointerType.TRIPLE;
+    }
+
+    @Override
+    public int hashCode() {
+        return Objects.hash(this.getSubject(), this.getPredicate(), this.getObject(), this.getContext());
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o == this) {
+            return true;
+        }
+        if (!(o instanceof Statement)) {
+            return false;
+        }
+
+        Statement other = (Statement) o;
+
+        if (!this.getSubject().equals(other.getSubject())) {
+            return false;
+        }
+
+        if (!this.getPredicate().equals(other.getPredicate())) {
+            return false;
+        }
+
+        if (!this.getObject().equals(other.getObject())) {
+            return false;
+        }
+
+        if (!Objects.equals(this.getContext(), other.getContext())) {
+            return false;
+        }
+
+        return true;
     }
 
 }

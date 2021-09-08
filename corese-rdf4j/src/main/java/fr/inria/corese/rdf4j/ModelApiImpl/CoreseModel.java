@@ -1,6 +1,7 @@
 package fr.inria.corese.rdf4j.ModelApiImpl;
 
 import java.util.Collection;
+import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
@@ -150,7 +151,11 @@ public class CoreseModel implements Model {
     @Override
     public Set<Namespace> getNamespaces() {
         // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not implemented, yet");
+        // throw new UnsupportedOperationException("Not implemented, yet");
+        Set<Namespace> result =  new HashSet<Namespace>();
+        // result.add(new SimpleNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"));
+        // result.add(new SimpleNamespace("ex", "http://example.org/ns#"));
+        return result;
     }
 
     @Override

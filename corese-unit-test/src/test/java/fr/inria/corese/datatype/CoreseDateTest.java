@@ -112,7 +112,7 @@ public class CoreseDateTest {
 
     @Test
     public void constructorEmpty() throws DatatypeConfigurationException {
-        CoreseDate date = new CoreseDate();
+        new CoreseDate();
     }
 
     @Test

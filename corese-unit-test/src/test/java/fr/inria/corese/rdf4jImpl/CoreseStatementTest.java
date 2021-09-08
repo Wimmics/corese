@@ -1,4 +1,4 @@
-package fr.inria.corese.rdf4jimpl;
+package fr.inria.corese.rdf4jImpl;
 
 import static org.junit.Assert.assertEquals;
 

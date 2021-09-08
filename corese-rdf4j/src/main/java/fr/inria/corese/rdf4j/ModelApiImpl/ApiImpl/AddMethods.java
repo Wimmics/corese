@@ -69,13 +69,17 @@ public class AddMethods {
      */
     public boolean addSPO(Graph corese_graph, Resource subj, IRI pred, Value obj, Resource... contexts) {
 
+        if (subj == null || pred == null || obj == null) {
+            throw new UnsupportedOperationException("Incomplete statement");
+        }
+
         // Convert subject, predicate, object into IDatatype
         IDatatype subj_corese = Rdf4jValueToCoreseDatatype.convert(subj);
         IDatatype pred_corese = Rdf4jValueToCoreseDatatype.convert(pred);
         IDatatype obj_corese = Rdf4jValueToCoreseDatatype.convert(obj);
 
         // With no graph context
-        if (contexts == null || contexts.length == 0) {
+        if (contexts == null || contexts.length == 0 || (contexts.length == 1 && contexts[0] == null)) {
             return this.addInCoreseGraph(corese_graph, subj_corese, pred_corese, obj_corese, null);
         }
 

@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.core;
 
-import static fr.inria.corese.kgram.api.core.ExpType.UNION;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
 import static fr.inria.corese.kgram.core.Eval.STOP;

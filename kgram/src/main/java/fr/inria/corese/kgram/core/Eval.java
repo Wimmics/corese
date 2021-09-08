@@ -314,11 +314,12 @@ public class Eval implements ExpType, Plugin {
         } 
         // external values clause
         // select * where {} values var {}
-        else if (map == null && m == null) {
-            // there is no binding parameter
-            // external values evaluated as join(values, body)
-            return queryWithJoinValues(gNode, q, map);
-        } else {
+//        else if (map == null && m == null) {
+//            // there is no binding parameter
+//            // external values evaluated as join(values, body)
+//            return queryWithJoinValues(gNode, q, map);
+//        } 
+        else {
             // there is binding parameter (m and/or map)
             // Mapping m is bound in memory, keep it, mappings map is passed as eval parameter 
             // bind external values one by one in memory and eval one by one

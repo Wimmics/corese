@@ -805,6 +805,7 @@ public class CoreseDatatype
      * used by Graph Node table to retrieve an existing Node
      * Distinguish 1 01 1.0 '1'^^xsd:long (does not return 0 but -1 or +1)
      * Distinguish true '1'^^xsd:boolean
+     * Distinguish date with Z and +00:00
      */
     @Override
     public int compareTo(Object d2) {
@@ -871,17 +872,19 @@ public class CoreseDatatype
             case DATETIME:
 
                 if (code == other) {
-                    try {
-                        b = this.less(d2);
-                    } catch (CoreseDatatypeException e) {
-                    }
-                    if (b) {
-                        return LESSER;
-                    } else if (this.sameTerm(d2)) {
-                        return 0;
-                    } else {
-                        return GREATER;
-                    }
+                    return compareDate(d2);
+                    
+//                    try {
+//                        b = this.less(d2);
+//                    } catch (CoreseDatatypeException e) {
+//                    }
+//                    if (b) {
+//                        return LESSER;
+//                    } else if (this.sameTerm(d2)) {
+//                        return 0;
+//                    } else {
+//                        return GREATER;
+//                    }
                 }
                 break;
 
@@ -1012,6 +1015,22 @@ public class CoreseDatatype
         if (val == 0) return 0;
         if (val < 0) return -1;
         return 1;
+    }
+    
+    int compareDate(IDatatype dt) {
+        try {
+            int res = compare(dt);
+            if (res != 0) {
+                return res;
+            }
+            if (sameTerm(dt)) {
+                return 0;
+            }
+            // else distinguish == that are not sameTerm
+        } catch (CoreseDatatypeException ex) {
+            // incomparable dates
+        }
+        return getLabel().compareTo(dt.getLabel());
     }
     
     /**

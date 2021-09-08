@@ -175,13 +175,8 @@ public class Graph extends GraphObject implements
     Hashtable<String, Node> individual;
     // label -> Blank Node
     Hashtable<String, Node> blank;
-    SortedMap<IDatatype, Node> 
-            // IDatatype -> Literal Node 
-            // number with same value but different datatype have different Node
-            // but (may) have same index
-            literal,
-            // this table enables to share index in this case for same value with different label
-            sliteral;
+    private SortedMap<IDatatype, Node> literalNodeManager;
+    private SortedMap<IDatatype, Node> literalIndexManager;
     // @deprecated
     // key -> Node
     Map<String, Node> vliteral;
@@ -520,6 +515,13 @@ public class Graph extends GraphObject implements
         this.defaultGraphMode = defaultGraph;
     }
    
+    /**
+     * With CompareNode:  manage 1, 01, 1.0 as different Node (with same index)
+     * With CompareIndex: manage IDatatype(1) IDatatype(01) IDatatype(1.0) 
+     * with same index
+     * With CompareIndexStrict: manage IDatatype(1) IDatatype(01) with same index
+     * and 1.0 with different index (sparql compliant)
+     */
     public class TreeNode extends TreeMap<IDatatype, Node> {
 
         TreeNode() {
@@ -528,7 +530,7 @@ public class Graph extends GraphObject implements
 
         TreeNode(boolean strict) {
             super((strict) ? 
-                    // manage two triples for: s p 1, 1.0
+                    // todo ?
                     new CompareIndexStrict(): 
                     new CompareIndex());
         }
@@ -543,7 +545,8 @@ public class Graph extends GraphObject implements
     }
   
      /**
-      * Assign same node index when compatible datatypes (same datatypes or datatypes both in (integer, long, decimal))
+      * Assign same node index when compatible datatypes 
+      * (same datatypes or datatypes both in (integer, long, decimal))
       * and same value (and possibly different labels)
       * 1 = 01 = 1.0 = '1'^^xsd:long != 1e0
       * '1'^^xsd:boolean = true
@@ -560,8 +563,7 @@ public class Graph extends GraphObject implements
                  // number value comparison with = on values only
                  res = dt1.compare(dt2);
             } catch (CoreseDatatypeException ex) {
-                // boolean vs number
-                return generalizedDatatype(dt1).compareTo(generalizedDatatype(dt2));
+                return compareWhenException(dt1, dt2);
             }
                  
             if (res == 0){
@@ -578,6 +580,21 @@ public class Graph extends GraphObject implements
             else {
                 return res;
             }                      
+        }
+        
+        /**
+         * boolean vs number
+         * incomparable dates
+         * 
+         */
+        int compareWhenException (IDatatype dt1, IDatatype dt2) {
+            if (dt1.isDate() && dt2.isDate()) {
+                // some dates are incomparable, compare string date
+                // as they are not equal, we just need to return -1 or +1 
+                // in a deterministic way
+                return dt1.getLabel().compareTo(dt2.getLabel());
+            }
+            return generalizedDatatype(dt1).compareTo(generalizedDatatype(dt2));
         }
 
         /*
@@ -629,6 +646,7 @@ public class Graph extends GraphObject implements
      * already existing in graph in such a way that two occurrences of same
      * Literal be represented by same Node 
      * It represents (1 integer) and (01 integer) as two different nodes
+     * that will be assigned the same node index in order to join in SPARQL
      */
     class CompareNode implements Comparator<IDatatype> {
 
@@ -660,10 +678,21 @@ public class Graph extends GraphObject implements
 
         table = getIndex(0);
         
-        // Literals (all of them):
-        literal  = Collections.synchronizedSortedMap(new TreeNode());
-        // Literal numbers and booleans  (to manage Node index):
-        sliteral = Collections.synchronizedSortedMap(new TreeNode(DatatypeMap.SPARQLCompliant));
+        // Note: 
+        // nodeManager  allocate different Node to 1, 01, 1.0
+        // indexManager allocate same Node index to 1, 01 (and also 1.0 as corese default mode) 
+        
+        // Literals (all of them) comparator = CompareNode and compareTo()
+        // different Node allocated when different value or different datatype or different label
+        // e.g. allocate different Node for 1, 01, 1.0 
+        setLiteralNodeManager(Collections.synchronizedSortedMap(new TreeNode()));
+        // Literal numbers and booleans to manage Node index:
+        // comparator = CompareIndex and compare()
+        // 1, 01, 1.0 have same index, 1 double has different index
+        // same index means that SPARQL perform a join on nodes with same index
+        // when DatatypeMap.SPARQLCompliant = false (true), 1 and 1.0 have same (different) index
+        // corese default is false, which means that corese sparql perform a join on 1 and 1.0 (which is not standard)
+        setLiteralIndexManager(Collections.synchronizedSortedMap(new TreeNode(DatatypeMap.SPARQLCompliant)));
         // deprecated:
         vliteral = Collections.synchronizedMap(new HashMap<>());
         // URI Node
@@ -1013,7 +1042,7 @@ public class Graph extends GraphObject implements
         sb.appendPNL("kg:property ", table.size());
         sb.appendPNL("kg:uri      ", individual.size());
         sb.appendPNL("kg:bnode    ", blank.size());
-        sb.appendPNL("kg:literal  ", literal.size());
+        sb.appendPNL("kg:literal  ", getLiteralNodeManager().size());
         sb.appendPNL("kg:nodeManager  ", getNodeManager().isEffective());
         if (getNodeManager().isEffective()) {
             sb.appendPNL("kg:nbSubject  ", getNodeManager().size());
@@ -1667,7 +1696,7 @@ public class Graph extends GraphObject implements
     }
 
     public int nbLiterals() {
-        return literal.size();
+        return getLiteralNodeManager().size();
     }
     
     public void setSize(int n) {
@@ -1998,7 +2027,7 @@ public class Graph extends GraphObject implements
             vliteral.put(node.getKey(), node);
             indexNode(dt, node);
         } else {
-            literal.put(dt,  node);
+            getLiteralNodeManager().put(dt,  node);
             indexLiteralNode(dt, node);
         }
     }
@@ -2006,24 +2035,24 @@ public class Graph extends GraphObject implements
     /**
      * 01 and 1 have same index
      * true and '1'^^xsd:boolean have same index
+     * date with Z and date with +00:00 have same value but different label
+     * hence they have different Node with same index
      */
     boolean isSameIndexAble(IDatatype dt){
-        return dt.isNumber() || dt.isBoolean();
+        return dt.isNumber() || dt.isBoolean() || dt.isDate();
     }
 
     /**
      * Assign an index to Literal Node Assign same index to same number values:
      * same datatype with same value and different label have same index
-     * 1 and 01 have same index: they join with SPARQL
-     * 1, '1'^^xsd:double, 1.0 have same index 
-     * If EdgeIndex is sorted by index,
-     * dichotomy enables join on semantically equivalent values
+     * 1, 01, 1.0 have same index: they join with SPARQL
+     * 1, 1 double have different index, they do not join 
      */
     void indexLiteralNode(IDatatype dt, Node node) {
         if (isSameIndexAble(dt)) {
-            Node n = sliteral.get(dt);
+            Node n = getLiteralIndexManager().get(dt);
             if (n == null) {
-                sliteral.put(dt,  node);
+                getLiteralIndexManager().put(dt,  node);
                 indexNode(dt, node);
             } else if (node.getIndex() == -1) {
                 // assign same index as existing same value
@@ -2040,14 +2069,14 @@ public class Graph extends GraphObject implements
                  
     // return same datatype value with possibly different label (e.g. 10 vs 1e1)
     public Node getExtLiteralNode(IDatatype dt) {
-        return sliteral.get(dt);    
+        return getLiteralIndexManager().get(dt);    
     }
 
     public Node getLiteralNode(String key, IDatatype dt) {
         if (valueOut) {
             return vliteral.get(key);
         } else {
-            return literal.get(dt);
+            return getLiteralNodeManager().get(dt);
         }
     }
 
@@ -2569,7 +2598,7 @@ public class Graph extends GraphObject implements
         if (valueOut) {
             return vliteral.values();
         }
-        return literal.values();
+        return getLiteralNodeManager().values();
     }
    
     public Iterable<Node> getAllNodeIterator() {
@@ -2985,7 +3014,7 @@ public class Graph extends GraphObject implements
     void clearNodes() {
         individual.clear();
         blank.clear();
-        literal.clear();
+        getLiteralNodeManager().clear();
         property.clear();
     }
 
@@ -3585,6 +3614,22 @@ public class Graph extends GraphObject implements
     
     public JSONObject cardinality(ASTQuery ast) {
         return new GraphDistance(this).cardinality(ast);
+    }
+
+    public SortedMap<IDatatype, Node> getLiteralNodeManager() {
+        return literalNodeManager;
+    }
+
+    public void setLiteralNodeManager(SortedMap<IDatatype, Node> literal) {
+        this.literalNodeManager = literal;
+    }
+
+    public SortedMap<IDatatype, Node> getLiteralIndexManager() {
+        return literalIndexManager;
+    }
+
+    public void setLiteralIndexManager(SortedMap<IDatatype, Node> sliteral) {
+        this.literalIndexManager = sliteral;
     }
         
 }

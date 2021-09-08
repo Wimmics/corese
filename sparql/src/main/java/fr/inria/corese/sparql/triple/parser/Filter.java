@@ -84,6 +84,7 @@ public class Filter extends Exp {
     
     @Override
     public void walk(Walker walker) {
+        //System.out.println("walk filter: " + this);
         walker.enter(this);
         getFilter().walk(walker);
         walker.leave(this);

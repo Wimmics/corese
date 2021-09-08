@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.core;
 
-import static fr.inria.corese.kgram.api.core.ExpType.UNION;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
 import static fr.inria.corese.kgram.core.Eval.STOP;
@@ -60,7 +59,12 @@ public class EvalJoin {
         if (map2.size() == 0) {
             return backtrack;
         }
-       
+        if (eval.isDebug()) {
+            System.out.println("join map1:\n" + 
+                    map1.toString(false, false, 5));
+            System.out.println("join map2:\n" + 
+                    map2.toString(false, false, 5));
+        }
         return join(p, gNode, stack, env, map1, map2, n);
     }
     
@@ -219,6 +223,7 @@ public class EvalJoin {
                 map2 = tmp;
             }
             map2.sort(eval, q);
+            //System.out.println("join sort map2:\n"+map2);
             for (Mapping m1 : map1) {
                 if (stop) {
                     return STOP;
@@ -263,7 +268,8 @@ public class EvalJoin {
 
                         // second, try : n2 != null
                         int nn = map2.find(n1, q);
-
+//                        System.out.println(
+//                        String.format("join: index of %s in map2 = %s",n1,nn ));
                         if (nn >= 0 && nn < map2.size()) {
 
                             for (int i = nn; i < map2.size(); i++) {

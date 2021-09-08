@@ -23,20 +23,25 @@ public class CoreseDate extends CoreseDatatype {
     private static final String TODAY = "today";
     private static int code = DATE;
     private static final CoreseURI datatype = new CoreseURI(RDF.xsddate);
+    String label;
 
     public CoreseDate() throws DatatypeConfigurationException {
         this.cal = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
+        setLabel(cal.toString());
     }
 
     public CoreseDate(XMLGregorianCalendar cal) {
         this.cal = cal;
+        setLabel(cal.toString());
     }
 
     public CoreseDate(String label) throws DatatypeConfigurationException {
         if (label.equals(TODAY)) {
             this.cal = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
+            setLabel(cal.toString());
         } else {
             this.cal = DatatypeFactory.newInstance().newXMLGregorianCalendar(label);
+            setLabel(label);
         }
     }
 
@@ -71,7 +76,12 @@ public class CoreseDate extends CoreseDatatype {
 
     @Override
     public String getLabel() {
-        return this.cal.toString();
+        //return this.cal.toString();
+        return label;
+    }
+    
+    void setLabel(String label) {
+        this.label = label;
     }
 
     @Override

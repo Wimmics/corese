@@ -56,7 +56,6 @@ import java.io.ByteArrayInputStream;
 import java.io.FileFilter;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import java.util.logging.Level;
 import org.openrdf.rio.RDFFormat;
 import org.openrdf.rio.RDFHandlerException;
 import org.openrdf.rio.RDFParseException;

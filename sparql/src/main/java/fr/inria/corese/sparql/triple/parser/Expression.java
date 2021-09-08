@@ -890,6 +890,7 @@ public class Expression extends TopExp
     }
     
     public void walk(Walker walker) {
+        //System.out.println("walk exp: " + this);
         walker.enter(this);
         for (Expression exp : getArgs()) {
             exp.walk(walker);

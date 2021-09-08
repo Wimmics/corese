@@ -1,10 +1,10 @@
 package fr.inria.corese.rdf4j.ModelApiImpl;
 
 import java.util.Collection;
-import java.util.HashSet;
 import java.util.Iterator;
 import java.util.Optional;
 import java.util.Set;
+import java.util.TreeSet;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Model;
@@ -103,6 +103,30 @@ public class CoreseModel implements Model {
         return RemoveMethods.getInstance().removeAll(this.corese_graph, statements);
     }
 
+    /***********************
+     * Namespace functions *
+     ***********************/
+
+    final Set<Namespace> namespaces = new TreeSet<>();
+
+    @Override
+    public Set<Namespace> getNamespaces() {
+        return this.namespaces;
+    }
+
+    @Override
+    public void setNamespace(Namespace namespace) {
+        removeNamespace(namespace.getPrefix());
+        this.namespaces.add(namespace);
+    }
+
+    @Override
+    public Optional<Namespace> removeNamespace(String prefix) {
+        Optional<Namespace> result = this.getNamespace(prefix);
+        result.ifPresent(namespaces::remove);
+        return result;
+    }
+
     /*******************
      * other functions *
      *******************/
@@ -149,29 +173,7 @@ public class CoreseModel implements Model {
     }
 
     @Override
-    public Set<Namespace> getNamespaces() {
-        // TODO Auto-generated method stub
-        // throw new UnsupportedOperationException("Not implemented, yet");
-        Set<Namespace> result =  new HashSet<Namespace>();
-        // result.add(new SimpleNamespace("rdf", "http://www.w3.org/1999/02/22-rdf-syntax-ns#"));
-        // result.add(new SimpleNamespace("ex", "http://example.org/ns#"));
-        return result;
-    }
-
-    @Override
     public CoreseModel unmodifiable() {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not implemented, yet");
-    }
-
-    @Override
-    public void setNamespace(Namespace namespace) {
-        // TODO Auto-generated method stub
-        throw new UnsupportedOperationException("Not implemented, yet");
-    }
-
-    @Override
-    public Optional<Namespace> removeNamespace(String prefix) {
         // TODO Auto-generated method stub
         throw new UnsupportedOperationException("Not implemented, yet");
     }

@@ -15,6 +15,15 @@ import fr.inria.corese.kgram.api.core.Edge;
 
 public class RemoveMethods {
 
+    private static final RemoveMethods instance = new RemoveMethods();
+
+    private RemoveMethods() {
+    }
+
+    public static RemoveMethods getInstance() {
+        return instance;
+    }
+
     /**
      * Removes statements with the specified subject, predicate, object and
      * (optionally) context exist in this model. The subject, predicate and object
@@ -40,11 +49,11 @@ public class RemoveMethods {
      *                     removed.
      * @return true if one or more statements have been removed.
      */
-    public static boolean removeSPO(Graph corese_graph, Resource subj, IRI pred, Value obj, Resource... contexts) {
+    public boolean removeSPO(Graph corese_graph, Resource subj, IRI pred, Value obj, Resource... contexts) {
 
         // get edges
         ArrayList<Edge> edges = new ArrayList<>();
-        for (Edge edge : Utils.getEdges(corese_graph, subj, pred, obj, contexts)) {
+        for (Edge edge : Utils.getInstance().getEdges(corese_graph, subj, pred, obj, contexts)) {
             if (edge != null) {
                 edges.add(corese_graph.getEdgeFactory().copy(edge));
             }
@@ -66,14 +75,13 @@ public class RemoveMethods {
      * @param o            Statement to remove.
      * @return True if the graph is modify, else false.
      */
-    public static boolean removeStatement(Graph corese_graph, Object o) {
+    public boolean removeStatement(Graph corese_graph, Object o) {
         if (o instanceof Statement) {
-            if (OtherMethods.isEmpty(corese_graph)) {
+            if (OtherMethods.getInstance().isEmpty(corese_graph)) {
                 return false;
             }
             Statement st = (Statement) o;
-            return RemoveMethods.removeSPO(corese_graph, st.getSubject(), st.getPredicate(), st.getObject(),
-                    st.getContext());
+            return this.removeSPO(corese_graph, st.getSubject(), st.getPredicate(), st.getObject(), st.getContext());
         }
         return false;
     }
@@ -85,11 +93,11 @@ public class RemoveMethods {
      * @param c            Collection of statements to remove
      * @return True if the graph is modify, else false.
      */
-    public static boolean removeAll(Graph corese_graph, Collection<?> c) {
+    public boolean removeAll(Graph corese_graph, Collection<?> c) {
         boolean modified = false;
         Iterator<?> i = c.iterator();
         while (i.hasNext()) {
-            modified |= RemoveMethods.removeStatement(corese_graph, i.next());
+            modified |= this.removeStatement(corese_graph, i.next());
         }
         return modified;
     }

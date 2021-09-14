@@ -48,34 +48,7 @@ import java.util.HashMap;
  */
 public class Transformer implements ExpType {
 
-    /**
-     * @return the algebra
-     */
-    public boolean isAlgebra() {
-        return algebra;
-    }
-
-    /**
-     * @param algebra the algebra to set
-     */
-    public void setAlgebra(boolean algebra) {
-        this.algebra = algebra;
-    }
-
-    /**
-     * @return the BGP
-     */
-    public boolean isBGP() {
-        return isBGP;
-    }
-
-    /**
-     * @param BGP the BGP to set
-     */
-    public void setBGP(boolean BGP) {
-        this.isBGP = BGP;
-    }
-
+   
     private static Logger logger = LoggerFactory.getLogger(Transformer.class);
     public static final String NL = System.getProperty("line.separator");
     public static final String ROOT = "?_kgram_";
@@ -104,7 +77,7 @@ public class Transformer implements ExpType {
             isSPARQL1 = true;
     private boolean isUseBind = true;
     private boolean isGenerateMain = true;
-    private boolean isLoadFunction = false;
+    //private boolean isLoadFunction = false;
     private boolean isBGP = false;
     private boolean algebra = false;
     String namespaces, base;
@@ -347,7 +320,9 @@ public class Transformer implements ExpType {
         }
 
         q.setSort(ast.isSorted());
-        q.setDebug(ast.isDebug());
+        if (ast.isDebug()) {
+            q.setDebug(ast.isDebug());
+        }
         q.setCheck(ast.isCheck());
         q.setRelax(ast.isMore());
         q.setPlanProfile(getPlanProfile());
@@ -1942,4 +1917,33 @@ public class Transformer implements ExpType {
     public void setNumber(int number) {
         this.number = number;
     }
+    
+     /**
+     * @return the algebra
+     */
+    public boolean isAlgebra() {
+        return algebra;
+    }
+
+    /**
+     * @param algebra the algebra to set
+     */
+    public void setAlgebra(boolean algebra) {
+        this.algebra = algebra;
+    }
+
+    /**
+     * @return the BGP
+     */
+    public boolean isBGP() {
+        return isBGP;
+    }
+
+    /**
+     * @param BGP the BGP to set
+     */
+    public void setBGP(boolean BGP) {
+        this.isBGP = BGP;
+    }
+
 }

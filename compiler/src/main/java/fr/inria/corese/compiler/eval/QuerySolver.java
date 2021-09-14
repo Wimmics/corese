@@ -68,6 +68,7 @@ public class QuerySolver implements SPARQLEngine {
 
     public static boolean BGP_DEFAULT = false;
     public static boolean ALGEBRA_DEFAULT = false;
+    public static boolean SPARQL_COMPLIANT_DEFAULT = false;
     private static boolean visitorable = false;
 
     static String NAMESPACES;
@@ -89,7 +90,7 @@ public class QuerySolver implements SPARQLEngine {
             isCheckLoop = false,
             isDebug = false,
             isOptimize = false,
-            isSPARQLCompliant = false;
+            isSPARQLCompliant = SPARQL_COMPLIANT_DEFAULT;
     private boolean isGenerateMain = true;
     private boolean isSynchronized = false;
     private boolean isPathType = false;

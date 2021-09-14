@@ -81,6 +81,7 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
         return callback(INIT_PARAM, toArray());        
     }
     
+    // called by corese gui -param processing by GraphEngine
     public IDatatype initServer(String uri) {
         return callback(INIT_SERVER, toArray(uri));
     } 

@@ -44,7 +44,7 @@ import java.util.List;
  * @author Olivier Corby INRIA
  */
 public class Interpreter implements Computer, Evaluator, ExprType {
-    public static boolean testNewEval = true;
+    public static boolean testNewEval = false;
     private static Logger logger = LoggerFactory.getLogger(Interpreter.class);
     static final String MEMORY = Exp.KGRAM + "memory";
     static final String STACK = Exp.KGRAM + "stack";
@@ -334,18 +334,23 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                             return DatatypeMap.createObject(m);
                     } else {
                         // let (?m = select where)
-                        Eval eval = createEval(currentEval, exp, env, p);
-                        if (eval == null) {
-                            return null;
+                        if (testNewEval) {
+                            map = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
                         }
-                        map = eval.subEval(qq, gNode, Stack.create(sub), 0); 
+                        else {
+                            Eval eval = createEval(currentEval, exp, env, p);
+                            if (eval == null) {
+                                return null;
+                            }
+                            map = eval.subEval(qq, gNode, Stack.create(sub), 0);
+                        }
                     }
                 } else {
                     // never happen
                     return null;
                 }
             } else {
-                // SPARQL exists {}
+                // SPARQL exists {}               
                 Eval eval = createEval(currentEval, exp, env, p);
                 if (eval == null) {
                     return null;

@@ -1,0 +1,51 @@
+#
+# Corese configuration 
+# Property file interpreted by corese.core.util.Property
+# java -jar corese-gui.jar    -init property.txt
+# java -jar corese-server.jar -init property.txt
+# Property.load("property.txt");
+# Property.set(LOAD_IN_DEFAULT_GRAPH, true);
+#
+
+GRAPH_NODE_AS_DATATYPE  = true
+LOAD_IN_DEFAULT_GRAPH   = true
+SKOLEMIZE               = false
+RDF_STAR                = false
+SPARQL_COMPLIANT        = false
+REENTRANT_QUERY         = false
+
+ACCESS_RIGHT            = false
+#ACCESS_LEVEL           = PUBLIC | RESTRICTED | PRIVATE
+
+EVENT               = false
+RULE_VISITOR        = fr.inria.corese.core.visitor.solver.QuerySolverVisitorRuleUser
+#SOLVER_VISITOR      = fr.inria.corese.core.visitor.solver.QuerySolverVisitorUser
+TRANSFORMER_VISITOR = fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformerUser
+SERVER_VISITOR      = fr.inria.corese.server.webservice.QuerySolverVisitorServerUser
+
+#
+# Test, debug
+#
+VERBOSE        = false
+SOLVER_DEBUG   = false
+TRANSFORMER_DEBUG   = false
+INTERPRETER_TEST = true
+SOLVER_SORT_CARDINALITY   = true
+
+#
+# Dataset
+#
+PREFIX        = h=http://www.inria.fr/2015/humans# ; i=http://www.inria.fr/2015/humans-instances#
+LOAD_FUNCTION = /user/corby/home/AAData/data/corese/function.rq
+#LOAD_LIMIT   = 10
+
+#
+# use case: corese gui
+# Property.init(graph);
+#
+
+# Default value for corese gui
+RDFS_ENTAILMENT = false
+
+LOAD_DATASET  = /user/corby/home/AAServer/data/tutorial/human1.rdf;/user/corby/home/AAServer/data/tutorial/human2.rdf;/user/corby/home/AAServer/data/tutorial/human.rdfs
+#LOAD_RULE     = http://www.w3.org/ns/owl-profile/RL

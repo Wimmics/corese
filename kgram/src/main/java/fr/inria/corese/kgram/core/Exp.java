@@ -26,67 +26,13 @@ import java.util.HashMap;
 public class Exp extends PointerObject
         implements ExpType, ExpPattern, Iterable<Exp> {
 
-    /**
-     * @return the mappings
-     */
-    public boolean isMappings() {
-        return mappings;
-    }
-
-    /**
-     * @param mappings the mappings to set
-     */
-    public void setMappings(boolean mappings) {
-        this.mappings = mappings;
-    }
-
-    /**
-     * @return the generated
-     */
-    public boolean isGenerated() {
-        return generated;
-    }
-
-    /**
-     * @param generated the generated to set
-     */
-    public void setGenerated(boolean generated) {
-        this.generated = generated;
-    }
-
-    /**
-     * @return the simpleNodeList
-     */
-    public List<Node> getInScopeNodeList() {
-        return simpleNodeList;
-    }
-
-    /**
-     * @param simpleNodeList the simpleNodeList to set
-     */
-    public void setInScopeNodeList(List<Node> simpleNodeList) {
-        this.simpleNodeList = simpleNodeList;
-    }
-
-    /**
-     * @return the externQuery
-     */
-    public Query getExternQuery() {
-        return externQuery;
-    }
-
-    /**
-     * @param externQuery the externQuery to set
-     */
-    public void setExternQuery(Query externQuery) {
-        this.externQuery = externQuery;
-    }
     
     public static final int ANY        = -1;
     public static final int SUBJECT    = 0;
     public static final int OBJECT     = 1;
     public static final int PREDICATE  = 2;
     public static final int GRAPH_NAME = 3;
+    public static boolean DEBUG_DEFAULT = false;
     
     static final String NL = System.getProperty("line.separator");
     static final String SP = " ";
@@ -106,7 +52,7 @@ public class Exp extends PointerObject
             isBGP = false,
             lock = false,
             isSilent = false;
-    boolean isDebug = false;
+    boolean isDebug = DEBUG_DEFAULT;
     private boolean isPostpone = false;
     private boolean BGPAble = false;
     private boolean isFunctional = false;
@@ -2453,5 +2399,62 @@ public class Exp extends PointerObject
     Exp getValues(Mappings map) {
         return createValues(map.getNodeList(), map);
     }
+    
+    /**
+     * @return the mappings
+     */
+    public boolean isMappings() {
+        return mappings;
+    }
+
+    /**
+     * @param mappings the mappings to set
+     */
+    public void setMappings(boolean mappings) {
+        this.mappings = mappings;
+    }
+
+    /**
+     * @return the generated
+     */
+    public boolean isGenerated() {
+        return generated;
+    }
+
+    /**
+     * @param generated the generated to set
+     */
+    public void setGenerated(boolean generated) {
+        this.generated = generated;
+    }
+
+    /**
+     * @return the simpleNodeList
+     */
+    public List<Node> getInScopeNodeList() {
+        return simpleNodeList;
+    }
+
+    /**
+     * @param simpleNodeList the simpleNodeList to set
+     */
+    public void setInScopeNodeList(List<Node> simpleNodeList) {
+        this.simpleNodeList = simpleNodeList;
+    }
+
+    /**
+     * @return the externQuery
+     */
+    public Query getExternQuery() {
+        return externQuery;
+    }
+
+    /**
+     * @param externQuery the externQuery to set
+     */
+    public void setExternQuery(Query externQuery) {
+        this.externQuery = externQuery;
+    }
+    
     
 }

@@ -548,9 +548,10 @@ public class Eval implements ExpType, Plugin {
     }
 
     /**
-     * Eval exp alone in a fresh new Memory 
+     * Eval exp in a fresh new Memory where exp is part of main expression
+     * use case: main = optional, minus, union, join
      * Node gNode : actual graph node 
-     * Node queryNode : exp graph node
+     * Node queryNode : exp query graph node
      */
     public Mappings subEval(Producer p, Node gNode, Node queryNode, Exp exp, Exp main) throws SparqlException {
         return subEval(p, gNode, queryNode, exp, main, null, null, false);

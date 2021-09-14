@@ -115,7 +115,7 @@ public class Transformer implements TransformProcessor {
     private static String NL = System.getProperty("line.separator");
     private static boolean isOptimizeDefault = false;
     private static boolean isExplainDefault = false;
-
+    public static boolean DEFAULT_DEBUG = false;
     public static int count = 0;
     static HashMap<String, Boolean> dmap;
     private TemplateVisitor visitor;
@@ -135,7 +135,7 @@ public class Transformer implements TransformProcessor {
     String sepTemplate = NL;
     // separator of several results of one template
     String sepResult = " ";
-    boolean isDebug = false;
+    boolean isDebug = DEFAULT_DEBUG;
     private boolean isTrace = false;
     private boolean isDetail = false;
     private IDatatype EMPTY;
@@ -572,6 +572,10 @@ public class Transformer implements TransformProcessor {
 
     public void setDebug(boolean b) {
         isDebug = b;
+    }
+    
+     public static void setDefaultDebug(boolean b) {
+        DEFAULT_DEBUG = b;
     }
     
     void setDebug(String name) {

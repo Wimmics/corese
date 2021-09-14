@@ -73,6 +73,7 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
 public class RuleEngine implements Engine, Graphable {
    
     static final String NL = System.getProperty("line.separator");
+    static final String OWL_RL_PROFILE = NSManager.OWL_RL_PROFILE;
     public static final int OWL_RL_FULL = -1;
     public static final int STD = 0;
     public static final int OWL_RL = 1;
@@ -164,6 +165,17 @@ public class RuleEngine implements Engine, Graphable {
     public void setProfile(Profile p) throws LoadException {
         profile = p;
         loadProfile(p);
+    }
+    
+    public void setProfile(String p) throws LoadException {
+        switch (p) {
+            case OWL_RL_PROFILE:
+                setProfile(OWL_RL);
+                break;
+                
+            default:
+                throw new LoadException(new EngineException("Undefined Rule Base: " + p));
+        }
     }
     
     void loadProfile(Profile p) throws LoadException {

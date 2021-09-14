@@ -77,7 +77,7 @@ public class QueryProcess extends QuerySolver {
     private static String solverVisitorName = null; 
     private static String serverVisitorName = null;
     //sort query edges taking cardinality into account
-    static boolean isSort = false;
+    private static boolean isSort = false;
 
     static HashMap<String, Producer> dbmap;
     private Manager updateManager;

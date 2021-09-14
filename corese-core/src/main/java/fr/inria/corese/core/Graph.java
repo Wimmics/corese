@@ -52,11 +52,9 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.Arrays;
 import java.util.Collection;
-import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONObject;
 
 /**
@@ -76,19 +74,7 @@ public class Graph extends GraphObject implements
         fr.inria.corese.sparql.api.Graph, 
         Graphable, TripleStore {
 
-    /**
-     * @return the allGraphNode
-     */
-    public boolean isAllGraphNode() {
-        return allGraphNode;
-    }
 
-    /**
-     * @param allGraphNode the allGraphNode to set
-     */
-    public void setAllGraphNode(boolean allGraphNode) {
-        this.allGraphNode = allGraphNode;
-    }
   
     static {
 	    Corese.init();
@@ -119,8 +105,12 @@ public class Graph extends GraphObject implements
     private static final String NL = System.getProperty("line.separator");
     static final int TAGINDEX = 2;    
     static boolean byIndexDefault = true;
+    public static boolean VERBOSE = false;
+    public static boolean SKOLEM_DEFAULT = false;
     public static boolean METADATA_DEFAULT = false;
     public static boolean EDGE_METADATA_DEFAULT = false;
+    // for external agent such as corese gui, meaningless otherwise
+    public static boolean RDFS_ENTAILMENT_DEFAULT = true;   
     // same triple have same name in named graphs
     public static boolean TRIPLE_UNIQUE_NAME = true;
     
@@ -196,7 +186,7 @@ public class Graph extends GraphObject implements
     EdgeFactory fac;
     private Context context;
     private Distance classDistance, propertyDistance;
-    private boolean isSkolem = false;
+    private boolean isSkolem = SKOLEM_DEFAULT;
     // true when graph is modified and need index()
 //    boolean isUpdate = false,
 //            isDelete = false,
@@ -655,7 +645,8 @@ public class Graph extends GraphObject implements
 
         @Override
         public int compare(IDatatype dt1, IDatatype dt2) {
-            return dt1.compareTo(dt2);
+            int res = dt1.compareTo(dt2);
+            return res;
         }
     }
     
@@ -715,6 +706,7 @@ public class Graph extends GraphObject implements
         initSystem();
         dataStore = new DataStore(this);
         eventManager = new EventManager(this);
+        eventManager.setVerbose(VERBOSE);
     }
     
     /**
@@ -736,9 +728,9 @@ public class Graph extends GraphObject implements
         constraintGraph    = system.get(Entailment.CONSTRAINT);
     }
     
-    NodeImpl createSystemNode(String label){
+    Node createSystemNode(String label){
         IDatatype dt = DatatypeMap.newResource(label);
-        NodeImpl node = NodeImpl.create(dt, this);
+        Node node = NodeImpl.create(dt, this);
         index(dt, node);
         return node;
     }
@@ -3630,6 +3622,22 @@ public class Graph extends GraphObject implements
 
     public void setLiteralIndexManager(SortedMap<IDatatype, Node> sliteral) {
         this.literalIndexManager = sliteral;
+    }
+    
+    public static void setDefaultVerbose(boolean b) {
+        VERBOSE = b;
+    }
+    
+    public static void setDefaultSkolem(boolean b) {
+        SKOLEM_DEFAULT = b;
+    }
+        
+    public boolean isAllGraphNode() {
+        return allGraphNode;
+    }
+
+    public void setAllGraphNode(boolean allGraphNode) {
+        this.allGraphNode = allGraphNode;
     }
         
 }

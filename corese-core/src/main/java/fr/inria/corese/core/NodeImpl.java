@@ -17,13 +17,19 @@ import fr.inria.corese.kgram.path.Path;
  */
 public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl> {
 
-//    String key = INITKEY;
+    // true means graph nodes are IDatatype instead of NodeImpl
+    // todo: duplicate IDatatype when insert node in new graph, e.g. construct
     public static boolean byIDatatype = false;
     Graph graph;
     int index = -1;
     IDatatype dt;
 
     NodeImpl(IDatatype val) {
+        dt = val;
+    }
+    
+    NodeImpl(IDatatype val, Graph g) {
+        graph = g;
         dt = val;
     }
 
@@ -34,13 +40,19 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
         return new NodeImpl(val);
     }
 
-    NodeImpl(IDatatype val, Graph g) {
-        graph = g;
-        dt = val;
-    }
-
-    public static NodeImpl create(IDatatype val, Graph g) {
+    public static Node create(IDatatype val, Graph g) {
+        if (byIDatatype) {
+            return createDatatype(val, g);
+        }
         return new NodeImpl(val, g);
+    }
+    
+    static Node createDatatype(IDatatype val, Graph g) {
+        if (val.getTripleStore() != null && val.getTripleStore() != g) {
+            val = val.copy();
+        }
+        val.setTripleStore(g);
+        return val;
     }
 
     @Override

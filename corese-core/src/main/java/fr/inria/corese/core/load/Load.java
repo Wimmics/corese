@@ -115,6 +115,10 @@ public class Load
     public static void setDefaultGraphValue(boolean b) {
         DEFAULT_GRAPH = b;
     }
+    
+    public static boolean isDefaultGraphValue() {
+        return DEFAULT_GRAPH;
+    }
 
     Load(Graph g) {
         this();

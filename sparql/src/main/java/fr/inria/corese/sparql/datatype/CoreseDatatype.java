@@ -53,7 +53,6 @@ public class CoreseDatatype
     static final Hashtable<String, IDatatype> lang2dataLang = new Hashtable<String, IDatatype>(); // 'en' -> CoreseString('en')
     static final Hashtable<String, IDatatype> hdt = new Hashtable<String, IDatatype>(); // datatype name -> CoreseURI datatype
     static final DatatypeMap dm = DatatypeMap.create();
-    static final NSManager nsm = NSManager.create();
     static final int LESSER = -1, GREATER = 1;
     static int cindex = 0;
     static int code = -1;
@@ -62,6 +61,7 @@ public class CoreseDatatype
     private static IDatatype publicDatatypeValue;
     
     private int index = IDatatype.VALUE;
+    private TripleStore graph;
     
     static { 
         init();
@@ -80,7 +80,7 @@ public class CoreseDatatype
     }
     
     public static NSManager nsm() {
-        return nsm;
+        return NSManager.nsm();
     }
     
     static void define(int i, Class c) {
@@ -158,7 +158,7 @@ public class CoreseDatatype
             if (prefix && (datatype.startsWith(RDF.XSD))
                     || datatype.startsWith(RDF.RDF)
                     || datatype.startsWith(NSManager.DT)) {
-                datatype = nsm.toPrefix(datatype);
+                datatype = nsm().toPrefix(datatype);
             } else {
                 datatype = "<" + datatype + ">";
             }
@@ -169,7 +169,7 @@ public class CoreseDatatype
         } else if (isLiteral()) {
             value = protect(value);
         } else if (isURI()) {
-            String str = nsm.toPrefix(value, true);
+            String str = nsm().toPrefix(value, true);
             if (str == value) {
                 value = "<" + value + ">";
             } else {
@@ -212,6 +212,14 @@ public class CoreseDatatype
     }
 
     public CoreseDatatype() {
+    }
+    
+    /**
+     * @todo: leverage extension and pointer datatype
+     */
+    @Override
+    public IDatatype copy() {
+        return DatatypeMap.copy(this);
     }
 
     @Deprecated
@@ -1296,7 +1304,7 @@ public class CoreseDatatype
      * see ProducerImpl getNode()
      *
      ***************************************************************
-     */
+     */  
     @Override
     public int getIndex() {
         return index;
@@ -1415,8 +1423,12 @@ public class CoreseDatatype
     
     @Override
     public TripleStore getTripleStore() {
-        // TODO Auto-generated method stub
-        return null;
+        return graph;
+    }
+    
+    @Override
+    public void setTripleStore(TripleStore store) {
+        graph = store;
     }
     
      /**

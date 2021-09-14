@@ -13,6 +13,7 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
+import static fr.inria.corese.sparql.api.IDatatype.LITERAL;
 import fr.inria.corese.sparql.datatype.extension.CoreseMap;
 import fr.inria.corese.sparql.datatype.extension.CoreseList;
 import fr.inria.corese.sparql.datatype.extension.CoreseJSON;
@@ -343,6 +344,21 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return null;
     }
     
+    /**
+     * @todo: leverage extension and pointer datatype
+     */
+    public static IDatatype copy(IDatatype dt) {
+        if (dt.isBlank()) {
+            return createBlank(dt.getLabel());
+        } else if (dt.isURI()) {
+            return newResource(dt.getLabel());
+        } else if (dt.getCode() == LITERAL && dt.getLang() == null) {
+            return newBasicLiteral(dt.getLabel());
+        } else {
+            return newInstance(dt.getLabel(), dt.getDatatypeURI(), dt.getLang());
+        }
+    }
+    
     public static IDatatype cast(NodeList list) {
         return CoreseXML.cast(list);
     }
@@ -618,9 +634,14 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         if (literalAsString) {
             return newInstance(label);
         } else {
-            return new CoreseLiteral(label);
+            return newBasicLiteral(label);
         }
     }
+    
+    public static IDatatype newBasicLiteral(String label) {
+        return new CoreseLiteral(label);
+    }
+    
 
 //    public static IDatatype createObject(String name) {
 //        return createLiteral(name, XMLLITERAL, null);

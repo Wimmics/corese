@@ -7,6 +7,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.Loopable;
 import fr.inria.corese.kgram.api.core.PointerType;
+import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.sparql.storage.api.IStorage;
 
 import java.math.BigDecimal;
@@ -75,6 +76,8 @@ public interface IDatatype
     public static final String XML_DATATYPE = ExpType.DT + "xml";
     public static final String SYSTEM = ExpType.DT + "system";
 
+    IDatatype copy();
+    
     boolean isSkolem();
 
     boolean isXMLLiteral();
@@ -184,6 +187,8 @@ public interface IDatatype
 
     @Override
     Pointerable getPointerObject();
+    
+    void setTripleStore(TripleStore store);
 
     /**
      * Compare 2 datatypes
@@ -223,6 +228,14 @@ public interface IDatatype
     String toSparql(boolean prefix);
 
     String toSparql(boolean prefix, boolean xsd);
+    
+    default String trace() {
+        return String.format("trace: %s code: %s datatype: %s label: %s", 
+                this,
+                getCode(),
+                getDatatypeURI(),
+                getLabel());
+    }
 
     // Used by XMLLiteral to store a XML DOM 
     @Override

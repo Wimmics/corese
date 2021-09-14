@@ -60,7 +60,7 @@ public class Access {
         int getValue() {
             return value;
         } 
-        
+                
         public Level min(Level r2) {
             if (this.getValue() <= r2.getValue()) {
                 return this;
@@ -156,11 +156,18 @@ public class Access {
         return sb.toString();
     }
     
-    
+    public static void setDefaultUserLevel(Level l) {
+        USER_DEFAULT = l;
+    }
+            
     public static boolean skip(boolean b) {
         boolean save = SKIP;
         SKIP = b;
         return save;
+    }
+    
+    public static void setActive(boolean b) {
+        SKIP = !b;
     }
     
     public static boolean isActive() {

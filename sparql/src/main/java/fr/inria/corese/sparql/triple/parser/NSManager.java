@@ -136,7 +136,7 @@ public class NSManager extends ASTObject {
     public static final String HASH = "#";
     static final String NL = System.getProperty("line.separator");
     static final char[] END_CHAR = {'#', '/', '?'}; //, ':'}; // may end an URI ...
-    static final String[] PB_CHAR_NAME = {"\u2013", ":", "#", "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
+    static final String[] PB_CHAR_NAME = {".", "\u2013", ":", "#", "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
     static final String[] PB_CHAR_URI = {"(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
     static final String pchar = ":";
     int count = 0;

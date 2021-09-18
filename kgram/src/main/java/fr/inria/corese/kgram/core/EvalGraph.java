@@ -22,13 +22,21 @@ public class EvalGraph {
         stop = b;
     }
     
+    /**
+     * gNode is possible named graphURI stemming from evaluation context
+     * It is not the current named graph 
+     */
     int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
+        // current named graph URI/VAR
         Node graphNode = exp.getGraphName();
+        // URI or value of VAR or null if unbound
         Node graph     = eval.getNode(p, graphNode);
         Mappings res;
 
         if (graph == null) {
+            // named graph VAR is unbound
+            // iterate named graph list, using from named if any
             res = graphNodes(p, exp, data, n);
         } else {
             res = graph(p, graph, exp, data, n);

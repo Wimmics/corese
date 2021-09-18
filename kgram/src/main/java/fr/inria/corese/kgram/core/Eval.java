@@ -2029,7 +2029,7 @@ public class Eval implements ExpType, Plugin {
 //				}
                 previous = edge;
                 boolean bmatch = match(qEdge, edge, gNode, graph, env);
-                
+
                 if (matchNBNode) {
                     bmatch &= (qEdge.nbNode() == edge.nbNode());
                 }

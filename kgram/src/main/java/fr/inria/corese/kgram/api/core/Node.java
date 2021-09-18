@@ -75,7 +75,7 @@ public interface Node extends Pointerable {
 	Object getValue();
         
         DatatypeValue getDatatypeValue();
-        
+                
         default void setDatatypeValue(DatatypeValue dt) {}
         
         Node getGraph();

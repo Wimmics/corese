@@ -31,6 +31,7 @@ import fr.inria.corese.core.approximate.ext.ASTRewriter;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
@@ -135,6 +136,12 @@ public class QueryProcess extends QuerySolver {
     public static QueryProcess create() {
         return create(Graph.create());
     }
+    
+    public static QueryProcess create(DataManager dm) {
+        QueryProcess exec = create(Graph.create());
+        exec.getProducerImpl().defineDataManager(dm);
+        return exec;
+    }
 
     public static QueryProcess create(Graph g) {
         return create(g, false);
@@ -179,7 +186,12 @@ public class QueryProcess extends QuerySolver {
         return exec;
     }
 
- 
+    public ProducerImpl getProducerImpl() {
+        if (getProducer() instanceof ProducerImpl) {
+            return (ProducerImpl) getProducer();
+        }
+        return new ProducerImpl(Graph.create());
+    }
 
     public static synchronized Producer getCreateProducer(Graph g, String factory, String db) {
         if (db == null) {

@@ -1,6 +1,5 @@
 package fr.inria.corese.core.query;
 
-import fr.inria.corese.core.EdgeFactory;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;

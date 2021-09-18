@@ -1,6 +1,7 @@
 package fr.inria.corese.core.query;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.DataBroker;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Regex;
@@ -26,62 +27,74 @@ public class ProducerImplNode {
         graph = p.getGraph();
     }
     
-    public Iterable<Node> getNodeIterator(Node gNode, List<Node> from, Edge edge,
+    /**
+     * Node iterator for starting PP with exp* when there is no start node
+     * @param namedGraphURI: URI of named graph or null
+     * @param from: empty or default graph specification with select from
+     */
+    public Iterable<Node> getNodeIterator(Node namedGraphURI, List<Node> from, Edge edge,
             Environment env, List<Regex> exp, int index) {
 
         Node node = edge.getNode(index);
 
         if (node.isConstant()) {
             // return constant
-            Node nn = graph.copy(node);
+            Node nn = getDataBroker().getNodeCopy(node);
             ArrayList<Node> list = new ArrayList<>(1);
             list.add(nn);
             return list;
-        } else if (gNode == null) {
+        } else if (namedGraphURI == null) {
             // default graph nodes
             if (from.size() > 0) {
-                return getNodes(gNode, from, env);
+                return getNodes(namedGraphURI, from, env);
             } else {
-                return graph.getAllNodeIterator();
+                //return graph.getAllNodeIterator();
+                return getDataBroker().getDefaultNodeList();
             }
         } // named graph nodes
-        else if (gNode.isConstant()) {
+        else //if (namedGraphURI.isConstant()) 
+        {
             // return nodes of this named graph
-            node = graph.getGraphNode(gNode.getLabel());
+            //node = graph.getGraphNode(namedGraphURI.getLabel());
+            node = getDataBroker().getGraph(namedGraphURI);
             if (node != null) {
-                return graph.getNodeGraphIterator(node);
+                //return graph.getNodeGraphIterator(node);
+                return getDataBroker().getGraphNodeList(node);
             }
         } 
-        else if (env.isBound(gNode)) {
-            // return nodes of this named graph
-            node = env.getNode(gNode);
-            // return nodes of this named graph
-            node = graph.getGraphNode(node.getLabel());
-            if (node != null) {
-                return graph.getNodeGraphIterator(node);
-            }
-        }else if (from.size() > 0) {
-            // return nodes of from named graph
-            return getNodes(gNode, from, env);
-        } else {
-            // all nodes with named graph
-            return graph.getNodeGraphIterator();
-        }
+//        else if (env.isBound(namedGraphURI)) {
+//            // return nodes of this named graph
+//            node = env.getNode(namedGraphURI);
+//            // return nodes of this named graph
+//            node = graph.getGraphNode(node.getLabel());
+//            if (node != null) {
+//                return graph.getNodeGraphIterator(node);
+//            }
+//        }
+//        else if (from.size() > 0) {
+//            // return nodes of from named graph
+//            return getNodes(namedGraphURI, from, env);
+//        } else {
+//            // named graph nodes
+//            return graph.getNodeGraphIterator();
+//        }
 
-        return new ArrayList<Node>(0);
+        return new ArrayList<>(0);
     }
 
     /**
-     * Enumerate nodes from graphs in the list gNode == null : from gNode !=
-     * null : from named
+     * Enumerate nodes from graphs in the list 
+     * gNode == null : from 
+     * gNode != null : from named -- never happens here
      */
     Iterable<Node> getNodes(Node gNode, List<Node> from, Environment env) {
         MetaIterator<Node> meta = new MetaIterator<>();
         for (Node gn : p.getGraphNodes(gNode, from, env)) {
-            meta.next(graph.getNodeGraphIterator(gn));
+            //meta.next(graph.getNodeGraphIterator(gn));
+            meta.next(getDataBroker().getGraphNodeList(gn));
         }
         if (meta.isEmpty()) {
-            return new ArrayList<Node>(0);
+            return new ArrayList<>(0);
         }
         if (gNode == null) {
             // eliminate duplicates
@@ -132,5 +145,10 @@ public class ProducerImplNode {
             };
         };
     }
+
+    DataBroker getDataBroker() {
+        return p.getDataBroker();
+    }
+  
 
 }

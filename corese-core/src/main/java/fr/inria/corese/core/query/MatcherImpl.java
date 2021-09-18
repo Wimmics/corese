@@ -102,7 +102,7 @@ public class MatcherImpl implements Matcher {
     @Override
     public boolean match(Edge q, Edge r, Environment env) {
 
-        if (graph.getProxy().isType(q)) { //(q.getLabel().equals(RDF.TYPE)){
+        if (graph.getProxy().isType(q)) { 
             return matchType(q, r, env);
         }
 
@@ -140,7 +140,6 @@ public class MatcherImpl implements Matcher {
     }
 
     boolean matchType(Edge q, Edge r, Environment env) {
-        
         if (!match(q.getNode(0), r.getNode(0), env)) {
             return false;
         }
@@ -184,13 +183,6 @@ public class MatcherImpl implements Matcher {
 
                 case SUBSUME:
                 case MIX:
-
-//				if (entail.isTopClass(qnode)){
-//					// ?x rdf:type rdfs:Resource
-//					return true;
-//				}
-
-
                     // if rdf:type is completed by subClassOf, skip this and perform std match
                     // if rdf:type is not completed by subClassOf, check whether r <: q
                     boolean b = false;

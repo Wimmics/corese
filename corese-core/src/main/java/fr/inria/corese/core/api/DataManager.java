@@ -2,19 +2,40 @@ package fr.inria.corese.core.api;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
- *
+ * Interface to external graph implementation
  */
 public interface DataManager {
     
+     
+    // from provides union of triples  (select from where default graph semantics)
+    default Iterable<Edge> getEdgeList(Node subject, Node predicate, Node object, List<Node> from) {
+        return new ArrayList<>(0);
+    }
+    
+    default Iterable<Node> getGraphList() {
+        return new ArrayList<>(0);
+    }
+    
+    default Iterable<Node> getPropertyList() {
+        return new ArrayList<>(0);
+    }
+    
     /**
-     * 
-     * @param predicate : property name URI or Graph.TOPREL when unbound variable
-     * @param node : subject/object/graph when it is known
-     * @param n : index of node in edge: subject=0, object=1, graph=Graph.IGRAPH
-     * @return 
+     * @return set of subject/object of default graph
      */
-    Iterable<Edge> iterate(Node predicate, Node node, int n) ;
+    default Iterable<Node> getDefaultNodeList() {
+        return new ArrayList<>(0);
+    }
+
+    /**
+     * @return set of subject/object of named graph
+     */
+    default Iterable<Node> getGraphNodeList(Node node) {
+        return new ArrayList<>(0);
+    }
     
 }

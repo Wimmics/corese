@@ -261,7 +261,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
                 // there is a list of candidates for ?x ?p ?y
                 // skip first query edge: skip exp.get(0)
                 exp = Exp.create(Exp.AND, exp.get(1), exp.get(2));
-            } else if (isTestable && graph.hasList()) {
+            } else if (isTestable && graph.hasRuleEdgeList()) {
                 // focus on new edges in a specific graph Index sorted by timestamps
                 isTestable = false;
                 exp = union(exp);

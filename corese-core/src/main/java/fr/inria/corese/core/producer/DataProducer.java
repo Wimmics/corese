@@ -101,6 +101,8 @@ public class DataProducer extends GraphObject
     
     /**
      * @Pragma: this is getDefault() DataProducer 
+     * for testing external graph DataManager
+     * It is not used in standard corese
      */
     @Override
     public DataProducer getEdgeList(Node subject, Node predicate, Node object, List<Node> from) {
@@ -110,6 +112,17 @@ public class DataProducer extends GraphObject
             return getGraph().getDataStore().getDefault(from)
                     .iterate(value(subject), value(predicate), value(object));
         }
+    }
+    
+    /**
+     * DataManagerUpdate implementation for testing purpose
+     * Not used by standard corese
+     */
+    @Override
+    public Edge insert(Edge edge) {
+        System.out.println("insert ext: " + edge);
+        Edge res = getGraph().addEdgeWithNode(edge);
+        return res;
     }
     
     IDatatype value(Node n) {

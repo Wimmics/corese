@@ -207,7 +207,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
         } else {
             // create Edge 
             // no Mapping created by kgram
-            cons.construct(map, env);
+            cons.entailment(map, env);
             return false;
         }
     }

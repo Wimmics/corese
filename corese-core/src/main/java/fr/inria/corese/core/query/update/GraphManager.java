@@ -11,12 +11,14 @@ import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.Workflow;
+import fr.inria.corese.core.api.DataBrokerConstruct;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.load.LoadException;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.producer.DataBrokerConstructLocal;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -48,11 +50,14 @@ public class GraphManager {
     private Graph graph;
     Load load;
     private QueryProcess queryProcess;
+    // broker to corese graph or external graph 
+    private DataBrokerConstruct dataBroker;
 
     public GraphManager(Graph g) {
         graph = g;
         load = getLoader();
         load.init(graph);
+        setDataBroker(new DataBrokerConstructLocal(this));
     }
     
    
@@ -74,6 +79,26 @@ public class GraphManager {
      **********************************************************/
 
     /**
+     * Before construct/insert/delete starts
+     */
+    public void start(Event e){
+        graph.getEventManager().start(e);        
+    }
+    
+    /**
+     * After construct/insert/delete completes 
+     * Tell the graph to recompile its Index
+     */
+    public void finish(Event e) {
+        if (graph.size() > 0) {
+            // index graph
+            graph.getEventManager().finish(e);
+        }
+    }
+
+  
+    
+    /**
      * Corese extension:
      * Additional system named graph 
      * Optional
@@ -90,78 +115,29 @@ public class GraphManager {
         return graph.addDefaultGraphNode();
     }
     
+    // When insert in new graph name, update insert dataset named += name
     public boolean isDefaultGraphNode(String name){
         return graph.isDefaultGraphNode(name);
     }
-     
-    /**
-     * Return existing resource Node (URI only)
-     * If not exist, create a Node, do not add it into the graph
-     */
-    Node getResourceNode(IDatatype dt) {
-        return graph.getResourceNode(dt, true, false);
-    }
-
-    /**
-     * Return existing Node (any type of Node)
-     * If not exist, create a Node, do not add it into the graph
-     * gNode is the name of a named graph
-     */
-    public Node getNode(Node gNode, IDatatype dt) {
-        return graph.getNode(gNode, dt, true, false);
-    }
     
-    /**
-     * Return existing Node (any type of Node)
-     * If not exist, create a Node, add it into the graph
-     * gNode is the name of a named graph
-     */
-    public Node getCreateNode(Node gNode, IDatatype dt) {
-        return graph.getNode(gNode, dt, true, true);
+    public Node getRuleGraphName(boolean constraint) {
+        return graph.getRuleGraphName(constraint);
     }
-    
+      
 
-    /**
-     * Before construct/insert/delete starts
-     */
-    public void start(Event e){
-        graph.getEventManager().start(e);        
-    }
-    /**
-     * After construct/insert/delete completes 
-     * Tell the graph to recompile its Index
-     */
-    public void finish(Event e) {
-        if (graph.size() > 0) {
-            // index graph
-            graph.getEventManager().finish(e);
-        }
-    }
-
-    /**
-     * Delete occurrences of edge in named graphs of from list
-     * keep other occurrences
-     * edge has no named graph
-     * Return the list of deleted edges
-     */
-    public List<Edge> delete(Edge ent, List<Constant> from) {
-        return graph.delete(ent, from);
-    }
-
-    /**
-     * If Edge have a named graph: delete this occurrence
-     * Otherwise: delete all occurrences of edge 
-     */
-    public List<Edge> delete(Edge ent) {
-        return graph.delete(ent);
-    }
 
     /**
      * Return null if edge already exists in graph
      * and in its named graph
+     * Used by construct/insert/rule
      */
-    public Edge insert(Edge ent) {
-        return graph.addEdge(ent);
+    public Edge insert(Edge edge) {
+        return getDataBroker().insert(edge);
+    }
+    
+    // corese optimization, not for extern
+    public void insert(Node predicate, List<Edge> list) {
+        getDataBroker().insert(predicate, list);
     }
 
     /**
@@ -169,35 +145,50 @@ public class GraphManager {
      * Used by RuleEngine only
      */
     public boolean exist(Node property, Node subject, Node object) {
-        return graph.exist(property, subject, object);
+        return getDataBroker().exist(property, subject, object);
     }
 
     /**
      * Add a Node as a Vertex in the graph (subject of object of an edge)
      */
     public void add(Node node) {
-        graph.add(node);
+        getDataBroker().add(node);
     }
     
     public void add(Node node, int n) {
-        if (graph.isMetadata() && n > 1){
-            return;
-        }
-        graph.add(node);
+        getDataBroker().add(node, n);
     }
     
+    /**
+     * Return existing Node (any type of Node) If not exist, create a Node, do
+     * not add it into the graph gNode is the name of a named graph gNode is not
+     * used with corese graph implementation
+     * Node may be skolemized by graph
+     */
+    public Node getNode(Node gNode, IDatatype dt) {
+        return getDataBroker().getNode(gNode, dt);
+    }
+  
     public void addPropertyNode(Node property) {
-        graph.addPropertyNode(property);
+        getDataBroker().addPropertyNode(property);
     }
 
-    public Node addGraphNode(Node source) {
-        Node node = graph.getNode(source);
-        if (node == null){
-            node = source;
-        }
-        graph.addGraphNode(node);
-        return node;       
+    public void addGraphNode(Node node) { 
+        getDataBroker().addGraphNode(node);
     }
+    
+//        public void addGraphNode(Node node) {
+//        Node node = graph.getNode(source);
+//        if (node == null){
+//            node = source;
+//        }
+//        graph.addGraphNode(node);
+//        return node;     
+//    }
+    
+    /**
+     * Create temporary Edge for construct / update
+     */
 
     /**
      * Create a candidate edge to be inserted
@@ -237,45 +228,68 @@ public class GraphManager {
      *   SPARQL Update Manager
      * 
      ****************************************************************************/
+    
+    /**
+     * Delete occurrences of edge in named graphs of from list
+     * keep other occurrences
+     * edge has no named graph
+     * Return the list of deleted edges
+     */
+    public List<Edge> delete(Edge ent, List<Constant> from) {
+        return getDataBroker().delete(ent, from);
+    }
+
+    /**
+     * If Edge have a named graph: delete this occurrence
+     * Otherwise: delete all occurrences of edge 
+     */
+    public List<Edge> delete(Edge ent) {
+        return getDataBroker().delete(ent);
+    }
 
     void clear(String name, boolean silent) {
-        graph.clear(name, silent);
+        getDataBroker().clear(name, silent);
     }
 
     void deleteGraph(String name) {
-        graph.deleteGraph(name);
+        getDataBroker().deleteGraph(name);
     }
 
     void clearNamed() {
-        graph.clearNamed();
+        getDataBroker().clearNamed();
     }
 
     void dropGraphNames() {
-        graph.dropGraphNames();
+        getDataBroker().dropGraphNames();
     }
 
     void clearDefault() {
-        graph.clearDefault();
+        getDataBroker().clearDefault();
     }
 
     boolean add(String source, String target, boolean silent) {
-        return graph.add(source, target, silent);
+        return getDataBroker().add(source, target, silent);
     }
 
     boolean move(String source, String target, boolean silent) {
-        return graph.move(source, target, silent);
+        return getDataBroker().move(source, target, silent);
     }
 
     boolean copy(String source, String target, boolean silent) {
-        return graph.copy(source, target, silent);
+        return getDataBroker().copy(source, target, silent);
     }
 
     void addGraph(String uri) {
-        graph.addGraph(uri);
+        getDataBroker().addGraph(uri);
     }
     
-    
     boolean load(Query q, Basic ope, Level level, AccessRight access) throws EngineException {
+        return getDataBroker().load(q, ope, level, access);
+    }
+
+    
+    
+   public boolean myLoad(Query q, Basic ope, Level level, AccessRight access) throws EngineException {
         Load load = Load.create(graph);
         load.setLevel(level);
         if (AccessRight.isActive()) {
@@ -289,14 +303,12 @@ public class GraphManager {
         
         graph.logStart(q);
         graph.getEventManager().start(Event.LoadUpdate);
-        //getQueryProcess().getCurrentVisitor().beforeLoad(dt);
         if (ope.isSilent()) {
             try {
                 if (NSManager.isFile(uri)) {
                     // load access file system ?
                     Access.check(Feature.LOAD_FILE, level, uri, TermEval.LOAD_MESS);
                 }
-                //load.parse(uri, src);
                 load(load, src, uri);
             } catch (LoadException | SafetyException ex) {
                 logger.error("Load silent trap error: " + ex.getMessage());
@@ -319,7 +331,6 @@ public class GraphManager {
                 return ope.isSilent();
             }
             finally {
-                   //getQueryProcess().getCurrentVisitor().afterLoad(dt);
                 graph.logFinish(q);
                 graph.getEventManager().finish(Event.LoadUpdate);
             }
@@ -333,7 +344,6 @@ public class GraphManager {
             // (des)activate
             // pragma {kg:kgram kg:rule true/false}
             graph.addEngine(load.getRuleEngine());
-            //graph.setEntail(true);
             graph.getEventManager().start(Event.ActivateEntailment);
         }
 
@@ -426,6 +436,14 @@ public class GraphManager {
      */
     public void setQueryProcess(QueryProcess queryProcess) {
         this.queryProcess = queryProcess;
+    }
+
+    public DataBrokerConstruct getDataBroker() {
+        return dataBroker;
+    }
+
+    public void setDataBroker(DataBrokerConstruct dataBroker) {
+        this.dataBroker = dataBroker;
     }
 
 }

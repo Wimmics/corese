@@ -43,7 +43,7 @@ public class UpdateProcess {
 
     private static Logger logger = LoggerFactory.getLogger(UpdateProcess.class);
 
-    Manager manager;
+    Manager manager; // see ManagerImpl
     QueryProcess exec;
     Query query;
     Dataset ds;

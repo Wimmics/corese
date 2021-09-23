@@ -28,7 +28,7 @@ public class ManagerImpl implements Manager {
 
    
     static Logger logger = LoggerFactory.getLogger(ManagerImpl.class);
-    GraphManager gm;
+    private GraphManager graphManager;
     static final int COPY = 0;
     static final int MOVE = 1;
     static final int ADD = 2;
@@ -37,7 +37,7 @@ public class ManagerImpl implements Manager {
     private AccessRight accessRight;
 
     public ManagerImpl(GraphManager gm) {
-        this.gm = gm;
+        this.graphManager = gm;
         
     }
 
@@ -57,7 +57,7 @@ public class ManagerImpl implements Manager {
         boolean isAll = ope.isAll();
         boolean isSilent = ope.isSilent();
 
-        gm.system(ope);
+        getGraphManager().system(ope);
 
         switch (ope.type()) {
 
@@ -92,7 +92,7 @@ public class ManagerImpl implements Manager {
     }
     
     boolean load(Query q, Basic ope) throws  EngineException {
-        return gm.load(q, ope, getLevel(), getAccessRight());
+        return getGraphManager().load(q, ope, getLevel(), getAccessRight());
     }
    
     private boolean clear(Basic ope, Dataset ds) {
@@ -120,19 +120,19 @@ public class ManagerImpl implements Manager {
         }
 
         if (ope.getGraph() != null) {
-            gm.clear(ope.getGraph(), ope.isSilent());
+            getGraphManager().clear(ope.getGraph(), ope.isSilent());
             if (drop) {
-                gm.deleteGraph(ope.getGraph());
+                getGraphManager().deleteGraph(ope.getGraph());
             }
         } else if (ds == null || ds.isEmpty()) {
             // no prescribed dataset
             if (ope.isNamed() || ope.isAll()) {
-                gm.clearNamed();
+                getGraphManager().clearNamed();
                 if (drop) {
-                    gm.dropGraphNames();
+                    getGraphManager().dropGraphNames();
                 }
             } else if (ope.isDefault()) {
-                gm.clearDefault();
+                getGraphManager().clearDefault();
             }
 
         }
@@ -140,9 +140,9 @@ public class ManagerImpl implements Manager {
     }
 
     void clear(Constant g, Basic ope, boolean drop) {
-        gm.clear(g.getLabel(), ope.isSilent());
+        getGraphManager().clear(g.getLabel(), ope.isSilent());
         if (drop) {
-            gm.deleteGraph(g.getLabel());
+            getGraphManager().deleteGraph(g.getLabel());
         }
     }
 
@@ -164,7 +164,7 @@ public class ManagerImpl implements Manager {
                 update(ope, mode, source, name);
             } else {
                 // use case: move g to default
-                update(ope, mode, source, gm.getDefaultGraphNode().getLabel());
+                update(ope, mode, source, getGraphManager().getDefaultGraphNode().getLabel());
             }
         } else if (target != null && ds != null && ds.hasFrom()) {
             // copy default to g
@@ -185,11 +185,11 @@ public class ManagerImpl implements Manager {
 
         switch (mode) {
             case ADD:
-                return gm.add(source, target, ope.isSilent());
+                return getGraphManager().add(source, target, ope.isSilent());
             case MOVE:
-                return gm.move(source, target, ope.isSilent());
+                return getGraphManager().move(source, target, ope.isSilent());
             case COPY:
-                return gm.copy(source, target, ope.isSilent());
+                return getGraphManager().copy(source, target, ope.isSilent());
         }
         return true;
     }
@@ -208,27 +208,27 @@ public class ManagerImpl implements Manager {
 
     private boolean create(Basic ope) {
         String uri = ope.getGraph();
-        gm.addGraph(uri);
+        getGraphManager().addGraph(uri);
         return true;
     }
 
    
     @Override
     public void insert(Query query, Mappings lMap, Dataset ds) {
-        Construct cons = Construct.create(query, gm);
+        Construct cons = Construct.createInsert(query, getGraphManager());
         cons.setAccessRight(getAccessRight());
         cons.setDebug(query.isDebug());
         cons.insert(lMap, ds);
-        lMap.setGraph(gm.getGraph());
+        lMap.setGraph(getGraphManager().getGraph());
     }
 
     @Override
     public void delete(Query query, Mappings lMap, Dataset ds) {
-        Construct cons = Construct.create(query, gm);
+        Construct cons = Construct.createDelete(query, getGraphManager());
         cons.setAccessRight(getAccessRight());
         cons.setDebug(query.isDebug());
         cons.delete(lMap, ds);
-        lMap.setGraph(gm.getGraph());
+        lMap.setGraph(getGraphManager().getGraph());
     }
 
     /**
@@ -257,5 +257,13 @@ public class ManagerImpl implements Manager {
      */
     public void setAccessRight(AccessRight accessRight) {
         this.accessRight = accessRight;
+    }
+
+    public GraphManager getGraphManager() {
+        return graphManager;
+    }
+
+    public void setGraphManager(GraphManager graphManager) {
+        this.graphManager = graphManager;
     }
 }

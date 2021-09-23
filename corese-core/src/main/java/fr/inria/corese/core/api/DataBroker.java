@@ -8,7 +8,8 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.List;
 
 /**
- * Broker between ProducerImpl and graph DataManager
+ * Broker between ProducerImpl and graph DataManager 
+ * for sparql query for the where part
  * Refined by core.producer.DataBrokerLocal  for corese graph
  * Refined by core.producer.DataBrokerExtern for external DataManager
  */

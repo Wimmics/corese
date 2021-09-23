@@ -7,7 +7,6 @@ import fr.inria.corese.core.index.PredicateList;
 import fr.inria.corese.kgram.api.core.Node;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
-import java.util.HashMap;
 
 /**
  * Interface for Index for Graph 

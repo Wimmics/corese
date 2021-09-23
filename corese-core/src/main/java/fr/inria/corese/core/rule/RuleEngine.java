@@ -83,6 +83,7 @@ public class RuleEngine implements Engine, Graphable {
     private static final String UNKNOWN = "unknown";
     public static Logger logger = LoggerFactory.getLogger(RuleEngine.class);
     Graph graph;
+    private GraphManager graphManager;
     QueryProcess exec;
     private QueryEngine qengine;
     private List<Rule> rules;
@@ -148,6 +149,23 @@ public class RuleEngine implements Engine, Graphable {
         rules = new ArrayList<>();
         errorList = new ArrayList<>();
     }
+    
+    
+    
+    public static RuleEngine create(Graph g) {
+        return create(new GraphManager((g)));
+    }
+    
+    
+    public static RuleEngine create(GraphManager gm) {
+        RuleEngine eng = new RuleEngine();
+        eng.set(gm.getGraph());
+        eng.set(QueryProcess.create(gm.getGraph()));
+        eng.setGraphManager(gm);
+        return eng;
+    }
+    
+    
     
     void set(Graph g) {
         graph = g;
@@ -300,25 +318,20 @@ public class RuleEngine implements Engine, Graphable {
         trace = b;
     }
 
-    public static RuleEngine create(Graph g) {
-        RuleEngine eng = new RuleEngine();
-        eng.set(g);
-        eng.set(QueryProcess.create(g));
-        return eng;
-    }
+   
 
-    public static RuleEngine create(QueryProcess q) {
-        RuleEngine eng = new RuleEngine();
-        eng.set(q);
-        return eng;
-    }
-
-    public static RuleEngine create(Graph g, QueryProcess q) {
-        RuleEngine eng = new RuleEngine();
-        eng.set(g);
-        eng.set(q);
-        return eng;
-    }
+//    public static RuleEngine create(QueryProcess q) {
+//        RuleEngine eng = new RuleEngine();
+//        eng.set(q);
+//        return eng;
+//    }
+//
+//    public static RuleEngine create(Graph g, QueryProcess q) {
+//        RuleEngine eng = new RuleEngine();
+//        eng.set(g);
+//        eng.set(q);
+//        return eng;
+//    }
     
     /**
      * 
@@ -420,13 +433,9 @@ public class RuleEngine implements Engine, Graphable {
         graph.getEventManager().start(Event.InferenceEngine, getClass().getName());
     }
     
-    void beforeConstraint() {
-        Graph g = getGraphStore().getRuleGraph(true);
-        if (g != getGraphStore()) {
-            // specific graph for constraint entailment
-            g.clear();
-        }
-    }
+//    void beforeConstraint() {
+//        getGraphManager().clearConstraintGraph();
+//    }
     
     void after() throws EngineException {
         graph.getEventManager().finish(Event.InferenceEngine, getClass().getName());
@@ -877,16 +886,11 @@ public class RuleEngine implements Engine, Graphable {
         Date d1 = new Date();
         boolean isConstruct = isOptimize && isConstructResult;
 
-        Query qq = rule.getQuery();
-        Construct cons = Construct.create(qq);
-        cons.setAccessRight(b.getAccessRight());
-        
-        Graph targetGraph = getGraphStore().getRuleGraph(rule.isConstraint());
-        Node name = targetGraph.getRuleGraphName(rule.isConstraint());
-        
-        cons.setDefaultGraph(name);
-        cons.set(new GraphManager(targetGraph));
-        
+        Query qq = rule.getQuery();                  
+        Construct cons = Construct.createRule(qq, getGraphManager());
+        // named graph to store inference rule entailment OR constraint rule error
+        cons.setDefaultGraph(getGraphManager().getRuleGraphName(rule.isConstraint()));
+        cons.setAccessRight(b.getAccessRight());        
         cons.setRule(rule, rule.getIndex(), rule.getProvenance());
         cons.setLoopIndex(loopIndex);
         cons.setDebug(isDebug());
@@ -991,10 +995,11 @@ public class RuleEngine implements Engine, Graphable {
         
         if (cons.isBuffer()) {
             // cons insert list contains only new edge that do not exist
-            getGraphStore().getRuleGraph(r.isConstraint()).addOpt(r.getUniquePredicate(), cons.getInsertList());
+            //getGraphStore().getRuleGraph(r.isConstraint()).addOpt(r.getUniquePredicate(), cons.getInsertList());
+            getGraphManager().insert(r.getUniquePredicate(), cons.getInsertList());
         } else {
             // create edges from Mappings as usual
-            cons.insert(map, null);
+            cons.entailment(map);
         }
 
         if (r.isConstraint()) {
@@ -1482,6 +1487,14 @@ public class RuleEngine implements Engine, Graphable {
 
     public boolean isDebug() {
         return debug;
+    }
+
+    public GraphManager getGraphManager() {
+        return graphManager;
+    }
+
+    public void setGraphManager(GraphManager graphManager) {
+        this.graphManager = graphManager;
     }
 
 }

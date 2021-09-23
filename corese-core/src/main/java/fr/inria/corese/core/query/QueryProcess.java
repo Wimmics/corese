@@ -31,15 +31,16 @@ import fr.inria.corese.core.approximate.ext.ASTRewriter;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.DataBroker;
+import fr.inria.corese.core.api.DataBrokerConstruct;
 import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.LogManager;
+import fr.inria.corese.core.producer.DataBrokerUpdateExtern;
 import fr.inria.corese.core.query.update.GraphManager;
-import fr.inria.corese.core.query.update.Manager;
-import fr.inria.corese.core.query.update.ManagerImpl;
 import fr.inria.corese.core.util.Extension;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
@@ -69,7 +70,7 @@ import org.slf4j.LoggerFactory;
 public class QueryProcess extends QuerySolver {
 
     private static Logger logger = LoggerFactory.getLogger(QueryProcess.class);
-    private static ProducerImpl p;
+    private static ProducerImpl dbProducer;
     private static final String EVENT = "event";
     static final String DB_FACTORY = "fr.inria.corese.tinkerpop.Factory";
     static final String DB_INPUT = "fr.inria.corese.tinkerpop.dbinput";
@@ -81,9 +82,9 @@ public class QueryProcess extends QuerySolver {
     private static boolean isSort = false;
 
     static HashMap<String, Producer> dbmap;
-    private Manager updateManager;
-    private GraphManager graphManager;
     private QueryProcessUpdate queryProcessUpdate;
+    private ProducerImpl localProducer;
+    private DataBrokerConstruct dataBrokerUpdate;
     Transformer transformer;
     Loader load;
     // fake eval for funcall public function
@@ -137,9 +138,19 @@ public class QueryProcess extends QuerySolver {
         return create(Graph.create());
     }
     
+    /**
+     * Query processor for external graph
+     * Provide DataManager for query and update of external graph 
+     * DataManager is stored in ProducerImpl
+     * DataManager is used when create GraphManager for update
+     * There is still a local corese graph for compatibility
+     * Use of DataManager is done in core.producer.DataBrokerExtern 
+     * and core.producer.DataBrokerUpdateExtern
+     * SPARQL construct where return a corese graph
+     */
     public static QueryProcess create(DataManager dm) {
-        QueryProcess exec = create(Graph.create());
-        exec.getProducerImpl().defineDataManager(dm);
+        QueryProcess exec = create();
+        exec.getLocalProducer().defineDataManager(dm);
         return exec;
     }
 
@@ -174,7 +185,47 @@ public class QueryProcess extends QuerySolver {
         return exec;
     }
    
-   
+    public static QueryProcess create(ProducerImpl p) {
+        Matcher match = MatcherImpl.create(p.getGraph());
+        p.set(match);
+        if (p.isMatch()) {
+            // there is local match in Producer
+            // create global match with Relax mode 
+            match = MatcherImpl.create(p.getGraph());
+            match.setMode(Matcher.RELAX);
+        }
+        QueryProcess exec = QueryProcess.create(p, createInterpreter(p, match), match);
+        exec.setLocalProducer(p);
+        return exec;
+    }
+    
+    public static QueryProcess create(Producer p) {
+        if (p instanceof ProducerImpl) {
+            return create((ProducerImpl) p);
+        } else {
+            return createExtern(p);
+        }
+    }
+    
+    public static QueryProcess createExtern(Producer p) {
+        Matcher match = MatcherImpl.create(Graph.create());
+        match.setMode(Matcher.RELAX);
+        QueryProcess exec = QueryProcess.create(p, createInterpreter(p, match), match);
+        // for compatibility reason:
+        exec.setLocalProducer(new ProducerImpl(Graph.create()));
+        return exec;
+    }
+
+    /**
+     * To Be Used by implementation other than Graph
+     */
+//    public static QueryProcess create(Producer prod, Matcher match) {
+//        return new QueryProcess(prod, createInterpreter(prod, match), match);
+//    }
+
+    public static QueryProcess create(Producer prod, Interpreter eval, Matcher match) {
+        return new QueryProcess(prod, eval, match);
+    }
    
     /**
      * When there is a graph database to manage the graph
@@ -185,21 +236,14 @@ public class QueryProcess extends QuerySolver {
         exec.setMatch(isMatch);
         return exec;
     }
-
-    public ProducerImpl getProducerImpl() {
-        if (getProducer() instanceof ProducerImpl) {
-            return (ProducerImpl) getProducer();
-        }
-        return new ProducerImpl(Graph.create());
-    }
-
+   
     public static synchronized Producer getCreateProducer(Graph g, String factory, String db) {
         if (db == null) {
-            if (p == null) {
+            if (dbProducer == null) {
                 logger.info("property fr.inria.corese.factory defined. Using factory: " + factory);
-                p = createProducer(g, factory, db);
+                dbProducer = createProducer(g, factory, db);
             }
-            return p;
+            return dbProducer;
         } else {
             Producer prod = dbmap.get(db);
             if (prod == null) {
@@ -278,36 +322,7 @@ public class QueryProcess extends QuerySolver {
         return p;
     }
 
-    public static QueryProcess create(Producer p) {
-        Matcher match;
-        if (p instanceof ProducerImpl) {
-            ProducerImpl prod = (ProducerImpl) p;
-            match = MatcherImpl.create(prod.getGraph());
-            prod.set(match);
-            if (prod.isMatch()) {
-                // there is local match in Producer
-                // create global match with Relax mode 
-                match = MatcherImpl.create(prod.getGraph());
-                match.setMode(Matcher.RELAX);
-            }
-        } else {
-            match = MatcherImpl.create(Graph.create());
-            match.setMode(Matcher.RELAX);
-        }
-        QueryProcess exec = QueryProcess.create(p, match);
-        return exec;
-    }
-
-    /**
-     * To Be Used by implementation other than Graph
-     */
-    public static QueryProcess create(Producer prod, Matcher match) {
-        return new QueryProcess(prod, createInterpreter(prod, match), match);
-    }
-
-    public static QueryProcess create(Producer prod, Interpreter eval, Matcher match) {
-        return new QueryProcess(prod, eval, match);
-    }
+   
 
     /**
      * Filter and LDScript Interpreter
@@ -822,11 +837,21 @@ public class QueryProcess extends QuerySolver {
     public EventManager getEventManager() {
         return getGraph().getEventManager();
     }
-
-    ManagerImpl createUpdateManager(Graph g) {
-        GraphManager man = new GraphManager(g);
-        man.setQueryProcess(this);
-        return new ManagerImpl(man);
+    
+    /**
+     * @return Proxy to graph for sparql update
+     */
+    GraphManager getUpdateGraphManager() {
+        GraphManager mgr = new GraphManager(getGraph());
+        if (hasDataManager()) {
+            // external graph DataManager (stored in ProducerImpl)
+            mgr.setDataBroker(new DataBrokerUpdateExtern(getDataManager()));
+        }
+        return mgr;
+    }
+    
+    GraphManager getConstructGraphManager(Graph g) {
+        return new GraphManager(g);
     }
 
     /**
@@ -880,7 +905,7 @@ public class QueryProcess extends QuerySolver {
         if (p.getGraph() instanceof Graph) {
             return (Graph) p.getGraph();
         }
-        return null;
+        return Graph.create();
     }
 
     /**
@@ -891,7 +916,7 @@ public class QueryProcess extends QuerySolver {
         Graph gg = getGraph().construct();
         // can be required to skolemize
         gg.setSkolem(isSkolem());
-        Construct cons = Construct.create(query, new GraphManager(gg));
+        Construct cons = Construct.createConstruct(query, getConstructGraphManager(gg));
         cons.setDebug(isDebug() || query.isDebug());
         cons.construct(map);
         cons.setAccessRight(access);
@@ -1030,9 +1055,9 @@ public class QueryProcess extends QuerySolver {
      * ****************************************
      */
     public void close() {
-        if (p != null) {
-            p.close();
-            p = null;
+        if (dbProducer != null) {
+            dbProducer.close();
+            dbProducer = null;
         }
     }
     
@@ -1341,46 +1366,64 @@ public class QueryProcess extends QuerySolver {
             
     /***********************************************************************/
     
-    /**
-     * @return the queryProcessUpdate
-     */
+    
     public QueryProcessUpdate getQueryProcessUpdate() {
         return queryProcessUpdate;
     }
 
-    /**
-     * @param queryProcessUpdate the queryProcessUpdate to set
-     */
+    
     public void setQueryProcessUpdate(QueryProcessUpdate queryProcessUpdate) {
         this.queryProcessUpdate = queryProcessUpdate;
     }
 
-    /**
-     * @return the solverVisitorName
-     */
+    
     public static String getVisitorName() {
         return solverVisitorName;
     }
     
 
-    /**
-     * @param aSolverVisitorName the solverVisitorName to set
-     */
+    
     public static void setVisitorName(String aSolverVisitorName) {
         solverVisitorName = aSolverVisitorName;
     }
 
-    /**
-     * @return the serverVisitorName
-     */
+    
     public static String getServerVisitorName() {
         return serverVisitorName;
     }
 
-    /**
-     * @param serverVisitorName the serverVisitorName to set
-     */
+    
     public static void setServerVisitorName(String name) {
         serverVisitorName = name;
     }
+
+    public ProducerImpl getLocalProducer() {
+        return localProducer;
+    }
+
+    public void setLocalProducer(ProducerImpl localProducer) {
+        this.localProducer = localProducer;
+    }
+    
+    // null with corese graph
+    public DataManager getDataManager() {
+        return getLocalProducer().getDataManager();
+    }
+    
+    public boolean hasDataManager() {
+        return getDataManager() != null;
+    }
+    
+    public DataBroker getDataBroker() {
+        return getLocalProducer().getDataBroker();
+    }
+
+    public DataBrokerConstruct getDataBrokerUpdate() {
+        return dataBrokerUpdate;
+    }
+
+    public void setDataBrokerUpdate(DataBrokerConstruct dataBrokerUpdate) {
+        this.dataBrokerUpdate = dataBrokerUpdate;
+    }
+    
 }

@@ -21,13 +21,17 @@ import fr.inria.corese.core.Event;
 import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.rule.Rule;
 import fr.inria.corese.core.util.Duplicate;
+import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import java.util.TreeMap;
 
 /**
- * construct where describe where delete where
+ * query  construct describe  
+ * update insert delete 
+ * rule   construct where
  *
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
@@ -35,7 +39,7 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
 public class Construct
         implements Comparator<Node> {
 
-    private static Logger logger = LoggerFactory.getLogger(Construct.class);
+   private static Logger logger = LoggerFactory.getLogger(Construct.class);
     private static boolean allEntailment = false;
     static final String BLANK = "_:b_";
     static final String DOT = ".";
@@ -43,43 +47,41 @@ public class Construct
     String root;
     Query query;
     ASTQuery ast;
-    GraphManager graph;
+    GraphManager graphManager;
     Node defaultGraph;
     //IDatatype dtDefaultGraph;
     List<Edge> lInsert, lDelete;
-    Dataset ds;
+    private Dataset ds;
     private boolean detail = false;
     boolean isDebug = false,
-            isDelete = false,
-            isRule = false,
-            isInsert = false,
-            isBuffer = false;
+            isDelete = false;
+    private boolean construct = false;
+    private boolean isRule = false;
+    private boolean isInsert = false;
+    boolean isBuffer = false;
     private boolean test = false;
     Rule rule;
     HashMap<Node, Node> table;
+    private TreeNode literalMap;
+    private HashMap<String, Node> labelMap;
     Duplicate duplicate;
     private int loopIndex = -1;
-    private Node prov;
+    private Node provenance;
     private ProcessVisitor visitor;
     private AccessRight accessRight;
     
 
-    Construct(Query q, Dataset ds) {
-        this(q);
-        this.ds = ds;
-    }
-
     Construct(Query q) {
         query = q;
         ast = (ASTQuery) query.getAST();
-        //setAccessRight(ast.getAccess());
-        table = new HashMap<Node, Node>();
+        table = new HashMap<>();
+        labelMap = new HashMap<>();
+        literalMap = new TreeNode();
         count = 0;
-        //dtDefaultGraph = DatatypeMap.createResource(src);
         duplicate =  Duplicate.create();
     }
 
-    public static Construct create(Query q) {
+    private static Construct create(Query q) {
         Construct cons = new Construct(q);
         if (q.isDetail()) {
             cons.setDetail(true);
@@ -87,16 +89,29 @@ public class Construct
         return cons;
     }
     
-    public static Construct create(Query q, GraphManager g) {
-        Construct cons = create(q);
-        cons.set(g);
-        return cons;
+    private static Construct create(Query q, GraphManager g) {
+        return create(q).set(g);
+    }
+    
+    public static Construct createConstruct(Query q, GraphManager g) {
+        return create(q, g).setConstruct(true);
+    }
+    
+    public static Construct createRule(Query q, GraphManager g) {
+        return create(q, g).setRule(true);
+    }
+    
+    public static Construct createInsert(Query q, GraphManager g) {
+        return create(q, g).setInsert(true);
+    }
+    
+    public static Construct createDelete(Query q, GraphManager g) {
+        return create(q, g).setDelete(true);
     }
 
-    public static Construct create(Query q, Dataset ds) {
-        Construct cons = new Construct(q, ds);
-        return cons;
-    }
+//    public static Construct create(Query q, Dataset ds) {
+//        return new Construct(q, ds);
+//    }
 
     public void setDefaultGraph(Node n) {
         defaultGraph = n;
@@ -106,27 +121,30 @@ public class Construct
         isBuffer = b;
     }    
     
-    public void set(GraphManager g){
-       graph = g; 
+    public Construct set(GraphManager g){
+       graphManager = g; 
+       return this;
     }
     
      public boolean isBuffer() {
         return isBuffer;
     }
 
-    public void setDelete(boolean b) {
+    public Construct setDelete(boolean b) {
         isDelete = b;
+        return this;
     }
 
-    public void setInsert(boolean b) {
+    public Construct setInsert(boolean b) {
         isInsert = b;
+        return this;
     }
 
     public void setRule(Rule r, int n, Node prov) {
-        isRule = true;
+        //setRule(true);
         rule = r;
         root = BLANK + n + DOT;
-        this.prov = prov;
+        setProvenance(prov);
     }
 
     public void setDebug(boolean b) {
@@ -149,44 +167,8 @@ public class Construct
         return lDelete;
     }
     
-    public void construct(Mappings map) {
-         construct(map, null);
-    }
-    
-    public void delete(Mappings map, Dataset ds) {
-        if (AccessRight.isActive() && getAccessRight() != null) {
-            if (! getAccessRight().isDelete()){
-                return;
-            } 
-        }
-        setDelete(true);
-        if (ds != null && ds.isUpdate()) {
-            this.ds = ds;
-        }
-        if (isDetail()){
-            setDeleteList(new ArrayList<>());
-        }
-        construct(map, null);
-    }
-
-    public void insert(Mappings map, Dataset ds) {
-        if (AccessRight.isActive() && getAccessRight() != null) {
-            if (! getAccessRight().isInsert()){
-                return;
-            } 
-        }
-        setInsert(true);
-        if (ds != null && ds.isUpdate()) {
-            this.ds = ds;
-        }
-        if (isDetail()){
-            setInsertList(new ArrayList<>());
-        }
-        construct(map, null);
-    }
-         
     Event event() {
-        return (isDelete) ? Event.Delete : (isInsert) ? Event.Insert : Event.Construct ;
+        return (isDelete) ? Event.Delete : (isInsert()) ? Event.Insert : Event.Construct ;
     }
     
     // when external named graph, use specific GraphManager
@@ -196,7 +178,7 @@ public class Construct
             // in GraphStore
             Node gNode = exp.first().getGraphName();
             if (gNode.isConstant()) {
-                GraphManager m = graph.getNamedGraph(gNode.getLabel());
+                GraphManager m = graphManager.getNamedGraph(gNode.getLabel());
                 if (m != null) {
                     set(m);
                 }
@@ -204,8 +186,53 @@ public class Construct
         }
     }
     
-    public void construct(Mappings map, Environment env) {  
-        graph.start(event());
+    
+    public void delete(Mappings map, Dataset ds) {
+        if (AccessRight.isActive() && getAccessRight() != null) {
+            if (! getAccessRight().isDelete()){
+                return;
+            } 
+        }
+        //setDelete(true);
+        if (ds != null && ds.isUpdate()) {
+            setDataset(ds);
+        }
+        if (isDetail()){
+            setDeleteList(new ArrayList<>());
+        }
+        process(map, null);
+    }
+    
+    public void insert(Mappings map, Dataset ds) {
+        if (AccessRight.isActive() && getAccessRight() != null) {
+            if (! getAccessRight().isInsert()){
+                return;
+            } 
+        }
+        //setInsert(true);
+        if (ds != null && ds.isUpdate()) {
+            setDataset(ds);
+        }
+        if (isDetail()){
+            setInsertList(new ArrayList<>());
+        }
+        process(map, null);
+    }
+       
+    public void construct(Mappings map) {
+         process(map, null);
+    }
+    
+    public void entailment(Mappings map) {
+        insert(map, null);
+    }
+
+    public void entailment(Mappings map, Environment env) {  
+        process(map, env);
+    }
+    
+    void process(Mappings map, Environment env) {  
+        graphManager.start(event());
         Exp exp = query.getConstruct();
         if (isDelete) {
             exp = query.getDelete();
@@ -214,10 +241,11 @@ public class Construct
         // when external named graph, use specific GraphManager
         setGraphManager(exp);
 
+        // can be set to kg:rule or kg:constraint
         Node gNode = defaultGraph;
         if (gNode == null) {
-            //gNode = graph.getResourceNode(dtDefaultGraph);
-            gNode = graph.getDefaultGraphNode();
+            // kg:default
+            gNode = graphManager.getDefaultGraphNode();
         }
 
         if (isDelete) {
@@ -232,7 +260,8 @@ public class Construct
         }
                 
         if (env != null) {
-            // construct one solution in env
+            // rule entailment
+            // construct one solution from env
             process(gNode, exp, map, env);
         } else {
             for (Mapping m : map) {       
@@ -240,13 +269,13 @@ public class Construct
             }
         }
 
-        graph.finish(event());     
+        graphManager.finish(event());     
     }
     
     void process(Node gNode, Exp exp, Mappings map, Environment env) {
         List<Edge> edgeList = null;
         clear();
-        if (isRule) {
+        if (isRule()) {
             edgeList = new ArrayList<>();
         }
         construct(gNode, exp, map, env, edgeList);
@@ -254,13 +283,13 @@ public class Construct
     }
     
     void record(List<Edge> construct, Edge[] where) {
-        if (isRule && ! construct.isEmpty() && 
+        if (isRule() && ! construct.isEmpty() && 
                 getVisitor() != null && getVisitor().entailment()) {
             List<Edge> whereList = new ArrayList<>();
             if (where != null) {
                 for (Edge e : where) {
                     if (e != null) {
-                        whereList.add(graph.getGraph().getEdgeFactory().copy(e));
+                        whereList.add(graphManager.getGraph().getEdgeFactory().copy(e));
                     }
                 }
             }
@@ -295,12 +324,12 @@ public class Construct
                                 logger.debug("** Delete: " + ent);
                             }
                             List<Edge> list = null;
-                            if (gNode == null && ds != null && ds.hasFrom()) {
+                            if (gNode == null && getDataset() != null && getDataset().hasFrom()) {
                                 // delete in default graph
-                                list = graph.delete(ent, ds.getFrom());
+                                list = graphManager.delete(ent, getDataset().getFrom());
                             } else {
                                 // delete in all named graph
-                                list = graph.delete(ent);
+                                list = graphManager.delete(ent);
                             }
                             if (list != null) {
                                 map.setNbDelete(map.nbDelete() + list.size());
@@ -321,31 +350,31 @@ public class Construct
                             accept = getAccessRight().setInsert(ent);
                         }
                         if (accept) {
-                            if (isRule && isAllEntailment()) {
+                            if (isRule() && isAllEntailment()) {
                                 edgeList.add(ent);
                             }
                             if (!isBuffer) {
                                 // isBuffer means: bufferise edges in a list 
                                 // that will be processed later by RuleEngine
                                 // otherwise, store edge in graph rigth now
-                                ent = graph.insert(ent);
+                                ent = graphManager.insert(ent);
                             }
                             if (ent != null) {
-                                if (isRule && ! isAllEntailment()) {
+                                if (isRule() && ! isAllEntailment()) {
                                     edgeList.add(ent);
                                 }
                                 map.setNbInsert(map.nbInsert() + 1);
                                 if (lInsert != null) {
-                                    // buffer where to store edges
+                                    // buffer where to store edges for RuleEngine process() cons.getInsertList()
                                     lInsert.add(ent);
                                 }
 
-                                if (isInsert) {
+                                if (isInsert()) {
                                     // When insert in new graph g, update dataset named += g
-                                    if (ds != null) {
+                                    if (getDataset() != null) {
                                         String name = ent.getGraph().getLabel();
-                                        if (!graph.isDefaultGraphNode(name)) {
-                                            ds.addNamed(name);
+                                        if (!graphManager.isDefaultGraphNode(name)) {
+                                            getDataset().addNamed(name);
                                         }
                                     }
                                 }
@@ -364,15 +393,20 @@ public class Construct
      */
     void clear() {
         table.clear();
+        getLiteralMap().clear();
+        getLabelMap().clear();
     }
 
     void init() {
-        table.clear();
+        clear();
         count = 0;
     }
 
     /**
      * Construct target edge from query edge and map
+     * Edge ready to be inserted/deleted into/from target graph
+     * Edge nodes are searched in target graph 
+     * If an insert node does not exist in the graph, it is added in the graph now
      */
     Edge construct(Node gNode, Edge edge, Environment env) {
 
@@ -396,7 +430,7 @@ public class Construct
         
         if (isBuffer){
             // optimized mode for Rule Engine
-            if (graph.exist(property, subject, object)){
+            if (graphManager.exist(property, subject, object)){
                 // edge already exists: skip it
                 return null;
             } 
@@ -411,24 +445,25 @@ public class Construct
                 source = null;
             }
         } else {
-            graph.add(subject);
-            graph.add(object);
-            graph.addPropertyNode(property);
-            source = graph.addGraphNode(source);
-            
+            // insert edge node into target graph
+            graphManager.add(subject);
+            graphManager.add(object);
+            graphManager.addPropertyNode(property);
+            //source = 
+            graphManager.addGraphNode(source);
         }
 
         Edge ee;
         if (edge.nbNode() > 2) {
             // tuple()
-            ArrayList<Node> list = new ArrayList<Node>();
+            ArrayList<Node> list = new ArrayList<>();
             list.add(subject);
             list.add(object);
 
             for (int i = 2; i < edge.nbNode(); i++) {
                 Node n = construct(source, edge.getNode(i), env);
                 if (n != null) {
-                    graph.add(n, i);
+                    graphManager.add(n, i);
                     list.add(n);
                 }
             }
@@ -437,25 +472,25 @@ public class Construct
         } else {
             ee = create(source, subject, property, object);
         }
-        if (prov != null){
-            ee.setProvenance(prov);
+        if (getProvenance() != null){
+            ee.setProvenance(getProvenance());
         }
         return ee;
     }
 
     Edge create(Node source, Node property, List<Node> list) {
         if (isDelete) {
-            return graph.createDelete(source, property, list);
+            return graphManager.createDelete(source, property, list);
         } else {
-            return graph.create(source, property, list);
+            return graphManager.create(source, property, list);
         }
     }
 
     Edge create(Node source, Node subject, Node property, Node object) {
         if (isDelete) {
-            return graph.createDelete(source, subject, property, object);
+            return graphManager.createDelete(source, subject, property, object);
         } else {
-            return graph.create(source, subject, property, object);
+            return graphManager.create(source, subject, property, object);
         }
     }
 
@@ -465,18 +500,77 @@ public class Construct
     Node construct(Node qNode, Environment map) {
         return construct(null, qNode, map);
     }
+    
+    /**
+     * Record value of query node in order to reuse it during solution processing
+     * qNode: variable | bnode | URI | Literal
+     * bnode in construct/insert is not a variable, it means create a new bnode
+     * and reuse the same new bnode in one solution
+     * switch targetNode:
+     * case var bnode URI -> put queryNode.getLabel() -> targetNode
+     * case Literal: TreeNode with sameTerm
+     */
+    void put1(Node queryNode, Node targetNode) {
+        table.put(queryNode, targetNode);
+    }
+        
+    Node get1(Node queryNode) {
+        return table.get(queryNode);
+    }
+    
+    void put(Node queryNode, Node targetNode) {
+        if (isLabel(queryNode)) {
+            getLabelMap().put(queryNode.getLabel(), targetNode);
+        }
+        else {
+            getLiteralMap().put(value(queryNode), targetNode);
+        }
+    }
+    
+    Node get(Node queryNode) {
+        if (isLabel(queryNode)) {
+            // queryNode = var bnode uri ; use getLabel() as key
+            return getLabelMap().get(queryNode.getLabel());
+        }
+        else {
+            // queryNode = Literal ; use IDatatype literal value as key
+            return getLiteralMap().get(value(queryNode));
+        }
+    }
+    
+    Node uniqueNode1(Node gNode, IDatatype dt) {
+        return graphManager.getNode(gNode, dt);
+    }
+
+    /**
+     * Return unique Node for every occurrence of same datatype dt in one solution
+     */
+    Node uniqueNode(Node gNode, IDatatype dt) {
+        Node node = get(dt);
+        if (node == null) {
+            // check if node already exist in target graph
+            node = graphManager.getNode(gNode, dt);
+            // record dt target value, later it can be reused
+            put(dt, node);
+        }
+        return node;
+    }
+    
+    boolean isLabel(Node queryNode) {
+        return queryNode.isVariable() || queryNode.isBlank() || queryNode.getDatatypeValue().isURI();
+    }
+    
 
     Node construct(Node gNode, Node qNode, Environment map) {
         // search target node
-        Node node = table.get(qNode);
-        
+        Node node = get(qNode);
         if (node == null) {
             // target node not yet created
             // search map node
             Node nn = map.getNode(qNode.getLabel());
-            Object value = null;
+            DatatypeValue value = null;
             if (nn != null) {
-                value = nn.getValue();
+                value = nn.getDatatypeValue();
             }
             IDatatype dt = null;
 
@@ -493,28 +587,26 @@ public class Construct
             } else {
                 dt = (IDatatype) value;
             }
-            node = graph.getNode(gNode, dt);
-            table.put(qNode, node);
+            node = uniqueNode(gNode, dt);
+            put(qNode, node);
         }
 
         return node;
     }
-    
-    Node getCreateNode(Node gNode, IDatatype dt){
-        if (isDelete){
-            return graph.getNode(gNode, dt);
-        }
-        return graph.getCreateNode(gNode, dt);
+       
+    IDatatype value(Node node) {
+        return (IDatatype) node.getDatatypeValue();
     }
+    
 
     IDatatype blank(Node qNode, Environment map) {
         String str;
-        if (isRule) {
+        if (isRule()) {
             str = blankRule(qNode, map);
         } else {
-            str = graph.newBlankID();
+            str = graphManager.newBlankID();
         }
-        IDatatype dt = graph.createBlank(str);
+        IDatatype dt = graphManager.createBlank(str);
         return dt;
     }
 
@@ -583,73 +675,143 @@ public class Construct
         loopIndex = n;
     }
 
-    /**
-     * @return the test
-     */
+   
     public boolean isTest() {
         return test;
     }
 
-    /**
-     * @param test the test to set
-     */
+   
     public void setTest(boolean test) {
         this.test = test;
     }
 
-    /**
-     * @return the detail
-     */
+    
     public boolean isDetail() {
         return detail;
     }
 
-    /**
-     * @param detail the detail to set
-     */
+   
     public void setDetail(boolean detail) {
         this.detail = detail;
     }
 
-    /**
-     * @return the visitor
-     */
+    
     public ProcessVisitor getVisitor() {
         return visitor;
     }
 
-    /**
-     * @param visitor the visitor to set
-     */
+    
     public void setVisitor(ProcessVisitor visitor) {
         this.visitor = visitor;
     }
 
-    /**
-     * @return the allEntailment
-     */
+    
     public static boolean isAllEntailment() {
         return allEntailment;
     }
 
-    /**
-     * @param aAllEntailment the allEntailment to set
-     */
+    
     public static void setAllEntailment(boolean aAllEntailment) {
         allEntailment = aAllEntailment;
     }
 
-    /**
-     * @return the accessRight
-     */
+    
     public AccessRight getAccessRight() {
         return accessRight;
     }
 
-    /**
-     * @param accessRight the accessRight to set
-     */
+   
     public void setAccessRight(AccessRight accessRight) {
         this.accessRight = accessRight;
     }
+
+    public boolean isRule() {
+        return isRule;
+    }
+
+    public Construct setRule(boolean isRule) {
+        this.isRule = isRule;
+        return this;
+    }
+
+    public boolean isInsert() {
+        return isInsert;
+    }
+
+    public boolean isConstruct() {
+        return construct;
+    }
+
+    public Construct setConstruct(boolean construct) {
+        this.construct = construct;
+        return this;
+    }
+    
+    public Dataset getDataset() {
+        return ds;
+    }
+
+    public void setDataset(Dataset ds) {
+        this.ds = ds;
+    }
+
+    public Node getProvenance() {
+        return provenance;
+    }
+
+    public void setProvenance(Node provenance) {
+        this.provenance = provenance;
+    }
+
+    public TreeNode getLiteralMap() {
+        return literalMap;
+    }
+
+    public void setLiteralMap(TreeNode literalMap) {
+        this.literalMap = literalMap;
+    }
+
+    public HashMap<String, Node> getLabelMap() {
+        return labelMap;
+    }
+
+    public void setLabelMap(HashMap<String, Node> labelMap) {
+        this.labelMap = labelMap;
+    }
+    
+    public class TreeNode extends TreeMap<IDatatype, Node> {
+
+        public TreeNode() {
+            super(new CompareNode());
+        }
+
+        void put(Node node) {
+            put((IDatatype) node.getDatatypeValue(), node);
+        }
+
+        boolean contains(Node node) {
+            return containsKey((IDatatype) node.getDatatypeValue());
+        }
+    }
+     
+     /**
+     * This Comparator enables to retrieve an occurrence of a given Literal
+     * already existing in graph in such a way that two occurrences of same
+     * Literal be represented by same Node 
+     * It represents (1 integer) and (01 integer) as two different nodes
+     * that will be assigned the same node index in order to join in SPARQL
+     */
+    class CompareNode implements Comparator<IDatatype> {
+
+        CompareNode() {
+        }
+
+        @Override
+        public int compare(IDatatype dt1, IDatatype dt2) {
+            int res = dt1.compareTo(dt2);
+            return res;
+        }
+    }
+
+ 
 }

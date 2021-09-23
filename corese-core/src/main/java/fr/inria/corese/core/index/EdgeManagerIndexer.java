@@ -579,7 +579,7 @@ public class EdgeManagerIndexer
             }
         }
         if (meta.isEmpty()) {
-            return new ArrayList<Edge>();
+            return new ArrayList<>();
         }
         return meta;
     }

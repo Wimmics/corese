@@ -488,7 +488,7 @@ public class Graph extends GraphObject implements
      */
     public class TreeNode extends TreeMap<IDatatype, Node> {
 
-        TreeNode() {
+        public TreeNode() {
             super(new CompareNode());
         }
 
@@ -1447,12 +1447,16 @@ public class Graph extends GraphObject implements
     }
 
     public Edge addEdgeWithNode(Edge ee) {
+        addEdgeNode(ee);
+        return addEdge(ee);
+    }
+    
+    public void addEdgeNode(Edge ee) {
         addGraphNode(ee.getGraph());
         addPropertyNode(ee.getEdgeNode());
         for (int i = 0; i < ee.nbGraphNode(); i++) {
             add(ee.getNode(i));
         }
-        return addEdge(ee);
     }
 
     public Node addList(List<Node> list) {
@@ -1528,9 +1532,9 @@ public class Graph extends GraphObject implements
     }
 
     /**
-	 * PRAGMA: there is no duplicate in list, all edges are inserted
-	 * predicate is declared in graph TODO: if same predicate, perform
-	 * ensureCapacity on Index list
+     * PRAGMA: there is no duplicate in list, all edges are inserted predicate
+     * is declared in graph TODO: if same predicate, perform ensureCapacity on
+     * Index list
      */
     void add(Node p, List<Edge> list) {
         for (Index ei : getIndexList()) {
@@ -1551,14 +1555,14 @@ public class Graph extends GraphObject implements
         }
         // fake index not sorted, hence add(edge) is done at end of index list
         setIndex(true);
-        HashMap<String, Node> t = new HashMap<String, Node>();
+        HashMap<String, Node> t = new HashMap<>();
 
         for (Edge ee : list) {
 
             Node pred = ee.getEdgeNode();
             t.put(pred.getLabel(), pred);
 
-            // add Entity at the end of list index
+            // add Edge at the end of list index
             addEdge(ee);
         }
 
@@ -1718,9 +1722,9 @@ public class Graph extends GraphObject implements
     }
 
     public List<Node> getTopProperties() {
-        List<Node> nl = new ArrayList<Node>();
+        List<Node> nl = new ArrayList<>();
         Node n;
-        if (nl.size() == 0) {
+        if (nl.isEmpty()) {
             n = getTopProperty();
             nl.add(n);
         }
@@ -1970,6 +1974,13 @@ public class Graph extends GraphObject implements
     public void add(Node node) {
         IDatatype dt = getDatatypeValue(node);
         add(dt, node);
+    }
+    
+    public void add(Node node, int n) {
+        if (isMetadata() && n > 1) {
+            return;
+        }
+        add(node);
     }
 
     void add(IDatatype dt, Node node) {

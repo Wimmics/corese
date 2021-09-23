@@ -34,7 +34,6 @@ import fr.inria.corese.core.producer.DataProducer;
 import fr.inria.corese.core.Index;
 import fr.inria.corese.core.api.DataBroker;
 import fr.inria.corese.core.api.DataManager;
-import fr.inria.corese.core.api.DataManagerFactory;
 import fr.inria.corese.core.producer.DataBrokerExtern;
 import fr.inria.corese.core.producer.DataBrokerLocal;
 import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
@@ -53,17 +52,16 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
 public class ProducerImpl 
         implements Producer, IProducerQP 
 {
-
     public static final int OWL_RL = 1;
-
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST = Graph.ILIST;
     public static final String TOPREL = Graph.TOPREL;
+    
     List<Edge> empty = new ArrayList<>(0);
     List<Node> emptyFrom = new ArrayList<>(0);
     DataProducer ei;
-    private DataManagerFactory dataManagerFactory;
     private DataManager dataManager;
+    private DataBroker dataBroker;
     Graph graph,
             // cache for handling (fun() as var) created Nodes
             local;
@@ -71,27 +69,19 @@ public class ProducerImpl
     MatcherImpl match;
     QueryEngine qengine;
     FuzzyMatch fuzzy = new FuzzyMatch();
-    //ValueCache vcache;
     RDFizer toRDF;
     Node graphNode;
     private Query query;
 
     // if true, perform local match
     boolean isMatch = false;
-    //private boolean selfValue;
     private boolean speedUp = false;
-    //private int index = -1;
     int mode = DEFAULT;
-    //private IDatatype prevdt;
-    //private Node prevnode;
-
-    //HashMap<Edge, DataProducer> cache;
+    
     private ProducerImplNode pn;
-    private DataBroker dataBroker;
 
     public ProducerImpl() {
         this(Graph.create());
-        //setDataManagerFactory(this);
     }
 
     public ProducerImpl(Graph g) {
@@ -100,10 +90,6 @@ public class ProducerImpl
         mapper = new Mapper(this);
         ei = DataProducer.create(g);
         toRDF = new RDFizer();
-        //vcache = new ValueCache();
-        //cache = new HashMap<>();
-        //setDataManagerFactory(this);
-        //setDataBroker(this);
         setDataBroker(new DataBrokerLocal(g));
         setNodeIterator(new ProducerImplNode(this));
     }
@@ -383,9 +369,10 @@ public class ProducerImpl
             // unbound property variable has TOPREL for property name
             property = null;
         }
-        System.out.println(String.format("External iterator: g: %s s: %s p: %s o: %s" , 
-                targetGraphNode, subject, predicate, objectNode));
-        System.out.println("from: " + from);
+        
+//        System.out.println(String.format("External iterator: g: %s s: %s p: %s o: %s" , 
+//                targetGraphNode, subject, predicate, objectNode));
+//        System.out.println("from: " + from);
         
         // @TODO
         // predicate = cos:Property when it is a variable
@@ -966,14 +953,11 @@ public class ProducerImpl
         return DatatypeMap.getDatatypeMap();
     }
 
-    public DataManagerFactory getDataManagerFactory() {
-        return dataManagerFactory;
-    }
-
-    public void setDataManagerFactory(DataManagerFactory dataManager) {
-        this.dataManagerFactory = dataManager;
-    }
-
+    /**
+     * DataManager for external graph
+     * With corese graph, dataManager = null, 
+     * and there is a corese DataBrokerLocal
+     */
     public DataManager getDataManager() {
         return dataManager;
     }

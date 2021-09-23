@@ -128,13 +128,11 @@ public class NodeImpl implements Node {
 
     @Override
     public int getIndex() {
-        // TODO Auto-generated method stub
         return index;
     }
 
     @Override
     public String getLabel() {
-        // TODO Auto-generated method stub
         if (atom.isResource()) {
             return atom.getLongName();
         }
@@ -143,19 +141,16 @@ public class NodeImpl implements Node {
 
     @Override
     public boolean isConstant() {
-        // TODO Auto-generated method stub
         return atom.isConstant();
     }
 
     @Override
     public boolean isVariable() {
-        // TODO Auto-generated method stub
         return atom.isVariable(); //&& ! atom.getVariable().isBlankNode();
     }
 
     @Override
     public boolean isBlank() {
-        // TODO Auto-generated method stub
         return atom.isBlank() || (isVariable() && atom.getVariable().isBlankNode());
     }
 

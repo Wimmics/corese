@@ -30,6 +30,8 @@ public interface Compiler {
   Node createNode(String name);
 
   Node createNode(Atom at);
+  
+  Node createNode(Atom at, boolean reuse);
 
   Node getNode();
 

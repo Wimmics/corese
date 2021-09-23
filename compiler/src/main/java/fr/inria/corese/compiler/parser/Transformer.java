@@ -1490,7 +1490,7 @@ public class Transformer implements ExpType {
     }
 
     Exp compileGraph(Exp exp, Atom at) {
-        Node src = compile(at);
+        Node src = compiler.createNode(at, ast.isInsertData());
         // create a NODE kgram expression for graph ?g
         Exp node = Exp.create(NODE, src);
         Exp gnode = Exp.create(GRAPHNODE, node);

@@ -112,7 +112,7 @@ public class EdgeGeneric extends EdgeTop
     public void setEdgeNode(Node node) {
         predicate = node;
     }
-
+       
     @Override
     public int getIndex() {
         return index;

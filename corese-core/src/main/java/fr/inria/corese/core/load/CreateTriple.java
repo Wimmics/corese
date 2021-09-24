@@ -2,12 +2,16 @@ package fr.inria.corese.core.load;
 
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +25,7 @@ public class CreateTriple {
     private QueryProcess queryProcess;
     Load load;
     Graph graph;
+    private DataManager dataManager;
     private String path;
     IDatatype dtpath;
     ArrayList<String> exclude;
@@ -61,24 +66,88 @@ public class CreateTriple {
                 return ;
             }
         }
-        Edge edge = graph.addEdge(e);
+        Edge edge = addEdge(e);
         if (edge != null) {
             declare(edge);
         }
     }
+    
+    Node getProperty(Atom res) {
+        return addProperty(res.getLabel());
+    }
+    
+    String newBlankID() {
+        return graph.newBlankID();
+    }
+    
+    Edge create(Node g, Node s, Node p, Node o) {
+        return graph.create(g, s, p, o);
+    }
+    
+    Edge create(Node g, Node p, List<Node> list) {
+        return graph.create(g, p, list);
+    }
+    
+    /**
+     * Graph api
+     */
+    
+    Edge addEdge(Edge e) {
+        if (hasDataManager()) {
+            return getDataManager().insert(e);
+        }
+        else {
+            return graph.addEdge(e);
+        }
+    }
+    
+    /**
+     * We can keep Node creation functions on the graph
+     * or we could provide NodeImpl() with a DataBroker
+     * All we need is to have a broker for addEdge above.
+     */
+    
+    Node addGraph(String src) {
+        return graph.addGraph(src);
+    }
+    
+    Node addDefaultGraphNode() {
+        return graph.addDefaultGraphNode();
+    }
+    
+    Node addProperty(String label) {
+        return graph.addProperty(label);
+    }
+    
+    Node addLiteral(String predicate, String label, String datatype, String lang) {
+        return graph.addLiteral(predicate, label, datatype, lang);
+    }
+    
+    Node addLiteral(String label, String datatype, String lang) {
+        return graph.addLiteral(label, datatype, lang);
+    }
+    
+    Node addBlank(String label) {
+        return graph.addBlank(label);
+    }
+    
+    Node addResource(String label) {
+        return graph.addResource(label);
+    }
+       
+    Node addNode(Constant lit) {
+        return graph.getNode(lit.getDatatypeValue(), true, true);
+    }
+    
+    
+    
 
     void declare(Edge edge) {
         if (load.isEvent() && getQueryProcess() != null) {
             getQueryProcess().getVisitor().insert(dtpath, edge);
         }
     }
-    
-//    void access(Edge edge) {
-//        if (AccessRight.isActive()) {
-//            getAccessRight().setInsert(edge);
-//        }
-//    }
-    
+       
     AccessRight getAccessRight() {
         return load.getAccessRight();
     }
@@ -173,6 +242,18 @@ public class CreateTriple {
      */
     public void setLimit(int limit) {
         this.limit = limit;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
+    
+    boolean hasDataManager() {
+        return getDataManager()!=null;
     }
 
 }

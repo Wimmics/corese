@@ -57,6 +57,8 @@ public class GraphManager {
         graph = g;
         load = getLoader();
         load.init(graph);
+        // local data broker for corese graph
+        // may be overloaded by QueryProcess create
         setDataBroker(new DataBrokerConstructLocal(this));
     }
     
@@ -124,7 +126,13 @@ public class GraphManager {
         return graph.getRuleGraphName(constraint);
     }
       
-
+    public int size() {
+        return getDataBroker().graphSize();
+    }
+    
+    public int size(Node pred) {
+        return getDataBroker().graphSize(pred);
+    }
 
     /**
      * Return null if edge already exists in graph

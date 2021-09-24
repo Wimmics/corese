@@ -73,13 +73,13 @@ public class CreateImpl extends CreateTriple implements Creator {
     // init
     // TODO: check 
     public void graph(String src) {
-        source = graph.addGraph(src);
+        source = addGraph(src);
     }
 
     @Override
     public void graph(Atom src) {
         stack.add(source);
-        source = graph.addGraph(src.getLabel());
+        source = addGraph(src.getLabel());
     }
 
     @Override
@@ -96,7 +96,7 @@ public class CreateImpl extends CreateTriple implements Creator {
     public void triple(Atom subject, Atom property, Atom object) {
         if (accept(property.getLabel())) {
             if (source == null) {
-                source = graph.addDefaultGraphNode();
+                source = addDefaultGraphNode();
             }
             Node s = getSubject(subject);
             Node p = getProperty(property);
@@ -107,7 +107,7 @@ public class CreateImpl extends CreateTriple implements Creator {
                 o = getNode(object);
             }
 
-            Edge e = graph.create(source, s, p, o);
+            Edge e = create(source, s, p, o);
             add(e);
             parseImport(property, object);
         }
@@ -126,18 +126,18 @@ public class CreateImpl extends CreateTriple implements Creator {
     @Override
     public void triple(Atom property, List<Atom> l) {
         if (source == null) {
-            source = graph.addDefaultGraphNode();
+            source = addDefaultGraphNode();
         }
 
         Node p = getProperty(property);
 
-        ArrayList<Node> list = new ArrayList<Node>();
+        ArrayList<Node> list = new ArrayList<>();
         for (Atom at : l) {
             Node n = getObject(at);
             list.add(n);
         }
 
-        Edge e = graph.create(source, p, list);
+        Edge e = create(source, p, list);
         add(e);
     }
 
@@ -165,19 +165,19 @@ public class CreateImpl extends CreateTriple implements Creator {
 
     Node getLiteral(Atom pred, Constant lit) {
         if (lit.getDatatypeValue().isList()) {
-            return getList(lit);
+            return addNode(lit);
         }
         String lang = lit.getLang();
         String datatype = nsm.toNamespace(lit.getDatatype());
         if (lang == "") {
             lang = null;
         }
-        return graph.addLiteral(pred.getLabel(), lit.getLabel(), datatype, lang);
+        return addLiteral(pred.getLabel(), lit.getLabel(), datatype, lang);
     }
 
     Node getLiteral(Constant lit) {
         if (lit.getDatatypeValue().isList()) {
-            return getList(lit);
+            return addNode(lit);
         }
         return getLiteralBasic(lit);
     }
@@ -188,32 +188,28 @@ public class CreateImpl extends CreateTriple implements Creator {
         if (lang == "") {
             lang = null;
         }
-        return graph.addLiteral(lit.getLabel(), datatype, lang);
+        return addLiteral(lit.getLabel(), datatype, lang);
     }
 
-    Node getList(Constant lit) {
-        return graph.getNode(lit.getDatatypeValue(), true, true);
-    }
+    
 
-    Node getProperty(Atom res) {
-        return graph.addProperty(res.getLabel());
-    }
+    
 
     Node getNode(Atom c) {
         if (c.isBlank() || c.isBlankNode()) {
-            return graph.addBlank(getID(c.getLabel()));
+            return addBlank(getID(c.getLabel()));
         } else {
-            return graph.addResource(c.getLabel());
+            return addResource(c.getLabel());
         }
     }
 
     Node getSubject(Atom c) {
         if (c.isBlank() || c.isBlankNode()) {
-            return graph.addBlank(getID(c.getLabel()));
+            return addBlank(getID(c.getLabel()));
         } else {
             if (resource == null || !resource.equals(c.getLabel())) {
                 resource = c.getLabel();
-                node = graph.addResource(resource);
+                node = addResource(resource);
             }
             return node;
         }
@@ -224,7 +220,7 @@ public class CreateImpl extends CreateTriple implements Creator {
         if (isRenameBlankNode()) {
             id = blank.get(b);
             if (id == null) {
-                id = graph.newBlankID();
+                id = newBlankID();
                 blank.put(b, id);
             }
         }

@@ -121,7 +121,7 @@ public class DataProducer extends GraphObject
     @Override
     public Edge insert(Edge edge) {
         System.out.println("insert ext: " + edge);
-        Edge res = getGraph().addEdgeWithNode(edge);
+        Edge res = getGraph().addEdgeWithTargetNode(edge);
         return res;
     }
     

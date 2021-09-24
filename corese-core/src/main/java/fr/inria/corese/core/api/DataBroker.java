@@ -19,6 +19,15 @@ public interface DataBroker {
         return new DataManager() {};
     }
     
+    default int graphSize() {
+        return getDataManager().graphSize();
+    }
+    
+    default int graphSize(Node pred) {
+        return getDataManager().graphSize(pred);
+    }
+    
+    
     // from provides union of triples  (select from where default graph semantics)
     default Iterable<Edge> getEdgeList(Node subject, Node predicate, Node object, List<Node> from) {
         return getDataManager().getEdgeList(subject, predicate, object, from);

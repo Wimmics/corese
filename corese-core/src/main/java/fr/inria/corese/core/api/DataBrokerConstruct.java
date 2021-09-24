@@ -18,9 +18,8 @@ import java.util.List;
  * Refined by core.producer.DataBrokerConstructLocal  for corese graph
  * Refined by core.producer.DataBrokerConstructExtern for external DataManager
  */
-public interface DataBrokerConstruct {
-    
-    
+public interface DataBrokerConstruct extends DataBroker {
+          
     default Node getNode(Node gNode, IDatatype dt) {
         return dt;
     }
@@ -49,7 +48,7 @@ public interface DataBrokerConstruct {
      * Return null if edge already exists 
      */
     default Edge insert(Edge edge) {
-        return edge;
+        return getDataManager().insert(edge);
     }
     
  
@@ -66,7 +65,7 @@ public interface DataBrokerConstruct {
      */
     
     default List<Edge> delete(Edge edge) {
-        return new ArrayList<>(0);
+        return getDataManager().delete(edge);
     }
     
     /**
@@ -84,33 +83,39 @@ public interface DataBrokerConstruct {
     }
     
     default void clear(String name, boolean silent) {
+        getDataManager().clear(name, silent);
     }
 
     default void deleteGraph(String name) {
+        getDataManager().deleteGraph(name);
     }
 
     default void clearNamed() {
+        getDataManager().clearNamed();
     }
 
     default void dropGraphNames() {
+        getDataManager().clearNamed();
     }
 
     default void clearDefault() {
+        getDataManager().clearDefault();
     }
 
     default boolean add(String source, String target, boolean silent) {
-        return true;
+        return getDataManager().add(source, target, silent);
     }
 
     default boolean move(String source, String target, boolean silent) {
-        return true;
+        return getDataManager().move(source, target, silent);
     }
 
     default boolean copy(String source, String target, boolean silent) {
-        return true;
+        return getDataManager().copy(source, target, silent);
     }
 
-    default void addGraph(String uri) {      
+    default void addGraph(String uri) {  
+        getDataManager().addGraph(uri);
     }
 
     

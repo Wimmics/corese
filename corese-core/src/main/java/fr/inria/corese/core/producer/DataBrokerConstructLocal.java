@@ -16,15 +16,21 @@ import fr.inria.corese.sparql.triple.update.Basic;
 import java.util.List;
 
 /**
- *
+ * Broker between GraphManager and Corese graph
+ * Used by:
+ * sparql construct/update with corese graph
+ * sparql construct when external graph 
+ * Hence, construct always a corese graph.
+ * 
  */
-public class DataBrokerConstructLocal implements DataBrokerConstruct {
+public class DataBrokerConstructLocal 
+        extends DataBrokerLocal
+        implements DataBrokerConstruct {
     
-    private Graph graph;
     private GraphManager graphManager;
     
     public DataBrokerConstructLocal(GraphManager mgr) {
-        setGraph(mgr.getGraph());
+        super(mgr.getGraph());
         setGraphManager(mgr);
     }
     
@@ -146,18 +152,7 @@ public class DataBrokerConstructLocal implements DataBrokerConstruct {
         getGraph().addGraph(uri);
     }     
      
-     
-     
-    
-    
-
-    public Graph getGraph() {
-        return graph;
-    }
-
-    public void setGraph(Graph graph) {
-        this.graph = graph;
-    }
+ 
 
     public GraphManager getGraphManager() {
         return graphManager;

@@ -26,7 +26,19 @@ public class DataBrokerLocal implements DataBroker {
     @Override
     public DataManager getDataManager() {
         return getGraph().getDefault();
-    }      
+    } 
+    
+    
+    @Override
+    public int graphSize() {
+        return getGraph().size();
+    }
+    
+    @Override
+    public int graphSize(Node pred) {
+        return getGraph().size(pred);
+    }
+    
     
     @Override
     public Node getNode(Node node) {

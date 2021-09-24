@@ -28,7 +28,7 @@ public class BuildImpl extends CreateTriple implements Build {
     public BuildImpl() {
     }
 
-    public BuildImpl(Graph g, Load ld) {
+    BuildImpl(Graph g, Load ld) {
         super(g, ld);
         graph = g;
         blank = new Hashtable<>();
@@ -68,7 +68,7 @@ public class BuildImpl extends CreateTriple implements Build {
     public void setSource(String src) {
         if (source == null || !src.equals(source)) {
             source = src;
-            gnode = graph.addGraph(src);
+            gnode = addGraph(src);
         }
     }
     
@@ -78,10 +78,10 @@ public class BuildImpl extends CreateTriple implements Build {
         blank.clear();
     }
 
-    @Override
-    public void setSkip(boolean b) {
-        setSkip(b);
-    }
+//    @Override
+//    public void setSkip(boolean b) {
+//        setSkip(b);
+//    }
 
   
 
@@ -91,11 +91,9 @@ public class BuildImpl extends CreateTriple implements Build {
 
     public Edge getEdge(Node source, Node subject, Node predicate, Node value) {
         if (source == null) {
-            source = graph.addDefaultGraphNode();
+            source = addDefaultGraphNode();
         }
-
-        return graph.create(source, subject, predicate, value);
-
+        return create(source, subject, predicate, value);
     }
 
     public Node getLiteral(AResource pred, ALiteral lit) {
@@ -104,16 +102,16 @@ public class BuildImpl extends CreateTriple implements Build {
         if (lang == "") {
             lang = null;
         }
-        return graph.addLiteral(pred.getURI(), lit.toString(), datatype, lang);
+        return addLiteral(pred.getURI(), lit.toString(), datatype, lang);
     }
 
     public Node getProperty(AResource res) {
-        return graph.addProperty(res.getURI());
+        return addProperty(res.getURI());
     }
 
     Node getSubject(AResource res) {
         if (res.isAnonymous()) {
-            return graph.addBlank(getID(res.getAnonymousID()));
+            return addBlank(getID(res.getAnonymousID()));
         } else {
             return getResource(res.getURI());
         }
@@ -121,16 +119,16 @@ public class BuildImpl extends CreateTriple implements Build {
 
     public Node getNode(AResource res) {
         if (res.isAnonymous()) {
-            return graph.addBlank(getID(res.getAnonymousID()));
+            return addBlank(getID(res.getAnonymousID()));
         } else {
-            return graph.addResource(res.getURI());
+            return addResource(res.getURI());
         }
     }
 
     Node getResource(String uri) {
         if (resource == null || !resource.equals(uri)) {
             resource = uri;
-            node = graph.addResource(uri);
+            node = addResource(uri);
         }
         return node;
     }
@@ -138,7 +136,7 @@ public class BuildImpl extends CreateTriple implements Build {
     public String getID(String b) {
         String id = blank.get(b);
         if (id == null) {
-            id = graph.newBlankID();
+            id = newBlankID();
             blank.put(b, id);
         }
         return id;

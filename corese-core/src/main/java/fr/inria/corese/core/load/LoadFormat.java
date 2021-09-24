@@ -76,6 +76,7 @@ public class LoadFormat {
         udefine(Loader.RDFXML_FORMAT_STR, Loader.RDFXML_FORMAT);
         udefine(Loader.JSON_FORMAT_STR,   Loader.JSONLD_FORMAT);
         udefine(Loader.JSONLD_FORMAT_STR, Loader.JSONLD_FORMAT);
+        udefine(Loader.ALL_FORMAT_STR,    Loader.OWL_FORMAT);
         
         
         dtable = new HashMap<String, Integer>();

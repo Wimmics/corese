@@ -6,11 +6,27 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Interface to corese graph OR external graph implementation
+ * Interface for external graph implementation (not used by corese graph)
+ * DataManager for select where part
+ * DataManagerUpdate for update
+ * construct handled by GraphManager -> DataBrokerConstructLocal 
+ * construct return corese graph
+ * update: GraphManager -> DataBrokerUpdateExtern -> DataManager
+ * select where: ProducerImpl -> DataBrokerExtern -> DataManager
+ * For corese graph, specific DataBroker handle corese graph directly
  */
 public interface DataManager extends DataManagerUpdate {
     
-     
+    // Rule Engine
+    default int graphSize() {
+        return 0;
+    }
+    
+    // Rule Engine
+    default int graphSize(Node predicate) {
+        return 0;
+    }
+    
     /**
      * Edge iterator for sparql
      * Parameter from provides union of triples 

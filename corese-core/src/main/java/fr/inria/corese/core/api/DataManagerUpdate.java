@@ -2,9 +2,6 @@ package fr.inria.corese.core.api;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.triple.update.Basic;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,7 +13,6 @@ public interface DataManagerUpdate {
     
     
     default Edge insert(Edge edge) {
-        System.out.println("insert: " + edge);
         return edge;
     }
     
@@ -27,7 +23,6 @@ public interface DataManagerUpdate {
      */
     
     default List<Edge> delete(Edge edge) {
-        System.out.println("delete: " + edge);
         return new ArrayList<>(0);        
     }
     
@@ -40,15 +35,37 @@ public interface DataManagerUpdate {
      */  
     
     default List<Edge> delete(Edge edge, List<Node> from) {
-        System.out.println("delete: " + edge + " " + from);
         return new ArrayList<>(0);
     }
     
-    
-    
-    default boolean load(Query q, Basic ope) throws EngineException {
-        System.out.println("load: " + ope.getURI());
+    default void clear(String name, boolean silent) {
+    }
+
+    default void deleteGraph(String name) {
+    }
+
+    default void clearNamed() {
+    }
+
+    default void dropGraphNames() {
+    }
+
+    default void clearDefault() {
+    }
+
+    default boolean add(String source, String target, boolean silent) {
         return true;
     }
-    
+
+    default boolean move(String source, String target, boolean silent) {
+        return true;
+    }
+
+    default boolean copy(String source, String target, boolean silent) {
+        return true;
+    }
+
+    default void addGraph(String uri) {      
+    }
+      
 }

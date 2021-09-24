@@ -841,7 +841,7 @@ public class QueryProcess extends QuerySolver {
     /**
      * @return Proxy to graph for sparql update
      */
-    GraphManager getUpdateGraphManager() {
+    public GraphManager getUpdateGraphManager() {
         GraphManager mgr = new GraphManager(getGraph());
         if (hasDataManager()) {
             // external graph DataManager (stored in ProducerImpl)

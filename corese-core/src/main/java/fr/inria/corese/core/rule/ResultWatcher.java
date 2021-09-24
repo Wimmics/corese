@@ -61,7 +61,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
 
     ResultWatcher(Graph g) {
         graph = g;
-        list = new ArrayList<Edge>();
+        list = new ArrayList<>();
     }
 
     public Distinct getDistinct() {
@@ -231,16 +231,6 @@ public class ResultWatcher implements ResultListener, GraphListener {
     public Exp listen(Exp exp, int n) {
         switch (exp.type()) {
 
-//            case Exp.PATH:
-//                if (isSkipPath){
-//                    // skip path to check if a solution has new edges
-//                }
-//                else {
-//                    // do not skip path to check if a solution has new edges
-//                   selectNewResultOnly = false;   
-//                }
-//                
-//                break;
             case Exp.PATH:
             case Exp.QUERY:
                 selectNewResult = false;
@@ -397,58 +387,42 @@ public class ResultWatcher implements ResultListener, GraphListener {
     public void load(String path) {
     }
 
-    /**
-     * @return the isSkipPath
-     */
+    
     public boolean isSkipPath() {
         return isSkipPath;
     }
 
-    /**
-     * @param isSkipPath the isSkipPath to set
-     */
+   
     public void setSkipPath(boolean isSkipPath) {
         this.isSkipPath = isSkipPath;
     }
 
-    /**
-     * @return the isDistinct
-     */
+    
     public boolean isDistinct() {
         return isDistinct;
     }
 
-    /**
-     * @param isDistinct the isDistinct to set
-     */
+    
     public void setDistinct(boolean isDistinct) {
         this.isDistinct = isDistinct;
     }
 
-    /**
-     * @return the test
-     */
+   
     public boolean isTest() {
         return test;
     }
 
-    /**
-     * @param test the test to set
-     */
+    
     public void setTest(boolean test) {
         this.test = test;
     }
 
-    /**
-     * @return the trace
-     */
+   
     public boolean isTrace() {
         return trace;
     }
 
-    /**
-     * @param trace the trace to set
-     */
+    
     public void setTrace(boolean trace) {
         this.trace = trace;
     }

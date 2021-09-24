@@ -1,7 +1,10 @@
 package fr.inria.corese.core.producer;
 
+import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.api.DataBrokerConstruct;
 import fr.inria.corese.core.api.DataManager;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Query;
@@ -16,36 +19,20 @@ import java.util.List;
 /**
  * Broker between GraphManager and external graph DataManager
  * For SPARQL Update
- * Update -> GraphManager -> DataBroker -> DataManager -> external graph
+ * Update -> GraphManager -> DataBrokerUpdateExtern -> DataManager -> external graph
  * DataBroker is here to adapt api between GraphManager and DataManager
  * For example: Constant -> Node
+ * DataBrokerUpdateExtern implement relevant subset of DataBrokerConstruct
+ * 
  */
-public class DataBrokerUpdateExtern implements DataBrokerConstruct {
-    
-    private DataManager dataManager;
-    
+public class DataBrokerUpdateExtern 
+        extends DataBrokerExtern
+        implements DataBrokerConstruct {
+        
     public DataBrokerUpdateExtern(DataManager mgr) {
-        setDataManager(mgr);
+        super(mgr);
     }
-    
-    
-    /**
-     * Return null if edge already exists 
-     */
-    @Override
-    public Edge insert(Edge edge) {
-        return getDataManager().insert(edge);
-    }
-    
-    /**
-     * If Edge have a named graph: delete this occurrence
-     * Otherwise: delete all occurrences of edge 
-     * Return list of deleted edge
-     */
-    @Override
-    public List<Edge> delete(Edge edge) {
-        return getDataManager().delete(edge);
-    }
+        
     
     /**
      * Delete occurrences of edge in named graphs of from list
@@ -61,7 +48,15 @@ public class DataBrokerUpdateExtern implements DataBrokerConstruct {
     
     @Override
     public boolean load(Query q, Basic ope, Access.Level level, AccessRight access) throws EngineException {
-        return getDataManager().load(q, ope);
+        Graph g = Graph.create();
+        Load load = Load.create(g);
+        load.setDataManager(getDataManager());
+        try {
+            load.parse(ope.getURI(), ope.getTarget());
+        } catch (LoadException ex) {
+            throw new EngineException(ex);
+        }
+        return true;
     }
     
     
@@ -74,15 +69,6 @@ public class DataBrokerUpdateExtern implements DataBrokerConstruct {
             nodeList.add(cst.getDatatypeValue());
         }
         return nodeList;
-    }
-    
-
-    public DataManager getDataManager() {
-        return dataManager;
-    }
-
-    public void setDataManager(DataManager dataManager) {
-        this.dataManager = dataManager;
-    }
+    }    
     
 }

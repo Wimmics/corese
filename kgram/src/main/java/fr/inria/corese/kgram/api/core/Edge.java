@@ -96,6 +96,8 @@ public interface Edge extends Pointerable, Statement {
 
 	// edge variable or edge node
 	Node getProperty();
+        
+        default void setProperty(Node node) {}
 
 	Node getNode();
 

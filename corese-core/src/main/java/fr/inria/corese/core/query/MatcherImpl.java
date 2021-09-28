@@ -280,8 +280,8 @@ public class MatcherImpl implements Matcher {
             return true;
         }
 
-        IDatatype qdt = (IDatatype) q.getValue();
-        IDatatype tdt = (IDatatype) t.getValue();
+        IDatatype qdt =  q.getValue();
+        IDatatype tdt =  t.getValue();
         return (DatatypeMap.SPARQLCompliant) ? qdt.sameTerm(tdt) : qdt.match(tdt);
     }
 

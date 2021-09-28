@@ -189,7 +189,7 @@ public class CompileService implements URLParam {
 
             if (val != null && ! val.isBlank()) {
                 lvar.add(var);
-                IDatatype dt = (IDatatype) val.getValue();
+                IDatatype dt =  val.getValue();
                 Constant cst = Constant.create(dt);
                 lval.add(cst);
             }
@@ -240,7 +240,7 @@ public class CompileService implements URLParam {
                         blank = true;
                     } 
                     else {
-                        IDatatype dt = (IDatatype) val.getValue();
+                        IDatatype dt =  val.getValue();
                         Constant cst = create(ast, dt);
                         list.add(cst);
                         ok = true;
@@ -391,7 +391,7 @@ public class CompileService implements URLParam {
                 }
                 else {
                     Variable v = Variable.create(var);
-                    IDatatype dt = (IDatatype) val.getValue();
+                    IDatatype dt =  val.getValue();
                     Constant cst = Constant.create(dt);
                     Term t = Term.create(Term.SEQ, v, cst);
                     lt.add(t);
@@ -447,7 +447,7 @@ public class CompileService implements URLParam {
                     blank = true;
                 }
                 else {                    
-                    Term t = filter(ast, var, (IDatatype) valNode.getDatatypeValue());
+                    Term t = filter(ast, var,  valNode.getDatatypeValue());
                     lt.add(t);
                 }
             }

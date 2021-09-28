@@ -116,7 +116,7 @@ public class DataFilter implements ExprType {
     }
     
     IDatatype getValue(Edge ent, int n){
-        return (IDatatype) getNode(ent, n).getValue();
+        return  getNode(ent, n).getValue();
     }
     
     boolean eval(Edge ent) {

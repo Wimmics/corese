@@ -289,7 +289,7 @@ public class SPARQLProcess extends  WorkflowProcess {
         }
         Node temp = data.getMappings().getTemplateResult();
         if (temp != null){
-            data.setDatatypeValue((IDatatype) temp.getValue());
+            data.setDatatypeValue( temp.getValue());
             data.setTemplateResult(data.getDatatypeValue().stringValue());
         }
     }

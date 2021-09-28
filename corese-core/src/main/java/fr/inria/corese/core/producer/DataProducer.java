@@ -129,7 +129,7 @@ public class DataProducer extends GraphObject
         if (n == null) {
             return null;
         }
-        return (IDatatype) n.getDatatypeValue();
+        return  n.getDatatypeValue();
     }
      
     DataProducer empty(){
@@ -402,7 +402,7 @@ public class DataProducer extends GraphObject
         ArrayList<IDatatype> list = new ArrayList<>();
         for (Edge edge : this) {
             if (edge != null) {
-                list.add((IDatatype) edge.getNode(n).getDatatypeValue());
+                list.add( edge.getNode(n).getDatatypeValue());
             }
         }
         return DatatypeMap.newList(list);

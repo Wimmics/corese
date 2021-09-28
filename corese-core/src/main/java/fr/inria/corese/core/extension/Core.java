@@ -114,7 +114,7 @@ public class Core extends PluginImpl implements FunctionEvaluator {
         if (map.size() == 0) {
             return null;
         }
-        return (IDatatype) map.getValue(var.getLabel());
+        return  map.getValue(var.getLabel());
     }
 
     IDatatype xt_print(IDatatype... dt) {
@@ -160,7 +160,7 @@ public class Core extends PluginImpl implements FunctionEvaluator {
         ArrayList<IDatatype> list = new ArrayList<>();
         for (IDatatype dt : edge(null, getProducer(), s, p, o)) {
             Edge edge = dt.getPointerObject().getEdge();
-            list.add((IDatatype) edge.getNode(n).getDatatypeValue());
+            list.add( edge.getNode(n).getDatatypeValue());
         }
         return DatatypeMap.newList(list);
     }

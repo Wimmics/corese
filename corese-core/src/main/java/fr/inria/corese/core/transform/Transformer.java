@@ -834,7 +834,7 @@ public class Transformer implements TransformProcessor {
     }
 
     public IDatatype process(Node node) throws EngineException {
-        return process((IDatatype) node.getValue());
+        return process( node.getValue());
     }
 
     public IDatatype process(IDatatype dt) throws EngineException {
@@ -1106,7 +1106,7 @@ public class Transformer implements TransformProcessor {
     }
 
     IDatatype datatype(Node n) {
-        return (IDatatype) n.getDatatypeValue();
+        return  n.getDatatypeValue();
     }
 
     private List<Query> getTemplates(String temp, IDatatype dt) {
@@ -1165,7 +1165,7 @@ public class Transformer implements TransformProcessor {
             logger.error(ex.getMessage());
             return EMPTY;
         }
-        return (IDatatype) node.getDatatypeValue();
+        return  node.getDatatypeValue();
     }
 
     boolean contains(Query q) {
@@ -1502,25 +1502,6 @@ public class Transformer implements TransformProcessor {
         this.isTrace = isTrace;
     }
 
-    /**
-     * Load additional RDF into QueryProcess
-     */
-//    public void load(String uri) {
-//        if (loaded.containsKey(uri)) {
-//            return;
-//        } else {
-//            loaded.put(uri, uri);
-//        }
-//        Graph g = Graph.create();
-//        Load load = Load.create(g);
-//        try {
-//            load.parse(uri, Load.TURTLE_FORMAT);
-//            g.init();
-//            exec.add(g);
-//        } catch (LoadException ex) {
-//            logger.error(ex.getMessage());
-//        }
-//    }
 
     /**
      * @return the hasDefault

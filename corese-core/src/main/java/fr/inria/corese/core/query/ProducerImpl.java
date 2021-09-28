@@ -5,7 +5,6 @@ import java.util.List;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
@@ -549,7 +548,7 @@ public class ProducerImpl
         Node predicate = getDataBroker().getProperty(exp.getLongName());
         if (predicate == null) {
             if (isdb) {
-                predicate = (IDatatype) exp.getDatatypeValue();
+                predicate =  exp.getDatatypeValue();
             } else {
                 return empty;
             }
@@ -632,12 +631,12 @@ public class ProducerImpl
     }
 
     IDatatype nodeValue(Node n) {
-        return (IDatatype) n.getValue();
+        return  n.getValue();
     }
 
     // cast IDatatype or Java value into DatatypeValue
     @Override
-    public DatatypeValue getDatatypeValue(Object value) {
+    public IDatatype getDatatypeValue(Object value) {
         if (value == null) {
             return null;
         } else if (value instanceof IDatatype) {
@@ -699,7 +698,7 @@ public class ProducerImpl
 
     @Override
     public boolean isBindable(Node node) {
-        IDatatype dt = (IDatatype) node.getValue();
+        IDatatype dt =  node.getValue();
         // 1 && 1.0 are not same Node: cannot bind (see kgram Eval)
         return !dt.isNumber();
     }
@@ -782,7 +781,7 @@ public class ProducerImpl
      */
     @Override
     public boolean isProducer(Node node) {
-        IDatatype dt = (IDatatype) node.getValue();
+        IDatatype dt =  node.getValue();
         if (dt.getObject() != null) {
             return toRDF.isGraphAble(dt.getObject()) || dt.getObject() instanceof Producer;
         }
@@ -795,7 +794,7 @@ public class ProducerImpl
      */
     @Override
     public Producer getProducer(Node node, Environment env) {
-        IDatatype dt = (IDatatype) node.getValue();
+        IDatatype dt =  node.getValue();
         Object obj = dt.getObject();
         Graph g = null;
 

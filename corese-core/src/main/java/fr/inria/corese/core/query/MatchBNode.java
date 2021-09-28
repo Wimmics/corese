@@ -249,7 +249,7 @@ System.out.println();
     }
 
     IDatatype getValue(Node n) {
-        return (IDatatype) n.getValue();
+        return  n.getValue();
     }
 
     boolean match(Edge e1, Edge e2, TreeNode t, int n) {

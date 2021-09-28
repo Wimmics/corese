@@ -270,7 +270,7 @@ public class Graph extends GraphObject implements
      */
     public boolean isFlawed() {
         for (Node ent : getLiteralNodes()) {
-            IDatatype dt = (IDatatype) ent.getValue();
+            IDatatype dt =  ent.getValue();
             if (DatatypeMap.isUndefined(dt)) {
                 return true;
             }
@@ -420,7 +420,7 @@ public class Graph extends GraphObject implements
         if (n == null) {
             return DatatypeMap.createBlank();
         }
-        return (IDatatype) n.getDatatypeValue();
+        return  n.getDatatypeValue();
     }
 
     /**
@@ -491,11 +491,11 @@ public class Graph extends GraphObject implements
         }
 
         void put(Node node) {
-            put((IDatatype) node.getDatatypeValue(), node);
+            put( node.getDatatypeValue(), node);
         }
 
         boolean contains(Node node) {
-            return containsKey((IDatatype) node.getDatatypeValue());
+            return containsKey( node.getDatatypeValue());
         }
     }
 
@@ -1026,7 +1026,7 @@ public class Graph extends GraphObject implements
         }
 
         for (Node e : getLiteralNodes()) {
-            IDatatype dt = (IDatatype) e.getValue();
+            IDatatype dt =  e.getValue();
             if (dt.isNumber()) {
                 num++;
             } else if (dt.getCode() == IDatatype.STRING) {
@@ -1659,7 +1659,7 @@ public class Graph extends GraphObject implements
     }
 
     IDatatype getDatatypeValue(Node node) {
-        return (IDatatype) node.getValue();
+        return  node.getValue();
     }
 
     public Node getTopClass() {
@@ -2064,7 +2064,7 @@ public class Graph extends GraphObject implements
         if (!containsCoreseNode(gNode)) {
             //graph.put(gNode.getLabel(), gNode);
             graph.put(getID(gNode), gNode);
-            indexNode((IDatatype) gNode.getValue(), gNode);
+            indexNode( gNode.getValue(), gNode);
         }
     }
 
@@ -2085,7 +2085,7 @@ public class Graph extends GraphObject implements
     public void addPropertyNode(Node pNode) {
         if (!property.containsKey(pNode.getLabel())) {
             property.put(pNode.getLabel(), pNode);
-            indexNode((IDatatype) pNode.getValue(), pNode);
+            indexNode( pNode.getValue(), pNode);
         }
     }
 
@@ -2166,7 +2166,7 @@ public class Graph extends GraphObject implements
         if (value == null) {
             return null;
         }
-        return (IDatatype) value.getValue();
+        return  value.getValue();
     }
 
     public Node getNode(String name, Node node) {
@@ -2355,7 +2355,7 @@ public class Graph extends GraphObject implements
     }
 
     IDatatype value(Node n) {
-        return (IDatatype) n.getValue();
+        return  n.getValue();
     }
 
     boolean isTopRelation(Node predicate) {
@@ -3141,7 +3141,7 @@ public class Graph extends GraphObject implements
         ArrayList<Node> list = new ArrayList<Node>();
 
         for (int i = 0; i < edge.nbNode(); i++) {
-            Node n = addNode((IDatatype) edge.getNode(i).getValue());
+            Node n = addNode( edge.getNode(i).getValue());
             list.add(n);
         }
         Edge e = addEdge(g, p, list);
@@ -3227,7 +3227,7 @@ public class Graph extends GraphObject implements
      */
     public Edge add(IDatatype subject, IDatatype predicate, IDatatype value) {
         Node def = addDefaultGraphNode();
-        return add((IDatatype) def.getValue(), subject, predicate, value);
+        return add( def.getValue(), subject, predicate, value);
     }
 
     public Edge add(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {

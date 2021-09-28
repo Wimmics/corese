@@ -344,7 +344,7 @@ public class XMLFormat {
             // do nothing 
             return;
         }
-        display(var, (IDatatype) c.getValue());
+        display(var,  c.getValue());
     }
 
     void display(String var, IDatatype dt) {

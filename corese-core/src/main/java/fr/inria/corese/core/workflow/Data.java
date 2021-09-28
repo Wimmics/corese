@@ -353,7 +353,7 @@ public class Data {
         if (getMappings() == null){
             return null;
         }
-        return  (IDatatype) getMappings().getValue(var);
+        return   getMappings().getValue(var);
     }
 
     /**

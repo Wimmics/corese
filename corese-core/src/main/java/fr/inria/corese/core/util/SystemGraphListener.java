@@ -79,7 +79,7 @@ class SystemGraphListener implements GraphListener {
         void process(Edge edge){
             String subject = edge.getNode(0).getLabel();
             String predicate = edge.getLabel();
-            IDatatype dt = (IDatatype) edge.getNode(1).getValue();
+            IDatatype dt =  edge.getNode(1).getValue();
 
             if (predicate.equals(SKOLEM)){
                 graph.setSkolem(dt.booleanValue());

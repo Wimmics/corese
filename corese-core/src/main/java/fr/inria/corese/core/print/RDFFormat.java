@@ -360,7 +360,7 @@ public class RDFFormat {
     }
 
     IDatatype getValue(Node node) {
-        return (IDatatype) node.getValue();
+        return  node.getValue();
     }
 
     void display(String mes, Object obj) {

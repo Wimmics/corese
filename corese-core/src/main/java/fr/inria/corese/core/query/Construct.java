@@ -568,7 +568,7 @@ public class Construct
             // target node not yet created
             // search map node
             Node nn = map.getNode(qNode.getLabel());
-            DatatypeValue value = null;
+            IDatatype value = null;
             if (nn != null) {
                 value = nn.getDatatypeValue();
             }
@@ -585,7 +585,7 @@ public class Construct
                     return null;
                 }
             } else {
-                dt = (IDatatype) value;
+                dt =  value;
             }
             node = uniqueNode(gNode, dt);
             put(qNode, node);
@@ -595,7 +595,7 @@ public class Construct
     }
        
     IDatatype value(Node node) {
-        return (IDatatype) node.getDatatypeValue();
+        return  node.getDatatypeValue();
     }
     
 
@@ -645,7 +645,7 @@ public class Construct
     }
 
     IDatatype getValue(Node node) {
-        return (IDatatype) node.getValue();
+        return  node.getDatatypeValue();
     }
 
     String getID(Mapping map) {
@@ -657,10 +657,10 @@ public class Construct
         Collections.sort(list, this);
         int n = 0;
         for (Node qNode : list) {
-            Object value = map.getValue(qNode);
+            IDatatype value = map.getValue(qNode);
             n++;
             if (value != null && !qNode.isConstant()) {
-                IDatatype dt = (IDatatype) value;
+                IDatatype dt =  value;
                 str += qNode.getLabel() + "." + dt.toSparql() + ".";
             }
         }
@@ -786,11 +786,11 @@ public class Construct
         }
 
         void put(Node node) {
-            put((IDatatype) node.getDatatypeValue(), node);
+            put(node.getDatatypeValue(), node);
         }
 
         boolean contains(Node node) {
-            return containsKey((IDatatype) node.getDatatypeValue());
+            return containsKey( node.getDatatypeValue());
         }
     }
      

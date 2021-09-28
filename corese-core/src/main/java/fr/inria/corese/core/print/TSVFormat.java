@@ -20,7 +20,7 @@ public class TSVFormat extends CSVFormat {
 
     String getLabel(Node node) {
         if (node.getValue() instanceof IDatatype) {
-            IDatatype dt = (IDatatype) node.getValue();
+            IDatatype dt =  node.getValue();
             if (dt.isNumber()) {
                 return dt.getLabel();
             }

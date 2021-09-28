@@ -309,7 +309,7 @@ public class PluginImpl
 
         Distance distance = g.setClassDistance();
         Node n = distance.ancestor(n1, n2);
-        return (IDatatype) n.getValue();
+        return  n.getValue();
     }
 
     IDatatype pSimilarity(Graph g, IDatatype dt1, IDatatype dt2) {
@@ -682,7 +682,7 @@ public class PluginImpl
         if (val == null) {
             return null;
         }
-        return (IDatatype) val.getDatatypeValue();
+        return  val.getDatatypeValue();
     }
 
     @Override
@@ -760,7 +760,7 @@ public class PluginImpl
         if (n == null) {
             return null;
         }
-        return (IDatatype) n.getDatatypeValue();
+        return  n.getDatatypeValue();
     }
 
     /*
@@ -824,7 +824,7 @@ public class PluginImpl
 
     IDatatype triple(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
         EdgeQuad edge = EdgeQuad.create(DatatypeMap.newResource(Entailment.DEFAULT), subj, pred, obj);
-        return (IDatatype) edge.getNode().getValue();
+        return edge.getNode().getValue();
     }
 
     private IDatatype accessGraph(Expr exp, Environment env, Producer p, IDatatype dt) {
@@ -832,7 +832,7 @@ public class PluginImpl
             Pointerable obj = dt.getPointerObject();
             switch (dt.pointerType()) {
                 case TRIPLE:
-                    return (IDatatype) obj.getEdge().getGraph().getValue();
+                    return  obj.getEdge().getGraph().getValue();
                 case MAPPINGS:
                     return DatatypeMap.createObject(obj.getMappings().getGraph());
             }
@@ -847,16 +847,16 @@ public class PluginImpl
         Edge ent = dt.getPointerObject().getEdge();
         switch (exp.oper()) {
             case XT_GRAPH:
-                return (IDatatype) ent.getGraph().getDatatypeValue();
+                return  ent.getGraph().getDatatypeValue();
 
             case XT_SUBJECT:
-                return (IDatatype) ent.getNode(0).getDatatypeValue();
+                return  ent.getNode(0).getDatatypeValue();
 
             case XT_OBJECT:
-                return (IDatatype) ent.getNode(1).getDatatypeValue();
+                return  ent.getNode(1).getDatatypeValue();
 
             case XT_PROPERTY:
-                return (IDatatype) ent.getEdgeNode().getDatatypeValue();
+                return  ent.getEdgeNode().getDatatypeValue();
 
             case XT_INDEX:
                 return getValue(ent.getIndex());
@@ -875,7 +875,7 @@ public class PluginImpl
         if (edge == null) {
             return null;
         }
-        return (IDatatype) edge.getNode(dt.intValue()).getDatatypeValue();
+        return  edge.getNode(dt.intValue()).getDatatypeValue();
     }
 
     @Override

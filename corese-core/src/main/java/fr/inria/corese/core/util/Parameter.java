@@ -119,7 +119,7 @@ public class Parameter {
         
         for (Mapping m : map) {
             for (Node var : map.getSelect()) {
-                IDatatype value = (IDatatype) map.getValue(var);
+                IDatatype value =  map.getValue(var);
                 if (value != null) {
                     switch (var.getLabel()) {
                         case FUNCTION_IMPORT:
@@ -135,7 +135,7 @@ public class Parameter {
 
         for (Mapping m : map) {
             for (Node var : map.getSelect()) {
-                IDatatype value = (IDatatype) map.getValue(var);
+                IDatatype value =  map.getValue(var);
                 if (value != null) {
                     String label = value.getLabel();
                     

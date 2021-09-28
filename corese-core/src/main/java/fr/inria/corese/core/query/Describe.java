@@ -171,7 +171,7 @@ public class Describe {
 	
 	
 	int getValue(Mappings m, String n){
-		IDatatype dt = (IDatatype) m.getValue(n);
+		IDatatype dt =  m.getValue(n);
 		if (dt == null) return 0;
 		return dt.intValue();
 	}

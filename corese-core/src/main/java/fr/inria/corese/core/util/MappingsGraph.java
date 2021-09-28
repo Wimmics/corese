@@ -96,7 +96,7 @@ public class MappingsGraph implements Graphable {
                 Node bind = graph.addBlank(bnid());
                 graph.addEdge(sol, binding, bind);
                 graph.addEdge(bind, variable, getVariable(n));
-                graph.addEdge(bind, value, graph.addNode((IDatatype) m.getValue(n)));               
+                graph.addEdge(bind, value, graph.addNode( m.getValue(n)));               
             }
         }
     }

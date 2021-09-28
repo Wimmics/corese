@@ -122,7 +122,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     }
 
     IDatatype nodeValue(Node n) {
-        return (IDatatype) n.getDatatypeValue();
+        return  n.getDatatypeValue();
     }
 
     @Override

@@ -627,7 +627,7 @@ public class EdgeManager implements Iterable<Edge> {
     }
     
     IDatatype getValue(Node n){
-        return (IDatatype) n.getValue();
+        return  n.getValue();
     }
 
     @Override

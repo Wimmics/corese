@@ -222,7 +222,7 @@ public class WorkflowParser {
         loop(wf);
         context(wf);
         parseNode(wf);      
-        complete(sw, (IDatatype) wf.getValue());
+        complete(sw,  wf.getValue());
         return sw;
     }
     
@@ -357,7 +357,7 @@ public class WorkflowParser {
      * Workflow is a loop.
      */
     void loop(Node wf) {
-        IDatatype dt = getValue(LOOP, (IDatatype) wf.getValue());
+        IDatatype dt = getValue(LOOP,  wf.getValue());
         if (dt != null) {
             sw.setLoop(dt.intValue());
         }

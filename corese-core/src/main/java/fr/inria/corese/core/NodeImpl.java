@@ -63,7 +63,7 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
     @Override
     public int compare(Node node) {
         // TODO Auto-generated method stub
-        return getValue().compareTo((IDatatype) node.getValue());
+        return getValue().compareTo( node.getValue());
     }
 
     @Override
@@ -123,12 +123,12 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
 
     @Override
     public boolean same(Node node) {
-        return getValue().sameTerm((IDatatype) node.getValue());
+        return getValue().sameTerm( node.getValue());
     }
     
      @Override
     public boolean match(Node node) {
-        return getValue().match((IDatatype) node.getValue());
+        return getValue().match( node.getValue());
     }
 
     @Override

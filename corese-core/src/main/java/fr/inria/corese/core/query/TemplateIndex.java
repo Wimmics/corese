@@ -74,7 +74,7 @@ class TemplateIndex extends HashMap<String, List<Query>> {
 
                     if (type.isConstant()) {
                         // ?in rdf:type sql:Select
-                        IDatatype dt = (IDatatype) type.getValue();
+                        IDatatype dt =  type.getValue();
                         add(dt.getLabel(), q);
                         suc = true;
                     } 
@@ -86,7 +86,7 @@ class TemplateIndex extends HashMap<String, List<Query>> {
                             for (Mapping m : map) {
                                 Node node = m.getNode(type);
                                 if (node != null) {
-                                    IDatatype dt = (IDatatype) node.getValue();
+                                    IDatatype dt =  node.getValue();
                                     add(dt.getLabel(), q);
                                     suc = true;
                                 }

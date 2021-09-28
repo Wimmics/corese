@@ -91,7 +91,7 @@ public class DataFilterFactory {
     }
     
     public DataFilterFactory filter(int test, Node node, int index){
-        setFilter(new DataFilter(test, (IDatatype)node.getValue(), index));
+        setFilter(new DataFilter(test, node.getValue(), index));
         return this;
     }
     

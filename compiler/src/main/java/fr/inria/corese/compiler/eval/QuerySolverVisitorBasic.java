@@ -169,13 +169,13 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     }
     
     // datatype(us:km, us:length)
-    public IDatatype datatype(IDatatype type, IDatatype sup) {
-        getHierarchy().defSuperType(type, sup);
-        return type;
-    }
+//    public IDatatype datatype(IDatatype type, IDatatype sup) {
+//        getHierarchy().defSuperType(type, sup);
+//        return type;
+//    }
     
-    @Override
-    public DatatypeValue datatype(DatatypeValue type, DatatypeValue sup) {
+    //@Override
+    public DatatypeValue datatype(IDatatype type, IDatatype sup) {
         getHierarchy().defSuperType(type, sup);
         return type;
     }

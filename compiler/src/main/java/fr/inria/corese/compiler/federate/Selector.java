@@ -121,12 +121,12 @@ public class Selector {
         ast.getLog().setExceptionList(exec.getLog().getExceptionList());
         
         for (Mapping m : map) {
-            IDatatype serv = (IDatatype) m.getValue(SERVER_VAR);
+            IDatatype serv =  m.getValue(SERVER_VAR);
             
             // table: predicate -> exists boolean variable
             for (String pred : predicateVariable.keySet()) {
                 String var = predicateVariable.get(pred);
-                IDatatype val = (IDatatype) m.getValue(var);
+                IDatatype val =  m.getValue(var);
                 if (val != null && val.booleanValue()) {
                     predicateService.get(pred).add(Constant.create(serv));
                 }
@@ -135,7 +135,7 @@ public class Selector {
             // table: triple -> exists boolean variable
             for (Triple t : tripleVariable.keySet()) {
                 String var = tripleVariable.get(t);
-                IDatatype val = (IDatatype) m.getValue(var);
+                IDatatype val =  m.getValue(var);
                 if (val != null && val.booleanValue()) {
                     tripleService.get(t).add(Constant.create(serv));
                 }
@@ -162,10 +162,10 @@ public class Selector {
             System.out.println(map);
         }
         for (Mapping m : map) {
-            IDatatype serv = (IDatatype) m.getValue(SERVER_VAR);
+            IDatatype serv =  m.getValue(SERVER_VAR);
             for (String pred : predicateVariable.keySet()) {
                 String var = predicateVariable.get(pred);
-                IDatatype val = (IDatatype) m.getValue(var);
+                IDatatype val = m.getValue(var);
                 if (val != null) {
                     predicateService.get(pred).add(Constant.create(serv));
                 }

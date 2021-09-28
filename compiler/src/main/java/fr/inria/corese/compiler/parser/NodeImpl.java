@@ -84,7 +84,7 @@ public class NodeImpl implements Node {
     }
     
     public IDatatype getValue(Node n) {
-        return (IDatatype) n.getValue();    
+        return  n.getValue();    
     }
 
     @Override

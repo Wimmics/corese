@@ -3,7 +3,7 @@ module fr.inria.corese.compiler {
 	requires org.slf4j;
 	requires java.xml;
 	requires java.sql;
-	requires fr.inria.corese.kgram;
+	//requires fr.inria.corese.kgram;
 	exports fr.inria.corese.compiler.parser;
 	exports fr.inria.corese.compiler.eval;
 	exports fr.inria.corese.compiler.api;

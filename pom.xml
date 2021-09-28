@@ -154,11 +154,11 @@
         <artifactId>compiler</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
+<!--      <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>kgram</artifactId>
         <version>${project.version}</version>
-      </dependency>
+      </dependency>-->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>corese-core</artifactId>

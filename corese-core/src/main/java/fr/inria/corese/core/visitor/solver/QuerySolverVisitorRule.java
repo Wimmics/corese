@@ -3,7 +3,6 @@ package fr.inria.corese.core.visitor.solver;
 import fr.inria.corese.compiler.eval.QuerySolverVisitorBasic;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
@@ -48,18 +47,18 @@ public class QuerySolverVisitorRule extends QuerySolverVisitorBasic {
     }
 
     @Override
-    public IDatatype beforeEntailment(DatatypeValue path) {
+    public IDatatype beforeEntailment(IDatatype path) {
         IDatatype dt = callback(BEFORE_ENTAIL, toArray(getRuleEngine(), path));
         return dt;
     }
     
     @Override
-    public IDatatype afterEntailment(DatatypeValue path) {
+    public IDatatype afterEntailment(IDatatype path) {
         return callback(AFTER_ENTAIL, toArray(getRuleEngine(), path));
     }
     
     @Override
-    public IDatatype prepareEntailment(DatatypeValue path) {
+    public IDatatype prepareEntailment(IDatatype path) {
         IDatatype dt = callback(PREPARE_ENTAIL, toArray(getRuleEngine(), path));
         return dt;
     }  
@@ -82,7 +81,7 @@ public class QuerySolverVisitorRule extends QuerySolverVisitorBasic {
     } 
     
     @Override
-    public IDatatype loopEntailment(DatatypeValue path) {
+    public IDatatype loopEntailment(IDatatype path) {
         IDatatype dt = callback(LOOP_ENTAIL, toArray(getRuleEngine(), path));
         return dt;
     }      
@@ -101,7 +100,7 @@ public class QuerySolverVisitorRule extends QuerySolverVisitorBasic {
     
     // res: Mappings or List<Edge>
     @Override
-    public IDatatype constraintRule(Query q, Object res, DatatypeValue success) {
+    public IDatatype constraintRule(Query q, Object res, IDatatype success) {
         return callback(CONSTRAINT_RULE, toArray(getRuleEngine(), q, res, success));
     }
     
@@ -112,7 +111,7 @@ public class QuerySolverVisitorRule extends QuerySolverVisitorBasic {
     }
     
     @Override
-    public DatatypeValue entailment(Query rule, List<Edge> construct, List<Edge> where) { 
+    public IDatatype entailment(Query rule, List<Edge> construct, List<Edge> where) { 
         return callback(ENTAILMENT, toArray(getRuleEngine(), rule, toDatatype(construct), toDatatype(where)));
     }
 

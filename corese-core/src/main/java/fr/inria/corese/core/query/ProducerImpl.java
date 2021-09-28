@@ -660,7 +660,11 @@ public class ProducerImpl
         if (!(value instanceof IDatatype)) {
             return DatatypeMap.createObject(value);
         }
-        IDatatype dt = (IDatatype) value;
+        return getNode((IDatatype) value);
+    }
+        
+        
+    public Node getNode(IDatatype dt) {
         if (dt.isFuture()) {
             // future: template intermediate result 
             return dt;
@@ -726,7 +730,7 @@ public class ProducerImpl
     }
 
     @Override
-    public List<Node> toNodeList(Object obj) {
+    public List<Node> toNodeList(IDatatype obj) {
         return mapper.toNodeList(obj);
     }
 

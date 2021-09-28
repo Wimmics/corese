@@ -1,7 +1,6 @@
 package fr.inria.corese.core;
 
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.TripleStore;
@@ -88,12 +87,6 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
     }
     
     @Override
-    public void setDatatypeValue(DatatypeValue dt) {
-        if (dt instanceof IDatatype) {
-            setDatatypeValue((IDatatype) dt);
-        }
-    }
-    
     public void setDatatypeValue(IDatatype dt) {
         this.dt = dt;
     }

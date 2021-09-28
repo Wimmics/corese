@@ -1,7 +1,6 @@
 package fr.inria.corese.core.visitor.solver;
 
 import fr.inria.corese.core.rule.RuleEngine;
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Query;
@@ -9,7 +8,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.HashMap;
 import java.util.List;
-import javax.crypto.AEADBadTagException;
 
 /**
  *
@@ -64,7 +62,7 @@ public class QuerySolverVisitorRuleUser extends QuerySolverVisitorRule {
     }
     
     @Override
-    public DatatypeValue entailment(Query q, List<Edge> construct, List<Edge> where) { 
+    public IDatatype entailment(Query q, List<Edge> construct, List<Edge> where) { 
         incr(mapInference, q);
         System.out.println("rule: " + q.getID());
         System.out.println("entailment: " + mapInference.get(q));

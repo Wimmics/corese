@@ -40,11 +40,11 @@
       <artifactId>sparql</artifactId>
       <version>${project.parent.version}</version>
     </dependency>
-    <dependency>
+<!--    <dependency>
       <groupId>${project.parent.groupId}</groupId>
       <artifactId>kgram</artifactId>
       <version>${revision}</version>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>org.eclipse.rdf4j</groupId>
       <artifactId>rdf4j-model</artifactId>

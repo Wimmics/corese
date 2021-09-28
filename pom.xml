@@ -78,7 +78,7 @@
   </developers>
 
   <modules>
-    <module>kgram</module>
+<!--    <module>kgram</module>-->
     <module>corese-core</module>
     <module>corese-server</module>
     <module>sparql</module>
@@ -121,9 +121,11 @@
     <sonar.dynamicAnalysis>reuseReports</sonar.dynamicAnalysis>
     <sonar.jacoco.reportPath>${project.basedir}/../target/jacoco.exec</sonar.jacoco.reportPath>
     <sonar.language>java</sonar.language>
-    <slf4j.version>1.7.32</slf4j.version>
+<!--    <slf4j.version>1.7.32</slf4j.version>-->
+    <slf4j.version>1.8.0-beta2</slf4j.version>
     <surefire.version>3.0.0-M3</surefire.version>
-    <log4j2.version>2.14.1</log4j2.version>
+<!--    <log4j2.version>2.14.1</log4j2.version>-->
+    <log4j2.version>2.11.0</log4j2.version>
     <sesame.version>4.1.1</sesame.version>
     <jersey.version>2.27</jersey.version>
     <semargl.groupId>fr.inria.corese.org.semarglproject</semargl.groupId>

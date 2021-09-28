@@ -37,10 +37,10 @@
       <groupId>${project.groupId}</groupId>
       <artifactId>corese-core</artifactId>
     </dependency>
-    <dependency>
+<!--    <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>kgram</artifactId>
-    </dependency>
+    </dependency>-->
     <dependency>
       <groupId>${project.groupId}</groupId>
       <artifactId>corese-rdf4j</artifactId>

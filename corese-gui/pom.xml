@@ -24,10 +24,10 @@
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>compiler</artifactId>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgram</artifactId>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>corese-core</artifactId>

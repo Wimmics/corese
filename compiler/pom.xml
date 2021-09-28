@@ -13,16 +13,18 @@
 
 	<artifactId>compiler</artifactId>
 	<name>compiler</name>
-
+        <properties>
+            <maven.test.skip>true</maven.test.skip>
+        </properties>
 	<dependencies>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>sparql</artifactId>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgram</artifactId>
-		</dependency>
+		</dependency>-->
 
 		<dependency>
 			<groupId>org.hamcrest</groupId>

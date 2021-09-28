@@ -1,6 +1,5 @@
 package fr.inria.corese.compiler.eval;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Query;
@@ -32,9 +31,9 @@ public class QuerySolverVisitorExtension extends QuerySolverVisitor {
     }
     
     @Override
-    public IDatatype insert(DatatypeValue path, Edge triple) {
+    public IDatatype insert(IDatatype path, Edge triple) {
         System.out.println("My Visitor insert: " + triple);
-        return (IDatatype) path;
+        return  path;
         //return super.insert(path, triple);
     }
 }

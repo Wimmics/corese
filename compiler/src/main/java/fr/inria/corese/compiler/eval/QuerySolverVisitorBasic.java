@@ -1,6 +1,5 @@
 package fr.inria.corese.compiler.eval;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.PointerType;
@@ -175,7 +174,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
 //    }
     
     //@Override
-    public DatatypeValue datatype(IDatatype type, IDatatype sup) {
+    public IDatatype datatype(IDatatype type, IDatatype sup) {
         getHierarchy().defSuperType(type, sup);
         return type;
     }
@@ -184,9 +183,9 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
         return getHierarchy().getSuperTypes(null, type);
     }
     
-    String getSuperType(DatatypeValue dt) {
-        return getSuperType ((IDatatype) dt);
-    }
+//    String getSuperType(IDatatype dt) {
+//        return getSuperType ((IDatatype) dt);
+//    }
     
     String getSuperType(IDatatype type) {
         List<String> list = getSuperTypes(type);

@@ -1,6 +1,5 @@
 package fr.inria.corese.compiler.parser;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.Atom;
@@ -92,13 +91,7 @@ public class NodeImpl implements Node {
         return atom.getDatatypeValue();
     }
     
-    @Override
-    public void setDatatypeValue(DatatypeValue dt) {
-        if (dt instanceof IDatatype) {
-            setDatatypeValue((IDatatype)dt);
-        }
-    }
-    
+    @Override   
     public void setDatatypeValue(IDatatype dt) {
         atom = Constant.create(dt);
     }

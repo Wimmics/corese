@@ -512,10 +512,10 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return extension;
     }
 
-    @Override
-    public Function getDefineMethod(Environment env, String name, Object type, Object[] values) {
-        return getDefineMethod(env, name, (IDatatype) type, (IDatatype[]) values);
-    }
+    
+//    public Function getDefineMethod(Environment env, String name, Object type, Object[] values) {
+//        return getDefineMethod(env, name, (IDatatype) type, (IDatatype[]) values);
+//    }
 
     public ProxyInterpreter getComputerPlugin() {
         return proxy.getComputerPlugin();

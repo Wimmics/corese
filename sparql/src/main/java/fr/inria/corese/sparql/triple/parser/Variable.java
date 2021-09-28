@@ -375,7 +375,7 @@ public class Variable extends Atom {
         if (node == null) {
             return null;
         }
-        return (IDatatype) node.getDatatypeValue();
+        return  node.getDatatypeValue();
     }
 
     /**

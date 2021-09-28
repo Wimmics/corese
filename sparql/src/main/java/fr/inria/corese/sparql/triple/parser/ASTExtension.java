@@ -1,10 +1,10 @@
 package fr.inria.corese.sparql.triple.parser;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Hierarchy;
 import fr.inria.corese.kgram.filter.Extension;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -294,9 +294,9 @@ public class ASTExtension implements Extension {
      * By default, return  function if there is no method
      */  
     @Override
-    public Function getMethod(String label, DatatypeValue type, Object[] param) {
+    public Function getMethod(String label, IDatatype type, IDatatype[] param) {
         if (getActualHierarchy() != null && param.length > 0) {
-            for (String atype : getActualHierarchy().getSuperTypes((DatatypeValue) param[0],  type)) {
+            for (String atype : getActualHierarchy().getSuperTypes(param[0],  type)) {
                 ASTExtension ext = getMethodExtension(atype);
                 if (isDebug()) {
                     System.out.println("ASTExtension: " + label + " " + atype + " " + ext);

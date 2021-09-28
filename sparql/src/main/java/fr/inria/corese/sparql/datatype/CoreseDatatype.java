@@ -1114,7 +1114,7 @@ public class CoreseDatatype
         if (obj instanceof IDatatype) {
             return equals((IDatatype) obj);
         } else if (obj instanceof Node) {
-            return equals((IDatatype) ((Node) obj).getValue());
+            return equals( ((Node) obj).getValue());
         }
         return false;
     }
@@ -1317,13 +1317,13 @@ public class CoreseDatatype
 
     @Override
     public boolean same(Node n) {
-        return sameTerm((IDatatype) n.getValue());
-        //return equals((IDatatype) n.getValue());
+        return sameTerm( n.getValue());
+        //return equals( n.getValue());
     }
     
     @Override
     public boolean match(Node n) {
-        return match((IDatatype) n.getValue());
+        return match( n.getValue());
     }
     
     // for graph match
@@ -1360,7 +1360,7 @@ public class CoreseDatatype
     
     @Override
     public int compare(Node n) {
-        return compareTo((IDatatype) n.getValue());
+        return compareTo( n.getValue());
     }
 
     @Override

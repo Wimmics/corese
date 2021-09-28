@@ -76,13 +76,13 @@ public class Introspection extends LDScript {
             return null;
         }  
         if (gNode.isConstant()) {
-            return (IDatatype) gNode.getDatatypeValue();
+            return  gNode.getDatatypeValue();
         }
         Node n = env.getNode(gNode);
         if (n == null) {
             return null;
         }
-        return (IDatatype) n.getDatatypeValue();
+        return  n.getDatatypeValue();
     }
     
     IDatatype dataset(Expr exp, Environment env, Producer p){

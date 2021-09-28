@@ -95,16 +95,16 @@ public class GraphFunction extends LDScript {
         Edge edge = dt.getPointerObject().getEdge();
         switch (oper()) {
             case XT_GRAPH:
-                return (IDatatype) edge.getGraph().getDatatypeValue();
+                return  edge.getGraph().getDatatypeValue();
 
             case XT_SUBJECT:
-                return (IDatatype) edge.getNode(0).getDatatypeValue();
+                return  edge.getNode(0).getDatatypeValue();
 
             case XT_OBJECT:
-                return (IDatatype) edge.getNode(1).getDatatypeValue();
+                return  edge.getNode(1).getDatatypeValue();
 
             case XT_PROPERTY:
-                return (IDatatype) edge.getEdgeNode().getDatatypeValue();
+                return  edge.getEdgeNode().getDatatypeValue();
 
             case XT_INDEX:
                 return DatatypeMap.newInstance(edge.getIndex());

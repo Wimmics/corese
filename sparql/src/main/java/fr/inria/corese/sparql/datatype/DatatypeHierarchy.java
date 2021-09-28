@@ -2,7 +2,6 @@ package fr.inria.corese.sparql.datatype;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.query.Hierarchy;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -63,7 +62,7 @@ public class DatatypeHierarchy implements Hierarchy {
     }
     
     @Override
-    public void defSuperType(DatatypeValue name, DatatypeValue sup) {
+    public void defSuperType(IDatatype name, IDatatype sup) {
         defSuperType(name.stringValue(), sup.stringValue());       
     }
 
@@ -72,14 +71,14 @@ public class DatatypeHierarchy implements Hierarchy {
         return hierarchy.get(name);
     }
 
-    @Override
-    public List<String> getSuperTypes(DatatypeValue value, DatatypeValue type) {
-        List<String> list = getSuperTypes((IDatatype) value, (IDatatype) type);
-        if (isDebug()) System.out.println("DH: " + value + " " + list);
-        return list;
-    }
+//    public List<String> getSuperTypes(IDatatype value, IDatatype type) {
+//        List<String> list = getSuperTypes( value,  type);
+//        if (isDebug()) System.out.println("DH: " + value + " " + list);
+//        return list;
+//    }
       
-    List<String> getSuperTypes(IDatatype dt, IDatatype type) {
+    @Override
+    public List<String> getSuperTypes(IDatatype dt, IDatatype type) {
         String name = (type == null) ? xt_kind(dt).stringValue() : type.stringValue();
         List<String> list = hierarchy.get(name);
         if (list != null) {

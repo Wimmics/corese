@@ -652,7 +652,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
             return (IDatatype) value;
         }
         if (value instanceof Node) {
-            return (IDatatype) ((Node) value).getDatatypeValue();
+            return  ((Node) value).getDatatypeValue();
         }
         if (value instanceof List) {
             return getValue((List) value);
@@ -708,7 +708,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
             return null;
         }
         if (obj instanceof Node) {
-            return (IDatatype) ((Node) obj).getDatatypeValue();
+            return  ((Node) obj).getDatatypeValue();
         }      
         return createObjectBasic(name, obj);
     }
@@ -847,7 +847,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     public static IDatatype toList(List<Node> list) {
         ArrayList<IDatatype> l = new ArrayList<>();
         for (Node node : list) {
-            l.add((IDatatype) node.getDatatypeValue());
+            l.add( node.getDatatypeValue());
         }
         return newList(l);
     }

@@ -320,7 +320,7 @@ public class Binding implements Binder {
         valList.set(index, val);
     }
 
-    @Override
+    //@Override
     public void unset(Expr exp, List<Expr> lvar) {
         desallocate(exp);
     }
@@ -605,25 +605,25 @@ public class Binding implements Binder {
         return count;
     }
 
-    @Override
-    public void bind(Expr exp, Expr var, Node val) {
-        bind(exp, var, (IDatatype) val);
-    }
+//    @Override
+//    public void bind(Expr exp, Expr var, Node val) {
+//        bind(exp, var, (IDatatype) val);
+//    }
 
-    @Override
-    public void set(Expr exp, Expr var, Node val) {
-        set(exp, var, (IDatatype) val);
-    }
+//    @Override
+//    public void set(Expr exp, Expr var, Node val) {
+//        set(exp, var, (IDatatype) val);
+//    }
+//
+//    @Override
+//    public void set(Expr exp, List<Expr> lvar, Node[] value) {
+//        set(exp, lvar, (IDatatype[]) value);
+//    }
 
-    @Override
-    public void set(Expr exp, List<Expr> lvar, Node[] value) {
-        set(exp, lvar, (IDatatype[]) value);
-    }
-
-    @Override
-    public void unset(Expr exp, Expr var, Node value) {
-        unset(exp, var, (IDatatype) value);
-    }
+//    @Override
+//    public void unset(Expr exp, Expr var, Node value) {
+//        unset(exp, var, (IDatatype) value);
+//    }
 
     /**
      * return(dt) LDScript function set boolean result field to true

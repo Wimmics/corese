@@ -139,7 +139,7 @@ public class TermEval extends Term {
     
     
     public IDatatype error(Computer eval, Binding b, Environment env, Producer p, IDatatype... param) {
-        return (IDatatype) env.getVisitor().error(env.getEval(), this, param);       
+        return  env.getVisitor().error(env.getEval(), this, param);       
     }
     
     public IDatatype overload(Computer eval, Binding b, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype res) {
@@ -154,7 +154,7 @@ public class TermEval extends Term {
     }
     
     public IDatatype overload(Environment env, IDatatype res, IDatatype... param) {
-        return (IDatatype) env.getVisitor().overload(env.getEval(), this, res, param);  
+        return  env.getVisitor().overload(env.getEval(), this, res, param);  
     }
     
     public Node getNode(IDatatype dt, Producer p) {

@@ -817,7 +817,10 @@ public class CoreseDatatype
      */
     @Override
     public int compareTo(Object d2) {
-        return compareTo((IDatatype) d2);
+        if (d2 instanceof IDatatype) {
+            return compareTo((IDatatype) d2);
+        }
+        return -1;
     }
 
     @Override

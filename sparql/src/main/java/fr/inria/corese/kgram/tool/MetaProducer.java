@@ -189,7 +189,7 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     }
 
     @Override
-    public List<Node> toNodeList(Object value) {
+    public List<Node> toNodeList(IDatatype value) {
         return producer.toNodeList(value);
     }
 

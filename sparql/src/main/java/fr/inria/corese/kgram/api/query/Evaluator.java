@@ -9,6 +9,7 @@ import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.core.SparqlException;
+import fr.inria.corese.sparql.api.IDatatype;
 /**
  * Interface for the connector that evaluates filters
  * 
@@ -61,7 +62,7 @@ public interface Evaluator {
 	                             
         Expr getDefine(Environment env, String name, int n);
         Expr getDefineMetadata(Environment env, String metadata, int n);       
-        Expr getDefineMethod(Environment env, String name, Object type, Object[] values);
+        Expr getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] values);
 
         Expr getDefine(String name);
         

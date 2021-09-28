@@ -1,11 +1,11 @@
 package fr.inria.corese.kgram.core;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.sparql.api.IDatatype;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -305,7 +305,7 @@ public class Bind implements Binder {
     }
 
     @Override
-    public DatatypeValue getGlobalVariable(String var) {
+    public IDatatype getGlobalVariable(String var) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

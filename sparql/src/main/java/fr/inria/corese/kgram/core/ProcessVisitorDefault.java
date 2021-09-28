@@ -1,8 +1,8 @@
 package fr.inria.corese.kgram.core;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.sparql.api.IDatatype;
 
 /**
  *
@@ -14,7 +14,7 @@ public class ProcessVisitorDefault implements ProcessVisitor {
     public static int SLICE_DEFAULT_VALUE = ProcessVisitor.SLICE_DEFAULT;
     
     int slice = SLICE_DEFAULT_VALUE;
-    DatatypeValue defaultValue;
+    IDatatype defaultValue;
 
     @Override
     public int slice() {
@@ -33,12 +33,12 @@ public class ProcessVisitorDefault implements ProcessVisitor {
     }
     
     @Override
-    public void setDefaultValue(DatatypeValue val) {
+    public void setDefaultValue(IDatatype val) {
         defaultValue = val;
     }
     
     @Override
-    public DatatypeValue defaultValue() {
+    public IDatatype defaultValue() {
         return defaultValue;
     }
 

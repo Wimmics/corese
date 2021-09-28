@@ -175,7 +175,7 @@ public interface Producer {
 	 * @param value
 	 * @return List<Node>
 	 */
-	List<Node> toNodeList(Object value);
+	List<Node> toNodeList(IDatatype value);
         
         DatatypeValueFactory getDatatypeValueFactory();
 	

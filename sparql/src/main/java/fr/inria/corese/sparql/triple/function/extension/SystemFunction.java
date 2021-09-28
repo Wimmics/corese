@@ -53,7 +53,7 @@ public class SystemFunction extends TermEval {
                 // to be used in @init function
             case ExprType.XT_DATATYPE:
                 if (param.length < 2) {return null;}
-                return (IDatatype) env.getVisitor().datatype(param[0], param[1]);
+                return  env.getVisitor().datatype(param[0], param[1]);
                 
             case ExprType.XT_GET_DATATYPE_VALUE:
                 // system function for try catch, see TryCatch

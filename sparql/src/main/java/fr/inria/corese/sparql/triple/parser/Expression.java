@@ -13,7 +13,6 @@ import fr.inria.corese.sparql.triple.cst.Keyword;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -625,7 +624,7 @@ public class Expression extends TopExp
     }
 
     @Override
-    public Object getValue() {
+    public IDatatype getValue() {
         return null;
     }
 
@@ -964,7 +963,7 @@ public class Expression extends TopExp
     }
 
     @Override
-    public DatatypeValue[] getArguments(int n) {
+    public IDatatype[] getArguments(int n) {
         return null;
     }
 

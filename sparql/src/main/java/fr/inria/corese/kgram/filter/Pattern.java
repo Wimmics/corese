@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.filter;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -8,6 +7,7 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.core.Exp;
+import fr.inria.corese.sparql.api.IDatatype;
 import java.util.Collection;
 
 /**
@@ -167,7 +167,8 @@ public class Pattern implements ExprType, Expr {
 	}
 
 	
-	public Object getValue() {
+        @Override
+	public IDatatype getValue() {
 		return null;
 	}
 
@@ -349,7 +350,7 @@ public class Pattern implements ExprType, Expr {
     }
 
     @Override
-    public DatatypeValue getDatatypeValue() {
+    public IDatatype getDatatypeValue() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -389,7 +390,7 @@ public class Pattern implements ExprType, Expr {
     }
 
     @Override
-    public DatatypeValue[] getArguments(int n) {
+    public IDatatype[] getArguments(int n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

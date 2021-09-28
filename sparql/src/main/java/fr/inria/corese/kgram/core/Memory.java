@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.core;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -1276,17 +1275,17 @@ public class Memory extends PointerObject implements Environment {
      * @return 
      */
     @Override
-    public Iterable getLoop() {
+    public Iterable<List<IDatatype>> getLoop() {
         return getList();
     }
         
-    List<List<DatatypeValue>> getList() {    
-        ArrayList<List<DatatypeValue>> list = new ArrayList<>();
+    List<List<IDatatype>> getList() {    
+        ArrayList<List<IDatatype>> list = new ArrayList<>();
         int i = 0;
         for (Node n : getQueryNodes()) {
             Node val = getNode(i++);
             if (n!= null && val != null){
-                ArrayList<DatatypeValue> l = new ArrayList<>(2);
+                ArrayList<IDatatype> l = new ArrayList<>(2);
                 l.add(n.getDatatypeValue());
                 l.add(val.getDatatypeValue());
                 list.add(l);
@@ -1317,8 +1316,8 @@ public class Memory extends PointerObject implements Environment {
         return node.getDatatypeValue();
     }
 
-    List<DatatypeValue> getBinding(int n){
-        List<List<DatatypeValue>> l = getList();
+    List<IDatatype> getBinding(int n){
+        List<List<IDatatype>> l = getList();
         if (n < l.size()){
             return l.get(n);
         }

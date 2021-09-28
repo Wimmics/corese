@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.api.core;
 
+import fr.inria.corese.sparql.api.IDatatype;
 import java.util.Collection;
 import java.util.List;
 
@@ -39,8 +40,8 @@ public interface Expr {
 	Expr getArg();
 	void setArg(Expr exp);
 
-	Object getValue();
-        DatatypeValue getDatatypeValue();
+	IDatatype getValue();
+        IDatatype getDatatypeValue();
 	
 	int type();
                 
@@ -88,7 +89,7 @@ public interface Expr {
         
         Expr getDefinition();
         int getNbVariable();
-        DatatypeValue[] getArguments(int n);
+        IDatatype[] getArguments(int n);
         
         List<String> getMetadataValues(String name);
         Collection<String> getMetadataList();

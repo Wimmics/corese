@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.core;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;

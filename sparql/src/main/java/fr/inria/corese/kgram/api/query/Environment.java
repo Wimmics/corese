@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.api.query;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.Map;
 
 import fr.inria.corese.kgram.api.core.Expr;
@@ -13,7 +12,6 @@ import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
-import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.api.IDatatype;

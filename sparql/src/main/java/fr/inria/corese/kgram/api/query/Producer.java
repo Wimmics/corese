@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.api.query;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
 import java.util.List;
 

@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.api.core;
 
+import fr.inria.corese.sparql.api.IDatatype;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -115,6 +116,43 @@ public interface Edge extends Pointerable, Statement {
 	default boolean isMatchArity() {
 		return false;
 	}
+        
+        
+        default Node getGraphNode() {
+            return getGraph();            
+        }
+        
+        default Node getSubjectNode() {
+            return getNode(0);            
+        }
+        
+        default Node getPropertyNode() {
+            return getProperty();            
+        }
+        
+        default Node getObjectNode() {
+            return getNode(1);            
+        }              
+        
+        default IDatatype getGraphValue() {
+            Node node = getGraph();
+            if (node == null) {
+                return null;
+            }
+            return node.getDatatypeValue();
+        }
+        
+        default IDatatype getSubjectValue() {
+            return getNode(0).getDatatypeValue();
+        }
+        
+        default IDatatype getPropertyValue() {
+            return getProperty().getDatatypeValue();
+        }
+        
+        default IDatatype getObjectValue() {
+            return getNode(1).getDatatypeValue();
+        }
 
 	///////////
 	// RDF4J //
@@ -122,17 +160,17 @@ public interface Edge extends Pointerable, Statement {
 
 	@Override
 	public default Resource getSubject() {
-		return (Resource) this.getNode(0).getDatatypeValue().getRdf4jValue();
+		return (Resource) getSubjectValue().getRdf4jValue();
 	}
 
 	@Override
 	public default IRI getPredicate() {
-		return (IRI) this.getEdgeNode().getDatatypeValue().getRdf4jValue();
+		return (IRI) getPropertyValue().getRdf4jValue();
 	}
 
 	@Override
 	public default Value getObject() {
-		return this.getNode(1).getDatatypeValue().getRdf4jValue();
+		return getObjectValue().getRdf4jValue();
 	}
 
 	@Override

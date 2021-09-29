@@ -64,7 +64,7 @@ public class Namespace extends TermEval {
     
     
     NSManager nsm(Environment env) {        
-        ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+        ASTQuery ast =  env.getQuery().getAST();
         return ast.getNSM();
     }
 

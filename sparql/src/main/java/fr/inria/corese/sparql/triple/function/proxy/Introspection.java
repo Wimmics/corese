@@ -49,7 +49,7 @@ public class Introspection extends LDScript {
                 return DatatypeMap.createObject(env.getQuery().getMappings());    
                 
             case XT_METADATA:
-                ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+                ASTQuery ast =  env.getQuery().getAST();
                 if (ast.getMetadata() == null){
                     return null;
                 }
@@ -86,7 +86,7 @@ public class Introspection extends LDScript {
     }
     
     IDatatype dataset(Expr exp, Environment env, Producer p){
-        ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+        ASTQuery ast = env.getQuery().getAST();
         Dataset ds = ast.getDataset();
         
         switch (exp.oper()){

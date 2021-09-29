@@ -126,7 +126,7 @@ public class JavaCompiler {
     }
 
     public JavaCompiler compile(Query q) throws IOException, EngineException {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         this.ast = ast;
         path(ast);
         head.process(getPackage(), name);

@@ -10,7 +10,6 @@ import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.PointerType;
-import fr.inria.corese.kgram.api.query.ASTQ;
 import fr.inria.corese.kgram.api.query.DQPFactory;
 import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.kgram.api.query.Matcher;
@@ -18,6 +17,7 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.filter.Compile;
 import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.tool.Message;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -104,7 +104,7 @@ public class Query extends Exp implements Graphable {
     private Object graph;
     Query query, outerQuery;
     private ArrayList<Query> subQueryList;
-    ASTQ ast;
+    ASTQuery ast;
     Object object;
 
     // Transformation profile template
@@ -362,11 +362,11 @@ public class Query extends Exp implements Graphable {
         object = o;
     }
 
-    public ASTQ getAST() {
+    public ASTQuery getAST() {
         return ast;
     }
 
-    public void setAST(ASTQ o) {
+    public void setAST(ASTQuery o) {
         ast = o;
     }
 

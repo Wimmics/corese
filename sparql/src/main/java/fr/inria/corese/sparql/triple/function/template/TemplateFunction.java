@@ -61,7 +61,7 @@ public class TemplateFunction extends LDScript {
                 }
             }
         }
-        ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+        ASTQuery ast =  env.getQuery().getAST();
         Term t = ast.createFunction(getProxy(), list);
         return DatatypeMap.createFuture(t);
     }

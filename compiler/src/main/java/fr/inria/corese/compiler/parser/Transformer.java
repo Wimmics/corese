@@ -583,7 +583,7 @@ public class Transformer implements ExpType {
     
     
     public void imports(Query q, String path) throws EngineException {
-        getFunctionCompiler().imports(q, (ASTQuery) q.getAST(), path);
+        getFunctionCompiler().imports(q,  q.getAST(), path);
     }
     
     public boolean getLinkedFunction(String label) throws EngineException {
@@ -1099,7 +1099,7 @@ public class Transformer implements ExpType {
     }
 
     ASTQuery getAST(Query q) {
-        return (ASTQuery) q.getAST();
+        return q.getAST();
     }
 
     Node getProperAndSubSelectNode(Query q, String name) {
@@ -1703,14 +1703,14 @@ public class Transformer implements ExpType {
      * generate a blank node for each path (PathFinder)
      */
     void filters(Query q) throws EngineException {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
 
         Term t = Term.function(Processor.PATHNODE);
         q.setFilter(Query.PATHNODE, t.compile(ast));
     }
 
     void relax(Query q) {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         for (Expression exp : ast.getRelax()) {
             if (exp.isConstant()) {
                 Constant p = exp.getConstant();

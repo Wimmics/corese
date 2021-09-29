@@ -53,7 +53,7 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
         // Visitor may be reused by let (?g = construct where)
         if (query == null) {
             query = q;
-            ast = (ASTQuery) q.getAST();
+            ast =  q.getAST();
             setSelect();
             initialize();
             execInit(q);

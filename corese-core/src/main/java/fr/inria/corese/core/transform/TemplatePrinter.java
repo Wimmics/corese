@@ -61,7 +61,7 @@ public class TemplatePrinter {
                             process((ASTQuery) q.getAST());
                     }
                     for (Query q : qe.getQueries()){
-                            process((ASTQuery) q.getAST());
+                            process( q.getAST());
                     }		
                     trailer();
                     result();

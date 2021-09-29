@@ -63,7 +63,7 @@ public class TripleFormat extends RDFFormat {
         if (q == null) {
             return nsm();
         }
-        return ((ASTQuery) q.getAST()).getNSM();
+        return  q.getAST().getNSM();
     }
 
     public static TripleFormat create(Graph g, boolean isGraph) {

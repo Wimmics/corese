@@ -73,7 +73,7 @@ public class Construct
 
     Construct(Query q) {
         query = q;
-        ast = (ASTQuery) query.getAST();
+        ast =  query.getAST();
         table = new HashMap<>();
         labelMap = new HashMap<>();
         literalMap = new TreeNode();

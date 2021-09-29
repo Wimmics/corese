@@ -928,7 +928,7 @@ public class QueryProcess extends QuerySolver {
      * Pragma specific to kgraph (in addition to generic pragma in QuerySolver)
      */
     void pragma(Query query) {
-        ASTQuery ast = (ASTQuery) query.getAST();
+        ASTQuery ast =  query.getAST();
 
         if (ast != null && ast.getPragma() != null) {
             PragmaImpl.create(this, query).parse();

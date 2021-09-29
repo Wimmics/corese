@@ -109,7 +109,7 @@ public class LogImpl implements Log {
 	
 	
 	void query(Query q, Mappings m){
-		ASTQuery ast = (ASTQuery) q.getAST();
+		ASTQuery ast =  q.getAST();
 		trace("Query: " + query.size() + " " + ast.getText());
 		if (isQuery){
 			query.add(ast.getText());
@@ -118,7 +118,7 @@ public class LogImpl implements Log {
 	}
 	
 	void query(Query q){
-		ASTQuery ast = (ASTQuery) q.getAST();
+		ASTQuery ast =  q.getAST();
 		trace("Query: " + query.size() + " " + ast.getText());
 		if (isQuery){
 			query.add(ast.getText());
@@ -126,7 +126,7 @@ public class LogImpl implements Log {
 	}
 	
 	void update(Query  q){
-		ASTQuery ast = (ASTQuery) q.getAST();
+		ASTQuery ast =  q.getAST();
 		trace("Update: " + update.size() + " " + ast.getText());
 		if (isUpdate){
 			update.add(ast.getText());

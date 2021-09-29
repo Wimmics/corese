@@ -473,7 +473,7 @@ public class Service implements URLParam {
     }
     
         ASTQuery getAST(Query q) {
-        return (ASTQuery) q.getAST();
+        return  q.getAST();
     }
     
     void metadata(ASTQuery ast) {

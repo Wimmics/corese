@@ -589,7 +589,7 @@ public class RuleEngine implements Engine, Graphable {
      */
     void cleanContext(Query q) {
         q.setContext(null);
-        ((ASTQuery)q.getAST()).setContext(null);
+        q.getAST().setContext(null);
     }
     
     Dataset getCreateDataset() {

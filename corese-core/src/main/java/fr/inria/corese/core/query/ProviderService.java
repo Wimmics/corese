@@ -502,7 +502,7 @@ public class ProviderService implements URLParam {
     }
 
     ASTQuery getAST(Query q) {
-        return (ASTQuery) q.getAST();
+        return  q.getAST();
     }
 
     void traceAST(URLServer serv, ASTQuery ast) {

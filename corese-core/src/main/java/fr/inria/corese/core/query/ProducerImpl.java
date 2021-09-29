@@ -232,7 +232,7 @@ public class ProducerImpl
             }
         }        
         
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         //int level = -1;
         int focusNodeIndex = 0;
 

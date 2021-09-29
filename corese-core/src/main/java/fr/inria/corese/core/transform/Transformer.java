@@ -797,7 +797,7 @@ public class Transformer implements TransformProcessor {
     }
     
     ASTQuery ast(Query q) {
-        return (ASTQuery) q.getAST();
+        return  q.getAST();
     }
     
     NSManager nsm(Query q) {
@@ -1397,7 +1397,7 @@ public class Transformer implements TransformProcessor {
        
     void checkFunction(fr.inria.corese.compiler.parser.Transformer tr, Query q, Level level) throws LoadException  {
         try {
-            ASTQuery ast = (ASTQuery) q.getAST();
+            ASTQuery ast =  q.getAST();
             tr.getFunctionCompiler().undefinedFunction(q, ast, level);
         } catch (EngineException ex) {
             throw new LoadException(ex);
@@ -1435,7 +1435,7 @@ public class Transformer implements TransformProcessor {
             if (q.hasPragma(Pragma.FILE)) {
                 System.out.println(name(q));
             }
-            ASTQuery ast = (ASTQuery) q.getAST();
+            ASTQuery ast =  q.getAST();
             System.out.println(ast);
         }
     }
@@ -1576,7 +1576,7 @@ public class Transformer implements TransformProcessor {
      * query and calling transformer (if any)
      */
     public void complete(Query q, Transformer ct) {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         Context c = getContext(q, ct);
         if (c != null) {
             // inherit context exported properties:

@@ -189,7 +189,7 @@ public class PluginImpl
      */
     void setMethodHandler(Producer p, Environment env) {
         Extension ext = env.getQuery().getActualExtension();
-        ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+        ASTQuery ast =  env.getQuery().getAST();
         if (ext != null && ext.isMethod() && ast.hasMetadata(Metadata.METHOD)) {
             ClassHierarchy ch = new ClassHierarchy(getGraph(p));
             if (env.getQuery().getGlobalQuery().isDebug()) {
@@ -1072,7 +1072,7 @@ public class PluginImpl
     }
 
     IDatatype db(Environment env, Graph g) {
-        ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+        ASTQuery ast =  env.getQuery().getAST();
         String name = ast.getMetadataValue(Metadata.DB);
         return db(name, g);
     }
@@ -1262,12 +1262,12 @@ public class PluginImpl
         if (ast != null) {
             return ast.getGlobalAST();
         } else {
-            return (ASTQuery) q.getAST();
+            return  q.getAST();
         }
     }
     
     ASTQuery getAST(Environment env) {
-        return (ASTQuery) env.getQuery().getAST();
+        return  env.getQuery().getAST();
     }
 
     public class TreeNode extends TreeMap<IDatatype, IDatatype> {

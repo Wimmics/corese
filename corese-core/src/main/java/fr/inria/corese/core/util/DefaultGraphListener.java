@@ -148,7 +148,7 @@ public class DefaultGraphListener implements GraphListener {
 
     // store query in kg:query graph
     void query(Graph g, Query q) {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         Exp body = ast.getBody();
         if (body.size() > 0 && body.get(0).isGraph()) {
             Source src = (Source) body.get(0);

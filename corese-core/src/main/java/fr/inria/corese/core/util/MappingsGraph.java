@@ -43,7 +43,7 @@ public class MappingsGraph implements Graphable {
         map = m;
         graph = Graph.create();
         query = map.getQuery();
-        ast = (ASTQuery) query.getAST();
+        ast =  query.getAST();
         var = new HashMap<String, Node>();
     }
     

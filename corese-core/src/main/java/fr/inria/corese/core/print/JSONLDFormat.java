@@ -74,7 +74,7 @@ public class JSONLDFormat {
     }
 
     JSONLDFormat(Graph g, Query q) {
-        this(((ASTQuery) q.getAST()).getNSM());
+        this(q.getAST().getNSM());
         if (g != null) {
             graph = g;
             //graph.prepare();
@@ -101,7 +101,7 @@ public class JSONLDFormat {
         Graph g = (Graph) map.getGraph();
         if (g != null) {
             Query q = map.getQuery();
-            NSManager nsm = ((ASTQuery) q.getAST()).getNSM();
+            NSManager nsm =  q.getAST().getNSM();
             return create(g, nsm);
         }
         return create(Graph.create());

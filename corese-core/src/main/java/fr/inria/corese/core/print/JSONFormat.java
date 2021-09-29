@@ -45,7 +45,7 @@ public class JSONFormat extends XMLFormat {
 
     public static JSONFormat create(Mappings lm) {
         Query q = lm.getQuery();
-        return JSONFormat.create(q, (ASTQuery) q.getAST(), lm);
+        return JSONFormat.create(q,  q.getAST(), lm);
     }
 
     public static JSONFormat create(Query q, ASTQuery ast, Mappings lm) {

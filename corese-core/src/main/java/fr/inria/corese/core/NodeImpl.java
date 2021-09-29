@@ -61,7 +61,6 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
 
     @Override
     public int compare(Node node) {
-        // TODO Auto-generated method stub
         return getValue().compareTo( node.getValue());
     }
 
@@ -72,7 +71,6 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
 
     @Override
     public String getLabel() {
-        // TODO Auto-generated method stub
         return getValue().getLabel();
     }
 
@@ -93,19 +91,16 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
 
     @Override
     public boolean isBlank() {
-        // TODO Auto-generated method stub
         return getValue().isBlank();
     }
 
     @Override
     public boolean isConstant() {
-        // TODO Auto-generated method stub
         return getValue().isConstant();
     }
 
     @Override
     public boolean isVariable() {
-        // TODO Auto-generated method stub
         return false;
     }
     

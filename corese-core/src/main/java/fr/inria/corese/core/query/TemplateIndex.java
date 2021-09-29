@@ -170,7 +170,7 @@ class TemplateIndex extends HashMap<String, List<Query>> {
     }
 
     int getLevel(Query q) {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         return ast.getPriority();
     }
 }

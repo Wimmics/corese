@@ -89,7 +89,7 @@ public class RDFFormat {
     }
 
     static ASTQuery getAST(Query q) {
-        return (ASTQuery) q.getAST();
+        return  q.getAST();
     }
 
     RDFFormat(Mapping m, NSManager n) {

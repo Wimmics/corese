@@ -39,7 +39,7 @@ public class TemplateFormat {
             if (query.hasPragma(Pragma.TEMPLATE)) {
                 printer = (String) query.getPragma(Pragma.TEMPLATE);
             }
-            ASTQuery ast = (ASTQuery) query.getAST();
+            ASTQuery ast =  query.getAST();
             setNSM(ast.getNSM());
         }
     }

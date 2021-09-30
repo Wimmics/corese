@@ -60,6 +60,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.core.util.Property;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.shex.shacl.Shex;
 import fr.inria.corese.sparql.exceptions.SafetyException;
@@ -92,13 +93,14 @@ public class MainFrame extends JFrame implements ActionListener {
     private static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.2 - Wimmics INRIA I3S - 2021-08-15";
+    private static final String TITLE = "Corese 4.2 - Inria UCA - 2021-09-21";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
     private ArrayList<Integer> nbreTab = new ArrayList<>();
     private String lCurrentPath = "user/home";
     private String lCurrentRule = "user/home";
+    private String lCurrentProperty = "user/home";
 
     private String lPath;
     private String fileName = "";
@@ -107,6 +109,7 @@ public class MainFrame extends JFrame implements ActionListener {
     boolean trace = false;
     // Pour le menu
     private JMenuItem loadRDF;
+    private JMenuItem loadProperty;
     private JMenuItem loadSHACL, loadShex;
     private JMenuItem loadSHACLShape;
     private JMenuItem loadQuery;
@@ -278,7 +281,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
         //Initialise Corese
         myCapturer = aCapturer;
-        setMyCoreseNewInstance(true);
+        setMyCoreseNewInstance(Graph.RDFS_ENTAILMENT_DEFAULT);
 
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 
@@ -494,6 +497,10 @@ public class MainFrame extends JFrame implements ActionListener {
         loadRDF = new JMenuItem("Dataset");
         loadRDF.addActionListener(this);
         loadRDF.setToolTipText("Load Dataset");
+        
+        loadProperty = new JMenuItem("Property");
+        loadProperty.addActionListener(this);
+        loadProperty.setToolTipText("Load Property");
        
         loadRule = new JMenuItem("Rule");
         loadRule.addActionListener(this);
@@ -695,6 +702,7 @@ public class MainFrame extends JFrame implements ActionListener {
         //On ajoute tout au menu
         fileMenu.add(fileMenuLoad);
         fileMenuLoad.add(loadRDF);
+        fileMenuLoad.add(loadProperty);
         fileMenuLoad.add(loadRule);
         fileMenuLoad.add(loadAndRunRule);
         fileMenuLoad.add(loadSHACL);
@@ -883,7 +891,8 @@ public class MainFrame extends JFrame implements ActionListener {
                 setRDFSEntailment(cbrdfs.isSelected());
             }
         });
-        cbrdfs.setSelected(true);
+        // default is true, may be set by property file
+        cbrdfs.setSelected(Graph.RDFS_ENTAILMENT_DEFAULT);
 
         cbnamed.setSelected(true);
         cbnamed.setEnabled(true);
@@ -1091,6 +1100,9 @@ public class MainFrame extends JFrame implements ActionListener {
         } 
         else if (e.getSource() == loadRDF || e.getSource() == loadSHACL) {
             loadRDF();
+        } 
+        else if (e.getSource() == loadProperty) {
+            loadProperty();
         } 
         else if (e.getSource() == loadSHACLShape) {
             basicLoad(SHACL_SHACL);
@@ -1441,7 +1453,22 @@ public class MainFrame extends JFrame implements ActionListener {
     void loadRDF() {
         loadDataset();
     }
-
+    
+    void loadProperty() {
+        JFileChooser fileChooser = new JFileChooser(getProperty());                     
+        File selectedFile;
+        int returnValue = fileChooser.showOpenDialog(null);
+        if (returnValue == JFileChooser.APPROVE_OPTION) {
+            selectedFile = fileChooser.getSelectedFile();
+            try {
+                setProperty(selectedFile.getParent());
+                LOGGER.info("Load Property File: " + selectedFile.getAbsolutePath());
+                Property.load(selectedFile.getAbsolutePath());
+            } catch (IOException ex) {
+                LOGGER.error(ex);
+            }
+        }
+    }
     
     void loadDataset() {
         Filter FilterRDF  = new Filter("RDF", "rdf", "ttl", "trig", "jsonld", "html");
@@ -1865,7 +1892,7 @@ public class MainFrame extends JFrame implements ActionListener {
             myCorese.finish();
         }
         myCorese = GraphEngine.create(rdfs);
-        myCorese.setOption(cmd);
+        myCorese.init(cmd);
     }
     
     void process(Command cmd) {
@@ -1995,6 +2022,14 @@ public class MainFrame extends JFrame implements ActionListener {
     
     public String getPath() {
         return lCurrentPath;
+    } 
+    
+    public void setProperty(String path) {
+        this.lCurrentProperty = path;
+    }
+    
+    public String getProperty() {
+        return lCurrentProperty;
     } 
 
     /**

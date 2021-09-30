@@ -22,6 +22,8 @@ import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.util.Parameter;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.*;
 import fr.inria.corese.gui.core.Command;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -29,8 +31,9 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Constant;
+import static fr.inria.corese.core.util.Property.Value.ACCESS_LEVEL;
+import java.io.IOException;
 
 /**
  * Lite implementation of IEngine using kgraph and kgram
@@ -55,7 +58,7 @@ public class GraphEngine {
             isDebug = false, linkedFunction = false;
 
     GraphEngine(boolean b) {
-        DatatypeMap.setLiteralAsString(false);
+        //DatatypeMap.setLiteralAsString(false);
         graph = GraphStore.create(b);
         qengine = QueryEngine.create(graph);
         exec = QueryProcess.create(graph, true);
@@ -72,6 +75,12 @@ public class GraphEngine {
     public void finish() {
         graph.getEventManager().process(Event.Finish);
     }
+    
+    public void init(Command cmd) {
+        setOption(cmd);
+        Property.init(getGraph());
+    }
+
 
     public void setOption(Command cmd) {
         for (String key : cmd.keySet()) {
@@ -80,44 +89,51 @@ public class GraphEngine {
                 case Command.VERBOSE:
                     graph.setVerbose(true);
                     break;
+                case Command.DEBUG:
+                    graph.setDebugMode(true);
+                    break;
+                case Command.METADATA:
+                    graph.setMetadata(true);
+                    break;
+                    
                 case Command.LINKED_FUNCTION:
                     setLinkedFunction(true);
                     break;
                 case Command.READ_FILE:
                     setReadFile(true);
                     break;
-                case Command.SUPER_USER:
-                    Access.skip(true);
-                    break;
-                case Command.DEBUG:
-                    graph.setDebugMode(true);
-                    break;
-                case Command.MAX_LOAD:
-                    int max = Integer.valueOf(cmd.get(key));
-                    Load.setLimitDefault(max);
-                    break;
-                case Command.METADATA:
-                    graph.setMetadata(true);
-                    break;
+                    
                 case Command.STRING:
                     Constant.setString(true);
-                    break;
-                case Command.REENTRANT:
-                    QueryProcess.setOverwrite(true);
-                    break;
-                case Command.RDF_STAR:
-                    Graph.setRDFStar(true);
-                    break;
-                case Command.ACCESS:
-                    AccessRight.setActive(true);
-                    break;
+                    break;                               
                 case Command.PARAM:
                     param(cmd.get(key));
                     break;
+               
                 case Command.LOAD:
                     System.out.println("load: " + cmd.get(key));
                     loadDirProtect(cmd.get(key));
                     break;
+
+                    
+                case Command.REENTRANT:
+                    Property.set(REENTRANT_QUERY, true);
+                    break;
+                case Command.ACCESS:
+                    Property.set(ACCESS_RIGHT, true);
+                    break;
+                case Command.LOAD_DEFAULT_GRAPH:
+                    Property.set(LOAD_IN_DEFAULT_GRAPH, true);
+                    break;
+                case Command.NODE_AS_DATATYPE:
+                    Property.set(GRAPH_NODE_AS_DATATYPE, true);
+                case Command.RDF_STAR:
+                    Property.set(RDF_STAR, true);
+                    break;                   
+                case Command.SUPER_USER:
+                    Property.set(ACCESS_LEVEL, false);
+                    break;
+                
             }
         }
     }
@@ -127,7 +143,7 @@ public class GraphEngine {
             new Parameter().load(path).process();
             IDatatype dt = getVisitor().initServer("http://ns.inria.fr/corese/gui");
         } catch (LoadException ex) {
-            java.util.logging.Logger.getLogger(GraphEngine.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex);
         }
     }
 
@@ -202,8 +218,7 @@ public class GraphEngine {
                 for (String name : path.split(";")) {
                     ld.parseDir(name);
                 }
-            }
-            else {
+            } else {
                 ld.parseDir(path);
             }
         } catch (LoadException ex) {
@@ -286,7 +301,7 @@ public class GraphEngine {
     }
 
     public void loadRDF(String rdf, int format) throws EngineException, LoadException {
-        
+
         InputStream stream = new ByteArrayInputStream(rdf.getBytes(StandardCharsets.UTF_8));
 
         Load ld = this.loader();

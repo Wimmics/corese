@@ -87,7 +87,7 @@ public class Rule {
     }
     
     String toGraph(){
-        ASTQuery ast = (ASTQuery) getQuery().getAST();
+        ASTQuery ast =  getQuery().getAST();
         SPIN sp = SPIN.create();
         sp.visit(ast, "kg:r" + getIndex());
         return sp.toString();

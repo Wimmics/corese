@@ -16,7 +16,7 @@ public class Extension extends Pragma {
 	}
 	
 	public static Extension create(Query q){
-		return new Extension(q, (ASTQuery) q.getAST());
+		return new Extension(q,  q.getAST());
 	}
 	
 	public void parse(fr.inria.corese.sparql.triple.parser.Exp exp){

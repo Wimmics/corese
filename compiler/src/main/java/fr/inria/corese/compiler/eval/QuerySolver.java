@@ -68,6 +68,7 @@ public class QuerySolver implements SPARQLEngine {
 
     public static boolean BGP_DEFAULT = false;
     public static boolean ALGEBRA_DEFAULT = false;
+    public static boolean SPARQL_COMPLIANT_DEFAULT = false;
     private static boolean visitorable = false;
 
     static String NAMESPACES;
@@ -89,7 +90,7 @@ public class QuerySolver implements SPARQLEngine {
             isCheckLoop = false,
             isDebug = false,
             isOptimize = false,
-            isSPARQLCompliant = false;
+            isSPARQLCompliant = SPARQL_COMPLIANT_DEFAULT;
     private boolean isGenerateMain = true;
     private boolean isSynchronized = false;
     private boolean isPathType = false;
@@ -326,14 +327,14 @@ public class QuerySolver implements SPARQLEngine {
     }
 
     void before(Query q) {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         for (fr.inria.corese.sparql.api.QueryVisitor vis : ast.getVisitorList()) {
             vis.before(q);
         }
     }
 
     void after(Mappings map) {
-        ASTQuery ast = (ASTQuery) map.getQuery().getAST();
+        ASTQuery ast =  map.getQuery().getAST();
         for (fr.inria.corese.sparql.api.QueryVisitor vis : ast.getVisitorList()) {
             vis.after(map);
         }
@@ -381,7 +382,7 @@ public class QuerySolver implements SPARQLEngine {
     }
 
     void tune(Eval kgram, Query q, Mapping m) {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         boolean event = ast.hasMetadata(Metadata.EVENT);
         tune(kgram, m, event);
         if (q.isInitMode()) {
@@ -513,7 +514,7 @@ public class QuerySolver implements SPARQLEngine {
     }
 
     public ASTQuery getAST(Query q) {
-        return (ASTQuery) q.getAST();
+        return  q.getAST();
     }
 
     public ASTQuery getAST(Mappings lm) {
@@ -624,7 +625,7 @@ public class QuerySolver implements SPARQLEngine {
     }
 
     void pragma(Eval kgram, Query query) {
-        ASTQuery ast = (ASTQuery) query.getAST();
+        ASTQuery ast =  query.getAST();
         Pragma pg = new Pragma(kgram, query, ast);
         if (getPragma() != null) {
             pg.parse(getPragma());

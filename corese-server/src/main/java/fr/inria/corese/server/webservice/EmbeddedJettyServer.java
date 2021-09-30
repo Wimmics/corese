@@ -8,6 +8,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.util.Parameter;
+import fr.inria.corese.core.util.Property;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import org.apache.commons.cli.BasicParser;
@@ -139,6 +140,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
         Option param = new Option("param", "param", true, "read properties file");
         Option rdfstar = new Option("rdfstar", "rdfstar", false, "RDF*");
         Option binding = new Option("binding", "binding", true, "binding values | filter");
+        Option init = new Option("init", "init", true, "config file");
 
         Option sslOpt = new Option("ssl", "ssl", false, "enable ssl connection ?");
         Option portSslOpt = new Option("pssl", "pssl", true, "port of ssl connection");
@@ -162,6 +164,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
         options.addOption(key);
         options.addOption(param);
         options.addOption(binding);
+        options.addOption(init);
         options.addOption(reentrant);
         options.addOption(rdfstar);
 
@@ -269,6 +272,17 @@ public class EmbeddedJettyServer extends ResourceConfig {
                 if (prop != null) {
                     try {
                         new Parameter().load(prop).process();
+                    } catch (Exception e) {
+                        logger.error(e);
+                    }
+                }
+            }
+            if (cmd.hasOption("init")) {
+                String prop = cmd.getOptionValue("init");
+                logger.info("init = " + prop);
+                if (prop != null) {
+                    try {
+                        Property.load(prop);
                     } catch (Exception e) {
                         logger.error(e);
                     }

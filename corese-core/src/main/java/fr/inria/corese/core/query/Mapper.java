@@ -295,8 +295,10 @@ public class Mapper {
     }
 
     public List<Node> toNodeList(Object obj) {
-        IDatatype dt = (IDatatype) obj;
-        List<Node> list = new ArrayList<Node>();
+        return toNodeList((IDatatype) obj);
+    }
+    public List<Node> toNodeList(IDatatype dt) {
+        List<Node> list = new ArrayList<>();
         if (dt.isList()) {
             for (IDatatype dd : dt.getValues()) {
                 if (dd.isXMLLiteral() && dd.getLabel().startsWith("http://")) {

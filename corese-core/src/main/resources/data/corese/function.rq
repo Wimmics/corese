@@ -1,0 +1,4 @@
+@public @before 
+function us:before(q) {
+    xt:print("@before", xt:ast(q))
+}

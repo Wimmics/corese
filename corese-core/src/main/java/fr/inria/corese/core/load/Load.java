@@ -34,6 +34,7 @@ import fr.inria.corese.core.workflow.SemanticWorkflow;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.api.Log;
 import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.rule.RuleEngine;
@@ -87,6 +88,7 @@ public class Load
     
     int maxFile = Integer.MAX_VALUE;
     Graph graph;
+    private DataManager dataManager;
     Log log;
     RuleEngine engine;
     QueryEngine qengine;
@@ -114,6 +116,10 @@ public class Load
      */
     public static void setDefaultGraphValue(boolean b) {
         DEFAULT_GRAPH = b;
+    }
+    
+    public static boolean isDefaultGraphValue() {
+        return DEFAULT_GRAPH;
     }
 
     Load(Graph g) {
@@ -149,24 +155,18 @@ public class Load
     
     public void setLimit(int max) {
         limit = max;
-//        if (build != null) {
-//            build.setLimit(limit);
-//        }
     }
 
     void set(Graph g) {
         graph = g;
         log = g.getLog();
-        loaded = new HashMap<String, String>();
-        //build = BuildImpl.create(graph, this);
+        loaded = new HashMap<>();
     }
 
     public void reset() {
-        //COUNT = 0;
     }
 
     public void exclude(String ns) {
-        //build.exclude(ns);
         getExclude().add(ns);
     }
     
@@ -513,7 +513,8 @@ public class Load
 
         Reader read = null;
         InputStream stream = null;
-
+        int myFormat = (requiredFormat == UNDEF_FORMAT)?expectedFormat:requiredFormat;
+        
         try {
             if (NSManager.isResource(path)){
                 stream = getResourceStream(path);
@@ -522,15 +523,33 @@ public class Load
             else if (isURL(path)) {
                 URL url = new URL(path);
                 URLConnection c = url.openConnection();
-                if (requiredFormat != UNDEF_FORMAT) {
-                    c.setRequestProperty("Accept", LoadFormat.getFormat(requiredFormat));
+                if (myFormat != UNDEF_FORMAT) {
+                    String testFormat = LoadFormat.getFormat(myFormat);
+                    if (testFormat != null) {
+                        //System.out.println("format: " + testFormat);
+                        c.setRequestProperty(ACCEPT, testFormat);
+                    }
+                    else {
+                        //System.out.println("format: all" );
+                        c.setRequestProperty(ACCEPT, ALL_FORMAT_STR);
+                    }
+                }               
+                else {
+                    //System.out.println("format: all" );
+                    c.setRequestProperty(ACCEPT, ALL_FORMAT_STR);
                 }
-                String contentType = c.getContentType();
+                //System.out.println("content: " + c.getContentType() + " " + myFormat);
                 stream = c.getInputStream();
+                String contentType = c.getContentType();
                 read = reader(stream);
-                if ((expectedFormat == UNDEF_FORMAT || requiredFormat != UNDEF_FORMAT) && contentType != null) {
-                    expectedFormat = getTypeFormat(contentType, expectedFormat);
+//                if ((expectedFormat == UNDEF_FORMAT || requiredFormat != UNDEF_FORMAT) && contentType != null) {
+//                    expectedFormat = getTypeFormat(contentType, expectedFormat);
+//                }
+                if (contentType!=null) {
+                    myFormat = getTypeFormat(contentType, myFormat);
                 }
+                //System.out.println("load: " + contentType + " " + myFormat);
+
             } else {
                 read = new FileReader(path);
             }
@@ -549,7 +568,7 @@ public class Load
             name = base;
         }
         
-        synLoad(read, path, base, name, expectedFormat);
+        synLoad(read, path, base, name, myFormat); //expectedFormat);
 
         close(stream);
     }
@@ -623,6 +642,9 @@ public class Load
     }
 
     void synLoad(Reader stream, String path, String base, String name, int format) throws LoadException {
+        if (isReadLocked()) {
+            throw new LoadException(new EngineException("Read lock while parsing: " + path));
+        }
         try {
             lock();
             parse(stream, path, base, name, format);            
@@ -702,6 +724,10 @@ public class Load
         return graph.writeLock();
     }
     
+    boolean isReadLocked() {
+        return graph.isReadLocked();
+    }
+    
     void loadWorkflow(Reader read, String path) throws LoadException{
         WorkflowParser wp = new WorkflowParser();
         try {
@@ -739,6 +765,7 @@ public class Load
         build.exclude(getExclude());
         build.setSource(name);
         build.setPath(path);
+        build.setDataManager(getDataManager());
         IDatatype dt = DatatypeMap.newResource(path);
         boolean b = true;
         if (isEvent()) {
@@ -776,6 +803,7 @@ public class Load
         cr.setRenameBlankNode(renameBlankNode);
         cr.setLimit(limit);
         cr.exclude(getExclude());
+        cr.setDataManager(getDataManager());
         cr.start();
         IDatatype dt = DatatypeMap.newResource(path);
         boolean b = true; 
@@ -1315,6 +1343,14 @@ public class Load
      */
     public void setTransformer(boolean transformer) {
         this.transformer = transformer;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
     }
 
 }

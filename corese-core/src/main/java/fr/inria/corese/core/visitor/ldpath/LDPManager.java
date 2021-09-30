@@ -88,7 +88,7 @@ public class LDPManager {
         graph = load(path);
         QueryProcess exec = QueryProcess.create(graph);
         Mappings map = exec.query(query);
-        return (IDatatype) map.getValue("?list");       
+        return  map.getValue("?list");       
     }
     
     Graph load(String path) throws LoadException {

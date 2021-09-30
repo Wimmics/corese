@@ -52,6 +52,7 @@ public class NSManager extends ASTObject {
     public static final String FPPN = "ftp://ftp-sop.inria.fr/wimmics/soft/pprint/";
     public static final String XSD = RDFS.XSD;
     public static final String XSI = "http://www.w3.org/2001/XMLSchema-instance#";
+    public static final String OWL_RL_PROFILE = "http://www.w3.org/ns/owl-profile/RL";
     public static final String XML = fr.inria.corese.sparql.datatype.RDF.XML;
     public static final String RDF = RDFS.RDF;
     public static final String RDFS_NS = RDFS.RDFS;
@@ -135,14 +136,14 @@ public class NSManager extends ASTObject {
     public static final String HASH = "#";
     static final String NL = System.getProperty("line.separator");
     static final char[] END_CHAR = {'#', '/', '?'}; //, ':'}; // may end an URI ...
-    static final String[] PB_CHAR_NAME = {"\u2013", ":", "#", "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
+    static final String[] PB_CHAR_NAME = {".", "\u2013", ":", "#", "(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
     static final String[] PB_CHAR_URI = {"(", ")", "'", "\"", ",", ";", "[", "]", "{", "}", "?", "&"};
     static final String pchar = ":";
     int count = 0;
-    static final NSManager nsm = create();
+    static final NSManager nsm ;
     static final HashMap<String, Boolean> number;
 
-    HashMap<String, String> def; // system namespace with prefered prefix
+    static HashMap<String, String> def; // system namespace with prefered prefix
     HashMap<String, Integer> index;  // namespace -> number
     HashMap<String, String> tns;     // namespace -> prefix
     HashMap<String, String> tprefix; // prefix -> namespace
@@ -160,6 +161,8 @@ public class NSManager extends ASTObject {
     static {
         number = new HashMap<>();
         number();
+        define();
+        nsm = create();
     }
     
     // for pretty printing without ^^datatype
@@ -172,12 +175,11 @@ public class NSManager extends ASTObject {
     }
 
     private NSManager() {
-        def = new HashMap<>();
         tprefix = new HashMap<>();
         tns = new HashMap<>();
         index = new HashMap<>();
         trecord = new HashMap<>();
-        define();
+        //define();
     }
 
     private NSManager(String defaultNamespaces) {
@@ -269,8 +271,9 @@ public class NSManager extends ASTObject {
         }
     }
 
-    // default system namespaces, not for application namespace
-    void define() {
+    // default predefined namespaces
+    static void define() {
+        def = new HashMap<>();        
         def.put(RDFS.XML, RDFS.XMLPrefix);
         def.put(RDFS.RDF, RDFS.RDFPrefix);
         def.put(RDFS.RDFS, RDFS.RDFSPrefix);
@@ -323,8 +326,8 @@ public class NSManager extends ASTObject {
 
     // add default namespaces
     void initDefault() {
-        for (String ns : def.keySet()) {
-            defNamespace(ns, def.get(ns));
+        for (String ns : getDefaultNS().keySet()) {
+            defNamespace(ns, getDefaultNS().get(ns));
         }
         defPrefix("xsh", SHACL);
     }
@@ -354,8 +357,8 @@ public class NSManager extends ASTObject {
     }
 
     String makePrefix(String ns) {
-        if (def.get(ns) != null) {
-            return def.get(ns);
+        if (getDefaultNS().get(ns) != null) {
+            return getDefaultNS().get(ns);
         } else {
             return createPrefix(seed);
         }
@@ -945,6 +948,14 @@ public class NSManager extends ASTObject {
     public NSManager setRecord(boolean record) {
         this.record = record;
         return this;
+    }
+    
+    static HashMap<String, String> getDefaultNS() {
+        return def;
+    }
+    
+    public static void defineDefaultPrefix(String p, String ns) {
+        def.put(ns, p);
     }
 
 }

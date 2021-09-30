@@ -43,7 +43,7 @@ public class MappingComparator {
 
 	// target value of a Node
 	IDatatype datatype(Node n){
-		return (IDatatype) n.getValue();
+		return  n.getValue();
 	}
 
 

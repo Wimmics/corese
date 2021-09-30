@@ -117,7 +117,7 @@ public class ExtendGraph {
     IDatatype engine(Producer p, Expr exp, Environment env) {
         Graph g = getGraph(p);
         Node q = g.getContext().getRuleEngineNode();
-        return (IDatatype) q.getDatatypeValue();
+        return  q.getDatatypeValue();
     }
     
     IDatatype visited(Producer p, Expr exp, Environment env) {
@@ -132,7 +132,7 @@ public class ExtendGraph {
      IDatatype record(Producer p, Expr exp, Environment env) {
         Graph g = getGraph(p);
         Node q = g.getContext().getRecordNode();       
-        return (IDatatype) q.getDatatypeValue();
+        return  q.getDatatypeValue();
     }
    
     IDatatype query(Producer p, Expr exp, Environment env, IDatatype dt) {
@@ -147,7 +147,7 @@ public class ExtendGraph {
         if (q == null){
             q = create("query", env.getQuery(), IDatatype.QUERY);
         }
-        return (IDatatype) q.getDatatypeValue();
+        return  q.getDatatypeValue();
     }
 
     

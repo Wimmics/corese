@@ -1,5 +1,6 @@
 module fr.inria.corese.sparql {
-	requires fr.inria.corese.kgram;
+	//requires fr.inria.corese.kgram;
+	requires java.desktop;
 	requires org.slf4j;
 	requires java.sql;
 	requires org.json;
@@ -7,6 +8,16 @@ module fr.inria.corese.sparql {
 	requires transitive rdf4j.model.api;
 	requires transitive rdf4j.model;
 	requires transitive rdf4j.model.vocabulary;
+        
+        exports fr.inria.corese.kgram.core;
+	exports fr.inria.corese.kgram.api.core;
+	exports fr.inria.corese.kgram.api.query;
+	exports fr.inria.corese.kgram.filter;
+	exports fr.inria.corese.kgram.event;
+	exports fr.inria.corese.kgram.tool;
+	exports fr.inria.corese.kgram.sorter.core;
+	exports fr.inria.corese.kgram.path;
+	exports fr.inria.corese.kgram.sorter.impl.qpv1;
 
 	exports fr.inria.corese.sparql.triple.parser;
 	exports fr.inria.corese.sparql.triple.parser.visitor;

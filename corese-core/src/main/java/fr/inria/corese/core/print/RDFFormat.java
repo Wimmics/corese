@@ -89,7 +89,7 @@ public class RDFFormat {
     }
 
     static ASTQuery getAST(Query q) {
-        return (ASTQuery) q.getAST();
+        return  q.getAST();
     }
 
     RDFFormat(Mapping m, NSManager n) {
@@ -360,7 +360,7 @@ public class RDFFormat {
     }
 
     IDatatype getValue(Node node) {
-        return (IDatatype) node.getValue();
+        return  node.getValue();
     }
 
     void display(String mes, Object obj) {

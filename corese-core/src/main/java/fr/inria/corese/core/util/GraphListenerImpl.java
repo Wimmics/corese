@@ -128,7 +128,7 @@ public class GraphListenerImpl implements GraphListener {
 		if (at.isVariable() || at.isBlank() || at.isBlankNode()){
 			return true;
 		}
-		IDatatype dt = (IDatatype) n.getValue();
+		IDatatype dt =  n.getValue();
 		try {
 			return at.getDatatypeValue().equalsWE(dt);
 		} catch (CoreseDatatypeException e) {

@@ -1,6 +1,5 @@
 package fr.inria.corese.compiler.parser;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.Atom;
@@ -84,7 +83,7 @@ public class NodeImpl implements Node {
     }
     
     public IDatatype getValue(Node n) {
-        return (IDatatype) n.getValue();    
+        return  n.getValue();    
     }
 
     @Override
@@ -92,13 +91,7 @@ public class NodeImpl implements Node {
         return atom.getDatatypeValue();
     }
     
-    @Override
-    public void setDatatypeValue(DatatypeValue dt) {
-        if (dt instanceof IDatatype) {
-            setDatatypeValue((IDatatype)dt);
-        }
-    }
-    
+    @Override   
     public void setDatatypeValue(IDatatype dt) {
         atom = Constant.create(dt);
     }
@@ -128,13 +121,11 @@ public class NodeImpl implements Node {
 
     @Override
     public int getIndex() {
-        // TODO Auto-generated method stub
         return index;
     }
 
     @Override
     public String getLabel() {
-        // TODO Auto-generated method stub
         if (atom.isResource()) {
             return atom.getLongName();
         }
@@ -143,19 +134,16 @@ public class NodeImpl implements Node {
 
     @Override
     public boolean isConstant() {
-        // TODO Auto-generated method stub
         return atom.isConstant();
     }
 
     @Override
     public boolean isVariable() {
-        // TODO Auto-generated method stub
         return atom.isVariable(); //&& ! atom.getVariable().isBlankNode();
     }
 
     @Override
     public boolean isBlank() {
-        // TODO Auto-generated method stub
         return atom.isBlank() || (isVariable() && atom.getVariable().isBlankNode());
     }
 

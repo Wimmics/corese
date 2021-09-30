@@ -115,7 +115,7 @@ public class Transformer implements TransformProcessor {
     private static String NL = System.getProperty("line.separator");
     private static boolean isOptimizeDefault = false;
     private static boolean isExplainDefault = false;
-
+    public static boolean DEFAULT_DEBUG = false;
     public static int count = 0;
     static HashMap<String, Boolean> dmap;
     private TemplateVisitor visitor;
@@ -135,7 +135,7 @@ public class Transformer implements TransformProcessor {
     String sepTemplate = NL;
     // separator of several results of one template
     String sepResult = " ";
-    boolean isDebug = false;
+    boolean isDebug = DEFAULT_DEBUG;
     private boolean isTrace = false;
     private boolean isDetail = false;
     private IDatatype EMPTY;
@@ -574,6 +574,10 @@ public class Transformer implements TransformProcessor {
         isDebug = b;
     }
     
+     public static void setDefaultDebug(boolean b) {
+        DEFAULT_DEBUG = b;
+    }
+    
     void setDebug(String name) {
         for (String key : dmap.keySet()) {
             if (name.startsWith(key)){
@@ -793,7 +797,7 @@ public class Transformer implements TransformProcessor {
     }
     
     ASTQuery ast(Query q) {
-        return (ASTQuery) q.getAST();
+        return  q.getAST();
     }
     
     NSManager nsm(Query q) {
@@ -830,7 +834,7 @@ public class Transformer implements TransformProcessor {
     }
 
     public IDatatype process(Node node) throws EngineException {
-        return process((IDatatype) node.getValue());
+        return process( node.getValue());
     }
 
     public IDatatype process(IDatatype dt) throws EngineException {
@@ -1102,7 +1106,7 @@ public class Transformer implements TransformProcessor {
     }
 
     IDatatype datatype(Node n) {
-        return (IDatatype) n.getDatatypeValue();
+        return  n.getDatatypeValue();
     }
 
     private List<Query> getTemplates(String temp, IDatatype dt) {
@@ -1161,7 +1165,7 @@ public class Transformer implements TransformProcessor {
             logger.error(ex.getMessage());
             return EMPTY;
         }
-        return (IDatatype) node.getDatatypeValue();
+        return  node.getDatatypeValue();
     }
 
     boolean contains(Query q) {
@@ -1393,7 +1397,7 @@ public class Transformer implements TransformProcessor {
        
     void checkFunction(fr.inria.corese.compiler.parser.Transformer tr, Query q, Level level) throws LoadException  {
         try {
-            ASTQuery ast = (ASTQuery) q.getAST();
+            ASTQuery ast =  q.getAST();
             tr.getFunctionCompiler().undefinedFunction(q, ast, level);
         } catch (EngineException ex) {
             throw new LoadException(ex);
@@ -1431,7 +1435,7 @@ public class Transformer implements TransformProcessor {
             if (q.hasPragma(Pragma.FILE)) {
                 System.out.println(name(q));
             }
-            ASTQuery ast = (ASTQuery) q.getAST();
+            ASTQuery ast =  q.getAST();
             System.out.println(ast);
         }
     }
@@ -1498,25 +1502,6 @@ public class Transformer implements TransformProcessor {
         this.isTrace = isTrace;
     }
 
-    /**
-     * Load additional RDF into QueryProcess
-     */
-//    public void load(String uri) {
-//        if (loaded.containsKey(uri)) {
-//            return;
-//        } else {
-//            loaded.put(uri, uri);
-//        }
-//        Graph g = Graph.create();
-//        Load load = Load.create(g);
-//        try {
-//            load.parse(uri, Load.TURTLE_FORMAT);
-//            g.init();
-//            exec.add(g);
-//        } catch (LoadException ex) {
-//            logger.error(ex.getMessage());
-//        }
-//    }
 
     /**
      * @return the hasDefault
@@ -1591,7 +1576,7 @@ public class Transformer implements TransformProcessor {
      * query and calling transformer (if any)
      */
     public void complete(Query q, Transformer ct) {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         Context c = getContext(q, ct);
         if (c != null) {
             // inherit context exported properties:

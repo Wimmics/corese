@@ -486,7 +486,7 @@ public class Entailment implements Engine {
      */
     void infer(Node gNode, Edge edge, List<Node> list, int i) {
         Node node = edge.getNode(i);
-        IDatatype dt = (IDatatype) node.getValue();
+        IDatatype dt =  node.getValue();
 
         if (i == 1 && dt.isLiteral()) {
             return;
@@ -897,7 +897,7 @@ public class Entailment implements Engine {
                 isDatatype = DatatypeMap.isDatatype(range);
             }
             for (Edge ent : graph.getEdges(prop)) {
-                IDatatype dt = (IDatatype) ent.getNode(1).getValue();
+                IDatatype dt =  ent.getNode(1).getValue();
                 if (range == null) {
                     if (DatatypeMap.isUndefined(dt)) {
                         logger.warn("Datatype error: " + dt);

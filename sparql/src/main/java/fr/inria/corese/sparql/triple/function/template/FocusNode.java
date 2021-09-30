@@ -34,7 +34,7 @@ public class FocusNode extends TemplateFunction {
         if (node == null) {
             return null;
         }
-        return (IDatatype) node.getValue();
+        return  node.getValue();
     }
    
 }

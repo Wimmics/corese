@@ -15,6 +15,9 @@ public class QuerySolverVisitorTransformerUser extends QuerySolverVisitorTransfo
     
     public QuerySolverVisitorTransformerUser(Transformer t, Eval e) { super(t, e); }
     
+    public QuerySolverVisitorTransformerUser(Eval e) { super(e); }
+
+    
     @Override
     public IDatatype afterTransformer(String uri, String res) {
         System.out.println("User defined transformer: " + uri);

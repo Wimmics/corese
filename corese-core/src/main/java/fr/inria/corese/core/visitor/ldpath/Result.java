@@ -167,9 +167,9 @@ public class Result {
     void result(int i, ASTQuery ast, Mapping map) throws IOException {
         List<Constant> path1 = path(ast);
         List<Constant> path2 = empty;
-        IDatatype dtp = (IDatatype) map.getValue(AST.PROPERTY_VAR);
-        IDatatype dtg = (IDatatype) map.getValue(AST.GRAPH2_VAR);
-        IDatatype dtu = (IDatatype) map.getValue(AST.SERVICE_VAR);
+        IDatatype dtp =  map.getValue(AST.PROPERTY_VAR);
+        IDatatype dtg =  map.getValue(AST.GRAPH2_VAR);
+        IDatatype dtu =  map.getValue(AST.SERVICE_VAR);
         Constant type = type(ast);
         Constant uri  = (dtu==null)?null:Constant.create(dtu);
         
@@ -296,10 +296,10 @@ public class Result {
     
     
     void slot(StringBuilder sb, Mapping m) {
-        IDatatype ddt = (IDatatype) m.getValue(AST.DATATYPE_VAR);
+        IDatatype ddt =  m.getValue(AST.DATATYPE_VAR);
 
         for (String name : varList) {
-            IDatatype dd = (IDatatype) m.getValue(name);
+            IDatatype dd =  m.getValue(name);
             if (dd != null) {
                 String slot = map.get(name);
                 if (ddt == null && (slot.contains("min") || slot.contains("max") || slot.contains("avg"))) {
@@ -354,7 +354,7 @@ public class Result {
     }
 
     Constant getVariable(Mapping map, String name) {
-        IDatatype dt = (IDatatype) map.getValue(name);
+        IDatatype dt =  map.getValue(name);
         if (dt != null) {
             return Constant.create(dt);
         }

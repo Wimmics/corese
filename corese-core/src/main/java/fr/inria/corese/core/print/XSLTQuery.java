@@ -105,7 +105,7 @@ public class XSLTQuery {
 		try {
 			Mappings map = exec.query(query);
 			Query q = map.getQuery();
-			ASTQuery ast = (ASTQuery) q.getAST();
+			ASTQuery ast =  q.getAST();
 			
 			String str = null;
 			if (q.isConstruct() && map.getGraph()!=null){

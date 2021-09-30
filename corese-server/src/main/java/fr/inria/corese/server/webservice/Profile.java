@@ -486,7 +486,7 @@ public class Profile {
     }
     
     IDatatype getValue(Mapping m, String var) {
-        return (IDatatype) m.getValue(var);
+        return  m.getValue(var);
     }
     
     /**
@@ -529,7 +529,7 @@ public class Profile {
             if (s.getParam() == null){
                 s.setParam(new Context());
             }
-            s.getParam().set(Context.STL_WORKFLOW, (IDatatype) sw.getValue());
+            s.getParam().set(Context.STL_WORKFLOW,  sw.getValue());
         }
         services.put(prof.getLabel(), s);
     }

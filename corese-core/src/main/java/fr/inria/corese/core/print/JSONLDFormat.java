@@ -74,7 +74,7 @@ public class JSONLDFormat {
     }
 
     JSONLDFormat(Graph g, Query q) {
-        this(((ASTQuery) q.getAST()).getNSM());
+        this(q.getAST().getNSM());
         if (g != null) {
             graph = g;
             //graph.prepare();
@@ -101,7 +101,7 @@ public class JSONLDFormat {
         Graph g = (Graph) map.getGraph();
         if (g != null) {
             Query q = map.getQuery();
-            NSManager nsm = ((ASTQuery) q.getAST()).getNSM();
+            NSManager nsm =  q.getAST().getNSM();
             return create(g, nsm);
         }
         return create(Graph.create());
@@ -240,7 +240,7 @@ public class JSONLDFormat {
     private JSONLDObject subjectId(Node node) {
         JSONLDObject jo = new JSONLDObject(KW_ID);
 
-        IDatatype dt = (IDatatype) node.getValue();
+        IDatatype dt =  node.getValue();
         String subject = dt.isBlank() ? dt.getLabel() : nsm.toPrefixURI(dt.getLabel());
         subject = filter(subject);
 
@@ -278,7 +278,7 @@ public class JSONLDFormat {
             Object obj = null;
 
             //2. get object
-            IDatatype dt = (IDatatype) edge.getNode(1).getValue();
+            IDatatype dt =  edge.getNode(1).getValue();
             if (dt.isLiteral()) {//2.1 literal
                 IDatatype datatype = dt.getDatatype();
                 IDatatype lang = dt.getDataLang();

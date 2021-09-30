@@ -40,7 +40,7 @@ public class DataProducer extends GraphObject
     Iterator<Edge> it;
     EdgeTop glast;
     Edge last;
-    Graph graph;
+    private Graph graph;
     private DataFilter filter;
     DataFrom from;
     boolean isNamedGraph;
@@ -58,11 +58,11 @@ public class DataProducer extends GraphObject
     }
       
     public DataProducer iterate() {
-        return iterate(graph.getTopProperty());
+        return iterate(getGraph().getTopProperty());
     }
 
     public DataProducer iterate(Node predicate) {
-        setIterable(graph.getEdges(predicate));
+        setIterable(getGraph().getEdges(predicate));
         return this;
     }
 
@@ -71,9 +71,10 @@ public class DataProducer extends GraphObject
     }
     
     public DataProducer iterate(Node node, int n) {
-        return iterate(graph.getTopProperty(), node, n);
+        return iterate(getGraph().getTopProperty(), node, n);
     }
 
+    //@Override
     public DataProducer iterate(Node predicate, Node node, int n) {
         // optimize special cases
         if (isNamedGraph) {
@@ -94,12 +95,45 @@ public class DataProducer extends GraphObject
         } 
 
         // general case
-        setIterable(graph.properGetEdges(predicate, node, n));
+        setIterable(getGraph().properGetEdges(predicate, node, n));
         return this;
+    }
+    
+    /**
+     * @Pragma: this is getDefault() DataProducer 
+     * for testing external graph DataManager
+     * It is not used in standard corese
+     */
+    @Override
+    public DataProducer getEdgeList(Node subject, Node predicate, Node object, List<Node> from) {
+        if (from == null || from.isEmpty()) {
+            return iterate(value(subject), value(predicate), value(object));
+        } else {
+            return getGraph().getDataStore().getDefault(from)
+                    .iterate(value(subject), value(predicate), value(object));
+        }
+    }
+    
+    /**
+     * DataManagerUpdate implementation for testing purpose
+     * Not used by standard corese
+     */
+    @Override
+    public Edge insert(Edge edge) {
+        System.out.println("insert ext: " + edge);
+        Edge res = getGraph().addEdgeWithTargetNode(edge);
+        return res;
+    }
+    
+    IDatatype value(Node n) {
+        if (n == null) {
+            return null;
+        }
+        return  n.getDatatypeValue();
     }
      
     DataProducer empty(){
-        setIterable(new ArrayList<Edge>(0));
+        setIterable(new ArrayList<>(0));
         return this; 
     } 
     
@@ -120,14 +154,14 @@ public class DataProducer extends GraphObject
     public DataProducer iterate(IDatatype s, IDatatype p, IDatatype o) {
         Node ns = null, np, no = null;
         if (p == null) { 
-            np = graph.getTopProperty();
+            np = getGraph().getTopProperty();
         }
         else if (p.isBlank()){
             // check whether bnode is a graph bnode
-            np = graph.getNode(p);
+            np = getGraph().getNode(p);
             if (np == null) {
                 // not graph bnode, it is a joker
-                np = graph.getTopProperty();
+                np = getGraph().getTopProperty();
             }
             else {
                 // graph bnode, it cannot be a property
@@ -135,19 +169,19 @@ public class DataProducer extends GraphObject
             }
         }
         else {
-            np = graph.getPropertyNode(p);
+            np = getGraph().getPropertyNode(p);
             if (np == null){
                 return empty();
             }
         }
         if (s != null){
-            ns = graph.getNode(s);
+            ns = getGraph().getNode(s);
             if (ns == null && ! s.isBlank()){
                 return empty();
             }
         }        
         if (o != null){
-            no = graph.getNode(o);
+            no = getGraph().getNode(o);
             if (no == null && ! o.isBlank()){
                  return empty();
             }
@@ -211,9 +245,9 @@ public class DataProducer extends GraphObject
         MetaIterator<Edge> meta = new MetaIterator<Edge>();
 
         for (Node src : from) {
-            Node tfrom = graph.getGraphNode(src.getLabel());
+            Node tfrom = getGraph().getGraphNode(src.getLabel());
             if (tfrom != null) {
-                Iterable<Edge> it = graph.getEdges(predicate, tfrom, Graph.IGRAPH);
+                Iterable<Edge> it = getGraph().getEdges(predicate, tfrom, Graph.IGRAPH);
                 if (it != null) {
                     meta.next(it);
                 }
@@ -269,7 +303,7 @@ public class DataProducer extends GraphObject
     
     public DataFrom getCreateDataFrom(){
         if (from == null){
-            from = new DataFrom(graph);
+            from = new DataFrom(getGraph());
             setFilter(from);
         }
         return from;
@@ -295,7 +329,7 @@ public class DataProducer extends GraphObject
             dt.getList().sort();
             return fromList(dt.getValueList());
         }
-        Node g = graph.getNode(dt, false, false);
+        Node g = getGraph().getNode(dt, false, false);
         return (g==null)?this:from(g);
     }
     
@@ -303,7 +337,7 @@ public class DataProducer extends GraphObject
         if (list != null && ! list.isEmpty()){
             ArrayList<Node> nodeList = new ArrayList<>();
             for (IDatatype dt : list) {
-                Node node = graph.getNode(dt, false, false);
+                Node node = getGraph().getNode(dt, false, false);
                 if (node != null) {
                     nodeList.add(node);
                 }
@@ -368,7 +402,7 @@ public class DataProducer extends GraphObject
         ArrayList<IDatatype> list = new ArrayList<>();
         for (Edge edge : this) {
             if (edge != null) {
-                list.add((IDatatype) edge.getNode(n).getDatatypeValue());
+                list.add( edge.getNode(n).getDatatypeValue());
             }
         }
         return DatatypeMap.newList(list);
@@ -390,7 +424,7 @@ public class DataProducer extends GraphObject
         ArrayList<IDatatype> list = new ArrayList<>();
         for (Edge edge : this) {
             if (edge != null) {
-                list.add(DatatypeMap.createObject(graph.getEdgeFactory().copy(edge)));
+                list.add(DatatypeMap.createObject(getGraph().getEdgeFactory().copy(edge)));
             }
         }
         return DatatypeMap.newInstance(list);
@@ -403,7 +437,7 @@ public class DataProducer extends GraphObject
             for (Edge edge : this) {
                 if (i++ == n) {
                     if (edge != null) {
-                        IDatatype dt = DatatypeMap.createObject(graph.getEdgeFactory().copy(edge));
+                        IDatatype dt = DatatypeMap.createObject(getGraph().getEdgeFactory().copy(edge));
                         return dt;
                     } 
                 }
@@ -486,7 +520,7 @@ public class DataProducer extends GraphObject
     
     Edge result(Edge edge) {
         if (isDuplicate()) {
-            return graph.getEdgeFactory().copy(edge);
+            return getGraph().getEdgeFactory().copy(edge);
         }
         return edge;
     }
@@ -500,7 +534,7 @@ public class DataProducer extends GraphObject
             // different properties: ok
             return true;
         }
-        if (graph.isMetadata()) {
+        if (getGraph().isMetadata()) {
             return metadataDifferent(last, edge);
         }
         if (skipEdgeMetadata) {
@@ -541,7 +575,7 @@ public class DataProducer extends GraphObject
     // record a copy of edge for last
     Edge duplicate(Edge edge) {
         if (glast == null) {
-            glast = graph.getEdgeFactory().createDuplicate(edge);
+            glast = getGraph().getEdgeFactory().createDuplicate(edge);
         }
         glast.duplicate(edge);
         return glast;
@@ -625,6 +659,14 @@ public class DataProducer extends GraphObject
     public DataProducer setDuplicate(boolean duplicate) {
         this.duplicate = duplicate;
         return this;
+    }
+
+    public Graph getGraph() {
+        return graph;
+    }
+
+    public void setGraph(Graph graph) {
+        this.graph = graph;
     }
     
 }

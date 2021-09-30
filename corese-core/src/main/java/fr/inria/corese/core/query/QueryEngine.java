@@ -104,7 +104,7 @@ public class QueryEngine implements Engine {
      */   
     void cleanContext(Query q) {
         q.setContext(null);
-        ((ASTQuery)q.getAST()).setContext(null);
+        q.getAST().setContext(null);
     }
 
     public void defQuery(Query q) {

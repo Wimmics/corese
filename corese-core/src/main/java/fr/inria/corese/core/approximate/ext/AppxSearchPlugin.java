@@ -151,7 +151,7 @@ public class AppxSearchPlugin implements ExprType {
             parameter = BaseAlgorithm.OPTION_URI;
         }
 
-        ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+        ASTQuery ast =  env.getQuery().getAST();
         //is approximate search
         //TRUE: only calculate once, does not compute the value of similarity
         //FALSE: need to compute the value of similarity

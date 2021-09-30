@@ -118,7 +118,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     @Override
     public void visit(fr.inria.corese.kgram.core.Query query) {
         query.setFederate(true);
-        ASTQuery ast = (ASTQuery) query.getAST();
+        ASTQuery ast =  query.getAST();
         ast.getLog().setAST(ast);
         exec.getLog().setAST(ast);
     }

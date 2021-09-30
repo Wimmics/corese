@@ -17,7 +17,7 @@ public class NodeGraph extends NodeImpl {
     }
     
     public NodeGraph(Node node, Node graph) {
-        this((IDatatype) node.getDatatypeValue());
+        this( node.getDatatypeValue());
         this.node = node;
         this.graph = graph;
     }

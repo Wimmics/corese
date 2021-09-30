@@ -1,6 +1,5 @@
 package fr.inria.corese.compiler.eval;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.Node;
@@ -54,7 +53,7 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
         // Visitor may be reused by let (?g = construct where)
         if (query == null) {
             query = q;
-            ast = (ASTQuery) q.getAST();
+            ast =  q.getAST();
             setSelect();
             initialize();
             execInit(q);
@@ -81,6 +80,7 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
         return callback(INIT_PARAM, toArray());        
     }
     
+    // called by corese gui -param processing by GraphEngine
     public IDatatype initServer(String uri) {
         return callback(INIT_SERVER, toArray(uri));
     } 
@@ -120,12 +120,12 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
     }
     
     @Override
-    public IDatatype beforeLoad(DatatypeValue path) {
+    public IDatatype beforeLoad(IDatatype path) {
         return callback(BEFORE_LOAD, toArray(path));
     }
 
     @Override
-    public IDatatype afterLoad(DatatypeValue path) {
+    public IDatatype afterLoad(IDatatype path) {
         return callback(AFTER_LOAD, toArray(path));
     }
     
@@ -140,7 +140,7 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
     }
     
     @Override
-    public IDatatype insert(DatatypeValue path, Edge edge) {
+    public IDatatype insert(IDatatype path, Edge edge) {
         return callback(INSERT, toArray(path, edge));
     }
     
@@ -262,7 +262,7 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
     }  
     
     @Override
-    public IDatatype bind(Eval eval, Node g, Exp e, DatatypeValue dt) { 
+    public IDatatype bind(Eval eval, Node g, Exp e, IDatatype dt) { 
         return callback(eval, BIND, toArray(g, e, dt));    
     } 
     
@@ -342,13 +342,13 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
     }
     
     @Override
-    public DatatypeValue select(Eval eval, Expr e, DatatypeValue dt) {       
+    public IDatatype select(Eval eval, Expr e, IDatatype dt) {       
         IDatatype val = callback(eval, SELECT, toArray(e, dt));
         return dt;
     }
     
     @Override
-    public DatatypeValue aggregate(Eval eval, Expr e, DatatypeValue dt) {       
+    public IDatatype aggregate(Eval eval, Expr e, IDatatype dt) {       
         IDatatype val = callback(eval, AGGREGATE, toArray(e, dt));
         return dt;
     }
@@ -356,25 +356,25 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
 
     
     @Override
-    public IDatatype error(Eval eval, Expr exp, DatatypeValue[] args) {
+    public IDatatype error(Eval eval, Expr exp, IDatatype[] args) {
         return  overload.error(eval, exp, (IDatatype[]) args);
     }
     
     @Override
-    public boolean overload(Expr exp, DatatypeValue res, DatatypeValue dt1, DatatypeValue dt2) {
+    public boolean overload(Expr exp, IDatatype res, IDatatype dt1, IDatatype dt2) {
         // prevent overload within overload
-        return ! isRunning() && overload.overload(exp, (IDatatype)res, (IDatatype)dt1, (IDatatype)dt2);
+        return ! isRunning() && overload.overload(exp, res, dt1, dt2);
     }
        
    @Override
-    public IDatatype overload(Eval eval, Expr exp, DatatypeValue res, DatatypeValue[] args) {
-        return overload.overload(eval, exp, (IDatatype) res, (IDatatype[]) args);
+    public IDatatype overload(Eval eval, Expr exp, IDatatype res, IDatatype[] args) {
+        return overload.overload(eval, exp,  res, (IDatatype[]) args);
     }   
     
     @Override
-    public int compare(Eval eval, int res, DatatypeValue dt1, DatatypeValue dt2) {
-        if (! isRunning() && overload.overload((IDatatype)dt1, (IDatatype)dt2)) {
-            return overload.compare(eval, res, (IDatatype)dt1, (IDatatype)dt2);
+    public int compare(Eval eval, int res, IDatatype dt1, IDatatype dt2) {
+        if (! isRunning() && overload.overload(dt1, dt2)) {
+            return overload.compare(eval, res, dt1, dt2);
         }
         return res;
     }

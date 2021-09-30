@@ -40,7 +40,7 @@ public class RDFResultFormat implements Graphable {
         sb.nl();
         sb.appendPNL("[] a rs:ResultSet");       
         Query q = getMappings().getQuery();
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         if (ast != null && ast.isAsk()){
             sb.append("rs:boolean ", getMappings().size() > 0);
             sb.appendNL(" .");

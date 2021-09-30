@@ -11,7 +11,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.HashMap;
 
 /**
@@ -628,7 +627,7 @@ public class EdgeManager implements Iterable<Edge> {
     }
     
     IDatatype getValue(Node n){
-        return (IDatatype) n.getValue();
+        return  n.getValue();
     }
 
     @Override

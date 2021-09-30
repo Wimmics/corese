@@ -30,7 +30,6 @@ public class Constant extends Atom {
 
     public static Constant rootProperty;
     private static Logger logger = LoggerFactory.getLogger(Constant.class);
-    private static NSManager nsm;
     static DatatypeMap dm;
     private static boolean stringDatatype = false;
     boolean isQName = false;
@@ -45,7 +44,6 @@ public class Constant extends Atom {
 
     static {
         dm = DatatypeMap.create();
-        nsm = NSManager.create();
         rootProperty = Constant.createResource(RDFS.RootPropertyURI);
     }
 
@@ -62,7 +60,7 @@ public class Constant extends Atom {
     private Constant(String name, String datatype, String lg) {
         super(name);
         this.datatype = datatype;
-        setDatatypeValue(DatatypeMap.createLiteral(name, nsm.toNamespace(datatype), lg));
+        setDatatypeValue(DatatypeMap.createLiteral(name, nsm().toNamespace(datatype), lg));
     }
 
     private Constant(String name, String dt) {
@@ -90,7 +88,7 @@ public class Constant extends Atom {
 
     public static Constant createResource(String str) {
         Constant cst = new Constant(str);
-        cst.setLongName(nsm.toNamespace(str));
+        cst.setLongName(nsm().toNamespace(str));
         cst.setDatatypeValue(DatatypeMap.createResource(cst.getLongName()));
         return cst;
     }
@@ -318,7 +316,7 @@ public class Constant extends Atom {
     }
 
     static String getJavaType(String datatypeURI) {
-        return dm.getJType(nsm.toNamespace(datatypeURI));
+        return dm.getJType(nsm().toNamespace(datatypeURI));
     }
 
     @Override
@@ -340,7 +338,7 @@ public class Constant extends Atom {
         if (dt.isLiteral()) {
             cst = create(dt.getLabel(), dt.getDatatype().getLabel(), dt.getLang());
         } else if (dt.isURI()) {
-            cst = createResource(nsm.toPrefix(dt.getLabel(), true), dt.getLabel());
+            cst = createResource(nsm().toPrefix(dt.getLabel(), true), dt.getLabel());
             //cst.setQName(! cst.getName().equals(cst.getLongName()));
         } else {
             cst = createBlank(dt.getLabel());
@@ -536,6 +534,10 @@ public class Constant extends Atom {
      */
     public void setNativeDatatype(boolean nativeDatatype) {
         this.nativeDatatype = nativeDatatype;
+    }
+    
+    static NSManager nsm() {
+        return NSManager.nsm();
     }
  
 

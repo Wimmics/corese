@@ -48,7 +48,7 @@ public class JSOND3Format extends RDFFormat {
         Graph g = (Graph) map.getGraph();
         if (g != null) {
             Query q = map.getQuery();
-            NSManager nsm = ((ASTQuery) q.getAST()).getNSM();
+            NSManager nsm = q.getAST().getNSM();
             return create(g, nsm);
         }
         return create(Graph.create());
@@ -62,7 +62,7 @@ public class JSOND3Format extends RDFFormat {
         Graph g = (Graph) map.getGraph();
         if (g != null) {
             Query q = map.getQuery();
-            NSManager nsm = ((ASTQuery) q.getAST()).getNSM();
+            NSManager nsm = q.getAST().getNSM();
             JSOND3Format t = new JSOND3Format(g, nsm);
             t.setGraph(isGraph);
             return t;

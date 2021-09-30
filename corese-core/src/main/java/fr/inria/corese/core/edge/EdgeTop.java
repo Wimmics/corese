@@ -61,6 +61,11 @@ public abstract class EdgeTop extends GraphObject implements Edge {
 
     public void setEdgeNode(Node pred) {
     }
+    
+    @Override
+    public void setProperty(Node pred) {
+        setEdgeNode(pred);
+    }
 
     @Override
     public Node getProperty() {
@@ -117,7 +122,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     }
 
     IDatatype nodeValue(Node n) {
-        return (IDatatype) n.getDatatypeValue();
+        return  n.getDatatypeValue();
     }
 
     @Override

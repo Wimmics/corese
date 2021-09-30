@@ -464,7 +464,7 @@ public final class MyJPanelQuery extends JPanel {
 
 
     private String getLabel(NSManager nsm, fr.inria.corese.kgram.api.core.Node n) {
-        IDatatype dt = (IDatatype) n.getValue();
+        IDatatype dt =  n.getValue();
         if (dt.isURI()){
             return nsm.toPrefix(n.getLabel());
         }
@@ -554,7 +554,7 @@ public final class MyJPanelQuery extends JPanel {
                 fr.inria.corese.kgram.api.core.Node value = m.getNode(columnName);
                 
                 if (value != null) {
-                    IDatatype dt = (IDatatype) value.getValue();
+                    IDatatype dt =  value.getValue();
                     colmunData[j] = pretty(dt);
                 }
             }

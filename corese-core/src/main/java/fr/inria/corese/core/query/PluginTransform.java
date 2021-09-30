@@ -147,7 +147,7 @@ public class PluginTransform implements ComputerProxy {
             throws EngineException {
         try {
             Query q = env.getQuery();
-            ASTQuery ast = (ASTQuery) q.getAST();
+            ASTQuery ast =  q.getAST();
             String transform = getTrans(uri);
             Transformer t = (Transformer) q.getTransformer(transform);
 

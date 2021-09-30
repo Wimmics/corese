@@ -60,13 +60,13 @@ public class ClassHierarchy extends DatatypeHierarchy {
     * TODO: store the list in HashMap
     */
     @Override
-    public List<String> getSuperTypes(DatatypeValue object, DatatypeValue type) {
+    public List<String> getSuperTypes(IDatatype object, IDatatype type) {
         List<String> list;
         if (type == null){
-            list = getSuperTypes((IDatatype) object, queryObject);
+            list = getSuperTypes( object, queryObject);
         }
         else {
-            list = getSuperTypes((IDatatype) type, queryClass);
+            list = getSuperTypes( type, queryClass);
         }
         if (list.isEmpty()){
             return super.getSuperTypes(object, type);
@@ -92,7 +92,7 @@ public class ClassHierarchy extends DatatypeHierarchy {
         try {
             Mapping m = getMapping(X, val);
             Mappings map = exec.query(query, m);
-            IDatatype dt = (IDatatype) map.getValue(LIST);
+            IDatatype dt =  map.getValue(LIST);
             return getList(dt);
         } catch (EngineException ex) {
             Logger.getLogger(ClassHierarchy.class.getName()).log(Level.SEVERE, null, ex);

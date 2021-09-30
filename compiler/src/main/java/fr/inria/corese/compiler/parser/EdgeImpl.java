@@ -10,6 +10,7 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.core.PointerObject;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.Atom;
@@ -84,8 +85,8 @@ public class EdgeImpl extends PointerObject implements Edge {
     }
 
     @Override
-    public Iterable<DatatypeValue> getLoop() {
-        ArrayList<DatatypeValue> list = new ArrayList();
+    public Iterable<IDatatype> getLoop() {
+        ArrayList<IDatatype> list = new ArrayList();
         for (int i = 0; i <= nodes.size(); i++) {
             list.add(getValue(null, i));
         }
@@ -98,7 +99,7 @@ public class EdgeImpl extends PointerObject implements Edge {
     }
 
     @Override
-    public DatatypeValue getValue(String var, int n) {
+    public IDatatype getValue(String var, int n) {
         switch (n) {
             case 0:
                 return getNode(0).getDatatypeValue();

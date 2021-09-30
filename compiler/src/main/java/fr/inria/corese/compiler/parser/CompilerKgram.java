@@ -35,20 +35,15 @@ public class CompilerKgram implements ExpType, Compiler {
     ASTQuery ast;
     EdgeImpl edge;
     Node node;
-    //boolean test = false;
 
     HashMap<String, Node> varTable;
     HashMap<String, Node> resTable;
     HashMap<String, Node> bnodeTable;
 
-    //List<IDatatype> consList;
-
-
     public CompilerKgram() {
         varTable = new HashMap<String, Node>();
         resTable = new HashMap<String, Node>();
         bnodeTable = new HashMap<>();
-        //consList = new ArrayList<IDatatype>();
     }
 
     public static CompilerKgram create() {
@@ -60,6 +55,7 @@ public class CompilerKgram implements ExpType, Compiler {
         return varTable;
     }
     
+    @Override
     public void share(Compiler cp) {
         varTable = cp.getVarTable();
     }
@@ -130,6 +126,11 @@ public class CompilerKgram implements ExpType, Compiler {
     
     NodeImpl getNodeImpl(Atom at) {
         return (NodeImpl) getNode(at, false);
+    }
+    
+    @Override
+    public Node createNode(Atom at, boolean isReuse) {
+        return getNode(at, isReuse);
     }
 
 

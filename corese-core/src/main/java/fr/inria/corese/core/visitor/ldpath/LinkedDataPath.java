@@ -10,7 +10,6 @@ import fr.inria.corese.kgram.core.ProcessVisitorDefault;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Metadata;
@@ -524,7 +523,7 @@ public class LinkedDataPath implements QueryVisitor {
     List<Constant> getPropertyList(Mappings map) {
         ArrayList<Constant> list = new ArrayList<>();
         for (Mapping m : map) {
-            IDatatype dt = (IDatatype) m.getValue(AST.PROPERTY_VAR);
+            IDatatype dt =  m.getValue(AST.PROPERTY_VAR);
             if (dt != null) {
                 Constant p = Constant.create(dt);
                 list.add(p);

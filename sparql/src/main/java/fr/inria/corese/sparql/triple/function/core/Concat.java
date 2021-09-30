@@ -208,7 +208,7 @@ public class Concat extends TermEval {
     }
 
     Expr createFunction(String name, ArrayList<Expression> args, Environment env) {
-        ASTQuery ast = (ASTQuery) env.getQuery().getAST();
+        ASTQuery ast =  env.getQuery().getAST();
         try {
             return ast.createFunction(name, args);
         } catch (EngineException ex) {

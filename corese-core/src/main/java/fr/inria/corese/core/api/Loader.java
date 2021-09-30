@@ -18,6 +18,7 @@ public interface Loader {
     static final int WORKFLOW_FORMAT = 10;
     static final int OWL_FORMAT = 11;
     
+    static final String ACCEPT = "Accept";
     static final String JSONLD_FORMAT_STR = "application/ld+json";
     static final String JSON_FORMAT_STR = "application/json";
     static final String RDFXML_FORMAT_STR = "application/rdf+xml";
@@ -26,7 +27,9 @@ public interface Loader {
     static final String NT_FORMAT_STR = "text/n3";
     static final String TURTLE_FORMAT_STR = "text/turtle";
     static final String HTML_FORMAT_STR = "text/html";
-
+    static final String ALL_FORMAT_STR =
+            "text/ttl;q=1.0, application/rdf+xml;q=0.9, application/ld+json;q=0.7; application/json;q=0.6";
+    
 	void init(Object o);
 	
 	boolean isRule(String path);

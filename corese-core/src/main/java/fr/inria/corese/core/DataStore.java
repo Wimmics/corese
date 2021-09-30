@@ -23,7 +23,7 @@ public class DataStore {
 
     DataStore(Graph g) {
         graph = g;
-        defaultGraphList = new ArrayList<Node>();
+        defaultGraphList = new ArrayList<>();
     }
 
     /**

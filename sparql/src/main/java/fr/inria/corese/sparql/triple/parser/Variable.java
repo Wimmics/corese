@@ -267,7 +267,7 @@ public class Variable extends Atom {
     // see ProducerDefault
     // use case: project a query graph on itself
     @Override
-    public Object getValue() {
+    public IDatatype getValue() {
         return getDatatypeValue();
     }
 
@@ -375,7 +375,7 @@ public class Variable extends Atom {
         if (node == null) {
             return null;
         }
-        return (IDatatype) node.getDatatypeValue();
+        return  node.getDatatypeValue();
     }
 
     /**

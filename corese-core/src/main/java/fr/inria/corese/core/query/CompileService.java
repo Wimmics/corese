@@ -154,7 +154,7 @@ public class CompileService implements URLParam {
     }
     
     ASTQuery getAST(Query q) {
-        return (ASTQuery) q.getAST();
+        return  q.getAST();
     }
         
     public void prepare(Query q) {
@@ -175,7 +175,7 @@ public class CompileService implements URLParam {
      * such variable Set bindings in ASTQuery
      */
     ASTQuery bindings(Query q, Environment env) {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         ArrayList<Variable> lvar = new ArrayList<>();
         ArrayList<Constant> lval = new ArrayList<>();
 
@@ -189,7 +189,7 @@ public class CompileService implements URLParam {
 
             if (val != null && ! val.isBlank()) {
                 lvar.add(var);
-                IDatatype dt = (IDatatype) val.getValue();
+                IDatatype dt =  val.getValue();
                 Constant cst = Constant.create(dt);
                 lval.add(cst);
             }
@@ -203,7 +203,7 @@ public class CompileService implements URLParam {
      * Generate bindings as bindings from Mappings
      */
     ASTQuery bindings(URLServer url, Query q, Mappings map, Environment env, int start, int limit) {
-        ASTQuery ast = (ASTQuery) q.getAST();        
+        ASTQuery ast =  q.getAST();        
         // in-scope variables
         List<Variable> varList = getVariables(url, q, ast, map);
         // in-scope bound variables
@@ -240,7 +240,7 @@ public class CompileService implements URLParam {
                         blank = true;
                     } 
                     else {
-                        IDatatype dt = (IDatatype) val.getValue();
+                        IDatatype dt =  val.getValue();
                         Constant cst = create(ast, dt);
                         list.add(cst);
                         ok = true;
@@ -378,7 +378,7 @@ public class CompileService implements URLParam {
      * such variable as filters Set filters in ASTQuery
      */
     ASTQuery filter(Query q, Environment env) {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         ArrayList<Term> lt = new ArrayList<>();
 
         for (Node qv : q.getBody().getRecordInScopeNodesForService()) {
@@ -391,7 +391,7 @@ public class CompileService implements URLParam {
                 }
                 else {
                     Variable v = Variable.create(var);
-                    IDatatype dt = (IDatatype) val.getValue();
+                    IDatatype dt =  val.getValue();
                     Constant cst = Constant.create(dt);
                     Term t = Term.create(Term.SEQ, v, cst);
                     lt.add(t);
@@ -414,7 +414,7 @@ public class CompileService implements URLParam {
      * Generate bindings from Mappings as filter
      */
     public ASTQuery filter(URLServer url, Query q, Mappings map, int start, int limit) {
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         Term filter = null;
         List<Variable> lvar = getVariables(url, q, ast, map);
         
@@ -447,7 +447,7 @@ public class CompileService implements URLParam {
                     blank = true;
                 }
                 else {                    
-                    Term t = filter(ast, var, (IDatatype) valNode.getDatatypeValue());
+                    Term t = filter(ast, var,  valNode.getDatatypeValue());
                     lt.add(t);
                 }
             }

@@ -119,7 +119,7 @@ public class Parameter {
         
         for (Mapping m : map) {
             for (Node var : map.getSelect()) {
-                IDatatype value = (IDatatype) map.getValue(var);
+                IDatatype value =  map.getValue(var);
                 if (value != null) {
                     switch (var.getLabel()) {
                         case FUNCTION_IMPORT:
@@ -135,7 +135,7 @@ public class Parameter {
 
         for (Mapping m : map) {
             for (Node var : map.getSelect()) {
-                IDatatype value = (IDatatype) map.getValue(var);
+                IDatatype value =  map.getValue(var);
                 if (value != null) {
                     String label = value.getLabel();
                     
@@ -150,16 +150,16 @@ public class Parameter {
                             namespace(value, true);
                             break;
                         case LINKED_FUNCTION_REJECT:
-                            namespace(value, true);
+                            namespace(value, false);
                             break;
                         case LINKED_FUNCTION:
                             Access.setLinkedFunction(value.booleanValue());
                             break;
                         case ACCESS_RIGHT:
-                            AccessRight.setActive(value.booleanValue());
+                            Property.set(Property.Value.ACCESS_RIGHT, value.booleanValue());
                             break;
                         case EVENT:
-                            QuerySolver.setVisitorable(value.booleanValue());
+                            Property.set(Property.Value.EVENT, value.booleanValue());
                             break;
                         case PROFILE:
                             PROFILE_EVENT = value.booleanValue();

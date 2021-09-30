@@ -1,7 +1,6 @@
 package fr.inria.corese.core;
 
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.TripleStore;
@@ -17,13 +16,19 @@ import fr.inria.corese.kgram.path.Path;
  */
 public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl> {
 
-//    String key = INITKEY;
+    // true means graph nodes are IDatatype instead of NodeImpl
+    // todo: duplicate IDatatype when insert node in new graph, e.g. construct
     public static boolean byIDatatype = false;
     Graph graph;
     int index = -1;
     IDatatype dt;
 
     NodeImpl(IDatatype val) {
+        dt = val;
+    }
+    
+    NodeImpl(IDatatype val, Graph g) {
+        graph = g;
         dt = val;
     }
 
@@ -34,13 +39,19 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
         return new NodeImpl(val);
     }
 
-    NodeImpl(IDatatype val, Graph g) {
-        graph = g;
-        dt = val;
-    }
-
-    public static NodeImpl create(IDatatype val, Graph g) {
+    public static Node create(IDatatype val, Graph g) {
+        if (byIDatatype) {
+            return createDatatype(val, g);
+        }
         return new NodeImpl(val, g);
+    }
+    
+    static Node createDatatype(IDatatype val, Graph g) {
+        if (val.getTripleStore() != null && val.getTripleStore() != g) {
+            val = val.copy();
+        }
+        val.setTripleStore(g);
+        return val;
     }
 
     @Override
@@ -50,8 +61,7 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
 
     @Override
     public int compare(Node node) {
-        // TODO Auto-generated method stub
-        return getValue().compareTo((IDatatype) node.getValue());
+        return getValue().compareTo( node.getValue());
     }
 
     @Override
@@ -61,7 +71,6 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
 
     @Override
     public String getLabel() {
-        // TODO Auto-generated method stub
         return getValue().getLabel();
     }
 
@@ -76,31 +85,22 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
     }
     
     @Override
-    public void setDatatypeValue(DatatypeValue dt) {
-        if (dt instanceof IDatatype) {
-            setDatatypeValue((IDatatype) dt);
-        }
-    }
-    
     public void setDatatypeValue(IDatatype dt) {
         this.dt = dt;
     }
 
     @Override
     public boolean isBlank() {
-        // TODO Auto-generated method stub
         return getValue().isBlank();
     }
 
     @Override
     public boolean isConstant() {
-        // TODO Auto-generated method stub
         return getValue().isConstant();
     }
 
     @Override
     public boolean isVariable() {
-        // TODO Auto-generated method stub
         return false;
     }
     
@@ -111,12 +111,12 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
 
     @Override
     public boolean same(Node node) {
-        return getValue().sameTerm((IDatatype) node.getValue());
+        return getValue().sameTerm( node.getValue());
     }
     
      @Override
     public boolean match(Node node) {
-        return getValue().match((IDatatype) node.getValue());
+        return getValue().match( node.getValue());
     }
 
     @Override

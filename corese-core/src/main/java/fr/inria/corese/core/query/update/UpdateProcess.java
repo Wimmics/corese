@@ -43,7 +43,7 @@ public class UpdateProcess {
 
     private static Logger logger = LoggerFactory.getLogger(UpdateProcess.class);
 
-    Manager manager;
+    Manager manager; // see ManagerImpl
     QueryProcess exec;
     Query query;
     Dataset ds;
@@ -68,7 +68,7 @@ public class UpdateProcess {
      */
     public Mappings update(Query q, Mapping m, Binding bind) throws EngineException {
         query = q;
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         ASTUpdate astu = ast.getUpdate();
         Mappings map = Mappings.create(q);
         manager.setLevel(getLevel(bind));
@@ -411,7 +411,7 @@ public class UpdateProcess {
      */
     ASTQuery createAST(Query q, Composite ope) {
         ASTQuery ast = ASTQuery.create();
-        ASTQuery ga = (ASTQuery) q.getAST();
+        ASTQuery ga =  q.getAST();
         ast.setNSM(ope.getNSM());
         
         ast.setPragma(ga.getPragma());

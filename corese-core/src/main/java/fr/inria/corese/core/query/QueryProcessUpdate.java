@@ -113,7 +113,7 @@ public class QueryProcessUpdate {
             // TODO: check complete() -- W3C test case require += default + entailment + rule
             getQueryProcess().complete(ds);
         }
-        UpdateProcess up = UpdateProcess.create(getQueryProcess(), createUpdateManager(getGraph()), ds);
+        UpdateProcess up = UpdateProcess.create(getQueryProcess(), createUpdateManager(), ds);
         up.setDebug(isDebug());
         Mappings map = up.update(query, m, getBinding(m));
 
@@ -277,8 +277,8 @@ public class QueryProcessUpdate {
     }
 
 
-    ManagerImpl createUpdateManager(Graph g) {
-        GraphManager man = new GraphManager(g);
+    ManagerImpl createUpdateManager() {
+        GraphManager man = getQueryProcess().getUpdateGraphManager();
         man.setQueryProcess(getQueryProcess());
         return new ManagerImpl(man);
     }

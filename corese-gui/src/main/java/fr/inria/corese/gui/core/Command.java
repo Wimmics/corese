@@ -1,7 +1,11 @@
 package fr.inria.corese.gui.core;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.util.Property;
+import java.io.IOException;
 import java.util.HashMap;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
 
 /**
  * Command line parser
@@ -9,6 +13,8 @@ import java.util.HashMap;
  *
  */
 public class Command extends HashMap<String, String> {
+    private static Logger logger = LogManager.getLogger(Command.class);
+    
     public static final String VERBOSE          = "-verbose";
     public static final String DEBUG            = "-debug";
     public static final String MAX_LOAD         = "-maxload";
@@ -22,8 +28,11 @@ public class Command extends HashMap<String, String> {
     public static final String RDF_STAR         = "-rdfstar";
     public static final String ACCESS           = "-access";
     public static final String PARAM            = "-param";
+    public static final String INIT             = "-init";
     public static final String LOAD             = "-load";
     public static final String LOAD_QUERY       = "-query";
+    public static final String LOAD_DEFAULT_GRAPH = "-dg";
+    public static final String NODE_AS_DATATYPE = "-dt";
         
     String[] args;
     private String query;
@@ -54,7 +63,10 @@ public class Command extends HashMap<String, String> {
                    put(PARAM, args[i++]);
                    break; 
                    
-                    
+                case INIT:
+                   init(args[i++]);
+                   break; 
+                   
                 case MAX_LOAD:
                    put(MAX_LOAD, args[i++]);
                    break; 
@@ -94,6 +106,14 @@ public class Command extends HashMap<String, String> {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+    
+    void init(String path) {
+        try {
+            Property.load(path);
+        } catch (IOException ex) {
+            logger.error(ex);
+        }
     }
     
 

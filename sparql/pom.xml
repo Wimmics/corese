@@ -13,13 +13,15 @@
 
 	<artifactId>sparql</artifactId>
 	<name>sparql</name>
-
+        <properties>
+            <maven.test.skip>true</maven.test.skip>
+        </properties>
 	<dependencies>
-		<dependency>
+<!--		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>kgram</artifactId>
 			<version>${revision}</version>
-		</dependency>
+		</dependency>-->
 		<dependency>
 			<groupId>junit</groupId>
 			<artifactId>junit</artifactId>

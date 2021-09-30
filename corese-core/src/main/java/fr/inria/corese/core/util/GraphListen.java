@@ -132,7 +132,7 @@ public class GraphListen implements GraphListener {
         if (obj instanceof IDatatype) {
             return (IDatatype) obj;
         }
-        return (IDatatype) eval.getProducer().getValue(obj);
+        return  eval.getProducer().getValue(obj);
     }
 
     IDatatype[] param() {

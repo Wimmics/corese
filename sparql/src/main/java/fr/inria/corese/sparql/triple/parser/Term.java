@@ -73,7 +73,6 @@ public class Term extends Expression {
     static final String SERVICE = "service";
     // default processor to compile term
     static Processor processor;
-    static final NSManager nsm = NSManager.create();
     // possibly dynamic processor to implement some functions: regex, ...
     Processor proc;
     Exist exist;
@@ -194,7 +193,11 @@ public class Term extends Expression {
     }
 
     public static Term function(String name) {
-        return function(name, nsm.toNamespace(name));
+        return function(name, nsm().toNamespace(name));
+    }
+    
+    static NSManager nsm() {
+        return NSManager.nsm();
     }
 
     static Term newFunction(String name, String longName) {

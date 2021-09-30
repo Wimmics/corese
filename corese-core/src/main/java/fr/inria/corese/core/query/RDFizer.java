@@ -75,7 +75,7 @@ public class RDFizer {
         try {
             Graph g = (Graph) q.getGraph();
             if (g == null){
-                ASTQuery ast = (ASTQuery) q.getAST();
+                ASTQuery ast =  q.getAST();
                 SPINProcess sp = SPINProcess.create();
                 g = sp.toSpinGraph(ast);
                 q.setGraph(g);

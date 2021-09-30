@@ -59,7 +59,7 @@ public class Shacl {
     private Binding input;
 
     //Default SHACL Interpreter in Corese
-    private static String SHACL_Interpreter = "http://ns.inria.fr/sparql-template/function/datashape/main.rq":
+    private static String SHACL_Interpreter = "http://ns.inria.fr/sparql-template/function/datashape/main.rq";
     
     static {
         init();

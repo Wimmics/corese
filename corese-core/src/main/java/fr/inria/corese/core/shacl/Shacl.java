@@ -57,6 +57,9 @@ public class Shacl {
     private Graph result;
     private Binding bind;
     private Binding input;
+
+    //Default SHACL Interpreter in Corese
+    private static String SHACL_Interpreter = "http://ns.inria.fr/sparql-template/function/datashape/main.rq":
     
     static {
         init();
@@ -68,7 +71,7 @@ public class Shacl {
     static void init() {
         QueryProcess exec = QueryProcess.create(Graph.create());
         try {
-            exec.imports("http://ns.inria.fr/sparql-template/function/datashape/main.rq");
+            exec.imports(SHACL_Interpreter);
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
         }
@@ -82,6 +85,17 @@ public class Shacl {
     public Shacl(Graph g, Graph shacl) {
         setGraph(g);
         setShacl(shacl);
+    }
+
+    /**
+     * Set a different SHACL interpreter, ex. SHACL-S 
+     */
+    public static void setSHACL_Interpreter(String SHACL_Interpreter) {
+        Shacl.SHACL_Interpreter = SHACL_Interpreter;
+    }
+
+    public static String getSHACL_Interpreter() {
+        return SHACL_Interpreter;
     }
     
     public Binding input() {

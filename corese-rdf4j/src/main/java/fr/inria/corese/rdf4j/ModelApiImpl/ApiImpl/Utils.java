@@ -1,19 +1,20 @@
 package fr.inria.corese.rdf4j.ModelApiImpl.ApiImpl;
 
 import java.util.ArrayList;
+import java.util.HashSet;
 import java.util.Iterator;
-import java.util.List;
+import java.util.Set;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
 
-import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.rdf4j.ModelApiImpl.CoreseModel;
 import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
 public class Utils {
@@ -30,11 +31,10 @@ public class Utils {
     /**
      * Convert a RDF4J value to a Corese node.
      * 
-     * @param rdf4j_value Rdf4j value to translate.
-     * @return Equivalent Corese node or null if Rdf4j value is null.
+     * @param rdf4j_value RDF4J value to convert.
+     * @return Equivalent Corese node or null if RDF4J value is null.
      */
     private Node convertRdf4jValueToCoreseNode(Value rdf4j_value) {
-
         if (rdf4j_value == null) {
             return null;
         }
@@ -43,12 +43,13 @@ public class Utils {
     }
 
     /**
-     * Convert an array of RDF4J context to an array of Corese Node of graph.
+     * Convert an array of RDF4J context to an equivalent array of Corese node
+     * graph.
      * 
      * @param default_graph Value of the default graph.
      * @param contexts      Array of RDF4J context to convert.
-     * @return Equivalent array of Corese Node, null if RDF4J context is empty or
-     *         the default graph is RDF4J context is null .
+     * @return Equivalent array of Corese node, null if RDF4J context is empty, the
+     *         default graph if RDF4J context is null.
      */
     private Node[] convertRdf4jContextsToCorese(Node default_graph, Resource... contexts) {
 
@@ -63,22 +64,18 @@ public class Utils {
         }
 
         // convert rdf4j context to Corese graph
-        ArrayList<Node> corese_contexts = new ArrayList<Node>();
+        Set<Node> corese_contexts = new HashSet<Node>();
         for (Resource context : contexts) {
-            // i don't want null value into corese_contexts
             if (context != null) {
                 corese_contexts.add(this.convertRdf4jValueToCoreseNode(context));
+            } else {
+                corese_contexts.add(default_graph);
             }
         }
 
-        // if all contexts are null then the context is the default context
-        if (corese_contexts.isEmpty()) {
-            return new Node[] { default_graph };
-        } else {
-            // convert arraylist to java array
-            Node[] corese_contexts_jarray = new Node[corese_contexts.size()];
-            return corese_contexts.toArray(corese_contexts_jarray);
-        }
+        // convert arraylist to java array
+        Node[] corese_contexts_jarray = new Node[corese_contexts.size()];
+        return corese_contexts.toArray(corese_contexts_jarray);
     }
 
     /**
@@ -91,21 +88,21 @@ public class Utils {
      * to match statements without an associated context, specify the value null and
      * explicitly cast it to type Resource.
      * 
-     * @param corese_graph Graph in which the statement is searched.
+     * @param corese_model Corese model in which statements are searched.
      * @param subj         The subject of the statements to match, null to match
      *                     statements with any subject.
-     * @param predThe      predicate of the statements to match, null to match
+     * @param predThe      Predicate of the statements to match, null to match
      *                     statements with any predicate.
-     * @param objThe       object of the statements to match, null to match
+     * @param objThe       Object of the statements to match, null to match
      *                     statements with any object.
-     * @param contextsThe  contexts of the statements to match. If no contexts are
+     * @param contextsThe  Contexts of the statements to match. If no contexts are
      *                     specified, statements will match disregarding their
      *                     context. If one or more contexts are specified,
      *                     statements with a context matching one of these will
      *                     match.
-     * @return Iterable of Edge that match the specified pattern.
+     * @return Iterable of Statement that match the specified pattern.
      */
-    public Iterable<Edge> getEdges(Graph corese_graph, Resource subj, IRI pred, Value obj,
+    public Iterable<Statement> getEdges(Graph corese_graph, Resource subj, IRI pred, Value obj,
             Resource... contexts) {
 
         // convert subject, predicate, object into Corese Node
@@ -117,30 +114,90 @@ public class Utils {
         Node[] contexts_node = this.convertRdf4jContextsToCorese(corese_graph.getDefaultGraphNode(), contexts);
 
         // get edges
-        Iterable<Edge> result;
+        Iterable<Edge> corese_iterable;
         if (contexts_node == null) {
-            result = corese_graph.getEdgesRDF4J(subj_node, pred_node, obj_node);
+            corese_iterable = corese_graph.getEdgesRDF4J(subj_node, pred_node, obj_node);
         } else {
-            result = corese_graph.getEdgesRDF4J(subj_node, pred_node, obj_node, contexts_node);
+            corese_iterable = corese_graph.getEdgesRDF4J(subj_node, pred_node, obj_node, contexts_node);
         }
+
+        // Create a new clean iterable (because corse iterable does not have a perfectly
+        // defined behavior for optimization reasons)
+        ArrayList<Statement> result = new ArrayList<>();
+        for (Edge edge : corese_iterable) {
+            // System.out.println(edge);
+            if (edge != null) {
+                result.add(corese_graph.getEdgeFactory().copy(edge));
+            }
+        }
+
         return result;
     }
 
     /**
-     * Convert an iterator of edge into iterable of statement.
+     * Get a Corese model iterator with Statements that match the specified subject,
+     * predicate, object and (optionally) context. The subject, predicate and object
+     * parameters can be null to indicate wildcards. The contexts parameter is a
+     * wildcard and accepts zero or more values. If no contexts are specified,
+     * statements will match disregarding their context. If one or more contexts are
+     * specified, statements with a context matching one of these will match. Note:
+     * to match statements without an associated context, specify the value null and
+     * explicitly cast it to type Resource.
      * 
-     * @param edge_factory Edge factory.
-     * @param edges        Iterator of edge to convert.
-     * @return Iterable of statement equivalent.
+     * @param corese_model Corese model on which iterated.
+     * @param subj         The subject of the statements to match, null to match
+     *                     statements with any subject.
+     * @param pred         The Predicate of the statements to match, null to match
+     *                     statements with any predicate.
+     * @param obj          The Object of the statements to match, null to match
+     *                     statements with any object.
+     * @param contexts     The Contexts of the statements to match. If no contexts
+     *                     are specified, statements will match disregarding their
+     *                     context. If one or more contexts are specified,
+     *                     statements with a context matching one of these will
+     *                     match.
+     * @return Corese model iterator with Statements that match the specified
+     *         subject, predicate, object and (optionally) context.
      */
-    public Iterable<Statement> convertItEdgeToItStatement(EdgeFactory edge_factory, Iterator<Edge> edges) {
+    public Iterator<Statement> getFilterIterator(CoreseModel corese_model, Resource subj, IRI pred, Value obj,
+            Resource... contexts) {
 
-        List<Statement> result = new ArrayList<>();
-        while (edges.hasNext()) {
-            Edge edge_copy = edge_factory.copy(edges.next());
-            result.add(edge_copy);
+        /**
+         * Iterator for the Corese model
+         */
+        class CoreseModelIterator implements Iterator<Statement> {
+
+            private Iterator<Statement> iter;
+
+            private Statement last;
+
+            public CoreseModelIterator(Iterator<Statement> iter) {
+                this.iter = iter;
+            }
+
+            @Override
+            public boolean hasNext() {
+                return iter.hasNext();
+            }
+
+            @Override
+            public Statement next() {
+                return last = iter.next();
+            }
+
+            @Override
+            public void remove() {
+                if (last == null) {
+                    throw new IllegalStateException();
+                }
+                corese_model.remove(last);
+                iter.remove();
+            }
         }
 
-        return result;
+        // get edges
+        Iterable<Statement> edges = Utils.getInstance().getEdges(corese_model.getCoreseGraph(), subj, pred, obj, contexts);
+        return new CoreseModelIterator(edges.iterator());
     }
+
 }

@@ -102,8 +102,7 @@ public class Utils {
      *                     match.
      * @return Iterable of Statement that match the specified pattern.
      */
-    public Iterable<Statement> getEdges(Graph corese_graph, Resource subj, IRI pred, Value obj,
-            Resource... contexts) {
+    public Iterable<Statement> getEdges(Graph corese_graph, Resource subj, IRI pred, Value obj, Resource... contexts) {
 
         // convert subject, predicate, object into Corese Node
         Node subj_node = this.convertRdf4jValueToCoreseNode(subj);
@@ -125,7 +124,6 @@ public class Utils {
         // defined behavior for optimization reasons)
         ArrayList<Statement> result = new ArrayList<>();
         for (Edge edge : corese_iterable) {
-            // System.out.println(edge);
             if (edge != null) {
                 result.add(corese_graph.getEdgeFactory().copy(edge));
             }
@@ -196,7 +194,8 @@ public class Utils {
         }
 
         // get edges
-        Iterable<Statement> edges = Utils.getInstance().getEdges(corese_model.getCoreseGraph(), subj, pred, obj, contexts);
+        Iterable<Statement> edges = Utils.getInstance().getEdges(corese_model.getCoreseGraph(), subj, pred, obj,
+                contexts);
         return new CoreseModelIterator(edges.iterator());
     }
 

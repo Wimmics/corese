@@ -1,10 +1,13 @@
 package fr.inria.corese.core.producer;
 
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.core.Graph;
 import java.util.ArrayList;
+import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
+
+import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Node;
 
 /**
  * from, from named dataset for edge iteration
@@ -15,37 +18,37 @@ import fr.inria.corese.kgram.api.core.Edge;
  *
  */
 public class DataFrom extends DataFilter {
-    static final List<Node> emptyNode   = new ArrayList<Node>(0);    
-    
+    static final List<Node> emptyNode = new ArrayList<Node>(0);
+
     private List<Node> from;
     private Node fromNode;
     Graph graph;
-    
+
     boolean hasFrom;
     private boolean oneFrom;
     boolean isMember = true;
-    
-    DataFrom(Graph g){
+
+    DataFrom(Graph g) {
         graph = g;
     }
-    
-    DataFrom from(List<Node> list, Node source){
-        if (source == null){
+
+    DataFrom from(List<Node> list, Node source) {
+        if (source == null) {
             from(list);
         }
         from(source);
         return this;
     }
-    
-    DataFrom from(Node node){
+
+    DataFrom from(Node node) {
         setOneFrom(true);
         setFromNode(node);
-        if (getFrom() == null){
+        if (getFrom() == null) {
             setFrom(emptyNode);
         }
         return this;
     }
-    
+
     DataFrom from(List<Node> list) {
         setFrom(list);
         if (list != null && list.size() == 1) {
@@ -57,29 +60,29 @@ public class DataFrom extends DataFilter {
         }
         return this;
     }
-    
-     public DataFrom minus(List<Node> list){
+
+    public DataFrom minus(List<Node> list) {
         from(list);
         isMember = false;
         return this;
     }
-    
-    public DataFrom minus(Node node){
+
+    public DataFrom minus(Node node) {
         from(node);
         isMember = false;
         return this;
     }
-     
-    boolean isEmpty(){
+
+    boolean isEmpty() {
         return getFrom().isEmpty();
     }
-    
+
     @Override
-    boolean eval(Edge ent){
+    boolean eval(Edge ent) {
         boolean b = result(isFrom(ent));
         return b;
     }
-    
+
     boolean isFrom(Edge ent) {
         if (isOneFrom()) {
             return same(fromNode, ent.getGraph());
@@ -89,22 +92,22 @@ public class DataFrom extends DataFilter {
             return res != -1;
         }
     }
-    
-     /**
+
+    /**
      * isMember = false means skip graph in from clause
      */
     @Override
-    boolean result(boolean found){
-        if (isMember){
+    boolean result(boolean found) {
+        if (isMember) {
             return found;
         }
-        return ! found;
+        return !found;
     }
-    
+
     boolean same(Node n1, Node n2) {
         return n1.getIndex() == n2.getIndex();
     }
-    
+
     boolean isFromOK(List<Node> from) {
         for (Node node : from) {
             Node tfrom = graph.getNode(node);
@@ -114,8 +117,7 @@ public class DataFrom extends DataFilter {
         }
         return false;
     }
-    
-    
+
     public boolean isFrom(List<Node> from, Node node) {
         int res = find(from, node);
         return res != -1;
@@ -123,8 +125,7 @@ public class DataFrom extends DataFilter {
 
     int find(List<Node> list, Node node) {
         int res = find(list, node, 0, list.size());
-        if (res >= 0 && res < list.size()
-                && list.get(res).same(node)) {
+        if (res >= 0 && res < list.size() && list.get(res).same(node)) {
             return res;
         }
         return -1;
@@ -159,6 +160,11 @@ public class DataFrom extends DataFilter {
      */
     public void setFrom(List<Node> from) {
         this.from = from;
+        Collections.sort(this.from, new Comparator<Node>() {
+            public int compare(Node o1, Node o2) {
+                return o1.compare(o2);
+            }
+        });
     }
 
     /**
@@ -188,5 +194,5 @@ public class DataFrom extends DataFilter {
     public void setFromNode(Node fromNode) {
         this.fromNode = fromNode;
     }
-    
+
 }

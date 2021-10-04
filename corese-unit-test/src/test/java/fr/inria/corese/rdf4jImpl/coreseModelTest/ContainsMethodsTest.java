@@ -45,6 +45,7 @@ public class ContainsMethodsTest {
         model.add(edithPiafNode, isaProperty, singerNode);
         model.add(edithPiafNode, firstNameProperty, edithLiteral, context1);
         model.add(edithPiafNode, firstNameProperty, edithLiteral, context2);
+        model.getCoreseGraph().init();
 
         ////////////////
         // Test graph //
@@ -86,6 +87,7 @@ public class ContainsMethodsTest {
         assertEquals(true, model.contains(edithPiafNode, firstNameProperty, edithLiteral, context1));
         assertEquals(true, model.contains(null, null, null, context1));
         assertEquals(true, model.contains(null, null, null, context1, context2));
+        assertEquals(true, model.contains(null, null, null, context2, context1));
 
         assertEquals(false, model.contains(edithPiafNode, isaProperty, singerNode, context1));
         /////////////////////////

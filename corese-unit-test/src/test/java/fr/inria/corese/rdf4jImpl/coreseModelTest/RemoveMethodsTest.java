@@ -81,6 +81,21 @@ public class RemoveMethodsTest {
         assertEquals(false, model.remove(null, firstNameProperty, null));
         assertEquals(true, model.contains(edithPiafNode, isaProperty, singerNode));
         assertEquals(false, model.contains(edithPiafNode, firstNameProperty, edithLiteral, context1));
+
+        model = this.buildCoreseModel();
+        assertEquals(true, model.contains(edithPiafNode, firstNameProperty, edithLiteral, context1));
+        assertEquals(true, model.contains(edithPiafNode, firstNameProperty, edithLiteral, context2));
+        assertEquals(true, model.remove(null, null, null, context1, context2));
+        assertEquals(false, model.contains(edithPiafNode, firstNameProperty, edithLiteral, context1));
+        assertEquals(false, model.contains(edithPiafNode, firstNameProperty, edithLiteral, context2));
+
+        model = this.buildCoreseModel();
+        assertEquals(true, model.contains(edithPiafNode, firstNameProperty, edithLiteral, context1));
+        assertEquals(true, model.contains(edithPiafNode, firstNameProperty, edithLiteral, context2));
+        assertEquals(true, model.remove(null, null, null, context2, context1));
+        assertEquals(false, model.contains(edithPiafNode, firstNameProperty, edithLiteral, context1));
+        assertEquals(false, model.contains(edithPiafNode, firstNameProperty, edithLiteral, context2));
+
     }
 
     @Test

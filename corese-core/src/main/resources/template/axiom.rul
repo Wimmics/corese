@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri May 07 14:42:27 CEST 2021
+Sat Oct 02 15:51:31 CEST 2021
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -63,6 +63,8 @@ where {
 
   { ?in owl:disjointUnionOf ?y }
   union { ?in a owl:ReflexiveProperty }
+  # unionOf only as left part of subClassOf hence in a bnode
+  union { ?in owl:unionOf|owl:intersectionOf ?y filter isURI(?in) }
   
   filter(st:alreadyVisited(?in, "fail", false))
  

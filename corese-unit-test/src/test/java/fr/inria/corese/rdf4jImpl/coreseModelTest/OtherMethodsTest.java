@@ -8,96 +8,94 @@ import java.util.List;
 
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Literal;
+import org.eclipse.rdf4j.model.Model;
+import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
+import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.corese.rdf4j.ModelApiImpl.CoreseModel;
 
 public class OtherMethodsTest {
 
-    private IRI edithPiafNode;
+    private CoreseModel model;
+    private Statement statement_0;
+    private Statement statement_1;
+    private Statement statement_2;
+    private Statement statement_3;
     private IRI isaProperty;
-    private IRI singerNode;
     private IRI firstNameProperty;
-    private Literal edithLiteral;
-    private IRI context1;
+    private IRI edithPiafNode;
     private IRI context2;
-    private IRI context3;
 
-    private CoreseModel buildCoreseModel() {
+    @Before
+    public void buildCoreseModel() {
+        // build an array with graph statement
+        ValueFactory vf = SimpleValueFactory.getInstance();
+
         String ex = "http://example.org/";
 
+        // statement zero
+        IRI edithPiafNode = Values.iri(ex, "EdithPiaf");
+        this.edithPiafNode = edithPiafNode;
+        IRI isaProperty = Values.iri(RDF.TYPE.stringValue());
+        this.isaProperty = isaProperty;
+        IRI singerNode = Values.iri(ex, "Singer");
+        this.statement_0 = vf.createStatement(edithPiafNode, isaProperty, singerNode);
+
         // first statement
-        this.edithPiafNode = Values.iri(ex, "EdithPiaf");
-        this.isaProperty = Values.iri(RDF.TYPE.stringValue());
-        this.singerNode = Values.iri(ex, "Singer");
+        IRI firstNameProperty = Values.iri(ex, "firstName");
+        this.firstNameProperty = firstNameProperty;
+        Literal edithLiteral = Values.literal("Edith");
+        IRI context1 = Values.iri(ex, "context1");
+        this.statement_1 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context1);
 
         // second statement
-        this.firstNameProperty = Values.iri(ex, "firstName");
-        this.edithLiteral = Values.literal("Edith");
-        this.context1 = Values.iri(ex, "context1");
+        IRI context2 = Values.iri(ex, "context2");
+        this.context2 = context2;
+        this.statement_2 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context2);
 
-        // third statement
-        this.context2 = Values.iri(ex, "context2");
+        IRI context3 = Values.iri(ex, "context3");
+        this.statement_3 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context3);
 
-        this.context3 = Values.iri(ex, "context3");
         /////////////////
         // Build graph //
         /////////////////
-        CoreseModel model = new CoreseModel();
-        model.add(edithPiafNode, isaProperty, singerNode);
-        model.add(edithPiafNode, firstNameProperty, edithLiteral, context1);
-        model.add(edithPiafNode, firstNameProperty, edithLiteral, context2);
-        model.add(edithPiafNode, firstNameProperty, edithLiteral, context3);
-        model.getCoreseGraph().init();
-
-        return model;
+        this.model = new CoreseModel();
+        this.model.add(edithPiafNode, isaProperty, singerNode);
+        this.model.add(edithPiafNode, firstNameProperty, edithLiteral, context1);
+        this.model.add(edithPiafNode, firstNameProperty, edithLiteral, context2);
+        this.model.add(edithPiafNode, firstNameProperty, edithLiteral, context3);
+        this.model.getCoreseGraph().init();
     }
 
     @Test
     public void isEmpty() {
-        CoreseModel model = new CoreseModel();
-        assertEquals(true, model.isEmpty());
-        model = this.buildCoreseModel();
-        assertEquals(false, model.isEmpty());
-    }
-
-    @Test
-    public void experimentation() {
+        assertEquals(true, new CoreseModel().isEmpty());
+        assertEquals(false, this.model.isEmpty());
     }
 
     @Test
     public void size() {
-        CoreseModel model = this.buildCoreseModel();
-        assertEquals(4, model.size());
-        model.clear();
-        assertEquals(0, model.size());
+        assertEquals(4, this.model.size());
+        this.model.clear();
+        assertEquals(0, this.model.size());
     }
 
     @Test
     public void iterator() {
-        CoreseModel model = this.buildCoreseModel();
-
-        // buil an array with graph statement
-        ValueFactory vf = SimpleValueFactory.getInstance();
-
-        Statement statement_0 = vf.createStatement(edithPiafNode, isaProperty, singerNode);
-        Statement statement_1 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context1);
-        Statement statement_2 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context2);
-        Statement statement_3 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context3);
-
         ArrayList<Statement> graph_statements = new ArrayList<>();
-        graph_statements.add(statement_0);
-        graph_statements.add(statement_1);
-        graph_statements.add(statement_2);
-        graph_statements.add(statement_3);
+        graph_statements.add(this.statement_0);
+        graph_statements.add(this.statement_1);
+        graph_statements.add(this.statement_2);
+        graph_statements.add(this.statement_3);
 
         // build an array with iterator result
-        Iterator<Statement> iter = model.iterator();
+        Iterator<Statement> iter = this.model.iterator();
 
         ArrayList<Statement> iterator_statements = new ArrayList<>();
         while (iter.hasNext()) {
@@ -110,25 +108,28 @@ public class OtherMethodsTest {
     }
 
     @Test
+    public void removeFromIterator() {
+        Iterator<Statement> iter = this.model.iterator();
+        assertEquals(true, this.model.contains(this.statement_0));
+        while (iter.hasNext()) {
+            Statement last = iter.next();
+            if (last.equals(this.statement_0)) {
+                iter.remove();
+            }
+        }
+        assertEquals(false, this.model.contains(this.statement_0));
+    }
+
+    @Test
     public void getStatements() {
-        CoreseModel model = this.buildCoreseModel();
-
-        // buil an array with graph statement
-        ValueFactory vf = SimpleValueFactory.getInstance();
-
-        Statement statement_0 = vf.createStatement(edithPiafNode, isaProperty, singerNode);
-        Statement statement_1 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context1);
-        Statement statement_2 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context2);
-        Statement statement_3 = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context3);
-
         ArrayList<Statement> graph_statements = new ArrayList<>();
-        graph_statements.add(statement_0);
-        graph_statements.add(statement_1);
-        graph_statements.add(statement_2);
-        graph_statements.add(statement_3);
+        graph_statements.add(this.statement_0);
+        graph_statements.add(this.statement_1);
+        graph_statements.add(this.statement_2);
+        graph_statements.add(this.statement_3);
 
         // build an array with iterator result
-        Iterable<Statement> iterable_statements = model.getStatements(null, null, null);
+        Iterable<Statement> iterable_statements = this.model.getStatements(null, null, null);
 
         List<Statement> result_statements = new ArrayList<>();
         iterable_statements.forEach(result_statements::add);
@@ -136,5 +137,64 @@ public class OtherMethodsTest {
         // Tests
         assertEquals(true, result_statements.containsAll(graph_statements));
         assertEquals(true, graph_statements.containsAll(result_statements));
+    }
+
+    @Test
+    public void getStatementsRemove() {
+        assertEquals(true, this.model.contains(this.statement_0));
+
+        // get statements
+        Iterable<Statement> statements = this.model.getStatements(null, this.isaProperty, null);
+
+        // test result of getStatement
+        for (Statement statement : statements) {
+            assertEquals(this.statement_0, statement);
+        }
+
+        // remove from getStatement iterator
+        Iterator<Statement> iter = statements.iterator();
+        iter.next();
+        iter.remove();
+
+        // test
+        assertEquals(false, this.model.contains(this.statement_0));
+    }
+
+    @Test
+    public void removeTermsIteration() {
+        assertEquals(true, this.model.contains(this.statement_0));
+        assertEquals(true, this.model.contains(this.statement_1));
+        assertEquals(true, this.model.contains(this.statement_2));
+        assertEquals(true, this.model.contains(this.statement_3));
+
+        this.model.removeTermIteration(this.model.iterator(), null, this.firstNameProperty, null);
+        assertEquals(true, this.model.contains(this.statement_0));
+        assertEquals(false, this.model.contains(this.statement_1));
+        assertEquals(false, this.model.contains(this.statement_2));
+        assertEquals(false, this.model.contains(this.statement_3));
+    }
+
+    @Test
+    public void filter() {
+        assertEquals(true, this.model.contains(this.statement_0));
+        assertEquals(true, this.model.contains(this.statement_1));
+        assertEquals(true, this.model.contains(this.statement_2));
+        assertEquals(true, this.model.contains(this.statement_3));
+
+        Model filterModel = this.model.filter(this.edithPiafNode, null, null, this.context2, (Resource) null);
+        assertEquals(true, filterModel.contains(this.statement_0));
+        assertEquals(false, filterModel.contains(this.statement_1));
+        assertEquals(true, filterModel.contains(this.statement_2));
+        assertEquals(false, filterModel.contains(this.statement_3));
+
+        model.remove(this.statement_2);
+        filterModel.remove(this.statement_0);
+
+        assertEquals(true, filterModel.isEmpty());
+
+        assertEquals(false, this.model.contains(this.statement_0));
+        assertEquals(true, this.model.contains(this.statement_1));
+        assertEquals(false, this.model.contains(this.statement_2));
+        assertEquals(true, this.model.contains(this.statement_3));
     }
 }

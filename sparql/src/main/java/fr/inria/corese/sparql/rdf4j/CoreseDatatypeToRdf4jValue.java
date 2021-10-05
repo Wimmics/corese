@@ -152,7 +152,7 @@ public class CoreseDatatypeToRdf4jValue {
     }
 
     /**
-     * Convert Corese Literal to equivalant RDF4J Literal
+     * Convert Corese Literal to equivalent RDF4J Literal
      * 
      * @param corese_literal the Corese Literal to convert
      * @param datatype       Literal datatype
@@ -164,7 +164,7 @@ public class CoreseDatatypeToRdf4jValue {
     }
 
     /**
-     * Convert Corese lang string Literal to equivalant RDF4J lang string Literal
+     * Convert Corese lang string Literal to equivalent RDF4J lang string Literal
      * 
      * @param corese_lang_string the Corese lang string Literal to convert
      * @return equivalent RDF4J lang string
@@ -176,7 +176,7 @@ public class CoreseDatatypeToRdf4jValue {
     }
 
     /**
-     * Convert Corese undef Literal to equivalant RDF4J Literal
+     * Convert Corese undef Literal to equivalent RDF4J Literal
      * 
      * @param corese_undef_literal the Corese Literal to convert
      * @param dataType             datatype url

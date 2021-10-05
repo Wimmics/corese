@@ -21,7 +21,6 @@ import fr.inria.corese.core.Event;
 import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.rule.Rule;
 import fr.inria.corese.core.util.Duplicate;
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -124,6 +123,10 @@ public class Construct
     public Construct set(GraphManager g){
        graphManager = g; 
        return this;
+    }
+    
+    public GraphManager getGraphManager() {
+        return graphManager;
     }
     
      public boolean isBuffer() {

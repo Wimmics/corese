@@ -107,6 +107,9 @@ public class Graph extends GraphObject implements
     public static boolean SKOLEM_DEFAULT = false;
     // graph ?g { } iterate std and external named graph when true
     public static boolean EXTERNAL_NAMED_GRAPH = false;
+    // specific graph name for rule constraint error
+    public static boolean CONSTRAINT_NAMED_GRAPH = true;
+    public static boolean CONSTRAINT_GRAPH = false;
     // Prototype for additional Node e.g. fuzzy edge
     public static boolean METADATA_DEFAULT = false;
     // RDF Star
@@ -3319,6 +3322,10 @@ public class Graph extends GraphObject implements
     public Node getConstraintGraphNode() {
         return constraintGraph;
     }
+    
+    public Graph getConstraintGraph() {
+        return this;
+    }
 
     public boolean isRuleGraphNode(Node node) {
         return node == ruleGraph;
@@ -3563,7 +3570,7 @@ public class Graph extends GraphObject implements
     }
 
     public Node getRuleGraphName(boolean constraint) {
-        return constraint ? addConstraintGraphNode() : addRuleGraphNode();
+        return (constraint && CONSTRAINT_NAMED_GRAPH) ? addConstraintGraphNode() : addRuleGraphNode();
     }
 
     public boolean isMetadata() {

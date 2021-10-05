@@ -53,6 +53,12 @@ public class Property {
         GRAPH_NODE_AS_DATATYPE,
         // load rdf file into graph kg:default instead of graph file-path 
         LOAD_IN_DEFAULT_GRAPH,
+        // constraint rule error in specific named graph
+        CONSTRAINT_NAMED_GRAPH,
+        // constraint rule error in external named graph  
+        CONSTRAINT_GRAPH,
+        // graph ?g { } iterate std and external named graph
+        EXTERNAL_NAMED_GRAPH,
         // mockup of rdf* where triples are assserted
         RDF_STAR,
         // corese server for micro services
@@ -189,6 +195,18 @@ public class Property {
         switch (value) {
             case GRAPH_NODE_AS_DATATYPE:
                 NodeImpl.byIDatatype = b;
+                break;
+                
+            case CONSTRAINT_NAMED_GRAPH:
+                Graph.CONSTRAINT_NAMED_GRAPH = b;
+                break;
+                
+            case CONSTRAINT_GRAPH:
+                Graph.CONSTRAINT_GRAPH = b;
+                break;
+                
+            case EXTERNAL_NAMED_GRAPH:
+                Graph.EXTERNAL_NAMED_GRAPH = b;
                 break;
 
             case LOAD_IN_DEFAULT_GRAPH:

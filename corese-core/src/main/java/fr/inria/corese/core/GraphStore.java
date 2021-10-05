@@ -72,6 +72,14 @@ public class GraphStore extends Graph {
     public Graph getNamedGraph(String name) {
         return getStore().get(name);
     }
+    
+    @Override
+    public Graph getConstraintGraph() {
+        if (CONSTRAINT_GRAPH) {
+            return getCreateNamedGraph(Entailment.CONSTRAINT);
+        }
+        return this;
+    }
 
     public Graph createNamedGraph(String name) {
         Graph g = Graph.create();

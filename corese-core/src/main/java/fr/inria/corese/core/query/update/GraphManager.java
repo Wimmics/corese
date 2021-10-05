@@ -125,6 +125,20 @@ public class GraphManager {
     public Node getRuleGraphName(boolean constraint) {
         return graph.getRuleGraphName(constraint);
     }
+    
+    /**
+     * Constraint rule may have specific construct graph where to record
+     * constraint error
+     */
+    public GraphManager getGraphManager(boolean isConstraint) {
+        if (isConstraint) {
+            Graph g = getGraph().getConstraintGraph();
+            if (g != getGraph()) {
+                return new GraphManager(g);
+            }
+        }
+        return this;
+    }
       
     public int size() {
         return getDataBroker().graphSize();

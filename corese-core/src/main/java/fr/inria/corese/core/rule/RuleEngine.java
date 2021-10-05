@@ -117,6 +117,7 @@ public class RuleEngine implements Engine, Graphable {
     private boolean isSkipPath = false;
     private boolean synchronize = false;
     private boolean event = true;
+    private boolean record = false;
     private Context context;
     private ProcessVisitor visitor;
     private String base;
@@ -635,7 +636,9 @@ public class RuleEngine implements Engine, Graphable {
     // take a picture of graph Index, store it in graph kg:re1
     void begin(){
         processProfile();
-        getGraphStore().getContext().storeIndex(NSManager.KGRAM+"re1");
+        if (isRecord()) {
+            getGraphStore().getContext().storeIndex(NSManager.KGRAM+"re1");
+        }
         context();
     }
     
@@ -654,7 +657,9 @@ public class RuleEngine implements Engine, Graphable {
      */
     void end(){
         getGraphStore().getContext().setRuleEngine(this);
-        getGraphStore().getContext().storeIndex(NSManager.KGRAM+"re2");
+        if (isRecord()) {
+            getGraphStore().getContext().storeIndex(NSManager.KGRAM+"re2");
+        }
     }
     
     
@@ -884,10 +889,11 @@ public class RuleEngine implements Engine, Graphable {
         Date d1 = new Date();
         boolean isConstruct = isOptimize && isConstructResult;
 
-        Query qq = rule.getQuery();                  
-        Construct cons = Construct.createRule(qq, getGraphManager());
+        Query qq = rule.getQuery();  
+        GraphManager mgr = getGraphManager().getGraphManager(rule.isConstraint());
+        Construct cons = Construct.createRule(qq, mgr);
         // named graph to store inference rule entailment OR constraint rule error
-        cons.setDefaultGraph(getGraphManager().getRuleGraphName(rule.isConstraint()));
+        cons.setDefaultGraph(mgr.getRuleGraphName(rule.isConstraint()));
         cons.setAccessRight(b.getAccessRight());        
         cons.setRule(rule, rule.getIndex(), rule.getProvenance());
         cons.setLoopIndex(loopIndex);
@@ -993,7 +999,7 @@ public class RuleEngine implements Engine, Graphable {
         
         if (cons.isBuffer()) {
             // cons insert list contains only new edge that do not exist
-            getGraphManager().insert(r.getUniquePredicate(), cons.getInsertList());
+            cons.getGraphManager().insert(r.getUniquePredicate(), cons.getInsertList());
         } else {
             // create edges from Mappings as usual
             cons.entailment(map);
@@ -1500,6 +1506,14 @@ public class RuleEngine implements Engine, Graphable {
 
     public void setOptimizable(boolean optimizable) {
         this.optimizable = optimizable;
+    }
+
+    public boolean isRecord() {
+        return record;
+    }
+
+    public void setRecord(boolean record) {
+        this.record = record;
     }
 
 }

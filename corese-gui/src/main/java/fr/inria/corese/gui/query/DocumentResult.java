@@ -28,7 +28,7 @@ public class DocumentResult {
     
     void process(Mappings map) {
         setMappings(map);
-        setAst((ASTQuery) map.getQuery().getAST());
+        setAst( map.getQuery().getAST());
         explain();
     }
     

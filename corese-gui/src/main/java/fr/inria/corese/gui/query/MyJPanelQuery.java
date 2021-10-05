@@ -484,7 +484,7 @@ public final class MyJPanelQuery extends JPanel {
 
     String toString(Mappings map) {
         Query q = map.getQuery();
-        ASTQuery ast = (ASTQuery) map.getQuery().getAST();
+        ASTQuery ast =  map.getQuery().getAST();
         if (ast.isSPARQLQuery()) {
             if (map.getGraph() != null) {
                 return graphToString(map);
@@ -630,7 +630,7 @@ public final class MyJPanelQuery extends JPanel {
             return;
         }
         Query q = map.getQuery();
-        ASTQuery ast = (ASTQuery) q.getAST();
+        ASTQuery ast =  q.getAST();
         boolean oneValue = !map.getQuery().isListGroup();
         getTextAreaXMLResult().setText(toString(map));
 

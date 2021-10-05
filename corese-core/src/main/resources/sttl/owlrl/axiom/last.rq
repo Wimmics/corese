@@ -8,6 +8,9 @@ where {
 
   { ?in owl:disjointUnionOf ?y }
   union { ?in a owl:ReflexiveProperty }
+  # unionOf|intersectionOf only as argument of other expression, hence not in URI but in bnode
+  # [owl:unionOf()] rdfs:subClassOf ...
+  union { ?in owl:unionOf|owl:intersectionOf ?y  filter isURI(?in) }
   
   filter(st:alreadyVisited(?in, "fail", false))
  

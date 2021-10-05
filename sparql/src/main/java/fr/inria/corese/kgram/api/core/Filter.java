@@ -5,6 +5,7 @@ import java.util.List;
 
 /**
  * Interface of Filter that contains an evaluable expression
+ * Filter (and Expr) api refer to sparql.triple.parser.Expression
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
@@ -21,6 +22,7 @@ public interface Filter {
 	
 	/**
 	 * Evaluable expression processed by KGRAM generic Interpreter
+         * Expr api refer also to sparql.triple.parser.Expression
 	 * 
 	 * @return
 	 */

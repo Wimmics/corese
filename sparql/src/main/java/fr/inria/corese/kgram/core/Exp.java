@@ -66,6 +66,7 @@ public class Exp extends PointerObject
     private List<Node> nodeSet, 
             // in-scope variables except those that are only in right arg of optional
             simpleNodeList;
+    // Filter api refer to sparql.triple.parser.Expression
     Filter filter;
     List<Filter> lFilter;
     // min(?l, expGroupBy(?x, ?y))

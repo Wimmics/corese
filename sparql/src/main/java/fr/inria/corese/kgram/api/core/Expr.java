@@ -6,6 +6,7 @@ import java.util.List;
 
 
 /**
+ * Expr api refer to sparql.triple.parser.Expression
  * 
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *

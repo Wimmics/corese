@@ -16,6 +16,14 @@
   
   
   Maxime Lefrançois & Olivier Corby - Wimmics INRIA I3S - 2014-2021
+  @todo: 
+  some rules require explicit c a owl:Class
+  e.g. x a owl:Class -> x rdfs:subClassOf owl:Thing
+  what if c a owl:Class is missing ?
+  e.g. ex:Man rdfs:subClassOf ex:Human 
+  and no ex:Man a owl:Class ?
+
+  a owl:Restriction not considered as a owl:Class
 -->
 
 <rdf:RDF 
@@ -778,9 +786,24 @@ CONSTRUCT {
 WHERE {
     ?c a owl:Class .
 }
-
 </body>
 </rule>
+
+
+<!-- additional rule -->
+<rule rdf:about='&owl;Restriction'>
+<body>  
+CONSTRUCT {
+    ?x a owl:Thing .
+}
+WHERE {
+    _:b a owl:Restriction 
+    ?x a _:b
+    filter isURI(?x)
+}
+</body>
+</rule>
+
 
 <rule rdf:about='&owl;equivalentClass3'>
 <body>  <!--   scm eqc1 -->
@@ -1093,24 +1116,45 @@ WHERE {
 
 
 
+<rule rdf:about='&owl;hasKey'>
+<body>
+construct {
+    ?x owl:sameAs ?y
+}
+where {
+    ?c owl:hasKey ?list 
+    ?x a ?c
+    ?y a ?c
+    filter (?x != ?y)
+    
+    filter not exists { 
+        ?list rdf:rest*/rdf:first ?p
+        filter not exists { 
+            ?x ?p ?v .
+            ?y ?p ?v
+        }
+    }
+}
+</body>
+</rule>
+
+
 
 <!--  eq-ref  -->
 <rule rdf:about='&owl;sameAs'>
   <body> 
 CONSTRUCT {
-    ?s owl:sameAs ?s .
+    ?s  owl:sameAs ?s .
     ?pp owl:sameAs ?pp .
     ?oo owl:sameAs ?oo
 }
 WHERE {
-	?s ?p ?o
+	graph ?g {?s ?p ?o}
     # do not modify the ontology:
     filter (! strstarts(?p, owl:))
     filter (! strstarts(?p, rdfs:))
     filter (! strstarts(?p, xsd:))
-    filter (! strstarts(?p, rdf:) 
-        # exclude bnode object in:   s rdf:type [ a owl:Restriction ]
-        || (?p = rdf:type &amp;&amp; ! isBlank(?o)))
+    filter (! strstarts(?p, rdf:) || ?p = rdf:type)
     
     filter (! strstarts(?s, owl:))
     filter (! strstarts(?s, xsd:))
@@ -1122,8 +1166,11 @@ WHERE {
     filter (! strstarts(?o, rdf:))
     filter (! strstarts(?o, rdfs:))
     
-    bind (if (isLiteral(?o), error(), ?oo) as ?oo)
-    # protect from OWL not RL
+    bind (if (isLiteral(?o), error(),
+        # exclude bnode object of us:James a [ a owl:Restriction ... ]
+        if (isBlank(?o) &amp;&amp; ?p = rdf:type, error(), ?o)) 
+        as ?oo)
+    # protect from bnode property
     bind (if (isBlank(?p), error(), ?p) as ?pp)
 }
 </body>
@@ -1203,58 +1250,6 @@ WHERE {
 }
 </body>
 </rule>
-
-
-
-
-
-
-
-
-<!--
-Additional rule to check whether there is bnode as property.
-In this case, ontology is not OWL RL
--->
-
-
-
-<rule rdf:about='&owl;owlrlcheck1'>
-<type rdf:resource='&rule;constraint'/>
-<body>  
-CONSTRUCT {
-    [] a sp:ConstraintViolation ;
-    sp:arg1 ?s ;
-    sp:arg2 ?o ;
-    sp:violationPath ?p ;
-    sp:violationRoot ?r ;
-    sp:violationRoot ?v ;
-    rdfs:label "Blank Node property not in OWL RL Profile" .
-}
-WHERE {
-    ?s ?p ?o
-    filter isBlank(?p)
-    optional {
-        ?restr owl:onProperty ?p .
-        ?p ?r ?v
-        filter (?p != ?v)
-        # use case: owl:onProperty [ owl:inverseOf ex:hasFriend ]
-        filter ((strstarts(?r, owl:) &amp;&amp; ?r != owl:sameAs)  || strstarts(?r, rdfs:))
-    } 
-}
-</body>
-</rule>
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

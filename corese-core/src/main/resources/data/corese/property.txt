@@ -8,6 +8,9 @@
 #
 
 GRAPH_NODE_AS_DATATYPE  = true
+EXTERNAL_NAMED_GRAPH    = true
+CONSTRAINT_NAMED_GRAPH  = true
+CONSTRAINT_GRAPH        = true
 LOAD_IN_DEFAULT_GRAPH   = true
 SKOLEMIZE               = false
 RDF_STAR                = false
@@ -29,13 +32,13 @@ SERVER_VISITOR      = fr.inria.corese.server.webservice.QuerySolverVisitorServer
 VERBOSE        = false
 SOLVER_DEBUG   = false
 TRANSFORMER_DEBUG   = false
-INTERPRETER_TEST = true
-SOLVER_SORT_CARDINALITY   = true
+INTERPRETER_TEST = false
+SOLVER_SORT_CARDINALITY   = false
 
 #
 # Dataset
 #
-PREFIX        = h=http://www.inria.fr/2015/humans# ; i=http://www.inria.fr/2015/humans-instances#
+PREFIX        = d=http://ns.inria.fr/humans/data# ; h=http://ns.inria.fr/humans/schema#
 LOAD_FUNCTION = /user/corby/home/AAData/data/corese/function.rq
 #LOAD_LIMIT   = 10
 
@@ -47,5 +50,5 @@ LOAD_FUNCTION = /user/corby/home/AAData/data/corese/function.rq
 # Default value for corese gui
 RDFS_ENTAILMENT = false
 
-LOAD_DATASET  = /user/corby/home/AAServer/data/tutorial/human1.rdf;/user/corby/home/AAServer/data/tutorial/human2.rdf;/user/corby/home/AAServer/data/tutorial/human.rdfs
+#LOAD_DATASET  = /user/corby/home/AADemoNew/tdinrae/data/humans_owl.ttl ; /user/corby/home/AADemoNew/tdinrae/data/humans_data.ttl ; /user/corby/home/AADemoNew/tdinrae/data/humans_schema.ttl
 #LOAD_RULE     = http://www.w3.org/ns/owl-profile/RL

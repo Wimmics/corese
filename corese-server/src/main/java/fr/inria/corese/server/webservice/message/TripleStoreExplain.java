@@ -30,7 +30,7 @@ public class TripleStoreExplain {
         setQueryProcess(exec);
         setMappings(map);
         setQuery(map.getQuery());
-        setAst((ASTQuery)getQuery().getAST());
+        setAst(getQuery().getAST());
         setContext(context);
     }
     

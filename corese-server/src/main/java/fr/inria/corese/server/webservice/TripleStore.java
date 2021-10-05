@@ -346,7 +346,7 @@ public class TripleStore implements URLParam {
     Mappings spin(String query, Dataset ds) throws EngineException {
         Query q = getQueryProcess().compile(query);
         SPINProcess sp = SPINProcess.create();
-        Graph g = sp.toSpinGraph(getQueryProcess().getAST(q));
+        Graph g = sp.toSpinGraph(q.getAST());
         Mappings map = Mappings.create(q);
         map.setGraph(g);
         return map;

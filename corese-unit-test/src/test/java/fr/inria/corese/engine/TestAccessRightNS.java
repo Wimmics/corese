@@ -1,5 +1,9 @@
 package fr.inria.corese.engine;
 
+import org.junit.Assert;
+import org.junit.Ignore;
+import org.junit.Test;
+
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.parser.FunctionCompiler;
 import fr.inria.corese.core.Graph;
@@ -9,11 +13,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessNamespace;
-import java.util.logging.Level;
-import java.util.logging.Logger;
-import org.junit.Assert;
-import org.junit.Ignore;
-import org.junit.Test;
 
 /**
  *
@@ -144,7 +143,7 @@ public class TestAccessRightNS {
                 try {
                         map = exec.query(q);
                         // System.out.println(map);
-                        IDatatype dt = (IDatatype) map.getValue("?t");
+                        map.getValue("?t");
                         Assert.assertEquals(false, true);
                 } catch (EngineException ex) {
                         // ok
@@ -189,7 +188,7 @@ public class TestAccessRightNS {
                 Mappings map;
                 try {
                         map = exec.query(q);
-                        IDatatype dt = (IDatatype) map.getValue("?t");
+                        map.getValue("?t");
                         Assert.assertEquals(false, true);
                 } catch (EngineException ex) {
                         System.out.println("trap safety exception with success");

@@ -1,11 +1,28 @@
 package fr.inria.corese.engine;
 
-import fr.inria.corese.compiler.eval.QuerySolver;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+import java.util.logging.Logger;
 
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+
+import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.compiler.result.XMLResult;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.extension.Extension;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
@@ -23,50 +40,31 @@ import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphStoreInit;
 import fr.inria.corese.core.util.QueryManager;
 import fr.inria.corese.core.util.SPINProcess;
-import fr.inria.corese.sparql.datatype.RDF;
-import org.junit.BeforeClass;
-import org.junit.Test;
-
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.storage.api.IStorage;
-import fr.inria.corese.sparql.storage.api.Parameters;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.Context;
-import fr.inria.corese.sparql.triple.parser.Dataset;
-import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.compiler.result.XMLResult;
-import fr.inria.corese.core.extension.Extension;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.datatype.extension.CoresePointer;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.LDScriptException;
 import fr.inria.corese.sparql.exceptions.UndefinedExpressionException;
+import fr.inria.corese.sparql.storage.api.IStorage;
+import fr.inria.corese.sparql.storage.api.Parameters;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.kgram.api.core.PointerType;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-import java.util.logging.Logger;
-
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
-
-import org.junit.AfterClass;
-import org.junit.Assert;
-
-import static org.junit.Assert.*;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  *
@@ -77,13 +75,9 @@ public class TestQuery1 {
     static String data = TestQuery1.class.getResource("data").getPath();
     static String QUERY = Thread.currentThread().getContextClassLoader().getResource("query/").getPath();
     static String text = Thread.currentThread().getContextClassLoader().getResource("text/").getPath();
-    // TODO manque dossier test
-    // static String test = Thread.currentThread().getContextClassLoader().getResource("test/").getPath();
 
     private static final String FOAF = "http://xmlns.com/foaf/0.1/";
-    private static final String SPIN_PREF = "prefix sp: <" + NSManager.SPIN + ">\n";
     private static final String FOAF_PREF = "prefix foaf: <http://xmlns.com/foaf/0.1/>\n";
-    private static final String SQL_PREF = "prefix sql: <http://ns.inria.fr/ast/sql#>\n";
     static Graph graph;
 
     @BeforeClass
@@ -129,7 +123,7 @@ public class TestQuery1 {
                 + "xt:print(java:getAST(xt:query())) ;" + "xt:display( ?e, ?x, ?y) ; " + "error() " + "}" + "}";
 
         try {
-            Query qq = exec.compile(q);
+            exec.compile(q);
         } catch (EngineException ex) {
             Logger.getLogger(TestQuery1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
@@ -170,7 +164,7 @@ public class TestQuery1 {
 
         ;
         try {
-            Query qq = exec.compile(q);
+            exec.compile(q);
         } catch (EngineException ex) {
             System.out.println(ex);
             Logger.getLogger(TestQuery1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
@@ -228,7 +222,7 @@ public class TestQuery1 {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         exec.query(i);
-        Mappings map = exec.query(q);
+        exec.query(q);
     }
 
     // @Test
@@ -255,25 +249,6 @@ public class TestQuery1 {
         System.out.println(gg.getContent());
     }
 
-    // @Test
-    // @Ignore
-    // // TODO
-    // public void xslt() throws EngineException {
-    //     String q = String.format("select (us:test(<%s>, <%s>) as ?t) (us:test(xt:xml(?t)) as ?name) where {}"
-
-    //             + "function us:test(xml, xslt) {" + "let (doc = xt:xml(xml)) {" + "xt:xslt(doc, xslt)" + "}" + "}",
-    //             test + "data/data.xml", test + "data/xslt.xsl")
-
-    //             + "function us:test(xml) {" + "for (doc in xml) {" + "for (node in doc) {"
-    //             + "return(dom:getNodeName(node))" + "}" + "}" + "}";
-
-    //     Graph g = Graph.create();
-    //     QueryProcess exec = QueryProcess.create(g);
-    //     Mappings map = exec.query(q);
-    //     DatatypeValue dt = map.getValue("?name");
-    //     assertEquals("title", dt.stringValue());
-    // }
-
     @Test
     public void json() throws EngineException, MalformedURLException, LoadException, URISyntaxException {
         String q = "select (us:test() as ?t) " + "where {}" + "function us:test() {"
@@ -281,7 +256,7 @@ public class TestQuery1 {
                 + "return (xt:path(json, '/knows/1/name'))" + "} " + "}";
 
         Graph g = Graph.create();
-        Load load = Load.create(g);
+        Load.create(g);
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
         DatatypeValue dt = map.getValue("?t");
@@ -368,7 +343,7 @@ public class TestQuery1 {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         try {
-            Mappings map = exec.query(q);
+            exec.query(q);
             assertEquals(false, true);
         } catch (EngineException ex) {
             assertEquals(2, ex.getDatatypeValue().intValue());
@@ -412,7 +387,7 @@ public class TestQuery1 {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         try {
-            Mappings map = exec.query(q);
+            exec.query(q);
             assertEquals(false, true);
         } catch (LDScriptException ex) {
             assertEquals(1, ex.getDatatypeValue().intValue());
@@ -450,7 +425,7 @@ public class TestQuery1 {
                 + "select * where {bind (ex:mytest(xt:graph()) as ?t) } limit 10";
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
-        exec.setReentrant(true);
+        QueryProcess.setReentrant(true);
         Mappings map = exec.query(q);
         map = exec.query("select * from us:g1 where { ?s ?p ?o }");
         assertEquals(1, map.size());
@@ -460,7 +435,7 @@ public class TestQuery1 {
         Graph g = (Graph) dt.getPointerObject();
         try {
             QueryProcess exec = QueryProcess.create(g);
-            Mappings map = exec.query("insert { graph us:g1 { [] rdf:value ?v } } where { bind (rand() as ?v) }");
+            exec.query("insert { graph us:g1 { [] rdf:value ?v } } where { bind (rand() as ?v) }");
         } catch (EngineException ex) {
             Logger.getLogger(Extension.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
@@ -863,7 +838,6 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         String i = "insert data {  " + "us:John foaf:knows us:Jim , us:John . " + "us:Jim  foaf:knows us:John, us:Jim "
                 + "}";
-        String i2 = "insert data { us:John foaf:knows  us:Jim . us:Jim foaf:knows us:John }";
         String q = "select * where {  ?x foaf:knows+ ?y }";
 
         exec.query(i);
@@ -1103,7 +1077,7 @@ public class TestQuery1 {
 
         GraphStore graph = GraphStore.create();
         QueryProcess exec = QueryProcess.create(graph);
-        exec.setOverwrite(true);
+        QueryProcess.setOverwrite(true);
 
         String i1 = "insert data { graph <http://example.org/g>  { us:John rdfs:label 'John'  } }";
         String i11 = "with <http://example.org/g1> " + "insert { ?x rdfs:label ?y }"
@@ -1121,12 +1095,11 @@ public class TestQuery1 {
         exec.query(i1);
         Graph g = graph.getNamedGraph("http://example.org/g");
 
-        Mappings map = exec.query(i11);
-        Graph g1 = graph.getNamedGraph("http://example.org/g1");
-        Mappings m4 = exec.query(q4);
-        // System.out.println(m4);
+        exec.query(i11);
+        graph.getNamedGraph("http://example.org/g1");
+        exec.query(q4);
 
-        Mappings m1 = exec.query(q);
+        exec.query(q);
         exec.query(i2);
         Mappings m2 = exec.query(q);
         assertEquals(2, m2.size());
@@ -1135,7 +1108,7 @@ public class TestQuery1 {
         Mappings m3 = exec.query(q2);
         assertEquals(1, m3.size());
 
-        exec.setOverwrite(false);
+        QueryProcess.setOverwrite(false);
 
     }
 
@@ -1145,7 +1118,7 @@ public class TestQuery1 {
         GraphStore graph = GraphStore.create();
         QueryProcess exec = QueryProcess.create(graph);
 
-        exec.setOverwrite(true);
+        QueryProcess.setOverwrite(true);
 
         String i = "select * where { " + "bind (us:test()  as ?r) " + "graph us:g1 { ?s ?p ?o }" + "}"
                 + "function us:test() {" + "query(insert data { graph us:g1 { us:Jack foaf:name 'Jack' } } ) " + "}";
@@ -1160,7 +1133,7 @@ public class TestQuery1 {
         Mappings m = exec.query(q3);
         assertEquals(0, m.size());
 
-        exec.setOverwrite(false);
+        QueryProcess.setOverwrite(false);
 
     }
 

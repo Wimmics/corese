@@ -58,7 +58,7 @@ public class DataShapeExt {
     
     Graph myinit() throws EngineException, LoadException, IOException {
         Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.parse(data + "test/human1.rdf");
         ld.parse(data + "test/human2.rdf");
@@ -734,9 +734,7 @@ public class DataShapeExt {
         QueryProcess exec = QueryProcess.create(g);
         exec.query(i);
         Shacl shacl = new MyShacl(g);
-        Graph gg = shacl.eval();
-        //System.out.println(Transformer.turtle(gg));
-        //assertEquals(2, shacl.nbResult(gg));
+        shacl.eval();
     }
     
     
@@ -1158,7 +1156,7 @@ public class DataShapeExt {
 
     Graph init() throws EngineException, LoadException, IOException {
         Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.parse(data + "test/human1.rdf");
         ld.parse(data + "test/human2.rdf");
@@ -1169,16 +1167,11 @@ public class DataShapeExt {
     @Test
     public void testshaclexp3() throws EngineException, LoadException, IOException, TransformerException {
         Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.parse(data + "test/human1.rdf");
         ld.parse(data + "test/human2.rdf");
         ld.parse(data + "test/shapeexp2.ttl");
-
-        String q = "@import <http://ns.inria.fr/sparql-template/function/datashape/main.rq> "
-                + "select * where {}"
-                + "bind (sh:shacl() as ?g)"
-                + "}";
 
         Shacl shacl = new MyShacl(g);
         Graph gg = shacl.eval();
@@ -1269,7 +1262,7 @@ public class DataShapeExt {
     @Test
     public void testshaclexp1() throws EngineException, LoadException, IOException, TransformerException {
         Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.parse(data + "test/human1.rdf");
         ld.parse(data + "test/human2.rdf");
@@ -1281,25 +1274,10 @@ public class DataShapeExt {
         assertEquals(11, gg.size());
     }
 
-    //@Test
-//    public void testshacljavaexp2() throws EngineException, LoadException, IOException, TransformerException {
-//        Graph g = Graph.create();
-//        QueryProcess exec = QueryProcess.create(g);
-//        Load ld = Load.create(g);
-//        ld.parse(data + "test/human1.rdf");
-//        ld.parse(data + "test/human2.rdf");
-//        ld.parse(data + "test/shapeexp2.ttl");
-//
-//        ShaclJava shacl = new ShaclJava(g);
-//        Graph gg = shacl.eval();
-//        //System.out.println(Transformer.turtle(gg));
-//        assertEquals(2, gg.size());
-//    }
-
     @Test
     public void testshaclexp4() throws EngineException, LoadException, IOException, TransformerException {
         Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.parse(data + "test/human1.rdf");
         ld.parse(data + "test/human2.rdf");
@@ -1313,7 +1291,7 @@ public class DataShapeExt {
     @Test
     public void testshaclexp5() throws EngineException, LoadException, IOException, TransformerException {
         Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.parse(data + "test/human1.rdf");
         ld.parse(data + "test/human2.rdf");
@@ -1329,7 +1307,7 @@ public class DataShapeExt {
     @Test
     public void testshaclexp6() throws EngineException, LoadException, IOException, TransformerException {
         Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.parse(data + "test/human1.rdf");
         ld.parse(data + "test/human2.rdf");
@@ -1345,7 +1323,7 @@ public class DataShapeExt {
     @Test
     public void testshaclexp7() throws EngineException, LoadException, IOException, TransformerException {
         Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.parse(data + "test/human1.rdf");
         ld.parse(data + "test/human2.rdf");
@@ -1361,7 +1339,7 @@ public class DataShapeExt {
     @Test
     public void testshaclexp8() throws EngineException, LoadException, IOException, TransformerException {
         Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.parse(data + "test/human1.rdf");
         ld.parse(data + "test/human2.rdf");
@@ -1377,7 +1355,7 @@ public class DataShapeExt {
     @Test
     public void testshaclexp9() throws EngineException, LoadException, IOException, TransformerException {
         Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.parse(data + "test/human1.rdf");
         ld.parse(data + "test/human2.rdf");
@@ -1394,7 +1372,7 @@ public class DataShapeExt {
     @Test
     public void testshaclexp10() throws EngineException, LoadException, IOException, TransformerException {
         Graph g = Graph.create();
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Load ld = Load.create(g);
         ld.parse(data + "test/human.rdfs");
         ld.parse(data + "test/human1.rdf");
@@ -1494,11 +1472,10 @@ public class DataShapeExt {
  @Test
     public void testapi2() throws EngineException, LoadException, IOException, TransformerException {      
         Shacl shacl = api2(qapi1());
-        Graph g = shacl.getResult();
-        //System.out.println(Transformer.turtle(g));
+        shacl.getResult();
         
         shacl = api2(qapi10());
-        g = shacl.getResult();
+        shacl.getResult();
     }
     
     String qapi10() {

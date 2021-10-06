@@ -534,15 +534,6 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return newResource(ns + name);
     }
 
-    public static IDatatype newDateOld() {
-        try {
-            return new CoreseDateTimeOld();
-        } catch (CoreseDatatypeException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public static IDatatype newDate() {
         try {
             return new CoreseDateTime();
@@ -553,28 +544,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return null;
     }
 
-    public static IDatatype newDateOld(String date) {
-        try {
-            return new CoreseDateOld(date);
-        } catch (CoreseDatatypeException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
     public static IDatatype newDate(String date) {
         try {
             return new CoreseDate(date);
         } catch (DatatypeConfigurationException e) {
-            e.printStackTrace();
-        }
-        return null;
-    }
-
-    public static IDatatype newDateTimeOld(String date) {
-        try {
-            return new CoreseDateTimeOld(date);
-        } catch (CoreseDatatypeException e) {
             e.printStackTrace();
         }
         return null;
@@ -1007,10 +980,6 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
             return null;
         }
         return getDate(dt).getTZ();
-    }
-
-    static CoreseDateOld getDateOld(IDatatype dt) {
-        return (CoreseDateOld) dt;
     }
 
     static CoreseDate getDate(IDatatype dt) {

@@ -23,9 +23,12 @@ public class CoreseStatementTest {
     public static Node predicate_firstName;
     public static Node predicate_lastName;
 
-    public static Node context_singer;
-    public static Node context_edith;
-    public static Node context_piaf;
+    public static Node object_singer;
+    public static Node object_edith;
+    public static Node object_piaf;
+
+    public static Node context_1;
+    public static Node context_2;
 
     @BeforeClass
     public static void buildGraph() {
@@ -37,54 +40,67 @@ public class CoreseStatementTest {
 
         // Create and add IRIs to Graph
         edith_piaf = graph.addResource(ex + "EdithPiaf");
-        context_singer = graph.addResource(ex + "Singer");
+        object_singer = graph.addResource(ex + "Singer");
 
         // Create and add properties to Graph
         predicate_rdfType = graph.addProperty(RDF.TYPE);
         predicate_firstName = graph.addProperty(ex + "firstName");
         predicate_lastName = graph.addProperty(ex + "lastName");
 
+        // Create and add contexts to graph
+        context_1 = graph.addGraph(ex + "context1");
+        context_2 = graph.addGraph(ex + "context2");
+
         // Add first statement : Edith Piaf is an Singer
-        edge_edit_singer = graph.addEdge(edith_piaf, predicate_rdfType, context_singer);
+        edge_edit_singer = graph.addEdge(edith_piaf, predicate_rdfType, object_singer);
 
         // Add second statement : Edith Piaf's first name is Edith
-        context_edith = graph.addLiteral("Edith");
-        edge_edit_fname = graph.addEdge(edith_piaf, predicate_firstName, context_edith);
+        object_edith = graph.addLiteral("Edith");
+        edge_edit_fname = graph.addEdge(context_1, edith_piaf, predicate_firstName, object_edith);
 
         // Add third statement : Edith Piaf's last name is Piaf
-        context_piaf = graph.addLiteral("Piaf");
-        edge_edit_lname = graph.addEdge(edith_piaf, predicate_lastName, context_piaf);
+        object_piaf = graph.addLiteral("Piaf");
+        edge_edit_lname = graph.addEdge(context_2, edith_piaf, predicate_lastName, object_piaf);
     }
 
     @Test
     public void getSubject() {
-        Value subject = edith_piaf.getDatatypeValue().getRdf4jValue();
+        Value subject_rdf4j = edith_piaf.getDatatypeValue().getRdf4jValue();
 
-        assertEquals(subject, edge_edit_singer.getSubject());
-        assertEquals(subject, edge_edit_fname.getSubject());
-        assertEquals(subject, edge_edit_lname.getSubject());
+        assertEquals(subject_rdf4j, edge_edit_singer.getSubject());
+        assertEquals(subject_rdf4j, edge_edit_fname.getSubject());
+        assertEquals(subject_rdf4j, edge_edit_lname.getSubject());
     }
 
     @Test
     public void getPredicate() {
-        Value rdfType = predicate_rdfType.getDatatypeValue().getRdf4jValue();
-        Value firstName = predicate_firstName.getDatatypeValue().getRdf4jValue();
-        Value lastName = predicate_lastName.getDatatypeValue().getRdf4jValue();
+        Value rdfType_rdf4j = predicate_rdfType.getDatatypeValue().getRdf4jValue();
+        Value firstName_rdf4j = predicate_firstName.getDatatypeValue().getRdf4jValue();
+        Value lastName_rdf4j = predicate_lastName.getDatatypeValue().getRdf4jValue();
 
-        assertEquals(rdfType, edge_edit_singer.getPredicate());
-        assertEquals(firstName, edge_edit_fname.getPredicate());
-        assertEquals(lastName, edge_edit_lname.getPredicate());
+        assertEquals(rdfType_rdf4j, edge_edit_singer.getPredicate());
+        assertEquals(firstName_rdf4j, edge_edit_fname.getPredicate());
+        assertEquals(lastName_rdf4j, edge_edit_lname.getPredicate());
+    }
+
+    @Test
+    public void getObject() {
+        Value singer_rdf4j = object_singer.getDatatypeValue().getRdf4jValue();
+        Value edith_rdf4j = object_edith.getDatatypeValue().getRdf4jValue();
+        Value piaf_rdf4j = object_piaf.getDatatypeValue().getRdf4jValue();
+
+        assertEquals(singer_rdf4j, edge_edit_singer.getObject());
+        assertEquals(edith_rdf4j, edge_edit_fname.getObject());
+        assertEquals(piaf_rdf4j, edge_edit_lname.getObject());
     }
 
     @Test
     public void getContext() {
-        Value singer = context_singer.getDatatypeValue().getRdf4jValue();
-        Value edith = context_edith.getDatatypeValue().getRdf4jValue();
-        Value piaf = context_piaf.getDatatypeValue().getRdf4jValue();
+        Value context1_rdf4j = context_1.getDatatypeValue().getRdf4jValue();
+        Value context2_rdf4j = context_2.getDatatypeValue().getRdf4jValue();
 
-        assertEquals(singer, edge_edit_singer.getObject());
-        assertEquals(edith, edge_edit_fname.getObject());
-        assertEquals(piaf, edge_edit_lname.getObject());
+        assertEquals(null, edge_edit_singer.getContext());
+        assertEquals(context1_rdf4j, edge_edit_fname.getContext());
+        assertEquals(context2_rdf4j, edge_edit_lname.getContext());
     }
-
 }

@@ -22,6 +22,7 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
  */
 public abstract class EdgeTop extends GraphObject implements Edge {
     private byte level = AccessRight.DEFAULT;
+    private static final long serialVersionUID = 2087591563645988076L;
 
     public Edge copy() {
         return create(getGraph(), getNode(0), getEdgeNode(), getNode(1));
@@ -61,7 +62,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
 
     public void setEdgeNode(Node pred) {
     }
-    
+
     @Override
     public void setProperty(Node pred) {
         setEdgeNode(pred);
@@ -122,7 +123,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     }
 
     IDatatype nodeValue(Node n) {
-        return  n.getDatatypeValue();
+        return n.getDatatypeValue();
     }
 
     @Override
@@ -147,31 +148,29 @@ public abstract class EdgeTop extends GraphObject implements Edge {
 
     @Override
     public boolean equals(Object o) {
-        if (o == this) {
-            return true;
-        }
-        if (!(o instanceof Statement)) {
-            return false;
-        }
+        // We check object equality first since it's most likely to be different. In
+        // general the number of different
+        // predicates and contexts in sets of statements are the smallest (and therefore
+        // most likely to be identical),
+        // so these are checked last.
 
-        Statement other = (Statement) o;
+        return this == o || o instanceof Statement && this.getObject().equals(((Statement) o).getObject())
+                && this.getSubject().equals(((Statement) o).getSubject())
+                && this.getPredicate().equals(((Statement) o).getPredicate())
+                && Objects.equals(this.getContext(), ((Statement) o).getContext());
+    }
 
-        if (!this.getSubject().equals(other.getSubject())) {
-            return false;
-        }
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder(256);
 
-        if (!this.getPredicate().equals(other.getPredicate())) {
-            return false;
-        }
+        sb.append("(" + getSubject() + ", " + getPredicate() + ", " + getObject()
+                + (getContext() == null ? "" : ", " + getContext()) + ")");
 
-        if (!this.getObject().equals(other.getObject())) {
-            return false;
-        }
-
-        if (!Objects.equals(this.getContext(), other.getContext())) {
-            return false;
+        if (getContext() != null) {
+            sb.append(" [").append(getContext()).append("]");
         }
 
-        return true;
+        return sb.toString();
     }
 }

@@ -113,12 +113,7 @@ public class EdgeImpl extends EdgeTop
         if (nbNode()>2){
             return tuple();
         }
-        String str = "";
-        if (displayGraph) {
-            str += getGraph() + " ";
-        }
-        str += getNode(0) + " " + getEdgeNode() + " " + getNode(1);
-        return str;
+        return super.toString();
     }
     
     public String tuple() {

@@ -17,7 +17,6 @@ import org.eclipse.rdf4j.model.impl.FilteredModel;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.rdf4j.ModelApiImpl.ApiImpl.Utils;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 

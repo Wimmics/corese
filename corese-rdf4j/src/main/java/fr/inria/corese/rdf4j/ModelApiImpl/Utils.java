@@ -1,4 +1,4 @@
-package fr.inria.corese.rdf4j.ModelApiImpl.ApiImpl;
+package fr.inria.corese.rdf4j.ModelApiImpl;
 
 import java.util.ArrayList;
 import java.util.HashSet;
@@ -14,7 +14,6 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.rdf4j.ModelApiImpl.CoreseModel;
 import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
 public class Utils {

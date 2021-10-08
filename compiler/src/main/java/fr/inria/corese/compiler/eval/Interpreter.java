@@ -215,6 +215,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         IDatatype dt = ((Expression) exp).evalWE(this, b, env, p);
         if (b.isDebug()) {
             System.out.println("eval: " + exp + " = " + dt);
+            System.out.println(env);
         }
 //        if (dt == null) {
 //            // Evaluation error, may be overloaded by visitor event @error function 

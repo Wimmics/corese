@@ -64,7 +64,7 @@ public class QuerySolver implements SPARQLEngine {
 //    public static final int PROTECT_SERVER_MODE = 1;
 //    static int INIT_SERVER_MODE = DEFAULT_MODE;
 
-    private static int QUERY_PLAN = Query.QP_DEFAULT;
+    public static int QUERY_PLAN = Query.QP_DEFAULT;
 
     public static boolean BGP_DEFAULT = false;
     public static boolean ALGEBRA_DEFAULT = false;

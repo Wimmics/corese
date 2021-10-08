@@ -8,6 +8,8 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_LIMIT;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
@@ -482,10 +484,15 @@ public class Service implements URLParam {
                 ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
             }
             // DRAFT: for testing (modify ast ...)
-            String lim = getURL().getParameter(LIMIT);
-            if (lim != null) {
-                ast.setLimit(Integer.valueOf(lim));
+            Integer lim = getURL().intValue(LIMIT);
+            if (lim != -1) {
+                ast.setLimit(lim);
             }
+            lim = Property.intValue(SERVICE_LIMIT);
+            if (lim != null) {
+                ast.setLimit(lim);
+            }
+            
         }
         if (getURL().isGET() || ast.getGlobalAST().hasMetadata(Metadata.GET)) {
             setPost(false);

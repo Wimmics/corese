@@ -75,7 +75,6 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.URLServer;
-import java.net.URLEncoder;
 import javax.ws.rs.core.Response;
 
 /**
@@ -122,7 +121,7 @@ public class PluginImpl
     String PPRINTER = DEF_PPRINTER;
     MatcherImpl match;
     Loader ld;
-    private Object dtnumber;
+    //private Object dtnumber;
     boolean isCache = false;
     TreeNode cache;
 

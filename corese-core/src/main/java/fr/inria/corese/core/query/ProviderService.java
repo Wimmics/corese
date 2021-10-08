@@ -18,6 +18,11 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.util.Property;
+import fr.inria.corese.core.util.Property.Value;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_PARAMETER;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_SLICE;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_TIMEOUT;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -202,7 +207,7 @@ public class ProviderService implements URLParam {
         for (Node service : serverList) {
 
             String name = service.getLabel();
-            URLServer url = new URLServer(name);
+            URLServer url = new URLServer(name, Property.stringValue(SERVICE_PARAMETER));
             if (!ok) {
                 url.setUndefined(true);
             }
@@ -639,6 +644,9 @@ public class ProviderService implements URLParam {
     int getTimeout(Node serv) {
         Integer time = (Integer) getQuery().getGlobalQuery().getPragma(Pragma.TIMEOUT);
         if (time == null) {
+            time = Property.intValue(SERVICE_TIMEOUT);
+        }
+        if (time == null) {
             return getEval().getVisitor().timeout(serv);
         }
         return time;
@@ -646,8 +654,12 @@ public class ProviderService implements URLParam {
 
     int getSlice(Node serv, Mappings map) {
         // former: 
-        getQuery().getGlobalQuery().getSlice();
-        int slice = getEval().getVisitor().slice(serv, map == null ? Mappings.create(getQuery()) : map);
+        //getQuery().getGlobalQuery().getSlice();
+        Integer slice = Property.intValue(SERVICE_SLICE);
+        if (slice != null) {
+            return slice;
+        }
+        slice = getEval().getVisitor().slice(serv, map == null ? Mappings.create(getQuery()) : map);
         IDatatype dt = getBinding().getGlobalVariable(Binding.SLICE_SERVICE);
         if (dt == null) {
             return slice;

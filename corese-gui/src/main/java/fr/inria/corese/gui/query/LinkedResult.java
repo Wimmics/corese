@@ -4,6 +4,8 @@ import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.query.ProviderService;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_BROWSE;
 import fr.inria.corese.gui.core.MainFrame;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -90,7 +92,7 @@ public class LinkedResult implements URLParam {
         }
         
         ASTQuery ast = (ASTQuery) map.getAST();
-        if (ast.hasMetadata(Metadata.BROWSE)) {
+        if (ast.hasMetadata(Metadata.BROWSE) || Property.booleanValue(SERVICE_BROWSE)) {
             browse(map);
         }
     }

@@ -495,6 +495,24 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         }
         return intCache[value];
     }
+    
+    public static IDatatype newValue(String result) {
+        if (result.equals("true")) {
+            return TRUE;
+        }
+        if (result.equals("false")) {
+            return FALSE;
+        }
+        if (result.startsWith("http://")) {
+            return newResource(result);
+        }
+        try {
+            return newInstance(Integer.valueOf(result));
+        }
+        catch (Exception e) {        
+        }
+        return newInstance(result);
+    }
 
     public static IDatatype newInstance(String result) {
         return new CoreseString(result);

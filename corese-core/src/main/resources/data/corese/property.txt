@@ -7,10 +7,13 @@
 # Property.set(LOAD_IN_DEFAULT_GRAPH, true);
 #
 BLANK_NODE              = _:b
-
+DISPLAY_URI_AS_PREFIX   = true
 GRAPH_NODE_AS_DATATYPE  = true
+# graph ?g { } iterate external named graph
 EXTERNAL_NAMED_GRAPH    = true
+# constraint rule entailment in kg:constraint named graph
 CONSTRAINT_NAMED_GRAPH  = true
+# constraint rule entailment in external kg:constraint named graph
 CONSTRAINT_GRAPH        = true
 LOAD_IN_DEFAULT_GRAPH   = true
 SKOLEMIZE               = false
@@ -24,14 +27,14 @@ ACCESS_RIGHT            = false
 EVENT               = false
 RULE_VISITOR        = fr.inria.corese.core.visitor.solver.QuerySolverVisitorRuleUser
 #SOLVER_VISITOR      = fr.inria.corese.core.visitor.solver.QuerySolverVisitorUser
-TRANSFORMER_VISITOR = fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformerUser
+#TRANSFORMER_VISITOR = fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformerUser
 SERVER_VISITOR      = fr.inria.corese.server.webservice.QuerySolverVisitorServerUser
 
 #
 # Test, debug
 #
 VERBOSE        = false
-SOLVER_DEBUG   = false
+SOLVER_DEBUG   = true
 TRANSFORMER_DEBUG   = false
 INTERPRETER_TEST = false
 SOLVER_SORT_CARDINALITY   = false
@@ -39,17 +42,17 @@ SOLVER_SORT_CARDINALITY   = false
 SOLVER_QUERY_PLAN = STD
 
 LDSCRIPT_DEBUG           = false
-LDSCRIPT_CHECK_DATATYPE  = true
-LDSCRIPT_CHECK_RDFTYPE   = true
-LDSCRIPT_VARIABLE        = test=value;var=test
+LDSCRIPT_CHECK_DATATYPE  = false
+LDSCRIPT_CHECK_RDFTYPE   = false
+# trace var in owl rl checker
+LDSCRIPT_VARIABLE        = trace_sttl_undo=true
 
 SERVICE_BINDING     = values 
 SERVICE_SLICE       = 10
-SERVICE_LIMIT       = 10
-SERVICE_TIMEOUT     = 500
-SERVICE_PARAMETER   = mode=message;link&transform=st:map
-# GUI browse Linked Result
-SERVICE_BROWSE      = true
+SERVICE_LIMIT       = 100
+SERVICE_TIMEOUT     = 2000
+#SERVICE_PARAMETER   = mode=link;debug;show&transform=st:xml&format=json
+
 
 
 
@@ -57,17 +60,30 @@ SERVICE_BROWSE      = true
 # Dataset
 #
 PREFIX        = d=http://ns.inria.fr/humans/data# ; h=http://ns.inria.fr/humans/schema#
-LOAD_FUNCTION = /user/corby/home/AAData/data/corese/function.rq
+
 #LOAD_LIMIT   = 10
 
+# load take ?format=rdfxml into account
+#LOAD_WITH_PARAMETER = true
+
+#LOAD_FORMAT   = text/turtle;q=1.0, application/rdf+xml;q=0.9, application/ld+json;q=0.7; application/json;q=0.6
+
+#LOAD_FORMAT   =application/rdf+xml
 #
 # use case: corese gui
 # Property.init(graph);
 #
 
+GUI_TITLE = Corese Semantic Web Factory - Inria UCA - R&D version - 2021-10-16 
+
+# GUI browse Linked Result
+SERVICE_BROWSE      = true
+
 # Default value for corese gui
 RDFS_ENTAILMENT = false
-
+LOAD_DATASET  = /user/corby/home/AADemoNew/inrae/data/humans_owl.ttl
 #LOAD_DATASET  = /user/corby/home/AADemoNew/tdinrae/data/humans_owl.ttl ; /user/corby/home/AADemoNew/tdinrae/data/humans_data.ttl ; /user/corby/home/AADemoNew/tdinrae/data/humans_schema.ttl
 #LOAD_RULE     = http://www.w3.org/ns/owl-profile/RL
+LOAD_QUERY     = /user/corby/home/AADemoNew/load.rq
+LOAD_FUNCTION = /user/corby/home/AAData/data/corese/function.rq
 

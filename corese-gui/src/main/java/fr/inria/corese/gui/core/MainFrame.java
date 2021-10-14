@@ -61,6 +61,8 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.GUI_TITLE;
+import static fr.inria.corese.core.util.Property.Value.LOAD_QUERY;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.shex.shacl.Shex;
 import fr.inria.corese.sparql.exceptions.SafetyException;
@@ -1892,9 +1894,11 @@ public class MainFrame extends JFrame implements ActionListener {
             myCorese.finish();
         }
         myCorese = GraphEngine.create(rdfs);
+        // execute options and -init property
         myCorese.init(cmd);
     }
     
+    // at the end of gui creation
     void process(Command cmd) {
         String path = cmd.get(Command.WORKFLOW);
         if (path != null) {
@@ -1907,13 +1911,25 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         
         if (cmd.getQuery() !=null) {
+            initLoadQuery(cmd.getQuery());
+        }
+        if (Property.stringValue(LOAD_QUERY) != null) {
+            initLoadQuery(Property.stringValue(LOAD_QUERY));
+        }
+        if (Property.stringValue(GUI_TITLE) != null) {
+            setTitle(Property.stringValue(GUI_TITLE));
+        }
+    }
+    
+    void initLoadQuery(String path) {
+        if (path != null) {
             QueryLoad ql = QueryLoad.create();
             String query;
             try {
-                query = ql.readWE(cmd.getQuery());
-                File f = new File(cmd.getQuery());
+                query = ql.readWE(path);
+                File f = new File(path);
                 setPath(f.getParent());
-                defQuery(query, cmd.getQuery(), false);
+                defQuery(query, path, false);
             } catch (LoadException ex) {
                 LOGGER.error(ex.getMessage());
             }

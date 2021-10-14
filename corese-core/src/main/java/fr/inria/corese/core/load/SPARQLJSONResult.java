@@ -29,6 +29,7 @@ public class SPARQLJSONResult extends SPARQLResult {
     public Mappings parse(String str) {
         setJson(new JSONObject(str));
         header();
+        link();
         Mappings map = body();
         complete(map);
         return map;
@@ -46,11 +47,13 @@ public class SPARQLJSONResult extends SPARQLResult {
     }
     
     void link() {
-        JSONArray link = json.getJSONObject("head").getJSONArray("link");
-        for (int i=0; i<link.length(); i++) {
-            String url = link.getString(i);
-            addLink(url);
-        }               
+        if (json.getJSONObject("head").has("link")) {
+            JSONArray link = json.getJSONObject("head").getJSONArray("link");
+            for (int i = 0; i < link.length(); i++) {
+                String url = link.getString(i);
+                addLink(url);
+            }
+        }
     }
     
     Mappings body() {

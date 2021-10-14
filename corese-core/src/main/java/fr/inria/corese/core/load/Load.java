@@ -74,10 +74,11 @@ public class Load
 
     public static Logger logger = LoggerFactory.getLogger(Load.class);
     private static int DEFAULT_FORMAT = RDFXML_FORMAT;
-    static final String HTTP = "http://";
-    static final String FTP = "ftp://";
-    static final String FILE = "file://";
-    static final String[] protocols = {HTTP, FTP, FILE};
+    public static String LOAD_FORMAT = ALL_FORMAT_STR;
+//    static final String HTTP = "http://";
+//    static final String FTP = "ftp://";
+    static final String FILE = "file";
+    //static final String[] protocols = {HTTP, FTP, FILE};
     static final String OWL = NSManager.OWL; 
     static final String IMPORTS = OWL + "imports";
     // true:  load files into kg:default graph when no named graph is given
@@ -522,30 +523,23 @@ public class Load
             }
             else if (isURL(path)) {
                 URL url = new URL(path);
-                URLConnection c = url.openConnection();
-                if (myFormat != UNDEF_FORMAT) {
-                    String testFormat = LoadFormat.getFormat(myFormat);
-                    if (testFormat != null) {
-                        //System.out.println("format: " + testFormat);
-                        c.setRequestProperty(ACCEPT, testFormat);
-                    }
-                    else {
-                        //System.out.println("format: all" );
-                        c.setRequestProperty(ACCEPT, ALL_FORMAT_STR);
-                    }
-                }               
-                else {
-                    //System.out.println("format: all" );
-                    c.setRequestProperty(ACCEPT, ALL_FORMAT_STR);
+                String contentType = null;
+
+                if (url.getProtocol().equals(FILE)) {
+                    URLConnection c = url.openConnection();
+                    c.setRequestProperty(ACCEPT, getActualFormat(myFormat));
+                    stream = c.getInputStream();
+                    contentType = c.getContentType();
+                } else {
+                    Service srv = new Service(path);
+                    stream = srv.load(path, getActualFormat(path, myFormat));
+                    contentType = srv.getFormat();
                 }
-                //System.out.println("content: " + c.getContentType() + " " + myFormat);
-                stream = c.getInputStream();
-                String contentType = c.getContentType();
+                                       
                 read = reader(stream);
-//                if ((expectedFormat == UNDEF_FORMAT || requiredFormat != UNDEF_FORMAT) && contentType != null) {
-//                    expectedFormat = getTypeFormat(contentType, expectedFormat);
-//                }
+
                 if (contentType!=null) {
+                    logger.info("Content-type: " + contentType);
                     myFormat = getTypeFormat(contentType, myFormat);
                 }
                 //System.out.println("load: " + contentType + " " + myFormat);
@@ -571,6 +565,37 @@ public class Load
         synLoad(read, path, base, name, myFormat); //expectedFormat);
 
         close(stream);
+    }
+   
+   
+   //                if (myFormat != UNDEF_FORMAT) {
+//                    String testFormat = LoadFormat.getFormat(myFormat);
+//                    if (testFormat != null) {
+//                        //System.out.println("format: " + testFormat);
+//                        c.setRequestProperty(ACCEPT, testFormat);
+//                    }
+//                    else {
+//                        //System.out.println("format: all" );
+//                        c.setRequestProperty(ACCEPT, LOAD_FORMAT);
+//                    }
+//                }               
+//                else {
+//                    logger.info("Header Accept: " + LOAD_FORMAT);
+//                    c.setRequestProperty(ACCEPT, LOAD_FORMAT);
+//                }
+   
+    String getActualFormat(String path, int myFormat) {
+        return getActualFormat(myFormat);
+    }
+   
+    String getActualFormat(int myFormat) {
+        if (myFormat != UNDEF_FORMAT) {
+            String testFormat = LoadFormat.getFormat(myFormat);
+            if (testFormat != null) {
+                return testFormat;
+            } 
+        } 
+        return LOAD_FORMAT;
     }
    
    
@@ -753,7 +778,7 @@ public class Load
     }
 
     void loadRDFXML(Reader stream, String path, String base, String name) throws LoadException {
-
+        logger.info("Load RDF/XML: " + path);
         if (hasPlugin) {
             name = plugin.statSource(name);
             base = plugin.statBase(base);
@@ -797,6 +822,7 @@ public class Load
     }
 
     void loadTurtle(Reader stream, String path, String base, String name) throws LoadException {
+        logger.info("Load Turtle: " + path);
 
         CreateImpl cr = CreateImpl.create(graph, this);
         cr.graph(Constant.create(name));
@@ -839,6 +865,7 @@ public class Load
 
     // load RDFa
     void loadRDFa(Reader stream, String path, String base, String name) throws LoadException {
+        logger.info("Load RDFa: " + path);
         CoreseRDFaTripleSink sink = new CoreseRDFaTripleSink(graph, null);
         sink.setHelper(renameBlankNode, limit);
 
@@ -854,6 +881,7 @@ public class Load
 
     // load JSON-LD
     void loadJsonld(Reader stream, String path, String base, String name) throws LoadException {
+        logger.info("Load JSON LD: " + path);
 
         CoreseJsonTripleCallback callback = new CoreseJsonTripleCallback(graph, name);
         callback.setHelper(renameBlankNode, limit);
@@ -870,6 +898,7 @@ public class Load
     //can surpot format:.ttl, .nt, .nq and .trig
     //now only used for .trig and .nq
     void loadWithSesame(Reader stream, String path, String base, String name, RDFFormat format) throws LoadException {
+        logger.info("Load Sesame Parser: " + path);
         ParserTripleHandlerSesame handler = new ParserTripleHandlerSesame(graph, name);
         handler.setHelper(renameBlankNode, limit);
         ParserLoaderSesame loader = ParserLoaderSesame.create(stream, base);

@@ -6,6 +6,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
@@ -13,9 +14,9 @@ import fr.inria.corese.core.transform.Transformer;
 import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
-import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.CoreseDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.script.Function;
@@ -23,6 +24,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -56,6 +58,7 @@ public class Property {
 
     public enum Value {
         // boolan value
+        DISPLAY_URI_AS_PREFIX,
         // Graph node implemented as IDatatype instead of NodeImpl
         GRAPH_NODE_AS_DATATYPE,
         BLANK_NODE,
@@ -78,6 +81,7 @@ public class Property {
         // activate @event ldscript function call for sparql query processing
         EVENT,
         VERBOSE,
+        LOAD_FORMAT,
         // integer value
         // max number of triples for each rdf file load
         LOAD_LIMIT,
@@ -96,7 +100,10 @@ public class Property {
         INTERPRETER_TEST,
         SPARQL_COMPLIANT,
         // init graph
+        GUI_TITLE,
+        LOAD_WITH_PARAMETER,
         LOAD_DATASET,
+        LOAD_QUERY,
         LOAD_FUNCTION,
         LOAD_RULE,
         RDFS_ENTAILMENT,
@@ -219,6 +226,16 @@ public class Property {
         getBooleanProperty().put(value, b);
 
         switch (value) {
+            
+            case LOAD_WITH_PARAMETER:
+                Service.LOAD_WITH_PARAMETER = b;
+                break;
+            
+            case DISPLAY_URI_AS_PREFIX:
+                Constant.DISPLAY_AS_PREFIX = b;
+                CoreseDatatype.DISPLAY_AS_PREFIX = b;
+                break;
+                
             case GRAPH_NODE_AS_DATATYPE:
                 NodeImpl.byIDatatype = b;
                 break;
@@ -316,6 +333,10 @@ public class Property {
         logger.info(value + " = " + str);
         getStringProperty().put(value, str);
         switch (value) {
+            
+            case LOAD_FORMAT:
+                Load.LOAD_FORMAT = str;
+                break;
             
             case SERVICE_BINDING:
                 CompileService.setBinding(str);

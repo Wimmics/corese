@@ -330,6 +330,16 @@ public class ResultFormat implements ResultFormatDef {
         return getFormat(getFormat(ft));
     }
     
+    // sparql update load URL format
+    // rdfxml -> application/rdf+xml
+    public static String decodeLoadFormat(String ft) {
+        if (format.containsKey(ft)) {
+            int type = format.get(ft);
+            return content.get(type);
+        }
+        return null;
+    }
+    
     public static String decodeOrText(String ft) {
         int type = getFormatUndef(ft);
         if (type == UNDEF_FORMAT) {

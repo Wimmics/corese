@@ -27,7 +27,7 @@ import java.util.List;
  * @author Olivier Corby & Olivier Savoie
  */
 public class Constant extends Atom {
-
+    public static boolean DISPLAY_AS_PREFIX = true;
     public static Constant rootProperty;
     private static Logger logger = LoggerFactory.getLogger(Constant.class);
     static DatatypeMap dm;
@@ -210,7 +210,7 @@ public class Constant extends Atom {
             }
         } else if (isBlank()) {
             sb.append(name);
-        } else if (isQName) {
+        } else if (isQName && DISPLAY_AS_PREFIX) {
             sb.append(name);
         } else {
             sb.append(KeywordPP.OPEN).append(getLongName()).append(KeywordPP.CLOSE);

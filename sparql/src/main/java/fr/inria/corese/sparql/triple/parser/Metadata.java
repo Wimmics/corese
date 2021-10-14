@@ -73,11 +73,10 @@ public class Metadata extends ASTObject
     public static final int WHY       = 54; 
     public static final int MESSAGE   = 55; 
     public static final int MERGE_SERVICE = 56; 
-    public static final int BROWSE = 57; 
-
+    public static final int BROWSE  = 57;     
+    public static final int EVENT   = 58;
+    public static final int FORMAT  = 59;
     
-    
-    public static final int EVENT   = 51;
 //    public static final int BEFORE  = 51;
 //    public static final int AFTER   = 52;
 //    public static final int PRODUCE = 53;
@@ -197,6 +196,7 @@ public class Metadata extends ASTObject
         define("@message",  MESSAGE); 
         define("@browse",   BROWSE); 
         define("@merge",    MERGE_SERVICE); 
+        define("@format",   FORMAT); 
                       
         define("@update",    UPDATE);  
         define("@event",    EVENT);  

@@ -43,7 +43,7 @@ import java.util.List;
  */
 public class CoreseDatatype
         implements IDatatype {
-  
+    public static boolean DISPLAY_AS_PREFIX = true;
     public static Logger logger = LoggerFactory.getLogger(CoreseDatatype.class);
     static final CoreseURI datatype = new CoreseURI(RDF.RDFSRESOURCE);
     static final CoreseString empty = new CoreseString("");
@@ -160,20 +160,25 @@ public class CoreseDatatype
                     || datatype.startsWith(NSManager.DT)) {
                 datatype = nsm().toPrefix(datatype);
             } else {
-                datatype = "<" + datatype + ">";
+                datatype = String.format("<%s>", datatype);
             }
 
             value = protect(value) + "^^" + datatype;
-        } else if (getLang() != null && getLang() != "") {
+        } else if (getLang() != null && !getLang().isEmpty()) {
             value = protect(value) + "@" + getLang();
         } else if (isLiteral()) {
             value = protect(value);
         } else if (isURI()) {
-            String str = nsm().toPrefix(value, true);
-            if (str == value) {
-                value = "<" + value + ">";
-            } else {
-                value = str;
+            if (DISPLAY_AS_PREFIX) {
+                String str = nsm().toPrefix(value, true);
+                if (str == value) {
+                    value = String.format("<%s>", value);
+                } else {
+                    value = str;
+                }
+            }
+            else {
+                value = String.format("<%s>", value);
             }
         } else if (isBlank()) {
         }

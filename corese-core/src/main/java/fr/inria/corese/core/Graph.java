@@ -98,7 +98,7 @@ public class Graph extends GraphObject implements
     public static final int ADD = 2;
     public static final int CLEAR = 3;
     static long blankid = 0;
-    static final String BLANK = "_:b";
+    public static String BLANK = "_:b";
     static final String SKOLEM = ExpType.SKOLEM;
     private static final String NL = System.getProperty("line.separator");
     static final int TAGINDEX = 2;

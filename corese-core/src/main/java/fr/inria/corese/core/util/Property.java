@@ -6,6 +6,8 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.Transformer;
@@ -13,11 +15,16 @@ import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
 import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.CoreseDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -41,16 +48,20 @@ public class Property {
 
     private static Logger logger = LoggerFactory.getLogger(Property.class);
     private static Property singleton;
-
+    private static final String STD = "std";
+    
     private HashMap<Value, Boolean> booleanProperty;
     private HashMap<Value, String> stringProperty;
+    private HashMap<Value, Integer> integerProperty;
     // Java Properties manage property file (at user option)
     private Properties properties;
 
     public enum Value {
         // boolan value
+        DISPLAY_URI_AS_PREFIX,
         // Graph node implemented as IDatatype instead of NodeImpl
         GRAPH_NODE_AS_DATATYPE,
+        BLANK_NODE,
         // load rdf file into graph kg:default instead of graph file-path 
         LOAD_IN_DEFAULT_GRAPH,
         // constraint rule error in specific named graph
@@ -70,6 +81,7 @@ public class Property {
         // activate @event ldscript function call for sparql query processing
         EVENT,
         VERBOSE,
+        LOAD_FORMAT,
         // integer value
         // max number of triples for each rdf file load
         LOAD_LIMIT,
@@ -77,6 +89,7 @@ public class Property {
         SOLVER_DEBUG,
         TRANSFORMER_DEBUG,
         SOLVER_SORT_CARDINALITY,
+        SOLVER_QUERY_PLAN, // STD | ADVANCED
         // string value
         SOLVER_VISITOR,
         RULE_VISITOR,
@@ -86,12 +99,28 @@ public class Property {
         // Testing purpose
         INTERPRETER_TEST,
         SPARQL_COMPLIANT,
+        OWL_CLEAN,
+        OWL_CLEAN_QUERY,
         // init graph
+        GUI_TITLE,
+        LOAD_WITH_PARAMETER,
         LOAD_DATASET,
+        LOAD_QUERY,
         LOAD_FUNCTION,
         LOAD_RULE,
-        RDFS_ENTAILMENT
-
+        RDFS_ENTAILMENT,
+        
+        LDSCRIPT_VARIABLE,
+        LDSCRIPT_DEBUG,
+        LDSCRIPT_CHECK_DATATYPE,
+        LDSCRIPT_CHECK_RDFTYPE,
+        
+        SERVICE_BINDING,
+        SERVICE_SLICE,
+        SERVICE_LIMIT,
+        SERVICE_TIMEOUT,
+        SERVICE_PARAMETER,
+        SERVICE_BROWSE
     };
 
     static {
@@ -101,6 +130,7 @@ public class Property {
     Property() {
         booleanProperty = new HashMap<>();
         stringProperty = new HashMap<>();
+        integerProperty = new HashMap<>();
         properties = new Properties();
     }
 
@@ -133,6 +163,11 @@ public class Property {
 
     public static Boolean get(Value value) {
         return getSingleton().getBooleanProperty().get(value);
+    }
+    
+    public static boolean booleanValue(Value value) {
+        Boolean b = get(value);
+        return b!=null && b;
     }
 
     public static Set<Value> getPropertySet() {
@@ -193,6 +228,20 @@ public class Property {
         getBooleanProperty().put(value, b);
 
         switch (value) {
+            
+            case OWL_CLEAN:
+                RuleEngine.OWL_CLEAN = b;
+                break;
+            
+            case LOAD_WITH_PARAMETER:
+                Service.LOAD_WITH_PARAMETER = b;
+                break;
+            
+            case DISPLAY_URI_AS_PREFIX:
+                Constant.DISPLAY_AS_PREFIX = b;
+                CoreseDatatype.DISPLAY_AS_PREFIX = b;
+                break;
+                
             case GRAPH_NODE_AS_DATATYPE:
                 NodeImpl.byIDatatype = b;
                 break;
@@ -257,7 +306,21 @@ public class Property {
             case SOLVER_DEBUG:
                 Query.DEBUG_DEFAULT = b;
                 break;
-
+                
+            case LDSCRIPT_DEBUG:
+                Binding.DEBUG_DEFAULT = b;
+                Function.nullcheck = b;
+                break;
+                
+           
+            case LDSCRIPT_CHECK_DATATYPE:
+                Function.typecheck = b;
+                break; 
+                
+            case LDSCRIPT_CHECK_RDFTYPE:
+                Function.rdftypecheck = b;
+                break;    
+                                        
             case INTERPRETER_TEST:
                 Interpreter.testNewEval = b;
                 break;
@@ -276,6 +339,32 @@ public class Property {
         logger.info(value + " = " + str);
         getStringProperty().put(value, str);
         switch (value) {
+            
+            case LOAD_FORMAT:
+                Load.LOAD_FORMAT = str;
+                break;
+            
+            case SERVICE_BINDING:
+                CompileService.setBinding(str);
+                break;
+                
+            case SERVICE_PARAMETER:
+                // set in table
+                break;
+                
+                
+            case LDSCRIPT_VARIABLE:
+                variable(str);
+                break;
+                
+            case BLANK_NODE:
+                Graph.BLANK = str;
+                break;
+                
+            case SOLVER_QUERY_PLAN:
+                queryPlan(str);
+                break;
+                
             case SOLVER_VISITOR:
                 QueryProcess.setVisitorName(str);
                 break;
@@ -304,6 +393,35 @@ public class Property {
                 loadFunction(str);
                 break;
 
+        }
+    }
+    
+    void basicSet(Value value, int n) {
+        logger.info(value + " = " + n);
+        getIntegerProperty().put(value, n);
+        
+        switch (value) {
+            
+            case SERVICE_SLICE:                
+            case SERVICE_LIMIT:                
+            case SERVICE_TIMEOUT:
+                // use integer table
+                break;
+                
+            case LOAD_LIMIT:
+                Load.setLimitDefault(n);
+                break;
+        }
+    }
+    
+    void queryPlan(String str) {
+        switch (str) {
+            case STD:
+                QuerySolver.QUERY_PLAN = Query.QP_DEFAULT;
+                break;
+            default:
+                QuerySolver.QUERY_PLAN = Query.QP_HEURISTICS_BASED;
+                break;
         }
     }
     
@@ -380,7 +498,23 @@ public class Property {
         }
     }
     
-    
+    /**
+     * LDScript static variable
+     * LDSCRIPT_VARIABLE = var=val;var=val
+     */
+    void variable(String str) {
+        String[] list = str.split(";");
+        for (String elem : list) {
+            String[] def = elem.split("=");
+            if (def.length >= 2) {
+                String var = def[0].strip();
+                String val = def[1].strip();
+                System.out.println("variable: " + var + "=" + val);
+                IDatatype dt = DatatypeMap.newValue(val);
+                Binding.setStaticVariable(var, dt);
+            }
+        }
+    }
 
     void prefix(String str) {
         String[] list = str.split(";");
@@ -393,14 +527,7 @@ public class Property {
         }
     }
 
-    void basicSet(Value value, int n) {
-        logger.info(value + " = " + n);
-        switch (value) {
-            case LOAD_LIMIT:
-                Load.setLimitDefault(n);
-                break;
-        }
-    }
+
 
     void accessLevel(String str) {
         try {
@@ -433,6 +560,30 @@ public class Property {
 
     public Properties getProperties() {
         return properties;
+    }
+
+    public HashMap<Value, Integer> getIntegerProperty() {
+        return integerProperty;
+    }
+
+    public void setIntegerProperty(HashMap<Value, Integer> integerProperty) {
+        this.integerProperty = integerProperty;
+    }
+    
+    public static Integer intValue(Value val) {
+        return getSingleton().getIntegerProperty().get(val);
+    }
+    
+    public static String stringValue(Value val) {
+        return getSingleton().getStringProperty().get(val);
+    }
+    
+    public static String[] stringValueList(Value val) {
+        String str = stringValue(val);
+        if (val == null) {
+            return new String[0];
+        }
+        return str.split(";");
     }
 
 }

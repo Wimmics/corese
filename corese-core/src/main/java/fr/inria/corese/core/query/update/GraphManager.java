@@ -18,6 +18,7 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.producer.DataBrokerConstructLocal;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
@@ -29,6 +30,7 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
@@ -322,7 +324,7 @@ public class GraphManager {
         String uri = ope.getURI();
         IDatatype dt = DatatypeMap.newResource(uri);
         String src = ope.getTarget();
-        
+        int format = getFormat(q);
         graph.logStart(q);
         graph.getEventManager().start(Event.LoadUpdate);
         if (ope.isSilent()) {
@@ -331,7 +333,7 @@ public class GraphManager {
                     // load access file system ?
                     Access.check(Feature.LOAD_FILE, level, uri, TermEval.LOAD_MESS);
                 }
-                load(load, src, uri);
+                load(load, src, uri, format);
             } catch (LoadException | SafetyException ex) {
                 logger.error("Load silent trap error: " + ex.getMessage());
             }
@@ -342,7 +344,7 @@ public class GraphManager {
             }
             
             try {
-                load(load, src, uri);
+                load(load, src, uri, format);
             }
             catch (LoadException e) {
                 if (e.isSafetyException()) {
@@ -371,6 +373,16 @@ public class GraphManager {
 
         return true;
     }
+   
+   // format from query metadata @format st:rdfxml
+    void load(Load load, String src, String uri, int format) throws LoadException {
+        if (format == Loader.UNDEF_FORMAT) {
+            load(load, src, uri);
+        }
+        else {
+            load.parse(uri, src, uri, format);
+        }
+    }
 
     // try RDF/XML and if parse error try Turtle
     void load(Load load, String src, String uri) throws LoadException {
@@ -383,6 +395,15 @@ public class GraphManager {
                 load.parse(uri, src, uri, Loader.TURTLE_FORMAT);
             }
         }
+    }
+    
+    // @format st:rdfxml st:json st:turtle
+    int getFormat(Query q) {
+        String ft = q.getAST().getMetadataValue(Metadata.FORMAT);
+        if (ft == null) {
+            return Loader.UNDEF_FORMAT;
+        }
+        return LoadFormat.getDTFormat(ft);
     }
 
     

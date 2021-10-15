@@ -113,13 +113,26 @@ public class JSONFormat extends XMLFormat {
         }
     }
     
-    void printLnk(List<String> list) {
+    void printLnk2(List<String> list) {
         for (String name : list) {
             print(", \n\"link\": [\"" + name + "\"]");
         }
     }
     
-    
+    void printLnk(List<String> list) {
+        if (list.isEmpty()) {
+            return;
+        }
+        print(", \n\"link\": [");
+        int n = 0;
+        for (String name : list) {
+            if (n++ > 0) {
+                print(", ");
+            }
+            print("\"" + name + "\"");           
+        }
+        print("]");
+    }
 
     @Override
     public void printAsk() {

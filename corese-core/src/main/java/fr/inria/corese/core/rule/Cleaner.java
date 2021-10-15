@@ -4,8 +4,11 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.OWL_CLEAN_QUERY;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -21,8 +24,7 @@ import java.util.Date;
 public class Cleaner {
     public static final int OWL = 0;
     static final String data = "/query/clean/";
-    //static final String[] queries = {"ui2.rq", "ui3.rq", "ui4.rq", "allsome.rq", "card.rq"};
-    static final String[] queries = { "allsome.rq", "card.rq", "ui2.rq", "ui3.rq", "ui4.rq"};
+    static final String[] queries = { "allsome.rq", "card.rq", "intersection.rq", "union.rq"}; //"ui2.rq", "ui3.rq", "ui4.rq"};
     
     Graph graph;
     private ProcessVisitor visitor;
@@ -32,7 +34,7 @@ public class Cleaner {
         graph = g;
     }
     
-    void clean(int mode) throws IOException, EngineException{
+    void clean(int mode) throws IOException, EngineException, LoadException{
         switch (mode){
             
             case OWL: 
@@ -41,15 +43,18 @@ public class Cleaner {
         }
     }
     
-    public void clean() throws IOException, EngineException {
-        clean(graph, queries);
+    public void clean() throws IOException, EngineException, LoadException {
+        clean(graph, queries, true);
+        if (Property.stringValue(OWL_CLEAN_QUERY) != null) {
+            clean(graph, Property.stringValueList(OWL_CLEAN_QUERY), false);
+        }
     }
       
     /**
      * Replace different bnodes that represent same OWL expression
      * by same bnode
      */
-    void clean(Graph g, String[] lq) throws IOException, EngineException{
+    void clean(Graph g, String[] lq, boolean resource) throws IOException, EngineException, LoadException{
         Date d1 = new Date();
          QueryLoad ql = QueryLoad.create();
          QueryProcess exec = QueryProcess.create(g);
@@ -59,8 +64,8 @@ public class Cleaner {
          // it works because init() is also synchronized
          exec.setSynchronized(true);
          for (String q : lq){
-             String qq = ql.getResource(data + q); 
-             //DatatypeValue dt = getVisitor().prepareEntailment(DatatypeMap.newInstance(qq));
+             String qq = (resource) ? ql.getResource(data + q) : ql.readWE(q); 
+             //IDatatype dt = getVisitor().prepareEntailment(DatatypeMap.newInstance(qq));
              Mappings map = exec.query(qq, createMapping(getVisitor()));
              if (isDebug()) {
                  RuleEngine.logger.info(q + " nb res: "+ map.size());

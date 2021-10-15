@@ -4,7 +4,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
-import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
@@ -434,15 +433,19 @@ public class Binding implements Binder {
         return bind(new VariableLocal(name), val);
     }
     
-    public Binding setGlobalVariable(String name, IDatatype val) {
-        if (!name.startsWith("?")){
-            name = "?"+name;
-        }
-        return bind(new VariableLocal(name), val);
+    public Binding setGlobalVariable(String name, IDatatype val) {        
+        return bind(new VariableLocal(name(name)), val);
     }
     
-    public static Binding setStaticVariable(String name, IDatatype val) {
-        return getSingleton().setVariable(name, val);
+    static String name(String name) {
+        if (name.startsWith("?")) {
+            return name;
+        }
+        return "?" + name;
+    }
+    
+    public static Binding setStaticVariable(String name, IDatatype val) {        
+        return getSingleton().setVariable(name(name), val);
     }
     
     public static IDatatype getStaticVariable(String name) {

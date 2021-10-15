@@ -1315,6 +1315,9 @@ public class ASTQuery
     }
         
     public String getMetadataValue(int type) {
+        if (metadata == null) {
+            return null;
+        }
         return metadata.getValue(type);
     }
     

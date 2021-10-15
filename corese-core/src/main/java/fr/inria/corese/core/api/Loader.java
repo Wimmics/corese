@@ -28,7 +28,7 @@ public interface Loader {
     static final String TURTLE_FORMAT_STR = "text/turtle";
     static final String HTML_FORMAT_STR = "text/html";
     static final String ALL_FORMAT_STR =
-            "text/ttl;q=1.0, application/rdf+xml;q=0.9, application/ld+json;q=0.7; application/json;q=0.6";
+            "text/turtle;q=1.0, application/rdf+xml;q=0.9, application/ld+json;q=0.7; application/json;q=0.6";
     
 	void init(Object o);
 	

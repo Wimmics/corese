@@ -27,6 +27,7 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -108,7 +109,7 @@ public class UpdateProcess {
                 Composite c = u.getComposite();
                 // pass current binding as parameter
                 // use case: @event function has defined global variable
-                map = process(q, c, m, bind); //exec.getCurrentBinding());
+                map = process(q, c, m, bind); 
             }
             // save and restore eval to get initial Visitor with possible @event function
             // because @event function may execute query and hence reset eval
@@ -147,14 +148,17 @@ public class UpdateProcess {
         switch (ope.type()) {
 
             case Update.INSERT:
+                // insert data
                 ast = getInsert(q, ope);
                 break;
 
             case Update.DELETE:
+                // delete data
                 ast = getDelete(q, ope);
                 break;
 
             case Update.COMPOSITE:
+                // delete insert where
                 ast = getComposite(q, ope);
                 break;
 
@@ -228,6 +232,11 @@ public class UpdateProcess {
         
         //System.out.println("UP: " + vis);
         Mappings map = exec.basicQuery(null, q, mm);
+        
+        if (query.getAST().hasMetadata(Metadata.SELECT)) {
+            // evaluate insert where as select where
+            return map;
+        }
    
         // PRAGMA: update can be both delete & insert
         if (q.isDelete()) {

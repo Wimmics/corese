@@ -39,8 +39,14 @@ public class URLServer implements URLParam {
     
     
     public URLServer(String s) {
-        url = s;
-        init();
+        this(s, null);
+    }
+    
+    // param = Property.stringValue(SERVICE_PARAMETER)
+    // predefined URL parameters
+    public URLServer(String uri, String param) {
+        url = uri;
+        init(param);
     }
     
     // service clause
@@ -54,15 +60,23 @@ public class URLServer implements URLParam {
         return getURL();
     }       
     
-    void init() {
+    void init(String param) {
         setServer(server(getURL()));
         setParam(parameter(getURL()));
+        if (param!=null) {
+            // default parameters first
+            // they may be overloaded by actual parameters
+            hashmap(getCreateMap(), param);
+        }
         if (getParam()!=null) {
-            setMap(hashmap(getParam()));
+            hashmap(getCreateMap(), getParam());
             if (hasParameter(DISPLAY, PARAM)) {
                 display();
             }
         }
+    }
+    
+    void completeParameter() {
     }
     
     public void display() {
@@ -194,15 +208,13 @@ public class URLServer implements URLParam {
             return def;
         }
     }
-    
-
+      
     /**
      * param = URL parameter string
      * create hashmap for parameter value
      * hashmap: param -> list(value)
      */
-    HashMapList hashmap(String param) {
-        HashMapList<String> map = new HashMapList();
+    HashMapList hashmap(HashMapList<String> map, String param) {
         String[] params = param.split("&");
         
         for (String str : params) {
@@ -448,6 +460,13 @@ public class URLServer implements URLParam {
      */
     public HashMapList<String> getMap() {
         return amap;
+    }
+    
+    public HashMapList<String> getCreateMap() {
+        if (getMap() == null) {
+            setMap(new HashMapList<>());
+        }
+        return getMap();
     }
 
     /**

@@ -80,6 +80,7 @@ public class RuleEngine implements Engine, Graphable {
     public static final int OWL_RL = 1;
     public static final int OWL_RL_LITE = 2;
     public static final int OWL_RL_EXT = 3;
+    public static boolean OWL_CLEAN = true;
    
     private static final String UNKNOWN = "unknown";
     public static Logger logger = LoggerFactory.getLogger(RuleEngine.class);
@@ -260,8 +261,10 @@ public class RuleEngine implements Engine, Graphable {
         if (isOptimizable()) {
             setSpeedUp(true);
             try {
-                cleanOWL();
-            } catch (IOException | EngineException ex) {
+                if (OWL_CLEAN) {
+                    cleanOWL();
+                }
+            } catch (IOException | EngineException | LoadException ex) {
                 logger.error("", ex);
             }
             // enable graph Index by timestamp
@@ -272,7 +275,7 @@ public class RuleEngine implements Engine, Graphable {
     /**
      * Clean OWL RDF graph
      */
-    public void cleanOWL() throws IOException, EngineException{
+    public void cleanOWL() throws IOException, EngineException, LoadException{
         Cleaner cl = new Cleaner(graph);
         cl.setDebug(isDebug());
         if (isEvent()) {
@@ -1514,6 +1517,6 @@ public class RuleEngine implements Engine, Graphable {
 
     public void setRecord(boolean record) {
         this.record = record;
-    }
+    }   
 
 }

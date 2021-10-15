@@ -73,11 +73,11 @@ public class Metadata extends ASTObject
     public static final int WHY       = 54; 
     public static final int MESSAGE   = 55; 
     public static final int MERGE_SERVICE = 56; 
-    public static final int BROWSE = 57; 
-
+    public static final int BROWSE  = 57;     
+    public static final int EVENT   = 58;
+    public static final int FORMAT  = 59;
+    public static final int SELECT  = 60;
     
-    
-    public static final int EVENT   = 51;
 //    public static final int BEFORE  = 51;
 //    public static final int AFTER   = 52;
 //    public static final int PRODUCE = 53;
@@ -104,7 +104,7 @@ public class Metadata extends ASTObject
     
     public static final String PROBE            = PREF + "probe";
     public static final String VERBOSE          = PREF + "verbose";
-    public static final String SELECT           = PREF + "select";
+    public static final String SELECT_SOURCE    = PREF + "select";
     public static final String SELECT_FILTER    = PREF + "selectfilter";
     public static final String GROUP            = PREF + "group";
     public static final String MERGE            = PREF + "merge";
@@ -197,8 +197,10 @@ public class Metadata extends ASTObject
         define("@message",  MESSAGE); 
         define("@browse",   BROWSE); 
         define("@merge",    MERGE_SERVICE); 
+        define("@format",   FORMAT); 
+        define("@select",   SELECT); 
                       
-        define("@update",    UPDATE);  
+        define("@update",   UPDATE);  
         define("@event",    EVENT);  
 //        define(META_BEFORE, BEFORE);  
 //        define(META_AFTER,  AFTER);  

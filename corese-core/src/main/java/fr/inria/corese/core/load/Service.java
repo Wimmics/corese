@@ -8,16 +8,21 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_LIMIT;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import java.io.ByteArrayInputStream;
+import java.io.InputStream;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
+import java.util.logging.Level;
 import javax.ws.rs.RedirectionException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -45,8 +50,8 @@ import org.slf4j.LoggerFactory;
 public class Service implements URLParam {
     static Logger logger = LoggerFactory.getLogger(Service.class);
      static final String ENCODING = "UTF-8";
-
-    
+     // load take URL parameter into account, e.g. format=rdfxml
+    public static boolean LOAD_WITH_PARAMETER = false;
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
     private ClientBuilder clientBuilder;
 
@@ -314,6 +319,41 @@ public class Service implements URLParam {
     }
         
     public String getBasic(String url, String mime) {
+        Response resp = getResponse(url, mime);
+        String res = resp.readEntity(String.class);
+        trace(res);
+        return res;
+    }
+            
+    public InputStream getStream(String url, String mime) throws LoadException {
+        Response resp = getResponse(url, mime);
+        InputStream res = resp.readEntity(InputStream.class);
+        return res;
+    }
+
+    // may take URL parameter into account:    ?format=rdfxml
+    public InputStream load(String url, String mime) throws LoadException {
+        if (LOAD_WITH_PARAMETER) {
+            return getStream(getURL().getServer(), getFormat(mime));
+        }
+        return getStream(url, mime);
+    }
+    
+    // may take URL parameter into account:    ?format=rdfxml
+    String getFormat(String defaut) {
+        String format = getURL().getParameter(URLServer.FORMAT);
+        if (format != null) {
+            // format=rdfxml | application/rdf+xml
+            String res = ResultFormat.decodeLoadFormat(format);
+            if (res != null) {
+                // res = application/rdf+xml
+                return res;
+            }
+        }
+        return defaut;
+    }
+    
+    Response getResponse(String url, String mime) {
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build();
         WebTarget target = client.target(url);
@@ -326,13 +366,11 @@ public class Service implements URLParam {
             if (myUrl.equals(url)) {
                 throw new javax.ws.rs.RedirectionException(resp);
             }
-            return getBasic(myUrl, mime);
+            return getResponse(myUrl, mime);
         }
-        
-        String res = resp.readEntity(String.class);
-        trace(res);
-        return res;
+        return resp;
     }
+    
     
     public Response get(String uri) {
         Client client = clientBuilder.build();
@@ -482,10 +520,15 @@ public class Service implements URLParam {
                 ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
             }
             // DRAFT: for testing (modify ast ...)
-            String lim = getURL().getParameter(LIMIT);
-            if (lim != null) {
-                ast.setLimit(Integer.valueOf(lim));
+            Integer lim = getURL().intValue(LIMIT);
+            if (lim != -1) {
+                ast.setLimit(lim);
             }
+            lim = Property.intValue(SERVICE_LIMIT);
+            if (lim != null) {
+                ast.setLimit(lim);
+            }
+            
         }
         if (getURL().isGET() || ast.getGlobalAST().hasMetadata(Metadata.GET)) {
             setPost(false);

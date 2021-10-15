@@ -26,7 +26,7 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import org.junit.Test;
 
-import fr.inria.corese.rdf4j.ModelApiImpl.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseModel;
 
 public class Rdf4jExperimentations {
 
@@ -35,7 +35,7 @@ public class Rdf4jExperimentations {
         InputStream input_stream = Rdf4jExperimentations.class.getResourceAsStream("peopleWork.ttl");
 
         CoreseModel model = new CoreseModel();
-        
+
         RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
         rdfParser.setRDFHandler(new StatementCollector(model));
 

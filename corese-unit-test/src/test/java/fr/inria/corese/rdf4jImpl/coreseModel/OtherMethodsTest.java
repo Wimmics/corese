@@ -1,4 +1,4 @@
-package fr.inria.corese.rdf4jImpl.coreseModelTest;
+package fr.inria.corese.rdf4jImpl.coreseModel;
 
 import static org.junit.Assert.assertEquals;
 
@@ -18,7 +18,7 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.corese.rdf4j.ModelApiImpl.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseModel;
 
 public class OtherMethodsTest {
 

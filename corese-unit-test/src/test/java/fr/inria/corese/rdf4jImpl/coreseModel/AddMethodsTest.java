@@ -1,4 +1,4 @@
-package fr.inria.corese.rdf4jImpl.coreseModelTest;
+package fr.inria.corese.rdf4jImpl.coreseModel;
 
 import static org.junit.Assert.assertEquals;
 
@@ -17,7 +17,7 @@ import org.junit.Test;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.rdf4j.ModelApiImpl.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseModel;
 import fr.inria.corese.sparql.exceptions.EngineException;
 
 public class AddMethodsTest {

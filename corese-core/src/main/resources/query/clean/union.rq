@@ -1,0 +1,41 @@
+#
+# Factorize all occurrences of same union list
+# into the same list everywhere
+# x owl:unionOf list 
+#
+# Olivier Corby - Wimmics Inria UCA - 2021 
+#
+delete { 
+    ?s ?p ?dx
+    ?dx owl:unionOf ?dl
+    ?b  rdf:first ?f ; rdf:rest ?r
+}
+insert { 
+    ?s ?p ?xx 
+}
+where {
+
+# lx is the list of subject that share the same union list
+{select ?list (aggregate(?x) as ?lx) 
+where {
+    select ?x (xt:sort(aggregate(?e)) as ?list) 
+    where {
+        ?x owl:unionOf ?l .
+        ?l rdf:rest*/rdf:first ?e
+    }
+    group by ?x
+}
+group by ?list
+having (xt:size(?lx) > 1)
+}
+
+# xx will replace other occurrences dx
+bind (xt:get(?lx, 0) as ?xx) 
+# other occurrence dx
+values ?dx { unnest(xt:rest(?lx)) }
+
+?s ?p ?dx
+?dx owl:unionOf ?dl
+?dl rdf:rest* ?b
+?b  rdf:first ?f ; rdf:rest ?r
+}

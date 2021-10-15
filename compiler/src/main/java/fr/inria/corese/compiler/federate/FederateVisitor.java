@@ -242,7 +242,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         if (skip(Metadata.DISTRIBUTE_NAMED)) {
             distributeNamed = false;
         }
-        if (skip(Metadata.SELECT)) {
+        if (skip(Metadata.SELECT_SOURCE)) {
             select = false;
         }
         if (skip(Metadata.SELECT_FILTER)) {

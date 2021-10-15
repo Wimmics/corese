@@ -99,6 +99,8 @@ public class Property {
         // Testing purpose
         INTERPRETER_TEST,
         SPARQL_COMPLIANT,
+        OWL_CLEAN,
+        OWL_CLEAN_QUERY,
         // init graph
         GUI_TITLE,
         LOAD_WITH_PARAMETER,
@@ -226,6 +228,10 @@ public class Property {
         getBooleanProperty().put(value, b);
 
         switch (value) {
+            
+            case OWL_CLEAN:
+                RuleEngine.OWL_CLEAN = b;
+                break;
             
             case LOAD_WITH_PARAMETER:
                 Service.LOAD_WITH_PARAMETER = b;
@@ -570,6 +576,14 @@ public class Property {
     
     public static String stringValue(Value val) {
         return getSingleton().getStringProperty().get(val);
+    }
+    
+    public static String[] stringValueList(Value val) {
+        String str = stringValue(val);
+        if (val == null) {
+            return new String[0];
+        }
+        return str.split(";");
     }
 
 }

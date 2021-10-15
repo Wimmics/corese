@@ -51,11 +51,11 @@ public class ManagerImpl implements Manager {
 
     @Override
     public boolean process(Query q, Basic ope, Dataset ds) throws EngineException  {
-        String uri = ope.getGraph();
-        boolean isDefault = ope.isDefault();
-        boolean isNamed = ope.isNamed();
-        boolean isAll = ope.isAll();
-        boolean isSilent = ope.isSilent();
+//        String uri = ope.getGraph();
+//        boolean isDefault = ope.isDefault();
+//        boolean isNamed = ope.isNamed();
+//        boolean isAll = ope.isAll();
+//        boolean isSilent = ope.isSilent();
 
         getGraphManager().system(ope);
 

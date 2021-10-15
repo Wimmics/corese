@@ -823,7 +823,6 @@ public class Load
 
     void loadTurtle(Reader stream, String path, String base, String name) throws LoadException {
         logger.info("Load Turtle: " + path);
-
         CreateImpl cr = CreateImpl.create(graph, this);
         cr.graph(Constant.create(name));
         cr.setRenameBlankNode(renameBlankNode);

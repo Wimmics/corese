@@ -11,7 +11,7 @@ template st:map2(?list) {
     str(?lat)
     str(?lon)
     coalesce(st:get(st:mapicon2), "/img/smarker.png")
-    st:plink(?r)
+    coalesce(st:plink(?r), str(?r))
   }
 }
 where {

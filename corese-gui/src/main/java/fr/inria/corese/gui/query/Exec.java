@@ -43,6 +43,7 @@ public class Exec extends Thread {
     private boolean shacl = false;
     private boolean shex = false;
     QueryExec current;
+    private Mappings mappings;
 
     public Exec(MainFrame f, String q, boolean b) {
         frame = f;
@@ -109,7 +110,7 @@ public class Exec extends Thread {
             if (isShacl()) {
                 q = (isShex()) ? qshex : qshacl;
             }
-            Mappings l_Results = exec.SPARQLQuery(q);
+            Mappings l_Results = exec.SPARQLQuery(q, getMappings());
             Date d2 = new Date();
             System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
             return l_Results;
@@ -222,6 +223,15 @@ public class Exec extends Thread {
      */
     public void setShex(boolean shex) {
         this.shex = shex;
+    }
+
+    public Mappings getMappings() {
+        return mappings;
+    }
+
+    public Exec setMappings(Mappings mappings) {
+        this.mappings = mappings;
+        return this;
     }
 
 }

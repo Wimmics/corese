@@ -1,17 +1,15 @@
+#
+# Transfom Mappings with variables ?location ?lon ?lat into a map
+# Transformer is created with Mappings argument
+# Transformer set Mappings into start template
+# Start template in this case is: http://ns.inria.fr/sparql-template/navlab#mapper 
+# Function xt:mappings() gets mappings from current st:mapper template query which is the start template
+# 
+#
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
 template st:mapper {
-    st:call-template(st:maplist, ft:mapper.html, ?list, ?text)        
+    st:call-template(st:mapmap, xt:mappings())        
 } 
-where {
-    bind (coalesce(st:call-template(st:link), "link undef") as ?text)
-
-    {select (aggregate(xt:list(?location, ?lat, ?lon)) as ?list)
-    where {
-        select distinct ?location ?lon ?lat where {
-            values (?location ?lon ?lat) { unnest(xt:mappings()) }
-        }
-    }}
-    filter (xt:size(?list) > 0)
-}
+where { }
 

@@ -325,14 +325,14 @@ public class Service implements URLParam {
         return res;
     }
             
-    public InputStream getStream(String url, String mime) throws LoadException {
+    public InputStream getStream(String url, String mime)  {
         Response resp = getResponse(url, mime);
         InputStream res = resp.readEntity(InputStream.class);
         return res;
     }
 
     // may take URL parameter into account:    ?format=rdfxml
-    public InputStream load(String url, String mime) throws LoadException {
+    public InputStream load(String url, String mime)  {
         if (LOAD_WITH_PARAMETER) {
             return getStream(getURL().getServer(), getFormat(mime));
         }
@@ -354,11 +354,14 @@ public class Service implements URLParam {
     }
     
     Response getResponse(String url, String mime) {
+        //System.out.println("Service:  " + url + " " + mime);
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build();
         WebTarget target = client.target(url);
         Response resp = target.request(mime).get();
-        setFormat(resp.getMediaType().toString());
+        if (resp.getMediaType()!=null) {
+            setFormat(resp.getMediaType().toString());
+        }
 
         if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
             String myUrl = resp.getLocation().toString();

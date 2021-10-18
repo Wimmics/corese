@@ -101,6 +101,7 @@ public class Property {
         SPARQL_COMPLIANT,
         OWL_CLEAN,
         OWL_CLEAN_QUERY,
+        OWL_RL,
         // init graph
         GUI_TITLE,
         LOAD_WITH_PARAMETER,

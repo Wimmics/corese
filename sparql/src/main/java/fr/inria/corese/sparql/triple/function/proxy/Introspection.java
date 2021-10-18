@@ -43,10 +43,13 @@ public class Introspection extends LDScript {
             case XT_QUERY:
                 return DatatypeMap.createObject(env.getQuery());
                 
-            case XT_MAPPINGS:
-                // use case: transformer work on Mappings of a query
-                // st:start template manage Mappings 
-                return DatatypeMap.createObject(env.getQuery().getMappings());    
+//            case XT_MAPPINGS:
+//                // use case: transformer work on Mappings of a query
+//                // st:start template manage Mappings 
+//                if (b.getMappings() != null) {
+//                    return DatatypeMap.createObject(b.getMappings());
+//                }
+//                return DatatypeMap.createObject(env.getQuery().getMappings());    
                 
             case XT_METADATA:
                 ASTQuery ast =  env.getQuery().getAST();

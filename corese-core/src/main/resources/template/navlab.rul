@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Aug 19 13:27:10 CEST 2021
+Fri Oct 15 18:25:32 CEST 2021
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -48,22 +48,56 @@ where {
 <rule>
 <body>
 <![CDATA[
+#
+# Transfom Mappings with variables ?location ?lon ?lat into a map
+# Transformer is created with Mappings argument
+# Transformer set Mappings into start template
+# Start template in this case is: http://ns.inria.fr/sparql-template/navlab#mapper 
+# Function xt:mappings() gets mappings from current st:mapper template query which is the start template
+# 
+#
 prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 
-template st:mapper {
+template st:mapmap(?amap) {
     st:call-template(st:maplist, ft:mapper.html, ?list, ?text)        
 } 
 where {
+    values ?amap {undef}
     bind (coalesce(st:call-template(st:link), "link undef") as ?text)
 
-    {select (aggregate(xt:list(?location, ?lat, ?lon)) as ?list)
+    {select ?amap (aggregate(xt:list(?location, ?lat, ?lon)) as ?list)
     where {
-        select distinct ?location ?lon ?lat where {
-            values (?location ?lon ?lat) { unnest(xt:mappings()) }
-        }
+        values ?amap {undef}
+        {select distinct ?amap ?location ?lon ?lat 
+        where {
+            values ?amap {undef}
+            values (?location ?lon ?lat) { unnest(?amap) }
+        }}
     }}
     filter (xt:size(?list) > 0)
 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Transfom Mappings with variables ?location ?lon ?lat into a map
+# Transformer is created with Mappings argument
+# Transformer set Mappings into start template
+# Start template in this case is: http://ns.inria.fr/sparql-template/navlab#mapper 
+# Function xt:mappings() gets mappings from current st:mapper template query which is the start template
+# 
+#
+prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
+
+template st:mapper {
+    st:call-template(st:mapmap, xt:mappings())        
+} 
+where { }
 
 ]]>
 </body>
@@ -513,7 +547,7 @@ template st:map2(?list) {
     str(?lat)
     str(?lon)
     coalesce(st:get(st:mapicon2), "/img/smarker.png")
-    st:plink(?r)
+    coalesce(st:plink(?r), str(?r))
   }
 }
 where {

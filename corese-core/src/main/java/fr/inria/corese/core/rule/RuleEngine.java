@@ -38,6 +38,7 @@ import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL;
 import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL_EXT;
 import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL_LITE;
 import static fr.inria.corese.core.rule.RuleEngine.Profile.STDRL;
+import fr.inria.corese.core.util.Property;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import java.io.IOException;
 import java.io.InputStream;
@@ -215,7 +216,13 @@ public class RuleEngine implements Engine, Graphable {
             case OWLRL:
             case OWLRL_LITE:
             case OWLRL_EXT:
-               load(p.getPath());
+                if (Property.stringValue(Property.Value.OWL_RL) != null) {
+                    // user defined OWL RL
+                    logger.info("Load user OWL RL: " + Property.stringValue(Property.Value.OWL_RL));
+                    loadPath(Property.stringValue(Property.Value.OWL_RL));
+                } else {
+                    load(p.getPath());
+                }
         }
     }
     
@@ -252,6 +259,13 @@ public class RuleEngine implements Engine, Graphable {
         ld.setQueryProcess(getQueryProcess());
         InputStream stream = RuleEngine.class.getResourceAsStream(name);
         ld.parse(stream, NSManager.RESOURCE+name, Load.RULE_FORMAT);
+    }
+    
+    void loadPath(String name) throws LoadException {
+        Load ld = Load.create(graph);
+        ld.setEngine(this);
+        ld.setQueryProcess(getQueryProcess());
+        ld.parse(name, Load.RULE_FORMAT);
     }
       
     /**

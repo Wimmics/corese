@@ -804,6 +804,10 @@ public class Transformer implements TransformProcessor {
         return ast(q).getNSM();
     }
     
+    /**
+     * Record Binding in case of Workflow: next WorkflowProcess can get Binding
+     * @param map 
+     */
     void save(Mappings map) {
         if (getBinding() == null && map.getBinding() != null) {
             setBinding((Binding) map.getBinding());
@@ -1053,6 +1057,12 @@ public class Transformer implements TransformProcessor {
     Mapping share(Mapping m, Environment env) {
         if (env != null && env.getBind() != null) {
             m.setBind(env.getBind());
+        }
+        if (getMappings() != null) {
+            if (m.getBind() == null) {
+                m.setBind(Binding.create());
+            }
+            m.getBind().setMappings(getMappings());
         }
         return m;
     }
@@ -1710,86 +1720,63 @@ public class Transformer implements TransformProcessor {
         this.transformerMap = transformerMap;
     }
     
-    /**
-     * @return the binding
-     */
+    
     public Binding getBinding() {
         return binding;
     }
 
-    /**
-     * @param binding the binding to set
-     */
+    
     public void setBinding(Binding binding) {
         this.binding = binding;
     }
 
-    /**
-     * @return the map
-     */
+    
+    @Override
     public Mappings getMappings() {
         return map;
     }
 
-    /**
-     * @param map the map to set
-     */
+    
     public void setMappings(Mappings map) {
         this.map = map;
     }
 
-    /**
-     * @return the eventVisitor
-     */
+    
     public QuerySolverVisitorTransformer getEventVisitor() {
         return eventVisitor;
     }
 
-    /**
-     * @param eventVisitor the eventVisitor to set
-     */
+    
     public void setEventVisitor(QuerySolverVisitorTransformer eventVisitor) {
         this.eventVisitor = eventVisitor;
     }
 
-    /**
-     * @return the starting
-     */
+    
     public boolean isStarting() {
         return starting;
     }
 
-    /**
-     * @param starting the starting to set
-     */
+   
     public void setStarting(boolean starting) {
         this.starting = starting;
     }
 
-    /**
-     * @return the AccessLevel
-     */
+   
     public Level getAccessLevel() {
         return AccessLevel;
     }
 
-    /**
-     * @param AccessLevel the AccessLevel to set
-     */
+   
     public void setAccessLevel(Level AccessLevel) {
         this.AccessLevel = AccessLevel;
     }
 
-    /**
-     * @return the event
-     */
+  
     public boolean isEvent() {
         return event;
     }
 
-    /**
-     * @param event the event to set
-     */
+   
     public void setEvent(boolean event) {
         this.event = event;
     }

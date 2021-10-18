@@ -532,12 +532,10 @@ public class Load
                     contentType = c.getContentType();
                 } else {
                     Service srv = new Service(path);
-                    stream = srv.load(path, getActualFormat(path, myFormat));
+                    stream = srv.load(path, getActualFormat(path, myFormat));                  
                     contentType = srv.getFormat();
                 }
-                                       
                 read = reader(stream);
-
                 if (contentType!=null) {
                     logger.info("Content-type: " + contentType);
                     myFormat = getTypeFormat(contentType, myFormat);
@@ -548,6 +546,8 @@ public class Load
                 read = new FileReader(path);
             }
         } catch (Exception e) {
+            logger.error(e.toString());
+            logger.error(e.getMessage() + " " + path);
             throw LoadException.create(e, path);
         }
 

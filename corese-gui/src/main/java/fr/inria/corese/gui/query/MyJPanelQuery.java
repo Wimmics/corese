@@ -119,6 +119,7 @@ public final class MyJPanelQuery extends JPanel {
     private static final String KGGRAPH = Pragma.GRAPH;
     private static final Logger logger = LogManager.getLogger(MyJPanelQuery.class.getName());
     private boolean displayLink = true;
+    private Mappings mappings;
 
     public MyJPanelQuery() {
         super();
@@ -629,6 +630,7 @@ public final class MyJPanelQuery extends JPanel {
             tabbedPaneResults.setSelectedIndex(XML_PANEL);
             return;
         }
+        setMappings(map);
         Query q = map.getQuery();
         ASTQuery ast =  q.getAST();
         boolean oneValue = !map.getQuery().isListGroup();
@@ -876,6 +878,9 @@ public final class MyJPanelQuery extends JPanel {
                         exec.setValidate(ev.getSource() == buttonValidate);
                         exec.setShacl(ev.getSource()    == buttonShacl || ev.getSource()    == buttonShex);
                         exec.setShex(ev.getSource()     == buttonShex); //coreseFrame.isShexSemantics());
+                        
+                        exec.setMappings(coreseFrame.getPreviousMappings());
+                                                
                         exec.process();
                         //Permet de passer a true toutes les options du trace KGram
                         for (int i = 0; i < coreseFrame.getListCheckbox().size(); i++) {
@@ -909,7 +914,7 @@ public final class MyJPanelQuery extends JPanel {
     }
     
     public void exec(MainFrame frame, String query) {
-        Exec exec = new Exec(frame, query, false);      
+        Exec exec = new Exec(frame, query, false); 
         exec.process();
     }
 
@@ -964,5 +969,13 @@ public final class MyJPanelQuery extends JPanel {
 
     public void setDisplayLink(boolean displayLink) {
         this.displayLink = displayLink;
+    }
+
+    public Mappings getMappings() {
+        return mappings;
+    }
+
+    public void setMappings(Mappings mappings) {
+        this.mappings = mappings;
     }
 }

@@ -10,6 +10,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.EventListener;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 
 /**
@@ -96,6 +97,17 @@ public class QueryExec {
         // use case: call @event   @public @prepare function () {}
         exec.prepare();
         Mappings map = exec.query(squery);
+        return map;
+    }
+    
+    // Mappings for transformer
+    public Mappings SPARQLQuery(String squery, Mappings amap) throws EngineException {
+        if (amap == null) {
+            return SPARQLQuery(squery);
+        }
+        // use case: call @event   @public @prepare function () {}
+        exec.prepare();
+        Mappings map = exec.query(squery, Binding.create().setMappings(amap));
         return map;
     }
     

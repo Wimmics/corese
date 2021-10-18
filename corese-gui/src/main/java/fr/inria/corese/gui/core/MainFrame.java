@@ -450,6 +450,32 @@ public class MainFrame extends JFrame implements ActionListener {
         return newQuery(query, "");
     }
     
+    public MyJPanelQuery getCurrentQueryPanel() {
+        Component cp = conteneurOnglets.getSelectedComponent();
+        if (cp instanceof MyJPanelQuery) {
+            return (MyJPanelQuery) cp;
+        }
+        return null;
+    }
+    
+    public MyJPanelQuery getPreviousQueryPanel() {        
+        if (monTabOnglet.size() >= 2) {
+            Component cp = monTabOnglet.get(monTabOnglet.size()-2);
+            if (cp instanceof MyJPanelQuery) {
+                return (MyJPanelQuery) cp;
+            }
+        }
+        return null;
+    }
+    
+    public Mappings getPreviousMappings() {
+        MyJPanelQuery panel = getPreviousQueryPanel();
+        if (panel != null) {
+            return panel.getMappings();
+        }
+        return null;
+    }
+    
     public MyJPanelQuery newQuery(String query, String name) {
         nbTabs++;
         //supprime l'onglet "+", ajoute un onglet Query, puis recrée l'onglet "+" à la suite
@@ -762,6 +788,7 @@ public class MainFrame extends JFrame implements ActionListener {
         templateMenu.add(itrig);
         templateMenu.add(ispin);
         templateMenu.add(iowl);
+        templateMenu.add(defItem("Map", "maptemplate.rq"));
         
         shaclMenu.add(itypecheck);
         shaclMenu.add(defItem("Fast Engine", "shacl/fastengine.rq"));

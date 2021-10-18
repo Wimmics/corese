@@ -6,6 +6,7 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Context;
@@ -57,6 +58,8 @@ public class Binding implements Binder {
     private Access.Level accessLevel = Access.Level.USER_DEFAULT;
     private ContextLog contextLog;
     private Context context;
+    // transformer Mappings
+    private Mappings mappings;
     private IDatatype datatypeValue;
     
     private static Binding singleton;
@@ -567,6 +570,9 @@ public class Binding implements Binder {
         if (b.getContext()!=null) {
             setContext(b.getContext());
         }
+        if (b.getMappings() != null) {
+            setMappings(b.getMappings());
+        }
     }
     
     void shareGlobalVariable(Binding b) {
@@ -807,6 +813,15 @@ public class Binding implements Binder {
         if (c.getAccessRight() != null) {
             setAccessRight(c.getAccessRight());
         }
+    }
+
+    public Mappings getMappings() {
+        return mappings;
+    }
+
+    public Binding setMappings(Mappings mappings) {
+        this.mappings = mappings;
+        return this;
     }
     
 }

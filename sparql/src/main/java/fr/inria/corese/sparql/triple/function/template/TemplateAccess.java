@@ -56,6 +56,9 @@ public class TemplateAccess extends TemplateFunction {
                 return trans.isDefined(param[0].getLabel()) ? TRUE : FALSE;
                 
             case XT_MAPPINGS:
+                if (b.getMappings() != null) {
+                    return DatatypeMap.createObject(b.getMappings());
+                }
                 Mappings map = trans.getMappings();
                 if (map == null) {
                     return null;

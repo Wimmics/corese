@@ -2,8 +2,10 @@ package fr.inria.corese.rdf4j;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.HashMap;
 import java.util.HashSet;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 
 import org.eclipse.rdf4j.model.IRI;
@@ -64,44 +66,12 @@ public class Rdf4jDataManager implements DataManager {
      * GetEdges *
      ************/
 
-    /**
-     * Compare to Statement without context.
-     * 
-     * @param statement_1 First statement to compare.
-     * @param statement_2 Second statement to compare.
-     * @return True if the two statements have the same subject, predicate, objects.
-     *         False else.
-     */
-    private boolean compareStatementWithoutContext(Statement statement_1, Statement statement_2) {
-        return statement_1.getSubject().equals(statement_2.getSubject())
-                && statement_1.getPredicate().equals(statement_2.getPredicate())
-                && statement_1.getObject().equals(statement_2.getObject());
-    };
-
-    /**
-     * Check if a particular statment is in a list of Statements, statement are
-     * compared without contexts.
-     * 
-     * @param compreStatement Statement to compare.
-     * @param statements      List of statements.
-     * @return True if the statement without context is equal with at least one
-     *         statements without context in list. False else.
-     */
-    private boolean containSameStatementWithoutContext(Statement compreStatement, Iterable<Edge> statements) {
-        for (Statement statement : statements) {
-            if (this.compareStatementWithoutContext(compreStatement, statement)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
     @Override
     public Iterable<Edge> getEdgeList(Node subject, Node predicate, Node object, List<Node> graphs) {
         // Convert Corese node to RDF4J Value
-        IRI rdf4j_subject = (IRI) Convert.coreseNodeToRdf4jValue(subject);
+        Resource rdf4j_subject = (Resource) Convert.coreseNodeToRdf4jValue(subject);
         IRI rdf4j_predicate = (IRI) Convert.coreseNodeToRdf4jValue(predicate);
-        IRI rdf4j_object = (IRI) Convert.coreseNodeToRdf4jValue(object);
+        Value rdf4j_object = Convert.coreseNodeToRdf4jValue(object);
 
         // Convert list of corese graphs to list of RDF4J contexts
         Resource[] rdf4j_contexts;
@@ -118,14 +88,13 @@ public class Rdf4jDataManager implements DataManager {
 
         // convert Statements to Edges
         // remove duplicate edges (same edge with different context)
-        ArrayList<Edge> result = new ArrayList<>();
+        HashMap<Integer, Edge> result = new HashMap<>();
         for (Edge statement : Convert.statementsToEdges(this.default_graph, statements)) {
-            if (!this.containSameStatementWithoutContext(statement, result)) {
-                result.add(statement);
-            }
+            int hash = Objects.hash(statement.getSubject(), statement.getPredicate(), statement.getObject());
+            result.put(hash, statement);
         }
 
-        return result;
+        return result.values();
     }
 
     /************

@@ -395,8 +395,8 @@ public class Graph extends GraphObject implements
 
     DataProducer getDataProducer(Node... from) {
         DataProducer dp;
-        if (from.length == 0) {
-            dp = getDataStore().getDefault(Arrays.asList(from));
+        if (from == null || from.length == 0) {
+            dp = getDataStore().getNamed(null, null);
         } else {
             dp = getDataStore().getNamed(Arrays.asList(from), null);
         }
@@ -404,18 +404,21 @@ public class Graph extends GraphObject implements
     }
 
     /**
-     * when from = Node[0] -> default graph = union of named graph
+     * Return statements with the specified subject, predicate, object and
+     * (optionally) from exist in this graph.
+     *
+     * @param s    The subject of the statements to match, null to match statements
+     *             with any subject.
+     * @param p    Predicate of the statements to match, null to match statements
+     *             with any predicate.
+     * @param o    Object of the statements to match, null to match statements with
+     *             any object.
+     * @param from Contexts of the statements to match. If from = Node[0] or from =
+     *             null, statements will match disregarding their context.
+     * @return List of edges that match the specified pattern.
      */
     public Iterable<Edge> getEdgesRDF4J(Node s, Node p, Node o, Node... from) {
         DataProducer dp = getDataProducer(from);
-        return dp.iterate(bnvalue(s), bnvalue(p), bnvalue(o));
-    }
-
-    /**
-     * All occurrences of triples in every named graph
-     */
-    public Iterable<Edge> getEdgesRDF4J(Node s, Node p, Node o) {
-        DataProducer dp = getDataStore().getNamed(null, null);
         return dp.iterate(bnvalue(s), bnvalue(p), bnvalue(o));
     }
 

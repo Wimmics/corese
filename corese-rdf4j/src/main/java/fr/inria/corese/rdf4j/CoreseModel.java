@@ -249,8 +249,7 @@ public class CoreseModel extends AbstractModel {
      *                    statements with any object.
      * @param contextsThe Contexts of the statements to match. If no contexts are
      *                    specified, statements will match disregarding their
-     *                    context. If one or more contexts are specified, statements
-     *                    with a context matching one of these will match.
+     *                    context.
      * @return Corese model Statements that match the specified pattern.
      */
     private Iterable<Statement> choose(Resource subj, IRI pred, Value obj, Resource... contexts) {

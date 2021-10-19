@@ -43,10 +43,13 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.XMLFormat;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.GUI_CONSTRUCT_FORMAT;
+import static fr.inria.corese.core.util.Property.Value.GUI_SELECT_FORMAT;
+import static fr.inria.corese.core.util.Property.Value.GUI_XML_MAX;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Metadata;
-import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 
@@ -87,7 +90,9 @@ public final class MyJPanelQuery extends JPanel {
     int maxresxml = 1000;
     
     //Boutton du panneau Query
-    private JButton buttonRun, buttonShacl, buttonPush, buttonShex, buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL, buttonTKgram, buttonProve;
+    private JButton buttonRun, buttonShacl, buttonPush, buttonCopy, buttonShex, 
+            buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL, 
+            buttonTKgram, buttonProve;
     private JButton buttonSearch;
     private JButton buttonRefreshStyle, buttonDefaultStyle;
     //panneau de la newQuery
@@ -153,6 +158,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonShacl = new JButton();
         buttonShex = new JButton();
         buttonPush = new JButton();
+        buttonCopy = new JButton();
         buttonStop = new JButton();
         buttonKill = new JButton();
         buttonValidate = new JButton();
@@ -276,7 +282,10 @@ public final class MyJPanelQuery extends JPanel {
          * Bouttons et leurs actions *
          */
         //Lancer une requête
+        // copy current result into new query panel (template)
         buttonPush.setText("Push");
+        // copy current result into last result panel
+        buttonCopy.setText("Copy");
         buttonRun.setText("Query");
         buttonShacl.setText("Shacl");
         buttonShex.setText("Shex");
@@ -350,6 +359,7 @@ public final class MyJPanelQuery extends JPanel {
         hSeq2.addComponent(buttonShacl);
         hSeq2.addComponent(buttonShex);
         hSeq2.addComponent(buttonPush);
+        hSeq2.addComponent(buttonCopy);
         hSeq2.addComponent(buttonStop);
         hSeq2.addComponent(buttonKill);
         hSeq2.addComponent(buttonValidate);
@@ -385,6 +395,7 @@ public final class MyJPanelQuery extends JPanel {
         vParallel2.addComponent(buttonShacl);
         vParallel2.addComponent(buttonShex);
         vParallel2.addComponent(buttonPush);
+        vParallel2.addComponent(buttonCopy);
         vParallel2.addComponent(buttonStop);
         vParallel2.addComponent(buttonKill);
         vParallel2.addComponent(buttonValidate);
@@ -441,6 +452,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonShacl.addActionListener(l_RunListener);
         buttonShex.addActionListener(l_RunListener);
         buttonPush.addActionListener(l_RunListener);
+        buttonCopy.addActionListener(l_RunListener);
         buttonStop.addActionListener(l_RunListener);
         buttonKill.addActionListener(l_RunListener);
         buttonValidate.addActionListener(l_RunListener);
@@ -475,12 +487,13 @@ public final class MyJPanelQuery extends JPanel {
     }
     
     /**
-     * Max number of xml results to display can be set by LDScript static variable max_xml_result
-     * Use case: Event/GUI set this static variable 
-     * location: resources/function/event/gui.rq
+     * Max number of xml results to display can be set by Property
      */
     int maxResXML() {
-        return Binding.getDefaultValue(Binding.MAX_XML_RESULT, maxresxml);
+        if (Property.intValue(GUI_XML_MAX) != null) {
+            return Property.intValue(GUI_XML_MAX);
+        }
+        return maxresxml;
     }
 
     String toString(Mappings map) {
@@ -491,9 +504,7 @@ public final class MyJPanelQuery extends JPanel {
                 return graphToString(map);
             } else {
                 // RDF or XML
-                ResultFormat rf = ResultFormat.create(map);
-                rf.setNbResult(maxResXML());
-                String str = rf.toString();
+                String str = mapToString(map);
                 if (str == null) {
                     // use case: template fail
                     str = "";
@@ -512,8 +523,38 @@ public final class MyJPanelQuery extends JPanel {
         }
     }
     
+    String mapToString(Mappings map) {
+        if (Property.stringValue(GUI_SELECT_FORMAT) != null) {
+            switch (Property.stringValue(GUI_SELECT_FORMAT)) {
+                case Property.JSON:
+                    return ResultFormat.create(map, ResultFormat.JSON_FORMAT)
+                            .setNbResult(maxResXML()).toString();
+                case Property.XML:
+                    return ResultFormat.create(map, ResultFormat.XML_FORMAT)
+                            .setNbResult(maxResXML()).toString();
+            }
+        }
+        ResultFormat rf = ResultFormat.create(map).setNbResult(maxResXML());
+        return rf.toString();
+    }
+
     String graphToString(Mappings map) {
         Graph g = (Graph) map.getGraph();
+        
+        if (Property.stringValue(GUI_CONSTRUCT_FORMAT) != null) {
+            switch (Property.stringValue(GUI_CONSTRUCT_FORMAT)) {
+                case Property.RDF_XML:
+                    return ResultFormat.create(g, ResultFormat.RDF_XML_FORMAT).toString();
+                case Property.TURTLE:
+                    return ResultFormat.create(g, ResultFormat.TURTLE_FORMAT).toString();
+                case Property.JSON:
+                    return ResultFormat.create(g, ResultFormat.JSON_LD_FORMAT).toString();   }
+        }
+        // default
+        return turtle(g);
+    }
+    
+    String turtle(Graph g) {
         Transformer t = Transformer.create(g, Transformer.TURTLE);
         try {
             return t.transform();
@@ -616,15 +657,19 @@ public final class MyJPanelQuery extends JPanel {
         return getTextAreaXMLResult().getText();
     }
 
+    void basicDisplay(Mappings map) {
+        display(map, null, -1, false);
+    }
+    
     public void display(Mappings map) {
-        display(map, null, -1);
+        display(map, null, -1, true);
     }
     
     public void display(Mappings map, Binding bind) {
-        display(map, bind, -1);
+        display(map, bind, -1, true);
     }
     
-    void display(Mappings map, Binding bind, int sort) {
+    void display(Mappings map, Binding bind, int sort, boolean link) {
         if (map == null) {
             // go to XML for error message
             tabbedPaneResults.setSelectedIndex(XML_PANEL);
@@ -664,7 +709,9 @@ public final class MyJPanelQuery extends JPanel {
             display(map, ast.getNSM());
         }
         
-        linkedResult(ast, map, bind);
+        if (link) {
+            linkedResult(ast, map, bind);
+        }
     }
     
     void linkedResult(ASTQuery ast, Mappings map, Binding bind) {
@@ -868,9 +915,15 @@ public final class MyJPanelQuery extends JPanel {
                         tabbedPaneResults.setSelectedIndex(XML_PANEL);
                     }
                     else if (ev.getSource() == buttonPush) { 
-                        // push current result into new query editor (as if load query were done)
+                        // copy current result into new query editor (as if load query were done)
                         coreseFrame.newQuery(txt, "generated");
-                    } else if (ev.getSource() == buttonRun || ev.getSource() == buttonValidate 
+                    } 
+                    else if (ev.getSource() == buttonCopy) { 
+                        // copy current result into last result panel 
+                        // (as if load result), for xt:mappings()
+                        coreseFrame.getLastQueryPanel().basicDisplay(getMappings());
+                    } 
+                    else if (ev.getSource() == buttonRun || ev.getSource() == buttonValidate 
                             || ev.getSource() == buttonShacl || ev.getSource() == buttonShex) {
                         // buttonRun
                         Exec exec = new Exec(coreseFrame, query, isTrace);
@@ -878,8 +931,10 @@ public final class MyJPanelQuery extends JPanel {
                         exec.setValidate(ev.getSource() == buttonValidate);
                         exec.setShacl(ev.getSource()    == buttonShacl || ev.getSource()    == buttonShex);
                         exec.setShex(ev.getSource()     == buttonShex); //coreseFrame.isShexSemantics());
-                        
-                        exec.setMappings(coreseFrame.getPreviousMappings());
+                        // draft test: Mappings available using xt:mappings()
+                        // Mappings from previous query may have been copied here
+                        // using Copy button
+                        exec.setMappings(getQueryMappings());
                                                 
                         exec.process();
                         //Permet de passer a true toutes les options du trace KGram
@@ -969,6 +1024,16 @@ public final class MyJPanelQuery extends JPanel {
 
     public void setDisplayLink(boolean displayLink) {
         this.displayLink = displayLink;
+    }
+    
+    /**
+     * Query result accessible by xt:mappings()
+     * Use case: Previous Query Result has been Copied (Copy button)
+     * here to be processed by xt:mappings()
+     */
+    Mappings getQueryMappings() {
+        //return mainFrame.getPreviousMappings();
+        return getMappings();
     }
 
     public Mappings getMappings() {

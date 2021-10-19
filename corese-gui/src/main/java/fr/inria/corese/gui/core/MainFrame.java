@@ -151,7 +151,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem success;
     private JMenuItem quit;
     private JMenuItem iselect, iselecttuple, igraph, iconstruct, iask, idescribe,
-            iserviceLocal, iserviceCorese, iserviceDBpedia, ifederate,
+            iserviceLocal, iserviceCorese, imapcorese, iserviceDBpedia, ifederate,
             iinsert, iinsertdata, idelete, ideleteinsert,
             iturtle, in3, irdfxml, ijson, itrig, ispin, iowl, 
             ientailment, irule, ierror, ifunction, ical, iowlrl;
@@ -458,9 +458,49 @@ public class MainFrame extends JFrame implements ActionListener {
         return null;
     }
     
-    public MyJPanelQuery getPreviousQueryPanel() {        
-        if (monTabOnglet.size() >= 2) {
-            Component cp = monTabOnglet.get(monTabOnglet.size()-2);
+    // test
+    MyJPanelQuery getPreviousQueryPanel2() {  
+        MyJPanelQuery jp = (MyJPanelQuery) conteneurOnglets.getSelectedComponent();
+        conteneurOnglets.getComponentCount();
+        int i = conteneurOnglets.getSelectedIndex();
+        return null;
+    }
+    
+    public MyJPanelQuery getLastQueryPanel() { 
+        return getLastQueryPanel(0);
+    }
+    
+
+    /**
+     * n=0 : last panel
+     * n=1 : last-1 panel
+     */
+    public MyJPanelQuery getLastQueryPanel(int n) {         
+        int i = 0;
+        int last = conteneurOnglets.getComponentCount()-1;
+        
+        for (int j = last;  j>=0; j--) {
+            Component cp = conteneurOnglets.getComponent(j);
+            if (cp instanceof MyJPanelQuery) {
+                MyJPanelQuery jp = (MyJPanelQuery) cp;
+                if (i++ == n) {
+                    return jp;
+                }
+            }
+        }
+        return null;
+    }
+    
+    /**
+     * Last element is "+" at length-1, current query panel at length-2, previous query panel at length-3
+     * @return 
+     */
+    public MyJPanelQuery getPreviousQueryPanel() {  
+        for (Component cp : conteneurOnglets.getComponents()) {
+            System.out.println("gui: " + cp.getClass().getName());
+        }
+        if (conteneurOnglets.getComponents().length >= 3) {
+            Component cp = conteneurOnglets.getComponent(conteneurOnglets.getComponents().length-3);
             if (cp instanceof MyJPanelQuery) {
                 return (MyJPanelQuery) cp;
             }
@@ -470,7 +510,9 @@ public class MainFrame extends JFrame implements ActionListener {
     
     public Mappings getPreviousMappings() {
         MyJPanelQuery panel = getPreviousQueryPanel();
+        System.out.println("gui panel: " + panel);
         if (panel != null) {
+            System.out.println("gui mappings: " + panel.getMappings());
             return panel.getMappings();
         }
         return null;
@@ -611,6 +653,7 @@ public class MainFrame extends JFrame implements ActionListener {
         idescribe = defItem("Describe", DEFAULT_DESCRIBE_QUERY);
         iserviceLocal = defItem("Service Local", "servicelocal.rq");
         iserviceCorese = defItem("Service Corese", DEFAULT_SERVICE_CORESE_QUERY);
+        imapcorese = defItem("Map Corese", "mapcorese.rq");
         iserviceDBpedia = defItem("Service DBpedia", DEFAULT_SERVICE_DBPEDIA_QUERY);
         ifederate = defItem("Federate", "federate.rq");
         ifunction = defItem("Function", DEFAULT_FUN_QUERY);
@@ -766,7 +809,8 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(idescribe);
         queryMenu.add(iserviceLocal);
         queryMenu.add(iserviceCorese);
-        queryMenu.add(iserviceDBpedia);
+        queryMenu.add(iserviceCorese);
+        queryMenu.add(imapcorese);
         queryMenu.add(ifederate);
         queryMenu.add(ifunction);
         queryMenu.add(ical);
@@ -788,7 +832,6 @@ public class MainFrame extends JFrame implements ActionListener {
         templateMenu.add(itrig);
         templateMenu.add(ispin);
         templateMenu.add(iowl);
-        templateMenu.add(defItem("Map", "maptemplate.rq"));
         
         shaclMenu.add(itypecheck);
         shaclMenu.add(defItem("Fast Engine", "shacl/fastengine.rq"));

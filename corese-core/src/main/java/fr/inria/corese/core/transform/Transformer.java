@@ -1059,6 +1059,8 @@ public class Transformer implements TransformProcessor {
             m.setBind(env.getBind());
         }
         if (getMappings() != null) {
+            // Mappings e.g. for st:mapper   values ?x {unnest(xt:mappings())}
+            // recorded in Binding, available with xt:mappings() 
             if (m.getBind() == null) {
                 m.setBind(Binding.create());
             }

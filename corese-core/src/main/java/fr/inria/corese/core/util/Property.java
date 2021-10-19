@@ -49,6 +49,11 @@ public class Property {
     private static Logger logger = LoggerFactory.getLogger(Property.class);
     private static Property singleton;
     private static final String STD = "std";
+    public static final String RDF_XML = "rdf+xml";
+    public static final String TURTLE = "turtle";
+    public static final String JSON = "json";
+    public static final String XML = "xml";
+    
     
     private HashMap<Value, Boolean> booleanProperty;
     private HashMap<Value, String> stringProperty;
@@ -81,10 +86,6 @@ public class Property {
         // activate @event ldscript function call for sparql query processing
         EVENT,
         VERBOSE,
-        LOAD_FORMAT,
-        // integer value
-        // max number of triples for each rdf file load
-        LOAD_LIMIT,
         SKOLEMIZE,
         SOLVER_DEBUG,
         TRANSFORMER_DEBUG,
@@ -102,13 +103,26 @@ public class Property {
         OWL_CLEAN,
         OWL_CLEAN_QUERY,
         OWL_RL,
+        
         // init graph
         GUI_TITLE,
+        GUI_BROWSE,
+        GUI_XML_MAX,
+        // rdf+xml turtle json
+        GUI_CONSTRUCT_FORMAT,
+        GUI_SELECT_FORMAT,
+        
+        // application/rdf+xml
+        LOAD_FORMAT,
+        // integer value
+        // max number of triples for each rdf file load
+        LOAD_LIMIT,
         LOAD_WITH_PARAMETER,
         LOAD_DATASET,
         LOAD_QUERY,
         LOAD_FUNCTION,
         LOAD_RULE,
+        
         RDFS_ENTAILMENT,
         
         LDSCRIPT_VARIABLE,
@@ -121,7 +135,6 @@ public class Property {
         SERVICE_LIMIT,
         SERVICE_TIMEOUT,
         SERVICE_PARAMETER,
-        SERVICE_BROWSE
     };
 
     static {

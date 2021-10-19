@@ -608,8 +608,9 @@ public class ResultFormat implements ResultFormatDef {
     /**
      * @param nbResult the nbResult to set
      */
-    public void setNbResult(long nbResult) {
+    public ResultFormat setNbResult(long nbResult) {
         this.nbResult = nbResult;
+        return this;
     }
     
     public int type() {

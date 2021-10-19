@@ -18,6 +18,12 @@ CONSTRAINT_GRAPH        = true
 LOAD_IN_DEFAULT_GRAPH   = true
 SKOLEMIZE               = false
 RDF_STAR                = false
+
+# clean OWL before OWL RL
+OWL_CLEAN               = true
+#OWL_CLEAN_QUERY         = /user/corby/home/AAData/query/clean/test.rq
+#OWL_RL                  = /user/corby/home/AAData/rule/owlrl.rul
+
 SPARQL_COMPLIANT        = false
 REENTRANT_QUERY         = false
 
@@ -25,7 +31,7 @@ ACCESS_RIGHT            = false
 #ACCESS_LEVEL           = PUBLIC | RESTRICTED | PRIVATE
 
 EVENT               = false
-RULE_VISITOR        = fr.inria.corese.core.visitor.solver.QuerySolverVisitorRuleUser
+#RULE_VISITOR        = fr.inria.corese.core.visitor.solver.QuerySolverVisitorRuleUser
 #SOLVER_VISITOR      = fr.inria.corese.core.visitor.solver.QuerySolverVisitorUser
 #TRANSFORMER_VISITOR = fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformerUser
 SERVER_VISITOR      = fr.inria.corese.server.webservice.QuerySolverVisitorServerUser
@@ -34,8 +40,8 @@ SERVER_VISITOR      = fr.inria.corese.server.webservice.QuerySolverVisitorServer
 # Test, debug
 #
 VERBOSE        = false
-SOLVER_DEBUG   = true
-TRANSFORMER_DEBUG   = false
+SOLVER_DEBUG   = false
+TRANSFORMER_DEBUG   = true
 INTERPRETER_TEST = false
 SOLVER_SORT_CARDINALITY   = false
 # STD | ADVANCED
@@ -48,11 +54,10 @@ LDSCRIPT_CHECK_RDFTYPE   = false
 LDSCRIPT_VARIABLE        = trace_sttl_undo=true
 
 SERVICE_BINDING     = values 
-SERVICE_SLICE       = 10
-SERVICE_LIMIT       = 100
-SERVICE_TIMEOUT     = 2000
+SERVICE_SLICE       = 20
+SERVICE_LIMIT       = 1000
+#SERVICE_TIMEOUT     = 2000
 #SERVICE_PARAMETER   = mode=link;debug;show&transform=st:xml&format=json
-
 
 
 
@@ -77,13 +82,17 @@ PREFIX        = d=http://ns.inria.fr/humans/data# ; h=http://ns.inria.fr/humans/
 GUI_TITLE = Corese Semantic Web Factory - Inria UCA - R&D version - 2021-10-16 
 
 # GUI browse Linked Result
-SERVICE_BROWSE      = true
+GUI_BROWSE      = true
+GUI_XML_MAX     = 100
+# rdf+xml turtle json
+GUI_SELECT_FORMAT       =  xml
+GUI_CONSTRUCT_FORMAT    =  rdf+xml
 
 # Default value for corese gui
 RDFS_ENTAILMENT = false
-LOAD_DATASET  = /user/corby/home/AADemoNew/inrae/data/humans_owl.ttl
+#LOAD_DATASET  = /user/corby/home/AADemoNew/inrae/data/humans_owl.ttl
 #LOAD_DATASET  = /user/corby/home/AADemoNew/tdinrae/data/humans_owl.ttl ; /user/corby/home/AADemoNew/tdinrae/data/humans_data.ttl ; /user/corby/home/AADemoNew/tdinrae/data/humans_schema.ttl
 #LOAD_RULE     = http://www.w3.org/ns/owl-profile/RL
-LOAD_QUERY     = /user/corby/home/AADemoNew/load.rq
+LOAD_QUERY     = /user/corby/home/AAGui/query/mapcorese.rq
 LOAD_FUNCTION = /user/corby/home/AAData/data/corese/function.rq
 

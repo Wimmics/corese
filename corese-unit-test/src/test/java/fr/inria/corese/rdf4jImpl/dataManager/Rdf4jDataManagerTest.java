@@ -38,6 +38,7 @@ public class Rdf4jDataManagerTest {
     private IRI firstNameProperty;
     private IRI singerNode;
     private IRI edithPiafNode;
+    private IRI georgeBrassensNode;
     private Literal edithLiteral;
     private IRI context1;
     private IRI context2;
@@ -82,9 +83,9 @@ public class Rdf4jDataManagerTest {
         this.context3 = context3;
 
         // bonus statement
-        IRI lastNameProperty = Values.iri(ex, "lastName");
-        Literal piafLiteral = Values.literal("Piaf");
-        this.statement_bonus = vf.createStatement(edithPiafNode, lastNameProperty, piafLiteral);
+        IRI georgeBrassensNode = Values.iri(ex, "GeorgeBrassens");
+        this.georgeBrassensNode = georgeBrassensNode;
+        this.statement_bonus = vf.createStatement(georgeBrassensNode, isaProperty, singerNode);
 
         /////////////////
         // Build graph //
@@ -111,28 +112,31 @@ public class Rdf4jDataManagerTest {
     }
 
     @Test
-    public void graphSizeNode() {
+    public void countEdges() {
         DataManager dataManager;
         Node fnp_corese_node = Convert.rdf4jValueToCoreseNode(this.firstNameProperty);
         Node ip_corese_node = Convert.rdf4jValueToCoreseNode(this.isaProperty);
 
         dataManager = new Rdf4jDataManager(new CoreseModel());
-        assertEquals(0, dataManager.graphSize(fnp_corese_node));
+        assertEquals(0, dataManager.countEdges(fnp_corese_node));
 
         dataManager = new Rdf4jDataManager(this.model);
-        assertEquals(3, dataManager.graphSize(fnp_corese_node));
+        assertEquals(3, dataManager.countEdges(fnp_corese_node));
 
         dataManager = new Rdf4jDataManager(this.model);
-        assertEquals(1, dataManager.graphSize(ip_corese_node));
+        assertEquals(1, dataManager.countEdges(ip_corese_node));
+
+        dataManager = new Rdf4jDataManager(this.model);
+        assertEquals(4, dataManager.countEdges(null));
     }
 
     @Test
-    public void getEdgeList() {
+    public void getEdges() {
         DataManager dataManager;
         dataManager = new Rdf4jDataManager(this.model);
 
         // All edges
-        Iterable<Edge> iterable = dataManager.getEdgeList(null, null, null, null);
+        Iterable<Edge> iterable = dataManager.getEdges(null, null, null, null);
         List<Edge> result = new ArrayList<>();
         iterable.forEach(result::add);
 
@@ -146,7 +150,7 @@ public class Rdf4jDataManagerTest {
         // All edges of default graph
         ArrayList<Node> graphs = new ArrayList<>();
         graphs.add(this.default_graph);
-        iterable = dataManager.getEdgeList(null, null, null, graphs);
+        iterable = dataManager.getEdges(null, null, null, graphs);
         result = new ArrayList<>();
         iterable.forEach(result::add);
 
@@ -156,11 +160,100 @@ public class Rdf4jDataManagerTest {
     }
 
     @Test
-    public void getGraphList() {
+    public void subjects() {
+        Iterable<Node> iterable;
+        List<Node> result;
+
+        Model model_copy = new TreeModel(this.model);
+        model_copy.add(this.statement_bonus);
+        DataManager dataManager = new Rdf4jDataManager(model_copy);
+
+        // All contexts
+        iterable = dataManager.subjects(null);
+        result = new ArrayList<>();
+        iterable.forEach(result::add);
+        assertEquals(2, result.size());
+        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.edithPiafNode)));
+        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.georgeBrassensNode)));
+
+        // Context 1
+        iterable = dataManager.subjects(Convert.rdf4jContextToCoreseGraph(this.default_graph, this.context1));
+        result = new ArrayList<>();
+        iterable.forEach(result::add);
+        assertEquals(1, result.size());
+        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.edithPiafNode)));
+    }
+
+    @Test
+    public void predicates() {
+        Iterable<Node> iterable;
+        List<Node> result;
+
+        Model model_copy = new TreeModel(this.model);
+        model_copy.add(this.statement_bonus);
+        DataManager dataManager = new Rdf4jDataManager(model_copy);
+
+        // All contexts
+        iterable = dataManager.predicates(null);
+        result = new ArrayList<>();
+        iterable.forEach(result::add);
+        assertEquals(2, result.size());
+        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.isaProperty)));
+        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.firstNameProperty)));
+
+        // Context 1
+        iterable = dataManager.predicates(Convert.rdf4jContextToCoreseGraph(this.default_graph, this.context1));
+        result = new ArrayList<>();
+        iterable.forEach(result::add);
+        assertEquals(1, result.size());
+        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.firstNameProperty)));
+
+        // Default context
+        iterable = dataManager.predicates(this.default_graph);
+        result = new ArrayList<>();
+        iterable.forEach(result::add);
+        assertEquals(1, result.size());
+        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.isaProperty)));
+    }
+
+    @Test
+    public void objects() {
+        Iterable<Node> iterable;
+        List<Node> result;
+
+        Model model_copy = new TreeModel(this.model);
+        model_copy.add(this.statement_bonus);
+        DataManager dataManager = new Rdf4jDataManager(model_copy);
+
+        // All contexts
+        iterable = dataManager.objects(null);
+        result = new ArrayList<>();
+        iterable.forEach(result::add);
+        assertEquals(2, result.size());
+        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.singerNode)));
+        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.edithLiteral)));
+
+        // Context 1
+        iterable = dataManager.objects(Convert.rdf4jContextToCoreseGraph(this.default_graph, this.context1));
+        result = new ArrayList<>();
+        iterable.forEach(result::add);
+        assertEquals(1, result.size());
+        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.edithLiteral)));
+
+        // Default context
+        iterable = dataManager.objects(this.default_graph);
+        result = new ArrayList<>();
+        iterable.forEach(result::add);
+        assertEquals(1, result.size());
+        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.singerNode)));
+    }
+
+    @Test
+    public void contexts() {
         DataManager dataManager;
 
         dataManager = new Rdf4jDataManager(this.model);
-        Iterable<Node> iterable = dataManager.getGraphList();
+        Iterable<Node> iterable = dataManager.contexts();
         List<Node> result = new ArrayList<>();
         iterable.forEach(result::add);
 
@@ -169,48 +262,6 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.context2)));
         assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.context3)));
         assertEquals(true, result.contains(this.default_graph));
-    }
-
-    @Test
-    public void getPropertyList() {
-        DataManager dataManager;
-
-        dataManager = new Rdf4jDataManager(this.model);
-        Iterable<Node> iterable = dataManager.getPropertyList();
-        List<Node> result = new ArrayList<>();
-        iterable.forEach(result::add);
-
-        assertEquals(2, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.firstNameProperty)));
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.isaProperty)));
-    }
-
-    @Test
-    public void getDefaultNodeList() {
-        DataManager dataManager;
-
-        dataManager = new Rdf4jDataManager(this.model);
-        Iterable<Node> iterable = dataManager.getDefaultNodeList();
-        List<Node> result = new ArrayList<>();
-        iterable.forEach(result::add);
-
-        assertEquals(2, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.edithPiafNode)));
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.singerNode)));
-    }
-
-    @Test
-    public void getGraphNodeList() {
-        DataManager dataManager;
-
-        dataManager = new Rdf4jDataManager(this.model);
-        Iterable<Node> iterable = dataManager.getGraphNodeList(Convert.rdf4jValueToCoreseNode(this.context1));
-        List<Node> result = new ArrayList<>();
-        iterable.forEach(result::add);
-
-        assertEquals(2, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.edithPiafNode)));
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.edithLiteral)));
     }
 
     @Test
@@ -226,9 +277,7 @@ public class Rdf4jDataManagerTest {
 
         // Try insert statement already in graph
         iterable = dataManager.insert(edge_bonus);
-        assertEquals(iterable, null);
-
-        System.out.println(this.model);
+        assertEquals(null, iterable);
     }
 
     @Test

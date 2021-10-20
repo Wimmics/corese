@@ -39,7 +39,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.LogManager;
-import fr.inria.corese.core.producer.DataBrokerUpdateExtern;
+import fr.inria.corese.core.producer.DataBrokerConstructExtern;
 import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.util.Extension;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
@@ -845,7 +845,7 @@ public class QueryProcess extends QuerySolver {
         GraphManager mgr = new GraphManager(getGraph());
         if (hasDataManager()) {
             // external graph DataManager (stored in ProducerImpl)
-            mgr.setDataBroker(new DataBrokerUpdateExtern(getDataManager()));
+            mgr.setDataBroker(new DataBrokerConstructExtern(getDataManager()));
         }
         return mgr;
     }

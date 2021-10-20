@@ -27,27 +27,39 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 public class Rdf4jDataManager implements DataManager {
 
     private Model rdf4j_model;
-    private Node default_graph;
+    private Node default_corese_context;
 
     /****************
      * Constructors *
      ****************/
 
+    /**
+     * Constructor of Rdf4jDataManager from a RDF4J Model.
+     * 
+     * @param rdf4j_model RDF4J model.
+     */
     public Rdf4jDataManager(Model rdf4j_model) {
         this.rdf4j_model = rdf4j_model;
 
-        IDatatype default_graph_datatype = DatatypeMap.createResource(ExpType.DEFAULT_GRAPH);
-        this.default_graph = NodeImpl.create(default_graph_datatype);
+        IDatatype default_context_datatype = DatatypeMap.createResource(ExpType.DEFAULT_GRAPH);
+        this.default_corese_context = NodeImpl.create(default_context_datatype);
     }
 
-    public Rdf4jDataManager(Model rdf4j_model, Node default_graph) {
+    /**
+     * Constructor of Rdf4jDataManager from a RDF4J Model and a specific default
+     * corese context.
+     * 
+     * @param rdf4j_model            RDF4J model.
+     * @param default_corese_context Value of the default corese context.
+     */
+    public Rdf4jDataManager(Model rdf4j_model, Node default_corese_context) {
         this.rdf4j_model = rdf4j_model;
-        this.default_graph = default_graph;
+        this.default_corese_context = default_corese_context;
     }
 
-    /*************
-     * GraphSize *
-     *************/
+    /*********
+     * Count *
+     *********/
 
     @Override
     public int graphSize() {
@@ -55,8 +67,8 @@ public class Rdf4jDataManager implements DataManager {
     }
 
     @Override
-    public int graphSize(Node predicate) {
-        // Convert Corese node to RDF4J Value
+    public int countEdges(Node predicate) {
+        // convert Corese node to RDF4J Value
         IRI rdf4j_predicate = (IRI) Convert.coreseNodeToRdf4jValue(predicate);
 
         return this.rdf4j_model.filter(null, rdf4j_predicate, null).size();
@@ -67,20 +79,19 @@ public class Rdf4jDataManager implements DataManager {
      ************/
 
     @Override
-    public Iterable<Edge> getEdgeList(Node subject, Node predicate, Node object, List<Node> graphs) {
-        // Convert Corese node to RDF4J Value
+    public Iterable<Edge> getEdges(Node subject, Node predicate, Node object, List<Node> corese_contexts) {
+        // convert Corese node to RDF4J Value
         Resource rdf4j_subject = (Resource) Convert.coreseNodeToRdf4jValue(subject);
         IRI rdf4j_predicate = (IRI) Convert.coreseNodeToRdf4jValue(predicate);
         Value rdf4j_object = Convert.coreseNodeToRdf4jValue(object);
 
-        // Convert list of corese graphs to list of RDF4J contexts
+        // convert list of corese contexts to list of RDF4J contexts
         Resource[] rdf4j_contexts;
-        if (graphs == null) {
-            rdf4j_contexts = Convert.coreseGraphsToRdf4jContexts(this.default_graph, (Node) null);
+        if (corese_contexts == null) {
+            rdf4j_contexts = Convert.coreseGraphsToRdf4jContexts(this.default_corese_context, (Node) null);
         } else {
-            Node[] graphs_java_list = new Node[graphs.size()];
-            graphs_java_list = graphs.toArray(graphs_java_list);
-            rdf4j_contexts = Convert.coreseGraphsToRdf4jContexts(this.default_graph, graphs_java_list);
+            Node[] corese_contexts_array = corese_contexts.toArray(new Node[corese_contexts.size()]);
+            rdf4j_contexts = Convert.coreseGraphsToRdf4jContexts(this.default_corese_context, corese_contexts_array);
         }
 
         Iterable<Statement> statements = this.rdf4j_model.getStatements(rdf4j_subject, rdf4j_predicate, rdf4j_object,
@@ -89,7 +100,7 @@ public class Rdf4jDataManager implements DataManager {
         // convert Statements to Edges
         // remove duplicate edges (same edge with different context)
         HashMap<Integer, Edge> result = new HashMap<>();
-        for (Edge statement : Convert.statementsToEdges(this.default_graph, statements)) {
+        for (Edge statement : Convert.statementsToEdges(this.default_corese_context, statements)) {
             int hash = Objects.hash(statement.getSubject(), statement.getPredicate(), statement.getObject());
             result.put(hash, statement);
         }
@@ -97,47 +108,61 @@ public class Rdf4jDataManager implements DataManager {
         return result.values();
     }
 
-    /************
-     * Get list *
-     ************/
+    /*************
+     * Get lists *
+     *************/
 
     @Override
-    public Iterable<Node> getGraphList() {
-        Set<Resource> contexts = this.rdf4j_model.contexts();
-        Node[] graphs = Convert.rdf4jContextsToCoreseGraphs(this.default_graph,
-                contexts.toArray(new Resource[contexts.size()]));
-        return Arrays.asList(graphs);
-    }
+    public Iterable<Node> subjects(Node corese_context) {
+        Set<Resource> subjects;
 
-    @Override
-    public Iterable<Node> getPropertyList() {
-        ArrayList<Value> predicates = new ArrayList<Value>(this.rdf4j_model.predicates());
-        return Convert.rdf4jvaluestoCoresNodes(predicates);
-    }
-
-    @Override
-    public Iterable<Node> getDefaultNodeList() {
-        return this.getGraphNodeList(this.default_graph);
-    }
-
-    @Override
-    public Iterable<Node> getGraphNodeList(Node graph) {
-
-        // convert graph to context
-        Resource context = Convert.coreseGraphToRdf4jContext(this.default_graph, graph);
-        if (context != null && !context.isResource()) {
-            return new ArrayList<>();
+        // if corese_context is null then match with all contexts in graph
+        if (corese_context == null) {
+            subjects = this.rdf4j_model.subjects();
+        } else {
+            Resource rdf4j_context = Convert.coreseGraphToRdf4jContext(this.default_corese_context, corese_context);
+            subjects = this.rdf4j_model.filter(null, null, null, rdf4j_context).subjects();
         }
 
-        // filter model on context
-        Model context_model = this.rdf4j_model.filter(null, null, null, (Resource) context);
+        return Convert.rdf4jvaluestoCoresNodes(new ArrayList<>(subjects));
+    }
 
-        // build and convert result graph
-        ArrayList<Value> sub_obj_values = new ArrayList<>();
-        sub_obj_values.addAll(context_model.subjects());
-        sub_obj_values.addAll(context_model.objects());
+    @Override
+    public Iterable<Node> predicates(Node corese_context) {
+        Set<IRI> predicates;
 
-        return Convert.rdf4jvaluestoCoresNodes(sub_obj_values);
+        // if corese_context is null then match with all contexts in graph
+        if (corese_context == null) {
+            predicates = this.rdf4j_model.predicates();
+        } else {
+            Resource rdf4j_context = Convert.coreseGraphToRdf4jContext(this.default_corese_context, corese_context);
+            predicates = this.rdf4j_model.filter(null, null, null, rdf4j_context).predicates();
+        }
+
+        return Convert.rdf4jvaluestoCoresNodes(new ArrayList<>(predicates));
+    }
+
+    @Override
+    public Iterable<Node> objects(Node corese_context) {
+        Set<Value> objects;
+
+        // if corese_context is null then match with all contexts in graph
+        if (corese_context == null) {
+            objects = this.rdf4j_model.objects();
+        } else {
+            Resource rdf4j_context = Convert.coreseGraphToRdf4jContext(this.default_corese_context, corese_context);
+            objects = this.rdf4j_model.filter(null, null, null, rdf4j_context).objects();
+        }
+
+        return Convert.rdf4jvaluestoCoresNodes(new ArrayList<>(objects));
+    }
+
+    @Override
+    public Iterable<Node> contexts() {
+        Set<Resource> rdf4j_contexts = this.rdf4j_model.contexts();
+        Node[] corese_contexts = Convert.rdf4jContextsToCoreseGraphs(this.default_corese_context,
+                rdf4j_contexts.toArray(new Resource[rdf4j_contexts.size()]));
+        return Arrays.asList(corese_contexts);
     }
 
     /**********
@@ -169,7 +194,7 @@ public class Rdf4jDataManager implements DataManager {
         // remove statement
         for (Statement statement : statements_to_remove) {
             if (this.rdf4j_model.remove(statement)) {
-                result.add(Convert.statementToEdge(this.default_graph, statement));
+                result.add(Convert.statementToEdge(this.default_corese_context, statement));
             }
         }
 
@@ -185,7 +210,7 @@ public class Rdf4jDataManager implements DataManager {
         } else {
             Node[] graphs_java_list = new Node[corese_graph.size()];
             graphs_java_list = corese_graph.toArray(graphs_java_list);
-            rdf4j_contexts = Convert.coreseGraphsToRdf4jContexts(this.default_graph, graphs_java_list);
+            rdf4j_contexts = Convert.coreseGraphsToRdf4jContexts(this.default_corese_context, graphs_java_list);
         }
 
         // reconstitution of the statement with context
@@ -196,7 +221,7 @@ public class Rdf4jDataManager implements DataManager {
 
             // remove from model
             if (this.rdf4j_model.remove(statement)) {
-                result.add(Convert.statementToEdge(this.default_graph, statement));
+                result.add(Convert.statementToEdge(this.default_corese_context, statement));
             }
         }
 

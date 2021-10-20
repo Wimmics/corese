@@ -7,6 +7,7 @@ import java.util.logging.Logger;
 
 import org.junit.Assert;
 import org.junit.BeforeClass;
+import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.corese.core.Graph;
@@ -477,7 +478,8 @@ public class TestFederate {
     
     
      @Test
-    public void process4() throws EngineException, LoadException {
+     @Ignore
+     public void process4() throws EngineException, LoadException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
 
@@ -495,6 +497,7 @@ public class TestFederate {
     
     
      @Test
+     @Ignore
     public void testmserv() throws LoadException,  EngineException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);

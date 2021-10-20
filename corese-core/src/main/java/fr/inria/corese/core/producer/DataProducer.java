@@ -105,7 +105,7 @@ public class DataProducer extends GraphObject
      * It is not used in standard corese
      */
     @Override
-    public DataProducer getEdgeList(Node subject, Node predicate, Node object, List<Node> from) {
+    public DataProducer getEdges(Node subject, Node predicate, Node object, List<Node> from) {
         if (from == null || from.isEmpty()) {
             return iterate(value(subject), value(predicate), value(object));
         } else {

@@ -86,7 +86,6 @@ public class TestAccessRight {
     }
 
     @Test
-    @Ignore
     public void test7() throws EngineException, LoadException {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);

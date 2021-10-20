@@ -216,6 +216,8 @@ public class Extension extends Core {
             logger.error(ex.getMessage());
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
+        } catch (LoadException ex) {
+            ex.printStackTrace();
         }
         return DatatypeMap.TRUE;
     }

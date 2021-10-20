@@ -11,7 +11,6 @@ import java.util.Date;
 
 import org.junit.AfterClass;
 import org.junit.BeforeClass;
-import org.junit.Ignore;
 import org.junit.Test;
 
 import fr.inria.corese.compiler.eval.QuerySolver;
@@ -228,7 +227,6 @@ public class TestRuleEngine {
     }
 
      @Test
-     @Ignore
     public void testOWLRL22() throws EngineException, IOException {
         GraphStore gs = GraphStore.create();
         QueryProcess exec = QueryProcess.create(gs);
@@ -335,7 +333,6 @@ public class TestRuleEngine {
         
    
          @Test 
-    @Ignore
     public void testOWLRL4() throws LoadException, EngineException {
         GraphStore g = GraphStore.create();
         Load ld = Load.create(g);
@@ -354,7 +351,7 @@ public class TestRuleEngine {
     }
 
         @Test
-     @Ignore  
+        
         public void testRuleOptimization() throws LoadException, EngineException { 
             Graph g1 = testRuleOpt();
             Graph g2 = testRuleNotOpt();

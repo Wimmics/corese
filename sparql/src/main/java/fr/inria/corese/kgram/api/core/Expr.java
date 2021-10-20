@@ -1,6 +1,11 @@
 package fr.inria.corese.kgram.api.core;
 
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import java.util.Collection;
 import java.util.List;
 
@@ -95,5 +100,8 @@ public interface Expr {
         List<String> getMetadataValues(String name);
         Collection<String> getMetadataList();
         boolean hasMetadata(String name);
+        
+        IDatatype evalWE(Computer eval, Binding b, Environment env, Producer p) throws EngineException ;
+
         	
 }

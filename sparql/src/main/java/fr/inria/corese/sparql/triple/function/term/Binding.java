@@ -35,7 +35,6 @@ public class Binding implements Binder {
     public static boolean DEBUG_DEFAULT = false;
     public static boolean DYNAMIC_CAPTURE_DEFAULT = false;
     public static final String SLICE_SERVICE  = "?slice_service";
-    public static final String MAX_XML_RESULT = "?max_xml_result";
     ArrayList<Expr> varList;
     ArrayList<IDatatype> valList;
     // level of the stack before function call

@@ -22,6 +22,8 @@ import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
 import fr.inria.corese.kgram.tool.EnvironmentImpl;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
@@ -61,7 +63,7 @@ public class Mapping
     Query query;
     Map<String, IDatatype> bnode;
     //boolean read = false;
-    private Binder bind;
+    private Binding bind;
     private Node graphNode;
     private Node targetGraphNode;
     private Eval eval;
@@ -107,7 +109,7 @@ public class Mapping
         return new Mapping();
     }
     
-    public static Mapping create(Binder b) {
+    public static Mapping create(Binding b) {
         Mapping m = new Mapping();
         m.setBind(b);
         return m;
@@ -197,7 +199,7 @@ public class Mapping
      * function us:fun(?x){let (select ?x where {}) {}}
      * variable ?x appears twice in the stack because it is redefined in the let clause
      */
-    public static Mapping create(Query q, Binder b) {
+    public static Mapping create(Query q, Binding b) {
         ArrayList<Node> lvar = new ArrayList();
         ArrayList<Node> lval = new ArrayList();
         for (Expr var : b.getVariables()) {
@@ -1273,17 +1275,17 @@ public class Mapping
 //    }
 
     @Override
-    public Extension getExtension() {
+    public ASTExtension getExtension() {
         return query.getActualExtension();
     }
 
     @Override
-    public Binder getBind() {
+    public Binding getBind() {
         return bind;
     }
     
     @Override
-    public void setBind(Binder b) {
+    public void setBind(Binding b) {
         bind = b;
     }
 
@@ -1292,7 +1294,7 @@ public class Mapping
         return bind != null && bind.hasBind();
     }
     
-    Binder getCreateBind(){
+    Binding getCreateBind(){
         return bind;
     }
 

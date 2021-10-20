@@ -130,7 +130,7 @@ public class JavaCompiler {
         this.ast = ast;
         path(ast);
         head.process(getPackage(), name);
-        compile((ASTExtension) q.getExtension());
+        //compile((ASTExtension) q.getExtension());
         //toJava(ast.getDefineLambda());
         trailer();
         write();

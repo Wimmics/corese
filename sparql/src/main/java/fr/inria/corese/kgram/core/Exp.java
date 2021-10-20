@@ -1354,7 +1354,7 @@ public class Exp extends PointerObject
 
     public boolean bind(Filter f) {
         List<String> lVar = f.getVariables();
-        List<String> lVarExp = new ArrayList<String>();
+        List<String> lVarExp = new ArrayList<>();
         share(lVar, lVarExp);
         return bound(lVar, lVarExp);
     }

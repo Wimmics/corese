@@ -21,6 +21,7 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.Context;
 import java.util.Map;
 
 /*
@@ -280,7 +281,7 @@ public class Mappings extends PointerObject
         return getQuery().getAST();
     }
 
-    public Object getContext() {
+    public Context getContext() {
         if (getQuery() == null) {
             return null;
         }

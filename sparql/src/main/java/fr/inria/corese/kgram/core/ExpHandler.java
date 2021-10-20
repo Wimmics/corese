@@ -10,9 +10,9 @@ import java.util.List;
  */
 public class ExpHandler {
     
-    private List<Node> nodeList = new ArrayList<Node>();
-    private List<Node> selectNodeList = new ArrayList<Node>();
-    private List<Node> existNodeList = new ArrayList<Node>();
+    private List<Node> nodeList ;
+    private List<Node> selectNodeList ;
+    private List<Node> existNodeList ;
     
     private boolean inSubScope=false;
     private boolean bind=false;
@@ -22,12 +22,13 @@ public class ExpHandler {
     private boolean all = false;
 
     public ExpHandler() {
-        nodeList = new ArrayList<Node>();
-        selectNodeList = new ArrayList<Node>();
-        existNodeList = new ArrayList<Node>();
+        nodeList = new ArrayList<>();
+        selectNodeList = new ArrayList<>();
+        existNodeList = new ArrayList<>();
     }
     
     public ExpHandler(boolean exist, boolean inSubScope, boolean bind, boolean blank) {
+        this();
         setExist(exist).setInSubScope(inSubScope).setBind(bind).setBlank(blank);
     }
       

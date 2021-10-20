@@ -184,7 +184,7 @@ public class ProxyInterpreter implements ExprType {
     }
 
     public Context getContext() {
-        return ((Interpreter) getEval().getEvaluator()).getContext((Binding) getEnvironment().getBind(), getEnvironment(), getProducer());
+        return ((Interpreter) getEval().getEvaluator()).getContext(getEnvironment().getBind(), getEnvironment(), getProducer());
     }
 
     public Eval getEval() {

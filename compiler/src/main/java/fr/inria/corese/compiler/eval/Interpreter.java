@@ -86,20 +86,12 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
     
     public static ASTExtension getCreateExtension(Query q) {
-        ASTExtension ext = getExtension(q);
+        ASTExtension ext = q.getExtension();;
         if (ext == null) {
             ext = createExtension();
             q.setExtension(ext);
         }
         return ext;
-    }
-    
-    public static ASTExtension getExtension(Environment env) {
-        return (ASTExtension) env.getExtension();
-    }
-    
-    public static ASTExtension getExtension(Query q) {
-        return (ASTExtension) q.getExtension();
     }
 
     @Override
@@ -209,11 +201,9 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * eval(Computer e, Binding b, Environment env, Producer p)
      */
     public IDatatype eval(Expr exp, Environment env, Producer p) throws EngineException {
-        // Stack for LDScript variable binding
-        Binding b = (Binding) env.getBind();
         // evalWE clean the binding stack if an EngineException is thrown
-        IDatatype dt = ((Expression) exp).evalWE(this, b, env, p);
-        if (b.isDebug()) {
+        IDatatype dt = exp.evalWE(this, env.getBind(), env, p);
+        if (env.getBind().isDebug()) {
             System.out.println("eval: " + exp + " = " + dt);
             System.out.println(env);
         }
@@ -422,7 +412,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public Binder getBinder() {
+    public Binding getBinder() {
         return Binding.create() ;
     }
 
@@ -437,7 +427,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     @Override
     public Function getDefine(Expr exp, Environment env) {
-        ASTExtension ext = getExtension(env);
+        ASTExtension ext = env.getExtension();
         if (ext != null) {
             Function def = ext.get(exp);
             if (def != null) {
@@ -465,7 +455,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     @Override
     public Function getDefine(Environment env, String name, int n) {
-        ASTExtension ext = getExtension(env);
+        ASTExtension ext = env.getExtension();
         if (ext != null) {
             Function ee = ext.get(name, n);
             if (ee != null) {
@@ -477,7 +467,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     
     @Override
     public Function getDefineMetadata(Environment env, String metadata, int n) {
-        ASTExtension ext = getExtension(env);
+        ASTExtension ext = env.getExtension();
         if (ext != null) {
             Function ee = ext.getMetadata(metadata, n);
             if (ee != null) {
@@ -492,7 +482,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      */
     @Override
     public Function getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] param) {
-        ASTExtension ext = getExtension(env);
+        ASTExtension ext = env.getExtension();
         if (ext != null) {
             if (env.getQuery().isDebug()) {
                 ext.setDebug(true);

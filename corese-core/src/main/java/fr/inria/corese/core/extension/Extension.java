@@ -136,7 +136,7 @@ public class Extension extends Core {
     ASTQuery parseQuery(String str, Context c) throws EngineException {
         QueryProcess exec = QueryProcess.create();
         Query q = exec.compile(str, c);
-        return (ASTQuery) q.getAST();
+        return  q.getAST();
     }
         
         
@@ -212,11 +212,9 @@ public class Extension extends Core {
         clean.setVisitor(new QuerySolverVisitorRule(new RuleEngine(), getEval()));
         try {
             clean.clean();
-        } catch (IOException ex) {
+        } catch (IOException | LoadException | EngineException ex) {
             logger.error(ex.getMessage());
-        } catch (EngineException ex) {
-            logger.error(ex.getMessage());
-        }
+        } 
         return DatatypeMap.TRUE;
     }
     
@@ -307,7 +305,7 @@ public class Extension extends Core {
     }
     
     ASTQuery getAST() {
-        return (ASTQuery) getEnvironment().getQuery().getAST();
+        return  getEnvironment().getQuery().getAST();
     }
     
     IDatatype cast(Object obj) {

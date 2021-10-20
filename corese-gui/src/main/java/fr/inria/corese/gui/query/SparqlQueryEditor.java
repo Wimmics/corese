@@ -44,12 +44,13 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
 
     static final String[] kw = {
             "select", "where", "optional", "service", "minus", "filter",
-            "construct", "describe", "union", "bind", "as", "template", "function",
+            "construct", "describe", "union", "bind", "values", "as", "template", "function",
             "insert", "delete", "data",
             "prefix", "base", "ask", "order by", "group by", "limit",
             "offset", "distinct", "reduced",
             "from", "from named", "graph", "not", "exists",
-            "if", "else", "in", "set", "static", "for", "let", "letdyn", "apply", "funcall", "reduce", "map", "maplist", "return"
+            "if", "else", "in", "set", "static", "for", "let", "letdyn", 
+            "apply", "funcall", "reduce", "map", "maplist", "return", "unnest"
         };
     
     static final String[] fun = {

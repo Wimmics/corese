@@ -527,8 +527,8 @@ public final class MyJPanelQuery extends JPanel {
         if (Property.stringValue(GUI_SELECT_FORMAT) != null) {
             switch (Property.stringValue(GUI_SELECT_FORMAT)) {
                 case Property.JSON:
-                    return ResultFormat.create(map, ResultFormat.JSON_FORMAT)
-                            .setNbResult(maxResXML()).toString();
+                    return clean(ResultFormat.create(map, ResultFormat.JSON_FORMAT)
+                            .setNbResult(maxResXML()).toString());
                 case Property.XML:
                     return ResultFormat.create(map, ResultFormat.XML_FORMAT)
                             .setNbResult(maxResXML()).toString();
@@ -543,15 +543,20 @@ public final class MyJPanelQuery extends JPanel {
         
         if (Property.stringValue(GUI_CONSTRUCT_FORMAT) != null) {
             switch (Property.stringValue(GUI_CONSTRUCT_FORMAT)) {
+                case Property.XML:
                 case Property.RDF_XML:
                     return ResultFormat.create(g, ResultFormat.RDF_XML_FORMAT).toString();
                 case Property.TURTLE:
                     return ResultFormat.create(g, ResultFormat.TURTLE_FORMAT).toString();
                 case Property.JSON:
-                    return ResultFormat.create(g, ResultFormat.JSON_LD_FORMAT).toString();   }
+                    return clean(ResultFormat.create(g, ResultFormat.JSON_LD_FORMAT).toString());   }
         }
         // default
         return turtle(g);
+    }
+    
+    String clean(String str) {
+        return str.replace("\t", " ");
     }
     
     String turtle(Graph g) {

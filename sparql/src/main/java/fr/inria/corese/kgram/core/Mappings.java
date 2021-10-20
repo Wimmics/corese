@@ -21,6 +21,7 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Context;
 import java.util.Map;
 
@@ -72,7 +73,7 @@ public class Mappings extends PointerObject
 //    private Mapping sm1;
 //    private Mapping sm2;
     private Node result;
-    private Binder binding;
+    private Binding binding;
     private Object provenance;
     private List<String> link;
     private int length = 0;
@@ -1735,14 +1736,14 @@ public class Mappings extends PointerObject
         /**
      * @return the binding
      */
-    public Binder getBinding() {
+    public Binding getBinding() {
         return binding;
     }
 
     /**
      * @param binding the binding to set
      */
-    public void setBinding(Binder binding) {
+    public void setBinding(Binding binding) {
         this.binding = binding;
     }
  

@@ -1113,7 +1113,7 @@ public class PluginImpl
     }
 
     Dataset getDataset(Environment env) {
-        Context c = (Context) env.getQuery().getContext();
+        Context c =  env.getQuery().getContext();
         if (c != null) {
             return new Dataset(c);
         }

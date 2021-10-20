@@ -110,7 +110,7 @@ public class PluginTransform implements ComputerProxy {
 
     Context getQueryContext(Binding b, Environment env, Producer p) {
         Query q = env.getQuery().getGlobalQuery();
-        Context c = (Context) q.getContext();
+        Context c =  q.getContext();
         if (c == null && !q.isTransformationTemplate()) {
             //  std Query or Template alone
             c = new Context();

@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
  * Property.init(graph);
  * corese-gui.jar    -init property-file-path
  * corese-server.jar -init property-file-path
+ * A property file example is in core resources/data/corese/property.txt 
  */
 public class Property {
 

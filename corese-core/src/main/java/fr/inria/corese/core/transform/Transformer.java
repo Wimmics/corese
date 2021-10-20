@@ -1656,7 +1656,7 @@ public class Transformer implements TransformProcessor {
             //setContext(ast.getContext());
             // inherit all properties:
             //getContext().copy(ast.getContext());
-            return (Context) q.getContext();
+            return  q.getContext();
 
         } else {
             return ct.getContext();

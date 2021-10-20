@@ -680,7 +680,7 @@ public class QueryProcess extends QuerySolver {
         if (m == null) {
             return null;
         }
-        return (Binding) m.getBind();
+        return m.getBind();
     }
     
     /**
@@ -784,9 +784,9 @@ public class QueryProcess extends QuerySolver {
     }
 
     Context getContext(Query q) {
-        Context c = (Context) q.getContext();
+        Context c =  q.getContext();
         if (c == null) {
-            return getAST(q).getContext();
+            return q.getAST().getContext();
         }
         return c;
     }
@@ -1139,7 +1139,7 @@ public class QueryProcess extends QuerySolver {
     }
 
     Binding getBind(Eval eval) {
-        return (Binding) eval.getMemory().getBind();
+        return  eval.getMemory().getBind();
     }
 
     // Use case: funcall @public functions

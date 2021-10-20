@@ -172,7 +172,7 @@ public class QueryEngine implements Engine {
             if (profile.getExtension() != null) {
                 // share profile function definitions in templates
                 fr.inria.corese.compiler.parser.Transformer tr = fr.inria.corese.compiler.parser.Transformer.create();
-                ASTExtension ext = Interpreter.getExtension(profile);
+                ASTExtension ext = profile.getExtension();
                 tr.definePublic(ext, profile, false);
                 
                 for (Query t : getTemplates()) {
@@ -193,8 +193,7 @@ public class QueryEngine implements Engine {
             q.setExtension(ext);
         }
         else {
-            //q.getExtension().add(ext);
-            Interpreter.getExtension(q).add(ext);
+            q.getExtension().add(ext);
         }
     }
             

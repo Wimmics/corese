@@ -110,6 +110,7 @@ public class Exec extends Thread {
             if (isShacl()) {
                 q = (isShex()) ? qshex : qshacl;
             }
+            // draft test: Mappings available using xt:mappings()
             Mappings l_Results = exec.SPARQLQuery(q, getMappings());
             Date d2 = new Date();
             System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));

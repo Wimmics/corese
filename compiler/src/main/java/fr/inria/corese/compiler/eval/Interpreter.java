@@ -4,7 +4,6 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -29,7 +28,6 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Context;
-import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import org.slf4j.Logger;
@@ -502,11 +500,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     public static ASTExtension getExtension() {
         return extension;
     }
-
-    
-//    public Function getDefineMethod(Environment env, String name, Object type, Object[] values) {
-//        return getDefineMethod(env, name, (IDatatype) type, (IDatatype[]) values);
-//    }
 
     public ProxyInterpreter getComputerPlugin() {
         return proxy.getComputerPlugin();

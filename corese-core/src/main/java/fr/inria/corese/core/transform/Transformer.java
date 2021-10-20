@@ -810,7 +810,7 @@ public class Transformer implements TransformProcessor {
      */
     void save(Mappings map) {
         if (getBinding() == null && map.getBinding() != null) {
-            setBinding((Binding) map.getBinding());
+            setBinding(map.getBinding());
         }
     }
 
@@ -1305,7 +1305,7 @@ public class Transformer implements TransformProcessor {
                     IDatatype dt1 = null;
                     try {
                         dt1 = new Funcall(name).callWE((Interpreter) exec.getEvaluator(),
-                                (Binding) env.getBind(), env, exec.getProducer(), (Function) function, param(dt));
+                                 env.getBind(), env, exec.getProducer(), (Function) function, param(dt));
                     } catch (EngineException ex) {
                         logger.error(ex.getMessage() + " in " + name);
                     }

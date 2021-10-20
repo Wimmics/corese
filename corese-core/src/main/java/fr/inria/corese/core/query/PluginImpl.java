@@ -554,7 +554,7 @@ public class PluginImpl
 
     @Override
     public IDatatype entailment(Environment env, Producer p, IDatatype dt) throws EngineException {
-        Binding bind = (Binding) env.getBind();
+        Binding bind =  env.getBind();
         Graph g = getGraph(p);
         String uri = null;
         if (dt != null) {
@@ -944,7 +944,7 @@ public class PluginImpl
     }
 
     Binding getBinding(Environment env) {
-        return (Binding) env.getBind();
+        return  env.getBind();
     }
 
     @Override

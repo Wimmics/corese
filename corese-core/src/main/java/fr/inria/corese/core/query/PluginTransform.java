@@ -97,7 +97,7 @@ public class PluginTransform implements ComputerProxy {
     }
 
     public Context getContext() {
-        return getContext((Binding)getEnvironment().getBind(), getEnvironment(), getProducer());
+        return getContext(getEnvironment().getBind(), getEnvironment(), getProducer());
     }
 
     Environment getEnvironment() {

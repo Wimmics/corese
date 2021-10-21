@@ -11,24 +11,22 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.event.EvalListener;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.script.Function;
-import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Context;
 
 /**
- * Implements evaluator of operators & functions of filter language with
- * IDatatype values This code is now overloaded by fr.inria.corese.sparql.triple
- *
+ * Evaluator of operators & functions of filter language 
+ * implemented by fr.inria.corese.core.query.PluginImpl
+ * 
  * @author Olivier Corby, Edelweiss, INRIA 2010
- *
+ * 
  */
-public class ProxyInterpreter implements ExprType {
+public abstract class ProxyInterpreter implements ExprType {
 
     private static final String URN_UUID = "urn:uuid:";
     private static Logger logger = LoggerFactory.getLogger(ProxyInterpreter.class);
@@ -41,8 +39,7 @@ public class ProxyInterpreter implements ExprType {
     public static final String RDFTYPE = RDFNS + "type";
     private static final String USER_DISPLAY = NSManager.USER + "display";
     public static int count = 0;
-    // implemented by fr.inria.corese.core.query.PluginImpl extends ProxyInterpreter
-    ProxyInterpreter plugin;
+    //ProxyInterpreter plugin;
     Custom custom;
     SQLFun sql;
     Interpreter eval;
@@ -58,76 +55,75 @@ public class ProxyInterpreter implements ExprType {
     protected IDatatype EMPTY = DatatypeMap.newStringBuilder("");
 
     public ProxyInterpreter() {
-        sql = new SQLFun();
-        custom = new Custom();
+//        sql = new SQLFun();
+//        custom = new Custom();
+        //setPlugin(this);
     }
 
-    public void setEvaluator(Evaluator ev) {
-        eval = (Interpreter) ev;
-        if (plugin != null) {
-            plugin.setEvaluator(ev);
-        }
+    public void setEvaluator(Interpreter ev) {
+        eval =  ev;
+//        if (plugin != null) {
+//            plugin.setEvaluator(ev);
+//        }
     }
 
     public Interpreter getEvaluator() {
         return eval;
     }
 
-    public void setPlugin(ProxyInterpreter p) {
-        plugin = p;
-        plugin.setEvaluator(eval);
-    }
+//    public void setPlugin(ProxyInterpreter p) {
+//        plugin = p;
+//        //plugin.setEvaluator(eval);
+//    }
 
-    public ProxyInterpreter getPlugin() {
-        return plugin;
-    }
-
-    public ProxyInterpreter getComputerPlugin() {
-        return plugin;
-    }
+//    public ProxyInterpreter getPlugin() {
+//        return plugin;
+//    }
+//
+//    public ProxyInterpreter getComputerPlugin() {
+//        return plugin;
+//    }
 
     public GraphProcessor getGraphProcessor() {
-        return plugin.getGraphProcessor();
+        //return plugin.getGraphProcessor();
+        return null;
     }
 
     public ComputerProxy getComputerTransform() {
-        return plugin.getComputerTransform();
+        //return plugin.getComputerTransform();
+        return null;
     }
 
     public void setMode(int mode) {
-        switch (mode) {
-
-            case Evaluator.SPARQL_MODE:
-                SPARQLCompliant = true;
-                break;
-
-            case Evaluator.KGRAM_MODE:
-                SPARQLCompliant = false;
-                break;
-        }
-        plugin.setMode(mode);
+//        switch (mode) {
+//
+//            case Evaluator.SPARQL_MODE:
+//                SPARQLCompliant = true;
+//                break;
+//
+//            case Evaluator.KGRAM_MODE:
+//                SPARQLCompliant = false;
+//                break;
+//        }
+//        plugin.setMode(mode);
     }
 
     public void start() {
         number = 0;
     }
 
-    /**
-     * @return the producer
-     */
+    
     public Producer getProducer() {
         return producer;
     }
 
-    /**
-     * @param producer the producer to set
-     */
+    
+    // for Core & Extension
     public void setProducer(Producer producer) {
         this.producer = producer;
     }
 
     public IDatatype getValue(boolean b) {
-        // TODO Auto-generated method stub
         if (b) {
             return TRUE;
         } else {
@@ -161,24 +157,23 @@ public class ProxyInterpreter implements ExprType {
     }
 
     public Function getDefine(Expr exp, Environment env, String name, int n) throws EngineException {
-        return plugin.getDefine(exp, env, name, n);
+        //return plugin.getDefine(exp, env, name, n);
+        return null;
     }
 
     public void start(Producer p, Environment env) {
-        plugin.start(p, env);
+        //plugin.start(p, env);
     }
 
     public void finish(Producer p, Environment env) {
-        plugin.finish(p, env);
+        //plugin.finish(p, env);
     }
 
     public IDatatype getBufferedValue(StringBuilder sb, Environment env) {
-        return plugin.getBufferedValue(sb, env);
+        //return plugin.getBufferedValue(sb, env);
+        return null;
     }
-
-    /**
-     * @return the environment
-     */
+   
     public Environment getEnvironment() {
         return environment;
     }
@@ -190,10 +185,8 @@ public class ProxyInterpreter implements ExprType {
     public Eval getEval() {
         return getEnvironment().getEval();
     }
-
-    /**
-     * @param environment the environment to set
-     */
+    
+    // for Core & Extension
     public void setEnvironment(Environment environment) {
         this.environment = environment;
     }

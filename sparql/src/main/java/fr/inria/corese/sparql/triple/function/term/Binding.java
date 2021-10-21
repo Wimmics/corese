@@ -41,7 +41,6 @@ public class Binding implements Binder {
     // every funcall add a level
     ArrayList<Integer> level;
     int currentLevel = 0, count = 0;
-   // Expr current;
     
     HashMap<String, IDatatype> globalValue;
     HashMap<String, Variable>  globalVariable;
@@ -57,7 +56,7 @@ public class Binding implements Binder {
     private Access.Level accessLevel = Access.Level.USER_DEFAULT;
     private ContextLog contextLog;
     private Context context;
-    // transformer Mappings
+    // transformation Mappings with xt:mappings()
     private Mappings mappings;
     private IDatatype datatypeValue;
     
@@ -814,10 +813,12 @@ public class Binding implements Binder {
         }
     }
 
+    @Override
     public Mappings getMappings() {
         return mappings;
     }
 
+    @Override
     public Binding setMappings(Mappings mappings) {
         this.mappings = mappings;
         return this;

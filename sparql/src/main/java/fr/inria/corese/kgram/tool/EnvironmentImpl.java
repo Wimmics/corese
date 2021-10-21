@@ -4,7 +4,6 @@ import java.util.Map;
 
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;

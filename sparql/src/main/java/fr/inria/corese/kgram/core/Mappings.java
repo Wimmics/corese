@@ -21,6 +21,7 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import java.util.Map;
 
@@ -40,43 +41,57 @@ public class Mappings extends PointerObject
     private static final long serialVersionUID = 1L;
     private static int SELECT = -1;
     private static int HAVING = -2;
+    // SPARQL: -1 (unbound first)
+    // Corese order: 1 (unbound last)
+    public static int unbound = -1;
     List<Node> select;
     boolean isDistinct = false,
+            // statisfy having(test)
             isValid = true,
             hasEvent = false,
             // if true, store all Mapping of the group
             isListGroup = false;
     boolean sortWithDesc = true;
     Query query;
-    List<Mapping> list, reject;
+    List<Mapping> 
+            // result list
+            list, 
+            // draft: ldscript event may reject a result
+            reject;
+    // Original join Mappings
+    // use case: union manage its own way
     private Mappings joinMappings;
+    // Update result
     private List<Edge> insert;
     private List<Edge> delete;
+    // in-scope node list 
     private List<Node> nodeList;
     Group group, distinct;
-    Node fake;
-    Object object;
     private Eval eval;
+    // construct where result graph
     private TripleStore graph;
     private int nbsolutions = 0;
-    EventManager manager;
-    // SPARQL: -1 (unbound first)
-    // Corese order: 1 (unbound last)
-    int unbound = -1;
+    EventManager manager;    
     int count = 0;
     private int nbDelete = 0;
     private int nbInsert = 0;
+    // result of query as a template
     private Node templateResult;
+    // fake result in case of aggregate without result
     private boolean isFake = false;
+    // parse error in service result
     private boolean error = false;
-//    private Mapping sm1;
-//    private Mapping sm2;
-    private Node result;
+    //private Node result;
+    // return Binding stack as part of result to share it
     private Binding binding;
+    // Federate Service manage provenance
     private Object provenance;
+    // Linked Result URL List
     private List<String> link;
+    // service result log
     private int length = 0;
     private int queryLength = 0;
+    // limit number of results to be displayed
     private int display = Integer.MAX_VALUE;
 
     public Mappings() {
@@ -274,7 +289,7 @@ public class Mappings extends PointerObject
         return query;
     }
 
-    public Object getAST() {
+    public ASTQuery getAST() {
         if (getQuery() == null) {
             return null;
         }
@@ -291,14 +306,6 @@ public class Mappings extends PointerObject
     public void setQuery(Query q) {
         query = q;
     }
-
-//    public void setObject(Object o) {
-//        object = o;
-//    }
-//
-//    public Object getObject() {
-//        return object;
-//    }
 
     @Override
     public String toString() {
@@ -622,6 +629,9 @@ public class Mappings extends PointerObject
         }
     }
     
+    public static void setOrderUnboundFirst(boolean b) {
+        unbound = (b) ? -1 : 1;
+    } 
 
     int compare(Node n1, Node n2) {
         int res = 0;
@@ -1173,28 +1183,7 @@ public class Mappings extends PointerObject
         return res;
     }
 
-    /**
-     * Generic aggregate eval is Walker it applies the aggregate f (e.g.
-     * sum(?x)) on the list of Mapping with Mapping as environment to get
-     * variable binding
-     */
-//    void aggregate(Evaluator eval, Filter f, Environment env, Producer p) {
-//        if (isFake()) {
-//            // fake Mappings because there were no result
-//            return;
-//        }
-//        int n = 0;
-//        for (Mapping map : this) {
-//            this.setCount(n++);
-//            // in case there is a nested aggregate, map will be an Environment
-//            // it must implement aggregate() and hence must know current Mappings group
-//            map.setMappings(this);
-//            map.setQuery(env.getQuery());
-//            // share same bnode table in all Mapping of current group solution
-//            map.setMap(env.getMap());
-//            eval.eval(f, map, p);
-//        }
-//    }
+    
        
     /**
      * *******************************************************************
@@ -1585,7 +1574,7 @@ public class Mappings extends PointerObject
         return graph;
     }
 
-    public Object getGraph() {
+    public TripleStore getGraph() {
         return graph;
     }
 
@@ -1718,58 +1707,42 @@ public class Mappings extends PointerObject
         this.nodeList = nodeList;
     }
     
-    /**
-     * @return the result
-     */
-    public Node getResult() {
-        return result;
-    }
-
-    /**
-     * @param result the result to set
-     */
-    public void setResult(Node result) {
-        this.result = result;
-    }
+   
+//    public Node getResult() {
+//        return result;
+//    }
+//
+//   
+//    public void setResult(Node result) {
+//        this.result = result;
+//    }
     
-        /**
-     * @return the binding
-     */
+   
     public Binding getBinding() {
         return binding;
     }
 
-    /**
-     * @param binding the binding to set
-     */
+    
     public void setBinding(Binding binding) {
         this.binding = binding;
     }
  
-    /**
-     * @return the error
-     */
+   
     public boolean isError() {
         return error;
     }
 
-    /**
-     * @param error the error to set
-     */
+    
     public void setError(boolean error) {
         this.error = error;
     }
     
-        /**
-     * @return the provenance
-     */
+   
     public Object getProvenance() {
         return provenance;
     }
 
-    /**
-     * @param provenance the provenance to set
-     */
+   
     public void setProvenance(Object provenance) {
         this.provenance = provenance;
     }

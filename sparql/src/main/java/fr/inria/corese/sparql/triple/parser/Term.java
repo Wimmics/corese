@@ -1763,7 +1763,7 @@ public class Term extends Expression {
     @Override
     public boolean typecheck(ASTQuery ast) {
         if (getArity() < defineArity()) {
-            ast.addError("Arity error: ", this);
+            ast.addErrorMessage(Message.ARITY_ERROR, this);
             ast.setFail(true);
             return false;
         }

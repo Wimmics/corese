@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.parser.visitor;
 
 import fr.inria.corese.sparql.triple.api.Walker;
+import fr.inria.corese.sparql.triple.parser.Message;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Exp;
@@ -69,7 +70,7 @@ public class ASTParser implements Walker, URLParam {
             }
             else if (exp != ee) {
                 ast.setFail(true);
-                ASTQuery.logger.error(String.format("Scope error for bnode: %s\n%s\nvs:\n %s", at, exp, ee));
+                ASTQuery.logger.error(String.format(Message.BNODE_SCOPE, at, exp));
             }
         }
     }

@@ -238,20 +238,18 @@ public class BasicGraphPattern extends And {
         Table table = new Table();
 
         for (Exp exp : getBody()) {
-            if (exp.isFilter()) {}
-            else if (exp.isTriple()) {
-                if (!exp.isFilter()) {
-                    Triple t = exp.getTriple();
-                    isTriple = true;
-                    if (isBefore) {
-                        table.addBlank(t);
-                    } else {
-                        Atom b = table.contains(t);
-                        if (b != null) {
-                            ast.addError("Illegal blank references: " + b + " in " + this);
-                            ast.setCorrect(false);
-                            return false;
-                        }
+            if (exp.isFilter()) {
+            } else if (exp.isTriple()) {
+                Triple t = exp.getTriple();
+                isTriple = true;
+                if (isBefore) {
+                    table.addBlank(t);
+                } else {
+                    Atom b = table.contains(t);
+                    if (b != null) {
+                        ast.addErrorMessage(Message.BNODE_SCOPE, b, this);
+                        ast.setCorrect(false);
+                        return false;
                     }
                 }
             } else if (exp.isRDFList()) {

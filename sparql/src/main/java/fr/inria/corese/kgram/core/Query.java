@@ -406,6 +406,10 @@ public class Query extends Exp implements Graphable {
         this.hasFunctional = hasFunctional;
     }
     
+    public void addError(String mes) {
+        addError(mes, null);
+    }
+    
     public void addError(String mes, Object obj) {
         getGlobalQuery().setError(mes, obj);
     }

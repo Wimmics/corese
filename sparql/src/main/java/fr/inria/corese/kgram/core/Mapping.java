@@ -54,13 +54,18 @@ public class Mapping
             oNodes,
             // group by
             gNodes;
-    private Node result;
+    //private Node result;
     Node[] distinct, group;
+    // may record group Mappings when group by
     Mappings lMap;
+    // var -> Node
     HashMap<String, Node> values;
+    // Mapping as Environment
     Query query;
+    // aggregate may need to share bnode map 
     Map<String, IDatatype> bnode;
     //boolean read = false;
+    // Mapping as Environment 
     private Binding bind;
     private Node graphNode;
     private Node targetGraphNode;
@@ -241,11 +246,6 @@ public class Mapping
         this.qNodes = qn;
         this.nodes = tn;
     }
-
-//    void init(List<Path> lp) {
-//        lPath = new Path[lp.size()];
-//        lPath = lp.toArray(lPath);
-//    }
 
     void init(Node[] qnodes, Node[] nodes) {
         this.qNodes = qnodes;
@@ -1331,38 +1331,28 @@ public class Mapping
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-      /**
-     * @return the graphNode
-     */
+   
     @Override
     public Node getGraphNode() {
         return graphNode;
     }
 
-    /**
-     * @param graphNode the graphNode to set
-     */
+   
     public void setGraphNode(Node graphNode) {
         this.graphNode = graphNode;
     }
     
-     /**
-     * @return the result
-     */
-    public Node getResult() {
-        return result;
-    }
-
-    /**
-     * @param result the result to set
-     */
-    public void setResult(Node result) {
-        this.result = result;
-    }
+  
+//    public Node getResult() {
+//        return result;
+//    }
+//
+//   
+//    public void setResult(Node result) {
+//        this.result = result;
+//    }
     
-        /**
-     * @return the eval
-     */
+    
     @Override
     public Eval getEval() {
         return eval;
@@ -1376,24 +1366,18 @@ public class Mapping
         return getEval().getVisitor();
     }
 
-    /**
-     * @param eval the eval to set
-     */
+    
     @Override
     public void setEval(Eval eval) {
         this.eval = eval;
     }
 
-    /**
-     * @return the targetGraphNode
-     */
+    
     public Node getNamedGraph() {
         return targetGraphNode;
     }
 
-    /**
-     * @param targetGraphNode the targetGraphNode to set
-     */
+    
     public void setNamedGraph(Node targetGraphNode) {
         this.targetGraphNode = targetGraphNode;
     }

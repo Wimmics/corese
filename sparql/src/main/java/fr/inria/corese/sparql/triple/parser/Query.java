@@ -78,7 +78,7 @@ public class Query extends Exp {
             // select exp as var
             // var must not be already in scope
             if (ast.hasExpression(var) && a.isBound(var)) {
-                a.addError("Scope error: " + var);
+                ast.addErrorMessage(Message.SCOPE_ERROR , var);
                 a.setCorrect(false);
                 return false;
             }

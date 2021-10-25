@@ -20,6 +20,7 @@ import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.api.Walker;
 import fr.inria.corese.sparql.triple.parser.ASTBuffer;
+import fr.inria.corese.sparql.triple.parser.Message;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
@@ -406,7 +407,7 @@ public class Function extends Statement {
         int i = 1;
         for (Expression var : t.getArgs()) {
             if (list.contains(var.getVariable())) {
-                ast.addError("Duplicate parameter: " + var + " in: \n" + toString());
+                ast.addErrorMessage(Message.PARAMETER_DUPLICATE, var , toString());
                 ast.addFail(true);
                 return false;
             } else {

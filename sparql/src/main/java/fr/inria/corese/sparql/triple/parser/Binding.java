@@ -72,7 +72,7 @@ public class Binding extends Exp {
         
         if (list == null || list.isEmpty()){
             if (ast.isBound(var)) {
-                ast.addError("Scope error: " + var);
+                ast.addErrorMessage(Message.SCOPE_ERROR , var);
                 ast.setCorrect(false);
                 return false;
             }
@@ -83,7 +83,7 @@ public class Binding extends Exp {
             boolean ok = true;
             for (Variable v : list){
                 if (ast.isBound(v)) {
-                    ast.addError("Scope error: " + v);
+                ast.addErrorMessage(Message.SCOPE_ERROR , v);
                     ast.setCorrect(false);
                     ok = false;
                 }

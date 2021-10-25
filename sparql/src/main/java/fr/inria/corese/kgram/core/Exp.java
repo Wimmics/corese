@@ -18,7 +18,7 @@ import fr.inria.corese.kgram.api.query.Producer;
 import java.util.HashMap;
 
 /**
- * KGRAM expressions
+ * KGRAM/SPARQL expressions: bgp, union, optional, etc.
  *
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
@@ -586,22 +586,18 @@ public class Exp extends PointerObject
     }
 
     public void skip(boolean b) {
-        // TODO Auto-generated method stub
         skip = b;
     }
 
     public boolean skip() {
-        // TODO Auto-generated method stub
         return skip;
     }
 
     public void status(boolean b) {
-        // TODO Auto-generated method stub
         status = b;
     }
 
     public boolean status() {
-        // TODO Auto-generated method stub
         return status;
     }
 

@@ -1,0 +1,6 @@
+select ?var ?val 
+where {
+values ?amap { unnest(maplist(xt:self, xt:mappings())) }
+values (?var ?val) { 
+    unnest(maplist(function((?var, ?val)){xt:list(?var, ?val)}, ?amap)) }
+}

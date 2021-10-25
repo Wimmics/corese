@@ -14,6 +14,7 @@ import fr.inria.corese.core.transform.Transformer;
 import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.CoreseDatatype;
@@ -26,10 +27,13 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Properties;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -48,6 +52,8 @@ import org.slf4j.LoggerFactory;
 public class Property {
 
     private static Logger logger = LoggerFactory.getLogger(Property.class);
+    final static String VAR_CHAR = "$";
+    final static String LOCAL = "./";
     private static Property singleton;
     private static final String STD = "std";
     public static final String RDF_XML = "rdf+xml";
@@ -59,10 +65,17 @@ public class Property {
     private HashMap<Value, Boolean> booleanProperty;
     private HashMap<Value, String> stringProperty;
     private HashMap<Value, Integer> integerProperty;
+    private HashMap<String, String> variableMap;
     // Java Properties manage property file (at user option)
     private Properties properties;
+    
+    private String path, parent;
+
 
     public enum Value {
+        // VARIABLE =  home=/home/name/dir
+        VARIABLE,
+        
         // boolan value
         DISPLAY_URI_AS_PREFIX,
         // Graph node implemented as IDatatype instead of NodeImpl
@@ -100,7 +113,10 @@ public class Property {
         PREFIX,
         // Testing purpose
         INTERPRETER_TEST,
+        
         SPARQL_COMPLIANT,
+        SPARQL_ORDER_UNBOUND_FIRST,
+        
         OWL_CLEAN,
         OWL_CLEAN_QUERY,
         OWL_RL,
@@ -112,6 +128,10 @@ public class Property {
         // rdf+xml turtle json
         GUI_CONSTRUCT_FORMAT,
         GUI_SELECT_FORMAT,
+        GUI_DEFAULT_QUERY,
+        GUI_QUERY_LIST,
+        GUI_TEMPLATE_LIST,
+        GUI_EXPLAIN_LIST,
         
         // application/rdf+xml
         LOAD_FORMAT,
@@ -147,6 +167,7 @@ public class Property {
         stringProperty = new HashMap<>();
         integerProperty = new HashMap<>();
         properties = new Properties();
+        variableMap = new HashMap<>();
     }
 
     public static Property getSingleton() {
@@ -206,6 +227,9 @@ public class Property {
     }
     
     void basicLoad(String path) throws FileNotFoundException, IOException {
+        setPath(path);
+        File file = new File(path);
+        setParent(file .getParent());
         getProperties().load(new FileReader(path));
         init();
     }
@@ -293,6 +317,10 @@ public class Property {
                 DatatypeMap.setSPARQLCompliant(b);
                 QuerySolver.SPARQL_COMPLIANT_DEFAULT = b;
                 break;
+                
+            case SPARQL_ORDER_UNBOUND_FIRST:
+                Mappings.setOrderUnboundFirst(b);
+                break;
 
             case REENTRANT_QUERY:
                 QueryProcess.setOverwrite(true);
@@ -354,6 +382,10 @@ public class Property {
         logger.info(value + " = " + str);
         getStringProperty().put(value, str);
         switch (value) {
+            
+            case VARIABLE:
+                defineVariable();
+                break;
             
             case LOAD_FORMAT:
                 Load.LOAD_FORMAT = str;
@@ -429,6 +461,35 @@ public class Property {
         }
     }
     
+    private void defineVariable() {
+        for (Pair pair : getValueList(Value.VARIABLE)) {
+            getVariableMap().put(varName(pair.getKey()), pair.getValue());
+        }
+    }
+    
+    String varName(String key) {
+        return key.startsWith(VAR_CHAR) ? key : VAR_CHAR+key;
+    }
+    
+    String expand(String value) {
+        if (value.startsWith(VAR_CHAR)) {
+            for (String var : getVariableMap().keySet()) {
+                if (value.startsWith(var)) {
+                    return value.replace(var, getVariableMap().get(var));
+                }
+            }
+        }
+        else if (value.startsWith("./")) {
+            // relative path
+            return complete(value);
+        }
+        return value;
+    }
+    
+    String complete(String value) {
+        return getParent().concat(value.substring(1));
+    }
+    
     void queryPlan(String str) {
         switch (str) {
             case STD:
@@ -492,7 +553,8 @@ public class Property {
         for (String name : path.split(";")) {
             RuleEngine re = RuleEngine.create(g);
             try {
-                re.setProfile(name);
+                String file = expand(name);
+                re.setProfile(file);
                 re.process();
             } catch (LoadException | EngineException ex) {
                 logger.error(ex.toString());
@@ -505,8 +567,9 @@ public class Property {
         Load ld = Load.create(g);
         for (String name : path.split(";")) {
             try {
-                System.out.println("Load: " + name);
-                ld.parse(name.strip());
+                String file = expand(name);
+                System.out.println("Load: " + file);
+                ld.parse(file.strip());
             } catch (LoadException ex) {
                 logger.error(ex.toString());
             }
@@ -530,6 +593,59 @@ public class Property {
             }
         }
     }
+    
+    public static List<Pair> getValueList(Value val) {
+        return getSingleton().getValueListBasic(val);
+    }
+    
+    
+    public List<Pair> getValueListBasic(Value val) {
+        String str = Property.stringValue(val);
+        ArrayList<Pair> list = new ArrayList<>();
+        if (str == null) {
+            return list;
+        }
+        for (String elem : str.split(";")) {
+            String[] def = elem.split("=");
+            if (def.length>=2) {
+                list.add(new Pair(def[0], def[1]));
+            }
+        }
+        return list;
+    }
+    
+    public class Pair {
+        
+        private String first;
+        private String second;
+        
+        Pair(String f, String r) {
+            first = f;
+            second = r;
+        }
+
+        public String getKey() {
+            return first;
+        }
+
+        public void setFirst(String first) {
+            this.first = first;
+        }
+
+        public String getValue() {
+            return second;
+        }
+        
+        public String getPath() {
+            return expand(getValue());
+        }
+
+        public void setSecond(String second) {
+            this.second = second;
+        }
+        
+    }
+    
 
     void prefix(String str) {
         String[] list = str.split(";");
@@ -593,12 +709,40 @@ public class Property {
         return getSingleton().getStringProperty().get(val);
     }
     
+    public static String pathValue(Value val) {
+        return getSingleton().expand(stringValue(val));
+    }
+    
     public static String[] stringValueList(Value val) {
         String str = stringValue(val);
         if (val == null) {
             return new String[0];
         }
         return str.split(";");
+    }
+
+    public HashMap<String, String> getVariableMap() {
+        return variableMap;
+    }
+
+    public void setVariableMap(HashMap<String, String> variableMap) {
+        this.variableMap = variableMap;
+    }
+
+    public String getPath() {
+        return path;
+    }
+
+    public void setPath(String path) {
+        this.path = path;
+    }
+
+    public String getParent() {
+        return parent;
+    }
+
+    public void setParent(String parent) {
+        this.parent = parent;
     }
 
 }

@@ -22,6 +22,11 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
+/**
+ * A RDF4J model construct on a Corese Graph
+ * 
+ * @author Rémi Ceres
+ */
 public class CoreseModel extends AbstractModel {
 
     private Graph corese_graph;

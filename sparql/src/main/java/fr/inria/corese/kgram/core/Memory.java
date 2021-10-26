@@ -9,7 +9,6 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Matcher;
@@ -18,10 +17,11 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.event.EventManager;
-import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import java.util.ArrayList;
 
 /**
@@ -67,7 +67,7 @@ public class Memory extends PointerObject implements Environment {
     EventManager manager;
     boolean hasEvent = false;
     int nbEdge = 0, nbNode = 0;
-    private Binder bind;
+    private Binding bind;
     private ApproximateSearchEnv appxSearchEnv;
     boolean debug = DEBUG_DEFAULT;
 
@@ -313,7 +313,7 @@ public class Memory extends PointerObject implements Environment {
     /**
      * Share global variable, context, etc.
      */
-    public void share(Binder target, Binder source) {
+    public void share(Binding target, Binding source) {
         if (source != null && target != null) {
             target.share(source);
         }
@@ -327,7 +327,7 @@ public class Memory extends PointerObject implements Environment {
      * Copy this Bind local variable stack into this memory 
      * Use case: function xt:foo(?x) { exists { ?x ex:pp ?y } }
      */
-    void copy(Binder bind, Exp exp) {
+    void copy(Binding bind, Exp exp) {
         List<Node> list = exp.getNodes();
         for (Expr var : bind.getVariables()) {
             Node qn = getNode(var.getLabel(), list);
@@ -1234,7 +1234,7 @@ public class Memory extends PointerObject implements Environment {
     }
 
     @Override
-    public Extension getExtension() {
+    public ASTExtension getExtension() {
         return query.getActualExtension();
     }
 
@@ -1245,12 +1245,12 @@ public class Memory extends PointerObject implements Environment {
 
 
     @Override
-    public void setBind(Binder b) {
+    public void setBind(Binding b) {
         bind = b;
     }
 
     @Override
-    public Binder getBind() {
+    public Binding getBind() {
         return bind;
     }
 

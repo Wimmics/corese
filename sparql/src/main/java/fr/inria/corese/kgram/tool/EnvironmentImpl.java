@@ -4,19 +4,18 @@ import java.util.Map;
 
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.EventManager;
-import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.path.Path;
-import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 
 public class EnvironmentImpl implements Environment {
 	Query query;
@@ -170,12 +169,12 @@ public class EnvironmentImpl implements Environment {
     }
 
     @Override
-    public Extension getExtension() {
+    public ASTExtension getExtension() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
     @Override
-    public Binder getBind() {
+    public Binding getBind() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 
@@ -191,7 +190,7 @@ public class EnvironmentImpl implements Environment {
     }
 
     @Override
-    public void setBind(Binder b) {
+    public void setBind(Binding b) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

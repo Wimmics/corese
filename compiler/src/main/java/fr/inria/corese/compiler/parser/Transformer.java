@@ -22,7 +22,6 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.core.Sorter;
-import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.eval.QuerySolverVisitor;
@@ -816,7 +815,7 @@ public class Transformer implements ExpType {
         Exp bind = bindings(ast.getValues());
         if (bind == null) {
             q.setCorrect(false);
-            q.addError("Value Bindings: ", "#values != #variables");
+            q.addError(Message.VALUES_ERROR);
         } else {
             q.setValues(bind);
             if (ast.getValues().isMoved()) {
@@ -1209,7 +1208,7 @@ public class Transformer implements ExpType {
                 }
 
                 if (node == null) {
-                    ast.addError("OrderBy GroupBy Undefined exp: ", ee);
+                    ast.addErrorMessage(ASTQuery.ORDER_GROUP_UNDEFINED, ee);
                     node = compiler.createNode(ee.getName());
                 }
                 Exp e = Exp.create(NODE, node);
@@ -1317,7 +1316,7 @@ public class Transformer implements ExpType {
                         // TODO:
                         //logger.error("** Value Bindings: #values != #variables");
                         ast.setFail(true);
-                        ast.addError("Value Bindings: ", "#values != #variables");
+                        ast.addErrorMessage(ASTQuery.VALUES_ERROR);
                         return null;
                     }
                 }
@@ -1767,8 +1766,7 @@ public class Transformer implements ExpType {
         if (at.isVariable()
                 && !at.isBlankNode()
                 && !ast.isSelectAllVar(at.getVariable())) {
-            ast.addError(Message.get(Message.UNDEF_VAR)
-                    + ast.getUpdateTitle() + ": ", at.getLabel());
+            ast.addErrorMessage(ASTQuery.VARIABLE_UNDEFINED, ast.getUpdateTitle(), at.getLabel());
             return false;
         }
 

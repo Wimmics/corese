@@ -97,7 +97,10 @@ prefix ft:  <http://ns.inria.fr/sparql-template/format/navlab/>
 template st:mapper {
     st:call-template(st:mapmap, xt:mappings())        
 } 
-where { }
+where { 
+    bind (st:set(st:mapsize, coalesce(funcall(function(){ ?mapsize }), "maplarge")) as ?s)
+    bind (st:set(st:mapzoom, coalesce(funcall(function(){ ?mapzoom }), 6)) as ?z)    
+}
 
 ]]>
 </body>

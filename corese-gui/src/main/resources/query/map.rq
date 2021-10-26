@@ -6,10 +6,15 @@ prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 @browse
 select * where {
     values ?location {
-        <http://fr.dbpedia.org/resource/Antibes>
-        <http://fr.dbpedia.org/resource/Cannes>
-        <http://fr.dbpedia.org/resource/Grasse>
+        <http://fr.dbpedia.org/resource/Lille>
+        <http://fr.dbpedia.org/resource/Paris>
+        <http://fr.dbpedia.org/resource/Rennes>
+        <http://fr.dbpedia.org/resource/Nancy>
         <http://fr.dbpedia.org/resource/Sophia_Antipolis>
+        <http://fr.dbpedia.org/resource/Grenoble>
+        <http://fr.dbpedia.org/resource/Lyon>
+        <http://fr.dbpedia.org/resource/Montpellier>
+        <http://fr.dbpedia.org/resource/Bordeaux>
     }
     service <http://localhost:8080/sparql?mode=map> {
         service <http://fr.dbpedia.org/sparql> {

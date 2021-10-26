@@ -4,7 +4,6 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -29,7 +28,6 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Context;
-import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import org.slf4j.Logger;
@@ -38,8 +36,7 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * A generic filter Evaluator Values are Java Object Target processing is
- * delegated to a proxy and a producer (for Node).
+ * Filter Evaluator 
  *
  * @author Olivier Corby INRIA
  */
@@ -50,7 +47,9 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     static final String STACK = Exp.KGRAM + "stack";
     public static int DEFAULT_MODE = KGRAM_MODE;
     static final IDatatype[] EMPTY = new IDatatype[0];
-    protected ProxyInterpreter proxy;
+    //protected ProxyInterpreter proxy;
+    // fr.inria.corese.core.query.PluginImpl
+    private ProxyInterpreter plugin;
     Producer producer;
     Eval kgram;
     ResultListener listener;
@@ -66,19 +65,23 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     public Interpreter() {
-        this (new ProxyInterpreter());
+        //this (new ProxyInterpreter());
     }
     
-    Interpreter(ProxyInterpreter p) {
-        proxy =  p;
-        if (proxy.getEvaluator() == null) {
-            proxy.setEvaluator(this);
-        }
-    }
+//    Interpreter(ProxyInterpreter p) {
+//        proxy =  p;
+//        if (proxy.getEvaluator() == null) {
+//            proxy.setEvaluator(this);
+//        }
+//    }
     
     // for PluginImpl
     public void setPlugin(ProxyInterpreter plugin) {
-        proxy.setPlugin(plugin);
+        this.plugin = plugin; 
+        if (plugin.getEvaluator() == null) {
+            plugin.setEvaluator(this);
+        }
+        //proxy.setPlugin(plugin);
     }
     
     public static ASTExtension createExtension() {
@@ -86,20 +89,12 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
     
     public static ASTExtension getCreateExtension(Query q) {
-        ASTExtension ext = getExtension(q);
+        ASTExtension ext = q.getExtension();;
         if (ext == null) {
             ext = createExtension();
             q.setExtension(ext);
         }
         return ext;
-    }
-    
-    public static ASTExtension getExtension(Environment env) {
-        return (ASTExtension) env.getExtension();
-    }
-    
-    public static ASTExtension getExtension(Query q) {
-        return (ASTExtension) q.getExtension();
     }
 
     @Override
@@ -128,13 +123,13 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return env.getEval();
     }
     
-    public ProxyInterpreter getProxy() {
-        return proxy;
-    }
+//    public ProxyInterpreter getProxy() {
+//        return proxy;
+//    }
 
-    public ProxyInterpreter getComputerProxy() {
-        return proxy;
-    }
+//    public ProxyInterpreter getComputerProxy() {
+//        return proxy;
+//    }
 
     
     @Override
@@ -143,10 +138,12 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         hasListener = rl != null;
     }
 
+    /**
+     * Evaluator for bind (exp as var)
+     */
     @Override
     public Node eval(Filter f, Environment env, Producer p) throws EngineException {
-        Expr exp = f.getExp();
-        IDatatype value = eval(exp, env, p);
+        IDatatype value = eval(f.getExp(), env, p);
         if (value == ERROR_VALUE) {
             return null;
         }
@@ -154,7 +151,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     /**
-     * Functions that return several variables as result such as: 
+     * Extension: Functions that return several variables as result such as: 
      * values (VAR+) { unnest(exp) }
      */
     @Override
@@ -177,6 +174,9 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
     }
 
+    /**
+     * Evaluator of filter exp
+     */
     @Override
     public boolean test(Filter f, Environment env) throws EngineException {
         return test(f, env, getProducer());
@@ -184,8 +184,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     @Override
     public boolean test(Filter f, Environment env, Producer p) throws EngineException {
-        Expr exp = f.getExp();
-        IDatatype value = eval(exp, env, p);
+        IDatatype value = eval(f.getExp(), env, p);
         if (value == ERROR_VALUE) {
             return false;
         }
@@ -209,11 +208,9 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * eval(Computer e, Binding b, Environment env, Producer p)
      */
     public IDatatype eval(Expr exp, Environment env, Producer p) throws EngineException {
-        // Stack for LDScript variable binding
-        Binding b = (Binding) env.getBind();
         // evalWE clean the binding stack if an EngineException is thrown
-        IDatatype dt = ((Expression) exp).evalWE(this, b, env, p);
-        if (b.isDebug()) {
+        IDatatype dt = exp.evalWE(this, env.getBind(), env, p);
+        if (env.getBind().isDebug()) {
             System.out.println("eval: " + exp + " = " + dt);
             System.out.println(env);
         }
@@ -365,8 +362,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
         if (exp.isSystem()) {
             return DatatypeMap.createObject(map);
-        } else {
-            return proxy.getValue(b);
+        } else {          
+            return DatatypeMap.newInstance(b);
         }
         }
         catch (SparqlException e) {
@@ -396,7 +393,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     @Override
     public void setMode(int m) {
         mode = m;
-        proxy.setMode(m);
+        //proxy.setMode(m);
+        getPlugin().setMode(m);
     }
 
     @Override
@@ -411,7 +409,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     @Override
     public void start(Environment env) {
-        proxy.start(producer, env);
+        //proxy.start(producer, env);
     }
 
     @Override
@@ -422,13 +420,14 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public Binder getBinder() {
+    public Binding getBinder() {
         return Binding.create() ;
     }
 
     @Override
     public void finish(Environment env) {
-        proxy.finish(producer, env);
+        //proxy.finish(producer, env);
+        getPlugin().finish(producer, env);
     }
   
     public static boolean isDefined(Expr exp) {
@@ -437,7 +436,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     @Override
     public Function getDefine(Expr exp, Environment env) {
-        ASTExtension ext = getExtension(env);
+        ASTExtension ext = env.getExtension();
         if (ext != null) {
             Function def = ext.get(exp);
             if (def != null) {
@@ -458,14 +457,15 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             throws EngineException{
         Function fun = getDefine(env, name, n);
         if (fun == null) {
-            fun = proxy.getDefine(exp, env, name, n);
+            //fun = proxy.getDefine(exp, env, name, n);
+            fun = getPlugin().getDefine(exp, env, name, n);
         }
         return fun;
     }
 
     @Override
     public Function getDefine(Environment env, String name, int n) {
-        ASTExtension ext = getExtension(env);
+        ASTExtension ext = env.getExtension();
         if (ext != null) {
             Function ee = ext.get(name, n);
             if (ee != null) {
@@ -477,7 +477,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     
     @Override
     public Function getDefineMetadata(Environment env, String metadata, int n) {
-        ASTExtension ext = getExtension(env);
+        ASTExtension ext = env.getExtension();
         if (ext != null) {
             Function ee = ext.getMetadata(metadata, n);
             if (ee != null) {
@@ -492,7 +492,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      */
     @Override
     public Function getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] param) {
-        ASTExtension ext = getExtension(env);
+        ASTExtension ext = env.getExtension();
         if (ext != null) {
             if (env.getQuery().isDebug()) {
                 ext.setDebug(true);
@@ -513,13 +513,9 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return extension;
     }
 
-    
-//    public Function getDefineMethod(Environment env, String name, Object type, Object[] values) {
-//        return getDefineMethod(env, name, (IDatatype) type, (IDatatype[]) values);
-//    }
-
     public ProxyInterpreter getComputerPlugin() {
-        return proxy.getComputerPlugin();
+        //return proxy.getComputerPlugin();
+        return getPlugin();
     }
     
     @Override
@@ -556,6 +552,10 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     @Override
     public NSManager getNSM(Binding b, Environment env, Producer p) {
         return getComputerTransform().getNSM(b, env, p);
+    }
+
+    public ProxyInterpreter getPlugin() {
+        return plugin;
     }
 
 

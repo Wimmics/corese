@@ -187,7 +187,7 @@ public class PluginImpl
      * @test select where
      */
     void setMethodHandler(Producer p, Environment env) {
-        Extension ext = env.getQuery().getActualExtension();
+        ASTExtension ext = env.getQuery().getActualExtension();
         ASTQuery ast =  env.getQuery().getAST();
         if (ext != null && ext.isMethod() && ast.hasMetadata(Metadata.METHOD)) {
             ClassHierarchy ch = new ClassHierarchy(getGraph(p));
@@ -554,7 +554,7 @@ public class PluginImpl
 
     @Override
     public IDatatype entailment(Environment env, Producer p, IDatatype dt) throws EngineException {
-        Binding bind = (Binding) env.getBind();
+        Binding bind =  env.getBind();
         Graph g = getGraph(p);
         String uri = null;
         if (dt != null) {
@@ -944,7 +944,7 @@ public class PluginImpl
     }
 
     Binding getBinding(Environment env) {
-        return (Binding) env.getBind();
+        return  env.getBind();
     }
 
     @Override
@@ -1113,7 +1113,7 @@ public class PluginImpl
     }
 
     Dataset getDataset(Environment env) {
-        Context c = (Context) env.getQuery().getContext();
+        Context c =  env.getQuery().getContext();
         if (c != null) {
             return new Dataset(c);
         }

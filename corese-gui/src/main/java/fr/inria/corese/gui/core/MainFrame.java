@@ -61,6 +61,11 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.Property;
+import fr.inria.corese.core.util.Property.Pair;
+import static fr.inria.corese.core.util.Property.Value.GUI_DEFAULT_QUERY;
+import static fr.inria.corese.core.util.Property.Value.GUI_EXPLAIN_LIST;
+import static fr.inria.corese.core.util.Property.Value.GUI_QUERY_LIST;
+import static fr.inria.corese.core.util.Property.Value.GUI_TEMPLATE_LIST;
 import static fr.inria.corese.core.util.Property.Value.GUI_TITLE;
 import static fr.inria.corese.core.util.Property.Value.LOAD_QUERY;
 import fr.inria.corese.kgram.core.Mappings;
@@ -760,10 +765,11 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu engineMenu = new JMenu("Engine");
         JMenu debugMenu = new JMenu("Debug");
         JMenu queryMenu = new JMenu("Query");
+        JMenu userMenu = new JMenu("User Query");
         JMenu templateMenu = new JMenu("Template");
         JMenu shaclMenu = new JMenu("Shacl");
         JMenu shexMenu = new JMenu("Shex");
-        JMenu eventMenu = new JMenu("Event");        
+        JMenu eventMenu = new JMenu("Event");
         JMenu explainMenu = new JMenu("Explain");
         JMenu aboutMenu = new JMenu("?");
         
@@ -809,7 +815,6 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(idescribe);
         queryMenu.add(iserviceLocal);
         queryMenu.add(iserviceCorese);
-        queryMenu.add(iserviceCorese);
         queryMenu.add(imapcorese);
         queryMenu.add(ifederate);
         queryMenu.add(ifunction);
@@ -819,12 +824,21 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(iinsert);
         queryMenu.add(iinsertdata);
         queryMenu.add(ideleteinsert);
-
+        
+        userMenu.add(defItem("Count", "count.rq"));
+        for (Pair pair : Property.getValueList(GUI_QUERY_LIST)) {
+            userMenu.add(defItemQuery(pair.getKey(), pair.getPath()));
+        }
+        
         explainMenu.add(ientailment);
         explainMenu.add(irule);
         explainMenu.add(ierror);
         explainMenu.add(iowlrl);
-
+        
+        for (Pair pair : Property.getValueList(GUI_EXPLAIN_LIST)) {
+            explainMenu.add(defItemQuery(pair.getKey(), pair.getPath()));
+        }
+        
         templateMenu.add(iturtle);
         templateMenu.add(in3);
         templateMenu.add(irdfxml);
@@ -832,6 +846,11 @@ public class MainFrame extends JFrame implements ActionListener {
         templateMenu.add(itrig);
         templateMenu.add(ispin);
         templateMenu.add(iowl);
+        
+        for (Pair pair : Property.getValueList(GUI_TEMPLATE_LIST)) {
+            templateMenu.add(defItemQuery(pair.getKey(), pair.getPath()));
+        }        
+        
         
         shaclMenu.add(itypecheck);
         shaclMenu.add(defItem("Fast Engine", "shacl/fastengine.rq"));
@@ -1108,6 +1127,7 @@ public class MainFrame extends JFrame implements ActionListener {
         menuBar.add(engineMenu);
         menuBar.add(debugMenu);
         menuBar.add(queryMenu);
+        menuBar.add(userMenu);
         menuBar.add(templateMenu);
         menuBar.add(shaclMenu);
         menuBar.add(shexMenu);
@@ -1145,6 +1165,18 @@ public class MainFrame extends JFrame implements ActionListener {
             String str = read(root + q);
             itable.put(it, new DefQuery(q, str));
         } catch (LoadException | IOException ex) {
+            LOGGER.error(ex);
+        }
+        return it;
+    }
+    
+    JMenuItem defItemQuery(String name, String path) {
+        JMenuItem it = new JMenuItem(name);
+        it.addActionListener(this);
+        try {
+            String str = QueryLoad.create().readProtect(path);
+            itable.put(it, new DefQuery(path, str));
+        } catch (LoadException ex) {
             LOGGER.error(ex);
         }
         return it;
@@ -1527,16 +1559,36 @@ public class MainFrame extends JFrame implements ActionListener {
     }
     
     void loadProperty() {
-        JFileChooser fileChooser = new JFileChooser(getProperty());                     
+        JFileChooser fileChooser = new JFileChooser(getProperty());
         File selectedFile;
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             selectedFile = fileChooser.getSelectedFile();
+            setProperty(selectedFile.getParent());
+            init(selectedFile.getAbsolutePath());
+        }
+    }
+       
+    void init(String path) {
+        try {
+            LOGGER.info("Load Property File: " + path);
+            Property.load(path);
+        } catch (IOException ex) {
+            LOGGER.error(ex);
+        }
+    }
+    
+    void initProperty() {
+        if (Property.stringValue(LOAD_QUERY) != null) {
+            initLoadQuery(Property.pathValue(LOAD_QUERY));
+        }
+        if (Property.stringValue(GUI_TITLE) != null) {
+            setTitle(Property.stringValue(GUI_TITLE));
+        }
+        if (Property.stringValue(GUI_DEFAULT_QUERY) != null) {
             try {
-                setProperty(selectedFile.getParent());
-                LOGGER.info("Load Property File: " + selectedFile.getAbsolutePath());
-                Property.load(selectedFile.getAbsolutePath());
-            } catch (IOException ex) {
+                defaultQuery = QueryLoad.create().readWE(Property.pathValue(GUI_DEFAULT_QUERY));
+            } catch (LoadException ex) {
                 LOGGER.error(ex);
             }
         }
@@ -1983,12 +2035,7 @@ public class MainFrame extends JFrame implements ActionListener {
         if (cmd.getQuery() !=null) {
             initLoadQuery(cmd.getQuery());
         }
-        if (Property.stringValue(LOAD_QUERY) != null) {
-            initLoadQuery(Property.stringValue(LOAD_QUERY));
-        }
-        if (Property.stringValue(GUI_TITLE) != null) {
-            setTitle(Property.stringValue(GUI_TITLE));
-        }
+        initProperty();
     }
     
     void initLoadQuery(String path) {

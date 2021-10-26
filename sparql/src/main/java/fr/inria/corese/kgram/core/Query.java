@@ -17,7 +17,9 @@ import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.filter.Compile;
 import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.tool.Message;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Context;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -111,7 +113,7 @@ public class Query extends Exp implements Graphable {
     private Query templateProfile;
     private Object templateVisitor;
     // st:set/st:get Context
-    private Object context;
+    private Context context;
     // current transformer if any
     private Object transformer;
     // table: transformation -> Transformer
@@ -131,7 +133,8 @@ public class Query extends Exp implements Graphable {
     HashMap<Edge, Query> table;
     // Extended queries for additional group by
     List<Query> queries;
-    private Extension extension;
+    // implemented by ASTExtension 
+    private ASTExtension extension;
 
     private boolean isCompiled = false;
     private boolean hasFunctional = false;
@@ -401,6 +404,10 @@ public class Query extends Exp implements Graphable {
      */
     public void setHasFunctional(boolean hasFunctional) {
         this.hasFunctional = hasFunctional;
+    }
+    
+    public void addError(String mes) {
+        addError(mes, null);
     }
     
     public void addError(String mes, Object obj) {
@@ -677,11 +684,11 @@ public class Query extends Exp implements Graphable {
      * use case: select * list of nodes that are exposed as select *
      */
     public List<Node> getSelectNodes() {
-        List<Node> list = new ArrayList<Node>();
-        for (Node node : patternNodes) {
+        List<Node> list = new ArrayList<>();
+        for (Node node : getPatternNodes()) {
             list.add(node);
         }
-        for (Node node : patternSelectNodes) {
+        for (Node node : getPatternSelectNodes()) {
             if (!list.contains(node)) {
                 Node ext = getExtNode(node);
                 add(list, ext);
@@ -695,11 +702,11 @@ public class Query extends Exp implements Graphable {
      * use case: select ?x
      */
     public Node getSelectNodes(String name) {
-        Node node = get(patternNodes, name);
+        Node node = get(getPatternNodes(), name);
         if (node != null) {
             return node;
         }
-        node = get(patternSelectNodes, name);
+        node = get(getPatternSelectNodes(), name);
         if (node != null) {
             return getExtNode(node);
         }
@@ -2563,25 +2570,18 @@ public class Query extends Exp implements Graphable {
     /**
      * @return the extention
      */
-    public Extension getExtension() {
+    public ASTExtension getExtension() {
         return extension;
     }
     
-//    public Extension getCreateExtension() {
-//        if (getExtension() == null){
-//            setExtension(new Extension());
-//        }
-//        return getExtension();
-//    }
-    
-    public Extension getActualExtension(){
+    public ASTExtension getActualExtension(){
         return getGlobalQuery().getExtension();
     }
 
     /**
      * @param extention the extention to set
      */
-    public void setExtension(Extension ext) {
+    public void setExtension(ASTExtension ext) {
         this.extension = ext;
     }
     
@@ -2739,7 +2739,7 @@ public class Query extends Exp implements Graphable {
     /**
      * @return the Context
      */
-    public Object getContext() {
+    public Context getContext() {
         if (query == null){
             return context;
         }
@@ -2749,7 +2749,7 @@ public class Query extends Exp implements Graphable {
     /**
      * @param Context the Context to set
      */
-    public void setContext(Object context) {
+    public void setContext(Context context) {
         if (query == null){
             this.context = context;
         }
@@ -2799,7 +2799,7 @@ public class Query extends Exp implements Graphable {
      * Query inherits q transformer information
      * @param q 
      */
-    public void complete(Query q, Object context){
+    public void complete(Query q, Context context){
         setEnvironment(q.getEnvironment());
         setTransformer(q.getTransformer());
         setContext(context);

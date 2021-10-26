@@ -199,7 +199,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     void test() {
         IDatatype dt = DatatypeMap.map();
         dt.set(DatatypeMap.newInstance("test"), DatatypeMap.newInstance(10));
-        Binding b = (Binding) getEnvironment().getBind();
+        Binding b = getEnvironment().getBind();
         b.setVariable("?global", dt);
     }
     
@@ -348,7 +348,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
         if (function != null) {
             // prevent infinite loop in case where there is a query in the function
             setActive(true);
-            IDatatype dt = new ListSort("sort").sort((Computer) ev.getEvaluator(), (Binding) ev.getEnvironment().getBind(), ev.getEnvironment(), 
+            IDatatype dt = new ListSort("sort").sort((Computer) ev.getEvaluator(),  ev.getEnvironment().getBind(), ev.getEnvironment(), 
                     ev.getProducer(),  function, param[0] );
             setActive(false);
             return dt;
@@ -390,7 +390,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     
     IDatatype call(Function fun, IDatatype[] param, Evaluator eval, Environment env, Producer p) {
         try {
-            return new Funcall(fun.getFunction().getLabel()).callWE((Computer) eval, (Binding) env.getBind(), env, p, fun, param);
+            return new Funcall(fun.getFunction().getLabel()).callWE((Computer) eval, env.getBind(), env, p, fun, param);
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
             return null;

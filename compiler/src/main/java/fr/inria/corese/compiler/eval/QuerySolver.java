@@ -347,7 +347,7 @@ public class QuerySolver implements SPARQLEngine {
         if (getCurrentEval() == null) {
             return null;
         }
-        return (Binding) getCurrentEval().getEnvironment().getBind();
+        return getCurrentEval().getEnvironment().getBind();
     }
 
     public Binding getBinding() {
@@ -356,7 +356,7 @@ public class QuerySolver implements SPARQLEngine {
                 || getCurrentEval().getEnvironment().getBind() == null) {
             return Binding.create();
         }
-        return (Binding) getCurrentEval().getEnvironment().getBind();
+        return  getCurrentEval().getEnvironment().getBind();
     }
     
     public Context getContext() {

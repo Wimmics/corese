@@ -220,7 +220,7 @@ public class FunctionCompiler {
         Query imp = transformer.getSPARQLEngine().parseQuery(path, level);
         if (imp != null && imp.hasDefinition()) {
             // loaded functions are exported in Interpreter  
-            definePublic(Interpreter.getExtension(imp), imp);
+            definePublic(imp.getExtension(), imp);
             return true;
         }
         return false;

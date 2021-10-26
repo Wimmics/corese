@@ -8,8 +8,8 @@ import fr.inria.corese.sparql.api.IDatatype;
 import java.util.List;
 
 /**
- *
  * @author corby
+ * @deprecated
  */
 public interface Binder {
     
@@ -19,11 +19,6 @@ public interface Binder {
     boolean isBound(String label);
     Node get(Expr var);
     IDatatype getGlobalVariable(String var);
-    //void bind(Expr exp, Expr var, Node val);
-//    void set(Expr exp, Expr var, Node val);
-//    void set(Expr exp, List<Expr> lvar, Node[] value);
-    //void unset(Expr exp, Expr var, Node value);
-    //void unset(Expr exp, List<Expr> lvar);
     void share(Binder b);
     void setVisitor(ProcessVisitor vis);
     ProcessVisitor getVisitor();

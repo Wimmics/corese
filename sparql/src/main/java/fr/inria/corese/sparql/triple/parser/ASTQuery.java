@@ -50,7 +50,7 @@ import java.util.UUID;
  */
 public class ASTQuery 
         extends ASTObject 
-        implements Keyword, ASTVisitable, ASTQ {
+        implements Keyword, ASTVisitable, ASTQ, Message {
    
     /**
      * Use to keep the class version, to be consistent with the interface
@@ -698,6 +698,10 @@ public class ASTQuery
      *
      * @param error
      */
+    public void addErrorMessage(String mes, Object... obj) {
+        addError(String.format(mes, obj));
+    }
+    
     public void addError(String error) {
         getGlobalAST().setError(error);
     }
@@ -2110,7 +2114,7 @@ public class ASTQuery
         if (qname == uri) { //(qname.equals(uri)) {
             // use == instead of equals because 
             // with prefix bif: <bif:> we have bif:test equals <bif:test>
-            addError("Undefined prefix: ", qname);
+            addErrorMessage(PREFIX_UNDEFINED, qname);
         }
         cst.setQName(true);
         return cst;
@@ -2620,8 +2624,8 @@ public class ASTQuery
                 blank.put(label, exp);
             } else if (ee != exp) {
                 setCorrect(false);
-                logger.error("Blank Node used in different patterns: " + label);
-                addError("Blank Node used in different patterns: ", label);
+                //logger.error(String.format(ASTMessage.BNODE_SCOPE1,  label));
+                addErrorMessage(BNODE_SCOPE1,  label);
             }
         }
 
@@ -3325,7 +3329,7 @@ public class ASTQuery
     public void setSelect(Variable var, Expression e) {
         setSelect(var);
         if (getExpression(var) != null) {
-            addError("Duplicate select : " + e + " as " + var);
+            addErrorMessage(SELECT_DUPLICATE, e , var);
         }
         selectFunctions.put(var.getName(), e);
         selectExp.put(e, e);

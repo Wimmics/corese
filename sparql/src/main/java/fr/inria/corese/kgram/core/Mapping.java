@@ -14,14 +14,14 @@ import static fr.inria.corese.kgram.api.core.PointerType.MAPPING;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
-import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.api.query.Result;
-import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
 import fr.inria.corese.kgram.tool.EnvironmentImpl;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Set;
@@ -54,14 +54,19 @@ public class Mapping
             oNodes,
             // group by
             gNodes;
-    private Node result;
+    //private Node result;
     Node[] distinct, group;
+    // may record group Mappings when group by
     Mappings lMap;
+    // var -> Node
     HashMap<String, Node> values;
+    // Mapping as Environment
     Query query;
+    // aggregate may need to share bnode map 
     Map<String, IDatatype> bnode;
     //boolean read = false;
-    private Binder bind;
+    // Mapping as Environment 
+    private Binding bind;
     private Node graphNode;
     private Node targetGraphNode;
     private Eval eval;
@@ -107,7 +112,7 @@ public class Mapping
         return new Mapping();
     }
     
-    public static Mapping create(Binder b) {
+    public static Mapping create(Binding b) {
         Mapping m = new Mapping();
         m.setBind(b);
         return m;
@@ -197,7 +202,7 @@ public class Mapping
      * function us:fun(?x){let (select ?x where {}) {}}
      * variable ?x appears twice in the stack because it is redefined in the let clause
      */
-    public static Mapping create(Query q, Binder b) {
+    public static Mapping create(Query q, Binding b) {
         ArrayList<Node> lvar = new ArrayList();
         ArrayList<Node> lval = new ArrayList();
         for (Expr var : b.getVariables()) {
@@ -241,11 +246,6 @@ public class Mapping
         this.qNodes = qn;
         this.nodes = tn;
     }
-
-//    void init(List<Path> lp) {
-//        lPath = new Path[lp.size()];
-//        lPath = lp.toArray(lPath);
-//    }
 
     void init(Node[] qnodes, Node[] nodes) {
         this.qNodes = qnodes;
@@ -1273,17 +1273,17 @@ public class Mapping
 //    }
 
     @Override
-    public Extension getExtension() {
+    public ASTExtension getExtension() {
         return query.getActualExtension();
     }
 
     @Override
-    public Binder getBind() {
+    public Binding getBind() {
         return bind;
     }
     
     @Override
-    public void setBind(Binder b) {
+    public void setBind(Binding b) {
         bind = b;
     }
 
@@ -1292,7 +1292,7 @@ public class Mapping
         return bind != null && bind.hasBind();
     }
     
-    Binder getCreateBind(){
+    Binding getCreateBind(){
         return bind;
     }
 
@@ -1331,38 +1331,28 @@ public class Mapping
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
     
-      /**
-     * @return the graphNode
-     */
+   
     @Override
     public Node getGraphNode() {
         return graphNode;
     }
 
-    /**
-     * @param graphNode the graphNode to set
-     */
+   
     public void setGraphNode(Node graphNode) {
         this.graphNode = graphNode;
     }
     
-     /**
-     * @return the result
-     */
-    public Node getResult() {
-        return result;
-    }
-
-    /**
-     * @param result the result to set
-     */
-    public void setResult(Node result) {
-        this.result = result;
-    }
+  
+//    public Node getResult() {
+//        return result;
+//    }
+//
+//   
+//    public void setResult(Node result) {
+//        this.result = result;
+//    }
     
-        /**
-     * @return the eval
-     */
+    
     @Override
     public Eval getEval() {
         return eval;
@@ -1376,24 +1366,18 @@ public class Mapping
         return getEval().getVisitor();
     }
 
-    /**
-     * @param eval the eval to set
-     */
+    
     @Override
     public void setEval(Eval eval) {
         this.eval = eval;
     }
 
-    /**
-     * @return the targetGraphNode
-     */
+    
     public Node getNamedGraph() {
         return targetGraphNode;
     }
 
-    /**
-     * @param targetGraphNode the targetGraphNode to set
-     */
+    
     public void setNamedGraph(Node targetGraphNode) {
         this.targetGraphNode = targetGraphNode;
     }

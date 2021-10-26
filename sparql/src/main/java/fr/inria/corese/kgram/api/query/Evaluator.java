@@ -10,6 +10,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 /**
  * Interface for the connector that evaluates filters
  * 
@@ -69,7 +70,7 @@ public interface Evaluator {
         // cast Java object into IDatatype
         Node cast(Object obj, Environment e, Producer p);
 
-        Binder getBinder();
+        Binding getBinder();
 				        
         void setProducer(Producer p);
         

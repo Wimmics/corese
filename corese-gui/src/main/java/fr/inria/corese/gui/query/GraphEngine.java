@@ -27,13 +27,11 @@ import static fr.inria.corese.core.util.Property.Value.*;
 import fr.inria.corese.gui.core.Command;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import static fr.inria.corese.core.util.Property.Value.ACCESS_LEVEL;
-import java.io.IOException;
 
 /**
  * Lite implementation of IEngine using kgraph and kgram

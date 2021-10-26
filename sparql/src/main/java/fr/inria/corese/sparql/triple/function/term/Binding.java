@@ -35,14 +35,12 @@ public class Binding implements Binder {
     public static boolean DEBUG_DEFAULT = false;
     public static boolean DYNAMIC_CAPTURE_DEFAULT = false;
     public static final String SLICE_SERVICE  = "?slice_service";
-    public static final String MAX_XML_RESULT = "?max_xml_result";
     ArrayList<Expr> varList;
     ArrayList<IDatatype> valList;
     // level of the stack before function call
     // every funcall add a level
     ArrayList<Integer> level;
     int currentLevel = 0, count = 0;
-   // Expr current;
     
     HashMap<String, IDatatype> globalValue;
     HashMap<String, Variable>  globalVariable;
@@ -58,7 +56,7 @@ public class Binding implements Binder {
     private Access.Level accessLevel = Access.Level.USER_DEFAULT;
     private ContextLog contextLog;
     private Context context;
-    // transformer Mappings
+    // transformation Mappings with xt:mappings()
     private Mappings mappings;
     private IDatatype datatypeValue;
     
@@ -815,10 +813,12 @@ public class Binding implements Binder {
         }
     }
 
+    @Override
     public Mappings getMappings() {
         return mappings;
     }
 
+    @Override
     public Binding setMappings(Mappings mappings) {
         this.mappings = mappings;
         return this;

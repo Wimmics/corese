@@ -149,7 +149,7 @@ public class SPARQLProcess extends  WorkflowProcess {
             Date d1 = new Date();
             Mappings map = exec.query(tuneQuery(exec, data), data.dataset(c, ds)); 
             Data res = new Data(this, map, getGraph(map, data));
-            res.setBinding((Binding) map.getBinding());
+            res.setBinding( map.getBinding());
             log2(res, d1, new Date());  
             return res;
         }
@@ -164,7 +164,7 @@ public class SPARQLProcess extends  WorkflowProcess {
         }
         Date d2 = new Date();
         Data res = new Data(this, map, getGraph(map, data));
-        res.setBinding((Binding) map.getBinding());
+        res.setBinding( map.getBinding());
         if (hasVisitor()) {
             recVisitor().visit(this, res, ((d2.getTime()-d1.getTime())/(1000.0 * nb)));
         }

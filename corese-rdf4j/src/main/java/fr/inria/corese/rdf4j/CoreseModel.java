@@ -260,7 +260,7 @@ public class CoreseModel extends AbstractModel {
         Node obj_node = Convert.rdf4jValueToCoreseNode(obj);
 
         // convert contexts into Corese Nodes
-        Node[] contexts_node = Convert.rdf4jContextsToCoreseGraphs(this.corese_graph.getDefaultGraphNode(), contexts);
+        Node[] contexts_node = Convert.rdf4jContextsToCoreseContexts(contexts);
 
         // get edges
         Iterable<Edge> corese_iterable;

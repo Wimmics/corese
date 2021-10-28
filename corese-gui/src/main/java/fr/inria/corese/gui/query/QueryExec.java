@@ -120,6 +120,17 @@ public class QueryExec {
     public Query compile(String squery) throws EngineException {
         return exec.compile(squery);
     }
+    
+    /**
+     * call after compile to prepare GUI order by
+     * use case: user edit order by clause and click Sort button
+     * We sort Mappings again according to new order by clause 
+     * 
+     */
+    public void complete(Query q, Mappings map) throws EngineException {
+        map.setQuery(q);
+        map.setEval(exec.getEval());
+    }
 
     public Mappings query(String squery) throws EngineException {
         Mappings map = exec.sparqlQuery(squery);

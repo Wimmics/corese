@@ -57,7 +57,8 @@ public class TestCoreseDatatypeToRdf4jValue {
         // Checks
         assertEquals(true, rdf4j_blank_value.isBNode());
         BNode rdf4j_blank = (BNode) rdf4j_blank_value;
-        assertEquals(string_id, rdf4j_blank.getID());
+        assertEquals(string_id, corese_blank.stringValue());
+        assertEquals(string_id, rdf4j_blank.stringValue());
     }
 
     @Test

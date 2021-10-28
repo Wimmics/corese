@@ -10,7 +10,6 @@ import org.eclipse.rdf4j.model.vocabulary.XSD;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.RDF;
-import fr.inria.corese.sparql.triple.function.core.BlankNode;
 
 /**
  * Factory to create RDF4J value from Corese datatype
@@ -148,7 +147,7 @@ public class CoreseDatatypeToRdf4jValue {
      * @return equivalent RDF4J blank node BNode
      */
     public static BNode convertBNode(IDatatype corese_blank) {
-        String id = corese_blank.getLabel();
+        String id = corese_blank.stringValue();
         return rdf4j_factory.createBNode(id);
     }
 

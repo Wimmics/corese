@@ -64,7 +64,7 @@ public class TestRdf4jValueToCoreseDatatype {
         // Checks
         assertEquals(true, corese_blank_value.isBlank());
         CoreseBlankNode corese_blank = (CoreseBlankNode) corese_blank_value;
-        assertEquals(string_id, corese_blank.getID());
+        assertEquals(string_id, corese_blank.stringValue());
     }
 
     @Test

@@ -250,7 +250,6 @@ public class TestCoreseDatatypeToRdf4jValue {
 
         // Convert Corese literal lang to RDF4J literal lang
         Value rdf4j_literal_value = CoreseDatatypeToRdf4jValue.convert(corese_literal);
-
         // Checks
         assertEquals(rdf4j_literal_value.isLiteral(), true);
         Literal rdf4j_literal = (Literal) rdf4j_literal_value;
@@ -258,6 +257,25 @@ public class TestCoreseDatatypeToRdf4jValue {
         assertEquals(RDF.LANGSTRING, rdf4j_literal.getDatatype().stringValue());
         assertEquals(RDF.LANGSTRING, corese_literal.getDatatype().stringValue());
         assertEquals(Optional.of("fr"), rdf4j_literal.getLanguage());
+    }
+
+    @Test
+    public void convertLiteralLangXhithoutLang() {
+        String value = "Un super test";
+
+        // Build Corese literal lang
+        CoreseLiteral corese_literal = (CoreseLiteral) DatatypeMap.newInstance(value, RDF.rdflangString);
+
+        // Convert Corese literal lang to RDF4J literal lang
+        Value rdf4j_literal_value = CoreseDatatypeToRdf4jValue.convert(corese_literal);
+
+        // Checks
+        assertEquals(rdf4j_literal_value.isLiteral(), true);
+        Literal rdf4j_literal = (Literal) rdf4j_literal_value;
+        assertEquals(value, rdf4j_literal.getLabel());
+        assertEquals(XSD.STRING, rdf4j_literal.getDatatype());
+        assertEquals(XSD.STRING.stringValue(), corese_literal.getDatatype().stringValue());
+        assertEquals(Optional.empty(), rdf4j_literal.getLanguage());
     }
 
     @Test

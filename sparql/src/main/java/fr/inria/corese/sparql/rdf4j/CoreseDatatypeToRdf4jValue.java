@@ -10,6 +10,7 @@ import org.eclipse.rdf4j.model.vocabulary.XSD;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.RDF;
+import fr.inria.corese.sparql.triple.function.core.BlankNode;
 
 /**
  * Factory to create RDF4J value from Corese datatype
@@ -171,8 +172,14 @@ public class CoreseDatatypeToRdf4jValue {
      */
     private static Literal convertLangString(IDatatype corese_lang_string) {
         String value = corese_lang_string.getLabel();
-        String lang = corese_lang_string.getLang();
-        return rdf4j_factory.createLiteral(value, lang);
+
+        if (corese_lang_string.hasLang()) {
+            String lang = corese_lang_string.getLang();
+            return rdf4j_factory.createLiteral(value, lang);
+        }
+        else {
+            return rdf4j_factory.createLiteral(value);
+        }
     }
 
     /**

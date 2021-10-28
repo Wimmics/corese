@@ -1,7 +1,6 @@
 prefix foaf: <http://xmlns.com/foaf/0.1/>
 
 insert data {
-  us:John foaf:name 'John' .
-  triple(us:John foaf:knows us:Jack "2019-04-01"^^xsd:date)
-  <<us:John foaf:knows us:James>> us:author us:John ; us:date "2019-07-14"^^xsd:date .
+  us:John foaf:name 'John' ;
+    foaf:knows us:James .
 }

@@ -150,6 +150,10 @@ public interface Edge extends Pointerable, Statement {
             return getProperty().getDatatypeValue();
         }
         
+        default IDatatype getPredicateValue() {
+            return getProperty().getDatatypeValue();
+        }
+        
         default IDatatype getObjectValue() {
             return getNode(1).getDatatypeValue();
         }

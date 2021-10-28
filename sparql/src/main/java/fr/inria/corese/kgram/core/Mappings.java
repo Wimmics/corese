@@ -24,6 +24,8 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import java.util.Map;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /*
  * Manage list of Mapping, result of a query
@@ -223,8 +225,9 @@ public class Mappings extends PointerObject
         count = n;
     }
 
-    public void add(Mapping m) {
+    public Mappings add(Mapping m) {
         list.add(m);
+        return this;
     }
 
     public void reject(Mapping m) {
@@ -529,6 +532,50 @@ public class Mappings extends PointerObject
 
     void sort() {
         Collections.sort(list, this);
+    }
+    
+    public void orderBy() {
+        if (getEval() != null) {
+            setOrderBy();
+            sort();
+        }
+    }
+
+    /**
+     * Compute order by array again and set it in every Mapping
+     */
+    void setOrderBy() {
+        if (getQuery().isDebug()) {
+            System.out.println("Order By: " + this.toString(true));
+        }
+        for (Mapping m : this) {
+            Node[] nodes = new Node[getQuery().getOrderBy().size()];
+            int i = 0;
+            for (Exp exp : getQuery().getOrderBy()) {
+                Node node = null;
+                if (exp.getFilter() == null) {
+                    node = m.getNode(exp.getNode());
+                } else {                   
+                    try {
+                        // @toto: complete Mapping m with Binding, etc.
+                        m.setBind(getEval().getEnvironment().getBind());
+                        node = getEval().eval(exp.getFilter(), m, getEval().getProducer());
+                        if (getQuery().isDebug()) {
+                            System.out.println("Order By eval: " + exp);
+                            System.out.println(m);
+                        }
+                    } catch (SparqlException ex) {
+                        Eval.logger.error("Order By error: " + ex);
+                    }
+                }
+                if (getQuery().isDebug()) {
+                    System.out.println("Order By Result: " + exp + " " + node);
+                    System.out.println("__");
+                }
+                nodes[i++] = node;
+            }
+            m.setOrderBy(nodes);
+        }
     }
     
     public void genericSort() {

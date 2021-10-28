@@ -1251,16 +1251,26 @@ public class Mapping
     
     @Override
     public Iterable<Mapping> getAggregate(){
+        if (getMappings()==null) {
+            return List.of(this);
+        }
         if (getMappings().isFake()) {
-            return new ArrayList<Mapping>(0);
+            return new ArrayList<>(0);
         }
         return getMappings();
     }
     
     @Override
     public void aggregate(Mapping map, int n){
-        getMappings().aggregate(map, getQuery(), getMap(), n);
+        getAggregateMappings().aggregate(map, getQuery(), getMap(), n);
     }   
+    
+    Mappings getAggregateMappings() {
+        if (getMappings() == null) {
+            return new Mappings().add(this);
+        }
+        return getMappings();
+    }
     
 //    public void aggregate(Mapping map, int n){
 //        getMappings().setCount(n);

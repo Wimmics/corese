@@ -5,14 +5,21 @@
 # java -jar corese-server.jar -init property.txt
 # Property.load("property.txt");
 # Property.set(LOAD_IN_DEFAULT_GRAPH, true);
+# Property.init(graph);
 #
+
+VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./;myhome=$homedata
+
+IMPORT   = ./gui.txt
+
+
 
 BLANK_NODE              = _:b
 
 # display ex:test vs <http://example.org/test>
 DISPLAY_URI_AS_PREFIX   = true
 
-# Graph node is IDatatype or Node object
+# Graph node is instance of IDatatype (one object) or Node(IDatatype) (two objects)
 GRAPH_NODE_AS_DATATYPE  = true
 
 # graph ?g { } iterate external named graph
@@ -59,9 +66,9 @@ ACCESS_RIGHT            = false
 EVENT               = false
 
 # Visitor for trace
-#RULE_VISITOR        = fr.inria.corese.core.visitor.solver.QuerySolverVisitorRuleUser
-#SOLVER_VISITOR      = fr.inria.corese.core.visitor.solver.QuerySolverVisitorUser
-#TRANSFORMER_VISITOR = fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformerUser
+RULE_VISITOR        = $vis.QuerySolverVisitorRuleUser
+#SOLVER_VISITOR      = $vis.QuerySolverVisitorUser
+#TRANSFORMER_VISITOR = $vis.QuerySolverVisitorTransformerUser
 #SERVER_VISITOR      = fr.inria.corese.server.webservice.QuerySolverVisitorServerUser
 
 #
@@ -105,10 +112,8 @@ SERVICE_LIMIT       = 1000
 # Dataset
 #
 
-# predefined prefix for every sparql query
-PREFIX        = d=http://ns.inria.fr/humans/data# ; h=http://ns.inria.fr/humans/schema#
 
-# limit number of triples loaded from a document
+# limit number of triples loaded from any rdf document
 #LOAD_LIMIT   = 10
 
 # load take ?format=rdfxml into account
@@ -119,47 +124,4 @@ PREFIX        = d=http://ns.inria.fr/humans/data# ; h=http://ns.inria.fr/humans/
 #LOAD_FORMAT   = application/rdf+xml
 
 
-
-#
-# Property for corese gui
-# Property.init(graph);
-#
-
-GUI_TITLE = Corese Semantic Web Factory - Inria UCA - R&D version - 2021-11-01
-
-# GUI browse Linked Result
-GUI_BROWSE      = true
-
-# XML result max display
-GUI_XML_MAX     = 100
-
-# xml json
-GUI_SELECT_FORMAT       =  xml
-
-# xml json turtle
-GUI_CONSTRUCT_FORMAT    =  xml
-
-# Tune GUI
-VARIABLE =  gui=/user/corby/home/AAGui/query;data=/user/corby/home/AADemoNew/inrae/data
-
-# Query displayed when click "+" on GUI
-GUI_DEFAULT_QUERY    = $gui/select.rq
-
-# User defined query list displayed in User menu
-GUI_QUERY_LIST       = Map=$gui/mapcorese.rq;Chart=$gui/chart.rq
-
-#GUI_TEMPLATE_LIST    = Count=./query/count.rq
-#GUI_EXPLAIN_LIST     = Count=$gui/count.rq
-
-
-# Default value for corese gui
-RDFS_ENTAILMENT = false
-
-#LOAD_QUERY     = $gui/mapcorese.rq
-LOAD_QUERY     = $gui/count.rq
-
-LOAD_DATASET  = $data/humans_owl.ttl
-#LOAD_DATASET  = /user/corby/home/AADemoNew/tdinrae/data/humans_owl.ttl ; /user/corby/home/AADemoNew/tdinrae/data/humans_data.ttl ; /user/corby/home/AADemoNew/tdinrae/data/humans_schema.ttl
-#LOAD_RULE     = http://www.w3.org/ns/owl-profile/RL
-#LOAD_FUNCTION = /user/corby/home/AAData/data/corese/function.rq
 

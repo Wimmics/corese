@@ -1,0 +1,56 @@
+VARIABLE = gui=/user/corby/home/AAGui/query;human=/user/corby/home/AADemoNew/inrae/data;home=/user/corby/home/AAData;new=/user/corby/home/AADemoNew/
+
+
+
+# predefined prefix for every sparql query
+PREFIX        = d=http://ns.inria.fr/humans/data# ; h=http://ns.inria.fr/humans/schema#
+
+#
+# Property for corese gui
+# Property.init(graph);
+#
+
+GUI_TITLE = Corese Semantic Web Factory - Inria UCA - R&D version - 2021-11-01
+
+# GUI browse Linked Result
+GUI_BROWSE      = true
+
+# XML result max display
+GUI_XML_MAX     = 100
+
+# xml json
+GUI_SELECT_FORMAT       =  xml
+
+# xml json turtle
+GUI_CONSTRUCT_FORMAT    =  xml
+
+# Tune GUI
+
+# Query displayed when click "+" on GUI
+GUI_DEFAULT_QUERY    = $gui/select.rq
+
+# User defined query list displayed in User menu
+GUI_QUERY_LIST       = Map=$gui/mapcorese.rq;Chart=$gui/chart.rq;Mappings=$gui/valuesmappings.rq;Insert RDF*=$gui/insertdatardfstar.rq;Select RDF*=$gui/selecttuple.rq
+
+GUI_RULE_LIST   =   My Rule Base=$home/rule/rdfs.rul
+
+#GUI_TEMPLATE_LIST    = Count=./query/count.rq
+#GUI_EXPLAIN_LIST     = Count=$gui/count.rq
+
+
+# Default value for corese gui
+RDFS_ENTAILMENT = false
+
+#LOAD_QUERY     = $gui/mapcorese.rq
+LOAD_QUERY     = $gui/count.rq
+#LOAD_QUERY      = $new/orderby.rq
+
+#LOAD_DATASET  = $human/humans_owl.ttl
+
+LOAD_DATASET  =  $human/humans_data.ttl;$human/humans_schema.ttl
+
+#LOAD_RULE     = http://www.w3.org/ns/owl-profile/RL
+#LOAD_RULE     = $home/rule/rdfs.rul
+
+#LOAD_FUNCTION = /user/corby/home/AAData/data/corese/function.rq
+

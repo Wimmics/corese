@@ -90,7 +90,8 @@ public final class MyJPanelQuery extends JPanel {
     int maxresxml = 1000;
     
     //Boutton du panneau Query
-    private JButton buttonRun, buttonShacl, buttonPush, buttonCopy, buttonShex, 
+    private JButton buttonRun, buttonShacl, buttonPush, buttonCopy, buttonSort,
+            buttonShex, 
             buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL, 
             buttonTKgram, buttonProve;
     private JButton buttonSearch;
@@ -159,6 +160,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonShex = new JButton();
         buttonPush = new JButton();
         buttonCopy = new JButton();
+        buttonSort = new JButton();
         buttonStop = new JButton();
         buttonKill = new JButton();
         buttonValidate = new JButton();
@@ -286,6 +288,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonPush.setText("Push");
         // copy current result into last result panel
         buttonCopy.setText("Copy");
+        buttonSort.setText("Sort");
         buttonRun.setText("Query");
         buttonShacl.setText("Shacl");
         buttonShex.setText("Shex");
@@ -360,6 +363,7 @@ public final class MyJPanelQuery extends JPanel {
         hSeq2.addComponent(buttonShex);
         hSeq2.addComponent(buttonPush);
         hSeq2.addComponent(buttonCopy);
+        hSeq2.addComponent(buttonSort);
         hSeq2.addComponent(buttonStop);
         hSeq2.addComponent(buttonKill);
         hSeq2.addComponent(buttonValidate);
@@ -396,6 +400,7 @@ public final class MyJPanelQuery extends JPanel {
         vParallel2.addComponent(buttonShex);
         vParallel2.addComponent(buttonPush);
         vParallel2.addComponent(buttonCopy);
+        vParallel2.addComponent(buttonSort);
         vParallel2.addComponent(buttonStop);
         vParallel2.addComponent(buttonKill);
         vParallel2.addComponent(buttonValidate);
@@ -453,6 +458,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonShex.addActionListener(l_RunListener);
         buttonPush.addActionListener(l_RunListener);
         buttonCopy.addActionListener(l_RunListener);
+        buttonSort.addActionListener(l_RunListener);
         buttonStop.addActionListener(l_RunListener);
         buttonKill.addActionListener(l_RunListener);
         buttonValidate.addActionListener(l_RunListener);
@@ -928,6 +934,9 @@ public final class MyJPanelQuery extends JPanel {
                         // (as if load result), for xt:mappings()
                         coreseFrame.getLastQueryPanel().basicDisplay(getMappings());
                     } 
+                    else if (ev.getSource() == buttonSort) { 
+                        sort(query);
+                    } 
                     else if (ev.getSource() == buttonRun || ev.getSource() == buttonValidate 
                             || ev.getSource() == buttonShacl || ev.getSource() == buttonShex) {
                         // buttonRun
@@ -965,6 +974,22 @@ public final class MyJPanelQuery extends JPanel {
         };
     }
     
+    /**
+     * User edit order by clause and click button Sort
+     * Execute order by on current Mappings, assuming query is "the same"
+     */
+    void sort(String query) {
+        QueryExec exec = QueryExec.create(MainFrame.getSingleton().getMyCorese());
+        try {
+            Query q = exec.compile(query);
+            exec.complete(q, getMappings());
+            getMappings().orderBy();
+            fillTable(getMappings());
+        } catch (EngineException ex) {
+            logger.error(ex);
+        }
+    }
+
     void setCurrent(Exec e) {
         current = e;
     }

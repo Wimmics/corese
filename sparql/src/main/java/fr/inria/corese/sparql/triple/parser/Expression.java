@@ -1031,6 +1031,7 @@ public class Expression extends TopExp
     /**
      * Eval exp and clean stack if an exception is thrown by exp
      */
+    @Override
     public IDatatype evalWE(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         int varSize = b.getVariableSize();
         int levelSize = b.getLevelSize();

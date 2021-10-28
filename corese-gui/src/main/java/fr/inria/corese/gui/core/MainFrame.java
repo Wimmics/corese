@@ -65,8 +65,10 @@ import fr.inria.corese.core.util.Property.Pair;
 import static fr.inria.corese.core.util.Property.Value.GUI_DEFAULT_QUERY;
 import static fr.inria.corese.core.util.Property.Value.GUI_EXPLAIN_LIST;
 import static fr.inria.corese.core.util.Property.Value.GUI_QUERY_LIST;
+import static fr.inria.corese.core.util.Property.Value.GUI_RULE_LIST;
 import static fr.inria.corese.core.util.Property.Value.GUI_TEMPLATE_LIST;
 import static fr.inria.corese.core.util.Property.Value.GUI_TITLE;
+import static fr.inria.corese.core.util.Property.Value.LOAD_IN_DEFAULT_GRAPH;
 import static fr.inria.corese.core.util.Property.Value.LOAD_QUERY;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.shex.shacl.Shex;
@@ -166,7 +168,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JCheckBox checkBoxRule;
     private JCheckBox checkBoxVerbose;
     private JCheckBox checkBoxLoad;
-    private JCheckBox cbrdfs, cbowlrl, cbowlrllite, cbowlrlext, cbtrace, cbnamed;
+    private JCheckBox cbrdfs, cbowlrl, cbrdfsrl, cbowlrllite, cbowlrlext, cbtrace, cbnamed;
     private JCheckBox cbshexClosed, cbshexExtend, cbshexCard, cbshexshex;
     private JMenuItem validate;
     //style correspondant au graphe
@@ -658,7 +660,7 @@ public class MainFrame extends JFrame implements ActionListener {
         idescribe = defItem("Describe", DEFAULT_DESCRIBE_QUERY);
         iserviceLocal = defItem("Service Local", "servicelocal.rq");
         iserviceCorese = defItem("Service Corese", DEFAULT_SERVICE_CORESE_QUERY);
-        imapcorese = defItem("Map Corese", "mapcorese.rq");
+        imapcorese = defItem("Map", "mapcorese.rq");
         iserviceDBpedia = defItem("Service DBpedia", DEFAULT_SERVICE_DBPEDIA_QUERY);
         ifederate = defItem("Federate", "federate.rq");
         ifunction = defItem("Function", DEFAULT_FUN_QUERY);
@@ -728,10 +730,12 @@ public class MainFrame extends JFrame implements ActionListener {
         success = new JMenuItem("Success");
         quit = new JMenuItem("Quit");
         cbtrace = new JCheckBox("Trace");
-        cbrdfs = new JCheckBox("RDFS");
+        cbrdfs = new JCheckBox("RDFS Subset");
         cbowlrlext = new JCheckBox("OWL RL Extended");
         cbowlrllite = new JCheckBox("OWL RL Lite");
         cbowlrl = new JCheckBox("OWL RL");
+        cbrdfsrl = new JCheckBox("RDFS RL");
+        
         cbnamed = new JCheckBox("Load Named");
         
         cbshexCard   =  new JCheckBox("Cardinality");
@@ -808,22 +812,20 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(saveResult);
 
         queryMenu.add(iselect);
-        queryMenu.add(iselecttuple);
-        queryMenu.add(igraph);
+        //queryMenu.add(iselecttuple);
         queryMenu.add(iconstruct);
         queryMenu.add(iask);
-        queryMenu.add(idescribe);
+        //queryMenu.add(idescribe);
+        queryMenu.add(igraph);
         queryMenu.add(iserviceLocal);
-        queryMenu.add(iserviceCorese);
+        queryMenu.add(iserviceCorese);      
+        queryMenu.add(iinsertdata);
+        queryMenu.add(ideleteinsert);
+        
         queryMenu.add(imapcorese);
         queryMenu.add(ifederate);
         queryMenu.add(ifunction);
-        queryMenu.add(ical);
-
-        queryMenu.add(idelete);
-        queryMenu.add(iinsert);
-        queryMenu.add(iinsertdata);
-        queryMenu.add(ideleteinsert);
+        queryMenu.add(ical);        
         
         userMenu.add(defItem("Count", "count.rq"));
         for (Pair pair : Property.getValueList(GUI_QUERY_LIST)) {
@@ -889,15 +891,21 @@ public class MainFrame extends JFrame implements ActionListener {
         engineMenu.add(runRules);
         engineMenu.add(runRulesOpt);
         engineMenu.add(reset);
-//        engineMenu.add(coreseBox);
-//        myRadio.add(coreseBox);
-        // engineMenu.add(kgramBox);
+        engineMenu.add(cbtrace);
+        engineMenu.add(cbnamed);  
+        
+        // entailment
         engineMenu.add(cbrdfs);
         engineMenu.add(cbowlrl);
-        //engineMenu.add(cbowlrllite);
         engineMenu.add(cbowlrlext);
-        engineMenu.add(cbtrace);
-        engineMenu.add(cbnamed);
+        engineMenu.add(cbrdfsrl);
+        
+        for (Pair pair : Property.getValueList(GUI_RULE_LIST)) {
+            engineMenu.add(defineRuleBox(pair.getKey(), pair.getPath()));
+        }
+        
+        //engineMenu.add(cbowlrllite);
+               
         myRadio.add(kgramBox);
         aboutMenu.add(apropos);
         aboutMenu.add(tuto);
@@ -985,7 +993,9 @@ public class MainFrame extends JFrame implements ActionListener {
         // default is true, may be set by property file
         cbrdfs.setSelected(Graph.RDFS_ENTAILMENT_DEFAULT);
 
-        cbnamed.setSelected(true);
+        // check box is for load file in named graph
+        // Property is for load file in default graph, hence the negation
+        cbnamed.setSelected(! Property.booleanValue(LOAD_IN_DEFAULT_GRAPH));
         cbnamed.setEnabled(true);
         cbnamed.addItemListener(
                 new ItemListener() {
@@ -1045,13 +1055,13 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         });
 
-        cbowlrllite.setEnabled(true);
-        cbowlrllite.setSelected(false);
-        cbowlrllite.addItemListener(
+        cbrdfsrl.setEnabled(true);
+        cbrdfsrl.setSelected(false);
+        cbrdfsrl.addItemListener(
                 new ItemListener() {
             @Override
             public void itemStateChanged(ItemEvent e) {
-                setOWLRL(cbowlrllite.isSelected(), RuleEngine.OWL_RL_LITE);
+                setOWLRL(cbrdfsrl.isSelected(), RuleEngine.RDFS_RL);
             }
         });
         
@@ -1150,6 +1160,20 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
     
+    JCheckBox defineRuleBox(String title, String path) {
+        JCheckBox box = new JCheckBox(title);
+        box.setEnabled(true);
+        box.setSelected(false);
+        box.addItemListener(
+                new ItemListener() {
+            @Override
+            public void itemStateChanged(ItemEvent e) {
+                runRule(box.isSelected(), path);
+            }
+        });
+        return box;
+    }
+    
     JMenuItem defItem(String name, String q) {
         return defItemBasic(QUERY, name, q);
     }
@@ -1185,7 +1209,16 @@ public class MainFrame extends JFrame implements ActionListener {
     private void setOWLRL(boolean selected, int owl) {
         if (selected) {
             Entailment e = new Entailment(myCorese);
-            e.setOWLRL(selected, owl);
+            e.setOWLRL(owl);
+            e.setTrace(trace);
+            e.process();
+        }
+    }
+    
+    private void runRule(boolean selected, String path) {
+        if (selected) {
+            Entailment e = new Entailment(myCorese);
+            e.setPath(path);
             e.setTrace(trace);
             e.process();
         }
@@ -1835,6 +1868,7 @@ public class MainFrame extends JFrame implements ActionListener {
             case LOAD:
                 cbowlrllite.setSelected(false);
                 cbowlrl.setSelected(false);
+                //@todo: user rule check box
                 break;
 
         }

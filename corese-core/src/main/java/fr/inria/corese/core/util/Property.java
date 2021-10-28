@@ -11,7 +11,10 @@ import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.Transformer;
+import static fr.inria.corese.core.util.Property.Value.IMPORT;
 import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
+import static fr.inria.corese.core.util.Property.Value.PREFIX;
+import static fr.inria.corese.core.util.Property.Value.VARIABLE;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
 import fr.inria.corese.kgram.core.Mappings;
@@ -48,12 +51,19 @@ import org.slf4j.LoggerFactory;
  * corese-gui.jar    -init property-file-path
  * corese-server.jar -init property-file-path
  * A property file example is in core resources/data/corese/property.txt 
+ * Define variable:
+ * VARIABLE = $home=/user/home/
+ * LOAD_DATASET = $home/file.ttl
+ * 
+ * Olivier Corby
  */
 public class Property {
 
     private static Logger logger = LoggerFactory.getLogger(Property.class);
     final static String VAR_CHAR = "$";
     final static String LOCAL = "./";
+    final static String SEP = ";";
+    final static String EQ = "=";
     private static Property singleton;
     private static final String STD = "std";
     public static final String RDF_XML = "rdf+xml";
@@ -66,15 +76,19 @@ public class Property {
     private HashMap<Value, String> stringProperty;
     private HashMap<Value, Integer> integerProperty;
     private HashMap<String, String> variableMap;
+    private HashMap<String, String> imports;
+
     // Java Properties manage property file (at user option)
     private Properties properties;
     
     private String path, parent;
+    private boolean debug = false;
 
 
     public enum Value {
         // VARIABLE =  home=/home/name/dir
         VARIABLE,
+        IMPORT,
         
         // boolan value
         DISPLAY_URI_AS_PREFIX,
@@ -132,6 +146,7 @@ public class Property {
         GUI_QUERY_LIST,
         GUI_TEMPLATE_LIST,
         GUI_EXPLAIN_LIST,
+        GUI_RULE_LIST,
         
         // application/rdf+xml
         LOAD_FORMAT,
@@ -168,6 +183,7 @@ public class Property {
         integerProperty = new HashMap<>();
         properties = new Properties();
         variableMap = new HashMap<>();
+        imports = new HashMap<>();
     }
 
     public static Property getSingleton() {
@@ -189,7 +205,7 @@ public class Property {
         getSingleton().basicSet(value, b);
     }
     
-    public static void set(Value value, String str) {
+    public static void set(Value value, String str)  {
         getSingleton().basicSet(value, str);
     }
     
@@ -230,13 +246,45 @@ public class Property {
         setPath(path);
         File file = new File(path);
         setParent(file .getParent());
+        getImports().put(path, path);
         getProperties().load(new FileReader(path));
+        // start with variable because import may use variable, 
+        // as well as other properties 
+        defineVariable();
+        imports();
         init();
     }
 
-
+    /**
+     * @todo: ./ in imported file is the path of main property file
+     * @todo: there is no recursive import
+     */
+    private void imports() throws IOException {
+        if (getProperties().containsKey(IMPORT.toString())) {
+            
+            for (String name : getPropertiesValue(IMPORT).split(SEP)) {
+                String path = expand(name);
+                
+                if (getImports().containsKey(path)) {
+                    logger.info("Skip import: " + path);
+                }
+                else {
+                    getImports().put(path, path);
+                    logger.info("Import: " + path);
+                    getProperties().load(new FileReader(path));
+                    // @note: imported variable overload Properties and Property variable property
+                    // but complete variable hashmap properly
+                    defineVariable();
+                }
+            }
+        }
+    }
 
     void init() {
+        defineProperty();
+    }
+    
+    void defineProperty() {
         for (String name : getProperties().stringPropertyNames()) {
             String value = getProperties().getProperty(name);
             try {
@@ -246,8 +294,20 @@ public class Property {
             }
         }
     }
+    
+    /**
+     * Do it first
+     * VARIABLE = $gui=/a/path
+     */
+    void defineVariable() {
+        if (getProperties().containsKey(VARIABLE.toString())) {
+            basicSet(VARIABLE, getPropertiesValue(VARIABLE));
+            // variable definitions in a hashmap
+            defineVariableMap();
+        }
+    }
 
-    void define(String name, String value) {
+    void define(String name, String value) throws IOException {
         Value pname = Value.valueOf(name);
         if (value.equals("true") | value.equals("false")) {
             Boolean b = Boolean.valueOf(value);
@@ -263,7 +323,9 @@ public class Property {
     }
 
     void basicSet(Value value, boolean b) {
-        logger.info(value + " = " + b);
+        if (isDebug()) {
+            logger.info(value + " = " + b);
+        }
         getBooleanProperty().put(value, b);
 
         switch (value) {
@@ -378,14 +440,12 @@ public class Property {
         }
     }
 
-    void basicSet(Value value, String str) {
-        logger.info(value + " = " + str);
+    void basicSet(Value value, String str)  {
+        if (isDebug()) {
+            logger.info(value + " = " + str);
+        }
         getStringProperty().put(value, str);
         switch (value) {
-            
-            case VARIABLE:
-                defineVariable();
-                break;
             
             case LOAD_FORMAT:
                 Load.LOAD_FORMAT = str;
@@ -401,7 +461,7 @@ public class Property {
                 
                 
             case LDSCRIPT_VARIABLE:
-                variable(str);
+                variable();
                 break;
                 
             case BLANK_NODE:
@@ -413,19 +473,19 @@ public class Property {
                 break;
                 
             case SOLVER_VISITOR:
-                QueryProcess.setVisitorName(str);
+                QueryProcess.setVisitorName(expand(str));
                 break;
 
             case RULE_VISITOR:
-                QuerySolverVisitorRule.setVisitorName(str);
+                QuerySolverVisitorRule.setVisitorName(expand(str));
                 break;
 
             case TRANSFORMER_VISITOR:
-                QuerySolverVisitorTransformer.setVisitorName(str);
+                QuerySolverVisitorTransformer.setVisitorName(expand(str));
                 break;
 
             case SERVER_VISITOR:
-                QueryProcess.setServerVisitorName(str);
+                QueryProcess.setServerVisitorName(expand(str));
                 break;
 
             case ACCESS_LEVEL:
@@ -433,7 +493,7 @@ public class Property {
                 break;
 
             case PREFIX:
-                prefix(str);
+                prefix();
                 break;
                 
             case LOAD_FUNCTION:           
@@ -444,7 +504,9 @@ public class Property {
     }
     
     void basicSet(Value value, int n) {
-        logger.info(value + " = " + n);
+        if (isDebug()) {
+            logger.info(value + " = " + n);
+        }
         getIntegerProperty().put(value, n);
         
         switch (value) {
@@ -461,9 +523,17 @@ public class Property {
         }
     }
     
-    private void defineVariable() {
-        for (Pair pair : getValueList(Value.VARIABLE)) {
-            getVariableMap().put(varName(pair.getKey()), pair.getValue());
+    // variable definition may use preceding variables
+    private void defineVariableMap() {
+        for (Pair pair : getValueListBasic(Value.VARIABLE)) {
+            String var = varName(pair.getKey());
+            
+            if (getVariableMap().containsKey(var)) {
+                logger.info("Overload variable: " + var);
+            }
+            logger.info(String.format("variable: %s=%s", var, expand(pair.getValue())));
+
+            getVariableMap().put(var, expand(pair.getValue()));
         }
     }
     
@@ -503,7 +573,7 @@ public class Property {
     
     void loadFunction(String str) {
         QueryProcess exec = QueryProcess.create();
-        for (String name : str.split(";")) {
+        for (String name : str.split(SEP)) {
             try {
                 exec.imports(str);
             } catch (EngineException ex) {
@@ -550,7 +620,7 @@ public class Property {
     }
     
     void loadRule(Graph g, String path) {
-        for (String name : path.split(";")) {
+        for (String name : path.split(SEP)) {
             RuleEngine re = RuleEngine.create(g);
             try {
                 String file = expand(name);
@@ -565,10 +635,10 @@ public class Property {
 
     void loadList(Graph g, String path) {
         Load ld = Load.create(g);
-        for (String name : path.split(";")) {
+        for (String name : path.split(SEP)) {
             try {
                 String file = expand(name);
-                System.out.println("Load: " + file);
+                logger.info("Load: " + file);
                 ld.parse(file.strip());
             } catch (LoadException ex) {
                 logger.error(ex.toString());
@@ -580,20 +650,16 @@ public class Property {
      * LDScript static variable
      * LDSCRIPT_VARIABLE = var=val;var=val
      */
-    void variable(String str) {
-        String[] list = str.split(";");
-        for (String elem : list) {
-            String[] def = elem.split("=");
-            if (def.length >= 2) {
-                String var = def[0].strip();
-                String val = def[1].strip();
-                System.out.println("variable: " + var + "=" + val);
-                IDatatype dt = DatatypeMap.newValue(val);
-                Binding.setStaticVariable(var, dt);
-            }
+    void variable() {
+        for (Pair pair : getValueListBasic(Value.LDSCRIPT_VARIABLE)) {
+            String var = pair.getKey().strip();
+            String val = pair.getValue().strip();
+            logger.info(String.format("ldscript variable: %s=%s", var, val));
+            IDatatype dt = DatatypeMap.newValue(val);
+            Binding.setStaticVariable(var, dt);
         }
     }
-    
+        
     public static List<Pair> getValueList(Value val) {
         return getSingleton().getValueListBasic(val);
     }
@@ -605,8 +671,8 @@ public class Property {
         if (str == null) {
             return list;
         }
-        for (String elem : str.split(";")) {
-            String[] def = elem.split("=");
+        for (String elem : str.split(SEP)) {
+            String[] def = elem.split(EQ);
             if (def.length>=2) {
                 list.add(new Pair(def[0], def[1]));
             }
@@ -647,18 +713,13 @@ public class Property {
     }
     
 
-    void prefix(String str) {
-        String[] list = str.split(";");
-        for (String elem : list) {
-            String[] def = elem.split("=");
-            if (def.length >= 2) {
-                System.out.println("prefix " + def[0].strip() + ": <" + def[1].strip() + ">");
-                NSManager.defineDefaultPrefix(def[0].strip(), def[1].strip());
-            }
+    void prefix() {
+        for (Pair pair : getValueListBasic(PREFIX)) {
+            logger.info(String.format("prefix %s: <%s>", pair.getKey().strip(),  pair.getValue().strip()));
+            NSManager.defineDefaultPrefix(pair.getKey().strip(), pair.getValue().strip());
         }
     }
-
-
+   
 
     void accessLevel(String str) {
         try {
@@ -705,6 +766,13 @@ public class Property {
         return getSingleton().getIntegerProperty().get(val);
     }
     
+    String getPropertiesValue(Value value) {
+        if (getProperties().containsKey(value.toString())) {
+            return (String) getProperties().get(value.toString());
+        }
+        return null;
+    }
+    
     public static String stringValue(Value val) {
         return getSingleton().getStringProperty().get(val);
     }
@@ -718,7 +786,7 @@ public class Property {
         if (val == null) {
             return new String[0];
         }
-        return str.split(";");
+        return str.split(SEP);
     }
 
     public HashMap<String, String> getVariableMap() {
@@ -743,6 +811,22 @@ public class Property {
 
     public void setParent(String parent) {
         this.parent = parent;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
+    }
+
+    public HashMap<String, String> getImports() {
+        return imports;
+    }
+
+    public void setImports(HashMap<String, String> imports) {
+        this.imports = imports;
     }
 
 }

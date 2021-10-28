@@ -306,10 +306,10 @@ public class Profile {
      */
     void init(String path, String local) {
         try {
-            LogManager.getLogger(Profile.class.getName()).warn("Load: " + path);
+            logger.info("Load: " + path);
             GraphStore g = load(path, Parameter.PROFILE_EVENT);
             if (local != null){
-            LogManager.getLogger(Profile.class.getName()).warn("Load: " + local);
+            logger.info("Load: " + local);
                 load(g, local, Parameter.PROFILE_EVENT);
             }
             setProfile(g);
@@ -318,7 +318,7 @@ public class Profile {
         } catch (IOException ex) {
                 logger.error(ex.getMessage());
         } catch (LoadException ex) {
-                logger.error(ex.getMessage());
+                logger.error(ex.getMessage() + " " + ex.getPath());
         } catch (EngineException ex) {
                 logger.error(ex.getMessage());
         }
@@ -428,7 +428,11 @@ public class Profile {
     void initParameter(Graph g, String q) throws IOException, EngineException {        
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
-
+//        if (true) {
+//            System.out.println("profile: " + q);
+//            System.out.println(map);
+//            System.out.println();
+//        }
         for (Mapping m : map) {
             IDatatype dt   = getValue(m, "?url");
             IDatatype list = getValue(m, "?list");

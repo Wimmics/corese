@@ -486,7 +486,7 @@ public class Eval implements ExpType, Plugin {
     }
     
     Node eval(Filter f, Environment env, Producer p) throws SparqlException {
-        return evaluator.eval(f, memory, producer);
+        return evaluator.eval(f, env, p);
     }    
 
     /**

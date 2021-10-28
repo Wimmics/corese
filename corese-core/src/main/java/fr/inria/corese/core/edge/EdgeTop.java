@@ -162,6 +162,19 @@ public abstract class EdgeTop extends GraphObject implements Edge {
 
     @Override
     public String toString() {
+        return toRDF4JString();
+    }
+    
+    public String toRDFString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(getGraphValue()).append(" ");
+        sb.append(getSubjectValue()).append(" ");
+        sb.append(getPredicateValue()).append(" ");
+        sb.append(getObjectValue());                
+        return sb.toString();
+    }
+    
+    public String toRDF4JString() {
         StringBuilder sb = new StringBuilder(256);
 
         sb.append("(" + getSubject() + ", " + getPredicate() + ", " + getObject()

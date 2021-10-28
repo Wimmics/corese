@@ -190,23 +190,13 @@ public class GraphEngine {
         plugin = p;
     }
 
-//	public void setBuild(Build b){
-//		build = b;
-//	}
     public void load(String path) throws EngineException, LoadException {
-//		if (path.endsWith(BRUL)){
-//			bengine.load(path);
-//		}
-//		else 
-//		{
         Load ld = loader();
         ld.parse(path);
         // in case of load rule
         if (ld.getRuleEngine() != null) {
-            rengine = ld.getRuleEngine();
+            setRuleEngine(ld.getRuleEngine());
         }
-//		}
-
     }
 
     public void loadDirProtect(String path) {
@@ -233,31 +223,38 @@ public class GraphEngine {
     }
 
     public boolean runRuleEngine(boolean opt, boolean trace) throws EngineException {
-        if (rengine == null) {
+        if (getRuleEngine() == null) {
             logger.error("No rulebase available yet");
             return false;
         }
-        rengine.setDebug(isDebug);
+        getRuleEngine().setDebug(isDebug);
         if (opt) {
-            rengine.setSpeedUp(opt);
-            rengine.setTrace(trace);
+            getRuleEngine().setSpeedUp(opt);
+            getRuleEngine().setTrace(trace);
         }
-        graph.process(rengine);
+        graph.process(getRuleEngine());
+        return true;
+    }
+    
+    public boolean runRule(String path) throws EngineException, LoadException {
+        logger.info("Load rule: " + path);
+        load(path);
+        if (getRuleEngine() != null) {
+            return getRuleEngine().process();
+        }
         return true;
     }
 
     // TODO: clean timestamp, clean graph index
-    public void setOWLRL(boolean run, int owl, boolean trace) throws EngineException {
-        if (run) {
-            setOwlEngine(RuleEngine.create(graph));
-            getOwlEngine().setProfile(owl);
-            getOwlEngine().setTrace(trace);
-            Date d1 = new Date();
-            // disconnect RDFS entailment during OWL processing
-            getOwlEngine().processWithoutWorkflow();
-            Date d2 = new Date();
-            System.out.println("Time: " + (d2.getTime() - d1.getTime()) / (1000.0));
-        }
+    public void setOWLRL(int owl, boolean trace) throws EngineException {
+        setOwlEngine(RuleEngine.create(graph));
+        getOwlEngine().setProfile(owl);
+        getOwlEngine().setTrace(trace);
+        Date d1 = new Date();
+        // disconnect RDFS entailment during OWL processing
+        getOwlEngine().processWithoutWorkflow();
+        Date d2 = new Date();
+        System.out.println("Time: " + (d2.getTime() - d1.getTime()) / (1000.0));
     }
 
     public void runQueryEngine() {
@@ -454,6 +451,13 @@ public class GraphEngine {
     public void setReadFile(boolean b) {
         Access.setReadFile(b);
     }
+    
+    public RuleEngine getRuleEngine(String path) {
+        if (path == null) {
+            return getOwlEngine();
+        }
+        return getRuleEngine();
+    }
 
     public RuleEngine getOwlEngine() {
         return owlEngine;
@@ -461,6 +465,14 @@ public class GraphEngine {
 
     public void setOwlEngine(RuleEngine owlEngine) {
         this.owlEngine = owlEngine;
+    }
+
+    public RuleEngine getRuleEngine() {
+        return rengine;
+    }
+
+    public void setRuleEngine(RuleEngine rengine) {
+        this.rengine = rengine;
     }
 
 }

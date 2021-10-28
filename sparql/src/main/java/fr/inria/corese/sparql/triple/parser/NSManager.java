@@ -283,11 +283,11 @@ public class NSManager extends ASTObject {
 
         def.put(SPIN, SPIN_PREF);
         def.put(FOAF, FOAF_PREF);
-        def.put("http://dbpedia.org/ontology/", "dbo");
+        //def.put("http://dbpedia.org/ontology/", "dbo");
         def.put("http://www.w3.org/2004/02/skos/core#", "skos");
         def.put(DCTERM, "dc");
-        def.put(DBPEDIAFR, "db");
-        def.put(DBPEDIA, "dbe");
+        //def.put(DBPEDIAFR, "db");
+        //def.put(DBPEDIA, "dbe");
 
         def.put(KGRAM, KPREF);
         def.put(KGEXT, KEPREF);

@@ -38,6 +38,7 @@ import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL;
 import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL_EXT;
 import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL_LITE;
 import static fr.inria.corese.core.rule.RuleEngine.Profile.STDRL;
+import static fr.inria.corese.core.rule.RuleEngine.Profile.RDFS;
 import fr.inria.corese.core.util.Property;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import java.io.IOException;
@@ -81,6 +82,7 @@ public class RuleEngine implements Engine, Graphable {
     public static final int OWL_RL = 1;
     public static final int OWL_RL_LITE = 2;
     public static final int OWL_RL_EXT = 3;
+    public static final int RDFS_RL = 4;
     public static boolean OWL_CLEAN = true;
    
     private static final String UNKNOWN = "unknown";
@@ -132,7 +134,8 @@ public class RuleEngine implements Engine, Graphable {
         STDRL,
         OWLRL      ("/rule/owlrl.rul"),
         OWLRL_LITE ("/rule/owlrllite.rul"),
-        OWLRL_EXT  ("/rule/owlrlext.rul")       ;
+        OWLRL_EXT  ("/rule/owlrlext.rul") ,
+        RDFS       ("/rule/rdfs.rul")       ;
         
         String path;
         
@@ -223,6 +226,9 @@ public class RuleEngine implements Engine, Graphable {
                 } else {
                     load(p.getPath());
                 }
+                break;
+            case RDFS: load(p.getPath());
+                break;
         }
     }
     
@@ -235,7 +241,8 @@ public class RuleEngine implements Engine, Graphable {
         switch (n) {
             case OWL_RL:        setProfile(OWLRL)  ; break;              
             case OWL_RL_LITE:   setProfile(OWLRL_LITE)  ; break;
-            case OWL_RL_EXT:    setProfile(OWLRL_EXT)  ; break;                
+            case OWL_RL_EXT:    setProfile(OWLRL_EXT)  ; break;   
+            case RDFS_RL:       setProfile(RDFS)  ; break;    
         }
         }
         catch (LoadException e) {

@@ -394,7 +394,9 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
     ResultFormat getFormat(Mappings map, Dataset ds, String format, int type, List<String> transformList) {
         // predefined parameter associated to URL/mode in urlparameter.ttl
         transformList = selectTransformation(ds.getContext(), getValue(ds.getContext(), TRANSFORM, transformList));
-        
+        if (map.getQuery().isDebug()) {
+            logger.info("transform: " + transformList);
+        }
         if (transformList == null || transformList.isEmpty()) {
             return getFormatSimple(map, ds, format, type);
         } else {
@@ -574,6 +576,10 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
      * st:all -> st:xml st:json
      */
     List<String> prepare(List<String> transformList) {
+        if (true) {
+            System.out.println("transform list: : " + transformList);
+            System.out.println("server context: " + getContext());
+        }
         List<String> list = new ArrayList<>();
         
         for (String name : transformList) {

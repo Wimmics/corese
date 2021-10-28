@@ -9,9 +9,6 @@
 	Web site: http://wimmics.inria.fr/corese
 	Contact: olivier.corby@inria.fr
 	-->
-  <prerequisites>
-    <maven>3.5.0</maven>
-  </prerequisites>
 
   <!-- metadata: human readable informations for central -->
   <!-- end of central metada -->

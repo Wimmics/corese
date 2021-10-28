@@ -1,0 +1,10 @@
+prefix h: <http://www.inria.fr/2015/humans#>
+select * 
+where {
+  service <http://corese.inria.fr/sparql?mode=link&transform=d3:chart> {
+     select ?n ?a where {
+       ?x h:name ?n ; h:age ?a 
+     }  order by ?a
+     limit 10
+  }
+}

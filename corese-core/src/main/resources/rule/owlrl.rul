@@ -1150,6 +1150,7 @@ CONSTRUCT {
 }
 WHERE {
 	graph ?g {?s ?p ?o}
+    filter (?g != kg:constraint)
     # do not modify the ontology:
     filter (! strstarts(?p, owl:))
     filter (! strstarts(?p, rdfs:))

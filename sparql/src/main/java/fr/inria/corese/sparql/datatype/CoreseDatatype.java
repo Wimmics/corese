@@ -138,6 +138,11 @@ public class CoreseDatatype
 
     @Override
     public String toSparql(boolean prefix, boolean xsd) {
+        return toSparql(prefix, xsd, nsm());
+    }
+    
+    @Override
+    public String toSparql(boolean prefix, boolean xsd, NSManager nsm) {
         String value = getLabel();
         if (isPointer() && getPointerObject() != null){
             value = getPointerObject().getDatatypeLabel();
@@ -158,7 +163,7 @@ public class CoreseDatatype
             if (prefix && (datatype.startsWith(RDF.XSD))
                     || datatype.startsWith(RDF.RDF)
                     || datatype.startsWith(NSManager.DT)) {
-                datatype = nsm().toPrefix(datatype);
+                datatype = nsm.toPrefix(datatype);
             } else {
                 datatype = String.format("<%s>", datatype);
             }
@@ -170,7 +175,7 @@ public class CoreseDatatype
             value = protect(value);
         } else if (isURI()) {
             if (DISPLAY_AS_PREFIX) {
-                String str = nsm().toPrefix(value, true);
+                String str = nsm.toPrefix(value, true);
                 if (str == value) {
                     value = String.format("<%s>", value);
                 } else {

@@ -9,6 +9,7 @@ import fr.inria.corese.kgram.api.core.Loopable;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.sparql.storage.api.IStorage;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 import java.math.BigDecimal;
 import java.util.List;
@@ -228,6 +229,9 @@ public interface IDatatype
     String toSparql(boolean prefix);
 
     String toSparql(boolean prefix, boolean xsd);
+    
+    String toSparql(boolean prefix, boolean xsd, NSManager nsm);
+
     
     default String trace() {
         return String.format("trace: %s code: %s datatype: %s label: %s", 

@@ -5,6 +5,7 @@ import javax.ws.rs.FormParam;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -102,6 +103,32 @@ public class GraphProtocol  {
        
         logger.info("getJSON");
         return get(request, name, graph, getQuery(name), access, ResultFormat.JSON_LD_FORMAT);
+    }
+    
+    @PUT
+    public Response put(@javax.ws.rs.core.Context HttpServletRequest request,
+            @PathParam("name")    String name, 
+            @QueryParam("graph")  String graph, 
+            //@QueryParam("query")  
+                    String query, 
+            @QueryParam("access") String access, 
+            @QueryParam("mode")   List<String> mode) {
+       
+        logger.info("put");
+        return post(request, name, graph, query, access, ResultFormat.XML_FORMAT);
+    }
+    
+    @PUT
+    @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
+    public Response put2(@javax.ws.rs.core.Context HttpServletRequest request,
+            @PathParam("name")   String name, 
+            @FormParam("graph")  String graph, 
+            @FormParam("query")  String query, 
+            @FormParam("access") String access, 
+            @FormParam("mode")   List<String> mode) {
+       
+        logger.info(String.format("put2: graph %s", graph));
+        return post(request, name, graph, query, access, ResultFormat.XML_FORMAT);
     }
     
     @POST

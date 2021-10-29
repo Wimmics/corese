@@ -125,9 +125,5 @@ public class CoreseBlankNode extends CoreseResource {
 	public BNode getRdf4jValue() {
 		return CoreseDatatypeToRdf4jValue.convertBNode(this);
 	}
-
-	@Override
-	public String stringValue() {
-		return super.stringValue().replace("_:", "");
-	}
+	
 }

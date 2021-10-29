@@ -135,7 +135,7 @@ public class Rdf4jValueToCoreseDatatype {
      * @return equivalent Corese blank node
      */
     private static IDatatype convertBlank(BNode rdf4j_bnode) {
-        String value = rdf4j_bnode.getID();
+        String value = "_:" + rdf4j_bnode.getID();
         return DatatypeMap.createBlank(value);
     }
 

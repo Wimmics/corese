@@ -46,7 +46,7 @@ public class TestCoreseDatatypeToRdf4jValue {
 
     @Test
     public void convertBNode() {
-        String string_id = "BN_42";
+        String string_id = "_:BN_42";
 
         // Build Corese blank node
         IDatatype corese_blank = DatatypeMap.createBlank(string_id);
@@ -58,7 +58,7 @@ public class TestCoreseDatatypeToRdf4jValue {
         assertEquals(true, rdf4j_blank_value.isBNode());
         BNode rdf4j_blank = (BNode) rdf4j_blank_value;
         assertEquals(string_id, corese_blank.stringValue());
-        assertEquals(string_id, rdf4j_blank.stringValue());
+        assertEquals(string_id, rdf4j_blank.toString());
     }
 
     @Test

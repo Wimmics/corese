@@ -148,6 +148,7 @@ public class CoreseDatatypeToRdf4jValue {
      */
     public static BNode convertBNode(IDatatype corese_blank) {
         String id = corese_blank.stringValue();
+        id = id.replace("_:", "");
         return rdf4j_factory.createBNode(id);
     }
 

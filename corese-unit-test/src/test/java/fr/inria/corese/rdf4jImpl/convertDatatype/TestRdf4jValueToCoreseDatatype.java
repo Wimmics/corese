@@ -54,6 +54,7 @@ public class TestRdf4jValueToCoreseDatatype {
     @Test
     public void convertBNode() {
         String string_id = "BN_42";
+        String expected = "_:" + string_id;
 
         // Build RDF4J blank node
         Value rdf4j_blank = rdf4j_factory.createBNode(string_id);
@@ -64,7 +65,8 @@ public class TestRdf4jValueToCoreseDatatype {
         // Checks
         assertEquals(true, corese_blank_value.isBlank());
         CoreseBlankNode corese_blank = (CoreseBlankNode) corese_blank_value;
-        assertEquals(string_id, corese_blank.stringValue());
+        assertEquals(expected, corese_blank.toString());
+        assertEquals(expected, rdf4j_blank.toString());
     }
 
     @Test

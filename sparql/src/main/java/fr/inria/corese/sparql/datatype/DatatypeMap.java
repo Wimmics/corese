@@ -938,7 +938,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
 
     public static IDatatype createBlank(String label) {
-        return new CoreseBlankNode(BLANKSEED + label);
+        return new CoreseBlankNode(label);
     }
 
     public static IDatatype createBlank() {

@@ -2,7 +2,6 @@ package fr.inria.corese.core.print;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
@@ -227,6 +226,7 @@ public class TripleFormat extends RDFFormat {
         sdisplay(str);
     }
 
+    @Override
     void edge(Edge edge) {
 
         String pred = nsm.toPrefix(edge.getEdgeNode().getLabel());
@@ -239,7 +239,7 @@ public class TripleFormat extends RDFFormat {
         IDatatype dt1 = getValue(edge.getNode(1));
 
         if (dt1.isLiteral()) {
-            obj = dt1.toSparql();
+            obj = dt1.toSparql(true, false, nsm);
             sdisplay(obj);
         } else if (dt1.isBlank()) {
             obj = dt1.getLabel();

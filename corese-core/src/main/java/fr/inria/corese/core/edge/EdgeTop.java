@@ -23,6 +23,7 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
 public abstract class EdgeTop extends GraphObject implements Edge {
     private byte level = AccessRight.DEFAULT;
     private static final long serialVersionUID = 2087591563645988076L;
+    public static boolean DISPLAY_EDGE_AS_RDF4J = false;
 
     public Edge copy() {
         return create(getGraph(), getNode(0), getEdgeNode(), getNode(1));
@@ -162,16 +163,14 @@ public abstract class EdgeTop extends GraphObject implements Edge {
 
     @Override
     public String toString() {
-        return toRDF4JString();
+        if (DISPLAY_EDGE_AS_RDF4J) {
+            return toRDF4JString();
+        }
+        return toRDFString();
     }
     
     public String toRDFString() {
-        StringBuilder sb = new StringBuilder();
-        sb.append(getGraphValue()).append(" ");
-        sb.append(getSubjectValue()).append(" ");
-        sb.append(getPredicateValue()).append(" ");
-        sb.append(getObjectValue());                
-        return sb.toString();
+        return String.format("%s %s %s %s", getGraphValue(), getSubjectValue(), getPredicateValue(), getObjectValue());                
     }
     
     public String toRDF4JString() {

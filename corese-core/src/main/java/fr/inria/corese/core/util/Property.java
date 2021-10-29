@@ -4,6 +4,7 @@ import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
+import fr.inria.corese.core.edge.EdgeTop;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
@@ -92,6 +93,7 @@ public class Property {
         
         // boolan value
         DISPLAY_URI_AS_PREFIX,
+        DISPLAY_EDGE_AS_RDF4J,
         // Graph node implemented as IDatatype instead of NodeImpl
         GRAPH_NODE_AS_DATATYPE,
         BLANK_NODE,
@@ -336,6 +338,10 @@ public class Property {
             
             case LOAD_WITH_PARAMETER:
                 Service.LOAD_WITH_PARAMETER = b;
+                break;
+                
+            case DISPLAY_EDGE_AS_RDF4J:
+                EdgeTop.DISPLAY_EDGE_AS_RDF4J = b;
                 break;
             
             case DISPLAY_URI_AS_PREFIX:

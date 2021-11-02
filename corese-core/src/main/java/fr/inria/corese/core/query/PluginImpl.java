@@ -37,7 +37,6 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.EventManager;
@@ -52,6 +51,7 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.transform.TemplateVisitor;
@@ -75,7 +75,10 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import java.io.IOException;
 import javax.ws.rs.core.Response;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * Plugin for filter evaluator Compute semantic similarity of classes and
@@ -1161,6 +1164,28 @@ public class PluginImpl
 
     IDatatype read(IDatatype dt, Environment env, Producer p) {
         return read(dt);
+    }
+    
+    public Mappings parseSPARQLResult(String path) throws EngineException {
+        SPARQLResult parser = SPARQLResult.create();
+        try {
+            return  parser.parse(path);
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            throw new EngineException(ex);
+        }
+    }
+    
+    public IDatatype readSPARQLResult(IDatatype path) {
+        Mappings map = null;
+        try {
+            map = parseSPARQLResult(path.getLabel());
+        } catch (EngineException ex) {
+            logger.error(ex.getMessage() + " " + path);
+        }
+        if (map == null) {
+            return null;
+        }
+        return DatatypeMap.createObject(map);
     }
 
     @Override

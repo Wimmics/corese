@@ -14,12 +14,17 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.producer.DataProducer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import java.io.IOException;
+import javax.xml.parsers.ParserConfigurationException;
+import org.xml.sax.SAXException;
 
 /**
  * Implements unnest() statement values ?var { unnest(exp) } bind (unnest(?exp)
@@ -52,6 +57,9 @@ public class Mapper {
         return new Mappings();
     }
 
+    /**
+     * values (nodes) { unnest(dt) }
+     */
     Mappings map(List<Node> nodes, IDatatype dt) {
         if (dt.isList()) {
             return map(nodes, dt.getValues());
@@ -61,6 +69,8 @@ public class Mapper {
             return map(nodes, dt.getPointerObject());
         } else if (dt.getObject() != null) {
             return map(nodes, dt.getObject());
+        } else if (dt.isURI()) {
+            return mapURI(nodes, dt);
         } else {
             return mapDT(nodes, dt);
         }
@@ -278,6 +288,18 @@ public class Mapper {
      */
     Mappings map(List<Node> list, Mappings map) {
         return map;
+    }
+    
+    /**
+     * Try dt = URL of SPARQL Query Results XML Format
+     */
+    Mappings mapURI(List<Node> varList, IDatatype dt) {
+        SPARQLResult parser = SPARQLResult.create();
+        try {
+            return parser.parse(dt.getLabel());
+        } catch (ParserConfigurationException | SAXException | IOException ex) {
+            return mapDT(varList, dt);
+        }
     }
 
     Mappings mapDT(List<Node> varList, IDatatype dt) {

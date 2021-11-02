@@ -30,6 +30,7 @@ import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.path.PathFinder;
 import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.kgram.tool.ResultsImpl;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 
 /**
  * KGRAM Knowledge Graph Abstract Machine Compute graph homomorphism and
@@ -835,6 +836,43 @@ public class Eval implements ExpType, Plugin {
 
     private void template() throws SparqlException {
         results.template(evaluator, memory, producer);
+    }
+    
+    /**
+     * Process map with new query modifier
+     * Use case: user edit query modifier and click Modifier button in GUI
+     * select distinct select exp 
+     * select aggregate group by having
+     * order by limit offset
+     */
+    public void modifier(Query q, Mappings map) throws SparqlException {
+        if (q.isDebug()) {
+            System.out.println("modifier");
+        }
+        q.complete(getProducer());       
+        Memory env = new Memory(getMatcher(), getEvaluator());
+        env.init(q).setBinding(getMemory().getBind()).setResults(map);        
+        
+        if (q.isDebug()) {
+            System.out.println("prepare modifier");
+        }
+        map.modify(q);
+        
+        if (q.isDebug()) {
+            System.out.println("select expression");
+        }
+        map.modifySelect(this, q);  
+        
+        if (q.isDebug()) {
+            System.out.println("aggregate");
+        }
+        map.modifyAggregate(q, getEvaluator(), env, getProducer()); 
+        
+        if (q.isDebug()) {
+            System.out.println("order by");
+        }
+        map.modifyOrderBy(this, q);
+        map.modifyLimitOffset();
     }
 
     /**

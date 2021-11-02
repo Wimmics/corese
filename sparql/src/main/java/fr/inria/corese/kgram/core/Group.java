@@ -22,8 +22,7 @@ public class Group implements Comparator<Mappings> {
 
     TreeMapping table;
 
-    //List<Exp> criteria;
-    List<Node> nodes;
+    private List<Node> nodes;
 
     Node fake;
 
@@ -149,7 +148,7 @@ public class Group implements Comparator<Mappings> {
     }
 
     public static Group createFromExp(List<Exp> list) {
-        List<Node> nodes = new ArrayList<Node>();
+        List<Node> nodes = new ArrayList<>();
         for (Exp exp : list) {
             nodes.add(exp.getNode());
         }
@@ -157,7 +156,7 @@ public class Group implements Comparator<Mappings> {
     }
    
     Group(List<Node> list) {
-        nodes = list;
+        setNodeList(list);
         table = new TreeMapping(list);
     }
 
@@ -191,9 +190,7 @@ public class Group implements Comparator<Mappings> {
     Node getGroupBy(Mapping map, Node qNode, int n) {
         if (isDistinct) {
             return map.getDistinctNode(n);
-        } //		else if (isExtend){
-        //			return map.getGroupNode(n);
-        //		}
+        } 
         else {
             return map.getGroupBy(qNode, n);
         }
@@ -206,7 +203,7 @@ public class Group implements Comparator<Mappings> {
         if (isExtend) {
             // min(?l, groupBy(?x, ?y))
             // store value of ?x ?y in an array to speed up
-            map.setGroup(nodes);
+            map.setGroup(getNodeList());
         }
 
         Mappings lm = table.get(map);
@@ -223,13 +220,12 @@ public class Group implements Comparator<Mappings> {
     // select distinct *
     // select (avg(distinct ?x) as ?a
     public boolean isDistinct(Mapping map) {
-
-        map.setDistinct(nodes);
+        map.computeDistinct(getNodeList());
 
         if (table.containsKey(map)) {
             return false;
         }
-        table.put(map, null); //new Mappings(map));
+        table.put(map, null); 
         return true;
     }
 
@@ -239,6 +235,10 @@ public class Group implements Comparator<Mappings> {
     
     public Map<Mapping,Mappings> getTable() {
         return table;
+    }
+
+    public void setNodeList(List<Node> nodes) {
+        this.nodes = nodes;
     }
 
 

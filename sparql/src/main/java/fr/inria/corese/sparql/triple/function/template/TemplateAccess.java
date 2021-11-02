@@ -31,6 +31,11 @@ public class TemplateAccess extends TemplateFunction {
             return null;
         }
         
+        switch (oper()) {
+            case XT_MAPPINGS:
+                return getMappings(eval, b, env, p, param);               
+        }
+        
         TransformProcessor trans = eval.getTransformer(b, env, p);
         
         switch (oper()) {
@@ -54,20 +59,32 @@ public class TemplateAccess extends TemplateFunction {
                 
             case ExprType.STL_DEFINED:
                 return trans.isDefined(param[0].getLabel()) ? TRUE : FALSE;
-                
-            case XT_MAPPINGS:
-                if (b.getMappings() != null) {
-                    return DatatypeMap.createObject(b.getMappings());
-                }
-                Mappings map = trans.getMappings();
-                if (map == null) {
-                    return null;
-                }
-                return DatatypeMap.createObject(map);
-                        
-                            
+                                                                               
             default:
                 return null;
+        }
+    }
+      
+    
+    IDatatype getMappings(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param)
+            throws EngineException {
+        
+        if (param.length == 0) {
+            Mappings map = null;
+            
+            if (b.getMappings() != null) {
+                map = b.getMappings();
+            } else {
+                map = eval.getTransformer(b, env, p).getMappings();
+            }
+            if (map == null) {
+                return null;
+            }
+            return DatatypeMap.createObject(map);
+        } else {
+            // xt:mappings(path) with path of Query Results Mappings to parse
+            IDatatype dt = eval.getGraphProcessor().readSPARQLResult(param[0]);
+            return dt;
         }
     }
     

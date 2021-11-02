@@ -63,7 +63,7 @@ public class Aggregate extends LDScript {
         int n = 0;
         start();
         IDatatype dt;
-       
+        
         for (Mapping map : env.getAggregate()) {
             env.aggregate(map, n++);
             map.setEval(env.getEval());
@@ -72,7 +72,7 @@ public class Aggregate extends LDScript {
             }
             // TODO: should we inherit Binding b for aggregate eval ?
             // (let (x = exp) { sum(z + x) } as ?sum)
-            Binding bind = (Binding) map.getBind();
+            Binding bind = map.getBind();
             // eval aggregate exp
             dt = getBasicArg(0).eval(eval, bind, map, p);
             

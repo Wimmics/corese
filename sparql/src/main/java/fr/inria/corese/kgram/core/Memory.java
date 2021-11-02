@@ -81,8 +81,9 @@ public class Memory extends PointerObject implements Environment {
         this.appxSearchEnv = new ApproximateSearchEnv();
     }
 
-    public void setResults(Mappings r) {
+    public Memory setResults(Mappings r) {
         results = r;
+        return this;
     }
 
     void setEventManager(EventManager man) {
@@ -175,7 +176,7 @@ public class Memory extends PointerObject implements Environment {
         setEval(memory.getEval());
     }
 
-    public void init(Query q) {
+    public Memory init(Query q) {
         // store (sub) query
         query = q;
         if (q.isSubQuery()) {
@@ -201,6 +202,7 @@ public class Memory extends PointerObject implements Environment {
         qNodes = new Node[nmax];
 
         start();
+        return this;
     }
 
     void start() {
@@ -1159,7 +1161,7 @@ public class Memory extends PointerObject implements Environment {
     @Override
     public Iterable<Mapping> getAggregate() {
         if (current().isFake()) {
-            return new ArrayList<Mapping>(0);
+            return new ArrayList<>(0);
         }
         return current();
     }
@@ -1171,7 +1173,7 @@ public class Memory extends PointerObject implements Environment {
      */
     @Override
     public void aggregate(Mapping map, int n) {
-        current().aggregate(map, getQuery(), getMap(), n);
+        current().prepareAggregate(map, getQuery(), getMap(), n);
     }
        
 //    public void aggregate2(Mapping map, int n) {
@@ -1247,6 +1249,11 @@ public class Memory extends PointerObject implements Environment {
     @Override
     public void setBind(Binding b) {
         bind = b;
+    }
+    
+    public Memory setBinding(Binding b) {
+        setBind(b);
+        return this;
     }
 
     @Override

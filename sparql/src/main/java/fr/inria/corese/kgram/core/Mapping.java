@@ -54,8 +54,9 @@ public class Mapping
             oNodes,
             // group by
             gNodes;
-    //private Node result;
-    Node[] distinct, group;
+    Node[] distinct, 
+            // draft for min(?l, groupBy(?x, ?y))
+            group;
     // may record group Mappings when group by
     Mappings lMap;
     // var -> Node
@@ -493,7 +494,7 @@ public class Mapping
     }
 
     public List<Node> getNodes(String var, boolean distinct) {
-        List<Node> list = new ArrayList<Node>();
+        List<Node> list = new ArrayList<>();
         if (getMappings() != null) {
             for (Mapping map : getMappings()) {
                 Node n = map.getNode(var);
@@ -519,9 +520,19 @@ public class Mapping
         set(list, group);
     }
 
-    void setDistinct(List<Node> list) {
+    void computeDistinct(List<Node> list) {
         distinct = new Node[list.size()];
         set(list, distinct);
+    }
+    
+    void prepareModify(Query q) {
+        if (!q.getOrderBy().isEmpty()) {
+            setOrderBy(new Node[q.getOrderBy().size()]);
+        }
+        if (!q.getGroupBy().isEmpty()) {
+            // group by node retrieved in variable hashmap 
+            setGroupBy(new Node[0]);
+        }
     }
 
     void set(List<Node> list, Node[] array) {
@@ -570,11 +581,8 @@ public class Mapping
         int n = 0;
         for (Node qrNode : qNodes) {
             if (qNode.same(qrNode)) {
+                // overload variable value
                 setNode(qNode, node, n);
-//                nodes[n] = node;
-//                if (qNode.isVariable()) {
-//                    setNodeValue(qNode, node);
-//                }
                 return;
             }
             n++;
@@ -1262,7 +1270,7 @@ public class Mapping
     
     @Override
     public void aggregate(Mapping map, int n){
-        getAggregateMappings().aggregate(map, getQuery(), getMap(), n);
+        getAggregateMappings().prepareAggregate(map, getQuery(), getMap(), n);
     }   
     
     Mappings getAggregateMappings() {

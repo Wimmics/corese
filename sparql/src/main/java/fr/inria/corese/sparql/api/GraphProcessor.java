@@ -8,7 +8,8 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 /**
- *
+ * interface of fr.inria.corese.core.query.PluginImpl
+ * 
  * @author Olivier Corby - INRIA - 2018
  */
 public interface GraphProcessor {
@@ -21,6 +22,7 @@ public interface GraphProcessor {
     IDatatype syntax(IDatatype dtsyntax, IDatatype dtgraph, IDatatype node); 
     
     IDatatype read(IDatatype dt); 
+    IDatatype readSPARQLResult(IDatatype dt);
     IDatatype httpget(IDatatype dt); 
     IDatatype httpget(IDatatype dt, IDatatype format); 
     

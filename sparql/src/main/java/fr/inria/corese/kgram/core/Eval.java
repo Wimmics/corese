@@ -849,9 +849,10 @@ public class Eval implements ExpType, Plugin {
         if (q.isDebug()) {
             System.out.println("modifier");
         }
-        q.complete(getProducer());       
+        q.complete(getProducer());        
         Memory env = new Memory(getMatcher(), getEvaluator());
-        env.init(q).setBinding(getMemory().getBind()).setResults(map);        
+        env.init(q).setBinding(getMemory().getBind()).setResults(map);
+        env.setEval(this);
         
         if (q.isDebug()) {
             System.out.println("prepare modifier");
@@ -871,6 +872,7 @@ public class Eval implements ExpType, Plugin {
         if (q.isDebug()) {
             System.out.println("order by");
         }
+        map.modifyDistinct();
         map.modifyOrderBy(this, q);
         map.modifyLimitOffset();
     }

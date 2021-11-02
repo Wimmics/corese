@@ -57,10 +57,8 @@ public class Mappings extends PointerObject
             isListGroup = false;
     boolean sortWithDesc = true;
     private Query query;
-    List<Mapping> // result list
-            list,
-            // draft: ldscript event may reject a result
-            reject;
+    private List<Mapping> list;
+    List<Mapping> reject;
     // Original join Mappings
     // use case: union manage its own way
     private Mappings joinMappings;
@@ -223,7 +221,7 @@ public class Mappings extends PointerObject
     }
 
     public Mappings add(Mapping m) {
-        list.add(m);
+        getMappingList().add(m);
         return this;
     }
 
@@ -237,31 +235,31 @@ public class Mappings extends PointerObject
     void complete() {
         if (reject != null) {
             for (Mapping m : reject) {
-                list.remove(m);
+                getMappingList().remove(m);
             }
         }
     }
 
     List<Mapping> getList() {
-        return list;
+        return getMappingList();
     }
 
     void setList(List<Mapping> l) {
-        list = l;
+        setMappingList(l);
     }
 
     public void add(Mappings lm) {
-        list.addAll(lm.getList());
+        getMappingList().addAll(lm.getMappingList());
     }
 
     @Override
     public Iterator<Mapping> iterator() {
-        return list.iterator();
+        return getMappingList().iterator();
     }
 
     @Override
     public int size() {
-        return list.size();
+        return getMappingList().size();
     }
 
     public boolean isEmpty() {
@@ -269,19 +267,19 @@ public class Mappings extends PointerObject
     }
 
     public Mapping get(int n) {
-        return list.get(n);
+        return getMappingList().get(n);
     }
 
     public Mapping set(int n, Mapping m) {
-        return list.set(n, m);
+        return getMappingList().set(n, m);
     }
 
     void remove(int n) {
-        list.remove(n);
+        getMappingList().remove(n);
     }
 
     public void clear() {
-        list.clear();
+        getMappingList().clear();
     }
 
     @Override
@@ -488,6 +486,19 @@ public class Mappings extends PointerObject
             add(a);
         }
     }
+    
+    public void modifyDistinct() {
+        // select distinct + group by is already done by submit2
+        if (isDistinct() && getQuery().getGroupBy().isEmpty()) {
+            ArrayList<Mapping> alist = new ArrayList<>();
+            for (Mapping m : this) {
+                if (accept(m)) {
+                    alist.add(m);
+                }
+            }
+            setMappingList(alist);
+        }
+    }
 
     boolean accept(Node node) {
         return (getDistinct() == null) ? true : getDistinct().accept(node);
@@ -525,12 +536,12 @@ public class Mappings extends PointerObject
 
     void sort(Eval eval) {
         this.setEval(eval);
-        Collections.sort(list, this);
+        Collections.sort(getMappingList(), this);
         this.setEval(null);
     }
 
     void sort() {
-        Collections.sort(list, this);
+        Collections.sort(getMappingList(), this);
     }
     
     /**
@@ -635,7 +646,7 @@ public class Mappings extends PointerObject
     }
 
     public void genericSort() {
-        Collections.sort(list, new MappingSorter());
+        Collections.sort(getMappingList(), new MappingSorter());
     }
 
     class MappingSorter implements Comparator<Mapping> {
@@ -655,7 +666,7 @@ public class Mappings extends PointerObject
     }
 
     public void sort(List<String> varList) {
-        Collections.sort(list, new VariableSorter(varList));
+        Collections.sort(getMappingList(), new VariableSorter(varList));
     }
 
     VariableSorter getVariableSorter(List<String> varList) {
@@ -706,7 +717,7 @@ public class Mappings extends PointerObject
             return first;
         } else {
             int mid = (first + last) / 2;
-            Node n1 = list.get(mid).getNodeValue(qnode);
+            Node n1 = getMappingList().get(mid).getNodeValue(qnode);
             int res = compare(n1, n2);
             if (res >= 0) {
                 return find(n2, qnode, first, mid);
@@ -1087,7 +1098,7 @@ public class Mappings extends PointerObject
      */
     void filter(Evaluator eval, Filter f, Memory mem) throws SparqlException {
         ArrayList<Mapping> l = new ArrayList<>();
-        for (Mapping map : getList()) {
+        for (Mapping map : this) {
             mem.push(map, -1);
             if (eval.test(f, mem)) {
                 l.add(map);
@@ -1517,7 +1528,7 @@ public class Mappings extends PointerObject
             getSelect().add(var);
         }
         for (int i = 0; i < size();) {
-            Mapping m = list.get(i);
+            Mapping m = getMappingList().get(i);
             Node node = m.getNodeValue(var);
             if (node == null) {
                 m.addNode(var, val);
@@ -1525,7 +1536,7 @@ public class Mappings extends PointerObject
             } else if (node.equals(val)) {
                 i++;
             } else {
-                list.remove(m);
+                getMappingList().remove(m);
             }
         }
     }
@@ -1930,6 +1941,14 @@ public class Mappings extends PointerObject
 
     public void setDistinct(Group distinct) {
         this.distinct = distinct;
+    }
+
+    public List<Mapping> getMappingList() {
+        return list;
+    }
+
+    public void setMappingList(List<Mapping> list) {
+        this.list = list;
     }
 
 }

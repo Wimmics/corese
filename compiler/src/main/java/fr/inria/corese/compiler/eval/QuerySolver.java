@@ -20,6 +20,7 @@ import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.compiler.parser.Transformer;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -359,6 +360,13 @@ public class QuerySolver implements SPARQLEngine {
         return  getCurrentEval().getEnvironment().getBind();
     }
     
+    public Environment getEnvironment() {
+        if (getCurrentEval() == null) {
+            return null;
+        }
+        return getCurrentEval().getEnvironment();
+    }
+    
     public Context getContext() {
         return getBinding().getCreateContext();
     }
@@ -368,6 +376,20 @@ public class QuerySolver implements SPARQLEngine {
             current.finish();
         }
     }
+    
+    public void modifier(Query q, Mappings map) throws SparqlException {
+        if (getCurrentEval() == null) {
+            logger.error("Undefined Eval");
+            return;
+        }
+        getCurrentEval().modifier(q, map);
+    }
+    
+    public void modifier(String str, Mappings map) throws SparqlException {
+        Query q = compile(str);
+        modifier(q, map);
+    }
+
 
     public Eval getCurrentEval() {
         return current;

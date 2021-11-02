@@ -10,6 +10,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.EventListener;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 
@@ -119,6 +120,15 @@ public class QueryExec {
 
     public Query compile(String squery) throws EngineException {
         return exec.compile(squery);
+    }
+    
+    public void modifier(Query q, Mappings map) throws SparqlException {
+        exec.modifier(q, map);
+    }
+    
+    public void modifier(String str, Mappings map) throws SparqlException {
+       Query q = exec.compile(str);
+       exec.modifier(q, map);
     }
     
     /**

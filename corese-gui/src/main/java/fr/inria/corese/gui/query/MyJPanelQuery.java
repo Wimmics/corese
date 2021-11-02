@@ -48,8 +48,10 @@ import static fr.inria.corese.core.util.Property.Value.GUI_CONSTRUCT_FORMAT;
 import static fr.inria.corese.core.util.Property.Value.GUI_SELECT_FORMAT;
 import static fr.inria.corese.core.util.Property.Value.GUI_XML_MAX;
 import fr.inria.corese.core.util.SPINProcess;
+import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import java.util.Date;
 import java.util.List;
 import org.apache.logging.log4j.Level;
 
@@ -125,6 +127,7 @@ public final class MyJPanelQuery extends JPanel {
     private static final String KGGRAPH = Pragma.GRAPH;
     private static final Logger logger = LogManager.getLogger(MyJPanelQuery.class.getName());
     private boolean displayLink = true;
+    private QueryExec queryExec;
     private Mappings mappings;
 
     public MyJPanelQuery() {
@@ -288,7 +291,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonPush.setText("Push");
         // copy current result into last result panel
         buttonCopy.setText("Copy");
-        buttonSort.setText("Sort");
+        buttonSort.setText("Modifier");
         buttonRun.setText("Query");
         buttonShacl.setText("Shacl");
         buttonShex.setText("Shex");
@@ -935,7 +938,7 @@ public final class MyJPanelQuery extends JPanel {
                         coreseFrame.getLastQueryPanel().basicDisplay(getMappings());
                     } 
                     else if (ev.getSource() == buttonSort) { 
-                        sort(query);
+                        modifier(query);
                     } 
                     else if (ev.getSource() == buttonRun || ev.getSource() == buttonValidate 
                             || ev.getSource() == buttonShacl || ev.getSource() == buttonShex) {
@@ -978,15 +981,25 @@ public final class MyJPanelQuery extends JPanel {
      * User edit order by clause and click button Sort
      * Execute order by on current Mappings, assuming query is "the same"
      */
-    void sort(String query) {
-        QueryExec exec = QueryExec.create(MainFrame.getSingleton().getMyCorese());
-        try {
-            Query q = exec.compile(query);
-            exec.complete(q, getMappings());
-            getMappings().orderBy();
-            fillTable(getMappings());
-        } catch (EngineException ex) {
-            logger.error(ex);
+    void modifier(String query) {
+        if (getQueryExec() == null) {
+            logger.error("Undefined Query Exec");
+        } else {
+            try {
+                System.out.println("modifier");
+                System.out.println("before: " + getMappings());
+                Date d1 = new Date();
+                getQueryExec().modifier(query, getMappings());
+                Date d2 = new Date();
+                System.out.println("Time: " + (d2.getTime()-d1.getTime())/1000.0);
+                System.out.println("after: " + getMappings().toString(true));
+                fillTable(getMappings());
+            } catch (EngineException ex) {
+                logger.error(ex);
+            } catch (SparqlException ex) {
+                logger.error(ex);
+
+            }
         }
     }
 
@@ -999,6 +1012,7 @@ public final class MyJPanelQuery extends JPanel {
     }
     
     public void exec(MainFrame frame, String query) {
+        logger.info("Simple Exec");
         Exec exec = new Exec(frame, query, false); 
         exec.process();
     }
@@ -1073,4 +1087,12 @@ public final class MyJPanelQuery extends JPanel {
     public void setMappings(Mappings mappings) {
         this.mappings = mappings;
     }
+
+    public QueryExec getQueryExec() {
+        if (getCurrent() == null) {
+            return null;
+        }
+        return getCurrent().getQueryExec();
+    }
+   
 }

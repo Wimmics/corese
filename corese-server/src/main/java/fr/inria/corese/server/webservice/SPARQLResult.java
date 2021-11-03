@@ -540,9 +540,9 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
     
     ResultFormat getFormatSimple(Mappings map, Dataset ds, String format, int type) {
         if (type == UNDEF_FORMAT) {
-            return ResultFormat.create(map, format);
+            return ResultFormat.create(map, format).init(ds);
         } else {
-            return ResultFormat.create(map, type);
+            return ResultFormat.create(map, type).init(ds);
         }
     }
     

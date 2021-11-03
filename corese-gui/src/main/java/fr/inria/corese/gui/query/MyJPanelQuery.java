@@ -986,13 +986,9 @@ public final class MyJPanelQuery extends JPanel {
             logger.error("Undefined Query Exec");
         } else {
             try {
-                System.out.println("modifier");
-                System.out.println("before: " + getMappings());
                 Date d1 = new Date();
                 getQueryExec().modifier(query, getMappings());
                 Date d2 = new Date();
-                System.out.println("Time: " + (d2.getTime()-d1.getTime())/1000.0);
-                System.out.println("after: " + getMappings().toString(true));
                 fillTable(getMappings());
             } catch (EngineException ex) {
                 logger.error(ex);

@@ -1,7 +1,9 @@
 package fr.inria.corese.sparql.triple.function.template;
 
 import fr.inria.corese.kgram.api.core.ExprType;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_LOAD_MAPPINGS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_MAPPINGS;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_PARSE_MAPPINGS;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -33,6 +35,8 @@ public class TemplateAccess extends TemplateFunction {
         
         switch (oper()) {
             case XT_MAPPINGS:
+            case XT_PARSE_MAPPINGS:
+            case XT_LOAD_MAPPINGS:
                 return getMappings(eval, b, env, p, param);               
         }
         
@@ -68,24 +72,45 @@ public class TemplateAccess extends TemplateFunction {
     
     IDatatype getMappings(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param)
             throws EngineException {
-        
+
         if (param.length == 0) {
-            Mappings map = null;
-            
-            if (b.getMappings() != null) {
-                map = b.getMappings();
-            } else {
-                map = eval.getTransformer(b, env, p).getMappings();
-            }
-            if (map == null) {
-                return null;
-            }
-            return DatatypeMap.createObject(map);
+            // xt:mappings()
+            return getMappings(eval, b, env, p);
         } else {
-            // xt:mappings(path) with path of Query Results Mappings to parse
-            IDatatype dt = eval.getGraphProcessor().readSPARQLResult(param[0]);
-            return dt;
+            switch (oper()) {
+                case XT_PARSE_MAPPINGS:
+                    if (param.length == 1) {
+                        return eval.getGraphProcessor().readSPARQLResultString(param[0]);
+                    } else {
+                        return eval.getGraphProcessor().readSPARQLResultString(param[0], param[1]);
+
+                    }
+                case XT_MAPPINGS:
+                case XT_LOAD_MAPPINGS:
+                default:
+                    // xt:loadMappings(path) with path of Query Results Mappings to parse
+                    if (param.length == 1) {
+                        return eval.getGraphProcessor().readSPARQLResult(param[0]);
+                    } else {
+                        return eval.getGraphProcessor().readSPARQLResult(param[0], param[1]);
+
+                    }
+            }
         }
+    }
+    
+    // xt:mapings() get Mappings in binding or in transformer
+    IDatatype getMappings(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
+        Mappings map = null;
+        if (b.getMappings() != null) {
+            map = b.getMappings();
+        } else {
+            map = eval.getTransformer(b, env, p).getMappings();
+        }
+        if (map == null) {
+            return null;
+        }
+        return DatatypeMap.createObject(map);
     }
     
    

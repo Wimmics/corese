@@ -528,6 +528,8 @@ public class Term extends Expression {
             case ExprType.STL_ISSTART: 
             case ExprType.STL_DEFINED:
             case ExprType.XT_MAPPINGS:
+            case ExprType.XT_PARSE_MAPPINGS:
+            case ExprType.XT_LOAD_MAPPINGS:
                 return new TemplateAccess(name);
                 
             case ExprType.APPLY_TEMPLATES:

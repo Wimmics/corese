@@ -398,6 +398,13 @@ public class Context extends ASTObject implements URLParam {
                 break;
         }
     }
+    
+    public boolean acceptVariable(String var) {
+        if (hasValue(UNSELECT)) {
+            return ! getStringList(UNSELECT).contains(var);
+        }
+        return true;
+    }
         
     public Context set(String name, int n) {
         set(name, DatatypeMap.newInstance(n));

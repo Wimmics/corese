@@ -22,7 +22,8 @@ public interface GraphProcessor {
     IDatatype syntax(IDatatype dtsyntax, IDatatype dtgraph, IDatatype node); 
     
     IDatatype read(IDatatype dt); 
-    IDatatype readSPARQLResult(IDatatype dt);
+    IDatatype readSPARQLResult(IDatatype dtpath, IDatatype... dtformat);
+    IDatatype readSPARQLResultString(IDatatype dtstring, IDatatype... dtformat);
     IDatatype httpget(IDatatype dt); 
     IDatatype httpget(IDatatype dt, IDatatype format); 
     

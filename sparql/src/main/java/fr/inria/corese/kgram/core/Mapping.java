@@ -261,8 +261,10 @@ public class Mapping
         }
         int i = 0;
         for (Node q : qNodes) {
-            if (q != null && q.isVariable() && nodes[i] != null) {
-                setNodeValue(q, nodes[i]);
+            if (i < nodes.length) {
+                if (q != null && q.isVariable() && nodes[i] != null) {
+                    setNodeValue(q, nodes[i]);
+                }
             }
             i++;
         }

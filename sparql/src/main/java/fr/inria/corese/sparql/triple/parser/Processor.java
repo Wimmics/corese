@@ -758,6 +758,8 @@ public class Processor {
 		defoper(XT_TRIPLE,       ExprType.XT_TRIPLE);
 		defoper(XT_QUERY,        ExprType.XT_QUERY);
 		defoper(EXT+"mappings",  ExprType.XT_MAPPINGS);
+		defoper(EXT+"parseMappings",  ExprType.XT_PARSE_MAPPINGS);
+		defoper(EXT+"loadMappings",  ExprType.XT_LOAD_MAPPINGS);
 		defoper(XT_CONTEXT,      ExprType.XT_CONTEXT);
 		defoper(XT_METADATA,     ExprType.XT_METADATA);
 		defoper(XT_ANNOTATION,   ExprType.XT_METADATA);

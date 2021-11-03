@@ -402,7 +402,9 @@ public interface ExprType {
         public static int XT_SPLIT       = 493;
         public static int XT_PATH        = 494;
         public static int XT_MAPPINGS    = 495;
-        public static int XT_DISTANCE    = 496;
+        public static int XT_PARSE_MAPPINGS= 496;
+        public static int XT_LOAD_MAPPINGS= 497;
+        public static int XT_DISTANCE    = 498;
         
         
              

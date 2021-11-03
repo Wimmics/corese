@@ -6,7 +6,6 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.compiler.eval.SQLResult;
-import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -14,16 +13,17 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.load.SPARQLResult;
+import fr.inria.corese.core.load.SPARQLResultParser;
 import fr.inria.corese.core.producer.DataProducer;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
-import fr.inria.corese.sparql.exceptions.EngineException;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.xml.sax.SAXException;
 
 /**
@@ -34,6 +34,7 @@ import org.xml.sax.SAXException;
  *
  */
 public class Mapper {
+    static public Logger logger = LoggerFactory.getLogger(Mapper.class);
 
     Producer p;
     MapperSQL mapper;
@@ -294,10 +295,11 @@ public class Mapper {
      * Try dt = URL of SPARQL Query Results XML Format
      */
     Mappings mapURI(List<Node> varList, IDatatype dt) {
-        SPARQLResult parser = SPARQLResult.create();
+        SPARQLResultParser parser = new SPARQLResultParser();
         try {
             return parser.parse(dt.getLabel());
         } catch (ParserConfigurationException | SAXException | IOException ex) {
+            logger.info("Parse error SPARQL Query Results: " + dt.getLabel());
             return mapDT(varList, dt);
         }
     }

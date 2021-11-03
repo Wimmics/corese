@@ -15,7 +15,8 @@ import static fr.inria.corese.core.print.RDFFormat.NL;
  * @author Olivier Corby, Wimmics INRIA I3S, 2014
  *
  */
-public class RDFResultFormat implements Graphable {
+public class RDFResultFormat extends QueryResultFormat
+        implements Graphable {
     static final String RDFRESULT = NSManager.RDFRESULT;
     private Mappings map;
     

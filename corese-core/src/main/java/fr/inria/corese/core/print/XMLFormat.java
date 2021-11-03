@@ -25,7 +25,7 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
  * Olivier Corby, Edelweiss INRIA 2011
  *
  */
-public class XMLFormat {
+public class XMLFormat extends QueryResultFormat {
 
     /**
      * Use to keep the class version, to be consistent with the interface
@@ -100,16 +100,22 @@ public class XMLFormat {
     
     void setSelect() {
         select = new ArrayList<>();
+        
         for (Node node : query.getSelect()) {
-            select.add(node.getLabel());
+            defSelect(node.getLabel());
         }
+        
         if (isSelectAll()) {
             // additional select nodes such as ?_server_0 in federate mode
             for (Node node : lMap.getQueryNodeList()) {
-                if (!select.contains(node.getLabel())) {
-                    select.add(node.getLabel());
-                }
+                defSelect(node.getLabel());
             }
+        }
+    }
+    
+    void defSelect(String var) {
+        if (! select.contains(var) && accept(var)) {
+            select.add(var);
         }
     }
 

@@ -540,18 +540,22 @@ public class ResultFormat implements ResultFormatDef {
                 return RDFResultFormat.create(map).toString();
                 
             case JSON_FORMAT:
-                return JSONFormat.create(map).toString();
+                return JSONFormat.create(map)
+                        .init(getContext()).toString();
 
             case CSV_FORMAT:                
-                return CSVFormat.create(map).toString();
+                return CSVFormat.create(map)
+                        .init(getContext()).toString();
                 
             case TSV_FORMAT:
-                return TSVFormat.create(map).toString();
+                return TSVFormat.create(map)
+                        .init(getContext()).toString();
                 
              // map is query result
             case XML_FORMAT:
             default:
                 XMLFormat ft = XMLFormat.create(map);
+                ft.init(getContext());
                 ft.setSelectAll(isSelectAll());
                 ft.setNbResult(nbResult);
                 return ft.toString();

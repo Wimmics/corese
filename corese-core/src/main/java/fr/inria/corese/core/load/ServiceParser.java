@@ -120,8 +120,8 @@ public class ServiceParser implements URLParam {
     }
     
     public Mappings parseJSONMapping(String str) {
-        SPARQLJSONResult res = new SPARQLJSONResult(Graph.create());
-        Mappings map = res.parse(str);
+        SPARQLJSONResult res = new SPARQLJSONResult();
+        Mappings map = res.parseString(str);
         return map;
     }
     

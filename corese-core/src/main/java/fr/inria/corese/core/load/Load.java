@@ -737,7 +737,12 @@ public class Load
                     
                 case OWL_FORMAT:
                     loadRDFXMLOrTurtle(stream, path, base, name);
-                    break;    
+                    break; 
+                    
+                case XML_FORMAT:
+                case JSON_FORMAT:
+                    // skip it
+                    break;
 
                 case UNDEF_FORMAT:
                 default:

@@ -8,7 +8,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 
-public class CSVFormat {
+public class CSVFormat extends QueryResultFormat {
     // The end-of-line in CSV is CRLF i.e. Unicode codepoints 13 (0x0D) and 10 (0x0A).
 
     static final String EOL = "\n";
@@ -40,9 +40,11 @@ public class CSVFormat {
 
     void setQuery(Query q) {
         query = q;
-        select = new ArrayList<String>();
+        select = new ArrayList<>();
         for (Node node : q.getSelect()) {
-            select.add(node.getLabel());
+            if (accept(node.getLabel())) {
+                select.add(node.getLabel());
+            }
         }
     }
 

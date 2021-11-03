@@ -31,6 +31,7 @@ public class LoadFormat {
     static final String EXT_OWL = ".owl";
     static final String OWL_RDFXML = ".owx";
     static final String JSONLD = ".jsonld";
+    static final String JSON = ".json";
     static final String SWF = ".sw";
     
     static final String NT_FORMAT = NSManager.STL + "nt";
@@ -56,17 +57,18 @@ public class LoadFormat {
         define(NQUADS,  Loader.NQUADS_FORMAT);
         define(HTML,    Loader.RDFA_FORMAT);
         define(XHTML,   Loader.RDFA_FORMAT);
-        define(XML,     Loader.RDFA_FORMAT);
+        define(XML,     Loader.XML_FORMAT);
         define(SVG,     Loader.RDFA_FORMAT);
         define(EXT_RDF, Loader.RDFXML_FORMAT);
         define(EXT_RDFS,Loader.RDFXML_FORMAT);
         define(OWL_RDFXML, Loader.RDFXML_FORMAT);
         define(EXT_OWL, Loader.OWL_FORMAT);
         define(JSONLD,  Loader.JSONLD_FORMAT);
+        define(JSON,    Loader.JSON_FORMAT);
         define(SWF,     Loader.WORKFLOW_FORMAT);
         
-        utable = new HashMap<String, Integer>();
-        ftable = new HashMap<Integer, String>();
+        utable = new HashMap<>();
+        ftable = new HashMap<>();
         
         udefine(Loader.HTML_FORMAT_STR,   Loader.RDFA_FORMAT);
         udefine(Loader.TURTLE_FORMAT_STR, Loader.TURTLE_FORMAT);

@@ -4,8 +4,11 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -18,15 +21,34 @@ public class SPARQLJSONResult extends SPARQLResult {
     VTable vtable;
     private List<String> varList;
     
+    
+    public SPARQLJSONResult() {
+        this(Graph.create());
+    }
+    
     public SPARQLJSONResult(Graph g) {
         super(g);
         vtable = new VTable();
         varList = new ArrayList<>();
     }
     
+    public static SPARQLJSONResult create() {
+        return new SPARQLJSONResult();
+    }
+    
     
     @Override
-    public Mappings parse(String str) {
+    public Mappings parse(String path) throws IOException {
+        try {
+            String str = new QueryLoad().readWE(path);
+            return parseString(str);
+        } catch (LoadException ex) {
+            throw new IOException(ex.getMessage());
+        }
+    }
+    
+    @Override
+    public Mappings parseString(String str) {
         setJson(new JSONObject(str));
         header();
         link();
@@ -34,8 +56,6 @@ public class SPARQLJSONResult extends SPARQLResult {
         complete(map);
         return map;
     }
-    
-    
     
     void header() {
         JSONArray vars = json.getJSONObject("head").getJSONArray("vars");

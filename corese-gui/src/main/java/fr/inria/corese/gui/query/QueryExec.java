@@ -126,9 +126,9 @@ public class QueryExec {
         exec.modifier(q, map);
     }
     
-    public void modifier(String str, Mappings map) throws SparqlException {
+    public Mappings modifier(String str, Mappings map) throws SparqlException {
        Query q = exec.compile(str);
-       exec.modifier(q, map);
+       return exec.modifier(q, map);
     }
     
     /**

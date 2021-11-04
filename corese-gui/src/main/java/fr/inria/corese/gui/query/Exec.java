@@ -79,7 +79,7 @@ public class Exec extends Thread {
             res = query();
         }
         frame.setBuffer(null);
-        panel.display(res, getQueryExec().getQueryProcess().getBinding());
+        panel.display(res, getCurrent().getQueryProcess().getBinding());
     }
 
     public void finish(boolean kill) {
@@ -94,8 +94,15 @@ public class Exec extends Thread {
         current = exec;
     }
     
-    QueryExec getQueryExec() {
+    QueryExec getCurrent() {
         return current;
+    }
+    
+    QueryExec getQueryExec() {
+        if (getCurrent() == null) {
+            setCurrent(QueryExec.create(frame.getMyCorese()));
+        }
+        return getCurrent();
     }
     
     Mappings query() {

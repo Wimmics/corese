@@ -55,7 +55,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
-import fr.inria.corese.core.load.SPARQLResult;
+import fr.inria.corese.core.load.SPARQLResultParser;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
@@ -102,7 +102,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.2 - Inria UCA - 2021-10-16";
+    private static final String TITLE = "Corese 4.2 - Inria UCA - 2021-11-01";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -1956,7 +1956,7 @@ public class MainFrame extends JFrame implements ActionListener {
     
     void loadResultWE() throws ParserConfigurationException, SAXException, IOException {
         String path = selectPath("Load Query Result", ".xml");
-        SPARQLResult parser = SPARQLResult.create();
+        SPARQLResultParser parser = new SPARQLResultParser();
         Mappings map = parser.parse(path);
         MyJPanelQuery panel = execPlus(path, "");
         panel.display(map);

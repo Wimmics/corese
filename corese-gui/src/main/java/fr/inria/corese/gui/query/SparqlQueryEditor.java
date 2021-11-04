@@ -46,7 +46,7 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
             "select", "where", "optional", "service", "minus", "filter",
             "construct", "describe", "union", "bind", "values", "as", "template", "function",
             "insert", "delete", "data",
-            "prefix", "base", "ask", "order by", "group by", "limit",
+            "prefix", "base", "ask", "order by", "group by", "having", "limit",
             "offset", "distinct", "reduced",
             "from", "from named", "graph", "not", "exists",
             "if", "else", "in", "set", "static", "for", "let", "letdyn", 

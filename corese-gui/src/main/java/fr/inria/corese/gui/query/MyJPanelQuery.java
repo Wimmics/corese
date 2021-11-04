@@ -982,21 +982,25 @@ public final class MyJPanelQuery extends JPanel {
      * Execute order by on current Mappings, assuming query is "the same"
      */
     void modifier(String query) {
-        if (getQueryExec() == null) {
-            logger.error("Undefined Query Exec");
-        } else {
+        if (getCurrent() == null) {
+            logger.info("Undefined Query Exec");
+            setCurrent(new Exec(MainFrame.getSingleton(), query, false));
+        } 
+        
+        //else {
             try {
                 Date d1 = new Date();
-                getQueryExec().modifier(query, getMappings());
+                Mappings res = getQueryExec().modifier(query, getMappings());
                 Date d2 = new Date();
-                fillTable(getMappings());
+                fillTable(res);
+                //setMappings(res);
             } catch (EngineException ex) {
                 logger.error(ex);
             } catch (SparqlException ex) {
                 logger.error(ex);
 
             }
-        }
+        //}
     }
 
     void setCurrent(Exec e) {

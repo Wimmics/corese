@@ -23,11 +23,9 @@ import fr.inria.corese.sparql.storage.api.Parameters;
 
 import fr.inria.corese.core.api.Engine;
 import fr.inria.corese.compiler.eval.QuerySolver;
-import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.triple.parser.Access;
 import java.io.IOException;
 import java.util.Date;
 import org.junit.AfterClass;
@@ -271,7 +269,8 @@ public class TestRuleEngine {
                 + "order by ?x ?p ?y";
 
         Mappings map = exec.query(q);
-        assertEquals(114, map.size());
+        //assertEquals(114, map.size());
+        assertEquals(122, map.size());
 
     } 
         
@@ -364,7 +363,7 @@ public class TestRuleEngine {
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
 
-        assertEquals(612, map.size());
+        assertEquals(597, map.size());
     }
 
         @Test

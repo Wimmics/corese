@@ -1103,8 +1103,8 @@ public class Mapping
     }
     
     Mapping join(Mapping m) {
-        List<Node> qNodes = new ArrayList<Node>();
-        List<Node> tNodes = new ArrayList<Node>();
+        List<Node> qNodes = new ArrayList<>();
+        List<Node> tNodes = new ArrayList<>();
 
         for (Node q1 : getSelectQueryNodes()) {
             Node n1 = getNodeValue(q1);

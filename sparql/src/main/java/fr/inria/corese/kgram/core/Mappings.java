@@ -573,10 +573,13 @@ public class Mappings extends PointerObject
                     if (m.getNode(node) == null) {
                         // @todo
                         m.setBind(eval.getEnvironment().getBind());
+                        m.setEval(eval);
                         try {
                             Node value = eval.getEvaluator().eval(exp.getFilter(), m, eval.getProducer());
-                            m.setNode(node, value);
-                            addSelectVariable(node);
+                            if (value != null) {
+                                m.setNode(node, value);
+                                addSelectVariable(node);
+                            }
                         } catch (SparqlException ex) {
                             logger.error(ex.getMessage());
                         }
@@ -876,6 +879,13 @@ public class Mappings extends PointerObject
     
     public void modifyLimitOffset() {
         limitOffset();
+    }
+    
+    public Mappings modifyValues(Query q) {
+        if (q.getValues() != null) {
+            return join(q.getValues().getMappings());
+        }
+        return this;
     }
     
     public void aggregate(Query q, Evaluator evaluator, Memory memory, Producer p) throws SparqlException {

@@ -845,7 +845,7 @@ public class Eval implements ExpType, Plugin {
      * select aggregate group by having
      * order by limit offset
      */
-    public void modifier(Query q, Mappings map) throws SparqlException {
+    public Mappings modifier(Query q, Mappings map) throws SparqlException {
         if (q.isDebug()) {
             System.out.println("modifier");
         }
@@ -875,6 +875,8 @@ public class Eval implements ExpType, Plugin {
         map.modifyDistinct();
         map.modifyOrderBy(this, q);
         map.modifyLimitOffset();
+        Mappings res = map.modifyValues(q);
+        return res;
     }
 
     /**

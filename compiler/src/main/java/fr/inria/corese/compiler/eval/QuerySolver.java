@@ -377,12 +377,20 @@ public class QuerySolver implements SPARQLEngine {
         }
     }
     
-    public void modifier(Query q, Mappings map) throws SparqlException {
+    public Mappings modifier(Query q, Mappings map) throws SparqlException {
         if (getCurrentEval() == null) {
-            logger.error("Undefined Eval");
-            return;
+            logger.info("Undefined Eval");
+            //return;
+            return getEval().modifier(q, map);
         }
-        getCurrentEval().modifier(q, map);
+        else {
+            return getCurrentEval().modifier(q, map);
+        }
+    }
+    
+    // defined in QueryProcess
+    public Eval getEval() throws EngineException{
+        return null;
     }
     
     public void modifier(String str, Mappings map) throws SparqlException {

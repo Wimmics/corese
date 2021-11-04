@@ -25,7 +25,7 @@ d3:all st:equivalent (d3:graphic d3:hierarchy) .
 #
 # default parameters added to every sparql service by specifying mode "*" here
 #
-[] st:mode "star" ;
+[] st:mode "myjoker" ;
 st:param (
 ("mode"         "message")
 )
@@ -67,7 +67,8 @@ st:param (
 ("mode" "logquery" "link")
 ("transform" st:map)
 ("query"
-"""prefix dbo: <http://fr.dbpedia.org/ontology/> 
+"""prefix db:  <http://fr.dbpedia.org/resource/>
+prefix dbo: <http://fr.dbpedia.org/ontology/> 
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 select * where {graph st:geo {db:Amérique dbo:include ?location} 
 service <http://fr.dbpedia.org/sparql> {
@@ -81,7 +82,8 @@ select * where {?location geo:lat ?lat ; geo:long ?lon}
 st:param (
 ("mode" "log")
 ("query"
-"""prefix dbo: <http://fr.dbpedia.org/ontology/> 
+"""prefix db:  <http://fr.dbpedia.org/resource/>
+prefix dbo: <http://fr.dbpedia.org/ontology/> 
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 select * where {
 graph st:geo {db:Amérique dbo:include ?location} 

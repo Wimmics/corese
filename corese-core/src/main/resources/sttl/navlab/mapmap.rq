@@ -15,15 +15,13 @@ where {
     values ?amap {undef}
     bind (coalesce(st:call-template(st:link), "link undef") as ?text)
 
-    {select ?amap (aggregate(xt:list(?location, ?lat, ?lon)) as ?list)
+    {select ?amap (aggregate(distinct xt:list(?location, ?lat, ?lon)) as ?list)
     where {
         values ?amap {undef}
-        {select distinct ?amap ?location ?lon ?lat 
-        where {
-            values ?amap {undef}
-            values (?location ?lon ?lat) { unnest(?amap) }
-        }}
+        values (?location ?lon ?lat) { unnest(?amap) }
     }}
+    
     filter (xt:size(?list) > 0)
 }
+
 

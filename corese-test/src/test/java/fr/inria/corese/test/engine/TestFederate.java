@@ -297,7 +297,7 @@ public class TestFederate {
         QueryProcess exec = QueryProcess.create(g);
 
         String q = "prefix h: <http://www.inria.fr/2015/humans#>"
-               // + "@trace "
+                //+ "@trace @debug "
                // + "@variable "
                 + "@type  kg:exist "
             + "@federate "
@@ -475,7 +475,7 @@ public class TestFederate {
                 + "}";
 
         Mappings map = process(exec, q);
-        Assert.assertEquals(42, map.size());
+        Assert.assertEquals(43, map.size());
     }
     
     
@@ -493,7 +493,7 @@ public class TestFederate {
                 + "}";
 
         Mappings map = process(exec, q);
-        Assert.assertEquals(42, map.size());
+        Assert.assertEquals(43, map.size());
     }
     
     

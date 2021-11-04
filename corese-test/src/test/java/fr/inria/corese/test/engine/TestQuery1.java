@@ -41,7 +41,8 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.compiler.result.XMLResult;
-import fr.inria.corese.core.extension.Extension;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.*;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -62,22 +63,24 @@ import java.io.File;
 import java.net.MalformedURLException;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
-import java.util.logging.Logger;
+//import java.util.logging.Logger;
 
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.LogManager;
+//import org.apache.logging.log4j.Level;
+//import org.apache.logging.log4j.LogManager;
 
 import org.junit.AfterClass;
 import org.junit.Assert;
 
 
 import static org.junit.Assert.*;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  *
  */
 public class TestQuery1 {
+    private static org.slf4j.Logger logger = LoggerFactory.getLogger(TestQuery1.class);
 
     static String data  = Thread.currentThread().getContextClassLoader().getResource("data/").getPath() ;
     static String QUERY = Thread.currentThread().getContextClassLoader().getResource("query/").getPath() ;
@@ -93,8 +96,11 @@ public class TestQuery1 {
     @BeforeClass
     static public void init() {
         //Query.STD_PLAN = Query.PLAN_RULE_BASED;
-
-        Load.setDefaultGraphValue(true);
+        Property.set(GRAPH_NODE_AS_DATATYPE, true);
+        Property.set(LOAD_IN_DEFAULT_GRAPH, true);
+        Property.set(INTERPRETER_TEST, true);
+        
+        System.out.println("Property: "+ Property.display());
         //Graph.DEFAULT_GRAPH_MODE = Graph.DEFAULT_GRAPH;
 
         QueryProcess.definePrefix("c", "http://www.inria.fr/acacia/comma#");
@@ -107,7 +113,6 @@ public class TestQuery1 {
         try {
             init(graph, ld);
         } catch (LoadException ex) {
-            LogManager.getLogger(TestQuery1.class.getName()).error(ex);
         }
         //Option.isOption = false;
         //QueryProcess.setJoin(true);
@@ -151,7 +156,6 @@ public class TestQuery1 {
         try {
             Query qq = exec.compile(q);
         } catch (EngineException ex) {
-            Logger.getLogger(TestQuery1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         
         QuerySolver.setVisitorable(true);
@@ -213,7 +217,6 @@ public class TestQuery1 {
             Query qq = exec.compile(q);
         } catch (EngineException ex) {
             System.out.println(ex);
-            Logger.getLogger(TestQuery1.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
 
     }
@@ -255,7 +258,6 @@ public class TestQuery1 {
             ld.parse(Thread.currentThread().getContextClassLoader().getResource("data").getPath() + "/" + "comma/model.rdf");
             ld.parseDir(Thread.currentThread().getContextClassLoader().getResource("data").getPath() + "/" + "comma/data");
         } catch (LoadException ex) {
-            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
         }
 
         return graph;
@@ -273,6 +275,8 @@ public class TestQuery1 {
         exec.query(i);
         Mappings map = exec.query(q);
     }
+    
+    
     
        @Test
     public void union5() throws EngineException, MalformedURLException, LoadException {
@@ -508,7 +512,7 @@ public class TestQuery1 {
         DatatypeValue xml = map.getValue("?xml");
         DatatypeValue rdf = map.getValue("?rdf");
         DatatypeValue json = map.getValue("?json");
-        IDatatype gg   = (IDatatype) map.getValue("?g");
+        IDatatype gg   =  map.getValue("?g");
         
         System.out.println(xml.stringValue());
         System.out.println(rdf.stringValue());
@@ -785,7 +789,6 @@ public class TestQuery1 {
             QueryProcess exec = QueryProcess.create(g);
             Mappings map = exec.query("insert { graph us:g1 { [] rdf:value ?v } } where { bind (rand() as ?v) }");
         } catch (EngineException ex) {
-            Logger.getLogger(Extension.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
         return DatatypeMap.TRUE;
     }
@@ -811,7 +814,7 @@ public class TestQuery1 {
         
         exec.query(i);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?list");
+        IDatatype dt =  map.getValue("?list");
         assertEquals(3, dt.size());
     }
     
@@ -1021,7 +1024,7 @@ public class TestQuery1 {
                 + "}"                
                ;
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?n");
+        IDatatype dt =  map.getValue("?n");
         assertEquals(true, dt != null);
         assertEquals(10, dt.intValue());
     }
@@ -1037,7 +1040,7 @@ public class TestQuery1 {
                 + "}"                
                ;
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?n");
+        IDatatype dt =  map.getValue("?n");
         assertEquals(true, dt != null);
         assertEquals(20, dt.intValue());
     }
@@ -1055,7 +1058,7 @@ public class TestQuery1 {
                 + "function us:fun() { x }"
                ;
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?n");
+        IDatatype dt =  map.getValue("?n");
         assertEquals(true, dt != null);
         assertEquals(1, dt.intValue());
     }
@@ -1112,7 +1115,7 @@ public class TestQuery1 {
                 + ""
                ;
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?n");
+        IDatatype dt =  map.getValue("?n");
         assertEquals(true, dt == null);
     }
     
@@ -1132,7 +1135,7 @@ public class TestQuery1 {
                 + ""
                ;
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?n");
+        IDatatype dt =  map.getValue("?n");
         assertEquals(2, dt.intValue());
     }
     
@@ -1790,7 +1793,7 @@ public class TestQuery1 {
                ;
                 
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?g");
+        IDatatype dt =  map.getValue("?g");
         Graph gg = (Graph) dt.getPointerObject();
         
         String qq = "select ?p (count(*) as ?c) {"
@@ -2022,7 +2025,7 @@ public class TestQuery1 {
         exec.query(i);       
         Mappings map = exec.query(q);
         //System.out.println(map);
-        IDatatype dt = (IDatatype) map.getValue("?o");
+        IDatatype dt =  map.getValue("?o");
         assertEquals(20, dt.intValue());
 }
 
@@ -2039,8 +2042,8 @@ public class TestQuery1 {
                 + "}"           
                ;        
         Mappings map = exec.query(q);
-        IDatatype list = (IDatatype) map.getValue("?l");
-        IDatatype dt = (IDatatype) map.getValue("?y");
+        IDatatype list =  map.getValue("?l");
+        IDatatype dt =  map.getValue("?y");
         assertEquals(true, list.equals(DatatypeMap.newList(3, 4)));
         assertEquals(2, dt.intValue());
         
@@ -2055,8 +2058,8 @@ public class TestQuery1 {
                 + "(kg:contains('un été', 'ete') as ?ct)"
                 + "where {}";
         Mappings map = exec.query(q);
-        IDatatype dt1 = (IDatatype) map.getValue("?eq");
-        IDatatype dt2 = (IDatatype) map.getValue("?ct");
+        IDatatype dt1 =  map.getValue("?eq");
+        IDatatype dt2 =  map.getValue("?ct");
         assertEquals(true, dt1.booleanValue()&&dt2.booleanValue());
     }
     
@@ -2080,8 +2083,8 @@ public class TestQuery1 {
                ;        
         exec.query(i);       
         Mappings map = exec.query(q);
-        IDatatype dt1 = (IDatatype) map.getValue("?v1");
-        IDatatype dt2 = (IDatatype) map.getValue("?v2");
+        IDatatype dt1 =  map.getValue("?v1");
+        IDatatype dt2 =  map.getValue("?v2");
         assertEquals(true, dt1.intValue() == 10 && dt2.intValue() == 20);
 }
     
@@ -2106,8 +2109,8 @@ public class TestQuery1 {
         
         Mappings map = exec.query(q);
         assertEquals(2, map.size());
-        IDatatype v1 = (IDatatype) map.get(0).getValue("?t");
-        IDatatype v2 = (IDatatype) map.get(1).getValue("?t");
+        IDatatype v1 =  map.get(0).getValue("?t");
+        IDatatype v2 =  map.get(1).getValue("?t");
         assertEquals(10, v1.getPointerObject().getEdge().getNode(1).getDatatypeValue().intValue());
         assertEquals(20, v2.getPointerObject().getEdge().getNode(1).getDatatypeValue().intValue());
         
@@ -2166,19 +2169,19 @@ public class TestQuery1 {
         IDatatype remi   = DatatypeMap.newList(2, 3, 4, 5);
         IDatatype sw   = DatatypeMap.newList(2, 1, 3, 4, 5);
         
-        IDatatype list = (IDatatype) map.getValue("?list");
+        IDatatype list =  map.getValue("?list");
         assertEquals(true, list.eq(rev).booleanValue());
         
-        IDatatype sorted = (IDatatype) map.getValue("?sort");
+        IDatatype sorted =  map.getValue("?sort");
         assertEquals(true, sort.eq(sorted).booleanValue());
         
-        IDatatype remove = (IDatatype) map.getValue("?remove");
+        IDatatype remove =  map.getValue("?remove");
         assertEquals(true, rem.eq(remove).booleanValue());
         
-        IDatatype remindex = (IDatatype) map.getValue("?remindex");
+        IDatatype remindex =  map.getValue("?remindex");
         assertEquals(true, remi.eq(remindex).booleanValue());
         
-        IDatatype swap = (IDatatype) map.getValue("?swap");
+        IDatatype swap =  map.getValue("?swap");
         assertEquals(true, sw.eq(swap).booleanValue());
 
    }
@@ -2204,19 +2207,19 @@ public class TestQuery1 {
                 + "";
 
         Mappings map = exec.query(q);
-        IDatatype res = (IDatatype) map.getValue("?res");
+        IDatatype res =  map.getValue("?res");
         assertEquals(true, res.eq(DatatypeMap.newList(0, 1, 2)).booleanValue());
         
-        IDatatype fst = (IDatatype) map.getValue("?fst");
+        IDatatype fst =  map.getValue("?fst");
         assertEquals(true, fst.eq(DatatypeMap.ZERO).booleanValue()); 
         
-        IDatatype rst = (IDatatype) map.getValue("?rst");
+        IDatatype rst =  map.getValue("?rst");
         assertEquals(true, rst.eq(DatatypeMap.newList(1, 2)).booleanValue()); 
         
-        IDatatype app = (IDatatype) map.getValue("?app");
+        IDatatype app =  map.getValue("?app");
         assertEquals(true, app.eq(DatatypeMap.newList(1, 2, 3, 4)).booleanValue()); 
         
-        IDatatype ll = (IDatatype) map.getValue("?ll");
+        IDatatype ll =  map.getValue("?ll");
         assertEquals(true, ll.eq(DatatypeMap.newList(1, 2)).booleanValue()); 
     }    
      
@@ -2243,7 +2246,7 @@ public class TestQuery1 {
         
         
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?s");
+        IDatatype dt =  map.getValue("?s");
         assertEquals(55, dt.intValue());
 }
     
@@ -2260,8 +2263,8 @@ public class TestQuery1 {
                 
         
         Mappings map = exec.query(q);
-        IDatatype v1 = (IDatatype) map.getValue("?b1");
-        IDatatype v2 = (IDatatype) map.getValue("?b2");
+        IDatatype v1 =  map.getValue("?b1");
+        IDatatype v2 =  map.getValue("?b2");
         assertEquals(true, v1.intValue() == 10 && v2.intValue() == 20);
 }
     
@@ -2286,8 +2289,8 @@ public class TestQuery1 {
         
         Mappings map = exec.query(q);
         for (Mapping m : map) {
-            IDatatype g1 = (IDatatype) m.getValue("?g1");
-            IDatatype g2 = (IDatatype) m.getValue("?g2");
+            IDatatype g1 =  m.getValue("?g1");
+            IDatatype g2 =  m.getValue("?g2");
             assertEquals(true, g1.equals(g2));
         }
  }
@@ -2309,10 +2312,10 @@ public class TestQuery1 {
         exec.query(i);
         
         Mappings map = exec.query(q);
-        IDatatype s = (IDatatype) map.getValue("?s");
-        IDatatype p = (IDatatype) map.getValue("?p");
-        IDatatype o = (IDatatype) map.getValue("?o");
-        IDatatype g = (IDatatype) map.getValue("?g");
+        IDatatype s =  map.getValue("?s");
+        IDatatype p =  map.getValue("?p");
+        IDatatype o =  map.getValue("?o");
+        IDatatype g =  map.getValue("?g");
         
         assertEquals(NSManager.USER+"John", s.getLabel());
         assertEquals(NSManager.USER+"age",  p.getLabel());
@@ -2404,9 +2407,9 @@ public class TestQuery1 {
 
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);        
-        IDatatype dt = (IDatatype) map.getValue("?res");
+        IDatatype dt =  map.getValue("?res");
         Mappings m = dt.getPointerObject().getMappings();
-        IDatatype sum = (IDatatype) m.getValue("?sum");
+        IDatatype sum =  m.getValue("?sum");
         assertEquals(15, sum.intValue());
     } 
     
@@ -2420,9 +2423,9 @@ public class TestQuery1 {
 
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);        
-        IDatatype dt = (IDatatype) map.getValue("?res");
+        IDatatype dt =  map.getValue("?res");
         Mappings m = dt.getPointerObject().getMappings();
-        IDatatype sum = (IDatatype) m.getValue("?sum");
+        IDatatype sum =  m.getValue("?sum");
         assertEquals(15, sum.intValue());
     } 
     
@@ -2435,7 +2438,7 @@ public class TestQuery1 {
 
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?sum");
+        IDatatype dt =  map.getValue("?sum");
         assertEquals(10, dt.intValue());
     } 
     
@@ -2756,7 +2759,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
         //System.out.println(map.getQuery().getAST());
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals(120, dt.intValue());
     }
 
@@ -2766,7 +2769,7 @@ public class TestQuery1 {
 
 
     String stringValue(Mappings m, String var) {
-        return ((IDatatype) m.getValue(var)).stringValue();
+        return ( m.getValue(var)).stringValue();
     }
 
 
@@ -2802,9 +2805,9 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt1 = (IDatatype) map.getValue("?t1");
-        IDatatype dt2 = (IDatatype) map.getValue("?t2");
-        IDatatype dt3 = (IDatatype) map.getValue("?t3");
+        IDatatype dt1 =  map.getValue("?t1");
+        IDatatype dt2 =  map.getValue("?t2");
+        IDatatype dt3 =  map.getValue("?t3");
         Graph g1 = (Graph) dt1.getPointerObject().getTripleStore();
         Graph g2 = (Graph) dt2.getPointerObject().getTripleStore();
         Mappings m = dt3.getPointerObject().getMappings();
@@ -2832,11 +2835,11 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dg = (IDatatype) map.getValue("?g");
-        IDatatype dt = (IDatatype) map.getValue("?t");
-        IDatatype ds = (IDatatype) map.getValue("?s");
-        IDatatype dm = (IDatatype) map.getValue("?m");
-        IDatatype dl = (IDatatype) map.getValue("?l");
+        IDatatype dg =  map.getValue("?g");
+        IDatatype dt =  map.getValue("?t");
+        IDatatype ds =  map.getValue("?s");
+        IDatatype dm =  map.getValue("?m");
+        IDatatype dl =  map.getValue("?l");
         assertEquals(CoresePointer.getDatatype(PointerType.GRAPH), dg);
         assertEquals(CoresePointer.getDatatype(PointerType.TRIPLE), dt);
         assertEquals(CoresePointer.getDatatype(PointerType.MAPPINGS), ds);
@@ -2875,8 +2878,8 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
-        IDatatype dq = (IDatatype) map.getValue("?tt");
+        IDatatype dt =  map.getValue("?t");
+        IDatatype dq =  map.getValue("?tt");
         assertEquals(2, dt.size());
         assertEquals(2, dq.size());
         for (IDatatype list : dt.getValueList()) {
@@ -2898,7 +2901,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         exec.query(q);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals(true, dt.isList());
         assertEquals(6, dt.size());
     }
@@ -2934,7 +2937,7 @@ public class TestQuery1 {
         exec.query(init);
         exec.query(q);
         Mappings map = exec.query(q2);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         //System.out.println(dt);
         for (IDatatype pair : dt.getValueList()) {
             assertEquals(true, pair.getValueList().get(0).equals(pair.getValueList().get(1)));
@@ -2963,7 +2966,7 @@ public class TestQuery1 {
         exec.query(init);
         exec.query(q);
         Mappings map = exec.query(q2);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals(true, dt.booleanValue());
     }
 
@@ -2991,7 +2994,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?sum");
+        IDatatype dt =  map.getValue("?sum");
         //System.out.println(map);
         assertEquals(1, dt.intValue());
     }
@@ -3018,9 +3021,9 @@ public class TestQuery1 {
                 + "}";
 
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals(25, dt.intValue());
-        IDatatype dt2 = (IDatatype) map.getValue("?r");
+        IDatatype dt2 =  map.getValue("?r");
         assertEquals(20, dt2.intValue());
     }
 
@@ -3035,7 +3038,7 @@ public class TestQuery1 {
                 + "}";
 
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals(25, dt.intValue());
     }
 
@@ -3061,7 +3064,7 @@ public class TestQuery1 {
 
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         int i = 0;
         for (IDatatype val : dt.getValueList()) {
             assertEquals((i++ == 1) ? true : false, val.booleanValue());
@@ -3089,7 +3092,7 @@ public class TestQuery1 {
 
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         int i = 0;
         for (IDatatype val : dt.getValueList()) {
             assertEquals((i++ == 1) ? true : false, val.booleanValue());
@@ -3112,7 +3115,7 @@ public class TestQuery1 {
                 + "}";
 
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals(135, dt.intValue());
     }
 
@@ -3166,7 +3169,7 @@ public class TestQuery1 {
         Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals(110, dt.intValue());
     }
 
@@ -3184,7 +3187,7 @@ public class TestQuery1 {
         Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals(110, dt.intValue());
     }
 
@@ -3202,7 +3205,7 @@ public class TestQuery1 {
         Graph g = createGraph();
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals(110, dt.intValue());
     }
 
@@ -3698,7 +3701,7 @@ public class TestQuery1 {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?y");
+        IDatatype dt =  map.getValue("?y");
         assertEquals("test", dt.doubleValue(), 1.5497, 10e-5);
     }
 
@@ -3716,15 +3719,46 @@ public class TestQuery1 {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?y");
+        IDatatype dt =  map.getValue("?y");
         assertEquals("test", dt.doubleValue(), 1.5497, 10e-5);
     }
 
-   
+    @Test
+    public void testinsertwhere() throws EngineException {
+        String i = "insert { graph us:Jim {?s ?p ?o}} "
+                + "where { "
+                + "bind (us:Jim as ?s)"
+                + "bind (us:Jim as ?p)"
+                + "bind (us:Jim as ?o)"
+                + "}";
+        String d = "delete data { graph us:Jim { us:Jim us:Jim us:Jim }}";
+
+        Graph g = Graph.create();
+        QueryProcess exec = QueryProcess.create(g);
+        exec.query(i);
+
+        for (Edge e : g.getEdges()) {
+            int n = e.getGraph().getIndex();
+//            System.out.println("s "+ e.getNode(0) + " " + e.getNode(0).getIndex());
+//            System.out.println("o " +e.getNode(1) + " " + e.getNode(1).getIndex());
+//            System.out.println("p " +e.getEdgeNode() + " " + e.getEdgeNode().getIndex());
+//            System.out.println("g "+ e.getGraph() + " " + e.getGraph().getIndex());
+            
+            assertEquals(n, e.getNode(0).getIndex());
+            assertEquals(n, e.getNode(1).getIndex());
+            assertEquals(n, e.getEdge().getEdgeNode().getIndex());
+        }
+
+        exec.query(d);
+        assertEquals(0, g.size());
+    }
 
     @Test
     public void testinsertdata() throws EngineException {
-        String i = "insert data { graph us:Jim { us:Jim us:Jim us:Jim }}";
+        String i = "insert data { "
+                + "graph us:Jim { us:Jim us:Jim us:Jim }"
+                + "graph us:Jim { us:Jim us:Jim us:Jim }"
+                + "}";
         String d = "delete data { graph us:Jim { us:Jim us:Jim us:Jim }}";
 
         Graph g = Graph.create();
@@ -3770,7 +3804,7 @@ public class TestQuery1 {
                 + "}";
 
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?n");
+        IDatatype dt =  map.getValue("?n");
         assertEquals(dt.intValue(), 5);
     }
 
@@ -3911,7 +3945,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
 
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?res");
+        IDatatype dt =  map.getValue("?res");
         assertEquals("aoobooooc", dt.getLabel());
     }
 
@@ -4000,8 +4034,8 @@ public class TestQuery1 {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?c");
-        IDatatype dt2 = (IDatatype) map.getValue("?mc");
+        IDatatype dt =  map.getValue("?c");
+        IDatatype dt2 =  map.getValue("?mc");
         assertEquals(0, dt.intValue());
         assertEquals(0, dt2.intValue());
     }
@@ -4044,7 +4078,7 @@ public class TestQuery1 {
                 + "}";
 
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?tt");
+        IDatatype dt =  map.getValue("?tt");
         assertEquals(10, dt.intValue());
         Context c = (Context) map.getContext();
         IDatatype val = c.getName("test");
@@ -4067,7 +4101,7 @@ public class TestQuery1 {
                 + "}";
 
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals("JonJim", dt.stringValue());
     }
 
@@ -4091,7 +4125,6 @@ public class TestQuery1 {
             ld.parse(data + "junit/data/test.xml", Load.RDFXML_FORMAT);
 
         } catch (LoadException ex) {
-            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
         }
         assertEquals(5, g.size());
     }
@@ -4107,8 +4140,8 @@ public class TestQuery1 {
             ld.parseDir(data + "junit/data");
             ld.parseDir(data + "junit/data", "http://example.org/");
         } catch (LoadException ex) {
-            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
         }
+        System.out.println(g.display());
         assertEquals(4, g.size());
     }
 
@@ -4146,7 +4179,7 @@ public class TestQuery1 {
         exec1.query(i1);
 
         Mappings map = exec1.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?m");
+        IDatatype dt =  map.getValue("?m");
         Mappings m = dt.getPointerObject().getMappings();
         assertEquals(4, m.size());
     }
@@ -4224,7 +4257,7 @@ public class TestQuery1 {
 
         Mappings map = exec.query(q);
         assertEquals(4, map.size());
-        IDatatype dt = (IDatatype) map.getValue("?x");
+        IDatatype dt =  map.getValue("?x");
         assertEquals(1, dt.intValue());
     }
 
@@ -4264,7 +4297,7 @@ public class TestQuery1 {
 
         exec.query(i);
         Edge e = g.getEdges().iterator().next();
-        IDatatype dt = (IDatatype) e.getNode(1).getValue();
+        IDatatype dt =  e.getNode(1).getValue();
         assertEquals("John", dt.stringValue());
     }
 
@@ -4362,8 +4395,8 @@ public class TestQuery1 {
         //System.out.println("*****************************************");
         //System.out.println(map);
         assertEquals(2, map.size()); // there is also a global prefix c:
-//        IDatatype p = (IDatatype) map.getValue("?p");
-//        IDatatype n = (IDatatype) map.getValue("?n");
+//        IDatatype p =  map.getValue("?p");
+//        IDatatype n =  map.getValue("?n");
 //        assertEquals("ex", p.stringValue());
 //        assertEquals("htp://example.org/", n.stringValue());
     }
@@ -4648,7 +4681,7 @@ public class TestQuery1 {
 
         Mappings map = exec.query(q);
         assertEquals(3, map.size());
-        IDatatype dt = (IDatatype) map.getValue("?x");
+        IDatatype dt =  map.getValue("?x");
         assertEquals(NSManager.USER + "John", dt.stringValue());
     }
 
@@ -4685,7 +4718,7 @@ public class TestQuery1 {
     }
 
     String strValue(Mappings m, String v) {
-        return ((IDatatype) m.get(0).getValue(v)).stringValue();
+        return ( m.get(0).getValue(v)).stringValue();
     }
 
     @Test
@@ -4703,8 +4736,8 @@ public class TestQuery1 {
         //exec.setLinkedFunction(true);
         Access.setLinkedFunction(true);
         Mappings map = exec.query(q);
-        IDatatype dm = (IDatatype) map.getValue("?m");
-        IDatatype ds = (IDatatype) map.getValue("?s");
+        IDatatype dm =  map.getValue("?m");
+        IDatatype ds =  map.getValue("?s");
         assertEquals(3, dm.intValue());
         assertEquals(1.41421, ds.doubleValue(), 0.01);
         //1.41421
@@ -4762,9 +4795,9 @@ public class TestQuery1 {
                 + "(mapany(rq:strstarts, us:test, xt:list(xt:, st:, us:)) as ?st)"
                 + "where {}";
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?uri");
-        IDatatype bn = (IDatatype) map.getValue("?bn");
-        IDatatype st = (IDatatype) map.getValue("?st");
+        IDatatype dt =  map.getValue("?uri");
+        IDatatype bn =  map.getValue("?bn");
+        IDatatype st =  map.getValue("?st");
         assertEquals(true, dt.booleanValue());
         assertEquals(false, bn.booleanValue());
         assertEquals(true, st.booleanValue());
@@ -4783,7 +4816,7 @@ public class TestQuery1 {
                 + "}"
                 + "}";
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?res");
+        IDatatype dt =  map.getValue("?res");
         assertEquals(false, dt.booleanValue());
         ////System.out.println(map);
     }
@@ -4807,7 +4840,7 @@ public class TestQuery1 {
 
         Mappings map = exec.query(q);
         for (Mapping m : map) {
-            IDatatype dt = (IDatatype) m.getValue("?t");
+            IDatatype dt =  m.getValue("?t");
             assertEquals("Auguste", dt.stringValue());
         }
 
@@ -4876,7 +4909,7 @@ public class TestQuery1 {
         exec.query(init);
         Mappings map = exec.query(q);
         ////System.out.println(map);
-        IDatatype dt = (IDatatype) map.getValue(("?t"));
+        IDatatype dt =  map.getValue(("?t"));
         assertEquals("bar", dt.stringValue());
     }
 
@@ -4907,7 +4940,7 @@ public class TestQuery1 {
 //        Mappings map = exec.query(q);
 //        ////System.out.println(map);
 //        Mappings m = (Mappings) map.getNodeObject(ASTQuery.MAIN_VAR);
-//        IDatatype dt = (IDatatype) m.getValue("?s");
+//        IDatatype dt =  m.getValue("?s");
 
         IDatatype dt = exec.eval(q);
         //System.out.println(dt);
@@ -4944,7 +4977,7 @@ public class TestQuery1 {
         exec.compile(qe);
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals(1, dt.intValue());
     }
 
@@ -4981,11 +5014,11 @@ public class TestQuery1 {
 
         exec.query(i);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?s");
+        IDatatype dt =  map.getValue("?s");
         assertEquals(6, dt.intValue());
 
         map = exec.query(q2);
-        dt = (IDatatype) map.getValue("?s");
+        dt =  map.getValue("?s");
         assertEquals(5, dt.intValue());
     }
 
@@ -5041,7 +5074,7 @@ public class TestQuery1 {
 
         Mappings map = exec.query(q);
         ////System.out.println(map);
-        IDatatype dt = (IDatatype) map.getValue("?t");
+        IDatatype dt =  map.getValue("?t");
         assertEquals(25, dt.intValue());
 
     }
@@ -5111,7 +5144,7 @@ public class TestQuery1 {
 
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?res");
+        IDatatype dt =  map.getValue("?res");
         assertEquals(4, dt.intValue());
 
     }
@@ -5163,22 +5196,22 @@ public class TestQuery1 {
         Mappings map ;
         IDatatype dt;
 //        map = exec.query(q);
-//        dt = (IDatatype) map.getValue("?res");
+//        dt =  map.getValue("?res");
 //        assertEquals(10, dt.size());
 //        assertEquals(20, dt.get(dt.size() - 1).intValue());
 
         map = exec.query(q1);
-        dt = (IDatatype) map.getValue("?res");
+        dt =  map.getValue("?res");
         assertEquals(10, dt.size());
         assertEquals(20, dt.get(dt.size() - 1).intValue());
 
         map = exec.query(q2);
-        dt = (IDatatype) map.getValue("?res");
+        dt =  map.getValue("?res");
         assertEquals(10, dt.size());
         assertEquals(20, dt.get(dt.size() - 1).intValue());
 
 //        map = exec.query(q3);
-//        dt = (IDatatype) map.getValue("?res");
+//        dt =  map.getValue("?res");
 //        assertEquals(20, dt.size());
 //        assertEquals(30, dt.get(dt.size() - 1).intValue());
     }
@@ -5203,7 +5236,7 @@ public class TestQuery1 {
         assertEquals(25, map.size());
 
         map = exec.query(q2);
-        IDatatype dt = (IDatatype) map.getValue("?test");
+        IDatatype dt =  map.getValue("?test");
         assertEquals(25, dt.size());
 
 
@@ -5320,7 +5353,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?sum");
+        IDatatype dt =  map.getValue("?sum");
         assertEquals(2, dt.intValue());
     }
 
@@ -5344,7 +5377,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?sum");
+        IDatatype dt =  map.getValue("?sum");
         assertEquals(1, dt.intValue());
     }
 
@@ -5440,7 +5473,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?sum");
+        IDatatype dt =  map.getValue("?sum");
         assertEquals(1, dt.intValue());
     }
 
@@ -5462,7 +5495,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?sum");
+        IDatatype dt =  map.getValue("?sum");
         assertEquals(2, dt.intValue());
     }
 
@@ -5484,7 +5517,7 @@ public class TestQuery1 {
         QueryProcess exec = QueryProcess.create(g);
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?sum");
+        IDatatype dt =  map.getValue("?sum");
         assertEquals(6, dt.intValue());
     }
 
@@ -5618,9 +5651,9 @@ public class TestQuery1 {
         assertEquals(3, map.size());
 
         for (Mapping m : map) {
-            IDatatype dt = (IDatatype) m.getValue("?r");
+            IDatatype dt =  m.getValue("?r");
             assertEquals(true, dt.booleanValue());
-            IDatatype dtf = (IDatatype) m.getValue("?b");
+            IDatatype dtf =  m.getValue("?b");
             assertEquals(false, dtf.booleanValue());
         }
     }
@@ -5643,8 +5676,8 @@ public class TestQuery1 {
 
         Mappings map = exec.query(query);
 
-        IDatatype dtr = (IDatatype) map.getValue("?r");
-        IDatatype dtn = (IDatatype) map.getValue("?d");
+        IDatatype dtr =  map.getValue("?r");
+        IDatatype dtn =  map.getValue("?d");
 
         assertEquals("XCIX", dtr.stringValue());
         assertEquals(99, dtn.intValue());
@@ -5664,8 +5697,8 @@ public class TestQuery1 {
         Graph g = Graph.create();
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
-        IDatatype dt1 = (IDatatype) map.getValue("?x");
-        IDatatype dt2 = (IDatatype) map.getValue("?y");
+        IDatatype dt1 =  map.getValue("?x");
+        IDatatype dt2 =  map.getValue("?y");
         assertEquals(1, dt1.intValue());
         assertEquals(3, dt2.intValue());
     }
@@ -5697,7 +5730,7 @@ public class TestQuery1 {
         String q = ql.read(data + "query/cal.rq");
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?fr");
+        IDatatype dt =  map.getValue("?fr");
         assertEquals("Vendredi", dt.stringValue());
         ////System.out.println(Interpreter.getExtension());
         String qq = "prefix cal: <http://ns.inria.fr/sparql-extension/calendar/>"
@@ -5749,9 +5782,9 @@ public class TestQuery1 {
                 + "(reduce(rq:mult,   xt:iota(5)) as ?mul)"
                 + "where {}";
         Mappings map = exec.query(q);
-        IDatatype dt1 = (IDatatype) map.getValue("?con");
-        IDatatype dt2 = (IDatatype) map.getValue("?sum");
-        IDatatype dt3 = (IDatatype) map.getValue("?mul");
+        IDatatype dt1 =  map.getValue("?con");
+        IDatatype dt2 =  map.getValue("?sum");
+        IDatatype dt3 =  map.getValue("?mul");
         assertEquals("abc", dt1.stringValue());
         assertEquals(15, dt2.intValue());
         assertEquals(120, dt3.intValue());
@@ -5769,7 +5802,7 @@ public class TestQuery1 {
                 + "function xt:fun(?x) { 1.0 / xt:fac(?x) }";
 
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?res");
+        IDatatype dt =  map.getValue("?res");
         assertEquals(2.71828, dt.doubleValue(), 0.0001);
 
     }
@@ -5789,7 +5822,7 @@ public class TestQuery1 {
                         + "function xt:foo(?n) { 1 / xt:fac(?n) }";
         exec.query(init);
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?res");
+        IDatatype dt =  map.getValue("?res");
         assertEquals(2.71828, dt.doubleValue(), 0.0001);
 
     }
@@ -5819,13 +5852,13 @@ public class TestQuery1 {
 
         Mappings map = exec.query(query);
 
-        IDatatype dt = (IDatatype) map.getValue("?r");
+        IDatatype dt =  map.getValue("?r");
 
         assertEquals(14400, dt.intValue());
 
         map = exec.query(query2);
 
-        dt = (IDatatype) map.getValue("?r");
+        dt =  map.getValue("?r");
 
         assertEquals(14400, dt.intValue());
 
@@ -6158,7 +6191,7 @@ public class TestQuery1 {
         exec.add(g2);
 
         Mappings map = exec.query(q);
-        IDatatype dt = (IDatatype) map.getValue("?res");
+        IDatatype dt =  map.getValue("?res");
         ////System.out.println(map);
         assertEquals("true true true", dt.stringValue());
     }
@@ -6269,13 +6302,13 @@ public class TestQuery1 {
         Mappings map = exec.query(q);
         ////System.out.println(map);
 
-        IDatatype dt0 = (IDatatype) map.get(0).getValue("?g");
+        IDatatype dt0 =  map.get(0).getValue("?g");
         assertEquals(true, dt0.getDatatypeURI().equals(NSManager.XSD + "string"));
 
-        IDatatype dt1 = (IDatatype) map.get(1).getValue("?g");
+        IDatatype dt1 =  map.get(1).getValue("?g");
         assertEquals(true, dt1.getDatatypeURI().equals(NSManager.XSD + "string"));
 
-        IDatatype dt2 = (IDatatype) map.get(2).getValue("?g");
+        IDatatype dt2 =  map.get(2).getValue("?g");
         assertEquals(true, dt2.getLang() != null && dt2.getLang().equals("fr"));
 
     }
@@ -6312,7 +6345,6 @@ public class TestQuery1 {
 
 
         Mappings map = exec.query(t1);
-
         assertEquals(7764, map.getTemplateResult().getLabel().length());
 
         map = exec.query(t2);
@@ -6453,7 +6485,7 @@ public class TestQuery1 {
 
         try {
             Mappings map = exec.query(init);
-            IDatatype dt = (IDatatype) map.getValue("?c");
+            IDatatype dt =  map.getValue("?c");
             assertEquals("Result", 18, dt.intValue());
             ////System.out.println(g.display());
 
@@ -6532,7 +6564,7 @@ public class TestQuery1 {
 
         try {
             Mappings map = exec.query(init);
-            IDatatype dt = (IDatatype) map.getValue("?c");
+            IDatatype dt =  map.getValue("?c");
             assertEquals("Result", 11, dt.intValue());
 
         } catch (EngineException e) {
@@ -6622,7 +6654,7 @@ public class TestQuery1 {
 
         Mappings map = exec.query(query);
 
-        IDatatype dt = (IDatatype) map.getValue("?res");
+        IDatatype dt =  map.getValue("?res");
         assertEquals(true, dt.getLabel().contains("?x ?p ?y"));
 
 
@@ -6813,7 +6845,6 @@ public class TestQuery1 {
 
 
         } catch (EngineException ex) {
-            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
             assertEquals("result", true, ex);
         }
 
@@ -6887,7 +6918,6 @@ public class TestQuery1 {
             assertEquals("result", 2, map.size());
 
         } catch (EngineException ex) {
-            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -6916,7 +6946,6 @@ public class TestQuery1 {
             ////System.out.println(map);
             assertEquals("result", 1, map.size());
         } catch (EngineException ex) {
-            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
         }
 
     }
@@ -6937,7 +6966,6 @@ public class TestQuery1 {
             try {
                 stream.close();
             } catch (IOException ex) {
-                LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
             }
         }
         return stream;
@@ -7035,7 +7063,6 @@ public class TestQuery1 {
             ////System.out.println(map);
             ////System.out.println(map.size());
         } catch (EngineException ex) {
-            LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
         }
     }
 
@@ -7064,7 +7091,7 @@ public class TestQuery1 {
                         + "}";
 
         String query3 =
-                "select * where {"
+                "select distinct * where {"
                         + "?x foaf:age ?a "
                         + "}"
                         + "values ?a { 21 21.0 }";
@@ -7084,7 +7111,7 @@ public class TestQuery1 {
             assertEquals("Result", 1, map.size());
 
             map = exec.query(query3);
-            ////System.out.println(map);
+            //System.out.println(map);
             assertEquals("Result", 2, map.size());
 
         } catch (EngineException e) {
@@ -7191,7 +7218,7 @@ public class TestQuery1 {
 
 
             Mappings map = exec.query(query2);
-            IDatatype dt = (IDatatype) map.getValue("?t");
+            IDatatype dt =  map.getValue("?t");
             assertEquals("Results", 70, dt.getLabel().length());
 
         } catch (EngineException e) {
@@ -7621,7 +7648,6 @@ public class TestQuery1 {
             try {
                 init(g, ld);
             } catch (LoadException ex) {
-                LogManager.getLogger(TestQuery1.class.getName()).log(Level.ERROR, "", ex);
             }
 
             QueryProcess exec = QueryProcess.create(g);
@@ -8859,11 +8885,11 @@ public class TestQuery1 {
             ////System.out.println(map);
             assertEquals("Result", 5, map.size());
 
-            IDatatype dt0 = (IDatatype) map.get(0).getNode("?x").getValue();
-            IDatatype dt1 = (IDatatype) map.get(1).getNode("?x").getValue();
-            IDatatype dt2 = (IDatatype) map.get(2).getNode("?x").getValue();
-            IDatatype dt3 = (IDatatype) map.get(3).getNode("?x").getValue();
-            IDatatype dt4 = (IDatatype) map.get(4).getNode("?x").getValue();
+            IDatatype dt0 =  map.get(0).getNode("?x").getValue();
+            IDatatype dt1 =  map.get(1).getNode("?x").getValue();
+            IDatatype dt2 =  map.get(2).getNode("?x").getValue();
+            IDatatype dt3 =  map.get(3).getNode("?x").getValue();
+            IDatatype dt4 =  map.get(4).getNode("?x").getValue();
 
             assertEquals("Result", "B", dt0.getLabel());
             assertEquals("Result", "D", dt1.getLabel());
@@ -9191,6 +9217,6 @@ public class TestQuery1 {
     }
 
     IDatatype datatype(Node n) {
-        return (IDatatype) n.getValue();
+        return  n.getValue();
     }
 }

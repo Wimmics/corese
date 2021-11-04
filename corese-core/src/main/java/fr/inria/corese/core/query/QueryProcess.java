@@ -1143,6 +1143,7 @@ public class QueryProcess extends QuerySolver {
     }
 
     // Use case: funcall @public functions
+    @Override
     public Eval getEval() throws EngineException {
         if (eval == null) {
             eval = createEval("select where {}  ", null);

@@ -252,8 +252,11 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
                     
             }
             //  get additional parameters attached to URL in urlprofile.ttl 
-            context(ds.getContext(), getContext());
+            //context(ds.getContext(), getContext());
         }
+        
+        //  get additional parameters attached to URL in urlprofile.ttl 
+        context(ds.getContext(), getContext());
         
         // get default parameters attached to joker mode * in urlprofile.ttl 
         //ds.getContext().context(getContext(), STAR);

@@ -1,7 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
 package fr.inria.corese.sparql.triple.function.term;
 
 import fr.inria.corese.kgram.api.core.Node;
@@ -31,6 +27,7 @@ public class TermEval extends Term {
     public static Logger logger = LoggerFactory.getLogger(TermEval.class);
     public static final IDatatype TRUE = DatatypeMap.TRUE;
     public static final IDatatype FALSE = DatatypeMap.FALSE;
+    public static boolean OVERLOAD = false;
     
     public static final String SPARQL_MESS = "SPARQL query unauthorized";
     public static final String LOAD_MESS = "Load unauthorized";
@@ -143,12 +140,14 @@ public class TermEval extends Term {
     }
     
     public IDatatype overload(Computer eval, Binding b, Environment env, Producer p, IDatatype dt1, IDatatype dt2, IDatatype res) {
-        if (env.getVisitor().overload(this, res, dt1, dt2)) {
-            return overload(env, res, dt1, dt2);
-        } 
-        if (res == null) {
-            // TODO: create a vector for each error !!!
-            return error(eval, b, env, p, dt1, dt2);
+        if (OVERLOAD) {
+            if (env.getVisitor().overload(this, res, dt1, dt2)) {
+                return overload(env, res, dt1, dt2);
+            }
+            if (res == null) {
+                // TODO: create a vector for each error !!!
+                return error(eval, b, env, p, dt1, dt2);
+            }
         }
         return res;
     }

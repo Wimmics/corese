@@ -874,7 +874,7 @@ public class Memory extends PointerObject implements Environment {
             if (qNode != null) {
                 Node tNode = list.get(qNode.getLabel());
                 if (tNode != null) {
-                    Node node = map.getNode(k);
+                    Node node = map.getNodeProtect(k);
                     if (push(tNode, node, n)) {                       
                     } else {
                         // pop

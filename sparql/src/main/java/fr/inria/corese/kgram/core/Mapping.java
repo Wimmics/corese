@@ -674,6 +674,14 @@ public class Mapping
     public Node getNode(int n) {
         return nodes[n];
     }
+    
+    public Node getNodeProtect(int n) {
+        if (n < nodes.length) {
+            return nodes[n];
+        }
+        return null;
+    }
+    
 
     @Override
     public Node getQueryNode(int n) {

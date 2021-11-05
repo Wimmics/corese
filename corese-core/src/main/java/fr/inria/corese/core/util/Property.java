@@ -26,6 +26,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
@@ -123,6 +124,7 @@ public class Property {
         SOLVER_QUERY_PLAN, // STD | ADVANCED
         // string value
         SOLVER_VISITOR,
+        SOLVER_OVERLOAD,
         RULE_VISITOR,
         TRANSFORMER_VISITOR,
         SERVER_VISITOR,
@@ -438,6 +440,10 @@ public class Property {
 
             case SOLVER_SORT_CARDINALITY:
                 QueryProcess.setSort(b);
+                break;
+                
+            case SOLVER_OVERLOAD:
+                TermEval.OVERLOAD = b;
                 break;
                 
             case RDFS_ENTAILMENT:

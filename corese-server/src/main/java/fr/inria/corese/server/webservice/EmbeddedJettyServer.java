@@ -358,7 +358,6 @@ public class EmbeddedJettyServer extends ResourceConfig {
             ResourceConfig config = new ResourceConfig(
                     SPARQLRestAPI.class, 
                     SPARQLService.class,
-                    SPARQLUpdate.class,
                     GraphProtocol.class,
                     ServiceCompute.class,
                     SrvWrapper.class,

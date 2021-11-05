@@ -525,6 +525,10 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     String getQuery(String query, String message) {
         return (query.isEmpty()) ? message : query;
     }
+    
+    String getQuery(String query, String update, String message) {
+        return (query.isEmpty()) ? getQuery(update, message) : query;
+    }
 
     @POST
     @Produces({SPARQL_RESULTS_XML, XML})
@@ -597,22 +601,20 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             String message) {
         
         logger.info("getTriplesXMLForPost");
-        query = getQuery(query, message);
+//        logger.info("message: " + message);
+//        logger.info("query: " + query);
+//        logger.info("update: " + update);
+        
+        query = getQuery(query, update, message);
               
         String ft = request.getHeader("Accept");
         if (ft.contains(SPARQL_RESULTS_XML) || ft.contains(XML)) {
             format = SPARQL_RESULTS_XML;
         }   
                 
-        return getResultFormat(request, name, oper, uri, param, mode, query(query, update), access, defaut, named, format, UNDEF_FORMAT, transform);
+        return getResultFormat(request, name, oper, uri, param, mode, query, access, defaut, named, format, UNDEF_FORMAT, transform);
     }
 
-    String query(String query, String update) {
-        if (query.isEmpty()) {
-            return update;
-        }
-        return query;
-    }
     
     @POST
     @Produces(TEXT)
@@ -629,10 +631,10 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @FormParam("mode")   List<String> mode,
             @FormParam("uri")    List<String> uri, 
             String message) {
-            query = getQuery(query, message);
+            query = getQuery(query, update, message);
 
             logger.info("getTriplesTEXTForPost");       
-        return getResultForPost(request, name, oper, uri, param, mode, query(query, update), access, defaut, named, TEXT_FORMAT);
+        return getResultForPost(request, name, oper, uri, param, mode, query, access, defaut, named, TEXT_FORMAT);
     }
     
     
@@ -674,10 +676,10 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @FormParam("uri")    List<String> uri,  
             String message) {
 
-        query = getQuery(query, message);
+        query = getQuery(query, update, message);
         logger.info("getTriplesJSONForPost");       
         //return getResultForPost(request, name, oper, uri, param, mode, query, access, defaut, named, ResultFormat.JSON_FORMAT);
-        return getResultFormat(request, name, oper, uri, param, mode, query(query, update), access, defaut, named, null, JSON_FORMAT, transform);    
+        return getResultFormat(request, name, oper, uri, param, mode, query, access, defaut, named, null, JSON_FORMAT, transform);    
     }
     
     
@@ -708,11 +710,11 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @FormParam("named-graph-uri") List<String> named, 
             String message) {
         try {
-            query = getQuery(query, message);
+            query = getQuery(query, update, message);
             logger.info("getTriplesCSVForPost");
 
             return Response.status(200).header(headerAccept, "*").entity(CSVFormat.create(getTripleStore(name)
-                    .query(request, query(query, update), createDataset(request, defaut, named, access))).toString()).build();
+                    .query(request, query, createDataset(request, defaut, named, access))).toString()).build();
         } catch (Exception ex) {
             logger.error(ERROR_ENDPOINT, ex);
             return Response.status(ERROR).header(headerAccept, "*").entity(ERROR_ENDPOINT).build();
@@ -732,11 +734,11 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @FormParam("default-graph-uri") List<String> defaut,
             @FormParam("named-graph-uri") List<String> named, String message) {
         try {
-            query = getQuery(query, message);
+            query = getQuery(query, update, message);
             logger.info("getTriplesTSVForPost");
 
             return Response.status(200).header(headerAccept, "*").entity(TSVFormat.create(getTripleStore(name)
-                    .query(request, query(query, update), createDataset(request, defaut, named, access))).toString()).build();
+                    .query(request, query, createDataset(request, defaut, named, access))).toString()).build();
         } catch (Exception ex) {
             logger.error(ERROR_ENDPOINT, ex);
             return Response.status(ERROR).header(headerAccept, "*").entity(ERROR_ENDPOINT).build();
@@ -760,14 +762,13 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @FormParam("named-graph-uri") List<String> named,
             @FormParam("param")  List<String> param,
             @FormParam("mode")   List<String> mode,
-            @FormParam("uri")    List<String> uri,  
-            
+            @FormParam("uri")    List<String> uri,             
             String message) {
 
-        query = getQuery(query, message);
+        query = getQuery(query, update, message);
 
         logger.info("getRDFGraphXMLForPost");            
-        return getResultForPost(request, name, oper, uri, param, mode, query(query, update), access, defaut, named, RDF_XML_FORMAT);
+        return getResultForPost(request, name, oper, uri, param, mode, query, access, defaut, named, RDF_XML_FORMAT);
     }
 
     @POST
@@ -786,9 +787,9 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @FormParam("uri")    List<String> uri,  
             String message) {
 
-        query = getQuery(query, message);
+        query = getQuery(query, update, message);
         logger.info("getRDFGraphNTripleForPost");
-        return getResultForPost(request, name, oper, uri, param, mode, query(query, update), access, defaut, named, TURTLE_FORMAT);        
+        return getResultForPost(request, name, oper, uri, param, mode, query, access, defaut, named, TURTLE_FORMAT);        
     }
 
     @POST
@@ -806,9 +807,9 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @FormParam("mode")   List<String> mode,
             @FormParam("uri")    List<String> uri,  
             String message) {
-        query = getQuery(query, message);
+        query = getQuery(query, update, message);
         logger.info("getRDFGraphJsonLDForPost");
-        return getResultForPost(request, name, oper, uri, param, mode, query(query, update), access, defaut, named, JSON_LD_FORMAT);        
+        return getResultForPost(request, name, oper, uri, param, mode, query, access, defaut, named, JSON_LD_FORMAT);        
         
     }
 

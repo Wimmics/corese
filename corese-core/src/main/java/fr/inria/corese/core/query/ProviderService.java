@@ -88,7 +88,7 @@ public class ProviderService implements URLParam {
         setMappings(map);
         setEval(eval);
         // after setEval:
-        setBinding((Binding) getEnvironment().getBind());
+        setBinding(getEnvironment().getBind());
         // after setBinding:
         init();
     }
@@ -704,6 +704,7 @@ public class ProviderService implements URLParam {
             service.setCount(count);
             service.setBind(b);
             service.setDebug(q.isRecDebug());
+            service.setLog(getLog());
             Mappings map = service.query(q, ast, null);
             return map;
         } catch (LoadException ex) {

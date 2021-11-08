@@ -17,6 +17,7 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.io.InputStream;
 
 import java.io.UnsupportedEncodingException;
@@ -57,6 +58,7 @@ public class Service implements URLParam {
     public static final String RDF = RDF_XML;
     
     private ClientBuilder clientBuilder;
+    private ContextLog log;
 
     private boolean isDebug = false;
     private boolean post = true;
@@ -198,7 +200,7 @@ public class Service implements URLParam {
                 throw new ResponseProcessingException(resp, res);
             }
             
-            setFormat(resp.getMediaType().toString());
+            recordFormat(resp.getMediaType().toString());            
             trace(res);
             return res;
         } catch (RedirectionException ex) {
@@ -266,7 +268,7 @@ public class Service implements URLParam {
         if (ft == null) {
             return format(ast);
         }
-        logger.info("service: "+ ft + " " + ResultFormat.decode(ft));
+        logger.info("Accept: "+ ft + " " + ResultFormat.decode(ft));
         return ResultFormat.decode(ft);
     }
         
@@ -388,7 +390,7 @@ public class Service implements URLParam {
         WebTarget target = client.target(url);
         Response resp = target.request(mime).get();
         if (resp.getMediaType()!=null) {
-            setFormat(resp.getMediaType().toString());
+            recordFormat(resp.getMediaType().toString());
         }
 
         if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
@@ -495,48 +497,43 @@ public class Service implements URLParam {
     public void setURL(URLServer url) {
         this.url = url;
     }
-
-    /**
-     * @return the format
-     */
+   
     public String getFormat() {
         return format;
     }
 
-    /**
-     * @param format the format to set
-     */
+
     public void setFormat(String format) {
-        this.format = format;
+        this.format = format; 
+    }
+    
+    void recordFormat(String format) {
+        setFormat(format);
         if (getParser()!=null) {
             getParser().setFormat(format);
         }
+        logger.info("Content type: " + format);
+        if (getLog() != null) {
+            getLog().getFormatList().add(format);
+        }
     }
 
-    /**
-     * @return the timeout
-     */
+    
     public int getTimeout() {
         return timeout;
     }
 
-    /**
-     * @param timeout the timeout to set
-     */
+    
     public void setTimeout(int timeout) {
         this.timeout = timeout;
     }
 
-    /**
-     * @return the count
-     */
+    
     public int getCount() {
         return count;
     }
 
-    /**
-     * @param count the count to set
-     */
+    
     public void setCount(int count) {
         this.count = count;
     }
@@ -612,6 +609,14 @@ public class Service implements URLParam {
 
     public void setDebug(boolean isDebug) {
         this.isDebug = isDebug;
+    }
+
+    public ContextLog getLog() {
+        return log;
+    }
+
+    public void setLog(ContextLog log) {
+        this.log = log;
     }
     
 }

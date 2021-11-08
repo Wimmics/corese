@@ -55,6 +55,11 @@ public class ServiceParser implements URLParam {
                 case ResultFormat.TURTLE:
                 case ResultFormat.TURTLE_TEXT:
                     map = parseTurtle(str); break;
+                    
+                case ResultFormat.SPARQL_RESULTS_XML:
+                    map = parseXMLMapping(str, encoding); 
+                    break;
+
                 default:
                    map = parseXMLMapping(str, encoding); 
             }
@@ -146,7 +151,6 @@ public class ServiceParser implements URLParam {
         Load ld = Load.create(g);
         
         if (getFormat() != null) {
-            Service.logger.info("service parse: " + getFormat());
             switch (getFormat()) {
                 case ResultFormat.RDF_XML:
                     ld.loadString(str, Load.RDFXML_FORMAT);
@@ -157,7 +161,10 @@ public class ServiceParser implements URLParam {
                 case ResultFormat.TURTLE:
                 case ResultFormat.TURTLE_TEXT:
                     ld.loadString(str, Load.TURTLE_FORMAT);
-                    break;    
+                    break; 
+                default:
+                   Service.logger.info("Format not handled: " + getFormat());
+
             }
         }
         else {

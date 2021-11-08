@@ -54,6 +54,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     static final String SPARQL_RESULTS_JSON = ResultFormat.SPARQL_RESULTS_JSON;
     static final String SPARQL_RESULTS_CSV  = ResultFormat.SPARQL_RESULTS_CSV;
     static final String SPARQL_RESULTS_TSV  = ResultFormat.SPARQL_RESULTS_TSV;
+    static final String SPARQL_QUERY        = ResultFormat.SPARQL_QUERY;
     
     static final String XML         = ResultFormat.XML;
     static final String RDF_XML     = ResultFormat.RDF_XML;
@@ -532,7 +533,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
 
     @POST
     @Produces({SPARQL_RESULTS_XML, XML})
-    @Consumes("application/sparql-query")
+    @Consumes(SPARQL_QUERY)
     public Response getXMLForPost(@javax.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name") String name,
             @PathParam("oper") String oper,
@@ -555,7 +556,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     
     @POST
     @Produces({TEXT})
-    @Consumes("application/sparql-query")
+    @Consumes(SPARQL_QUERY)
     public Response getXMLForPostText(@javax.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name") String name, 
             @PathParam("oper") String oper, 
@@ -601,14 +602,17 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             String message) {
         
         logger.info("getTriplesXMLForPost");
+        String accept = request.getHeader("Accept");
+        if (accept!=null && !accept.isEmpty()){
+            logger.info("Accept: " + accept);
+        }
 //        logger.info("message: " + message);
 //        logger.info("query: " + query);
 //        logger.info("update: " + update);
         
         query = getQuery(query, update, message);
               
-        String ft = request.getHeader("Accept");
-        if (ft.contains(SPARQL_RESULTS_XML) || ft.contains(XML)) {
+        if (accept.contains(SPARQL_RESULTS_XML) || accept.contains(XML)) {
             format = SPARQL_RESULTS_XML;
         }   
                 
@@ -640,7 +644,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     
     @POST
     @Produces(SPARQL_RESULTS_JSON)
-    @Consumes("application/sparql-query")
+    @Consumes(SPARQL_QUERY)
     public Response getTriplesJSONForPostNew(@javax.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name") String name, 
             @PathParam("oper") String oper, 

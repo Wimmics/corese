@@ -389,7 +389,7 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
     
     void afterRequest(Mappings map, Dataset ds, String res) {
         if (ds.getContext().hasValue(TRACE)) {
-            System.out.println(res);
+            System.out.println("service result: \n"+res);
         }
     }
     

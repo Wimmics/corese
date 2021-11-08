@@ -37,6 +37,7 @@ public class ContextLog implements URLParam, LogKey {
     // federated visitor endpoint selector Mappings
     private ASTQuery astSelect;
     private StringBuilder trace; 
+    private List<String> formatList;
 
     public ContextLog() {
         init();
@@ -45,6 +46,7 @@ public class ContextLog implements URLParam, LogKey {
     void init() {
         exceptionList = new ArrayList<>();
         linkList = new ArrayList<>();
+        formatList = new ArrayList<>();
         setSubjectMap(new SubjectMap());
     }
 
@@ -489,5 +491,13 @@ public class ContextLog implements URLParam, LogKey {
         }
         return list.get(list.size()-1).getLabel();
     }   
+
+    public List<String> getFormatList() {
+        return formatList;
+    }
+
+    public void setFormatList(List<String> formatList) {
+        this.formatList = formatList;
+    }
 
 }

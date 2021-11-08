@@ -1,0 +1,13 @@
+# Content available in the default dataset at /sparql
+st:user a st:Server;
+    st:content st:loadcontent .
+
+# List endpoints allowed in federated queries + where STTL is allowed to get html templates
+st:access st:namespace
+    <http://localhost/sttl>,
+    <http://fr.dbpedia.org/sparql>,
+    <http://dbpedia.org/sparql>,
+    <https://query.wikidata.org/sparql>
+    .
+
+

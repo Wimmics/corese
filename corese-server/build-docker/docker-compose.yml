@@ -1,0 +1,12 @@
+version: '3'
+services:
+  corese:
+    image: wimmics/corese
+    build: ./corese
+    ports:
+      - "8080:8080"
+    volumes:
+      - "./log:/usr/local/corese/log"
+      - "./data:/usr/local/corese/data"
+      - "./config:/usr/local/corese/config"
+

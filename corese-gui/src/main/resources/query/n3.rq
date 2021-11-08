@@ -1,0 +1,7 @@
+template {
+  ?s " " ?p " " ?o " ."
+} 
+where {
+  ?s ?p ?o 
+}
+order by if (isURI(?s), 0, 1) ?s ?p ?o

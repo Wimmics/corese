@@ -232,23 +232,36 @@ public class RDFFormat {
 
     void header(StringBuilder bb) {
         boolean first = true;
-        
+        boolean rdf = false;
         for (String p : nsm.getPrefixSet()) {
             String ns = nsm.getNamespace(p);
             if (nsm.isDisplayable(ns)) {
+                if (p.equals("rdf")) {
+                    rdf = true;
+                }
                 if (first) {
                     first = false;
                 } else {
                     bb.append(NL);
                 }
 
-                bb.append(XMLNS);
-                if (!p.equals("")) {
-                    bb.append(":");
-                }
-                bb.append(p).append("='").append(toXML(ns)).append("'");
+                defPrefix(bb, p, ns);
             }
         }
+        if (!rdf) {
+            if (!first) {
+                bb.append(NL);
+            }
+            defPrefix(bb, "rdf", NSManager.RDF);
+        }
+    }
+    
+    void defPrefix(StringBuilder bb, String p, String ns) {
+        bb.append(XMLNS);
+        if (!p.equals("")) {
+            bb.append(":");
+        }
+        bb.append(p).append("='").append(toXML(ns)).append("'");
     }
 
     void print(Node node) {

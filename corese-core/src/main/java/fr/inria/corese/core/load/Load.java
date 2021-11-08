@@ -55,6 +55,8 @@ import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.io.ByteArrayInputStream;
 import java.io.FileFilter;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.net.URLConnection;
 import java.util.ArrayList;
 import org.openrdf.rio.RDFFormat;
@@ -567,22 +569,40 @@ public class Load
         close(stream);
     }
    
-   
-   //                if (myFormat != UNDEF_FORMAT) {
-//                    String testFormat = LoadFormat.getFormat(myFormat);
-//                    if (testFormat != null) {
-//                        //System.out.println("format: " + testFormat);
-//                        c.setRequestProperty(ACCEPT, testFormat);
-//                    }
-//                    else {
-//                        //System.out.println("format: all" );
-//                        c.setRequestProperty(ACCEPT, LOAD_FORMAT);
-//                    }
-//                }               
-//                else {
-//                    logger.info("Header Accept: " + LOAD_FORMAT);
-//                    c.setRequestProperty(ACCEPT, LOAD_FORMAT);
-//                }
+    public InputStream getStream(String path, String... formats) 
+            throws LoadException, MalformedURLException, FileNotFoundException, IOException {
+        String format = "*";
+        if (formats.length>0) {
+            format = formats[0];
+        }
+        InputStream stream;
+        
+        if (NSManager.isResource(path)) {
+            stream = getResourceStream(path);
+        } else if (isURL(path)) {
+            URL url = new URL(path);
+            String contentType = null;
+            
+            if (url.getProtocol().equals(FILE)) {
+                URLConnection c = url.openConnection();
+                stream = c.getInputStream();
+                contentType = c.getContentType();
+            } else {
+                Service srv = new Service(path);
+                stream = srv.load(path, format);
+                contentType = srv.getFormat();
+            }
+            if (contentType != null) {
+                logger.info("Content-type: " + contentType);
+                int myFormat = getTypeFormat(contentType, Load.UNDEF_FORMAT);
+            }
+            //System.out.println("load: " + contentType + " " + myFormat);
+
+        } else {
+            stream = new FileInputStream(path);
+        }
+        return stream;
+    }
    
     String getActualFormat(String path, int myFormat) {
         return getActualFormat(myFormat);

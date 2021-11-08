@@ -144,7 +144,25 @@ public class ServiceParser implements URLParam {
     public Graph parseGraph(String str, String encoding) throws LoadException {
         Graph g = Graph.create();
         Load ld = Load.create(g);
-        ld.loadString(str, Load.RDFXML_FORMAT);
+        
+        if (getFormat() != null) {
+            Service.logger.info("service parse: " + getFormat());
+            switch (getFormat()) {
+                case ResultFormat.RDF_XML:
+                    ld.loadString(str, Load.RDFXML_FORMAT);
+                    break;
+                case ResultFormat.JSON_LD:
+                    ld.loadString(str, Load.JSONLD_FORMAT);
+                    break;
+                case ResultFormat.TURTLE:
+                case ResultFormat.TURTLE_TEXT:
+                    ld.loadString(str, Load.TURTLE_FORMAT);
+                    break;    
+            }
+        }
+        else {
+            ld.loadString(str, Load.RDFXML_FORMAT);
+        }
         return g;
     }
 

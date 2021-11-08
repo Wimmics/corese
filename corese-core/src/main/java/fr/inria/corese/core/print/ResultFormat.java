@@ -45,7 +45,7 @@ public class ResultFormat implements ResultFormatDef {
     
     public static final String XML         = "application/xml";
     public static final String HTML        = "text/html";
-    
+    public static final String SPARQL_QUERY= "application/sparql-query";
     public static final String JSON_LD     = "application/ld+json";
     public static final String JSON        = "application/json";
     public static final String RDF_XML     = "application/rdf+xml";
@@ -110,7 +110,7 @@ public class ResultFormat implements ResultFormatDef {
         defContent(TURTLE_TEXT,       TURTLE_FORMAT);
         defContent(TRIG,              TRIG_FORMAT);
         defContent(JSON_LD,           JSON_LD_FORMAT);
-        defContent(JSON,              JSON_LD_FORMAT);
+        //defContent(JSON,              JSON_LD_FORMAT);
         
         format.put(TRIG_TEXT, TRIG_FORMAT);
         format.put(NT_TEXT, TURTLE_FORMAT);

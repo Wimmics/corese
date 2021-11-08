@@ -7,6 +7,8 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.print.ResultFormat;
+import static fr.inria.corese.core.print.ResultFormat.RDF_XML;
+import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
 import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.util.Property;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_LIMIT;
@@ -15,14 +17,12 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
-import java.io.ByteArrayInputStream;
 import java.io.InputStream;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.concurrent.TimeUnit;
-import java.util.logging.Level;
 import javax.ws.rs.RedirectionException;
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -53,6 +53,9 @@ public class Service implements URLParam {
      // load take URL parameter into account, e.g. format=rdfxml
     public static boolean LOAD_WITH_PARAMETER = false;
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
+    public static final String XML = SPARQL_RESULTS_XML;
+    public static final String RDF = RDF_XML;
+    
     private ClientBuilder clientBuilder;
 
     private boolean isDebug = false;
@@ -96,6 +99,12 @@ public class Service implements URLParam {
         return query(query, getAST(query), m);
     }
     
+    /**
+     * @todo: 
+     * accept = sparql-results+xml ; rdf+xml
+     * bug with: @federate construct
+     * corese server return sparql-results+xml and Service perform parseGraph
+     */
     public Mappings query(Query query, ASTQuery ast, Mapping m) throws LoadException {
         metadata(ast);
         Mappings map;
@@ -103,10 +112,11 @@ public class Service implements URLParam {
             ast = mapping(query, m);
         }
         String astq = ast.toString();
-        if (ast.isSelect() || ast.isAsk()) {
-            map = getParser().parseMapping(astq, process(astq), encoding(ast));
-        } else {
-            Graph g = getParser().parseGraph(process(astq), encoding(ast));
+        if (ast.isSelect() || ast.isAsk() || ast.isUpdate()) {
+            map = getParser().parseMapping(astq, process(ast, astq), encoding(ast));
+        } 
+        else {
+            Graph g = getParser().parseGraph(process(ast, astq), encoding(ast));
             map = new Mappings();
             map.setGraph(g);
         }
@@ -115,11 +125,14 @@ public class Service implements URLParam {
         return map;
     }
     
+    public String process(ASTQuery ast, String query) {
+        return process(query, accept(ast));
+    }
+       
     public String process(String query) {
         return process(query, getAccept());
     }
     
-
     public String process(String query, String mime) {
         if (isPost()) {
             return post(query, mime);
@@ -245,10 +258,25 @@ public class Service implements URLParam {
         if (ft == null) {
             return MIME_TYPE;
         }
-        return  ResultFormat.decode(ft);
+        return ResultFormat.decode(ft);
     }
     
+    String accept(ASTQuery ast) {
+        String ft = getURL().getParameter(FORMAT);
+        if (ft == null) {
+            return format(ast);
+        }
+        logger.info("service: "+ ft + " " + ResultFormat.decode(ft));
+        return ResultFormat.decode(ft);
+    }
+        
 
+    String format(ASTQuery ast) {
+        if (ast.isConstruct() || ast.isDescribe()) {
+            return RDF_XML;
+        }
+        return XML;
+    }
 
     public String post(String query, String mime) {
         // Server URL without parameters

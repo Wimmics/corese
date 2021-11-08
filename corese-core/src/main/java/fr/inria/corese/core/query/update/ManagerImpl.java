@@ -219,7 +219,7 @@ public class ManagerImpl implements Manager {
         cons.setAccessRight(getAccessRight());
         cons.setDebug(query.isDebug());
         cons.insert(lMap, ds);
-        lMap.setGraph(getGraphManager().getGraph());
+        //lMap.setGraph(getGraphManager().getGraph());
     }
 
     @Override
@@ -228,7 +228,7 @@ public class ManagerImpl implements Manager {
         cons.setAccessRight(getAccessRight());
         cons.setDebug(query.isDebug());
         cons.delete(lMap, ds);
-        lMap.setGraph(getGraphManager().getGraph());
+        //lMap.setGraph(getGraphManager().getGraph());
     }
 
     /**

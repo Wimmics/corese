@@ -195,8 +195,8 @@ Exp Query() : { Exp stack; Metadata global=null, la = null;}
        ( 
             ( stack = SelectQuery(la)    
             | stack = ConstructQuery(la) 
-            | stack = DescribeQuery()  
-            | stack = AskQuery()        
+            | stack = DescribeQuery(la)  
+            | stack = AskQuery(la)        
             | UpdateQuery(la)            	
             | stack = TemplateQuery(la)
             )  (Defun()) 
@@ -764,7 +764,7 @@ Exp ConstructQuery(Metadata la) : { Exp stack1, stack2; boolean isRule = false;}
   
 }
 
-Exp DescribeQuery() : { Exp stack; Variable v; String s; Atom at;}
+Exp DescribeQuery(Metadata la) : { Exp stack; Variable v; String s; Atom at;}
 {  
   { stack = new And(); }	
   <DESCRIBE>
@@ -783,11 +783,12 @@ Exp DescribeQuery() : { Exp stack; Variable v; String s; Atom at;}
   SolutionModifier()  
   { 
     astq.setResultForm(ASTQuery.QT_DESCRIBE);
-  	return stack; 
+    astq.setAnnotation(la);	
+    return stack; 
   }
 }
 
-Exp AskQuery() : { Exp stack; Values values;}
+Exp AskQuery(Metadata la) : { Exp stack; Values values;}
 {
   <ASK>
   Debug()
@@ -797,6 +798,7 @@ Exp AskQuery() : { Exp stack; Values values;}
   
   {
   	astq.setResultForm(ASTQuery.QT_ASK);
+        astq.setAnnotation(la);	
   	return stack;
   }
 }

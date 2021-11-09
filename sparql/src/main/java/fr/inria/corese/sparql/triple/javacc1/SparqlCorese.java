@@ -212,10 +212,10 @@
           stack = ConstructQuery(la);
           break;
         case DESCRIBE:
-          stack = DescribeQuery();
+          stack = DescribeQuery(la);
           break;
         case ASK:
-          stack = AskQuery();
+          stack = AskQuery(la);
           break;
         case LOAD:
         case CLEAR:
@@ -2172,8 +2172,8 @@
     throw new Error("Missing return statement in function");
   }
 
-  final public Exp DescribeQuery() throws ParseException {
-                        Exp stack; Variable v; String s; Atom at;
+  final public Exp DescribeQuery(Metadata la) throws ParseException {
+                                   Exp stack; Variable v; String s; Atom at;
     stack = new And();
     jj_consume_token(DESCRIBE);
     Debug();
@@ -2236,12 +2236,13 @@
     }
     SolutionModifier();
     astq.setResultForm(ASTQuery.QT_DESCRIBE);
-        {if (true) return stack;}
+    astq.setAnnotation(la);
+    {if (true) return stack;}
     throw new Error("Missing return statement in function");
   }
 
-  final public Exp AskQuery() throws ParseException {
-                   Exp stack; Values values;
+  final public Exp AskQuery(Metadata la) throws ParseException {
+                              Exp stack; Values values;
     jj_consume_token(ASK);
     Debug();
     label_19:
@@ -2267,6 +2268,7 @@
       ;
     }
         astq.setResultForm(ASTQuery.QT_ASK);
+        astq.setAnnotation(la);
         {if (true) return stack;}
     throw new Error("Missing return statement in function");
   }
@@ -8566,12 +8568,6 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_130() {
-    if (jj_scan_token(LPAREN)) return true;
-    if (jj_3R_93()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_156() {
     if (jj_scan_token(LOOP)) return true;
     return false;
@@ -8589,16 +8585,16 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3_1() {
-    if (jj_3R_60()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_242() {
     Token xsp;
     xsp = jj_scanpos;
     if (jj_3R_250()) jj_scanpos = xsp;
     if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_60()) return true;
     return false;
   }
 
@@ -9363,11 +9359,6 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_164() {
-    if (jj_scan_token(GROUP)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_122() {
     Token xsp;
     xsp = jj_scanpos;
@@ -9379,13 +9370,13 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_145() {
-    if (jj_3R_165()) return true;
+  final private boolean jj_3R_164() {
+    if (jj_scan_token(GROUP)) return true;
     return false;
   }
 
-  final private boolean jj_3R_144() {
-    if (jj_3R_164()) return true;
+  final private boolean jj_3R_145() {
+    if (jj_3R_165()) return true;
     return false;
   }
 
@@ -9395,8 +9386,8 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_143() {
-    if (jj_3R_163()) return true;
+  final private boolean jj_3R_144() {
+    if (jj_3R_164()) return true;
     return false;
   }
 
@@ -9414,6 +9405,11 @@ ExpressionList arg, el = null; Metadata meta = null;
 
   final private boolean jj_3R_229() {
     if (jj_scan_token(GRAPH)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_143() {
+    if (jj_3R_163()) return true;
     return false;
   }
 
@@ -9445,6 +9441,11 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
+  final private boolean jj_3R_248() {
+    if (jj_3R_252()) return true;
+    return false;
+  }
+
   final private boolean jj_3R_113() {
     Token xsp;
     xsp = jj_scanpos;
@@ -9455,11 +9456,6 @@ ExpressionList arg, el = null; Metadata meta = null;
     if (jj_3R_145()) return true;
     }
     }
-    return false;
-  }
-
-  final private boolean jj_3R_248() {
-    if (jj_3R_252()) return true;
     return false;
   }
 
@@ -10148,16 +10144,6 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_62() {
-    if (jj_3R_85()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_61() {
-    if (jj_3R_65()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_107() {
     if (jj_3R_65()) return true;
     return false;
@@ -10168,8 +10154,13 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_115() {
-    if (jj_scan_token(WHERE)) return true;
+  final private boolean jj_3R_62() {
+    if (jj_3R_85()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_61() {
+    if (jj_3R_65()) return true;
     return false;
   }
 
@@ -10197,13 +10188,13 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_203() {
-    if (jj_scan_token(DOUBLE)) return true;
+  final private boolean jj_3R_115() {
+    if (jj_scan_token(WHERE)) return true;
     return false;
   }
 
-  final private boolean jj_3R_114() {
-    if (jj_scan_token(DATA)) return true;
+  final private boolean jj_3R_203() {
+    if (jj_scan_token(DOUBLE)) return true;
     return false;
   }
 
@@ -10224,6 +10215,11 @@ ExpressionList arg, el = null; Metadata meta = null;
 
   final private boolean jj_3R_201() {
     if (jj_scan_token(INTEGER)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_114() {
+    if (jj_scan_token(DATA)) return true;
     return false;
   }
 
@@ -10349,12 +10345,6 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_83() {
-    if (jj_scan_token(INSERT)) return true;
-    if (jj_scan_token(DATA)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_264() {
     if (jj_3R_65()) return true;
     return false;
@@ -10362,6 +10352,12 @@ ExpressionList arg, el = null; Metadata meta = null;
 
   final private boolean jj_3R_263() {
     if (jj_3R_72()) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_83() {
+    if (jj_scan_token(INSERT)) return true;
+    if (jj_scan_token(DATA)) return true;
     return false;
   }
 
@@ -10452,6 +10448,12 @@ ExpressionList arg, el = null; Metadata meta = null;
     }
     }
     }
+    return false;
+  }
+
+  final private boolean jj_3R_130() {
+    if (jj_scan_token(LPAREN)) return true;
+    if (jj_3R_93()) return true;
     return false;
   }
 

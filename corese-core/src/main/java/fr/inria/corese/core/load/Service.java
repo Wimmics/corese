@@ -98,14 +98,10 @@ public class Service implements URLParam {
     }
 
     public Mappings query(Query query, Mapping m) throws LoadException {
-        return query(query, getAST(query), m);
+        return query(query, query.getAST(), m);
     }
     
     /**
-     * @todo: 
-     * accept = sparql-results+xml ; rdf+xml
-     * bug with: @federate construct
-     * corese server return sparql-results+xml and Service perform parseGraph
      */
     public Mappings query(Query query, ASTQuery ast, Mapping m) throws LoadException {
         metadata(ast);

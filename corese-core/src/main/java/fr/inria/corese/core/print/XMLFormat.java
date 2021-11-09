@@ -36,7 +36,7 @@ public class XMLFormat extends QueryResultFormat {
     static final String VAR2 = "$";
     Query query;
     ASTQuery ast;
-    Mappings lMap;
+    private Mappings lMap;
     ArrayList<String> select;
     PrintWriter pw;
 
@@ -107,7 +107,7 @@ public class XMLFormat extends QueryResultFormat {
         
         if (isSelectAll()) {
             // additional select nodes such as ?_server_0 in federate mode
-            for (Node node : lMap.getQueryNodeList()) {
+            for (Node node : getMappings().getQueryNodeList()) {
                 defSelect(node.getLabel());
             }
         }
@@ -219,8 +219,8 @@ public class XMLFormat extends QueryResultFormat {
     public void print(boolean printInfoInFile, String fileName) {
         init();
         println(getTitle(Title.XMLDEC));
-        if (lMap.size() > getNbResult()) {
-            println(String.format("<!-- Display %s results out of %s -->", getNbResult(), lMap.size()));
+        if (getMappings().size() > getNbResult()) {
+            println(String.format("<!-- Display %s results out of %s -->", getNbResult(), getMappings().size()));
         }
         println(getTitle(Title.OHEADER));
         error();
@@ -232,9 +232,9 @@ public class XMLFormat extends QueryResultFormat {
             printAsk();
         } else {
             println(getTitle(Title.ORESULTS));
-            if (lMap != null) {
+            if (getMappings() != null) {
                 long n = 1;
-                for (Mapping map : lMap) {
+                for (Mapping map : getMappings()) {
                     if (n > getNbResult()) {
                         break;
                     }
@@ -252,25 +252,25 @@ public class XMLFormat extends QueryResultFormat {
         println(getTitle(Title.OHEAD));
         // print variable or functions selected in the header
         printVariables(getSelect());
-        printLink(lMap.getLinkList());
+        printLink(getMappings().getLinkList());
         println(getTitle(Title.CHEAD));
     }
 
     void detail() {
 
-        if (lMap.getInsert() != null) {
+        if (getMappings().getInsert() != null) {
             println(OCOM);
             println("Insert:");
-            for (Edge ent : lMap.getInsert()) {
+            for (Edge ent : getMappings().getInsert()) {
                 println(ent);
             }
             println(CCOM);
         }
 
-        if (lMap.getDelete() != null) {
+        if (getMappings().getDelete() != null) {
             println(OCOM);
             println("Delete:");
-            for (Edge ent : lMap.getDelete()) {
+            for (Edge ent : getMappings().getDelete()) {
                 println(ent);
             }
             println(CCOM);
@@ -447,7 +447,7 @@ public class XMLFormat extends QueryResultFormat {
 
     public void printAsk() {
         String res = "true";
-        if (lMap == null || lMap.size() == 0) {
+        if (getMappings() == null || getMappings().size() == 0) {
             res = "false";
         }
         print(OBOOLEAN);
@@ -479,6 +479,14 @@ public class XMLFormat extends QueryResultFormat {
      */
     public void setSelectAll(boolean selectAll) {
         this.selectAll = selectAll;
+    }
+
+    public Mappings getMappings() {
+        return lMap;
+    }
+
+    public void setMappings(Mappings lMap) {
+        this.lMap = lMap;
     }
 
 }

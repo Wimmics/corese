@@ -95,11 +95,13 @@ public class JSONFormat extends XMLFormat {
     @Override
     public void printHead() {
         println(getTitle(Title.OHEAD));
-        // print variable or functions selected in the header
-        println(OPEN_VAR);
-        printVar(getSelect());
-        println(CLOSE_VAR);
-        printLnk(lMap.getLinkList());
+        if (! ast.isAsk()) {
+            // print variable or functions selected in the header
+            println(OPEN_VAR);
+            printVar(getSelect());
+            println(CLOSE_VAR);
+        }
+        printLnk(getMappings().getLinkList());
         println(getTitle(Title.CHEAD));
     }    
             
@@ -137,7 +139,7 @@ public class JSONFormat extends XMLFormat {
     @Override
     public void printAsk() {
         String res = "true";
-        if (lMap == null || lMap.size() == 0) {
+        if (getMappings() == null || getMappings().size() == 0) {
             res = "false";
         }
         print(BOOLEAN);

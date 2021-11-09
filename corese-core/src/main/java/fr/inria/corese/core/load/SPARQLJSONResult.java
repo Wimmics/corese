@@ -7,8 +7,6 @@ import fr.inria.corese.kgram.core.Mappings;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.json.JSONArray;
 import org.json.JSONObject;
 
@@ -58,12 +56,14 @@ public class SPARQLJSONResult extends SPARQLResult {
     }
     
     void header() {
-        JSONArray vars = json.getJSONObject("head").getJSONArray("vars");
-        for (int i=0; i<vars.length(); i++) {
-            String var = vars.getString(i);
-            defineVariable(getVariable(var));
-            getVarList().add(var);
-        }               
+        if (json.getJSONObject("head").has("vars")) {
+            JSONArray vars = json.getJSONObject("head").getJSONArray("vars");
+            for (int i = 0; i < vars.length(); i++) {
+                String var = vars.getString(i);
+                defineVariable(getVariable(var));
+                getVarList().add(var);
+            }
+        }
     }
     
     void link() {
@@ -78,12 +78,14 @@ public class SPARQLJSONResult extends SPARQLResult {
     
     Mappings body() {
         Mappings map = new Mappings();
-        JSONArray results = json.getJSONObject("results").getJSONArray("bindings");
-        
-        for (int i=0; i<results.length(); i++) {
-            Mapping m = processResult(results.getJSONObject(i));
-            if (m.getNodes().length > 0) {
-                map.add(m);
+        if (json.has("results")) {
+            JSONArray results = json.getJSONObject("results").getJSONArray("bindings");
+
+            for (int i = 0; i < results.length(); i++) {
+                Mapping m = processResult(results.getJSONObject(i));
+                if (m.getNodes().length > 0) {
+                    map.add(m);
+                }
             }
         }
         map.setLinkList(getLink());

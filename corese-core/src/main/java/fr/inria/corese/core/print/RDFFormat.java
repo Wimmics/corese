@@ -233,6 +233,7 @@ public class RDFFormat {
     void header(StringBuilder bb) {
         boolean first = true;
         boolean rdf = false;
+        
         for (String p : nsm.getPrefixSet()) {
             String ns = nsm.getNamespace(p);
             if (nsm.isDisplayable(ns)) {

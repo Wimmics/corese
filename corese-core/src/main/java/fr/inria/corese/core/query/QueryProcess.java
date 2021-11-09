@@ -701,7 +701,7 @@ public class QueryProcess extends QuerySolver {
     
  
     void dbProducer(Query q) {
-        ASTQuery ast = getAST(q);
+        ASTQuery ast = q.getAST();
         if (ast.hasMetadata(Metadata.DB)) {
             String factory = DB_FACTORY;
             if (ast.hasMetadata(Metadata.DB_FACTORY)) {
@@ -827,6 +827,7 @@ public class QueryProcess extends QuerySolver {
      */
     Mappings service(Query q, Mapping m) throws EngineException {
         Service serv = new Service(q.getService());
+        serv.setLog(getCreateLog());
         try {
             return serv.query(q, m);
         } catch (LoadException ex) {

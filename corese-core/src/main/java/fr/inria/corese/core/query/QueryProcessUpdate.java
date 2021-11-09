@@ -125,11 +125,11 @@ public class QueryProcessUpdate {
     // Binding may have been set by @beforeUpdate
     Binding getBinding(Mapping m) {
         if (m == null) {
-            return getQueryProcess().getCurrentBinding();
+            return getQueryProcess().getEnvironmentBinding();
         }
         Binding b = (Binding) m.getBind();
         if (b == null) {
-            return getQueryProcess().getCurrentBinding();
+            return getQueryProcess().getEnvironmentBinding();
         }
         return b;
     }

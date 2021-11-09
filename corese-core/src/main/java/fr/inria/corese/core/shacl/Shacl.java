@@ -9,8 +9,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -305,7 +303,7 @@ public class Shacl {
     IDatatype funcall(String name, Object... obj) throws EngineException {
         QueryProcess exec = QueryProcess.create(getGraph());
         IDatatype res = exec.funcall(name, getInput(), param(obj));
-        setBind(exec.getBinding());
+        setBind(exec.getCreateBinding());
         if (res == null) {
             throw new EngineException("SHACL Error") ;
         }

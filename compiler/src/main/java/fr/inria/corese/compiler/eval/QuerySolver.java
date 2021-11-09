@@ -121,6 +121,7 @@ public class QuerySolver implements SPARQLEngine {
 
     private BasicGraphPattern pragma;
     private Metadata metadata;
+    private Binding binding;
 
     static int count = 0;
 
@@ -167,12 +168,15 @@ public class QuerySolver implements SPARQLEngine {
     }
     
     public ContextLog getLog(Mappings map) {
-        //return getAST(map).getLog();
         return getLog();
     }
     
     public ContextLog getLog() {
-        return getBinding().getCreateLog();
+        return getCreateBinding().getCreateLog();
+    }
+    
+    public ContextLog getCreateLog() {
+        return getCreateBinding().getCreateLog();
     }
 
     public void setVisitor(QueryVisitor v) {
@@ -181,7 +185,7 @@ public class QuerySolver implements SPARQLEngine {
 
     public void addVisitor(QueryVisitor v) {
         if (visit == null) {
-            visit = new ArrayList<QueryVisitor>();
+            visit = new ArrayList<>();
         }
         visit.add(v);
     }
@@ -344,20 +348,29 @@ public class QuerySolver implements SPARQLEngine {
     /**
      * LDScript binding stack of current Eval use case: share global variables
      */
-    public Binding getCurrentBinding() {
-        if (getCurrentEval() == null) {
+    public Binding getEnvironmentBinding() {
+        if (getEnvironment() == null) {
             return null;
         }
-        return getCurrentEval().getEnvironment().getBind();
+        return getEnvironment().getBind();
     }
 
-    public Binding getBinding() {
-        if (getCurrentEval() == null
-                || getCurrentEval().getEnvironment() == null
-                || getCurrentEval().getEnvironment().getBind() == null) {
-            return Binding.create();
+    /**
+     * If a query has been executed, return Environment Binding
+     * otherwise, create a temporary local Binding
+     * Use case:  @federate need a Binding
+     * PRAGMA: 
+     * if a query is executed later, the two Binding will differ
+     */
+    public Binding getCreateBinding() {
+        Binding bind = getEnvironmentBinding();
+        if (bind == null) {
+            if (getBinding() == null) {
+                setBinding(Binding.create());
+            }
+            return getBinding();
         }
-        return  getCurrentEval().getEnvironment().getBind();
+        return bind;
     }
     
     public Environment getEnvironment() {
@@ -368,7 +381,7 @@ public class QuerySolver implements SPARQLEngine {
     }
     
     public Context getContext() {
-        return getBinding().getCreateContext();
+        return getCreateBinding().getCreateContext();
     }
 
     public void finish() {
@@ -872,30 +885,22 @@ public class QuerySolver implements SPARQLEngine {
         this.isSynchronized = isSynchronized;
     }
 
-    /**
-     * @return the isUseBind
-     */
+    
     public boolean isUseBind() {
         return isUseBind;
     }
 
-    /**
-     * @param isUseBind the isUseBind to set
-     */
+    
     public void setUseBind(boolean isUseBind) {
         this.isUseBind = isUseBind;
     }
 
-    /**
-     * @return the isGenerateMain
-     */
+    
     public boolean isGenerateMain() {
         return isGenerateMain;
     }
 
-    /**
-     * @param isGenerateMain the isGenerateMain to set
-     */
+    
     public void setGenerateMain(boolean isGenerateMain) {
         this.isGenerateMain = isGenerateMain;
     }
@@ -915,16 +920,12 @@ public class QuerySolver implements SPARQLEngine {
         return getMetadata();
     }
 
-    /**
-     * @return the metadata
-     */
+    
     public Metadata getMetadata() {
         return metadata;
     }
 
-    /**
-     * @param metadata the metadata to set
-     */
+    
     public void setMetadata(Metadata metadata) {
         this.metadata = metadata;
     }
@@ -933,30 +934,22 @@ public class QuerySolver implements SPARQLEngine {
         this.metadata = metadata;
     }
 
-    /**
-     * @return the rule
-     */
+    
     public boolean isRule() {
         return isRule;
     }
 
-    /**
-     * @param rule the rule to set
-     */
+   
     public void setRule(boolean rule) {
         this.isRule = rule;
     }
 
-    /**
-     * @return the serviceList
-     */
+    
     public List<Atom> getServiceList() {
         return serviceList;
     }
 
-    /**
-     * @param serviceList the serviceList to set
-     */
+    
     public void setServiceList(List<Atom> serviceList) {
         this.serviceList = serviceList;
     }
@@ -968,9 +961,7 @@ public class QuerySolver implements SPARQLEngine {
         getServiceList().add(Constant.createResource(uri));
     }
 
-    /**
-     * @return the algebra
-     */
+   
     public boolean isAlgebra() {
         return algebra;
     }
@@ -989,16 +980,12 @@ public class QuerySolver implements SPARQLEngine {
         ALGEBRA_DEFAULT = b;
     }
 
-    /**
-     * @return the BGP
-     */
+    
     public boolean isBGP() {
         return isBGP;
     }
 
-    /**
-     * @param BGP the BGP to set
-     */
+   
     public void setBGP(boolean BGP) {
         this.isBGP = BGP;
     }
@@ -1007,9 +994,7 @@ public class QuerySolver implements SPARQLEngine {
     public void getLinkedFunction(String uri) throws EngineException {
     }
 
-    /**
-     * @return the visitorable
-     */
+   
     public static boolean isVisitorable() {
         return visitorable;
     }
@@ -1019,6 +1004,14 @@ public class QuerySolver implements SPARQLEngine {
      */
     public static void setVisitorable(boolean aVisitorable) {
         visitorable = aVisitorable;
+    }
+
+    public void setBinding(Binding binding) {
+        this.binding = binding;
+    }
+
+    public Binding getBinding() {
+        return binding;
     }
 
 }

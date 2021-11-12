@@ -373,6 +373,21 @@ public class QuerySolver implements SPARQLEngine {
         return bind;
     }
     
+    public Binding getCreateBinding (Mapping m) {
+        Binding b = getBinding(m);
+        if (b != null) {
+            return b;
+        }
+        return getCreateBinding();
+    }
+    
+    public Binding getBinding(Mapping m) {
+        if (m == null) {
+            return null;
+        }
+        return m.getBind();
+    }
+    
     public Environment getEnvironment() {
         if (getCurrentEval() == null) {
             return null;

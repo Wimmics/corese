@@ -12,6 +12,8 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.cst.LogKey;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 import javax.ws.rs.client.ResponseProcessingException;
@@ -51,6 +53,13 @@ public class LogManager implements LogKey {
     @Override
     public String toString() {
         return process();
+    }
+    
+    public void toFile(String fileName) throws IOException {
+        FileWriter file = new FileWriter(fileName);
+        file.write(toString());
+        file.flush();
+        file.close();
     }
 
     /**
@@ -98,6 +107,7 @@ public class LogManager implements LogKey {
     public String process() {
         sb = new StringBuilder();
         main();
+        processComment();
         processLocal();
         processRemote();
         processMap();
@@ -118,6 +128,12 @@ public class LogManager implements LogKey {
         }
         if (log.getSelectMap() != null) {
             property("[] %s \"\"\"\n%s\"\"\" .\n", RESULT_SELECT, log.getSelectMap());
+        }
+    }
+    
+    void processComment() {
+        if (!getLog().getFormatList().isEmpty()) {
+            sb.append("# ns:formatList ").append(getLog().getFormatList()).append(NL);
         }
     }
 
@@ -190,18 +206,21 @@ public class LogManager implements LogKey {
         log.set(sub, "a", REPORT);
         if (e.getURL() != null) {
             log.set(sub, URL, e.getURL().getServer());
+            if (e.getURL().hasParameter()) {
+                log.set(sub, URL_PARAM, e.getURL().getURL());
+            }
         }
 
         if (e.getCause() instanceof ResponseProcessingException) {
-            Response resp = (Response) e.getObject();
-            if (resp != null) {
+            if (e.getObject()!=null && e.getObject() instanceof Response) {
+                Response resp = (Response) e.getObject();
                 log.set(sub, INFO, resp.getStatusInfo().toString());
                 log.set(sub, STATUS, resp.getStatus());
                 String serv = getServer(resp);
                 if (serv != null) {
                     log.set(sub, SERVER, serv);
                 }
-                if (resp.getHeaderString("Date") != null){
+                if (resp.getHeaderString("Date") != null) {
                     log.set(sub, DATE, resp.getHeaderString("Date"));
                 }
 
@@ -210,7 +229,9 @@ public class LogManager implements LogKey {
         }
 
         log.set(sub, MESSAGE, e.getMessage());
-        log.set(sub, QUERY, DatatypeMap.genericPointer(e.getAST().toString()));
+        if (e.getAST() != null) {
+            log.set(sub, QUERY, DatatypeMap.genericPointer(e.getAST().toString()));
+        }
     }
 
     void property(String format, Object... obj) {

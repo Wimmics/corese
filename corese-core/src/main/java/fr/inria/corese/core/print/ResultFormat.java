@@ -494,7 +494,7 @@ public class ResultFormat implements ResultFormatDef {
         if (isGraphFormat(mytype) && map.getGraph() == null) {
             // return Mappings as W3C RDF Graph Mappings
             //map.
-            setGraph(MappingsGraph.create(map).getGraph());
+            map.setGraph(MappingsGraph.create(map).getGraph());
         }
         else if (mytype == TEXT_FORMAT || mytype == HTML_FORMAT) {
             // Chose appropriate format

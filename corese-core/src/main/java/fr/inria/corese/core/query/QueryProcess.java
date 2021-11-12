@@ -50,9 +50,12 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.URLParam;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
+import javax.ws.rs.client.ResponseProcessingException;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -675,13 +678,7 @@ public class QueryProcess extends QuerySolver {
         Binding b = getBinding(m);
         return b==null?null:b.getAccessRight();
     }
-    
-    Binding getBinding(Mapping m) {
-        if (m == null) {
-            return null;
-        }
-        return m.getBind();
-    }
+     
     
     /**
      * Dataset may contain workflow Binding or Context access level Share
@@ -718,14 +715,30 @@ public class QueryProcess extends QuerySolver {
             eval.finish(q, map);
             map.setEval(null);
         }
-        if (getAST(q).hasMetadata(Metadata.LOG)) {
-            System.out.println(getLogManager(map));
+        if (q.getAST().hasMetadata(Metadata.LOG)) {
+            processLog(q, map);
         }
         if (!getLog().getLinkList().isEmpty()) {
             map.setLinkList(getLog().getLinkList());
         }
         
         processMessage(map);
+    }
+    
+    void processLog(Query q, Mappings map) {
+        LogManager man = getLogManager(map);        
+        String fileName = q.getAST().getMetadata().getValue(Metadata.LOG);
+        
+        if (fileName==null) {
+            System.out.println(man);
+        }
+        else {
+            try {
+                man.toFile(fileName);
+            } catch (IOException ex) {
+                logger.error(ex.getMessage());
+            }
+        }
     }
     
     /**
@@ -824,13 +837,16 @@ public class QueryProcess extends QuerySolver {
      *
      * @federate <http://dbpedia.org/sparql>
      * select where {}
+     * Mapping m may contain Binding which may contain Log 
+     * use case: xt:sparql("@federate <uri> select where")
      */
     Mappings service(Query q, Mapping m) throws EngineException {
         Service serv = new Service(q.getService());
-        serv.setLog(getCreateLog());
+        serv.setBind(getCreateBinding(m));
+        serv.setLog(true);
         try {
             return serv.query(q, m);
-        } catch (LoadException ex) {
+        } catch (LoadException | ResponseProcessingException ex) {
             throw new EngineException(ex);
         }
     }

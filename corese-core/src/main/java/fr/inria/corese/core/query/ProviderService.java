@@ -19,7 +19,7 @@ import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.util.Property;
-import fr.inria.corese.core.util.Property.Value;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_GRAPH;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_PARAMETER;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SLICE;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_TIMEOUT;
@@ -396,11 +396,13 @@ public class ProviderService implements URLParam {
             return res;
         } catch (ResponseProcessingException e) {
             logger.error("ResponseProcessingException: " + serv.getURL());
-            getLog().addException(new EngineException(e, e.getMessage()).setURL(serv).setAST(targetAST).setObject(e.getResponse()));
+            getLog().addException(new EngineException(e, e.getMessage())
+                    .setURL(serv).setAST(targetAST).setObject(e.getResponse()));
             error(serv, q.getGlobalQuery(), getAST(), e);
         } catch (ProcessingException | IOException | SparqlException e) {
             logger.error("ProcessingException: " + serv.getURL());
-            getLog().addException(new EngineException(e, e.getMessage()).setURL(serv).setAST(targetAST));
+            getLog().addException(new EngineException(e, e.getMessage())
+                    .setURL(serv).setAST(targetAST));
             error(serv, q.getGlobalQuery(), getAST(), e);
         }
 
@@ -414,14 +416,43 @@ public class ProviderService implements URLParam {
         gq.addError(SERVICE_ERROR.concat(serv.getServer()).concat("\n"), e);
     }
 
+    /**
+     * Intermediate send function with graph processing extension
+     * Endpoint may return RDF graph as query result
+     * use case: format=turtle => return W3C Query Results RDF Format => RDF Graph
+     */
     Mappings send(URLServer serv, ASTQuery ast, Mappings map,
             int start, int limit, int timeout, int count)
             throws EngineException, IOException {
-        
+
         if (serv.isUndefined()) {
             return null;
         }
-
+        if (Property.booleanValue(SERVICE_GRAPH)) {
+            return sendWithGraph(serv, ast, map, start, limit, timeout, count);
+        }
+        else {
+            return sendBasic(serv, ast, map, start, limit, timeout, count);
+        }
+    }
+    
+     Mappings sendBasic(URLServer serv, ASTQuery ast, Mappings map,
+            int start, int limit, int timeout, int count)
+            throws EngineException, IOException {
+      
+        Mappings res = eval(ast, serv, timeout, count);
+        processLinkList(res.getLinkList());
+        return res;
+    }
+    
+    /**
+     * Extension: service may return RDF graph 
+     * Evaluate service query on graph
+     */
+    Mappings sendWithGraph(URLServer serv, ASTQuery ast, Mappings map,
+            int start, int limit, int timeout, int count)
+            throws EngineException, IOException {
+               
         Mappings res = null;
         Graph g;
 
@@ -429,21 +460,10 @@ public class ProviderService implements URLParam {
             // reuse former graph from previous service call
             g = (Graph) serv.getGraph();
         } else {
-            res = eval(ast, serv, timeout, count);
-            
-            // @draft
-//            boolean suc = processMessage(res);
-//            if (! suc) {
-//                res = eval(ast, serv, timeout, count);
-//            }
-            
-            processLinkList(res.getLinkList());
+            res = sendBasic(serv, ast, map, start, limit, timeout, count);
             g = (Graph) res.getGraph();
         }
-
-        if (g != null) {
-            // service return RDF graph
-            // evaluate query(graph) locally
+        if (g != null) {            
             QueryProcess exec = QueryProcess.create(g);
             ast.inheritFunction(getGlobalAST());
             res = exec.query(ast, getBinding());
@@ -703,8 +723,8 @@ public class ProviderService implements URLParam {
             service.setTimeout(timeout);
             service.setCount(count);
             service.setBind(b);
+            //service.setLog(getLog());
             service.setDebug(q.isRecDebug());
-            service.setLog(getLog());
             Mappings map = service.query(q, ast, null);
             return map;
         } catch (LoadException ex) {

@@ -12,6 +12,8 @@ import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
 import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.util.Property;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_LIMIT;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
@@ -58,7 +60,6 @@ public class Service implements URLParam {
     public static final String RDF = RDF_XML;
     
     private ClientBuilder clientBuilder;
-    private ContextLog log;
 
     private boolean isDebug = false;
     private boolean post = true;
@@ -71,6 +72,7 @@ public class Service implements URLParam {
     private Access.Level level = Access.Level.DEFAULT;
     private String format;
     private ServiceParser parser;
+    private boolean log = false;
     
     public Service() {
         clientBuilder = ClientBuilder.newBuilder();
@@ -85,16 +87,15 @@ public class Service implements URLParam {
     public Service(URLServer serv, ClientBuilder builder) {
         this.clientBuilder = builder;
         setURL(serv);
-        setParser(new ServiceParser(serv));
     }
 
 
     public Mappings select(String query) throws LoadException {
-        return getParser().parseMapping(query, process(query), ENCODING);
+        return getCreateParser().parseMapping(query, process(query), ENCODING);
     }
 
     public Graph construct(String query) throws LoadException {
-        return getParser().parseGraph(process(query));
+        return getCreateParser().parseGraph(process(query));
     }
 
     public Mappings query(Query query, Mapping m) throws LoadException {
@@ -111,10 +112,10 @@ public class Service implements URLParam {
         }
         String astq = ast.toString();
         if (ast.isSelect() || ast.isAsk() || ast.isUpdate()) {
-            map = getParser().parseMapping(astq, process(ast, astq), encoding(ast));
+            map = getCreateParser().parseMapping(astq, process(ast, astq), encoding(ast));
         } 
         else {
-            Graph g = getParser().parseGraph(process(ast, astq), encoding(ast));
+            Graph g = getCreateParser().parseGraph(process(ast, astq), encoding(ast));
             map = new Mappings();
             map.setGraph(g);
         }
@@ -157,9 +158,10 @@ public class Service implements URLParam {
             // request() return Invocation.Builder
             Cookie cook = new Cookie(COUNT, Integer.toString(getCount()), url, getURL().getServer());
             Cookie cook2 = new Cookie(PLATFORM, CORESE);
-            
-            Builder rb = target.request(mime); // .cookie(cook)
-            setHeader(rb);
+            String accept = getAccept(mime);
+            Builder rb = target.request(accept); // .cookie(cook)
+            //setHeader(rb);
+            logger.info("Header Accept: " + accept);
             
             Date d1 = new Date();
             if (isDebug()) {
@@ -191,9 +193,17 @@ public class Service implements URLParam {
             }
                
             trace(resp);
+            logger.info("Response status: " + resp.getStatus());
             
             if (resp.getStatus() >= Response.Status.BAD_REQUEST.getStatusCode()) {
-                throw new ResponseProcessingException(resp, res);
+                ResponseProcessingException ex = new ResponseProcessingException(resp, res);
+                if (isLog() && getLog() != null){
+                    // use case: @federate call not within ProviderService
+                    // log here
+                    getLog().addException(new EngineException(ex, ex.getMessage())
+                        .setURL(getURL()).setObject(ex.getResponse()));
+                }
+                throw ex;
             }
             
             recordFormat(resp.getMediaType().toString());            
@@ -234,12 +244,34 @@ public class Service implements URLParam {
             for (String header : getURL().getParameterList(HEADER)) {
                 String[] pair = header.split(":");
                 if (pair.length >= 2) {
+                    logger.info("header: " +pair[0] + " = " + pair[1]); 
                     rb.header(pair[0], pair[1]);
                 }
             }
         }
         return rb;
     }
+    
+    // URL header Accept if any else mime 
+    String getAccept(String mime) {
+        String accept = getHeader(HEADER_ACCEPT);
+        return (accept==null)?mime:accept;
+    }
+    
+    String getHeader(String name) {
+        if (getURL().hasParameter(HEADER)) {
+            for (String header : getURL().getParameterList(HEADER)) {
+                String[] pair = header.split(":");
+                if (pair.length >= 2) {
+                    if (pair[0].equals(name)) {
+                        return pair[1];
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
 
     ASTQuery mapping(Query q, Mapping m) {
         Mappings map = new Mappings();
@@ -284,7 +316,11 @@ public class Service implements URLParam {
 
     
     Form getForm() {
-        return getURL().getMap() == null ? new Form() : new Form(getMap(getURL().getMap()));
+        if (sendParameter()) {
+            return getURL().getMap() == null ? new Form() : new Form(getMap(getURL().getMap()));
+        } else {
+            return new Form();
+        }
     }
     
     MultivaluedMap<String, String> getMap(HashMapList<String> map) {
@@ -294,15 +330,6 @@ public class Service implements URLParam {
         }
         return amap;
     }
-    
-//    void complete(Form form) {
-//        if (getURL().getMap() != null) {
-//            for (String key : getURL().getMap().keySet()) {
-//                //System.out.println("service: " + key + "=" + getURL().getParameter(key));
-//                form.param(key, getURL().getParameter(key));
-//            }
-//        }
-//    }
 
     public String get(String query, String mime) {
         // Server URL without parameters
@@ -323,10 +350,14 @@ public class Service implements URLParam {
     }
     
     String complete(String uri, String query) {
-        if (getURL().hasParameter()) {
+        if (getURL().hasParameter() && sendParameter()) {
             return String.format("%s?%s&query=%s", uri, param(), query);
         }
         return String.format("%s?query=%s", uri, query);
+    }
+    
+    boolean sendParameter() {
+       return Property.booleanValue(SERVICE_SEND_PARAMETER) && ! getURL().hasParameter(MODE, LOCAL);
     }
     
     /**
@@ -384,7 +415,8 @@ public class Service implements URLParam {
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build();
         WebTarget target = client.target(url);
-        Response resp = target.request(mime).get();
+        Builder build = target.request(mime);
+        Response resp = build.get();
         if (resp.getMediaType()!=null) {
             recordFormat(resp.getMediaType().toString());
         }
@@ -503,15 +535,26 @@ public class Service implements URLParam {
         this.format = format; 
     }
     
-    void recordFormat(String format) {
+    /**
+     * format = text/turtle;charset=UTF-8
+     */
+    void recordFormat(String str) {
+        logger.info("Content type: " + str);
+        String format = clean(str);
         setFormat(format);
         if (getParser()!=null) {
             getParser().setFormat(format);
         }
-        logger.info("Content type: " + format);
         if (getLog() != null) {
             getLog().getFormatList().add(format);
         }
+    }
+    
+    String clean(String format) {
+        if (format.contains(";")) {
+            return format.substring(0, format.indexOf(";"));
+        }
+        return format;
     }
 
     
@@ -534,7 +577,7 @@ public class Service implements URLParam {
         this.count = count;
     }
     
-        ASTQuery getAST(Query q) {
+    ASTQuery getAST(Query q) {
         return  q.getAST();
     }
     
@@ -548,7 +591,7 @@ public class Service implements URLParam {
             if (lim != -1) {
                 ast.setLimit(lim);
             }
-            lim = Property.intValue(SERVICE_LIMIT);
+            lim = Property.intValue(SERVICE_LIMIT);            
             if (lim != null) {
                 ast.setLimit(lim);
             }
@@ -563,38 +606,38 @@ public class Service implements URLParam {
         if (ast.getGlobalAST().isDebug()) {
             System.out.println(isPost()?"POST":"GET");
         }
-        getParser().setTrap(getURL().hasParameter(MODE, TRAP) || ast.getGlobalAST().hasMetadata(Metadata.TRAP));
+        getCreateParser().setTrap(getURL().hasParameter(MODE, TRAP) || ast.getGlobalAST().hasMetadata(Metadata.TRAP));
         if (! isShowResult()) {
             setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
-            getParser().setShowResult(isShowResult());        
+            getCreateParser().setShowResult(isShowResult());        
         }
     }
 
-    /**
-     * @return the bind
-     */
+   
     public Binding getBind() {
         return bind;
     }
 
-    /**
-     * @param bind the bind to set
-     */
+    
     public void setBind(Binding bind) {
         this.bind = bind;
-        getParser().setBind(bind);
     }
 
-    /**
-     * @return the parser
-     */
+    
     public ServiceParser getParser() {
         return parser;
     }
+    
+    ServiceParser getCreateParser() {
+        if (getParser() == null) {
+            setParser(new ServiceParser(getURL()));
+            getParser().setBind(getBind());
+            getParser().setLog(isLog());
+        }
+        return getParser();
+    }
 
-    /**
-     * @param parser the parser to set
-     */
+    
     public void setParser(ServiceParser parser) {
         this.parser = parser;
     }
@@ -608,10 +651,17 @@ public class Service implements URLParam {
     }
 
     public ContextLog getLog() {
+        if (getBind() == null) {
+            return null;
+        }
+        return getBind().getCreateLog();
+    }
+
+    public boolean isLog() {
         return log;
     }
 
-    public void setLog(ContextLog log) {
+    public void setLog(boolean log) {
         this.log = log;
     }
     

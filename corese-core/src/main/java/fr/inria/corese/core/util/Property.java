@@ -15,6 +15,7 @@ import fr.inria.corese.core.transform.Transformer;
 import static fr.inria.corese.core.util.Property.Value.IMPORT;
 import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
 import static fr.inria.corese.core.util.Property.Value.PREFIX;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
 import static fr.inria.corese.core.util.Property.Value.VARIABLE;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
@@ -174,11 +175,16 @@ public class Property {
         SERVICE_SLICE,
         SERVICE_LIMIT,
         SERVICE_TIMEOUT,
+        SERVICE_SEND_PARAMETER,
         SERVICE_PARAMETER,
+        // service result may be RDF graph (e.g. when format=turtle)
+        // apply service query on the graph 
+        SERVICE_GRAPH
     };
 
     static {
         singleton = new Property();
+        set(SERVICE_SEND_PARAMETER, true);
     }
 
     Property() {
@@ -224,6 +230,10 @@ public class Property {
     public static boolean booleanValue(Value value) {
         Boolean b = get(value);
         return b!=null && b;
+    }
+    
+    public static boolean hasValue(Value value, boolean b) {
+        return get(value) != null && get(value) == b;
     }
 
     public static Set<Value> getPropertySet() {

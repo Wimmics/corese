@@ -1145,6 +1145,10 @@ public class PluginImpl
                 // reject update
                 map = exec.sparqlQuery(query, m, getDataset(env));
             }
+            Binding b = exec.getEnvironmentBinding();
+            if (b != null) {
+                env.getBind().subShare(b);
+            }
             if (map.getQuery().isDebug()) {
                 System.out.println("result:");
                 System.out.println(map);
@@ -1159,6 +1163,11 @@ public class PluginImpl
             throw e;
         }
         catch (EngineException e) {
+            logger.error(e.getMessage());
+            Binding b = exec.getEnvironmentBinding();
+            if (b != null) {
+                env.getBind().subShare(b);
+            }
             return DatatypeMap.createObject(new Mappings());
         }
     }

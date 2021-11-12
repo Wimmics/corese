@@ -11,6 +11,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
@@ -28,6 +29,7 @@ public class ServiceParser implements URLParam {
      private String format;
      private URLServer url;
      private Binding bind;
+     private boolean log = false;
      
     public ServiceParser(URLServer url) {
          setURL(url);
@@ -50,18 +52,33 @@ public class ServiceParser implements URLParam {
         else if (getFormat() != null) {
             switch (getFormat()) {
                 case ResultFormat.SPARQL_RESULTS_JSON:
-                    map = parseJSONMapping(str); break;
-                    
-                case ResultFormat.TURTLE:
-                case ResultFormat.TURTLE_TEXT:
-                    map = parseTurtle(str); break;
-                    
-                case ResultFormat.SPARQL_RESULTS_XML:
-                    map = parseXMLMapping(str, encoding); 
+                    map = parseJSONMapping(str);
                     break;
 
+                case ResultFormat.SPARQL_RESULTS_XML:
+                    map = parseXMLMapping(str, encoding);
+                    break;
+                    
+                case ResultFormat.SPARQL_RESULTS_CSV:
+                case ResultFormat.SPARQL_RESULTS_TSV:
+                    Service.logger.warn("Format not handled: " + getFormat());
+                    map = new Mappings();
+                    break;
+                    
+                    
+                    // W3C Query Results RDF Format
+                    // use case: @federate url with format=rdfxml|turtle|jsonld
+                    // return query results as a graph in a Mappings, for testing prupose
+                case ResultFormat.TURTLE:
+                case ResultFormat.TURTLE_TEXT:
+                case ResultFormat.RDF_XML:
+                case ResultFormat.JSON_LD:
+                    map = parseGraphMapping(str, encoding); 
+                    break;                    
+
                 default:
-                   map = parseXMLMapping(str, encoding); 
+                    Service.logger.warn("Format not handled: " + getFormat());
+                    map = new Mappings(); //parseXMLMapping(str, encoding); 
             }
         }
         else {     
@@ -70,12 +87,57 @@ public class ServiceParser implements URLParam {
         map.setLength(str.length());
         map.setQueryLength(query.length());
         return map;
-    }  
+    } 
     
-    // @federate with one URL may have no bind
+    public Mappings parseGraphMapping(String str, String encoding) throws LoadException {
+        Graph g = parseGraph(str, encoding);
+        Mappings map = new Mappings();
+        map.setGraph(g);
+        return map;
+    }
+
+    
+    public Graph parseGraph(String str) throws LoadException {
+        return parseGraph(str, ENCODING);
+    }
+
+    public Graph parseGraph(String str, String encoding) throws LoadException {
+        try {
+            Graph g = Graph.create();
+            Load ld = Load.create(g);
+
+            if (getFormat() != null) {
+                switch (getFormat()) {
+                    case ResultFormat.RDF_XML:
+                        ld.loadString(str, Load.RDFXML_FORMAT);
+                        break;
+                    case ResultFormat.JSON_LD:
+                        ld.loadString(str, Load.JSONLD_FORMAT);
+                        break;
+                    case ResultFormat.TURTLE:
+                    case ResultFormat.TURTLE_TEXT:
+                        ld.loadString(str, Load.TURTLE_FORMAT);
+                        break;
+                    default:
+                        Service.logger.warn("Format not handled: " + getFormat());
+
+                }
+            } else {
+                ld.loadString(str, Load.RDFXML_FORMAT);
+            }
+            return g;
+        } catch (LoadException e) {
+            if (isLog() && getLog() != null) {
+                    getLog().addException(
+                       new EngineException(e, e.getMessage()).setURL(getURL()));
+            }
+            throw e;
+        }
+    }
+    
     synchronized void log(String result) {
-        if (getBind()!=null){
-            getBind().getLog().traceResult(getURL(), result);
+        if (getLog()!=null){
+            getLog().traceResult(getURL(), result);
         }
     }
     
@@ -142,105 +204,70 @@ public class ServiceParser implements URLParam {
         }
     }
 
-    public Graph parseGraph(String str) throws LoadException {
-        return parseGraph(str, ENCODING);
-    }
 
-    public Graph parseGraph(String str, String encoding) throws LoadException {
-        Graph g = Graph.create();
-        Load ld = Load.create(g);
-        
-        if (getFormat() != null) {
-            switch (getFormat()) {
-                case ResultFormat.RDF_XML:
-                    ld.loadString(str, Load.RDFXML_FORMAT);
-                    break;
-                case ResultFormat.JSON_LD:
-                    ld.loadString(str, Load.JSONLD_FORMAT);
-                    break;
-                case ResultFormat.TURTLE:
-                case ResultFormat.TURTLE_TEXT:
-                    ld.loadString(str, Load.TURTLE_FORMAT);
-                    break; 
-                default:
-                   Service.logger.info("Format not handled: " + getFormat());
 
-            }
-        }
-        else {
-            ld.loadString(str, Load.RDFXML_FORMAT);
-        }
-        return g;
-    }
-
-    /**
-     * @return the url
-     */
+   
     public URLServer getURL() {
         return url;
     }
 
-    /**
-     * @param url the url to set
-     */
+   
     public void setURL(URLServer url) {
         this.url = url;
     }
 
-    /**
-     * @return the trap
-     */
+    
     public boolean isTrap() {
         return trap;
     }
 
-    /**
-     * @param trap the trap to set
-     */
+   
     public void setTrap(boolean trap) {
         this.trap = trap;
     }
 
-    /**
-     * @return the showResult
-     */
+    
     public boolean isShowResult() {
         return showResult;
     }
 
-    /**
-     * @param showResult the showResult to set
-     */
+   
     public void setShowResult(boolean showResult) {
         this.showResult = showResult;
     }
 
-    /**
-     * @return the format
-     */
+    
     public String getFormat() {
         return format;
     }
 
-    /**
-     * @param format the format to set
-     */
+    
     public void setFormat(String format) {
         this.format = format;
     }
 
-    /**
-     * @return the bind
-     */
+    ContextLog getLog() {
+        if (getBind() == null) {
+            return null;
+        }
+        return getBind().getCreateLog();
+    }
+    
     public Binding getBind() {
         return bind;
     }
 
-    /**
-     * @param bind the bind to set
-     */
+    
     public void setBind(Binding bind) {
         this.bind = bind;
+    }
+
+    public boolean isLog() {
+        return log;
+    }
+
+    public void setLog(boolean log) {
+        this.log = log;
     }
 
     

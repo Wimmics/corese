@@ -573,6 +573,14 @@ public class Binding implements Binder {
         }
     }
     
+    // use case: env inherit Log from xt:sparql()
+    // PluginImpl sparql() kgram()
+    public void subShare(Binding b) {
+        if (getLog() == null) {
+            setLog(b.getLog());
+        }
+    }
+    
     void shareGlobalVariable(Binding b) {
         setGlobalVariableNames(b.getGlobalVariableNames());
         setGlobalVariableValues(b.getGlobalVariableValues());

@@ -32,8 +32,10 @@ public interface URLParam {
     static final String FOCUS = "focus";
     static final String SKIP = "skip";
     static final String HEADER = "header";
+    static final String HEADER_ACCEPT = "Accept";
     // service clause does not return variable in service result
     static final String UNSELECT = "unselect";
+    static final String LOCAL = "local";
 
     // value of mode=
     static final String DISPLAY = "display";

@@ -35,6 +35,7 @@ public interface LogKey {
     static final String STATUS = "ns:status";
     static final String INFO = "ns:info";
     static final String URL = "ns:url";
+    static final String URL_PARAM = "ns:urlParam";
     static final String LOG = "ns:log";
     static final String LINK = "ns:link";
     static final String INPUT_CARD = "ns:inputCard";

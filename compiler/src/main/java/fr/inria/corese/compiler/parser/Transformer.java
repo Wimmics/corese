@@ -185,7 +185,7 @@ public class Transformer implements ExpType {
         }
         ParserSparql1.create(ast).parse();
         ASTParser walk = new ASTParser(ast);
-        ast.walk(walk);
+        ast.process(walk);
         return ast;
     }
     

@@ -14,6 +14,7 @@ public class NodeImpl implements Node {
     /**
      * @return the matchCardinality
      */
+    @Override
     public boolean isMatchCardinality() {
         return matchCardinality;
     }

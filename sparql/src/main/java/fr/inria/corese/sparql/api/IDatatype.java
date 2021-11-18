@@ -8,6 +8,7 @@ import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.Loopable;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.TripleStore;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.storage.api.IStorage;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 
@@ -150,6 +151,18 @@ public interface IDatatype
     }
 
     IDatatype set(IDatatype name, IDatatype value);
+    
+    default IDatatype set(String name, String value){
+        return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
+    }
+    
+    default IDatatype set(String name, int value){
+        return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
+    }
+    
+    default IDatatype set(String name, boolean value){
+        return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
+    }
 
     @Override
     int size();

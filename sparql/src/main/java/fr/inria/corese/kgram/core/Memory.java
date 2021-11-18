@@ -77,7 +77,6 @@ public class Memory extends PointerObject implements Environment {
         match = m;
         eval = e;
         bnode = new HashMap();
-        //bind =  Bind.create();
         this.appxSearchEnv = new ApproximateSearchEnv();
     }
 
@@ -376,7 +375,7 @@ public class Memory extends PointerObject implements Environment {
      */
     Mapping store(Query q, Producer p, boolean subEval, boolean func) throws SparqlException {
         boolean complete = ! q.getGlobalQuery().isAlgebra();
-        clear();
+        //clear();
         int nb = nbNode;
         if (!subEval && complete) {
             //nb += q.nbFun();
@@ -861,7 +860,14 @@ public class Memory extends PointerObject implements Environment {
                 k++;
             }
         }
-
+        
+//        if (res.getDetail()!=null) {
+//            // detail about service execution. see corese.core.load Service
+//            // detail recorded as LDScript global variable
+//            // can be retrieved using bind (fun:detail() as ?detail)
+//            // see Extension
+//            getBind().setGlobalVariable(Binding.SERVICE_DETAIL, res.getDetail());
+//        }
         return true;
     }
 

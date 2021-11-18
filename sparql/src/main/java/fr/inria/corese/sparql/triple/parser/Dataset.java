@@ -296,12 +296,10 @@ public class Dataset extends ASTObject {
             }
         }
         if (getContext() != null) {
-            Binding b = (Binding) m.getBind();
-            if (b == null) {
-                b = Binding.create();
-                m.setBind(b);
+            if (m.getBind() == null) {
+                m.setBind(Binding.create());
             }
-            b.set(getContext());
+            m.getBind().share(getContext());
         }
         return m;
     }

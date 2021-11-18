@@ -1,20 +1,27 @@
 package fr.inria.corese.sparql.triple.parser.visitor;
 
 import fr.inria.corese.sparql.triple.api.Walker;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Message;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import fr.inria.corese.sparql.triple.parser.Values;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.HashMap;
 
 /**
  * Walker just after parsing to complete the AST.
  */
 public class ASTParser implements Walker, URLParam {
+    public static boolean SERVICE_LOG = false;
+    private boolean log = SERVICE_LOG;
     
     ASTQuery ast;
     
@@ -24,7 +31,12 @@ public class ASTParser implements Walker, URLParam {
         this.ast = ast;
     }
     
-       @Override
+    @Override
+    public void start(ASTQuery ast) {
+        serviceLog(ast);        
+    }
+    
+    @Override
     public void enter(ASTQuery ast) {
         bnodeScope(ast.getBody());
     }
@@ -34,6 +46,28 @@ public class ASTParser implements Walker, URLParam {
         process(exp);
         bnodeScope(exp);
     }
+    
+    
+    
+    void serviceLog(ASTQuery ast) {
+        if (isLog() || ast.hasMetadata(Metadata.DETAIL)) {
+            Variable var = new Variable(Binding.SERVICE_DETAIL);
+            if (!ast.isSelectAll()) {
+                ast.setSelect(var);
+            }
+            Values values = Values.create(var, (Constant) null);
+            if (ast.getValues() == null) {
+                ast.setValues(values);
+            } else {
+                ast.getBody().add(0, values);
+            }
+
+        }
+    }
+    
+    
+    
+    
     
     /**
      * check bnode scope
@@ -107,6 +141,14 @@ public class ASTParser implements Walker, URLParam {
                 }
             }
         }
+    }
+
+    public boolean isLog() {
+        return log;
+    }
+
+    public void setLog(boolean log) {
+        this.log = log;
     }
     
 }

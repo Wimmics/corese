@@ -207,7 +207,7 @@ public class Eval implements ExpType, Plugin {
         if (hasEvent) {
             send(Event.END, q, map);
         }
-        map.setBinding(memory.getBind());
+        map.setBinding(getBind());
         clean();
         return map;
     }
@@ -215,8 +215,8 @@ public class Eval implements ExpType, Plugin {
     // share global variables and ProcessVisitor
     void share(Mapping m) {
         if (m != null && m.getBind() != null) {
-            if (memory.getBind() != null) {
-                memory.getBind().share(m.getBind());
+            if (getBind() != null) {
+                getBind().share(m.getBind());
             }
             if (m.getBind().getVisitor() != null) {
                 // use case: let (?g = construct where)
@@ -229,8 +229,8 @@ public class Eval implements ExpType, Plugin {
     // store ProcessVisitor into Bind for future sharing by
     // Transformer and Interpreter exist
     void share(ProcessVisitor vis) {
-        if (vis.isShareable() && getMemory().getBind().getVisitor() == null) {
-            getMemory().getBind().setVisitor(vis);
+        if (vis.isShareable() && getBind().getVisitor() == null) {
+            getBind().setVisitor(vis);
         }
     }
 
@@ -545,7 +545,7 @@ public class Eval implements ExpType, Plugin {
     }
     
     StringBuilder getTrace() {
-        return getMemory().getBind().getTrace();
+        return getBind().getTrace();
     }
 
     /**
@@ -706,6 +706,14 @@ public class Eval implements ExpType, Plugin {
 
     public Memory getMemory() {
         return memory;
+    }
+    
+    public Binding getBinding() {
+        return getEnvironment().getBind();
+    }
+    
+    public Binding getBind() {
+        return getEnvironment().getBind();
     }
     
     Query getQuery() {
@@ -1654,7 +1662,7 @@ public class Eval implements ExpType, Plugin {
 
     private int service(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
-        Memory env = memory;
+        Memory env = getMemory();
         Node serv = exp.first().getNode();
         Node node = serv;
 
@@ -1664,21 +1672,22 @@ public class Eval implements ExpType, Plugin {
 
         if (provider != null) {
             // service delegated to provider
-            Mappings lMap = provider.service(node, exp, selectQueryMappings(data), this);
+            Mappings map = provider.service(node, exp, selectQueryMappings(data), this);
 
 //            if (stack.isCompleted()) {
 //                return result(p, lMap, n);
 //            }
-                        
-            for (Mapping map : lMap) {
+                                 
+            for (Mapping m : map) {
                 if (stop) {
                     return STOP;
                 }
                 // push each Mapping in memory and continue
-                complete(query, map, false);
-                if (env.push(map, n, false)) {
+                complete(query, m, false);
+                
+                if (env.push(m, n, false)) {
                     backtrack = eval(gNode, stack, n + 1);
-                    env.pop(map, false);
+                    env.pop(m, false);
                     if (backtrack < n) {
                         return backtrack;
                     }
@@ -1738,7 +1747,6 @@ public class Eval implements ExpType, Plugin {
 
         int backtrack = n - 1;
         Memory env = memory;
-
         env.setGraphNode(gNode);
         Node node = eval(exp.getFilter(), env, p);
         env.setGraphNode(null);

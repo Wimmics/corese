@@ -70,6 +70,9 @@ public class Mappings extends PointerObject
     private Group group;
     private Group distinct;
     private Eval eval;
+    // service details if Mappings from service
+    // json object
+    private IDatatype detail;
     // construct where result graph
     private TripleStore graph;
     private int nbsolutions = 0;
@@ -1961,4 +1964,28 @@ public class Mappings extends PointerObject
         this.list = list;
     }
 
+    public IDatatype getDetail() {
+        return detail;
+    }
+
+    public void setDetail(IDatatype detail) {
+        this.detail = detail;
+    }
+
+    /**
+     * Detail about service execution 
+     * Memory push(map) will set a LDScript global variable with detail
+     * Detail global variable can be retrieved with a bind (exp as var)
+     * and can be part of final result
+     */
+    public Mappings recordDetail(Node node, IDatatype detail) {
+        setDetail(detail);
+        if (isEmpty()) {
+            add(Mapping.create());
+        }
+        for (Mapping m : this) {
+            m.addNode(node, detail);
+        }
+        return this;
+    }
 }

@@ -773,6 +773,14 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return json;
     }
     
+    public static CoreseJSON json(String... param) {
+        CoreseJSON json = new CoreseJSON(new JSONObject());
+        for (int i = 0; i < param.length; i++) {
+            json.set(newInstance(param[i++]), newInstance(param[i]));
+        }
+        return json;
+    }
+    
     public static CoreseJSON json() {
         return new CoreseJSON(new JSONObject());
     }
@@ -1423,7 +1431,12 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
     
     public static IDatatype URIDomain(IDatatype dt) {
-        String dom = NSManager.domain(dt.getLabel());
+        return URIDomain(dt, TRUE);
+    }
+
+    
+    public static IDatatype URIDomain(IDatatype dt, IDatatype scheme) {
+        String dom = NSManager.domain(dt.getLabel(), scheme.booleanValue());
         if (dom == null) {
             return null;
         }

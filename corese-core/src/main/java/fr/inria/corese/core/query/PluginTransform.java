@@ -111,12 +111,20 @@ public class PluginTransform implements ComputerProxy {
     Context getQueryContext(Binding b, Environment env, Producer p) {
         Query q = env.getQuery().getGlobalQuery();
         Context c =  q.getContext();
+        
         if (c == null && !q.isTransformationTemplate()) {
             //  std Query or Template alone
-            c = new Context();
-            q.setContext(c);
-            if (b.getContext() == null) {
-                b.setContext(c);
+            
+            if (b.getContext() != null) {
+                // use case: xt:sparql(query) create Context using st:set
+                return b.getContext();
+            }
+            else {
+                c = new Context();
+                q.setContext(c);
+                //if (b.getContext() == null) {
+                    b.setContext(c);
+                //}
             }
         }
         return c;

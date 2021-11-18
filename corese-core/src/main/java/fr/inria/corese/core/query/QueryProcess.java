@@ -422,15 +422,16 @@ public class QueryProcess extends QuerySolver {
     public Mappings query(String squery, ProcessVisitor vis) throws EngineException {
         return query(squery, Mapping.create(vis), null);
     }
-    
-    Mappings query(Node gNode, Query q, Mapping m, Dataset ds) throws EngineException {
-        return basicQuery(gNode, q, m, ds);
-    }
-    
+      
     Mappings doQuery(String squery, Mapping map, Dataset ds) throws EngineException {
         Query q = compile(squery, ds);
         return query(null, q, map, ds);
     }
+    
+    Mappings query(Node gNode, Query q, Mapping m, Dataset ds) throws EngineException {
+        return basicQuery(gNode, q, m, ds);
+    }
+  
 
     @Override
     public Query compile(String squery, Dataset ds) throws EngineException {
@@ -477,6 +478,7 @@ public class QueryProcess extends QuerySolver {
     }
 
     @Override
+    // @todo: getUpdateDataset ???
     public Mappings eval(Node gNode, Query query, Mapping m, Producer p) throws EngineException {
         Dataset ds = getUpdateDataset(query);
         if (p == null || p == getProducer()) {
@@ -681,8 +683,13 @@ public class QueryProcess extends QuerySolver {
      
     
     /**
-     * Dataset may contain workflow Binding or Context access level Share
-     * Binding or access level
+     * Dataset may contain Binding and/or Context 
+     * Prepare Mapping with Binding/Context for Eval query processing
+     * Binding records Context if any
+     * Note that st:get/st:set consider Context in Query (cf PluginTransform getContext())
+     * ProviderService consider Context in Binding 
+     * Hence we have  Context both in Query and in Binding 
+     * 
      */
     Mapping completeMappings(Mapping m, Dataset ds) {
         if (ds != null) {
@@ -1113,51 +1120,58 @@ public class QueryProcess extends QuerySolver {
         if (function == null) {
             return null;
         }
-        return call(EVENT, function, param, null);
+        return call(EVENT, function, null, null, param);
     }
     
-//    public IDatatype callback(String name, IDatatype... param) throws EngineException {
-//        return new QuerySolverVisitor(getEval()).callback(getEval(), name, param);
-//    }
     
     /**
      * Execute LDScript function defined as @public
      */
     //@Override
     public IDatatype funcall(String name, IDatatype... param) throws EngineException {
-        return funcall(name, (Context) null, param);
+        return funcall(name, null, null, param);
     }
 
     public IDatatype funcall(String name, Binding b, IDatatype... param) throws EngineException {
-        return funcall(name, (b==null)?null:new Context().setBind(b), param);
+        return funcall(name, null, b, param);
     }
 
     public IDatatype funcall(String name, Context c, IDatatype... param) throws EngineException {
+        return funcall(name, c, null, param);
+    }
+    
+    public IDatatype funcall(String name, Context c, Binding b, IDatatype... param) throws EngineException {
         Function function = getLinkedFunction(name, param);
         if (function == null) {
             return null;
         }
-        return call(name, function, param, c);
+        return call(name, function, c, b, param);
     }
 
-    IDatatype call(String name, Function function, IDatatype[] param, Context c) throws EngineException {
+    // @todo: clean Binding/Context AccessLevel
+    IDatatype call(String name, Function function, Context c, Binding b, IDatatype... param) throws EngineException {
         Eval eval = getEval();
-        eval.getMemory().getQuery().setContext(c);
-        Binding b = getBind(eval);
-        if (c != null) { 
-            if (c.getBind() != null) {
-                // share global variables
-                b.share(c.getBind());
-            }
-            b.setAccessLevel(c.getLevel());
-        }
+        eval.getEnvironment().getQuery().setContext(c);
+        Binding bind = eval.getBinding();        
+        bind.share(b, c);
         return new Funcall(name).callWE((Interpreter) eval.getEvaluator(),
-                b, eval.getMemory(), eval.getProducer(), function, param);
-    }
-
-    Binding getBind(Eval eval) {
-        return  eval.getMemory().getBind();
-    }
+                bind, eval.getEnvironment(), eval.getProducer(), function, param);
+    } 
+    
+//    IDatatype call(String name, Function function, IDatatype[] param, Context c) throws EngineException {
+//        Eval eval = getEval();
+//        eval.getMemory().getQuery().setContext(c);
+//        Binding b = getBind(eval);
+//        if (c != null) { 
+//            if (c.getBind() != null) {
+//                // share global variables
+//                b.share(c.getBind());
+//            }
+//            b.setAccessLevel(c.getLevel());
+//        }
+//        return new Funcall(name).callWE((Interpreter) eval.getEvaluator(),
+//                b, eval.getMemory(), eval.getProducer(), function, param);
+//    }
 
     // Use case: funcall @public functions
     @Override

@@ -56,8 +56,9 @@ import org.json.JSONObject;
 public class ProviderService implements URLParam {
 
     static Logger logger = LoggerFactory.getLogger(ProviderService.class);
-    private static final String LOCAL_SERVICE = "http://example.org/sparql";
-    public static final String UNDEFINED_SERVICE = "http://example.com/undefined/sparql";
+    public static final String LOCAL_SERVICE    = "http://ns.inria.fr/corese/sparql"; //http://example.org/sparql";
+    public static final String LOCAL_SERVICE_NS = LOCAL_SERVICE + "/%s";
+    public static final String UNDEFINED_SERVICE = "http://example.org/undefined/sparql";
     private static final String SERVICE_ERROR = "Service error: ";
     private static final String DB = "db:";
 
@@ -83,8 +84,8 @@ public class ProviderService implements URLParam {
     ProviderService(ProviderImpl p, Query q, Mappings map, Eval eval) {
         setProvider(p);
         setQuery(q);
-        setGlobalAST(getAST(q.getGlobalQuery()));
-        setAST(getAST(q));
+        setGlobalAST(q.getGlobalQuery().getAST());
+        setAST(q.getAST());
         setMappings(map);
         setEval(eval);
         // after setEval:
@@ -442,8 +443,15 @@ public class ProviderService implements URLParam {
       
         Mappings res = eval(ast, serv, timeout, count);
         processLinkList(res.getLinkList());
+        //complete(res, ast);
         return res;
     }
+     
+     void complete(Mappings map, ASTQuery ast) {
+         if (map.getDetail()!=null) {
+             map.getDetail().set("ast", ast.toString());
+         }
+     }
     
     /**
      * Extension: service may return RDF graph 
@@ -692,8 +700,10 @@ public class ProviderService implements URLParam {
         if (isDB(serv.getNode())) {
             return db(getQuery(), serv.getNode());
         }
-        if (serv.getServer().equals(LOCAL_SERVICE)) {
-            return getDefault().query(ast);
+        if (serv.getServer().startsWith(LOCAL_SERVICE)) {
+            logger.info("Local service: " + serv);
+            logger.info(ast.toString());
+            return getDefault().query(ast, getBinding());
         }
         return send(getQuery(), ast, serv, timeout, count);
     }
@@ -808,7 +818,7 @@ public class ProviderService implements URLParam {
         this.globalAST = globalAST;
     }
 
-    synchronized ContextLog getLog() {
+    ContextLog getLog() {
         return getBinding().getCreateLog();
     }
 

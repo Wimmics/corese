@@ -33,6 +33,7 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.visitor.ASTParser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -177,6 +178,8 @@ public class Property {
         SERVICE_TIMEOUT,
         SERVICE_SEND_PARAMETER,
         SERVICE_PARAMETER,
+        SERVICE_LOG,
+
         // service result may be RDF graph (e.g. when format=turtle)
         // apply service query on the graph 
         SERVICE_GRAPH
@@ -458,6 +461,10 @@ public class Property {
                 
             case RDFS_ENTAILMENT:
                 Graph.RDFS_ENTAILMENT_DEFAULT = b;
+                break;
+                
+            case SERVICE_LOG:
+                ASTParser.SERVICE_LOG = b;
                 break;
         }
     }

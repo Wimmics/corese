@@ -1,5 +1,6 @@
 package fr.inria.corese.core.load;
 
+import fr.inria.corese.compiler.parser.NodeImpl;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.kgram.core.Mapping;
@@ -12,13 +13,18 @@ import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
 import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.util.Property;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_LIMIT;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_LOG;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.io.InputStream;
 
@@ -52,7 +58,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Service implements URLParam {
     static Logger logger = LoggerFactory.getLogger(Service.class);
-     static final String ENCODING = "UTF-8";
+    static final String ENCODING = "UTF-8";
      // load take URL parameter into account, e.g. format=rdfxml
     public static boolean LOAD_WITH_PARAMETER = false;
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
@@ -91,7 +97,7 @@ public class Service implements URLParam {
 
 
     public Mappings select(String query) throws LoadException {
-        return getCreateParser().parseMapping(query, process(query), ENCODING);
+        return getCreateParser().parseMapping(null, query, process(query), ENCODING);
     }
 
     public Graph construct(String query) throws LoadException {
@@ -100,28 +106,85 @@ public class Service implements URLParam {
 
     public Mappings query(Query query, Mapping m) throws LoadException {
         return query(query, query.getAST(), m);
+
+    }
+    
+    public Mappings query(Query query, ASTQuery ast, Mapping m) throws LoadException {
+        if (isDetail(query)) {
+            return queryLog(query, ast, m);
+        } else {
+            return queryBasic(query, ast, m);
+        }
+    }
+    
+    static boolean isDetail(Query query) {
+        return Property.booleanValue(SERVICE_LOG) || 
+                (query!=null &&
+                (query.getAST().hasMetadata(Metadata.DETAIL)
+                || query.getGlobalQuery().getAST().hasMetadata(Metadata.DETAIL)));
     }
     
     /**
+     * trap exception and return empty result with service detail 
      */
-    public Mappings query(Query query, ASTQuery ast, Mapping m) throws LoadException {
+    Mappings queryLog(Query query, ASTQuery ast, Mapping m) throws 
+            LoadException {
+        try { 
+            return queryBasic(query, ast, m);
+        }
+        catch (ResponseProcessingException ex) {
+           return logDetail(query, ex);           
+        }
+        catch (Exception ex) {
+           return logDetail(query, null);
+        }        
+    }
+        
+    Mappings logDetail(Query query, ResponseProcessingException ex) {
+        IDatatype dt = DatatypeMap.json(FORMAT, getFormatText());
+        
+        if (ex != null) {
+            dt.set(ERROR, ex.getResponse().getStatus());
+            if (ex.getMessage()!=null && !ex.getMessage().isEmpty()){
+                dt.set(MES, ex.getMessage());
+            }
+        }
+        
+        return Mappings.create(query).recordDetail(node(), dt);
+    }
+    
+    static Node node() {
+        return NodeImpl.createVariable(Binding.SERVICE_DETAIL);
+    }
+       
+    Mappings queryBasic(Query query, ASTQuery ast, Mapping m) throws LoadException {
         metadata(ast);
         Mappings map;
         if (m != null) {
             ast = mapping(query, m);
         }
         String astq = ast.toString();
+        String accept = accept(ast);
+        
         if (ast.isSelect() || ast.isAsk() || ast.isUpdate()) {
-            map = getCreateParser().parseMapping(astq, process(ast, astq), encoding(ast));
+            map = getCreateParser().parseMapping(query, astq, process(astq, accept), encoding(ast));
         } 
         else {
-            Graph g = getCreateParser().parseGraph(process(ast, astq), encoding(ast));
+            Graph g = getCreateParser().parseGraph(query, process(astq, accept), encoding(ast));
             map = new Mappings();
             map.setGraph(g);
         }
         map.setQuery(query);
         map.init(query);
+        complete(map, accept);
         return map;
+    }
+    
+    void complete(Mappings map, String accept) {
+        if (isDetail(map.getQuery()) &&
+                map.getDetail()!=null && accept != null) {
+            map.getDetail().set(ACCEPT, accept);
+        }
     }
     
     public String process(ASTQuery ast, String query) {
@@ -197,12 +260,13 @@ public class Service implements URLParam {
             
             if (resp.getStatus() >= Response.Status.BAD_REQUEST.getStatusCode()) {
                 ResponseProcessingException ex = new ResponseProcessingException(resp, res);
+                
                 if (isLog() && getLog() != null){
                     // use case: @federate call not within ProviderService
                     // log here
                     getLog().addException(new EngineException(ex, ex.getMessage())
                         .setURL(getURL()).setObject(ex.getResponse()));
-                }
+                }               
                 throw ex;
             }
             
@@ -429,6 +493,19 @@ public class Service implements URLParam {
             }
             return getResponse(myUrl, mime);
         }
+        
+        if (resp.getStatus() >= Response.Status.BAD_REQUEST.getStatusCode()) {
+            ResponseProcessingException ex = new ResponseProcessingException(resp, "");
+
+            if (isLog() && getLog() != null) {
+                // use case: @federate call not within ProviderService
+                // log here
+                getLog().addException(new EngineException(ex, ex.getMessage())
+                        .setURL(getURL()).setObject(ex.getResponse()));
+            }
+            throw ex;
+        }
+         
         return resp;
     }
     
@@ -530,7 +607,10 @@ public class Service implements URLParam {
         return format;
     }
 
-
+    public String getFormatText() {
+        return (getFormat()==null)?"undefined":getFormat();
+    }
+    
     public void setFormat(String format) {
         this.format = format; 
     }
@@ -650,11 +730,12 @@ public class Service implements URLParam {
         this.isDebug = isDebug;
     }
 
+    // @todo: synchronized wrt ProviderService & ServiceParser
     public ContextLog getLog() {
         if (getBind() == null) {
             return null;
         }
-        return getBind().getCreateLog();
+        return  getBind().getCreateLog();
     }
 
     public boolean isLog() {

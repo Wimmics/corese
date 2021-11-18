@@ -4,6 +4,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -40,12 +41,14 @@ public class ServiceParser implements URLParam {
     }
    
     public Mappings parseMapping(String str) throws LoadException {
-        return parseMapping("", str, ENCODING);
+        return parseMapping(null, "", str, ENCODING);
     }
 
-    public Mappings parseMapping(String query, String str, String encoding) throws LoadException {
+    public Mappings parseMapping(Query q, String query, String str, String encoding) 
+            throws LoadException {
         Mappings map = null;
         log(str);
+        boolean suc = true;
         if (getURL().hasParameter(WRAPPER)) {
             map = wrapper(str);
         }
@@ -63,6 +66,7 @@ public class ServiceParser implements URLParam {
                 case ResultFormat.SPARQL_RESULTS_TSV:
                     Service.logger.warn("Format not handled: " + getFormat());
                     map = new Mappings();
+                    suc = false;
                     break;
                     
                     
@@ -73,12 +77,13 @@ public class ServiceParser implements URLParam {
                 case ResultFormat.TURTLE_TEXT:
                 case ResultFormat.RDF_XML:
                 case ResultFormat.JSON_LD:
-                    map = parseGraphMapping(str, encoding); 
+                    map = parseGraphMapping(q, str, encoding); 
                     break;                    
 
                 default:
                     Service.logger.warn("Format not handled: " + getFormat());
-                    map = new Mappings(); //parseXMLMapping(str, encoding); 
+                    map = new Mappings(); 
+                    suc = false;
             }
         }
         else {     
@@ -86,22 +91,34 @@ public class ServiceParser implements URLParam {
         }
         map.setLength(str.length());
         map.setQueryLength(query.length());
+        complete(q, map, suc);
         return map;
     } 
     
-    public Mappings parseGraphMapping(String str, String encoding) throws LoadException {
-        Graph g = parseGraph(str, encoding);
+    void complete(Query q, Mappings map, boolean suc) {
+        if (Service.isDetail(q) && getFormat()!=null) {
+            IDatatype detail = DatatypeMap.json(FORMAT, getFormat());
+            map.recordDetail(Service.node(), detail);
+            if (! suc) {
+                detail.set(MES, "Format not handled");
+            }
+        }
+    }
+    
+    public Mappings parseGraphMapping(Query q, String str, String encoding) throws LoadException {
+        Graph g = parseGraph(q, str, encoding);
         Mappings map = new Mappings();
         map.setGraph(g);
+        complete(q, map, true);
         return map;
     }
 
     
     public Graph parseGraph(String str) throws LoadException {
-        return parseGraph(str, ENCODING);
+        return parseGraph(null, str, ENCODING);
     }
 
-    public Graph parseGraph(String str, String encoding) throws LoadException {
+    public Graph parseGraph(Query q, String str, String encoding) throws LoadException {
         try {
             Graph g = Graph.create();
             Load ld = Load.create(g);
@@ -120,7 +137,6 @@ public class ServiceParser implements URLParam {
                         break;
                     default:
                         Service.logger.warn("Format not handled: " + getFormat());
-
                 }
             } else {
                 ld.loadString(str, Load.RDFXML_FORMAT);
@@ -246,6 +262,7 @@ public class ServiceParser implements URLParam {
         this.format = format;
     }
 
+    // @todo: synchronized wrt ProviderService & Service
     ContextLog getLog() {
         if (getBind() == null) {
             return null;

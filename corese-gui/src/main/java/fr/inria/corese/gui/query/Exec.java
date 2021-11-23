@@ -79,7 +79,7 @@ public class Exec extends Thread {
             res = query();
         }
         frame.setBuffer(null);
-        panel.display(res, getCurrent().getQueryProcess().getBinding());
+        panel.display(res, getCurrent().getQueryProcess().getCreateBinding());
     }
 
     public void finish(boolean kill) {

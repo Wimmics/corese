@@ -116,15 +116,21 @@ public class SPARQLJSONResult extends SPARQLResult {
             case "uri":
                 return getURI(bind.getString("value"));
             case "literal":
-                return getLiteral(bind.getString("value"), null, bind.getString("xml:lang"));
+                return getLiteral(bind.getString("value"), null, getString(bind, "xml:lang"));
             case "typed-literal":
-                return getLiteral(bind.getString("value"), bind.getString("datatype"), null);
+                return getLiteral(bind.getString("value"), getString(bind, "datatype"), null);
             case "bnode":
                 return getBlank(bind.getString("value"));
         }
         return null;
     }
     
+    String getString(JSONObject json, String name) {
+        if (json.has(name)) {
+            return json.getString(name);
+        }
+        return null;
+    }
     
     Node getVariable(String var) {
         return getCompiler().createNode(vtable.get(var));

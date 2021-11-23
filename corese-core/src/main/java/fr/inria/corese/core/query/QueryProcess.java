@@ -638,7 +638,7 @@ public class QueryProcess extends QuerySolver {
                 throw new EngineException("LDScript unauthorized") ;
             }
         }
-        m = completeMappings(m, ds);
+        m = completeMappings(q, m, ds);
         pragma(q);
         for (QueryVisitor vis : getAST(q).getVisitorList()) {
             vis.visit(q, getGraph());
@@ -691,8 +691,8 @@ public class QueryProcess extends QuerySolver {
      * Hence we have  Context both in Query and in Binding 
      * 
      */
-    Mapping completeMappings(Mapping m, Dataset ds) {
-        if (ds != null) {
+    Mapping completeMappings(Query q, Mapping m, Dataset ds) {
+        if (ds != null) {           
             if (ds.getBinding() != null || ds.getContext() != null) {
                 if (m == null) {
                     m = new Mapping();

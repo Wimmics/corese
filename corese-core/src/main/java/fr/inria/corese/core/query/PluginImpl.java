@@ -1116,13 +1116,13 @@ public class PluginImpl
         return name;
     }
 
-    Dataset getDataset(Environment env) {
-        Context c =  env.getQuery().getContext();
-        if (c != null) {
-            return new Dataset(c);
-        }
-        return null;
-    }
+//    Dataset getDataset(Environment env) {
+//        Context c =  env.getQuery().getContext();
+//        if (c != null) {
+//            return new Dataset(c);
+//        }
+//        return null;
+//    }
 
 //    Dataset getDataset() {
 //        Context c = getPluginTransform().getContext();
@@ -1132,6 +1132,18 @@ public class PluginImpl
 //        return null;
 //    }
 
+    
+    Dataset getDataset(Environment env) {
+        Metadata meta = env.getQuery().getAST().getMetadata();
+        if (meta!=null) {
+            Metadata m = meta.selectSparql();
+            if (m != null) {
+                return new Dataset().setMetadata(m);
+            }
+        }
+        return null;
+    }
+    
     IDatatype kgram(Environment env, Graph g, String query, Mapping m) throws EngineException{
         QueryProcess exec = QueryProcess.create(g, true);
         exec.setRule(env.getQuery().isRule());
@@ -1140,10 +1152,10 @@ public class PluginImpl
             if (g.getLock().getReadLockCount() == 0 && !g.getLock().isWriteLocked()) {
                 // use case: LDScript direct call  
                 // accept update
-                map = exec.query(query, m);//, getDataset(env)); 
+                map = exec.query(query, m, getDataset(env)); 
             } else {
                 // reject update
-                map = exec.sparqlQuery(query, m, null);//getDataset(env));
+                map = exec.sparqlQuery(query, m, getDataset(env));
             }
             // use case: subquery create Log or Context
             // outer query processing inherits it
@@ -1154,6 +1166,8 @@ public class PluginImpl
                 System.out.println(map);
             }
             if (map.getGraph() == null) {
+                // draft: service evaluation detail report
+                env.setDetail(map.getDetail());
                 return DatatypeMap.createObject(map);
             } else {
                 return DatatypeMap.createObject(map.getGraph());

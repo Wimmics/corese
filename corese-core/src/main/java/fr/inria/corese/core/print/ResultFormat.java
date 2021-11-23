@@ -30,8 +30,8 @@ public class ResultFormat implements ResultFormatDef {
     
     public static final String SPARQL_RESULTS_XML  = "application/sparql-results+xml";
     public static final String SPARQL_RESULTS_JSON = "application/sparql-results+json";
-    public static final String SPARQL_RESULTS_CSV  = "application/sparql-results+csv";
-    public static final String SPARQL_RESULTS_TSV  = "application/sparql-results+tsv";
+    public static final String SPARQL_RESULTS_CSV  = "text/csv"; //application/sparql-results+csv";
+    public static final String SPARQL_RESULTS_TSV  = "text/tab-separated-values"; //application/sparql-results+tsv";
     
     static final String HEADER = 
               "<html>\n"

@@ -179,6 +179,7 @@ public class Property {
         SERVICE_SEND_PARAMETER,
         SERVICE_PARAMETER,
         SERVICE_LOG,
+        SERVICE_DETAIL,
 
         // service result may be RDF graph (e.g. when format=turtle)
         // apply service query on the graph 
@@ -463,8 +464,8 @@ public class Property {
                 Graph.RDFS_ENTAILMENT_DEFAULT = b;
                 break;
                 
-            case SERVICE_LOG:
-                ASTParser.SERVICE_LOG = b;
+            case SERVICE_DETAIL:
+                ASTParser.SERVICE_DETAIL = b;
                 break;
         }
     }

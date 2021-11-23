@@ -31,6 +31,7 @@ public class ServiceParser implements URLParam {
      private URLServer url;
      private Binding bind;
      private boolean log = false;
+     private ServiceReport report;
      
     public ServiceParser(URLServer url) {
          setURL(url);
@@ -64,7 +65,8 @@ public class ServiceParser implements URLParam {
                     
                 case ResultFormat.SPARQL_RESULTS_CSV:
                 case ResultFormat.SPARQL_RESULTS_TSV:
-                    Service.logger.warn("Format not handled: " + getFormat());
+                    Service.logger.warn(
+                         "Format not handled by local parser: " + getFormat());
                     map = new Mappings();
                     suc = false;
                     break;
@@ -81,8 +83,9 @@ public class ServiceParser implements URLParam {
                     break;                    
 
                 default:
-                    Service.logger.warn("Format not handled: " + getFormat());
-                    map = new Mappings(); 
+                    Service.logger.warn(
+                      "Format not handled by local parser: " + getFormat());
+                    map = Mappings.create(q).setFake(true);
                     suc = false;
             }
         }
@@ -91,25 +94,16 @@ public class ServiceParser implements URLParam {
         }
         map.setLength(str.length());
         map.setQueryLength(query.length());
-        complete(q, map, suc);
+        getReport().createParserReport(q, map, str, suc);
         return map;
     } 
-    
-    void complete(Query q, Mappings map, boolean suc) {
-        if (Service.isDetail(q) && getFormat()!=null) {
-            IDatatype detail = DatatypeMap.json(FORMAT, getFormat());
-            map.recordDetail(Service.node(), detail);
-            if (! suc) {
-                detail.set(MES, "Format not handled");
-            }
-        }
-    }
+        
     
     public Mappings parseGraphMapping(Query q, String str, String encoding) throws LoadException {
         Graph g = parseGraph(q, str, encoding);
         Mappings map = new Mappings();
         map.setGraph(g);
-        complete(q, map, true);
+        getReport().createParserReport(q, map, str, true);
         return map;
     }
 
@@ -136,7 +130,8 @@ public class ServiceParser implements URLParam {
                         ld.loadString(str, Load.TURTLE_FORMAT);
                         break;
                     default:
-                        Service.logger.warn("Format not handled: " + getFormat());
+                        Service.logger.warn(
+                          "Format not handled by local parser: " + getFormat());
                 }
             } else {
                 ld.loadString(str, Load.RDFXML_FORMAT);
@@ -256,7 +251,10 @@ public class ServiceParser implements URLParam {
     public String getFormat() {
         return format;
     }
-
+    
+    String getFormatText() {
+        return (getFormat()==null)?"undefined":getFormat();
+    }
     
     public void setFormat(String format) {
         this.format = format;
@@ -285,6 +283,14 @@ public class ServiceParser implements URLParam {
 
     public void setLog(boolean log) {
         this.log = log;
+    }
+
+    public ServiceReport getReport() {
+        return report;
+    }
+
+    public void setReport(ServiceReport report) {
+        this.report = report;
     }
 
     

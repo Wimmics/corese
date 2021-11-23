@@ -1,6 +1,5 @@
 package fr.inria.corese.core.load;
 
-import fr.inria.corese.compiler.parser.NodeImpl;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.kgram.core.Mapping;
@@ -12,19 +11,15 @@ import static fr.inria.corese.core.print.ResultFormat.RDF_XML;
 import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
 import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_DETAIL;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_LIMIT;
-import static fr.inria.corese.core.util.Property.Value.SERVICE_LOG;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
-import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.io.InputStream;
 
@@ -78,7 +73,10 @@ public class Service implements URLParam {
     private Access.Level level = Access.Level.DEFAULT;
     private String format;
     private ServiceParser parser;
+    private ServiceReport report;
+    private Response response;
     private boolean log = false;
+    private double time = 0;
     
     public Service() {
         clientBuilder = ClientBuilder.newBuilder();
@@ -93,6 +91,7 @@ public class Service implements URLParam {
     public Service(URLServer serv, ClientBuilder builder) {
         this.clientBuilder = builder;
         setURL(serv);
+        getCreateReport().setURL(serv);
     }
 
 
@@ -116,14 +115,7 @@ public class Service implements URLParam {
             return queryBasic(query, ast, m);
         }
     }
-    
-    static boolean isDetail(Query query) {
-        return Property.booleanValue(SERVICE_LOG) || 
-                (query!=null &&
-                (query.getAST().hasMetadata(Metadata.DETAIL)
-                || query.getGlobalQuery().getAST().hasMetadata(Metadata.DETAIL)));
-    }
-    
+       
     /**
      * trap exception and return empty result with service detail 
      */
@@ -133,60 +125,54 @@ public class Service implements URLParam {
             return queryBasic(query, ast, m);
         }
         catch (ResponseProcessingException ex) {
-           return logDetail(query, ex);           
+           return getCreateReport()
+                   .setFormat(getFormat()).setAccept(getAccept())
+                   .serviceReport(query, ex, null);           
         }
         catch (Exception ex) {
-           return logDetail(query, null);
+           return getCreateReport()
+                   .setFormat(getFormat()).setAccept(getAccept())
+                   .serviceReport(query, null, ex);
         }        
     }
-        
-    Mappings logDetail(Query query, ResponseProcessingException ex) {
-        IDatatype dt = DatatypeMap.json(FORMAT, getFormatText());
-        
-        if (ex != null) {
-            dt.set(ERROR, ex.getResponse().getStatus());
-            if (ex.getMessage()!=null && !ex.getMessage().isEmpty()){
-                dt.set(MES, ex.getMessage());
-            }
-        }
-        
-        return Mappings.create(query).recordDetail(node(), dt);
-    }
-    
-    static Node node() {
-        return NodeImpl.createVariable(Binding.SERVICE_DETAIL);
-    }
-       
+             
     Mappings queryBasic(Query query, ASTQuery ast, Mapping m) throws LoadException {
-        metadata(ast);
-        Mappings map;
-        if (m != null) {
-            ast = mapping(query, m);
+        try {
+            metadata(ast);
+            Mappings map;
+            if (m != null) {
+                ast = mapping(query, m);
+            }
+            String astq = ast.toString();
+            String accept = accept(ast);
+
+            if (ast.isSelect() || ast.isAsk() || ast.isUpdate()) {
+                map = getCreateParser().parseMapping(query, astq, process(astq, accept), encoding(ast));
+            } else {
+                Graph g = getCreateParser().parseGraph(query, process(astq, accept), encoding(ast));
+                map = new Mappings();
+                map.setGraph(g);
+            }
+            map.setQuery(query);
+            map.init(query);
+            getCreateReport().completeReport(map, accept);
+            return map;
+        } catch (LoadException e) {
+            // ServiceParser throw exception
+            if (isDetail(query)) {
+                return getCreateReport().parserReport(query, e);
+            }
+            throw e;
         }
-        String astq = ast.toString();
-        String accept = accept(ast);
-        
-        if (ast.isSelect() || ast.isAsk() || ast.isUpdate()) {
-            map = getCreateParser().parseMapping(query, astq, process(astq, accept), encoding(ast));
-        } 
-        else {
-            Graph g = getCreateParser().parseGraph(query, process(astq, accept), encoding(ast));
-            map = new Mappings();
-            map.setGraph(g);
-        }
-        map.setQuery(query);
-        map.init(query);
-        complete(map, accept);
-        return map;
     }
     
-    void complete(Mappings map, String accept) {
-        if (isDetail(map.getQuery()) &&
-                map.getDetail()!=null && accept != null) {
-            map.getDetail().set(ACCEPT, accept);
-        }
+    static boolean isDetail(Query query) {
+        return Property.booleanValue(SERVICE_DETAIL) || 
+                (query!=null &&
+                (query.getAST().hasMetadata(Metadata.DETAIL)
+                || query.getGlobalQuery().getAST().hasMetadata(Metadata.DETAIL)));
     }
-    
+   
     public String process(ASTQuery ast, String query) {
         return process(query, accept(ast));
     }
@@ -206,10 +192,6 @@ public class Service implements URLParam {
     
     // https://docs.oracle.com/javaee/7/api/index.html
     public String post(String url, String query, String mime) {
-//        if (isDebug()) {
-//            System.out.println("service post " + url);
-//            System.out.println(query);
-//        }
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         clientBuilder.readTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build(); 
@@ -217,7 +199,6 @@ public class Service implements URLParam {
         Form form = getForm();
         form.param(QUERY, query);
         try {
-            //String res = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
             // request() return Invocation.Builder
             Cookie cook = new Cookie(COUNT, Integer.toString(getCount()), url, getURL().getServer());
             Cookie cook2 = new Cookie(PLATFORM, CORESE);
@@ -241,10 +222,12 @@ public class Service implements URLParam {
 
             String res = resp.readEntity(String.class);
             
+            Date d2 = new Date();
+            double time = (d2.getTime() - d1.getTime()) / 1000.0;
+            getCreateReport().setTime(time);
             if (isDebug()) {
-                Date d2 = new Date();
-                logger.info("Time read: " + ((d2.getTime() - d1.getTime()) / 1000.0));
-            }
+                logger.info("Time read: " + time);
+            }            
             
             if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
                 String myUrl = resp.getLocation().toString();
@@ -288,6 +271,7 @@ public class Service implements URLParam {
     }
     
     void trace(Response res) {
+        getCreateReport().setResponse(res);
         if (getURL().hasParameter(DISPLAY, HEADER)) {
             System.out.println("service header: " + getURL().getURL());
             for (String name : res.getHeaders().keySet()) {
@@ -303,6 +287,7 @@ public class Service implements URLParam {
         }
     }
     
+    @Deprecated
     Builder setHeader(Builder rb) {
         if (getURL().hasParameter(HEADER)) {
             for (String header : getURL().getParameterList(HEADER)) {
@@ -318,11 +303,11 @@ public class Service implements URLParam {
     
     // URL header Accept if any else mime 
     String getAccept(String mime) {
-        String accept = getHeader(HEADER_ACCEPT);
+        String accept = getParamHeader(HEADER_ACCEPT);
         return (accept==null)?mime:accept;
     }
     
-    String getHeader(String name) {
+    String getParamHeader(String name) {
         if (getURL().hasParameter(HEADER)) {
             for (String header : getURL().getParameterList(HEADER)) {
                 String[] pair = header.split(":");
@@ -484,7 +469,8 @@ public class Service implements URLParam {
         if (resp.getMediaType()!=null) {
             recordFormat(resp.getMediaType().toString());
         }
-
+        getCreateReport().setResponse(resp);
+        
         if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
             String myUrl = resp.getLocation().toString();
             logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
@@ -495,7 +481,8 @@ public class Service implements URLParam {
         }
         
         if (resp.getStatus() >= Response.Status.BAD_REQUEST.getStatusCode()) {
-            ResponseProcessingException ex = new ResponseProcessingException(resp, "");
+            String res = resp.readEntity(String.class);
+            ResponseProcessingException ex = new ResponseProcessingException(resp, res);
 
             if (isLog() && getLog() != null) {
                 // use case: @federate call not within ProviderService
@@ -622,6 +609,7 @@ public class Service implements URLParam {
         logger.info("Content type: " + str);
         String format = clean(str);
         setFormat(format);
+        getCreateReport().setFormat(format);
         if (getParser()!=null) {
             getParser().setFormat(format);
         }
@@ -713,6 +701,7 @@ public class Service implements URLParam {
             setParser(new ServiceParser(getURL()));
             getParser().setBind(getBind());
             getParser().setLog(isLog());
+            getParser().setReport(getCreateReport());
         }
         return getParser();
     }
@@ -744,6 +733,21 @@ public class Service implements URLParam {
 
     public void setLog(boolean log) {
         this.log = log;
+    }
+
+    public ServiceReport getReport() {
+        return report;
+    }
+
+    public void setReport(ServiceReport report) {
+        this.report = report;
+    }
+    
+    public ServiceReport getCreateReport() {
+        if (getReport() == null) {
+            setReport(new ServiceReport());
+        }
+        return getReport();
     }
     
 }

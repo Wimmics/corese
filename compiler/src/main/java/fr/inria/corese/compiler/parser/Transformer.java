@@ -184,6 +184,9 @@ public class Transformer implements ExpType {
             ast.setDefaultDataset(getDataset());
         }
         ParserSparql1.create(ast).parse();
+        if (getDataset()!=null && getDataset().getMetadata()!=null) {
+            ast.addMetadata(getDataset().getMetadata());
+        }
         ASTParser walk = new ASTParser(ast);
         ast.process(walk);
         return ast;

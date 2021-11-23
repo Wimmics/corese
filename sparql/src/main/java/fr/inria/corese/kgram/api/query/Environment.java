@@ -156,5 +156,7 @@ public interface Environment {
         void setEval(Eval e);
         
         ProcessVisitor getVisitor();
+        
+        void setDetail(IDatatype dt);
 
 }

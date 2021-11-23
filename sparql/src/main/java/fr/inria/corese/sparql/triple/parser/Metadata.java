@@ -236,6 +236,21 @@ public class Metadata extends ASTObject
         }
         return sb.toString();
     }
+    
+    /**
+     * Subset of Metadata for xt:sparql() see PluginImpl
+     */
+    public Metadata selectSparql() {
+        if (hasMetadata(DETAIL)) {
+            return new Metadata().add(DETAIL);
+        }
+        return null;
+    }
+    
+    public Metadata share(Metadata meta) {
+        add(meta);
+        return this;
+    }
        
     public Metadata add(String str){
         map.put(str, str);
@@ -270,7 +285,7 @@ public class Metadata extends ASTObject
        add(name);
        List<String> list = value.get(name);
        if (list == null){
-           list = new ArrayList<String>();
+           list = new ArrayList<>();
            value.put(name, list);
        }
        if (! list.contains(val)){

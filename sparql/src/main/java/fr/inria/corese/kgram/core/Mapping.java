@@ -19,7 +19,6 @@ import fr.inria.corese.kgram.api.query.Result;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
 import fr.inria.corese.kgram.tool.EnvironmentImpl;
-import fr.inria.corese.kgram.tool.NodeImpl;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
@@ -1426,10 +1425,7 @@ public class Mapping
         this.visitorParameter = visitorParameter;
     }
 
-//    public IDatatype getDetail() {
-//        return detail;
-//    }
-
+    @Override
     public void setDetail(IDatatype detail) {
     }
  

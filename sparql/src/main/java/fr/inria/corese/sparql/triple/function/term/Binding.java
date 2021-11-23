@@ -35,7 +35,9 @@ public class Binding implements Binder {
     public static boolean DEBUG_DEFAULT = false;
     public static boolean DYNAMIC_CAPTURE_DEFAULT = false;
     public static final String SLICE_SERVICE  = "?slice_service";
-    public static final String SERVICE_DETAIL = "?_service_detail";
+    public static final String SERVICE_REPORT = "?_service_report";
+    public static final String SERVICE_REPORT_FORMAT = "?_service_report_%s";
+    public static final String SERVICE_REPORT_ZERO = "?_service_report_0";
     ArrayList<Expr> varList;
     ArrayList<IDatatype> valList;
     // level of the stack before function call

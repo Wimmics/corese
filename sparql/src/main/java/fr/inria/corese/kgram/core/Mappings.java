@@ -1800,8 +1800,9 @@ public class Mappings extends PointerObject
     /**
      * @param isFake the isFake to set
      */
-    public void setFake(boolean isFake) {
+    public Mappings setFake(boolean isFake) {
         this.isFake = isFake;
+        return this;
     }
 
     boolean isNodeList() {
@@ -1973,17 +1974,18 @@ public class Mappings extends PointerObject
     }
 
     /**
-     * Detail about service execution 
-     * Memory push(map) will set a LDScript global variable with detail
-     * Detail global variable can be retrieved with a bind (exp as var)
-     * and can be part of final result
+     * Detail about service execution as a dt:json/dt:map object
+     * Recorded as system generated variable ?_service_detail
      */
     public Mappings recordDetail(Node node, IDatatype detail) {
         setDetail(detail);
         if (isEmpty()) {
+            // when detail is required, we generate a fake result 
+            // to record var=detail
             add(Mapping.create());
         }
         for (Mapping m : this) {
+            // augment each result with var=detail
             m.addNode(node, detail);
         }
         return this;

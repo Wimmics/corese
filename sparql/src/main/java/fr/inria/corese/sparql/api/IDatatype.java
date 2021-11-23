@@ -13,6 +13,7 @@ import fr.inria.corese.sparql.storage.api.IStorage;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 
 import java.math.BigDecimal;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 
@@ -152,11 +153,32 @@ public interface IDatatype
 
     IDatatype set(IDatatype name, IDatatype value);
     
+    default IDatatype set(String name, Object value){
+        if (value == null) {
+            return null;
+        }
+        return set(name, value.toString());
+    }
+    
+    default IDatatype set(String name, Date value){
+        if (value == null) {
+            return null;
+        }
+        return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
+    }
+    
     default IDatatype set(String name, String value){
+        if (value == null) {
+            return null;
+        }
         return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
     }
     
     default IDatatype set(String name, int value){
+        return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
+    }
+    
+    default IDatatype set(String name, double value){
         return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
     }
     

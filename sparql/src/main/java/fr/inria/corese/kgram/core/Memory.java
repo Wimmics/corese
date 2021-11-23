@@ -19,6 +19,7 @@ import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
+import fr.inria.corese.kgram.tool.NodeImpl;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
@@ -60,6 +61,8 @@ public class Memory extends PointerObject implements Environment {
     // to evaluate aggregates such as count(?x)
     Mappings results, group; //, join;
     Mapping mapping;
+    // service evaluation detail report
+    private IDatatype detail;
     // true when processing aggregate at the end 
     boolean isAggregate = false;
     private boolean isFake = false,
@@ -376,6 +379,19 @@ public class Memory extends PointerObject implements Environment {
     Mapping store(Query q, Producer p, boolean subEval, boolean func) throws SparqlException {
         boolean complete = ! q.getGlobalQuery().isAlgebra();
         //clear();
+        
+        Node detailNode = null;
+        if (getDetail() != null) {
+            // draft: set service detail as variable value
+            // use case: xt:sparql() return map with detail
+            // PluginImpl sparql() record detail in Environment
+            // detailNode is defined by ASTParser with @detail metadata
+            detailNode = getQuery().getSelectNode(Binding.SERVICE_REPORT_ZERO);
+            if (detailNode != null) {
+                push(detailNode, getDetail());
+            }
+        }
+                
         int nb = nbNode;
         if (!subEval && complete) {
             //nb += q.nbFun();
@@ -411,7 +427,7 @@ public class Memory extends PointerObject implements Environment {
                 i++;
             }
         }
-
+                          
         n = 0;
         i = 0;
         for (Node node : qNodes) {
@@ -425,7 +441,7 @@ public class Memory extends PointerObject implements Environment {
         
         Mapping map = null;
         
-        if (complete) {
+        if (complete) {                        
             if (subEval) {
                 if (func) {                    
                     orderGroup(q.getOrderBy(), snode, p);
@@ -496,17 +512,24 @@ public class Memory extends PointerObject implements Environment {
                         pop(e.getNode());
                     }
                 }
-            }
+            }           
         }
         
         if (map == null) {
             map = new Mapping(qedge, tedge, qnode, tnode);
             mapping = map;
         }
+        
+        if (detailNode != null) {
+            pop(detailNode);
+            setDetail(null);
+        }
+
         map.setOrderBy(snode);
         map.setGroupBy(gnode);
         clear();
         mapping = null;
+
         return map;
     }
     
@@ -859,15 +882,7 @@ public class Memory extends PointerObject implements Environment {
                 }
                 k++;
             }
-        }
-        
-//        if (res.getDetail()!=null) {
-//            // detail about service execution. see corese.core.load Service
-//            // detail recorded as LDScript global variable
-//            // can be retrieved using bind (fun:detail() as ?detail)
-//            // see Extension
-//            getBind().setGlobalVariable(Binding.SERVICE_DETAIL, res.getDetail());
-//        }
+        }       
         return true;
     }
 
@@ -1339,6 +1354,15 @@ public class Memory extends PointerObject implements Environment {
     
     public static void recordEdge(boolean b) {
         IS_EDGE = b;
+    }
+
+    public IDatatype getDetail() {
+        return detail;
+    }
+
+    @Override
+    public void setDetail(IDatatype detail) {
+        this.detail = detail;
     }
     
 }

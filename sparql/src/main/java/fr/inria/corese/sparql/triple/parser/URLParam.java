@@ -106,6 +106,9 @@ public interface URLParam {
     static final String CARDINALITY = "cardinality";
     static final String GRAPH_SIZE = "graphSize";
     static final String MERGE = "merge";
+    static final String SIZE = "size";
+    static final String LENGTH = "length";
+    static final String SERVER_NAME = "server";
     
 
 }

@@ -1,127 +1,233 @@
 package fr.inria.corese.kgram.tool;
 
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.cst.RDFS;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.Node;
+import static fr.inria.corese.kgram.api.core.Node.INITKEY;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.kgram.path.Path;
-import fr.inria.corese.sparql.api.IDatatype;
 
 public class NodeImpl implements Node {
+
     
-    Node node, graph;
-    
-    public NodeImpl(Node node, Node graph) {
-        this.node = node;
-        this.graph = graph;
+
+    Atom atom;
+    int index = -1;
+    private boolean matchNodeList = false;
+    private boolean matchCardinality = false;
+
+    public NodeImpl(Atom at) {
+        atom = at;
     }
 
-    @Override
-    public int getIndex() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static NodeImpl createNode(Atom at) {
+        return new NodeImpl(at);
     }
 
-    @Override
-    public void setIndex(int n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static NodeImpl createVariable(String name) {
+        return new NodeImpl(Variable.create(name));
     }
 
-    @Override
-    public String getKey() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static NodeImpl createResource(String name) {
+        return new NodeImpl(Constant.create(name));
     }
 
-    @Override
-    public void setKey(String str) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static NodeImpl createConstant(String name) {
+        return new NodeImpl(Constant.create(name, RDFS.xsdstring));
     }
 
-    @Override
-    public boolean same(Node n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static NodeImpl createConstant(String name, String datatype) {
+        return new NodeImpl(Constant.create(name, datatype));
     }
 
-    @Override
-    public boolean match(Node n) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public static NodeImpl createConstant(String name, String datatype, String lang) {
+        return new NodeImpl(Constant.create(name, null, lang));
     }
 
-    @Override
-    public int compare(Node node) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public String getLabel() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean isVariable() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean isConstant() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean isBlank() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public boolean isFuture() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public Atom getAtom() {
+        return atom;
     }
 
     @Override
     public IDatatype getValue() {
-        return node.getDatatypeValue();
+        return atom.getDatatypeValue();
+    }
+    
+    public IDatatype getValue(Node n) {
+        return  n.getValue();    
     }
 
     @Override
     public IDatatype getDatatypeValue() {
-        return node.getDatatypeValue();
+        return atom.getDatatypeValue();
     }
-
+    
+    @Override   
+    public void setDatatypeValue(IDatatype dt) {
+        atom = Constant.create(dt);
+    }
+    
     @Override
     public Node getGraph() {
-        return graph;
+        return null;
+    }
+    
+    @Override
+    public Node getNode() {
+        return this;
     }
 
     @Override
-    public Node getNode() {
-        return node;
+    public String toString() {
+        return atom.toSparql(); // + "[" + getIndex() +"]";
+    }
+
+    @Override
+    public int compare(Node node) {
+        if (node.getValue() instanceof IDatatype) {
+            return getValue().compareTo(getValue(node));
+        }
+        return getLabel().compareTo(node.getLabel());
+    }
+
+    @Override
+    public int getIndex() {
+        return index;
+    }
+
+    @Override
+    public String getLabel() {
+        if (atom.isResource()) {
+            return atom.getLongName();
+        }
+        return atom.getName();
+    }
+
+    @Override
+    public boolean isConstant() {
+        return atom.isConstant();
+    }
+
+    @Override
+    public boolean isVariable() {
+        return atom.isVariable(); 
+    }
+
+    @Override
+    public boolean isBlank() {
+        return atom.isBlank() || (isVariable() && atom.getVariable().isBlankNode());
+    }
+
+    @Override
+    public boolean isFuture() {
+        return isConstant() && atom.getConstant().getDatatypeValue().isFuture();
+    }
+
+    @Override
+    public boolean same(Node n) {
+        if (isVariable() || n.isVariable()) {
+            return sameVariable(n);
+        }       
+        return getValue().sameTerm(getValue(n));
+        //return compare(n) == 0;
+    }
+    
+    boolean sameVariable(Node n){      
+        return isVariable() && n.isVariable() && getLabel().equals(n.getLabel());
+    }
+
+    @Override
+    public boolean match(Node n) {
+       if (isVariable() || n.isVariable()) {
+            return sameVariable(n);
+        }
+        return getValue().match(getValue(n));
+    }
+
+    @Override
+    public boolean equals(Object o) {
+        if (o instanceof Node) {
+            return equals((Node) o); // was same
+        }
+        return false;
+    }
+    
+     public boolean equals(Node n) {
+        if (isVariable() || n.isVariable()) {
+            return sameVariable(n);
+        }
+        return getValue().equals(getValue(n));
+     }
+
+    @Override
+    public void setIndex(int n) {
+        // TODO Auto-generated method stub
+        index = n;
     }
 
     @Override
     public Object getObject() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-
-    @Override
-    public TripleStore getTripleStore() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
     public void setObject(Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO Auto-generated method stub
+    }
+    
+    @Override
+    public Path getPath() {       
+        return atom.getDatatypeValue().getPath();
     }
 
     @Override
     public Object getProperty(int p) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO Auto-generated method stub
+        return null;
     }
 
     @Override
     public void setProperty(int p, Object o) {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        // TODO Auto-generated method stub
     }
 
     @Override
-    public Path getPath() {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    public String getKey() {
+        return INITKEY;
+    }
+
+    @Override
+    public void setKey(String str) {
+    }
+
+    @Override
+    public TripleStore getTripleStore() {
+        return null;
     }
     
+    
+    @Override
+    public boolean isMatchCardinality() {
+        return matchCardinality;
+    }
+
+    
+    public void setMatchCardinality(boolean matchCardinality) {
+        this.matchCardinality = matchCardinality;
+    }
+
+    
+    @Override
+    public boolean isMatchNodeList() {
+        return matchNodeList;
+    }
+
+   
+    public void setMatchNodeList(boolean matchNodeList) {
+        this.matchNodeList = matchNodeList;
+    }
 }

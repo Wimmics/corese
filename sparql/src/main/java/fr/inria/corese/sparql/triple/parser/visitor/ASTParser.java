@@ -14,16 +14,18 @@ import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Walker just after parsing to complete the AST.
  */
 public class ASTParser implements Walker, URLParam {
-    public static boolean SERVICE_LOG = false;
-    private boolean log = SERVICE_LOG;
+    public static boolean SERVICE_DETAIL = false;
+    private boolean log = SERVICE_DETAIL;
     
     ASTQuery ast;
+    private int nbService = 0;
     
     class BNodeMap extends HashMap<String, Exp> {}
 
@@ -33,6 +35,11 @@ public class ASTParser implements Walker, URLParam {
     
     @Override
     public void start(ASTQuery ast) {
+        //serviceLog(ast);        
+    }
+    
+    @Override
+    public void finish(ASTQuery ast) {
         serviceLog(ast);        
     }
     
@@ -51,20 +58,28 @@ public class ASTParser implements Walker, URLParam {
     
     void serviceLog(ASTQuery ast) {
         if (isLog() || ast.hasMetadata(Metadata.DETAIL)) {
-            Variable var = new Variable(Binding.SERVICE_DETAIL);
-            if (!ast.isSelectAll()) {
-                ast.setSelect(var);
+            ArrayList<Variable> varList = new ArrayList<>();
+            ArrayList<Constant> valList = new ArrayList<>();
+            int count = Math.max(1, getNbService());
+            
+            for (int i = 0; i < count; i++) {
+                Variable var = new Variable(String.format(Binding.SERVICE_REPORT_FORMAT, i));
+                varList.add(var);
+                valList.add(null);
+                if (!ast.isSelectAll()) {
+                    ast.setSelect(var);
+                }
             }
-            Values values = Values.create(var, (Constant) null);
-            if (ast.getValues() == null) {
+            Values values = Values.create(varList, valList);
+            if (ast.getValues() == null && !ast.isConstruct()) {
+                // virtuoso reject construct with values
                 ast.setValues(values);
             } else {
                 ast.getBody().add(0, values);
             }
-
         }
     }
-    
+
     
     
     
@@ -114,6 +129,7 @@ public class ASTParser implements Walker, URLParam {
     void process(Exp exp) {
         if (exp.isService()) {
             enter(exp.getService());
+            nbService++;
         }
     }
     
@@ -149,6 +165,14 @@ public class ASTParser implements Walker, URLParam {
 
     public void setLog(boolean log) {
         this.log = log;
+    }
+
+    public int getNbService() {
+        return nbService;
+    }
+
+    public void setNbService(int nbService) {
+        this.nbService = nbService;
     }
     
 }

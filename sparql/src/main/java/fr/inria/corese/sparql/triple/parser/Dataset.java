@@ -30,6 +30,7 @@ public class Dataset extends ASTObject {
     List<Constant> with;
     private Context context;
     private Binding binding;
+    private Metadata metadata;
     private Object templateVisitor;
     private String base;
     private List<String> uriList;
@@ -367,6 +368,15 @@ public class Dataset extends ASTObject {
      */
     public void setUriList(List<String> uriList) {
         this.uriList = uriList;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
+    }
+
+    public Dataset setMetadata(Metadata metadata) {
+        this.metadata = metadata;
+        return this;
     }
 
 }

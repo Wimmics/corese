@@ -10,8 +10,9 @@ import fr.inria.corese.core.print.ResultFormat;
 import static fr.inria.corese.core.print.ResultFormat.RDF_XML;
 import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
 import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.util.Property;
-import static fr.inria.corese.core.util.Property.Value.SERVICE_DETAIL;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_REPORT;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_LIMIT;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -95,12 +96,14 @@ public class Service implements URLParam {
     }
 
 
-    public Mappings select(String query) throws LoadException {
-        return getCreateParser().parseMapping(null, query, process(query), ENCODING);
+    public Mappings select(String query) throws LoadException, EngineException {
+        Query q = QueryProcess.create().compile(query);
+        return getCreateParser().parseMapping(q, query, process(query), ENCODING);
     }
 
-    public Graph construct(String query) throws LoadException {
-        return getCreateParser().parseGraph(process(query));
+    public Graph construct(String query) throws LoadException, EngineException {
+        Query q = QueryProcess.create().compile(query);
+        return getCreateParser().parseGraph(q, process(query));
     }
 
     public Mappings query(Query query, Mapping m) throws LoadException {
@@ -109,7 +112,7 @@ public class Service implements URLParam {
     }
     
     public Mappings query(Query query, ASTQuery ast, Mapping m) throws LoadException {
-        if (isDetail(query)) {
+        if (isReport(query)) {
             return queryLog(query, ast, m);
         } else {
             return queryBasic(query, ast, m);
@@ -125,14 +128,14 @@ public class Service implements URLParam {
             return queryBasic(query, ast, m);
         }
         catch (ResponseProcessingException ex) {
-           return getCreateReport()
+           return getCreateReport(query)
                    .setFormat(getFormat()).setAccept(getAccept())
-                   .serviceReport(query, ex, null);           
+                   .serviceReport(ex, null);           
         }
         catch (Exception ex) {
-           return getCreateReport()
+           return getCreateReport(query)
                    .setFormat(getFormat()).setAccept(getAccept())
-                   .serviceReport(query, null, ex);
+                   .serviceReport(null, ex);
         }        
     }
              
@@ -155,22 +158,23 @@ public class Service implements URLParam {
             }
             map.setQuery(query);
             map.init(query);
-            getCreateReport().completeReport(map, accept);
+            getCreateReport(query).setAccept(accept)
+                    .completeReport(map);
             return map;
         } catch (LoadException e) {
             // ServiceParser throw exception
-            if (isDetail(query)) {
-                return getCreateReport().parserReport(query, e);
+            if (isReport(query)) {
+                return getCreateReport(query).parserReport(e);
             }
             throw e;
         }
     }
     
-    static boolean isDetail(Query query) {
-        return Property.booleanValue(SERVICE_DETAIL) || 
+    static boolean isReport(Query query) {
+        return Property.booleanValue(SERVICE_REPORT) || 
                 (query!=null &&
-                (query.getAST().hasMetadata(Metadata.DETAIL)
-                || query.getGlobalQuery().getAST().hasMetadata(Metadata.DETAIL)));
+                (query.getAST().hasMetadata(Metadata.REPORT)
+                || query.getGlobalQuery().getAST().hasMetadata(Metadata.REPORT)));
     }
    
     public String process(ASTQuery ast, String query) {
@@ -265,6 +269,7 @@ public class Service implements URLParam {
             return post(uri, query, mime);
         }
         catch (Exception e) {
+            logger.error(getURL().toString());
             logger.error(e.getClass().getName() + " " + e.getMessage());
             throw e;
         }
@@ -749,5 +754,10 @@ public class Service implements URLParam {
         }
         return getReport();
     }
+    
+    public ServiceReport getCreateReport(Query q) {
+        return getCreateReport().setQuery(q);
+    }
+
     
 }

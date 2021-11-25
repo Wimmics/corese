@@ -365,27 +365,27 @@ public class XMLFormat extends QueryResultFormat {
         String str = dt.getLabel();
 
         if (dt.isLiteral()) {
-            String literal = "</literal>";
             str = toXML(str);
 
             if (dt.hasLang()) {
-                print("<literal xml:lang='" + dt.getLang() + "'>" + str
-                        + literal);
+                print(String.format("<literal xml:lang='%s'>%s</literal>", dt.getLang(), str));
             } else if (dt.getDatatype() != null && dt.getCode() != IDatatype.LITERAL) {
                 if (DatatypeMap.isDouble(dt)) {
                     //str =  nf.format(dt.doubleValue());
                     str = String.format("%g", dt.doubleValue());
                 }
-                print("<literal datatype='" + dt.getDatatype().getLabel()
-                        + "'>" + str);
-                print(literal);
+                else if (dt.isExtension()) {
+                    str = toXML(dt.getContent());
+                }
+                print(String.format("<literal datatype='%s'>%s</literal>",
+                        dt.getDatatype().getLabel() ,str));
             } else {
-                print("<literal>" + str + literal);
+                print(String.format("<literal>%s</literal>" ,str ));
             }
         } else if (dt.isBlank()) {
-            print("<bnode>" + str + "</bnode>");
+            print(String.format("<bnode>%s</bnode>", str));
         } else {
-            print("<uri>" + StringEscapeUtils.escapeXml(str) + "</uri>");
+            print(String.format("<uri>%s</uri>", StringEscapeUtils.escapeXml(str)));
         }
         println(close);
     }

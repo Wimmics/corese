@@ -1,17 +1,19 @@
 package fr.inria.corese.core.load;
 
 import fr.inria.corese.compiler.parser.NodeImpl;
-import static fr.inria.corese.core.api.Loader.ACCEPT;
-import static fr.inria.corese.kgram.api.core.ExprType.FORMAT;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import static fr.inria.corese.sparql.triple.parser.URLParam.MES;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import java.util.Date;
+import java.util.List;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.Response;
 
@@ -19,99 +21,111 @@ import javax.ws.rs.core.Response;
  *
  */
 public class ServiceReport implements URLParam {
-
-    public URLServer getURL() {
-        return url;
-    }
-
-    public void setURL(URLServer url) {
-        this.url = url;
-    }
     
     private String format;
     private String accept;
     private Response response;
     private URLServer url;
+    private Query query;
     private double time;
     
     /**
-     * Service detail when service exception occur
+     * Service report when service exception occur
      */
-    Mappings serviceReport(Query q, ResponseProcessingException ex, Exception e) {
-        IDatatype dt = DatatypeMap.newServiceReport(FORMAT, getFormatText(), ACCEPT, getAccept());
+    Mappings serviceReport(ResponseProcessingException ex, Exception e) {
+        IDatatype dt = newReport();
+        set(dt, FORMAT, getFormatText());
+        set(dt, ACCEPT, getAccept());
         
         if (ex == null) {
-            dt.set(MES, e.getMessage());
+            set(dt, MES, e.getMessage());
         }
         else {
-            dt.set(ERROR,  ex.getResponse().getStatus());
+            set(dt, ERROR, ex.getResponse().getStatus());
             if (ex.getResponse().getStatusInfo()!=null){
-                dt.set("info", ex.getResponse().getStatusInfo().getReasonPhrase());
+                set(dt, "info", ex.getResponse().getStatusInfo().getReasonPhrase());
             }
             if (ex.getMessage()!=null && !ex.getMessage().isEmpty()){
-                dt.set(MES, ex.getMessage());
+                set(dt, MES, ex.getMessage());
             }
         }
         
-        Mappings map = Mappings.create(q).recordDetail(node(), dt).setFake(true);
+        Mappings map = Mappings.create(getQuery()).recordReport(node(), dt).setFake(true);
         completeReportHeader(map);
         return map;
     }
     
-    void createParserReport(Query q, Mappings map, String str, boolean suc) {
-        if (Service.isDetail(q)) {
-            IDatatype detail = DatatypeMap.newServiceReport(FORMAT, getFormatText());
-            map.recordDetail(node(), detail);
+    
+    /**
+     * ServiceParser report without exception
+     */
+    void parserReport(Mappings map, String str, boolean suc) {
+        if (Service.isReport(getQuery()) && 
+                (!suc || map.size()>0 || 
+                (getQuery()!=null && getQuery().getGlobalQuery().getAST()
+                    .hasMetadataValue(Metadata.REPORT, Metadata.EMPTY)))) {
+            // if service is success but return no result:
+            // @report        generate no report (and no result Mapping)
+            // @report empty generate report and create a fake Mapping with report
+            IDatatype dt = newReport();
+            set(dt, FORMAT, getFormatText());
+            map.recordReport(node(), dt);
             if (! suc) {
-                detail.set(MES, "Format not handled by local parser");
-                detail.set(RESULT, str);
+                set(dt, MES, "Format not handled by local parser");
+                set(dt, RESULT, str);
             }
         }
     }
     
      /**
-     * Service detail when ServiceParser exception occur
+     * Service report when ServiceParser exception occur
      */
-    Mappings parserReport(Query q, LoadException e) {
-        IDatatype dt = DatatypeMap.newServiceReport(ERROR, e.getMessage());
-        Mappings map = Mappings.create(q).recordDetail(node(), dt).setFake(true);
+    Mappings parserReport(LoadException e) {
+        IDatatype dt = newReport();
+        set(dt, ERROR, e.getMessage());
+        Mappings map = Mappings.create(getQuery()).recordReport(node(), dt).setFake(true);
         completeReportHeader(map);
         return map;
     }
     
-    void completeReport(Mappings map, String accept) {
-        if (map.getDetail()!=null && accept != null) {
-            // ServiceParser generated detail report, complete it here
-            map.getDetail().set(ACCEPT, accept);
+    void completeReport(Mappings map) {
+        if (map.getReport()!=null && getAccept() != null) {
+            // ServiceParser generated report, complete it here
+            set(map.getReport(), ACCEPT, getAccept());
             completeReportHeader(map);
         }
     }
     
+    // no used yet
+    void complete(Mappings map, ASTQuery ast) {
+        if (map.getReport() != null) {
+            set(map.getReport(), "ast", ast.toString());
+        }
+    }
     
     void completeReportHeader(Mappings map) {
-        IDatatype dt = map.getDetail();
+        IDatatype dt = map.getReport();
         
         if (dt != null) {
             if (getResponse() != null) {
                 Response resp = getResponse();
                 if (resp.getHeaders().get("Server") != null) {
-                    dt.set(SERVER_NAME, resp.getHeaders().get("Server"));
+                    set(dt, SERVER_NAME, resp.getHeaders().get("Server"));
                 }
                 if (resp.getHeaders().get("Content-Length") != null) {
-                    dt.set(LENGTH, resp.getHeaders().get("Content-Length"));
+                    set(dt, LENGTH, resp.getHeaders().get("Content-Length"));
                 }
                 if (resp.getDate() != null) {
-                    dt.set(DATE, resp.getDate());
+                    set(dt, DATE, resp.getDate());
                 }
                 if (resp.getLastModified() != null) {
-                    dt.set("modified", resp.getLastModified());
+                    set(dt, "modified", resp.getLastModified());
                 }
             }
-            
-            dt.set(SIZE, (map.isFake()) ? 0 : map.size());
-            dt.set(TIME, getTime());
+            set(dt, URL, getURL().getServer());
+            set(dt, SIZE, (map.isFake()) ? 0 : map.size());
+            set(dt, TIME, getTime());
         }
-        
     }
     
     Node node() {       
@@ -160,4 +174,70 @@ public class ServiceReport implements URLParam {
         this.time = time;
     }
     
+    public URLServer getURL() {
+        return url;
+    }
+
+    public void setURL(URLServer url) {
+        this.url = url;
+    }
+
+    IDatatype newReport(String... param) {
+        return DatatypeMap.newServiceReport(param);
+    }
+    
+    void set(IDatatype dt, String key, String value) {
+        if (hasKey(key)) {
+            dt.set(key, value);
+        }
+    }
+    
+    void set(IDatatype dt, String key, int value) {
+        if (hasKey(key)) {
+            dt.set(key, value);
+        }
+    }
+
+    void set(IDatatype dt, String key, Object value) {
+        if (hasKey(key)) {
+            dt.set(key, value);
+        }
+    }
+
+    void set(IDatatype dt, String key, Date value) {
+        if (hasKey(key)) {
+            dt.set(key, value);
+        }
+    }
+    
+    /**
+     * @report server -> record server only
+     */
+    boolean hasKey(String key) {
+        if (getQuery() == null) {
+            return true;
+        }
+        Metadata meta = getQuery().getGlobalQuery().getAST().getMetadata();
+        if (meta == null) {
+            return true;
+        }
+        List<String> list = meta.getValues(Metadata.REPORT);
+        if (list == null) {
+            return true;
+        }
+        // @report empty: empty is not a key
+        if (list.size()==1 && list.contains(Metadata.EMPTY)) {
+            return true;
+        }
+        return list.contains(key);
+    }
+            
+    public Query getQuery() {
+        return query;
+    }
+
+    public ServiceReport setQuery(Query query) {
+        this.query = query;
+        return this;
+    }
 }

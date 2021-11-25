@@ -443,16 +443,9 @@ public class ProviderService implements URLParam {
       
         Mappings res = eval(ast, serv, timeout, count);
         processLinkList(res.getLinkList());
-        //complete(res, ast);
         return res;
     }
-     
-     void complete(Mappings map, ASTQuery ast) {
-         if (map.getDetail()!=null) {
-             map.getDetail().set("ast", ast.toString());
-         }
-     }
-    
+           
     /**
      * Extension: service may return RDF graph 
      * Evaluate service query on graph

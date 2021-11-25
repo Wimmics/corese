@@ -41,9 +41,9 @@ public class ServiceParser implements URLParam {
         this(new URLServer(url));
     }
    
-    public Mappings parseMapping(String str) throws LoadException {
-        return parseMapping(null, "", str, ENCODING);
-    }
+//    public Mappings parseMapping(String str) throws LoadException {
+//        return parseMapping(null, "", str, ENCODING);
+//    }
 
     public Mappings parseMapping(Query q, String query, String str, String encoding) 
             throws LoadException {
@@ -67,7 +67,7 @@ public class ServiceParser implements URLParam {
                 case ResultFormat.SPARQL_RESULTS_TSV:
                     Service.logger.warn(
                          "Format not handled by local parser: " + getFormat());
-                    map = new Mappings();
+                    map = Mappings.create(q);
                     suc = false;
                     break;
                     
@@ -94,22 +94,26 @@ public class ServiceParser implements URLParam {
         }
         map.setLength(str.length());
         map.setQueryLength(query.length());
-        getReport().createParserReport(q, map, str, suc);
+        getReport(q).parserReport(map, str, suc);
         return map;
     } 
         
     
     public Mappings parseGraphMapping(Query q, String str, String encoding) throws LoadException {
         Graph g = parseGraph(q, str, encoding);
-        Mappings map = new Mappings();
+        Mappings map = Mappings.create(q);
         map.setGraph(g);
-        getReport().createParserReport(q, map, str, true);
+        getReport(q).parserReport(map, str, true);
         return map;
     }
 
     
     public Graph parseGraph(String str) throws LoadException {
         return parseGraph(null, str, ENCODING);
+    }
+    
+    public Graph parseGraph(Query q, String str) throws LoadException {
+        return parseGraph(q, str, ENCODING);
     }
 
     public Graph parseGraph(Query q, String str, String encoding) throws LoadException {
@@ -187,15 +191,6 @@ public class ServiceParser implements URLParam {
         
         throw new LoadException(new IOException(String.format("Wrapper %s fail on service result", name)));
     }    
-    
-    public Mappings parseTurtle(String str) throws LoadException {
-        Graph g = Graph.create();
-        Load ld = Load.create(g);
-        ld.loadString(str, Load.TURTLE_FORMAT);
-        Mappings map = new Mappings();
-        map.setGraph(g);
-        return map;
-    }
     
     public Mappings parseJSONMapping(String str) {
         SPARQLJSONResult res = new SPARQLJSONResult();
@@ -287,6 +282,10 @@ public class ServiceParser implements URLParam {
 
     public ServiceReport getReport() {
         return report;
+    }
+    
+    public ServiceReport getReport(Query q) {
+        return getReport().setQuery(q);
     }
 
     public void setReport(ServiceReport report) {

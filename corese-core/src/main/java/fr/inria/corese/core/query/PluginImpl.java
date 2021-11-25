@@ -1167,7 +1167,7 @@ public class PluginImpl
             }
             if (map.getGraph() == null) {
                 // draft: service evaluation detail report
-                env.setDetail(map.getDetail());
+                env.setDetail(map.getReport());
                 return DatatypeMap.createObject(map);
             } else {
                 return DatatypeMap.createObject(map.getGraph());

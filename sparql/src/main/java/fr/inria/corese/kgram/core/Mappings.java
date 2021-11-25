@@ -1965,11 +1965,11 @@ public class Mappings extends PointerObject
         this.list = list;
     }
 
-    public IDatatype getDetail() {
+    public IDatatype getReport() {
         return detail;
     }
 
-    public void setDetail(IDatatype detail) {
+    public void setReport(IDatatype detail) {
         this.detail = detail;
     }
 
@@ -1977,8 +1977,8 @@ public class Mappings extends PointerObject
      * Detail about service execution as a dt:json/dt:map object
      * Recorded as system generated variable ?_service_detail
      */
-    public Mappings recordDetail(Node node, IDatatype detail) {
-        setDetail(detail);
+    public Mappings recordReport(Node node, IDatatype detail) {
+        setReport(detail);
         if (isEmpty()) {
             // when detail is required, we generate a fake result 
             // to record var=detail

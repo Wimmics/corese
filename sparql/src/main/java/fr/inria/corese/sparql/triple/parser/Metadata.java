@@ -77,6 +77,7 @@ public class Metadata extends ASTObject
     public static final int EVENT   = 58;
     public static final int FORMAT  = 59;
     public static final int SELECT  = 60;
+    public static final int REPORT  = 61;
     
 //    public static final int BEFORE  = 51;
 //    public static final int AFTER   = 52;
@@ -111,6 +112,8 @@ public class Metadata extends ASTObject
     public static final String SIMPLIFY         = PREF + "simplify";
     public static final String EXIST            = PREF + "exist";
     public static final String SKIP_STR         = PREF + "skip";
+    public static final String ALL              = "all";
+    public static final String EMPTY            = "empty";
     
     public static final String DISTRIBUTE_NAMED     = PREF + "distributeNamed";
     public static final String DISTRIBUTE_DEFAULT   = PREF + "distributeDefault";
@@ -184,6 +187,7 @@ public class Metadata extends ASTObject
         define("@endpoint", ENDPOINT); 
         define("@file",     FILE); 
         define("@detail",   DETAIL); 
+        define("@report",   REPORT); 
         define("@accept",   ACCEPT); 
         define("@reject",   REJECT); 
         define("@option",   OPTION); 
@@ -421,18 +425,13 @@ public class Metadata extends ASTObject
         return str != null && str.equals(value);
     }
     
-     public boolean hasValues(int meta, String value) {
+    public boolean hasValues(int meta, String value) {
         List<String> list = getValues(meta);
         if (list == null) {
             return false;
         }
-        for (String str : list){
-            if (str.equals(value)){
-                return true;
-            }
-        }
-        return false;
-     }
+        return list.contains(value);               
+    }
     
      public String getValue(String name){
          if (name == null){

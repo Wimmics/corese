@@ -176,6 +176,7 @@ public class ASTQuery
     boolean isBind = false;
     private boolean ldscript = false;
     private boolean insideWhere = false;
+    private boolean federateVisit = false;
     /**
      * max cg result
      */
@@ -374,51 +375,42 @@ public class ASTQuery
         shareFunction(ast);
     }
 
-    /**
-     * @return the undefined
-     */
+   
     public HashMap<String, Expression> getUndefined() {
         return undefined;
     }
 
-    /**
-     * @param undefined the undefined to set
-     */
+    
     public void setUndefined(HashMap<String, Expression> undefined) {
         this.undefined = undefined;
     }
 
-    /**
-     * @return the isFail
-     */
+    
     public boolean isFail() {
         return isFail;
     }
 
-    /**
-     * @param isFail the isFail to set
-     */
+   
     public void setFail(boolean isFail) {
         this.isFail = isFail;
     }
 
-    /**
-     * @return the isRelax
-     */
+    
     public boolean isRelax() {
         return isRelax;
     }
 
-    /**
-     * @param isRelax the isRelax to set
-     */
+    
     public void setRelax(boolean isRelax) {
         this.isRelax = isRelax;
     }
 
-    /**
-     * @return the serviceList
-     */
+    
+    public boolean isFederateVisitorable() {
+        return hasMetadata(Metadata.FEDERATION) || 
+                (getServiceList() != null && getServiceList().size()>1);
+    } 
+    
     public List<Atom> getServiceList() {
         return serviceList;
     }
@@ -431,9 +423,7 @@ public class ASTQuery
         return list;
     }
 
-    /**
-     * @param serviceList the serviceList to set
-     */
+    
     public void setServiceList(List<Atom> serviceList) {
         this.serviceList = serviceList;
     }
@@ -4082,6 +4072,14 @@ public class ASTQuery
 
     public void setPathList(List<Triple> pathList) {
         this.pathList = pathList;
+    }
+
+    public boolean isFederateVisit() {
+        return federateVisit;
+    }
+
+    public void setFederateVisit(boolean federateVisit) {
+        this.federateVisit = federateVisit;
     }
        
 }

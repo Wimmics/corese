@@ -21,11 +21,15 @@ import java.util.HashMap;
  * Walker just after parsing to complete the AST.
  */
 public class ASTParser implements Walker, URLParam {
-    public static boolean SERVICE_DETAIL = false;
-    private boolean log = SERVICE_DETAIL;
+    public static boolean SERVICE_REPORT = false;
+    private boolean log = SERVICE_REPORT;
     
     ASTQuery ast;
     private int nbService = 0;
+    private boolean bnode = true;
+    // false: do it later after Federate Visitor
+    private boolean report = true;
+    private boolean provenance = true;
     
     class BNodeMap extends HashMap<String, Exp> {}
 
@@ -33,14 +37,32 @@ public class ASTParser implements Walker, URLParam {
         this.ast = ast;
     }
     
+    public ASTParser configure() {
+        if (ast.isFederateVisitorable()) {
+            // first visit: no report
+            // do it after FederateVisitor
+            setReport(false);
+        }
+        return this;
+    }
+    
+    // after FederateVisitor
+    public ASTParser report() {
+        setBnode(false);
+        setProvenance(false);
+        setReport(true);
+        return this;
+    }
+    
+    
     @Override
     public void start(ASTQuery ast) {
-        //serviceLog(ast);        
+        //serviceReport(ast);        
     }
     
     @Override
     public void finish(ASTQuery ast) {
-        serviceLog(ast);        
+        serviceReport(ast);        
     }
     
     @Override
@@ -49,38 +71,42 @@ public class ASTParser implements Walker, URLParam {
     }
         
     @Override
-    public void enter(Exp exp) {
+    public void enter(Exp exp) { 
         process(exp);
         bnodeScope(exp);
     }
     
     
     
-    void serviceLog(ASTQuery ast) {
-        if (isLog() || ast.hasMetadata(Metadata.DETAIL)) {
-            ArrayList<Variable> varList = new ArrayList<>();
-            ArrayList<Constant> valList = new ArrayList<>();
-            int count = Math.max(1, getNbService());
-            
-            for (int i = 0; i < count; i++) {
-                Variable var = new Variable(String.format(Binding.SERVICE_REPORT_FORMAT, i));
-                varList.add(var);
-                valList.add(null);
-                if (!ast.isSelectAll()) {
-                    ast.setSelect(var);
-                }
-            }
-            Values values = Values.create(varList, valList);
-            if (ast.getValues() == null && !ast.isConstruct()) {
-                // virtuoso reject construct with values
-                ast.setValues(values);
-            } else {
-                ast.getBody().add(0, values);
+    void serviceReport(ASTQuery ast) {
+        if (isReport()) {
+            if (isLog() || ast.hasMetadata(Metadata.REPORT)) {
+                serviceReportBasic(ast);
             }
         }
     }
 
-    
+    void serviceReportBasic(ASTQuery ast) {
+        ArrayList<Variable> varList = new ArrayList<>();
+        ArrayList<Constant> valList = new ArrayList<>();
+        int count = Math.max(1, getNbService());
+
+        for (int i = 0; i < count; i++) {
+            Variable var = new Variable(String.format(Binding.SERVICE_REPORT_FORMAT, i));
+            varList.add(var);
+            valList.add(null);
+            if (!ast.isSelectAll()) {
+                ast.setSelect(var);
+            }
+        }
+        Values values = Values.create(varList, valList);
+        if (ast.getValues() == null && !ast.isConstruct()) {
+            // virtuoso reject construct with values
+            ast.setValues(values);
+        } else {
+            ast.getBody().add(0, values);
+        }
+    }
     
     
     
@@ -88,8 +114,10 @@ public class ASTParser implements Walker, URLParam {
      * check bnode scope
      */
     void bnodeScope(Exp exp) {
-        if (exp.isAnd()) {
-            and(exp, exp, new BNodeMap());
+        if (isBnode()) {
+            if (exp.isAnd()) {
+                and(exp, exp, new BNodeMap());
+            }
         }
     }
     
@@ -123,12 +151,13 @@ public class ASTParser implements Walker, URLParam {
             }
         }
     }
-    
-    
+       
     
     void process(Exp exp) {
         if (exp.isService()) {
-            enter(exp.getService());
+            if (isProvenance()) {
+                enter(exp.getService());
+            }
             nbService++;
         }
     }
@@ -173,6 +202,30 @@ public class ASTParser implements Walker, URLParam {
 
     public void setNbService(int nbService) {
         this.nbService = nbService;
+    }
+
+    public boolean isBnode() {
+        return bnode;
+    }
+
+    public void setBnode(boolean bnode) {
+        this.bnode = bnode;
+    }
+
+    public boolean isReport() {
+        return report;
+    }
+
+    public void setReport(boolean report) {
+        this.report = report;
+    }
+
+    public boolean isProvenance() {
+        return provenance;
+    }
+
+    public void setProvenance(boolean provenance) {
+        this.provenance = provenance;
     }
     
 }

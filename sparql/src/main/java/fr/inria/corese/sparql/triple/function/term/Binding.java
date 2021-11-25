@@ -38,6 +38,7 @@ public class Binding implements Binder {
     public static final String SERVICE_REPORT = "?_service_report";
     public static final String SERVICE_REPORT_FORMAT = "?_service_report_%s";
     public static final String SERVICE_REPORT_ZERO = "?_service_report_0";
+    public static final String SERVICE_REPORT_ONE = "?_service_report_1";
     ArrayList<Expr> varList;
     ArrayList<IDatatype> valList;
     // level of the stack before function call

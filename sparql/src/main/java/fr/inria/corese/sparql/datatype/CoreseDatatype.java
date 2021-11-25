@@ -171,7 +171,11 @@ public class CoreseDatatype
             value = protect(value) + "^^" + datatype;
         } else if (getLang() != null && !getLang().isEmpty()) {
             value = protect(value) + "@" + getLang();
-        } else if (isLiteral()) {
+        } 
+        else if (isExtension()) {
+            value = getContent();
+        }
+        else if (isLiteral()) {
             value = protect(value);
         } else if (isURI()) {
             if (DISPLAY_AS_PREFIX) {

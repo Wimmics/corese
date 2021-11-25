@@ -187,7 +187,7 @@ public class Transformer implements ExpType {
         if (getDataset()!=null && getDataset().getMetadata()!=null) {
             ast.addMetadata(getDataset().getMetadata());
         }
-        ASTParser walk = new ASTParser(ast);
+        ASTParser walk = new ASTParser(ast).configure();
         ast.process(walk);
         return ast;
     }

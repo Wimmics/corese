@@ -24,6 +24,7 @@ import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import fr.inria.corese.sparql.triple.parser.visitor.ASTParser;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -113,6 +114,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     @Override
     public void visit(ASTQuery ast) {
         process(ast);
+        ast.setFederateVisit(true);
+        report(ast);
     }
     
     @Override
@@ -176,9 +179,16 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
         if (verbose) {
             System.out.println("\nafter:");
+            System.out.println(ast.getMetadata());
             System.out.println(ast.getBody());
             System.out.println();
         }
+    }
+    
+    // possibly process @report: generate variable ?_service_report
+    void report(ASTQuery ast) {
+        ASTParser walk = new ASTParser(ast).report();
+        ast.process(walk);
     }
        
     boolean init() {

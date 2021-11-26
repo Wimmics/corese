@@ -1340,6 +1340,14 @@ public class ASTQuery
     public boolean hasMetadataValue(int type, String value) {
         return metadata != null && metadata.hasValues(type, value);
     }
+    
+    public boolean hasReportKey(String key) {
+        Metadata meta = getMetadata();
+        if (meta == null) {
+            return true;
+        }
+        return meta.hasReportKey(key);
+    }
 
     /**
      * SubQuery within function inherit function Metadata

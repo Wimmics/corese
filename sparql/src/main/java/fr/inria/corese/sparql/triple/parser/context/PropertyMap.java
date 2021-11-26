@@ -4,7 +4,6 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import static fr.inria.corese.sparql.triple.cst.LogKey.NS;
 import static fr.inria.corese.sparql.triple.cst.LogKey.PREF;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -35,13 +34,19 @@ public class PropertyMap extends HashMap<String, IDatatype> {
     public StringBuilder display(StringBuilder sb) {   
         int n = 0;
         for (String prop : getKeys()) {
-            sb.append(String.format("%s%s %s", (n++==0)?"":" ;\n", prop, pretty(get(prop))));
-        }   
+            IDatatype dt = get(prop);
+            if (dt == null) {
+                System.out.println(String.format("ContextLog: undefined %s", prop));
+            }
+            else {
+                sb.append(String.format("%s%s %s", (n++==0)?"":" ;\n", prop, pretty(dt)));
+            }
+            }   
         sb.append(" .\n");
         return sb;
     }
     
-    String pretty(IDatatype dt) {
+    String pretty(IDatatype dt) {       
         if (dt.isList()) {
             return dt.getContent();
         }

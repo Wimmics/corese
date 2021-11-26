@@ -4,7 +4,8 @@ public interface Cst {
 	/**
 	 * implementation Class name for datatypes
 	 */
-	static final String pack = "fr.inria.corese.sparql.datatype.";
+	static final String pack      = "fr.inria.corese.sparql.datatype.";
+	static final String extension = "fr.inria.corese.sparql.datatype.extension.";
 	
 	static final String jDatatype		= pack + "CoreseDatatype";
 	static final String jTypeString		= pack + "CoreseString";
@@ -31,5 +32,8 @@ public interface Cst {
 	static final String jTypeURILiteral     = pack + "CoreseURILiteral";
 	static final String jTypeBlank		= pack + "CoreseBlankNode";
 	static final String jTypeArray		= pack + "CoreseArray";
+        
+        static final String jTypeJSON		= extension + "CoreseJSON";
+
 
 }

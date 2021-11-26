@@ -13,6 +13,7 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
+import static fr.inria.corese.sparql.api.IDatatype.JSON_DATATYPE;
 import static fr.inria.corese.sparql.api.IDatatype.LITERAL;
 import fr.inria.corese.sparql.datatype.extension.CoreseMap;
 import fr.inria.corese.sparql.datatype.extension.CoreseList;
@@ -241,6 +242,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
 
         //special use case: to get the implementation java type for Resource and Blank
         put(RDFSRESOURCE, jTypeURI, RDFSRESOURCE);
+        put(JSON_DATATYPE, jTypeJSON, JSON_DATATYPE);
 
     }
 

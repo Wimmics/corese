@@ -43,6 +43,7 @@ import java.util.List;
  */
 public class CoreseDatatype
         implements IDatatype {
+    public static final String NL = System.getProperty("line.separator");
     public static boolean DISPLAY_AS_PREFIX = true;
     public static Logger logger = LoggerFactory.getLogger(CoreseDatatype.class);
     static final CoreseURI datatype = new CoreseURI(RDF.RDFSRESOURCE);
@@ -141,9 +142,12 @@ public class CoreseDatatype
         return toSparql(prefix, xsd, nsm());
     }
     
+    /**
+     * Overloaded by CoreseExtension
+     */
     @Override
     public String toSparql(boolean prefix, boolean xsd, NSManager nsm) {
-        String value = getLabel();
+        String value = getLabel();        
         if (isPointer() && getPointerObject() != null){
             value = getPointerObject().getDatatypeLabel();
         }
@@ -157,7 +161,6 @@ public class CoreseDatatype
         else if (getCode() == STRING || (getCode() == LITERAL && !hasLang())) {
             value = protect(value);
         } else if (getDatatype() != null && !getDatatype().getLabel().equals(RDFS.rdflangString)) {
-
             String datatype = getDatatype().getLabel();
 
             if (prefix && (datatype.startsWith(RDF.XSD))
@@ -172,10 +175,12 @@ public class CoreseDatatype
         } else if (getLang() != null && !getLang().isEmpty()) {
             value = protect(value) + "@" + getLang();
         } 
-        else if (isExtension()) {
-            value = getContent();
-        }
+//        else if (isExtension()) {
+//            value = getContent();
+//        }
         else if (isLiteral()) {
+                        System.out.println("D: false " + value);
+
             value = protect(value);
         } else if (isURI()) {
             if (DISPLAY_AS_PREFIX) {
@@ -269,11 +274,11 @@ public class CoreseDatatype
         if (lang != null) {
             lang = lang.toLowerCase();
         }
-        
         switch (valueJType){
             case Cst.jTypeString:   return new CoreseString(label);
             case Cst.jTypeURI:      return new CoreseURI(label);
-            case Cst.jTypeLiteral:  return new CoreseLiteral(label, lang);      
+            case Cst.jTypeLiteral:  return new CoreseLiteral(label, lang);  
+            case Cst.jTypeJSON:     return DatatypeMap.json(label);
         }
        
         String display = (datatype == null) ? valueJType : datatype;

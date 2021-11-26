@@ -416,6 +416,18 @@ public class Metadata extends ASTObject
         return NSManager.nstrip(value);
     }
     
+    boolean hasReportKey(String key) {
+        List<String> list = getValues(REPORT);
+        if (list == null) {
+            return true;
+        }
+        // @report empty: empty is not a key
+        if (list.size() == 1 && list.contains(EMPTY)) {
+            return true;
+        }
+        return list.contains(key);
+    }
+    
     public boolean hasValue(int meta) {
         return getValue(meta) != null;
     }

@@ -97,6 +97,7 @@ public interface URLParam {
     static final String TEST = "test";
     static final String DISTANCE = "distance";
     static final String ERROR = "error";
+    static final String STATUS = "status";
     static final String CATCH = "catch";
     static final String UNDEF = "undefined";
     static final String DATE = "date";
@@ -109,6 +110,8 @@ public interface URLParam {
     static final String SIZE = "size";
     static final String LENGTH = "length";
     static final String SERVER_NAME = "server";
+    static final String LOCATION = "location";
+    static final String REPORT = "report";
     
 
 }

@@ -57,6 +57,13 @@ public class Service extends SourceExp {
         return create(list, body, false);
     }
     
+    public URLServer getURL() {
+        if (getServiceName().isConstant()) {
+            return new URLServer(getServiceName().getLabel());
+        }
+        return null;
+    }
+    
     @Override
     public Service copy() {
         Service exp = super.copy().getService();

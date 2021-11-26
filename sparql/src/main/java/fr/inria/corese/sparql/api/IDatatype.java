@@ -137,6 +137,13 @@ public interface IDatatype
 
     IDatatype get(IDatatype name);
     
+    default IDatatype get(String name) {
+        if (name == null) {
+            return null;
+        }
+        return get(DatatypeMap.newResource(name));
+    }
+    
     // xml to json
     default IDatatype json() {
         return null;
@@ -288,6 +295,10 @@ public interface IDatatype
     IDatatype setPublicDatatypeValue(IDatatype dt);
 
     String getContent();
+    
+    default String pretty() {
+        return toString();
+    }
 
     IDatatype display();
 

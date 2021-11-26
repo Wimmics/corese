@@ -21,6 +21,7 @@ import java.util.HashMap;
  * Walker just after parsing to complete the AST.
  */
 public class ASTParser implements Walker, URLParam {
+    // set by Property SERVICE_REPORT
     public static boolean SERVICE_REPORT = false;
     private boolean log = SERVICE_REPORT;
     
@@ -77,7 +78,9 @@ public class ASTParser implements Walker, URLParam {
     }
     
     
-    
+    /**
+     * When @report : declare variable ?_service_report_n
+     */
     void serviceReport(ASTQuery ast) {
         if (isReport()) {
             if (isLog() || ast.hasMetadata(Metadata.REPORT)) {
@@ -155,22 +158,29 @@ public class ASTParser implements Walker, URLParam {
     
     void process(Exp exp) {
         if (exp.isService()) {
+            URLServer url = exp.getService().getURL();
+            
             if (isProvenance()) {
-                enter(exp.getService());
+                provenance(url, exp.getService());
             }
+            
+            if (url != null) {
+                if (url.hasParameter(MODE, REPORT)) {
+                    setLog(true);
+                }
+            }
+            
             nbService++;
         }
-    }
+    }   
     
     /**
      * http://server.fr/sparql?mode=provenance
      * FederateVisitor in core will rewrite service with 
      * a variable -> declare this variable in select clause 
      */ 
-    void enter(Service exp) {
-        Atom serv = exp.getServiceName();
-        if (serv.isConstant()) {
-            URLServer url = new URLServer(serv.getLabel());            
+    void provenance(URLServer url, Service exp) {
+        if (url != null) {
             if (url.hasParameter(MODE, PROVENANCE)) {
                 boolean b = false;
                 int n = 1;

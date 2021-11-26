@@ -1977,8 +1977,8 @@ public class Mappings extends PointerObject
      * Detail about service execution as a dt:json/dt:map object
      * Recorded as system generated variable ?_service_detail
      */
-    public Mappings recordReport(Node node, IDatatype detail) {
-        setReport(detail);
+    public Mappings recordReport(Node node, IDatatype report) {
+        setReport(report);
         if (isEmpty()) {
             // when detail is required, we generate a fake result 
             // to record var=detail
@@ -1986,7 +1986,20 @@ public class Mappings extends PointerObject
         }
         for (Mapping m : this) {
             // augment each result with var=detail
-            m.addNode(node, detail);
+            m.addNode(node, report);
+            m.setReport(report);
+        }
+        return this;
+    }
+    
+    public Mappings completeReport(String key, int value) {
+        for (Mapping m : this) {
+            if (m.getReport()==null) {
+                return this;
+            }
+            else {
+                m.getReport().set(key, value);
+            }
         }
         return this;
     }

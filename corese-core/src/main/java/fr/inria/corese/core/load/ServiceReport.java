@@ -1,6 +1,8 @@
 package fr.inria.corese.core.load;
 
 import fr.inria.corese.compiler.parser.NodeImpl;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_REPORT;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
@@ -18,16 +20,36 @@ import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.Response;
 
 /**
- *
+ * Generate service execution report as IDatatype json object
+ * recorded in Mappings as additional variable ?_service_report_n 
+ * ASTParser declare such variables in query AST in preprocessing phase
+ * Report process when metadata @record
+ * or Property SERVICE_REPORT = true
+ * record subset of key value:
+ * @record server url 
+ * generate record when service return empty results:
+ * @record empty
  */
 public class ServiceReport implements URLParam {
     
     private String format;
     private String accept;
+    private String location;
     private Response response;
     private URLServer url;
+    // query is set by Service accessor to ServiceReport
+    // getCreateReport(query)
     private Query query;
     private double time;
+    
+    
+    boolean isReport() {
+        return Property.booleanValue(SERVICE_REPORT) || 
+                getURL().hasParameter(MODE, REPORT) ||
+                (getQuery()!=null &&
+                (getQuery().getAST().hasMetadata(Metadata.REPORT)
+                || getQuery().getGlobalQuery().getAST().hasMetadata(Metadata.REPORT)));
+    }
     
     /**
      * Service report when service exception occur
@@ -41,7 +63,7 @@ public class ServiceReport implements URLParam {
             set(dt, MES, e.getMessage());
         }
         else {
-            set(dt, ERROR, ex.getResponse().getStatus());
+            //set(dt, STATUS, ex.getResponse().getStatus());
             if (ex.getResponse().getStatusInfo()!=null){
                 set(dt, "info", ex.getResponse().getStatusInfo().getReasonPhrase());
             }
@@ -60,7 +82,7 @@ public class ServiceReport implements URLParam {
      * ServiceParser report without exception
      */
     void parserReport(Mappings map, String str, boolean suc) {
-        if (Service.isReport(getQuery()) && 
+        if (isReport() && 
                 (!suc || map.size()>0 || 
                 (getQuery()!=null && getQuery().getGlobalQuery().getAST()
                     .hasMetadataValue(Metadata.REPORT, Metadata.EMPTY)))) {
@@ -69,11 +91,24 @@ public class ServiceReport implements URLParam {
             // @report empty generate report and create a fake Mapping with report
             IDatatype dt = newReport();
             set(dt, FORMAT, getFormatText());
-            map.recordReport(node(), dt);
+            
             if (! suc) {
                 set(dt, MES, "Format not handled by local parser");
                 set(dt, RESULT, str);
             }
+            
+            map.recordReport(node(), dt);
+        }
+    }
+    
+    /**
+     * Service report without exception
+     */
+    void completeReport(Mappings map) {
+        if (map.getReport()!=null) {
+            // ServiceParser generated report, complete it here
+            set(map.getReport(), ACCEPT, getAccept());
+            completeReportHeader(map);
         }
     }
     
@@ -88,13 +123,6 @@ public class ServiceReport implements URLParam {
         return map;
     }
     
-    void completeReport(Mappings map) {
-        if (map.getReport()!=null && getAccept() != null) {
-            // ServiceParser generated report, complete it here
-            set(map.getReport(), ACCEPT, getAccept());
-            completeReportHeader(map);
-        }
-    }
     
     // no used yet
     void complete(Mappings map, ASTQuery ast) {
@@ -105,26 +133,22 @@ public class ServiceReport implements URLParam {
     
     void completeReportHeader(Mappings map) {
         IDatatype dt = map.getReport();
-        
         if (dt != null) {
             if (getResponse() != null) {
                 Response resp = getResponse();
-                if (resp.getHeaders().get("Server") != null) {
-                    set(dt, SERVER_NAME, resp.getHeaders().get("Server"));
-                }
-                if (resp.getHeaders().get("Content-Length") != null) {
-                    set(dt, LENGTH, resp.getHeaders().get("Content-Length"));
-                }
-                if (resp.getDate() != null) {
-                    set(dt, DATE, resp.getDate());
-                }
-                if (resp.getLastModified() != null) {
-                    set(dt, "modified", resp.getLastModified());
+                set(dt, STATUS, resp.getStatus());
+                set(dt, SERVER_NAME, resp.getHeaderString("Server"));               
+                set(dt, DATE, resp.getDate());
+                set(dt, "modified", resp.getLastModified());
+                if (resp.getHeaderString("Content-Length") != null) {
+                    set(dt, LENGTH,  Integer.parseInt(resp.getHeaderString("Content-Length")));
                 }
             }
+            
             set(dt, URL, getURL().getServer());
             set(dt, SIZE, (map.isFake()) ? 0 : map.size());
             set(dt, TIME, getTime());
+            set(dt, LOCATION, getLocation());
         }
     }
     
@@ -187,7 +211,7 @@ public class ServiceReport implements URLParam {
     }
     
     void set(IDatatype dt, String key, String value) {
-        if (hasKey(key)) {
+        if (hasKey(key) && value!=null) {
             dt.set(key, value);
         }
     }
@@ -197,15 +221,21 @@ public class ServiceReport implements URLParam {
             dt.set(key, value);
         }
     }
-
-    void set(IDatatype dt, String key, Object value) {
+    
+    void set(IDatatype dt, String key, double value) {
         if (hasKey(key)) {
             dt.set(key, value);
         }
     }
 
+    void set(IDatatype dt, String key, Object value) {
+        if (hasKey(key) && value!=null) {
+            dt.set(key, value);
+        }
+    }
+
     void set(IDatatype dt, String key, Date value) {
-        if (hasKey(key)) {
+        if (hasKey(key) && value!=null) {
             dt.set(key, value);
         }
     }
@@ -217,19 +247,7 @@ public class ServiceReport implements URLParam {
         if (getQuery() == null) {
             return true;
         }
-        Metadata meta = getQuery().getGlobalQuery().getAST().getMetadata();
-        if (meta == null) {
-            return true;
-        }
-        List<String> list = meta.getValues(Metadata.REPORT);
-        if (list == null) {
-            return true;
-        }
-        // @report empty: empty is not a key
-        if (list.size()==1 && list.contains(Metadata.EMPTY)) {
-            return true;
-        }
-        return list.contains(key);
+        return getQuery().getGlobalQuery().getAST().hasReportKey(key);
     }
             
     public Query getQuery() {
@@ -239,5 +257,13 @@ public class ServiceReport implements URLParam {
     public ServiceReport setQuery(Query query) {
         this.query = query;
         return this;
+    }
+
+    public String getLocation() {
+        return location;
+    }
+
+    public void setLocation(String location) {
+        this.location = location;
     }
 }

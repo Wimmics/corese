@@ -19,6 +19,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
+import static fr.inria.corese.sparql.triple.parser.URLParam.REPORT;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
@@ -91,6 +92,9 @@ public class Service implements URLParam {
     }
     public Service(URLServer serv, ClientBuilder builder) {
         this.clientBuilder = builder;
+        if (serv.getNumber()<0) {
+            serv.setNumber(0);
+        }
         setURL(serv);
         getCreateReport().setURL(serv);
     }
@@ -113,7 +117,7 @@ public class Service implements URLParam {
     
     public Mappings query(Query query, ASTQuery ast, Mapping m) throws LoadException {
         if (isReport(query)) {
-            return queryLog(query, ast, m);
+            return queryReport(query, ast, m);
         } else {
             return queryBasic(query, ast, m);
         }
@@ -122,7 +126,7 @@ public class Service implements URLParam {
     /**
      * trap exception and return empty result with service detail 
      */
-    Mappings queryLog(Query query, ASTQuery ast, Mapping m) throws 
+    Mappings queryReport(Query query, ASTQuery ast, Mapping m) throws 
             LoadException {
         try { 
             return queryBasic(query, ast, m);
@@ -170,11 +174,8 @@ public class Service implements URLParam {
         }
     }
     
-    static boolean isReport(Query query) {
-        return Property.booleanValue(SERVICE_REPORT) || 
-                (query!=null &&
-                (query.getAST().hasMetadata(Metadata.REPORT)
-                || query.getGlobalQuery().getAST().hasMetadata(Metadata.REPORT)));
+    public boolean isReport(Query query) {
+        return getCreateReport(query).isReport();
     }
    
     public String process(ASTQuery ast, String query) {
@@ -233,17 +234,22 @@ public class Service implements URLParam {
                 logger.info("Time read: " + time);
             }            
             
-            if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
+            if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode() ||
+                resp.getStatus() == Response.Status.MOVED_PERMANENTLY.getStatusCode()    ) {
                 String myUrl = resp.getLocation().toString();
                 logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
                 if (myUrl.equals(url)) {
                     throw new RedirectionException(resp);
                 }
+                getCreateReport().setLocation(myUrl);
                 return post(myUrl, query, mime);
             }
                
             trace(resp);
             logger.info("Response status: " + resp.getStatus());
+            
+            recordFormat(resp.getMediaType().toString());  
+            getCreateReport().setResponse(resp);
             
             if (resp.getStatus() >= Response.Status.BAD_REQUEST.getStatusCode()) {
                 ResponseProcessingException ex = new ResponseProcessingException(resp, res);
@@ -257,7 +263,6 @@ public class Service implements URLParam {
                 throw ex;
             }
             
-            recordFormat(resp.getMediaType().toString());            
             trace(res);
             return res;
         } catch (RedirectionException ex) {
@@ -276,7 +281,6 @@ public class Service implements URLParam {
     }
     
     void trace(Response res) {
-        getCreateReport().setResponse(res);
         if (getURL().hasParameter(DISPLAY, HEADER)) {
             System.out.println("service header: " + getURL().getURL());
             for (String name : res.getHeaders().keySet()) {
@@ -476,7 +480,8 @@ public class Service implements URLParam {
         }
         getCreateReport().setResponse(resp);
         
-        if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
+        if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()                
+         || resp.getStatus() == Response.Status.MOVED_PERMANENTLY.getStatusCode()) {
             String myUrl = resp.getLocation().toString();
             logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
             if (myUrl.equals(url)) {

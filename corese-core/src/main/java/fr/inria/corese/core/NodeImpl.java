@@ -56,7 +56,7 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
 
     @Override
     public String toString() {
-        return getValue().toSparql();
+        return getValue().toString();
     }
 
     @Override

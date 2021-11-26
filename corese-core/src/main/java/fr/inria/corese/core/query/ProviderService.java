@@ -540,7 +540,10 @@ public class ProviderService implements URLParam {
     }
 
     void traceOutput(URLServer serv, Mappings map, int nbcall, double time) {
-        getLog().traceOutput(serv, map, nbcall, time);
+        getLog().traceOutput(serv, map, nbcall, time);       
+        if (getGlobalAST().hasReportKey(CARDINALITY)) {
+            map.completeReport(CARDINALITY, map.size());
+        }
     }
 
     void traceResult(URLServer serv, Mappings res) {

@@ -4,15 +4,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Draft SPARQL 1.1 Service
+ * SPARQL 1.1 Service
  *
  * @author Olivier Corby, Edelweiss, INRIA 2011
  */
 public class Service extends SourceExp {
     public static String SERVER_SEED = "?_server_";
     public static String SERVER_VAR = SERVER_SEED+"0";
+    private int number = 0;
 
     private List<Atom> serviceList;
+    private URLServer url;
     boolean silent;
 
     Service() {}
@@ -57,11 +59,13 @@ public class Service extends SourceExp {
         return create(list, body, false);
     }
     
-    public URLServer getURL() {
-        if (getServiceName().isConstant()) {
-            return new URLServer(getServiceName().getLabel());
+    public URLServer getCreateURL() {
+        if (getURL() == null) {
+            if (getServiceName().isConstant()) {
+                setURL(new URLServer(getServiceName().getLabel()));
+            }
         }
-        return null;
+        return getURL();
     }
     
     @Override
@@ -162,6 +166,20 @@ public class Service extends SourceExp {
         setServiceList(serviceList);
         setSource(serviceList.get(0));
     }
+
+    public int getNumber() {
+        return number;
+    }
+
+    public void setNumber(int number) {
+        this.number = number;
+    }
+
+    public void setURL(URLServer url) {
+        this.url = url;
+    }
     
-    
+     public URLServer getURL() {
+        return this.url;
+    }
 }

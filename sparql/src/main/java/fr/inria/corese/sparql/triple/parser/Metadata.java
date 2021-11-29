@@ -78,6 +78,7 @@ public class Metadata extends ASTObject
     public static final int FORMAT  = 59;
     public static final int SELECT  = 60;
     public static final int REPORT  = 61;
+    public static final int DISTINCT  = 62;
     
 //    public static final int BEFORE  = 51;
 //    public static final int AFTER   = 52;
@@ -154,6 +155,7 @@ public class Metadata extends ASTObject
         define("@provenance",PROVENANCE);      
         define("@log",      LOG);      
         define("@duplicate",DUPLICATE);      
+        define("@distinct", DISTINCT);      
         define("@count",    COUNT);
         define("@server",   SERVER);
         define("@export",   PUBLIC);      

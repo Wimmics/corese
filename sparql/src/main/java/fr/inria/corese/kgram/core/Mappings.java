@@ -573,7 +573,7 @@ public class Mappings extends PointerObject
                 Node node = exp.getNode();
                 
                 for (Mapping m : this) {
-                    if (m.getNode(node) == null) {
+                    //if (m.getNode(node) == null) {
                         // @todo
                         m.setBind(eval.getEnvironment().getBind());
                         m.setEval(eval);
@@ -586,7 +586,7 @@ public class Mappings extends PointerObject
                         } catch (SparqlException ex) {
                             logger.error(ex.getMessage());
                         }
-                    }
+                    //}
                 }
             }
         }

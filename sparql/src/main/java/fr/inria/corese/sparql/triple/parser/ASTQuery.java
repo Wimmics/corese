@@ -252,6 +252,7 @@ public class ASTQuery
     Context context;
     List<Atom> adescribe = new ArrayList<>();
     List<Variable> stack = new ArrayList<>(); // bound variables
+    private List<Service> serviceExpList = new ArrayList<>();
     List<String> vinfo;
     List<String> errors;
     Values values;
@@ -4088,6 +4089,14 @@ public class ASTQuery
 
     public void setFederateVisit(boolean federateVisit) {
         this.federateVisit = federateVisit;
+    }
+
+    public List<Service> getServiceExpList() {
+        return serviceExpList;
+    }
+
+    public void setServiceExpList(List<Service> serviceExpList) {
+        this.serviceExpList = serviceExpList;
     }
        
 }

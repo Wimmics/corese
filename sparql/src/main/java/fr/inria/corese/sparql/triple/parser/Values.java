@@ -33,6 +33,17 @@ public class Values extends Exp {
         vv.addValues(val);
         return vv;
     }
+    
+    public static Values create(List<Variable> var) {
+        List<Constant> val = new ArrayList<>();
+        for (Variable v : var) {
+            val.add(null);
+        }
+        Values vv = new Values();
+        vv.setVariables(var);
+        vv.addValues(val);
+        return vv;
+    }
 
     public static Values create(Variable var, List<Constant> val) {
         Values vv = new Values();

@@ -183,9 +183,8 @@ public class ProviderService implements URLParam {
      * variable binding into account when sending service Split Mappings into
      * buckets with size = slice Iterate service on each bucket When several
      * services, they are evaluated in parallel by default, unless @sequence
-     * metadata When several services, return *distinct* Mappings, unless
-     *
-     * @duplicate metadata.
+     * metadata When several services, return distinct Mappings when
+     * @distinct metadata.
      */
     Mappings send(List<Node> serverList, Node serviceNode, Mappings map, boolean slice, int length) throws EngineException {
         Graph g = getGraph(getEval().getProducer());
@@ -238,9 +237,9 @@ public class ProviderService implements URLParam {
 
             if (slice) {
                 // default behaviour when map != null
-                // service is variable: select appropriate subset of distinct Mappings with service URL
+                // service is variable: select appropriate subset of  Mappings with service URL
                 // service is URL: consider all Mappings. 
-                // Hint: Mappings are already result of former select distinct
+                // Hint: Mappings are already result of former select 
                 input = getMappings(q, getServiceExp(), getServiceExp().getServiceNode(), service, map);
                 if (input.size() > 0) {
                     g.getEventManager().process(Event.Service, "input: \n" + input.toString(true, false, 10));
@@ -574,8 +573,8 @@ public class ProviderService implements URLParam {
 
     /**
      * Return final result Mappings mapList is the list of result Mappings of
-     * each service When there are *several* services, return *distinct*
-     * Mappings unless @duplicate metadata
+     * each service When there are *several* services, return distinct
+     * Mappings with @distinct metadata
      */
     Mappings getResult(List<Mappings> mapList) {
         if (mapList.size() == 1) {
@@ -595,7 +594,7 @@ public class ProviderService implements URLParam {
             }
         }
     
-        boolean distinct = !getGlobalAST().hasMetadata(Metadata.DUPLICATE);
+        boolean distinct = getGlobalAST().hasMetadata(Metadata.DISTINCT);
         // TODO: if two Mappings have their own duplicates, they are removed
         if (res != null && res.getSelect() != null && distinct) {
             res = res.distinct(res.getSelect(), res.getSelect());

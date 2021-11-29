@@ -7,6 +7,7 @@ import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.logic.Distance;
 import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.query.Construct;
+import fr.inria.corese.core.query.ProviderService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.Cleaner;
 import fr.inria.corese.core.rule.RuleEngine;
@@ -29,7 +30,9 @@ import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.Enumeration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +64,7 @@ public class Extension extends Core {
         if (getEnvironment() == null) {
             return null;
         }
-        return (Binding) getEnvironment().getBind();
+        return  getEnvironment().getBind();
     }
     
     // inherit access level from Binding
@@ -96,6 +99,48 @@ public class Extension extends Core {
         return DatatypeMap.json(text);
     }
     
+    public IDatatype parallel(IDatatype name) {
+        return DatatypeMap.newResource(String.format(ProviderService.LOCAL_SERVICE_NS, name.getLabel()));
+    }
+    
+    public IDatatype report() {
+        return getEnvironment().getNode(Binding.SERVICE_REPORT_ZERO)
+                .getDatatypeValue();        
+    }
+    
+    public IDatatype report(IDatatype name) {
+        if (name.isNumber()) {
+            return reportNumber(name);
+        }
+        else {
+            return reportKey(name);
+        }
+    }
+    
+    public IDatatype reportKey(IDatatype name) {        
+        Node detail = getEnvironment().getNode(Binding.SERVICE_REPORT_ZERO);
+        if (detail == null) {
+            return null;
+        }
+        return detail.getDatatypeValue().get(name);
+    }
+    
+    public IDatatype reportNumber(IDatatype dt) {
+        Node detail = getEnvironment().getNode(String.format(Binding.SERVICE_REPORT_FORMAT, dt.intValue()));
+        if (detail == null) {
+            return null;
+        }
+        return detail.getDatatypeValue();
+    }
+    
+    public IDatatype report(IDatatype dt, IDatatype name) {
+        IDatatype detail = reportNumber(dt);
+        if (detail == null) {
+            return null;
+        }
+        return detail.getDatatypeValue().get(name);
+    }
+    
     /**
      * Service evaluation report graph recorded in ContextLog 
      */
@@ -118,8 +163,7 @@ public class Extension extends Core {
             return null;
         }
         return DatatypeMap.newResource(getLog().getLink());
-    }
-
+    }   
        
     public IDatatype parse(IDatatype dt) throws EngineException {
         Context c = getCreateContext();
@@ -138,27 +182,7 @@ public class Extension extends Core {
         Query q = exec.compile(str, c);
         return  q.getAST();
     }
-        
-        
-   
-    IDatatype imports(IDatatype dt, IDatatype pub) {
-        return imports(dt, pub.booleanValue());
-    }
-    
-    IDatatype imports(IDatatype dt, boolean pub) {
-        QueryProcess exec = QueryProcess.create();
-        try {
-            boolean b = exec.imports(dt.getLabel(), pub);
-            return DatatypeMap.newInstance(b);
-        }
-        catch (EngineException ex) {
-            logger.error(ex.getMessage());
-            return DatatypeMap.FALSE;
-        }
-    }
-    
-
-    
+           
     
     public IDatatype list(IDatatype dt) {
         if (dt.getObject() != null && dt.getObject() instanceof Enumeration) {
@@ -219,36 +243,6 @@ public class Extension extends Core {
     }
     
     
- 
-    
-    IDatatype mytest() {
-        try {
-            QueryProcess exec = QueryProcess.create(getGraph());
-            System.out.println("before mytest");
-            Mappings map = exec.query("insert { graph us:g1 { [] rdf:value ?v } } where { bind (rand() as ?v) }");
-            System.out.println("after mytest");
-        } catch (EngineException ex) {
-            logger.error(ex.getMessage());
-        }
-        return DatatypeMap.TRUE;
-    }
-    
-     IDatatype mytest2() {
-        Service s = new Service("http://localhost:8080/sparql");
-        try {
-            System.out.println("before mytest");
-            Mappings map = s.select("insert { graph us:g1 { [] rdf:value ?v } } where { bind (rand() as ?v) }");
-            System.out.println("after mytest");
-        } catch (LoadException ex) {
-            System.out.println(ex);
-        }
-        return DatatypeMap.TRUE;
-    }
-    
-     public IDatatype mytest1() {
-        System.out.println("mytest 1");
-        return DatatypeMap.TRUE;
-    }
     
     
     // example    

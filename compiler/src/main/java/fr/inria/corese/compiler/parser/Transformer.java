@@ -720,7 +720,7 @@ public class Transformer implements ExpType {
     }
 
     /**
-     * Compile service as a subquery if it is a pattern and as a subquery if it
+     * Compile service as a subquery if it is a graph pattern and as a subquery if it
      * already is one
      */
     Exp compileService(Service service) throws EngineException {
@@ -762,7 +762,8 @@ public class Transformer implements ExpType {
             }
             exp.setNodeSet(list);
         }
-        exp.setNumber(incrNumber());
+        //exp.setNumber(incrNumber());
+        exp.setNumber(service.getNumber());
         return exp;
     }
 

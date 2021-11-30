@@ -1,0 +1,41 @@
+#
+# Equivalent to wget
+# method = post|get
+# format = xml|json  rdfxml|jsonld|turtle
+# sparql query & update
+# fun:report(name) ::= xt:get(?_service_detail_0, name)
+#
+@log </user/corby/home/AAGui/query/demo/logselect.ttl>
+@report
+
+select *
+(coalesce(fun:report("message"), fun:report("info"), fun:report("error"))   as ?mes) 
+(fun:report("size")   as ?size) 
+(fun:report("server") as ?s) 
+(fun:report("time")   as ?time)
+(fun:report("date")   as ?date)
+where {
+
+values ?uri {
+    <http://fr.dbpedia.org/sparql>
+    <http://prod-dekalog.inria.fr/sparql>
+    <http://covidontheweb.inria.fr/sparql>
+    <http://wasabi.inria.fr/sparql>
+    <http://corese.inria.fr/sparql>
+}
+
+values ?method {"post" "get" }
+values ?format {"xml" "json" "csv" "tsv" } 
+
+bind (uri(xt:format("%s?method=%s&format=%s&mode=local", ?uri, ?method, ?format)) as ?url)
+
+
+optional {
+service ?url {
+    select ?x where {
+        ?x ?p ?y
+    } limit 1
+}
+}
+}
+order by bound(?x) ?url

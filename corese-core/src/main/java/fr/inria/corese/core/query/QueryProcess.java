@@ -44,6 +44,7 @@ import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.util.Extension;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
+import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
@@ -440,6 +441,11 @@ public class QueryProcess extends QuerySolver {
             addVisitor(new ASTRewriter());
         }
         return super.compile(squery, ds);
+    }
+    
+    public Mappings modifier(String str, Mappings map) throws SparqlException {
+       Query q = compile(str, new Context().setAST(map.getAST()));
+       return modifier(q, map);
     }
 
     @Override
@@ -1152,7 +1158,7 @@ public class QueryProcess extends QuerySolver {
     IDatatype call(String name, Function function, Context c, Binding b, IDatatype... param) throws EngineException {
         Eval eval = getEval();
         eval.getEnvironment().getQuery().setContext(c);
-        Binding bind = eval.getBinding();        
+        Binding bind = eval.getBinding();  
         bind.share(b, c);
         return new Funcall(name).callWE((Interpreter) eval.getEvaluator(),
                 bind, eval.getEnvironment(), eval.getProducer(), function, param);

@@ -15,7 +15,6 @@ import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
-import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -30,9 +29,9 @@ import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
-import java.io.FileInputStream;
 import java.io.IOException;
-import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Enumeration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -106,6 +105,49 @@ public class Extension extends Core {
     public IDatatype report() {
         return getEnvironment().getNode(Binding.SERVICE_REPORT_ZERO)
                 .getDatatypeValue();        
+    }
+    
+    public IDatatype reports(IDatatype name) {
+        return myreports(name);
+    }
+    
+    public IDatatype reports(IDatatype n1, IDatatype n2) {
+        return myreports(n1, n2);
+    }
+    
+    public IDatatype reports(IDatatype n1, IDatatype n2, IDatatype n3) {
+        return myreports(n1, n2, n3);
+    }
+    
+    public IDatatype reports(IDatatype n1, IDatatype n2, IDatatype n3, IDatatype n4) {
+        return myreports(n1, n2, n3, n4);
+    }
+    
+    IDatatype myreports(IDatatype... nameList) {
+        ArrayList<IDatatype> list = new ArrayList<>();
+
+        for (IDatatype report : reports()) {
+            for (IDatatype name : nameList) {
+                IDatatype dt = report.getDatatypeValue().get(name);
+                if (dt != null) {
+                    list.add(dt);
+                }
+            }
+        }
+        return DatatypeMap.newList(list);
+    }
+    
+    public IDatatype reports() {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        for (Node node : getEnvironment().getQueryNodes()) {
+            if (node!=null && node.getLabel().startsWith(Binding.SERVICE_REPORT)) {
+                Node report = getEnvironment().getNode(node);
+                if (report !=null) {
+                    list.add(report().getDatatypeValue());
+                }
+            }
+        }
+        return DatatypeMap.newList(list);
     }
     
     public IDatatype report(IDatatype name) {

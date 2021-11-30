@@ -715,6 +715,21 @@ public class Triple extends Exp implements Pointerable {
         }
         return variable.getName();
     }
+    
+    @Override
+    public boolean equals(Object obj) {
+        if (obj instanceof Triple) {
+            return equals((Triple) obj);
+        }
+        return false;
+    }
+    
+    // @todo: path
+    public boolean equals(Triple t) {
+         return getSubject().equals(t.getSubject()) &&
+                 getPredicate().equals(t.getPredicate()) &&
+                 getObject().equals(t.getObject());
+    }
 
     public Atom getSubject() {
         return subject;

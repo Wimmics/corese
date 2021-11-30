@@ -86,6 +86,7 @@ public class Context extends ASTObject implements URLParam {
     private HashMap<String, Context> context;
     NSManager nsm;
     private ContextLog contextLog;
+    private ASTQuery ast;
     
     private Binding bind;
     private AccessRight accessRight;
@@ -961,6 +962,15 @@ public class Context extends ASTObject implements URLParam {
         }
         
         return json;
+    }
+
+    public ASTQuery getAST() {
+        return ast;
+    }
+
+    public Context setAST(ASTQuery ast) {
+        this.ast = ast;
+        return this;
     }
     
 }

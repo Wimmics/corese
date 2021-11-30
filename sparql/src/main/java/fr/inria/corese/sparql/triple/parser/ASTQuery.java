@@ -289,6 +289,7 @@ public class ASTQuery
     private List<Triple> tripleList, pathList;
     private fr.inria.corese.kgram.core.Query updateQuery;
     private AccessRight accessRight;
+    private ASTSelector astSelector;
 
 
     public Object getTemplateVisitor(){
@@ -4097,6 +4098,14 @@ public class ASTQuery
 
     public void setServiceExpList(List<Service> serviceExpList) {
         this.serviceExpList = serviceExpList;
+    }
+
+    public ASTSelector getAstSelector() {
+        return astSelector;
+    }
+
+    public void setAstSelector(ASTSelector astSelector) {
+        this.astSelector = astSelector;
     }
        
 }

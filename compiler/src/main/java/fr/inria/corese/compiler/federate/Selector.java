@@ -14,6 +14,7 @@ import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTSelector;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Optional;
@@ -40,9 +41,8 @@ public class Selector {
     
     FederateVisitor vis;
     ASTQuery ast;
-    HashMap<String, List<Atom>> predicateService;
+    private ASTSelector astSelector;
     HashMap<String, String> predicateVariable;
-    HashMap<Triple, List<Atom>> tripleService;
     HashMap<Triple, String> tripleVariable;
     QuerySolver exec;
     boolean sparql10 = false;
@@ -57,10 +57,9 @@ public class Selector {
     }
     
     void init() {
-        predicateService  = new HashMap<>();
+        setAstSelector(new ASTSelector());
         predicateVariable = new HashMap<>();
         tripleVariable    = new HashMap<>();
-        tripleService     = new HashMap<>();
 
         if (ast.hasMetadata(Metadata.SPARQL10)) {
             sparql10 = true;
@@ -128,7 +127,7 @@ public class Selector {
                 String var = predicateVariable.get(pred);
                 IDatatype val =  m.getValue(var);
                 if (val != null && val.booleanValue()) {
-                    predicateService.get(pred).add(Constant.create(serv));
+                    getPredicateService().get(pred).add(Constant.create(serv));
                 }
             }
             
@@ -137,7 +136,7 @@ public class Selector {
                 String var = tripleVariable.get(t);
                 IDatatype val =  m.getValue(var);
                 if (val != null && val.booleanValue()) {
-                    tripleService.get(t).add(Constant.create(serv));
+                    getTripleService().get(t).add(Constant.create(serv));
                 }
             }
             
@@ -167,7 +166,7 @@ public class Selector {
                 String var = predicateVariable.get(pred);
                 IDatatype val = m.getValue(var);
                 if (val != null) {
-                    predicateService.get(pred).add(Constant.create(serv));
+                    getPredicateService().get(pred).add(Constant.create(serv));
                 }
             }
         }
@@ -177,16 +176,16 @@ public class Selector {
     }
     
     List<Atom> getPredicateService(Constant pred) {
-        return predicateService.get(pred.getLabel());
+        return getPredicateService().get(pred.getLabel());
     }
     
     List<Atom> getPredicateService(Triple t) {
-        List<Atom> list = tripleService.get(t);
+        List<Atom> list = getTripleService().get(t);
         if (list != null) {
             return list;
         }
         if (t.getPredicate().isVariable()) {
-            return ast.getServiceList();
+            return null; //ast.getServiceList();
         }
         return getPredicateService(t.getPredicate().getConstant());
     }
@@ -197,11 +196,11 @@ public class Selector {
         }
         if (ast.isDebug()) {
             System.out.println("Triple Selection");
-            for (String pred : predicateService.keySet()) {
-                System.out.println(pred + " " + predicateService.get(pred));
+            for (String pred : getPredicateService().keySet()) {
+                System.out.println(pred + " " + getPredicateService().get(pred));
             }
-            for (Triple t : tripleService.keySet()) {
-                System.out.println(t + " " + tripleService.get(t));
+            for (Triple t : getTripleService().keySet()) {
+                System.out.println(t + " " + getTripleService().get(t));
             }
         }
         if (trace) {
@@ -211,14 +210,14 @@ public class Selector {
     
     void declare(Constant p, Variable var) {
         predicateVariable.put(p.getLabel(), var.getLabel());
-        if (! predicateService.containsKey(p.getLabel())) {
-            predicateService.put(p.getLabel(), new ArrayList<Atom>());
+        if (! getPredicateService().containsKey(p.getLabel())) {
+            getPredicateService().put(p.getLabel(), new ArrayList<Atom>());
         }
     }
     
     void declare(Triple t, Variable var) {
         tripleVariable.put(t, var.getLabel());
-        tripleService.put(t, new ArrayList<Atom>());
+        getTripleService().put(t, new ArrayList<Atom>());
     }
     
     /**
@@ -528,6 +527,22 @@ public class Selector {
             option = new Optional(BasicGraphPattern.create(option), BasicGraphPattern.create(list.get(i)));
         }
         return option;
+    }
+
+    public HashMap<String, List<Atom>> getPredicateService() {
+        return getAstSelector().getPredicateService();
+    }   
+
+    public HashMap<Triple, List<Atom>> getTripleService() {
+        return getAstSelector().getTripleService();
+    }
+    
+    public ASTSelector getAstSelector() {
+        return astSelector;
+    }
+
+    public void setAstSelector(ASTSelector astSelector) {
+        this.astSelector = astSelector;
     }
 
 }

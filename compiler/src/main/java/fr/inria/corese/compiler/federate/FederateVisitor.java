@@ -19,6 +19,7 @@ import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTSelector;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
@@ -38,7 +39,7 @@ import org.slf4j.Logger;
  * select * where { } 
  * Recursively rewrite every triple t as:
  * service <s1> <s2> { t } Generalized service statement with several URI
- * Returns the union of Mappings without duplicate (select distinct *) 
+ * Returns the union of Mappings  
  * PRAGMA:
  * Property Path evaluated in each of the services but not on the union 
  * (hence PP is not federated)
@@ -86,7 +87,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     ASTQuery ast;
     Stack stack;
-    Selector selector;
+    private Selector selector;
+    private ASTSelector astSelector;
     QuerySolver exec;
     RewriteBGP rew;
     RewriteTriple rwt;
@@ -112,7 +114,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
      * Query Visitor just before compiling AST
      */
     @Override
-    public void visit(ASTQuery ast) {
+    public void visit(ASTQuery ast) {        
         process(ast);
         ast.setFederateVisit(true);
         report(ast);
@@ -163,8 +165,20 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             
             if (select) {
                 try {
-                    selector = new Selector(this, exec, ast);
-                    selector.process();
+                    if (ast.getContext() != null
+                            && ast.getContext().getAST() != null
+                            && ast.getContext().getAST().getAstSelector() != null) {
+                        // use case: gui -> QueryProcess modifier has recorded former ast query in context
+                        // and there is an AstSelector available
+                        // copy it for current ast
+                        ASTSelector sel = ast.getContext().getAST().getAstSelector();
+                        setAstSelector(sel.copy(ast));
+                    } else {
+                        setSelector(new Selector(this, exec, ast));
+                        getSelector().process();
+                        setAstSelector(getSelector().getAstSelector());
+                    }
+                    ast.setAstSelector(getAstSelector());
                 } catch (EngineException ex) {
                     logger.error(ex.getMessage());
                 }
@@ -725,12 +739,22 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     
     List<Atom> getServiceListTriple(Triple t) {     
         if (select) {
-            List<Atom> list = selector.getPredicateService(t);
+            List<Atom> list = getPredicateService(t); //getSelector().getPredicateService(t);
             if (list != null && ! list.isEmpty()) {
                 return list;
             }
         }
         return getDefaultServiceList();
+    }
+    
+    List<Atom> getPredicateService(Triple t) {
+        List<Atom> list = getAstSelector().getPredicateService(t);//  getSelector().getPredicateService(t);
+        if (list == null) {
+            if (t.getPredicate().isVariable()) {
+                return ast.getServiceList();
+            }
+        }
+        return list;
     }
 
     List<Atom> getServiceListPath(Triple t) {
@@ -755,7 +779,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     
     List<Atom> getServiceListBasic(Constant p) {          
         if (select) {
-            List<Atom> list = selector.getPredicateService(p);
+            List<Atom> list = getAstSelector().getPredicateService(p); //getSelector().getPredicateService(p);
             if (list == null) {
                 return new ArrayList<>(0);
             }
@@ -766,7 +790,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
        
     List<Atom> getServiceList(Constant p) {          
         if (select) {
-            List<Atom> list = selector.getPredicateService(p);
+            List<Atom> list = getAstSelector().getPredicateService(p); //getSelector().getPredicateService(p);
             if (list != null && ! list.isEmpty()) {
                 return list;
             }
@@ -774,7 +798,6 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         return getDefaultServiceList();
     }
     
-
     
     // when there is no service for a triple
     List<Atom> getDefaultServiceList() {
@@ -983,6 +1006,22 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setMergeService(boolean mergeService) {
         this.mergeService = mergeService;
+    }
+
+    public ASTSelector getAstSelector() {
+        return astSelector;
+    }
+
+    public void setAstSelector(ASTSelector astSelector) {
+        this.astSelector = astSelector;
+    }
+
+    public Selector getSelector() {
+        return selector;
+    }
+
+    public void setSelector(Selector selector) {
+        this.selector = selector;
     }
 
    

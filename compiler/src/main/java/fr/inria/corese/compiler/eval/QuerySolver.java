@@ -404,7 +404,7 @@ public class QuerySolver implements SPARQLEngine {
             current.finish();
         }
     }
-    
+        
     public Mappings modifier(Query q, Mappings map) throws SparqlException {
         if (getCurrentEval() == null) {
             logger.info("Undefined Eval");
@@ -421,12 +421,6 @@ public class QuerySolver implements SPARQLEngine {
         return null;
     }
     
-    public void modifier(String str, Mappings map) throws SparqlException {
-        Query q = compile(str);
-        modifier(q, map);
-    }
-
-
     public Eval getCurrentEval() {
         return current;
     }

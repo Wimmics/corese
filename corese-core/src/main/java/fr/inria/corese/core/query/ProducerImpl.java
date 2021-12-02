@@ -725,8 +725,13 @@ public class ProducerImpl
      * Cast function result into Mappings
      */
     @Override
-    public Mappings map(List<Node> nodes, Object object) {
+    public Mappings map(List<Node> nodes, IDatatype object) {
         return mapper.map(nodes, object);
+    }
+    
+    @Override
+    public Mappings map(List<Node> nodes, IDatatype object, int n) {
+        return mapper.map(nodes, object, n);
     }
 
     @Override

@@ -44,19 +44,31 @@ public class Mapper {
         mapper = new MapperSQL(p);
 
     }
-
-    public Mappings map(List<Node> nodes, Object object) {
+    
+    public Mappings map(List<Node> nodes, Object object, int n) {
         if (object instanceof IDatatype) {
-            return map(nodes, (IDatatype) object);
-        } else if (object instanceof Mappings) {
-            return map(nodes, (Mappings) object);
-        } else if (object instanceof Collection) {
-            return map(nodes, (Collection<IDatatype>) object);
-        } else if (object instanceof SQLResult) {
-            return mapper.sql(nodes, (SQLResult) object);
+            return map(nodes, (IDatatype)object, n);
         }
-        return new Mappings();
+        else {
+            return map(nodes, object);
+        }
     }
+    
+    public Mappings map(List<Node> nodes, IDatatype list, int n) {
+        if (n <= 1) {
+            return map(nodes, list);
+        }
+        else {
+            Mappings map = new Mappings();
+            for (IDatatype dt : list) {
+                Mappings res = map(nodes, dt, n-1);
+                map.add(res);
+            }
+            return map;
+        }
+    }
+
+
 
     /**
      * values (nodes) { unnest(dt) }
@@ -75,6 +87,19 @@ public class Mapper {
         } else {
             return mapDT(nodes, dt);
         }
+    }
+    
+    public Mappings map(List<Node> nodes, Object object) {
+        if (object instanceof IDatatype) {
+            return map(nodes, (IDatatype) object);
+        } else if (object instanceof Mappings) {
+            return map(nodes, (Mappings) object);
+        } else if (object instanceof Collection) {
+            return map(nodes, (Collection<IDatatype>) object);
+        } else if (object instanceof SQLResult) {
+            return mapper.sql(nodes, (SQLResult) object);
+        }
+        return new Mappings();
     }
 
     Mappings map(List<Node> nodes, Pointerable obj) {
@@ -110,27 +135,27 @@ public class Mapper {
     /**
      * bind (unnest(us:graph()) as (?s, ?p, ?o)) bind (unnest(us:graph()) as ?t)
      */
-    Mappings map2(List<Node> varList, Graph g) {
-        Node[] qNodes = new Node[varList.size()];
-        varList.toArray(qNodes);
-        Node[] nodes;
-        Mappings map = new Mappings();
-        int size = varList.size();
-        if (!(size == 1 || size == 3 || size == 4)) {
-            return map;
-        }
-        for (Edge ent : g.getEdges()) {
-            nodes = new Node[size];
-            if (size >= 3) {
-                nodeArray(ent, nodes);
-            } else {
-                nodes[0] = DatatypeMap.createObject(g.getEdgeFactory().copy(ent));
-            }
-            map.add(Mapping.create(qNodes, nodes));
-        }
-
-        return map;
-    }
+//    Mappings map2(List<Node> varList, Graph g) {
+//        Node[] qNodes = new Node[varList.size()];
+//        varList.toArray(qNodes);
+//        Node[] nodes;
+//        Mappings map = new Mappings();
+//        int size = varList.size();
+//        if (!(size == 1 || size == 3 || size == 4)) {
+//            return map;
+//        }
+//        for (Edge ent : g.getEdges()) {
+//            nodes = new Node[size];
+//            if (size >= 3) {
+//                nodeArray(ent, nodes);
+//            } else {
+//                nodes[0] = DatatypeMap.createObject(g.getEdgeFactory().copy(ent));
+//            }
+//            map.add(Mapping.create(qNodes, nodes));
+//        }
+//
+//        return map;
+//    }
 
     Mappings map(List<Node> varList, Graph g) {
         Node[] qNodes = new Node[varList.size()];
@@ -227,7 +252,7 @@ public class Mapper {
         if (varList.size() != 1) {
             return new Mappings();
         }
-        ArrayList<IDatatype> list = new ArrayList<IDatatype>();
+        ArrayList<IDatatype> list = new ArrayList<>();
         for (Edge e : q.getEdges()) {
             list.add(DatatypeMap.createObject(e));
         }

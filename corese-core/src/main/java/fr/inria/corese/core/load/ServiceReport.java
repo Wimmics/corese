@@ -15,7 +15,6 @@ import fr.inria.corese.sparql.triple.parser.URLParam;
 import static fr.inria.corese.sparql.triple.parser.URLParam.MES;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.Date;
-import java.util.List;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.Response;
 
@@ -48,7 +47,11 @@ public class ServiceReport implements URLParam {
                 getURL().hasParameter(MODE, REPORT) ||
                 (getQuery()!=null &&
                 (getQuery().getAST().hasMetadata(Metadata.REPORT)
-                || getQuery().getGlobalQuery().getAST().hasMetadata(Metadata.REPORT)));
+                || getGlobalAST().hasMetadata(Metadata.REPORT)));
+    }
+    
+    ASTQuery getGlobalAST() {
+        return getQuery().getGlobalQuery().getAST();
     }
     
     /**
@@ -84,8 +87,8 @@ public class ServiceReport implements URLParam {
     void parserReport(Mappings map, String str, boolean suc) {
         if (isReport() && 
                 (!suc || map.size()>0 || 
-                (getQuery()!=null && getQuery().getGlobalQuery().getAST()
-                    .hasMetadataValue(Metadata.REPORT, Metadata.EMPTY)))) {
+                (getQuery()!=null && 
+                    getGlobalAST().hasMetadataValue(Metadata.REPORT, Metadata.EMPTY)))) {
             // if service is success but return no result:
             // @report        generate no report (and no result Mapping)
             // @report empty generate report and create a fake Mapping with report
@@ -100,7 +103,7 @@ public class ServiceReport implements URLParam {
             map.recordReport(node(), dt);
         }
     }
-    
+        
     /**
      * Service report without exception
      */
@@ -137,11 +140,17 @@ public class ServiceReport implements URLParam {
             if (getResponse() != null) {
                 Response resp = getResponse();
                 set(dt, STATUS, resp.getStatus());
-                set(dt, SERVER_NAME, resp.getHeaderString("Server"));               
+                set(dt, SERVER_NAME, protect(resp.getHeaderString("Server")));               
                 set(dt, DATE, resp.getDate());
                 set(dt, "modified", resp.getLastModified());
                 if (resp.getHeaderString("Content-Length") != null) {
                     set(dt, LENGTH,  Integer.parseInt(resp.getHeaderString("Content-Length")));
+                }
+                
+                if (getGlobalAST().hasMetadata(Metadata.DETAIL)) {
+                    for (String key : resp.getHeaders().keySet()) {
+                    
+                    }
                 }
             }
             
@@ -166,6 +175,10 @@ public class ServiceReport implements URLParam {
 
     public String getFormatText() {
         return (getFormat()==null)?"undefined":getFormat();
+    }
+    
+    String protect(String str) {
+        return (str == null || str.isEmpty()) ? "undefined" : str;
     }
     
     public ServiceReport setFormat(String format) {

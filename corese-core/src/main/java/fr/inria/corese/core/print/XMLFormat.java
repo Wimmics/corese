@@ -359,7 +359,7 @@ public class XMLFormat extends QueryResultFormat {
             return;
         }
         String name = getName(var);
-        String open = "<binding name='" + name + "'>";
+        String open = String.format("<binding name='%s'>", name);
         String close = "</binding>";
         print(open);
         String str = dt.getLabel();
@@ -368,7 +368,7 @@ public class XMLFormat extends QueryResultFormat {
             str = toXML(str);
 
             if (dt.hasLang()) {
-                print(String.format("<literal xml:lang='%s'>%s</literal>", dt.getLang(), str));
+                printf("<literal xml:lang='%s'>%s</literal>", dt.getLang(), str);
             } else if (dt.getDatatype() != null && dt.getCode() != IDatatype.LITERAL) {
                 if (DatatypeMap.isDouble(dt)) {
                     //str =  nf.format(dt.doubleValue());
@@ -377,15 +377,15 @@ public class XMLFormat extends QueryResultFormat {
                 else if (dt.isExtension()) {
                     str = toXML(dt.getContent());
                 }
-                print(String.format("<literal datatype='%s'>%s</literal>",
-                        dt.getDatatype().getLabel() ,str));
+                printf("<literal datatype='%s'>%s</literal>",
+                        dt.getDatatype().getLabel() ,str);
             } else {
-                print(String.format("<literal>%s</literal>" ,str ));
+                printf("<literal>%s</literal>" ,str );
             }
         } else if (dt.isBlank()) {
-            print(String.format("<bnode>%s</bnode>", str));
+            printf("<bnode>%s</bnode>", str);
         } else {
-            print(String.format("<uri>%s</uri>", StringEscapeUtils.escapeXml(str)));
+            printf("<uri>%s</uri>", StringEscapeUtils.escapeXml(str));
         }
         println(close);
     }
@@ -443,6 +443,10 @@ public class XMLFormat extends QueryResultFormat {
 
     protected void print(String str) {
         pw.print(str);
+    }
+        
+    protected void printf(String format, Object... str) {
+        pw.print(String.format(format, str));
     }
 
     public void printAsk() {

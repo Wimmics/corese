@@ -161,7 +161,7 @@ public class JSONFormat extends XMLFormat {
 
         String open = "";
         if (i == 0) {
-            open = "\"" + name + "\": ";
+            open = String.format("\"%s\": ", name);
             if (n > 1) {
                 open += "[";
             }
@@ -173,14 +173,17 @@ public class JSONFormat extends XMLFormat {
 
         if (dt.isLiteral()) {
             if (dt.hasLang()) {
-                print("\"literal\", \"xml:lang\": \"" + dt.getLang() + "\"");
+                printf("\"literal\", \"xml:lang\": \"%s\"", dt.getLang());
             } else if (dt.getCode() == IDatatype.LITERAL) {
                 print("\"literal\"");
             } else {
                 if (DatatypeMap.isDouble(dt)) {
-                    str = String.format("%1.5g",dt.doubleValue());
+                    str = String.format("%1.5g", dt.doubleValue());
+                } else if (dt.isExtension()) {
+                    str = dt.getContent();
                 }
-                print("\"typed-literal\", \"datatype\": \"" + dt.getDatatype().getLabel() + "\"");
+                printf("\"typed-literal\", \"datatype\": \"%s\"", 
+                        dt.getDatatype().getLabel());
             }
         } else if (dt.isBlank()) {
             print("\"bnode\"");
@@ -191,7 +194,7 @@ public class JSONFormat extends XMLFormat {
             print("\"uri\"");
         }
 
-        print(", \"value\": \"" + JSONFormat.addJSONEscapes(str) + "\"}");
+        printf(", \"value\": \"%s\"}", JSONFormat.addJSONEscapes(str));
 
         if (n > 1 && i == n - 1) {
             print("]");

@@ -139,11 +139,12 @@ public class Extension extends Core {
     
     public IDatatype reports() {
         ArrayList<IDatatype> list = new ArrayList<>();
+        
         for (Node node : getEnvironment().getQueryNodes()) {
             if (node!=null && node.getLabel().startsWith(Binding.SERVICE_REPORT)) {
                 Node report = getEnvironment().getNode(node);
                 if (report !=null) {
-                    list.add(report().getDatatypeValue());
+                    list.add(report.getDatatypeValue());
                 }
             }
         }

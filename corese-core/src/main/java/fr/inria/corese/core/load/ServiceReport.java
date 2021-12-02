@@ -149,7 +149,7 @@ public class ServiceReport implements URLParam {
                 
                 if (getGlobalAST().hasMetadata(Metadata.DETAIL)) {
                     for (String key : resp.getHeaders().keySet()) {
-                    
+                        set(dt, key, resp.getHeaderString(key));
                     }
                 }
             }

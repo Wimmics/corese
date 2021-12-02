@@ -157,6 +157,6 @@ public interface Environment {
         
         ProcessVisitor getVisitor();
         
-        void setDetail(IDatatype dt);
+        void setReport(IDatatype dt);
 
 }

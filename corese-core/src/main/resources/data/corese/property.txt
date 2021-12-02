@@ -8,7 +8,7 @@
 # Property.init(graph);
 #
 
-VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./;myhome=$homedata
+VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./
 
 IMPORT   = ./gui.txt
 
@@ -86,6 +86,9 @@ INTERPRETER_TEST = false
 # take property cardinality into account to sort query pattern
 SOLVER_SORT_CARDINALITY   = false
 
+# see fr.inria.corese.sparql.triple.function.term.TermEval term evaluator overload
+SOLVER_OVERLOAD           = false
+
 # enable advanced prototype query planner (todo)
 # std | advanced
 SOLVER_QUERY_PLAN = std
@@ -105,8 +108,11 @@ SERVICE_SLICE       = 20
 SERVICE_LIMIT       = 1000
 #SERVICE_TIMEOUT     = 2000
 #SERVICE_PARAMETER   = mode=link;debug;show&transform=st:xml&format=json
-
-
+# service may return RDF graph as result
+# when true: execute service query locally on this graph
+SERVICE_GRAPH       = false
+SERVICE_SEND_PARAMETER = true
+SERVICE_REPORT = false
 
 #
 # Dataset

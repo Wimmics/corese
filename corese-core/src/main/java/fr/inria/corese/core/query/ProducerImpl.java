@@ -363,22 +363,15 @@ public class ProducerImpl
         
         List<Node> list = getFrom(targetGraphNode, from);
         Node subject = (focusNodeIndex==0)?focusNode:null;
+        Node object = (focusNodeIndex==1)?focusNode: objectNode;
         Node property = predicate;
         if (predicate.getLabel().equals(TOPREL)) {
             // unbound property variable has TOPREL for property name
             property = null;
         }
         
-//        System.out.println(String.format("External iterator: g: %s s: %s p: %s o: %s" , 
-//                targetGraphNode, subject, predicate, objectNode));
-//        System.out.println("from: " + from);
-        
-        // @TODO
-        // predicate = cos:Property when it is a variable
-        
-        //trace(getDataManager().iterate(predicate, focusNode, focusNodeIndex));
-        
-        return getDataBroker().getEdgeList(subject, property, objectNode, list);
+
+        return getDataBroker().getEdgeList(subject, property, object, list);
     }
     
     List<Node> getFrom(Node graph, List<Node> from) {

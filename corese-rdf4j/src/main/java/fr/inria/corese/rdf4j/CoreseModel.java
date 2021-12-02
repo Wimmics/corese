@@ -38,7 +38,6 @@ public class CoreseModel extends AbstractModel {
 
     public CoreseModel() {
         this.corese_graph = Graph.create();
-        this.corese_graph.init();
         this.namespaces = new TreeSet<>();
     }
 
@@ -131,10 +130,10 @@ public class CoreseModel extends AbstractModel {
     @Override
     public boolean contains(Resource subj, IRI pred, Value obj, Resource... contexts) {
         // get edges
-        Iterable<Statement> statements = this.choose(subj, pred, obj, contexts);
+        Iterable<Edge> edges = this.choose(subj, pred, obj, contexts);
 
         // test if result is empty
-        if (statements == null || !statements.iterator().hasNext() || statements.iterator().next() == null) {
+        if (edges == null || !edges.iterator().hasNext() || edges.iterator().next() == null) {
             return false;
         }
         return true;
@@ -147,12 +146,12 @@ public class CoreseModel extends AbstractModel {
     @Override
     public boolean remove(Resource subj, IRI pred, Value obj, Resource... contexts) {
         // get edges
-        Iterable<Statement> statements = this.choose(subj, pred, obj, contexts);
+        Iterable<Edge> edges = this.choose(subj, pred, obj, contexts);
 
         // remove edges
         boolean change = false;
-        for (Statement statement : statements) {
-            change |= !this.corese_graph.delete((Edge) statement).isEmpty();
+        for (Edge edge : edges) {
+            change |= !this.corese_graph.delete(edge).isEmpty();
         }
         return change;
     }
@@ -257,7 +256,8 @@ public class CoreseModel extends AbstractModel {
      *                    context.
      * @return Corese model Statements that match the specified pattern.
      */
-    private Iterable<Statement> choose(Resource subj, IRI pred, Value obj, Resource... contexts) {
+    private Iterable<Edge> choose(Resource subj, IRI pred, Value obj, Resource... contexts) {
+        this.corese_graph.init();
 
         // convert subject, predicate, object into Corese Node
         Node subj_node = Convert.rdf4jValueToCoreseNode(subj);
@@ -277,7 +277,7 @@ public class CoreseModel extends AbstractModel {
 
         // Create a new clean iterable (because corse iterable does not have a perfectly
         // defined behavior for optimization reasons)
-        ArrayList<Statement> result = new ArrayList<>();
+        ArrayList<Edge> result = new ArrayList<>();
         for (Edge edge : corese_iterable) {
             if (edge != null) {
                 result.add(this.corese_graph.getEdgeFactory().copy(edge));
@@ -311,6 +311,7 @@ public class CoreseModel extends AbstractModel {
      *         predicate, object and (optionally) context.
      */
     private Iterator<Statement> getFilterIterator(Resource subj, IRI pred, Value obj, Resource... contexts) {
+        this.corese_graph.init();
 
         /**
          * Iterator for the Corese model
@@ -346,7 +347,7 @@ public class CoreseModel extends AbstractModel {
         }
 
         // get edges
-        Iterable<Statement> edges = this.choose(subj, pred, obj, contexts);
+        Iterable<Statement> edges = Convert.EdgesTostatements(this.choose(subj, pred, obj, contexts));
         return new CoreseModelIterator(edges.iterator());
     }
 

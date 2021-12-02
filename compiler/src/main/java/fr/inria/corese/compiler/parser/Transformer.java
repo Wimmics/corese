@@ -184,8 +184,11 @@ public class Transformer implements ExpType {
             ast.setDefaultDataset(getDataset());
         }
         ParserSparql1.create(ast).parse();
-        ASTParser walk = new ASTParser(ast);
-        ast.walk(walk);
+        if (getDataset()!=null && getDataset().getMetadata()!=null) {
+            ast.addMetadata(getDataset().getMetadata());
+        }
+        ASTParser walk = new ASTParser(ast).configure();
+        ast.process(walk);
         return ast;
     }
     
@@ -717,7 +720,7 @@ public class Transformer implements ExpType {
     }
 
     /**
-     * Compile service as a subquery if it is a pattern and as a subquery if it
+     * Compile service as a subquery if it is a graph pattern and as a subquery if it
      * already is one
      */
     Exp compileService(Service service) throws EngineException {
@@ -759,7 +762,8 @@ public class Transformer implements ExpType {
             }
             exp.setNodeSet(list);
         }
-        exp.setNumber(incrNumber());
+        //exp.setNumber(incrNumber());
+        exp.setNumber(service.getNumber());
         return exp;
     }
 

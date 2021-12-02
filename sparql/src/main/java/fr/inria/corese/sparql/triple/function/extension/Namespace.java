@@ -23,7 +23,7 @@ public class Namespace extends TermEval {
     
     public Namespace(String name) {
         super(name);
-        setArity(1);
+        //setArity(1);
     }
 
     @Override
@@ -46,6 +46,12 @@ public class Namespace extends TermEval {
                 return qname(env, dt);
                 
             case ExprType.XT_DOMAIN:
+                if (getArity()>1) {
+                    IDatatype dt2 = getBasicArg(1).eval(eval, b, env, p);
+                    if (dt2 != null) {
+                        return DatatypeMap.URIDomain(dt, dt2);
+                    }
+                }
                 return DatatypeMap.URIDomain(dt);
         }
 

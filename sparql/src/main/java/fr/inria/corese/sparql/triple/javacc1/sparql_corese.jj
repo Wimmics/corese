@@ -2578,7 +2578,7 @@ ExpressionList LstVar(ExpressionList list) : {Variable var;}
 }
 
 
-Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
+Metadata Annotate() : {Token t, v; Metadata list = null; Constant s; }
 {
     ( { s = null; }
 
@@ -2587,7 +2587,13 @@ Metadata Annotate() : {Token t; Metadata list = null; Constant s; }
             (  
                 (<STAR> { list.add(t.image, "*");}) 
                 | 
-                ((s = Constant() { list.add(t.image, s); } ) *)   
+                (
+                    ((s = Constant() { list.add(t.image, s); } ) 
+                      |
+                     (v = <VAR3>     { list.add(t.image, v.image); })
+                    )
+                    *
+                )   
             )
        )
     )*

@@ -35,6 +35,10 @@ public class Binding implements Binder {
     public static boolean DEBUG_DEFAULT = false;
     public static boolean DYNAMIC_CAPTURE_DEFAULT = false;
     public static final String SLICE_SERVICE  = "?slice_service";
+    public static final String SERVICE_REPORT = "?_service_report";
+    public static final String SERVICE_REPORT_FORMAT = "?_service_report_%s";
+    public static final String SERVICE_REPORT_ZERO = "?_service_report_0";
+    public static final String SERVICE_REPORT_ONE = "?_service_report_1";
     ArrayList<Expr> varList;
     ArrayList<IDatatype> valList;
     // level of the stack before function call
@@ -429,7 +433,17 @@ public class Binding implements Binder {
     public IDatatype getBasicGlobalVariable(String name) {
         return getGlobalVariableValues().get(name);
     }
-      
+    
+    public IDatatype popBasicGlobalVariable(String name) {
+        IDatatype dt = getGlobalVariableValues().get(name);
+        setGlobalVariable(name, null);
+        return dt;
+    }
+    
+    public IDatatype getGlobalVariableBasic(String name) {
+        return getGlobalVariableValues().get(name);
+    } 
+    
     public Binding setVariable(String name, IDatatype val) {
         return bind(new VariableLocal(name), val);
     }
@@ -486,6 +500,7 @@ public class Binding implements Binder {
                             }
                         }
                         
+                        // global variable
                         define(var, val);
                         break;
                     default:
@@ -558,6 +573,15 @@ public class Binding implements Binder {
         shareContext(b);
     }
     
+    public void share(Binding b, Context c) {
+       if (b!=null) {
+           share(b);
+       }
+       if (c!=null) {
+           share(c);
+       }
+    }
+    
     void shareContext(Binding b) {
         setDebug(b.isDebug());
         setAccessLevel(b.getAccessLevel());
@@ -570,6 +594,19 @@ public class Binding implements Binder {
         }
         if (b.getMappings() != null) {
             setMappings(b.getMappings());
+        }
+    }
+    
+    // use case: env inherit Log/Context from xt:sparql()
+    // PluginImpl sparql() kgram()
+    public void subShare(Binding b) {
+        if (b != null) {
+            if (getLog() == null) {
+                setLog(b.getLog());
+            }
+            if (getContext() == null) {
+                setContext(b.getContext());
+            }
         }
     }
     
@@ -674,79 +711,59 @@ public class Binding implements Binder {
         this.visitor = visitor;
     }
 
-    /**
-     * @return the dynamicCapture
-     */
+    
     public boolean isDynamicCapture() {
         return dynamicCapture;
     }
 
-    /**
-     * @param dynamicCapture the dynamicCapture to set
-     */
+    
     public void setDynamicCapture(boolean dynamicCapture) {
         this.dynamicCapture = dynamicCapture;
     }
 
-    /**
-     * @return the coalesce
-     */
+    
     public boolean isCoalesce() {
         return coalesce;
     }
 
-    /**
-     * @param coalesce the coalesce to set
-     */
+   
     public void setCoalesce(boolean coalesce) {
         this.coalesce = coalesce;
     }
 
-    /**
-     * @return the singleton
-     */
+   
     public static Binding getSingleton() {
         return singleton;
     }
 
-    /**
-     * @param aSingleton the singleton to set
-     */
+    
     public static void setSingleton(Binding aSingleton) {
         singleton = aSingleton;
     }
 
-    /**
-     * @return the accessLevel
-     */
+    
     public Access.Level getAccessLevel() {
         return accessLevel;
     }
 
-    /**
-     * @param accessLevel the accessLevel to set
-     */
+    
     public void setAccessLevel(Access.Level accessLevel) {
         this.accessLevel = accessLevel;
     }
 
-    /**
-     * @return the context
-     */
-    public ContextLog getLog() {
+    
+    synchronized public ContextLog getLog() {
         return contextLog;
     }
     
-    public ContextLog getCreateLog() {
+    synchronized public ContextLog getCreateLog() {
         if (getLog() == null) {
             setLog(new ContextLog());
         }
         return getLog();
     }
 
-    /**
-     * @param context the context to set
-     */
+   
     public void setLog(ContextLog context) {
         this.contextLog = context;
     }
@@ -756,30 +773,22 @@ public class Binding implements Binder {
         return getCreateLog().getCreateTrace();
     }
 
-    /**
-     * @return the datatypeValue
-     */
+    
     public IDatatype getDatatypeValue() {
         return datatypeValue;
     }
 
-    /**
-     * @param datatypeValue the datatypeValue to set
-     */
+    
     public void setDatatypeValue(IDatatype datatypeValue) {
         this.datatypeValue = datatypeValue;
     }
     
-    /**
-     * @return the accessRight
-     */
+   
     public AccessRight getAccessRight() {
         return accessRight;
     }
 
-    /**
-     * @param accessRight the accessRight to set
-     */
+    
     public void setAccessRight(AccessRight accessRight) {
         this.accessRight = accessRight;
     }
@@ -806,6 +815,10 @@ public class Binding implements Binder {
     }
     
     public void set(Context c) {
+        share(c);
+    }
+    
+    public void share(Context c) {
         setContext(c);
         setAccessLevel(c.getLevel());
         if (c.getAccessRight() != null) {

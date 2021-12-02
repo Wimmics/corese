@@ -32,8 +32,10 @@ public interface URLParam {
     static final String FOCUS = "focus";
     static final String SKIP = "skip";
     static final String HEADER = "header";
+    static final String HEADER_ACCEPT = "Accept";
     // service clause does not return variable in service result
     static final String UNSELECT = "unselect";
+    static final String LOCAL = "local";
 
     // value of mode=
     static final String DISPLAY = "display";
@@ -95,6 +97,7 @@ public interface URLParam {
     static final String TEST = "test";
     static final String DISTANCE = "distance";
     static final String ERROR = "error";
+    static final String STATUS = "status";
     static final String CATCH = "catch";
     static final String UNDEF = "undefined";
     static final String DATE = "date";
@@ -104,6 +107,11 @@ public interface URLParam {
     static final String CARDINALITY = "cardinality";
     static final String GRAPH_SIZE = "graphSize";
     static final String MERGE = "merge";
+    static final String SIZE = "size";
+    static final String LENGTH = "length";
+    static final String SERVER_NAME = "server";
+    static final String LOCATION = "location";
+    static final String REPORT = "report";
     
 
 }

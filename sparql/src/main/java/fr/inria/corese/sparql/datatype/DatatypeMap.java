@@ -13,6 +13,7 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
+import static fr.inria.corese.sparql.api.IDatatype.JSON_DATATYPE;
 import static fr.inria.corese.sparql.api.IDatatype.LITERAL;
 import fr.inria.corese.sparql.datatype.extension.CoreseMap;
 import fr.inria.corese.sparql.datatype.extension.CoreseList;
@@ -25,11 +26,16 @@ import java.math.BigDecimal;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Date;
 import java.util.Enumeration;
+import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -236,6 +242,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
 
         //special use case: to get the implementation java type for Resource and Blank
         put(RDFSRESOURCE, jTypeURI, RDFSRESOURCE);
+        put(JSON_DATATYPE, jTypeJSON, JSON_DATATYPE);
 
     }
 
@@ -570,6 +577,53 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         }
         return null;
     }
+    
+    public static IDatatype newDate(Date date) {
+        return newInstance(date);
+    }
+
+    public static IDatatype newInstance(XMLGregorianCalendar date) {
+        return new CoreseDate(date);
+    }
+    
+    public static IDatatype newInstance(Date date) {
+        XMLGregorianCalendar cal = newXMLGregorianCalendar(date);
+        if (cal == null) {
+            return null;
+        }
+        return newInstance(cal);
+    }
+    
+    public static XMLGregorianCalendar newXMLGregorianCalendar(Date date) {
+        try {
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(
+                    year(date), month(date), date.getDate(),
+                    date.getHours(), date.getMinutes(), date.getSeconds(), (int)date.getTime()%1000, timeZone(date)
+            );
+        } catch (DatatypeConfigurationException ex) {
+            return null;
+        }
+    }
+    
+    public static XMLGregorianCalendar newXMLGregorianCalendar() {
+        try {
+            return DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
+        } catch (DatatypeConfigurationException ex) {
+            return null;
+        }
+    }
+    
+    static int timeZone(Date d) {
+        // -60 -> + 60
+        return d.getTimezoneOffset() + 120;
+    }
+    static int year(Date d) {
+        return d.getYear() + 1900;
+    }
+    
+    static int month(Date d) {
+        return d.getMonth() + 1;
+    }   
 
     public static IDatatype newDateTime(String date) {
         try {
@@ -749,6 +803,14 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return new CoreseMap();
     }
     
+    public static IDatatype newServiceReport(String... param) {
+        return json(param);
+    }
+    
+    public static IDatatype map(String... param) {
+        return init(map(), param);
+    }
+    
     public static CoreseJSON json(JSONObject obj) {
         return new CoreseJSON(obj);
     }
@@ -771,6 +833,17 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
             json.set(param[i++], param[i]);
         }
         return json;
+    }
+    
+    static IDatatype init(IDatatype obj, String... param) {
+        for (int i = 0; i < param.length; i++) {
+            obj.set(newInstance(param[i++]), newInstance(param[i]));
+        }
+        return obj;
+    }
+    
+    public static IDatatype json(String... param) {
+        return init(json(), param);
     }
     
     public static CoreseJSON json() {
@@ -1423,7 +1496,12 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
     
     public static IDatatype URIDomain(IDatatype dt) {
-        String dom = NSManager.domain(dt.getLabel());
+        return URIDomain(dt, TRUE);
+    }
+
+    
+    public static IDatatype URIDomain(IDatatype dt, IDatatype scheme) {
+        String dom = NSManager.domain(dt.getLabel(), scheme.booleanValue());
         if (dom == null) {
             return null;
         }

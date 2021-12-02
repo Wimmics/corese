@@ -1,46 +1,257 @@
 package fr.inria.corese.sparql.triple.parser.visitor;
 
 import fr.inria.corese.sparql.triple.api.Walker;
+import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Message;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import fr.inria.corese.sparql.triple.parser.Values;
+import fr.inria.corese.sparql.triple.parser.Variable;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Walker just after parsing to complete the AST.
  */
 public class ASTParser implements Walker, URLParam {
+    // set by Property SERVICE_REPORT
+    public static boolean SERVICE_REPORT = false;
+    private boolean log = SERVICE_REPORT;
     
-    ASTQuery ast;
+    private ASTQuery ast;
+    private ArrayList<ASTQuery> stack;
+    private int nbService = 0;
+    private boolean bnode = true;
+    // when false: do it later after Federate Visitor
+    private boolean report = true;
+    private boolean provenance = true;
     
     class BNodeMap extends HashMap<String, Exp> {}
 
     public ASTParser(ASTQuery ast) {
         this.ast = ast;
+        stack = new ArrayList<>();
+        setLog(isLog() || ast.hasMetadata(Metadata.REPORT));
     }
     
-       @Override
+    // std parser call
+    public ASTParser configure() {
+        if (getAST().isFederateVisitorable()) {
+            // first visit: no report
+            // do it after FederateVisitor
+            setReport(false);
+        }
+        return this;
+    }
+    
+    // special call after FederateVisitor
+    public ASTParser report() {
+        setBnode(false);
+        setProvenance(false);
+        setReport(true);
+        return this;
+    }
+    
+    
+    @Override
+    public void start(ASTQuery ast) {
+    }
+    
+    @Override
+    public void finish(ASTQuery ast) {
+        serviceReport(ast);        
+    }
+    
+    @Override
     public void enter(ASTQuery ast) {
+        push(ast);
         bnodeScope(ast.getBody());
     }
-        
+    
     @Override
-    public void enter(Exp exp) {
-        process(exp);
+    public void leave(ASTQuery ast) {  
+        leaveAST(ast);
+        pop();
+    }
+       
+    
+    @Override
+    public void enter(Exp exp) { 
+        processEnter(exp);
         bnodeScope(exp);
     }
     
+    @Override
+    public void leave(Exp exp) { 
+        processLeave(exp);
+    }
+    
+    
     /**
+     * When @report : declare variable ?_service_report_n
+     */
+    void serviceReport(ASTQuery ast) {
+        if (isReport()) {
+            if (isLog()) {
+                serviceReportMain(ast);
+            }
+        }
+    }
+    
+    void leaveAST(ASTQuery ast) {
+        if (isReport()) {
+            if (ast != getAST()) {
+                serviceReportSub(ast);
+            }
+        }
+    }
+
+    /**
+     * ast is the main query
+     */
+    void serviceReportMain(ASTQuery ast) {
+        ArrayList<Variable> varList = new ArrayList<>();
+        // generate at least one variable ?_service_report 
+        // in case of xt:sparql() with service inside
+        int count = Math.max(1, getNbService());
+
+        for (int i = 0; i < count; i++) {
+            Variable var = new Variable(String.format(Binding.SERVICE_REPORT_FORMAT, i));
+            varList.add(var);
+            
+            if (!ast.isSelectAll()) {
+                ast.setSelect(var);
+            }
+        }
+        
+        Values values = Values.create(varList);
+        ast.isFederate();
+        if (ast.getValues() == null && 
+                !ast.isConstruct() && 
+                // @federate <singleURL>
+                (! (ast.hasMetadata(Metadata.FEDERATE) && ast.getServiceList().size() == 1))) {
+            // virtuoso reject construct with values
+            // virtuoso reject external values 
+            ast.setValues(values);
+        } else {
+            ast.getBody().add(0, values);
+        }      
+    }
+  
+
+       
+    /**
+     * ast is a subquery, not the main query
+     */
+    void serviceReportSub(ASTQuery ast) {
+        ArrayList<Variable> varList = new ArrayList<>();
+
+        for (Service service : ast.getServiceExpList()) {
+            if (isLog() || (service.getURL() != null && service.getURL().hasParameter(MODE, REPORT))) {
+                Variable var = new Variable(String.format(Binding.SERVICE_REPORT_FORMAT, service.getNumber()));
+                varList.add(var);
+
+                for (ASTQuery aa : getStack()) {
+                    // export report variable through intermediate subselect to top select
+                    if (!aa.isSelectAll()) {
+                        aa.setSelect(var);
+                    }
+                }
+            }
+        }
+
+        if (!varList.isEmpty()) {
+            ast.getBody().add(0, Values.create(varList));
+        }
+    }
+    
+    void processEnter(Exp exp) {
+        if (exp.isService()) {
+            processEnter(exp.getService());
+        }
+    } 
+    
+    void processLeave(Exp exp) {
+        if (exp.isService()) {
+            processLeave(exp.getService());
+        }
+    }  
+    
+    void processEnter(Service exp) {
+        URLServer url = exp.getCreateURL();
+
+        if (isProvenance()) {
+            provenance(url, exp);
+        }
+    }
+    
+    /**
+     * @report
+     * Generate service number on leave
+     * when nested services:
+     * inner service is 0 and outer service is 1
+     */
+    void processLeave(Service exp) {
+        URLServer url = exp.getURL();
+        if (url != null) {
+            // url = constant
+            if (url.hasParameter(MODE, REPORT)) {
+                setLog(true);
+            }
+        }
+        exp.setNumber(nbService++);
+        top().getServiceExpList().add(exp);
+    }
+    
+    
+    
+  
+    
+    
+    
+    /*****************************************
+     * http://server.fr/sparql?mode=provenance
+     * FederateVisitor in core will rewrite service with 
+     * a variable -> declare this variable in select clause 
+     */ 
+    void provenance(URLServer url, Service exp) {
+        if (url != null) {
+            if (url.hasParameter(MODE, PROVENANCE)) {
+                boolean b = false;
+                int n = 1;
+                if (url.hasParameter(NBVAR)) {
+                    n = url.intValue(NBVAR);
+                }
+                if (exp.getBodyExp().size()>0 && exp.getBodyExp().get(0).isQuery()) {
+                    ASTQuery aa = exp.getBodyExp().get(0).getAST();
+                    b = aa.provenance(getAST(), n);
+                }
+                if (! b) {
+                    getAST().provenance(null, n);
+                }
+            }
+        }
+    }
+    
+        
+    
+    
+    
+    /************************************************
      * check bnode scope
      */
     void bnodeScope(Exp exp) {
-        if (exp.isAnd()) {
-            and(exp, exp, new BNodeMap());
+        if (isBnode()) {
+            if (exp.isAnd()) {
+                and(exp, exp, new BNodeMap());
+            }
         }
     }
     
@@ -69,44 +280,88 @@ public class ASTParser implements Walker, URLParam {
                 bnode.put(at.getLabel(), exp);
             }
             else if (exp != ee) {
-                ast.setFail(true);
+                getAST().setFail(true);
                 ASTQuery.logger.error(String.format(Message.BNODE_SCOPE, at, exp));
             }
         }
     }
-    
-    
-    
-    void process(Exp exp) {
-        if (exp.isService()) {
-            enter(exp.getService());
-        }
+
+    public boolean isLog() {
+        return log;
+    }
+
+    public void setLog(boolean log) {
+        this.log = log;
+    }
+
+    public int getNbService() {
+        return nbService;
+    }
+
+    public void setNbService(int nbService) {
+        this.nbService = nbService;
+    }
+
+    public boolean isBnode() {
+        return bnode;
+    }
+
+    public void setBnode(boolean bnode) {
+        this.bnode = bnode;
+    }
+
+    public boolean isReport() {
+        return report;
+    }
+
+    public void setReport(boolean report) {
+        this.report = report;
+    }
+
+    public boolean isProvenance() {
+        return provenance;
+    }
+
+    public void setProvenance(boolean provenance) {
+        this.provenance = provenance;
+    }
+
+    public ASTQuery getAST() {
+        return ast;
+    }
+
+    public void setAST(ASTQuery ast) {
+        this.ast = ast;
     }
     
-    /**
-     * http://server.fr/sparql?mode=provenance
-     * FederateVisitor in core will rewrite service with 
-     * a variable -> declare this variable in select clause 
-     */ 
-    void enter(Service exp) {
-        Atom serv = exp.getServiceName();
-        if (serv.isConstant()) {
-            URLServer url = new URLServer(serv.getLabel());            
-            if (url.hasParameter(MODE, PROVENANCE)) {
-                boolean b = false;
-                int n = 1;
-                if (url.hasParameter(NBVAR)) {
-                    n = url.intValue(NBVAR);
-                }
-                if (exp.getBodyExp().size()>0 && exp.getBodyExp().get(0).isQuery()) {
-                    ASTQuery aa = exp.getBodyExp().get(0).getAST();
-                    b = aa.provenance(ast, n);
-                }
-                if (! b) {
-                    ast.provenance(null, n);
-                }
-            }
+    
+    int last() {
+        return getStack().size() - 1;
+    }
+    
+    void push(ASTQuery ast) {
+        getStack().add(ast);
+    }
+    
+    ASTQuery pop() {
+        ASTQuery ast = getStack().get(last());
+        getStack().remove(last());
+        return ast;
+    }
+    
+    ASTQuery top() {
+        if (getStack().isEmpty()) {
+            return null;
         }
+        return getStack().get(last());
+    }
+
+    public ArrayList<ASTQuery> getStack() {
+        return stack;
+    }
+
+    public void setStack(ArrayList<ASTQuery> stack) {
+        this.stack = stack;
     }
     
 }

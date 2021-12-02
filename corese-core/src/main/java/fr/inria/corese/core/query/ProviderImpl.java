@@ -176,16 +176,12 @@ public class ProviderImpl implements Provider, URLParam {
    
     
 
-    /**
-     * @return the defaut
-     */
+    
     public QueryProcess getDefault() {
         return defaut;
     }
 
-    /**
-     * @param defaut the defaut to set
-     */
+    
     public void setDefault(QueryProcess defaut) {
         this.defaut = defaut;
     }

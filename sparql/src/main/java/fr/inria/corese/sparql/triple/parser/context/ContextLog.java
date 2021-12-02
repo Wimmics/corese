@@ -49,6 +49,10 @@ public class ContextLog implements URLParam, LogKey {
         formatList = new ArrayList<>();
         setSubjectMap(new SubjectMap());
     }
+    
+    synchronized ContextLog getSynchonizedLog() {
+        return this;
+    }
 
     String getSubject() {
         return SUBJECT;

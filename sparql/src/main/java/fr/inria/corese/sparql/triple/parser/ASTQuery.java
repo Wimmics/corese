@@ -176,6 +176,7 @@ public class ASTQuery
     boolean isBind = false;
     private boolean ldscript = false;
     private boolean insideWhere = false;
+    private boolean federateVisit = false;
     /**
      * max cg result
      */
@@ -251,6 +252,7 @@ public class ASTQuery
     Context context;
     List<Atom> adescribe = new ArrayList<>();
     List<Variable> stack = new ArrayList<>(); // bound variables
+    private List<Service> serviceExpList = new ArrayList<>();
     List<String> vinfo;
     List<String> errors;
     Values values;
@@ -287,6 +289,7 @@ public class ASTQuery
     private List<Triple> tripleList, pathList;
     private fr.inria.corese.kgram.core.Query updateQuery;
     private AccessRight accessRight;
+    private ASTSelector astSelector;
 
 
     public Object getTemplateVisitor(){
@@ -374,51 +377,42 @@ public class ASTQuery
         shareFunction(ast);
     }
 
-    /**
-     * @return the undefined
-     */
+   
     public HashMap<String, Expression> getUndefined() {
         return undefined;
     }
 
-    /**
-     * @param undefined the undefined to set
-     */
+    
     public void setUndefined(HashMap<String, Expression> undefined) {
         this.undefined = undefined;
     }
 
-    /**
-     * @return the isFail
-     */
+    
     public boolean isFail() {
         return isFail;
     }
 
-    /**
-     * @param isFail the isFail to set
-     */
+   
     public void setFail(boolean isFail) {
         this.isFail = isFail;
     }
 
-    /**
-     * @return the isRelax
-     */
+    
     public boolean isRelax() {
         return isRelax;
     }
 
-    /**
-     * @param isRelax the isRelax to set
-     */
+    
     public void setRelax(boolean isRelax) {
         this.isRelax = isRelax;
     }
 
-    /**
-     * @return the serviceList
-     */
+    
+    public boolean isFederateVisitorable() {
+        return hasMetadata(Metadata.FEDERATION) || 
+                (getServiceList() != null && getServiceList().size()>1);
+    } 
+    
     public List<Atom> getServiceList() {
         return serviceList;
     }
@@ -431,9 +425,7 @@ public class ASTQuery
         return list;
     }
 
-    /**
-     * @param serviceList the serviceList to set
-     */
+    
     public void setServiceList(List<Atom> serviceList) {
         this.serviceList = serviceList;
     }
@@ -1338,6 +1330,7 @@ public class ASTQuery
         return metadata != null && metadata.hasMetadata(type);
     }
     
+    @Override
     public boolean hasMetadata(String type) {
         return metadata != null && metadata.hasMetadata(type);
     }
@@ -1348,6 +1341,14 @@ public class ASTQuery
     
     public boolean hasMetadataValue(int type, String value) {
         return metadata != null && metadata.hasValues(type, value);
+    }
+    
+    public boolean hasReportKey(String key) {
+        Metadata meta = getMetadata();
+        if (meta == null) {
+            return true;
+        }
+        return meta.hasReportKey(key);
     }
 
     /**
@@ -4081,6 +4082,30 @@ public class ASTQuery
 
     public void setPathList(List<Triple> pathList) {
         this.pathList = pathList;
+    }
+
+    public boolean isFederateVisit() {
+        return federateVisit;
+    }
+
+    public void setFederateVisit(boolean federateVisit) {
+        this.federateVisit = federateVisit;
+    }
+
+    public List<Service> getServiceExpList() {
+        return serviceExpList;
+    }
+
+    public void setServiceExpList(List<Service> serviceExpList) {
+        this.serviceExpList = serviceExpList;
+    }
+
+    public ASTSelector getAstSelector() {
+        return astSelector;
+    }
+
+    public void setAstSelector(ASTSelector astSelector) {
+        this.astSelector = astSelector;
     }
        
 }

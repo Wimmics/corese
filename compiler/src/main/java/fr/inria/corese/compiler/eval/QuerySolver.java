@@ -373,6 +373,21 @@ public class QuerySolver implements SPARQLEngine {
         return bind;
     }
     
+    public Binding getCreateBinding (Mapping m) {
+        Binding b = getBinding(m);
+        if (b != null) {
+            return b;
+        }
+        return getCreateBinding();
+    }
+    
+    public Binding getBinding(Mapping m) {
+        if (m == null) {
+            return null;
+        }
+        return m.getBind();
+    }
+    
     public Environment getEnvironment() {
         if (getCurrentEval() == null) {
             return null;
@@ -389,7 +404,7 @@ public class QuerySolver implements SPARQLEngine {
             current.finish();
         }
     }
-    
+        
     public Mappings modifier(Query q, Mappings map) throws SparqlException {
         if (getCurrentEval() == null) {
             logger.info("Undefined Eval");
@@ -406,12 +421,6 @@ public class QuerySolver implements SPARQLEngine {
         return null;
     }
     
-    public void modifier(String str, Mappings map) throws SparqlException {
-        Query q = compile(str);
-        modifier(q, map);
-    }
-
-
     public Eval getCurrentEval() {
         return current;
     }

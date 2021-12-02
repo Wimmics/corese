@@ -793,18 +793,27 @@ public class NSManager extends ASTObject {
         return name;
     }
     
-    
     public static String domain(String uri) {
+        return domain(uri, true);
+    }
+
+    
+    public static String domain(String uri, boolean scheme) {
         try {
             URI url = new URI(uri);
             if (url.getScheme() == null || url.getAuthority() == null) {
                 return null;
             }
-            String res = url.getScheme().concat(":");
-            if (url.getScheme().startsWith("http")) {
-                res = res.concat("//");
+            if (scheme) {
+                String res = url.getScheme().concat(":");
+                if (url.getScheme().startsWith("http")) {
+                    res = res.concat("//");
+                }
+                return res.concat(url.getAuthority());
             }
-            return res.concat(url.getAuthority());
+            else {
+                return url.getAuthority();
+            }
         } catch (URISyntaxException ex) {
             return null;
         }

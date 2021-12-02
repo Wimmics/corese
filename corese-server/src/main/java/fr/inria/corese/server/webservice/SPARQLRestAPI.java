@@ -21,11 +21,9 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.print.CSVFormat;
 import fr.inria.corese.core.print.JSOND3Format;
 import fr.inria.corese.core.print.JSONFormat;
 import fr.inria.corese.core.print.ResultFormat;
-import fr.inria.corese.core.print.TSVFormat;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.api.ResultFormatDef;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -384,6 +382,13 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
             @QueryParam("uri")    List<String> uri) {
         
         logger.info("getHTMLForGet");
+        
+        if (query == null || query.isEmpty()) {
+            query = "select * where {?s ?p ?o} limit 5";
+        return new Transformer()
+        .queryGETHTML(request, fr.inria.corese.core.transform.Transformer.SPARQL, 
+                null, null, null, null, format, access, query, null, null, null, defaut, named);
+        }
         return getResultFormat(request, name, oper, uri, param, mode, query, access, defaut, named, null, HTML_FORMAT, transform);
     }
     
@@ -537,7 +542,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     // ----------------------------------------------------
 
     String getQuery(String query, String message) {
-        return (query.isEmpty()) ? message : query;
+        return (query == null || query.isEmpty()) ? message : query;
     }
     
     String getQuery(String query, String update, String message) {

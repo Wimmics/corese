@@ -70,6 +70,9 @@ public class Mappings extends PointerObject
     private Group group;
     private Group distinct;
     private Eval eval;
+    // service report if Mappings from service
+    // json object
+    private IDatatype detail;
     // construct where result graph
     private TripleStore graph;
     private int nbsolutions = 0;
@@ -570,10 +573,11 @@ public class Mappings extends PointerObject
                 Node node = exp.getNode();
                 
                 for (Mapping m : this) {
-                    if (m.getNode(node) == null) {
-                        // @todo
+                    //if (m.getNode(node) == null) {
+                        // @todo: bnode ?
                         m.setBind(eval.getEnvironment().getBind());
                         m.setEval(eval);
+                        m.setQuery(q);
                         try {
                             Node value = eval.getEvaluator().eval(exp.getFilter(), m, eval.getProducer());
                             if (value != null) {
@@ -583,7 +587,7 @@ public class Mappings extends PointerObject
                         } catch (SparqlException ex) {
                             logger.error(ex.getMessage());
                         }
-                    }
+                    //}
                 }
             }
         }
@@ -1797,8 +1801,9 @@ public class Mappings extends PointerObject
     /**
      * @param isFake the isFake to set
      */
-    public void setFake(boolean isFake) {
+    public Mappings setFake(boolean isFake) {
         this.isFake = isFake;
+        return this;
     }
 
     boolean isNodeList() {
@@ -1961,4 +1966,42 @@ public class Mappings extends PointerObject
         this.list = list;
     }
 
+    public IDatatype getReport() {
+        return detail;
+    }
+
+    public void setReport(IDatatype detail) {
+        this.detail = detail;
+    }
+
+    /**
+     * Detail about service execution as a dt:json/dt:map object
+     * Recorded as system generated variable ?_service_detail
+     */
+    public Mappings recordReport(Node node, IDatatype report) {
+        setReport(report);
+        if (isEmpty()) {
+            // when detail is required, we generate a fake result 
+            // to record var=detail
+            add(Mapping.create());
+        }
+        for (Mapping m : this) {
+            // augment each result with var=detail
+            m.addNode(node, report);
+            m.setReport(report);
+        }
+        return this;
+    }
+    
+    public Mappings completeReport(String key, int value) {
+        for (Mapping m : this) {
+            if (m.getReport()==null) {
+                return this;
+            }
+            else {
+                m.getReport().set(key, value);
+            }
+        }
+        return this;
+    }
 }

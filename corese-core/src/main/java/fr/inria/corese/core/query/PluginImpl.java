@@ -1091,7 +1091,7 @@ public class PluginImpl
     @Override
     public IDatatype sparql(Environment env, Producer p, IDatatype[] param) throws EngineException {
         Mapping m = createMapping(p, param, 1);
-        // share global variables and access level
+        // share global variables, context, log and access level
         m.setBind(env.getBind());
         return kgram(env, getGraph(p), param[0].getLabel(), m);
     }
@@ -1116,22 +1116,35 @@ public class PluginImpl
         return name;
     }
 
+//    Dataset getDataset(Environment env) {
+//        Context c =  env.getQuery().getContext();
+//        if (c != null) {
+//            return new Dataset(c);
+//        }
+//        return null;
+//    }
+
+//    Dataset getDataset() {
+//        Context c = getPluginTransform().getContext();
+//        if (c != null) {
+//            return new Dataset(c);
+//        }
+//        return null;
+//    }
+
+    
+    // share @report with subquery
     Dataset getDataset(Environment env) {
-        Context c =  env.getQuery().getContext();
-        if (c != null) {
-            return new Dataset(c);
+        Metadata meta = env.getQuery().getAST().getMetadata();
+        if (meta!=null) {
+            Metadata m = meta.selectSparql();
+            if (m != null) {
+                return new Dataset().setMetadata(m);
+            }
         }
         return null;
     }
-
-    Dataset getDataset() {
-        Context c = getPluginTransform().getContext();
-        if (c != null) {
-            return new Dataset(c);
-        }
-        return null;
-    }
-
+    
     IDatatype kgram(Environment env, Graph g, String query, Mapping m) throws EngineException{
         QueryProcess exec = QueryProcess.create(g, true);
         exec.setRule(env.getQuery().isRule());
@@ -1140,16 +1153,22 @@ public class PluginImpl
             if (g.getLock().getReadLockCount() == 0 && !g.getLock().isWriteLocked()) {
                 // use case: LDScript direct call  
                 // accept update
-                map = exec.query(query, m, getDataset(env));
+                map = exec.query(query, m, getDataset(env)); 
             } else {
                 // reject update
                 map = exec.sparqlQuery(query, m, getDataset(env));
             }
+            // use case: subquery create Log or Context
+            // outer query processing inherits it
+            env.getBind().subShare(exec.getEnvironmentBinding());
+            
             if (map.getQuery().isDebug()) {
                 System.out.println("result:");
                 System.out.println(map);
             }
             if (map.getGraph() == null) {
+                // draft: service evaluation detail report
+                env.setReport(map.getReport());
                 return DatatypeMap.createObject(map);
             } else {
                 return DatatypeMap.createObject(map.getGraph());
@@ -1159,6 +1178,8 @@ public class PluginImpl
             throw e;
         }
         catch (EngineException e) {
+            logger.error(e.getMessage());
+            env.getBind().subShare(exec.getEnvironmentBinding());
             return DatatypeMap.createObject(new Mappings());
         }
     }

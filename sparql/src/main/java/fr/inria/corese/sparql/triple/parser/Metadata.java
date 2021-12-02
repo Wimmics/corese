@@ -77,6 +77,8 @@ public class Metadata extends ASTObject
     public static final int EVENT   = 58;
     public static final int FORMAT  = 59;
     public static final int SELECT  = 60;
+    public static final int REPORT  = 61;
+    public static final int DISTINCT  = 62;
     
 //    public static final int BEFORE  = 51;
 //    public static final int AFTER   = 52;
@@ -111,6 +113,8 @@ public class Metadata extends ASTObject
     public static final String SIMPLIFY         = PREF + "simplify";
     public static final String EXIST            = PREF + "exist";
     public static final String SKIP_STR         = PREF + "skip";
+    public static final String ALL              = "all";
+    public static final String EMPTY            = "empty";
     
     public static final String DISTRIBUTE_NAMED     = PREF + "distributeNamed";
     public static final String DISTRIBUTE_DEFAULT   = PREF + "distributeDefault";
@@ -151,6 +155,7 @@ public class Metadata extends ASTObject
         define("@provenance",PROVENANCE);      
         define("@log",      LOG);      
         define("@duplicate",DUPLICATE);      
+        define("@distinct", DISTINCT);      
         define("@count",    COUNT);
         define("@server",   SERVER);
         define("@export",   PUBLIC);      
@@ -184,6 +189,7 @@ public class Metadata extends ASTObject
         define("@endpoint", ENDPOINT); 
         define("@file",     FILE); 
         define("@detail",   DETAIL); 
+        define("@report",   REPORT); 
         define("@accept",   ACCEPT); 
         define("@reject",   REJECT); 
         define("@option",   OPTION); 
@@ -236,6 +242,21 @@ public class Metadata extends ASTObject
         }
         return sb.toString();
     }
+    
+    /**
+     * Subset of Metadata for xt:sparql() see PluginImpl
+     */
+    public Metadata selectSparql() {
+        if (hasMetadata(REPORT)) {
+            return new Metadata().add(REPORT);
+        }
+        return null;
+    }
+    
+    public Metadata share(Metadata meta) {
+        add(meta);
+        return this;
+    }
        
     public Metadata add(String str){
         map.put(str, str);
@@ -270,7 +291,7 @@ public class Metadata extends ASTObject
        add(name);
        List<String> list = value.get(name);
        if (list == null){
-           list = new ArrayList<String>();
+           list = new ArrayList<>();
            value.put(name, list);
        }
        if (! list.contains(val)){
@@ -397,6 +418,18 @@ public class Metadata extends ASTObject
         return NSManager.nstrip(value);
     }
     
+    boolean hasReportKey(String key) {
+        List<String> list = getValues(REPORT);
+        if (list == null) {
+            return true;
+        }
+        // @report empty: empty is not a key
+        if (list.size() == 1 && list.contains(EMPTY)) {
+            return true;
+        }
+        return list.contains(key);
+    }
+    
     public boolean hasValue(int meta) {
         return getValue(meta) != null;
     }
@@ -406,18 +439,13 @@ public class Metadata extends ASTObject
         return str != null && str.equals(value);
     }
     
-     public boolean hasValues(int meta, String value) {
+    public boolean hasValues(int meta, String value) {
         List<String> list = getValues(meta);
         if (list == null) {
             return false;
         }
-        for (String str : list){
-            if (str.equals(value)){
-                return true;
-            }
-        }
-        return false;
-     }
+        return list.contains(value);               
+    }
     
      public String getValue(String name){
          if (name == null){

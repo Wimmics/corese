@@ -19,7 +19,7 @@ import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.util.Property;
-import fr.inria.corese.core.util.Property.Value;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_GRAPH;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_PARAMETER;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SLICE;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_TIMEOUT;
@@ -56,8 +56,9 @@ import org.json.JSONObject;
 public class ProviderService implements URLParam {
 
     static Logger logger = LoggerFactory.getLogger(ProviderService.class);
-    private static final String LOCAL_SERVICE = "http://example.org/sparql";
-    public static final String UNDEFINED_SERVICE = "http://example.com/undefined/sparql";
+    public static final String LOCAL_SERVICE    = "http://ns.inria.fr/corese/sparql"; //http://example.org/sparql";
+    public static final String LOCAL_SERVICE_NS = LOCAL_SERVICE + "/%s";
+    public static final String UNDEFINED_SERVICE = "http://example.org/undefined/sparql";
     private static final String SERVICE_ERROR = "Service error: ";
     private static final String DB = "db:";
 
@@ -83,8 +84,8 @@ public class ProviderService implements URLParam {
     ProviderService(ProviderImpl p, Query q, Mappings map, Eval eval) {
         setProvider(p);
         setQuery(q);
-        setGlobalAST(getAST(q.getGlobalQuery()));
-        setAST(getAST(q));
+        setGlobalAST(q.getGlobalQuery().getAST());
+        setAST(q.getAST());
         setMappings(map);
         setEval(eval);
         // after setEval:
@@ -182,9 +183,8 @@ public class ProviderService implements URLParam {
      * variable binding into account when sending service Split Mappings into
      * buckets with size = slice Iterate service on each bucket When several
      * services, they are evaluated in parallel by default, unless @sequence
-     * metadata When several services, return *distinct* Mappings, unless
-     *
-     * @duplicate metadata.
+     * metadata When several services, return distinct Mappings when
+     * @distinct metadata.
      */
     Mappings send(List<Node> serverList, Node serviceNode, Mappings map, boolean slice, int length) throws EngineException {
         Graph g = getGraph(getEval().getProducer());
@@ -237,9 +237,9 @@ public class ProviderService implements URLParam {
 
             if (slice) {
                 // default behaviour when map != null
-                // service is variable: select appropriate subset of distinct Mappings with service URL
+                // service is variable: select appropriate subset of  Mappings with service URL
                 // service is URL: consider all Mappings. 
-                // Hint: Mappings are already result of former select distinct
+                // Hint: Mappings are already result of former select 
                 input = getMappings(q, getServiceExp(), getServiceExp().getServiceNode(), service, map);
                 if (input.size() > 0) {
                     g.getEventManager().process(Event.Service, "input: \n" + input.toString(true, false, 10));
@@ -386,7 +386,7 @@ public class ProviderService implements URLParam {
             targetAST = ast;
             traceAST(serv, ast);
             Mappings res = send(serv, ast, map, start, limit, timeout, count);
-
+            reportAST(ast, res);
             if (debug) {
                 traceResult(serv, res);
             }
@@ -396,11 +396,13 @@ public class ProviderService implements URLParam {
             return res;
         } catch (ResponseProcessingException e) {
             logger.error("ResponseProcessingException: " + serv.getURL());
-            getLog().addException(new EngineException(e, e.getMessage()).setURL(serv).setAST(targetAST).setObject(e.getResponse()));
+            getLog().addException(new EngineException(e, e.getMessage())
+                    .setURL(serv).setAST(targetAST).setObject(e.getResponse()));
             error(serv, q.getGlobalQuery(), getAST(), e);
         } catch (ProcessingException | IOException | SparqlException e) {
             logger.error("ProcessingException: " + serv.getURL());
-            getLog().addException(new EngineException(e, e.getMessage()).setURL(serv).setAST(targetAST));
+            getLog().addException(new EngineException(e, e.getMessage())
+                    .setURL(serv).setAST(targetAST));
             error(serv, q.getGlobalQuery(), getAST(), e);
         }
 
@@ -414,14 +416,43 @@ public class ProviderService implements URLParam {
         gq.addError(SERVICE_ERROR.concat(serv.getServer()).concat("\n"), e);
     }
 
+    /**
+     * Intermediate send function with graph processing extension
+     * Endpoint may return RDF graph as query result
+     * use case: format=turtle => return W3C Query Results RDF Format => RDF Graph
+     */
     Mappings send(URLServer serv, ASTQuery ast, Mappings map,
             int start, int limit, int timeout, int count)
             throws EngineException, IOException {
-        
+
         if (serv.isUndefined()) {
             return null;
         }
-
+        if (Property.booleanValue(SERVICE_GRAPH)) {
+            return sendWithGraph(serv, ast, map, start, limit, timeout, count);
+        }
+        else {
+            return sendBasic(serv, ast, map, start, limit, timeout, count);
+        }
+    }
+    
+     Mappings sendBasic(URLServer serv, ASTQuery ast, Mappings map,
+            int start, int limit, int timeout, int count)
+            throws EngineException, IOException {
+      
+        Mappings res = eval(ast, serv, timeout, count);
+        processLinkList(res.getLinkList());
+        return res;
+    }
+           
+    /**
+     * Extension: service may return RDF graph 
+     * Evaluate service query on graph
+     */
+    Mappings sendWithGraph(URLServer serv, ASTQuery ast, Mappings map,
+            int start, int limit, int timeout, int count)
+            throws EngineException, IOException {
+               
         Mappings res = null;
         Graph g;
 
@@ -429,21 +460,10 @@ public class ProviderService implements URLParam {
             // reuse former graph from previous service call
             g = (Graph) serv.getGraph();
         } else {
-            res = eval(ast, serv, timeout, count);
-            
-            // @draft
-//            boolean suc = processMessage(res);
-//            if (! suc) {
-//                res = eval(ast, serv, timeout, count);
-//            }
-            
-            processLinkList(res.getLinkList());
+            res = sendBasic(serv, ast, map, start, limit, timeout, count);
             g = (Graph) res.getGraph();
         }
-
-        if (g != null) {
-            // service return RDF graph
-            // evaluate query(graph) locally
+        if (g != null) {            
             QueryProcess exec = QueryProcess.create(g);
             ast.inheritFunction(getGlobalAST());
             res = exec.query(ast, getBinding());
@@ -513,13 +533,22 @@ public class ProviderService implements URLParam {
     void traceAST(URLServer serv, ASTQuery ast) {
         getLog().traceAST(serv, ast);
     }
+    
+    void reportAST(ASTQuery ast, Mappings map) {
+        if (getGlobalAST().hasMetadata(Metadata.DETAIL)) {
+            map.completeReport("ast", ast.toString());
+        }
+    }
 
     void traceInput(URLServer serv, Mappings map) {
         getLog().traceInput(serv, map);
     }
 
     void traceOutput(URLServer serv, Mappings map, int nbcall, double time) {
-        getLog().traceOutput(serv, map, nbcall, time);
+        getLog().traceOutput(serv, map, nbcall, time);       
+        if (getGlobalAST().hasReportKey(CARDINALITY)) {
+            map.completeReport(CARDINALITY, map.size());
+        }
     }
 
     void traceResult(URLServer serv, Mappings res) {
@@ -550,8 +579,8 @@ public class ProviderService implements URLParam {
 
     /**
      * Return final result Mappings mapList is the list of result Mappings of
-     * each service When there are *several* services, return *distinct*
-     * Mappings unless @duplicate metadata
+     * each service When there are *several* services, return distinct
+     * Mappings with @distinct metadata
      */
     Mappings getResult(List<Mappings> mapList) {
         if (mapList.size() == 1) {
@@ -571,7 +600,7 @@ public class ProviderService implements URLParam {
             }
         }
     
-        boolean distinct = !getGlobalAST().hasMetadata(Metadata.DUPLICATE);
+        boolean distinct = getGlobalAST().hasMetadata(Metadata.DISTINCT);
         // TODO: if two Mappings have their own duplicates, they are removed
         if (res != null && res.getSelect() != null && distinct) {
             res = res.distinct(res.getSelect(), res.getSelect());
@@ -672,8 +701,10 @@ public class ProviderService implements URLParam {
         if (isDB(serv.getNode())) {
             return db(getQuery(), serv.getNode());
         }
-        if (serv.getServer().equals(LOCAL_SERVICE)) {
-            return getDefault().query(ast);
+        if (serv.getServer().startsWith(LOCAL_SERVICE)) {
+            logger.info("Local service: " + serv);
+            logger.info(ast.toString());
+            return getDefault().query(ast, getBinding());
         }
         return send(getQuery(), ast, serv, timeout, count);
     }
@@ -703,8 +734,8 @@ public class ProviderService implements URLParam {
             service.setTimeout(timeout);
             service.setCount(count);
             service.setBind(b);
+            //service.setLog(getLog());
             service.setDebug(q.isRecDebug());
-            service.setLog(getLog());
             Mappings map = service.query(q, ast, null);
             return map;
         } catch (LoadException ex) {
@@ -788,7 +819,7 @@ public class ProviderService implements URLParam {
         this.globalAST = globalAST;
     }
 
-    synchronized ContextLog getLog() {
+    ContextLog getLog() {
         return getBinding().getCreateLog();
     }
 

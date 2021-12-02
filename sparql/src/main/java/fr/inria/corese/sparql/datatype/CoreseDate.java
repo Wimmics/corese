@@ -13,6 +13,7 @@ import org.eclipse.rdf4j.model.Literal;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
+import java.util.Date;
 
 /**
  * An implementation of the xsd:date datatype used by Corese
@@ -34,7 +35,7 @@ public class CoreseDate extends CoreseDatatype {
         this.cal = cal;
         setLabel(cal.toString());
     }
-
+      
     public CoreseDate(String label) throws DatatypeConfigurationException {
         if (label.equals(TODAY)) {
             this.cal = DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());

@@ -1,0 +1,29 @@
+prefix fcu: <http://ontology.inrae.fr/frenchcropusage/>
+
+@report
+@federate
+<http://ontology.inrae.fr/frenchcropusage/sparql>
+<http://ontology.irstea.fr/ppdo/sparql>
+
+<http://147.100.179.235:8082/blazegraph/namespace/AnaEE_sites/sparql>
+<https://ico.iate.inra.fr/fuseki/annotation/query> 
+<https://ico.iate.inra.fr/fuseki/ontology/query> 
+<http://quantum.agroparistech.fr/graphdb/repositories/Composite_making_process>
+<https://opendata.inra.fr/openrdf-sesame/repositories/Ahol> 
+<http://agrold.southgreen.fr/sparql> 
+<http://ontology.inrae.fr/bsv_test/sparql>
+<http://ontology.irstea.fr/bsv/sparql> 
+<http://ontology.irstea.fr/weather/sparql> 
+
+SELECT DISTINCT ?crop ?lbl ?scale ?stade 
+(fun:reports("server") as ?serv) 
+WHERE {
+    ?dummy skos:prefLabel "arboriculture"@fr .
+    ?dummy skos:narrower+ ?crop .
+    ?crop  skos:prefLabel ?lbl .
+    ?topc  fcu:relatedCrop    ?crop .
+    ?scale skos:hasTopConcept ?topc .
+    ?topc  skos:narrower     ?stade .
+    FILTER (REGEX(STR(?scale), "bbch"))  
+} 
+ORDER BY ?stade

@@ -386,7 +386,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             // share global variables and ProcessVisitor
             return Mapping.create(env.getBind());
         }
-        //return null;
     }
 
 

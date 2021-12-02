@@ -15,6 +15,7 @@ import fr.inria.corese.core.transform.Transformer;
 import static fr.inria.corese.core.util.Property.Value.IMPORT;
 import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
 import static fr.inria.corese.core.util.Property.Value.PREFIX;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
 import static fr.inria.corese.core.util.Property.Value.VARIABLE;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
@@ -32,6 +33,7 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.visitor.ASTParser;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
@@ -174,11 +176,19 @@ public class Property {
         SERVICE_SLICE,
         SERVICE_LIMIT,
         SERVICE_TIMEOUT,
+        SERVICE_SEND_PARAMETER,
         SERVICE_PARAMETER,
+        SERVICE_LOG,
+        SERVICE_REPORT,
+
+        // service result may be RDF graph (e.g. when format=turtle)
+        // apply service query on the graph 
+        SERVICE_GRAPH
     };
 
     static {
         singleton = new Property();
+        set(SERVICE_SEND_PARAMETER, true);
     }
 
     Property() {
@@ -224,6 +234,10 @@ public class Property {
     public static boolean booleanValue(Value value) {
         Boolean b = get(value);
         return b!=null && b;
+    }
+    
+    public static boolean hasValue(Value value, boolean b) {
+        return get(value) != null && get(value) == b;
     }
 
     public static Set<Value> getPropertySet() {
@@ -448,6 +462,10 @@ public class Property {
                 
             case RDFS_ENTAILMENT:
                 Graph.RDFS_ENTAILMENT_DEFAULT = b;
+                break;
+                
+            case SERVICE_REPORT:
+                ASTParser.SERVICE_REPORT = b;
                 break;
         }
     }

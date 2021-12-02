@@ -61,6 +61,15 @@ public class CoreseJSON extends CoreseExtension {
     }
     
     @Override
+    public String pretty() {
+        StringBuilder sb = new StringBuilder();
+        for (IDatatype list : this) {
+            sb.append(list.get(0)).append(" = ").append(list.get(1)).append(NL);
+        }
+        return sb.toString();
+    }
+    
+    @Override
     public int size() {
         return json.length();
     }

@@ -10,11 +10,16 @@ import fr.inria.corese.core.print.ResultFormat;
 import static fr.inria.corese.core.print.ResultFormat.RDF_XML;
 import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
 import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_REPORT;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_LIMIT;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
+import static fr.inria.corese.sparql.triple.parser.URLParam.REPORT;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
@@ -50,7 +55,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Service implements URLParam {
     static Logger logger = LoggerFactory.getLogger(Service.class);
-     static final String ENCODING = "UTF-8";
+    static final String ENCODING = "UTF-8";
      // load take URL parameter into account, e.g. format=rdfxml
     public static boolean LOAD_WITH_PARAMETER = false;
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
@@ -58,7 +63,6 @@ public class Service implements URLParam {
     public static final String RDF = RDF_XML;
     
     private ClientBuilder clientBuilder;
-    private ContextLog log;
 
     private boolean isDebug = false;
     private boolean post = true;
@@ -71,6 +75,10 @@ public class Service implements URLParam {
     private Access.Level level = Access.Level.DEFAULT;
     private String format;
     private ServiceParser parser;
+    private ServiceReport report;
+    private Response response;
+    private boolean log = false;
+    private double time = 0;
     
     public Service() {
         clientBuilder = ClientBuilder.newBuilder();
@@ -84,45 +92,92 @@ public class Service implements URLParam {
     }
     public Service(URLServer serv, ClientBuilder builder) {
         this.clientBuilder = builder;
+        if (serv.getNumber()<0) {
+            serv.setNumber(0);
+        }
         setURL(serv);
-        setParser(new ServiceParser(serv));
+        getCreateReport().setURL(serv);
     }
 
 
-    public Mappings select(String query) throws LoadException {
-        return getParser().parseMapping(query, process(query), ENCODING);
+    public Mappings select(String query) throws LoadException, EngineException {
+        Query q = QueryProcess.create().compile(query);
+        return getCreateParser().parseMapping(q, query, process(query), ENCODING);
     }
 
-    public Graph construct(String query) throws LoadException {
-        return getParser().parseGraph(process(query));
+    public Graph construct(String query) throws LoadException, EngineException {
+        Query q = QueryProcess.create().compile(query);
+        return getCreateParser().parseGraph(q, process(query));
     }
 
     public Mappings query(Query query, Mapping m) throws LoadException {
         return query(query, query.getAST(), m);
+
     }
     
-    /**
-     */
     public Mappings query(Query query, ASTQuery ast, Mapping m) throws LoadException {
-        metadata(ast);
-        Mappings map;
-        if (m != null) {
-            ast = mapping(query, m);
+        if (isReport(query)) {
+            return queryReport(query, ast, m);
+        } else {
+            return queryBasic(query, ast, m);
         }
-        String astq = ast.toString();
-        if (ast.isSelect() || ast.isAsk() || ast.isUpdate()) {
-            map = getParser().parseMapping(astq, process(ast, astq), encoding(ast));
-        } 
-        else {
-            Graph g = getParser().parseGraph(process(ast, astq), encoding(ast));
-            map = new Mappings();
-            map.setGraph(g);
+    }
+       
+    /**
+     * trap exception and return empty result with service detail 
+     */
+    Mappings queryReport(Query query, ASTQuery ast, Mapping m) throws 
+            LoadException {
+        try { 
+            return queryBasic(query, ast, m);
         }
-        map.setQuery(query);
-        map.init(query);
-        return map;
+        catch (ResponseProcessingException ex) {
+           return getCreateReport(query)
+                   .setFormat(getFormat()).setAccept(getAccept())
+                   .serviceReport(ex, null);           
+        }
+        catch (Exception ex) {
+           return getCreateReport(query)
+                   .setFormat(getFormat()).setAccept(getAccept())
+                   .serviceReport(null, ex);
+        }        
+    }
+             
+    Mappings queryBasic(Query query, ASTQuery ast, Mapping m) throws LoadException {
+        try {
+            metadata(ast);
+            Mappings map;
+            if (m != null) {
+                ast = mapping(query, m);
+            }
+            String astq = ast.toString();
+            String accept = accept(ast);
+
+            if (ast.isSelect() || ast.isAsk() || ast.isUpdate()) {
+                map = getCreateParser().parseMapping(query, astq, process(astq, accept), encoding(ast));
+            } else {
+                Graph g = getCreateParser().parseGraph(query, process(astq, accept), encoding(ast));
+                map = new Mappings();
+                map.setGraph(g);
+            }
+            map.setQuery(query);
+            map.init(query);
+            getCreateReport(query).setAccept(accept)
+                    .completeReport(map);
+            return map;
+        } catch (LoadException e) {
+            // ServiceParser throw exception
+            if (isReport(query)) {
+                return getCreateReport(query).parserReport(e);
+            }
+            throw e;
+        }
     }
     
+    public boolean isReport(Query query) {
+        return getCreateReport(query).isReport();
+    }
+   
     public String process(ASTQuery ast, String query) {
         return process(query, accept(ast));
     }
@@ -142,10 +197,6 @@ public class Service implements URLParam {
     
     // https://docs.oracle.com/javaee/7/api/index.html
     public String post(String url, String query, String mime) {
-//        if (isDebug()) {
-//            System.out.println("service post " + url);
-//            System.out.println(query);
-//        }
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         clientBuilder.readTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build(); 
@@ -153,13 +204,13 @@ public class Service implements URLParam {
         Form form = getForm();
         form.param(QUERY, query);
         try {
-            //String res = target.request(mime).post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE), String.class);
             // request() return Invocation.Builder
             Cookie cook = new Cookie(COUNT, Integer.toString(getCount()), url, getURL().getServer());
             Cookie cook2 = new Cookie(PLATFORM, CORESE);
-            
-            Builder rb = target.request(mime); // .cookie(cook)
-            setHeader(rb);
+            String accept = getAccept(mime);
+            Builder rb = target.request(accept); // .cookie(cook)
+            //setHeader(rb);
+            logger.info("Header Accept: " + accept);
             
             Date d1 = new Date();
             if (isDebug()) {
@@ -176,27 +227,42 @@ public class Service implements URLParam {
 
             String res = resp.readEntity(String.class);
             
+            Date d2 = new Date();
+            double time = (d2.getTime() - d1.getTime()) / 1000.0;
+            getCreateReport().setTime(time);
             if (isDebug()) {
-                Date d2 = new Date();
-                logger.info("Time read: " + ((d2.getTime() - d1.getTime()) / 1000.0));
-            }
+                logger.info("Time read: " + time);
+            }            
             
-            if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
+            if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode() ||
+                resp.getStatus() == Response.Status.MOVED_PERMANENTLY.getStatusCode()    ) {
                 String myUrl = resp.getLocation().toString();
                 logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
                 if (myUrl.equals(url)) {
                     throw new RedirectionException(resp);
                 }
+                getCreateReport().setLocation(myUrl);
                 return post(myUrl, query, mime);
             }
                
             trace(resp);
+            logger.info("Response status: " + resp.getStatus());
+            
+            recordFormat(resp.getMediaType().toString());  
+            getCreateReport().setResponse(resp);
             
             if (resp.getStatus() >= Response.Status.BAD_REQUEST.getStatusCode()) {
-                throw new ResponseProcessingException(resp, res);
+                ResponseProcessingException ex = new ResponseProcessingException(resp, res);
+                
+                if (isLog() && getLog() != null){
+                    // use case: @federate call not within ProviderService
+                    // log here
+                    getLog().addException(new EngineException(ex, ex.getMessage())
+                        .setURL(getURL()).setObject(ex.getResponse()));
+                }               
+                throw ex;
             }
             
-            recordFormat(resp.getMediaType().toString());            
             trace(res);
             return res;
         } catch (RedirectionException ex) {
@@ -208,6 +274,7 @@ public class Service implements URLParam {
             return post(uri, query, mime);
         }
         catch (Exception e) {
+            logger.error(getURL().toString());
             logger.error(e.getClass().getName() + " " + e.getMessage());
             throw e;
         }
@@ -229,17 +296,40 @@ public class Service implements URLParam {
         }
     }
     
+    @Deprecated
     Builder setHeader(Builder rb) {
         if (getURL().hasParameter(HEADER)) {
             for (String header : getURL().getParameterList(HEADER)) {
                 String[] pair = header.split(":");
                 if (pair.length >= 2) {
+                    logger.info("header: " +pair[0] + " = " + pair[1]); 
                     rb.header(pair[0], pair[1]);
                 }
             }
         }
         return rb;
     }
+    
+    // URL header Accept if any else mime 
+    String getAccept(String mime) {
+        String accept = getParamHeader(HEADER_ACCEPT);
+        return (accept==null)?mime:accept;
+    }
+    
+    String getParamHeader(String name) {
+        if (getURL().hasParameter(HEADER)) {
+            for (String header : getURL().getParameterList(HEADER)) {
+                String[] pair = header.split(":");
+                if (pair.length >= 2) {
+                    if (pair[0].equals(name)) {
+                        return pair[1];
+                    }
+                }
+            }
+        }
+        return null;
+    }
+    
 
     ASTQuery mapping(Query q, Mapping m) {
         Mappings map = new Mappings();
@@ -284,7 +374,11 @@ public class Service implements URLParam {
 
     
     Form getForm() {
-        return getURL().getMap() == null ? new Form() : new Form(getMap(getURL().getMap()));
+        if (sendParameter()) {
+            return getURL().getMap() == null ? new Form() : new Form(getMap(getURL().getMap()));
+        } else {
+            return new Form();
+        }
     }
     
     MultivaluedMap<String, String> getMap(HashMapList<String> map) {
@@ -294,15 +388,6 @@ public class Service implements URLParam {
         }
         return amap;
     }
-    
-//    void complete(Form form) {
-//        if (getURL().getMap() != null) {
-//            for (String key : getURL().getMap().keySet()) {
-//                //System.out.println("service: " + key + "=" + getURL().getParameter(key));
-//                form.param(key, getURL().getParameter(key));
-//            }
-//        }
-//    }
 
     public String get(String query, String mime) {
         // Server URL without parameters
@@ -323,10 +408,14 @@ public class Service implements URLParam {
     }
     
     String complete(String uri, String query) {
-        if (getURL().hasParameter()) {
+        if (getURL().hasParameter() && sendParameter()) {
             return String.format("%s?%s&query=%s", uri, param(), query);
         }
         return String.format("%s?query=%s", uri, query);
+    }
+    
+    boolean sendParameter() {
+       return Property.booleanValue(SERVICE_SEND_PARAMETER) && ! getURL().hasParameter(MODE, LOCAL);
     }
     
     /**
@@ -384,12 +473,15 @@ public class Service implements URLParam {
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build();
         WebTarget target = client.target(url);
-        Response resp = target.request(mime).get();
+        Builder build = target.request(mime);
+        Response resp = build.get();
         if (resp.getMediaType()!=null) {
             recordFormat(resp.getMediaType().toString());
         }
-
-        if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()) {
+        getCreateReport().setResponse(resp);
+        
+        if (resp.getStatus() == Response.Status.SEE_OTHER.getStatusCode()                
+         || resp.getStatus() == Response.Status.MOVED_PERMANENTLY.getStatusCode()) {
             String myUrl = resp.getLocation().toString();
             logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
             if (myUrl.equals(url)) {
@@ -397,6 +489,20 @@ public class Service implements URLParam {
             }
             return getResponse(myUrl, mime);
         }
+        
+        if (resp.getStatus() >= Response.Status.BAD_REQUEST.getStatusCode()) {
+            String res = resp.readEntity(String.class);
+            ResponseProcessingException ex = new ResponseProcessingException(resp, res);
+
+            if (isLog() && getLog() != null) {
+                // use case: @federate call not within ProviderService
+                // log here
+                getLog().addException(new EngineException(ex, ex.getMessage())
+                        .setURL(getURL()).setObject(ex.getResponse()));
+            }
+            throw ex;
+        }
+         
         return resp;
     }
     
@@ -498,20 +604,35 @@ public class Service implements URLParam {
         return format;
     }
 
-
+    public String getFormatText() {
+        return (getFormat()==null)?"undefined":getFormat();
+    }
+    
     public void setFormat(String format) {
         this.format = format; 
     }
     
-    void recordFormat(String format) {
+    /**
+     * format = text/turtle;charset=UTF-8
+     */
+    void recordFormat(String str) {
+        logger.info("Content type: " + str);
+        String format = clean(str);
         setFormat(format);
+        getCreateReport().setFormat(format);
         if (getParser()!=null) {
             getParser().setFormat(format);
         }
-        logger.info("Content type: " + format);
         if (getLog() != null) {
             getLog().getFormatList().add(format);
         }
+    }
+    
+    String clean(String format) {
+        if (format.contains(";")) {
+            return format.substring(0, format.indexOf(";"));
+        }
+        return format;
     }
 
     
@@ -534,7 +655,7 @@ public class Service implements URLParam {
         this.count = count;
     }
     
-        ASTQuery getAST(Query q) {
+    ASTQuery getAST(Query q) {
         return  q.getAST();
     }
     
@@ -548,7 +669,7 @@ public class Service implements URLParam {
             if (lim != -1) {
                 ast.setLimit(lim);
             }
-            lim = Property.intValue(SERVICE_LIMIT);
+            lim = Property.intValue(SERVICE_LIMIT);            
             if (lim != null) {
                 ast.setLimit(lim);
             }
@@ -563,38 +684,39 @@ public class Service implements URLParam {
         if (ast.getGlobalAST().isDebug()) {
             System.out.println(isPost()?"POST":"GET");
         }
-        getParser().setTrap(getURL().hasParameter(MODE, TRAP) || ast.getGlobalAST().hasMetadata(Metadata.TRAP));
+        getCreateParser().setTrap(getURL().hasParameter(MODE, TRAP) || ast.getGlobalAST().hasMetadata(Metadata.TRAP));
         if (! isShowResult()) {
             setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
-            getParser().setShowResult(isShowResult());        
+            getCreateParser().setShowResult(isShowResult());        
         }
     }
 
-    /**
-     * @return the bind
-     */
+   
     public Binding getBind() {
         return bind;
     }
 
-    /**
-     * @param bind the bind to set
-     */
+    
     public void setBind(Binding bind) {
         this.bind = bind;
-        getParser().setBind(bind);
     }
 
-    /**
-     * @return the parser
-     */
+    
     public ServiceParser getParser() {
         return parser;
     }
+    
+    ServiceParser getCreateParser() {
+        if (getParser() == null) {
+            setParser(new ServiceParser(getURL()));
+            getParser().setBind(getBind());
+            getParser().setLog(isLog());
+            getParser().setReport(getCreateReport());
+        }
+        return getParser();
+    }
 
-    /**
-     * @param parser the parser to set
-     */
+    
     public void setParser(ServiceParser parser) {
         this.parser = parser;
     }
@@ -607,12 +729,40 @@ public class Service implements URLParam {
         this.isDebug = isDebug;
     }
 
+    // @todo: synchronized wrt ProviderService & ServiceParser
     public ContextLog getLog() {
+        if (getBind() == null) {
+            return null;
+        }
+        return  getBind().getCreateLog();
+    }
+
+    public boolean isLog() {
         return log;
     }
 
-    public void setLog(ContextLog log) {
+    public void setLog(boolean log) {
         this.log = log;
     }
+
+    public ServiceReport getReport() {
+        return report;
+    }
+
+    public void setReport(ServiceReport report) {
+        this.report = report;
+    }
+    
+    public ServiceReport getCreateReport() {
+        if (getReport() == null) {
+            setReport(new ServiceReport());
+        }
+        return getReport();
+    }
+    
+    public ServiceReport getCreateReport(Query q) {
+        return getCreateReport().setQuery(q);
+    }
+
     
 }

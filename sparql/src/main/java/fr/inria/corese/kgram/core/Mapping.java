@@ -71,6 +71,7 @@ public class Mapping
     private Node graphNode;
     private Node targetGraphNode;
     private Eval eval;
+    private IDatatype report;
     boolean debug = DEBUG_DEFAULT;
     
     private ProcessVisitor visitorParameter;
@@ -1422,6 +1423,15 @@ public class Mapping
      */
     public void setVisitorParameter(ProcessVisitor visitorParameter) {
         this.visitorParameter = visitorParameter;
+    }
+
+    public IDatatype getReport() {
+        return report;
+    }
+
+    @Override
+    public void setReport(IDatatype report) {
+        this.report = report;
     }
  
 }

@@ -70,7 +70,7 @@ public class Mappings extends PointerObject
     private Group group;
     private Group distinct;
     private Eval eval;
-    // service details if Mappings from service
+    // service report if Mappings from service
     // json object
     private IDatatype detail;
     // construct where result graph
@@ -574,9 +574,10 @@ public class Mappings extends PointerObject
                 
                 for (Mapping m : this) {
                     //if (m.getNode(node) == null) {
-                        // @todo
+                        // @todo: bnode ?
                         m.setBind(eval.getEnvironment().getBind());
                         m.setEval(eval);
+                        m.setQuery(q);
                         try {
                             Node value = eval.getEvaluator().eval(exp.getFilter(), m, eval.getProducer());
                             if (value != null) {

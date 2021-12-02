@@ -1425,14 +1425,11 @@ public class Mapping
         this.visitorParameter = visitorParameter;
     }
 
-    @Override
-    public void setDetail(IDatatype detail) {
-    }
-
     public IDatatype getReport() {
         return report;
     }
 
+    @Override
     public void setReport(IDatatype report) {
         this.report = report;
     }

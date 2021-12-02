@@ -247,8 +247,8 @@ public class Metadata extends ASTObject
      * Subset of Metadata for xt:sparql() see PluginImpl
      */
     public Metadata selectSparql() {
-        if (hasMetadata(DETAIL)) {
-            return new Metadata().add(DETAIL);
+        if (hasMetadata(REPORT)) {
+            return new Metadata().add(REPORT);
         }
         return null;
     }

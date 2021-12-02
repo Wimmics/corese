@@ -132,8 +132,13 @@ public class ASTParser implements Walker, URLParam {
         }
         
         Values values = Values.create(varList);
-        if (ast.getValues() == null && !ast.isConstruct()) {
+        ast.isFederate();
+        if (ast.getValues() == null && 
+                !ast.isConstruct() && 
+                // @federate <singleURL>
+                (! (ast.hasMetadata(Metadata.FEDERATE) && ast.getServiceList().size() == 1))) {
             // virtuoso reject construct with values
+            // virtuoso reject external values 
             ast.setValues(values);
         } else {
             ast.getBody().add(0, values);

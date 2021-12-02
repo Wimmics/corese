@@ -19,7 +19,6 @@ import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.event.EventManager;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
-import fr.inria.corese.kgram.tool.NodeImpl;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
@@ -381,14 +380,14 @@ public class Memory extends PointerObject implements Environment {
         //clear();
         
         Node detailNode = null;
-        if (getDetail() != null) {
+        if (getReport() != null) {
             // draft: set service detail as variable value
             // use case: xt:sparql() return map with detail
             // PluginImpl sparql() record detail in Environment
             // detailNode is defined by ASTParser with @detail metadata
             detailNode = getQuery().getSelectNode(Binding.SERVICE_REPORT_ZERO);
             if (detailNode != null) {
-                push(detailNode, getDetail());
+                push(detailNode, getReport());
             }
         }
                 
@@ -522,7 +521,7 @@ public class Memory extends PointerObject implements Environment {
         
         if (detailNode != null) {
             pop(detailNode);
-            setDetail(null);
+            setReport(null);
         }
 
         map.setOrderBy(snode);
@@ -1356,12 +1355,12 @@ public class Memory extends PointerObject implements Environment {
         IS_EDGE = b;
     }
 
-    public IDatatype getDetail() {
+    public IDatatype getReport() {
         return detail;
     }
 
     @Override
-    public void setDetail(IDatatype detail) {
+    public void setReport(IDatatype detail) {
         this.detail = detail;
     }
     

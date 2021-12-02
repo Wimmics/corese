@@ -226,7 +226,7 @@ public class EnvironmentImpl implements Environment {
     }
 
     @Override
-    public void setDetail(IDatatype dt) {
+    public void setReport(IDatatype dt) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -2004,4 +2004,17 @@ public class Mappings extends PointerObject
         }
         return this;
     }
+    
+    public Mappings completeReport(String key, String value) {
+        for (Mapping m : this) {
+            if (m.getReport()==null) {
+                return this;
+            }
+            else {
+                m.getReport().set(key, value);
+            }
+        }
+        return this;
+    }
+    
 }

@@ -189,7 +189,8 @@ public interface Producer {
 	 * @param object
 	 * @return Mappings
 	 */
-	Mappings map(List<Node> qNodes, Object object);
+	Mappings map(List<Node> qNodes, IDatatype value);
+	Mappings map(List<Node> qNodes, IDatatype value, int n);
 
         /**
          * graph node { }

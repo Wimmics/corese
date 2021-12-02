@@ -69,7 +69,7 @@ public class ProducerDefault implements Producer {
     }
 
     @Override
-    public Mappings map(List<Node> nodes, Object object) {
+    public Mappings map(List<Node> nodes, IDatatype object) {
         return null;
     }
 
@@ -163,6 +163,11 @@ public class ProducerDefault implements Producer {
 
     @Override
     public DatatypeValueFactory getDatatypeValueFactory() {
+        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+    }
+
+    @Override
+    public Mappings map(List<Node> qNodes, IDatatype object, int n) {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

@@ -182,8 +182,13 @@ public class MetaProducer implements Producer, Iterable<Producer> {
     }
 
     @Override
-    public Mappings map(List<Node> lNodes, Object object) {
+    public Mappings map(List<Node> lNodes, IDatatype object) {
         return producer.map(lNodes, object);
+    }
+    
+    @Override
+    public Mappings map(List<Node> lNodes, IDatatype object, int n) {
+        return producer.map(lNodes, object, n);
     }
 
     @Override

@@ -2,9 +2,11 @@ package fr.inria.corese.rdf4j;
 
 import java.util.ArrayList;
 
+import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
 import org.eclipse.rdf4j.model.Value;
+import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.edge.EdgeImpl;
@@ -214,6 +216,27 @@ public class Convert {
      * @return Equivalent Statement.
      */
     public static Statement EdgeToStatement(Edge edge) {
-        return edge;
+        Resource subject_corese = (Resource) Convert.coreseNodeToRdf4jValue(edge.getNode(0));
+        IRI predicate_corese = (IRI) Convert.coreseNodeToRdf4jValue(edge.getEdgeNode());
+        Value object_corese = Convert.coreseNodeToRdf4jValue(edge.getNode(1));
+        Resource context_corese = Convert.coreseContextToRdf4jContext(edge.getGraph());
+
+        SimpleValueFactory vf = SimpleValueFactory.getInstance();
+        return vf.createStatement(subject_corese, predicate_corese, object_corese, context_corese);
+    }
+
+    /**
+     * Convert a list of Edge to equivalent list of Statement.
+     * 
+     * @param edges List of Edge to convert.
+     * @return Equivalent list of Statement.
+     */
+    public static Iterable<Statement> EdgesTostatements(Iterable<Edge> edges) {
+
+        ArrayList<Statement> statements = new ArrayList<>();
+        for (Edge edge : edges) {
+            statements.add(Convert.EdgeToStatement(edge));
+        }
+        return statements;
     }
 }

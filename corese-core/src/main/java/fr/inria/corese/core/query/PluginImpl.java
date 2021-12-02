@@ -1133,6 +1133,7 @@ public class PluginImpl
 //    }
 
     
+    // share @report with subquery
     Dataset getDataset(Environment env) {
         Metadata meta = env.getQuery().getAST().getMetadata();
         if (meta!=null) {
@@ -1167,7 +1168,7 @@ public class PluginImpl
             }
             if (map.getGraph() == null) {
                 // draft: service evaluation detail report
-                env.setDetail(map.getReport());
+                env.setReport(map.getReport());
                 return DatatypeMap.createObject(map);
             } else {
                 return DatatypeMap.createObject(map.getGraph());

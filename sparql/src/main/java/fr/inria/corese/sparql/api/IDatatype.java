@@ -13,6 +13,7 @@ import fr.inria.corese.sparql.storage.api.IStorage;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 
 import java.math.BigDecimal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -109,6 +110,10 @@ public interface IDatatype
     }
 
     List<IDatatype> getValues();
+    
+    default IDatatype keys() {
+        return DatatypeMap.newList();
+    }
 
     @Override
     List<IDatatype> getValueList();
@@ -160,6 +165,9 @@ public interface IDatatype
 
     IDatatype set(IDatatype name, IDatatype value);
     
+    /**
+     * Utilitary functions
+     */
     default IDatatype set(String name, Object value){
         if (value == null) {
             return null;
@@ -191,6 +199,31 @@ public interface IDatatype
     
     default IDatatype set(String name, boolean value){
         return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
+    }
+    
+     /**
+     * this datatype: iterable of json (or map)
+     * @param keys: iterable of key
+     * @return list of (key_i (val_i1 .. val_in))
+     */
+    default IDatatype iterate(IDatatype keys) {
+        ArrayList<IDatatype> list = new ArrayList<>();
+
+        for (IDatatype key : keys) {
+            ArrayList<IDatatype> alist = new ArrayList<>();
+
+            for (IDatatype report : this) {
+                IDatatype dt = report.get(key);
+                if (dt != null) {
+                    alist.add(dt);
+                }
+            }
+            
+            if (!alist.isEmpty()){
+                list.add(DatatypeMap.newList(key, DatatypeMap.newList(alist)));
+            }
+        }
+        return DatatypeMap.newList(list);
     }
 
     @Override

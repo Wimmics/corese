@@ -272,6 +272,15 @@ public class CoreseJSON extends CoreseExtension {
     }
     
     @Override
+    public IDatatype keys() {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        for (String key : json.keySet()) {
+            list.add(DatatypeMap.newInstance(key));
+        }
+        return DatatypeMap.newList(list);
+    }
+    
+    @Override
     public Iterator<IDatatype> iterator() {
         return getValueList().iterator();
     }

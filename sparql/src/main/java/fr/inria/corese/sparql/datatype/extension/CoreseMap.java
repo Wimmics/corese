@@ -101,7 +101,7 @@ public class CoreseMap extends CoreseExtension {
     
     public IDatatype keys() {
         return DatatypeMap.createList(map.keySet());
-    }
+    }   
     
     public IDatatype values() {
         return DatatypeMap.createList(map.values());

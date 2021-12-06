@@ -1098,24 +1098,6 @@ public class ASTQuery
        return Binding.create(exp, var);
     }
     
-//    public Exp createBind2(Expression exp, Variable var) {
-//        if (var.getVariableList() != null) {
-//            // bind (sql() as ())
-//            return createASTBind(exp, var);
-//        } else {
-//            return Binding.create(exp, var);
-//        }
-//    }
-//
-//    public Exp createASTBind(Expression exp, Variable var) {
-//        ASTQuery ast = subCreate();
-//        ast.setBody(BasicGraphPattern.create());
-//        ast.setSelect(var, exp);
-//        ast.setBind(true);
-//        Query q = Query.create(ast);
-//        return q;
-//    }
-
     Term createTerm(String oper, Expression exp1, Expression exp2) {
         checkBlank(exp1);
         checkBlank(exp2);
@@ -3246,6 +3228,10 @@ public class ASTQuery
         return null;
     }
     
+    public Values createValues(List<Variable> list, Expression exp) {
+        return complete(Values.create(list, exp));
+    }
+    
     public Values complete(Values val){
         if (val.hasExpression()){
             Variable meta;
@@ -3295,6 +3281,12 @@ public class ASTQuery
     public void setSelect(Variable var) {
         if (!selectVar.contains(var)) {
             selectVar.add(var);
+        }
+    }
+    
+    public void setSelect(int n, Variable var) {
+        if (!selectVar.contains(var)) {
+            selectVar.add(n, var);
         }
     }
     

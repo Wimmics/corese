@@ -1,14 +1,16 @@
 package fr.inria.corese.sparql.triple.parser.visitor;
 
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.api.Walker;
-import fr.inria.corese.sparql.triple.function.term.Binding;
+//import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Message;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
-import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Service;
+import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
@@ -16,15 +18,17 @@ import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Walker just after parsing to complete the AST.
  */
 public class ASTParser implements Walker, URLParam {
+
     // set by Property SERVICE_REPORT
     public static boolean SERVICE_REPORT = false;
     private boolean log = SERVICE_REPORT;
-    
+
     private ASTQuery ast;
     private ArrayList<ASTQuery> stack;
     private int nbService = 0;
@@ -32,15 +36,16 @@ public class ASTParser implements Walker, URLParam {
     // when false: do it later after Federate Visitor
     private boolean report = true;
     private boolean provenance = true;
-    
-    class BNodeMap extends HashMap<String, Exp> {}
+
+    class BNodeMap extends HashMap<String, Exp> {
+    }
 
     public ASTParser(ASTQuery ast) {
         this.ast = ast;
         stack = new ArrayList<>();
         setLog(isLog() || ast.hasMetadata(Metadata.REPORT));
     }
-    
+
     // std parser call
     public ASTParser configure() {
         if (getAST().isFederateVisitorable()) {
@@ -50,7 +55,7 @@ public class ASTParser implements Walker, URLParam {
         }
         return this;
     }
-    
+
     // special call after FederateVisitor
     public ASTParser report() {
         setBnode(false);
@@ -58,42 +63,39 @@ public class ASTParser implements Walker, URLParam {
         setReport(true);
         return this;
     }
-    
-    
+
     @Override
     public void start(ASTQuery ast) {
     }
-    
+
     @Override
     public void finish(ASTQuery ast) {
-        serviceReport(ast);        
+        serviceReport(ast);
     }
-    
+
     @Override
     public void enter(ASTQuery ast) {
         push(ast);
         bnodeScope(ast.getBody());
     }
-    
+
     @Override
-    public void leave(ASTQuery ast) {  
+    public void leave(ASTQuery ast) {
         leaveAST(ast);
         pop();
     }
-       
-    
+
     @Override
-    public void enter(Exp exp) { 
+    public void enter(Exp exp) {
         processEnter(exp);
         bnodeScope(exp);
     }
-    
+
     @Override
-    public void leave(Exp exp) { 
+    public void leave(Exp exp) {
         processLeave(exp);
     }
-    
-    
+
     /**
      * When @report : declare variable ?_service_report_n
      */
@@ -104,7 +106,7 @@ public class ASTParser implements Walker, URLParam {
             }
         }
     }
-    
+
     void leaveAST(ASTQuery ast) {
         if (isReport()) {
             if (ast != getAST()) {
@@ -123,30 +125,61 @@ public class ASTParser implements Walker, URLParam {
         int count = Math.max(1, getNbService());
 
         for (int i = 0; i < count; i++) {
-            Variable var = new Variable(String.format(Binding.SERVICE_REPORT_FORMAT, i));
+            Variable var = new Variable(String.format(fr.inria.corese.sparql.triple.function.term.Binding.SERVICE_REPORT_FORMAT, i));
             varList.add(var);
-            
+
             if (!ast.isSelectAll()) {
                 ast.setSelect(var);
             }
         }
-        
+
         Values values = Values.create(varList);
-        ast.isFederate();
-        if (ast.getValues() == null && 
-                !ast.isConstruct() && 
-                // @federate <singleURL>
-                (! (ast.hasMetadata(Metadata.FEDERATE) && ast.getServiceList().size() == 1))) {
+
+        if (ast.getValues() == null
+                && !ast.isConstruct()
+                && // @federate <singleURL>
+                (!(ast.hasMetadata(Metadata.FEDERATE) && ast.getServiceList().size() == 1))) {
             // virtuoso reject construct with values
             // virtuoso reject external values 
             ast.setValues(values);
         } else {
             ast.getBody().add(0, values);
-        }      
-    }
-  
+        }
 
-       
+        if (ast.hasMetadata(Metadata.ENUM)) {
+            enumReport(ast);
+        }
+    }
+
+    /**
+     *
+     * @report @enum generate values (?key ?val) {unnest(fun:reportsEnum())}
+     * fun:reportsEnum() ::= (key_i (val_i1 .. val_in))
+     *
+     */
+    void enumReport(ASTQuery ast) {
+        IDatatype num = ast.getMetadata().getDatatypeValue(Metadata.ENUM);
+        Variable key = new Variable("?key");
+        Variable val = new Variable("?val");
+        List<Variable> vlist = List.of(key, val);
+        Term rep = ast.createFunction(ast.createQName("fun:reportsEnum"));
+//        if (num!=null) {
+//            rep.add(Constant.create(num));
+//        }
+        Term fun = ast.createFunction("unnest", rep);
+        try {
+            fun.compile(ast);
+        } catch (EngineException ex) {
+            ASTQuery.logger.error("ASTParser: " + ex.getMessage());
+        }
+        if (!ast.isSelectAll()) {
+            ast.setSelect(0, key);
+            ast.setSelect(1, val);
+        }
+        Values value = ast.createValues(vlist, fun);
+        ast.getBody().add(value);
+    }
+
     /**
      * ast is a subquery, not the main query
      */
@@ -155,7 +188,7 @@ public class ASTParser implements Walker, URLParam {
 
         for (Service service : ast.getServiceExpList()) {
             if (isLog() || (service.getURL() != null && service.getURL().hasParameter(MODE, REPORT))) {
-                Variable var = new Variable(String.format(Binding.SERVICE_REPORT_FORMAT, service.getNumber()));
+                Variable var = new Variable(String.format(fr.inria.corese.sparql.triple.function.term.Binding.SERVICE_REPORT_FORMAT, service.getNumber()));
                 varList.add(var);
 
                 for (ASTQuery aa : getStack()) {
@@ -171,19 +204,19 @@ public class ASTParser implements Walker, URLParam {
             ast.getBody().add(0, Values.create(varList));
         }
     }
-    
+
     void processEnter(Exp exp) {
         if (exp.isService()) {
             processEnter(exp.getService());
         }
-    } 
-    
+    }
+
     void processLeave(Exp exp) {
         if (exp.isService()) {
             processLeave(exp.getService());
         }
-    }  
-    
+    }
+
     void processEnter(Service exp) {
         URLServer url = exp.getCreateURL();
 
@@ -191,12 +224,10 @@ public class ASTParser implements Walker, URLParam {
             provenance(url, exp);
         }
     }
-    
+
     /**
-     * @report
-     * Generate service number on leave
-     * when nested services:
-     * inner service is 0 and outer service is 1
+     * @report Generate service number on leave when nested services: inner
+     * service is 0 and outer service is 1
      */
     void processLeave(Service exp) {
         URLServer url = exp.getURL();
@@ -209,18 +240,12 @@ public class ASTParser implements Walker, URLParam {
         exp.setNumber(nbService++);
         top().getServiceExpList().add(exp);
     }
-    
-    
-    
-  
-    
-    
-    
-    /*****************************************
-     * http://server.fr/sparql?mode=provenance
-     * FederateVisitor in core will rewrite service with 
-     * a variable -> declare this variable in select clause 
-     */ 
+
+    /**
+     * ***************************************
+     * http://server.fr/sparql?mode=provenance FederateVisitor in core will
+     * rewrite service with a variable -> declare this variable in select clause
+     */
     void provenance(URLServer url, Service exp) {
         if (url != null) {
             if (url.hasParameter(MODE, PROVENANCE)) {
@@ -229,22 +254,19 @@ public class ASTParser implements Walker, URLParam {
                 if (url.hasParameter(NBVAR)) {
                     n = url.intValue(NBVAR);
                 }
-                if (exp.getBodyExp().size()>0 && exp.getBodyExp().get(0).isQuery()) {
+                if (exp.getBodyExp().size() > 0 && exp.getBodyExp().get(0).isQuery()) {
                     ASTQuery aa = exp.getBodyExp().get(0).getAST();
                     b = aa.provenance(getAST(), n);
                 }
-                if (! b) {
+                if (!b) {
                     getAST().provenance(null, n);
                 }
             }
         }
     }
-    
-        
-    
-    
-    
-    /************************************************
+
+    /**
+     * **********************************************
      * check bnode scope
      */
     void bnodeScope(Exp exp) {
@@ -254,32 +276,29 @@ public class ASTParser implements Walker, URLParam {
             }
         }
     }
-    
-    
+
     void and(Exp exp, Exp outer, BNodeMap bnode) {
         for (Exp ee : exp) {
             if (ee.isTriple()) {
                 scope(ee.getTriple(), outer, bnode);
-            }
-            else if (ee.isBinaryExp()) {
+            } else if (ee.isBinaryExp()) {
                 and(ee.get(0), ee, bnode);
                 and(ee.get(1), ee, bnode);
             }
         }
     }
-    
+
     void scope(Triple t, Exp exp, BNodeMap bnode) {
         scope(t.getSubject(), exp, bnode);
         scope(t.getObject(), exp, bnode);
     }
-    
+
     void scope(Atom at, Exp exp, BNodeMap bnode) {
         if (at.isBlankNode()) {
             Exp ee = (bnode.get(at.getLabel()));
             if (ee == null) {
                 bnode.put(at.getLabel(), exp);
-            }
-            else if (exp != ee) {
+            } else if (exp != ee) {
                 getAST().setFail(true);
                 ASTQuery.logger.error(String.format(Message.BNODE_SCOPE, at, exp));
             }
@@ -333,22 +352,21 @@ public class ASTParser implements Walker, URLParam {
     public void setAST(ASTQuery ast) {
         this.ast = ast;
     }
-    
-    
+
     int last() {
         return getStack().size() - 1;
     }
-    
+
     void push(ASTQuery ast) {
         getStack().add(ast);
     }
-    
+
     ASTQuery pop() {
         ASTQuery ast = getStack().get(last());
         getStack().remove(last());
         return ast;
     }
-    
+
     ASTQuery top() {
         if (getStack().isEmpty()) {
             return null;
@@ -363,5 +381,5 @@ public class ASTParser implements Walker, URLParam {
     public void setStack(ArrayList<ASTQuery> stack) {
         this.stack = stack;
     }
-    
+
 }

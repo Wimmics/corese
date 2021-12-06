@@ -596,9 +596,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     
     public static XMLGregorianCalendar newXMLGregorianCalendar(Date date) {
         try {
+            long milli = date.getTime()%1000;
             return DatatypeFactory.newInstance().newXMLGregorianCalendar(
                     year(date), month(date), date.getDate(),
-                    date.getHours(), date.getMinutes(), date.getSeconds(), (int)date.getTime()%1000, timeZone(date)
+                    date.getHours(), date.getMinutes(), date.getSeconds(), (int)Math.max(0, milli), timeZone(date)
             );
         } catch (DatatypeConfigurationException ex) {
             return null;

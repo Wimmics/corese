@@ -44,6 +44,10 @@ public class Values extends Exp {
         vv.addValues(val);
         return vv;
     }
+    
+    public static Values create(List<Variable> var, Expression exp) {
+        return create(var).setExp(exp);
+    }
 
     public static Values create(Variable var, List<Constant> val) {
         Values vv = new Values();
@@ -195,23 +199,17 @@ public class Values extends Exp {
        walker.leave(this);
    }
 
-    /**
-     * @return the moved
-     */
+  
     public boolean isMoved() {
         return moved;
     }
 
-    /**
-     * @param mooved the moved to set
-     */
+ 
     public void setMoved(boolean moved) {
         this.moved = moved;
     }
 
-    /**
-     * @return the exp
-     */
+    
     public Expression getExp() {
         return exp;
     }
@@ -219,27 +217,23 @@ public class Values extends Exp {
     public Expression getExpression() {
         return exp;
     }
-    /**
-     * @param exp the exp to set
-     */
-    public void setExp(Expression exp) {
+    
+    public Values setExp(Expression exp) {
         this.exp = exp;
+        return this;
     }
 
     public boolean hasExpression() {
         return exp != null;
     }
 
-    /**
-     * @return the bind
-     */
+   
+    @Override
     public Binding getBind() {
         return bind;
     }
 
-    /**
-     * @param bind the bind to set
-     */
+    
     public void setBind(Binding bind) {
         this.bind = bind;
     }

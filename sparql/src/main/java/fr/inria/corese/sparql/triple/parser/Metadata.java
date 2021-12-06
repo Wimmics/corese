@@ -78,8 +78,9 @@ public class Metadata extends ASTObject
     public static final int FORMAT  = 59;
     public static final int SELECT  = 60;
     public static final int REPORT  = 61;
-    public static final int DISTINCT  = 62;
+    public static final int DISTINCT= 62;
     public static final int ENUM    = 63;
+    public static final int HEADER  = 64;
     
 //    public static final int BEFORE  = 51;
 //    public static final int AFTER   = 52;
@@ -191,6 +192,7 @@ public class Metadata extends ASTObject
         define("@file",     FILE); 
         define("@detail",   DETAIL); 
         define("@report",   REPORT); 
+        define("@header",   HEADER); 
         define("@enum",     ENUM); 
         define("@accept",   ACCEPT); 
         define("@reject",   REJECT); 

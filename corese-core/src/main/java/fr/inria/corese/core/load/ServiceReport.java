@@ -16,6 +16,7 @@ import static fr.inria.corese.sparql.triple.parser.URLParam.MES;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.Date;
 import javax.ws.rs.client.ResponseProcessingException;
+import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 
 /**
@@ -34,6 +35,7 @@ public class ServiceReport implements URLParam {
     private String format;
     private String accept;
     private String location;
+    private String result;
     private Response response;
     private URLServer url;
     // query is set by Service accessor to ServiceReport
@@ -135,29 +137,54 @@ public class ServiceReport implements URLParam {
     }
     
     void completeReportHeader(Mappings map) {
-        IDatatype dt = map.getReport();
-        if (dt != null) {
+        if (map.getReport() != null) {
+            IDatatype dt = map.getReport();
+            
             if (getResponse() != null) {
                 Response resp = getResponse();
                 set(dt, STATUS, resp.getStatus());
-                set(dt, SERVER_NAME, protect(resp.getHeaderString("Server")));               
-                set(dt, DATE, resp.getDate());               
-                set(dt, "modified", resp.getLastModified());
+                set(dt, SERVER_NAME, protect(resp.getHeaderString("Server")));
+                set(dt, DATE, resp.getDate());
                 if (resp.getHeaderString("Content-Length") != null) {
-                    set(dt, LENGTH,  Integer.parseInt(resp.getHeaderString("Content-Length")));
+                    set(dt, LENGTH, Integer.parseInt(resp.getHeaderString("Content-Length")));
                 }
-                
-                if (getGlobalAST().hasMetadata(Metadata.DETAIL)) {
+
+                if (getGlobalAST().hasMetadata(Metadata.HEADER)) {
                     for (String key : resp.getHeaders().keySet()) {
                         set(dt, key, resp.getHeaderString(key));
                     }
+                    for (Link link : resp.getLinks()) {
+                        set(dt, "link", link.toString());
+                        System.out.println("SR link: " + link);
+                    }
+                    
+                    StringBuilder sb = new StringBuilder();
+                    for (String cookie : resp.getCookies().keySet()) {
+                        sb.append(resp.getCookies().get(cookie)).append("; ");
+                    }
+                    if (sb.length()>0) {
+                        set(dt, "cookie", sb.toString());
+                        sb = new StringBuilder();
+                    }   
+                    
+                    for (String method : resp.getAllowedMethods()) {
+                        sb.append(method).append("; ");
+                    }
+                    if (sb.length()>0) {
+                        set(dt, "method", sb.toString());
+                    }   
+                        
                 }
             }
-            
+
             set(dt, URL, getURL().getServer());
             set(dt, SIZE, (map.isFake()) ? 0 : map.size());
             set(dt, TIME, getTime());
             set(dt, LOCATION, getLocation());
+            
+            if (getGlobalAST().hasMetadata(Metadata.DETAIL)) {
+                set(dt, "result", getResult());
+            }
         }
     }
     
@@ -278,5 +305,13 @@ public class ServiceReport implements URLParam {
 
     public void setLocation(String location) {
         this.location = location;
+    }
+
+    public String getResult() {
+        return result;
+    }
+
+    public void setResult(String result) {
+        this.result = result;
     }
 }

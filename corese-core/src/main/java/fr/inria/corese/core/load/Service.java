@@ -12,14 +12,12 @@ import static fr.inria.corese.core.print.ResultFormat.SPARQL_RESULTS_XML;
 import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.util.Property;
-import static fr.inria.corese.core.util.Property.Value.SERVICE_REPORT;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_LIMIT;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
-import static fr.inria.corese.sparql.triple.parser.URLParam.REPORT;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
@@ -250,6 +248,7 @@ public class Service implements URLParam {
             
             recordFormat(resp.getMediaType().toString());  
             getCreateReport().setResponse(resp);
+            getCreateReport().setResult(res);
             
             if (resp.getStatus() >= Response.Status.BAD_REQUEST.getStatusCode()) {
                 ResponseProcessingException ex = new ResponseProcessingException(resp, res);
@@ -437,6 +436,7 @@ public class Service implements URLParam {
         Response resp = getResponse(url, mime);
         String res = resp.readEntity(String.class);
         trace(res);
+        getCreateReport().setResult(res);
         return res;
     }
             

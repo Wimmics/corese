@@ -157,12 +157,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     @Override
     public Mappings eval(Filter f, Environment env, List<Node> nodes) 
             throws EngineException {
-        return eval(f, env, nodes, 0);
-    }
-    
-    Mappings eval(Filter f, Environment env, List<Node> nodes, int n) 
-            throws EngineException {
-        
+        int n = 1;
         Expr exp = f.getExp();
         switch (exp.oper()) {
 
@@ -170,8 +165,15 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                 if (hasListener) {
                     listener.listen(exp);
                 }
+                if (exp.arity() == 2) {
+                    // unnest(exp, 2)
+                    IDatatype dt = eval(exp.getExp(1), env, getProducer());
+                    if (dt == ERROR_VALUE) {
+                        return new Mappings();
+                    }
+                    n = dt.intValue();
+                }
                 exp = exp.getExp(0);
-                return eval(exp.getFilter(), env, nodes, n+1);
 
             default:
                 IDatatype res = eval(exp, env, getProducer());

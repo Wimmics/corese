@@ -141,7 +141,7 @@ public class ServiceReport implements URLParam {
                 Response resp = getResponse();
                 set(dt, STATUS, resp.getStatus());
                 set(dt, SERVER_NAME, protect(resp.getHeaderString("Server")));               
-                set(dt, DATE, resp.getDate());
+                set(dt, DATE, resp.getDate());               
                 set(dt, "modified", resp.getLastModified());
                 if (resp.getHeaderString("Content-Length") != null) {
                     set(dt, LENGTH,  Integer.parseInt(resp.getHeaderString("Content-Length")));

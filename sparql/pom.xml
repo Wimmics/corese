@@ -47,6 +47,16 @@
 			<artifactId>rdf4j-model</artifactId>
 			<version>3.7.0</version>
 		</dependency>
+		<dependency>
+			<groupId>org.eclipse.rdf4j</groupId>
+			<artifactId>rdf4j-model</artifactId>
+			<version>3.7.0</version>
+		</dependency>
+		<dependency>
+			<groupId>org.apache.httpcomponents</groupId>
+			<artifactId>httpclient</artifactId>
+			<version>4.5.13</version>
+		</dependency>
 	</dependencies>
 
 	<build>

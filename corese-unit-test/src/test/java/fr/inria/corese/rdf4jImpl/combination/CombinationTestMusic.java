@@ -316,6 +316,17 @@ public class CombinationTestMusic {
     }
 
     @Test
+    public void starPath() {
+        String query = "PREFIX :<http://stardog.com/tutorial/> "
+                + "SELECT  * "
+                + "WHERE { "
+                + "?album :artist* ?artist . "
+                + "}";
+
+        assertEquals(true, Combination.selectQuery(query, this.beatles));
+    }
+
+    @Test
     public void optionalMatch() {
         String query = "PREFIX :<http://stardog.com/tutorial/> "
                 + "select ?album "

@@ -383,7 +383,8 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         
         logger.info("getHTMLForGet");
         
-        if (query == null || query.isEmpty()) {
+        if ((query == null || query.isEmpty()) && 
+            (mode==null||mode.isEmpty())) {
             query = "select * where {?s ?p ?o} limit 5";
         return new Transformer()
         .queryGETHTML(request, fr.inria.corese.core.transform.Transformer.SPARQL, 

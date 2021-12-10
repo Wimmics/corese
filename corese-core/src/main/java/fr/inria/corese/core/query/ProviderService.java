@@ -536,7 +536,7 @@ public class ProviderService implements URLParam {
     
     void reportAST(ASTQuery ast, Mappings map) {
         if (getGlobalAST().hasMetadata(Metadata.DETAIL)) {
-            map.completeReport("ast", ast.toString());
+            map.completeReport(URLParam.QUERY, ast.toString());
         }
     }
 
@@ -671,10 +671,10 @@ public class ProviderService implements URLParam {
     }
 
     int getTimeout(Node serv) {
-        Integer time = (Integer) getQuery().getGlobalQuery().getPragma(Pragma.TIMEOUT);
-        if (time == null) {
-            time = Property.intValue(SERVICE_TIMEOUT);
+        if (getGlobalAST().getMetadataDatatypeValue(Metadata.TIMEOUT)!=null) {
+            return getGlobalAST().getMetadataDatatypeValue(Metadata.TIMEOUT).intValue();
         }
+        Integer time = Property.intValue(SERVICE_TIMEOUT);
         if (time == null) {
             return getEval().getVisitor().timeout(serv);
         }

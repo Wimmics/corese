@@ -14,6 +14,7 @@ import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import static fr.inria.corese.sparql.triple.parser.URLParam.MES;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import java.util.ArrayList;
 import java.util.Date;
 import javax.ws.rs.client.ResponseProcessingException;
 import javax.ws.rs.core.Link;
@@ -70,7 +71,7 @@ public class ServiceReport implements URLParam {
         else {
             //set(dt, STATUS, ex.getResponse().getStatus());
             if (ex.getResponse().getStatusInfo()!=null){
-                set(dt, "info", ex.getResponse().getStatusInfo().getReasonPhrase());
+                set(dt, INFO, ex.getResponse().getStatusInfo().getReasonPhrase());
             }
             if (ex.getMessage()!=null && !ex.getMessage().isEmpty()){
                 set(dt, MES, ex.getMessage());
@@ -127,54 +128,20 @@ public class ServiceReport implements URLParam {
         completeReportHeader(map);
         return map;
     }
-    
-    
-    // no used yet
-    void complete(Mappings map, ASTQuery ast) {
-        if (map.getReport() != null) {
-            set(map.getReport(), "ast", ast.toString());
-        }
-    }
-    
+         
     void completeReportHeader(Mappings map) {
         if (map.getReport() != null) {
             IDatatype dt = map.getReport();
             
-            if (getResponse() != null) {
-                Response resp = getResponse();
-                set(dt, STATUS, resp.getStatus());
-                set(dt, SERVER_NAME, protect(resp.getHeaderString("Server")));
-                set(dt, DATE, resp.getDate());
-                if (resp.getHeaderString("Content-Length") != null) {
-                    set(dt, LENGTH, Integer.parseInt(resp.getHeaderString("Content-Length")));
+            if (resp() != null) {
+                set(dt, STATUS, resp().getStatus());
+                set(dt, SERVER_NAME, protect(resp().getHeaderString("Server")));
+                set(dt, DATE, resp().getDate());
+                if (resp().getHeaderString("Content-Length") != null) {
+                    set(dt, LENGTH, Integer.parseInt(resp().getHeaderString("Content-Length")));
                 }
-
-                if (getGlobalAST().hasMetadata(Metadata.HEADER)) {
-                    for (String key : resp.getHeaders().keySet()) {
-                        set(dt, key, resp.getHeaderString(key));
-                    }
-                    for (Link link : resp.getLinks()) {
-                        set(dt, "link", link.toString());
-                        System.out.println("SR link: " + link);
-                    }
-                    
-                    StringBuilder sb = new StringBuilder();
-                    for (String cookie : resp.getCookies().keySet()) {
-                        sb.append(resp.getCookies().get(cookie)).append("; ");
-                    }
-                    if (sb.length()>0) {
-                        set(dt, "cookie", sb.toString());
-                        sb = new StringBuilder();
-                    }   
-                    
-                    for (String method : resp.getAllowedMethods()) {
-                        sb.append(method).append("; ");
-                    }
-                    if (sb.length()>0) {
-                        set(dt, "method", sb.toString());
-                    }   
-                        
-                }
+                
+                reportHeader(dt);
             }
 
             set(dt, URL, getURL().getServer());
@@ -183,10 +150,47 @@ public class ServiceReport implements URLParam {
             set(dt, LOCATION, getLocation());
             
             if (getGlobalAST().hasMetadata(Metadata.DETAIL)) {
-                set(dt, "result", getResult());
+                set(dt, RESULT, getResult());
             }
         }
     }
+    
+    void reportHeader(IDatatype dt) {
+        if (getGlobalAST().hasMetadata(Metadata.HEADER)) {
+            IDatatype json = DatatypeMap.json();
+            for (String key : resp().getHeaders().keySet()) {
+                json.set(key, resp().getHeaderString(key));
+            }           
+            if (json.size()>0) {
+                set(dt, HEADER, json);
+            }
+        }
+
+        if (getGlobalAST().hasMetadata(Metadata.COOKIE)) {
+            IDatatype json = DatatypeMap.json();
+            for (String cookie : resp().getCookies().keySet()) {
+                json.set(cookie, resp().getCookies().get(cookie));
+            }
+            if (json.size()>0) {
+                set(dt, COOKIE, json);
+            }
+        }
+    }
+    
+//            for (Link link : resp().getLinks()) {
+//                set(dt, "link", link.toString());
+//                System.out.println("SR link: " + link);
+//            }
+
+//            StringBuilder sb = new StringBuilder();
+//
+//            for (String method : resp().getAllowedMethods()) {
+//                sb.append(method).append("; ");
+//            }
+//
+//            if (sb.length() > 0) {
+//                set(dt, "method", sb.toString());
+//            }
     
     Node node() {       
         return node(getURL().getNumber());
@@ -225,6 +229,10 @@ public class ServiceReport implements URLParam {
     public Response getResponse() {
         return response;
     }
+    
+    Response resp() {
+        return response;
+    }
 
     public void setResponse(Response response) {
         this.response = response;
@@ -250,6 +258,10 @@ public class ServiceReport implements URLParam {
         return DatatypeMap.newServiceReport(param);
     }
     
+    IDatatype key(String name) {
+        return DatatypeMap.key(name);
+    }
+    
     void set(IDatatype dt, String key, String value) {
         if (hasKey(key) && value!=null) {
             dt.set(key, value);
@@ -269,6 +281,12 @@ public class ServiceReport implements URLParam {
     }
 
     void set(IDatatype dt, String key, Object value) {
+        if (hasKey(key) && value!=null) {
+            dt.set(key, value);
+        }
+    }
+    
+    void set(IDatatype dt, String key, IDatatype value) {
         if (hasKey(key) && value!=null) {
             dt.set(key, value);
         }

@@ -1,7 +1,6 @@
 
 package fr.inria.corese.core.producer;
 
-import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.api.DataBrokerConstruct;
 import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.kgram.api.core.Edge;

@@ -30,6 +30,7 @@ import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -375,13 +376,36 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
         if (exp.isSystem()) {
             return DatatypeMap.createObject(map);
-        } else {          
+        } else { 
+            //report(q, env, map);
             return DatatypeMap.newInstance(b);
         }
         }
         catch (SparqlException e) {
             throw EngineException.cast(e);
         }
+    }
+    
+    // draft test
+    void report(Query q, Environment env, Mappings map) {
+        if (q.getGlobalAST().hasMetadata(Metadata.REPORT)) {
+            IDatatype dt = getCreateReport(env);
+            IDatatype list = dt.get("exists");
+            list.getList().add(DatatypeMap.newInstance(map.toString(true)));
+            dt.set("exists", list);
+        }
+    }
+    
+    IDatatype getCreateReport(Environment env) {
+        IDatatype dt = env.getReport();
+        if (dt == null) {
+            dt = DatatypeMap.newServiceReport();
+            env.setReport(dt);
+        }
+        if (dt.get("exists") == null){
+            dt.set("exists", DatatypeMap.newList());
+        }
+        return dt;
     }
 
     /**

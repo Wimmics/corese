@@ -79,7 +79,6 @@ public class SelectResults {
         equal &= this.result_list.containsAll(other.result_list);
         equal &= other.result_list.containsAll(this.result_list);
 
-        // return this.result_list.equals(((Results) obj).getResultList());
         return equal;
     }
 

@@ -10,9 +10,9 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
- * Broker between ProducerImpl and graph DataManager 
+ * Broker between ProducerImpl and graph DataManager
  * for sparql query for the where part
- * Refined by core.producer.DataBrokerLocal  for corese graph
+ * Refined by core.producer.DataBrokerLocal for corese graph
  * Refined by core.producer.DataBrokerExtern for external DataManager
  */
 public interface DataBroker {
@@ -71,6 +71,19 @@ public interface DataBroker {
         return node;
     }
 
+    private Iterable<Node> mergeListOfNodeNoDuplicate(Iterable<Node> l1, Iterable<Node> l2) {
+        List<Node> result = new ArrayList<>();
+        l1.forEach(result::add);
+
+        for (Node l2_node : l2) {
+            if (!result.contains(l2_node)) {
+                result.add(l2_node);
+            }
+        }
+
+        return result;
+    }
+
     /**
      * @return set of subject/object of default graph
      */
@@ -78,11 +91,7 @@ public interface DataBroker {
         Iterable<Node> subjects = getDataManager().subjects(null);
         Iterable<Node> objects = getDataManager().objects(null);
 
-        List<Node> result = new ArrayList<>();
-        subjects.forEach(result::add);
-        objects.forEach(result::add);
-
-        return result;
+        return this.mergeListOfNodeNoDuplicate(subjects, objects);
     }
 
     /**
@@ -92,11 +101,7 @@ public interface DataBroker {
         Iterable<Node> subjects = getDataManager().subjects(graph);
         Iterable<Node> objects = getDataManager().objects(graph);
 
-        List<Node> result = new ArrayList<>();
-        subjects.forEach(result::add);
-        objects.forEach(result::add);
-
-        return result;
+        return this.mergeListOfNodeNoDuplicate(subjects, objects);
     }
 
 }

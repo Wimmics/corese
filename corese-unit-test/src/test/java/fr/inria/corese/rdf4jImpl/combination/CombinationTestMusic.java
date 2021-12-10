@@ -316,6 +316,17 @@ public class CombinationTestMusic {
     }
 
     @Test
+    public void starPath() {
+        String query = "PREFIX :<http://stardog.com/tutorial/> "
+                + "SELECT  * "
+                + "WHERE { "
+                + "?album :artist* ?artist . "
+                + "}";
+
+        assertEquals(true, Combination.selectQuery(query, this.beatles));
+    }
+
+    @Test
     public void optionalMatch() {
         String query = "PREFIX :<http://stardog.com/tutorial/> "
                 + "select ?album "
@@ -441,5 +452,20 @@ public class CombinationTestMusic {
                 + "} ";
 
         assertEquals(true, Combination.updateQuery(query, this.beatles));
+    }
+
+    @Test
+    public void federate1() {
+        String query = "PREFIX wd: <http://www.wikidata.org/entity/> "
+                + "PREFIX wdt: <http://www.wikidata.org/prop/direct/> "
+                + "SELECT ?name "
+                + "WHERE { "
+                + "SERVICE <https://query.wikidata.org/bigdata/namespace/wdq/sparql> { "
+                + "wd:Q1299 wdt:P527 ?member. "
+                + "?member wdt:P1559 ?name. "
+                + "} "
+                + "} ";
+
+        assertEquals(true, Combination.selectQuery(query, this.music));
     }
 }

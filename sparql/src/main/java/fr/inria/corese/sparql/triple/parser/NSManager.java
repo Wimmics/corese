@@ -64,6 +64,7 @@ public class NSManager extends ASTObject {
     public static final String RDFRESULT = "http://www.w3.org/2001/sw/DataAccess/tests/result-set#";
     public static final String XMLRESULT = "http://www.w3.org/2005/sparql-results#";
     public static final String EXT_FUN    = "function://fr.inria.corese.core.extension.Extension.";
+    public static final String EXT_FUN_REP    = "function://fr.inria.corese.core.extension.Report.";
     public static final String DCTERM = "http://purl.org/dc/terms/";
     public static final String DBPEDIAFR = "http://fr.dbpedia.org/resource/";
     public static final String DBPEDIA = "http://dbpedia.org/resource/";
@@ -314,6 +315,7 @@ public class NSManager extends ASTObject {
         def.put(SHEX_SHACL, "shex");
         def.put(SHACL_JAVA, "jsh");
         def.put(EXT_FUN, "fun");
+        def.put(EXT_FUN_REP, "js");
         def.put("http://example.org/ns#", "ex");
         def.put(JAVA, "java");
         def.put(DS, "ds");

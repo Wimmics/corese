@@ -74,8 +74,13 @@ public class CoreseMap extends CoreseExtension {
         set(key, DatatypeMap.newInstance(val));
     }
 
-    public void set(String key, IDatatype val) {
-        set(DatatypeMap.newResource(key), val);
+    /** 
+     * @todo 
+     * check IDatatype set(name,value) use newInstance instead of newResource.
+     * */
+    @Override
+    public IDatatype set(String key, IDatatype val) {
+        return set(DatatypeMap.newResource(key), val);     
     }
     
     @Override

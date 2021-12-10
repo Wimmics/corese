@@ -364,6 +364,10 @@ public class Query extends Exp implements Graphable {
     public void setObject(Object o) {
         object = o;
     }
+    
+    public ASTQuery getGlobalAST() {
+        return getGlobalQuery().getAST();
+    }
 
     public ASTQuery getAST() {
         return ast;

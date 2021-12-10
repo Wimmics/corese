@@ -1293,10 +1293,17 @@ public class ASTQuery
     }
         
     public String getMetadataValue(int type) {
-        if (metadata == null) {
+        if (getMetadata() == null) {
             return null;
         }
-        return metadata.getValue(type);
+        return getMetadata().getValue(type);
+    }
+    
+    public IDatatype getMetadataDatatypeValue(int type) {
+        if (getMetadata() == null) {
+            return null;
+        }
+        return getMetadata().getDatatypeValue(type);
     }
     
     public boolean isFederate() {
@@ -1305,7 +1312,7 @@ public class ASTQuery
     }
 
     public boolean hasMetadata(int type) {
-        return metadata != null && metadata.hasMetadata(type);
+        return getMetadata() != null && getMetadata().hasMetadata(type);
     }
     
     public boolean hasMetadata(String... type) {

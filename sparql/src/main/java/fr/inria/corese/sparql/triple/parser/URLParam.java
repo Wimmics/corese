@@ -32,6 +32,7 @@ public interface URLParam {
     static final String FOCUS = "focus";
     static final String SKIP = "skip";
     static final String HEADER = "header";
+    static final String COOKIE = "cookie";
     static final String HEADER_ACCEPT = "Accept";
     // service clause does not return variable in service result
     static final String UNSELECT = "unselect";
@@ -91,6 +92,7 @@ public interface URLParam {
     static final String REW = "rewrite";
     static final String SEL = "select";
     static final String SRC = "source";
+    static final String INFO = "info";
     static final String MES = "message";
     static final String ALL = "all";
     static final String WORKFLOW = "workflow";

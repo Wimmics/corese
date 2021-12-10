@@ -304,8 +304,8 @@ public class Mapping
      * Project on select variables of query Modify this Mapping
      */
     public void project(Query q) {
-        ArrayList<Node> lqNodes = new ArrayList<Node>();
-        ArrayList<Node> ltNodes = new ArrayList<Node>();
+        ArrayList<Node> lqNodes = new ArrayList<>();
+        ArrayList<Node> ltNodes = new ArrayList<>();
 
         for (Node qNode : q.getSelect()) {
             Node tNode = getNode(qNode);

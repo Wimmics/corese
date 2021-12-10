@@ -175,30 +175,43 @@ public interface IDatatype
         return set(name, value.toString());
     }
     
+    /**
+     * @todo
+     * CoreseMap set(name, value) use newResource(name) 
+     * whereas here we use key/newInstance(name)
+     * ServiceReport make the assumption that it is key/newInstance
+     */
+    default IDatatype set(String name, IDatatype value){
+        if (value == null) {
+            return null;
+        }
+        return set(DatatypeMap.key(name), value);
+    }
+    
     default IDatatype set(String name, Date value){
         if (value == null) {
             return null;
         }
-        return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
+        return set(DatatypeMap.key(name), DatatypeMap.newInstance(value));
     }
     
     default IDatatype set(String name, String value){
         if (value == null) {
             return null;
         }
-        return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
+        return set(DatatypeMap.key(name), DatatypeMap.newInstance(value));
     }
     
     default IDatatype set(String name, int value){
-        return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
+        return set(DatatypeMap.key(name), DatatypeMap.newInstance(value));
     }
     
     default IDatatype set(String name, double value){
-        return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
+        return set(DatatypeMap.key(name), DatatypeMap.newInstance(value));
     }
     
     default IDatatype set(String name, boolean value){
-        return set(DatatypeMap.newInstance(name), DatatypeMap.newInstance(value));
+        return set(DatatypeMap.key(name), DatatypeMap.newInstance(value));
     }
     
      /**

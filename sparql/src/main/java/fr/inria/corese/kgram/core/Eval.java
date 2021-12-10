@@ -505,7 +505,6 @@ public class Eval implements ExpType, Plugin {
         }
         eval(gNode, stack, map, n);
 
-        //memory.setResults(save);
         return results;
     }
 

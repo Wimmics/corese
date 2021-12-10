@@ -186,6 +186,7 @@ public class Memory extends PointerObject implements Environment {
             q = q.getGlobalQuery();
         }
         if (q.isRecordEdge()) {
+            // rule record edge
             isEdge = true;
         }
         int nmax = q.nbNodes();
@@ -372,19 +373,19 @@ public class Memory extends PointerObject implements Environment {
     }
 
     /**
-     * subEval = true : result of minus() or inpath() in this case we do not
-     * need select exp
+     * subEval = true : result of statement such as minus/optional etc
+     * in this case: no select exp, no order by, no group by, etc
+     * subEval = false: main or nested select query.
      */
     Mapping store(Query q, Producer p, boolean subEval, boolean func) throws SparqlException {
         boolean complete = ! q.getGlobalQuery().isAlgebra();
-        //clear();
         
         Node detailNode = null;
         if (getReport() != null) {
-            // draft: set service detail as variable value
-            // use case: xt:sparql() return map with detail
-            // PluginImpl sparql() record detail in Environment
-            // detailNode is defined by ASTParser with @detail metadata
+            // draft: set service report as variable value
+            // use case: xt:sparql() return map with report
+            // PluginImpl sparql() record report in Environment
+            // detailNode is defined by ASTParser with @report metadata
             detailNode = getQuery().getSelectNode(Binding.SERVICE_REPORT_ZERO);
             if (detailNode != null) {
                 push(detailNode, getReport());
@@ -392,13 +393,10 @@ public class Memory extends PointerObject implements Environment {
         }
                 
         int nb = nbNode;
-        if (!subEval && complete) {
-            //nb += q.nbFun();
-            /**
-             * select (exp as var) it may happen that var is already bound in
-             * memory (bindings, subquery), so we should not allocate a
-             * supplementary cell for var in Mapping node array
-             */
+        if (!subEval && complete) {            
+             // select (exp as var) it may happen that var is already bound in
+             // memory (bindings, subquery), so we should not allocate a
+             // supplementary cell for var in Mapping node array             
             for (Exp exp : q.getSelectWithExp()) {
                 if (exp.getFilter() != null && !isBound(exp.getNode())) {
                     nb++;
@@ -442,11 +440,13 @@ public class Memory extends PointerObject implements Environment {
         
         if (complete) {                        
             if (subEval) {
+                // statement e.g. minus/optional/union
                 if (func) {                    
                     orderGroup(q.getOrderBy(), snode, p);
                     orderGroup(q.getGroupBy(), gnode, p);
                 }
             } else {
+                // main query or nested query
                 int count = 0;
                 for (Exp e : q.getSelectFun()) {
 

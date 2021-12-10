@@ -99,7 +99,8 @@ public class CoreseJSON extends CoreseExtension {
         return value;
     }
     
-    void set(String key, IDatatype value) {
+    @Override
+    public IDatatype set(String key, IDatatype value) {
         switch (value.getCode()) {
             case INTEGER: json.put(key, value.intValue()); break;
             case LONG:    json.put(key, value.longValue()); break;
@@ -117,6 +118,7 @@ public class CoreseJSON extends CoreseExtension {
             
             default: json.put(key, value.stringValue()); break;
         }
+        return value;
     }
      
     /**

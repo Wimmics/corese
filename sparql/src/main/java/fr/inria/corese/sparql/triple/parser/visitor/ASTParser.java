@@ -3,10 +3,10 @@ package fr.inria.corese.sparql.triple.parser.visitor;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.api.Walker;
-//import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Message;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Service;
@@ -24,6 +24,12 @@ import java.util.List;
  * Walker just after parsing to complete the AST.
  */
 public class ASTParser implements Walker, URLParam {
+    
+    private static final String UNNEST = "unnest";
+    private static final String JSREPORTS_ENUM = "js:reportsEnum";
+    private static final String JSREPORT = "js:report";
+    private static final String VAR_VAL = "?val";
+    private static final String VAR_KEY = "?key";
 
     // set by Property SERVICE_REPORT
     public static boolean SERVICE_REPORT = false;
@@ -128,7 +134,7 @@ public class ASTParser implements Walker, URLParam {
             Variable var = new Variable(String.format(fr.inria.corese.sparql.triple.function.term.Binding.SERVICE_REPORT_FORMAT, i));
             varList.add(var);
 
-            if (!ast.isSelectAll()) {
+            if (! ast.isSelectAll() && ! ast.hasMetadata(Metadata.SKIP)) {
                 ast.setSelect(var);
             }
         }
@@ -153,20 +159,31 @@ public class ASTParser implements Walker, URLParam {
 
     /**
      *
-     * @report @enum generate values (?key ?val) {unnest(fun:reportsEnum())}
-     * fun:reportsEnum() ::= (key_i (val_i1 .. val_in))
+     * @report @enum generate values (?key ?val) {unnest(js:reportsEnum())}
+     * js:reportsEnum() ::= (key_i (val_i1 .. val_in))
      *
      */
     void enumReport(ASTQuery ast) {
         IDatatype num = ast.getMetadata().getDatatypeValue(Metadata.ENUM);
-        Variable key = new Variable("?key");
-        Variable val = new Variable("?val");
+        Variable key = new Variable(VAR_KEY);
+        Variable val = new Variable(VAR_VAL);
         List<Variable> vlist = List.of(key, val);
-        Term rep = ast.createFunction(ast.createQName("fun:reportsEnum"));
-//        if (num!=null) {
-//            rep.add(Constant.create(num));
-//        }
-        Term fun = ast.createFunction("unnest", rep);
+        Term rep;
+        if (num == null) {
+            if (getNbService()==1) {
+            // report number 0
+                rep = ast.createFunction(ast.createQName(JSREPORT));
+            }
+            else {
+                // all reports
+                rep = ast.createFunction(ast.createQName(JSREPORTS_ENUM));
+            }
+        }
+        else {
+            // report number num
+            rep = ast.createFunction(ast.createQName(JSREPORT), Constant.create(num));
+        }
+        Term fun = ast.createFunction(UNNEST, rep);
         try {
             fun.compile(ast);
         } catch (EngineException ex) {
@@ -192,8 +209,13 @@ public class ASTParser implements Walker, URLParam {
                 varList.add(var);
 
                 for (ASTQuery aa : getStack()) {
-                    // export report variable through intermediate subselect to top select
-                    if (!aa.isSelectAll()) {
+                    // export report variable through intermediate subselect 
+                    // to top select (skip top select when @skip)
+                    if (aa.isSelectAll() || 
+                       (aa == getAST() && aa.hasMetadata(Metadata.SKIP))) {
+                        // do nothing
+                    }
+                    else {
                         aa.setSelect(var);
                     }
                 }

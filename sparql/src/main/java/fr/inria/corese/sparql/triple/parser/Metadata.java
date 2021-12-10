@@ -81,6 +81,8 @@ public class Metadata extends ASTObject
     public static final int DISTINCT= 62;
     public static final int ENUM    = 63;
     public static final int HEADER  = 64;
+    public static final int COOKIE  = 65;
+    public static final int TIMEOUT  = 66;
     
 //    public static final int BEFORE  = 51;
 //    public static final int AFTER   = 52;
@@ -192,7 +194,9 @@ public class Metadata extends ASTObject
         define("@file",     FILE); 
         define("@detail",   DETAIL); 
         define("@report",   REPORT); 
-        define("@header",   HEADER); 
+        define("@header",   HEADER);
+        define("@cookie",   COOKIE);
+        define("@timeout",  TIMEOUT); 
         define("@enum",     ENUM); 
         define("@accept",   ACCEPT); 
         define("@reject",   REJECT); 

@@ -523,6 +523,11 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     public static IDatatype newInstance(String result) {
         return new CoreseString(result);
     }
+    
+    // key for map/json
+    public static IDatatype key(String result) {
+        return newInstance(result);
+    }
 
     public static IDatatype newStringBuilder(StringBuilder result) {
         return new CoreseStringBuilder(result);

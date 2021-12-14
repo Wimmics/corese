@@ -14,10 +14,8 @@ import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import static fr.inria.corese.sparql.triple.parser.URLParam.MES;
 import fr.inria.corese.sparql.triple.parser.URLServer;
-import java.util.ArrayList;
 import java.util.Date;
 import javax.ws.rs.client.ResponseProcessingException;
-import javax.ws.rs.core.Link;
 import javax.ws.rs.core.Response;
 
 /**
@@ -26,6 +24,7 @@ import javax.ws.rs.core.Response;
  * ASTParser declare such variables in query AST in preprocessing phase
  * Report process when metadata @record
  * or Property SERVICE_REPORT = true
+ * or url parameter mode=report 
  * record subset of key value:
  * @record server url 
  * generate record when service return empty results:
@@ -140,11 +139,11 @@ public class ServiceReport implements URLParam {
                 if (resp().getHeaderString("Content-Length") != null) {
                     set(dt, LENGTH, Integer.parseInt(resp().getHeaderString("Content-Length")));
                 }
-                
                 reportHeader(dt);
             }
 
             set(dt, URL, getURL().getServer());
+            set(dt, NUMBER, getURL().getNumber());
             set(dt, SIZE, (map.isFake()) ? 0 : map.size());
             set(dt, TIME, getTime());
             set(dt, LOCATION, getLocation());
@@ -155,6 +154,9 @@ public class ServiceReport implements URLParam {
         }
     }
     
+    /**
+     * Header and Cookie as json objects
+     */
     void reportHeader(IDatatype dt) {
         if (getGlobalAST().hasMetadata(Metadata.HEADER)) {
             IDatatype json = DatatypeMap.json();

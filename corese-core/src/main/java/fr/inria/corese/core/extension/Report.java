@@ -39,7 +39,7 @@ public class Report extends Extension implements URLParam {
     }
     
     public IDatatype header() {
-        return reportKey(key(HEADER));
+        return reportKey(HEADER);
     } 
     
     public IDatatype header(IDatatype key) {
@@ -51,7 +51,7 @@ public class Report extends Extension implements URLParam {
     } 
     
     public IDatatype cookie() {
-        return reportKey(key(COOKIE));
+        return reportKey(COOKIE);
     } 
     
     public IDatatype cookie(IDatatype key) {
@@ -61,6 +61,18 @@ public class Report extends Extension implements URLParam {
         }
         return dt.get(key);
     } 
+    
+    public IDatatype server() {
+        IDatatype server = reportKey(SERVER_NAME);
+        if (server == null) {
+            return null;
+        }
+        String label = server.getLabel();
+        if (label.contains("/")) {
+            return DatatypeMap.newInstance(label.substring(0, label.indexOf("/")));
+        }
+        return server;
+    }
     
     // return list of reports bound in environment
     public IDatatype reports() {
@@ -138,7 +150,11 @@ public class Report extends Extension implements URLParam {
         }
         return DatatypeMap.newList();
     }
-       
+    
+    public IDatatype reportKey(String name) {
+        return reportKey(key(name));
+    }
+
     // value of key of first report     
     public IDatatype reportKey(IDatatype name) {        
         Node detail = report();

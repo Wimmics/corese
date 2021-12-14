@@ -386,7 +386,7 @@ public class ProviderService implements URLParam {
             targetAST = ast;
             traceAST(serv, ast);
             Mappings res = send(serv, ast, map, start, limit, timeout, count);
-            reportAST(ast, res);
+            reportAST(ast, res, count);
             if (debug) {
                 traceResult(serv, res);
             }
@@ -534,10 +534,11 @@ public class ProviderService implements URLParam {
         getLog().traceAST(serv, ast);
     }
     
-    void reportAST(ASTQuery ast, Mappings map) {
+    void reportAST(ASTQuery ast, Mappings map, int count) {
         if (getGlobalAST().hasMetadata(Metadata.DETAIL)) {
             map.completeReport(URLParam.QUERY, ast.toString());
         }
+        map.completeReport(CALL, count);
     }
 
     void traceInput(URLServer serv, Mappings map) {
@@ -546,8 +547,9 @@ public class ProviderService implements URLParam {
 
     void traceOutput(URLServer serv, Mappings map, int nbcall, double time) {
         getLog().traceOutput(serv, map, nbcall, time);       
-        if (getGlobalAST().hasReportKey(CARDINALITY)) {
-            map.completeReport(CARDINALITY, map.size());
+        if (getGlobalAST().hasReportKey(FULL_SIZE)) {
+            map.completeReport(FULL_SIZE, map.size());
+            map.completeReport(NB_CALL, nbcall);
         }
     }
 

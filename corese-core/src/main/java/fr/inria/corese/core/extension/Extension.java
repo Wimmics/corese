@@ -102,7 +102,20 @@ public class Extension extends Core {
     }
     
 
-    
+    // return list of variables bound in environment
+    public IDatatype variables() {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        
+        for (Node node : getEnvironment().getQueryNodes()) {
+            if (node!=null && node.isVariable() && ! node.isBlank()) {
+                Node report = getEnvironment().getNode(node);
+                if (report !=null) {
+                    list.add(report.getDatatypeValue());
+                }
+            }
+        }
+        return DatatypeMap.newList(list);
+    }
     
     
     /**

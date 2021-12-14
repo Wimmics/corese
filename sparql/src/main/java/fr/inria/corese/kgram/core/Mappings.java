@@ -1987,7 +1987,7 @@ public class Mappings extends PointerObject
         }
         for (Mapping m : this) {
             // augment each result with var=detail
-            m.addNode(node, report);
+            m.addNode(node, report);            
             m.setReport(report);
         }
         return this;

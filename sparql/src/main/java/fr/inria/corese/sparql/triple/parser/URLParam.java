@@ -110,6 +110,10 @@ public interface URLParam {
     static final String GRAPH_SIZE = "graphSize";
     static final String MERGE = "merge";
     static final String SIZE = "size";
+    static final String FULL_SIZE = "fullSize";
+    static final String CALL = "call";
+    static final String NB_CALL = "nbCall";
+    static final String NUMBER = "number";
     static final String LENGTH = "length";
     static final String SERVER_NAME = "server";
     static final String LOCATION = "location";

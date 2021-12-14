@@ -387,8 +387,9 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
     
     // draft test
+    // @todo: it does not clean the report in case of failure of the rest of the pattern
     void report(Query q, Environment env, Mappings map) {
-        if (q.getGlobalAST().hasMetadata(Metadata.REPORT)) {
+        if (q.getGlobalAST().hasMetadata(Metadata.REPORT) && !map.isEmpty()) {
             IDatatype dt = getCreateReport(env);
             IDatatype list = dt.get("exists");
             list.getList().add(DatatypeMap.newInstance(map.toString(true)));

@@ -22,6 +22,7 @@ import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Source;
 import fr.inria.corese.sparql.triple.parser.Term;
+import fr.inria.corese.sparql.triple.parser.visitor.ASTParser;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
@@ -150,6 +151,11 @@ public class Selector {
             Metadata meta = new Metadata();
             meta.add(Metadata.SHOW);
             aa.setAnnotation(meta);
+        }
+        if (ast.hasMetadata(Metadata.REPORT)) {
+            aa.getCreateMetadata().add(Metadata.REPORT);
+            ASTParser walk = new ASTParser(aa).report();
+            aa.process(walk);
         }
     }
           

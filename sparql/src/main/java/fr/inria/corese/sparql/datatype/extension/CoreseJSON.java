@@ -106,13 +106,16 @@ public class CoreseJSON extends CoreseExtension {
             case LONG:    json.put(key, value.longValue()); break;
             case DOUBLE:  json.put(key, value.doubleValue()); break;
             case FLOAT:   json.put(key, value.floatValue()); break;
-            case DECIMAL: json.put(key, value.doubleValue()); break;
+            case DECIMAL: json.put(key, value.decimalValue()); break;
             case BOOLEAN: json.put(key, value.booleanValue()); break;
             
-            case UNDEF:
+            case UNDEF: 
                 switch (value.getDatatypeURI()) {
                     case LIST_DATATYPE: json.put(key, toJSONArray(value)); break;
                     case JSON_DATATYPE: json.put(key, (JSONObject) value.getObject()); break;
+                    case MAPPINGS_DATATYPE: 
+                        json.put(key, value.getObject()); 
+                        break;
                 }
                 break;
             
@@ -247,7 +250,7 @@ public class CoreseJSON extends CoreseExtension {
                     arr.put(i, value.floatValue());
                     break;
                 case DECIMAL:
-                    arr.put(i, value.doubleValue());
+                    arr.put(i, value.decimalValue());
                     break;
                 case BOOLEAN:
                     arr.put(i, value.booleanValue());
@@ -261,6 +264,9 @@ public class CoreseJSON extends CoreseExtension {
                         case JSON_DATATYPE:
                             arr.put(i, (JSONObject) value.getObject());
                             break;
+                        case MAPPINGS_DATATYPE:
+                            arr.put(i,  value.getObject());
+                            break;    
                     }
                     break;
 
@@ -331,6 +337,16 @@ public class CoreseJSON extends CoreseExtension {
     @Override
     public Iterable<IDatatype> getLoop() {
         return getValueList();
+    }
+    
+    @Override
+    public IDatatype duplicate() {
+        JSONObject myjson = new JSONObject();
+        for (String key : json.keySet()) {
+            Object obj = json.get(key);
+            myjson.put(key, obj);
+        }
+        return new CoreseJSON(myjson);
     }
     
 }

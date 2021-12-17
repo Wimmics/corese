@@ -418,4 +418,32 @@ public class CoreseList extends CoreseExtension implements IDatatypeList {
         }
         return super.compareTo(dt);
     }
+    
+    /**
+     * this is a list of json objects
+     * each json object records copy of the list 
+     * where the object itself is removed from the list
+     * to avoid infinite recursive loop
+     */
+    @Override
+    public IDatatype dispatch(String name) {
+        if (size() > 1) {
+            IDatatype list = duplicate();
+            for (IDatatype dt : this) {
+                // each item record the list of items 
+                dt.set(name, list);
+            }
+        }
+        return this;
+    }
+    
+    @Override
+    public IDatatypeList duplicate() {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        for (IDatatype dt : this) {
+            list.add(dt.duplicate());
+        }
+        return new CoreseList(list);
+    }
+    
 }

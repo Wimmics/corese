@@ -377,7 +377,11 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
                 return newInstance((Float) obj);
             } else if (obj instanceof Double) {
                 return newInstance((Double) obj);
-            }  else if (obj instanceof Short) {
+            }  
+            else if (obj instanceof BigDecimal) {
+                return newInstance((BigDecimal) obj);
+            }  
+            else if (obj instanceof Short) {
                 return newInstance(Integer.valueOf((Short)obj));
             } 
             else if (obj instanceof Byte) {

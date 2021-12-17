@@ -111,6 +111,7 @@ public interface URLParam {
     static final String MERGE = "merge";
     static final String SIZE = "size";
     static final String FULL_SIZE = "fullSize";
+    static final String FULL_TIME = "fullTime";
     static final String CALL = "call";
     static final String NB_CALL = "nbCall";
     static final String NUMBER = "number";

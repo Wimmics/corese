@@ -554,4 +554,13 @@ public interface IDatatype
     void setLang(String str);
 
     long getlValue();
+    
+    default IDatatype duplicate () {
+        return this;
+    }
+    
+    default IDatatype dispatch (String name) {
+        return this;
+    }
+    
 }

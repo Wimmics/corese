@@ -37,6 +37,7 @@ public class ServiceReport implements URLParam {
     private String location;
     private String result;
     private Response response;
+    private Mappings mappings;
     private URLServer url;
     // query is set by Service accessor to ServiceReport
     // getCreateReport(query)
@@ -149,7 +150,8 @@ public class ServiceReport implements URLParam {
             set(dt, LOCATION, getLocation());
             
             if (getGlobalAST().hasMetadata(Metadata.DETAIL)) {
-                set(dt, RESULT, getResult());
+                //set(dt, RESULT, getResult());
+                set(dt, RESULT, DatatypeMap.createObject(getMappings()));                
             }
         }
     }
@@ -333,5 +335,13 @@ public class ServiceReport implements URLParam {
 
     public void setResult(String result) {
         this.result = result;
+    }
+
+    public Mappings getMappings() {
+        return mappings;
+    }
+
+    public void setMappings(Mappings mappings) {
+        this.mappings = mappings;
     }
 }

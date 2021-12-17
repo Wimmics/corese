@@ -6,7 +6,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.compiler.parser.Pragma;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
@@ -240,15 +239,16 @@ public class ProviderService implements URLParam {
                 // service is variable: select appropriate subset of  Mappings with service URL
                 // service is URL: consider all Mappings. 
                 // Hint: Mappings are already result of former select 
-                input = getMappings(q, getServiceExp(), getServiceExp().getServiceNode(), service, map);
-                if (input.size() > 0) {
-                    g.getEventManager().process(Event.Service, "input: \n" + input.toString(true, false, 10));
+                input = getMappings(q, getServiceExp(), getServiceExp().getServiceNode(), service, map);                
+                if (input.size() > 0) {                   
+                    g.getEventManager().process(Event.Service, "input: \n" + input.toString(true, false, 5));
                 } else {
                     g.getEventManager().process(Event.Service, "no input");
                 }
             }
 
             Mappings sol = new Mappings();
+            sol.setReport(DatatypeMap.newList());
             mapList.add(sol);
 
             // sparql?slice=20
@@ -322,7 +322,7 @@ public class ProviderService implements URLParam {
                 Mappings res = send(service, map, size, size + length, timeout, count);
                 // join (serviceNode = serviceURI)
                 complete(getServiceExp().getServiceNode(), service.getNode(), res);
-                addResult(sol, res);
+                addResult(service, sol, res);
                 size += length;
                 count++;
 
@@ -335,7 +335,7 @@ public class ProviderService implements URLParam {
             Mappings res = send(service, map, 0, 0, timeout, count++);
             // join (serviceNode = serviceURI)
             complete(getServiceExp().getServiceNode(), service.getNode(), res);
-            addResult(sol, res);
+            addResult(service, sol, res);
         }
 
         traceOutput(service, sol, count, (new Date().getTime() - d1.getTime()) / 1000.0);
@@ -545,11 +545,24 @@ public class ProviderService implements URLParam {
         getLog().traceInput(serv, map);
     }
 
+    /**
+     * 
+     * @param serv
+     * @param map: final result Mappings of service serv
+     * @param nbcall: number of service call to evaluate service serv
+     * @param time 
+     */
     void traceOutput(URLServer serv, Mappings map, int nbcall, double time) {
-        getLog().traceOutput(serv, map, nbcall, time);       
+        getLog().traceOutput(serv, map, nbcall, time);
+        
         if (getGlobalAST().hasReportKey(FULL_SIZE)) {
             map.completeReport(FULL_SIZE, map.size());
-            map.completeReport(NB_CALL, nbcall);
+            map.completeReport(NB_CALL,   nbcall);
+            map.completeReport(FULL_TIME, time);
+            
+            if (map.getReport()!=null) {
+                 map.getReport().dispatch(REPORT);
+            }
         }
     }
 
@@ -561,8 +574,17 @@ public class ProviderService implements URLParam {
         }
     }
 
-    void addResult(Mappings sol, Mappings res) {
+    /**
+     * 
+     * @param sol: total   result of service evaluation 
+     * @param res: partial result of service evaluation 
+     */
+    void addResult(URLServer serv, Mappings sol, Mappings res) {
         if (res != null) {
+            if (sol.getReport() != null && sol.getReport().getList() != null && 
+                    res.getReport() != null) {
+                sol.getReport().getList().add(res.getReport());
+            }
             sol.add(res);
             sol.setLength(sol.getLength() + res.getLength());
             sol.setQueryLength(sol.getQueryLength() + res.getQueryLength());

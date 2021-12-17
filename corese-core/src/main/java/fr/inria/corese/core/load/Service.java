@@ -153,6 +153,7 @@ public class Service implements URLParam {
 
             if (ast.isSelect() || ast.isAsk() || ast.isUpdate()) {
                 map = getCreateParser().parseMapping(query, astq, process(astq, accept), encoding(ast));
+                getCreateReport(query).setMappings(map);
             } else {
                 Graph g = getCreateParser().parseGraph(query, process(astq, accept), encoding(ast));
                 map = new Mappings();

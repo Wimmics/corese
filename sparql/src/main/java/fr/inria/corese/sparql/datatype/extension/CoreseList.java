@@ -246,6 +246,12 @@ public class CoreseList extends CoreseExtension implements IDatatypeList {
         list.add(n.intValue(), elem);
         return this;
     }
+    
+    @Override
+    public IDatatype addAll(IDatatype list) {
+        getValueList().addAll(list.getValueList());
+        return this;
+    }
 
     @Override
     public IDatatype swap(IDatatype i1, IDatatype i2) {
@@ -422,8 +428,6 @@ public class CoreseList extends CoreseExtension implements IDatatypeList {
     /**
      * this is a list of json objects
      * each json object records copy of the list 
-     * where the object itself is removed from the list
-     * to avoid infinite recursive loop
      */
     @Override
     public IDatatype dispatch(String name) {

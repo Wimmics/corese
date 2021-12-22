@@ -20,6 +20,8 @@ import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.kgram.tool.ApproximateSearchEnv;
 import fr.inria.corese.kgram.tool.EnvironmentImpl;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatypeList;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import java.util.Arrays;
@@ -818,7 +820,7 @@ public class Mapping
         return getList();
     }
         
-    List<List<IDatatype>> getList() {    
+    public List<List<IDatatype>> getList() {    
         ArrayList<List<IDatatype>> list = new ArrayList<>();
         int i = 0;
         for (Node n : getQueryNodes()) {
@@ -831,6 +833,14 @@ public class Mapping
             }
         }
         return list;
+    }
+    
+    public IDatatype getDatatypeList() {
+        IDatatypeList dt = DatatypeMap.newList();
+        for (List<IDatatype> list : getList()) {
+            dt.add(DatatypeMap.newList(list));
+        }
+        return dt;
     }
 
 

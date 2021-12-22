@@ -72,6 +72,7 @@ public interface IDatatype
 
     public static final String GRAPH_DATATYPE    = ExpType.DT + "graph";    // same as PointerType.GRAPH.name; 
     public static final String MAPPINGS_DATATYPE = ExpType.DT + "mappings"; // same as PointerType.MAPPINGS.name;  
+    public static final String MAPPING_DATATYPE  = ExpType.DT + "mapping"; // same as PointerType.MAPPING.name;  
 
     public static final String ITERATE_DATATYPE = ExpType.DT + "iterate";
     public static final String MAP_DATATYPE     = ExpType.DT + "map";
@@ -237,6 +238,21 @@ public interface IDatatype
             }
         }
         return DatatypeMap.newList(list);
+    }
+    
+    /**
+     * Use case: complete ServiceReport
+     */
+    default IDatatype complete(String key, IDatatype value) {
+        if (isList()) {
+            for (IDatatype dt : this) {
+                dt.set(key, value);
+            }
+        }
+        else {
+            set(key, value);
+        }
+        return this;
     }
 
     @Override

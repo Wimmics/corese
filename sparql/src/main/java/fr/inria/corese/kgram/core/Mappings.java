@@ -21,10 +21,10 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
-import static fr.inria.corese.sparql.triple.parser.URLParam.REPORT;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -1994,24 +1994,20 @@ public class Mappings extends PointerObject
         return this;
     }
     
-    public Mappings completeReport(String key, int value) {
-        for (Mapping m : this) {
-            if (m.getReport()==null) {
-                return this;
-            }
-            else {
-                m.getReport().set(key, value);
-            }
+    public Mappings completeReport(String key, IDatatype value) {
+        if (getReport() != null) {
+            getReport().complete(key, value);
+        } else {
+            basicCompleteReport(key, value);
         }
         return this;
     }
     
-    public Mappings completeReport(String key, double value) {
+    public Mappings basicCompleteReport(String key, IDatatype value) {
         for (Mapping m : this) {
-            if (m.getReport()==null) {
+            if (m.getReport() == null) {
                 return this;
-            }
-            else {
+            } else {
                 m.getReport().set(key, value);
             }
         }
@@ -2019,15 +2015,26 @@ public class Mappings extends PointerObject
     }
     
     public Mappings completeReport(String key, String value) {
-        for (Mapping m : this) {
-            if (m.getReport()==null) {
-                return this;
-            }
-            else {
-                m.getReport().set(key, value);
-            }
-        }
-        return this;
+        return completeReport(key, DatatypeMap.newInstance(value));
     }
     
+    public Mappings completeReport(String key, int value) {
+        return completeReport(key, DatatypeMap.newInstance(value));
+    }
+    
+    public Mappings completeReport(String key, double value) {
+        return completeReport(key, DatatypeMap.newInstance(value));
+    }
+    
+    public boolean contains(IDatatype value) {
+        for (Mapping m : this) {
+            for (Node node : m.getNodes()) {
+                if (value.equals(node.getDatatypeValue())) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+       
 }

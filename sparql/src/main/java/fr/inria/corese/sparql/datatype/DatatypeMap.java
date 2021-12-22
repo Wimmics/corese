@@ -1485,6 +1485,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return dm;
     }
     
+    public static DatatypeMap getSingleton() {
+        return dm;
+    }
+    
     @Override
     public Node nodeList(List<Node> list) {
         return toList(list);

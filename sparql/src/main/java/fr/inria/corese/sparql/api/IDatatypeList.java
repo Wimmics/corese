@@ -23,6 +23,7 @@ public interface IDatatypeList extends IDatatype {
     IDatatype cons(IDatatype elem);
     
     IDatatype add(IDatatype elem);
+    IDatatype addAll(IDatatype list);
     
     IDatatype add(IDatatype ind, IDatatype val);
     

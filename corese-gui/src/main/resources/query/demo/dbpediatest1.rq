@@ -1,0 +1,37 @@
+#
+# Return list of values found by service call 
+#
+prefix h: <http://www.inria.fr/2015/humans#>
+
+@report @detail @skip @trace  
+
+select ?uri ?var ?val
+(xt:get(?prov, "url")    as ?url) 
+(xt:get(?prov, "server") as ?srv)
+where {
+service <http://corese.inria.fr/sparql> {
+    ?s h:name ?n
+}
+
+bind (strlang(?n, "fr") as ?name)
+
+service <http://fr.dbpedia.org/sparql?slice=10> {
+    ?uri rdfs:label ?name
+}
+
+# service report where ?uri member of result
+bind (js:provenance(?uri)  as ?prov)
+
+# other reports in ?prov
+values ?cont {unnest(js:context(?prov))}
+
+# result of service call
+bind (xt:get(?cont, "result") as ?res)
+
+# result as pairs of variable value bindings
+values (?var ?val) { unnest(fun:list(?res))}
+
+# select ?uri and ?name
+filter (str(?var) = "?uri" || str(?var) = "?name")
+
+}

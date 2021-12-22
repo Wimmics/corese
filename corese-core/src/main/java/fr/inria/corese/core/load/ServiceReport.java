@@ -88,22 +88,29 @@ public class ServiceReport implements URLParam {
      * ServiceParser report without exception
      */
     void parserReport(Mappings map, String str, boolean suc) {
-        if (isReport() && 
-                (!suc || map.size()>0 || 
-                (getQuery()!=null && 
-                    getGlobalAST().hasMetadataValue(Metadata.REPORT, Metadata.EMPTY)))) {
-            // if service is success but return no result:
-            // @report        generate no report (and no result Mapping)
-            // @report empty generate report and create a fake Mapping with report
-            IDatatype dt = newReport();
-            set(dt, FORMAT, getFormatText());
-            
-            if (! suc) {
-                set(dt, MES, "Format not handled by local parser");
-                set(dt, RESULT, str);
-            }
-            
-            map.recordReport(node(), dt);
+        if (isReport()) {
+            boolean empty = getQuery() != null
+                    && getGlobalAST().hasMetadataValue(Metadata.REPORT, Metadata.EMPTY);
+            //if (!suc || map.size() > 0 || empty) {
+                // if service is success but return no result:
+                // @report        generate no report (and no result Mapping)
+                // @report empty generate report and create a fake Mapping with report
+                IDatatype dt = newReport();
+                set(dt, FORMAT, getFormatText());
+
+                if (!suc) {
+                    set(dt, MES, "Format not handled by local parser");
+                    set(dt, RESULT, str);
+                }
+                
+                if (suc && map.isEmpty() && !empty) {
+                    // do not generate fake result to record report
+                    map.setReport(dt);                           
+                }
+                else {
+                    map.recordReport(node(), dt);
+                }
+            //}
         }
     }
         

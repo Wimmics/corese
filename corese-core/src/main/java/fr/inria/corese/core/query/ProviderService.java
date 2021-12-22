@@ -540,6 +540,10 @@ public class ProviderService implements URLParam {
         }
         map.completeReport(CALL, count);
     }
+    
+    DatatypeMap map() {
+        return DatatypeMap.getSingleton();
+    }
 
     void traceInput(URLServer serv, Mappings map) {
         getLog().traceInput(serv, map);

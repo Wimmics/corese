@@ -15,9 +15,12 @@ import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatypeList;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
@@ -116,8 +119,7 @@ public class Extension extends Core {
         }
         return DatatypeMap.newList(list);
     }
-    
-    
+           
     /**
      * Service evaluation report graph recorded in ContextLog 
      */
@@ -162,14 +164,34 @@ public class Extension extends Core {
            
     
     public IDatatype list(IDatatype dt) {
+        if (dt.isExtension()) { 
+            switch (dt.getDatatypeURI()) {
+                case IDatatype.MAPPINGS_DATATYPE: return list(dt.getPointerObject().getMappings());
+                case IDatatype.MAPPING_DATATYPE:  return list(dt.getPointerObject().getMapping());
+            }
+        }
         if (dt.getObject() != null && dt.getObject() instanceof Enumeration) {
-            return DatatypeMap.newList((Enumeration)dt.getObject());
+            return DatatypeMap.newList((Enumeration) dt.getObject());
         }
         if (dt.getObject() != null && dt.getObject() instanceof Object[]) {
-            return DatatypeMap.newList((Object[])dt.getObject());
+            return DatatypeMap.newList((Object[]) dt.getObject());
         }
         return DatatypeMap.list();
-    }  
+    }
+    
+    // Mappings as list(list(var, val))
+    IDatatype list(Mappings map) {
+        IDatatypeList list = DatatypeMap.newList();
+        for (Mapping m : map) {
+            list.addAll(m.getDatatypeList());
+        }
+        return list;
+    }
+    
+    // Mapping as list(list(var, val))
+    IDatatype list(Mapping m) {
+        return m.getDatatypeList();
+    }
           
     public IDatatype allEntailment(IDatatype dt) {
         Construct.setAllEntailment(dt.booleanValue());

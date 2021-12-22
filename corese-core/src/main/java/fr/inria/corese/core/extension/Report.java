@@ -1,6 +1,8 @@
 package fr.inria.corese.core.extension;
 
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -67,6 +69,10 @@ public class Report extends Extension implements URLParam {
         if (server == null) {
             return null;
         }
+        return server(server);
+    }
+    
+    public IDatatype server(IDatatype server) {        
         String label = server.getLabel();
         if (label.contains("/")) {
             return DatatypeMap.newInstance(label.substring(0, label.indexOf("/")));
@@ -190,6 +196,50 @@ public class Report extends Extension implements URLParam {
         }
         return detail.getDatatypeValue().get(name);
     }
+    
+    /**
+     * Return report where result Mappings contains 
+     * Mapping var = value
+     * pragma: @report @detail to get result
+     */
+    public IDatatype provenance(IDatatype value) {
+        for (IDatatype dt : reports()) {
+            IDatatype result = dt.get(RESULT);
+            if (result!=null) {
+                Mappings map = result.getPointerObject().getMappings();
+                if (map.contains(value)) {
+                    return dt;
+                }
+            }
+        }
+        return null;
+    }
+    
+    // return slot name of provenance(value)
+    public IDatatype provenance(IDatatype value, IDatatype name) {
+        IDatatype report = provenance(value);
+        if (report == null) {
+            return null;
+        }
+        return report.get(name);
+    }
+    
+    // return other reports of this service report
+    public IDatatype context(IDatatype dt) {
+        IDatatype num  = dt.get(URLParam.CALL);
+        IDatatype list = dt.get(REPORT);       
+        ArrayList<IDatatype> res = new ArrayList<>();
+        
+        if (list != null && num != null) {            
+            for (IDatatype rep : list) {
+                if (num.intValue() != rep.get(URLParam.CALL).intValue()) {
+                    res.add(rep);
+                }
+            }
+        }
+        return DatatypeMap.newList(res);
+    }
+
     
     
 }

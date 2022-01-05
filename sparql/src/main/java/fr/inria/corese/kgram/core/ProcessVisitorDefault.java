@@ -3,6 +3,7 @@ package fr.inria.corese.kgram.core;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 
 /**
  *
@@ -41,6 +42,53 @@ public class ProcessVisitorDefault implements ProcessVisitor {
     public IDatatype defaultValue() {
         return defaultValue;
     }
-
     
+    
+    void visit(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {
+        if (eval.getQuery().getGlobalAST().hasMetadata(Metadata.REPORT)) {
+            eval.getBind().visit(e, g, m1, m2);
+        }
+    }
+    
+    @Override
+    public IDatatype graph(Eval eval, Node g, Exp e, Mappings m1) {         
+        visit(eval, g, e, m1, null);
+        return defaultValue(); 
+    } 
+    
+    @Override
+    public IDatatype query(Eval eval, Node g, Exp e, Mappings m1) {         
+        visit(eval, g, e, m1, null);
+        return defaultValue(); 
+    } 
+    
+    @Override
+    public IDatatype service(Eval eval, Node g, Exp e, Mappings m1) {         
+        visit(eval, g, e, m1, null);
+        return defaultValue(); 
+    } 
+    
+    @Override
+    public IDatatype optional(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {         
+        visit(eval, g, e, m1, m2);
+        return defaultValue(); 
+    } 
+
+    @Override
+    public IDatatype minus(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {         
+        visit(eval, g, e, m1, m2);
+        return defaultValue(); 
+    } 
+    
+    @Override
+    public IDatatype union(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {         
+        visit(eval, g, e, m1, m2);
+        return defaultValue(); 
+    } 
+    
+    @Override
+    public IDatatype join(Eval eval, Node g, Exp e, Mappings m1, Mappings m2) {         
+        visit(eval, g, e, m1, m2);
+        return defaultValue(); 
+    } 
 }

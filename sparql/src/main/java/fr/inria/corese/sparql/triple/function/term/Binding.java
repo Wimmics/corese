@@ -4,9 +4,12 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Binder;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Context;
@@ -29,7 +32,13 @@ import org.slf4j.Logger;
  *
  */
 public class Binding implements Binder {
-   
+    
+    private static final String GRAPH = "graph";
+    private static final String MAP2 = "m2";
+    private static final String MAP1 = "m1";
+    private static final String EXP = "str";
+    private static final String STMT = "stmt";
+    
     static final String NL = System.getProperty("line.separator");
     public static final int UNBOUND = ExprType.UNBOUND;
     public static boolean DEBUG_DEFAULT = false;
@@ -63,6 +72,9 @@ public class Binding implements Binder {
     // transformation Mappings with xt:mappings()
     private Mappings mappings;
     private IDatatype datatypeValue;
+    // draft sparql evaluation report
+    // record partial results of sparql statements
+    private IDatatype report;
     
     private static Binding singleton;
     
@@ -74,6 +86,7 @@ public class Binding implements Binder {
         varList = new ArrayList();
         valList = new ArrayList();
         level = new ArrayList();
+        setReport(DatatypeMap.newServiceReport());
         setGlobalVariableValues(new HashMap<>());
         setGlobalVariableNames(new HashMap<>());
         setAccessRight(new AccessRight());
@@ -595,6 +608,9 @@ public class Binding implements Binder {
         if (b.getMappings() != null) {
             setMappings(b.getMappings());
         }
+        if (b.getReport()!=null) {
+            setReport(b.getReport());
+        }
     }
     
     // use case: env inherit Log/Context from xt:sparql()
@@ -835,6 +851,42 @@ public class Binding implements Binder {
     public Binding setMappings(Mappings mappings) {
         this.mappings = mappings;
         return this;
+    }
+    
+    
+    /**
+     * ProcessVisitorDefault call 
+     * @todo when exp is named graph pattern, there is one call 
+     * with exp for each named graph
+     * 
+     */
+    public void visit(Exp exp, Node g, Mappings m1, Mappings m2) {
+        IDatatype dt = getReport(exp);
+        getReport().set(STMT+getReport().size(), dt);
+        dt.set(EXP, exp.toString());
+        dt.set(MAP1,  DatatypeMap.createObject(m1));
+        if (m2!=null){
+            dt.set(MAP2,  DatatypeMap.createObject(m2));
+        }
+        if (g!=null){
+            dt.set(GRAPH,  g.getDatatypeValue());
+        }
+    }
+    
+    /**
+     * @todo share same report for every call 
+     * on same named graph pattern exp
+     */
+    IDatatype getReport(Exp exp) {
+        return DatatypeMap.newServiceReport();
+    }
+
+    public IDatatype getReport() {
+        return report;
+    }
+
+    public void setReport(IDatatype report) {
+        this.report = report;
     }
     
 }

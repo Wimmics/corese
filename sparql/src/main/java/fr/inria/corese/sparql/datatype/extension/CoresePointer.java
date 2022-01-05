@@ -206,5 +206,16 @@ public class CoresePointer extends CoreseUndefLiteral {
         return getPointerObject().compare(d2.getPointerObject());
     }
     
+    @Override
+    public IDatatype set(IDatatype key, IDatatype value) {
+        switch (getDatatypeURI()) {
+            case GRAPH_DATATYPE:
+                getPointerObject().getTripleStore()
+                        .set(key, value);
+                break;
+        }
+        return value;
+    }
+        
 
 }

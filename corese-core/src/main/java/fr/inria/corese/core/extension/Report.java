@@ -30,6 +30,22 @@ public class Report extends Extension implements URLParam {
         return dt;
     }
     
+    public IDatatype myreport() {
+        return getBinding().getReport();
+    }
+    
+    public IDatatype myreport(IDatatype name) {
+        return myreport().get(name);
+    }
+    
+    public IDatatype myreport(IDatatype name, IDatatype key) {
+        IDatatype dt = myreport(name);
+        if (dt == null) {
+            return null;
+        }
+        return dt.get(key);
+    }
+    
     // key:string  -> return value of key in report 0
     // key:integer -> return report number key
     public IDatatype report(IDatatype key) {
@@ -92,6 +108,11 @@ public class Report extends Extension implements URLParam {
                 }
             }
         }
+        
+        if (list.isEmpty()) {
+            list.add(myreport());
+        }
+        
         return DatatypeMap.newList(list);
     }
         

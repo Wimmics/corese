@@ -1381,7 +1381,13 @@ public class Graph extends GraphObject implements
     public Iterable<Node> getSortedProperties() {
         return getSubjectIndex().getSortedProperties();
     }
-
+    
+    @Override
+    public IDatatype set(IDatatype key, IDatatype value) {
+        add(addBlank().getDatatypeValue(), key, value);
+        return value;
+    }
+      
     public Edge add(Edge edge) {
         return add(edge, true);
     }

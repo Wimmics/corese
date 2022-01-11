@@ -83,14 +83,14 @@ function sh:targetClassElem(class) {
     }
 }
 
-function sh:targetSubjectElem(predicate) {
-    let (select * (aggregate(distinct ?x) as ?list) where { ?x ?predicate ?y } ) {
+function sh:targetSubjectElem(apredicate) {
+    let (select * (aggregate(distinct ?x) as ?list) where { ?x ?apredicate ?y } ) {
         ?list
     }
 }
 
-function sh:targetObjectElem(predicate) {
-    let (select * (aggregate(distinct ?y) as ?list) where { ?x ?predicate ?y } ) {
+function sh:targetObjectElem(apredicate) {
+    let (select * (aggregate(distinct ?y) as ?list) where { ?x ?apredicate ?y } ) {
         ?list
     }
 }

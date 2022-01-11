@@ -19,6 +19,9 @@ public class Atom extends Expression implements ElementClause{
 	boolean isall = false;
 	boolean isdirect = false;
 	int star;
+        // use case: parser generate triple reference for s p o {| q v |}
+        // object o contain triple reference
+        private Atom tripleReference;
 	
 	public Atom() {
 	}
@@ -114,6 +117,14 @@ public class Atom extends Expression implements ElementClause{
         public void walk(Walker walker) {
             walker.enter(this);
             walker.leave(this);
+    }
+
+    public Atom getTripleReference() {
+        return tripleReference;
+    }
+
+    public void setTripleReference(Atom tripleReference) {
+        this.tripleReference = tripleReference;
     }
 	
 }

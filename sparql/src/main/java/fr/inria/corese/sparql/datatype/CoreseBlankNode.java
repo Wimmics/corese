@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.datatype;
 
+import fr.inria.corese.kgram.api.core.Pointerable;
 import org.eclipse.rdf4j.model.BNode;
 
 import fr.inria.corese.sparql.api.IDatatype;
@@ -22,6 +23,8 @@ import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
 public class CoreseBlankNode extends CoreseResource {
 	static int  code=BLANK;
         boolean variable = false;
+        private boolean triple = false;
+        private Pointerable pointerObject;
 	
 	
 	public CoreseBlankNode(String value) {
@@ -125,5 +128,21 @@ public class CoreseBlankNode extends CoreseResource {
 	public BNode getRdf4jValue() {
 		return CoreseDatatypeToRdf4jValue.convertBNode(this);
 	}
+
+    public Pointerable getPointerObject() {
+        return pointerObject;
+    }
+
+    public void setPointerObject(Pointerable pointerObject) {
+        this.pointerObject = pointerObject;
+    }
+
+    public boolean isTriple() {
+        return triple;
+    }
+
+    public void setTriple(boolean triple) {
+        this.triple = triple;
+    }
 	
 }

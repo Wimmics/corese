@@ -3,6 +3,7 @@ package fr.inria.corese.sparql.datatype;
 import fr.inria.corese.sparql.datatype.extension.CoreseIterate;
 import fr.inria.corese.sparql.datatype.extension.CoreseUndefFuture;
 import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
+import fr.inria.corese.kgram.api.core.Edge;
 import java.util.Hashtable;
 
 import org.slf4j.Logger;
@@ -1024,7 +1025,33 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
 
     public static IDatatype createBlank() {
-        return new CoreseBlankNode(BLANK + COUNT++);
+        return new CoreseBlankNode(blankID());
+    }
+    
+    static String blankID() {
+        return BLANK + COUNT++;
+    }
+    
+    public static IDatatype createTripleReference(String label) {
+        IDatatype dt = new CoreseBlankNode(label);
+        dt.setTriple(true);
+        return dt;
+    }
+    
+    public static IDatatype createTripleReference(Edge e) {
+        IDatatype dt = createTripleReference(blankID());
+        dt.setPointerObject(e);
+        return dt;
+    }
+    
+    // dt1 share dt2
+    public static void shareTripleReference(IDatatype dt1, IDatatype dt2) {
+        if (dt2.isTriple()) {
+            dt1.setTriple(true);
+            if (dt2.getPointerObject()!=null && dt1.getPointerObject()==null) {
+                dt1.setPointerObject(dt2.getPointerObject());
+            }
+        }
     }
 
     /**

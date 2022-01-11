@@ -85,6 +85,12 @@ public class Constant extends Atom {
         cst.setDatatypeValue(DatatypeMap.createBlank(label));
         return cst;
     }
+    
+    public static Constant createTripleReference(String label) {
+        Constant cst = new Constant(label);
+        cst.setDatatypeValue(DatatypeMap.createTripleReference(label));
+        return cst;
+    }
 
     public static Constant createResource(String str) {
         Constant cst = new Constant(str);

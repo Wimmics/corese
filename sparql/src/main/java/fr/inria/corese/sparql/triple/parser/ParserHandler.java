@@ -31,16 +31,26 @@ public class ParserHandler {
     public void setCreator(Creator c) {
         create = c;
     }
-       
+      
+    // s p o1, .. on
     public Exp createTriples(ASTQuery ast, Exp stack, Expression e1, Atom p, ExpressionList list, int n)
             throws ParseException {
         for (Expression e2 : list) {
-            Exp e = createTriple(ast, e1, p, e2);
+            Exp e = genericCreateTriple(ast, e1.getAtom(), p, e2.getAtom()); //createTriple(ast, e1, p, e2);
             if (e != null) {
                 stack.add(n++, e);
             }
         }
         return stack;
+    }
+    
+    Triple genericCreateTriple(ASTQuery ast, Atom s, Atom p, Atom o) throws ParseException {
+        if (o.getAtom().getTripleReference()!=null) {
+            return createTripleStar(ast, s, p, o, o.getAtom().getTripleReference());
+        }
+        else {
+            return createTriple(ast, s, p, o);
+        }
     }
 
     public Triple createTriple(ASTQuery ast, Expression s, Atom p, Expression o) throws ParseException {
@@ -54,25 +64,22 @@ public class ParserHandler {
             return ast.createTriple(s, p, o);
         }
     }
-
+    
     public Triple createTriple(ASTQuery ast, Atom p, List<Atom> list, boolean matchArity) {
+        return createTriple(ast, p, list, matchArity, false);
+    }
+
+    Triple createTriple(ASTQuery ast, Atom p, List<Atom> list, boolean matchArity, boolean nested) {
         if (create != null) {
-            create.triple(p, list);
+            create.triple(p, list, nested);
             return null;
         } else {
-            Triple t = ast.createTriple(p, list);
+            Triple t = ast.createTriple(p, list, nested);
             t.setMatchArity(matchArity);
             return t;
         }
     }
 
-    public Triple createTriple(ASTQuery ast, Atom p, Atom s, Atom o, Atom v) {
-        ArrayList<Atom> list = new ArrayList<Atom>();
-        list.add(s);
-        list.add(o);
-        list.add(v);
-        return createTriple(ast, p, list, true);
-    }
 
     public void graphPattern(Atom g) {
         if (create != null) {
@@ -172,11 +179,44 @@ public class ParserHandler {
         return create != null;
     }
     
+    // <<s p o>>
+    public Atom createNestedTripleStar(ASTQuery ast, Exp stack, Atom s, Atom p, Atom o, Atom v) {
+        Atom ref = createTripleReference(ast, v);
+        return createTripleStar(ast, stack, s, p, o, ref, true);
+    }
+
+   
+    
+    Atom createTripleStar(ASTQuery ast, Exp stack, Atom s, Atom p, Atom o, Atom ref, boolean nested) {
+        Triple t = createTripleStar(ast, s, p, o, ref, nested);
+        if (t != null) {
+            // sparql query (not load turtle)
+            stack.add(t);
+        }
+        return ref;
+    }
+    
+    Triple createTripleStar(ASTQuery ast, Atom s, Atom p, Atom o, Atom ref) {
+        return createTripleStar(ast, s, p, o, ref, false);
+    }
+      
+    Triple createTripleStar(ASTQuery ast, Atom s, Atom p, Atom o, Atom ref, boolean nested) {
+        ArrayList<Atom> list = new ArrayList<>();
+        list.add(s);
+        list.add(o);
+        list.add(ref);
+        return createTriple(ast, p, list, true, nested);
+    }
+    
     /**
      * Generate ref st:
      * <<s p o>> q v
      * triple(s p o ref) . ref q v
-     */    
+     */   
+    public Atom createTripleReference(ASTQuery ast) {
+        return createTripleReference(ast, null);
+    }
+    
     public Atom createTripleReference(ASTQuery ast, Atom var) {
         if (isLoad()) {
             return ast.tripleReferenceDefinition();

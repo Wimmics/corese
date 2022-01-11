@@ -143,6 +143,7 @@ public interface IDatatype
 
     IDatatype get(IDatatype name);
     
+    // json is newInstance, map is newResource
     default IDatatype get(String name) {
         if (name == null) {
             return null;
@@ -292,6 +293,16 @@ public interface IDatatype
 
     @Override
     Pointerable getPointerObject();
+    default void setPointerObject(Pointerable o) {
+    }
+    
+    default boolean isTriple() {
+        return false;
+    }
+    
+    default void setTriple(boolean b) {
+    }
+
     
     void setTripleStore(TripleStore store);
 

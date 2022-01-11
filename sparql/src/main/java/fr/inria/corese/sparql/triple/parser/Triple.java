@@ -30,19 +30,7 @@ import fr.inria.corese.sparql.triple.cst.RDFS;
  */
 public class Triple extends Exp implements Pointerable {
 
-    /**
-     * @return the matchArity
-     */
-    public boolean isMatchArity() {
-        return matchArity;
-    }
 
-    /**
-     * @param matchArity the matchArity to set
-     */
-    public void setMatchArity(boolean matchArity) {
-        this.matchArity = matchArity;
-    }
 
     /**
      * Use to keep the class version, to be consistent with the interface
@@ -87,6 +75,7 @@ public class Triple extends Exp implements Pointerable {
     boolean istype = false;    // rdf:type or <= rdf:type
     boolean isdirect = false;  // direct::rdf:type
     private boolean matchArity = false;
+    private boolean nested = false;
 
     public Triple() {
         setID();
@@ -885,6 +874,24 @@ public class Triple extends Exp implements Pointerable {
             case 2: return getTerm(1).getDatatypeValue();
         }
         return null;
+    }
+    
+  
+    public boolean isMatchArity() {
+        return matchArity;
+    }
+
+   
+    public void setMatchArity(boolean matchArity) {
+        this.matchArity = matchArity;
+    }
+
+    public boolean isNested() {
+        return nested;
+    }
+
+    public void setNested(boolean nested) {
+        this.nested = nested;
     }
        
 }

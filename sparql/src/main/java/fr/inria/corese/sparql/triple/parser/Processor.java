@@ -20,6 +20,11 @@ import fr.inria.corese.sparql.triple.cst.KeywordPP;
 import fr.inria.corese.kgram.api.core.ExpPattern;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
+import static fr.inria.corese.kgram.api.core.ExprType.IS_TRIPLE;
+import static fr.inria.corese.kgram.api.core.ExprType.OBJECT;
+import static fr.inria.corese.kgram.api.core.ExprType.PREDICATE;
+import static fr.inria.corese.kgram.api.core.ExprType.SUBJECT;
+import static fr.inria.corese.kgram.api.core.ExprType.TRIPLE;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.HashMap;
 import java.util.logging.Level;
@@ -653,6 +658,12 @@ public class Processor {
 		defoper(ISNUMERIC, ExprType.ISNUMERIC);
 		defoper(LANG, 	ExprType.LANG);
 		defoper(LANGMATCH, ExprType.LANGMATCH);
+                
+                defoper("triple", TRIPLE);
+                defoper("isTriple", IS_TRIPLE);
+                defoper("subject", SUBJECT);
+                defoper("predicate", PREDICATE);
+                defoper("object", OBJECT);
 		
 		defoper(STRDT, 		ExprType.STRDT);
 		defoper(STRLANG, 	ExprType.STRLANG);

@@ -621,6 +621,13 @@ public class Term extends Expression {
             case ExprType.XT_VERTEX:              
                 return new GraphFunction(name);
                 
+            case ExprType.SUBJECT:
+            case ExprType.OBJECT:
+            case ExprType.PREDICATE: 
+            case ExprType.TRIPLE: 
+            case ExprType.IS_TRIPLE:
+                return new TripleAccess(name);
+                                
             case ExprType.XT_METADATA:
             case ExprType.XT_CONTEXT:  
             case ExprType.XT_QUERY:    

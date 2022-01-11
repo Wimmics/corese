@@ -656,7 +656,7 @@ public class ASTQuery
     }
     
     Constant tripleReferenceConstantBnode() {
-        return createBlankNode();
+        return createTripleReference();
     }
     
     Constant tripleReferenceConstantURI() {
@@ -2143,13 +2143,18 @@ public class ASTQuery
         cst.setExpression(e);
         return cst;
     }
-
+    
     public Triple createTriple(Atom predicate, List<Atom> list) {
+        return createTriple(predicate, list, false);
+    }
+
+    public Triple createTriple(Atom predicate, List<Atom> list, boolean nested) {
         Triple t = createTriple(list.get(0), predicate, list.get(1));
         // triple receive list with additional args only (so remove subject and object from list)
         list.remove(0);
         list.remove(0);
         t.setArgs(list);
+        t.setNested(nested);
         return t;
     }
 
@@ -2573,6 +2578,10 @@ public class ASTQuery
     
     public Constant createBlankNode() {
         return Constant.createBlank("_:bb" + nbbnode++);
+    }
+    
+    public Constant createTripleReference() {
+        return Constant.createTripleReference("_:bb" + nbbnode++);
     }
 
     public Variable metaVariable() {

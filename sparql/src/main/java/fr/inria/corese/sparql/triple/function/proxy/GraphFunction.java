@@ -17,7 +17,6 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.sparql.api.GraphProcessor;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.script.LDScript;
 

@@ -117,7 +117,22 @@ public interface Edge extends Pointerable, Statement {
 		return false;
 	}
         
+        // nested rdf star triple <<s p o>>
+        default boolean isNested() {
+            return false;
+        }
         
+        default boolean isAsserted() {
+            return ! isNested();
+        }
+        
+        default void setNested(boolean b) {
+        }
+        
+        default void setAsserted(boolean b) {
+            setNested(! b);
+        }
+                
         default Node getGraphNode() {
             return getGraph();            
         }
@@ -146,17 +161,20 @@ public interface Edge extends Pointerable, Statement {
             return getNode(0).getDatatypeValue();
         }
         
-        default IDatatype getPropertyValue() {
-            return getProperty().getDatatypeValue();
+      default IDatatype getPropertyValue() {
+        return getPredicateValue();
+      }
+
+    default IDatatype getPredicateValue() {
+        if (getProperty() == null) {
+            return null;
         }
-        
-        default IDatatype getPredicateValue() {
-            return getProperty().getDatatypeValue();
-        }
-        
-        default IDatatype getObjectValue() {
-            return getNode(1).getDatatypeValue();
-        }
+        return getProperty().getDatatypeValue();
+    }
+
+    default IDatatype getObjectValue() {
+        return getNode(1).getDatatypeValue();
+    }
 
 	///////////
 	// RDF4J //

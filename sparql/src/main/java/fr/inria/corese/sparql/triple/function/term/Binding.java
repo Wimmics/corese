@@ -33,11 +33,13 @@ import org.slf4j.Logger;
  */
 public class Binding implements Binder {
     
-    private static final String GRAPH = "graph";
+    private static final String URI = "uri";
     private static final String MAP2 = "m2";
     private static final String MAP1 = "m1";
     private static final String EXP = "str";
     private static final String STMT = "stmt";
+    private static final String LIST = "list";
+    private static final String NUMBER = "number";
     
     static final String NL = System.getProperty("line.separator");
     public static final int UNBOUND = ExprType.UNBOUND;
@@ -856,29 +858,49 @@ public class Binding implements Binder {
     
     /**
      * ProcessVisitorDefault call 
-     * @todo when exp is named graph pattern, there is one call 
-     * with exp for each named graph
-     * 
+     * Generate evaluation report for optional/minus/union graph/service
      */
     public void visit(Exp exp, Node g, Mappings m1, Mappings m2) {
-        IDatatype dt = getReport(exp);
-        getReport().set(STMT+getReport().size(), dt);
+        IDatatype dt = getReport(exp); 
+        dt.set(NUMBER, exp.getNum());
         dt.set(EXP, exp.toString());
         dt.set(MAP1,  DatatypeMap.createObject(m1));
         if (m2!=null){
             dt.set(MAP2,  DatatypeMap.createObject(m2));
         }
         if (g!=null){
-            dt.set(GRAPH,  g.getDatatypeValue());
+            dt.set(URI,  g.getDatatypeValue());
         }
     }
     
     /**
-     * @todo share same report for every call 
-     * on same named graph pattern exp
+     * share same report for every call on same named graph pattern or service exp
+     * exp report contains list(rep_1  rep_n) one rep_i for each uri
      */
     IDatatype getReport(Exp exp) {
-        return DatatypeMap.newServiceReport();
+        IDatatype dt  = DatatypeMap.newServiceReport();
+        
+        if (exp.isGraph() || exp.isService()) {
+            // report -> rep(exp).list = (rep_1 .. rep_n)
+            for (IDatatype pair : getReport()) {
+                IDatatype rep = pair.get(1);
+                
+                if (rep.get(NUMBER).intValue() == exp.getNum()) {
+                    rep.get(LIST).getList().add(dt);
+                    return dt;
+                }
+            }
+            // create new report rep for exp and report list in rep
+            IDatatype rep  = DatatypeMap.newServiceReport();
+            IDatatype list = DatatypeMap.newList(dt);
+            getReport().set(STMT + getReport().size(), rep);
+            rep.set(NUMBER, exp.getNum());
+            rep.set(LIST, list);
+        } else {
+            getReport().set(STMT + getReport().size(), dt);
+        }
+        
+        return dt;
     }
 
     public IDatatype getReport() {

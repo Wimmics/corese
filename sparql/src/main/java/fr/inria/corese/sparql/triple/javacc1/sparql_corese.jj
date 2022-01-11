@@ -1503,13 +1503,13 @@ Atom StarTriple(Exp stack) :
 {
     <LT><LT> 
         sub = StarTerm(stack) pred = Verb() obj = StarTerm(stack) ( refatom = VarOrTerm(stack)  )?
-        { ref = handler.createTripleReference(astq, refatom) ;
-          t = handler.createTriple(astq, pred, sub, obj, ref);
-          if (t != null) { stack.add(t); }
+        { ref = handler.createNestedTripleStar(astq, stack, sub, pred, obj, refatom);
         }
     <GT><GT>
     { return ref; }
 }
+
+
 
 Atom StarTerm(Exp stack) : { Atom term; }
 {
@@ -1601,14 +1601,37 @@ ExpressionList ObjectList(Exp stack): { Expression expression1; ExpressionList v
 }
 
 
-Expression PropertyValue(Exp stack) : { Expression exp; }
+Atom PropertyValue(Exp stack) : { Atom value; Atom tripleRef = null; }
 {
     (
-        exp = GraphNode(stack)
-      | exp = StarTriple(stack)
+        value = GraphNode(stack)
+      | value = StarTriple(stack)
     )
-    { return exp; }
+
+    (LOOKAHEAD(2) tripleRef = AssertedAnnotation(stack)
+        { value.setTripleReference(tripleRef); }
+    ) ?
+
+    { return value; }
 }
+
+
+// s p o  {| q v |}
+Atom AssertedAnnotation(Exp stack) : { Exp exp; Atom tripleRef = null; }
+{    
+    
+    <LBRACE> <BAR> 
+        // subject of annotation triple ref q v
+        // triple ref for s p o ref
+        { tripleRef = handler.createTripleReference(astq); }
+        // annotation triples inserted in stack
+          stack = PropertyListNotEmpty(tripleRef, stack) 
+    <BAR> <RBRACE> 
+
+    { return tripleRef; }
+}
+
+
 
 
 Atom Verb() : { Atom atom; }
@@ -2155,6 +2178,7 @@ Expression BuiltInCall(Exp stack) : { ExpressionList el; Expression exp1 = null,
         | t1 =  <ROUND> | t1 = <FLOOR> | t1 = <CEIL>  | t1 = <ABS> 
         | t1 =  <YEAR> | t1 = <MONTH> | t1 = <DAY> | t1 = <HOURS> | t1 = <MINUTES> | t1 = <SECONDS> | t1 = <TIMEZONE> | t1 = <TZ>
         | t1 = <RETURN> | t1 = <SELF> | t1 = <EVAL> 
+        | t1 = <SUBJECT> | t1 = <OBJECT> | t1 = <PREDICATE> | t1 = <IS_TRIPLE>
    )
  
 
@@ -2189,7 +2213,7 @@ Expression BuiltInCall(Exp stack) : { ExpressionList el; Expression exp1 = null,
     (
     ( t1 = <UNNEST> | t1 = <REGEX> | t1 = <COALESCE> | t1 = <CONCAT> | t1 = <SUBSTR> | t1 = <REPLACE>
     | t1 = <METHOD> | t1 = <FUNCALL> | t1 = <MAP> | t1 = <MAPLIST> | t1 = <MAPMERGE>  
-    | t1 = <MAPFINDLIST> | t1 = <MAPFIND> | t1 = <MAPANY> | t1 = <MAPEVERY> | t1 = <THROW>)
+    | t1 = <MAPFINDLIST> | t1 = <MAPFIND> | t1 = <MAPANY> | t1 = <MAPEVERY> | t1 = <THROW> | t1 = <TRIPLE> )
     <LPAREN> 
     { term =  astq.createFunction(t1.image); }
       exp1 = Expression(stack) { term.add(exp1); }
@@ -3063,6 +3087,10 @@ TOKEN [IGNORE_CASE] :
 | <NOSORT: "nosort">
 | <TUPLE: "tuple">
 | <TRIPLE: "triple">
+| <SUBJECT: "subject">
+| <PREDICATE: "predicate">
+| <OBJECT: "object">
+| <IS_TRIPLE: "isTriple">
 | <XPATH: "xpath">
 | <FUNCTION: "function">
 | <LAMBDA: "lambda">

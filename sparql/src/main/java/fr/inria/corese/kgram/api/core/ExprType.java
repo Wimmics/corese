@@ -100,9 +100,9 @@ public interface ExprType {
 	public static int TZ 		= 75;
 	public static int STR 		= 76;
 
-	public static int STRBEFORE  = 77;
+	public static int STRBEFORE      = 77;
 	public static int STRAFTER 	 = 78;
-	public static int STRREPLACE = 79;
+	public static int STRREPLACE     = 79;
 	public static int FUUID 	 = 80;
 	public static int STRUUID 	 = 81;
 	public static int XSDSTRING 	 = 82;
@@ -111,6 +111,13 @@ public interface ExprType {
         public static int ISLIST 	 = 85;
         public static int ISUNDEFINED 	 = 86;
         public static int ISWELLFORMED 	 = 87;
+        
+        public static int TRIPLE 	 = 88;
+        public static int SUBJECT 	 = 89;
+        public static int PREDICATE 	 = 90;
+        public static int OBJECT 	 = 91;
+        public static int IS_TRIPLE 	 = 92;
+
 
 	
 	// term
@@ -412,6 +419,7 @@ public interface ExprType {
         public static int EDGE_LEVEL  = 501;
         public static int DB          = 502;
         public static int EDGE_ACCESS = 503;
+        public static int EDGE_NESTED = 504;
         
         // DOM XML
         public static int XT_NODE_PROPERTY   = 600;

@@ -93,28 +93,28 @@ function xsd:boolean sh:myclass(?o, ?c){
         exists { ?o rdf:type/rdfs:subClassOf* ?c })
 }
 
-function sh:class(object, class) {
-    exists { ?object rdf:type/rdfs:subClassOf* ?class }
+function sh:class(aobject, class) {
+    exists { ?aobject rdf:type/rdfs:subClassOf* ?class }
 }
 
-function sh:type(object, class) {
-    exists { ?object rdf:type ?class }
+function sh:type(aobject, class) {
+    exists { ?aobject rdf:type ?class }
 }
 
 
-function xsd:boolean sh:in(?object, ?list) {
+function xsd:boolean sh:in(?aobject, ?list) {
         for (value in list) { 
-            if (object = value && if (isLiteral(object), datatype(object) = datatype(value), true)) {
+            if (aobject = value && if (isLiteral(aobject), datatype(aobject) = datatype(value), true)) {
                 return (true)
             } 
         } ;
         return (false)
 }
 
-function xsd:boolean sh:in2(?object, ?lv) {
+function xsd:boolean sh:in2(?aobject, ?lv) {
     let (list = sh:getShapeConstraint(sh:incst, lv)) {
         for (value in list) { 
-            if (object = value && if (isLiteral(object), datatype(object) = datatype(value), true)) {
+            if (aobject = value && if (isLiteral(aobject), datatype(aobject) = datatype(value), true)) {
                 return (true)
             } 
         } ;
@@ -129,9 +129,9 @@ function sh:incst(shape, sh) {
     }
 }
 
-function xsd:boolean sh:languageIn(?object, ?list){
-   if (isLiteral(object)) {
-        let (lan = lang(object)) {
+function xsd:boolean sh:languageIn(?aobject, ?list){
+   if (isLiteral(aobject)) {
+        let (lan = lang(aobject)) {
             for (value in list) { 
                 if (langMatches(lan, value)) {
                     return (true)
@@ -144,9 +144,9 @@ function xsd:boolean sh:languageIn(?object, ?list){
         return (false)
     }
 }
-function xsd:boolean sh:languageIn2(?object, ?lv){
-   if (isLiteral(object)) {
-        let (lan = lang(object), list = sh:getShapeConstraint(sh:incst, lv)) {
+function xsd:boolean sh:languageIn2(?aobject, ?lv){
+   if (isLiteral(aobject)) {
+        let (lan = lang(aobject), list = sh:getShapeConstraint(sh:incst, lv)) {
             for (value in list) { 
                 if (langMatches(lan, value)) {
                     return (true)

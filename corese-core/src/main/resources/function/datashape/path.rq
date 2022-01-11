@@ -291,9 +291,9 @@ function sh:hasValue (report, sh, vis, s, p, v, nodeList) {
     }
 }
 
-function sh:hasValueList (object, list) {
+function sh:hasValueList (aobject, list) {
     for (value in list) {
-        if (coalesce(object = value, false), return(true), true)
+        if (coalesce(aobject = value, false), return(true), true)
     } ;
     return (false)
 }

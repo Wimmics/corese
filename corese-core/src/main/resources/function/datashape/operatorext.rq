@@ -47,8 +47,8 @@ function sh:triplePath(focus, source, element, exp) {
 # [xsh:triplePath (xsh:subject)] | [xsh:triplePath (xsh:subject rdf:type)]
 #
 function xsh:subject(focus, source, node, exp) {
-    let ((name predicate value) = exp) {
-        xt:edges(node, coalesce(if (isBlank(predicate), bnode(), predicate), bnode()), coalesce(value, bnode()), focus)
+    let ((name apredicate value) = exp) {
+        xt:edges(node, coalesce(if (isBlank(apredicate), bnode(), apredicate), bnode()), coalesce(value, bnode()), focus)
     }
 }
 function xsh:predicate(focus, source, node, exp) {
@@ -56,13 +56,13 @@ function xsh:predicate(focus, source, node, exp) {
         xt:edges(bnode(), node, bnode(), focus))
 }
 function xsh:object(focus, source, node, exp) {
-    let ((name predicate) = exp) {
-        xt:edges(bnode(), coalesce(if (isBlank(predicate), bnode(), predicate), bnode()), node, focus)
+    let ((name apredicate) = exp) {
+        xt:edges(bnode(), coalesce(if (isBlank(apredicate), bnode(), apredicate), bnode()), node, focus)
     }
 }
 function xsh:graph(focus, source, node, exp) {
-    let ((name predicate) = exp) {
-        xt:edges(bnode(), coalesce(if (isBlank(predicate), bnode(), predicate), bnode()), bnode(), node)
+    let ((name apredicate) = exp) {
+        xt:edges(bnode(), coalesce(if (isBlank(apredicate), bnode(), apredicate), bnode()), bnode(), node)
     }
 }
 # xsh:subject & xsh:object : adjacent edges
@@ -86,11 +86,11 @@ function sh:isList(element) {
 # exp   = ((xsh:preceding xsh:object) [] (xsh:source xsh:subject))
 #
 function sh:tripleExtension(focus, source, element, exp) {
-    let ((subject predicate object agraph) = exp) {
+    let ((asubject apredicate aobject agraph) = exp) {
         xt:edges(
-            sh:position(subject, source, element), 
-            coalesce(sh:position(predicate, source, element), bnode()),
-            coalesce(sh:position(object,    source, element), bnode()),
+            sh:position(asubject, source, element), 
+            coalesce(sh:position(apredicate, source, element), bnode()),
+            coalesce(sh:position(aobject,    source, element), bnode()),
             coalesce(sh:position(agraph,    source, element), focus))
             #focus)
     }
@@ -186,26 +186,26 @@ function xsh:node(atriple) {
 #
 
 # sh:path ( [ sh:exist (rdf:type) ] )
-function xsh:exist(subject, node, exp) {
+function xsh:exist(asubject, node, exp) {
     #xt:print("with path:", exp);
     if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:exist", xt:list(exp)), true);
     let ((path) = exp, 
-         list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node, subject)) {
+         list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node, asubject)) {
         if (xt:size(list) > 0, xt:list(node), xt:list())
     }
 }
 
 # sh:path ( [ sh:notExist (rdf:type) ] )
-function xsh:notExist(subject, node, exp) {
+function xsh:notExist(asubject, node, exp) {
     if (xt:size(exp) > 1, xt:print("sequence must be inside a list: xsh:notExist", xt:list(exp)), true);
     let ((path) = exp, 
-         list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node, subject)) {
+         list = sh:pathfinder(if (xt:size(exp) > 1, exp, path), node, asubject)) {
         if (xt:size(list) = 0, xt:list(node), xt:list())
     }
 }
 
 # sh:path ( [ sh:filter ([shape constraint]) ] )
-function xsh:filter(subject, node, exp) {
+function xsh:filter(asubject, node, exp) {
     #xt:print("filter shape:", exp);
     let ((shape) = exp, 
           suc = sh:localEval(shape, node)) {
@@ -215,7 +215,7 @@ function xsh:filter(subject, node, exp) {
 
 
 # sh:path ( [ sh:notFilter ([shape constraint]) ] )
-function xsh:notFilter(subject, node, exp) {
+function xsh:notFilter(asubject, node, exp) {
     let ((shape) = exp, 
           suc = sh:eval(shape, node)) {
         if (suc, xt:list(), xt:list(node))
@@ -312,19 +312,19 @@ function sh:notEqual(source, element, exp) {
 
 # xsh:equal()
 #
-function xsh:source(subject, atriple) {
-    subject
+function xsh:source(asubject, atriple) {
+    asubject
 }
-function xsh:subject(subject, atriple) {
+function xsh:subject(asubject, atriple) {
     xt:subject(atriple)
 }
-function xsh:predicate(subject, atriple) {
+function xsh:predicate(asubject, atriple) {
     xt:predicate(atriple)
 }
-function xsh:object(subject, atriple) {
+function xsh:object(asubject, atriple) {
     xt:object(atriple)
 }
-function xsh:graph(subject, atriple) {
+function xsh:graph(asubject, atriple) {
     xt:graph(atriple)
 }
 
@@ -338,16 +338,16 @@ function xsh:graph(subject, atriple) {
 # xsh:function [ xsh:success(true) ]
 #
 
-function sh:success(subject, node, exp) {
+function sh:success(asubject, node, exp) {
     let ((show) = exp) {
-        if (coalesce(show, false), xt:print("success:", sh:pretty(node), sh:pretty(subject)), true);
+        if (coalesce(show, false), xt:print("success:", sh:pretty(node), sh:pretty(asubject)), true);
         return (true)
     }
 }
 
-function sh:failure(subject, node, exp) {
+function sh:failure(asubject, node, exp) {
     let ((show) = exp) {
-        if (coalesce(show, false), xt:print("failure:", sh:pretty(node), sh:pretty(subject)), true);
+        if (coalesce(show, false), xt:print("failure:", sh:pretty(node), sh:pretty(asubject)), true);
         return (false)
     }
 }
@@ -367,11 +367,11 @@ function sh:failure(node, exp) {
     }
 }
 
-function sh:display(subject, nodeList, exp) {
+function sh:display(asubject, nodeList, exp) {
     let ((show) = exp) {
-        if (coalesce(show, false), xt:print("display:", sh:pretty(subject), nodeList), 
+        if (coalesce(show, false), xt:print("display:", sh:pretty(asubject), nodeList), 
         if (coalesce(!show, false) && xt:size(nodeList) > 0,
-            xt:print("display:", sh:pretty(subject), nodeList),
+            xt:print("display:", sh:pretty(asubject), nodeList),
             true));
         return (true)
     }
@@ -442,7 +442,7 @@ function sh:qualifiedmess(node, list, path) {
 # node = target node
 # if property node is missing, coalesce return true
 #
-function xsh:evaluate(subject, node, exp) {
+function xsh:evaluate(asubject, node, exp) {
     coalesce(xsh:compute(node, exp), true)
 }
 
@@ -455,7 +455,7 @@ function xsh:evaluate(node, exp) {
 # (rq:self (URI)) return URI
 # (rq:self) return node
 # 
-function xsh:compute(subject, node, exp) {
+function xsh:compute(asubject, node, exp) {
     xsh:compute(node, exp)
 }
 
@@ -550,7 +550,7 @@ function sh:validURI( url, any) {
     }
 }
 
-function sh:validURI( sh, subject, path, url) {
+function sh:validURI( sh, asubject, path, url) {
     let (value = xt:validURI(url)) {
         return (value)
     }
@@ -579,10 +579,10 @@ function xsh:trace(node, exp) {
 }
 
 # sh:trace = sh:eval with trace
-function xsh:trace(subject, node, exp) {
+function xsh:trace(asubject, node, exp) {
     let ((shape) = exp,
          suc = sh:eval(shape, node)) {
-        xt:print("trace:", subject, node, xt:turtle(shape), suc) ;
+        xt:print("trace:", asubject, node, xt:turtle(shape), suc) ;
         return (suc)
     }
 }

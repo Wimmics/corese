@@ -17,9 +17,9 @@ function sh:sparqlbasic(report, sh, vis, nodeList, p) {
             let (funList = sh:getShapeConstraint(sh:sparqlfunction, cst)) {
         
                 for (node in dt:list(nodeList)) {
-                    for (object in sh:ppath(node, p)) { 
-                            if (sh:trace(), xt:print("path sparql:", node, p, object, q), true);
-                            let (res = sh:mysparql(report, concat(define, q), sh, cst, node, object, vis, 
+                    for (aobject in sh:ppath(node, p)) { 
+                            if (sh:trace(), xt:print("path sparql:", node, p, aobject, q), true);
+                            let (res = sh:mysparql(report, concat(define, q), sh, cst, node, aobject, vis, 
                                 coalesce(mes, sh:null), bound(mes), amin, amax, funList)) {
                                 if (res, true, set(suc = false))
                             } 

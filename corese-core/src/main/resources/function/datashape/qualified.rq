@@ -73,10 +73,10 @@ function sh:shexshacl() {
     }
 }
 
-function sh:qualifiedValueShape(report, sh, vis, subject, path, nodeList, cstList) {
+function sh:qualifiedValueShape(report, sh, vis, asubject, path, nodeList, cstList) {
     if (sh:isShex(), 
-        sh:partitionValueShape(report, sh, vis, subject, path, nodeList, cstList), 
-        sh:shaclQualifiedValueShape(report, sh, vis, subject, path, nodeList, cstList))
+        sh:partitionValueShape(report, sh, vis, asubject, path, nodeList, cstList), 
+        sh:shaclQualifiedValueShape(report, sh, vis, asubject, path, nodeList, cstList))
 }
 
 #
@@ -84,11 +84,11 @@ function sh:qualifiedValueShape(report, sh, vis, subject, path, nodeList, cstLis
 # nodeList : subject path target node list
 # cstList : list(qsh)
 #
-function sh:shaclQualifiedValueShape(report, sh, vis, subject, path, nodeList, cstList) {
+function sh:shaclQualifiedValueShape(report, sh, vis, asubject, path, nodeList, cstList) {
     let (res = true) {
         for ((oper qsh disjoint amin amax) in cstList) {
             let (suc = coalesce(                    
-                sh:shaclQualifiedValueShape(report, sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList) , 
+                sh:shaclQualifiedValueShape(report, sh, vis, asubject, path, qsh, disjoint, amin, amax, nodeList) , 
                 false) ) {
                 if (! suc, set(res = false), true) 
             }
@@ -98,19 +98,19 @@ function sh:shaclQualifiedValueShape(report, sh, vis, subject, path, nodeList, c
 }
 
         
-function sh:shaclQualifiedValueShape (report, sh, vis, subject, path, qsh, disjoint, amin, amax, nodeList) {
+function sh:shaclQualifiedValueShape (report, sh, vis, asubject, path, qsh, disjoint, amin, amax, nodeList) {
         # list = node list that match qualified shape
         # qlist = distinct node list when sh:qualifiedValueShapesDisjoint = true
         #let (list = mapfindlist(sh:qualifiedShape, nodeList,  qsh, xt:list(report)),
         let (list = mapfindlist(sh:qualifiedShape, nodeList,  qsh, report),
             qlist = if (coalesce(disjoint, false), 
                 # remove elements that are in sibling shapes target node list
-                sh:findDisjointList(report, list, qsh, subject, path), 
+                sh:findDisjointList(report, list, qsh, asubject, path), 
                 list),
             suc1 = xt:size(qlist) >= amin, 
             suc2 = if (amax = -1, true, xt:size(qlist) <= amax)) {
-            sh:report(report, sh:qualifiedMinCount, sh, subject, path, subject, suc1, vis) ;
-            sh:report(report, sh:qualifiedMaxCount, sh, subject, path, subject, suc2, vis) ;
+            sh:report(report, sh:qualifiedMinCount, sh, asubject, path, asubject, suc1, vis) ;
+            sh:report(report, sh:qualifiedMaxCount, sh, asubject, path, asubject, suc2, vis) ;
             return (suc1 && suc2)
         }
 }
@@ -122,8 +122,8 @@ function sh:shaclQualifiedValueShape (report, sh, vis, subject, path, qsh, disjo
 # absence of us:genre return false because we will count the number of nodes
 # that *verify* the shape
 #
-function xsd:boolean sh:qualifiedShape(subject, qsh, report){
-    sh:core(report, qsh, false, subject, true)
+function xsd:boolean sh:qualifiedShape(asubject, qsh, report){
+    sh:core(report, qsh, false, asubject, true)
 }
 
 
@@ -134,8 +134,8 @@ function xsd:boolean sh:qualifiedShape(subject, qsh, report){
 # qsh:  qualified value shape with qualifiedValueShapesDisjoint=true
 # return sublist of nodes disjoint with node lists of sibling shapes
 #
-function sh:findDisjointList(report, nodeList, qsh, subject, currentPath) {
-    let (siblingNodeList     = sh:siblingNodeList(report, qsh, subject, currentPath, nodeList),
+function sh:findDisjointList(report, nodeList, qsh, asubject, currentPath) {
+    let (siblingNodeList     = sh:siblingNodeList(report, qsh, asubject, currentPath, nodeList),
         mergeSiblingNodeList = reduce(xt:append, siblingNodeList),
         result = mapfindlist(
             function(node, list) { ! xt:member(node, list) },
@@ -148,11 +148,11 @@ function sh:findDisjointList(report, nodeList, qsh, subject, currentPath) {
 #
 # return list of sibling shape qualified node list
 #
-function sh:siblingNodeList(report, qsh, subject, currentPath, nodeList) {
+function sh:siblingNodeList(report, qsh, asubject, currentPath, nodeList) {
     let (siblingNodeList = xt:list(), cardList = xt:list(),
          cstList = coalesce(sh:getConstraint(sh:sibling, qsh), xt:list())) {
         for ((sh, path, amin, amax) in cstList) {
-            let (target = if (coalesce(sh:samePath(currentPath, path), false), nodeList, sh:ppath(subject, path)),
+            let (target = if (coalesce(sh:samePath(currentPath, path), false), nodeList, sh:ppath(asubject, path)),
                  #targetQualified =  mapfindlist(sh:qualifiedShape, target,  sh, xt:list(report))) {
                  targetQualified =  mapfindlist(sh:qualifiedShape, target,  sh, report)) {
                 xt:add(siblingNodeList, targetQualified) ;

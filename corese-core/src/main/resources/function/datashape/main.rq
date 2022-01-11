@@ -6,6 +6,7 @@
 prefix sh:   <http://www.w3.org/ns/shacl#> 
 prefix xsh:  <http://www.w3.org/ns/shacl#> 
 prefix shex: <http://ns.inria.fr/shex/shacl#>
+prefix fun:  <function://fr.inria.corese.core.extension.Extension>
 
 @import  <api/define.rq> <focus.rq> <ppathparser.rq> <ppath.rq> <operator.rq> <operatorext.rq> <core.rq>  <path.rq> <constraint.rq>  <target.rq> <report.rq>
 
@@ -78,6 +79,7 @@ function dt:graph sh:shaclnode(node) {
 # focus = mappings or list(sh=nodeShape; list=targetNodeList)
 #
 function dt:graph sh:shacl(dt:graph shape, focus) {
+    #fun:test(shape, focus) ;
     xt:event("@beforeShacl", focus);
     sh:start(shape) ;
     let (suc = sh:shacleval(shape, focus)) {
@@ -223,17 +225,17 @@ function sh:initvariable() {
     coalesce(sh:trace(), sh:trace(!true))
 }
 
-function sh:push(sh, object) {
-    xt:add(stack, xt:list(sh, object))
+function sh:push(sh, obj ) {
+    xt:add(stack, xt:list(sh, obj ))
 }
 
 function sh:pop() {
     xt:removeindex(stack, xt:size(stack) - 1)
 }
 
-function sh:contains(sh, object) {
+function sh:contains(sh, obj ) {
     for ((name value) in stack) {
-        if (name == sh && object == value) {
+        if (name == sh && obj  == value) {
             return(true)
         }
     } ;

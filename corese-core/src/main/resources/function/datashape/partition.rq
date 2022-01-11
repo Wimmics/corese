@@ -37,12 +37,12 @@ function sh:setdsp(bb) {
 # consider sibling qualifiedValueShape with same path if any, 
 # compute a partition of relevant subset of nodeList that matches cardinality constraint of each sibling qvs
 #
-function sh:partitionValueShape(report, sh, vis, subject, path, nodeList, cstList) {
+function sh:partitionValueShape(report, sh, vis, asubject, path, nodeList, cstList) {
     let (res = true) {
         for ((oper qsh disjoint amin amax extra) in cstList) {
             # there is one qvs in cstList
             let (suc = coalesce(                    
-                sh:partitionValueShape(report, sh, vis, extra, subject, path, qsh, disjoint, amin, amax, nodeList) , 
+                sh:partitionValueShape(report, sh, vis, extra, asubject, path, qsh, disjoint, amin, amax, nodeList) , 
                 false) ) {
                 if (! suc, set(res = false), true) 
             }
@@ -56,14 +56,14 @@ function sh:partitionValueShape(report, sh, vis, subject, path, nodeList, cstLis
 # sh: property shape ; qsh: qualified shape ; nodeList: subject path object node list
 # extra = true: extra values authorized for subject path  in addition to qualified values
 #
-function sh:partitionValueShape (report, sh, vis, extra, subject, path, qsh, disjoint, amin, amax, nodeList) {
+function sh:partitionValueShape (report, sh, vis, extra, asubject, path, qsh, disjoint, amin, amax, nodeList) {
         # list = node list that match qualified shape
         sh:dsp("shex partition:");
-        sh:dsp(subject, path, nodeList);
+        sh:dsp(asubject, path, nodeList);
         
         let (opt = sh:getShapeConstraint(sh:optional, sh),
             list = mapfindlist(sh:qualifiedShape, nodeList,  qsh, report),
-            (partList cardList) = sh:partitionSiblingNodeList(report, qsh, subject, path, nodeList),
+            (partList cardList) = sh:partitionSiblingNodeList(report, qsh, asubject, path, nodeList),
             candidate   = xt:cons(list, partList),
             cardinality = xt:cons(xt:list(amin, amax), cardList)) {
             
@@ -74,7 +74,7 @@ function sh:partitionValueShape (report, sh, vis, extra, subject, path, qsh, dis
                 # check there is no extra node in nodeList that does not match any qvs
                 let (res = ! sh:extra(nodeList, candidate)) {
                     sh:dsp("extra:", res);
-                    sh:report(report, shex:extra, sh, subject, path, subject, res, vis) ;
+                    sh:report(report, shex:extra, sh, asubject, path, asubject, res, vis) ;
                 }
             } ;
             
@@ -83,7 +83,7 @@ function sh:partitionValueShape (report, sh, vis, extra, subject, path, qsh, dis
                 
             let (res = sh:prepare(candidate, cardinality)) {
                 sh:dsp("partition:", res);
-                sh:report(report, shex:qualifiedValueShape, sh, subject, path, subject, res, vis) ;
+                sh:report(report, shex:qualifiedValueShape, sh, asubject, path, asubject, res, vis) ;
                 return (res)
             }
         }
@@ -100,7 +100,7 @@ function sh:extra(nodeList, candidate) {
 #
 # return list of sibling shape with same path qualified node list 
 #
-function sh:partitionSiblingNodeList(report, qsh, subject, currentPath, nodeList) {
+function sh:partitionSiblingNodeList(report, qsh, asubject, currentPath, nodeList) {
     let (siblingNodeList = xt:list(), cardList = xt:list(),
         cstList = coalesce(sh:getConstraint(sh:sibling, qsh), xt:list())) {
         for ((sh, path, amin, amax) in cstList) {

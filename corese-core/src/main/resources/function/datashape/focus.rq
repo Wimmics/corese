@@ -11,8 +11,8 @@ prefix xsh: <http://www.w3.org/ns/shacl#>
 
 # targetFunction return triples of predicate 
 function xsh:triple(exp) {
-    let ((predicate) = exp) {
-        xt:edges(predicate)
+    let ((apredicate) = exp) {
+        xt:edges(apredicate)
     }
 }
 
@@ -131,8 +131,8 @@ query (
 
 
 
-function sh:getEdges(predicate) {
-    xt:edges(if (isBlank(predicate), bnode(), predicate))
+function sh:getEdges(apredicate) {
+    xt:edges(if (isBlank(apredicate), bnode(), apredicate))
 }
 
 #

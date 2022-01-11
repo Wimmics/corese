@@ -258,8 +258,8 @@ function sh:getFunctionTriple(name, arg) {
 # xsh:tripleExtension((xsh:preceding xsh:subject)) OR xsh:triplePath(xsh:subject)  
 #
 function sh:getFunctionTripleBasic(name, arg) {
-    let ((subject predicate object) = arg) {
-        if (coalesce(sh:isExtensionTriple(subject) || sh:isExtensionTriple(object), false),
+    let ((subj pred obj) = arg) {
+        if (coalesce(sh:isExtensionTriple(subj) || sh:isExtensionTriple(obj), false),
             sh:tripleExtension, sh:triplePath)
     }
 }
@@ -273,8 +273,8 @@ function sh:isExtensionTriple(node) {
 # predicate is a nested constraint
 #
 function sh:isNestedPredicate(name, arg) {
-    let ((subject predicate) = arg) {
-       coalesce(sh:isExtensionTriple(predicate) && xt:first(predicate) in  (xsh:exist, xsh:filter), false)
+    let ((asubject apredicate) = arg) {
+       coalesce(sh:isExtensionTriple(apredicate) && xt:first(apredicate) in  (xsh:exist, xsh:filter), false)
     }
 }
 
@@ -301,14 +301,14 @@ function sh:defineFunctionTriple(name, arg) {
 #  (xsh:exist  ((xsh:nodePath xsh:predicate)(rdfs:subPropertyOf*)(xsh:object h:hasAncestor)))
 #
 function sh:nest(name, arg) {
-    let ((subject predicate object) = arg, 
-          (oper value) = predicate,
+    let ((subj pred obj) = arg, 
+          (oper value) = pred,
           exist   = (oper = xsh:exist),
           aname   = sh:getFunctionTripleBasic(name, arg),
-          atriple = sh:funpath(aname, xt:list(subject, bnode(), coalesce(object, bnode()))),
+          atriple = sh:funpath(aname, xt:list(subj, bnode(), coalesce(obj, bnode()))),
           proj    = sh:funpath(xsh:nodePath,   xt:list(xsh:predicate)),
-          pred    = if (exist, sh:path(sh:shaclGraph(), value), value),
-          test    = if (exist, xt:cons(proj, xt:get(pred, 1)), xt:list(proj, sh:funpath(oper, value))),
+          pp      = if (exist, sh:path(sh:shaclGraph(), value), value),
+          test    = if (exist, xt:cons(proj, xt:get(pp, 1)), xt:list(proj, sh:funpath(oper, value))),
           path    = sh:sequence(test)
           ) {
         # record exist path has already compiled

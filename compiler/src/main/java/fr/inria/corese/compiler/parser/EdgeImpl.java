@@ -27,6 +27,7 @@ public class EdgeImpl extends PointerObject implements Edge {
     Triple triple;
     int index = -1;
     boolean matchArity = false;
+    private boolean nested = false;
 
     public EdgeImpl() {
         this(TOP);
@@ -34,13 +35,14 @@ public class EdgeImpl extends PointerObject implements Edge {
 
     public EdgeImpl(String label) {
         this.label = label;
-        nodes = new ArrayList<Node>();
+        nodes = new ArrayList<>();
     }
 
     public EdgeImpl(Triple t) {
         label = t.getProperty().getLongName();
         triple = t;
-        nodes = new ArrayList<Node>();
+        nodes = new ArrayList<>();
+        setNested(t.isNested());
         setMatchArity(t.isMatchArity());
     }
 
@@ -297,6 +299,14 @@ public class EdgeImpl extends PointerObject implements Edge {
         }
 
         return true;
+    }
+
+    public boolean isNested() {
+        return nested;
+    }
+
+    public void setNested(boolean nested) {
+        this.nested = nested;
     }
 
 }

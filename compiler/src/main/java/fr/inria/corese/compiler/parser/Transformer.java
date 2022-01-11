@@ -762,7 +762,6 @@ public class Transformer implements ExpType {
             }
             exp.setNodeSet(list);
         }
-        //exp.setNumber(incrNumber());
         exp.setNumber(service.getNumber());
         return exp;
     }
@@ -1377,6 +1376,7 @@ public class Transformer implements ExpType {
                 
         }
 
+        exp.setNum(incrNumber());
         return exp;
 
     }
@@ -1902,9 +1902,7 @@ public class Transformer implements ExpType {
         this.functionCompiler = functionCompiler;
     }
 
-    /**
-     * @return the number
-     */
+   
     public int getNumber() {
         return number;
     }
@@ -1913,9 +1911,6 @@ public class Transformer implements ExpType {
         return number++;
     }
 
-    /**
-     * @param number the number to set
-     */
     public void setNumber(int number) {
         this.number = number;
     }

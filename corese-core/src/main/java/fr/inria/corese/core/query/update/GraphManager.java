@@ -199,16 +199,7 @@ public class GraphManager {
 
     public void addGraphNode(Node node) { 
         getDataBroker().addGraphNode(node);
-    }
-    
-//        public void addGraphNode(Node node) {
-//        Node node = graph.getNode(source);
-//        if (node == null){
-//            node = source;
-//        }
-//        graph.addGraphNode(node);
-//        return node;     
-//    }
+    }    
     
     /**
      * Create temporary Edge for construct / update

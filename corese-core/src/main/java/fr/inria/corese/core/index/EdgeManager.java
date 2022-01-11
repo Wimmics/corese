@@ -48,7 +48,7 @@ public class EdgeManager implements Iterable<Edge> {
         graph = indexer.getGraph();
         this.indexer = indexer;        
         predicate = p;
-        list = new ArrayList<Edge>();
+        list = new ArrayList<>();
         index = i;
         if (index == 0) {
             other = 1;
@@ -89,12 +89,15 @@ public class EdgeManager implements Iterable<Edge> {
         ArrayList<Edge> l = new ArrayList<>();
         Edge pred = null;
         int count = 0, ind = 0;
+        //System.out.println("before reduce: " + list);
+        
         for (Edge edge : list) {
             if (pred == null) {
                 l.add(edge);
                 mgr.add(edge.getNode(index), predicate, ind);
                 ind++;
-            } else if (equalExceptMetadata(pred, edge)) {
+            } else if (equalExceptIfMetadata(pred, edge)) {
+                // skip edge
                 count++;
             } else {
                 l.add(edge);
@@ -105,19 +108,21 @@ public class EdgeManager implements Iterable<Edge> {
             }
             pred = edge;
         }
+        
         list = l;
         if (count > 0) {
             graph.setSize(graph.size() - count);
         }
+        //System.out.println("after reduce: " + list);
         return count;
     }
     
     /**
-     * return true when edges are equal, except if e2 has metadata
+     * return true when edges are equal, except if one has metadata
      */
-    boolean equalExceptMetadata(Edge e1, Edge e2) {
+    boolean equalExceptIfMetadata(Edge e1, Edge e2) {
         if (comp.compare(e1, e2) == 0) {
-            if (graph.isEdgeMetadata() && e2.getNode(meta) != null) {
+            if (graph.isEdgeMetadata() && (e1.getNode(meta) != null || e2.getNode(meta) != null)) {
                 indexer.setLoopMetadata(true);
                 return false;
             }
@@ -133,11 +138,15 @@ public class EdgeManager implements Iterable<Edge> {
      * Context: RDF*
      * Merge duplicate triples, keep one metadata node
      * PRAGMA: index = 0, list is sorted and reduced
+     * rdf* triple with same g s p o  and with or without ref id are not yet reduced
+     * because they are considered equal by compare()
+     * we remove these duplicate here and keep triple with ref id if any
      */
     void metadata() {
         ArrayList<Edge> l = new ArrayList<>();
         Edge e1 = null;
         int count = 0;
+        
         for (Edge e2 : list) { 
             if (e1 == null) {
                 e1 = e2;
@@ -147,12 +156,16 @@ public class EdgeManager implements Iterable<Edge> {
                 //  g s p o t1 vs g s p o t2
                 //  keep g s p o t1
                 if (e1.getNode(meta) == null) { 
+                    // e2 replace e1
+                    share(e2, e1);
                     e1 = e2;
                     l.set(l.size()-1, e2);
                     count ++;
                 }  
                 else {
+                    share(e1, e2);
                     merge(e1, e2);
+                    // e1 replace e2
                     count ++;
                 }
             }
@@ -173,31 +186,15 @@ public class EdgeManager implements Iterable<Edge> {
             graph.setSize(graph.size() - count);
         }
     }
-      
-    /** 
-     * g1 s p o t1 . g2 s p o t2
-       replace by 
-       g1 s p o t1 . g2 s p o t1
-    */
-    void name(Edge e1, Edge e2, List<Edge> list) {
-        if (e1.getNode(meta) != null) {
-            if (e2.getNode(meta) != null) {
-                merge(e1, e2);
-                e2.setNode(meta, e1.getNode(meta));
-            } else {
-                e2 = graph.getEdgeFactory().name(e2, predicate, e1.getNode(meta));
-            }
-        } else if (e2.getNode(meta) != null) {
-            e1 = graph.getEdgeFactory().name(e1, predicate, e2.getNode(meta));
-            list.set(list.size() - 1, e1);
-        } else {
-            // safety in case there is a third one with a name
-            e1 = graph.getEdgeFactory().name(e1, predicate, graph.addTripleName());
-            e2 = graph.getEdgeFactory().name(e2, predicate, e1.getNode(meta));
-            list.set(list.size() - 1, e1);
+    
+    // e1 replace e2
+    void share(Edge e1, Edge e2) {
+       if (e2.isAsserted()) {
+            e1.setAsserted(true);
         }
-        list.add(e2);
     }
+      
+
      
     // keep only one metadata node (e1)
     void merge(Edge e1, Edge e2) {
@@ -222,6 +219,31 @@ public class EdgeManager implements Iterable<Edge> {
         if (b) {
            complete();
         }
+    }
+    
+    /** 
+     * g1 s p o t1 . g2 s p o t2
+       replace by 
+       g1 s p o t1 . g2 s p o t1
+    */
+    void name(Edge e1, Edge e2, List<Edge> list) {
+        if (e1.getNode(meta) != null) {
+            if (e2.getNode(meta) != null) {
+                merge(e1, e2);
+                e2.setNode(meta, e1.getNode(meta));
+            } else {
+                e2 = graph.getEdgeFactory().name(e2, predicate, e1.getNode(meta));
+            }
+        } else if (e2.getNode(meta) != null) {
+            e1 = graph.getEdgeFactory().name(e1, predicate, e2.getNode(meta));
+            list.set(list.size() - 1, e1);
+        } else {
+            // safety in case there is a third one with a name
+            e1 = graph.getEdgeFactory().name(e1, predicate, graph.addTripleName());
+            e2 = graph.getEdgeFactory().name(e2, predicate, e1.getNode(meta));
+            list.set(list.size() - 1, e1);
+        }
+        list.add(e2);
     }
       
     void complete() {
@@ -351,7 +373,7 @@ public class EdgeManager implements Iterable<Edge> {
         if (i >= list.size()) {
             i = list.size();
         } else if (index == 0) {
-            if (equalExceptMetadata(list.get(i), edge)) {
+            if (equalExceptIfMetadata(list.get(i), edge)) {
                 // eliminate duplicate at load time for index 0                   
                 return -1;
             }
@@ -722,6 +744,10 @@ public class EdgeManager implements Iterable<Edge> {
 
     /**
      * Compare two edges to sort them in Index
+     * rdf star edge are equal when g s p o are equal 
+     * wether or not there is a triple ref id
+     * @note:  sort edge list is not deterministic for rdf star triple ...
+     * list will be reduced by metadata()
      */
      Comparator<Edge> getComparator() {
 
@@ -740,9 +766,9 @@ public class EdgeManager implements Iterable<Edge> {
                 if (res != 0) {
                     return res;
                 }
-                
+                                
                 if (o1.nbNode() == 2 && o2.nbNode() == 2 || graph.isMetadataNode()) {
-                    // compare third Node
+                    // compare third Node (i.e. graph in the general case)
                     res = compareNodeTerm(o1.getNode(next), o2.getNode(next));
                     return res;
                 }

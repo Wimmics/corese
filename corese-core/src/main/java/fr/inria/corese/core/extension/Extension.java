@@ -170,6 +170,9 @@ public class Extension extends Core {
                 case IDatatype.MAPPING_DATATYPE:  return list(dt.getPointerObject().getMapping());
             }
         }
+        if (dt.isTriple() && dt.getPointerObject()!=null) {
+            return list(dt.getPointerObject().getEdge());
+        }
         if (dt.getObject() != null && dt.getObject() instanceof Enumeration) {
             return DatatypeMap.newList((Enumeration) dt.getObject());
         }
@@ -177,6 +180,12 @@ public class Extension extends Core {
             return DatatypeMap.newList((Object[]) dt.getObject());
         }
         return DatatypeMap.list();
+    }
+    
+    IDatatype list(Edge e) {
+        IDatatypeList list = DatatypeMap.newList(
+                e.getSubjectValue(), e.getPredicateValue(), e.getObjectValue());
+        return DatatypeMap.newList(list);
     }
     
     // Mappings as list(list(var, val))

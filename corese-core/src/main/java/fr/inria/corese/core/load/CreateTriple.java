@@ -88,6 +88,10 @@ public class CreateTriple {
         return graph.create(g, p, list);
     }
     
+    Edge create(Node g, Node p, List<Node> list, boolean nested) {
+        return graph.create(g, p, list);
+    }
+    
     /**
      * Graph api
      */

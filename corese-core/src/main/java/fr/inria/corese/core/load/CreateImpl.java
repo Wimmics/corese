@@ -16,6 +16,7 @@ import fr.inria.corese.core.Graph;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
  *
@@ -124,7 +125,7 @@ public class CreateImpl extends CreateTriple implements Creator {
     }
 
     @Override
-    public void triple(Atom property, List<Atom> l) {
+    public void triple(Atom property, List<Atom> l, boolean nested) {
         if (source == null) {
             source = addDefaultGraphNode();
         }
@@ -137,11 +138,14 @@ public class CreateImpl extends CreateTriple implements Creator {
             list.add(n);
         }
 
-        Edge e = create(source, p, list);
+        Edge e = create(source, p, list, nested);
         add(e);
     }
 
-   
+   @Override
+    public void triple(Atom property, List<Atom> l) {
+        triple(property, l, false);
+    }
 
     @Override
     public void list(RDFList l) {
@@ -197,15 +201,21 @@ public class CreateImpl extends CreateTriple implements Creator {
 
     Node getNode(Atom c) {
         if (c.isBlank() || c.isBlankNode()) {
-            return addBlank(getID(c.getLabel()));
+            return getBlank(c);
         } else {
             return addResource(c.getLabel());
         }
     }
+    
+    Node getBlank(Atom c) {
+        Node n = addBlank(getID(c.getLabel()));
+        DatatypeMap.shareTripleReference(n.getDatatypeValue(), c.getDatatypeValue());
+        return n;
+    }
 
     Node getSubject(Atom c) {
         if (c.isBlank() || c.isBlankNode()) {
-            return addBlank(getID(c.getLabel()));
+            return getBlank(c);
         } else {
             if (resource == null || !resource.equals(c.getLabel())) {
                 resource = c.getLabel();

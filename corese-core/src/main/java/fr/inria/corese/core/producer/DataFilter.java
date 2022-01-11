@@ -27,6 +27,7 @@ public class DataFilter implements ExprType {
     int index, other = 1;
     byte level = AccessRight.DEFAULT;
     private AccessRight accessRight;
+    private boolean nested;
     
     private IDatatype value;
     
@@ -54,6 +55,11 @@ public class DataFilter implements ExprType {
     public DataFilter(int test, AccessRight ac){
        this.test = test;
        setAccessRight(ac);
+    } 
+    
+    public DataFilter(int test, boolean nested){
+       this.test = test;
+       setNested(nested);
     } 
     
     public DataFilter(int test, IDatatype dt){
@@ -127,7 +133,13 @@ public class DataFilter implements ExprType {
                 return result(ent.getIndex() >= index);
                 
             case EDGE_ACCESS:
-                return getAccessRight().acceptWhere(ent.getLevel());    
+                return getAccessRight().acceptWhere(ent.getLevel());  
+                
+            case EDGE_NESTED:
+                // if query edge is
+                // nested:   asserted and nested edge is ok
+                // asserted: asserted edge ok, nested edge not ok
+                return (isNested()) ? true : ! ent.isNested();
                 
             default:
                 IDatatype dt =  getValue(ent, index);
@@ -226,6 +238,14 @@ public class DataFilter implements ExprType {
      */
     public void setAccessRight(AccessRight accessRight) {
         this.accessRight = accessRight;
+    }
+
+    public boolean isNested() {
+        return nested;
+    }
+
+    public void setNested(boolean nested) {
+        this.nested = nested;
     }
     
 

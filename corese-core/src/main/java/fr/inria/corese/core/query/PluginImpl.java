@@ -765,6 +765,12 @@ public class PluginImpl
         }
         return  n.getDatatypeValue();
     }
+    
+    @Override
+    public IDatatype triple(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
+        Edge e = getGraph(p).create(subj, pred, obj);
+        return DatatypeMap.createTripleReference(e);
+    }
 
     /*
      * Return Loopable with edges
@@ -844,7 +850,7 @@ public class PluginImpl
     }
 
     private IDatatype access(Expr exp, Environment env, Producer p, IDatatype dt) {
-        if (!(dt.isPointer() && dt.pointerType() == TRIPLE)) {
+        if (!(dt.isPointer() && dt.pointerType() == PointerType.TRIPLE)) {
             return null;
         }
         Edge ent = dt.getPointerObject().getEdge();

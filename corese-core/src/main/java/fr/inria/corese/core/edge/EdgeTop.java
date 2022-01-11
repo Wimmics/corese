@@ -24,6 +24,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     private byte level = AccessRight.DEFAULT;
     private static final long serialVersionUID = 2087591563645988076L;
     public static boolean DISPLAY_EDGE_AS_RDF4J = false;
+    private boolean nested = false;
 
     public Edge copy() {
         return create(getGraph(), getNode(0), getEdgeNode(), getNode(1));
@@ -184,5 +185,13 @@ public abstract class EdgeTop extends GraphObject implements Edge {
         }
 
         return sb.toString();
+    }
+
+    public boolean isNested() {
+        return nested;
+    }
+
+    public void setNested(boolean nested) {
+        this.nested = nested;
     }
 }

@@ -1134,6 +1134,10 @@ public class Graph extends GraphObject implements
     public boolean isEdgeMetadata() {
         return edgeMetadata;
     }
+    
+    public boolean isRDFStar() {
+        return edgeMetadata;
+    }
 
     public void setEdgeMetadata(boolean b) {
         edgeMetadata = b;
@@ -1626,7 +1630,11 @@ public class Graph extends GraphObject implements
     }
 
     public Edge create(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
-        return null;
+        return create(getCreateNode(source), getCreateNode(subject), getCreateNode(predicate), getCreateNode(value));
+    }
+    
+    public Edge create(IDatatype subject, IDatatype predicate, IDatatype value) {
+        return create(getDefaultGraphNode(), getCreateNode(subject), getCreateNode(predicate), getCreateNode(value));
     }
 
     @Override

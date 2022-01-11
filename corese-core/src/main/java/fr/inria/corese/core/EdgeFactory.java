@@ -218,6 +218,10 @@ public class EdgeFactory {
     public Edge create(Node source, Node predicate, List<Node> list) {
         EdgeImpl ee = EdgeImpl.create(source, predicate, list);
         ee.setMetadata(graph.isMetadata());
+        if (graph.isRDFStar() && list.size()>2) {            
+            list.get(2).getDatatypeValue().setTriple(true);
+            list.get(2).getDatatypeValue().setPointerObject(ee);
+        }
         return ee;
     }
     

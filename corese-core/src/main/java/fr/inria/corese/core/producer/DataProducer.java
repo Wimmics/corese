@@ -296,6 +296,12 @@ public class DataProducer extends GraphObject
         return  this;
     }
     
+    // nested triple
+    public DataProducer status(boolean nested){
+        setFilter(new DataFilter(ExprType.EDGE_NESTED, nested));
+        return  this;
+    }
+    
     public DataProducer named(){
         this.isNamedGraph = true;
         return this;

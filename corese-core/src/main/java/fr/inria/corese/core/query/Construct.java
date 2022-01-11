@@ -23,6 +23,7 @@ import fr.inria.corese.core.rule.Rule;
 import fr.inria.corese.core.util.Duplicate;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.util.TreeMap;
@@ -452,7 +453,6 @@ public class Construct
             graphManager.add(subject);
             graphManager.add(object);
             graphManager.addPropertyNode(property);
-            //source = 
             graphManager.addGraphNode(source);
         }
 
@@ -478,6 +478,7 @@ public class Construct
         if (getProvenance() != null){
             ee.setProvenance(getProvenance());
         }
+        ee.setNested(edge.isNested());
         return ee;
     }
 
@@ -610,6 +611,7 @@ public class Construct
             str = graphManager.newBlankID();
         }
         IDatatype dt = graphManager.createBlank(str);
+        DatatypeMap.shareTripleReference(dt, qNode.getDatatypeValue());
         return dt;
     }
 
@@ -653,7 +655,7 @@ public class Construct
 
     String getID(Mapping map) {
         String str = "";
-        List<Node> list = new ArrayList<Node>();
+        List<Node> list = new ArrayList<>();
         for (Node node : map.getQueryNodes()) {
             list.add(node);
         }

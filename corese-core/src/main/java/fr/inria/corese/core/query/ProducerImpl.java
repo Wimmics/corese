@@ -35,6 +35,7 @@ import fr.inria.corese.core.api.DataBroker;
 import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.producer.DataBrokerExtern;
 import fr.inria.corese.core.producer.DataBrokerLocal;
+import fr.inria.corese.core.util.Property;
 import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
 import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -293,7 +294,8 @@ public class ProducerImpl
             it = graph.getDataStore().getDefault(emptyFrom).iterate(predicate, focusNode, focusNodeIndex);
         } else {
             boolean skip = graph.isEdgeMetadata() && edge.nbNode()==2;
-            it = getEdges(namedGraphURI, getNode(namedGraphURI, env), from, predicate, focusNode, objectNode, focusNodeIndex, skip, getAccessRight(env));
+            it = getEdges(namedGraphURI, getNode(namedGraphURI, env), from, predicate, focusNode, objectNode, focusNodeIndex, 
+                    skip, getAccessRight(env), edge.isNested());
         }
         // in case of local Matcher
         it = localMatch(it, namedGraphURI, edge, env);
@@ -323,8 +325,7 @@ public class ProducerImpl
     }
     
     AccessRight getAccessRight(Environment env) {
-        Binding b = (Binding) env.getBind();
-        return b.getAccessRight();
+        return env.getBind().getAccessRight();
     }
     
 
@@ -336,13 +337,15 @@ public class ProducerImpl
      * int n:  the index of focusNode in the triple: subject=0, object=1, graph=Graph.IGRAPH
      */
     public Iterable<Edge> getEdges(Node queryGraphNode, Node targetGraphNode, List<Node> from,
-            Node predicate, Node focusNode, Node objectNode, int focusNodeIndex, boolean skip, AccessRight access) {
+            Node predicate, Node focusNode, Node objectNode, int focusNodeIndex, 
+            boolean skip, AccessRight access, boolean nested) {
         if (hasDataManager()) {
             // external graph iterator
-            return getExternalEdges(queryGraphNode, targetGraphNode, from, predicate, focusNode, objectNode, focusNodeIndex);
+            return getExternalEdges(queryGraphNode, targetGraphNode, from, 
+                    predicate, focusNode, objectNode, focusNodeIndex, nested);
         } else {
             // corese graph iterator
-            return getDataProducer(queryGraphNode, targetGraphNode, from, skip, access)
+            return getDataProducer(queryGraphNode, targetGraphNode, from, skip, access, nested)
                     .iterate(predicate, focusNode, focusNodeIndex);
         }
     }
@@ -359,7 +362,7 @@ public class ProducerImpl
      * @return 
      */
     public Iterable<Edge> getExternalEdges(Node queryGraphNode, Node targetGraphNode, 
-            List<Node> from, Node predicate, Node focusNode, Node objectNode, int focusNodeIndex) {
+            List<Node> from, Node predicate, Node focusNode, Node objectNode, int focusNodeIndex, boolean nested) {
         
         List<Node> list = getFrom(targetGraphNode, from);
         Node subject = (focusNodeIndex==0)?focusNode:null;
@@ -370,7 +373,6 @@ public class ProducerImpl
             property = null;
         }
         
-
         return getDataBroker().getEdgeList(subject, property, object, list);
     }
     
@@ -396,7 +398,7 @@ public class ProducerImpl
      */
     //@Override
     public DataManager newInstance(Node queryGraphNode, Node targetGraphNode, List<Node> from, boolean skipMetadataNode, AccessRight access) {
-        return getDataProducer(queryGraphNode, targetGraphNode, from, skipMetadataNode, access);
+        return getDataProducer(queryGraphNode, targetGraphNode, from, skipMetadataNode, access, false);
     }
     
 
@@ -409,7 +411,8 @@ public class ProducerImpl
      * @param access: access right to skip triples whose access would be forbidden
      * @return DataProducer
      */
-    DataProducer getDataProducer(Node queryGraphNode, Node targetGraphNode, List<Node> from, boolean skip, AccessRight access) {
+    DataProducer getDataProducer(Node queryGraphNode, Node targetGraphNode, List<Node> from, 
+            boolean skip, AccessRight access, boolean nested) {
         DataProducer dp;
         if (queryGraphNode == null) {
             dp = graph.getDataStore().getDefault(from).setSkipEdgeMetadata(skip);
@@ -418,6 +421,10 @@ public class ProducerImpl
         }
         if (AccessRight.isActive()) {
             dp.access(access);
+        }
+        if (getGraph().isRDFStar()) {
+            // asserted query edge require asserted target edge
+            dp.status(nested);
         }
         return dp;
     }
@@ -547,7 +554,8 @@ public class ProducerImpl
             }
         }
 
-        Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, graph.isEdgeMetadata(), getAccessRight(env));
+        Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, 
+                graph.isEdgeMetadata(), getAccessRight(env), edge.isNested());
 
         return it;
     }
@@ -570,7 +578,8 @@ public class ProducerImpl
             if (match(exp, predicate)) {
                 // exclude
             } else {
-                Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, graph.isEdgeMetadata(), getAccessRight(env));
+                Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, 
+                        graph.isEdgeMetadata(), getAccessRight(env), edge.isNested());
 
                 if (it != null) {
                     meta.next(it);
@@ -768,14 +777,6 @@ public class ProducerImpl
         System.out.println(")}");
 
     }
-
-//    private boolean isSelfValue() {
-//        return selfValue;
-//    }
-//
-//    public void setSelfValue(boolean selfValue) {
-//        this.selfValue = selfValue;
-//    }
 
     /**
      * Overloading of graph ?g { } The value of ?g may an extended graph

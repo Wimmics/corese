@@ -1,7 +1,7 @@
 #!/bin/bash
 
 CORESE=/usr/local/corese
-JAR=$CORESE/corese-server-4.2.4.jar
+JAR=$CORESE/corese-server-4.3.0.jar
 PROFILE=$CORESE/config/corese-profile.ttl
 PROPERTIES=$CORESE/config/corese-properties.ini
 

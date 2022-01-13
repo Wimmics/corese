@@ -4,23 +4,26 @@ This is a Docker image for hosting the [Corese Semantic Web Server](https://proj
 Corese also implements the LDScript and STTL SPARQL extensions.
 
 The Docker image tag includes the Corese version installed in the image. The following version is currently available:
-  - corese:4.2.4
+
+- corese:4.2.4
+- corese:4.3.0
 
 ## Running the Corese Docker image
 
 ### Running with the `docker run` command
 
 The most simple way to run Corese is to run the command below.
-It starts a fresh empty Corese server ready to execute queries submitted to http://localhost:8080/sparql.
+It starts a fresh empty Corese server ready to execute queries submitted to <http://localhost:8080/sparql>.
 
-```
+```sh
 docker run --name my-corese \
     -p 8080:8080 \
     -d wimmics/corese
 ```
 
 To load data when Corese starts up, place your RDF files in directory `data` and mount it as follows:
-```
+
+```sh
 docker run --name my-corese \
     -p 8080:8080 \
     -v /my/local/path/data:/usr/local/corese/data \
@@ -28,7 +31,8 @@ docker run --name my-corese \
 ```
 
 Additionally, you can control configuration parameters and check log files by mounting directories `config` and `log` respively:
-```
+
+```sh
 docker run --rm -d --name my-corese \
     -p 8080:8080 \
     -v /my/local/path/log:/usr/local/corese/log \
@@ -37,14 +41,13 @@ docker run --rm -d --name my-corese \
     -d wimmics/corese
 ```
 
-
 ### Running with Docker Compose
 
 Alternatively, you can run the image using docker-compose.
 Create file `docker-compose.yml` as follows:
 
-```
-version: '3'
+```yml
+version: "3"
 services:
   corese:
     image: wimmics/corese
@@ -58,7 +61,6 @@ services:
 ```
 
 Then run: `docker-compose up -d`
-
 
 ## Loading data at start-up
 
@@ -74,8 +76,9 @@ Alternatively you may edit a previously created `corese-profile.ttl` file and ch
 ## Configuration
 
 When it starts, the container will look for two files and create them if it they do not exist:
-  - `config/corese-properties.ini` allows to tune various paremters;
-  - `config/corese-profile.ttl` defines a standard server and instructs Corese to load files found in `data`. 
+
+- `config/corese-properties.ini` allows to tune various paremters;
+- `config/corese-profile.ttl` defines a standard server and instructs Corese to load files found in `data`.
 
 You may edit those files and restart the container for changes to be taken into account.
 
@@ -83,28 +86,30 @@ See the [configuration documentation](https://project.inria.fr/corese/documentat
 
 ### Changing the JVM heap size
 
-To change the memory allocated to the JVM that runs Corese, provide environment variable `$JVM_XMX` with the value of the -Xmx JVM parameter. 
+To change the memory allocated to the JVM that runs Corese, provide environment variable `$JVM_XMX` with the value of the -Xmx JVM parameter.
 
 Example:
-  - add option `-e JVM_XMX=1024m` to the docker run command;
-  - or add this to the `docker-compose.yml file`:
-```
-    environment:
-        JVM_XMX: "1024m"
+
+- add option `-e JVM_XMX=1024m` to the docker run command;
+- or add this to the `docker-compose.yml file`:
+
+```yml
+environment:
+  JVM_XMX: "1024m"
 ```
 
 ## Test the container
 
 To test if the cointainer runs properly, simply run the script below that submits query `select * where {?s ?p ?o} limit 100`:
 
-```
+```sh
 QUERY=select%20*%20where%20%7B%3Fs%20%3Fp%20%3Fo%7D%20limit%20100
 curl --header "Accept: application/sparql-results+json" "http://localhost:8080/sparql?query=$QUERY"
 ```
 
 To test a SPARQL update request, run the script below:
 
-```
+```sh
 QUERY='PREFIX dc: <http://purl.org/dc/elements/1.1/> INSERT DATA { <http://example/book1> dc:title "A new book" . }'
 curl \
   -X POST \

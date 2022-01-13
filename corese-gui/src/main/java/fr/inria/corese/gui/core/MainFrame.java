@@ -102,7 +102,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.2 - Inria UCA - 2021-11-01";
+    private static final String TITLE = "Corese 4.3.0 - Inria UCA";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés

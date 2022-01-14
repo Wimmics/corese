@@ -45,6 +45,18 @@
       <timezone>1</timezone>
     </developer>
     <developer>
+      <id>remiceres</id>
+      <name>Rémi Cérès</name>
+      <email>remi.ceres@inria.fr</email>
+      <url>http://www-sop.inria.fr/members/Remi.Ceres</url>
+      <roles>
+        <role>Contributor for the implementation of the RDF4J API</role>
+      </roles>
+      <organization>INRIA</organization>
+      <organizationUrl>http://www.inria.fr/</organizationUrl>
+      <timezone>1</timezone>
+    </developer>
+    <developer>
       <id>AlbanGaignard</id>
       <name>Alban Gaignard</name>
       <email>alban.gaignard@i3s.unice.fr</email>
@@ -75,7 +87,7 @@
   </developers>
 
   <modules>
-<!--    <module>kgram</module>-->
+    <!--    <module>kgram</module>-->
     <module>corese-core</module>
     <module>corese-server</module>
     <module>sparql</module>
@@ -110,7 +122,7 @@
             b = build number.
             For more details: https://docs.oracle.com/middleware/1212/core/MAVEN/maven_version.htm#MAVEN400
          -->
-    <revision>4.3.0</revision>
+    <revision>4.3.0-SNAPSHOT</revision>
     <!-- To ignore errors in javadoc usage. -->
     <additionalparam>-Xdoclint:none</additionalparam>
     <!-- Sonar -->
@@ -149,7 +161,7 @@
         <artifactId>compiler</artifactId>
         <version>${project.version}</version>
       </dependency>
-<!--      <dependency>
+      <!--      <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>kgram</artifactId>
         <version>${project.version}</version>
@@ -698,7 +710,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-source-plugin</artifactId>
-            <version>3.0.1</version>
+            <version>3.2.1</version>
             <executions>
               <execution>
                 <id>attach-sources</id>
@@ -711,7 +723,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-javadoc-plugin</artifactId>
-            <version>3.0.0</version>
+            <version>3.3.1</version>
             <executions>
               <execution>
                 <id>attach-javadocs</id>
@@ -739,7 +751,7 @@
           <plugin>
             <groupId>org.apache.maven.plugins</groupId>
             <artifactId>maven-gpg-plugin</artifactId>
-            <version>1.6</version>
+            <version>3.0.1</version>
             <executions>
               <execution>
                 <id>sign-artifacts</id>

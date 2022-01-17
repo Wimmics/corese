@@ -75,6 +75,10 @@ public class GraphManager {
     public static Load getLoader() {
         return new Load();
     }
+    
+    public boolean isRDFStar(){
+        return getGraph().isRDFStar();
+    }
 
     
     /***********************************************************
@@ -100,7 +104,9 @@ public class GraphManager {
         }
     }
 
-  
+    public void trace() {
+        System.out.println(getGraph().display());
+    }
     
     /**
      * Corese extension:
@@ -170,6 +176,13 @@ public class GraphManager {
      */
     public boolean exist(Node property, Node subject, Node object) {
         return getDataBroker().exist(property, subject, object);
+    }
+    
+    public Edge find(Edge edge) {
+        if (edge.getGraph() == null) {
+            edge.setGraph(getDefaultGraphNode());
+        }
+        return getDataBroker().find(edge);
     }
 
     /**

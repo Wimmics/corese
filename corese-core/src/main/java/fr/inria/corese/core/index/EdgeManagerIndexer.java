@@ -14,6 +14,7 @@ import fr.inria.corese.kgram.tool.MetaIterator;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.Index;
 import fr.inria.corese.core.Serializer;
+import fr.inria.corese.core.util.Property;
 import java.util.HashMap;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
@@ -403,6 +404,16 @@ public class EdgeManagerIndexer
         }
         return list.exist(edge);
     }
+    
+    @Override
+    public Edge find(Edge edge) {
+        EdgeManager list = getListByLabel(edge);
+        if (list == null) {
+            return null;
+        }
+        return list.findEdge(edge);
+    }
+
 
     boolean isSort(Edge edge) {
         return !graph.isIndex();
@@ -715,15 +726,56 @@ public class EdgeManagerIndexer
         
         Edge target = list.get(i);
         
-        if (AccessRight.acceptDelete(edge, target)) {
-            Edge ent = list.remove(i);
+        if (AccessRight.acceptDelete(edge, target)
+                && accept(edge, target)) {
+            
             if (getIndex() == 0) {
                 graph.setSize(graph.size() - 1);
             }
-            logDelete(ent);
-            return ent;
-        } else {
-            return null;
+
+            if (getGraph().isRDFStar() && target.hasReference()) {  
+                // delete tuple(s p o t)
+                if (superUser(edge)) {
+                    list.remove(i);    
+                }
+                else {
+                    // target = tuple(s p o t) with possibly t q v
+                    // set target as nested triple instead of deleting target
+                    // @todo: we may also delete t q v in the same delete operation 
+                    // in this case we should delete target ...
+                    target.setNested(true);
+                }               
+            } 
+            else {
+                list.remove(i);               
+            }
+            
+            logDelete(target);
+            return target;
+        } 
+        
+        return null;
+    }
+    
+    boolean superUser(Edge edge) {
+        return Property.booleanValue(Property.Value.RDF_STAR_DELETE);
+    }
+    
+    /**
+     * general case: asserted delete asserted 
+     * super user:   asserted delete asserted & nested ;
+     *               nested delete nested
+     */
+    boolean accept(Edge edge, Edge target) {
+        if (edge.isAsserted()) { 
+            return target.isAsserted() ||  superUser(edge);
+        } 
+        else if (target.isNested() && superUser(edge)) {
+            // nested delete nested when super user
+            return true;
+        }
+        else {
+            return false;
         }
     }
 

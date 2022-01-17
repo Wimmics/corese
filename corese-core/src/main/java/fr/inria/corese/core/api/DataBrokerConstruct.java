@@ -42,6 +42,11 @@ public interface DataBrokerConstruct extends DataBroker {
     default boolean exist(Node property, Node subject, Node object) {
         return false;
     }
+    
+    default Edge find(Edge edge) {
+        return edge;
+    }
+   
 
     /**
      * Return null if edge already exists

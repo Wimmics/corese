@@ -219,7 +219,6 @@ public class ProducerImpl
     @Override
     public Iterable<Edge> getEdges(Node namedGraphURI, List<Node> from, Edge edge,
             Environment env) {
-        //System.out.println("PI: enter " + namedGraphURI);
         Node predicate = getPredicate(edge, env);
         if (predicate == null) {
             return empty;
@@ -408,6 +407,7 @@ public class ProducerImpl
      * @param targetGraphNode: target named graph  (graph node)
      * @param from:  from or from named or null
      * @param skip: skip nodes other than subject/object/graph to determine that triples are different (default false)
+     * use case: rdf star reference node does not count to determine if two triples are different
      * @param access: access right to skip triples whose access would be forbidden
      * @return DataProducer
      */

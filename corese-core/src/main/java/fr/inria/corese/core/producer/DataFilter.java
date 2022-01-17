@@ -22,6 +22,7 @@ public class DataFilter implements ExprType {
     public static final int OBJECT = 1;
     public static final int PROPERTY = -2;
     public static final int GRAPH = Graph.IGRAPH;
+    public static boolean RDF_STAR_SELECT = false;
     
     private int test;
     int index, other = 1;
@@ -125,27 +126,27 @@ public class DataFilter implements ExprType {
         return  getNode(ent, n).getValue();
     }
     
-    boolean eval(Edge ent) {
+    boolean eval(Edge edge) {
         switch (getOper()) {
 
             // Rule Engine optimization require edge with index >= index
             case EDGE_LEVEL:
-                return result(ent.getIndex() >= index);
+                return result(edge.getIndex() >= index);
                 
             case EDGE_ACCESS:
-                return getAccessRight().acceptWhere(ent.getLevel());  
+                return getAccessRight().acceptWhere(edge.getLevel());  
                 
             case EDGE_NESTED:
                 // if query edge is
-                // nested:   asserted and nested edge is ok
+                // nested:   asserted edge ok, nested edge ok
                 // asserted: asserted edge ok, nested edge not ok
-                return (isNested()) ? true : ! ent.isNested();
+                return (isNested() || RDF_STAR_SELECT) ? true : edge.isAsserted();
                 
             default:
-                IDatatype dt =  getValue(ent, index);
+                IDatatype dt =  getValue(edge, index);
                 IDatatype dt2 = getValue();
                 if (dt2 == null){
-                    dt2 =  getValue(ent, other);
+                    dt2 =  getValue(edge, other);
                 }
                 try {
                     switch (getOper()) {

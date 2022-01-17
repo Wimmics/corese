@@ -24,6 +24,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     private byte level = AccessRight.DEFAULT;
     private static final long serialVersionUID = 2087591563645988076L;
     public static boolean DISPLAY_EDGE_AS_RDF4J = false;
+    public static final String NL = System.getProperty("line.separator");
     private boolean nested = false;
 
     public Edge copy() {

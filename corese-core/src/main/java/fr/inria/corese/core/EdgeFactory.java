@@ -216,11 +216,17 @@ public class EdgeFactory {
    }
     
     public Edge create(Node source, Node predicate, List<Node> list) {
+        return create(source, predicate, list, false);
+    }
+
+    public Edge create(Node source, Node predicate, List<Node> list, boolean nested) {
+
         EdgeImpl ee = EdgeImpl.create(source, predicate, list);
         ee.setMetadata(graph.isMetadata());
-        if (graph.isRDFStar() && list.size()>2) {            
+        if (graph.isRDFStar() && list.size() > 2) {
             list.get(2).getDatatypeValue().setTriple(true);
             list.get(2).getDatatypeValue().setPointerObject(ee);
+            ee.setNested(nested);
         }
         return ee;
     }

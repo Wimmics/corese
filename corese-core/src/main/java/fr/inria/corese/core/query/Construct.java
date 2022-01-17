@@ -49,8 +49,7 @@ public class Construct
     ASTQuery ast;
     GraphManager graphManager;
     Node defaultGraph;
-    //IDatatype dtDefaultGraph;
-    List<Edge> lInsert, lDelete;
+    List<Edge> lInsert, lDelete, globalDeleteList;
     private Dataset ds;
     private boolean detail = false;
     boolean isDebug = false,
@@ -60,6 +59,7 @@ public class Construct
     private boolean isInsert = false;
     boolean isBuffer = false;
     private boolean test = false;
+    public static boolean trace = false;
     Rule rule;
     HashMap<Node, Node> table;
     private TreeNode literalMap;
@@ -125,7 +125,7 @@ public class Construct
        graphManager = g; 
        return this;
     }
-    
+        
     public GraphManager getGraphManager() {
         return graphManager;
     }
@@ -204,7 +204,14 @@ public class Construct
         if (isDetail()){
             setDeleteList(new ArrayList<>());
         }
+        if (getGraphManager().isRDFStar()) {
+            globalDeleteList = new ArrayList<>();
+        }
         process(map, null);
+        if (getGraphManager().isRDFStar()) {
+            // @hint: does not work with: dataset + delete { graph uri { rdfstar }}
+            delete(null, map, globalDeleteList);
+        }
     }
     
     public void insert(Mappings map, Dataset ds) {
@@ -234,7 +241,7 @@ public class Construct
     public void entailment(Mappings map, Environment env) {  
         process(map, env);
     }
-    
+           
     void process(Mappings map, Environment env) {  
         graphManager.start(event());
         Exp exp = query.getConstruct();
@@ -312,39 +319,28 @@ public class Construct
             exp = exp.rest();
         }
 
+        List<Edge> deleteList = null;
+        
+        if (isDelete) {
+            deleteList = new ArrayList<> ();
+        }
+        
         for (Exp ee : exp.getExpList()) {
             if (ee.isEdge()) {
-                Edge ent = construct(gNode, ee.getEdge(), env);              
+                Edge ent = construct(gNode, ee.getEdge(), env);
+                
                 if (ent != null) {
                     // RuleEngine loop index
                     ent.setIndex(loopIndex);
+                    
                     if (isDelete) {
                         boolean accept = true;
                         if (AccessRight.isActive()&&getAccessRight() != null) {
                             accept = getAccessRight().setDelete(ent);
                         }
-                        if (accept) {
-                            if (isDebug) {
-                                logger.debug("** Delete: " + ent);
-                            }
-                            List<Edge> list = null;
-                            if (gNode == null && getDataset() != null && getDataset().hasFrom()) {
-                                // delete in default graph
-                                list = graphManager.delete(ent, getDataset().getFrom());
-                            } else {
-                                // delete in all named graph
-                                list = graphManager.delete(ent);
-                            }
-                            if (list != null) {
-                                map.setNbDelete(map.nbDelete() + list.size());
-
-                                if (lDelete != null) {
-                                    //lDelete.addAll(list);
-                                    lDelete.add(ent);
-                                }
-                            }
+                        if (accept) {                           
+                            deleteList.add(ent);                                                        
                         }
-
                     } else { // insert/construt
                         if (isDebug) {
                             logger.debug("** Construct: " + ent);
@@ -388,6 +384,40 @@ public class Construct
                 }
             } else {
                 construct(gNode, ee, map, env, edgeList);
+            }                        
+        }
+        
+        if (isDelete) {
+            if (getGraphManager().isRDFStar()) {
+                globalDeleteList.addAll(deleteList);
+            }
+            else {
+                delete(gNode, map, deleteList);
+            }
+        }
+    }
+    
+    void delete(Node gNode, Mappings map, List<Edge> deleteList) {
+        for (Edge ent : deleteList) {
+            if (isDebug) {
+                logger.debug("** Delete: " + ent);
+            }
+            List<Edge> list = null;
+
+            if (gNode == null && getDataset() != null && getDataset().hasFrom()) {
+                // delete in default graph from dataset
+                list = graphManager.delete(ent, getDataset().getFrom());
+            } else {
+                list = graphManager.delete(ent);
+            }
+
+            if (list != null) {
+                map.setNbDelete(map.nbDelete() + list.size());
+
+                if (lDelete != null) {
+                    //lDelete.addAll(list);
+                    lDelete.add(ent);
+                }
             }
         }
     }
@@ -413,7 +443,10 @@ public class Construct
      * If an insert node does not exist in the graph, it is added in the graph now
      */
     Edge construct(Node gNode, Edge edge, Environment env) {
-
+        if (trace) {
+            System.out.println("___");
+            System.out.println("construct edge: " + edge);
+        }
         Node pred = edge.getEdgeVariable();
         if (pred == null) {
             pred = edge.getEdgeNode();
@@ -425,8 +458,8 @@ public class Construct
         }
         Node property = construct(pred, env);
 
-        Node subject = construct(source, edge.getNode(0), env);
-        Node object  = construct(source, edge.getNode(1), env);
+        Node subject = construct(gNode, source, edge.getNode(0), env);
+        Node object  = construct(gNode, source, edge.getNode(1), env);
 
         if ((source == null && !isDelete) || subject == null || property == null || object == null) {
             return null;
@@ -464,9 +497,11 @@ public class Construct
             list.add(object);
 
             for (int i = 2; i < edge.nbNode(); i++) {
-                Node n = construct(source, edge.getNode(i), env);
+                Node n = construct(gNode, source, edge.getNode(i), env, true);
                 if (n != null) {
-                    graphManager.add(n, i);
+                    if (!isDelete){
+                        graphManager.add(n, i);
+                    }
                     list.add(n);
                 }
             }
@@ -502,7 +537,7 @@ public class Construct
      * Construct target node from query node and map
      */
     Node construct(Node qNode, Environment map) {
-        return construct(null, qNode, map);
+        return construct(null, null, qNode, map);
     }
     
     /**
@@ -564,23 +599,61 @@ public class Construct
         return queryNode.isVariable() || queryNode.isBlank() || queryNode.getDatatypeValue().isURI();
     }
     
+    Node construct(Node gNode, Node source, Node qNode, Environment map) {
+        return construct(gNode, source, qNode, map, false);
+    }
 
-    Node construct(Node gNode, Node qNode, Environment map) {
+    /**
+     * Given query qNode return target node
+     * If node exist in graph, return graph node
+     */
+    Node construct(Node gNode, Node source, Node qNode, Environment map, boolean additionalNode) {        
+        if (isDelete  && additionalNode && qNode.isBlank() && qNode.isTriple() ) {
+           return null;
+        }
+        
         // search target node
         Node node = get(qNode);
+       
         if (node == null) {
             // target node not yet created
             // search map node
             Node nn = map.getNode(qNode.getLabel());
-            IDatatype value = null;
-            if (nn != null) {
-                value = nn.getDatatypeValue();
-            }
             IDatatype dt = null;
+            if (nn != null) {
+                dt = nn.getDatatypeValue();
+            }
 
-            if (value == null) {
+            if (dt == null) {
                 if (qNode.isBlank()) {
-                    dt = blank(qNode, map);
+                    if (isDelete && !additionalNode && qNode.isTriple() && 
+                         qNode.getEdge()!=null) {
+                        // qNode is a triple reference to edge:
+                        // <<s p o>> q v -> t q v . tuple(s p o t)
+                        // qNode = t in t q v and t.edge = s p o
+                        // instantiate edge s p o, find it in graph, get its reference ref if any
+                        // return ref as t
+                        Edge edge  = qNode.getEdge();
+                        Edge query = construct(gNode, edge, map);
+                        Edge target = getGraphManager().find(query);
+                        
+                        if (trace) {
+                            System.out.println("query node: " + qNode + " ref: " + edge);
+                            System.out.println("edge inst: " + query);
+                            System.out.println("target triple: " + target);
+                        }
+                        
+                        if (target!=null && target.hasReference()) {
+                            dt = target.getNode(Edge.REF_INDEX).getDatatypeValue(); // = qNode
+                            if (trace) System.out.println(qNode + " = " + dt);
+                        }
+                        else {
+                            dt = blank(qNode, map);
+                        }
+                    }
+                    else {
+                        dt = blank(qNode, map);
+                    }
                 } else if (qNode.isConstant()) {
                     // constant
                     dt = getValue(qNode);
@@ -588,10 +661,9 @@ public class Construct
                     // unbound variable
                     return null;
                 }
-            } else {
-                dt =  value;
-            }
-            node = uniqueNode(gNode, dt);
+            } 
+            
+            node = uniqueNode(source, dt);
             put(qNode, node);
         }
 

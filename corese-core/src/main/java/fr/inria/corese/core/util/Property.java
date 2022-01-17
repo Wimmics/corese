@@ -8,6 +8,7 @@ import fr.inria.corese.core.edge.EdgeTop;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.producer.DataFilter;
 import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
@@ -108,8 +109,12 @@ public class Property {
         CONSTRAINT_GRAPH,
         // graph ?g { } iterate std and external named graph
         EXTERNAL_NAMED_GRAPH,
-        // mockup of rdf* where triples are assserted
+        // rdf* draft
         RDF_STAR,
+        // joker: asserted query triple return asserted and nested triple (default false)
+        RDF_STAR_SELECT,
+        // joker: asserted delete triple deletes asserted and nested triple (default false)
+        RDF_STAR_DELETE,
         // corese server for micro services
         REENTRANT_QUERY,
         // activate access level control (default is true)
@@ -391,6 +396,11 @@ public class Property {
 
             case RDF_STAR:
                 Graph.setRDFStar(b);
+                ASTParser.RDF_STAR = b;
+                break;
+                
+            case RDF_STAR_SELECT:                
+                DataFilter.RDF_STAR_SELECT = b;
                 break;
                 
             case SPARQL_COMPLIANT:

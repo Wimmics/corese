@@ -60,6 +60,8 @@ public interface Index {
         Edge delete(Node pred, Edge edge);
 
 	void delete(Node pred);
+        
+        Edge find(Edge edge);
 
 	boolean exist(Edge edge);
         

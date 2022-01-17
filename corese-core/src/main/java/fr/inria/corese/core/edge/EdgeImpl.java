@@ -120,13 +120,12 @@ public class EdgeImpl extends EdgeTop
         if (displayGraph) {
             str += getGraph() + " ";
         }
-        str += toParse();
+        str += toParse(new StringBuilder(), true);
 
         return str;
     }
 
-    public String toParse() {
-        StringBuilder sb = new StringBuilder();
+    String toParse(StringBuilder sb, boolean all) {
         if (isNested()) {
             sb.append("<<");
         }
@@ -141,6 +140,18 @@ public class EdgeImpl extends EdgeTop
         if (isNested()) {
             sb.append(">>");
         }
+        
+        if (all) {
+            int i = 0;
+            for (Node n : nodes) {
+                if (i++ < 2) {
+                    if (n.getDatatypeValue().isTriple() && n.getDatatypeValue().getPointerObject()!=null) {
+                        sb.append(NL).append(n.getDatatypeValue().getPointerObject().getEdge().toString());
+                    }
+                }
+            }
+        }
+        
         return sb.toString();
     }
 

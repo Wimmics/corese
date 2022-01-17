@@ -6,6 +6,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import java.util.Objects;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.path.Path;
 
 /**
@@ -144,6 +145,10 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
 
     @Override
     public Edge getEdge() {
+        Pointerable obj = getDatatypeValue().getPointerObject();
+        if (obj != null && (obj instanceof Edge)) {
+            return obj.getEdge();
+        }
         return null;
     }
 

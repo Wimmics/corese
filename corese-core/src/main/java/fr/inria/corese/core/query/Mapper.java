@@ -20,6 +20,7 @@ import java.util.Collection;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
+import fr.inria.corese.sparql.api.IDatatypeList;
 import java.io.IOException;
 import javax.xml.parsers.ParserConfigurationException;
 import org.slf4j.Logger;
@@ -84,9 +85,26 @@ public class Mapper {
             return map(nodes, dt.getObject());
         } else if (dt.isURI()) {
             return mapURI(nodes, dt);
-        } else {
+        } 
+        else if (dt.isTriple() && dt.getPointerObject()!=null) {
+            return mapEdge(nodes, dt.getPointerObject().getEdge());
+        }
+        else {
             return mapDT(nodes, dt);
         }
+    }
+    
+    Mappings mapEdge(List<Node> nodes, Edge edge) {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        IDatatypeList dt = DatatypeMap.newList();
+        dt.add(edge.getSubjectValue());
+        dt.add(edge.getPredicateValue());
+        dt.add(edge.getObjectValue());
+        if (edge.getGraphValue()!=null) {
+            dt.add(edge.getGraphValue());
+        }
+        list.add(dt);
+        return map(nodes, list);
     }
     
     public Mappings map(List<Node> nodes, Object object) {

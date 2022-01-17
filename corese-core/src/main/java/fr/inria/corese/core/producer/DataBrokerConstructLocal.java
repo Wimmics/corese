@@ -62,6 +62,11 @@ public class DataBrokerConstructLocal
     public boolean exist(Node property, Node subject, Node object) {
         return getGraph().exist(property, subject, object);
     }
+    
+    @Override
+    public Edge find(Edge edge) {
+        return getGraph().find(edge);
+    }
    
     
      /**

@@ -452,6 +452,14 @@ public class EdgeManager implements Iterable<Edge> {
 
         return -1;
     }
+    
+    Edge findEdge(Edge edge) {
+        int i = findIndexNodeTerm(edge);
+        if (i == -1) {
+            return null;
+        }
+        return list.get(i);
+    }
 
     /**
      * Find index of node as node(index) -1 if not found

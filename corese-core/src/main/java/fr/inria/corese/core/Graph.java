@@ -1423,6 +1423,10 @@ public class Graph extends GraphObject implements
     public boolean exist(Edge edge) {
         return getSubjectIndex().exist(edge);
     }
+    
+    public Edge find(Edge edge) {
+        return getSubjectIndex().find(edge);
+    }
 
     public boolean exist(Node p, Node n1, Node n2) {
         p = getPropertyNode(p);
@@ -1622,6 +1626,10 @@ public class Graph extends GraphObject implements
     }
 
     public Edge create(Node source, Node predicate, List<Node> list) {
+        return fac.create(source, predicate, list);
+    }
+    
+    public Edge create(Node source, Node predicate, List<Node> list, boolean nested) {
         return fac.create(source, predicate, list);
     }
 

@@ -136,7 +136,24 @@ public class Composite extends Update {
         }
         return sb;
     }
-
+    
+    public Exp getDelete() {
+        return getPattern(DELETE);
+    }
+    
+    public Exp getInsert() {
+        return getPattern(INSERT);
+    }
+    
+    Exp getPattern(int type) {
+        for (Composite cc : getUpdates()) {
+            if (cc.type() == type) {
+                return cc.getPattern();
+            }
+        }
+        return null;
+    }
+    
     public void setPattern(Exp d) {
         pattern = d;
     }

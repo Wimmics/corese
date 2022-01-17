@@ -6,9 +6,11 @@ import fr.inria.corese.sparql.triple.api.Walker;
 import fr.inria.corese.sparql.triple.parser.Message;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.Optional;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Triple;
@@ -16,6 +18,9 @@ import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.update.ASTUpdate;
+import fr.inria.corese.sparql.triple.update.Composite;
+import fr.inria.corese.sparql.triple.update.Update;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -33,6 +38,7 @@ public class ASTParser implements Walker, URLParam {
 
     // set by Property SERVICE_REPORT
     public static boolean SERVICE_REPORT = false;
+    public static boolean RDF_STAR = false;
     private boolean log = SERVICE_REPORT;
 
     private ASTQuery ast;
@@ -90,6 +96,80 @@ public class ASTParser implements Walker, URLParam {
         leaveAST(ast);
         pop();
     }
+    
+    
+    
+    @Override
+    public void enter(ASTUpdate ast) {       
+    }
+
+    @Override
+    public void leave(ASTUpdate ast) {
+    }
+
+    @Override
+    public void enter(Composite c) {
+//        if (RDF_STAR) {
+//            process(c);
+//        }
+    }
+    
+    /**
+     * When update = delete exp where body
+     * Copy delete triple with reference into body 
+     */
+    void process(Composite c) {
+        switch (c.type()) {
+            case Update.COMPOSITE:
+                if (c.getDelete()!=null) {
+                    processDelete(c.getDelete(), c.getBody());
+                    System.out.println("parser:\n"+c);
+                }
+        }
+    }
+    
+    /**
+     * delete exp where body
+     */
+    void processDelete(Exp exp, Exp body) {
+        BasicGraphPattern bgp = new BasicGraphPattern();
+        
+        for (Exp ee : exp) {
+            // select triple with reference
+            if (ee.isTriple() && ee.getTriple().hasTripleReference()) {
+                bgp.add(ee);
+            }
+        }
+        
+        if (bgp.size() > 0) {
+            rewrite(bgp, body);
+        }
+    }
+    
+    /**
+     * bgp = (delete) triples with reference
+     * generate optional with  triple with reference
+     * @todo: generate one optional for each (whole) triple with reference
+     * @todo: declare triple in body to ast ?
+     */
+    void rewrite(Exp bgp, Exp body) {
+        Optional opt = new Optional();
+        BasicGraphPattern fst = new BasicGraphPattern();
+        for (Exp ee : body) {
+            fst.add(ee);
+        }
+        opt.add(fst);
+        opt.add(bgp);
+        body.getBody().clear();
+        body.add(opt);
+    }
+    
+
+    @Override
+    public void leave(Composite c) {
+    }
+    
+    
 
     @Override
     public void enter(Exp exp) {

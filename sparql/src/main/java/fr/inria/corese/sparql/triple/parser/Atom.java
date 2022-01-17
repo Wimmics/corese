@@ -50,6 +50,10 @@ public class Atom extends Expression implements ElementClause{
 	boolean isAtom() {
 		return true;
 	}
+        
+        public boolean isTriple() {
+            return false;
+        }
 	
 	public boolean isResource() {
 		return false;
@@ -126,5 +130,5 @@ public class Atom extends Expression implements ElementClause{
     public void setTripleReference(Atom tripleReference) {
         this.tripleReference = tripleReference;
     }
-	
+    	
 }

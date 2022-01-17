@@ -17,7 +17,9 @@ public class ParserHandler {
     static final String SQ3  = "\"\"\"";
     static final String SSQ3 = "'''";
     
-    boolean insideWhere = false;
+    boolean insideDelete = false;
+    boolean insideDeleteData = false;
+    int countWhere = 0;
     private boolean function = false;
 
     Creator create;
@@ -162,23 +164,7 @@ public class ParserHandler {
         return retval.toString();
     }
     
-    public void enterWhere() {
-        insideWhere = true;
-    }
-    
-    public void leaveWhere() {
-        insideWhere = false;
-    }
-    
-    
-    public boolean isInsideWhere() {
-        return insideWhere;
-    }
-    
-    boolean isLoad() {
-        return create != null;
-    }
-    
+
     // <<s p o>>
     public Atom createNestedTripleStar(ASTQuery ast, Exp stack, Atom s, Atom p, Atom o, Atom v) {
         Atom ref = createTripleReference(ast, v);
@@ -231,9 +217,16 @@ public class ParserHandler {
                 return ast.tripleReferenceVariable();
             }
             else {
+                // bnode as variable
                 return ast.tripleReferenceQuery();                
             }
         }
+//        else if (isInsideDelete() || isInsideDeleteData()) {
+//            // @todo: rdf star triple to be duplicated
+//            // in where part in such a way that variable be
+//            // instantiated by where processing
+//            return ast.tripleReferenceVariable();
+//        }
         // insert delete data
         // insert delete -- where
         // construct     -- where
@@ -283,6 +276,50 @@ public class ParserHandler {
             throw new Error("Incorrect Variable: " + name + " Line: " + name.beginLine);
         }
     }
+    
+        public void enterWhere() {
+        countWhere++;
+    }
+    
+    public void leaveWhere() {
+        countWhere--;
+    }
+    
+    
+    public boolean isInsideWhere() {
+        return countWhere>0;
+    }
+    
+    public void enterDelete() {
+        insideDelete =  true;
+    }
+    
+    public void leaveDelete() {
+        insideDelete = false;
+    }
+    
+    
+    public boolean isInsideDelete() {
+        return insideDelete;
+    }
+    
+    public void enterDeleteData() {
+        insideDeleteData =  true;
+    }
+    
+    public void leaveDeleteData() {
+        insideDeleteData = false;
+    }
+    
+    
+    public boolean isInsideDeleteData() {
+        return insideDeleteData;
+    }
+    
+    boolean isLoad() {
+        return create != null;
+    }
+    
 
     
 }

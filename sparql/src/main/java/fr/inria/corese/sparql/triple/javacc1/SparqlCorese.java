@@ -773,7 +773,9 @@
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case DATA:
         jj_consume_token(DATA);
+                                 handler.enterDeleteData();
         exp = QuadPattern();
+                             handler.leaveDeleteData();
                          ope = Composite.create(Update.DELETE, exp);
         break;
       case WHERE:
@@ -817,7 +819,9 @@
     switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
     case DELETE:
       jj_consume_token(DELETE);
+                      handler.enterDelete();
       exp = QuadPattern();
+                      handler.leaveDelete();
                  ope = Composite.create(Update.DELETE); ope.setPattern(exp); upd.add(ope);
       switch ((jj_ntk==-1)?jj_ntk():jj_ntk) {
       case INSERT:
@@ -8742,11 +8746,6 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_111() {
-    if (jj_scan_token(DISTINCT)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_90() {
     if (jj_scan_token(LBRACE)) return true;
     Token xsp;
@@ -8759,11 +8758,6 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3_1() {
-    if (jj_3R_60()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_83() {
     if (jj_3R_114()) return true;
     return false;
@@ -8772,6 +8766,11 @@ ExpressionList arg, el = null; Metadata meta = null;
   final private boolean jj_3R_132() {
     if (jj_scan_token(IF)) return true;
     if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3_1() {
+    if (jj_3R_60()) return true;
     return false;
   }
 
@@ -10437,11 +10436,6 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_116() {
-    if (jj_scan_token(WHERE)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_253() {
     Token xsp;
     xsp = jj_scanpos;
@@ -10473,6 +10467,11 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
+  final private boolean jj_3R_116() {
+    if (jj_scan_token(WHERE)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_75() {
     if (jj_3R_76()) return true;
     return false;
@@ -10499,13 +10498,13 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_115() {
-    if (jj_scan_token(DATA)) return true;
+  final private boolean jj_3_11() {
+    if (jj_3R_75()) return true;
     return false;
   }
 
-  final private boolean jj_3_11() {
-    if (jj_3R_75()) return true;
+  final private boolean jj_3R_115() {
+    if (jj_scan_token(DATA)) return true;
     return false;
   }
 
@@ -10516,17 +10515,6 @@ ExpressionList arg, el = null; Metadata meta = null;
 
   final private boolean jj_3_3() {
     if (jj_3R_63()) return true;
-    return false;
-  }
-
-  final private boolean jj_3R_85() {
-    if (jj_scan_token(DELETE)) return true;
-    Token xsp;
-    xsp = jj_scanpos;
-    if (jj_3R_115()) {
-    jj_scanpos = xsp;
-    if (jj_3R_116()) return true;
-    }
     return false;
   }
 
@@ -10565,6 +10553,17 @@ ExpressionList arg, el = null; Metadata meta = null;
     xsp = jj_scanpos;
     if (jj_3R_251()) jj_scanpos = xsp;
     if (jj_scan_token(LPAREN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_85() {
+    if (jj_scan_token(DELETE)) return true;
+    Token xsp;
+    xsp = jj_scanpos;
+    if (jj_3R_115()) {
+    jj_scanpos = xsp;
+    if (jj_3R_116()) return true;
+    }
     return false;
   }
 
@@ -10612,12 +10611,6 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
-  final private boolean jj_3R_84() {
-    if (jj_scan_token(INSERT)) return true;
-    if (jj_scan_token(DATA)) return true;
-    return false;
-  }
-
   final private boolean jj_3R_241() {
     if (jj_scan_token(TUPLE)) return true;
     return false;
@@ -10652,8 +10645,19 @@ ExpressionList arg, el = null; Metadata meta = null;
     return false;
   }
 
+  final private boolean jj_3R_84() {
+    if (jj_scan_token(INSERT)) return true;
+    if (jj_scan_token(DATA)) return true;
+    return false;
+  }
+
   final private boolean jj_3R_113() {
     if (jj_scan_token(SEMICOLON)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_111() {
+    if (jj_scan_token(DISTINCT)) return true;
     return false;
   }
 

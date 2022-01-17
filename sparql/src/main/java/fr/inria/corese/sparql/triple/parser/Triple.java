@@ -10,6 +10,7 @@ import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
 import fr.inria.corese.sparql.triple.cst.RDFS;
+import java.util.ArrayList;
 
 /**
  * <p>
@@ -151,14 +152,6 @@ public class Triple extends Exp implements Pointerable {
         return t;
     }
 
-//    // for filters
-//    public static Triple create(Expression exp) {
-//        Triple t = new Triple();
-//        t.exp = exp;
-//        t.isexp = true;
-//        t.setID();
-//        return t;
-//    }
 
     public static Triple createNS(Constant type, Constant prefix, Constant uri) {
         return create(type, prefix, uri);
@@ -226,42 +219,7 @@ public class Triple extends Exp implements Pointerable {
      * 2. Semantic phase expand prefix with namespace uri expand get:gui expand
      * path : p[2] p{2} return uri triple
      */
-//    @Override
-//    public void setAST(ASTQuery a) {
-//        ast = a;
-//    }
 
-//    @Override
-//    public ASTQuery getAST() {
-//        if (ast == null) {
-//            ast = defaultAST();
-//        }
-//        return ast;
-//    }
-//
-//    ASTQuery defaultAST() {
-//        ASTQuery ast = ASTQuery.create();
-//        //ast.setKgram(true);
-//        ast.setBody(new And());
-//        return ast;
-//    }
-
-    /**
-     * Translate this exp triple as a Term
-     *
-     * @return
-     */
-//    Expression toTerm() {
-//        return exp;
-//    }
-
-//	boolean isString(String str) {
-//		if ((str.startsWith("\"") && str.endsWith("\""))
-//				|| (str.startsWith("'") && str.endsWith("'")))
-//			return true;
-//		else
-//			return false;
-//	}
     /**
      * Util functions
      *
@@ -366,7 +324,7 @@ public class Triple extends Exp implements Pointerable {
                 }
                 break;
             case 3:
-                source = (Atom) exp;
+                source = exp;
                 break;
         }
     }
@@ -382,10 +340,27 @@ public class Triple extends Exp implements Pointerable {
     public void setArgs(List<Atom> l) {
         larg = l;
     }
-
-//    public void setExp(Expression e) {
-//        exp = e;
-//    }
+    
+    public List<Atom> getArgList() {
+        ArrayList<Atom> list = new ArrayList<>();
+        list.add(getSubject());
+        list.add(getObject());
+        if (getArgs()!=null) {
+            for (Atom at : getArgs()) {
+                list.add(at);
+            }
+        }
+        return list;
+    }
+    
+    public boolean hasTripleReference() {
+        for (Atom at : getArgList()) {
+            if (at.isTriple()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     public void setSubject(Atom e1) {
         subject = e1;
@@ -394,15 +369,6 @@ public class Triple extends Exp implements Pointerable {
     public void setObject(Atom e2) {
         object = e2;
     }
-
-//    public Expression getExp() {
-//        return exp;
-//    }
-
-//    @Override
-//    public Expression getFilter() {
-//        return exp;
-//    }
 
     public Expression getRegex() {
         return regex;

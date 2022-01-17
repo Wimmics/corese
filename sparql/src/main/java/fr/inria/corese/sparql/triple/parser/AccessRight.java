@@ -192,7 +192,11 @@ public class AccessRight {
      */
     public static boolean acceptDelete(Edge query, Edge target) {
         return ! isActive() || accept(query.getLevel(), target.getLevel());
-    }   
+    } 
+    
+    public static boolean acceptDeleteStatus(Edge query, Edge target) {
+        return isSuperUser(query.getLevel());
+    }  
     
     // specific test for query = target = 0
     public static boolean acceptBI(byte query, byte target) {
@@ -208,6 +212,10 @@ public class AccessRight {
 //    public static boolean rejectLT(byte query, byte target) {
 //        return query < target;
 //    } 
+    
+    public static boolean isSuperUser(byte query) {
+        return query == SUPER_USER;
+    }
     
     public static boolean acceptEQ(byte query, byte target) {
         return query == SUPER_USER || query == target;

@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.tool;
 
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.Atom;
@@ -7,6 +8,7 @@ import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.Node;
 import static fr.inria.corese.kgram.api.core.Node.INITKEY;
+import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.kgram.path.Path;
 
@@ -164,19 +166,25 @@ public class NodeImpl implements Node {
 
     @Override
     public void setIndex(int n) {
-        // TODO Auto-generated method stub
         index = n;
     }
 
     @Override
     public Object getObject() {
-        // TODO Auto-generated method stub
+        return null;
+    }
+    
+     @Override
+    public Edge getEdge() {
+        Pointerable obj = getDatatypeValue().getPointerObject();
+        if (obj != null && (obj instanceof Edge)) {
+            return obj.getEdge();
+        }
         return null;
     }
 
     @Override
     public void setObject(Object o) {
-        // TODO Auto-generated method stub
     }
     
     @Override
@@ -186,13 +194,11 @@ public class NodeImpl implements Node {
 
     @Override
     public Object getProperty(int p) {
-        // TODO Auto-generated method stub
         return null;
     }
 
     @Override
     public void setProperty(int p, Object o) {
-        // TODO Auto-generated method stub
     }
 
     @Override

@@ -641,7 +641,9 @@ public class ASTQuery
     }
     
     Variable tripleReferenceVariable() {
-        return Variable.create("?t_" + nbvar++);
+        Variable var = Variable.create("?t_" + nbvar++);
+        var.setTriple(true);
+        return var;
     } 
     
     Variable tripleReferenceBnode() {
@@ -3704,7 +3706,7 @@ public class ASTQuery
      */
     public void process(Walker walker) {
         walker.start(this);
-        walk(walker);
+        switchProcess(walker);
         walker.finish(this);
     }
     

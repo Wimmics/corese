@@ -84,7 +84,7 @@ public interface Node extends Pointerable {
         Node getNode();
 	
 	Object getObject();
-        
+                      
         Path getPath();
         
         TripleStore getTripleStore();
@@ -94,6 +94,10 @@ public interface Node extends Pointerable {
 	Object getProperty(int p);
 	
 	void setProperty(int p, Object o);
-		
+        
+        default boolean isTriple() {
+            return getDatatypeValue().isTriple();
+        }
+               
 	
 }

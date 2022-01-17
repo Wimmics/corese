@@ -32,33 +32,7 @@ import fr.inria.corese.kgram.api.query.Producer;
  */
 public class Variable extends Atom {
 
-    /**
-     * @return the matchCardinality
-     */
-    public boolean isMatchCardinality() {
-        return matchCardinality;
-    }
-
-    /**
-     * @param matchCardinality the matchCardinality to set
-     */
-    public void setMatchCardinality(boolean matchCardinality) {
-        this.matchCardinality = matchCardinality;
-    }
-
-    /**
-     * @return the matchNodeList
-     */
-    public boolean isMatchNodeList() {
-        return matchNodeList;
-    }
-
-    /**
-     * @param matchNodeList the matchNodeList to set
-     */
-    public void setMatchNodeList(boolean matchNodeList) {
-        this.matchNodeList = matchNodeList;
-    }
+  
 
     private boolean isBlankNode = false;
     private boolean matchNodeList = false;
@@ -66,6 +40,8 @@ public class Variable extends Atom {
     private boolean isPath = false; // use case ?x $path ?y
     private boolean isVisited = false;
     private boolean dynamic = false;
+    // rdf star triple reference variable
+    private boolean triple = false;
     private int index = ExprType.UNBOUND;
     private int type = ExprType.GLOBAL;
 
@@ -378,18 +354,40 @@ public class Variable extends Atom {
         return  node.getDatatypeValue();
     }
 
-    /**
-     * @return the dynamic
-     */
     public boolean isDynamic() {
         return dynamic;
     }
 
-    /**
-     * @param dynamic the dynamic to set
-     */
+    
     public void setDynamic(boolean dynamic) {
         this.dynamic = dynamic;
+    }
+    
+      
+    public boolean isMatchCardinality() {
+        return matchCardinality;
+    }
+
+   
+    public void setMatchCardinality(boolean matchCardinality) {
+        this.matchCardinality = matchCardinality;
+    }
+
+    public boolean isMatchNodeList() {
+        return matchNodeList;
+    }
+
+    
+    public void setMatchNodeList(boolean matchNodeList) {
+        this.matchNodeList = matchNodeList;
+    }
+
+    public boolean isTriple() {
+        return triple;
+    }
+
+    public void setTriple(boolean triple) {
+        this.triple = triple;
     }
 
 }

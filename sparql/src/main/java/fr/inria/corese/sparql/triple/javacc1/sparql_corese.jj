@@ -384,8 +384,10 @@ void DeleteInsertData() : {Exp exp; Composite ope, upd;}
 	
 		<DELETE> 
 		(
-			<DATA>     exp =   QuadPattern() 
-			
+			<DATA>  {handler.enterDeleteData();}   
+                            exp =   QuadPattern() 
+                            {handler.leaveDeleteData();} 
+
 			{ope = Composite.create(Update.DELETE, exp);}
 			
 			|
@@ -421,7 +423,10 @@ void DeleteInsertWhere() : {Exp exp; Composite upd, ope; Constant uri; Values va
 	) ?
 	
 	(
-		<DELETE> exp = QuadPattern() 			
+		<DELETE> 
+                    { handler.enterDelete(); } 
+                    exp = QuadPattern() 
+                    { handler.leaveDelete(); }
 		
 		{ope = Composite.create(Update.DELETE); ope.setPattern(exp); upd.add(ope);}
 		

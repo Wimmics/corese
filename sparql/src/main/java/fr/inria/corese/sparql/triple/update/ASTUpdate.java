@@ -177,7 +177,9 @@ public class ASTUpdate {
         for (Update up : getUpdates()) {
             if (up.isComposite()) {
                 walker.enter(up.getComposite());
-                up.getComposite().getBody().walk(walker);
+                if (up.getComposite().getBody()!=null){
+                    up.getComposite().getBody().walk(walker);
+                }
                 walker.leave(up.getComposite());
             }
         }

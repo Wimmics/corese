@@ -14,6 +14,8 @@ import org.eclipse.rdf4j.model.Value;
  *
  */
 public interface Edge extends Pointerable, Statement {
+    // rdf star reference node index: index of t = 2 in tuple(s p o t)
+    int REF_INDEX = 2; 
 
 	/**
 	 * Number of nodes.
@@ -204,5 +206,10 @@ public interface Edge extends Pointerable, Statement {
 		}
 		return (Resource) context.getDatatypeValue().getRdf4jValue();
 	}
+        
+        // for rdf star only
+        default boolean hasReference() {
+            return nbNode() > REF_INDEX;
+        }
 
 }

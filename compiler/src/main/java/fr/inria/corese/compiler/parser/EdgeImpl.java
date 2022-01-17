@@ -5,7 +5,6 @@ import java.util.Objects;
 
 import org.eclipse.rdf4j.model.Statement;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.PointerType;
@@ -176,19 +175,16 @@ public class EdgeImpl extends PointerObject implements Edge {
 
     @Override
     public boolean contains(Node n) {
-        // TODO Auto-generated method stub
         return nodes.contains(n);
     }
 
     @Override
     public Node getEdgeNode() {
-        // TODO Auto-generated method stub
         return edgeNode;
     }
 
     @Override
     public Node getEdgeVariable() {
-        // TODO Auto-generated method stub
         return edgeVariable;
     }
 
@@ -301,10 +297,12 @@ public class EdgeImpl extends PointerObject implements Edge {
         return true;
     }
 
+    @Override
     public boolean isNested() {
         return nested;
     }
 
+    @Override
     public void setNested(boolean nested) {
         this.nested = nested;
     }

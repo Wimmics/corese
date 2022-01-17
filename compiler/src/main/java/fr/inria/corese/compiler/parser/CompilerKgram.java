@@ -194,13 +194,18 @@ public class CompilerKgram implements ExpType, Compiler {
         edge.setEdgeNode(predicate);
 
         if (tt.getArgs() != null) {
+            
             for (Atom arg : tt.getArgs()) {
                 NodeImpl sup =  getNodeImpl(arg);
+                
                 if (arg.isVariable()) {
                     sup.setMatchNodeList(arg.getVariable().isMatchNodeList());
                     sup.setMatchCardinality(arg.getVariable().isMatchCardinality());
                 }
-                edge.add(sup);
+                if (sup.getDatatypeValue().isTriple()) {
+                    sup.getDatatypeValue().setPointerObject(edge);
+                }
+                edge.add(sup);                
             }
         }
 
@@ -221,7 +226,7 @@ public class CompilerKgram implements ExpType, Compiler {
 
     @Override
     public List<Filter> getFilters() {
-        return new ArrayList<Filter>();
+        return new ArrayList<>();
     }
 
     @Override

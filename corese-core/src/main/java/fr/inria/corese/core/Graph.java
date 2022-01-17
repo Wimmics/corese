@@ -1630,7 +1630,7 @@ public class Graph extends GraphObject implements
     }
     
     public Edge create(Node source, Node predicate, List<Node> list, boolean nested) {
-        return fac.create(source, predicate, list);
+        return fac.create(source, predicate, list, nested);
     }
 
     public Edge createDelete(Node source, Node predicate, List<Node> list) {

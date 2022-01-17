@@ -188,10 +188,12 @@ public abstract class EdgeTop extends GraphObject implements Edge {
         return sb.toString();
     }
 
+    @Override
     public boolean isNested() {
         return nested;
     }
 
+    @Override
     public void setNested(boolean nested) {
         this.nested = nested;
     }

@@ -239,7 +239,7 @@ public class TestQueryEvent {
         String q = "select (sum(?a) as ?sum) where {?x foaf:age ?a}";
 
         exec.query(i);
-        IDatatype res = exec.getCurrentBinding().getVariable("?report");
+        IDatatype res = exec.getBinding().getVariable("?report");
         Graph report = (Graph) res.getPointerObject();
         boolean b = new Shacl(g).conform(report);
         assertEquals(true, b);

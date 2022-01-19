@@ -179,9 +179,10 @@ public class GraphManager {
     }
     
     public Edge find(Edge edge) {
-        if (edge.getGraph() == null) {
-            edge.setGraph(getDefaultGraphNode());
-        }
+//        if (edge.getGraph() == null) {
+//            edge.setGraph(getDefaultGraphNode());
+//        }
+        // delete edge may have graph node == null
         return getDataBroker().find(edge);
     }
 
@@ -248,6 +249,14 @@ public class GraphManager {
 
     public IDatatype createBlank(String str) {
         return graph.createBlank(str);
+    }
+    
+    public IDatatype createBlank() {
+        return graph.createBlank(graph.newBlankID());
+    }
+    
+    public IDatatype createTripleReference() {
+        return graph.createTripleReference();
     }
     
     

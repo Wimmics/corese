@@ -136,6 +136,10 @@ public class CreateTriple {
         return graph.addBlank(label);
     }
     
+    Node addTripleReference(String label) {
+        return graph.addTripleReference(label);
+    }
+    
     Node addResource(String label) {
         return graph.addResource(label);
     }

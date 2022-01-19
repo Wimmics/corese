@@ -222,38 +222,39 @@ public class EdgeFactory {
     public Edge create(Node source, Node predicate, List<Node> list, boolean nested) {
         EdgeImpl ee = EdgeImpl.create(source, predicate, list);
         ee.setMetadata(graph.isMetadata());
-        if (graph.isRDFStar() && list.size() > 2) {
-            list.get(2).getDatatypeValue().setTriple(true);
-            list.get(2).getDatatypeValue().setPointerObject(ee);
+        if (graph.isRDFStar() && list.size() > Edge.REF_INDEX) {
+            list.get(Edge.REF_INDEX).getDatatypeValue().setTriple(true);
+            list.get(Edge.REF_INDEX).getDatatypeValue().setPointerObject(ee);
             ee.setNested(nested);
         }
         return ee;
     }
     
-    public Edge create(Node source, Node subject, Node predicate, Node object, Node node) {
+    public Edge create(Node source, Node subject, Node predicate, Node object, Node node, boolean nested) {
         ArrayList<Node> list = new ArrayList<>();
         list.add(subject);list.add(object); list.add(node);
-        return create(source,  predicate, list);
-   }
-    
-    public Edge name(Edge edge) {
-        return name(edge, graph.addTripleName());
+        return create(source,  predicate, list, nested);
     }
     
-    public Edge name(Edge edge, Node name) {
-        if (edge.nbNode() == 3) {
-            edge.setNode(2, name);
-            return edge;
-        }
-        return name(edge, edge.getEdgeNode(), name);
-    }
+//    public Edge name(Edge edge) {
+//        return name(edge, graph.addTripleName());
+//    }
+//    
+//    public Edge name(Edge edge, Node name) {
+//        if (edge.nbNode() == 3) {
+//            edge.setNode(Edge.REF_INDEX, name);
+//            return edge;
+//        }
+//        return name(edge, edge.getEdgeNode(), name);
+//    }
     
-     public Edge name(Edge edge, Node predicate, Node name) {
-        if (edge.nbNode() == 3) {
-            edge.setNode(2, name);
+    // @todo: check this
+    public Edge name(Edge edge, Node predicate, Node name) {
+        if (edge.hasReference()) {
+            edge.setNode(Edge.REF_INDEX, name);
             return edge;
         }
-        return create(edge.getGraph(), edge.getNode(0), predicate, edge.getNode(1), name);
+        return create(edge.getGraph(), edge.getNode(0), predicate, edge.getNode(1), name, edge.isNested());
     }
     
     public Edge copy(Node node, Node pred, Edge ent) {

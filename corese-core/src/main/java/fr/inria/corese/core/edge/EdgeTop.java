@@ -151,18 +151,22 @@ public abstract class EdgeTop extends GraphObject implements Edge {
 
     @Override
     public boolean equals(Object o) {
-        // We check object equality first since it's most likely to be different. In
-        // general the number of different
-        // predicates and contexts in sets of statements are the smallest (and therefore
-        // most likely to be identical),
-        // so these are checked last.
-
-        return this == o || o instanceof Statement && this.getObject().equals(((Statement) o).getObject())
-                && this.getSubject().equals(((Statement) o).getSubject())
-                && this.getPredicate().equals(((Statement) o).getPredicate())
-                && Objects.equals(this.getContext(), ((Statement) o).getContext());
+        if (this == o) {
+            return true;
+        }
+        if (o instanceof Statement) {
+            return equals((Statement)o);
+        }
+        return false;
     }
-
+    
+    public boolean equals(Statement t) {
+        return getObject().equals(t.getObject())
+                && getSubject().equals(t.getSubject())
+                && getPredicate().equals(t.getPredicate())
+                && Objects.equals(this.getContext(), t.getContext());
+    }
+    
     @Override
     public String toString() {
         if (DISPLAY_EDGE_AS_RDF4J) {

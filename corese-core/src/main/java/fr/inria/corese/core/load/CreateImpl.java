@@ -195,27 +195,38 @@ public class CreateImpl extends CreateTriple implements Creator {
         return addLiteral(lit.getLabel(), datatype, lang);
     }
 
-    
-
-    
-
     Node getNode(Atom c) {
         if (c.isBlank() || c.isBlankNode()) {
-            return getBlank(c);
+            return getGenericBlank(c);
         } else {
             return addResource(c.getLabel());
         }
     }
+   
+    Node getGenericBlank(Atom c) {
+        if (c.isTriple()) {
+            return getTripleReference(c);
+        }
+        else {
+            return getBlank(c);
+        }
+    }
+
     
     Node getBlank(Atom c) {
         Node n = addBlank(getID(c.getLabel()));
-        DatatypeMap.shareTripleReference(n.getDatatypeValue(), c.getDatatypeValue());
+        return n;
+    }
+    
+    Node getTripleReference(Atom c) {
+        Node n = addTripleReference(tripleID(c.getLabel()));
+        //DatatypeMap.shareTripleReference(n.getDatatypeValue(), c.getDatatypeValue());
         return n;
     }
 
     Node getSubject(Atom c) {
         if (c.isBlank() || c.isBlankNode()) {
-            return getBlank(c);
+            return getGenericBlank(c);
         } else {
             if (resource == null || !resource.equals(c.getLabel())) {
                 resource = c.getLabel();
@@ -226,13 +237,26 @@ public class CreateImpl extends CreateTriple implements Creator {
     }
 
     String getID(String b) {
-        String id = b;
         if (isRenameBlankNode()) {
-            id = blank.get(b);
-            if (id == null) {
-                id = newBlankID();
-                blank.put(b, id);
-            }
+            return basicID(b);
+        }
+        return b;
+    }
+    
+    String basicID(String b) {
+        String id = blank.get(b);
+        if (id == null) {
+            id = newBlankID();
+            blank.put(b, id);
+        }
+        return id;
+    }
+    
+    String tripleID(String b) {
+        String id = blank.get(b);
+        if (id == null) {
+            id = getGraph().newTripleReferenceID();
+            blank.put(b, id);
         }
         return id;
     }

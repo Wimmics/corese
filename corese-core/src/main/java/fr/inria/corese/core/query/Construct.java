@@ -606,6 +606,8 @@ public class Construct
     /**
      * Given query qNode return target node
      * If node exist in graph, return graph node
+     * additionalNode = true means node is not subject/object, 
+     * it may be an rdf star triple reference
      */
     Node construct(Node gNode, Node source, Node qNode, Environment map, boolean additionalNode) {        
         if (isDelete  && additionalNode && qNode.isBlank() && qNode.isTriple() ) {
@@ -620,48 +622,27 @@ public class Construct
             // search map node
             Node nn = map.getNode(qNode.getLabel());
             IDatatype dt = null;
-            if (nn != null) {
-                dt = nn.getDatatypeValue();
-            }
 
-            if (dt == null) {
+            if (nn == null) {
                 if (qNode.isBlank()) {
                     if (isDelete && !additionalNode && qNode.isTriple() && 
                          qNode.getEdge()!=null) {
-                        // qNode is a triple reference to edge:
-                        // <<s p o>> q v -> t q v . tuple(s p o t)
-                        // qNode = t in t q v and t.edge = s p o
-                        // instantiate edge s p o, find it in graph, get its reference ref if any
-                        // return ref as t
-                        Edge edge  = qNode.getEdge();
-                        Edge query = construct(gNode, edge, map);
-                        Edge target = getGraphManager().find(query);
-                        
-                        if (trace) {
-                            System.out.println("query node: " + qNode + " ref: " + edge);
-                            System.out.println("edge inst: " + query);
-                            System.out.println("target triple: " + target);
-                        }
-                        
-                        if (target!=null && target.hasReference()) {
-                            dt = target.getNode(Edge.REF_INDEX).getDatatypeValue(); // = qNode
-                            if (trace) System.out.println(qNode + " = " + dt);
-                        }
-                        else {
-                            dt = blank(qNode, map);
-                        }
+                        dt = reference(gNode, qNode, map);
                     }
                     else {
-                        dt = blank(qNode, map);
+                        dt = genericBlank(qNode, map);
                     }
                 } else if (qNode.isConstant()) {
-                    // constant
+                    // uri, literal
                     dt = getValue(qNode);
                 } else {
                     // unbound variable
                     return null;
                 }
-            } 
+            }
+            else {
+                dt = nn.getDatatypeValue();
+            }
             
             node = uniqueNode(source, dt);
             put(qNode, node);
@@ -669,12 +650,49 @@ public class Construct
 
         return node;
     }
+    
+        // qNode is a triple reference to edge:
+        // delete <<s p o>> q v -> t q v . tuple(s p o t)
+        // qNode = t in t q v and t.edge = s p o
+        // instantiate edge s p o, find it in graph, get its reference ref if any
+        // return ref as t
+    IDatatype reference(Node gNode, Node qNode, Environment map) {
+
+        Edge edge = qNode.getEdge();
+        Edge query = construct(gNode, edge, map);
+        Edge target = getGraphManager().find(query);
+
+        if (trace) {
+            System.out.println("gNode: " + gNode );
+            System.out.println("query node: " + qNode + " ref: " + edge);
+            System.out.println("edge inst: " + query);
+            System.out.println("target triple: " + target);
+        }
+
+        if (target != null && target.hasReference()) {
+            IDatatype dt = target.getNode(Edge.REF_INDEX).getDatatypeValue(); // = qNode
+            if (trace) {
+                System.out.println(qNode + " = " + dt);
+            }
+            return dt;
+        } else {
+            return genericBlank(qNode, map);
+        }
+    }
        
     IDatatype value(Node node) {
         return  node.getDatatypeValue();
     }
     
-
+    IDatatype genericBlank(Node qNode, Environment map) {
+        if (qNode.isTriple()) {
+            return tripleReference(qNode, map);
+        }
+        else {
+            return blank(qNode, map);
+        }
+    }
+    
     IDatatype blank(Node qNode, Environment map) {
         String str;
         if (isRule()) {
@@ -683,9 +701,15 @@ public class Construct
             str = graphManager.newBlankID();
         }
         IDatatype dt = graphManager.createBlank(str);
-        DatatypeMap.shareTripleReference(dt, qNode.getDatatypeValue());
         return dt;
     }
+    
+    IDatatype tripleReference(Node qNode, Environment map) {
+        IDatatype dt = graphManager.createTripleReference();
+        //DatatypeMap.shareTripleReference(dt, qNode.getDatatypeValue());
+        return dt;
+    }
+
 
     /**
      * Create a unique BN ID according to (Rule, qNode & Mapping) If the rule

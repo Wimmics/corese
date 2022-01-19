@@ -732,7 +732,6 @@ public class EdgeManagerIndexer
             if (getIndex() == 0) {
                 graph.setSize(graph.size() - 1);
             }
-
             if (getGraph().isRDFStar() && target.hasReference()) {  
                 // delete tuple(s p o t)
                 if (superUser(edge)) {

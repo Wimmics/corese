@@ -98,7 +98,9 @@ public class Graph extends GraphObject implements
     public static final int ADD = 2;
     public static final int CLEAR = 3;
     static long blankid = 0;
+    static long triplerefid = 0;
     public static String BLANK = "_:b";
+    public static String TRIPLE_REF = "_:t";
     static final String SKOLEM = ExpType.SKOLEM;
     private static final String NL = System.getProperty("line.separator");
     static final int TAGINDEX = 2;
@@ -116,7 +118,7 @@ public class Graph extends GraphObject implements
     public static boolean EDGE_METADATA_DEFAULT = false;
     // for external agent such as corese gui, meaningless otherwise
     public static boolean RDFS_ENTAILMENT_DEFAULT = true;
-    // same triple have same name in named graphs
+    // same triple s p o have same reference node in different named graphs
     public static boolean TRIPLE_UNIQUE_NAME = true;
 
     private static final String[] PREDEFINED = {
@@ -1981,6 +1983,18 @@ public class Graph extends GraphObject implements
         }
         return node;
     }
+    
+    Node basicAddTripleReference(String label) {
+        Node node = getBlankNode(label);
+        if (node == null) {
+            IDatatype dt = createTripleReference(label);
+            node = buildNode(dt);
+            indexNode(dt, node);
+            addBlankNode(dt, node);
+        }
+        return node;
+    }
+
 
     public void add(Node node) {
         IDatatype dt = getDatatypeValue(node);
@@ -2683,6 +2697,10 @@ public class Graph extends GraphObject implements
             return blankID();
         }
     }
+    
+    public String newTripleReferenceID() {
+        return TRIPLE_REF + triplerefid++;
+    }
 
     String blankID() {
         return BLANK + blankid++;
@@ -3378,6 +3396,22 @@ public class Graph extends GraphObject implements
         } else {
             return basicAddBlank(label);
         }
+    }
+    
+    public Node addTripleReference() {
+        return addTripleReference(newTripleReferenceID());
+    }
+    
+    public Node addTripleReference(String label) {
+        return basicAddTripleReference(label);
+    }
+    
+    public IDatatype createTripleReference() {
+        return createTripleReference(newTripleReferenceID());
+    }
+    
+    IDatatype createTripleReference(String label) {
+        return DatatypeMap.createTripleReference(label);
     }
 
     public IDatatype createBlank(String label) {

@@ -553,7 +553,6 @@ public class ProducerImpl
                 return empty;
             }
         }
-
         Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, 
                 graph.isEdgeMetadata(), getAccessRight(env), edge.isNested());
 

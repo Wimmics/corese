@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.datatype;
 
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import org.eclipse.rdf4j.model.BNode;
 
@@ -108,6 +109,60 @@ public class CoreseBlankNode extends CoreseResource {
 	public int hashCode() {
 		return getLabel().hashCode();
 	}
+        
+        @Override
+    public boolean sameTerm(IDatatype dt) {
+        if (isTriple() && dt.isTriple()) {
+            return sameTermTriple(dt) ;
+        }
+        return super.sameTerm(dt);
+    }
+    
+    boolean sameTermTriple(IDatatype dt) {
+        Pointerable obj1 = getPointerObject();
+        Pointerable obj2 = dt.getPointerObject();
+        if (obj1 != null && obj2 !=null) {
+            Edge e1 = obj1.getEdge();
+            Edge e2 = obj2.getEdge();
+            return e1.sameTerm(e2);
+        }
+        return super.sameTerm(dt);
+    }
+    
+
+        
+    @Override
+    public IDatatype eq(IDatatype dt) {
+        if (isTriple() && dt.isTriple()) {
+            return eqTriple(dt) ? TRUE : FALSE;
+        }
+        try {
+            return (this.equalsWE(dt)) ? TRUE : FALSE;
+        } catch (CoreseDatatypeException ex) {
+            return null;
+        }
+    }
+        
+    @Override
+    public IDatatype ne(IDatatype dt) {
+        IDatatype res = eq(dt);
+        if (res == null) {
+            return null;
+        }
+        return res.booleanValue() ? FALSE : TRUE;
+    }
+    
+    boolean eqTriple(IDatatype dt) {
+        Pointerable obj1 = getPointerObject();
+        Pointerable obj2 = dt.getPointerObject();
+        if (obj1 != null && obj2 !=null) {
+            Edge e1 = obj1.getEdge();
+            Edge e2 = obj2.getEdge();
+            return e1.equals(e2);
+        }
+        return false;
+    }
+        
 
 	@Override
 	public boolean equals(Object obj) {

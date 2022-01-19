@@ -109,61 +109,9 @@ public class ASTParser implements Walker, URLParam {
 
     @Override
     public void enter(Composite c) {
-//        if (RDF_STAR) {
-//            process(c);
-//        }
     }
     
-    /**
-     * When update = delete exp where body
-     * Copy delete triple with reference into body 
-     */
-    void process(Composite c) {
-        switch (c.type()) {
-            case Update.COMPOSITE:
-                if (c.getDelete()!=null) {
-                    processDelete(c.getDelete(), c.getBody());
-                    System.out.println("parser:\n"+c);
-                }
-        }
-    }
-    
-    /**
-     * delete exp where body
-     */
-    void processDelete(Exp exp, Exp body) {
-        BasicGraphPattern bgp = new BasicGraphPattern();
-        
-        for (Exp ee : exp) {
-            // select triple with reference
-            if (ee.isTriple() && ee.getTriple().hasTripleReference()) {
-                bgp.add(ee);
-            }
-        }
-        
-        if (bgp.size() > 0) {
-            rewrite(bgp, body);
-        }
-    }
-    
-    /**
-     * bgp = (delete) triples with reference
-     * generate optional with  triple with reference
-     * @todo: generate one optional for each (whole) triple with reference
-     * @todo: declare triple in body to ast ?
-     */
-    void rewrite(Exp bgp, Exp body) {
-        Optional opt = new Optional();
-        BasicGraphPattern fst = new BasicGraphPattern();
-        for (Exp ee : body) {
-            fst.add(ee);
-        }
-        opt.add(fst);
-        opt.add(bgp);
-        body.getBody().clear();
-        body.add(opt);
-    }
-    
+
 
     @Override
     public void leave(Composite c) {

@@ -1,6 +1,7 @@
 package fr.inria.corese.kgram.api.core;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import java.util.Objects;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -9,163 +10,165 @@ import org.eclipse.rdf4j.model.Value;
 /**
  * Interface for Producer iterator that encapsulate Edge or Node with its Graph
  * Node
- * 
+ *
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
 public interface Edge extends Pointerable, Statement {
+
     // rdf star reference node index: index of t = 2 in tuple(s p o t)
-    int REF_INDEX = 2; 
+    int REF_INDEX = 2;
 
-	/**
-	 * Number of nodes.
-	 * 
-	 * @return
-	 */
-	int nbNode();
+    /**
+     * Number of nodes.
+     *
+     * @return
+     */
+    int nbNode();
 
-	/**
-	 * nodes that are vertex of the graph use case: metadata node is not a graph
-	 * vertex
-	 */
-	int nbGraphNode();
+    /**
+     * nodes that are vertex of the graph use case: metadata node is not a graph
+     * vertex
+     */
+    int nbGraphNode();
 
-	/**
-	 * Node at index n.
-	 * 
-	 * @param n
-	 * @return
-	 */
-	Node getNode(int i);
+    /**
+     * Node at index n.
+     *
+     * @param n
+     * @return
+     */
+    Node getNode(int i);
 
-	default void setNode(int i, Node n) {
-	}
+    default void setNode(int i, Node n) {
+    }
 
-	/**
-	 * Additional Node that represents the label of the edge as a Node. This node is
-	 * matched with query edge node if any use case: ?x ?p ?y The target edge node
-	 * is bound to ?p This node is not supposed to be returned by getNode() neither
-	 * is it supposed to be counted in nbNode().
-	 * 
-	 * @return
-	 */
-	Node getEdgeNode();
+    /**
+     * Additional Node that represents the label of the edge as a Node. This
+     * node is matched with query edge node if any use case: ?x ?p ?y The target
+     * edge node is bound to ?p This node is not supposed to be returned by
+     * getNode() neither is it supposed to be counted in nbNode().
+     *
+     * @return
+     */
+    Node getEdgeNode();
 
-	/**
-	 * Is node returned by getNode()
-	 * 
-	 * @param n
-	 * @return
-	 */
-	boolean contains(Node node);
+    /**
+     * Is node returned by getNode()
+     *
+     * @param n
+     * @return
+     */
+    boolean contains(Node node);
 
-	/**
-	 * The label of the edge.
-	 * 
-	 * @return
-	 */
-	String getLabel();
+    /**
+     * The label of the edge.
+     *
+     * @return
+     */
+    String getLabel();
 
-	/**
-	 * Query edge must have an index. Target edge are not committed to.
-	 * 
-	 * @return
-	 */
-	int getIndex();
+    /**
+     * Query edge must have an index. Target edge are not committed to.
+     *
+     * @return
+     */
+    int getIndex();
 
-	// manage access right
-	default byte getLevel() {
-		return -1;
-	}
+    // manage access right
+    default byte getLevel() {
+        return -1;
+    }
 
-	default Edge setLevel(byte b) {
-		return this;
-	}
+    default Edge setLevel(byte b) {
+        return this;
+    }
 
-	/**
-	 * Query edge must have an index (computed by KGRAM). Target edge are not
-	 * committed to.
-	 * 
-	 * @return
-	 */
-	void setIndex(int n);
+    /**
+     * Query edge must have an index (computed by KGRAM). Target edge are not
+     * committed to.
+     *
+     * @return
+     */
+    void setIndex(int n);
 
-	/**
-	 * Query edge may have variable Node Target edge are not committed to.
-	 * 
-	 * @return
-	 */
-	Node getEdgeVariable();
+    /**
+     * Query edge may have variable Node Target edge are not committed to.
+     *
+     * @return
+     */
+    Node getEdgeVariable();
 
-	// edge variable or edge node
-	Node getProperty();
-        
-        default void setProperty(Node node) {}
+    // edge variable or edge node
+    Node getProperty();
 
-	Node getNode();
+    default void setProperty(Node node) {
+    }
 
-	Node getGraph();
+    Node getNode();
 
-	default void setGraph(Node n) {
-	}
+    Node getGraph();
 
-	Edge getEdge();
+    default void setGraph(Node n) {
+    }
 
-	Object getProvenance();
+    Edge getEdge();
 
-	void setProvenance(Object obj);
+    Object getProvenance();
 
-	default boolean isMatchArity() {
-		return false;
-	}
-        
-        // nested rdf star triple <<s p o>>
-        default boolean isNested() {
-            return false;
+    void setProvenance(Object obj);
+
+    default boolean isMatchArity() {
+        return false;
+    }
+
+    // nested rdf star triple <<s p o>>
+    default boolean isNested() {
+        return false;
+    }
+
+    default boolean isAsserted() {
+        return !isNested();
+    }
+
+    default void setNested(boolean b) {
+    }
+
+    default void setAsserted(boolean b) {
+        setNested(!b);
+    }
+
+    default Node getGraphNode() {
+        return getGraph();
+    }
+
+    default Node getSubjectNode() {
+        return getNode(0);
+    }
+
+    default Node getPropertyNode() {
+        return getProperty();
+    }
+
+    default Node getObjectNode() {
+        return getNode(1);
+    }
+
+    default IDatatype getGraphValue() {
+        Node node = getGraph();
+        if (node == null) {
+            return null;
         }
-        
-        default boolean isAsserted() {
-            return ! isNested();
-        }
-        
-        default void setNested(boolean b) {
-        }
-        
-        default void setAsserted(boolean b) {
-            setNested(! b);
-        }
-                
-        default Node getGraphNode() {
-            return getGraph();            
-        }
-        
-        default Node getSubjectNode() {
-            return getNode(0);            
-        }
-        
-        default Node getPropertyNode() {
-            return getProperty();            
-        }
-        
-        default Node getObjectNode() {
-            return getNode(1);            
-        }              
-        
-        default IDatatype getGraphValue() {
-            Node node = getGraph();
-            if (node == null) {
-                return null;
-            }
-            return node.getDatatypeValue();
-        }
-        
-        default IDatatype getSubjectValue() {
-            return getNode(0).getDatatypeValue();
-        }
-        
-      default IDatatype getPropertyValue() {
+        return node.getDatatypeValue();
+    }
+
+    default IDatatype getSubjectValue() {
+        return getNode(0).getDatatypeValue();
+    }
+
+    default IDatatype getPropertyValue() {
         return getPredicateValue();
-      }
+    }
 
     default IDatatype getPredicateValue() {
         if (getProperty() == null) {
@@ -178,38 +181,59 @@ public interface Edge extends Pointerable, Statement {
         return getNode(1).getDatatypeValue();
     }
 
-	///////////
-	// RDF4J //
-	///////////
+    ///////////
+    // RDF4J //
+    ///////////
+    @Override
+    public default Resource getSubject() {
+        return (Resource) getSubjectValue().getRdf4jValue();
+    }
 
-	@Override
-	public default Resource getSubject() {
-		return (Resource) getSubjectValue().getRdf4jValue();
-	}
+    @Override
+    public default IRI getPredicate() {
+        return (IRI) getPropertyValue().getRdf4jValue();
+    }
 
-	@Override
-	public default IRI getPredicate() {
-		return (IRI) getPropertyValue().getRdf4jValue();
-	}
+    @Override
+    public default Value getObject() {
+        return getObjectValue().getRdf4jValue();
+    }
 
-	@Override
-	public default Value getObject() {
-		return getObjectValue().getRdf4jValue();
-	}
+    @Override
+    public default Resource getContext() {
+        Node context = this.getGraph();
 
-	@Override
-	public default Resource getContext() {
-		Node context = this.getGraph();
-
-		if (context == null || context.getLabel().equals(ExpType.DEFAULT_GRAPH)) {
-			return null;
-		}
-		return (Resource) context.getDatatypeValue().getRdf4jValue();
-	}
-        
-        // for rdf star only
-        default boolean hasReference() {
-            return nbNode() > REF_INDEX;
+        if (context == null || context.getLabel().equals(ExpType.DEFAULT_GRAPH)) {
+            return null;
         }
+        return (Resource) context.getDatatypeValue().getRdf4jValue();
+    }
+
+    // for rdf star only
+    default boolean hasReference() {
+        return nbNode() > REF_INDEX;
+    }
+    
+    default Node getReferenceNode() {
+        return getNode(REF_INDEX);
+    }
+
+    default boolean sameTerm(Edge e) {
+        return getSubjectValue().sameTerm(e.getSubjectValue())
+                && getPredicateValue().sameTerm(e.getPredicateValue())
+                && getObjectValue().sameTerm(e.getObjectValue())
+                && (getGraphValue() == null || e.getGraphValue() == null
+                ? getGraphValue() == e.getGraphValue()
+                : getGraphValue().sameTerm(e.getGraphValue()));
+    }
+
+    default boolean equals(Edge e) {
+        return getObjectValue().equals(e.getObjectValue())
+                && getSubjectValue().equals(e.getSubjectValue())
+                && getPredicateValue().equals(e.getPredicateValue())
+                && (getGraphValue() == null || e.getGraphValue() == null
+                ? getGraphValue() == e.getGraphValue()
+                : getGraphValue().equals(e.getGraphValue()));
+    }
 
 }

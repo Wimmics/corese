@@ -647,7 +647,9 @@ public class ASTQuery
     } 
     
     Variable tripleReferenceBnode() {
-        return newBlankNode();
+        Variable var = newBlankNode();
+        var.setTriple(true);
+        return var;
     } 
     
     Constant tripleReferenceDefinition() {

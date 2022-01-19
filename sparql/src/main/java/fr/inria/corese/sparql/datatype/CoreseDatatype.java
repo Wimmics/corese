@@ -1149,6 +1149,7 @@ public class CoreseDatatype
         }
     }
     
+    // overloaded by CoreseBlankNode for triple
     @Override
     public boolean sameTerm(IDatatype dt) {
         if (getCode() == dt.getCode()) {
@@ -1169,6 +1170,7 @@ public class CoreseDatatype
         return false;
     }
 
+    // overloaded by CoreseBlankNode for triple
     @Override
     public IDatatype eq(IDatatype dt) {
         try {
@@ -1183,7 +1185,8 @@ public class CoreseDatatype
         return ne(dt);
     }
     
-     @Override
+    // overloaded by CoreseBlankNode for triple
+    @Override
     public IDatatype ne(IDatatype dt) {
         try {
             return (!this.equalsWE(dt)) ? TRUE : FALSE;

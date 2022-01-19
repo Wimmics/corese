@@ -382,6 +382,7 @@ public class Variable extends Atom {
         this.matchNodeList = matchNodeList;
     }
 
+    @Override
     public boolean isTriple() {
         return triple;
     }

@@ -212,21 +212,16 @@ public class ParserHandler {
         }
         if (isInsideWhere()) { 
             if (ast.isUpdate()) {
-                // use case: delete where { <<s p o>> q v }
-                // delete works with a variable, not with a bnode
+                // delete (insert) works with a variable, not with a bnode
+                // use case: delete where {} and delete is empty 
                 return ast.tripleReferenceVariable();
             }
             else {
-                // bnode as variable
+                // variable isBlankNode() == true
+                // not returned by select *
                 return ast.tripleReferenceQuery();                
             }
         }
-//        else if (isInsideDelete() || isInsideDeleteData()) {
-//            // @todo: rdf star triple to be duplicated
-//            // in where part in such a way that variable be
-//            // instantiated by where processing
-//            return ast.tripleReferenceVariable();
-//        }
         // insert delete data
         // insert delete -- where
         // construct     -- where

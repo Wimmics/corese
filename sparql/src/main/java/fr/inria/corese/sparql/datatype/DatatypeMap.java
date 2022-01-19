@@ -1033,7 +1033,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
     
     public static IDatatype createTripleReference(String label) {
-        IDatatype dt = new CoreseBlankNode(label);
+        IDatatype dt = createBlank(label);
         dt.setTriple(true);
         return dt;
     }

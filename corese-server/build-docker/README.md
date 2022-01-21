@@ -1,12 +1,14 @@
 # Corese Docker
 
+![Corese logo](https://project.inria.fr/corese/files/2018/07/corese-3.png)
+
 This is a Docker image for hosting the [Corese Semantic Web Server](https://project.inria.fr/corese/) that implements RDF, RDFS, SPARQL 1.1 Query & Update, OWL-RL, SHACL.
 Corese also implements the LDScript and STTL SPARQL extensions.
 
 The Docker image tag includes the Corese version installed in the image. The following version is currently available:
 
-- corese:4.2.4
 - corese:4.3.0
+- corese:4.2.4
 
 ## Running the Corese Docker image
 
@@ -117,3 +119,9 @@ curl \
   -d "$QUERY" \
   "http://localhost:8080/sparql"
 ```
+
+## References
+
+- [Website](https://project.inria.fr/corese/)
+- [Demo](http://corese.inria.fr/)
+- [Git](https://github.com/Wimmics/corese)

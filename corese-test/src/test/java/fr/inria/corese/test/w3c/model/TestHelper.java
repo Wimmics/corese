@@ -9,6 +9,8 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import java.util.List;
 
+import org.junit.Ignore;
+
 import fr.inria.corese.test.w3c.turtle.TurtleTestCase;
 import fr.inria.corese.test.w3c.rdfa.RDFaTestCase;
 
@@ -100,8 +102,9 @@ public class TestHelper {
      * @param output Source of graph 2
      * 
      * @return true (semantic equivalent), otherwise false
+     * @throws EngineException
      */
-    public static boolean graphCompare(String input, String output) {
+    public static boolean graphCompare(String input, String output) throws EngineException {
         //create a graph for input
         Graph g1 = Graph.create();
         boolean b1 = load(input, g1);

@@ -9,8 +9,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessNamespace;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 import org.junit.Assert;
 import org.junit.Test;
 

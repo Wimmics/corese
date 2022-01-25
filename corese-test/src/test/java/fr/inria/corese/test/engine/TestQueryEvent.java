@@ -8,6 +8,8 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.shacl.Shacl;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.SOLVER_OVERLOAD;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -19,6 +21,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Context;
 import java.io.IOException;
 import static org.junit.Assert.assertEquals;
+import org.junit.BeforeClass;
 import org.junit.Test;
 
 /**
@@ -28,6 +31,11 @@ import org.junit.Test;
 public class TestQueryEvent {
      static String data  = Thread.currentThread().getContextClassLoader().getResource("data/").getPath() ;
    
+      @BeforeClass
+    static public void init() {
+        Property.set(SOLVER_OVERLOAD, true);
+    }
+     
       @Test
     public void testmethod() throws EngineException, LoadException {
         Graph g = createGraph();
@@ -239,7 +247,7 @@ public class TestQueryEvent {
         String q = "select (sum(?a) as ?sum) where {?x foaf:age ?a}";
 
         exec.query(i);
-        IDatatype res = exec.getCurrentBinding().getVariable("?report");
+        IDatatype res = exec.getEnvironmentBinding().getVariable("?report");
         Graph report = (Graph) res.getPointerObject();
         boolean b = new Shacl(g).conform(report);
         assertEquals(true, b);
@@ -537,7 +545,7 @@ public class TestQueryEvent {
         //exec.query(i);
         Mappings map = exec.query(q);
         DatatypeValue dt = map.getValue("?t");
-        Binding b = exec.getBinding();
+        Binding b = exec.getCreateBinding();
         assertEquals(4, b.getVariable("?var").intValue());
     }
 

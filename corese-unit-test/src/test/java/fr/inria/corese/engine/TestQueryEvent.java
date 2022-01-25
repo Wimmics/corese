@@ -831,7 +831,11 @@ public class TestQueryEvent {
         exec.query(i);
         
         Mappings map = exec.query(q);
+<<<<<<< HEAD
         //assertEquals(4, map.getResult().getDatatypeValue().intValue());
+=======
+        assertEquals(4, map.getNode().getDatatypeValue().intValue());
+>>>>>>> origin/master
     }   
     
     

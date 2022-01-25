@@ -1,6 +1,8 @@
 package fr.inria.corese.test.w3c.turtle;
 
 import org.testng.Assert;
+
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.test.w3c.model.IEvaluate;
 import fr.inria.corese.test.w3c.model.TestCase;
 import fr.inria.corese.test.w3c.model.TestHelper;
@@ -64,11 +66,15 @@ public class TurtleTestEvaluate implements IEvaluate {
         TurtleTestCase ttc = (TurtleTestCase) tc;
         String type = ttc.getType();
         //ttc.setTested(true);
-        boolean result;
+        boolean result = false;
 
         //***** 1. turtle
         if (type.equals(PositiveEval)) {
-            result = TestHelper.graphCompare(ttc.getAction(), ttc.getResult());
+            try {
+                result = TestHelper.graphCompare(ttc.getAction(), ttc.getResult());
+            } catch (EngineException e) {
+                e.printStackTrace();
+            }
         } else if (type.equals(NegativeEval) || type.equals(PositiveSyntax) || type.equals(NegativeSyntax)) {
             result = TestHelper.loadValidate(ttc.getAction());
 
@@ -78,13 +84,21 @@ public class TurtleTestEvaluate implements IEvaluate {
 
             //***** 3. XML
         } else if (type.equals(XMLPositiveEval)) {//for RDF/XML
-            result = TestHelper.graphCompare(ttc.getAction(), ttc.getResult());
+            try {
+                result = TestHelper.graphCompare(ttc.getAction(), ttc.getResult());
+            } catch (EngineException e) {
+                e.printStackTrace();
+            }
         } else if (type.equals(XMLNegativeSyntax)) {
             result = TestHelper.loadValidate(ttc.getAction());
 
             //***** 4. TriG
         } else if (type.equals(TriGPositiveEval)) {
-            result = TestHelper.graphCompare(ttc.getAction(), ttc.getResult());
+            try {
+                result = TestHelper.graphCompare(ttc.getAction(), ttc.getResult());
+            } catch (EngineException e) {
+                e.printStackTrace();
+            }
         } else if (type.equals(TriGNegativeEval) || type.equals(TriGPositiveSyntax) || type.equals(TriGNegativeSyntax)) {
             result = TestHelper.loadValidate(ttc.getAction());
 

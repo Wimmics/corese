@@ -14,7 +14,7 @@ import fr.inria.corese.sparql.triple.api.Walker;
  */
 
 public class Atom extends Expression implements ElementClause{
-	
+	public static boolean display = false;
 	boolean isone = false;
 	boolean isall = false;
 	boolean isdirect = false;
@@ -22,6 +22,7 @@ public class Atom extends Expression implements ElementClause{
         // use case: parser generate triple reference for s p o {| q v |}
         // object o contain triple reference
         private Atom tripleReference;
+        private Triple triple;
 	
 	public Atom() {
 	}
@@ -43,8 +44,8 @@ public class Atom extends Expression implements ElementClause{
 	
         @Override
 	public Expression getExpression() {
-        return null;
-    }
+            return null;
+        }
 
         @Override
 	boolean isAtom() {
@@ -53,6 +54,14 @@ public class Atom extends Expression implements ElementClause{
         
         public boolean isTriple() {
             return false;
+        }
+        
+        public void setTriple(Triple t) {
+            triple = t;
+        }
+        
+        public Triple getTriple() {
+            return triple;
         }
 	
 	public boolean isResource() {

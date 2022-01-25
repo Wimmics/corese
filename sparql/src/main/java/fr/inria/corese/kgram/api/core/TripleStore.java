@@ -10,5 +10,6 @@ public interface TripleStore {
     
     Node getNode(int n);
     IDatatype set(IDatatype key, IDatatype value);
+    int size();
     
 }

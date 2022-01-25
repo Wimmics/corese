@@ -89,6 +89,10 @@ PARSER_BEGIN(SparqlCorese)
             handler = h;
             handler.setParser(this);
         }
+
+        public ParserHandler getHandler() {
+            return handler;
+        }
 	
 	/**
 	* @param s1 = the string deprecated
@@ -222,8 +226,8 @@ Exp LoadPattern() : {Exp stack;}
 	(
           BaseDecl() 
         | PrefixDecl()
-        | TriplesSameSubject(stack) ( <DOT> ) ?
-	| GraphGraphPattern(stack) 
+        | LOOKAHEAD(2) TriplesSameSubject(stack) ( <DOT> ) ?
+        | (<GRAPH>)? BasicGraphGraphPattern(stack) 
 
         ) *
 
@@ -945,7 +949,7 @@ Values Values() : {
          stack = BasicGraphPattern.create();
         }
 
- <VALUES> 
+ <VALUES>  { handler.setInsideValues(true); }
  
 	( 
 	(	
@@ -955,12 +959,12 @@ Values Values() : {
 		<RPAREN>
 			
 		<LBRACE> 
-                (
+                (   // unnest(exp)
                     exp = BuiltInCall(stack) { values.addExp(exp); }
                     |
                     (
 			<LPAREN> 
-				{ value = new ArrayList<Constant>(); }
+				{ value = new ArrayList<Constant>();}
                                 
                                 ( val = Value() { value.add(val); } ) *                                                                    
 
@@ -993,13 +997,13 @@ Values Values() : {
 	)
 	)
 	
-	{ return astq.complete(values); }
+	{ handler.setInsideValues(false); return astq.complete(values); }
 
 	
 }
 
 
-Constant Value() : { Constant cst; String s; Token t1;}
+Constant Value() : { Constant cst = null; String s; Token t1; Exp exp; Atom triple;}
 {
   	( 
   	  s = Q_IRI_ref() { cst = astq.createURI(s); }
@@ -1008,7 +1012,10 @@ Constant Value() : { Constant cst; String s; Token t1;}
   	| t1 = <UNDEF>    { cst = null; }  
   	| cst = RDFLiteral() 
   	| cst = NumericLiteral()
-  	| cst = BooleanLiteral()   
+  	| cst = BooleanLiteral() 
+        | { exp = BasicGraphPattern.create(); }
+          triple = StarTriple(exp)
+          { cst = triple.getConstant(); }
   	) 
   	
   { return cst; }
@@ -1337,12 +1344,16 @@ void ScopeGraphPattern(Exp stack) : { Exp e; }
 
 
 void GraphGraphPattern(Exp stack) : 
+	{ }
+{	
+	<GRAPH>	 BasicGraphGraphPattern(stack)
+        
+}
+
+void BasicGraphGraphPattern(Exp stack) : 
 	{ Atom src; Exp e; Source st; 
 	  boolean state = false, leaf = false, rec = false;}
-{
-	
-	 <GRAPH>
-	 
+{	
   	src = VarOrIRIref(stack) 
   	{ handler.graphPattern(src); }
   	e = GroupGraphPattern()
@@ -1506,11 +1517,12 @@ Exp RDFstar(Exp stack) : {  Atom ref; }
 Atom StarTriple(Exp stack) : 
 {Atom refatom = null; Atom sub, obj, ref, pred;  Triple t;}
 {
-    <LT><LT> 
-        sub = StarTerm(stack) pred = Verb() obj = StarTerm(stack) ( refatom = VarOrTerm(stack)  )?
-        { ref = handler.createNestedTripleStar(astq, stack, sub, pred, obj, refatom);
+    <LTLT> 
+        sub = StarTerm(stack) pred = Verb() obj = StarTerm(stack) 
+//( refatom = VarOrTerm(stack)  )?
+        { ref = handler.createNestedTripleStar(astq, stack, sub, pred, obj, null);
         }
-    <GT><GT>
+    <GTGT>
     { return ref; }
 }
 
@@ -1519,7 +1531,8 @@ Atom StarTriple(Exp stack) :
 Atom StarTerm(Exp stack) : { Atom term; }
 {
     (
-        term = GraphNode(stack)
+        //term = GraphNode(stack)
+        term = VarOrTerm(stack)
       | term = StarTriple(stack)
     )
     { return term; }
@@ -1867,7 +1880,9 @@ Token Soper(): { Token t; }
 
 Token Toper(): { Token t; }
 {
-  ( t = <STRICT_SPEC> | t = <SPEC> | t = <SAME>
+  ( 
+    //t = <STRICT_SPEC> | 
+    t = <SPEC> | t = <SAME>
   | t = <GENERALISATION> | t = <STRICT_GENERALISATION> )
   { return t; }  
 }
@@ -1918,6 +1933,7 @@ Atom Collection(Exp stack) :
 { 
   ArrayList<Atom> list;
   Atom node, head;
+  Exp exp;
   RDFList rlist;
   int arobase = ASTQuery.L_DEFAULT, save = ASTQuery.L_LIST;
 }
@@ -1942,7 +1958,8 @@ Atom Collection(Exp stack) :
 	
   	<LPAREN>
   	(
-  		node = GraphNode(stack)
+  		(node = GraphNode(stack) | 
+                 node = StarTriple(stack))
   		{
   			list.add(node);
   		}   
@@ -1966,6 +1983,7 @@ Atom GraphNode(Exp stack) : { Atom expression1; }
 {
   (   LOOKAHEAD(2)
   	  expression1 = VarOrTerm(stack) 
+        // below: s p [q r] or s p (a b)
   	| expression1 = TriplesNode(stack)   	
   )
   { return expression1; }
@@ -2710,10 +2728,10 @@ Expression BrackettedExpression(Exp stack) : { Expression expression1; }
 	}
 }
 
-Expression PrimaryExpression(Exp stack) : { Expression expression1; }
+Expression PrimaryExpression(Exp stack) : {Exp exp; Expression expression1; }
 {
   ( 
-   expression1 = BrackettedExpression(stack)	// Expression
+     expression1 = BrackettedExpression(stack)	// Expression
    | expression1 = BuiltInCall(stack)		// Expression
    | expression1 = FunctionCorese(stack)	// Term
    | expression1 = Var()				// Variable
@@ -2722,6 +2740,9 @@ Expression PrimaryExpression(Exp stack) : { Expression expression1; }
    | expression1 = BooleanLiteral()		// Constant
    | expression1 = BlankNode(stack) 			// Constant
    | expression1 = IRIrefOrFunction(stack)   // Expression
+   | { exp = BasicGraphPattern.create() ;} 
+     expression1 = StarTriple(exp)
+
    // NOT  |  VarOrTerm()        
    // Because of IRIrefOrFunction
   )
@@ -3113,7 +3134,7 @@ TOKEN :
   <EQ2: "==">
 | <NE2: "!==">
 | <BEGIN_WITH: "^">
-| <STRICT_SPEC: "<:">
+//| <STRICT_SPEC: "<:">
 | <SPEC: "<=:">
 | <SAME: "=:">
 | <GENERALISATION: ">=:">
@@ -3196,8 +3217,10 @@ TOKEN :
 {
   < EQ: "=" >
 | < NE: "!=" >
-| < GT: ">" >
+| < LTLT: "<<">
+| < GTGT: ">>">
 | < LT: "<" >
+| < GT: ">" >
 | < LE: "<=" > 
 | < GE: ">=" > 
 

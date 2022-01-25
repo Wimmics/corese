@@ -2154,10 +2154,17 @@ public class ASTQuery
 
     public Triple createTriple(Atom predicate, List<Atom> list, boolean nested) {
         Triple t = createTriple(list.get(0), predicate, list.get(1));
-        // triple receive list with additional args only (so remove subject and object from list)
+        // triple target list must contain additional args only 
+        // remove subject/object from list
         list.remove(0);
         list.remove(0);
-        t.setArgs(list);
+        if (list.size() > 0) {
+            t.setArgs(list);
+            if (list.get(0).isTriple()) {
+                // rdf star triple reference
+                list.get(0).setTriple(t);
+            }
+        }
         t.setNested(nested);
         return t;
     }

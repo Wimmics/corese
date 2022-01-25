@@ -1,6 +1,7 @@
 package fr.inria.corese.kgram.api.core;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import java.util.Objects;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
@@ -211,7 +212,7 @@ public interface Edge extends Pointerable, Statement {
 
     // for rdf star only
     default boolean hasReference() {
-        return nbNode() > REF_INDEX;
+        return nbNode() > REF_INDEX && getReferenceNode().getDatatypeValue().isTriple();
     }
     
     default Node getReferenceNode() {
@@ -219,21 +220,40 @@ public interface Edge extends Pointerable, Statement {
     }
 
     default boolean sameTerm(Edge e) {
-        return getSubjectValue().sameTerm(e.getSubjectValue())
-                && getPredicateValue().sameTerm(e.getPredicateValue())
-                && getObjectValue().sameTerm(e.getObjectValue())
+        return sameTermWithoutGraph(e)
                 && (getGraphValue() == null || e.getGraphValue() == null
                 ? getGraphValue() == e.getGraphValue()
                 : getGraphValue().sameTerm(e.getGraphValue()));
     }
+    
+    default boolean sameTermWithoutGraph(Edge e) {
+        return getSubjectValue().sameTerm(e.getSubjectValue())
+                && getPredicateValue().sameTerm(e.getPredicateValue())
+                && getObjectValue().sameTerm(e.getObjectValue());
+    }
 
     default boolean equals(Edge e) {
-        return getObjectValue().equals(e.getObjectValue())
-                && getSubjectValue().equals(e.getSubjectValue())
-                && getPredicateValue().equals(e.getPredicateValue())
+        return equalsWithoutGraph(e)
                 && (getGraphValue() == null || e.getGraphValue() == null
                 ? getGraphValue() == e.getGraphValue()
                 : getGraphValue().equals(e.getGraphValue()));
+    }
+    
+    default boolean equalsWithoutGraph(Edge e) {
+        return getObjectValue().equals(e.getObjectValue())
+                && getSubjectValue().equals(e.getSubjectValue())
+                && getPredicateValue().equals(e.getPredicateValue());
+    }
+    
+    default int compareWithoutGraph(Edge e) throws CoreseDatatypeException {
+        int res = getSubjectValue().compare(e.getSubjectValue());
+        if (res == 0) {
+            res = getPredicateValue().compare(e.getPredicateValue());
+        }
+        if (res == 0) {
+            res = getObjectValue().compare(e.getObjectValue());
+        }
+        return res;
     }
 
 }

@@ -30,7 +30,7 @@ import java.util.ArrayList;
  * @author Olivier Corby & Olivier Savoie
  */
 public class Triple extends Exp implements Pointerable {
-
+    public static boolean display = false;
 
 
     /**
@@ -411,30 +411,13 @@ public class Triple extends Exp implements Pointerable {
         return str;
     }
 
-//    public ASTBuffer ftoSparql(Expression exp, ASTBuffer sb) {
-//        if (exp == null) {
-//            return sb;
-//        }
-//        boolean isAtom = (exp.isAtom());
-//        sb.append(KeywordPP.FILTER + KeywordPP.SPACE);
-//        if (isAtom) {
-//            sb.append("(");
-//        }
-//        exp.toString(sb);
-//        if (isAtom) {
-//            sb.append(")");
-//        }
-//        sb.append(KeywordPP.SPACE);
-//        return sb;
-//    }
+    @Override
+    public String toString() {
+        return toString(new ASTBuffer()).toString();
+    }
 
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
-
-//        if (isFilter()) {
-//            return ftoSparql(getFilter(), sb);
-//        }
-
         String SPACE = " ";
 
         if (source != null) {
@@ -470,6 +453,14 @@ public class Triple extends Exp implements Pointerable {
                 sb.append(KeywordPP.DOT);
             }
             sb.append(KeywordPP.CLOSE_PAREN + KeywordPP.DOT);
+            
+            if (display){
+                if (larg.size()>0 && larg.get(0).isTriple()) {
+                    sb.append(ASTBuffer.NL);
+                    sb.append(String.format("# %s = triple(%s %s %s)", 
+                        larg.get(0), getSubject(), getPredicate(), getObject()));
+                }
+            }
         } else {
             sb.append(r).append(SPACE).append(p).append(SPACE).append(v).append(KeywordPP.DOT);
         }

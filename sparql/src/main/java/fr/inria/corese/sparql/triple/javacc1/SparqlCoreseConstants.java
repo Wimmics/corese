@@ -198,64 +198,65 @@ public interface SparqlCoreseConstants {
   int EQ2 = 197;
   int NE2 = 198;
   int BEGIN_WITH = 199;
-  int STRICT_SPEC = 200;
-  int SPEC = 201;
-  int SAME = 202;
-  int GENERALISATION = 203;
-  int STRICT_GENERALISATION = 204;
-  int EQ_LANG = 205;
-  int INTEGER = 206;
-  int DECIMAL = 207;
-  int DOUBLE = 208;
-  int EXPONENT = 209;
-  int QUOTE_3D = 210;
-  int QUOTE_3S = 211;
-  int ECHAR = 212;
-  int STRING_LITERAL1 = 213;
-  int STRING_LITERAL2 = 214;
-  int STRING_LITERAL_LONG1 = 215;
-  int STRING_LITERAL_LONG2 = 216;
-  int DIGITS = 217;
-  int HEX = 218;
-  int LPAREN = 219;
-  int RPAREN = 220;
-  int LBRACE = 221;
-  int RBRACE = 222;
-  int LBRACKET = 223;
-  int RBRACKET = 224;
-  int ANON = 225;
-  int SEMICOLON = 226;
-  int COMMA = 227;
-  int DOT = 228;
-  int EQ = 229;
-  int NE = 230;
-  int GT = 231;
+  int SPEC = 200;
+  int SAME = 201;
+  int GENERALISATION = 202;
+  int STRICT_GENERALISATION = 203;
+  int EQ_LANG = 204;
+  int INTEGER = 205;
+  int DECIMAL = 206;
+  int DOUBLE = 207;
+  int EXPONENT = 208;
+  int QUOTE_3D = 209;
+  int QUOTE_3S = 210;
+  int ECHAR = 211;
+  int STRING_LITERAL1 = 212;
+  int STRING_LITERAL2 = 213;
+  int STRING_LITERAL_LONG1 = 214;
+  int STRING_LITERAL_LONG2 = 215;
+  int DIGITS = 216;
+  int HEX = 217;
+  int LPAREN = 218;
+  int RPAREN = 219;
+  int LBRACE = 220;
+  int RBRACE = 221;
+  int LBRACKET = 222;
+  int RBRACKET = 223;
+  int ANON = 224;
+  int SEMICOLON = 225;
+  int COMMA = 226;
+  int DOT = 227;
+  int EQ = 228;
+  int NE = 229;
+  int LTLT = 230;
+  int GTGT = 231;
   int LT = 232;
-  int LE = 233;
-  int GE = 234;
-  int BANG = 235;
-  int TILDE = 236;
-  int COLON = 237;
-  int SC_OR = 238;
-  int SC_AND = 239;
-  int PLUS = 240;
-  int MINUS = 241;
-  int STAR = 242;
-  int SLASH = 243;
-  int QM = 244;
-  int BAR = 245;
-  int DATATYPE = 246;
-  int AT = 247;
-  int VAR3 = 248;
-  int NCCHAR1p = 249;
-  int NCCHAR1 = 250;
-  int NCCHAR = 251;
-  int NCNAME_PREFIX = 252;
-  int NCNAME = 253;
-  int BLANKNAME = 254;
-  int VARNAME = 255;
-  int LOCAL_ESC = 256;
-  int PERCENT = 257;
+  int GT = 233;
+  int LE = 234;
+  int GE = 235;
+  int BANG = 236;
+  int TILDE = 237;
+  int COLON = 238;
+  int SC_OR = 239;
+  int SC_AND = 240;
+  int PLUS = 241;
+  int MINUS = 242;
+  int STAR = 243;
+  int SLASH = 244;
+  int QM = 245;
+  int BAR = 246;
+  int DATATYPE = 247;
+  int AT = 248;
+  int VAR3 = 249;
+  int NCCHAR1p = 250;
+  int NCCHAR1 = 251;
+  int NCCHAR = 252;
+  int NCNAME_PREFIX = 253;
+  int NCNAME = 254;
+  int BLANKNAME = 255;
+  int VARNAME = 256;
+  int LOCAL_ESC = 257;
+  int PERCENT = 258;
 
   int DEFAULT = 0;
 
@@ -460,7 +461,6 @@ public interface SparqlCoreseConstants {
     "\"==\"",
     "\"!==\"",
     "\"^\"",
-    "\"<:\"",
     "\"<=:\"",
     "\"=:\"",
     "\">=:\"",
@@ -491,8 +491,10 @@ public interface SparqlCoreseConstants {
     "\".\"",
     "\"=\"",
     "\"!=\"",
-    "\">\"",
+    "\"<<\"",
+    "\">>\"",
     "\"<\"",
+    "\">\"",
     "\"<=\"",
     "\">=\"",
     "\"!\"",

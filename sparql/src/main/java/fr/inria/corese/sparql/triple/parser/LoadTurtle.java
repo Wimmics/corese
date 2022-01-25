@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.parser;
 
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.InputStream;
@@ -101,6 +102,9 @@ public class LoadTurtle {
     public void load() throws QueryLexicalException, QuerySyntaxException {
         try {
             parser.load();
+            for (EngineException e : parser.getHandler().getErrorList()) {
+                throw new QuerySyntaxException(e.getMessage());
+            }
         } catch (JavaccParseException e) {
             throw new QuerySyntaxException(e.getMessage());
         } catch (TokenMgrError e) {

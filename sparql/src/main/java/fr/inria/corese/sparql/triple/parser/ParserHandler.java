@@ -1,11 +1,15 @@
 package fr.inria.corese.sparql.triple.parser;
 
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.exceptions.QuerySyntaxException;
 import fr.inria.corese.sparql.triple.api.Creator;
 import fr.inria.corese.sparql.triple.javacc1.ParseException;
 import fr.inria.corese.sparql.triple.javacc1.SparqlCorese;
 import fr.inria.corese.sparql.triple.javacc1.Token;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -13,18 +17,28 @@ import java.util.List;
  *
  */
 public class ParserHandler {
-    
+    public static Logger logger = LoggerFactory.getLogger(ParserHandler.class);
+   
     static final String SQ3  = "\"\"\"";
     static final String SSQ3 = "'''";
+    public static boolean rdf_star_validation = false;
     
     boolean insideDelete = false;
     boolean insideDeleteData = false;
+    private boolean insideValues = false;
     int countWhere = 0;
     private boolean function = false;
 
+    // Broker to target Graph in Load context
+    // Turtle Loader create Edge(g s p o) directly in the graph
     Creator create;
     SparqlCorese parser;
     private Metadata metadata;
+    private ArrayList<EngineException> errorList;
+    
+    ParserHandler() {
+        errorList = new ArrayList<>();
+    }
          
     public void setParser(SparqlCorese parser) {
         this.parser = parser;
@@ -47,22 +61,27 @@ public class ParserHandler {
     }
     
     Triple genericCreateTriple(ASTQuery ast, Atom s, Atom p, Atom o) throws ParseException {
-        if (o.getAtom().getTripleReference()!=null) {
-            return createTripleStar(ast, s, p, o, o.getAtom().getTripleReference());
+        if (o.getAtom().getTripleReference()==null) {
+            return createTriple(ast, s, p, o);
         }
         else {
-            return createTriple(ast, s, p, o);
+            // s p o {| q v |} ->
+            // triple(s p o t) . t q v
+            // t = o.getAtom().getTripleReference()
+            return createTripleStar(ast, s, p, o, o.getAtom().getTripleReference());
         }
     }
 
     public Triple createTriple(ASTQuery ast, Expression s, Atom p, Expression o) throws ParseException {
         if (create != null) {
+            // load turtle
             if (!create.accept(s.getAtom(), p, o.getAtom())) {
                 throw parser.generateParseException();
             }
             create.triple(s.getAtom(), p, o.getAtom());
             return null;
         } else {
+            // sparql parser
             return ast.createTriple(s, p, o);
         }
     }
@@ -72,13 +91,15 @@ public class ParserHandler {
     }
 
     Triple createTriple(ASTQuery ast, Atom p, List<Atom> list, boolean matchArity, boolean nested) {
-        if (create != null) {
-            create.triple(p, list, nested);
-            return null;
-        } else {
+        if (create == null) {
+            // sparql query
             Triple t = ast.createTriple(p, list, nested);
             t.setMatchArity(matchArity);
             return t;
+        } else {
+            // load turtle
+            create.triple(p, list, nested);
+            return null;
         }
     }
 
@@ -167,6 +188,10 @@ public class ParserHandler {
 
     // <<s p o>>
     public Atom createNestedTripleStar(ASTQuery ast, Exp stack, Atom s, Atom p, Atom o, Atom v) {
+        if (s.isLiteral() && rdf_star_validation) {
+            logger.error("RDF star illegal subject: " + s);
+            getErrorList().add(new EngineException("RDF star illegal subject: " + s));
+        }
         Atom ref = createTripleReference(ast, v);
         return createTripleStar(ast, stack, s, p, o, ref, true);
     }
@@ -191,6 +216,12 @@ public class ParserHandler {
         list.add(s);
         list.add(o);
         list.add(ref);
+        if (p.getExpression() != null) {
+            // predicate has ppath regex: error
+            errorList.add(new EngineException(
+                    String.format("Illegal regex in RDF star triple: %s %s %s", s, p.getExpression(), o)));
+            logger.error(String.format("Illegal regex in RDF star triple: %s %s %s", s, p.getExpression(), o));
+        }
         return createTriple(ast, p, list, true, nested);
     }
     
@@ -204,28 +235,36 @@ public class ParserHandler {
     }
     
     public Atom createTripleReference(ASTQuery ast, Atom var) {
-        if (isLoad()) {
-            return ast.tripleReferenceDefinition();
+        Atom ref;
+        if (isLoad() || isInsideValues()) {
+            // Constant with Datatype Blank Node with isTriple() == true
+            // Once in the graph, Datatype will contain Edge(s p o t)
+            ref = ast.tripleReferenceDefinition();
         }
-        if (var != null) {
-            return var;
+        else if (var != null) {
+            ref = var;
         }
-        if (isInsideWhere()) { 
+        else if (isInsideWhere()) { 
             if (ast.isUpdate()) {
-                // delete (insert) works with a variable, not with a bnode
+                // delete works with a variable, not with a bnode
                 // use case: delete where {} and delete is empty 
-                return ast.tripleReferenceVariable();
+                // Variable with isTriple() == true
+                ref = ast.tripleReferenceVariable();
             }
             else {
-                // variable isBlankNode() == true
+                // Variable with isBlankNode() == true and isTriple() == true
                 // not returned by select *
-                return ast.tripleReferenceQuery();                
+                ref = ast.tripleReferenceQuery();                
             }
         }
+        else {
         // insert delete data
         // insert delete -- where
         // construct     -- where
-        return ast.tripleReferenceDefinition();       
+            ref = ast.tripleReferenceDefinition();   
+        }
+        
+        return ref;
     }
 
     /**
@@ -313,6 +352,22 @@ public class ParserHandler {
     
     boolean isLoad() {
         return create != null;
+    }
+
+    public boolean isInsideValues() {
+        return insideValues;
+    }
+
+    public void setInsideValues(boolean insideValues) {
+        this.insideValues = insideValues;
+    }
+
+    public ArrayList<EngineException> getErrorList() {
+        return errorList;
+    }
+
+    public void setErrorList(ArrayList<EngineException> errorList) {
+        this.errorList = errorList;
     }
     
 

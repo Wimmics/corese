@@ -221,7 +221,21 @@ public class Constant extends Atom {
         } else {
             sb.append(KeywordPP.OPEN).append(getLongName()).append(KeywordPP.CLOSE);
         }
+        if (display) {
+            completeDisplay();
+        }
         return sb;
+    }
+    
+    void completeDisplay() {
+        if (isTriple() && getTriple()!=null) {
+            Triple t = getTriple();
+            System.out.println(String.format("%s = triple(%s %s %s)", getLabel(), 
+                    t.getSubject().getDatatypeValue(), t.getPredicate().getDatatypeValue(), t.getObject().getDatatypeValue()));
+            if (t.getObject().isTriple()) {
+                t.getObject().getConstant().completeDisplay();
+            }
+        }
     }
 
     public StringBuffer toString2(StringBuffer sb) {
@@ -408,6 +422,11 @@ public class Constant extends Atom {
     public boolean isURI() {
         return dt.isURI();
     }
+    
+    @Override
+    public boolean isTriple() {
+        return getDatatypeValue().isTriple();
+    }
 
     @Override
     public void setWeight(String w) {
@@ -440,6 +459,7 @@ public class Constant extends Atom {
         var = s;
     }
 
+    @Override
     public void setExpression(Expression e) {
         exp = e;
     }

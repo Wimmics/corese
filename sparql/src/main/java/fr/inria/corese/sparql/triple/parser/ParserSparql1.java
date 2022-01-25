@@ -1,13 +1,12 @@
 package fr.inria.corese.sparql.triple.parser;
 
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.io.StringReader;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import fr.inria.corese.sparql.exceptions.QueryLexicalException;
 import fr.inria.corese.sparql.exceptions.QuerySyntaxException;
-import fr.inria.corese.sparql.triple.api.Creator;
 import fr.inria.corese.sparql.triple.javacc1.JavaccParseException;
-import fr.inria.corese.sparql.triple.javacc1.ParseException;
 import fr.inria.corese.sparql.triple.javacc1.SparqlCorese;
 import fr.inria.corese.sparql.triple.javacc1.TokenMgrError;
 
@@ -58,6 +57,9 @@ public class ParserSparql1 {
     public ASTQuery parse() throws QueryLexicalException, QuerySyntaxException {
         try {
             ASTQuery ast = parser.parse();
+            for (EngineException e : parser.getHandler().getErrorList()) {
+                throw new QuerySyntaxException(e.getMessage());
+            }
             return ast;
         } catch (JavaccParseException e) {
             logger.debug(ast.getText());

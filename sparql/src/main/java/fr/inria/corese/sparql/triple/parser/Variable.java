@@ -10,7 +10,6 @@ import fr.inria.corese.sparql.triple.cst.KeywordPP;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExprType;
-import static fr.inria.corese.kgram.api.core.ExprType.LOCAL;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -86,7 +85,21 @@ public class Variable extends Atom {
         } else {
             sb.append(name);            
         }
+        if (display) {
+            completeDisplay();
+        }
         return sb;
+    }
+    
+    void completeDisplay() {
+        if (isTriple() && getTriple()!=null) {
+            Triple t = getTriple();
+            System.out.println(String.format("%s = triple(%s %s %s)", getLabel(), 
+                    t.getSubject().getDatatypeValue(), t.getPredicate().getDatatypeValue(), t.getObject().getDatatypeValue()));
+            if (t.getObject().isTriple()) {
+                t.getObject().getVariable().completeDisplay();
+            }
+        }
     }
 
     @Override

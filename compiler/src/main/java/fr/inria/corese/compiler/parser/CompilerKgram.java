@@ -40,8 +40,8 @@ public class CompilerKgram implements ExpType, Compiler {
     HashMap<String, Node> bnodeTable;
 
     public CompilerKgram() {
-        varTable = new HashMap<String, Node>();
-        resTable = new HashMap<String, Node>();
+        varTable = new HashMap<>();
+        resTable = new HashMap<>();
         bnodeTable = new HashMap<>();
     }
 

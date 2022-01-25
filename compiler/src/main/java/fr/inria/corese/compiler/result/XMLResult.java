@@ -47,6 +47,7 @@ import org.slf4j.LoggerFactory;
  * @author Olivier Corby, Wimmics, INRIA 2012
  *
  */
+@Deprecated
 public class XMLResult {
 
     private static Logger logger = LoggerFactory.getLogger(XMLResult.class);
@@ -67,6 +68,11 @@ public class XMLResult {
     private static final int BOOLEAN = 6;
     private static final int VARIABLE = 7;
     private static final int LINK = 8;
+    private static final int TRIPLE = 9;
+    private static final int SUBJECT = 10;
+    private static final int PREDICATE = 11;
+    private static final int OBJECT = 12;
+    
     
     private boolean debug = false;
     private boolean trapError = false;
@@ -178,6 +184,10 @@ public class XMLResult {
         table.put("boolean", BOOLEAN);
         table.put("variable",VARIABLE);
         table.put("link",   LINK);
+        table.put("triple",   TRIPLE);        
+        table.put("subject",   SUBJECT);    
+        table.put("predicate",   PREDICATE);    
+        table.put("object",   OBJECT);    
     }
 
     int type(String name) {
@@ -242,6 +252,7 @@ public class XMLResult {
                 isLiteral = false,
                 isBlank = false,
                 isVariable = false;
+        int     triple = 0;
         String text, datatype, lang;
 
         MyHandler(Mappings m) {
@@ -267,6 +278,7 @@ public class XMLResult {
             datatype = null;
             lang = null;
             isVariable = false;
+            triple = 0;
         }
 
         /**
@@ -334,19 +346,83 @@ public class XMLResult {
                 case BOOLEAN:
                     isBoolean = true;
                     isContent = true;
-                    break;
-
+                    break; 
+                    
+                case TRIPLE:
+                    triple++;
+                    break;               
             }
-
         }
+        
+        void pushSubject(Node node) {
+        
+        }
+        void pushPredicate(Node node) {
+        
+        } 
+        void pushObject(Node node) {
+        
+        }
+        Node getSubject() {
+            return null;
+        }        
+        Node getPredicate() {
+            return null;
+        }  
+        Node getObject() {
+            return null;
+        } 
+        
+        void edge(Node sub, Node pred, Node obj) {
+        
+        }
+        
+        // inside triple and possibly inside triple element
+        void triple(String namespaceURI, String simpleName, String qualifiedName) {
+                        
+            switch (type(simpleName)) {
+                case SUBJECT:
+                    pushSubject(getNode());
+                    break;
+                case PREDICATE:
+                    pushPredicate(getNode());
+                    break;                    
+                case OBJECT:
+                    pushObject(getNode());
+                    break;                    
+                case TRIPLE:
+                    
+            }
+        }
+        
+        Node getNode() {
+            if (isURI) {
+                isURI=false;
+                return getURI(text);
+            } else if (isBlank) {
+                isBlank=false;
+                return getBlank(text);
+            } else if (isLiteral) {
+                isLiteral=false;
+                return getLiteral(text, datatype, lang);
+            }
+            else {
+                return null;
+            }
+        }
+        
 
         @Override
         public void endElement(String namespaceURI, String simpleName, String qualifiedName) {
             if (debug) {
                 System.out.println("close: " + qualifiedName);
             }
-            if (isContent) {
-
+            
+            if (triple > 0) {
+                triple(namespaceURI, simpleName, qualifiedName);
+                triple--;
+            }         
+            else if (isContent) {
                 isContent = false;
 
                 if (text == null) {
@@ -357,7 +433,6 @@ public class XMLResult {
                 if (isURI) {
                     add(var, getURI(text));
                 } else if (isBlank) {
-                    // TODO: should we generate a fresh ID ?
                     add(var, getBlank(text));
                 } else if (isLiteral) {
                     add(var, getLiteral(text, datatype, lang));

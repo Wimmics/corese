@@ -857,7 +857,7 @@ public class Transformer implements ExpType {
 
     List<Node> bind(Values values) {
 
-        List<Node> lNode = new ArrayList<Node>();
+        List<Node> lNode = new ArrayList<>();
 
         for (Variable var : values.getVarList()) {
             Node qNode = compiler.createNode(var);
@@ -874,7 +874,7 @@ public class Transformer implements ExpType {
     }
 
     List<Node> bind(List<Constant> lVal) {
-        List<Node> lNode = new ArrayList<Node>();
+        List<Node> lNode = new ArrayList<>();
         for (Constant val : lVal) {
             Node node = null;
             if (val != null) {

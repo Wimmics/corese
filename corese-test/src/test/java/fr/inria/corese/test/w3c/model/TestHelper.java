@@ -7,10 +7,13 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.List;
 
 import fr.inria.corese.test.w3c.turtle.TurtleTestCase;
 import fr.inria.corese.test.w3c.rdfa.RDFaTestCase;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 /**
  * Helper class for testing
@@ -113,9 +116,14 @@ public class TestHelper {
         if(!b2) return false;
 
         QueryProcess qp = QueryProcess.create(g1);
-        Mappings map = qp.query(g2);
-
-        return map.size() > 0;
+        Mappings map;
+        try {
+            map = qp.query(g2);
+            return map.size() > 0;
+        } catch (EngineException ex) {
+            Logger.getLogger(TestHelper.class.getName()).log(Level.SEVERE, null, ex);
+        }
+        return false;
     }
 
     /**

@@ -222,9 +222,9 @@ public class EdgeFactory {
     public Edge create(Node source, Node predicate, List<Node> list, boolean nested) {
         EdgeImpl ee = EdgeImpl.create(source, predicate, list);
         ee.setMetadata(graph.isMetadata());
-        if (graph.isRDFStar() && list.size() > Edge.REF_INDEX) {
-            list.get(Edge.REF_INDEX).getDatatypeValue().setTriple(true);
-            list.get(Edge.REF_INDEX).getDatatypeValue().setPointerObject(ee);
+        if (ee.hasReference()) {
+           //list.get(Edge.REF_INDEX).getDatatypeValue().setTriple(true);
+            ee.getReferenceNode().getDatatypeValue().setPointerObject(ee);
             ee.setNested(nested);
         }
         return ee;

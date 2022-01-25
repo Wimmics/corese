@@ -539,7 +539,7 @@ public class Load
                 }
                 read = reader(stream);
                 if (contentType!=null) {
-                    logger.info("Content-type: " + contentType);
+                    //logger.info("Content-type: " + contentType);
                     myFormat = getTypeFormat(contentType, myFormat);
                 }
                 //System.out.println("load: " + contentType + " " + myFormat);
@@ -593,7 +593,7 @@ public class Load
                 contentType = srv.getFormat();
             }
             if (contentType != null) {
-                logger.info("Content-type: " + contentType);
+                //logger.info("Content-type: " + contentType);
                 int myFormat = getTypeFormat(contentType, Load.UNDEF_FORMAT);
             }
             //System.out.println("load: " + contentType + " " + myFormat);
@@ -803,7 +803,7 @@ public class Load
     }
 
     void loadRDFXML(Reader stream, String path, String base, String name) throws LoadException {
-        logger.info("Load RDF/XML: " + path);
+        //logger.info("Load RDF/XML: " + path);
         if (hasPlugin) {
             name = plugin.statSource(name);
             base = plugin.statBase(base);
@@ -847,7 +847,7 @@ public class Load
     }
 
     void loadTurtle(Reader stream, String path, String base, String name) throws LoadException {
-        logger.info("Load Turtle: " + path);
+        //logger.info("Load Turtle: " + path);
         CreateImpl cr = CreateImpl.create(graph, this);
         cr.graph(Constant.create(name));
         cr.setRenameBlankNode(renameBlankNode);
@@ -889,7 +889,7 @@ public class Load
 
     // load RDFa
     void loadRDFa(Reader stream, String path, String base, String name) throws LoadException {
-        logger.info("Load RDFa: " + path);
+        //logger.info("Load RDFa: " + path);
         CoreseRDFaTripleSink sink = new CoreseRDFaTripleSink(graph, null);
         sink.setHelper(renameBlankNode, limit);
 
@@ -905,7 +905,7 @@ public class Load
 
     // load JSON-LD
     void loadJsonld(Reader stream, String path, String base, String name) throws LoadException {
-        logger.info("Load JSON LD: " + path);
+        //logger.info("Load JSON LD: " + path);
 
         CoreseJsonTripleCallback callback = new CoreseJsonTripleCallback(graph, name);
         callback.setHelper(renameBlankNode, limit);

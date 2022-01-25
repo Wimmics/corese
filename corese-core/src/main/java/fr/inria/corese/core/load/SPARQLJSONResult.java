@@ -99,10 +99,10 @@ public class SPARQLJSONResult extends SPARQLResult {
         for (String var : getVarList()) {
             if (result.has(var)) {
                 JSONObject bind = result.getJSONObject(var);
-                Node val = processBind(bind);
+                Node val = process(bind);
                 if (val != null) {
                     varList.add(getVariable(var));
-                    valList.add(processBind(bind));
+                    valList.add(process(bind));
                 }
             }
         }
@@ -110,7 +110,7 @@ public class SPARQLJSONResult extends SPARQLResult {
         return map;
     }
     
-    Node processBind(JSONObject bind) {
+    Node process(JSONObject bind) {
         String type = bind.getString("type");
         switch (type) {
             case "uri":
@@ -121,8 +121,18 @@ public class SPARQLJSONResult extends SPARQLResult {
                 return getLiteral(bind.getString("value"), getString(bind, "datatype"), null);
             case "bnode":
                 return getBlank(bind.getString("value"));
+            case "triple":
+                return getTriple(bind.getJSONObject("value"));
         }
         return null;
+    }
+    
+    Node getTriple(JSONObject triple) {
+        Node subject    = process(triple.getJSONObject("subject"));
+        Node predicate  = process(triple.getJSONObject("predicate"));
+        Node object     = process(triple.getJSONObject("object"));
+        Node reference  = edge(subject, predicate, object);
+        return reference;
     }
     
     String getString(JSONObject json, String name) {

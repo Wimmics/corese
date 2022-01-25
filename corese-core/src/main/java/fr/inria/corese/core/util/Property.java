@@ -34,6 +34,7 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.ParserHandler;
 import fr.inria.corese.sparql.triple.parser.visitor.ASTParser;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -111,6 +112,8 @@ public class Property {
         EXTERNAL_NAMED_GRAPH,
         // rdf* draft
         RDF_STAR,
+        // enforce compliance: no literal as subject
+        RDF_STAR_VALIDATION,
         // joker: asserted query triple return asserted and nested triple (default false)
         RDF_STAR_SELECT,
         // joker: asserted delete triple deletes asserted and nested triple (default false)
@@ -397,6 +400,11 @@ public class Property {
             case RDF_STAR:
                 Graph.setRDFStar(b);
                 ASTParser.RDF_STAR = b;
+                ParserHandler.rdf_star_validation = true;
+                break;
+                
+            case RDF_STAR_VALIDATION:
+                ParserHandler.rdf_star_validation = true;
                 break;
                 
             case RDF_STAR_SELECT:                

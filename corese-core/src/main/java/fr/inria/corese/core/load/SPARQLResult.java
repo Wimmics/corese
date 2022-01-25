@@ -1,20 +1,23 @@
 package fr.inria.corese.core.load;
 
+import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.compiler.result.XMLResult;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Edge;
 
 public class SPARQLResult extends XMLResult {
 
     private Graph graph;
     private Graph local;
+    EdgeFactory fac;
 
     SPARQLResult(Graph g) {
         super();
         graph = g;
         local = Graph.create();
+        fac = new EdgeFactory(g);
     }
 
     public static SPARQLResult create() {
@@ -61,6 +64,14 @@ public class SPARQLResult extends XMLResult {
             n = getLocal().getNode(dt, true, true);
         }
         return n;
+    }
+    
+    // return reference node t of edge(s p o t)
+    @Override
+    public Node edge(Node sub, Node pred, Node obj) {        
+         Node ref = getLocal().addTripleReference();
+         Edge edge = fac.create(getLocal().getDefaultGraphNode(), sub, pred, obj, ref, true);
+         return ref;
     }
 
     /**

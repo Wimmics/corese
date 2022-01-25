@@ -728,14 +728,14 @@ public class EdgeManagerIndexer
         
         if (AccessRight.acceptDelete(edge, target)
                 && accept(edge, target)) {
-            
-            if (getIndex() == 0) {
-                graph.setSize(graph.size() - 1);
-            }
+                       
             if (getGraph().isRDFStar() && target.hasReference()) {  
                 // delete tuple(s p o t)
                 if (superUser(edge)) {
-                    list.remove(i);    
+                    if (getIndex() == 0) {
+                        graph.setSize(graph.size() - 1);
+                    }
+                    list.remove(i);
                 }
                 else {
                     // target = tuple(s p o t) with possibly t q v
@@ -746,7 +746,10 @@ public class EdgeManagerIndexer
                 }               
             } 
             else {
-                list.remove(i);               
+                if (getIndex() == 0) {
+                    graph.setSize(graph.size() - 1);
+                }
+                list.remove(i);
             }
             
             logDelete(target);

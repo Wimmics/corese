@@ -922,7 +922,7 @@ public class Load
     //can surpot format:.ttl, .nt, .nq and .trig
     //now only used for .trig and .nq
     void loadWithSesame(Reader stream, String path, String base, String name, RDFFormat format) throws LoadException {
-        logger.info("Load Sesame Parser: " + path);
+        //logger.info("Load Sesame Parser: " + path);
         ParserTripleHandlerSesame handler = new ParserTripleHandlerSesame(graph, name);
         handler.setHelper(renameBlankNode, limit);
         ParserLoaderSesame loader = ParserLoaderSesame.create(stream, base);

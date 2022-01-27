@@ -1,5 +1,6 @@
 package fr.inria.corese.core.print;
 
+import fr.inria.corese.kgram.api.core.Edge;
 import java.util.ArrayList;
 
 import fr.inria.corese.sparql.api.IDatatype;
@@ -21,8 +22,8 @@ public class JSONFormat extends XMLFormat {
     private static final String CHEADER = "}";
     private static final String OHEAD = "\"head\": { \n";
     private static final String CHEAD = "},";
-    private static final String OPEN_VAR ="\"vars\": [";
-    private static final String CLOSE_VAR ="]";   
+    private static final String OPEN_VAR = "\"vars\": [";
+    private static final String CLOSE_VAR = "]";
     private static final String OHEADASK = "\"head\": { } ,";
     private static final String CHEADASK = "";
     private static final String OVAR = "";
@@ -45,7 +46,7 @@ public class JSONFormat extends XMLFormat {
 
     public static JSONFormat create(Mappings lm) {
         Query q = lm.getQuery();
-        return JSONFormat.create(q,  q.getAST(), lm);
+        return JSONFormat.create(q, q.getAST(), lm);
     }
 
     public static JSONFormat create(Query q, ASTQuery ast, Mappings lm) {
@@ -89,13 +90,11 @@ public class JSONFormat extends XMLFormat {
                 return "";
         }
     }
-    
-    
 
     @Override
     public void printHead() {
         println(getTitle(Title.OHEAD));
-        if (! ast.isAsk()) {
+        if (!ast.isAsk()) {
             // print variable or functions selected in the header
             println(OPEN_VAR);
             printVar(getSelect());
@@ -103,8 +102,8 @@ public class JSONFormat extends XMLFormat {
         }
         printLnk(getMappings().getLinkList());
         println(getTitle(Title.CHEAD));
-    }    
-            
+    }
+
     void printVar(ArrayList<String> select) {
         int n = 1;
         for (String var : select) {
@@ -114,13 +113,13 @@ public class JSONFormat extends XMLFormat {
             }
         }
     }
-    
+
     void printLnk2(List<String> list) {
         for (String name : list) {
             print(", \n\"link\": [\"" + name + "\"]");
         }
     }
-    
+
     void printLnk(List<String> list) {
         if (list.isEmpty()) {
             return;
@@ -131,7 +130,7 @@ public class JSONFormat extends XMLFormat {
             if (n++ > 0) {
                 print(", ");
             }
-            print("\"" + name + "\"");           
+            print("\"" + name + "\"");
         }
         print("]");
     }
@@ -152,23 +151,45 @@ public class JSONFormat extends XMLFormat {
             // do nothing
             return;
         }
-        int i = 0, n = 1;
         if (getnBind() > 0) {
             print(",\n");
         }
         incrnBind();
-        String name = getName(var);
-
-        String open = "";
-        if (i == 0) {
-            open = String.format("\"%s\": ", name);
-            if (n > 1) {
-                open += "[";
-            }
+        print(String.format("\"%s\": ", getName(var)));
+        display(dt);
+    }
+    
+    @Override
+    void display(IDatatype dt) {
+        if (dt.isTriple() && dt.getEdge()!=null) {
+            triple(dt);
         }
-
-        open += "{ \"type\": ";
-        print(open);
+        else {
+            term(dt);
+        }
+    }
+    
+    void triple(IDatatype dt) {
+        Edge e = dt.getEdge();
+        println("{ \"type\": \"triple\",");
+        println("\"value\": {");
+        
+        print("\"subject\": ");
+        display(e.getSubjectValue());
+        println(",");
+        
+        print("\"predicate\": ");
+        display(e.getPredicateValue());
+        println(",");
+        
+        print("\"object\": ");
+        display(e.getObjectValue());
+        println();
+        print("}}");
+    }
+    
+    void term(IDatatype dt) {    
+        print("{ \"type\": ");        
         String str = dt.getLabel();
 
         if (dt.isLiteral()) {
@@ -182,10 +203,11 @@ public class JSONFormat extends XMLFormat {
                 } else if (dt.isExtension()) {
                     str = dt.getContent();
                 }
-                printf("\"typed-literal\", \"datatype\": \"%s\"", 
+                printf("\"typed-literal\", \"datatype\": \"%s\"",
                         dt.getDatatype().getLabel());
             }
-        } else if (dt.isBlank()) {
+        }         
+        else if (dt.isBlank()) {
             print("\"bnode\"");
             if (str.startsWith(BLANK)) {
                 str = str.substring(BLANK.length());
@@ -194,11 +216,8 @@ public class JSONFormat extends XMLFormat {
             print("\"uri\"");
         }
 
-        printf(", \"value\": \"%s\"}", JSONFormat.addJSONEscapes(str));
-
-        if (n > 1 && i == n - 1) {
-            print("]");
-        }
+        printf(", \"value\": \"%s\"", JSONFormat.addJSONEscapes(str));
+        print("}");
     }
 
     @Override
@@ -218,9 +237,10 @@ public class JSONFormat extends XMLFormat {
     }
 
     /**
-     * source: javacc replace special char by escape char for pprint
-     * This function is needed because JSON format does not accept escaped single quotes which are possibly returned by Constant.addEscape().
-     * 
+     * source: javacc replace special char by escape char for pprint This
+     * function is needed because JSON format does not accept escaped single
+     * quotes which are possibly returned by Constant.addEscape().
+     *
      * @param str The string to be escaped
      * @return the escaped string
      */

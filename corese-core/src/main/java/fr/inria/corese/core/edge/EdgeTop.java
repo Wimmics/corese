@@ -26,6 +26,8 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     public static boolean DISPLAY_EDGE_AS_RDF4J = false;
     public static final String NL = System.getProperty("line.separator");
     private boolean nested = false;
+    // created by values, bind or triple()
+    private boolean created = false;
 
     public Edge copy() {
         return create(getGraph(), getNode(0), getEdgeNode(), getNode(1));
@@ -200,5 +202,13 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     @Override
     public void setNested(boolean nested) {
         this.nested = nested;
+    }
+
+    public boolean isCreated() {
+        return created;
+    }
+
+    public void setCreated(boolean created) {
+        this.created = created;
     }
 }

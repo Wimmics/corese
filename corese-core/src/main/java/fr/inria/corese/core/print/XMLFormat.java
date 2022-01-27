@@ -350,20 +350,20 @@ public class XMLFormat extends QueryResultFormat {
             // do nothing 
             return;
         }
-        display(var,  c.getValue());
+        display(var,  c.getDatatypeValue());
     }
 
     void display(String var, IDatatype dt) {
         if (dt == null) {
-            // do nothing 
             return;
         }
-        String name = getName(var);
-        String open = String.format("<binding name='%s'>", name);
-        String close = "</binding>";
-        print(open);
+        print(String.format("<binding name='%s'>", getName(var)));
+        display(dt);
+        println("</binding>");
+    }
+    
+    void display(IDatatype dt) {
         String str = dt.getLabel();
-
         if (dt.isLiteral()) {
             str = toXML(str);
 
@@ -382,12 +382,28 @@ public class XMLFormat extends QueryResultFormat {
             } else {
                 printf("<literal>%s</literal>" ,str );
             }
-        } else if (dt.isBlank()) {
+        } else if (dt.isTriple() && dt.getEdge()!=null) {
+            // nested edge
+            Edge e = dt.getEdge();
+            
+            println("<triple>");
+            print("<subject>");
+            display(e.getSubjectValue());
+            println("</subject>");
+            print("<predicate>");
+            display(e.getPredicateValue());
+            println("</predicate>");
+            print("<object>");
+            display(e.getObjectValue());
+            println("</object>");
+            println("</triple>");
+        }            
+        else if (dt.isBlank()) {
             printf("<bnode>%s</bnode>", str);
-        } else {
+        } 
+        else if (dt.isURI()) {
             printf("<uri>%s</uri>", StringEscapeUtils.escapeXml(str));
         }
-        println(close);
     }
 
     String display(Object o) {
@@ -435,6 +451,10 @@ public class XMLFormat extends QueryResultFormat {
 
     protected void println(String str) {
         pw.println(str);
+    }
+    
+    protected void println() {
+        pw.println();
     }
 
     protected void println(Object obj) {

@@ -12,7 +12,6 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.storage.api.IStorage;
 import fr.inria.corese.sparql.storage.util.StorageFactory;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.function.script.Function;
@@ -51,7 +50,6 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
-import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.load.SPARQLResultParser;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.ResultFormat;
@@ -766,10 +764,20 @@ public class PluginImpl
         return  n.getDatatypeValue();
     }
     
+    /**
+     * rdf star
+     * triple(s, p, o)  
+     * filter bind <<s p o>>
+     */
     @Override
     public IDatatype triple(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
-        Edge e = getGraph(p).create(subj, pred, obj);
-        return DatatypeMap.createTripleReference(e);
+        IDatatype ref = getGraph(p).createTripleReference();
+        Edge e = getGraph(p).create(
+                getGraph(p).getDefaultGraphDatatypeValue(), 
+                subj, pred, obj, ref);
+        e.setCreated(true);
+        e.setNested(true);
+        return ref;
     }
 
     /*

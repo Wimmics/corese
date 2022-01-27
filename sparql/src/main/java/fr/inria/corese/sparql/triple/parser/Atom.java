@@ -1,6 +1,10 @@
 package fr.inria.corese.sparql.triple.parser;
 
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.api.ElementClause;
 import fr.inria.corese.sparql.triple.api.Walker;
 
@@ -20,9 +24,12 @@ public class Atom extends Expression implements ElementClause{
 	boolean isdirect = false;
 	int star;
         // use case: parser generate triple reference for s p o {| q v |}
-        // object o contain triple reference
+        // object o contain triple reference, for parsing purpose
+        // not for semantics nor for eval
         private Atom tripleReference;
+        // this atom is a triple reference:
         private Triple triple;
+        private boolean btriple = false;
 	
 	public Atom() {
 	}
@@ -53,7 +60,11 @@ public class Atom extends Expression implements ElementClause{
 	}
         
         public boolean isTriple() {
-            return false;
+            return btriple;
+        }
+        
+        public void setTriple(boolean b) {
+            btriple = b;
         }
         
         public void setTriple(Triple t) {
@@ -63,6 +74,27 @@ public class Atom extends Expression implements ElementClause{
         public Triple getTriple() {
             return triple;
         }
+        
+    /**
+     * this = Atom(isTriple()==true; triple=triple(?s :p ?o this))
+     * eval quoted triple as function call triple(?s, :p, ?o)
+     * this atom is either Constant or Variable
+     */
+    IDatatype triple(Computer eval, fr.inria.corese.sparql.triple.function.term.Binding b, Environment env, Producer p) 
+            throws EngineException {
+        if (getTriple() == null) {
+            return null;
+        }
+        IDatatype sub  = getTriple().getSubject().eval(eval, b, env, p);
+        IDatatype pred = getTriple().getPredicate().eval(eval, b, env, p);
+        IDatatype obj  = getTriple().getObject().eval(eval, b, env, p);
+        
+        if (sub == null || pred == null || obj == null) {
+            return null;
+        }
+        
+        return eval.getGraphProcessor().triple(env, p, sub, pred, obj);       
+    }
 	
 	public boolean isResource() {
 		return false;

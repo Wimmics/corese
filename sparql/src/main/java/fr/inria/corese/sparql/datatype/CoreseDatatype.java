@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
+import java.util.logging.Level;
 
 /**
  * <p>Title: Corese</p>
@@ -823,11 +824,11 @@ public class CoreseDatatype
      * Generic comparison between datatypes, used to sort the projection cache
      * and to sort results. It sorts deterministically different datatypes with
      * their natural order (e.g. : numbers, strings, dates) The order is :
-     * Literal, URI, BlankNode Literal : number date
+     * Literal, URI, BlankNode 
      * string/literal/XMLliteral/boolean undef numbers are sorted by values
      * string/literal/XMLLiteral/undef/boolean are sorted alphabetically then by
-     * datatypes (by their code) literals are sorted with their lang if any TODO
-     * : the primary order (Lit URI BN) is inverse of SPARQL !!!
+     * datatypes (by their code) literals are sorted with their lang if any 
+     * @todo: the primary order (Lit URI BN) is inverse of SPARQL !!!
      * used for select distinct, group by (sameTerm semantics)
      * used by Graph Node table to retrieve an existing Node
      * Distinguish 1 01 1.0 '1'^^xsd:long (does not return 0 but -1 or +1)
@@ -841,7 +842,14 @@ public class CoreseDatatype
         }
         return -1;
     }
-
+    
+    // to be used when isTriple() == true
+    // redefined in CoreseBlankNode
+    @Override
+    public int compareTriple(IDatatype dt) throws CoreseDatatypeException {
+        throw failure;
+    }
+   
     @Override
     public int compareTo(IDatatype d2) {
         int code = getCode(), other = d2.getCode();
@@ -857,11 +865,22 @@ public class CoreseDatatype
                 break;
 
             case URI:
-            case BLANK:
             case XMLLITERAL:
             case URI_LITERAL:
-
                 if (code == other) {
+                    return this.getLabel().compareTo(d2.getLabel());
+                }
+                break;
+
+            case BLANK:
+                if (code == other) {
+                    if (isTriple() && d2.isTriple()) {
+                        try {
+                            return compareTriple(d2);
+                        } catch (CoreseDatatypeException ex) {
+                            // continue;
+                        }
+                    }
                     return this.getLabel().compareTo(d2.getLabel());
                 }
                 break;
@@ -902,19 +921,7 @@ public class CoreseDatatype
             case DATETIME:
 
                 if (code == other) {
-                    return compareDate(d2);
-                    
-//                    try {
-//                        b = this.less(d2);
-//                    } catch (CoreseDatatypeException e) {
-//                    }
-//                    if (b) {
-//                        return LESSER;
-//                    } else if (this.sameTerm(d2)) {
-//                        return 0;
-//                    } else {
-//                        return GREATER;
-//                    }
+                    return compareDate(d2);                    
                 }
                 break;
 
@@ -941,6 +948,12 @@ public class CoreseDatatype
             // Blank URI Literal
 
             case BLANK:
+                if (isTriple()) {
+                    return GREATER;
+                }
+                else if (d2.isTriple()) {
+                    return LESSER;
+                }
                 return LESSER;
 
             case URI:

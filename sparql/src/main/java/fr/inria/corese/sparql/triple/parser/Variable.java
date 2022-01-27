@@ -360,6 +360,11 @@ public class Variable extends Atom {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
+        if (isTriple()) {
+            // bind (<<s p o>> as ?t)
+            // this = var(<<s p o>>)
+            return triple(eval, b, env, p);
+        }
         Node node = env.getNode(this);
         if (node == null) {
             return null;
@@ -394,14 +399,5 @@ public class Variable extends Atom {
     public void setMatchNodeList(boolean matchNodeList) {
         this.matchNodeList = matchNodeList;
     }
-
-    @Override
-    public boolean isTriple() {
-        return triple;
-    }
-
-    public void setTriple(boolean triple) {
-        this.triple = triple;
-    }
-
+   
 }

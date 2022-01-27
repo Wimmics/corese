@@ -138,6 +138,16 @@ public interface Edge extends Pointerable, Statement {
     default void setAsserted(boolean b) {
         setNested(!b);
     }
+    
+    // edge created as nested triple expression
+    // bind (<<s p o>> as ?t)
+    // values ?t { <<s p o>> }
+    default boolean isCreated() {
+        return false;
+    }
+    
+    default void setCreated(boolean b) {
+    }
 
     default Node getGraphNode() {
         return getGraph();
@@ -217,6 +227,10 @@ public interface Edge extends Pointerable, Statement {
     
     default Node getReferenceNode() {
         return getNode(REF_INDEX);
+    }
+    
+    default void setReferenceNode(Node node) {
+        setNode(REF_INDEX, node);
     }
 
     default boolean sameTerm(Edge e) {

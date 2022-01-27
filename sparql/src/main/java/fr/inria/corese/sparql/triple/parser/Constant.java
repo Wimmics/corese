@@ -15,6 +15,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.List;
 
 /**
@@ -534,9 +535,14 @@ public class Constant extends Atom {
     }
     
     @Override
-     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p){
-        return dt;
+    public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException{
+        if (isTriple()) {
+            return triple(eval, b, env, p);
+        }
+        return getDatatypeValue();
     }
+    
+    
      
     @Override
      public IDatatype eval(Computer eval, Environment env, Producer p, IDatatype[] param){

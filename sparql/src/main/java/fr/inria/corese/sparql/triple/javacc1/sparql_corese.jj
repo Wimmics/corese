@@ -1514,12 +1514,15 @@ Exp RDFstar(Exp stack) : {  Atom ref; }
     { return stack; }
 }
 
+// return Constant with:
+// dt=bnode triple reference isTriple() == true
+// when sparql: triple = triple(s p o)
+// when load:   triple = null, edge created in graph directly
 Atom StarTriple(Exp stack) : 
-{Atom refatom = null; Atom sub, obj, ref, pred;  Triple t;}
+{ Atom sub, obj, ref, pred;  Triple t;}
 {
     <LTLT> 
         sub = StarTerm(stack) pred = Verb() obj = StarTerm(stack) 
-//( refatom = VarOrTerm(stack)  )?
         { ref = handler.createNestedTripleStar(astq, stack, sub, pred, obj, null);
         }
     <GTGT>

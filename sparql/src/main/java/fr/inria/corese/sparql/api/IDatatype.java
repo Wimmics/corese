@@ -2,6 +2,7 @@ package fr.inria.corese.sparql.api;
 
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.Pointerable;
@@ -295,7 +296,20 @@ public interface IDatatype
     Pointerable getPointerObject();
     default void setPointerObject(Pointerable o) {
     }
+    default void setEdge(Edge e) {
+        setPointerObject(e);
+    }
     
+    @Override
+    default Edge getEdge() {
+        if (getPointerObject()!=null && 
+                getPointerObject().getEdge()!=null) {
+            return getPointerObject().getEdge();
+        }
+        return null;
+    }
+    
+    @Override
     default boolean isTriple() {
         return false;
     }
@@ -314,6 +328,8 @@ public interface IDatatype
      * dt2, an int < 0 if the datatype is lesser
      */
     int compareTo(IDatatype dt);
+    
+    int compareTriple(IDatatype dt) throws CoreseDatatypeException;
 
     // for TreeMap
     int mapCompareTo(IDatatype dt);

@@ -7,23 +7,13 @@ import org.eclipse.rdf4j.model.BNode;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
- * <p>
- * Title: Corese</p>
- * <p>
- * Description: A Semantic Search Engine</p>
- * <p>
- * Copyright: Copyright INRIA (c) 2007</p>
- * <p>
- * Company: INRIA</p>
- * <p>
- * Project: Acacia</p>
- * <br>
- * An implementation of the xsd:anyURI datatype used by Corese
- * <br>
+ * Title: Corese
+ * Description: A Semantic Search Engine
+ * Copyright: Copyright INRIA (c) 2007
+ * Company: INRIA
+ * Project: Acacia
  *
  * @author Olivier Savoie
  */
@@ -145,7 +135,7 @@ public class CoreseBlankNode extends CoreseResource {
     public IDatatype eq(IDatatype dt) {
         try {
             if (isTriple() && dt.isTriple()) {
-                return compareWithoutGraph(dt) == 0 ? TRUE : FALSE;
+                return compareTriple(dt) == 0 ? TRUE : FALSE;
             }
             return (this.equalsWE(dt)) ? TRUE : FALSE;
         } catch (CoreseDatatypeException ex) {
@@ -166,7 +156,7 @@ public class CoreseBlankNode extends CoreseResource {
     public IDatatype le(IDatatype dt) {
         if (isTriple() && dt.isTriple()) {
             try {
-                return compareWithoutGraph(dt) <= 0 ? TRUE : FALSE;
+                return compareTriple(dt) <= 0 ? TRUE : FALSE;
             } catch (CoreseDatatypeException ex) {
                 return null;
             }
@@ -178,7 +168,7 @@ public class CoreseBlankNode extends CoreseResource {
     public IDatatype lt(IDatatype dt) {
         if (isTriple() && dt.isTriple()) {
             try {
-                return compareWithoutGraph(dt) < 0 ? TRUE : FALSE;
+                return compareTriple(dt) < 0 ? TRUE : FALSE;
             } catch (CoreseDatatypeException ex) {
                 return null;
             }
@@ -190,7 +180,7 @@ public class CoreseBlankNode extends CoreseResource {
     public IDatatype gt(IDatatype dt) {
         if (isTriple() && dt.isTriple()) {
             try {
-                return compareWithoutGraph(dt) > 0 ? TRUE : FALSE;
+                return compareTriple(dt) > 0 ? TRUE : FALSE;
             } catch (CoreseDatatypeException ex) {
                 return null;
             }
@@ -202,7 +192,7 @@ public class CoreseBlankNode extends CoreseResource {
     public IDatatype ge(IDatatype dt) {
         if (isTriple() && dt.isTriple()) {
             try {
-                return compareWithoutGraph(dt) >= 0 ? TRUE : FALSE;
+                return compareTriple(dt) >= 0 ? TRUE : FALSE;
             } catch (CoreseDatatypeException ex) {
                 return null;
             }
@@ -219,7 +209,8 @@ public class CoreseBlankNode extends CoreseResource {
         return false;
     }
     
-    int compareWithoutGraph(IDatatype dt) throws CoreseDatatypeException {        
+    @Override
+    public int compareTriple(IDatatype dt) throws CoreseDatatypeException {        
         if (getPointerObject() != null && dt.getPointerObject() != null) {
             Edge e1 = getPointerObject().getEdge();
             Edge e2 = dt.getPointerObject().getEdge();

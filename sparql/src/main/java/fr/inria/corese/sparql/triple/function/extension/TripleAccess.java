@@ -15,7 +15,6 @@ import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
-import fr.inria.corese.sparql.api.GraphProcessor;
 
 /**
  *

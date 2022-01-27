@@ -2161,7 +2161,9 @@ public class ASTQuery
         if (list.size() > 0) {
             t.setArgs(list);
             if (list.get(0).isTriple()) {
-                // rdf star triple reference
+                // rdf star triple reference cst
+                // Constant(dt = bnode with isTriple() == true; 
+                //          triple = triple(s p o cst))
                 list.get(0).setTriple(t);
             }
         }

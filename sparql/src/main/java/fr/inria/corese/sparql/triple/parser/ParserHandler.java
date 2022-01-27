@@ -186,7 +186,14 @@ public class ParserHandler {
     }
     
 
-    // <<s p o>>
+    /**
+     * <<s p o>> 
+     * return Constant cst(dt) with: 
+     * dt=bnode triple reference isTriple() == true 
+     * when sparql: cst.triple = triple(s p o) 
+     * when load:   cst.triple = null, edge created in graph directly
+     *
+     */
     public Atom createNestedTripleStar(ASTQuery ast, Exp stack, Atom s, Atom p, Atom o, Atom v) {
         if (s.isLiteral() && rdf_star_validation) {
             logger.error("RDF star illegal subject: " + s);

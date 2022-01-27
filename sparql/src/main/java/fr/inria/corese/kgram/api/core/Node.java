@@ -81,12 +81,14 @@ public interface Node extends Pointerable {
         
         Node getGraph();
         
+        @Override
         Node getNode();
 	
 	Object getObject();
                       
         Path getPath();
         
+        @Override
         TripleStore getTripleStore();
 	
 	void setObject(Object o);
@@ -95,9 +97,17 @@ public interface Node extends Pointerable {
 	
 	void setProperty(int p, Object o);
         
+        // tagged as triple reference
         default boolean isTriple() {
             return getDatatypeValue().isTriple();
         }
-               
-	
+        
+        // triple reference with edge inside
+	default boolean isTripleWithEdge() {
+            return isTriple() && getEdge() != null;
+        }
+        
+        default void setEdge(Edge e) {
+            getDatatypeValue().setPointerObject(e);
+        }
 }

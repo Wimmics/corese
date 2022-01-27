@@ -170,8 +170,8 @@ public class Extension extends Core {
                 case IDatatype.MAPPING_DATATYPE:  return list(dt.getPointerObject().getMapping());
             }
         }
-        if (dt.isTriple() && dt.getPointerObject()!=null) {
-            return list(dt.getPointerObject().getEdge());
+        if (dt.isTripleWithEdge()) {
+            return list(dt.getEdge());
         }
         if (dt.getObject() != null && dt.getObject() instanceof Enumeration) {
             return DatatypeMap.newList((Enumeration) dt.getObject());

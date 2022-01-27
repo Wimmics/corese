@@ -145,11 +145,7 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
 
     @Override
     public Edge getEdge() {
-        Pointerable obj = getDatatypeValue().getPointerObject();
-        if (obj != null && (obj instanceof Edge)) {
-            return obj.getEdge();
-        }
-        return null;
+        return getDatatypeValue().getEdge();
     }
 
     @Override

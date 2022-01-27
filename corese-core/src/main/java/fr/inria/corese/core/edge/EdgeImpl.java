@@ -145,8 +145,8 @@ public class EdgeImpl extends EdgeTop
             int i = 0;
             for (Node n : nodes) {
                 if (i++ < 2) {
-                    if (n.getDatatypeValue().isTriple() && n.getDatatypeValue().getPointerObject()!=null) {
-                        sb.append(NL).append(n.getDatatypeValue().getPointerObject().getEdge().toString());
+                    if (n.isTripleWithEdge()) {
+                        sb.append(NL).append(n).append(" : ").append(n.getEdge().toString());
                     }
                 }
             }

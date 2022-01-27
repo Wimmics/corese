@@ -116,7 +116,7 @@ public class SPARQLJSONResult extends SPARQLResult {
             case "uri":
                 return getURI(bind.getString("value"));
             case "literal":
-                return getLiteral(bind.getString("value"), null, getString(bind, "xml:lang"));
+                return getLiteral(bind.getString("value"), getString(bind, "datatype"), getString(bind, "xml:lang"));
             case "typed-literal":
                 return getLiteral(bind.getString("value"), getString(bind, "datatype"), null);
             case "bnode":

@@ -79,16 +79,18 @@ public class Mapper {
             return map(nodes, dt.getValues());
         } else if (dt.isMap() || dt.isJSON() || dt.isXML()) {
             return map(nodes, dt.getValueList());
-        } else if (dt.isPointer()) {
+        } 
+        else if (dt.isTripleWithEdge()) {
+            return mapEdge(nodes, dt.getEdge());
+        }    
+        else if (dt.isPointer()) {
             return map(nodes, dt.getPointerObject());
         } else if (dt.getObject() != null) {
             return map(nodes, dt.getObject());
         } else if (dt.isURI()) {
             return mapURI(nodes, dt);
         } 
-        else if (dt.isTriple() && dt.getPointerObject()!=null) {
-            return mapEdge(nodes, dt.getPointerObject().getEdge());
-        }
+        
         else {
             return mapDT(nodes, dt);
         }

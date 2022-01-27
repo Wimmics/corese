@@ -108,6 +108,6 @@ public interface Node extends Pointerable {
         }
         
         default void setEdge(Edge e) {
-            getDatatypeValue().setPointerObject(e);
+            getDatatypeValue().setEdge(e);
         }
 }

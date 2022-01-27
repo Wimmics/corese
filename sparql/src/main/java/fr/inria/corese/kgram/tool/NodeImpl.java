@@ -176,11 +176,7 @@ public class NodeImpl implements Node {
     
      @Override
     public Edge getEdge() {
-        Pointerable obj = getDatatypeValue().getPointerObject();
-        if (obj != null && (obj instanceof Edge)) {
-            return obj.getEdge();
-        }
-        return null;
+        return getDatatypeValue().getEdge();
     }
 
     @Override

@@ -296,6 +296,8 @@ public interface IDatatype
     Pointerable getPointerObject();
     default void setPointerObject(Pointerable o) {
     }
+    
+    @Override
     default void setEdge(Edge e) {
         setPointerObject(e);
     }
@@ -316,6 +318,12 @@ public interface IDatatype
     
     default void setTriple(boolean b) {
     }
+    
+    // triple reference with edge inside
+    @Override
+    default boolean isTripleWithEdge() {
+        return isTriple() && getEdge() != null;
+    }
 
     
     void setTripleStore(TripleStore store);
@@ -334,6 +342,7 @@ public interface IDatatype
     // for TreeMap
     int mapCompareTo(IDatatype dt);
 
+    // compare values (e.g. for numbers)
     int compare(IDatatype dt) throws CoreseDatatypeException;
 
     /**

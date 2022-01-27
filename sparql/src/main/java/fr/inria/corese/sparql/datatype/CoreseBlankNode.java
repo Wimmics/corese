@@ -21,8 +21,6 @@ public class CoreseBlankNode extends CoreseResource {
 
     static int code = BLANK;
     boolean variable = false;
-    private boolean triple = false;
-    private Pointerable pointerObject;
 
     public CoreseBlankNode(String value) {
         super(value);
@@ -110,114 +108,7 @@ public class CoreseBlankNode extends CoreseResource {
     @Override
     public int hashCode() {
         return getLabel().hashCode();
-    }
-
-    @Override
-    public boolean sameTerm(IDatatype dt) {
-        if (isTriple() && dt.isTriple()) {
-            return sameTermTriple(dt);
-        }
-        return super.sameTerm(dt);
-    }
-
-    boolean sameTermTriple(IDatatype dt) {
-        Pointerable obj1 = getPointerObject();
-        Pointerable obj2 = dt.getPointerObject();
-        if (obj1 != null && obj2 != null) {
-            Edge e1 = obj1.getEdge();
-            Edge e2 = obj2.getEdge();
-            return e1.sameTermWithoutGraph(e2);
-        }
-        return super.sameTerm(dt);
-    }
-
-    @Override
-    public IDatatype eq(IDatatype dt) {
-        try {
-            if (isTriple() && dt.isTriple()) {
-                return compareTriple(dt) == 0 ? TRUE : FALSE;
-            }
-            return (this.equalsWE(dt)) ? TRUE : FALSE;
-        } catch (CoreseDatatypeException ex) {
-            return null;
-        }
-    }
-
-    @Override
-    public IDatatype ne(IDatatype dt) {
-        IDatatype res = eq(dt);
-        if (res == null) {
-            return null;
-        }
-        return res.booleanValue() ? FALSE : TRUE;
-    }
-
-    @Override
-    public IDatatype le(IDatatype dt) {
-        if (isTriple() && dt.isTriple()) {
-            try {
-                return compareTriple(dt) <= 0 ? TRUE : FALSE;
-            } catch (CoreseDatatypeException ex) {
-                return null;
-            }
-        }
-        return super.le(dt);
-    }
-
-    @Override
-    public IDatatype lt(IDatatype dt) {
-        if (isTriple() && dt.isTriple()) {
-            try {
-                return compareTriple(dt) < 0 ? TRUE : FALSE;
-            } catch (CoreseDatatypeException ex) {
-                return null;
-            }
-        }
-        return super.lt(dt);
-    }
-
-    @Override
-    public IDatatype gt(IDatatype dt) {
-        if (isTriple() && dt.isTriple()) {
-            try {
-                return compareTriple(dt) > 0 ? TRUE : FALSE;
-            } catch (CoreseDatatypeException ex) {
-                return null;
-            }
-        }
-        return super.gt(dt);
-    }
-
-    @Override
-    public IDatatype ge(IDatatype dt) {
-        if (isTriple() && dt.isTriple()) {
-            try {
-                return compareTriple(dt) >= 0 ? TRUE : FALSE;
-            } catch (CoreseDatatypeException ex) {
-                return null;
-            }
-        }
-        return super.ge(dt);
-    }
-
-    boolean eqTriple(IDatatype dt) {        
-        if (getPointerObject() != null && dt.getPointerObject() != null) {
-            Edge e1 = getPointerObject().getEdge();
-            Edge e2 = dt.getPointerObject().getEdge();
-            return e1.equalsWithoutGraph(e2);
-        }
-        return false;
-    }
-    
-    @Override
-    public int compareTriple(IDatatype dt) throws CoreseDatatypeException {        
-        if (getPointerObject() != null && dt.getPointerObject() != null) {
-            Edge e1 = getPointerObject().getEdge();
-            Edge e2 = dt.getPointerObject().getEdge();
-            return e1.compareWithoutGraph(e2);
-        }
-        throw failure;
-    }
+    }   
 
     @Override
     public boolean equals(Object obj) {
@@ -239,20 +130,5 @@ public class CoreseBlankNode extends CoreseResource {
         return CoreseDatatypeToRdf4jValue.convertBNode(this);
     }
 
-    public Pointerable getPointerObject() {
-        return pointerObject;
-    }
-
-    public void setPointerObject(Pointerable pointerObject) {
-        this.pointerObject = pointerObject;
-    }
-
-    public boolean isTriple() {
-        return triple;
-    }
-
-    public void setTriple(boolean triple) {
-        this.triple = triple;
-    }
-
+   
 }

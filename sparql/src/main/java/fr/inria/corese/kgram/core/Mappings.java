@@ -322,6 +322,8 @@ public class Mappings extends PointerObject
         StringBuffer sb = new StringBuffer();
         int i = 1;
         boolean isSelect = select != null && !all;
+        ArrayList<Node> alist = new ArrayList<>();
+        
         for (Mapping map : this) {
             if (i > max) {
                 sb.append(String.format("# size = %s, stop after: %s", size(), (i - 1)));
@@ -333,26 +335,32 @@ public class Mappings extends PointerObject
 
             if (isSelect) {
                 for (Node qNode : select) {
-                    print(map, qNode, sb, ptr);
+                    print(map, qNode, sb, alist, ptr);
+                    
                 }
             } else {
                 for (Node qNode : map.getQueryNodes()) {
-                    print(map, qNode, sb, ptr);
+                    print(map, qNode, sb, alist, ptr);
                 }
             }
 
             i++;
             sb.append(NL);
+            for (Node n : alist) {
+                sb.append(n).append(" : ").append(n.getEdge()).append(NL);
+            }
+            alist.clear();
         }
         return sb.toString();
     }
 
-    void print(Mapping map, Node qNode, StringBuffer sb, boolean ptr) {
+    void print(Mapping map, Node qNode, StringBuffer sb, List<Node> list, boolean ptr) {
         Node node = map.getNode(qNode);
         if (node != null) {
-            sb.append(qNode);
-            //sb.append("[").append(qNode.getIndex()).append("]"); 
-            sb.append(" = ").append(node);
+            sb.append(qNode).append(" = ").append(node);
+            if (node.isTripleWithEdge()) {
+                list.add(node);
+            }
             Object obj = node.getObject();
             if (ptr && obj != null
                     && obj != this

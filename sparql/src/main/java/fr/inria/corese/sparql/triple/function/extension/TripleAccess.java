@@ -53,10 +53,10 @@ public class TripleAccess extends TermEval {
     
     
     IDatatype access(IDatatype dt) {
-        if (dt.getPointerObject() == null) {
+        Edge e = dt.getEdge();
+        if (e == null) {
             return null;
         }
-        Edge e = dt.getPointerObject().getEdge();
         switch (oper()) {
             case SUBJECT:   return e.getSubjectValue();
             case PREDICATE: return e.getPredicateValue();

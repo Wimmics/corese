@@ -269,5 +269,5 @@ public interface Edge extends Pointerable, Statement {
         }
         return res;
     }
-
+    
 }

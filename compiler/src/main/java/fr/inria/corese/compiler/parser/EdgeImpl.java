@@ -255,6 +255,7 @@ public class EdgeImpl extends PointerObject implements Edge {
         return null;
     }
 
+    @Override
     public void setProvenance(Object obj) {
 
     }

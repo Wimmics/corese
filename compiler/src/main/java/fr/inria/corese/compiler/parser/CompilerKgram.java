@@ -187,10 +187,10 @@ public class CompilerKgram implements ExpType, Compiler {
     Node getNodeRec(Atom at, boolean reuse, boolean rec) {
         Node node = getNode(at, reuse);
         if (rec && at.isTriple() && at.getTriple()!=null && 
-                node.getDatatypeValue().getEdge()==null) {
+                node.getEdge()==null) {
             Edge edge = compile(at.getTriple(), reuse, rec);
             edge.setCreated(true);
-            node.getDatatypeValue().setEdge(edge);
+            node.setEdge(edge);
         }
         return node;
     }
@@ -225,10 +225,10 @@ public class CompilerKgram implements ExpType, Compiler {
                     sup.setMatchNodeList(arg.getVariable().isMatchNodeList());
                     sup.setMatchCardinality(arg.getVariable().isMatchCardinality());
                 }
-                if (sup.getDatatypeValue().isTriple()) {
+                if (sup.isTriple()) {
                     // triple(s p o t) where t is triple reference
                     // t points to target edge
-                    sup.getDatatypeValue().setPointerObject(edge);
+                    sup.setEdge(edge);
                 }
                 edge.add(sup);                
             }

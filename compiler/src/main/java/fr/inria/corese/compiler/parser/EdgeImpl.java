@@ -27,6 +27,8 @@ public class EdgeImpl extends PointerObject implements Edge {
     int index = -1;
     boolean matchArity = false;
     private boolean nested = false;
+    // true for values ?t { <<s p o>> } see CompilerKgram
+    private boolean created = false;
 
     public EdgeImpl() {
         this(TOP);
@@ -305,6 +307,16 @@ public class EdgeImpl extends PointerObject implements Edge {
     @Override
     public void setNested(boolean nested) {
         this.nested = nested;
+    }
+
+    @Override
+    public boolean isCreated() {
+        return created;
+    }
+
+    @Override
+    public void setCreated(boolean created) {
+        this.created = created;
     }
 
 }

@@ -873,12 +873,25 @@ public class Transformer implements ExpType {
         return nodes;
     }
 
+    /**
+     * values (x y) { (x1 v1) }
+     * compile x1 v1 as Node values
+     */
     List<Node> bind(List<Constant> lVal) {
         List<Node> lNode = new ArrayList<>();
+        
         for (Constant val : lVal) {
             Node node = null;
             if (val != null) {
-                node = compiler.createNode(val);
+                if (val.isTriple() && val.getTriple()!=null) {
+                    Edge edge = compiler.compile(val.getTriple(), true, true);
+                    if (edge.hasReference()) {
+                        node = edge.getReferenceNode();
+                    }
+                }
+                else {
+                    node = compiler.createNode(val);
+                }
             }
             lNode.add(node);
         }

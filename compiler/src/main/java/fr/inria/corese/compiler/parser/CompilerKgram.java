@@ -139,7 +139,7 @@ public class CompilerKgram implements ExpType, Compiler {
      * For resources it is to enable to approximate match a query Class with
      * different target classes
      */
-    Node getNode(Atom at, boolean isReuse) {
+  Node getNode(Atom at, boolean isReuse) {
         
         if (at.isVariable()) {
             Node node = varTable.get(at.getName());
@@ -174,28 +174,51 @@ public class CompilerKgram implements ExpType, Compiler {
 
     @Override
     public Edge compile(Triple tt, boolean reuse) {
-        EdgeImpl edge = new EdgeImpl(tt);
-        Node subject = getNode(tt.getSubject(), reuse);
-        if (tt.getVariable() != null) {
-            Node variable = getNode(tt.getVariable());
+        return compile(tt, reuse, false);
+    }
+    
+    /**
+     * when rec = true: 
+     * when triple(t p o) where t is triple reference of triple(a q b t) ->
+     * recursively compile triple(a q b t)
+     * use case: values ?t {<<<<a q b>> p o>>}
+     */
+    
+    Node getNodeRec(Atom at, boolean reuse, boolean rec) {
+        Node node = getNode(at, reuse);
+        if (rec && at.isTriple() && at.getTriple()!=null && 
+                node.getDatatypeValue().getEdge()==null) {
+            Edge edge = compile(at.getTriple(), reuse, rec);
+            edge.setCreated(true);
+            node.getDatatypeValue().setEdge(edge);
+        }
+        return node;
+    }
+    
+    @Override
+    public Edge compile(Triple triple, boolean reuse, boolean rec) {
+        EdgeImpl edge = new EdgeImpl(triple);
+        edge.setCreated(rec);
+        Node subject = getNodeRec(triple.getSubject(), reuse, rec);
+        if (triple.getVariable() != null) {
+            Node variable = getNode(triple.getVariable());
             edge.setEdgeVariable(variable);
         }
-        Node predicate = getNode(tt.getProperty(), reuse);
+        Node predicate = getNodeRec(triple.getProperty(), reuse, rec);
         // PRAGMA:
         // ?x rdf:type c:Image
         // in this case we want each triple rdf:type c:Image to have its own c:Image Node
         // to accept type subsumption
         // if it would be same Node, it would need to be bound to same value
-        // cf Neurolog pb
         // TODO: fix it for relax
-        Node object = getNode(tt.getObject(), reuse);
+        Node object = getNode(triple.getObject(), reuse);
         edge.add(subject);
         edge.add(object);
         edge.setEdgeNode(predicate);
 
-        if (tt.getArgs() != null) {
-            
-            for (Atom arg : tt.getArgs()) {
+        if (triple.getArgs() != null) {
+            // tuple(s p o arg1 .. argn)
+            for (Atom arg : triple.getArgs()) {
                 NodeImpl sup =  getNodeImpl(arg);
                 
                 if (arg.isVariable()) {
@@ -203,6 +226,8 @@ public class CompilerKgram implements ExpType, Compiler {
                     sup.setMatchCardinality(arg.getVariable().isMatchCardinality());
                 }
                 if (sup.getDatatypeValue().isTriple()) {
+                    // triple(s p o t) where t is triple reference
+                    // t points to target edge
                     sup.getDatatypeValue().setPointerObject(edge);
                 }
                 edge.add(sup);                

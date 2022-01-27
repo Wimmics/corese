@@ -44,6 +44,8 @@ public interface Compiler {
   Filter compile(Expression exp) throws EngineException;
 
   Edge compile(Triple t, boolean insertData);
+  // rec==true when compile nested triple in values clause
+  Edge compile(Triple t, boolean insertData, boolean rec);
 
   List<Filter> compileFilter(Expression exp) throws EngineException;
 

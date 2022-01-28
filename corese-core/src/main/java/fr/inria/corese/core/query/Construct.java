@@ -678,16 +678,7 @@ public class Construct
     IDatatype value(Node node) {
         return  node.getDatatypeValue();
     }
-    
-    IDatatype genericBlank(Node qNode, Environment map) {
-        if (qNode.isTriple()) {
-            return tripleReference(qNode, map);
-        }
-        else {
-            return blank(qNode, map);
-        }
-    }
-    
+            
     IDatatype blank(Node qNode, Environment map) {
         String str;
         if (isRule()) {
@@ -783,7 +774,7 @@ public class Construct
     }
     
     boolean isLabel(Node queryNode) {
-        return queryNode.isVariable() || queryNode.isBlank() || queryNode.getDatatypeValue().isURI();
+        return queryNode.isVariable() || queryNode.isTriple() || queryNode.isBlank() || queryNode.getDatatypeValue().isURI();
     }
 
 

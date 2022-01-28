@@ -179,6 +179,8 @@ public class Graph extends GraphObject implements
     Hashtable<String, Node> individual;
     // label -> Blank Node
     Hashtable<String, Node> blank;
+    // Triple Reference Node
+    Hashtable<String, Node> triple;
     // graph nodes: key -> graph Node
     Hashtable<String, Node> graph;
     // property nodes: label -> property Node 
@@ -656,6 +658,7 @@ public class Graph extends GraphObject implements
         individual = new Hashtable<>();
         // Blank Node
         blank = new Hashtable<>();
+        triple = new Hashtable<>();
         // Named Graph Node
         graph = new Hashtable<>();
         // Property Node
@@ -990,6 +993,7 @@ public class Graph extends GraphObject implements
         sb.appendPNL("kg:property ", getSubjectIndex().size());
         sb.appendPNL("kg:uri      ", individual.size());
         sb.appendPNL("kg:bnode    ", blank.size());
+        sb.appendPNL("kg:triple    ", triple.size());
         sb.appendPNL("kg:literal  ", getLiteralNodeManager().size());
         sb.appendPNL("kg:nodeManager  ", getNodeManager().isEffective());
         if (getNodeManager().isEffective()) {
@@ -1685,6 +1689,10 @@ public class Graph extends GraphObject implements
     public int nbBlanks() {
         return blank.size();
     }
+    
+    public int nbTriples() {
+        return triple.size();
+    }
 
     public int nbLiterals() {
         return getLiteralNodeManager().size();
@@ -1848,6 +1856,20 @@ public class Graph extends GraphObject implements
         }
         return node;
     }
+    
+    public Node getTripleNode(IDatatype dt, boolean create, boolean add) {
+        Node node = getTripleNode(dt.getLabel());
+        if (node != null) {
+            return node;
+        }
+        if (node == null && create) {
+            node = buildNode(dt);
+        }
+        if (add) {
+            add(dt, node);
+        }
+        return node;
+    }
 
     public Node getLiteralNode(IDatatype dt, boolean create, boolean add) {
         String key = getKey(dt);
@@ -1888,7 +1910,8 @@ public class Graph extends GraphObject implements
     // resource or blank
     public boolean isIndividual(Node node) {
         return individual.containsKey(getID(node))
-                || blank.containsKey(node.getLabel());
+                || blank.containsKey(node.getLabel())
+                || triple.containsKey(node.getLabel());
     }
 
     // resource node
@@ -1907,9 +1930,17 @@ public class Graph extends GraphObject implements
     public Node getBlankNode(String name) {
         return blank.get(name);
     }
+    
+    public Node getTripleNode(String name) {
+        return triple.get(name);
+    }
 
     void addBlankNode(IDatatype dt, Node node) {
         blank.put(node.getLabel(), node);
+    }
+    
+    void addTripleNode(IDatatype dt, Node node) {
+        triple.put(node.getLabel(), node);
     }
 
     String getID(Node node) {
@@ -1999,12 +2030,12 @@ public class Graph extends GraphObject implements
     }
     
     Node basicAddTripleReference(String label) {
-        Node node = getBlankNode(label);
+        Node node = getTripleNode(label);
         if (node == null) {
             IDatatype dt = createTripleReference(label);
             node = buildNode(dt);
             indexNode(dt, node);
-            addBlankNode(dt, node);
+            addTripleNode(dt, node);
         }
         return node;
     }
@@ -2025,7 +2056,12 @@ public class Graph extends GraphObject implements
     void add(IDatatype dt, Node node) {
         if (dt.isLiteral()) {
             addLiteralNode(dt, node);
-        } else if (dt.isBlank()) {
+        } 
+        else if (dt.isTriple()) {
+            addTripleNode(dt, node);
+            indexNode(dt, node);
+        }
+        else if (dt.isBlank()) {
             addBlankNode(dt, node);
             indexNode(dt, node);
         } else {
@@ -2626,6 +2662,10 @@ public class Graph extends GraphObject implements
     public Iterable<Node> getBlankNodes() {
         return blank.values();
     }
+    
+     public Iterable<Node> getTripleNodes() {
+        return triple.values();
+    }
 
     /**
      * resource & blank TODO: a node may have been deleted (by a delete triple)
@@ -3060,6 +3100,7 @@ public class Graph extends GraphObject implements
     void clearNodes() {
         individual.clear();
         blank.clear();
+        triple.clear();
         getLiteralNodeManager().clear();
         property.clear();
     }

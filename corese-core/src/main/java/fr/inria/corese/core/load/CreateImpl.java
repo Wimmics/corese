@@ -195,22 +195,15 @@ public class CreateImpl extends CreateTriple implements Creator {
     }
 
     Node getNode(Atom c) {
-        if (c.isBlank() || c.isBlankNode()) {
-            return getGenericBlank(c);
-        } else {
-            return addResource(c.getLabel());
-        }
-    }
-   
-    Node getGenericBlank(Atom c) {
         if (c.isTriple()) {
             return getTripleReference(c);
         }
-        else {
+        if (c.isBlank() || c.isBlankNode()) {
             return getBlank(c);
+        } else {
+            return addResource(c.getLabel());
         }
-    }
-
+    }  
     
     Node getBlank(Atom c) {
         Node n = addBlank(getID(c.getLabel()));
@@ -219,20 +212,11 @@ public class CreateImpl extends CreateTriple implements Creator {
     
     Node getTripleReference(Atom c) {
         Node n = addTripleReference(tripleID(c.getLabel()));
-        //DatatypeMap.shareTripleReference(n.getDatatypeValue(), c.getDatatypeValue());
         return n;
     }
 
     Node getSubject(Atom c) {
-        if (c.isBlank() || c.isBlankNode()) {
-            return getGenericBlank(c);
-        } else {
-            if (resource == null || !resource.equals(c.getLabel())) {
-                resource = c.getLabel();
-                node = addResource(resource);
-            }
-            return node;
-        }
+        return getNode(c);
     }
 
     String getID(String b) {

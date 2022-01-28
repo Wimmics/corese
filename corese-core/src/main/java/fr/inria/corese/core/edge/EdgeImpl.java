@@ -3,6 +3,7 @@ package fr.inria.corese.core.edge;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.logic.Entailment;
 import java.util.Arrays;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
@@ -11,6 +12,8 @@ import java.util.ArrayList;
 
 /**
  * Graph Edge with n nodes (not only triple)
+ * RDF star triple with reference node t
+ * g <<s p o t>>
  *
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
@@ -109,10 +112,21 @@ public class EdgeImpl extends EdgeTop
 
     @Override
     public String toString() {
-        if (nbNode() > 2) {
+        if (isNested()) {
+            return nestedTriple();
+        }
+        else if (nbNode() > 2) {
             return tuple();
         }
         return super.toString();
+    }
+    
+    public String nestedTriple() {
+        String str = String.format("<<%s %s %s>> [%s]", getNode(0), getEdgeNode(), getNode(1), getNode(Edge.REF_INDEX));
+        if (getGraphNode()!=null && !getGraphNode().getLabel().equals(Entailment.DEFAULT)) {
+            str = String.format("%s %s", getGraphNode(), str);
+        }
+        return str;
     }
 
     public String tuple() {
@@ -125,22 +139,15 @@ public class EdgeImpl extends EdgeTop
         return str;
     }
 
-    String toParse(StringBuilder sb, boolean all) {
-        if (isNested()) {
-            sb.append("<<");
-        }
-        sb.append("tuple");
-        sb.append("(");
+    String toParse(StringBuilder sb, boolean all) {        
+        sb.append("tuple(");
         sb.append(getEdgeNode());
         for (Node n : nodes) {
             sb.append(" ");
             sb.append(n);
         }
         sb.append(")");
-        if (isNested()) {
-            sb.append(">>");
-        }
-        
+              
         if (all) {
             int i = 0;
             for (Node n : nodes) {

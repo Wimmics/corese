@@ -363,6 +363,7 @@ public class Construct
                                 ent = graphManager.insert(ent);
                                 
                                 if (!insertEdgeList.isEmpty()) {
+                                    if (trace) System.out.println("__");
                                     for (Edge edge : insertEdgeList) {
                                         if (trace) System.out.println("insert: " + edge);
                                         graphManager.insert(edge);
@@ -560,12 +561,22 @@ public class Construct
             boolean processInsertEdgeList = false;
             
             if (targetNode == null) {
+                if (trace) System.out.println("query node: " + queryNode + " " + queryNode.isTriple() + " " + queryNode.isTripleWithEdge());
                 if (queryNode.isTriple()) {
-                    if (isDelete && !additionalNode && queryNode.isTripleWithEdge()) {
-                        // delete triple(s p o t) . t q v
+                    if (!additionalNode && queryNode.isTripleWithEdge()) {
+                        // triple(s p o t) . t q v
                         // queryNode = t in t q v
                         // find occurrence of (s p o t) in graph
-                        dt = reference(queryGraphNode, queryNode, map);
+                        if (isDelete) {                        
+                            dt = reference(queryGraphNode, queryNode, map);
+                        }
+                        else {
+                            int size = insertEdgeList.size();
+                            dt = reference(queryGraphNode, queryNode, map, insertEdgeList);
+                            if (insertEdgeList.size() > size) {
+                                processInsertEdgeList = true;
+                            }
+                        }
                     }
                     else {
                         dt = tripleReference(queryNode, map);
@@ -596,7 +607,7 @@ public class Construct
                     // find occurrence of t in triple(s p o t) in graph
                     int size = insertEdgeList.size();
                     dt = reference(queryGraphNode, targetNode, map, insertEdgeList);
-                    if (dt !=null && insertEdgeList.size()>size) {
+                    if (insertEdgeList.size()>size) {
                         processInsertEdgeList = true;
                     }
                 }
@@ -638,8 +649,8 @@ public class Construct
         Edge target = getGraphManager().find(query);
 
         if (trace) {
-            System.out.println("gNode: " + gNode );
-            System.out.println("query node: " + qNode + " ref: " + edge);
+            System.out.println("graph node: " + gNode );
+            System.out.println("input node: " + qNode + " ref: " + edge);
             System.out.println("edge inst: " + query);
             System.out.println("target triple: " + target);
         }

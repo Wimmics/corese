@@ -204,14 +204,14 @@ public class CompilerKgram implements ExpType, Compiler {
             Node variable = getNode(triple.getVariable());
             edge.setEdgeVariable(variable);
         }
-        Node predicate = getNodeRec(triple.getProperty(), reuse, rec);
+        Node predicate = getNode(triple.getProperty(), reuse);
         // PRAGMA:
         // ?x rdf:type c:Image
         // in this case we want each triple rdf:type c:Image to have its own c:Image Node
         // to accept type subsumption
         // if it would be same Node, it would need to be bound to same value
         // TODO: fix it for relax
-        Node object = getNode(triple.getObject(), reuse);
+        Node object = getNodeRec(triple.getObject(), reuse, rec);
         edge.add(subject);
         edge.add(object);
         edge.setEdgeNode(predicate);

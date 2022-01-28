@@ -73,6 +73,13 @@ public class EdgeImpl extends PointerObject implements Edge {
 
     @Override
     public String toString() {
+        if (isNested()) {
+            return nestedTriple();
+        }
+        return basicTriple();
+    }
+
+    String basicTriple() {    
         String str = "";
         String name = label;
         if (getEdgeVariable() != null) {
@@ -84,6 +91,11 @@ public class EdgeImpl extends PointerObject implements Edge {
         for (int i = 1; i < nodes.size(); i++) {
             str += " " + getNode(i);
         }
+        return str;
+    }
+    
+    String nestedTriple() {
+        String str = String.format("<<%s %s %s>> [%s]", getNode(0), getPredicateNode(), getNode(1), getNode(Edge.REF_INDEX));        
         return str;
     }
 

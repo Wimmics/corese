@@ -23,7 +23,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- *
+ * error in w3c test: 
+ * sparql/eval trs:sparql-star-op-3
  */
 public class RDFStar {
     
@@ -44,7 +45,14 @@ public class RDFStar {
         Property.set(Property.Value.LOAD_IN_DEFAULT_GRAPH, true);
         
         for (IDatatype dt : RDFStar.this.manifest()) {
-            RDFStar.this.manifest(dt.getLabel());
+            String name =  dt.getLabel();
+            if (name.contains("trig/eval")) {
+                System.out.println("*** skip: " + name);
+                System.out.println("Trig rdf star parser undefined");
+            }
+            else {
+                RDFStar.this.manifest(name);
+            }
         }
     }
     
@@ -191,12 +199,12 @@ public class RDFStar {
         QueryLoad ql = QueryLoad.create();
         try {
             String q = ql.readWE(query);
-            System.out.println("query:\n"+q);
+            if (trace) System.out.println("query:\n"+q);
             if (type.contains("Negative")) System.out.println(type);
             QueryProcess exec = QueryProcess.create(g);
             Mappings map = exec.query(q);
             Mappings map2 = result(result);            
-            genericompare(g, map, map2);            
+            genericompare(q, g, map, map2);            
         } catch (LoadException ex) {
             Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
         } catch (EngineException ex) {
@@ -210,7 +218,7 @@ public class RDFStar {
         }
     }
     
-    void genericompare(Graph g, Mappings m1, Mappings m2) {
+    void genericompare(String q, Graph g, Mappings m1, Mappings m2) {
         if (m2.getGraph() != null) {
             if (m1.getGraph() == null) {
                 compare(g, (Graph) m2.getGraph());
@@ -219,15 +227,24 @@ public class RDFStar {
                 compare((Graph) m1.getGraph(), (Graph) m2.getGraph());
             }
         } else {
-           compare(m1, m2);
+           compare(q, m1, m2);
         }
     }
     
-    void compare(Mappings m1, Mappings m2) {
-        display(m1, m2);
+    void compare(String q, Mappings m1, Mappings m2) {
+        if (m1.size()!=m2.size()) {
+            System.out.println("query:\n"+q);
+            display(m1, m2);
+        }
+    }
+   
+    void compare(Graph g, Graph r) {
+        if (g.size()!=r.size()) {
+            display(g, r);
+        }
     }
     
-    void compare(Graph g, Graph r) {
+    void display(Graph g, Graph r) {
         System.out.println("corese:");
         display(g);
         System.out.println("rdf star:");

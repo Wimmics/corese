@@ -626,6 +626,7 @@ public class Term extends Expression {
             case ExprType.PREDICATE: 
             case ExprType.TRIPLE: 
             case ExprType.IS_TRIPLE:
+            case ExprType.SPARQL_COMPARE:
                 return new TripleAccess(name);
                                 
             case ExprType.XT_METADATA:

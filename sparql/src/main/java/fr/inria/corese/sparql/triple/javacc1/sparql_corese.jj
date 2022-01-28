@@ -2226,7 +2226,7 @@ Expression BuiltInCall(Exp stack) : { ExpressionList el; Expression exp1 = null,
     (t1 = <LANGMATCHES> | t1 = <POWER> | t1 = <XPATH>
     | t1 = <SAMETERM> | t1 = <STRDT> | t1 = <STRLANG> | t1 = <CONTAINS> 
     | t1 = <STRSTARTS> | t1 = <STRENDS> | t1 = <STRBEFORE>  | t1 = <STRAFTER>
-    | t1 = <REDUCE> | t1 = <APPLY>
+    | t1 = <REDUCE> | t1 = <APPLY> | t1 = <SPARQL_COMPARE>
     )
      <LPAREN> exp1 = Expression(stack) <COMMA> exp2 = Expression(stack) <RPAREN>
 
@@ -3120,6 +3120,7 @@ TOKEN [IGNORE_CASE] :
 | <PREDICATE: "predicate">
 | <OBJECT: "object">
 | <IS_TRIPLE: "isTriple">
+| <SPARQL_COMPARE: "sparql-compare">
 | <XPATH: "xpath">
 | <FUNCTION: "function">
 | <LAMBDA: "lambda">

@@ -117,6 +117,7 @@ public interface ExprType {
         public static int PREDICATE 	 = 90;
         public static int OBJECT 	 = 91;
         public static int IS_TRIPLE 	 = 92;
+        public static int SPARQL_COMPARE = 93;
 
 
 	

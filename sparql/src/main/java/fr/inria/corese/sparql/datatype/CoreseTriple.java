@@ -5,7 +5,11 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
 /**
- *
+ * Edge reference datatype for edge reference node
+ * <<s p o>> q v -> edge(s p o t)  t q v 
+ * where t is reference node
+ * e.referenceNode = t
+ * t.edge = edge(s p o t)
  */
 public class CoreseTriple extends CoreseBlankNode {
 
@@ -70,42 +74,36 @@ public class CoreseTriple extends CoreseBlankNode {
         }
         return res.booleanValue() ? FALSE : TRUE;
     }
+    
+    @Override
+    public int compare(IDatatype dt) throws CoreseDatatypeException {
+        if (getEdge()!=null && dt.isTripleWithEdge()) {
+            return getEdge().compareWithoutGraph(dt.getEdge());
+        }
+        return super.compare(dt);
+    }
 
   
     @Override
     public boolean less(IDatatype dt) throws CoreseDatatypeException {
-        if (getEdge()!=null && dt.isTripleWithEdge()) {
-            return getEdge().compareWithoutGraph(dt.getEdge()) < 0;
-        }
-        return super.less(dt);        
+        return compare(dt) < 0 ;
     }
 
     @Override
     public boolean lessOrEqual(IDatatype dt) throws CoreseDatatypeException {
-        if (getEdge() != null && dt.isTripleWithEdge()) {
-            return getEdge().compareWithoutGraph(dt.getEdge()) <= 0;
-        }
-        return super.lessOrEqual(dt);
+        return compare(dt) <= 0 ;
     }
 
     @Override
     public boolean greater(IDatatype dt) throws CoreseDatatypeException {
-        if (getEdge() != null && dt.isTripleWithEdge()) {
-            return getEdge().compareWithoutGraph(dt.getEdge()) > 0;
-        }
-        return super.greater(dt);
+        return compare(dt) > 0 ;
     }
 
     @Override
     public boolean greaterOrEqual(IDatatype dt) throws CoreseDatatypeException {
-        if (getEdge() != null && dt.isTripleWithEdge()) {
-            return getEdge().compareWithoutGraph(dt.getEdge()) >= 0;
-        }
-        return super.greaterOrEqual(dt);
+        return compare(dt) >= 0 ;
     }
-    
-    
-    
+       
 
     boolean eqTriple(IDatatype dt) {
         if (getEdge() != null && dt.getEdge() != null) {

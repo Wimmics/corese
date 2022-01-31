@@ -5,7 +5,7 @@
 
 <p align="center">
     <a href="https://project.inria.fr/corese/">
-        <img src="https://project.inria.fr/corese/files/2022/01/Corese-logo.png" width="300" height="149" alt="Corese-logo">
+        <img src="https://user-images.githubusercontent.com/5692787/151865170-24dc2a17-3c78-4e6b-bb61-bf449f040382.svg" width="300" height="149" alt="Corese-logo">
     </a>
     <br>
     <strong>Software platform for the Semantic Web of Linked Data</strong>

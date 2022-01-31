@@ -607,7 +607,7 @@ public class Construct
                     // find occurrence of t in triple(s p o t) in graph
                     int size = insertEdgeList.size();
                     dt = reference(queryGraphNode, targetNode, map, insertEdgeList);
-                    if (insertEdgeList.size()>size) {
+                    if (dt!=null&&insertEdgeList.size()>size) {
                         processInsertEdgeList = true;
                     }
                 }

@@ -234,23 +234,11 @@ public class EdgeFactory {
         list.add(subject);list.add(object); list.add(node);
         return create(source,  predicate, list, nested);
     }
-    
-//    public Edge name(Edge edge) {
-//        return name(edge, graph.addTripleName());
-//    }
-//    
-//    public Edge name(Edge edge, Node name) {
-//        if (edge.nbNode() == 3) {
-//            edge.setNode(Edge.REF_INDEX, name);
-//            return edge;
-//        }
-//        return name(edge, edge.getEdgeNode(), name);
-//    }
-    
+        
     // @todo: check this
     public Edge name(Edge edge, Node predicate, Node name) {
         if (edge.hasReference()) {
-            edge.setNode(Edge.REF_INDEX, name);
+            edge.setReferenceNode(name);
             return edge;
         }
         return create(edge.getGraph(), edge.getNode(0), predicate, edge.getNode(1), name, edge.isNested());

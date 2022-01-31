@@ -118,11 +118,7 @@ public class EventManager {
             case LoadAPI:
                 startLoad();
                 break;
-                
-//            case LoadAPI:
-//                setUpdate(true);
-//                break;  
-                                
+                                                
             case Insert:
             case Delete:             
             case Construct:     
@@ -173,6 +169,7 @@ public class EventManager {
         }
     }
 
+    // @todo: check this wrt graph index
     public void finish(Event e, Object o) {
         trace(Finish, e, o);
          switch (e) {
@@ -187,9 +184,12 @@ public class EventManager {
                 // continue
                 
             case LoadAPI: 
+                graph.finishUpdate();
+                break; 
+                
             case UpdateStep:                
                 graph.finishUpdate();
-                break;            
+                break;   
                 
             case Rule:
                 break;

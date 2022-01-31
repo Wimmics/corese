@@ -115,7 +115,7 @@ public class TripleFormat extends RDFFormat {
     }
 
     void nodes() {
-        for (Node node : getNodes()) {
+        for (Node node : getSubjectNodes()) {
             print(null, node);
         }
     }
@@ -125,7 +125,7 @@ public class TripleFormat extends RDFFormat {
             if (accept(gNode)) {
                 sdisplay(GRAPH);
                 sdisplay(SPACE);
-                subject(gNode);
+                node(gNode);
                 sdisplay(OGRAPH);
                 display();
                 for (Node node : graph.getNodeGraphIterator(gNode)) {
@@ -135,23 +135,7 @@ public class TripleFormat extends RDFFormat {
             }
         }
     }
-
-    void header2(StringBuilder bb) {
-        boolean first = true;
-        for (String p : nsm.getPrefixSet()) {
-
-            if (first) {
-                first = false;
-            } else {
-                bb.append(NL);
-            }
-
-            String ns = nsm.getNamespace(p);
-            //bb.append(PREFIX + SPACE + p + ": <" + toXML(ns) + "> .");
-            bb.append(String.format("@prefix %s: <%s>", p, toXML(ns)));
-        }
-    }
-
+   
     @Override
     void header(StringBuilder bb) {
         link(bb);
@@ -172,21 +156,27 @@ public class TripleFormat extends RDFFormat {
 
     void print(Node gNode, Node node) {
         boolean first = true;
-
-        for (Edge ent : getEdges(gNode, node)) {
-
-            if (ent != null && accept(ent)) {
-
+        boolean annotation = false;
+        
+        for (Edge edge : getEdges(gNode, node)) {
+            if (edge != null && accept(edge) && edge.isAsserted()) {
                 if (first) {
                     first = false;
-                    subject(ent);
+                    subject(edge);
+                    sdisplay(SPACE);
+                    if (annotation(edge)) {
+                        annotation = true;
+                        sdisplay("{| ");
+                    }
                 } else {
                     sdisplay(PV);
                     sdisplay(NL);
                 }
-
-                edge(ent);
+                edge(edge);
             }
+        }
+        if (annotation){
+            sdisplay(" |}");
         }
 
         if (!first) {
@@ -205,49 +195,83 @@ public class TripleFormat extends RDFFormat {
     }
 
     void subject(Edge ent) {
-        subject(ent.getNode(0));
+        node(ent.getSubjectValue());
     }
 
-    void subject(Node node) {
-        IDatatype dt0 = getValue(node);
 
-        if (dt0.isBlank()) {
-            String sub = dt0.getLabel();
-            sdisplay(sub);
+    
+    boolean hasNestedTriple(Edge edge) {
+        return edge.getSubjectValue().isTripleWithEdge() || edge.getObjectValue().isTripleWithEdge();
+    }
+    
+    void triple(Edge edge) {
+        triple(edge, false);
+    }
+    
+    void triple(Edge edge, boolean rec) {
+        if (edge.isNested() || hasNestedTriple(edge) || rec) {
+            sdisplay("<<");
+            basicTriple(edge, rec);
+            sdisplay(">>");
         } else {
-            uri(dt0.getLabel());
+            basicTriple(edge, rec);
         }
+    }
+    
+    void basicTriple(Edge edge) {
+        basicTriple(edge, false);
+    }
 
+    void basicTriple(Edge edge, boolean rec) {
+        node(edge.getSubjectNode(), true);
         sdisplay(SPACE);
+        predicate(edge.getEdgeNode());
+        sdisplay(SPACE);
+        node(edge.getObjectNode(), true);
+    }
+       
+    void predicate(Node node) {
+        String pred = nsm.toPrefix(node.getLabel());
+        sdisplay(pred);
+    }
+    
+    void node(Node node) {
+        node(node, false);
+    }
+    
+    void node(Node node, boolean rec) {
+        IDatatype dt = node.getValue();
+        if (dt.isTripleWithEdge()) {
+            triple(dt.getEdge(), rec);
+        }
+        else if (dt.isLiteral()) {
+            sdisplay(dt.toSparql(true, false, nsm));
+        } else if (dt.isBlank()) {
+            sdisplay(dt.getLabel());
+        } else {
+            uri(dt.getLabel());
+        }
     }
 
     void uri(String label) {
-        String str = nsm.toPrefixURI(label);
-        sdisplay(str);
+        sdisplay(nsm.toPrefixURI(label));
     }
 
     @Override
-    void edge(Edge edge) {
-
-        String pred = nsm.toPrefix(edge.getEdgeNode().getLabel());
-
-        sdisplay(pred);
+    void edge(Edge edge) {        
+        predicate(edge.getEdgeNode());
         sdisplay(SPACE);
-
-        String obj;
-
-        IDatatype dt1 = getValue(edge.getNode(1));
-
-        if (dt1.isLiteral()) {
-            obj = dt1.toSparql(true, false, nsm);
-            sdisplay(obj);
-        } else if (dt1.isBlank()) {
-            obj = dt1.getLabel();
-            sdisplay(obj);
-        } else {
-            uri(dt1.getLabel());
-        }
-
+        node(edge.getObjectNode());
+    }
+    
+    boolean annotation(Edge edge) {
+        return annotation(edge.getSubjectNode());
+    }
+    
+    boolean annotation(Node node) {
+        return node.isTripleWithEdge() && 
+                node.getEdge().isAsserted() && 
+                ! hasNestedTriple(node.getEdge());
     }
 
     public Mappings getMappings() {

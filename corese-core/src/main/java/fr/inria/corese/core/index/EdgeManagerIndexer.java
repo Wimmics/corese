@@ -39,19 +39,6 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
 public class EdgeManagerIndexer 
         implements Index {
 
-    /**
-     * @return the loopMetadata
-     */
-    public boolean isLoopMetadata() {
-        return loopMetadata;
-    }
-
-    /**
-     * @param loopMetadata the loopMetadata to set
-     */
-    public void setLoopMetadata(boolean loopMetadata) {
-        this.loopMetadata = loopMetadata;
-    }
     // true: store internal Edge without predicate Node
     public static boolean test = true;
     private static final String NL = System.getProperty("line.separator");
@@ -956,6 +943,7 @@ public class EdgeManagerIndexer
     @Override
     public void finishUpdate() {
         if (graph.isEdgeMetadata()) {
+            graph.init();
             metadata();
         }
     }
@@ -1010,6 +998,16 @@ public class EdgeManagerIndexer
         for (Node p : getProperties()) {
             get(p).replace(map);
         }
+    }
+    
+  
+    public boolean isLoopMetadata() {
+        return loopMetadata;
+    }
+
+   
+    public void setLoopMetadata(boolean loopMetadata) {
+        this.loopMetadata = loopMetadata;
     }
       
 }

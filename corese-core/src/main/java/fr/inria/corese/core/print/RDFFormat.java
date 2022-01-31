@@ -165,6 +165,13 @@ public class RDFFormat {
         }
         return graph.getRBNodes();
     }
+    
+    Iterable<Node> getSubjectNodes() {
+        if (map != null) {
+            return map.getMapNodes();
+        }
+        return graph.getSubjectNodes();
+    }
 
     Iterable<Edge> getEdges(Node node) {
         if (map != null) {

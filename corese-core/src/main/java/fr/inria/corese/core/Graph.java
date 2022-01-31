@@ -185,7 +185,9 @@ public class Graph extends GraphObject implements
     Hashtable<String, Node> graph;
     // property nodes: label -> property Node 
     Hashtable<String, Node> property;
+    // allocate Node (1 and 01 have different Node)
     private SortedMap<IDatatype, Node> literalNodeManager;
+    // allocate index (1 and 01 have same index)
     private SortedMap<IDatatype, Node> literalIndexManager;
     // @todo
     // key -> Node for value management in external memory
@@ -643,7 +645,6 @@ public class Graph extends GraphObject implements
         // indexManager allocate same Node index to 1, 01 (and also 1.0 as corese default mode) 
         // Literals (all of them) comparator = CompareNode and compareTo()
         // different Node allocated when different value or different datatype or different label
-        // e.g. allocate different Node for 1, 01, 1.0 
         setLiteralNodeManager(Collections.synchronizedSortedMap(new TreeNode()));
         // Literal numbers and booleans to manage Node index:
         // comparator = CompareIndex and compare()
@@ -1767,7 +1768,7 @@ public class Graph extends GraphObject implements
 
     // used by construct
     public Node getNode(Node gNode, IDatatype dt, boolean create, boolean add) {
-        if (dt.isBlank() && isSkolem()) {
+        if (dt.isBlank() && ! dt.isTriple() && isSkolem()) {
             dt = skolem(dt);
         }
         return getNode(dt, create, add);
@@ -1810,7 +1811,11 @@ public class Graph extends GraphObject implements
     public Node getNode(IDatatype dt, boolean create, boolean add) {
         if (dt.isLiteral()) {
             return getLiteralNode(dt, create, add);
-        } else if (dt.isBlank()) {
+        } 
+        else if (dt.isTriple()) {
+            return getTripleNode(dt, create, add);
+        }
+        else if (dt.isBlank()) {
             return getBlankNode(dt, create, add);
         } else {
             return getResourceNode(dt, create, add);
@@ -2429,7 +2434,7 @@ public class Graph extends GraphObject implements
             }
             Node val = first.getNode(1);
 
-            if (val.isBlank()) {
+            if (val.isBlank() && ! val.isTriple()) {
                 // may be a list
                 ArrayList<IDatatype> ll = reclist(val);
                 if (ll == null) {
@@ -2677,6 +2682,14 @@ public class Graph extends GraphObject implements
         meta.next(getBlankNodes());
         return meta;
     }
+    
+    public Iterable<Node> getSubjectNodes() {
+        MetaIterator<Node> meta = new MetaIterator<>();
+        meta.next(getNodes());
+        meta.next(getBlankNodes());
+        meta.next(getTripleNodes());
+        return meta;
+    }
 
     public Iterable<Node> getLiteralNodes() {
         if (valueOut) {
@@ -2766,6 +2779,9 @@ public class Graph extends GraphObject implements
     }
 
     public IDatatype skolem(IDatatype dt) {
+        if (dt.isTriple()) {
+            return dt;
+        }
         if (!dt.isBlank()) {
             return dt;
         }
@@ -2774,6 +2790,9 @@ public class Graph extends GraphObject implements
     }
 
     public Node skolem(Node node) {
+        if (node.isTriple()) {
+            return node;
+        }
         if (!node.isBlank()) {
             return node;
         }

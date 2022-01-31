@@ -122,7 +122,7 @@ public class EdgeManager implements Iterable<Edge> {
      */
     boolean equalExceptIfMetadata(Edge e1, Edge e2) {
         if (comp.compare(e1, e2) == 0) {
-            if (graph.isEdgeMetadata() && (e1.getNode(meta) != null || e2.getNode(meta) != null)) {
+            if (graph.isEdgeMetadata() && (e1.getReferenceNode() != null || e2.getReferenceNode() != null)) {
                 indexer.setLoopMetadata(true);
                 return false;
             }
@@ -130,10 +130,7 @@ public class EdgeManager implements Iterable<Edge> {
         }
         return false;
     }
-    
-//        return comp.compare(e1, e2) == 0
-//                && !(graph.isEdgeMetadata() && e2.getNode(meta) != null);
-      
+         
     /**
      * Context: RDF*
      * Merge duplicate triples, keep one metadata node
@@ -156,7 +153,7 @@ public class EdgeManager implements Iterable<Edge> {
             else if (compare3(e1, e2) == 0){
                 //  g s p o t1 vs g s p o t2
                 //  keep g s p o t1
-                if (e1.getNode(meta) == null) { 
+                if (e1.getReferenceNode() == null) { 
                     // e2 replace e1
                     share(e2, e1);
                     e1 = e2;
@@ -187,7 +184,7 @@ public class EdgeManager implements Iterable<Edge> {
         list = l;
         if (count > 0) {
             graph.setSize(graph.size() - count);
-        }
+        }       
     }
     
     // e1 replace e2
@@ -201,7 +198,7 @@ public class EdgeManager implements Iterable<Edge> {
      
     // keep only one metadata node (e1)
     void merge(Edge e1, Edge e2) {
-        indexer.replace(e2.getNode(meta), e1.getNode(meta));
+        indexer.replace(e2.getReferenceNode(), e1.getReferenceNode());
     }
     
     /**
@@ -232,18 +229,18 @@ public class EdgeManager implements Iterable<Edge> {
      *  int i is index of e2 in Index main list
      */
     void name(Edge e1, Edge e2, List<Edge> edgeList, int i) {
-        if (e1.getNode(meta) != null) {
-            if (e2.getNode(meta) != null) {
+        if (e1.getReferenceNode() != null) {
+            if (e2.getReferenceNode() != null) {
                 // replace reference node t2 of e2 with t1
                 merge(e1, e2);
-                e2.setNode(meta, e1.getNode(meta));
+                e2.setNode(meta, e1.getReferenceNode());
             } else {
                 // set/add reference node of e2 to t1
-                e2 = graph.getEdgeFactory().name(e2, predicate, e1.getNode(meta));
+                e2 = graph.getEdgeFactory().name(e2, predicate, e1.getReferenceNode());
             }
-        } else if (e2.getNode(meta) != null) {
+        } else if (e2.getReferenceNode() != null) {
             // set/add reference node of e1 to t2
-            e1 = graph.getEdgeFactory().name(e1, predicate, e2.getNode(meta));
+            e1 = graph.getEdgeFactory().name(e1, predicate, e2.getReferenceNode());
             edgeList.set(edgeList.size() - 1, e1);
         } else {
             Node ref = getSameEdgeReferenceNode(e2, i);
@@ -251,7 +248,6 @@ public class EdgeManager implements Iterable<Edge> {
             // add reference node in case there is a third one with reference node
             // e1 = g1 s p o -> g1 s p o t
             // e2 = g2 s p o -> g2 s p o t
-            // @todo: get reference node instead of create/add one
             if (ref != null) {
                 e1 = graph.getEdgeFactory().name(e1, predicate, ref);
                 e2 = graph.getEdgeFactory().name(e2, predicate, ref);
@@ -271,7 +267,7 @@ public class EdgeManager implements Iterable<Edge> {
             Edge e2 = list.get(i);
             if (compare2(e, e2) == 0) {
                 if (e2.hasReference()) {
-                    return e2.getNode(Edge.REF_INDEX);
+                    return e2.getReferenceNode();
                 }
             }
             else {
@@ -287,11 +283,20 @@ public class EdgeManager implements Iterable<Edge> {
     }
     
     // compare subject object graph (not compare reference node if any)
+//    int compare3old(Edge e1, Edge e2) {
+//        int res = compareNodeTerm(e1.getNode(index), e2.getNode(index));
+//        if (res == 0) {
+//            res = compareNodeTerm(e1.getNode(other), e2.getNode(other));
+//        }
+//        if (res == 0) {
+//            res = compareNodeTerm(e1.getNode(IGRAPH), e2.getNode(IGRAPH));
+//        }
+//        return res;
+//    }
+    
+    // compare subject object graph (not compare reference node if any)
     int compare3(Edge e1, Edge e2) {
-        int res = compareNodeTerm(e1.getNode(index), e2.getNode(index));
-        if (res == 0) {
-            res = compareNodeTerm(e1.getNode(other), e2.getNode(other));
-        }
+        int res = compare2(e1, e2);        
         if (res == 0) {
             res = compareNodeTerm(e1.getNode(IGRAPH), e2.getNode(IGRAPH));
         }
@@ -476,13 +481,11 @@ public class EdgeManager implements Iterable<Edge> {
      */
     int findIndexNodeTerm(Edge ent) {
         int i = find(ent);
-
         if (i >= size()) {
             return -1;
         }
 
         int res = comp.compare(ent, list.get(i));
-
         if (res == 0) {
             return i;
         }

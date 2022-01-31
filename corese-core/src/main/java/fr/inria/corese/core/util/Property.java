@@ -400,11 +400,11 @@ public class Property {
             case RDF_STAR:
                 Graph.setRDFStar(b);
                 ASTParser.RDF_STAR = b;
-                ParserHandler.rdf_star_validation = true;
+                //ParserHandler.rdf_star_validation = b;
                 break;
                 
             case RDF_STAR_VALIDATION:
-                ParserHandler.rdf_star_validation = true;
+                ParserHandler.rdf_star_validation = b;
                 break;
                 
             case RDF_STAR_SELECT:                
@@ -425,7 +425,7 @@ public class Property {
                 break;
 
             case REENTRANT_QUERY:
-                QueryProcess.setOverwrite(true);
+                QueryProcess.setOverwrite(b);
                 break;
 
             case ACCESS_LEVEL:

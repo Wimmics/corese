@@ -122,7 +122,10 @@ public class EdgeImpl extends EdgeTop
     }
     
     public String nestedTriple() {
-        String str = String.format("<<%s %s %s>> [%s]", getNode(0), getEdgeNode(), getNode(1), getNode(Edge.REF_INDEX));
+        String str = String.format("<<%s %s %s>>", getNode(0), getEdgeNode(), getNode(1));
+        if (!DatatypeMap.DISPLAY_AS_TRIPLE && hasReference()) {
+            str = String.format("%s [%s]", str, getReferenceNode());
+        }
         if (getGraphNode()!=null && !getGraphNode().getLabel().equals(Entailment.DEFAULT)) {
             str = String.format("%s %s", getGraphNode(), str);
         }
@@ -134,24 +137,32 @@ public class EdgeImpl extends EdgeTop
         if (displayGraph) {
             str += getGraph() + " ";
         }
-        str += toParse(new StringBuilder(), true);
+        str += toParse(new StringBuilder());
 
         return str;
     }
 
-    String toParse(StringBuilder sb, boolean all) {        
+    String toParse(StringBuilder sb) {        
         sb.append("tuple(");
         sb.append(getEdgeNode());
+        int j = 0;
         for (Node n : nodes) {
-            sb.append(" ");
-            sb.append(n);
+            if (j++ == Edge.REF_INDEX && n.isTriple()) {
+                if (!DatatypeMap.DISPLAY_AS_TRIPLE) {
+                    sb.append(" ").append(n);
+                }
+            }
+            else {
+                sb.append(" ").append(n);
+            }
         }
         sb.append(")");
               
-        if (all) {
+        if (! DatatypeMap.DISPLAY_AS_TRIPLE) {
             int i = 0;
             for (Node n : nodes) {
                 if (i++ < 2) {
+                    // subject/object
                     if (n.isTripleWithEdge()) {
                         sb.append(NL).append(n).append(" : ").append(n.getEdge().toString());
                     }

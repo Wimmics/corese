@@ -74,7 +74,10 @@ public class Variable extends Atom {
 
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
-        if (isBlankNode()) {
+        if (isTripleWithTriple()) {
+            sb.append(toNestedTriple());
+        }
+        else if (isBlankNode()) {
             if (isBlankVariable(name)) {
                 // variable for blank node, replace ?_ by _:
                 sb.append(KeywordPP.BN + name.substring(2, name.length()));
@@ -110,13 +113,15 @@ public class Variable extends Atom {
     @Override
     public boolean equals(Object o) {
         if (o instanceof Variable) {
-            Variable var = (Variable) o;
-            if (getName().equals(var.getName())) {
-                return true;
-            }
+            return equals((Variable)o);
         }
         return false;
     }
+    
+    public boolean equals(Variable v) {
+        return getName().equals(v.getName());
+    }
+    
     
     @Override
     public void getVariables(List<String> list, boolean excludeLocal) {

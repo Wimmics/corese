@@ -665,6 +665,8 @@ public class Processor {
                 defoper("predicate", PREDICATE);
                 defoper("object", OBJECT);
                 defoper("sparql-compare", ExprType.SPARQL_COMPARE);
+                defoper(EXT+"edge", ExprType.XT_EDGE);
+                defoper(EXT+"asserted", ExprType.XT_ASSERTED);
 		
 		defoper(STRDT, 		ExprType.STRDT);
 		defoper(STRLANG, 	ExprType.STRLANG);

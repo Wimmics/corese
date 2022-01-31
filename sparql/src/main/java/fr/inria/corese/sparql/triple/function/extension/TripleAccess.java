@@ -7,6 +7,8 @@ import static fr.inria.corese.kgram.api.core.ExprType.PREDICATE;
 import static fr.inria.corese.kgram.api.core.ExprType.SPARQL_COMPARE;
 import static fr.inria.corese.kgram.api.core.ExprType.SUBJECT;
 import static fr.inria.corese.kgram.api.core.ExprType.TRIPLE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_ASSERTED;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGE;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -17,8 +19,6 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 /**
  *
@@ -76,7 +76,12 @@ public class TripleAccess extends TermEval {
                     return compareValue(dt.compare(dt2));
                 } catch (CoreseDatatypeException ex) {
                     return null;
-                }            
+                } 
+                
+            case XT_EDGE:
+                return DatatypeMap.createObject(e);
+            case XT_ASSERTED:
+                return value(e.isAsserted());
         }
         return null;
     }

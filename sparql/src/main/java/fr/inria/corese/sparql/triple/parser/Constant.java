@@ -182,7 +182,10 @@ public class Constant extends Atom {
 
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
-        if (isLiteral()) {
+        if (isTripleWithTriple()) {
+            sb.append(toNestedTriple());
+        }
+        else if (isLiteral()) {
             if (hasLang()) {
                 //return name + "@" + lang;
                 toString(name, sb);
@@ -330,10 +333,13 @@ public class Constant extends Atom {
     @Override
     public boolean equals(Object c) {
         if (c instanceof Constant) {
-            Constant cc = (Constant) c;
-            return getDatatypeValue().sameTerm(cc.getDatatypeValue());
+            return equals((Constant) c);
         }
         return false;
+    }
+    
+    public boolean equals(Constant c) {
+        return getDatatypeValue().sameTerm(c.getDatatypeValue());
     }
 
     static String getJavaType(String datatypeURI) {

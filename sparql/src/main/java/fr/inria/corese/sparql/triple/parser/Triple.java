@@ -2,6 +2,7 @@ package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
 import java.util.List;
 
@@ -418,6 +419,16 @@ public class Triple extends Exp implements Pointerable {
 
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
+        if ((isNested() || hasReference()) && DatatypeMap.DISPLAY_AS_TRIPLE) {
+            // additional nested triple pattern or triple pattern with reference
+            // not printed here but printed by triple that refer to it
+            // see Atom toTriple() toNestedTriple()
+            return sb;
+        }
+        return toStringBasic(sb);
+    }
+    
+    public ASTBuffer toStringBasic(ASTBuffer sb) {
         String SPACE = " ";
 
         if (source != null) {
@@ -442,7 +453,14 @@ public class Triple extends Exp implements Pointerable {
             }
         }
 
-        if (larg != null) {
+        if (subject.isTripleWithTriple() && !subject.getTriple().isNested()) {
+            // s p o {| q v |}
+            sb.append(String.format("%s {| %s %s |} .", subject.toTriple(), p, v));
+        }
+        else if (getArgs() == null || hasReference()) {
+            // triple
+            sb.append(r).append(SPACE).append(p).append(SPACE).append(v).append(KeywordPP.DOT);
+        } else {
             // tuple()
             sb.append("triple" + KeywordPP.OPEN_PAREN);
             sb.append(r).append(SPACE).append(p).append(SPACE).append(v);
@@ -453,19 +471,21 @@ public class Triple extends Exp implements Pointerable {
                 sb.append(KeywordPP.DOT);
             }
             sb.append(KeywordPP.CLOSE_PAREN + KeywordPP.DOT);
-            
-            if (display){
-                if (larg.size()>0 && larg.get(0).isTriple()) {
+
+            if (display) {
+                if (larg.size() > 0 && larg.get(0).isTriple()) {
                     sb.append(ASTBuffer.NL);
-                    sb.append(String.format("# %s = triple(%s %s %s)", 
-                        larg.get(0), getSubject(), getPredicate(), getObject()));
+                    sb.append(String.format("# %s = triple(%s %s %s)",
+                            larg.get(0), getSubject(), getPredicate(), getObject()));
                 }
             }
-        } else {
-            sb.append(r).append(SPACE).append(p).append(SPACE).append(v).append(KeywordPP.DOT);
         }
 
         return sb;
+    }
+    
+    public boolean hasReference() {
+        return getArgs() != null && !getArgs().isEmpty() && getArgs().get(0).isTriple();
     }
 
     boolean isTopProperty() {

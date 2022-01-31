@@ -12,7 +12,6 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
  * t.edge = edge(s p o t)
  */
 public class CoreseTriple extends CoreseBlankNode {
-
     private Edge edge;
 
     public CoreseTriple(String value) {
@@ -37,6 +36,19 @@ public class CoreseTriple extends CoreseBlankNode {
     @Override
     public void setEdge(Edge e) {
         edge = e;
+    }
+    
+    @Override
+    public String toString() {
+        if (getEdge() == null || ! DatatypeMap.DISPLAY_AS_TRIPLE) {
+            return super.toString();
+        }
+        return toStringTriple();
+    }
+    
+    public String toStringTriple() {        
+        Edge e = getEdge();
+        return String.format("<<%s %s %s>>", e.getSubjectValue(), e.getPredicateValue(), e.getObjectValue());
     }
 
     @Override

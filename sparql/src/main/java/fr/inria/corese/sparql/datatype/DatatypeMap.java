@@ -97,6 +97,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     public static boolean SEVERAL_NUMBER_SPACE = true;
     // corese behaviour:
     static boolean literalAsString = true;
+    public static boolean DISPLAY_AS_TRIPLE = true;
     private static final String DEFAULT = "default";
     private static final String NWFL = "NWFL";
     private static final String BLANK = BLANKSEED + "bb";

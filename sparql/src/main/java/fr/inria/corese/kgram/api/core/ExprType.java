@@ -421,6 +421,9 @@ public interface ExprType {
         public static int DB          = 502;
         public static int EDGE_ACCESS = 503;
         public static int EDGE_NESTED = 504;
+        public static int XT_ASSERTED = 505;
+        public static int XT_EDGE     = 506;
+        
         
         // DOM XML
         public static int XT_NODE_PROPERTY   = 600;

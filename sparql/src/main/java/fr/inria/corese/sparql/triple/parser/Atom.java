@@ -9,159 +9,178 @@ import fr.inria.corese.sparql.triple.api.ElementClause;
 import fr.inria.corese.sparql.triple.api.Walker;
 
 /**
- * <p>Title: Corese</p>
- * <p>Description: A Semantic Search Engine</p>
- * <p>Copyright: Copyright INRIA (c) 2007</p>
- * <p>Company: INRIA</p>
- * <p>Project: Acacia</p>
+ * <p>
+ * Title: Corese</p>
+ * <p>
+ * Description: A Semantic Search Engine</p>
+ * <p>
+ * Copyright: Copyright INRIA (c) 2007</p>
+ * <p>
+ * Company: INRIA</p>
+ * <p>
+ * Project: Acacia</p>
+ *
  * @author Olivier Corby & Olivier Savoie
  */
+public class Atom extends Expression implements ElementClause {
 
-public class Atom extends Expression implements ElementClause{
-	public static boolean display = false;
-	boolean isone = false;
-	boolean isall = false;
-	boolean isdirect = false;
-	int star;
-        // use case: parser generate triple reference for s p o {| q v |}
-        // object o contain triple reference, for parsing purpose
-        // not for semantics nor for eval
-        private Atom tripleReference;
-        // this atom is a triple reference:
-        private Triple triple;
-        private boolean btriple = false;
-	
-	public Atom() {
-	}
+    public static boolean display = false;
+    boolean isone = false;
+    boolean isall = false;
+    boolean isdirect = false;
+    int star;
+    // use case: parser generate triple reference for s p o {| q v |}
+    // object o contain triple reference, for parsing purpose
+    // not for semantics nor for eval
+    private Atom tripleReference;
+    // this atom is a triple reference:
+    private Triple triple;
+    private boolean btriple = false;
 
-    
+    public Atom() {
+    }
+
     public Atom(String name) {
-		super(name);
-	}
-	
-        @Override
-	public boolean equals(Object at){
-		return  false;
-	}
+        super(name);
+    }
 
-        @Override
-	public Variable getVariable() {
-		return null;
-	}
-	
-        @Override
-	public Expression getExpression() {
-            return null;
-        }
+    @Override
+    public boolean equals(Object at) {
+        return false;
+    }
+    
+    public String toNestedTriple() {
+        return String.format("<<%s>>", toTriple());
+    }
+    
+    public String toTriple() {
+        Triple t = getTriple();
+        return String.format("%s %s %s", t.getSubject(), t.getPredicate(), t.getObject());
+    }
 
-        @Override
-	boolean isAtom() {
-		return true;
-	}
-        
-        public boolean isTriple() {
-            return btriple;
-        }
-        
-        public void setTriple(boolean b) {
-            btriple = b;
-        }
-        
-        public void setTriple(Triple t) {
-            triple = t;
-        }
-        
-        public Triple getTriple() {
-            return triple;
-        }
-        
+    @Override
+    public Variable getVariable() {
+        return null;
+    }
+
+    @Override
+    public Expression getExpression() {
+        return null;
+    }
+
+    @Override
+    boolean isAtom() {
+        return true;
+    }
+
+    public boolean isTriple() {
+        return btriple;
+    }
+    
+    public boolean isTripleWithTriple() {
+        return isTriple() && getTriple()!=null;
+    }
+    
+
+    public void setTriple(boolean b) {
+        btriple = b;
+    }
+
+    public void setTriple(Triple t) {
+        triple = t;
+    }
+
+    public Triple getTriple() {
+        return triple;
+    }
+
     /**
-     * this = Atom(isTriple()==true; triple=triple(?s :p ?o this))
-     * eval quoted triple as function call triple(?s, :p, ?o)
-     * this atom is either Constant or Variable
+     * this = Atom(isTriple()==true; triple=triple(?s :p ?o this)) eval quoted
+     * triple as function call triple(?s, :p, ?o) this atom is either Constant
+     * or Variable
      */
-    IDatatype triple(Computer eval, fr.inria.corese.sparql.triple.function.term.Binding b, Environment env, Producer p) 
+    IDatatype triple(Computer eval, fr.inria.corese.sparql.triple.function.term.Binding b, Environment env, Producer p)
             throws EngineException {
         if (getTriple() == null) {
             return null;
         }
-        IDatatype sub  = getTriple().getSubject().eval(eval, b, env, p);
+        IDatatype sub = getTriple().getSubject().eval(eval, b, env, p);
         IDatatype pred = getTriple().getPredicate().eval(eval, b, env, p);
-        IDatatype obj  = getTriple().getObject().eval(eval, b, env, p);
-        
+        IDatatype obj = getTriple().getObject().eval(eval, b, env, p);
+
         if (sub == null || pred == null || obj == null) {
             return null;
         }
-        
-        return eval.getGraphProcessor().triple(env, p, sub, pred, obj);       
+
+        return eval.getGraphProcessor().triple(env, p, sub, pred, obj);
     }
-	
-	public boolean isResource() {
-		return false;
-	}
-	
-	public boolean isIsall() {
-		return isall;
-	}
 
-	public void setIsall(boolean isall) {
-		this.isall = isall;
-	}
+    public boolean isResource() {
+        return false;
+    }
 
-	public boolean isIsdirect() {
-		return isdirect;
-	}
+    public boolean isIsall() {
+        return isall;
+    }
 
-	public void setIsdirect(boolean isdirect) {
-		this.isdirect = isdirect;
-	}
+    public void setIsall(boolean isall) {
+        this.isall = isall;
+    }
 
-	public boolean isIsone() {
-		return isone;
-	}
+    public boolean isIsdirect() {
+        return isdirect;
+    }
 
-	public void setIsone(boolean isone) {
-		this.isone = isone;
-	}
+    public void setIsdirect(boolean isdirect) {
+        this.isdirect = isdirect;
+    }
 
-	public int getStar() {
-		return star;
-	}
+    public boolean isIsone() {
+        return isone;
+    }
 
-	public void setPath(int star) {
-		this.star = star;
-	}
+    public void setIsone(boolean isone) {
+        this.isone = isone;
+    }
 
-        @Override
-	public Atom getAtom() {
-		return this;
-	}
+    public int getStar() {
+        return star;
+    }
 
-        @Override
-	public Constant getConstant() {
-		return null;
-	}
+    public void setPath(int star) {
+        this.star = star;
+    }
 
-        @Override
-	public IDatatype getDatatypeValue() {
-		return null;
-	}
+    @Override
+    public Atom getAtom() {
+        return this;
+    }
 
-	public Atom getElement() {
-		return this;
-	}
-	
-	boolean validateData(ASTQuery ast){
-		if (isBlankNode() || isBlank()){
-			ast.record(this);
-		}
-		return true;
-	}
-        
-        @Override
-        public void walk(Walker walker) {
-            walker.enter(this);
-            walker.leave(this);
+    @Override
+    public Constant getConstant() {
+        return null;
+    }
+
+    @Override
+    public IDatatype getDatatypeValue() {
+        return null;
+    }
+
+    public Atom getElement() {
+        return this;
+    }
+
+    boolean validateData(ASTQuery ast) {
+        if (isBlankNode() || isBlank()) {
+            ast.record(this);
+        }
+        return true;
+    }
+
+    @Override
+    public void walk(Walker walker) {
+        walker.enter(this);
+        walker.leave(this);
     }
 
     public Atom getTripleReference() {
@@ -171,5 +190,5 @@ public class Atom extends Expression implements ElementClause{
     public void setTripleReference(Atom tripleReference) {
         this.tripleReference = tripleReference;
     }
-    	
+
 }

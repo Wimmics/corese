@@ -432,7 +432,7 @@ public class NSManager extends ASTObject {
         if (getPrefix(ns) == null) {
             defNamespace(ns);
         }
-        return (index.get(ns)).intValue();
+        return index.get(ns);
     }
 
     public String toPrefix(String nsname) {

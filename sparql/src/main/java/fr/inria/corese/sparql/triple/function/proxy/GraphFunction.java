@@ -74,7 +74,7 @@ public class GraphFunction extends LDScript {
     }
        
     IDatatype access(IDatatype dt, Computer eval, Producer p) {
-        if (dt.pointerType() != PointerType.TRIPLE) {
+        if (dt.pointerType() != PointerType.TRIPLE && ! dt.isTripleWithEdge()) {
             switch (oper()) {
                 case XT_INDEX: return index(dt, p);
                 case XT_GRAPH:
@@ -91,7 +91,7 @@ public class GraphFunction extends LDScript {
             }
         }
         
-        Edge edge = dt.getPointerObject().getEdge();
+        Edge edge = dt.getEdge();            
         if (edge == null) {
             return  null;
         }

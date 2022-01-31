@@ -18,8 +18,6 @@ public class CoreseResource extends CoreseStringableImpl {
     static int  code=URI;
     static final CoreseURI datatype=new CoreseURI(RDF.RDFSRESOURCE);
 
-  //boolean generic=false; // if blank node URI
-
   public CoreseResource(String value) {
       super(value);
 

@@ -346,10 +346,10 @@ public class Mappings extends PointerObject
 
             i++;
             sb.append(NL);
-            for (Node n : alist) {
-                sb.append(n).append(" : ").append(n.getEdge()).append(NL);
-            }
-            alist.clear();
+//            for (Node n : alist) {
+//                sb.append(n).append(" : ").append(n.getEdge()).append(NL);
+//            }
+//            alist.clear();
         }
         return sb.toString();
     }
@@ -358,9 +358,9 @@ public class Mappings extends PointerObject
         Node node = map.getNode(qNode);
         if (node != null) {
             sb.append(qNode).append(" = ").append(node);
-            if (node.isTripleWithEdge()) {
-                list.add(node);
-            }
+//            if (node.isTripleWithEdge()) {
+//                list.add(node);
+//            }
             Object obj = node.getObject();
             if (ptr && obj != null
                     && obj != this

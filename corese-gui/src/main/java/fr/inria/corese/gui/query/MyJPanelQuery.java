@@ -557,11 +557,14 @@ public final class MyJPanelQuery extends JPanel {
                     return ResultFormat.create(g, ResultFormat.RDF_XML_FORMAT).toString();
                 case Property.TURTLE:
                     return ResultFormat.create(g, ResultFormat.TURTLE_FORMAT).toString();
+                case Property.TRIG:
+                    return ResultFormat.create(g, ResultFormat.TRIG_FORMAT).toString();
                 case Property.JSON:
                     return clean(ResultFormat.create(g, ResultFormat.JSON_LD_FORMAT).toString());   }
         }
         // default
-        return turtle(g);
+        return ResultFormat.create(g, ResultFormat.TRIG_FORMAT).toString();
+        //return turtle(g);
     }
     
     String clean(String str) {

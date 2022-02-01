@@ -56,6 +56,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.SPARQLResultParser;
+import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.TemplatePrinter;
@@ -68,6 +69,7 @@ import static fr.inria.corese.core.util.Property.Value.GUI_QUERY_LIST;
 import static fr.inria.corese.core.util.Property.Value.GUI_RULE_LIST;
 import static fr.inria.corese.core.util.Property.Value.GUI_TEMPLATE_LIST;
 import static fr.inria.corese.core.util.Property.Value.GUI_TITLE;
+import static fr.inria.corese.core.util.Property.Value.GUI_TRIPLE_MAX;
 import static fr.inria.corese.core.util.Property.Value.LOAD_IN_DEFAULT_GRAPH;
 import static fr.inria.corese.core.util.Property.Value.LOAD_QUERY;
 import fr.inria.corese.kgram.core.Mappings;
@@ -102,7 +104,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static MainFrame singleton ;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.3.0 - Inria UCA - 2022-01-01";
+    private static final String TITLE = "Corese 4.3.0 - Inria UCA - 2022-02-02";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -157,7 +159,8 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem map;
     private JMenuItem success;
     private JMenuItem quit;
-    private JMenuItem iselect, iselecttuple, igraph, iconstruct, iask, idescribe,
+    private JMenuItem iselect, iselecttuple, igraph, 
+            iconstruct, iconstructgraph, iask, idescribe,
             iserviceLocal, iserviceCorese, imapcorese, iserviceDBpedia, ifederate,
             iinsert, iinsertdata, idelete, ideleteinsert,
             iturtle, in3, irdfxml, ijson, itrig, ispin, iowl, 
@@ -656,6 +659,7 @@ public class MainFrame extends JFrame implements ActionListener {
         iselecttuple = defItem("Select Tuple", DEFAULT_TUPLE_QUERY);
         igraph = defItem("Graph", DEFAULT_GRAPH_QUERY);
         iconstruct = defItem("Construct", DEFAULT_CONSTRUCT_QUERY);
+        iconstructgraph = defItem("Construct graph", "constructgraph.rq");
         iask = defItem("Ask", DEFAULT_ASK_QUERY);
         idescribe = defItem("Describe", DEFAULT_DESCRIBE_QUERY);
         iserviceLocal = defItem("Service Local", "servicelocal.rq");
@@ -771,6 +775,7 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu queryMenu = new JMenu("Query");
         JMenu userMenu = new JMenu("User Query");
         JMenu templateMenu = new JMenu("Template");
+        JMenu displayMenu = new JMenu("Display");
         JMenu shaclMenu = new JMenu("Shacl");
         JMenu shexMenu = new JMenu("Shex");
         JMenu eventMenu = new JMenu("Event");
@@ -814,6 +819,7 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(iselect);
         //queryMenu.add(iselecttuple);
         queryMenu.add(iconstruct);
+        queryMenu.add(iconstructgraph);
         queryMenu.add(iask);
         //queryMenu.add(idescribe);
         queryMenu.add(igraph);
@@ -852,6 +858,11 @@ public class MainFrame extends JFrame implements ActionListener {
         for (Pair pair : Property.getValueList(GUI_TEMPLATE_LIST)) {
             templateMenu.add(defItemQuery(pair.getKey(), pair.getPath()));
         }        
+        
+        displayMenu.add(defDisplay("Turtle", ResultFormat.TURTLE_FORMAT));
+        displayMenu.add(defDisplay("Trig", ResultFormat.TRIG_FORMAT));
+        displayMenu.add(defDisplay("RDF/XML", ResultFormat.RDF_XML_FORMAT));
+        displayMenu.add(defDisplay("JSON LD", ResultFormat.JSON_LD_FORMAT));
         
         
         shaclMenu.add(itypecheck);
@@ -1139,6 +1150,7 @@ public class MainFrame extends JFrame implements ActionListener {
         menuBar.add(queryMenu);
         menuBar.add(userMenu);
         menuBar.add(templateMenu);
+        menuBar.add(displayMenu);
         menuBar.add(shaclMenu);
         menuBar.add(shexMenu);
         menuBar.add(eventMenu);
@@ -1192,6 +1204,29 @@ public class MainFrame extends JFrame implements ActionListener {
             LOGGER.error(ex);
         }
         return it;
+    }
+    
+    JMenuItem defDisplay(String name, int format) {
+        JMenuItem it = new JMenuItem(name);
+        it.addActionListener((ActionEvent event) -> {
+            displayMenu(name, format);
+        });
+        return it;
+    }
+    
+    void displayMenu(String name, int format) {
+        ResultFormat ft = ResultFormat.create(getMyCorese().getGraph(), format)
+                .setNbTriple(getTripleMax());
+        getCurrentQueryPanel().getTextArea().setText(ft.toString());
+    }
+    
+    int getTripleMax() {
+        int max = 10000;
+        if (Property.intValue(GUI_TRIPLE_MAX) != null) {
+            max = Property.intValue(GUI_TRIPLE_MAX);
+        }
+        LOGGER.info("Display triple number: " + max);
+        return max;
     }
     
     JMenuItem defItemQuery(String name, String path) {

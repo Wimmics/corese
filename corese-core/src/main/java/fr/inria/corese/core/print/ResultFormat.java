@@ -68,6 +68,7 @@ public class ResultFormat implements ResultFormatDef {
     private int construct_format = DEFAULT_CONSTRUCT_FORMAT;
     private int select_format = DEFAULT_SELECT_FORMAT;
     private long nbResult = Long.MAX_VALUE;
+    private int nbTriple = Integer.MAX_VALUE;
     private String contentType;
     private boolean selectAll = false;
     private boolean transformer;
@@ -435,13 +436,15 @@ public class ResultFormat implements ResultFormatDef {
             case RDF_XML_FORMAT:
                 return  RDFFormat.create(getGraph()).toString();           
             case TRIG_FORMAT:
-                return TripleFormat.create(getGraph(), true).toString(node);    
+                return TripleFormat.create(getGraph(), true)
+                        .setNbTriple(getNbTriple()).toString(node);    
             case JSON_LD_FORMAT:
                 return JSONLDFormat.create(getGraph()).toString();  
             case TURTLE_FORMAT:
             default:
                 // e.g. HTML
-                String str = TripleFormat.create(getGraph()).toString(node);
+                String str = TripleFormat.create(getGraph())
+                        .setNbTriple(getNbTriple()).toString(node);
                 if (type() == HTML_FORMAT) {
                     return html(str);
                 }
@@ -527,9 +530,9 @@ public class ResultFormat implements ResultFormatDef {
             case RDF_XML_FORMAT:
                 return RDFFormat.create(map).toString();
             case TURTLE_FORMAT:
-                return TripleFormat.create(map).toString();
+                return TripleFormat.create(map).setNbTriple(getNbTriple()).toString();
             case TRIG_FORMAT:
-                return TripleFormat.create(map, true).toString();                
+                return TripleFormat.create(map, true).setNbTriple(getNbTriple()).toString();                
             case JSON_LD_FORMAT:
                 return JSONLDFormat.create(map).toString();
                 
@@ -602,16 +605,12 @@ public class ResultFormat implements ResultFormatDef {
         this.select_format = select_format;
     }
 
-    /**
-     * @return the nbResult
-     */
+    
     public long getNbResult() {
         return nbResult;
     }
 
-    /**
-     * @param nbResult the nbResult to set
-     */
+    
     public ResultFormat setNbResult(long nbResult) {
         this.nbResult = nbResult;
         return this;
@@ -745,6 +744,15 @@ public class ResultFormat implements ResultFormatDef {
 
     public void setTransformType(int transformType) {
         this.transformType = transformType;
+    }
+
+    public int getNbTriple() {
+        return nbTriple;
+    }
+
+    public ResultFormat setNbTriple(int nbTriple) {
+        this.nbTriple = nbTriple;
+        return  this;
     }
     
     

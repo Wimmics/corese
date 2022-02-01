@@ -61,6 +61,7 @@ public class RDFFormat {
     Query query;
     ASTQuery ast;
     List<String> with, without;
+    private int nbTriple = Integer.MAX_VALUE;
 
     RDFFormat(NSManager n) {
         with = new ArrayList<>();
@@ -428,5 +429,14 @@ public class RDFFormat {
             display(CCOM);
             display();
         }
+    }
+
+    public int getNbTriple() {
+        return nbTriple;
+    }
+
+    public RDFFormat setNbTriple(int nbTriple) {
+        this.nbTriple = nbTriple;
+        return this;
     }
 }

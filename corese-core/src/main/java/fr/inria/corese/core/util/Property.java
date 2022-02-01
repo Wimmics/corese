@@ -74,6 +74,7 @@ public class Property {
     private static final String STD = "std";
     public static final String RDF_XML = "rdf+xml";
     public static final String TURTLE = "turtle";
+    public static final String TRIG = "trig";
     public static final String JSON = "json";
     public static final String XML = "xml";
     
@@ -99,6 +100,8 @@ public class Property {
         // boolan value
         DISPLAY_URI_AS_PREFIX,
         DISPLAY_EDGE_AS_RDF4J,
+        // rdf star reference node displayed as nested triple
+        DISPLAY_AS_TRIPLE,
         // Graph node implemented as IDatatype instead of NodeImpl
         GRAPH_NODE_AS_DATATYPE,
         BLANK_NODE,
@@ -153,6 +156,7 @@ public class Property {
         GUI_TITLE,
         GUI_BROWSE,
         GUI_XML_MAX,
+        GUI_TRIPLE_MAX,
         // rdf+xml turtle json
         GUI_CONSTRUCT_FORMAT,
         GUI_SELECT_FORMAT,
@@ -371,6 +375,10 @@ public class Property {
             case DISPLAY_URI_AS_PREFIX:
                 Constant.DISPLAY_AS_PREFIX = b;
                 CoreseDatatype.DISPLAY_AS_PREFIX = b;
+                break;
+                
+            case DISPLAY_AS_TRIPLE:
+                DatatypeMap.DISPLAY_AS_TRIPLE = b;
                 break;
                 
             case GRAPH_NODE_AS_DATATYPE:

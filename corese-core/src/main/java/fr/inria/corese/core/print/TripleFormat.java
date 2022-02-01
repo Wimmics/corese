@@ -26,6 +26,7 @@ public class TripleFormat extends RDFFormat {
 
     boolean isGraph = false;
     private Mappings mappings;
+    int tripleCounter = 0;
 
     TripleFormat(Graph g, NSManager n) {
         super(g, n);
@@ -116,16 +117,23 @@ public class TripleFormat extends RDFFormat {
 
     void nodes() {
         for (Node node : getSubjectNodes()) {
+            if (tripleCounter > getNbTriple()) {
+                break;
+            }
             print(null, node);
         }
     }
 
     void graphNodes() {
         for (Node gNode : graph.getGraphNodes()) {
+            if (tripleCounter > getNbTriple()) {
+                break;
+            }
             if (accept(gNode)) {
                 sdisplay(GRAPH);
                 sdisplay(SPACE);
                 node(gNode);
+                sdisplay(SPACE);
                 sdisplay(OGRAPH);
                 display();
                 for (Node node : graph.getNodeGraphIterator(gNode)) {
@@ -159,7 +167,11 @@ public class TripleFormat extends RDFFormat {
         boolean annotation = false;
         
         for (Edge edge : getEdges(gNode, node)) {
-            if (edge != null && accept(edge) && edge.isAsserted()) {
+            if (edge != null && accept(edge) 
+                    && edge.isAsserted()) {
+                if (tripleCounter++ > getNbTriple()) {
+                    break;
+                }
                 if (first) {
                     first = false;
                     subject(edge);
@@ -280,6 +292,12 @@ public class TripleFormat extends RDFFormat {
 
     public TripleFormat setMappings(Mappings mappings) {
         this.mappings = mappings;
+        return this;
+    }
+    
+    @Override
+    public TripleFormat setNbTriple(int nbTriple) {
+        super.setNbTriple(nbTriple);
         return this;
     }
 

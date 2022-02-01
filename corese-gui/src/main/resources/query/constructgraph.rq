@@ -1,0 +1,6 @@
+construct {
+  graph ?g { ?x ?p ?y }
+} 
+where {
+  graph ?g { ?x ?p ?y }
+}

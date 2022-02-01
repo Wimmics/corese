@@ -5,7 +5,7 @@
 
 <p align="center">
     <a href="https://project.inria.fr/corese/">
-        <img src="https://user-images.githubusercontent.com/5692787/151865170-24dc2a17-3c78-4e6b-bb61-bf449f040382.svg" width="300" height="149" alt="Corese-logo">
+        <img src="https://user-images.githubusercontent.com/5692787/151987397-316a61f0-8098-4d37-a4e8-69180e33261a.svg" width="300" height="149" alt="Corese-logo">
     </a>
     <br>
     <strong>Software platform for the Semantic Web of Linked Data</strong>
@@ -32,20 +32,7 @@ There are three versions of Corese:
 ```xml
 <dependency>
     <groupId>fr.inria.corese</groupId>
-    <artifactId>corese-parent</artifactId>
-    <version>4.3.0</version>
-    <type>pom</type>
-</dependency>
-
-<dependency>
-    <groupId>fr.inria.corese</groupId>
     <artifactId>corese-core</artifactId>
-    <version>4.3.0</version>
-</dependency>
-
-<dependency>
-    <groupId>fr.inria.corese</groupId>
-    <artifactId>sparql</artifactId>
     <version>4.3.0</version>
 </dependency>
 
@@ -60,7 +47,7 @@ Documentation: [Getting Started With Corese](https://notes.inria.fr/s/hiiedLfVe#
 
 ### Corese-server
 
-- Dowload from [Docker-hub](https://hub.docker.com/r/wimmics/corese)
+- Download from [Docker-hub](https://hub.docker.com/r/wimmics/corese)
 
 ```sh
 docker run --name my-corese \
@@ -88,7 +75,7 @@ java -jar "corese-gui-${VERSION}.jar"
 
 ## Compilation from source
 
-Dowload source code and compile.
+Download source code and compile.
 
 ```shell
 git clone "https://github.com/Wimmics/corese.git"
@@ -103,8 +90,9 @@ We welcome everyone to contribute to [issue reports](https://github.com/Wimmics/
 
 ## General informations
 
-- Corese website: [project.inria.fr](https://project.inria.fr/corese/)
-- Corese server demo: [corese.inria.fr](http://corese.inria.fr/)
-- Contact: olivier.corby at inria.fr
-- Mailing list: corese-users at inria.fr
-- Subscribe to mailing list: corese-users-request at inria.fr subject: subscribe
+- [Corese website](https://project.inria.fr/corese)
+- [Source code](https://github.com/Wimmics/corese)
+- [Corese server demo](http://corese.inria.fr/)
+- [Changelog](https://notes.inria.fr/A_mnDHrkROO_kzFkY9yhgw#)
+- **Mailing list:** corese-users at inria.fr
+- **Subscribe to mailing list:** corese-users-request at inria.fr **subject:** subscribe

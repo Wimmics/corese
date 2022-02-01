@@ -282,13 +282,21 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         public ASTBuffer display(ASTBuffer sb) {
             int i = 0;
             for (Exp exp : getBody()) {
-                if (i++ > 0) {
-                    sb.nl();
+                if (exp.isDisplayable()) {
+                    if (i++ > 0) {
+                        sb.nl();
+                    }
+                    exp.toString(sb);
                 }
-                exp.toString(sb);
             }
             return sb;
-        }        
+        }  
+        
+        // use case: nested rdf star triple are not displayed
+        // directly but as subject/object of annotation triple
+        public boolean isDisplayable() {
+            return true;
+        }
         
         public ASTBuffer pretty(ASTBuffer sb) {
             sb.append("{").nlincr();

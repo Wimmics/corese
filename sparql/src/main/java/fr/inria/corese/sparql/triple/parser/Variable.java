@@ -74,7 +74,7 @@ public class Variable extends Atom {
 
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
-        if (isTripleWithTriple()) {
+        if (isTripleWithTriple() && displayAsTriple()) {
             sb.append(toNestedTriple());
         }
         else if (isBlankNode()) {

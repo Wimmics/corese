@@ -418,14 +418,18 @@ public class Triple extends Exp implements Pointerable {
     }
 
     @Override
-    public ASTBuffer toString(ASTBuffer sb) {
-        if ((isNested() || hasReference()) && DatatypeMap.DISPLAY_AS_TRIPLE) {
-            // additional nested triple pattern or triple pattern with reference
-            // not printed here but printed by triple that refer to it
-            // see Atom toTriple() toNestedTriple()
-            return sb;
-        }
+    public ASTBuffer toString(ASTBuffer sb) {        
         return toStringBasic(sb);
+    }
+    
+    // Exp display() check triple.isDisplayable()
+    @Override
+    public boolean isDisplayable() {
+        return isAsserted() || ! displayAsTriple();
+    }
+    
+    boolean displayAsTriple() {
+        return DatatypeMap.DISPLAY_AS_TRIPLE;
     }
     
     public ASTBuffer toStringBasic(ASTBuffer sb) {
@@ -453,15 +457,19 @@ public class Triple extends Exp implements Pointerable {
             }
         }
 
-        if (subject.isTripleWithTriple() && !subject.getTriple().isNested()) {
+        if (subject.isTripleWithTriple() && subject.getTriple().isAsserted()
+                && displayAsTriple()) {
             // s p o {| q v |}
             sb.append(String.format("%s {| %s %s |} .", subject.toTriple(), p, v));
         }
-        else if (getArgs() == null || hasReference()) {
+        else if (getArgs() == null || (hasReference() && displayAsTriple())) {
             // triple
             sb.append(r).append(SPACE).append(p).append(SPACE).append(v).append(KeywordPP.DOT);
         } else {
             // tuple()
+            if (isNested()) {
+                sb.append("<<");
+            }
             sb.append("triple" + KeywordPP.OPEN_PAREN);
             sb.append(r).append(SPACE).append(p).append(SPACE).append(v);
             for (Atom e : larg) {
@@ -470,18 +478,13 @@ public class Triple extends Exp implements Pointerable {
             if (isMatchArity()) {
                 sb.append(KeywordPP.DOT);
             }
-            sb.append(KeywordPP.CLOSE_PAREN + KeywordPP.DOT);
-
-            if (display) {
-                if (larg.size() > 0 && larg.get(0).isTriple()) {
-                    sb.append(ASTBuffer.NL);
-                    sb.append(String.format("# %s = triple(%s %s %s)",
-                            larg.get(0), getSubject(), getPredicate(), getObject()));
-                }
+            sb.append(KeywordPP.CLOSE_PAREN);
+            if (isNested()) {
+                sb.append(">>");
             }
-        }
-
-        return sb;
+            sb.append(KeywordPP.DOT);
+         }
+      return sb;
     }
     
     public boolean hasReference() {
@@ -861,6 +864,10 @@ public class Triple extends Exp implements Pointerable {
    
     public void setMatchArity(boolean matchArity) {
         this.matchArity = matchArity;
+    }
+    
+    public boolean isAsserted() {
+        return ! isNested();
     }
 
     public boolean isNested() {

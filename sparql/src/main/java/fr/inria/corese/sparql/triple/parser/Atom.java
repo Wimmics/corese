@@ -4,6 +4,7 @@ import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.api.ElementClause;
 import fr.inria.corese.sparql.triple.api.Walker;
@@ -47,6 +48,10 @@ public class Atom extends Expression implements ElementClause {
     @Override
     public boolean equals(Object at) {
         return false;
+    }
+    
+    public boolean displayAsTriple() {
+        return DatatypeMap.DISPLAY_AS_TRIPLE;
     }
     
     public String toNestedTriple() {

@@ -1,6 +1,16 @@
-# Corese Docker
+<!-- markdownlint-configure-file { "MD004": { "style": "consistent" } } -->
+<!-- markdownlint-disable MD033 -->
 
-![Corese logo](https://project.inria.fr/corese/files/2018/07/corese-3.png)
+# Corese
+
+<p align="center">
+    <a href="https://project.inria.fr/corese/">
+        <img src="https://user-images.githubusercontent.com/5692787/151987397-316a61f0-8098-4d37-a4e8-69180e33261a.svg" width="300" height="149" alt="Corese-logo">
+    </a>
+    <br>
+    <strong>Software platform for the Semantic Web of Linked Data</strong>
+</p>
+<!-- markdownlint-enable MD033 -->
 
 This is a Docker image for hosting the [Corese Semantic Web Server](https://project.inria.fr/corese/) that implements RDF, RDFS, SPARQL 1.1 Query & Update, OWL-RL, SHACL.
 Corese also implements the LDScript and STTL SPARQL extensions.
@@ -120,8 +130,11 @@ curl \
   "http://localhost:8080/sparql"
 ```
 
-## References
+## General informations
 
-- [Website](https://project.inria.fr/corese/)
-- [Demo](http://corese.inria.fr/)
-- [Git](https://github.com/Wimmics/corese)
+- [Corese website](https://project.inria.fr/corese)
+- [Source code](https://github.com/Wimmics/corese)
+- [Corese server demo](http://corese.inria.fr/)
+- [Changelog](https://notes.inria.fr/s/TjriAbX14#)
+- **Mailing list:** corese-users at inria.fr
+- **Subscribe to mailing list:** corese-users-request at inria.fr **subject:** subscribe

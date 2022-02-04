@@ -382,7 +382,7 @@ public class XMLFormat extends QueryResultFormat {
             } else {
                 printf("<literal>%s</literal>" ,str );
             }
-        } else if (dt.isTriple() && dt.getEdge()!=null) {
+        } else if (dt.isTripleWithEdge()) {
             // nested edge
             Edge e = dt.getEdge();
             

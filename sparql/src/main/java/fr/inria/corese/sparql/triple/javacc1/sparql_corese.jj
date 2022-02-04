@@ -1642,8 +1642,8 @@ Atom AssertedAnnotation(Exp stack) : { Exp exp; Atom tripleRef = null; }
 {    
     
     <LBRACE> <BAR> 
-        // subject of annotation triple ref q v
-        // triple ref for s p o ref
+        // s p o {| q v |} -> s p o t . t q v
+        // create subject t of annotation triple t q v
         { tripleRef = handler.createTripleReference(astq); }
         // annotation triples inserted in stack
           stack = PropertyListNotEmpty(tripleRef, stack) 

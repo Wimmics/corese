@@ -84,7 +84,7 @@ public class TopExp implements ASTVisitable {
      * 1. entering a statement (eg bgp) by default do not consider filters because we want *inscope* variables
      * 1.1 getVariables(VariableScope.inscope().setFilter(true)) consider also filter variables and filter exists variables
      * getVariables(VariableScope.inscope().setFilter(true).setExist(false)) consider also filter but not filter exist variables
-     * 2. entering a filter Expression (i.e. not a Triple that contains a filter) consider filter variables and filter exists variables
+     * 2. entering a filter Expression: consider filter variables and filter exists variables
      * 2.1 getVariables(VariableScope.inscope().setExist(false)) consider filter variables but not filter exists variables
      * Hence there is a subtle difference when entering a filter as statement Exp or as filter Expression
      */

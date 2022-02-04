@@ -55,14 +55,13 @@ public class Atom extends Expression implements ElementClause {
     }
     
     public String toNestedTriple() {
-        return String.format("<<%s>>", toTriple());
+        return getTriple().toNestedTriple();
     }
     
     public String toTriple() {
-        Triple t = getTriple();
-        return String.format("%s %s %s", t.getSubject(), t.getPredicate(), t.getObject());
+        return getTriple().toTriple();
     }
-
+    
     @Override
     public Variable getVariable() {
         return null;

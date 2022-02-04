@@ -30,9 +30,7 @@ import fr.inria.corese.kgram.api.query.Producer;
  * @author Olivier Corby & Olivier Savoie
  */
 public class Variable extends Atom {
-
-  
-
+    
     private boolean isBlankNode = false;
     private boolean matchNodeList = false;
     private boolean matchCardinality = false;
@@ -124,7 +122,7 @@ public class Variable extends Atom {
     
     
     @Override
-    public void getVariables(List<String> list, boolean excludeLocal) {
+    public void getVariables(List<String> list, boolean excludeLocal) {        
         if (!list.contains(getName())
                 && !(excludeLocal && isLocal())) {
             list.add(getName());

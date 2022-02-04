@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;
+import java.util.HashMap;
 
 /**
  *
@@ -11,6 +12,7 @@ public class ASTBuffer  {
     
     static final String NL = System.getProperty("line.separator");
     static final String SPACE = " ";
+    private HashMap<Triple, Triple> done;
     
     int count = 0;
     
@@ -19,6 +21,7 @@ public class ASTBuffer  {
     
     public ASTBuffer() {
         sb = new StringBuffer();
+        done = new HashMap<>();
     }
     
     public ASTBuffer append(Object obj) {
@@ -95,6 +98,26 @@ public class ASTBuffer  {
      */
     public void setCompiler(JavaCompiler javacompiler) {
         this.javacompiler = javacompiler;
+    }
+
+    public HashMap<Triple, Triple> getDone() {
+        return done;
+    }
+
+    public void setDone(HashMap<Triple, Triple> done) {
+        this.done = done;
+    }
+    
+    /**
+     * Do not print (nested) rdf star triple twice
+     * @param exp
+     * @return 
+     */
+    public boolean accept(Exp exp) {
+        if (exp.isTriple()) {
+            return ! getDone().containsKey(exp.getTriple());
+        }
+        return true;
     }
 
 }

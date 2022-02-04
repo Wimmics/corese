@@ -2,14 +2,13 @@ package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
 import java.util.List;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.inria.corese.sparql.triple.cst.KeywordPP;
+import static fr.inria.corese.sparql.triple.cst.KeywordPP.DOT;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import java.util.ArrayList;
 
@@ -49,6 +48,7 @@ public class Triple extends Exp implements Pointerable {
 //	final static String LANG = KeywordPP.LANG;
     final static String PREFIX = "PREFIX";
     final static String BASE = "BASE";
+    static final String SPACE = " ";
     static int ccid = 0;
     // nb different system variables in a query ...
     static final int MAX = Integer.MAX_VALUE;
@@ -63,6 +63,9 @@ public class Triple extends Exp implements Pointerable {
     Atom source;
     // draft for tuple
     List<Atom> larg;
+    // rdf star annotation triples t q v 
+    // s p o t {| t q v |}
+    private List<Triple> tripleList;
     // tuple contain a filter
     //Expression exp;
     // path regex
@@ -411,6 +414,22 @@ public class Triple extends Exp implements Pointerable {
     String clean(String str) {
         return str;
     }
+    
+    public String toNestedTriple() {
+        return String.format("<<%s>>", toTriple());
+    }
+    
+    public String toTriple() {
+        return toTriple(getSubject(), getPredicate(), getObject());
+    }
+    
+    String toTriple(Atom s, Atom p, Atom o) {
+        return String.format("%s %s %s", s, p, o);
+    }
+    
+    String toTriple(String s, String p, String o) {
+        return String.format("%s %s %s", s, p, o);
+    }
 
     @Override
     public String toString() {
@@ -419,73 +438,136 @@ public class Triple extends Exp implements Pointerable {
 
     @Override
     public ASTBuffer toString(ASTBuffer sb) {        
-        return toStringBasic(sb);
+        return toStringWithAnnotation(sb);
+    }
+      
+    
+    /**
+     * When printing rdf star triple, terms that are nested triples are printed 
+     * as <<s p o>> except in one case: s p o {| q v |}
+     * <<s p o>> is printed by Atom toNestedTriple() 
+     * called by Constant or Variable toString()
+     * When printing AST, rdf star triples to be printed are selected by Exp isDisplayable()
+     * hence we do not print here every physical triple in a BGP 
+     * but a subset of relevant star triples
+     * 
+     * this = s p o
+     * recursively pprint s p o {| q v |} if it has annotation
+     * record that annotation are already printed in ASTBuffer
+     * in order not to pprint them again in Exp pprint
+     */
+    public ASTBuffer toStringWithAnnotation(ASTBuffer sb) {
+        if (getSource() != null) {
+            sb.append(getSource()).append(SPACE);
+        }
+
+        String s = getSubject().toString();
+        String p = propertyToString();
+        String o = getObject().toString();
+      
+        if (getTripleList()!=null && displayAsTriple()) {
+            // this = t q v with t = s p o
+            // ::=
+            // s p o {| q v |}
+            sb.append(toTriple(s, p, o));
+            annotation(sb);
+        }
+        else if (getArgs() == null || (hasReference() && displayAsTriple())) {
+            // std triple
+            sb.append(String.format("%s .", toTriple(s, p, o)));
+        } else {
+            tuple(sb, s, p, o);
+         }
+      return sb;
     }
     
-    // Exp display() check triple.isDisplayable()
+    /**
+     */
+    void annotation(ASTBuffer sb) {
+        sb.append(" {| ");
+        int i = 0;
+        for (Triple t : getTripleList()) {
+            sb.getDone().put(t, t);
+            sb.append(String.format("%s%s %s", (i++==0)?"":"; ", t.getPredicate(), t.getObject()));
+            if (t.getTripleList()!=null) {
+                t.annotation(sb);
+            }
+        }
+        sb.append(" |}");
+    }
+    
+    
+    String propertyToString() {
+        String p = getProperty().toString();
+        if (isPath()) {
+            p = getRegex().toRegex();
+
+            if (getVariable() != null && !getVariable().getName().startsWith(ASTQuery.SYSVAR)) {
+                p += " :: " + getVariable().toString();
+            }
+        } else if (getVariable() != null) {
+            if (isTopProperty()) {
+                p = getVariable().toString();
+            } else {
+                p += "::" + getVariable().getName();
+            }
+        }
+        return p;
+    }
+    
+    // display additional arg: triple(s p o t1 .. tn)
+    ASTBuffer tuple(ASTBuffer sb, String s, String p, String o) {
+        // tuple()
+        if (isNested()) {
+            sb.append("<<");
+        }
+        sb.append(String.format("triple(%s %s %s", s, p, o));
+        for (Atom e : getArgs()) {
+            sb.append(SPACE).append(e);
+        }
+        if (isMatchArity()) {
+            sb.append(DOT);
+        }
+        sb.append(")");
+        if (isNested()) {
+            sb.append(">>");
+        }
+        sb.append(DOT);
+        return sb;
+    }
+    
+    @Deprecated
+    public ASTBuffer toStringBasic(ASTBuffer sb) {
+        if (getSource() != null) {
+            sb.append(getSource()).append(SPACE);
+        }
+
+        String s = getSubject().toString();
+        String p = propertyToString();
+        String o = getObject().toString();
+      
+        if (getSubject().isTripleWithTriple() && getSubject().getTriple().isAsserted()
+                && displayAsTriple()) {
+            // this = t q v with t = s p o
+            // ::=
+            // s p o {| q v |}
+            sb.append(String.format("%s {| %s %s |} .", getSubject().toTriple(), p, o));
+        }
+        else if (getArgs() == null || (hasReference() && displayAsTriple())) {
+            // std triple
+            sb.append(String.format("%s %s %s .", s, p, o));
+        } else {
+            tuple(sb, s, p, o);
+         }
+      return sb;
+    }
+    
+        // Exp display() check triple.isDisplayable()
     @Override
     public boolean isDisplayable() {
         return isAsserted() || ! displayAsTriple();
     }
     
-    boolean displayAsTriple() {
-        return DatatypeMap.DISPLAY_AS_TRIPLE;
-    }
-    
-    public ASTBuffer toStringBasic(ASTBuffer sb) {
-        String SPACE = " ";
-
-        if (source != null) {
-            sb.append(source.toString()).append(" ");
-        }
-
-        String r = subject.toString();
-        String p = predicate.toString();
-        String v = object.toString();
-
-        if (isPath()) {
-            p = getRegex().toRegex();
-
-            if (variable != null && !variable.getName().startsWith(ASTQuery.SYSVAR)) {
-                p += " :: " + variable.toString();
-            }
-        } else if (variable != null) {
-            if (isTopProperty()) {
-                p = variable.toString();
-            } else {
-                p += "::" + variable.getName();
-            }
-        }
-
-        if (subject.isTripleWithTriple() && subject.getTriple().isAsserted()
-                && displayAsTriple()) {
-            // s p o {| q v |}
-            sb.append(String.format("%s {| %s %s |} .", subject.toTriple(), p, v));
-        }
-        else if (getArgs() == null || (hasReference() && displayAsTriple())) {
-            // triple
-            sb.append(r).append(SPACE).append(p).append(SPACE).append(v).append(KeywordPP.DOT);
-        } else {
-            // tuple()
-            if (isNested()) {
-                sb.append("<<");
-            }
-            sb.append("triple" + KeywordPP.OPEN_PAREN);
-            sb.append(r).append(SPACE).append(p).append(SPACE).append(v);
-            for (Atom e : larg) {
-                sb.append(SPACE).append(e.toString());
-            }
-            if (isMatchArity()) {
-                sb.append(KeywordPP.DOT);
-            }
-            sb.append(KeywordPP.CLOSE_PAREN);
-            if (isNested()) {
-                sb.append(">>");
-            }
-            sb.append(KeywordPP.DOT);
-         }
-      return sb;
-    }
     
     public boolean hasReference() {
         return getArgs() != null && !getArgs().isEmpty() && getArgs().get(0).isTriple();
@@ -662,21 +744,6 @@ public class Triple extends Exp implements Pointerable {
     void setOne(boolean b) {
         //isone = b;
     }
-
-    /**
-     * @return a variable on which we attach the evaluable expression
-     */
-//    public String getExpVariable() {
-//        if (exp == null) {
-//            return null;
-//        }
-//        Variable var = exp.getVariable();
-//        if (var != null) {
-//            return var.getName();
-//        } else {
-//            return null;
-//        }
-//    }
 
     public String getVariableName() {
         if (variable == null) {
@@ -876,6 +943,21 @@ public class Triple extends Exp implements Pointerable {
 
     public void setNested(boolean nested) {
         this.nested = nested;
+    }
+
+    public List<Triple> getCreateTripleList() {
+        if (getTripleList()==null) {
+            setTripleList(new ArrayList<>());
+        }
+        return getTripleList();
+    }
+    
+    public List<Triple> getTripleList() {
+        return tripleList;
+    }
+
+    public void setTripleList(List<Triple> tripleList) {
+        this.tripleList = tripleList;
     }
        
 }

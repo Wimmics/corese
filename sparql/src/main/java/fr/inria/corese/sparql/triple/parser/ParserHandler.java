@@ -1,7 +1,6 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.exceptions.QuerySyntaxException;
 import fr.inria.corese.sparql.triple.api.Creator;
 import fr.inria.corese.sparql.triple.javacc1.ParseException;
 import fr.inria.corese.sparql.triple.javacc1.SparqlCorese;
@@ -49,26 +48,56 @@ public class ParserHandler {
     }
       
     // s p o1, .. on
-    public Exp createTriples(ASTQuery ast, Exp stack, Expression e1, Atom p, ExpressionList list, int n)
+    public Exp createTriples(ASTQuery ast, Exp stack, Expression subject, Atom p, ExpressionList objectList, int n)
             throws ParseException {
-        for (Expression e2 : list) {
-            Exp e = genericCreateTriple(ast, e1.getAtom(), p, e2.getAtom()); //createTriple(ast, e1, p, e2);
-            if (e != null) {
-                stack.add(n++, e);
+        ArrayList<Triple> tripleList = new ArrayList<>();
+        
+        for (Expression object : objectList) {
+            Triple t = genericCreateTriple(ast, subject.getAtom(), p, object.getAtom()); 
+            if (t != null) {
+                stack.add(n++, t);
+                if (object.getAtom().getTripleReference()!=null) {
+                    tripleList.add(t);
+                }
             }
         }
+        
+        annotate(tripleList, stack);
         return stack;
     }
     
+    void annotate(List<Triple> tripleList, Exp stack) {
+        for (Triple t : tripleList) {
+            annotate(t, stack);
+        }
+    }
+    
+    /**
+     * 
+     * @param triple: s p o t st exists t q v in stack
+     * @param stack 
+     */
+    void annotate(Triple triple, Exp stack) {
+        for (Exp exp : stack) {
+            if (exp.isTriple()) {
+                Triple tr = exp.getTriple();
+                if (triple.getObject().getTripleReference() == tr.getSubject()) {
+                    triple.getCreateTripleList().add(tr);
+                }
+            }
+        }
+    }
+    
     Triple genericCreateTriple(ASTQuery ast, Atom s, Atom p, Atom o) throws ParseException {
-        if (o.getAtom().getTripleReference()==null) {
+        if (o.getTripleReference()==null) {
             return createTriple(ast, s, p, o);
         }
         else {
             // s p o {| q v |} ->
             // triple(s p o t) . t q v
             // t = o.getAtom().getTripleReference()
-            return createTripleStar(ast, s, p, o, o.getAtom().getTripleReference());
+            // create: s p o t  
+            return createTripleStar(ast, s, p, o, o.getTripleReference());
         }
     }
 

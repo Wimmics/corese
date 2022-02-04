@@ -1610,22 +1610,22 @@ public class Query extends Exp implements Graphable {
             case FILTER:
                 // use case: filter(exists {?x ?p ?y})
                 boolean hasExist = index(query, exp.getFilter());
-
                 List<String> lVar = exp.getFilter().getVariables(true);
+                
                 for (String var : lVar) {
                     Node qNode = query.getProperAndSubSelectNode(var);
-                    if (qNode != null) {
-                        n = qIndex(query, qNode);
-                        min = Math.min(min, n);
-                    } else if (!isExist && !hasExist) {
-					// TODO: does not work with filter in exists{}
-                        // because getProperAndSubSelectNode does not go into exists{}
+                    if (qNode == null) {
+                        // TODO: does not work with filter in exists {}
+                        // because getProperAndSubSelectNode does not go into exists {}                       
                         Message.log(Message.UNDEF_VAR, var);
                         addError(Message.get(Message.UNDEF_VAR), var);
+                    } else if (!isExist && !hasExist) {
+                        n = qIndex(query, qNode);
+                        min = Math.min(min, n);
                     }
                 }
                 if (hasExist) {
-				// by safety, outer exp will not be free
+                    // by safety, outer exp will not be free
                     // use case:
                     // exists {?x p ?y filter(?x != ?z)}
                     min = -1;

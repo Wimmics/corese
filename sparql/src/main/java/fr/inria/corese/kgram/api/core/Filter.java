@@ -1,5 +1,6 @@
 package fr.inria.corese.kgram.api.core;
 
+import fr.inria.corese.sparql.triple.parser.Expression;
 import java.util.List;
 
 
@@ -27,6 +28,7 @@ public interface Filter {
 	 * @return
 	 */
 	Expr getExp();
+        Expression getFilterExpression();
 
 	/**
 	 * Does filter contain a bound() function

@@ -20,6 +20,8 @@ import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Variable;
+import fr.inria.corese.sparql.triple.parser.VariableScope;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -1611,14 +1613,17 @@ public class Query extends Exp implements Graphable {
                 // use case: filter(exists {?x ?p ?y})
                 boolean hasExist = index(query, exp.getFilter());
                 List<String> lVar = exp.getFilter().getVariables(true);
-                
                 for (String var : lVar) {
                     Node qNode = query.getProperAndSubSelectNode(var);
                     if (qNode == null) {
                         // TODO: does not work with filter in exists {}
-                        // because getProperAndSubSelectNode does not go into exists {}                       
-                        Message.log(Message.UNDEF_VAR, var);
-                        addError(Message.get(Message.UNDEF_VAR), var);
+                        // because getProperAndSubSelectNode does not go into exists {} 
+                        if (! isTriple(exp, var)) {
+                            // no error message for use case: 
+                            // var = ?_bn = <<s p o>> 
+                            Message.log(Message.UNDEF_VAR, var);
+                            addError(Message.get(Message.UNDEF_VAR), var);
+                        }
                     } else if (!isExist && !hasExist) {
                         n = qIndex(query, qNode);
                         min = Math.min(min, n);
@@ -1718,6 +1723,19 @@ public class Query extends Exp implements Graphable {
 
         return min;
 
+    }
+    
+    
+    boolean isTriple(Exp exp, String name) {
+        List<Variable> varList = exp.getFilterExpression().getVariables(VariableScope.filterscopeNotLocal());
+        for (Variable var : varList) {
+            if (var.getName().equals(name)) {
+                if (var.isTripleWithTriple()) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     boolean inSelect(Node qNode) {

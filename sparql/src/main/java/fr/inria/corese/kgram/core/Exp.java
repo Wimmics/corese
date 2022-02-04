@@ -15,6 +15,7 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.STATEMENT;
 import fr.inria.corese.kgram.api.core.Regex;
 import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.sparql.triple.parser.Expression;
 import java.util.HashMap;
 
 /**
@@ -838,7 +839,11 @@ public class Exp extends PointerObject
     public Filter getFilter() {
         return filter;
     }
-
+    
+    public Expression getFilterExpression() {
+        return getFilter().getFilterExpression();
+    }
+    
     public void setFilter(Filter f) {
         filter = f;
         if (f.isRecAggregate()) {

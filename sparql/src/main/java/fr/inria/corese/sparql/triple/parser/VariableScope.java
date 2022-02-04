@@ -42,6 +42,10 @@ public class VariableScope {
         return new VariableScope(INSCOPE).setFilter(true);
     }
     
+    public static VariableScope filterscopeNotLocal() {
+        return new VariableScope(INSCOPE).setFilter(true).setExcludeLocal(true);
+    }
+    
     public static VariableScope inscope() {
         return new VariableScope(INSCOPE);
     }

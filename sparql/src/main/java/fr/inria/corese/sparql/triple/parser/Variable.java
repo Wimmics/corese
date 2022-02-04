@@ -122,7 +122,7 @@ public class Variable extends Atom {
     
     
     @Override
-    public void getVariables(List<String> list, boolean excludeLocal) {        
+    public void getVariables(List<String> list, boolean excludeLocal) {  
         if (!list.contains(getName())
                 && !(excludeLocal && isLocal())) {
             list.add(getName());

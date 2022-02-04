@@ -552,6 +552,11 @@ public class Expression extends TopExp
     public Expr getExp() {
         return this;
     }
+    
+    @Override
+    public Expression getFilterExpression() {
+        return this;
+    }
    
     /**
      * Variables of a filter

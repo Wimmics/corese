@@ -178,7 +178,7 @@ public class CoreseDouble extends CoreseNumber {
 
             //case UNDEF:
             case URI:
-            case BLANK:
+            case BLANK: case TRIPLE:
                 return false;
 
             default:
@@ -196,7 +196,7 @@ public class CoreseDouble extends CoreseNumber {
                 return (dvalue == dt.doubleValue()) ? TRUE : FALSE;
 
             case URI:
-            case BLANK:
+            case BLANK: case TRIPLE:
                 return FALSE;
 
             default:
@@ -214,7 +214,7 @@ public class CoreseDouble extends CoreseNumber {
                 return (dvalue == dt.doubleValue()) ? FALSE : TRUE;
 
             case URI:
-            case BLANK:
+            case BLANK: case TRIPLE:
                 return TRUE;
 
             default:

@@ -21,7 +21,7 @@ public class AggregateMinMax extends Aggregate {
 
     @Override
     public void aggregate(IDatatype dt) {
-        if (dt.isBlank()) {
+        if (dt.isBlank() && ! dt.isTriple()) {
             isError = true;
         } else if (dtres == null) {
             dtres = dt;

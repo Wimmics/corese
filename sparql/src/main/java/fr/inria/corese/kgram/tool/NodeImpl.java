@@ -8,7 +8,6 @@ import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.kgram.api.core.Node;
 import static fr.inria.corese.kgram.api.core.Node.INITKEY;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.kgram.path.Path;
 
@@ -118,14 +117,15 @@ public class NodeImpl implements Node {
         return atom.isVariable(); 
     }
 
+    // Constant bnode or sparql variable as bnode
     @Override
     public boolean isBlank() {
-        return atom.isBlank() || (isVariable() && atom.getVariable().isBlankNode());
+        return atom.isBlankOrBlankNode();
     }
 
     @Override
     public boolean isFuture() {
-        return isConstant() && atom.getConstant().getDatatypeValue().isFuture();
+        return isConstant() && getDatatypeValue().isFuture();
     }
 
     @Override
@@ -134,7 +134,6 @@ public class NodeImpl implements Node {
             return sameVariable(n);
         }       
         return getValue().sameTerm(getValue(n));
-        //return compare(n) == 0;
     }
     
     boolean sameVariable(Node n){      

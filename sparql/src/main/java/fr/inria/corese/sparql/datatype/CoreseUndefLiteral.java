@@ -93,7 +93,7 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
     public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case URI:
-            case BLANK:
+            case BLANK: case TRIPLE:
                 return false;
             // special case with literal !!!
             case LITERAL:

@@ -1,7 +1,5 @@
 package fr.inria.corese.sparql.datatype;
 
-import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import org.eclipse.rdf4j.model.BNode;
 
 import fr.inria.corese.sparql.api.IDatatype;
@@ -20,6 +18,7 @@ import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
 public class CoreseBlankNode extends CoreseResource {
 
     static int code = BLANK;
+    // true when this bnode is the datatype value of a variable.
     boolean variable = false;
 
     public CoreseBlankNode(String value) {
@@ -54,7 +53,7 @@ public class CoreseBlankNode extends CoreseResource {
     @Override
     public int compare(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
-            case BLANK:
+            case BLANK: 
                 return getLabel().compareTo(iod.getLabel());
         }
         throw failure();
@@ -63,7 +62,7 @@ public class CoreseBlankNode extends CoreseResource {
     @Override
     public boolean less(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
-            case BLANK:
+            case BLANK: 
                 return getLabel().compareTo(iod.getLabel()) < 0;
         }
         throw failure();
@@ -72,7 +71,7 @@ public class CoreseBlankNode extends CoreseResource {
     @Override
     public boolean lessOrEqual(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
-            case BLANK:
+            case BLANK: 
                 return getLabel().compareTo(iod.getLabel()) <= 0;
         }
         throw failure();
@@ -81,7 +80,7 @@ public class CoreseBlankNode extends CoreseResource {
     @Override
     public boolean greater(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
-            case BLANK:
+            case BLANK: 
                 return getLabel().compareTo(iod.getLabel()) > 0;
         }
         throw failure();
@@ -90,7 +89,7 @@ public class CoreseBlankNode extends CoreseResource {
     @Override
     public boolean greaterOrEqual(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
-            case BLANK:
+            case BLANK: 
                 return getLabel().compareTo(iod.getLabel()) >= 0;
         }
         throw failure();
@@ -99,7 +98,7 @@ public class CoreseBlankNode extends CoreseResource {
     @Override
     public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
-            case BLANK:
+            case BLANK: 
                 return getLabel().equals(iod.getLabel());
         }
         return false;

@@ -145,7 +145,7 @@ public class CoreseBoolean extends CoreseStringLiteral {
             case BOOLEAN:
                 return booleanValue() == iod.booleanValue();
             case URI:
-            case BLANK:
+            case BLANK: case TRIPLE:
                 return false;
         }
         throw failure();

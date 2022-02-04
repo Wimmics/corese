@@ -538,6 +538,8 @@ public interface IDatatype
      */
     @Override
     String getLabel();
+    // <<s p o>>
+    String getPrettyLabel();
 
     String getID();
 

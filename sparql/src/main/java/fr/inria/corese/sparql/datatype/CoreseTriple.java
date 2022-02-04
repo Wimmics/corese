@@ -11,11 +11,18 @@ import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
  * e.referenceNode = t
  * t.edge = edge(s p o t)
  */
-public class CoreseTriple extends CoreseBlankNode {
+public class CoreseTriple extends CoreseResource {
+    static int code = TRIPLE;
+    
     private Edge edge;
 
     public CoreseTriple(String value) {
         super(value);
+    }
+    
+    @Override
+    public int getCode() {
+        return code;
     }
 
     @Override
@@ -26,6 +33,14 @@ public class CoreseTriple extends CoreseBlankNode {
     @Override
     public boolean isTripleWithEdge() {
         return getEdge()!=null;
+    }
+    
+    @Override
+    public String getPrettyLabel() {
+        if (getEdge() == null) {
+            return getLabel();
+        }
+        return toStringTriple();
     }
 
     @Override
@@ -41,7 +56,7 @@ public class CoreseTriple extends CoreseBlankNode {
     @Override
     public String toString() {
         if (getEdge() == null || ! DatatypeMap.DISPLAY_AS_TRIPLE) {
-            return super.toString();
+            return getLabel();
         }
         return toStringTriple();
     }
@@ -65,37 +80,25 @@ public class CoreseTriple extends CoreseBlankNode {
         }
         return super.sameTerm(dt);
     }
-
-    @Override
-    public IDatatype eq(IDatatype dt) {
-        try {
-            if (dt.isTriple()) {
-                return compareTriple(dt) == 0 ? TRUE : FALSE;
-            }
-            return (this.equalsWE(dt)) ? TRUE : FALSE;
-        } catch (CoreseDatatypeException ex) {
-            return null;
-        }
-    }
-
-    @Override
-    public IDatatype ne(IDatatype dt) {
-        IDatatype res = eq(dt);
-        if (res == null) {
-            return null;
-        }
-        return res.booleanValue() ? FALSE : TRUE;
-    }
     
+   
     @Override
     public int compare(IDatatype dt) throws CoreseDatatypeException {
         if (getEdge()!=null && dt.isTripleWithEdge()) {
             return getEdge().compareWithoutGraph(dt.getEdge());
         }
-        return super.compare(dt);
+        throw failure();
     }
-
-  
+    
+    
+    @Override
+    public boolean equalsWE(IDatatype dt) throws CoreseDatatypeException {
+        if (dt.isTriple()) {
+            return compare(dt) == 0;
+        }
+        return false;
+    }
+ 
     @Override
     public boolean less(IDatatype dt) throws CoreseDatatypeException {
         return compare(dt) < 0 ;
@@ -117,18 +120,39 @@ public class CoreseTriple extends CoreseBlankNode {
     }
        
 
-    boolean eqTriple(IDatatype dt) {
-        if (getEdge() != null && dt.getEdge() != null) {
-            return getEdge().equalsWithoutGraph(dt.getEdge());
-        }
-        return false;
-    }
+//    boolean eqTriple(IDatatype dt) {
+//        if (getEdge() != null && dt.getEdge() != null) {
+//            return getEdge().equalsWithoutGraph(dt.getEdge());
+//        }
+//        return false;
+//    }
 
-    @Override
-    public int compareTriple(IDatatype dt) throws CoreseDatatypeException {
-        if (getEdge() != null && dt.getEdge() != null) {
-            return getEdge().compareWithoutGraph(dt.getEdge());
-        }
-        throw failure;
-    }
+//    @Override
+//    public int compareTriple(IDatatype dt) throws CoreseDatatypeException {
+//        if (getEdge() != null && dt.getEdge() != null) {
+//            return getEdge().compareWithoutGraph(dt.getEdge());
+//        }
+//        throw failure();
+//    }
+    
+//    @Override
+//    public IDatatype eq(IDatatype dt) {
+//        try {
+//            if (dt.isTriple()) {
+//                return compareTriple(dt) == 0 ? TRUE : FALSE;
+//            }
+//            return (this.equalsWE(dt)) ? TRUE : FALSE;
+//        } catch (CoreseDatatypeException ex) {
+//            return null;
+//        }
+//    }
+//
+//    @Override
+//    public IDatatype ne(IDatatype dt) {
+//        IDatatype res = eq(dt);
+//        if (res == null) {
+//            return null;
+//        }
+//        return res.booleanValue() ? FALSE : TRUE;
+//    }    
 }

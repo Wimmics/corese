@@ -114,7 +114,7 @@ public class CoreseLiteral extends CoreseStringLiteral {
                 case UNDEF: if (hasLang()){return false;} else {throw failure();}
                     
 		case URI:
-		case BLANK: return false;
+		case BLANK: case TRIPLE: return false;
 		}
 		throw failure();
 	}

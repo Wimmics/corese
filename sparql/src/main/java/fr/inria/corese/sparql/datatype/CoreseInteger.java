@@ -222,7 +222,7 @@ public class CoreseInteger extends CoreseNumber {
                 
             //case UNDEF:
             case URI:
-            case BLANK:
+            case BLANK: case TRIPLE:
                 return false;
                     
             default:
@@ -242,7 +242,7 @@ public class CoreseInteger extends CoreseNumber {
                 return (doubleValue() == dt.doubleValue()) ? TRUE : FALSE ;
                 
             case URI:
-            case BLANK:
+            case BLANK: case TRIPLE:
                 return FALSE;
                     
             default:
@@ -262,7 +262,7 @@ public class CoreseInteger extends CoreseNumber {
                 return (doubleValue() == dt.doubleValue()) ? FALSE : TRUE ;
                 
             case URI:
-            case BLANK:
+            case BLANK: case TRIPLE:
                 return TRUE;
                     
             default:

@@ -30,7 +30,9 @@ import fr.inria.corese.kgram.api.query.Producer;
  * @author Olivier Corby & Olivier Savoie
  */
 public class Variable extends Atom {
-    
+    // sparql bnode implemented as Variable with isBlankNode() == true
+    // is a variable for pattern matching
+    // is a bnode for select *
     private boolean isBlankNode = false;
     private boolean matchNodeList = false;
     private boolean matchCardinality = false;

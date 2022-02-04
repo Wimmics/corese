@@ -37,7 +37,7 @@ public class CoreseGeneric extends CoreseString {
 			if (! getDatatypeURI().equals(dt.getDatatypeURI())) throw failure();
 			return getLabel().equals(dt.getLabel());
 		case URI:
-		case BLANK: return false;
+		case BLANK: case TRIPLE: return false;
 		}
 		throw failure();
 	}

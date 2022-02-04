@@ -83,11 +83,11 @@ public class BinaryFunction extends TermEval {
                 
             case ExprType.STRLANG:
                 if (eval.isCompliant() && !isSimpleLiteral(dt1)) return null;                
-                return DatatypeMap.newInstance(dt1.getLabel(), null, dt2.getLabel());
+                return DatatypeMap.newInstance(dt1.getPrettyLabel(), null, dt2.getLabel());
                 
             case ExprType.STRDT:    
                 if (eval.isCompliant() && !isSimpleLiteral(dt1)) return null;                
-                return DatatypeMap.newInstance(dt1.getLabel(), dt2.getLabel());
+                return DatatypeMap.newInstance(dt1.getPrettyLabel(), dt2.getLabel());
                 
             case ExprType.SAMETERM:  return value(dt1.sameTerm(dt2));        
         }

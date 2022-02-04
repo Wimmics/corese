@@ -894,10 +894,7 @@ public class Triple extends Exp implements Pointerable {
 
     @Override
     public boolean validateDelete() {
-        if (subject.isBlankNode()) {
-            return false;
-        }
-        if (object.isBlankNode()) {
+        if (subject.isBlankNode()||object.isBlankNode()) {
             return false;
         }
         return true;

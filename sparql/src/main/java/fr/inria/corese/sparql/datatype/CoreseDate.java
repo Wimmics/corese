@@ -261,7 +261,7 @@ public class CoreseDate extends CoreseDatatype {
                 return this.compare(cal1, cal2) == 0;
 
             case URI:
-            case BLANK:
+            case BLANK: case TRIPLE:
                 return false;
         }
         throw failure();

@@ -175,10 +175,15 @@ public class Atom extends Expression implements ElementClause {
     }
 
     boolean validateData(ASTQuery ast) {
-        if (isBlankNode() || isBlank()) {
+        if (isBlankOrBlankNode()) {
             ast.record(this);
         }
         return true;
+    }
+    
+    // bnode or bnode as variable
+    public boolean isBlankOrBlankNode() {
+        return isBlank() || isBlankNode();
     }
 
     @Override

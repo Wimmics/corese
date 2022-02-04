@@ -50,7 +50,7 @@ public class CoreseString extends CoreseStringLiteral {
               
           //case UNDEF: 
 	  case URI:
-	  case BLANK: return false;
+	  case BLANK: case TRIPLE: return false;
 	  }
 	  throw failure();
   }

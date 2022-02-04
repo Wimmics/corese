@@ -361,9 +361,13 @@ public class CoreseDatatype
      */
     IDatatype caster(String type) {
         try {
-            if (isBlank() && type.equals(Cst.jTypeString)) {
+            if (isTripleWithEdge() && type.equals(Cst.jTypeString)) {
+                return DatatypeMap.newInstance(toString());
+            }
+            else if (isBlank() && type.equals(Cst.jTypeString)) {
                 return CoreseDatatype.create(type, null, "", null);
             }
+            
             return CoreseDatatype.create(type, null, getNormalizedLabel(), null, true);
         } catch (CoreseDatatypeException e) {
             //e.printStackTrace();
@@ -715,6 +719,11 @@ public class CoreseDatatype
     public String getLabel() {
         return getNormalizedLabel();
     }
+    
+    @Override
+    public String getPrettyLabel() {
+        return getLabel();
+    }
 
     @Override
     public StringBuilder getStringBuilder() {
@@ -871,11 +880,11 @@ public class CoreseDatatype
                 }
                 break;
 
-            case BLANK:
+            case BLANK: case TRIPLE:
                 if (code == other) {
                     if (isTriple() && d2.isTriple()) {
                         try {
-                            return compareTriple(d2);
+                            return compare(d2);
                         } catch (CoreseDatatypeException ex) {
                             // continue;
                         }
@@ -940,24 +949,25 @@ public class CoreseDatatype
 
         boolean trace = false;
         IDatatype d1 = this;
+        
+        // case where CODE are not equal 
+        if (isTriple()) {
+            return GREATER;
+        } else if (d2.isTriple()) {
+            return LESSER;
+        }
 
         switch (code) {
             // case where CODE are not equal 
             // SPARQL order:
             // Blank URI Literal
 
-            case BLANK:
-                if (isTriple()) {
-                    return GREATER;
-                }
-                else if (d2.isTriple()) {
-                    return LESSER;
-                }
+            case BLANK: 
                 return LESSER;
 
             case URI:
                 switch (other) {
-                    case BLANK:
+                    case BLANK: 
                         return GREATER;
                     // other is Literal
                     default:
@@ -967,7 +977,7 @@ public class CoreseDatatype
             default:
                 // this is LITERAL
                 switch (other) {
-                    case BLANK:
+                    case BLANK: 
                     case URI:
                         return GREATER;
                 }
@@ -1161,7 +1171,7 @@ public class CoreseDatatype
         }
     }
     
-    // overloaded by CoreseBlankNode for triple
+    // overloaded by CoreseTriple
     @Override
     public boolean sameTerm(IDatatype dt) {
         if (getCode() == dt.getCode()) {

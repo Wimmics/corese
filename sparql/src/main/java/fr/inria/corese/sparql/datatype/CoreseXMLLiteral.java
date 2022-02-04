@@ -77,7 +77,7 @@ public class CoreseXMLLiteral extends CoreseStringLiteral {
     	switch (iod.getCode()){
     	case XMLLITERAL: return getLabel().equals(iod.getLabel());
     	case URI:
-    	case BLANK: return false;
+    	case BLANK: case TRIPLE: return false;
     	}
     	throw failure();
     }

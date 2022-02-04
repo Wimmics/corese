@@ -48,8 +48,8 @@ public class UnaryFunction extends TermEval {
                 
             case ExprType.DATATYPE:     return dt.datatype();
             case ExprType.LANG:         return dt.getDataLang();
-            case ExprType.STR:          return DatatypeMap.newLiteral(dt.getLabel());
-            case ExprType.XSDSTRING:    return DatatypeMap.newInstance(dt.getLabel());
+            case ExprType.STR:          return DatatypeMap.newLiteral(dt.getPrettyLabel());
+            case ExprType.XSDSTRING:    return DatatypeMap.newInstance(dt.getPrettyLabel());
             case ExprType.CAST:         return dt.cast(getLabel());
             case ExprType.STRLEN:       return DatatypeMap.strlen(dt);
             case ExprType.UCASE:        return result(dt, dt.getLabel().toUpperCase());

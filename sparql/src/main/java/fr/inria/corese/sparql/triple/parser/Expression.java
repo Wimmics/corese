@@ -251,8 +251,17 @@ public class Expression extends TopExp
     public boolean isBlankNode() {
         return false;
     }
+    
+    // because triple reference is BlankNode
+    public boolean isStrictBlankNode() {
+        return isBlankNode() && ! isTriple();
+    }
 
     public boolean isTerm() {
+        return false;
+    }
+    
+    public boolean isTriple() {
         return false;
     }
     

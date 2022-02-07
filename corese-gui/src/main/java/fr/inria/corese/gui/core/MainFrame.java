@@ -1,6 +1,14 @@
 package fr.inria.corese.gui.core;
 
-import fr.inria.corese.gui.query.MyJPanelQuery;
+import static fr.inria.corese.core.util.Property.Value.GUI_DEFAULT_QUERY;
+import static fr.inria.corese.core.util.Property.Value.GUI_EXPLAIN_LIST;
+import static fr.inria.corese.core.util.Property.Value.GUI_QUERY_LIST;
+import static fr.inria.corese.core.util.Property.Value.GUI_RULE_LIST;
+import static fr.inria.corese.core.util.Property.Value.GUI_TEMPLATE_LIST;
+import static fr.inria.corese.core.util.Property.Value.GUI_TITLE;
+import static fr.inria.corese.core.util.Property.Value.GUI_TRIPLE_MAX;
+import static fr.inria.corese.core.util.Property.Value.LOAD_IN_DEFAULT_GRAPH;
+import static fr.inria.corese.core.util.Property.Value.LOAD_QUERY;
 
 import java.awt.BorderLayout;
 import java.awt.Component;
@@ -12,14 +20,23 @@ import java.awt.event.ItemListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.OutputStreamWriter;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 
 import javax.swing.ButtonGroup;
 import javax.swing.DefaultListModel;
@@ -39,18 +56,16 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.Document;
 import javax.swing.text.Element;
 import javax.swing.text.JTextComponent;
+import javax.xml.parsers.ParserConfigurationException;
 
-import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.gui.editor.ShaclEditor;
-import fr.inria.corese.gui.editor.TurtleEditor;
-import fr.inria.corese.gui.event.MyEvalListener;
-import fr.inria.corese.gui.query.Buffer;
-import fr.inria.corese.gui.query.GraphEngine;
-import fr.inria.corese.core.workflow.Data;
-import fr.inria.corese.core.workflow.WorkflowParser;
-import fr.inria.corese.core.workflow.SemanticWorkflow;
-import fr.inria.corese.core.workflow.WorkflowProcess;
-import fr.inria.corese.kgram.event.Event;
+import org.apache.logging.log4j.Level;
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+import org.apache.logging.log4j.core.LoggerContext;
+import org.apache.logging.log4j.core.config.Configuration;
+import org.apache.logging.log4j.core.layout.PatternLayout;
+import org.xml.sax.SAXException;
+
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
@@ -63,35 +78,23 @@ import fr.inria.corese.core.transform.TemplatePrinter;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.Property;
 import fr.inria.corese.core.util.Property.Pair;
-import static fr.inria.corese.core.util.Property.Value.GUI_DEFAULT_QUERY;
-import static fr.inria.corese.core.util.Property.Value.GUI_EXPLAIN_LIST;
-import static fr.inria.corese.core.util.Property.Value.GUI_QUERY_LIST;
-import static fr.inria.corese.core.util.Property.Value.GUI_RULE_LIST;
-import static fr.inria.corese.core.util.Property.Value.GUI_TEMPLATE_LIST;
-import static fr.inria.corese.core.util.Property.Value.GUI_TITLE;
-import static fr.inria.corese.core.util.Property.Value.GUI_TRIPLE_MAX;
-import static fr.inria.corese.core.util.Property.Value.LOAD_IN_DEFAULT_GRAPH;
-import static fr.inria.corese.core.util.Property.Value.LOAD_QUERY;
+import fr.inria.corese.core.workflow.Data;
+import fr.inria.corese.core.workflow.SemanticWorkflow;
+import fr.inria.corese.core.workflow.WorkflowParser;
+import fr.inria.corese.core.workflow.WorkflowProcess;
+import fr.inria.corese.gui.editor.ShaclEditor;
+import fr.inria.corese.gui.editor.TurtleEditor;
+import fr.inria.corese.gui.event.MyEvalListener;
+import fr.inria.corese.gui.query.Buffer;
+import fr.inria.corese.gui.query.GraphEngine;
+import fr.inria.corese.gui.query.MyJPanelQuery;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.shex.shacl.Shex;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import java.io.BufferedReader;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.nio.charset.Charset;
-import java.util.Date;
-import java.util.HashMap;
-import javax.xml.parsers.ParserConfigurationException;
-
-import org.apache.logging.log4j.Logger;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Level;
-import org.apache.logging.log4j.core.LoggerContext;
-import org.apache.logging.log4j.core.config.Configuration;
-import org.apache.logging.log4j.core.layout.PatternLayout;
-import org.xml.sax.SAXException;
 
 /**
  * Fenêtre principale, avec le conteneur d'onglets et le menu
@@ -101,7 +104,7 @@ public class MainFrame extends JFrame implements ActionListener {
     /**
      *
      */
-    private static MainFrame singleton ;
+    private static MainFrame singleton;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
     private static final String TITLE = "Corese 4.3.0 - Inria UCA - 2022-02-02";
@@ -115,7 +118,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
     private String lPath;
     private String fileName = "";
-    //Variable true ou false pour déterminer le mode Kgram ou Corese
+    // Variable true ou false pour déterminer le mode Kgram ou Corese
     private boolean isKgram = true;
     boolean trace = false;
     // Pour le menu
@@ -159,11 +162,11 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem map;
     private JMenuItem success;
     private JMenuItem quit;
-    private JMenuItem iselect, iselecttuple, igraph, 
+    private JMenuItem iselect, iselecttuple, igraph,
             iconstruct, iconstructgraph, iask, idescribe,
             iserviceLocal, iserviceCorese, imapcorese, iserviceDBpedia, ifederate,
             iinsert, iinsertdata, idelete, ideleteinsert,
-            iturtle, in3, irdfxml, ijson, itrig, ispin, iowl, 
+            iturtle, in3, irdfxml, ijson, itrig, ispin, iowl,
             ientailment, irule, ierror, ifunction, ical, iowlrl;
     private JMenuItem itypecheck, ipredicate, ipredicatepath;
     HashMap<Object, DefQuery> itable;
@@ -174,10 +177,10 @@ public class MainFrame extends JFrame implements ActionListener {
     private JCheckBox cbrdfs, cbowlrl, cbrdfsrl, cbowlrllite, cbowlrlext, cbtrace, cbnamed;
     private JCheckBox cbshexClosed, cbshexExtend, cbshexCard, cbshexshex;
     private JMenuItem validate;
-    //style correspondant au graphe
+    // style correspondant au graphe
     private String defaultStylesheet, saveStylesheet;
-    private ArrayList<JCheckBox> listCheckbox;	//list qui stocke les JCheckBoxs présentes sur le JPanelListener
-    private ArrayList<JMenuItem> listJMenuItems;	//list qui stocke les Boutons présents sur le JPanelListener
+    private ArrayList<JCheckBox> listCheckbox; // list qui stocke les JCheckBoxs présentes sur le JPanelListener
+    private ArrayList<JMenuItem> listJMenuItems; // list qui stocke les Boutons présents sur le JPanelListener
     // Les 4 types d'onglets
     private ArrayList<MyJPanelQuery> monTabOnglet;
     private JPanel plus;
@@ -228,25 +231,26 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String URI_CORESE = "http://project.inria.fr/corese";
     private static final String URI_GRAPHSTREAM = "http://graphstream-project.org/";
     int nbTabs = 0;
-    
+
     boolean shexClosed = true, shexCard = true, shexExtend = true;
     private boolean shexSemantics = false;
-    
+
     Command cmd;
-    
+
     static {
         // false: load files into named graphs
-        // true:  load files into kg:default graph
+        // true: load files into kg:default graph
         Load.setDefaultGraphValue(false);
     }
-    
+
     class DefQuery {
 
         private String query;
         private String name;
-        
+
         DefQuery(String n, String q) {
-            query = q; name = n;
+            query = q;
+            name = n;
         }
 
         public String getQuery() {
@@ -274,7 +278,7 @@ public class MainFrame extends JFrame implements ActionListener {
      * @param pPropertyPath
      */
     public MainFrame(CaptureOutput aCapturer, String[] args) {
-        super(); 
+        super();
         Access.setMode(Access.Mode.GUI); // before command
         cmd = new Command(args).init();
         this.setTitle(TITLE);
@@ -291,23 +295,23 @@ public class MainFrame extends JFrame implements ActionListener {
             LogManager.getLogger(MainFrame.class.getName()).log(Level.ERROR, "", ex);
         }
 
-        //Initialise Corese
+        // Initialise Corese
         myCapturer = aCapturer;
         setMyCoreseNewInstance(Graph.RDFS_ENTAILMENT_DEFAULT);
 
         System.setProperty("org.graphstream.ui.renderer", "org.graphstream.ui.j2dviewer.J2DGraphRenderer");
 
-        //Initialise le menu
+        // Initialise le menu
         initMenu();
 
         listCheckbox = new ArrayList<>();
         listJMenuItems = new ArrayList<>();
 
-        //Création et ajout de notre conteneur d'onglets à la fenêtre
+        // Création et ajout de notre conteneur d'onglets à la fenêtre
         conteneurOnglets = new JTabbedPane();
         this.getContentPane().add(conteneurOnglets, BorderLayout.CENTER);
 
-        //Création et ajout des deux onglets "Listener" et "+"
+        // Création et ajout des deux onglets "Listener" et "+"
         monTabOnglet = new ArrayList<>();
         ongletListener = new MyJPanelListener(this);
         ongletShacl = new ShaclEditor(this);
@@ -318,59 +322,59 @@ public class MainFrame extends JFrame implements ActionListener {
         conteneurOnglets.addTab("Turtle editor", ongletTurtle);
         conteneurOnglets.addTab("+", plus);
 
-        //Par défaut, l'onglet sélectionné est "listener"
+        // Par défaut, l'onglet sélectionné est "listener"
         conteneurOnglets.setSelectedIndex(0);
 
-        //S'applique lors d'un changement de selection d'onglet
+        // S'applique lors d'un changement de selection d'onglet
         conteneurOnglets.addChangeListener(
                 new ChangeListener() {
-            @Override
-            public void stateChanged(ChangeEvent changeEvent) {
-                // c est le composant sélectionné
-                Component c = conteneurOnglets.getSelectedComponent();
+                    @Override
+                    public void stateChanged(ChangeEvent changeEvent) {
+                        // c est le composant sélectionné
+                        Component c = conteneurOnglets.getSelectedComponent();
 
-                // selected est l'indice du composant sélectionné dans le conteneur d'onglets
-                selected = conteneurOnglets.getSelectedIndex();
+                        // selected est l'indice du composant sélectionné dans le conteneur d'onglets
+                        selected = conteneurOnglets.getSelectedIndex();
 
-                //Si l'onglet sélectionné est un onglet Query il devient l'onglet "courant"
-                if (c instanceof MyJPanelQuery) {
-                    current = (MyJPanelQuery) c;
+                        // Si l'onglet sélectionné est un onglet Query il devient l'onglet "courant"
+                        if (c instanceof MyJPanelQuery) {
+                            current = (MyJPanelQuery) c;
 
-                    // Certaines options du menu deviennent utilisables
-                    cut.setEnabled(true);
-                    copy.setEnabled(true);
-                    paste.setEnabled(true);
-                    duplicate.setEnabled(true);
-                    duplicateFrom.setEnabled(true);
-                    comment.setEnabled(true);
-                    saveQuery.setEnabled(true);
-                    saveResult.setEnabled(true);
+                            // Certaines options du menu deviennent utilisables
+                            cut.setEnabled(true);
+                            copy.setEnabled(true);
+                            paste.setEnabled(true);
+                            duplicate.setEnabled(true);
+                            duplicateFrom.setEnabled(true);
+                            comment.setEnabled(true);
+                            saveQuery.setEnabled(true);
+                            saveResult.setEnabled(true);
 
-                    MyJPanelQuery temp = (MyJPanelQuery) getConteneurOnglets().getComponentAt(selected);
+                            MyJPanelQuery temp = (MyJPanelQuery) getConteneurOnglets().getComponentAt(selected);
 
-                    if (isKgram) {
-                        temp.getButtonTKgram().setEnabled(true);
-                    } else {
-                        temp.getButtonTKgram().setEnabled(false);
+                            if (isKgram) {
+                                temp.getButtonTKgram().setEnabled(true);
+                            } else {
+                                temp.getButtonTKgram().setEnabled(false);
+                            }
+
+                        } // Sinon elles restent grisées et inutilisables
+                        else {
+                            cut.setEnabled(false);
+                            copy.setEnabled(false);
+                            paste.setEnabled(false);
+                            duplicate.setEnabled(false);
+                            duplicateFrom.setEnabled(false);
+                            comment.setEnabled(false);
+                            saveQuery.setEnabled(false);
+                            saveResult.setEnabled(false);
+                        }
+                        // Si l'onglet sélectionné est le "+" on crée un nouvel onglet Query
+                        if (c == plus) {
+                            execPlus();
+                        }
                     }
-
-                } // Sinon elles restent grisées et inutilisables
-                else {
-                    cut.setEnabled(false);
-                    copy.setEnabled(false);
-                    paste.setEnabled(false);
-                    duplicate.setEnabled(false);
-                    duplicateFrom.setEnabled(false);
-                    comment.setEnabled(false);
-                    saveQuery.setEnabled(false);
-                    saveResult.setEnabled(false);
-                }
-                // Si l'onglet sélectionné est le "+" on crée un nouvel onglet Query
-                if (c == plus) {
-                    execPlus();
-                }
-            }
-        });
+                });
         this.setVisible(true);
 
         addWindowListener(new WindowAdapter() {
@@ -381,7 +385,7 @@ public class MainFrame extends JFrame implements ActionListener {
         });
         appendMsg("Initialization:\n\n" + myCapturer.getContent() + "\n\n");
 
-        //On remplit notre liste de JCheckBox
+        // On remplit notre liste de JCheckBox
         listCheckbox.add(checkBoxLoad);
         listCheckbox.add(checkBoxQuery);
         listCheckbox.add(checkBoxRule);
@@ -390,7 +394,7 @@ public class MainFrame extends JFrame implements ActionListener {
             listCheckbox.get(i).setEnabled(false);
         }
 
-        //on remplit notre liste de Bouton
+        // on remplit notre liste de Bouton
         listJMenuItems.add(help);
         listJMenuItems.add(map);
         listJMenuItems.add(next);
@@ -403,7 +407,7 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         process(cmd);
     }
-        
+
     public void focusMessagePanel() {
         getConteneurOnglets().setSelectedIndex(0);
     }
@@ -415,7 +419,7 @@ public class MainFrame extends JFrame implements ActionListener {
     public MyJPanelQuery execPlus(String name, String str) {
         // s : texte par défaut dans la requête
         textQuery = str;
-        //Crée un nouvel onglet Query
+        // Crée un nouvel onglet Query
         return newQuery(str, name);
     }
 
@@ -438,7 +442,7 @@ public class MainFrame extends JFrame implements ActionListener {
         try {
             currentDoc.insertString(currentDoc.getLength(), msg, null);
 
-            //Place l'ascenceur en bas à chaque ajout de texte
+            // Place l'ascenceur en bas à chaque ajout de texte
             ongletListener.getScrollPaneLog().revalidate();
             int length = currentDoc.getLength();
             ongletListener.getTextPaneLogs().setCaretPosition(length);
@@ -446,12 +450,11 @@ public class MainFrame extends JFrame implements ActionListener {
             LOGGER.fatal("Output capture problem:", innerException);
         }
     }
-    
+
     public MainFrame msg(String msg) {
         appendMsg(msg);
         return this;
     }
-
 
     /**
      * Crée un onglet Query *
@@ -459,7 +462,7 @@ public class MainFrame extends JFrame implements ActionListener {
     MyJPanelQuery newQuery(String query) {
         return newQuery(query, "");
     }
-    
+
     public MyJPanelQuery getCurrentQueryPanel() {
         Component cp = conteneurOnglets.getSelectedComponent();
         if (cp instanceof MyJPanelQuery) {
@@ -467,29 +470,28 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         return null;
     }
-    
+
     // test
-    MyJPanelQuery getPreviousQueryPanel2() {  
+    MyJPanelQuery getPreviousQueryPanel2() {
         MyJPanelQuery jp = (MyJPanelQuery) conteneurOnglets.getSelectedComponent();
         conteneurOnglets.getComponentCount();
         int i = conteneurOnglets.getSelectedIndex();
         return null;
     }
-    
-    public MyJPanelQuery getLastQueryPanel() { 
+
+    public MyJPanelQuery getLastQueryPanel() {
         return getLastQueryPanel(0);
     }
-    
 
     /**
      * n=0 : last panel
      * n=1 : last-1 panel
      */
-    public MyJPanelQuery getLastQueryPanel(int n) {         
+    public MyJPanelQuery getLastQueryPanel(int n) {
         int i = 0;
-        int last = conteneurOnglets.getComponentCount()-1;
-        
-        for (int j = last;  j>=0; j--) {
+        int last = conteneurOnglets.getComponentCount() - 1;
+
+        for (int j = last; j >= 0; j--) {
             Component cp = conteneurOnglets.getComponent(j);
             if (cp instanceof MyJPanelQuery) {
                 MyJPanelQuery jp = (MyJPanelQuery) cp;
@@ -500,24 +502,26 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         return null;
     }
-    
+
     /**
-     * Last element is "+" at length-1, current query panel at length-2, previous query panel at length-3
-     * @return 
+     * Last element is "+" at length-1, current query panel at length-2, previous
+     * query panel at length-3
+     * 
+     * @return
      */
-    public MyJPanelQuery getPreviousQueryPanel() {  
+    public MyJPanelQuery getPreviousQueryPanel() {
         for (Component cp : conteneurOnglets.getComponents()) {
             System.out.println("gui: " + cp.getClass().getName());
         }
         if (conteneurOnglets.getComponents().length >= 3) {
-            Component cp = conteneurOnglets.getComponent(conteneurOnglets.getComponents().length-3);
+            Component cp = conteneurOnglets.getComponent(conteneurOnglets.getComponents().length - 3);
             if (cp instanceof MyJPanelQuery) {
                 return (MyJPanelQuery) cp;
             }
         }
         return null;
     }
-    
+
     public Mappings getPreviousMappings() {
         MyJPanelQuery panel = getPreviousQueryPanel();
         System.out.println("gui panel: " + panel);
@@ -527,10 +531,11 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         return null;
     }
-    
+
     public MyJPanelQuery newQuery(String query, String name) {
         nbTabs++;
-        //supprime l'onglet "+", ajoute un onglet Query, puis recrée l'onglet "+" à la suite
+        // supprime l'onglet "+", ajoute un onglet Query, puis recrée l'onglet "+" à la
+        // suite
         conteneurOnglets.remove(plus);
         MyJPanelQuery temp = new MyJPanelQuery(this, query, name);
 
@@ -556,59 +561,60 @@ public class MainFrame extends JFrame implements ActionListener {
          * initTabComponent(conteneurOnglets.getComponentCount()-3); car il faut
          * retirer la croix et l'onglet "+" dans le compte
          */
-        //Si c'est le 1er onglet Query créé
+        // Si c'est le 1er onglet Query créé
         if (conteneurOnglets.getComponentCount() == 5) {
-            //On applique la croix fermante sur le 4eme composant (l'onglet tout juste créé)
+            // On applique la croix fermante sur le 4eme composant (l'onglet tout juste
+            // créé)
             initTabComponent(3);
-        } //S'il y en avait déjà
+        } // S'il y en avait déjà
         else {
             initTabComponent(conteneurOnglets.getComponentCount() - 3);
         }
 
-        //sélectionne l'onglet fraichement créé
+        // sélectionne l'onglet fraichement créé
         conteneurOnglets.setSelectedIndex(conteneurOnglets.getComponentCount() - 3);
         return temp;
     }
 
-    //Barre du menu
+    // Barre du menu
     private void initMenu() {
         JMenuBar menuBar = new JMenuBar();
-        //crée les options du menu et leurs listeners
+        // crée les options du menu et leurs listeners
         loadRDF = new JMenuItem("Dataset");
         loadRDF.addActionListener(this);
         loadRDF.setToolTipText("Load Dataset");
-        
+
         loadProperty = new JMenuItem("Property");
         loadProperty.addActionListener(this);
         loadProperty.setToolTipText("Load Property");
-       
+
         loadRule = new JMenuItem("Rule");
         loadRule.addActionListener(this);
         loadRule.setToolTipText("Load file with inferencing rules");
-        
+
         loadAndRunRule = new JMenuItem("Load & Run Rule");
         loadAndRunRule.addActionListener(this);
-        
+
         loadSHACL = new JMenuItem("SHACL");
         loadSHACL.addActionListener(this);
         loadSHACL.setToolTipText("Load SHACL");
-        
+
         loadSHACLShape = new JMenuItem("SHACL Shape Validator");
         loadSHACLShape.addActionListener(this);
         loadSHACLShape.setToolTipText("Load SHACL Shape Validator");
-        
+
         loadQuery = new JMenuItem("Query");
         loadQuery.addActionListener(this);
         loadResult = new JMenuItem("Result");
         loadResult.addActionListener(this);
-        
+
         loadShex = new JMenuItem("Shex");
         loadShex.addActionListener(this);
         loadShex.setToolTipText("Load Shex");
-        
+
         loadWorkflow = new JMenuItem("Workflow");
         loadWorkflow.addActionListener(this);
-        
+
         loadRunWorkflow = new JMenuItem("Load & Run Workflow");
         loadRunWorkflow.addActionListener(this);
 
@@ -617,7 +623,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
         refresh = new JMenuItem("Reload");
         refresh.addActionListener(this);
-        
+
         exportRDF = new JMenuItem("RDF/XML");
         exportRDF.addActionListener(this);
         exportRDF.setToolTipText("Export graph in RDF/XML format");
@@ -637,13 +643,13 @@ public class MainFrame extends JFrame implements ActionListener {
         exportTrig = new JMenuItem("TriG");
         exportTrig.addActionListener(this);
         exportTrig.setToolTipText("Export graph in TriG format");
-        
+
         execWorkflow = new JMenuItem("Process Workflow");
         execWorkflow.addActionListener(this);
 
         cpTransform = new JMenuItem("Compile Transformation");
         cpTransform.addActionListener(this);
-        
+
         shex = new JMenuItem("Translate Shex to Shacl");
         shex.addActionListener(this);
 
@@ -676,8 +682,8 @@ public class MainFrame extends JFrame implements ActionListener {
         ideleteinsert = defItem("Delete Insert", DEFAULT_DELETE_INSERT_QUERY);
 
         ientailment = defItem("RDFS Entailment", DEFAULT_ENTAILMENT_QUERY);
-        irule = defItem("Rule/OWL RL", DEFAULT_RULE_QUERY);      
-        ierror = defItem("Constraint", "constraint.rq");      
+        irule = defItem("Rule/OWL RL", DEFAULT_RULE_QUERY);
+        ierror = defItem("Constraint", "constraint.rq");
         iowlrl = defItem("OWL RL Check", "owlrl.rq");
 
         iturtle = defItem("Turtle", DEFAULT_TEMPLATE_QUERY);
@@ -687,8 +693,8 @@ public class MainFrame extends JFrame implements ActionListener {
         itrig = defItem("Trig", DEFAULT_TRIG_QUERY);
         ispin = defItem("SPIN", DEFAULT_SPIN_QUERY);
         iowl = defItem("OWL", DEFAULT_OWL_QUERY);
-        
-        itypecheck = defItem("Engine",   "shacl/typecheck.rq");
+
+        itypecheck = defItem("Engine", "shacl/typecheck.rq");
         ipredicate = defItem("Predicate", "shacl/predicate.rq");
         ipredicatepath = defItem("Predicate Path", "shacl/predicatepath.rq");
 
@@ -717,9 +723,9 @@ public class MainFrame extends JFrame implements ActionListener {
         doc = new JMenuItem("Online doc GraphStream");
         doc.addActionListener(this);
         myRadio = new ButtonGroup();
-//        coreseBox = new JRadioButton("Corese - SPARQL 1.1");
-//        coreseBox.setSelected(true);
-//        coreseBox.addActionListener(this);system
+        // coreseBox = new JRadioButton("Corese - SPARQL 1.1");
+        // coreseBox.setSelected(true);
+        // coreseBox.addActionListener(this);system
         kgramBox = new JRadioButton("Corese/Kgram SPARQL 1.1");
         kgramBox.setSelected(true);
         kgramBox.addActionListener(this);
@@ -739,14 +745,14 @@ public class MainFrame extends JFrame implements ActionListener {
         cbowlrllite = new JCheckBox("OWL RL Lite");
         cbowlrl = new JCheckBox("OWL RL");
         cbrdfsrl = new JCheckBox("RDFS RL");
-        
+
         cbnamed = new JCheckBox("Load Named");
-        
-        cbshexCard   =  new JCheckBox("Cardinality");
-        cbshexClosed =  new JCheckBox("Closed");
-        cbshexExtend =  new JCheckBox("Shacl Extension");
-        cbshexshex =  new JCheckBox("Shex Semantics");
-        
+
+        cbshexCard = new JCheckBox("Cardinality");
+        cbshexClosed = new JCheckBox("Closed");
+        cbshexExtend = new JCheckBox("Shacl Extension");
+        cbshexshex = new JCheckBox("Shex Semantics");
+
         checkBoxLoad = new JCheckBox("Load");
         checkBoxQuery = new JCheckBox("Query");
         checkBoxRule = new JCheckBox("Rule");
@@ -781,11 +787,11 @@ public class MainFrame extends JFrame implements ActionListener {
         JMenu eventMenu = new JMenu("Event");
         JMenu explainMenu = new JMenu("Explain");
         JMenu aboutMenu = new JMenu("?");
-        
+
         JMenu fileMenuLoad = new JMenu("Load");
         JMenu fileMenuSaveGraph = new JMenu("Save Graph");
 
-        //On ajoute tout au menu
+        // On ajoute tout au menu
         fileMenu.add(fileMenuLoad);
         fileMenuLoad.add(loadRDF);
         fileMenuLoad.add(loadProperty);
@@ -801,7 +807,7 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenuLoad.add(loadStyle);
 
         fileMenu.add(refresh);
-        
+
         fileMenu.add(execWorkflow);
         fileMenu.add(cpTransform);
         fileMenu.add(shex);
@@ -817,36 +823,36 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(saveResult);
 
         queryMenu.add(iselect);
-        //queryMenu.add(iselecttuple);
+        // queryMenu.add(iselecttuple);
         queryMenu.add(iconstruct);
         queryMenu.add(iconstructgraph);
         queryMenu.add(iask);
-        //queryMenu.add(idescribe);
+        // queryMenu.add(idescribe);
         queryMenu.add(igraph);
         queryMenu.add(iserviceLocal);
-        queryMenu.add(iserviceCorese);      
+        queryMenu.add(iserviceCorese);
         queryMenu.add(iinsertdata);
         queryMenu.add(ideleteinsert);
-        
+
         queryMenu.add(imapcorese);
         queryMenu.add(ifederate);
         queryMenu.add(ifunction);
-        queryMenu.add(ical);        
-        
+        queryMenu.add(ical);
+
         userMenu.add(defItem("Count", "count.rq"));
         for (Pair pair : Property.getValueList(GUI_QUERY_LIST)) {
             userMenu.add(defItemQuery(pair.getKey(), pair.getPath()));
         }
-        
+
         explainMenu.add(ientailment);
         explainMenu.add(irule);
         explainMenu.add(ierror);
         explainMenu.add(iowlrl);
-        
+
         for (Pair pair : Property.getValueList(GUI_EXPLAIN_LIST)) {
             explainMenu.add(defItemQuery(pair.getKey(), pair.getPath()));
         }
-        
+
         templateMenu.add(iturtle);
         templateMenu.add(in3);
         templateMenu.add(irdfxml);
@@ -854,17 +860,16 @@ public class MainFrame extends JFrame implements ActionListener {
         templateMenu.add(itrig);
         templateMenu.add(ispin);
         templateMenu.add(iowl);
-        
+
         for (Pair pair : Property.getValueList(GUI_TEMPLATE_LIST)) {
             templateMenu.add(defItemQuery(pair.getKey(), pair.getPath()));
-        }        
-        
+        }
+
         displayMenu.add(defDisplay("Turtle", ResultFormat.TURTLE_FORMAT));
         displayMenu.add(defDisplay("Trig", ResultFormat.TRIG_FORMAT));
         displayMenu.add(defDisplay("RDF/XML", ResultFormat.RDF_XML_FORMAT));
         displayMenu.add(defDisplay("JSON LD", ResultFormat.JSON_LD_FORMAT));
-        
-        
+
         shaclMenu.add(itypecheck);
         shaclMenu.add(defItem("Fast Engine", "shacl/fastengine.rq"));
         shaclMenu.add(ipredicate);
@@ -872,24 +877,24 @@ public class MainFrame extends JFrame implements ActionListener {
         shaclMenu.add(defItem("Constraint Function", "shacl/extension.rq"));
         shaclMenu.add(defItem("Path Function", "shacl/funpath.rq"));
         shaclMenu.add(defItem("Path Linked Data", "shacl/service.rq"));
-        
-        shexMenu.add(cbshexCard);
-        //shexMenu.add(cbshexClosed);
-        shexMenu.add(cbshexExtend);
-        //shexMenu.add(cbshexshex);
-        
-        eventMenu.add(defItemFunction("SPARQL Query",   "event/query.rq"));
-        eventMenu.add(defItemFunction("SPARQL Update",  "event/update.rq"));
-        eventMenu.add(defItemFunction("SHACL",          "event/shacl.rq"));
-        eventMenu.add(defItemFunction("Rule",           "event/rule.rq"));
-        eventMenu.add(defItemFunction("Entailment",     "event/entailment.rq"));
 
-        eventMenu.add(defItemFunction("Unit",           "event/unit.rq"));
-        eventMenu.add(defItemFunction("Romain",         "event/romain.rq"));
-        eventMenu.add(defItemFunction("XML",            "event/xml.rq"));
-        eventMenu.add(defItemFunction("JSON",           "event/json.rq"));
-        
-        eventMenu.add(defItemFunction("GUI",            "event/gui.rq"));
+        shexMenu.add(cbshexCard);
+        // shexMenu.add(cbshexClosed);
+        shexMenu.add(cbshexExtend);
+        // shexMenu.add(cbshexshex);
+
+        eventMenu.add(defItemFunction("SPARQL Query", "event/query.rq"));
+        eventMenu.add(defItemFunction("SPARQL Update", "event/update.rq"));
+        eventMenu.add(defItemFunction("SHACL", "event/shacl.rq"));
+        eventMenu.add(defItemFunction("Rule", "event/rule.rq"));
+        eventMenu.add(defItemFunction("Entailment", "event/entailment.rq"));
+
+        eventMenu.add(defItemFunction("Unit", "event/unit.rq"));
+        eventMenu.add(defItemFunction("Romain", "event/romain.rq"));
+        eventMenu.add(defItemFunction("XML", "event/xml.rq"));
+        eventMenu.add(defItemFunction("JSON", "event/json.rq"));
+
+        eventMenu.add(defItemFunction("GUI", "event/gui.rq"));
 
         editMenu.add(cut);
         editMenu.add(copy);
@@ -903,20 +908,20 @@ public class MainFrame extends JFrame implements ActionListener {
         engineMenu.add(runRulesOpt);
         engineMenu.add(reset);
         engineMenu.add(cbtrace);
-        engineMenu.add(cbnamed);  
-        
+        engineMenu.add(cbnamed);
+
         // entailment
         engineMenu.add(cbrdfs);
         engineMenu.add(cbowlrl);
         engineMenu.add(cbowlrlext);
         engineMenu.add(cbrdfsrl);
-        
+
         for (Pair pair : Property.getValueList(GUI_RULE_LIST)) {
             engineMenu.add(defineRuleBox(pair.getKey(), pair.getPath()));
         }
-        
-        //engineMenu.add(cbowlrllite);
-               
+
+        // engineMenu.add(cbowlrllite);
+
         myRadio.add(kgramBox);
         aboutMenu.add(apropos);
         aboutMenu.add(tuto);
@@ -986,67 +991,66 @@ public class MainFrame extends JFrame implements ActionListener {
         cbtrace.setEnabled(true);
         cbtrace.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                trace = cbtrace.isSelected();
-            }
-        });
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        trace = cbtrace.isSelected();
+                    }
+                });
         cbtrace.setSelected(false);
 
         cbrdfs.setEnabled(true);
         cbrdfs.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setRDFSEntailment(cbrdfs.isSelected());
-            }
-        });
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        setRDFSEntailment(cbrdfs.isSelected());
+                    }
+                });
         // default is true, may be set by property file
         cbrdfs.setSelected(Graph.RDFS_ENTAILMENT_DEFAULT);
 
         // check box is for load file in named graph
         // Property is for load file in default graph, hence the negation
-        cbnamed.setSelected(! Property.booleanValue(LOAD_IN_DEFAULT_GRAPH));
+        cbnamed.setSelected(!Property.booleanValue(LOAD_IN_DEFAULT_GRAPH));
         cbnamed.setEnabled(true);
         cbnamed.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                Load.setDefaultGraphValue(!cbnamed.isSelected());
-            }
-        });
-        
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        Load.setDefaultGraphValue(!cbnamed.isSelected());
+                    }
+                });
+
         cbshexClosed.setEnabled(true);
         cbshexClosed.setSelected(true);
         cbshexClosed.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                shexClosed = cbshexClosed.isSelected();
-            }
-        });
-        
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        shexClosed = cbshexClosed.isSelected();
+                    }
+                });
+
         cbshexCard.setEnabled(true);
         cbshexCard.setSelected(true);
         cbshexCard.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                shexCard = cbshexCard.isSelected();
-            }
-        });
-        
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        shexCard = cbshexCard.isSelected();
+                    }
+                });
+
         cbshexExtend.setEnabled(true);
         cbshexExtend.setSelected(true);
         cbshexExtend.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                shexExtend = cbshexExtend.isSelected();
-            }
-        });
-        
-        
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        shexExtend = cbshexExtend.isSelected();
+                    }
+                });
+
         cbshexshex.setEnabled(true);
         cbshexshex.setSelected(false);
         cbshexshex.addItemListener(new ItemListener() {
@@ -1060,68 +1064,67 @@ public class MainFrame extends JFrame implements ActionListener {
         cbowlrl.setSelected(false);
         cbowlrl.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setOWLRL(cbowlrl.isSelected(), RuleEngine.OWL_RL);
-            }
-        });
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        setOWLRL(cbowlrl.isSelected(), RuleEngine.OWL_RL);
+                    }
+                });
 
         cbrdfsrl.setEnabled(true);
         cbrdfsrl.setSelected(false);
         cbrdfsrl.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setOWLRL(cbrdfsrl.isSelected(), RuleEngine.RDFS_RL);
-            }
-        });
-        
-        
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        setOWLRL(cbrdfsrl.isSelected(), RuleEngine.RDFS_RL);
+                    }
+                });
+
         cbowlrlext.setEnabled(true);
         cbowlrlext.setSelected(false);
         cbowlrlext.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setOWLRL(cbowlrlext.isSelected(), RuleEngine.OWL_RL_EXT);
-            }
-        });
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        setOWLRL(cbowlrlext.isSelected(), RuleEngine.OWL_RL_EXT);
+                    }
+                });
 
         checkBoxLoad.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-            }
-        });
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                    }
+                });
 
         debugMenu.add(checkBoxQuery);
         checkBoxQuery.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-            }
-        });
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                    }
+                });
 
         debugMenu.add(checkBoxRule);
         checkBoxRule.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-            }
-        });
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                    }
+                });
 
         debugMenu.add(checkBoxVerbose);
         checkBoxVerbose.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                if (checkBoxVerbose.isSelected()) {
-                    set(Event.VERBOSE);
-                } else {
-                    set(Event.NONVERBOSE);
-                }
-            }
-        });
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        if (checkBoxVerbose.isSelected()) {
+                            set(Event.VERBOSE);
+                        } else {
+                            set(Event.NONVERBOSE);
+                        }
+                    }
+                });
 
         debugMenu.add(validate);
         ActionListener l_validateListener = new ActionListener() {
@@ -1135,7 +1138,7 @@ public class MainFrame extends JFrame implements ActionListener {
                     File l_Files[] = fileChooser.getSelectedFiles();
                     for (File f : l_Files) {
                         lPath = f.getAbsolutePath();
-                        setPath(f.getParent());   //recupere le dossier parent du fichier que l'on charge
+                        setPath(f.getParent()); // recupere le dossier parent du fichier que l'on charge
                     }
                 }
             }
@@ -1159,7 +1162,7 @@ public class MainFrame extends JFrame implements ActionListener {
 
         setJMenuBar(menuBar);
 
-        //S'il n'y a pas encore d'onglet Query ces options sont inutilisables
+        // S'il n'y a pas encore d'onglet Query ces options sont inutilisables
         if (nbreTab.isEmpty()) {
             cut.setEnabled(false);
             copy.setEnabled(false);
@@ -1171,25 +1174,25 @@ public class MainFrame extends JFrame implements ActionListener {
             saveResult.setEnabled(false);
         }
     }
-    
+
     JCheckBox defineRuleBox(String title, String path) {
         JCheckBox box = new JCheckBox(title);
         box.setEnabled(true);
         box.setSelected(false);
         box.addItemListener(
                 new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                runRule(box.isSelected(), path);
-            }
-        });
+                    @Override
+                    public void itemStateChanged(ItemEvent e) {
+                        runRule(box.isSelected(), path);
+                    }
+                });
         return box;
     }
-    
+
     JMenuItem defItem(String name, String q) {
         return defItemBasic(QUERY, name, q);
     }
-    
+
     JMenuItem defItemFunction(String name, String q) {
         return defItemBasic("/function/", name, q);
     }
@@ -1205,7 +1208,7 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         return it;
     }
-    
+
     JMenuItem defDisplay(String name, int format) {
         JMenuItem it = new JMenuItem(name);
         it.addActionListener((ActionEvent event) -> {
@@ -1213,13 +1216,13 @@ public class MainFrame extends JFrame implements ActionListener {
         });
         return it;
     }
-    
+
     void displayMenu(String name, int format) {
         ResultFormat ft = ResultFormat.create(getMyCorese().getGraph(), format)
                 .setNbTriple(getTripleMax());
         getCurrentQueryPanel().getTextArea().setText(ft.toString());
     }
-    
+
     int getTripleMax() {
         int max = 10000;
         if (Property.intValue(GUI_TRIPLE_MAX) != null) {
@@ -1228,7 +1231,7 @@ public class MainFrame extends JFrame implements ActionListener {
         LOGGER.info("Display triple number: " + max);
         return max;
     }
-    
+
     JMenuItem defItemQuery(String name, String path) {
         JMenuItem it = new JMenuItem(name);
         it.addActionListener(this);
@@ -1249,7 +1252,7 @@ public class MainFrame extends JFrame implements ActionListener {
             e.process();
         }
     }
-    
+
     private void runRule(boolean selected, String path) {
         if (selected) {
             Entailment e = new Entailment(myCorese);
@@ -1259,49 +1262,41 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
 
-    //Actions du menu
+    // Actions du menu
     @Override
     public void actionPerformed(ActionEvent e) {
         if (e.getSource() == loadResult) {
             loadResult();
-        }
-        else if (e.getSource() == loadQuery) {
+        } else if (e.getSource() == loadQuery) {
             loadQuery();
         } else if (e.getSource() == loadRule) {
             loadRule();
-        } 
-        else if (e.getSource() == loadRDF || e.getSource() == loadSHACL) {
+        } else if (e.getSource() == loadRDF || e.getSource() == loadSHACL) {
             loadRDF();
-        } 
-        else if (e.getSource() == loadProperty) {
+        } else if (e.getSource() == loadProperty) {
             loadProperty();
-        } 
-        else if (e.getSource() == loadSHACLShape) {
+        } else if (e.getSource() == loadSHACLShape) {
             basicLoad(SHACL_SHACL);
-        } 
-        else if (e.getSource() == loadShex) {
+        } else if (e.getSource() == loadShex) {
             shex(true);
-        }
-        else if (e.getSource() == execWorkflow) {
+        } else if (e.getSource() == execWorkflow) {
             execWorkflow();
         } else if (e.getSource() == loadWorkflow) {
             loadWorkflow(false);
         } else if (e.getSource() == loadRunWorkflow) {
             loadWorkflow(true);
-        } 
-        else if (e.getSource() == cpTransform) {
+        } else if (e.getSource() == cpTransform) {
             compile();
-        } 
-        else if (e.getSource() == shex) {
+        } else if (e.getSource() == shex) {
             shex(false);
-        } 
-        //sauvegarde la requête dans un fichier texte (.txt)
+        }
+        // sauvegarde la requête dans un fichier texte (.txt)
         else if (e.getSource() == saveQuery) {
-          saveQuery();
+            saveQuery();
         } else if (e.getSource() == loadStyle) {
             String style = loadText();
             defaultStylesheet = style;
-        } //Sauvegarde le résultat sous forme XML dans un fichier texte
+        } // Sauvegarde le résultat sous forme XML dans un fichier texte
         else if (e.getSource() == saveResult) {
             save(current.getTextAreaXMLResult().getText());
         } // Exporter le graph au format RDF/XML
@@ -1327,7 +1322,7 @@ public class MainFrame extends JFrame implements ActionListener {
             if (!nbreTab.isEmpty()) {
                 current.getTextPaneQuery().cut();
             }
-        } //utilisation de la presse papier pour le copier coller
+        } // utilisation de la presse papier pour le copier coller
         else if (e.getSource() == copy) {
             if (!nbreTab.isEmpty()) {
                 current.getTextPaneQuery().copy();
@@ -1336,7 +1331,7 @@ public class MainFrame extends JFrame implements ActionListener {
             if (!nbreTab.isEmpty()) {
                 current.getTextPaneQuery().paste();
             }
-        } //Dupliquer une requête
+        } // Dupliquer une requête
         else if (e.getSource() == duplicate) {
             if (!nbreTab.isEmpty()) {
                 String toDuplicate;
@@ -1344,7 +1339,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 textQuery = toDuplicate;
                 newQuery(textQuery);
             }
-        } //Dupliquer une requête à partir du texte sélectionné
+        } // Dupliquer une requête à partir du texte sélectionné
         else if (e.getSource() == duplicateFrom) {
             if (!nbreTab.isEmpty()) {
                 String toDuplicate;
@@ -1352,7 +1347,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 textQuery = toDuplicate;
                 newQuery(textQuery);
             }
-        } //Commente une sélection dans la requête
+        } // Commente une sélection dans la requête
         else if (e.getSource() == comment) {
             if (!nbreTab.isEmpty()) {
                 String line;
@@ -1362,11 +1357,13 @@ public class MainFrame extends JFrame implements ActionListener {
                 for (int i = 0; i < current.getTextAreaLines().getLineCount() - 1; i++) {
                     try {
                         int lineStartOffset = getLineStartOffset(current.getTextPaneQuery(), i);
-                        line = current.getTextPaneQuery().getText(lineStartOffset, getLineOfOffset(current.getTextPaneQuery(), i) - lineStartOffset);
+                        line = current.getTextPaneQuery().getText(lineStartOffset,
+                                getLineOfOffset(current.getTextPaneQuery(), i) - lineStartOffset);
 
-                        if (lineStartOffset >= selectedTextSartPosition && lineStartOffset <= selectedTextEndPosition && !line.startsWith("#")) {
-                            //on regarde si la ligne est deja commentée ou non
-                            //on commente
+                        if (lineStartOffset >= selectedTextSartPosition && lineStartOffset <= selectedTextEndPosition
+                                && !line.startsWith("#")) {
+                            // on regarde si la ligne est deja commentée ou non
+                            // on commente
                             line = "#" + line;
                         }
                         result += line;
@@ -1376,11 +1373,11 @@ public class MainFrame extends JFrame implements ActionListener {
                 }
                 current.getTextPaneQuery().setText(result);
             }
-        } //crée un nouvel onglet requête
+        } // crée un nouvel onglet requête
         else if (e.getSource() == newQuery) {
             textQuery = defaultQuery();
             newQuery(textQuery);
-        } //Applique les règles chargées
+        } // Applique les règles chargées
         else if (e.getSource() == runRules) {
             try {
                 runRules(false);
@@ -1393,10 +1390,10 @@ public class MainFrame extends JFrame implements ActionListener {
             } catch (EngineException ex) {
                 LOGGER.error(ex.getMessage());
             }
-        } //Remet tout à zéro
+        } // Remet tout à zéro
         else if (e.getSource() == reset) {
             reset();
-        } //Recharge tous les fichiers déjà chargés
+        } // Recharge tous les fichiers déjà chargés
         else if (e.getSource() == refresh) {
             ongletListener.refresh(this);
         } else if (e.getSource() == apropos || e.getSource() == tuto || e.getSource() == doc) {
@@ -1407,7 +1404,7 @@ public class MainFrame extends JFrame implements ActionListener {
             browse(uri);
         } else if (e.getSource() == kgramBox) {
             isKgram = true;
-            //DatatypeMap.setLiteralAsString(true);
+            // DatatypeMap.setLiteralAsString(true);
             for (int i = 0; i < monTabOnglet.size(); i++) {
                 MyJPanelQuery temp = monTabOnglet.get(i);
                 temp.getButtonTKgram().setEnabled(true);
@@ -1418,18 +1415,17 @@ public class MainFrame extends JFrame implements ActionListener {
             execPlus(def.getName(), def.getQuery());
         }
     }
-    
-    
+
     public void browse(String url) {
         if (Desktop.isDesktopSupported() && Desktop.getDesktop().isSupported(Desktop.Action.BROWSE)) {
-            try {                
+            try {
                 Desktop.getDesktop().browse(new URI(url));
             } catch (IOException | URISyntaxException e) {
                 LOGGER.error(e);
             }
         }
     }
-    
+
     void loadRunRule() {
         String lPath = null;
         JFileChooser fileChooser = new JFileChooser(getPath());
@@ -1441,17 +1437,17 @@ public class MainFrame extends JFrame implements ActionListener {
                 lPath = f.getAbsolutePath();
                 if (lPath != null) {
                     try {
-                        setPath(f.getParent()); 
+                        setPath(f.getParent());
                         myCorese.load(lPath);
                         appendMsg("Loading file from path : " + f.getAbsolutePath() + "\n");
                         appendMsg(myCapturer.getContent() + "\ndone.\n\n");
                         // do not record because we do not want that this rule based be reloaded
                         // when we perform Engine/Reload
-                        //ongletListener.getModel().addElement(lPath);
+                        // ongletListener.getModel().addElement(lPath);
                         Date d1 = new Date();
                         boolean b = myCorese.runRuleEngine();
                         Date d2 = new Date();
-                        System.out.println("Time: " + (d2.getTime()-d1.getTime())/1000.0);
+                        System.out.println("Time: " + (d2.getTime() - d1.getTime()) / 1000.0);
                         if (b) {
                             appendMsg("\n rules applied... \n" + myCapturer.getContent() + "\ndone.\n");
                         }
@@ -1473,7 +1469,7 @@ public class MainFrame extends JFrame implements ActionListener {
             LOGGER.error(ex);
         }
     }
-    
+
     void saveQuery() {
         // Créer un JFileChooser
         JFileChooser filechoose = new JFileChooser(getPath());
@@ -1491,17 +1487,12 @@ public class MainFrame extends JFrame implements ActionListener {
                 myFile = myFile + RQ;
             }
 
-            try {
-                // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans lequel enregsitrer
-                FileWriter lu = new FileWriter(myFile);
-                // Mettre le flux en tampon (en cache)
-                BufferedWriter out = new BufferedWriter(lu);
-                // Mettre dans le flux le contenu de la zone de texte
-                out.write(current.getTextPaneQuery().getText());
+            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(myFile),
+                    StandardCharsets.UTF_8)) {
+                writer.write(current.getTextPaneQuery().getText());
                 current.setFileName(file.getName());
-                // Fermer le flux
-                out.close();
-
+                writer.close();
+                appendMsg("Writing the file : " + myFile + "\n");
             } catch (IOException er) {
                 LOGGER.error(er);
             }
@@ -1528,16 +1519,21 @@ public class MainFrame extends JFrame implements ActionListener {
             File f = filechoose.getSelectedFile();
             String myFile = f.toString();
             setPath(f.getParent());
-            try {
-                write(str, myFile);
+            try (OutputStreamWriter writer = new OutputStreamWriter(new FileOutputStream(myFile),
+                    StandardCharsets.UTF_8)) {
+                writer.write(str);
+                writer.close();
+                appendMsg("Writing the file : " + myFile + "\n");
             } catch (IOException ex) {
-                java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                        ex);
             }
         }
     }
-    
+
     void write(String str, String path) throws IOException {
-        // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans lequel enregsitrer
+        // Créer un objet java.io.FileWriter avec comme argument le mon du fichier dans
+        // lequel enregsitrer
         FileWriter lu = new FileWriter(path);
         // Mettre le flux en tampon (en cache)
         BufferedWriter out = new BufferedWriter(lu);
@@ -1565,7 +1561,8 @@ public class MainFrame extends JFrame implements ActionListener {
         return defaultQuery;
     }
 
-    public static int getLineStartOffset(final JTextComponent textComponent, final int line) throws BadLocationException {
+    public static int getLineStartOffset(final JTextComponent textComponent, final int line)
+            throws BadLocationException {
         final Document doc = textComponent.getDocument();
         final int lineCount = doc.getDefaultRootElement().getElementCount();
         if (line < 0) {
@@ -1593,7 +1590,7 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
 
-    //Pour la croix fermante sur les onglets
+    // Pour la croix fermante sur les onglets
     private void initTabComponent(int i) {
         conteneurOnglets.setTabComponentAt(i, new ButtonTabComponent(conteneurOnglets, this));
     }
@@ -1607,25 +1604,24 @@ public class MainFrame extends JFrame implements ActionListener {
     public String extension(Object o) {
         String extension = null;
         String s = String.valueOf(o);
-        int i = s.lastIndexOf('.');	//récupére l'index a partir duquel il faut couper
+        int i = s.lastIndexOf('.'); // récupére l'index a partir duquel il faut couper
 
         if (i > 0 && i < s.length() - 1) {
-            extension = s.substring(i + 1).toLowerCase();		//on récupére l'extension
+            extension = s.substring(i + 1).toLowerCase(); // on récupére l'extension
         }
-        return extension;	//on retourne le résultat
+        return extension; // on retourne le résultat
     }
-
 
     void display() {
         for (int i = 0; i < getOngletListener().getModel().getSize(); i++) {
             System.out.println("GUI: " + ongletListener.getModel().get(i).toString());
         }
     }
-    
+
     void loadRDF() {
         loadDataset();
     }
-    
+
     void loadProperty() {
         JFileChooser fileChooser = new JFileChooser(getProperty());
         File selectedFile;
@@ -1636,7 +1632,7 @@ public class MainFrame extends JFrame implements ActionListener {
             init(selectedFile.getAbsolutePath());
         }
     }
-       
+
     void init(String path) {
         try {
             LOGGER.info("Load Property File: " + path);
@@ -1645,7 +1641,7 @@ public class MainFrame extends JFrame implements ActionListener {
             LOGGER.error(ex);
         }
     }
-    
+
     void initProperty() {
         if (Property.stringValue(LOAD_QUERY) != null) {
             initLoadQuery(Property.pathValue(LOAD_QUERY));
@@ -1661,12 +1657,12 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
     }
-    
+
     void loadDataset() {
-        Filter FilterRDF  = new Filter("RDF", "rdf", "ttl", "trig", "jsonld", "html");
+        Filter FilterRDF = new Filter("RDF", "rdf", "ttl", "trig", "jsonld", "html");
         Filter FilterRDFS = new Filter("RDFS/OWL", "rdfs", "owl", "ttl");
         Filter FilterOWL = new Filter("OWL", "owl");
-        Filter FilterDS   = new Filter("Dataset", "rdf", "rdfs", "owl", "ttl", "html");        
+        Filter FilterDS = new Filter("Dataset", "rdf", "rdfs", "owl", "ttl", "html");
         load(FilterRDF, FilterRDFS, FilterOWL, FilterDS);
     }
 
@@ -1674,19 +1670,18 @@ public class MainFrame extends JFrame implements ActionListener {
         Filter FilterRDF = new Filter("Workflow", "ttl", "sw");
         load(FilterRDF, true, true, false);
     }
-    
+
     void loadWorkflow(boolean run) {
         Filter FilterRDF = new Filter("Workflow", "ttl", "sw");
         load(FilterRDF, true, false, run);
     }
-    
+
     /**
      * Charge un fichier dans CORESE
      */
     void load(Filter... filter) {
         load(false, false, false, filter);
     }
-    
 
     /**
      * wf: load a Workflow
@@ -1696,14 +1691,13 @@ public class MainFrame extends JFrame implements ActionListener {
     public void load(Filter filter, boolean wf, boolean exec, boolean run) {
         load(wf, exec, run, filter);
     }
-    
-    
+
     void load(boolean wf, boolean exec, boolean run, Filter... filter) {
         controler(LOAD);
         lPath = null;
         JFileChooser fileChooser = new JFileChooser(getPath());
         fileChooser.setMultiSelectionEnabled(true);
-        for (Filter f : filter){
+        for (Filter f : filter) {
             fileChooser.addChoosableFileFilter(f);
         }
         int returnValue = fileChooser.showOpenDialog(null);
@@ -1723,21 +1717,19 @@ public class MainFrame extends JFrame implements ActionListener {
                     model.addElement(lPath);
                 }
                 appendMsg("Loading " + extension(lPath) + " File from path : " + lPath + "\n");
-                if (wf){ 
-                   if (exec) {
-                       execWF(lPath);
-                   }
-                   else {
-                       loadWF(lPath, run);
-                   }
-                } 
-                else {
+                if (wf) {
+                    if (exec) {
+                        execWF(lPath);
+                    } else {
+                        loadWF(lPath, run);
+                    }
+                } else {
                     load(lPath);
                 }
             }
         }
     }
-    
+
     void basicLoad(String path) {
         DefaultListModel model = getOngletListener().getModel();
         if (!model.contains(path)) {
@@ -1750,7 +1742,7 @@ public class MainFrame extends JFrame implements ActionListener {
     void execWF(String path) {
         execWF(path, true);
     }
-    
+
     void execWF(String path, boolean reset) {
         if (reset) {
             reset();
@@ -1790,7 +1782,7 @@ public class MainFrame extends JFrame implements ActionListener {
             appendMsg(ex.toString());
         }
     }
-    
+
     void defQuery(WorkflowProcess wp, boolean run) {
         if (wp.getProcessList() != null) {
             for (WorkflowProcess wf : wp.getProcessList()) {
@@ -1806,20 +1798,20 @@ public class MainFrame extends JFrame implements ActionListener {
     String selectPath() {
         return selectPath(null);
     }
-    
+
     String selectPath(String title, String... ext) {
         lPath = null;
         JFileChooser fileChooser = new JFileChooser(getPath());
-        
-        if (ext != null && ext.length>0) {
+
+        if (ext != null && ext.length > 0) {
             Filter filter = new Filter(title, ext);
             fileChooser.addChoosableFileFilter(filter);
         }
-        
+
         fileChooser.setMultiSelectionEnabled(true);
         fileChooser.setFileSelectionMode(JFileChooser.FILES_AND_DIRECTORIES);
         int returnValue = fileChooser.showOpenDialog(null);
-        
+
         if (returnValue == JFileChooser.APPROVE_OPTION) {
             File l_Files[] = fileChooser.getSelectedFiles();
 
@@ -1832,7 +1824,7 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         return null;
     }
-    
+
     /**
      * Compile a transformation
      *
@@ -1858,7 +1850,7 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
     }
-    
+
     void shex(boolean load) {
         String path = selectPath("Shex", "shex");
         if (path != null) {
@@ -1876,11 +1868,12 @@ public class MainFrame extends JFrame implements ActionListener {
                     loadRDF(name);
                 }
             } catch (Exception ex) {
-                java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
+                java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null,
+                        ex);
             }
         }
     }
-    
+
     void compile(String path) {
         TemplatePrinter p = TemplatePrinter.create(path);
         try {
@@ -1903,7 +1896,7 @@ public class MainFrame extends JFrame implements ActionListener {
             case LOAD:
                 cbowlrllite.setSelected(false);
                 cbowlrl.setSelected(false);
-                //@todo: user rule check box
+                // @todo: user rule check box
                 break;
 
         }
@@ -1916,8 +1909,8 @@ public class MainFrame extends JFrame implements ActionListener {
             myCorese.load(fichier);
             Date d2 = new Date();
             appendMsg(myCapturer.getContent());
-            System.out.println("Load time: " +(d2.getTime() - d1.getTime())/1000.0);
-        } catch (EngineException |LoadException e) {
+            System.out.println("Load time: " + (d2.getTime() - d1.getTime()) / 1000.0);
+        } catch (EngineException | LoadException e) {
             appendMsg(e.toString());
             e.printStackTrace();
         }
@@ -1933,16 +1926,16 @@ public class MainFrame extends JFrame implements ActionListener {
     public String loadText(String title, String... ext) {
         String str = "";
         JFileChooser fileChooser = new JFileChooser(getPath());
-        
-        if (ext != null && ext.length>0) {
+
+        if (ext != null && ext.length > 0) {
             Filter filter = new Filter(title, ext);
             fileChooser.addChoosableFileFilter(filter);
         }
-        
+
         File selectedFile;
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            //Voici le fichier qu'on a selectionné
+            // Voici le fichier qu'on a selectionné
             selectedFile = fileChooser.getSelectedFile();
             setFileName(selectedFile.getName());
             setPath(selectedFile.getParent());
@@ -1952,12 +1945,13 @@ public class MainFrame extends JFrame implements ActionListener {
                 int n;
                 while ((n = fis.available()) > 0) {
                     byte[] b = new byte[n];
-                    //On lit le fichier
+                    // On lit le fichier
                     int result = fis.read(b);
                     if (result == -1) {
                         break;
                     }
-                    //On remplit un string avec ce qu'il y a dans le fichier, "s" est ce qu'on va mettre dans la textArea de la requête
+                    // On remplit un string avec ce qu'il y a dans le fichier, "s" est ce qu'on va
+                    // mettre dans la textArea de la requête
                     str = new String(b);
                     appendMsg("Loading file from path: " + selectedFile + "\n");
                 }
@@ -1980,15 +1974,15 @@ public class MainFrame extends JFrame implements ActionListener {
         textQuery = loadText("Query", "rq");
         newQuery(textQuery, getFileName());
     }
-    
-    void loadResult()  {
+
+    void loadResult() {
         try {
             loadResultWE();
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             LOGGER.error(ex.getMessage());
         }
     }
-    
+
     void loadResultWE() throws ParserConfigurationException, SAXException, IOException {
         String path = selectPath("Load Query Result", ".xml");
         SPARQLResultParser parser = new SPARQLResultParser();
@@ -1996,24 +1990,24 @@ public class MainFrame extends JFrame implements ActionListener {
         MyJPanelQuery panel = execPlus(path, "");
         panel.display(map);
     }
-    
-    void defQuery(String text, String name, boolean run){
+
+    void defQuery(String text, String name, boolean run) {
         textQuery = text;
         MyJPanelQuery panel = newQuery(textQuery, name);
-        if (run){
+        if (run) {
             panel.exec(this, text);
         }
     }
 
     public void loadPipe() {
-        //Load and run a pipeline
+        // Load and run a pipeline
         Filter FilterRUL = new Filter("RDF", "rdf", "ttl");
         JFileChooser fileChooser = new JFileChooser(getPath());
         fileChooser.addChoosableFileFilter(FilterRUL);
         File selectedFile;
         int returnValue = fileChooser.showOpenDialog(null);
         if (returnValue == JFileChooser.APPROVE_OPTION) {
-            //Voici le fichier qu'on a selectionné
+            // Voici le fichier qu'on a selectionné
             selectedFile = fileChooser.getSelectedFile();
             setPath(selectedFile.getParent());
             myCorese.runPipeline(selectedFile.getAbsolutePath());
@@ -2024,7 +2018,7 @@ public class MainFrame extends JFrame implements ActionListener {
      * Charge un fichier Rule dans CORESE
      */
     public void loadRule() {
-        Filter FilterRUL = new Filter("Rule" ,"rul", "brul");
+        Filter FilterRUL = new Filter("Rule", "rul", "brul");
         load(FilterRUL);
     }
 
@@ -2032,7 +2026,7 @@ public class MainFrame extends JFrame implements ActionListener {
         try {
             myCorese.load(fichier);
             appendMsg(myCapturer.getContent() + "\ndone.\n\n");
-        } catch (EngineException |LoadException e) {
+        } catch (EngineException | LoadException e) {
             appendMsg(e.toString());
             e.printStackTrace();
         }
@@ -2051,18 +2045,18 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
 
-    //Getteurs et setteurs utiles
-    //donne l'onglet sélectionné
+    // Getteurs et setteurs utiles
+    // donne l'onglet sélectionné
     public int getSelected() {
         return selected;
     }
 
-    //Accède au contenu de du textArea de l'onglet query
+    // Accède au contenu de du textArea de l'onglet query
     public String getTextQuery() {
         return textQuery;
     }
 
-    //Accède au conteneur d'onglets de la fenêtre principale
+    // Accède au conteneur d'onglets de la fenêtre principale
     public JTabbedPane getConteneurOnglets() {
         return conteneurOnglets;
     }
@@ -2075,7 +2069,7 @@ public class MainFrame extends JFrame implements ActionListener {
         return myCorese;
     }
 
-    //Réinitialise Corese
+    // Réinitialise Corese
     public void setMyCoreseNewInstance() {
         setMyCoreseNewInstance(cbrdfs.isSelected());
     }
@@ -2088,7 +2082,7 @@ public class MainFrame extends JFrame implements ActionListener {
         // execute options and -init property
         myCorese.init(cmd);
     }
-    
+
     // at the end of gui creation
     void process(Command cmd) {
         String path = cmd.get(Command.WORKFLOW);
@@ -2100,13 +2094,13 @@ public class MainFrame extends JFrame implements ActionListener {
         } catch (EngineException ex) {
             java.util.logging.Logger.getLogger(MainFrame.class.getName()).log(java.util.logging.Level.SEVERE, null, ex);
         }
-        
-        if (cmd.getQuery() !=null) {
+
+        if (cmd.getQuery() != null) {
             initLoadQuery(cmd.getQuery());
         }
         initProperty();
     }
-    
+
     void initLoadQuery(String path) {
         if (path != null) {
             QueryLoad ql = QueryLoad.create();
@@ -2121,7 +2115,7 @@ public class MainFrame extends JFrame implements ActionListener {
             }
         }
     }
-    
+
     void init() throws EngineException {
         QueryProcess exec = QueryProcess.create(Graph.create());
         System.out.println("Import: SHACL");
@@ -2217,22 +2211,22 @@ public class MainFrame extends JFrame implements ActionListener {
     public void setEvalListener(MyEvalListener el) {
         this.el = el;
     }
-    
+
     public void setPath(String path) {
         this.lCurrentPath = path;
     }
-    
+
     public String getPath() {
         return lCurrentPath;
-    } 
-    
+    }
+
     public void setProperty(String path) {
         this.lCurrentProperty = path;
     }
-    
+
     public String getProperty() {
         return lCurrentProperty;
-    } 
+    }
 
     /**
      *
@@ -2247,8 +2241,7 @@ public class MainFrame extends JFrame implements ActionListener {
             buffer.set(event);
         }
     }
-    
-    
+
     /**
      * @return the fileName
      */
@@ -2267,25 +2260,26 @@ public class MainFrame extends JFrame implements ActionListener {
         CaptureOutput aCapturer = new CaptureOutput();
         LoggerContext context = (LoggerContext) LogManager.getContext();
         Configuration config = context.getConfiguration();
-        PatternLayout layout = PatternLayout.createLayout("%m%n", null, config, null, Charset.defaultCharset(), false, false, null, null);
-        MainFrame coreseFrame = new MainFrame(aCapturer, p_args);       
+        PatternLayout layout = PatternLayout.createLayout("%m%n", null, config, null, Charset.defaultCharset(), false,
+                false, null, null);
+        MainFrame coreseFrame = new MainFrame(aCapturer, p_args);
         coreseFrame.setStyleSheet();
         coreseFrame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         MyJPanelListener.listLoadedFiles.setCellRenderer(new MyCellRenderer());
         setSingleton(coreseFrame);
     }
-    
+
     public void show(String text) {
         getPanel().display(text);
     }
-    
+
     public static void display(String text) {
         if (getSingleton() != null) {
             getSingleton().appendMsg(text);
             getSingleton().appendMsg("\n");
         }
     }
-    
+
     public static void newline() {
         if (getSingleton() != null) {
             getSingleton().appendMsg("\n");

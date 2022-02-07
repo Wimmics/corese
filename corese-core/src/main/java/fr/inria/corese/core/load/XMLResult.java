@@ -301,7 +301,7 @@ public class XMLResult {
         }
 
         // called for each binding
-        void clear() {
+        void basicClear() {
             isURI = false;
             isLiteral = false;
             isBlank = false;
@@ -309,6 +309,10 @@ public class XMLResult {
             datatype = null;
             lang = null;
             isVariable = false;
+        }
+        
+        void clear() {
+            basicClear();
             triple = 0;
         }
 
@@ -395,7 +399,7 @@ public class XMLResult {
 
         void record(Node n) {
             if (triple > 0) {
-                node = n;
+                setNode(n);
             } else {
                 add(var, n);
             }
@@ -410,20 +414,19 @@ public class XMLResult {
             switch (type(simpleName)) {
                 case SUBJECT:
                     pushSubject(getNode());
+                    basicClear();
                     break;
                 case PREDICATE:
                     pushPredicate(getNode());
+                    basicClear();
                     break;
                 case OBJECT:
                     pushObject(getNode());
+                    basicClear();
                     break;
                 case TRIPLE:
                     triple--;
-                    setNode(edge(popSubject(), popPredicate(), popObject()));
-//                    if (triple == 0) {
-//                        // main triple
-//                        add(var, getNode());
-//                    }
+                    record(edge(popSubject(), popPredicate(), popObject()));
                     break;
                 default:
 

@@ -222,7 +222,7 @@ public class EdgeFactory {
     public Edge create(Node source, Node predicate, List<Node> list, boolean nested) {
         EdgeImpl ee = EdgeImpl.create(source, predicate, list);
         ee.setMetadata(graph.isMetadata());
-        if (ee.hasReference()) {
+        if (ee.hasReferenceNode()) {
             ee.getReferenceNode().setEdge(ee);
             ee.setNested(nested);
         }
@@ -237,7 +237,7 @@ public class EdgeFactory {
         
     // @todo: check this
     public Edge name(Edge edge, Node predicate, Node name) {
-        if (edge.hasReference()) {
+        if (edge.hasReferenceNode()) {
             edge.setReferenceNode(name);
             return edge;
         }

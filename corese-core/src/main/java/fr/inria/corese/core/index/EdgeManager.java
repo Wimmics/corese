@@ -266,7 +266,7 @@ public class EdgeManager implements Iterable<Edge> {
         for (int i=n+1; i<list.size(); i++) {
             Edge e2 = list.get(i);
             if (compare2(e, e2) == 0) {
-                if (e2.hasReference()) {
+                if (e2.hasReferenceNode()) {
                     return e2.getReferenceNode();
                 }
             }

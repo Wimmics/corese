@@ -43,6 +43,33 @@ public interface DataBrokerConstruct extends DataBroker {
         return false;
     }
     
+    
+    /**
+     * Edge may be an rdf star triple, asserted or nested
+     * RDF star triple design
+     * <<s p o>> q v   -> <<edge(s p o t)>>  t q v
+     * s p o {| q v |} -> edge(s p o t)      t q v
+     * g1 s p o t  g2 s p o t
+     * t is additional Node, similar to subject/object
+     * every occurrence of triple s p o (whatever graph g) has same reference node t
+     * edge.hasReferenceNode() == true
+     * edge.getReferenceNode() = t
+     * t.getEdge() = s p o t
+     * t.isTriple() == true
+     * edge.isNested()   == true |false
+     * edge.isAsserted() == false|true
+     * IDatatype dt = t.getDatatypeValue()
+     * dt.isTriple() == true|false
+     * dt.getEdge() = s p o t
+     * 
+     * operation find, insert, delete may have as argument a rdf star edge
+     * where subject/object may be a reference node and/or edge may have reference node 
+     * DataManager must process these subject/object/reference using the api above
+     * for example: find/insert/delete t q v where t = <<s p o>>
+     * Note that it can be recursive: t = <<<<s p o>> r u>> 
+     * .
+     */
+    
     default Edge find(Edge edge) {
         return edge;
     }

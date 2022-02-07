@@ -179,10 +179,6 @@ public class GraphManager {
     }
     
     public Edge find(Edge edge) {
-//        if (edge.getGraph() == null) {
-//            edge.setGraph(getDefaultGraphNode());
-//        }
-        // delete edge may have graph node == null
         return getDataBroker().find(edge);
     }
 

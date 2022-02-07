@@ -123,7 +123,7 @@ public class EdgeImpl extends EdgeTop
     
     public String nestedTriple() {
         String str = String.format("<<%s %s %s>>", getNode(0), getEdgeNode(), getNode(1));
-        if (!DatatypeMap.DISPLAY_AS_TRIPLE && hasReference()) {
+        if (!DatatypeMap.DISPLAY_AS_TRIPLE && hasReferenceNode()) {
             str = String.format("%s [%s]", str, getReferenceNode());
         }
         if (getGraphNode()!=null && !getGraphNode().getLabel().equals(Entailment.DEFAULT)) {

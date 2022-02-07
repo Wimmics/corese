@@ -319,6 +319,10 @@ public class Construct
      * env: current solution mapping to be processed
      */
     void construct(Node gNode, Exp exp, Mappings map, Environment env, List<Edge> edgeList) {
+        construct(gNode, exp, map, env, edgeList, false);
+    }
+    
+    void construct(Node gNode, Exp exp, Mappings map, Environment env, List<Edge> edgeList, boolean rec) {
         if (exp.isGraph()) {
             gNode = exp.getGraphName();
             exp = exp.rest();
@@ -333,10 +337,10 @@ public class Construct
         for (Exp ee : exp.getExpList()) {
             if (ee.isEdge()) {
                 List<Edge> insertEdgeList = 
-                        (isInsertConstruct()) ? new ArrayList<>() : emptyEdgeList;
+                        (isInsertConstruct() || isRule()) ? new ArrayList<>() : emptyEdgeList;
                 // construct edge may construct nested rdf star triples recursively
                 // they are recorded in insertEdgeList
-                Edge edge = construct(gNode, ee.getEdge(), env, insertEdgeList);
+                Edge edge = construct(gNode, ee.getEdge(), env, insertEdgeList, rec);
                 
                 if (edge != null) {
                     // RuleEngine loop index
@@ -364,14 +368,15 @@ public class Construct
                                 edgeList.add(edge);
                             }
                             if (isLocal()) {
-                              // store edge in graph rigth now
-                                edge = graphManager.insert(edge);
-                                
-                                if (!insertEdgeList.isEmpty()) {
-                                    for (Edge nestedEdge : insertEdgeList) {
-                                        graphManager.insert(nestedEdge);
-                                    }
-                                }
+                                // store edge in graph rigth now
+                                edge = graphManager.insert(edge);                                
+                                for (Edge nestedEdge : insertEdgeList) {
+                                    // insert { t q v } where { ... }
+                                    // edge = t q v ; nestedEdge = <<s p o t>>
+                                    // t is reference of <<s p o>>
+                                    // insert <<s p o>> (and recursively s may be a reference)
+                                    graphManager.insert(nestedEdge);
+                                }                                
                             }
                             
                             if (edge != null) {
@@ -404,7 +409,7 @@ public class Construct
                     }
                 }
             } else {
-                construct(gNode, ee, map, env, edgeList);
+                construct(gNode, ee, map, env, edgeList, rec);
             }                        
         }
         
@@ -464,7 +469,7 @@ public class Construct
      * Edge nodes are searched in target graph 
      * If an insert node does not exist in the graph, it is added in the graph now
      */    
-    Edge construct(Node gNode, Edge edge, Environment env, List<Edge> insertEdgeList) {
+    Edge construct(Node gNode, Edge edge, Environment env, List<Edge> insertEdgeList, boolean rec) {
         if (trace) {
             System.out.println("___");
             System.out.println("construct edge: " + edge);
@@ -480,8 +485,8 @@ public class Construct
         }
         Node property = construct(pred, env);
         
-        Node subject = construct(gNode, source, edge.getNode(0), env, insertEdgeList, false);
-        Node object  = construct(gNode, source, edge.getNode(1), env, insertEdgeList, false);
+        Node subject = construct(gNode, source, edge.getNode(0), env, insertEdgeList, false, rec);
+        Node object  = construct(gNode, source, edge.getNode(1), env, insertEdgeList, false, rec);
 
         if ((source == null && !isDelete) || subject == null || property == null || object == null) {
             return null;
@@ -519,7 +524,7 @@ public class Construct
             list.add(object);
 
             for (int i = 2; i < edge.nbNode(); i++) {
-                Node n = construct(gNode, source, edge.getNode(i), env, null, true);
+                Node n = construct(gNode, source, edge.getNode(i), env, null, true, rec);
                 if (n != null) {
                     if (!isDelete){
                         graphManager.add(n, i);
@@ -544,7 +549,7 @@ public class Construct
 
     
     Node construct(Node gNode, Node source, Node qNode, Environment map) {
-        return construct(gNode, source, qNode, map, null, false);
+        return construct(gNode, source, qNode, map, null, false, false);
     }
 
     /**
@@ -554,11 +559,16 @@ public class Construct
      * it may be an rdf star triple reference
      */
     Node construct(Node queryGraphNode, Node resultGraphNode, Node queryNode, Environment map, 
-            List<Edge> insertEdgeList, boolean additionalNode) {        
+            List<Edge> insertEdgeList, boolean additionalNode, boolean rec) {        
         if (isDelete  && additionalNode && queryNode.isTriple()) {
             // reference node useless in case of delete
             // do not screw up future binding of this node in case it would appear as subject
            return null;
+        }
+        
+        if (rec && queryNode.isBlank()) {
+            // bnode in rec nested triple: bnode denote itself, it is not a variable
+            return queryNode;
         }
         
         // search result node in table
@@ -576,15 +586,16 @@ public class Construct
                 if (queryNode.isTriple()) {
                     if (!additionalNode && queryNode.isTripleWithEdge()) {
                         // triple(s p o t) . t q v
-                        // queryNode = t in t q v
-                        // find occurrence of (s p o t) in graph
+                        // queryNode = t 
+                        // find t from occurrence of (s p o t) in graph
                         if (isDelete) {                        
-                            dt = reference(queryGraphNode, queryNode, map);
+                            dt = reference(queryGraphNode, queryNode, map, emptyEdgeList, additionalNode, rec);
                         }
                         else {
                             int size = insertEdgeList.size();
-                            dt = reference(queryGraphNode, queryNode, map, insertEdgeList);
+                            dt = reference(queryGraphNode, queryNode, map, insertEdgeList, additionalNode, rec);
                             if (insertEdgeList.size() > size) {
+                                // insert/construct edge s p o t of t 
                                 processInsertEdgeList = true;
                             }
                         }
@@ -614,11 +625,12 @@ public class Construct
                         && targetNode.isTripleWithEdge()  
                         && (targetNode.getEdge().isCreated() || isConstruct())) {
                     // <<triple(s p o t)>> . t q v
-                    // queryNode = t in t q v
-                    // find occurrence of t in triple(s p o t) in graph
+                    // queryNode = t 
+                    // find t in occurrence of triple(s p o t) in graph
                     int size = insertEdgeList.size();
-                    dt = reference(queryGraphNode, targetNode, map, insertEdgeList);
+                    dt = reference(queryGraphNode, targetNode, map, insertEdgeList, additionalNode, rec);
                     if (dt!=null&&insertEdgeList.size()>size) {
+                        // insert edge s p o t of t 
                         processInsertEdgeList = true;
                     }
                 }
@@ -630,12 +642,12 @@ public class Construct
             resultNode = uniqueNode(resultGraphNode, dt);
             put(queryNode, resultNode);
             
-            // insert { ?t q v } where { bind(<<s p o>> as ?t) }
-            // insertEdgeList = ( <<s p o>> )
-            // queryNode = ?t resultNode = t
-            // t in t q v becomes reference node <<s p o t>>
             if (processInsertEdgeList) {
-                Edge ee = insertEdgeList.get(insertEdgeList.size()-1);
+                // insert { ?t q v } where { bind(<<s p o>> as ?t) }
+                // insertEdgeList = ( <<s p o>> )
+                // queryNode = ?t resultNode = t
+                // t in t q v becomes reference node <<s p o t>>
+                Edge ee = insertEdgeList.get(insertEdgeList.size() - 1);
                 ee.setReferenceNode(resultNode);
                 resultNode.setEdge(ee);
             }
@@ -644,30 +656,28 @@ public class Construct
         return resultNode;
     }   
     
-    IDatatype reference(Node gNode, Node qNode, Environment map) {
-        return reference(gNode, qNode, map, null);
-    }
-    
+
     /**
      * qNode is a triple reference to edge: delete/insert/construct <<s p o>> q v -> t q v .
      * tuple(s p o t) qNode = t in t q v and t.edge = s p o instantiate edge s p
      * o, find it in graph, get its reference ref if any return ref as t
      *
      */
-    IDatatype reference(Node gNode, Node qNode, Environment map, List<Edge> insertEdgeList) {
+    IDatatype reference(Node gNode, Node qNode, Environment map, List<Edge> insertEdgeList, 
+            boolean additionalNode, boolean rec) {
         Edge edge   = qNode.getEdge();
         if (trace) {
             System.out.println("graph node: " + gNode );
             System.out.println("input node: " + qNode + " ref: " + edge + " asserted: " + edge.isAsserted());
         }
-        Edge query  = construct(gNode, edge, map, insertEdgeList);
+        Edge query  = construct(gNode, edge, map, insertEdgeList, true);
         Edge target = getGraphManager().find(query);
         if (trace) {
             System.out.println("edge inst: " + query + " asserted: " + query.isAsserted());
             System.out.println("target triple: " + target);
         }
 
-        if (target != null && target.hasReference()) {
+        if (target != null && target.hasReferenceNode()) {
             // target edge exists in graph: return its reference
             IDatatype dt = target.getReferenceNode().getDatatypeValue(); 
             if (trace) {
@@ -788,6 +798,7 @@ public class Construct
             // record dt target value, later it can be reused
             put(dt, node);
         }
+        if (dt.isBlank()) System.out.println("unique: " + dt + " " + node);
         return node;
     }
     

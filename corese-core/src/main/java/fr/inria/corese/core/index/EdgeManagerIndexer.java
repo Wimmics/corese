@@ -714,7 +714,7 @@ public class EdgeManagerIndexer
         if (AccessRight.acceptDelete(edge, target)
                 && accept(edge, target)) {
                        
-            if (getGraph().isRDFStar() && target.hasReference()) {  
+            if (getGraph().isRDFStar() && target.hasReferenceNode()) {  
                 // delete tuple(s p o t)
                 if (superUser(edge)) {
                     remove(list, i);

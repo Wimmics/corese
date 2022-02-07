@@ -83,6 +83,10 @@ public class Metadata extends ASTObject
     public static final int HEADER  = 64;
     public static final int COOKIE  = 65;
     public static final int TIMEOUT  = 66;
+    // data producer return asserted and nested edge for sparql query
+    public static final int RDF_STAR_SELECT  = 67;
+    // delete update query remove (nested) edge
+    public static final int RDF_STAR_DELETE  = 68;
     
 //    public static final int BEFORE  = 51;
 //    public static final int AFTER   = 52;
@@ -212,7 +216,10 @@ public class Metadata extends ASTObject
         define("@browse",   BROWSE); 
         define("@merge",    MERGE_SERVICE); 
         define("@format",   FORMAT); 
+        // update query evaluated as select query
         define("@select",   SELECT); 
+        define("@selectrdfstar", RDF_STAR_SELECT);
+        define("@deleterdfstar", RDF_STAR_DELETE);
                       
         define("@update",   UPDATE);  
         define("@event",    EVENT);  

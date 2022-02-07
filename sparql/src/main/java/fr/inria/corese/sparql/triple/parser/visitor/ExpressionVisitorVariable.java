@@ -7,10 +7,12 @@ import static fr.inria.corese.kgram.api.core.ExprType.LOCAL;
 import fr.inria.corese.sparql.triple.function.script.ForLoop;
 import fr.inria.corese.sparql.triple.function.script.Let;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Term;
+import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.VariableLocal;
 import java.util.ArrayList;
@@ -45,7 +47,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     HashMap<Variable, Integer> reference;
 
     ExpressionVisitorVariable() {
-        list = new ArrayList<Variable>();
+        list = new ArrayList<>();
         reference = new HashMap<>();
     }
     
@@ -151,11 +153,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             case ExprType.FOR:
                 loop(t.getFor());
                 break;
-                                                                      
-//            case ExprType.AGGREGATE:
-//                aggregate(t);
-//                break;
-                               
+                                                                                                     
             case ExprType.EXIST:
                visitExist(t);
                 // continue
@@ -172,8 +170,6 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
             Expression e = t.getArg(i);
             e.visit(this);
             if (isLocal(e)){
-//                VariableLocal var = new VariableLocal(e.getLabel());
-//                var.setIndex(e.getIndex());
                 VariableLocal var = getLocal(e.getVariable());
                 t.setArg(i, var);
                 t.setExp(i, var);
@@ -184,6 +180,7 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
     VariableLocal getLocal(Variable var) {
         VariableLocal nvar = new VariableLocal(var.getLabel());
         nvar.setIndex(var.getIndex());
+        nvar.setTriple(var.getTriple());
         return nvar;
     }
     
@@ -207,11 +204,45 @@ public class ExpressionVisitorVariable implements ExpressionVisitor {
 
     @Override
     public void visit(Variable v) {
-        variable(v);       
+        variable(v);   
+        triple(v);
     }
 
     @Override
     public void visit(Constant c) {
+        triple(c);
+    }
+    
+    void triple(Atom at) {
+        if (at.getTriple() != null) {
+            // rdf star triple
+            triple(at.getTriple());
+        }
+    }
+    
+    void visit(Atom at) {
+        if (at.isVariable()) {
+            visit(at.getVariable());
+        }
+        else {
+            visit(at.getConstant());
+        }
+    }
+    
+    // <<?s p o>>
+    void triple(Triple t) {
+        visit(t.getSubject());
+        if (isLocal(t.getSubject())) {
+            t.setSubject(getLocal(t.getSubject().getVariable()));
+        }
+        visit(t.getPredicate());
+         if (isLocal(t.getPredicate())) {
+            t.setVariable(getLocal(t.getPredicate().getVariable()));
+        }
+        visit(t.getObject());       
+        if (isLocal(t.getObject())) {
+            t.setObject(getLocal(t.getObject().getVariable()));
+        }
     }
         
     void function(Function f) {

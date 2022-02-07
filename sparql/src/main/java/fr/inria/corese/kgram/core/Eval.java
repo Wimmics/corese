@@ -2050,7 +2050,7 @@ public class Eval implements ExpType, Plugin {
             }
 
             Edge edge = it.next();
-            //if (query.isDebug())System.out.println("E: " + edge);
+            if (query.isDebug())System.out.println("E: " + edge);
             if (edge != null) {
                 nbEdge++;
                 if (hasListener && !listener.listen(qEdge, edge)) {

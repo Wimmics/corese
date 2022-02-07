@@ -221,7 +221,7 @@ public interface Edge extends Pointerable, Statement {
     }
 
     // for rdf star only
-    default boolean hasReference() {
+    default boolean hasReferenceNode() {
         return nbNode() > REF_INDEX && getReferenceNode().getDatatypeValue().isTriple();
     }
     

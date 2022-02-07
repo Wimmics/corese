@@ -208,7 +208,7 @@ public class EdgeManagerIndexer
      */
     @Override
     public Iterable<Edge> getEdges() {
-        MetaIterator<Edge> meta = new MetaIterator<Edge>();
+        MetaIterator<Edge> meta = new MetaIterator<>();
         for (Node pred : getSortedProperties()) {
             Iterable<Edge> it = extGet(pred);
             meta.next(it);
@@ -602,7 +602,6 @@ public class EdgeManagerIndexer
         else {
             return list.getEdges(node);
         }
-        //return list.getEdges(node, node2);
     }
     
     @Override
@@ -698,7 +697,6 @@ public class EdgeManagerIndexer
             // never happens for subject object and graph
             return null;
         }
-        //EdgeManager list = getListByLabel(edge);
         EdgeManager list = get(pred);
         
         if (list == null) {
@@ -719,10 +717,7 @@ public class EdgeManagerIndexer
             if (getGraph().isRDFStar() && target.hasReference()) {  
                 // delete tuple(s p o t)
                 if (superUser(edge)) {
-                    if (getIndex() == 0) {
-                        graph.setSize(graph.size() - 1);
-                    }
-                    list.remove(i);
+                    remove(list, i);
                 }
                 else {
                     // target = tuple(s p o t) with possibly t q v
@@ -733,10 +728,7 @@ public class EdgeManagerIndexer
                 }               
             } 
             else {
-                if (getIndex() == 0) {
-                    graph.setSize(graph.size() - 1);
-                }
-                list.remove(i);
+                remove(list, i);
             }
             
             logDelete(target);
@@ -744,6 +736,13 @@ public class EdgeManagerIndexer
         } 
         
         return null;
+    }
+    
+    void remove(EdgeManager list, int i) {
+        if (getIndex() == 0) {
+            graph.setSize(graph.size() - 1);
+        }
+        list.remove(i);
     }
     
     boolean superUser(Edge edge) {

@@ -336,7 +336,7 @@ public class EdgeManager implements Iterable<Edge> {
      */
     
     void compact() {
-        if (graph.isMetadata()) {
+        if (graph.isMetadata() || graph.isRDFStar()) {
             doCompactMetadata();
         }
         else {
@@ -352,7 +352,7 @@ public class EdgeManager implements Iterable<Edge> {
     }
     
     void doCompact(){
-        ArrayList<Edge> l = new ArrayList<Edge>(list.size());
+        ArrayList<Edge> l = new ArrayList<>(list.size());
         for (Edge ent : list) {
            Edge ee = graph.getEdgeFactory().compact(ent);
            l.add(ee);

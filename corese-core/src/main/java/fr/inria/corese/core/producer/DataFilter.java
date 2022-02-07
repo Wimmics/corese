@@ -22,13 +22,16 @@ public class DataFilter implements ExprType {
     public static final int OBJECT = 1;
     public static final int PROPERTY = -2;
     public static final int GRAPH = Graph.IGRAPH;
+    // when true:  return nested and asserted edge
+    // when false: return asserted target edge for asserted query edge
+    // and every edge for nested query edge
     public static boolean RDF_STAR_SELECT = false;
     
     private int test;
     int index, other = 1;
     byte level = AccessRight.DEFAULT;
     private AccessRight accessRight;
-    private boolean nested;
+    private boolean nested = false;
     
     private IDatatype value;
     

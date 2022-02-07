@@ -1069,13 +1069,13 @@ public class Graph extends GraphObject implements
 
     public String display(int n) {
         String sep = System.getProperty("line.separator");
-        StringBuffer sb = new StringBuffer();
+        StringBuilder sb = new StringBuilder();
 
         for (Node p : getSortedProperties()) {
             if (sb.length() > 0) {
                 sb.append(NL);
             }
-            sb.append(p + " (" + getIndex().size(p) + ") : ");
+            sb.append(p).append(" (").append(getIndex().size(p)).append(") : ");
             sb.append(sep);
             int i = 0;
             for (Edge ent : (n == 0) ? getEdges(p) : getIndex(n).getEdges()) {

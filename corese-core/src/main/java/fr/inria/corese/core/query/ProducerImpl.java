@@ -35,12 +35,11 @@ import fr.inria.corese.core.api.DataBroker;
 import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.producer.DataBrokerExtern;
 import fr.inria.corese.core.producer.DataBrokerLocal;
-import fr.inria.corese.core.util.Property;
 import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
 import fr.inria.corese.kgram.core.SparqlException;
-import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import static fr.inria.corese.sparql.triple.parser.Metadata.RDF_STAR_SELECT;
 
 /**
  * Producer Implement getEdges() for KGRAM interpreter rely on
@@ -224,7 +223,7 @@ public class ProducerImpl
             return empty;
         }
 
-        Query q = env.getQuery();
+        Query q = env.getQuery(); 
         if (q.isRule()) {
             Iterable<Edge> it = getRuleEdgeList(q, edge, env, namedGraphURI, from, predicate);
             if (it != null) {
@@ -294,13 +293,17 @@ public class ProducerImpl
         } else {
             boolean skip = graph.isEdgeMetadata() && edge.nbNode()==2;
             it = getEdges(namedGraphURI, getNode(namedGraphURI, env), from, predicate, focusNode, objectNode, focusNodeIndex, 
-                    skip, getAccessRight(env), edge.isNested());
+                    skip, getAccessRight(env), isNested(q, edge));
         }
         // in case of local Matcher
         it = localMatch(it, namedGraphURI, edge, env);
 
         return it;
-    }      
+    }  
+
+    boolean isNested(Query q, Edge edge) {
+        return edge.isNested() || q.getGlobalAST().hasMetadata(RDF_STAR_SELECT);
+    }    
     
     // special case with tricky optimizations for rule engine
     Iterable<Edge> getRuleEdgeList(Query q, Edge edge, Environment env, Node gNode, List<Node> from, Node predicate) {
@@ -334,6 +337,8 @@ public class ProducerImpl
      * focusNode: subject/object/graph node if any of them is known (constant or bound variable), otherwise null
      * objectNode: the object Node, possibly null
      * int n:  the index of focusNode in the triple: subject=0, object=1, graph=Graph.IGRAPH
+     * nested == false: return asserted edges
+     * nested == true:  return nested and asserted edges 
      */
     public Iterable<Edge> getEdges(Node queryGraphNode, Node targetGraphNode, List<Node> from,
             Node predicate, Node focusNode, Node objectNode, int focusNodeIndex, 
@@ -554,7 +559,7 @@ public class ProducerImpl
             }
         }
         Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, 
-                graph.isEdgeMetadata(), getAccessRight(env), edge.isNested());
+                graph.isEdgeMetadata(), getAccessRight(env), isNested(env.getQuery(), edge));
 
         return it;
     }
@@ -578,7 +583,7 @@ public class ProducerImpl
                 // exclude
             } else {
                 Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, 
-                        graph.isEdgeMetadata(), getAccessRight(env), edge.isNested());
+                        graph.isEdgeMetadata(), getAccessRight(env), isNested(env.getQuery(), edge));
 
                 if (it != null) {
                     meta.next(it);

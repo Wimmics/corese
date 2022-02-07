@@ -131,8 +131,12 @@ public class Construct
         return graphManager;
     }
     
-     public boolean isBuffer() {
+    public boolean isBuffer() {
         return isBuffer;
+    }
+     
+    boolean isLocal() {
+        return ! isBuffer();
     }
 
     public Construct setDelete(boolean b) {
@@ -330,61 +334,66 @@ public class Construct
             if (ee.isEdge()) {
                 List<Edge> insertEdgeList = 
                         (isInsertConstruct()) ? new ArrayList<>() : emptyEdgeList;
-                Edge ent = construct(gNode, ee.getEdge(), env, insertEdgeList);
+                // construct edge may construct nested rdf star triples recursively
+                // they are recorded in insertEdgeList
+                Edge edge = construct(gNode, ee.getEdge(), env, insertEdgeList);
                 
-                if (ent != null) {
+                if (edge != null) {
                     // RuleEngine loop index
-                    ent.setIndex(loopIndex);
+                    edge.setIndex(loopIndex);
                     
                     if (isDelete) {
                         boolean accept = true;
                         if (AccessRight.isActive()&&getAccessRight() != null) {
-                            accept = getAccessRight().setDelete(ent);
+                            accept = getAccessRight().setDelete(edge);
                         }
                         if (accept) {                           
-                            deleteList.add(ent);                                                        
+                            deleteList.add(edge);                                                        
                         }
                     } else { // insert/construt
                         if (isDebug) {
-                            logger.debug("** Construct: " + ent);
+                            logger.debug("** Construct: " + edge);
                         }
                         boolean accept = true;
                         if (AccessRight.isActive()&&getAccessRight() != null) {
-                            accept = getAccessRight().setInsert(ent);
+                            accept = getAccessRight().setInsert(edge);
                         }
                         if (accept) {
                             if (isRule() && isAllEntailment()) {
-                                edgeList.add(ent);
+                                //@todo: check insertEdgeList
+                                edgeList.add(edge);
                             }
-                            if (!isBuffer) {
-                                // isBuffer means: bufferise edges in a list 
-                                // that will be processed later by RuleEngine
-                                // otherwise, store edge in graph rigth now
-                                ent = graphManager.insert(ent);
+                            if (isLocal()) {
+                              // store edge in graph rigth now
+                                edge = graphManager.insert(edge);
                                 
                                 if (!insertEdgeList.isEmpty()) {
-                                    if (trace) System.out.println("__");
-                                    for (Edge edge : insertEdgeList) {
-                                        if (trace) System.out.println("insert: " + edge);
-                                        graphManager.insert(edge);
+                                    for (Edge nestedEdge : insertEdgeList) {
+                                        graphManager.insert(nestedEdge);
                                     }
                                 }
                             }
                             
-                            if (ent != null) {
+                            if (edge != null) {
+                                // edge has been inserted in  the graph with success
                                 if (isRule() && ! isAllEntailment()) {
-                                    edgeList.add(ent);
+                                    edgeList.add(edge);
                                 }
                                 map.setNbInsert(map.nbInsert() + 1);
+                                
                                 if (lInsert != null) {
-                                    // buffer where to store edges for RuleEngine process() cons.getInsertList()
-                                    lInsert.add(ent);
+                                    // isBuffer() == true
+                                    // store edges for RuleEngine process() cons.getInsertList()
+                                    lInsert.add(edge);
+                                    for (Edge nestedEdge : insertEdgeList) {
+                                        lInsert.add(nestedEdge);
+                                    }
                                 }
 
                                 if (isInsert()) {
                                     // When insert in new graph g, update dataset named += g
                                     if (getDataset() != null) {
-                                        String name = ent.getGraph().getLabel();
+                                        String name = edge.getGraph().getLabel();
                                         if (!graphManager.isDefaultGraphNode(name)) {
                                             getDataset().addNamed(name);
                                         }
@@ -411,17 +420,17 @@ public class Construct
     
     // @todo: check access right
     void delete(Node gNode, Mappings map, List<Edge> deleteList) {
-        for (Edge ent : deleteList) {
+        for (Edge edge : deleteList) {
             if (isDebug) {
-                logger.debug("** Delete: " + ent);
+                logger.debug("** Delete: " + edge);
             }
             List<Edge> list = null;
 
             if (gNode == null && getDataset() != null && getDataset().hasFrom()) {
                 // delete in default graph from dataset
-                list = graphManager.delete(ent, getDataset().getFrom());
+                list = graphManager.delete(edge, getDataset().getFrom());
             } else {
-                list = graphManager.delete(ent);
+                list = graphManager.delete(edge);
             }
 
             if (list != null) {
@@ -429,7 +438,7 @@ public class Construct
 
                 if (lDelete != null) {
                     //lDelete.addAll(list);
-                    lDelete.add(ent);
+                    lDelete.add(edge);
                 }
             }
         }
@@ -523,7 +532,9 @@ public class Construct
         } else {
             ee = create(source, subject, property, object);
         }
-        if (getProvenance() != null){
+
+        if (getProvenance() != null && !getGraphManager().isRDFStar()){
+            // @todo: check this
             ee.setProvenance(getProvenance());
         }
         ee.setNested(edge.isNested());
@@ -601,7 +612,7 @@ public class Construct
                 // retrieve corresponding reference in graph
                 if (!additionalNode 
                         && targetNode.isTripleWithEdge()  
-                        && targetNode.getEdge().isCreated()) {
+                        && (targetNode.getEdge().isCreated() || isConstruct())) {
                     // <<triple(s p o t)>> . t q v
                     // queryNode = t in t q v
                     // find occurrence of t in triple(s p o t) in graph
@@ -638,24 +649,26 @@ public class Construct
     }
     
     /**
-     * qNode is a triple reference to edge: delete <<s p o>> q v -> t q v .
+     * qNode is a triple reference to edge: delete/insert/construct <<s p o>> q v -> t q v .
      * tuple(s p o t) qNode = t in t q v and t.edge = s p o instantiate edge s p
      * o, find it in graph, get its reference ref if any return ref as t
      *
      */
     IDatatype reference(Node gNode, Node qNode, Environment map, List<Edge> insertEdgeList) {
         Edge edge   = qNode.getEdge();
-        Edge query  = construct(gNode, edge, map, insertEdgeList);
-        Edge target = getGraphManager().find(query);
-
         if (trace) {
             System.out.println("graph node: " + gNode );
-            System.out.println("input node: " + qNode + " ref: " + edge);
-            System.out.println("edge inst: " + query);
+            System.out.println("input node: " + qNode + " ref: " + edge + " asserted: " + edge.isAsserted());
+        }
+        Edge query  = construct(gNode, edge, map, insertEdgeList);
+        Edge target = getGraphManager().find(query);
+        if (trace) {
+            System.out.println("edge inst: " + query + " asserted: " + query.isAsserted());
             System.out.println("target triple: " + target);
         }
 
         if (target != null && target.hasReference()) {
+            // target edge exists in graph: return its reference
             IDatatype dt = target.getReferenceNode().getDatatypeValue(); 
             if (trace) {
                 System.out.println(qNode + " = " + dt);
@@ -666,8 +679,13 @@ public class Construct
         // if edge isCreated() : edge = <<s p o>> in 
         // insert { ?t us:wrt ?x } where {bind (<<s p o>> as ?t)}
         // insert <<s p o>> as well as nested triple
-        else if (edge.isCreated() && isInsertConstruct()) {
+        else if (isConstruct() || (edge.isCreated() && ! isDelete())) {
+            // add nested triple <<s p o>> in <<s p o>> q v
+            // it must not be asserted here
+            query.setNested(true);
             insertEdgeList.add(query);
+            // reference will be assigned as reference Node of (query) edge
+            // see setReferenceNode() above
             return tripleReference(qNode, map);
         }
         else {
@@ -913,6 +931,10 @@ public class Construct
     public boolean isConstruct() {
         return construct;
     }
+    
+    public boolean isDelete() {
+        return isDelete;
+    }
 
     public Construct setConstruct(boolean construct) {
         this.construct = construct;
@@ -984,6 +1006,5 @@ public class Construct
             return res;
         }
     }
-
- 
+    
 }

@@ -885,7 +885,7 @@ public class Transformer implements ExpType {
             if (val != null) {
                 if (val.isTriple() && val.getTriple()!=null) {
                     Edge edge = compiler.compile(val.getTriple(), true, true);
-                    if (edge.hasReference()) {
+                    if (edge.hasReferenceNode()) {
                         node = edge.getReferenceNode();
                     }
                 }

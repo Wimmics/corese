@@ -46,8 +46,10 @@ import javax.ws.rs.core.MediaType;
 @Path("sparql")
 public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     private static final String ERROR_ENDPOINT = "Error while querying Corese SPARQL endpoint";
-
     private static final String headerAccept = "Access-Control-Allow-Origin";
+    private static final String headerContent = "Content-type";
+    private static final String TEXT_PLAIN = "text/plain";
+
     static final String SPARQL_RESULTS_XML  = ResultFormat.SPARQL_RESULTS_XML;
     static final String SPARQL_RESULTS_JSON = ResultFormat.SPARQL_RESULTS_JSON;
     static final String SPARQL_RESULTS_CSV  = ResultFormat.SPARQL_RESULTS_CSV;
@@ -886,7 +888,10 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
                 logger.warn("Null update query !");
             }
 
-            Response resp = Response.status(200).header(headerAccept, "*").entity("").build();
+            Response resp = Response.status(200)
+                    .header(headerAccept, "*")
+                    .header(headerContent, TEXT_PLAIN)
+                    .entity("").build();
             afterRequest(request, resp, message, map, resp.getEntity().toString());
             return resp;
         } catch (Exception ex) {

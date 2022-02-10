@@ -51,7 +51,6 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.URLParam;
-import java.io.FileWriter;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -72,7 +71,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class QueryProcess extends QuerySolver {
-
+    public static boolean DISPLAY_QUERY = false;
     private static Logger logger = LoggerFactory.getLogger(QueryProcess.class);
     private static ProducerImpl dbProducer;
     private static final String EVENT = "event";
@@ -377,10 +376,18 @@ public class QueryProcess extends QuerySolver {
 
     @Override
     public Mappings query(String squery) throws EngineException {
-        //System.out.println("QP: " + squery);
+        if (DISPLAY_QUERY) {
+            System.out.println("QP: " + squery);
+        }
         Mappings map = doQuery(squery, null, null);
-//        LogManager man = getLogManager(map);
-//        System.out.println(man);
+        return map;
+    }
+    
+    // rdf is a turtle document
+    // parse it as sparql query graph pattern (where bnode are variable)
+    public Mappings queryTurtle(String rdf) throws EngineException {
+        //System.out.println("QP: " + rdf);
+        Mappings map = doQuery(rdf, null, Dataset.create().setLoad(true));
         return map;
     }
 

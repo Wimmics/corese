@@ -286,6 +286,10 @@ public class Graph extends GraphObject implements
         }
         return false;
     }
+    
+    public boolean isCorrect() {
+        return ! isFlawed();
+    }
 
     public boolean typeCheck() {
         if (getEntailment() == null) {

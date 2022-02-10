@@ -556,10 +556,14 @@ public class Construct
      * Given queryNode return target node in map
      * If node exist in graph, return graph node
      * additionalNode = true means node is not subject/object, 
-     * it may be an rdf star triple reference
+     * it may be rdf star triple reference
+     * rec == true: recursive call for nested triple
+     * <<_:b p o t>> q v
      */
-    Node construct(Node queryGraphNode, Node resultGraphNode, Node queryNode, Environment map, 
-            List<Edge> insertEdgeList, boolean additionalNode, boolean rec) {        
+    Node construct(Node queryGraphNode, Node resultGraphNode, 
+            Node queryNode, Environment map, 
+            List<Edge> insertEdgeList, boolean additionalNode, boolean rec) {
+        
         if (isDelete  && additionalNode && queryNode.isTriple()) {
             // reference node useless in case of delete
             // do not screw up future binding of this node in case it would appear as subject
@@ -567,7 +571,8 @@ public class Construct
         }
         
         if (rec && queryNode.isBlank()) {
-            // bnode in rec nested triple: bnode denote itself, it is not a variable
+            // bnode in rec nested triple: 
+            // bnode denote itself, it is not a variable
             return queryNode;
         }
         
@@ -798,7 +803,6 @@ public class Construct
             // record dt target value, later it can be reused
             put(dt, node);
         }
-        if (dt.isBlank()) System.out.println("unique: " + dt + " " + node);
         return node;
     }
     

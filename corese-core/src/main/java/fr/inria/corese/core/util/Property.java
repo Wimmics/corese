@@ -10,6 +10,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.producer.DataFilter;
 import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.core.query.MatcherImpl;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.Transformer;
@@ -408,11 +409,12 @@ public class Property {
             case RDF_STAR:
                 Graph.setRDFStar(b);
                 ASTParser.RDF_STAR = b;
-                //ParserHandler.rdf_star_validation = b;
                 break;
                 
             case RDF_STAR_VALIDATION:
+                // check subject literal is an error
                 ParserHandler.rdf_star_validation = b;
+                MatcherImpl.RDF_STAR_VALIDATION = b;
                 break;
                 
             case RDF_STAR_SELECT:                

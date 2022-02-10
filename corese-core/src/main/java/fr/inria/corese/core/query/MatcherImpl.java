@@ -27,6 +27,8 @@ import fr.inria.corese.core.logic.Entailment;
  */
 public class MatcherImpl implements Matcher {
     private static boolean byIndex = false;
+    public static boolean RDF_STAR_VALIDATION = false;
+    boolean SparqlCompliant = DatatypeMap.SPARQLCompliant;
 
     /**
      * @return the byIndex
@@ -131,7 +133,7 @@ public class MatcherImpl implements Matcher {
             }
             else {
                 Node node  = r.getNode(i);
-                if (!match(qNode, node, env)) {
+                if (!match(q, r, qNode, node, env)) {
                     return false;
                 }
             }
@@ -282,7 +284,28 @@ public class MatcherImpl implements Matcher {
 
         IDatatype qdt =  q.getValue();
         IDatatype tdt =  t.getValue();
-        return (DatatypeMap.SPARQLCompliant) ? qdt.sameTerm(tdt) : qdt.match(tdt);
+        return (SparqlCompliant) ? qdt.sameTerm(tdt) : qdt.match(tdt);
+    }
+    
+    public boolean match(Edge query, Edge target, Node q, Node t, Environment env) {
+        if (q.isBlank()) {
+            if (RDF_STAR_VALIDATION && 
+                    query.isNested() && DatatypeMap.isUndefined(t.getValue())) {
+                // nested undefined literal cannot entail bnode
+                return false;
+            }
+            return true;
+        }
+        if (q.isVariable()) {
+            return true;
+        }
+        IDatatype qdt = q.getValue();
+        IDatatype tdt = t.getValue();        
+
+        // nested triple require same-term on literal
+        return (SparqlCompliant || 
+                (RDF_STAR_VALIDATION && query.isNested())) 
+                ? qdt.sameTerm(tdt) : qdt.match(tdt);
     }
 
   public MatchBNode getMatchBNode(){

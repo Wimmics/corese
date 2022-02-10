@@ -328,7 +328,7 @@ public class UpdateProcess {
                 logger.debug("** Update: insert not valid: " + exp);
             }
             q.setCorrect(false);
-            return null; //Mappings.create(q);
+            return null; 
         }
 
         if (exp != null) {
@@ -338,8 +338,6 @@ public class UpdateProcess {
         }
 
         // Processed as a construct (add) on target graph
-        //return manager.query(q, ast);
-        //return update(q, ast, m);
         return ast;
     }
 
@@ -357,7 +355,7 @@ public class UpdateProcess {
         if (!exp.validateData(ast) || !exp.validateDelete()) {
             q.setCorrect(false);
             q.addError("** Update: delete not valid: ", exp);
-            return null; //Mappings.create(q);
+            return null; 
         }
 
         if (exp != null) {
@@ -366,7 +364,6 @@ public class UpdateProcess {
             ast.setDeleteData(true);
         }
 
-        //return update(q, ast, m);
         return ast;
 
     }

@@ -95,6 +95,7 @@ public class QueryGraph implements QueryGraphVisitor {
             if (e != null) {
                 init(e);
                 exp.add(fac.queryEdge(e));
+                //exp.add(e);
             }
         }
         return exp;

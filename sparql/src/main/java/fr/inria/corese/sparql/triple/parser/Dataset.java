@@ -39,6 +39,10 @@ public class Dataset extends ASTObject {
     // W3C test case is true
     // Protocol is false
     boolean isUpdate = false;
+    // sparql/turtle parser must parse query string 
+    // with load() function instead of parse()
+    // parse turtle as sparql where graph pattern
+    private boolean load = false;
 
     public Dataset() {
         this(new ArrayList<Constant>(), new ArrayList<Constant>());
@@ -376,6 +380,15 @@ public class Dataset extends ASTObject {
 
     public Dataset setMetadata(Metadata metadata) {
         this.metadata = metadata;
+        return this;
+    }
+
+    public boolean isLoad() {
+        return load;
+    }
+
+    public Dataset setLoad(boolean load) {
+        this.load = load;
         return this;
     }
 

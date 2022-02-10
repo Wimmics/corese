@@ -28,7 +28,9 @@ public class ParserSparql1 {
     private static Logger logger = LoggerFactory.getLogger(ParserSparql1.class);
 
     SparqlCorese parser;
-    ASTQuery ast;   
+    ASTQuery ast;
+    // true: load turtle file as a sparql where graph pattern
+    private boolean load = false;
 
     public static ParserSparql1 create(ASTQuery aq) {
         return new ParserSparql1(aq);
@@ -56,7 +58,18 @@ public class ParserSparql1 {
 
     public ASTQuery parse() throws QueryLexicalException, QuerySyntaxException {
         try {
-            ASTQuery ast = parser.parse();
+            ASTQuery ast;
+            
+            if (isLoad()) {
+                // parse turtle as sparql where graph pattern
+                parser.getHandler().enterWhere();
+                ast = parser.load();
+                ast.setSelectAll(true);
+            }
+            else {
+                ast = parser.parse();
+            }
+            
             for (EngineException e : parser.getHandler().getErrorList()) {
                 throw new QuerySyntaxException(e.getMessage());
             }
@@ -68,6 +81,15 @@ public class ParserSparql1 {
             logger.debug(ast.getText());
             throw new QueryLexicalException(e.getMessage());
         }
+    }
+
+    public boolean isLoad() {
+        return load;
+    }
+
+    public ParserSparql1 setLoad(boolean load) {
+        this.load = load;
+        return this;
     }
     
     

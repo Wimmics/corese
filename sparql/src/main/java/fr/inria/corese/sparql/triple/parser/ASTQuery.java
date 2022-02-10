@@ -745,7 +745,7 @@ public class ASTQuery
 
     void setError(String error) {
         if (errors == null) {
-            errors = new ArrayList<String>();
+            errors = new ArrayList<>();
         }
         if (!errors.contains(error)) {
             errors.add(error);
@@ -2625,8 +2625,8 @@ public class ASTQuery
      */
     public Variable newBlankNode(Exp exp, String label) {
         if (blank == null) {
-            blank = new HashMap<String, Exp>();
-            blankNode = new HashMap<String, Variable>();
+            blank = new HashMap<>();
+            blankNode = new HashMap<>();
         }
 
         if (!isInsertData()) {
@@ -2636,15 +2636,13 @@ public class ASTQuery
                 blank.put(label, exp);
             } else if (ee != exp) {
                 setCorrect(false);
-                //logger.error(String.format(ASTMessage.BNODE_SCOPE1,  label));
-                addErrorMessage(BNODE_SCOPE1,  label);
+                //addErrorMessage(BNODE_SCOPE1,  label);
             }
         }
 
         Variable var = blankNode.get(label);
         if (var == null) {
             // create a new blank node and put it in the table
-            //var = newBlankNode();
             var = getBlankNode(label);
             blankNode.put(label, var);
         }

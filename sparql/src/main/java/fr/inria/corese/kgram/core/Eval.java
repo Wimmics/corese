@@ -2059,23 +2059,6 @@ public class Eval implements ExpType, Plugin {
 
                 //Edge edge = ent;
                 graph = edge.getGraph();
-
-//				if (draft && edgeToDiffer != null && previous != null){
-//					// draft backjump with position
-//					// backjump require different node
-//					// between previous and current edge
-////					if (indexToDiffer != n){
-////						System.out.println(query);
-////						edgeToDiffer = null;
-////					}
-////					else 
-//						if (! differ(exp, edgeToDiffer, previous, edge)){
-//						continue;
-//					}
-//					else {
-//						edgeToDiffer = null;
-//					}
-//				}
                 previous = edge;
                 boolean bmatch = match(qEdge, edge, gNode, graph, env);
 

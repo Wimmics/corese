@@ -42,7 +42,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
     private ArrayList<Exp> body;
 
     public Exp() {
-        body = new ArrayList<Exp>();
+        body = new ArrayList<>();
     }
 
     public Exp add(Exp exp) {
@@ -61,9 +61,16 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             exp.add(0, bgp);
             body.clear();
             return add(exp);
-
         }
         body.add(exp);
+        return this;
+    }
+    
+    // for parser handler stack.addList()
+    public Exp addList(RDFList list) {
+        for (Exp exp : list) {
+            add(exp);
+        }
         return this;
     }
 

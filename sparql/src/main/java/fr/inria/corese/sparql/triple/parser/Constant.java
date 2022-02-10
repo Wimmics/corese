@@ -190,7 +190,11 @@ public class Constant extends Atom {
                 //return name + "@" + lang;
                 toString(name, sb);
                 sb.append(KeywordPP.LANG).append(getLang());
-            } else if (hasRealDatatype()) {
+            } else if (DatatypeMap.isUndefined(getDatatypeValue())) {
+                    toString(name, sb);
+                    sb.append(KeywordPP.SDT).append(datatype);
+                }
+                else if (hasRealDatatype()) {
                 if (getDatatypeValue().isList()){
                     sb.append("@").append(getDatatypeValue().getContent());
                 }

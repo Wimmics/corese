@@ -130,14 +130,16 @@ PARSER_BEGIN(SparqlCorese)
     }   
     
     
-     public void load() throws JavaccParseException, TokenMgrError {
+     public ASTQuery load() throws JavaccParseException, TokenMgrError {
         astu = ASTUpdate.create();
         try {
-       	  LoadPattern();
+       	  Exp exp = LoadPattern();
+          astq.setBody(exp);
        	}
-         catch(ParseException e) {
-        	throw new JavaccParseException(e);
+        catch(ParseException e) {
+            throw new JavaccParseException(e);
         }
+        return astq;
     }
 
     boolean isLoad() {
@@ -1172,19 +1174,6 @@ void GraphPattern (Exp stack) : {}
 	(<DOT>)?
 )*
 }
-
-
-// former GraphPattern
-void GP(Exp stack) : {}
-{    
-	FilteredBasicGraphPattern(stack)
-  	(
-		GraphPatternNotTriples(stack) 
-   	 	(<DOT>   )?
-    	GraphPattern(stack)
-  	)?  	 
-}
-
 
 
 void FilteredBasicGraphPattern(Exp stack) : {} 

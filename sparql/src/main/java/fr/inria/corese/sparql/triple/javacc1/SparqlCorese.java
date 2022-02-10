@@ -110,14 +110,16 @@
     }
 
 
-     public void load() throws JavaccParseException, TokenMgrError {
+     public ASTQuery load() throws JavaccParseException, TokenMgrError {
         astu = ASTUpdate.create();
         try {
-          LoadPattern();
+          Exp exp = LoadPattern();
+          astq.setBody(exp);
         }
-         catch(ParseException e) {
-                throw new JavaccParseException(e);
+        catch(ParseException e) {
+            throw new JavaccParseException(e);
         }
+        return astq;
     }
 
     boolean isLoad() {
@@ -8805,11 +8807,6 @@ ExpressionList arg, el = null; Metadata meta = null;
     finally { jj_save(18, xla); }
   }
 
-  final private boolean jj_3R_155() {
-    if (jj_3R_179()) return true;
-    return false;
-  }
-
   final private boolean jj_3R_156() {
     if (jj_scan_token(LTLT)) return true;
     if (jj_3R_180()) return true;
@@ -10791,6 +10788,11 @@ ExpressionList arg, el = null; Metadata meta = null;
     xsp = jj_scanpos;
     if (jj_3R_117()) jj_scanpos = xsp;
     if (jj_scan_token(RPAREN)) return true;
+    return false;
+  }
+
+  final private boolean jj_3R_155() {
+    if (jj_3R_179()) return true;
     return false;
   }
 

@@ -1,7 +1,6 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.triple.cst.KeywordPP;
-import java.util.List;
 
 /**
  * <p>
@@ -114,7 +113,7 @@ public class Source extends SourceExp {
             // dive into {}
             ee = get(0);
         }
-
+        
         for (Exp exp : ee.getBody()) {
             if (!(exp.isTriple() && exp.validateData(ast))) {
                 return false;

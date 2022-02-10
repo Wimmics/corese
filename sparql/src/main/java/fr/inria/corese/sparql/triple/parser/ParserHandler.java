@@ -151,7 +151,8 @@ public class ParserHandler {
         if (create != null) {
             create.list(rlist);
         } else {
-            stack.add(rlist);
+            //stack.add(rlist);
+            stack.addList(rlist);
         }
 
         return rlist.head();

@@ -7,6 +7,7 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.SPARQLJSONResult;
 import fr.inria.corese.core.load.SPARQLResult;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.util.Property;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
@@ -34,30 +35,52 @@ public class RDFStar {
     static final String qt    = "http://www.w3.org/2001/sw/DataAccess/tests/test-query#";
     static final String ut    = "http://www.w3.org/2009/sparql/tests/test-update#";
     boolean trace = false;
+    RDFStarReport report;
+    int nbsuc     = 0;
+    int nbfail    = 0;
+    int nbvariant = 0;
     
-    public static void main(String[] args) throws LoadException {
+    RDFStar() {
+        report = new RDFStarReport("", "rdf star");
+    }
+    
+    public static void main(String[] args) throws LoadException, EngineException, IOException {
         new RDFStar().process();
     }
     
-    void process() throws LoadException {
+    void report(String test, boolean suc) {
+        report.result(test, suc);
+        if (suc){nbsuc++;}
+        else {nbfail++;}
+    }
+    
+    /**
+     * @todo:
+     * "test"@en-us not sameTerm "test"@en-US
+     */
+    
+    void process() throws LoadException, EngineException, IOException {
         Property.set(Property.Value.RDF_STAR, true);
+        // nested subject literal is an error
+        // nested 042 does not unify with nested 42
+        // nested undefined literal does not unify with bnode
         Property.set(Property.Value.RDF_STAR_VALIDATION, true);
         Property.set(Property.Value.LOAD_IN_DEFAULT_GRAPH, true);
+       // Property.set(Property.Value.SPARQL_COMPLIANT, true);
         
         for (IDatatype dt : RDFStar.this.manifest()) {
             String name =  dt.getLabel();
-            if (name.contains("trig/eval")) {
-                System.out.println("*** skip: " + name);
-                System.out.println("Trig rdf star parser undefined");
-            }
-            else {
-                RDFStar.this.manifest(name);
-            }
+            manifest(name);
         }
+        
+        report.write("/user/corby/home/AADemoNew/rdf-star-main/report.ttl");
+        System.out.println("nb success: " + nbsuc);
+        System.out.println("nb failure: " + nbfail);
+        System.out.println("nb variant: " + nbvariant);
     }
     
     // main manifest
-    void manifest(String name) throws LoadException {
+    void manifest(String name) throws LoadException, EngineException {
         Graph g = Graph.create();
         Load ld = Load.create(g);
         ld.parse(name);
@@ -68,7 +91,7 @@ public class RDFStar {
     }
     
     // manifest name
-    void manifest(Graph g, String name, List<IDatatype> testList) {
+    void manifest(Graph g, String name, List<IDatatype> testList) throws EngineException {
         System.out.println(name);
         if (trace) System.out.println("process: " + testList);
         
@@ -85,17 +108,28 @@ public class RDFStar {
         return edge.getObjectNode().getLabel();
     }
     
+    IDatatype getDatatypeValue(Graph g, String predicate, String subject) {
+        Edge edge = g.getEdge(predicate, subject, 0);
+        if (edge == null) {
+            return null;
+        }
+        return edge.getObjectValue();
+    }
+    
     /**
      * test: subject uri of a test 
      */
-    void test(Graph gg, IDatatype test) {
+    void test(Graph gg, IDatatype test) throws EngineException {
         System.out.println("test: " + test);
-        Edge eaction= gg.getEdge(mf + "action", test.getLabel(), 0);
-        Edge eresult= gg.getEdge(mf + "result", test.getLabel(), 0);
-        Edge etype  = gg.getEdge(NSManager.RDF+"type", test.getLabel(), 0);        
+        String subject = test.getLabel();
+        Edge eaction= gg.getEdge(mf + "action", subject, 0);
+        Edge eresult= gg.getEdge(mf + "result", subject, 0);
+        Edge etype  = gg.getEdge(NSManager.RDF+"type", subject, 0); 
+        String entailment = getValue(gg, mf+"entailmentRegime", subject);
         String type = etype ==null ? "undefined" : etype.getObjectNode().getLabel();
         String result = null; 
-        String comment = getValue(gg, rdfs+"comment", test.getLabel());
+        Boolean bresult = null;
+        String comment = getValue(gg, rdfs+"comment", subject);
         if (comment!=null) {
             System.out.println("comment: " + comment);
         }
@@ -110,13 +144,15 @@ public class RDFStar {
                 }
             }
             else if (dt.isBoolean()) {
-            
+                bresult = dt.booleanValue();
             }
             else {
                 result = nresult.getLabel();
             }
         }
-                
+        
+        boolean suc = true;
+        
         if (eaction != null) {
             Node node = eaction.getObjectNode();
             if (trace) System.out.println("action: " + node.getLabel());
@@ -134,7 +170,7 @@ public class RDFStar {
                     edata = gg.getEdge(ut + "data", node, 0);
                 }
                 
-                boolean isQuery = equery!=null;
+                boolean isQuery   = equery!=null;
                 boolean isRequest = erequest!=null;
                 
                 if ((isQuery || isRequest )&& edata!=null) {
@@ -142,11 +178,11 @@ public class RDFStar {
                     if (trace) if (isRequest) System.out.println("request: " + erequest.getObjectNode().getLabel());
                     if (trace) System.out.println("data: " + edata.getObjectNode().getLabel());
  
-                    query(edata.getObjectNode().getLabel(), 
+                    suc = query(edata.getObjectNode().getLabel(), 
                             isQuery?
                              equery.getObjectNode().getLabel():
                              erequest.getObjectNode().getLabel()       ,
-                            result, type, isQuery);
+                            result, type, entailment, isQuery);
                 }
                 else {
                     if (trace) System.out.println("query: " + equery);
@@ -154,13 +190,17 @@ public class RDFStar {
                 }
             }
             else {
-                action(node.getLabel(), result, type);
+                suc = action(node.getLabel(), result, type, entailment, bresult);
             }
         }
         else {
             if (trace) System.out.println("action: " + eaction);
         }
+        
+        report(subject, suc);
     }
+    
+
     
     void load(Load ld, String name) throws LoadException, EngineException {
         if (name.endsWith(".rq") || name.endsWith(".ru")) {
@@ -176,62 +216,133 @@ public class RDFStar {
         }
     }
     
-    void query(String rdf, String query, String result, String type, boolean isQuery) {       
+    void entailment(Graph g, String entailment) {
+        if (entailment != null && entailment.equals("RDFS-Plus")) {
+            RuleEngine re = RuleEngine.create(g);
+            re.setProfile(RuleEngine.OWL_RL);
+            try {
+                re.process();
+            } catch (EngineException ex) {
+                Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
+            }
+        }
+    }
+    
+    // test with sparql query
+    boolean  query(String rdf, String query, String result, String type, String entailment, boolean isQuery) {       
         Graph g = Graph.create();
         Load ld = Load.create(g);
         try {
             load(ld, rdf);
-//            if (type.contains("*** Negative test not detected")) {
-//                System.out.println(g.display());
-//            }
-        } catch (LoadException ex) {
+        } catch (EngineException | LoadException ex) {
             System.out.println("syntax error: " + rdf);
             System.out.println(type);
             System.out.println(ex.getMessage());
-            return;
-        } catch (EngineException ex) {
-            System.out.println("syntax error: " + rdf);
-            System.out.println(type);
-            System.out.println(ex.getMessage());
-            return;
-        }
+            return false;
+        } 
         
+        entailment(g, entailment);
+                        
         QueryLoad ql = QueryLoad.create();
         try {
             String q = ql.readWE(query);
             if (trace) System.out.println("query:\n"+q);
-            if (type.contains("Negative")) System.out.println(type);
+            //if (type.contains("Negative")) System.out.println(type);
             QueryProcess exec = QueryProcess.create(g);
-            Mappings map = exec.query(q);
+            Mappings map  = exec.query(q);
             Mappings map2 = result(result);            
-            genericompare(q, g, map, map2);            
-        } catch (LoadException ex) {
-            Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (EngineException ex) {
-            Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (IOException ex) {
-            Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (ParserConfigurationException ex) {
-            Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
-        } catch (SAXException ex) {
+            String strResult = ql.readWE(result);
+            return genericompare(q, g, map, map2, strResult, ! type.contains("Negative"));   
+            
+        } catch (LoadException | EngineException | IOException | ParserConfigurationException | SAXException ex) {
             Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return false;
     }
     
-    void genericompare(String q, Graph g, Mappings m1, Mappings m2) {
-        if (m2.getGraph() != null) {
-            if (m1.getGraph() == null) {
-                compare(g, (Graph) m2.getGraph());
+    // test with load
+     boolean action(String name, String result, String type, String entailment, Boolean bresult) throws EngineException {        
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        try {
+            load(ld, name);
+            if (type.contains("Negative")) { 
+                System.out.println(type);
+                if (result == null && bresult == null) {
+                    System.out.println(g.display());
+                }
+            }
+        } catch (LoadException | EngineException ex) {
+            System.out.println("syntax error detected: "+ name);
+            System.out.println(type);
+            if (type.contains("Negative")){
+                // we detect failure: test is a success
+                return true;
             }
             else {
-                compare((Graph) m1.getGraph(), (Graph) m2.getGraph());
+                System.out.println(ex.getMessage());
+                return false;
+            }
+        } 
+        
+        entailment(g, entailment);
+        boolean suc = true;
+        
+        if (result != null) {
+            Graph gres = Graph.create();
+            Load ldr = Load.create(gres);
+            QueryLoad ql = QueryLoad.create();
+            try {
+                String myresult = check(name, result);
+                load(ldr, myresult);
+                String rdfstr = ql.readWE(myresult);
+                suc = compare(g, gres, rdfstr, !type.contains("Negative"));
+            } catch (LoadException ex) {
+                Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
+                suc = false;
+            }
+        }
+        else if (bresult != null) {
+            suc = g.isCorrect() == bresult;
+            if (!suc) {
+                System.out.println("corese graph: " + g.isCorrect() + " w3c result: " + bresult);
+            }
+        }
+        return suc;
+    }
+     
+     String check(String data, String result) {
+         if (result.contains("trig/eval") && result.endsWith(".nq")) {
+             System.out.println("switch result: " + result + " to: " + data);
+             nbvariant++;
+             return data;
+         }
+         return result;
+     }
+    
+    boolean genericompare(String q, Graph g, Mappings m1, Mappings m2, String strResult, boolean positive) {
+        if (m2.getGraph() != null) {
+            if (m1.getGraph() == null) {
+                return compare(g, (Graph) m2.getGraph(), strResult, positive);
+            }
+            else {
+                return compare((Graph) m1.getGraph(), (Graph) m2.getGraph(), strResult, positive);
             }
         } else {
-           compare(q, m1, m2);
+           return compare(q, m1, m2);
         }
     }
     
-    void compare(String q, Mappings m1, Mappings m2) {
+    boolean compare(String q, Mappings m1, Mappings m2) {
+        return myCompare(q, m1, m2);
+    }
+    
+    boolean myCompare(String q, Mappings m1, Mappings m2) {
+        Compare cp = new Compare(m1, m2);
+        return cp.check(m1, m2);
+    }
+    
+    void basicCompare(String q, Mappings m1, Mappings m2) {
         if (m1.size()!=m2.size()) {
             System.out.println("query:\n"+q);
             display(m1, m2);
@@ -239,9 +350,35 @@ public class RDFStar {
     }
    
     void compare(Graph g, Graph r) {
-        if (g.size()!=r.size()) {
-            display(g, r);
+        
+    }
+    
+    
+    boolean compare(Graph g, Graph r, String turtle, boolean positive) {
+        g.init();
+        r.init();
+        try {
+            boolean b = query(g, r, turtle, positive);
+            if (b != positive) {
+                System.out.println("corese: " + b + " w3c: " + positive);
+                display(g, r);
+            }
+            return b == positive;
+        } catch (EngineException ex) {
+            Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
         }
+        return false;
+    }
+    
+    boolean query(Graph g, Graph r, String turtle, boolean positive) 
+            throws EngineException {
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.queryTurtle(turtle);
+        if (map.size() > 0  != positive) {
+            System.out.println("result:"+map.size());
+            System.out.println(map.getAST());
+        }
+        return map.size()>0;
     }
     
     void display(Graph g, Graph r) {
@@ -276,11 +413,6 @@ public class RDFStar {
 
     Mappings result(String name) throws IOException, ParserConfigurationException, SAXException, LoadException, EngineException {
         Mappings map = null;
-        // DRAFT for nquad
-//        if (name.endsWith(".nq")) {
-//            name.replace(".nq", ".trig");
-//        }
-        
         if (name.endsWith(".srj")) {
             SPARQLJSONResult json = SPARQLJSONResult.create();
             map = json.parse(name);
@@ -298,39 +430,13 @@ public class RDFStar {
         return map;
     }
     
-    void action(String name, String result, String type) {        
-        Graph g = Graph.create();
-        Load ld = Load.create(g);
-        try {
-            load(ld, name);
-            if (type.contains("Negative")) { 
-                System.out.println(type);
-                if (result == null) {
-                    System.out.println(g.display());
-                }
-            }
-        } catch (LoadException | EngineException ex) {
-            System.out.println("syntax error detected: "+ name);
-            System.out.println(type);
-            if (!type.contains("Negative")){
-                System.out.println(ex.getMessage());
-            }
-            return;
-        } 
-        
-        if (result != null) {
-            Graph gres = Graph.create();
-            Load ldr = Load.create(gres);
-            try {
-                ldr.parse(result);
-                compare(g, gres);
-            } catch (LoadException ex) {
-                Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
-            }
+   
+    
+    void compare(boolean corese, boolean w3c) {
+        if (corese != w3c) {
+            System.out.println("corese graph: " + corese + " w3c result: " + w3c);
         }
     }
-    
-
     
     List<IDatatype> manifest() throws LoadException {
         Graph g = Graph.create();

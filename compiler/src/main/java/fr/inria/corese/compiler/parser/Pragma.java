@@ -224,7 +224,7 @@ public class Pragma {
                 if (t.getObject().isBlankNode()) {
                     // kg:kgram kg:relax (foaf:type)
                     RDFList list = getList(t.getObject(), pragma);
-                    ast.setRelax(list.getList());
+                    if (list!=null) ast.setRelax(list.getList());
                 } else {
                     ast.addRelax(t.getObject());
                 }

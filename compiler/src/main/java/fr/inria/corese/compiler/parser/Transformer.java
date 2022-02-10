@@ -46,7 +46,6 @@ import java.util.HashMap;
  *
  */
 public class Transformer implements ExpType {
-
    
     private static Logger logger = LoggerFactory.getLogger(Transformer.class);
     public static final String NL = System.getProperty("line.separator");
@@ -183,7 +182,8 @@ public class Transformer implements ExpType {
             // PRAGMA: if Dataset has Context, it becomes ast Context
             ast.setDefaultDataset(getDataset());
         }
-        ParserSparql1.create(ast).parse();
+        boolean isLoad = getDataset()!=null && getDataset().isLoad();
+        ParserSparql1.create(ast).setLoad(isLoad).parse();
         if (getDataset()!=null && getDataset().getMetadata()!=null) {
             ast.addMetadata(getDataset().getMetadata());
         }

@@ -568,7 +568,7 @@ public class EdgeManagerIndexer
     @Override
     public Iterable<Edge> getSortedEdges(Node node) {
         PredicateList list = getNodeManager().getPredicates(node);
-        MetaIterator<Edge> meta = new MetaIterator<Edge>();
+        MetaIterator<Edge> meta = new MetaIterator<>();
         int i = 0;
         for (Node pred : list) {
             Iterable<Edge> it = getEdges(pred, node, list.getPosition(i++));

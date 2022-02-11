@@ -25,6 +25,11 @@ public class TripleFormat extends RDFFormat {
     static final String CGRAPH = "}";
 
     boolean isGraph = false;
+    // when true:  display default graph kg:default with embedding graph kg:default {}
+    // when false: display default graph in turtle (without graph kg:default {})
+    private boolean displayDefaultGraphURI = false;
+    // true when this pretty print is for a future translation into sparql select where
+    private boolean graphQuery = false;
     private Mappings mappings;
     int tripleCounter = 0;
 
@@ -130,17 +135,32 @@ public class TripleFormat extends RDFFormat {
                 break;
             }
             if (accept(gNode)) {
-                sdisplay(GRAPH);
-                sdisplay(SPACE);
-                node(gNode);
-                sdisplay(SPACE);
-                sdisplay(OGRAPH);
-                display();
-                for (Node node : graph.getNodeGraphIterator(gNode)) {
-                    print(gNode, node);
+                if (graph.isDefaultGraphNode(gNode) && ! isDisplayDefaultGraphURI()) {
+                    basicGraphNode(gNode);
+
+                } else {
+                    graphNode(gNode);
                 }
-                display(CGRAPH);
             }
+        }
+    }
+    
+    void graphNode(Node gNode) {
+        sdisplay(GRAPH);
+        sdisplay(SPACE);
+        node(gNode);
+        sdisplay(SPACE);
+        sdisplay(OGRAPH);
+        display();
+
+        basicGraphNode(gNode);
+
+        display(CGRAPH);
+    }
+    
+    void basicGraphNode(Node gNode) {         
+        for (Node node : graph.getNodeGraphIterator(gNode)) {
+            print(gNode, node.getNode());
         }
     }
    
@@ -298,6 +318,24 @@ public class TripleFormat extends RDFFormat {
     @Override
     public TripleFormat setNbTriple(int nbTriple) {
         super.setNbTriple(nbTriple);
+        return this;
+    }
+
+    public boolean isDisplayDefaultGraphURI() {
+        return displayDefaultGraphURI;
+    }
+
+    public TripleFormat setDisplayDefaultGraphURI(boolean displayDefaultGraphURI) {
+        this.displayDefaultGraphURI = displayDefaultGraphURI;
+        return this;
+    }
+
+    public boolean isGraphQuery() {
+        return graphQuery;
+    }
+
+    public TripleFormat setGraphQuery(boolean graphQuery) {
+        this.graphQuery = graphQuery;
         return this;
     }
 

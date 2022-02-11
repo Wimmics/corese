@@ -72,9 +72,9 @@ public class CreateImpl extends CreateTriple implements Creator {
 
     // init
     // TODO: check 
-    public void graph(String src) {
-        source = addGraph(src);
-    }
+//    public void graph(String src) {
+//        source = addGraph(src);
+//    }
 
     @Override
     public void graph(Atom src) {
@@ -93,11 +93,24 @@ public class CreateImpl extends CreateTriple implements Creator {
     }
 
     @Override
+    public void triple(Atom graph, Atom subject, Atom property, Atom object) {
+        triple(getGraph(graph), subject, property, object);
+    }
+    
+    Node getGraph(Atom graph) {
+       return graph == null ? addDefaultGraphNode() : addGraph(graph.getLabel());
+    }
+    
+    @Override
     public void triple(Atom subject, Atom property, Atom object) {
-        if (accept(property.getLabel())) {
-            if (source == null) {
-                source = addDefaultGraphNode();
-            }
+        if (source == null) {
+            source = addDefaultGraphNode();
+        }
+        triple(source, subject, property, object);
+    }
+    
+    Edge triple(Node source, Atom subject, Atom property, Atom object) {
+        if (accept(property.getLabel())) {           
             Node s = getSubject(subject);
             Node p = getProperty(property);
             Node o;
@@ -110,7 +123,9 @@ public class CreateImpl extends CreateTriple implements Creator {
             Edge e = create(source, s, p, o);
             add(e);
             parseImport(property, object);
+            return e;
         }
+        return  null;
     }
 
     void parseImport(Atom property, Atom object) {

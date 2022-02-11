@@ -31,5 +31,10 @@ public class NodeGraph extends NodeImpl {
     public Node getGraph() {
         return graph;
     }
+    
+    @Override
+    public int getIndex() {
+        return node.getIndex();
+    }
 
 }

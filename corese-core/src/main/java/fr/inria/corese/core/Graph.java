@@ -1385,7 +1385,6 @@ public class Graph extends GraphObject implements
     }
 
     public void define(Edge ent) {
-        //gindex.add(ent);
         nodeGraphIndex.add(ent);
     }
 

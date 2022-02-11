@@ -41,8 +41,8 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.jsonld.CoreseJsonTripleCallback;
 import fr.inria.corese.core.load.jsonld.JsonldLoader;
 import fr.inria.corese.core.load.rdfa.CoreseRDFaTripleSink;
-import fr.inria.corese.core.load.sesame.ParserLoaderSesame;
-import fr.inria.corese.core.load.sesame.ParserTripleHandlerSesame;
+//import fr.inria.corese.core.load.sesame.ParserLoaderSesame;
+//import fr.inria.corese.core.load.sesame.ParserTripleHandlerSesame;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -59,9 +59,9 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.net.URLConnection;
 import java.util.ArrayList;
-import org.openrdf.rio.RDFFormat;
-import org.openrdf.rio.RDFHandlerException;
-import org.openrdf.rio.RDFParseException;
+//import org.openrdf.rio.RDFFormat;
+//import org.openrdf.rio.RDFHandlerException;
+//import org.openrdf.rio.RDFParseException;
 import org.semarglproject.rdf.core.ParseException;
 
 /**
@@ -724,11 +724,13 @@ public class Load
                     break;
 
                 case NQUADS_FORMAT:
-                    loadWithSesame(stream, path, base, name, RDFFormat.NQUADS);
+                    //loadWithSesame(stream, path, base, name, RDFFormat.NQUADS);
+                    loadTurtle(stream, path, base, name, true);
                     break;
                     
                 case TRIG_FORMAT:
-                    loadWithSesame(stream, path, base, name, RDFFormat.TRIG);
+                    //loadWithSesame(stream, path, base, name, RDFFormat.TRIG);
+                    loadTurtle(stream, path, base, name);
                     break;
 
                 case RULE_FORMAT:
@@ -845,8 +847,12 @@ public class Load
             }
         }
     }
-
+    
     void loadTurtle(Reader stream, String path, String base, String name) throws LoadException {
+        loadTurtle(stream, path, base, name, false);
+    }
+    
+    void loadTurtle(Reader stream, String path, String base, String name, boolean nquad) throws LoadException {
         //logger.info("Load Turtle: " + path);
         CreateImpl cr = CreateImpl.create(graph, this);
         cr.graph(Constant.create(name));
@@ -863,11 +869,10 @@ public class Load
         before(dt, b);
         cr.setPath(path);
         LoadTurtle ld = LoadTurtle.create(stream, cr, base);
+        ld.setNquad(nquad);
         try {
             ld.load();
-        } catch (QueryLexicalException e) {
-            throw LoadException.create(e, path);
-        } catch (QuerySyntaxException e) {
+        } catch (QueryLexicalException | QuerySyntaxException e) {
             throw LoadException.create(e, path);
         } finally {
             after(dt, b);
@@ -921,22 +926,22 @@ public class Load
     //load turtle with parser sesame(openRDF)
     //can surpot format:.ttl, .nt, .nq and .trig
     //now only used for .trig and .nq
-    void loadWithSesame(Reader stream, String path, String base, String name, RDFFormat format) throws LoadException {
-        //logger.info("Load Sesame Parser: " + path);
-        ParserTripleHandlerSesame handler = new ParserTripleHandlerSesame(graph, name);
-        handler.setHelper(renameBlankNode, limit);
-        ParserLoaderSesame loader = ParserLoaderSesame.create(stream, base);
-
-        try {
-            loader.loadWithSesame(handler, format);
-        } catch (IOException ex) {
-            throw LoadException.create(ex, path);
-        } catch (RDFParseException ex) {
-            throw LoadException.create(ex, path);
-        } catch (RDFHandlerException ex) {
-            throw LoadException.create(ex, path);
-        }
-    }
+//    void loadWithSesame(Reader stream, String path, String base, String name, RDFFormat format) throws LoadException {
+//        //logger.info("Load Sesame Parser: " + path);
+//        ParserTripleHandlerSesame handler = new ParserTripleHandlerSesame(graph, name);
+//        handler.setHelper(renameBlankNode, limit);
+//        ParserLoaderSesame loader = ParserLoaderSesame.create(stream, base);
+//
+//        try {
+//            loader.loadWithSesame(handler, format);
+//        } catch (IOException ex) {
+//            throw LoadException.create(ex, path);
+//        } catch (RDFParseException ex) {
+//            throw LoadException.create(ex, path);
+//        } catch (RDFHandlerException ex) {
+//            throw LoadException.create(ex, path);
+//        }
+//    }
 
     void loadRule(String path, String name) throws LoadException {
         if (NSManager.isResource(path)) {

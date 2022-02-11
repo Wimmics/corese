@@ -449,6 +449,7 @@ public class Service implements URLParam {
 
     // may take URL parameter into account:    ?format=rdfxml
     public InputStream load(String url, String mime)  {
+        //logger.info("load accept format: " + url + " " + mime);
         if (LOAD_WITH_PARAMETER) {
             return getStream(getURL().getServer(), getFormat(mime));
         }
@@ -470,11 +471,12 @@ public class Service implements URLParam {
     }
     
     Response getResponse(String url, String mime) {
-        //System.out.println("Service:  " + url + " " + mime);
+        logger.info("Service:  " + url + " " + mime);
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build();
         WebTarget target = client.target(url);
         Builder build = target.request(mime);
+        //Builder build = target.request();
         Response resp = build.get();
         if (resp.getMediaType()!=null) {
             recordFormat(resp.getMediaType().toString());
@@ -501,6 +503,8 @@ public class Service implements URLParam {
                 getLog().addException(new EngineException(ex, ex.getMessage())
                         .setURL(getURL()).setObject(ex.getResponse()));
             }
+            logger.error("Response status: " + resp.getStatus());
+            logger.info("message: "+ res);
             throw ex;
         }
          

@@ -39,6 +39,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.LogManager;
+import fr.inria.corese.core.print.TripleFormat;
 import fr.inria.corese.core.producer.DataBrokerConstructExtern;
 import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.util.Extension;
@@ -386,11 +387,25 @@ public class QueryProcess extends QuerySolver {
     // rdf is a turtle document
     // parse it as sparql query graph pattern (where bnode are variable)
     public Mappings queryTurtle(String rdf) throws EngineException {
-        //System.out.println("QP: " + rdf);
-        Mappings map = doQuery(rdf, null, Dataset.create().setLoad(true));
-        return map;
+        return doQuery(rdf, null, Dataset.create().setLoad(true));
     }
-
+    
+    // translate graph g as ast query graph pattern
+    public Mappings query(Graph g) throws EngineException {
+        String rdf = TripleFormat.create(g).setGraphQuery(true).toString();
+        return doQuery(rdf, null, Dataset.create().setLoad(true));
+    }
+    
+    public Mappings queryTrig(Graph g) throws EngineException {
+        // trig where default graph kg:default is printed 
+        // in turtle without embedding graph kg:default { }
+        String rdf = TripleFormat.create(g, true).setGraphQuery(true).toString();
+        return doQuery(rdf, null, Dataset.create().setLoad(true));
+    }
+    
+    public Mappings queryTurtle(Graph g) throws EngineException {
+        return query(g);
+    }
     /**
      * defaut and named specify a Dataset if the query has no from/using (resp.
      * named), kgram use defaut (resp. named) if it exist for update, defaut is
@@ -531,7 +546,7 @@ public class QueryProcess extends QuerySolver {
      * RDF Graph g considered as a Query Graph Build a SPARQL BGP with g
      * Generate and eval q KGRAM Query
      */
-    public Mappings query(Graph g) throws EngineException {
+    public Mappings queryOld(Graph g) throws EngineException {
         QueryGraph qg = QueryGraph.create(g);
         return query(qg);
     }

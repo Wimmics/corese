@@ -24,6 +24,7 @@ public class NodeManager {
 
     private Graph graph;
     private HashMap<Node, PredicateList> ptable;
+    HashMap<Integer, PredicateList> indexTable;
     // in some case content is obsolete
     private boolean active = true;
     // safety to switch off
@@ -39,6 +40,7 @@ public class NodeManager {
     NodeManager(Graph g, int index) {
         graph = g;
         ptable = new HashMap<>();
+        indexTable = new HashMap<>();
         this.index = index;
         //setAvailable(index > 0);
     }
@@ -53,6 +55,7 @@ public class NodeManager {
 
     void clear() {
         ptable.clear();
+        indexTable.clear();
         count = 0;
     }
     
@@ -81,12 +84,36 @@ public class NodeManager {
         graph.getEventManager().finish(Event.IndexNodeManager, this);
     }
     
+    PredicateList get(Node node) {
+        return get1(node);
+    }
+    
+    void put(Node node, PredicateList list) {
+        put1(node, list);
+    }
+    
+    PredicateList get1(Node node) {
+        return ptable.get(node);
+    }
+    
+    void put1(Node node, PredicateList list) {
+        ptable.put(node, list);
+    }
+    
+    PredicateList get2(Node node) {
+        return indexTable.get(node.getIndex());
+    }
+    
+    void put2(Node node, PredicateList list) {
+        indexTable.put(node.getIndex(), list);
+    }
+    
     void add(Node node, Node predicate, int n) {
         if (isEffective()) {
-            PredicateList list = ptable.get(node);
+            PredicateList list = get(node);
             if (list == null) {
                 list = new PredicateList(isPosition);
-                ptable.put(node, list);
+                put(node, list);
             }
             list.add(node, predicate, n);
             count++;
@@ -112,16 +139,16 @@ public class NodeManager {
     }
 
     PredicateList getPredicateList(Node node) {
-        PredicateList list = ptable.get(node);
+        PredicateList list = get(node);
         if (list == null) {
             list = new PredicateList(isPosition, 0);
-            ptable.put(node, list);
+            put(node, list);
         }
         return list;
     }
     
     int getPosition(Node node, Node predicate) {
-        PredicateList list = ptable.get(node);
+        PredicateList list = get(node);
         if (list == null) {
             return -2;
         }
@@ -193,6 +220,11 @@ public class NodeManager {
         }
         
         return sb.toString();
+    }
+    
+    @Override
+    public String toString() {
+        return indexTable.toString();
     }
 
 }

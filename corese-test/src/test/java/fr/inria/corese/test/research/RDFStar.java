@@ -6,6 +6,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.SPARQLJSONResult;
 import fr.inria.corese.core.load.SPARQLResult;
+import fr.inria.corese.core.print.TripleFormat;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.util.Property;
@@ -76,7 +77,7 @@ public class RDFStar {
         report.write("/user/corby/home/AADemoNew/rdf-star-main/report.ttl");
         System.out.println("nb success: " + nbsuc);
         System.out.println("nb failure: " + nbfail);
-        System.out.println("nb variant: " + nbvariant);
+        //System.out.println("nb variant: " + nbvariant);
     }
     
     // main manifest
@@ -208,9 +209,9 @@ public class RDFStar {
             QueryProcess exec = QueryProcess.create(Graph.create());
             exec.compile(q);
         }
-        else if (name.endsWith(".trig")) {
-            ld.parse(name, Load.TURTLE_FORMAT,Load.TURTLE_FORMAT);
-        }
+//        else if (name.endsWith(".trig")) {
+//            ld.parse(name, Load.TURTLE_FORMAT,Load.TURTLE_FORMAT);
+//        }
         else {
             ld.parse(name);
         }
@@ -251,8 +252,8 @@ public class RDFStar {
             QueryProcess exec = QueryProcess.create(g);
             Mappings map  = exec.query(q);
             Mappings map2 = result(result);            
-            String strResult = ql.readWE(result);
-            return genericompare(q, g, map, map2, strResult, ! type.contains("Negative"));   
+            //String strResult = ql.readWE(result);
+            return genericompare(q, g, map, map2, ! type.contains("Negative"));   
             
         } catch (LoadException | EngineException | IOException | ParserConfigurationException | SAXException ex) {
             Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
@@ -293,10 +294,10 @@ public class RDFStar {
             Load ldr = Load.create(gres);
             QueryLoad ql = QueryLoad.create();
             try {
-                String myresult = check(name, result);
-                load(ldr, myresult);
-                String rdfstr = ql.readWE(myresult);
-                suc = compare(g, gres, rdfstr, !type.contains("Negative"));
+                //String myresult = check(name, result);
+                load(ldr, result);
+                String rdfstr = ql.readWE(result);
+                suc = compare(g, gres, !type.contains("Negative"));
             } catch (LoadException ex) {
                 Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
                 suc = false;
@@ -319,14 +320,25 @@ public class RDFStar {
          }
          return result;
      }
+     
+     void nquad(String name) {
+         Graph g = Graph.create();
+         Load ld = Load.create(g);
+        try {
+            ld.parse(name);
+            System.out.println("** nquad:\n"+g.display());
+        } catch (LoadException ex) {
+            Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
+        }
+     }
     
-    boolean genericompare(String q, Graph g, Mappings m1, Mappings m2, String strResult, boolean positive) {
+    boolean genericompare(String q, Graph g, Mappings m1, Mappings m2, boolean positive) {
         if (m2.getGraph() != null) {
             if (m1.getGraph() == null) {
-                return compare(g, (Graph) m2.getGraph(), strResult, positive);
+                return compare(g, (Graph) m2.getGraph(), positive);
             }
             else {
-                return compare((Graph) m1.getGraph(), (Graph) m2.getGraph(), strResult, positive);
+                return compare((Graph) m1.getGraph(), (Graph) m2.getGraph(), positive);
             }
         } else {
            return compare(q, m1, m2);
@@ -354,11 +366,11 @@ public class RDFStar {
     }
     
     
-    boolean compare(Graph g, Graph r, String turtle, boolean positive) {
+    boolean compare(Graph g, Graph r, boolean positive) {
         g.init();
         r.init();
         try {
-            boolean b = query(g, r, turtle, positive);
+            boolean b = query(g, r, positive);
             if (b != positive) {
                 System.out.println("corese: " + b + " w3c: " + positive);
                 display(g, r);
@@ -370,13 +382,18 @@ public class RDFStar {
         return false;
     }
     
-    boolean query(Graph g, Graph r, String turtle, boolean positive) 
+    boolean query(Graph g, Graph r, boolean positive) 
             throws EngineException {
         QueryProcess exec = QueryProcess.create(g);
-        Mappings map = exec.queryTurtle(turtle);
+        Mappings map = exec.queryTrig(r);
+        System.out.println(map.getAST());
+        //System.out.println("success: " + (map.size() > 0  == positive) + " " + map.size());
         if (map.size() > 0  != positive) {
-            System.out.println("result:"+map.size());
+            System.out.println("result: "+map.size() + " positive: " + positive);
             System.out.println(map.getAST());
+            System.out.println("w3c trig graph:");
+            System.out.println(TripleFormat.create(r, true));
+            System.out.println(TripleFormat.create(r));
         }
         return map.size()>0;
     }

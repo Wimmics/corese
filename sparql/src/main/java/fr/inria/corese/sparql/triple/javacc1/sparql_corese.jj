@@ -130,10 +130,22 @@ PARSER_BEGIN(SparqlCorese)
     }   
     
     
-     public ASTQuery load() throws JavaccParseException, TokenMgrError {
+    public ASTQuery load() throws JavaccParseException, TokenMgrError {
         astu = ASTUpdate.create();
         try {
        	  Exp exp = LoadPattern();
+          astq.setBody(exp);
+       	}
+        catch(ParseException e) {
+            throw new JavaccParseException(e);
+        }
+        return astq;
+    }
+
+    public ASTQuery nquad() throws JavaccParseException, TokenMgrError {
+        astu = ASTUpdate.create();
+        try {
+       	  Exp exp = nquadPattern();
           astq.setBody(exp);
        	}
         catch(ParseException e) {
@@ -220,6 +232,33 @@ void Defun() : { Metadata global = null, la = null;} {
         la = Annotate() (Function(global, la) | Package(la)) 
     ) *
 }
+
+Exp nquadPattern() : {Exp stack; Atom subject, predicate, object, graph=null;}
+{
+        {stack = BasicGraphPattern.create();}
+
+	(BaseDecl())? 
+        (PrefixDecl())?
+        ( { graph = null; }
+         subject   = nquadTerm(stack) 
+         predicate = GraphTerm(stack)     
+         object    = nquadTerm(stack)
+         (graph    = GraphTerm(stack))?
+        <DOT>
+         { handler.createNquad(subject, predicate, object, graph); }
+        ) *    
+        <EOF>
+
+	{ return stack; }
+}
+
+Atom nquadTerm(Exp stack) : {Atom at;}
+{
+    (at = GraphTerm(stack) | at = StarTriple(stack))
+    {return at;}
+}
+
+
 
 Exp LoadPattern() : {Exp stack;}
 {

@@ -19,7 +19,8 @@ import fr.inria.corese.sparql.triple.parser.RDFList;
 	
          void finish();
          
-	 void triple(Atom subject, Atom predicate, Atom object);
+	 void triple(Atom graph, Atom subject, Atom predicate, Atom object);
+ 	 void triple(Atom subject, Atom predicate, Atom object);
 	
 	 void triple(Atom predicate, List<Atom> l);
          

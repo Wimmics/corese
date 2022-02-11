@@ -36,6 +36,7 @@ public class LoadTurtle {
     SparqlCorese parser;
     Creator create;
     ASTQuery ast;
+    private boolean nquad = false;
 
     LoadTurtle(InputStream r, Creator c, String base) {
         setLoader(r, c, base);
@@ -101,7 +102,12 @@ public class LoadTurtle {
 
     public void load() throws QueryLexicalException, QuerySyntaxException {
         try {
-            parser.load();
+            if (isNquad()) {
+                parser.nquad();
+            }
+            else {
+                parser.load();
+            }
             for (EngineException e : parser.getHandler().getErrorList()) {
                 throw new QuerySyntaxException(e.getMessage());
             }
@@ -110,6 +116,15 @@ public class LoadTurtle {
         } catch (TokenMgrError e) {
             throw new QueryLexicalException(e.getMessage());
         }
+    }
+
+    public boolean isNquad() {
+        return nquad;
+    }
+
+    public LoadTurtle setNquad(boolean nquad) {
+        this.nquad = nquad;
+        return this;
     }
 
 }

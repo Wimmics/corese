@@ -21,7 +21,6 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.junit.*;
 import org.xml.sax.SAXException;
 
-import static org.junit.Assert.assertEquals;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -311,6 +310,8 @@ public class TestW3C11KGraphNew {
 
     public TestW3C11KGraphNew() {
         DatatypeMap.setSPARQLCompliant(true);
+//        fr.inria.corese.core.NodeImpl.byIDatatype = true;
+//        Load.setDefaultGraphValue(true);
         tko = new Testing();
         tok = new Testing();
         earl = new Earl();
@@ -1131,12 +1132,12 @@ public class TestW3C11KGraphNew {
                 gres.setDebug(true);
                 // compare SPARQL result kg and Test case result gres
                 QueryProcess verif = QueryProcess.create(kg);
-                Mappings mm = verif.query(gres);
+                Mappings mm = verif.queryTurtle(gres);
                 if (mm.size() == 0) { //(kg != null && !gres.compare(kg)) {
                     System.out.println("kgram:");
                     System.out.println(kg.display());
-//                    System.out.println("w3c");
-//                    System.out.println(gres.display());
+                    System.out.println("w3c");
+                    System.out.println(gres.display());
                     if (!sparql1 && path.contains("construct")) {
                         // ok verified by hand 2011-03-15 because of blanks in graph
                         System.out.println("*** SKIP");

@@ -197,8 +197,11 @@ public class EdgeManager implements Iterable<Edge> {
 
      
     // keep only one metadata node (e1)
+    // replace e2 reference by e1 reference
     void merge(Edge e1, Edge e2) {
-        indexer.replace(e2.getReferenceNode(), e1.getReferenceNode());
+        if (e1.getReferenceNode() != e2.getReferenceNode()) {
+            indexer.replace(e2.getReferenceNode(), e1.getReferenceNode());
+        }
     }
     
     /**
@@ -233,7 +236,7 @@ public class EdgeManager implements Iterable<Edge> {
             if (e2.getReferenceNode() != null) {
                 // replace reference node t2 of e2 with t1
                 merge(e1, e2);
-                e2.setNode(meta, e1.getReferenceNode());
+                e2.setReferenceNode(e1.getReferenceNode());
             } else {
                 // set/add reference node of e2 to t1
                 e2 = graph.getEdgeFactory().name(e2, predicate, e1.getReferenceNode());

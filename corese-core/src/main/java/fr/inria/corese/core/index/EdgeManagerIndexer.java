@@ -61,7 +61,8 @@ public class EdgeManagerIndexer
     // Property Node -> Edge List 
     HashMap<Node, EdgeManager> table;
     NodeManager nodeManager;
-    HashMap<Node, Node> map;
+    // replace key node by value node
+    HashMap<Node, Node> replaceMap;
     private boolean debug = false;
     private boolean loopMetadata = false;
 
@@ -956,8 +957,8 @@ public class EdgeManagerIndexer
      */
     @Override
     public void metadata() {
-        if (map == null) {
-            map = new HashMap<>();
+        if (replaceMap == null) {
+            replaceMap = new HashMap<>();
         }
         graph.cleanIndex();
         graph.clearNodeManager();
@@ -972,19 +973,30 @@ public class EdgeManagerIndexer
                 // keep only one triple with one metadata node
                 get(p).metadata();
             }
-            if (map.size() > 0) {
+            if (replaceMap.size() > 0) {
                 // replace nodes that have been merged
                 replace();
             }
         }
+        clearReferenceNode();
         graph.getEventManager().finish(Event.IndexMetadata);
-        //graph.indexNodeManager();
-        map.clear();
+        replaceMap.clear();
+    }
+    
+    void test() {
+        System.out.println("AMI:\n" + graph.display());
+        System.out.println(replaceMap);
+    }
+    
+    void clearReferenceNode() {
+        for (Node node : replaceMap.keySet()) {
+            graph.removeTripleNode(node);
+        }
     }
     
     // record that n1 be replaced by n2
     void replace(Node n1, Node n2) {
-        map.put(n1, n2);
+        replaceMap.put(n1, n2);
     }
     
      /**
@@ -995,7 +1007,7 @@ public class EdgeManagerIndexer
      */
     void replace() {
         for (Node p : getProperties()) {
-            get(p).replace(map);
+            get(p).replace(replaceMap);
         }
     }
     

@@ -1950,6 +1950,10 @@ public class Graph extends GraphObject implements
     void addTripleNode(IDatatype dt, Node node) {
         triple.put(node.getLabel(), node);
     }
+    
+    public void removeTripleNode(Node node) {
+        triple.remove(node.getLabel());
+    }
 
     String getID(Node node) {
         if (valueOut) {
@@ -2671,8 +2675,12 @@ public class Graph extends GraphObject implements
         return blank.values();
     }
     
-     public Iterable<Node> getTripleNodes() {
+    public Iterable<Node> getTripleNodes() {
         return triple.values();
+    }
+    
+    public Hashtable<String, Node> getTripleNodeMap() {
+        return triple;
     }
 
     /**
@@ -2701,17 +2709,28 @@ public class Graph extends GraphObject implements
         return getLiteralNodeManager().values();
     }
 
+    /**
+     * may return iterable of NodeGraph(node, graph) 
+     * MUST perform n.getNode() to get the node
+     * 
+     */
     public Iterable<Node> getAllNodeIterator() {
         if (getEventManager().isDeletion()) {
             // recompute existing nodes (only if it has not been already recomputed)
             // iterable NodeGraph(node, graph)
             return getNodeGraphIterator();
         } else {
-            // get nodes from tables
+            // get nodes from basic node tables
             return getNodeIterator();
         }
     }
 
+    /**
+     * Iterate nodes from basic graph node tables
+     * @todo: 
+     * may iterate obsolete triple reference nodes
+     * that have been collapsed into one node
+     */
     public Iterable<Node> getNodeIterator() {
         MetaIterator<Node> meta = new MetaIterator<>();
         meta.next(getNodes());
@@ -2721,23 +2740,30 @@ public class Graph extends GraphObject implements
         return meta;
     }
 
-    // return iterable of NodeGraph(node, graph)
-    // MUST perform n.getNode() to get the node
+    /**
+     * return iterable of NodeGraph(node, graph) MUST perform n.getNode() to get
+     * the node
+     *
+     */
     public Iterable<Node> getNodeGraphIterator() {
         indexNode();
-        return nodeGraphIndex.getNodes();
+        return getNodeGraphIndex().getDistinctNodes();
     }
 
     // return iterable of NodeGraph(node, graph)
     // MUST perform n.getNode() to get the node
     public Iterable<Node> getNodeGraphIterator(Node gNode) {
         indexNode();
-        return nodeGraphIndex.getNodes(gNode);
+        return getNodeGraphIndex().getNodes(gNode);
     }
 
     public boolean contains(Node graph, Node node) {
         indexNode();
-        return nodeGraphIndex.contains(graph, node);
+        return getNodeGraphIndex().contains(graph, node);
+    }
+    
+    public NodeGraphIndex getNodeGraphIndex() {
+        return nodeGraphIndex;
     }
 
     /**

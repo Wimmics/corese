@@ -5,6 +5,8 @@ import java.util.HashMap;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.tool.Distinct;
+import fr.inria.corese.kgram.tool.DistinctNode;
 import fr.inria.corese.kgram.tool.MetaIterator;
 
 /**
@@ -65,7 +67,9 @@ public class NodeGraphIndex {
         return gt.containsKey(node);
     }
 
-    Iterable<Node> getNodes(Node graph) {
+    // return iterable of NodeGraph(node, graph)
+    // MUST perform n.getNode() to get the node
+    public Iterable<Node> getNodes(Node graph) {
         NodeTable gt = table.get(graph);
         if (gt == null) {
             return new ArrayList<>();
@@ -73,7 +77,10 @@ public class NodeGraphIndex {
         return gt.values();
     }
 
-    Iterable<Node> getNodes() {
+    // return iterable of NodeGraph(node, graph)
+    // MUST perform n.getNode() to get the node
+    // return all pairs (node, graph)
+    public Iterable<Node> getNodes() {
         MetaIterator<Node> meta = null;
         for (NodeTable gt : table.values()) {
             if (meta == null) {
@@ -86,6 +93,18 @@ public class NodeGraphIndex {
             return new ArrayList<>();
         }
         return meta;
+    }
+    
+    // return iterable of NodeGraph(node, graph)
+    // MUST perform n.getNode() to get the node
+    // return distinct nodes
+    public Iterable<Node> getDistinctNodes() {
+        return new DistinctNode(getNodes());
+    }
+
+    
+    public HashMap<Node, NodeTable> getGraphTable() {
+        return table;
     }
 
 }

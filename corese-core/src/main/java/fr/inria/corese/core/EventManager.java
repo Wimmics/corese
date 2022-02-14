@@ -29,7 +29,7 @@ public class EventManager {
     private boolean isEntail = true;
     private boolean isUpdate = false;
     private boolean isDelete = false;
-    private boolean isDeletion = false;
+    private boolean deletion = false;
     
     EventLogger log;
 
@@ -243,7 +243,7 @@ public class EventManager {
          isEntail = true;
          isUpdate = false;
          isDelete = false;
-         isDeletion = false;
+         setDeletion(false);
     }
     
     void setUpdate(boolean b) {
@@ -262,7 +262,7 @@ public class EventManager {
         setUpdate(b);
         isDelete = b;
         if (b) {
-            isDeletion = true;
+            setDeletion(true);
         }
     }
     
@@ -271,7 +271,7 @@ public class EventManager {
     }
     
     boolean isDeletion() {
-        return isDeletion;
+        return deletion;
     }
     
     void setEntail(boolean b) {
@@ -320,6 +320,10 @@ public class EventManager {
     public void setTrackUpdate(boolean track) {
         setVerbose(track);
         getLog().setMethod(track);
+    }
+
+    public void setDeletion(boolean deletion) {
+        this.deletion = deletion;
     }
     
     

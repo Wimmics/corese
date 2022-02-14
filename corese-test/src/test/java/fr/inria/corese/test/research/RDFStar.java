@@ -77,7 +77,7 @@ public class RDFStar {
         report.write("/user/corby/home/AADemoNew/rdf-star-main/report.ttl");
         System.out.println("nb success: " + nbsuc);
         System.out.println("nb failure: " + nbfail);
-        //System.out.println("nb variant: " + nbvariant);
+        System.out.println("nb variant: " + nbvariant);
     }
     
     // main manifest
@@ -116,7 +116,7 @@ public class RDFStar {
         }
         return edge.getObjectValue();
     }
-    
+        
     /**
      * test: subject uri of a test 
      */
@@ -179,7 +179,7 @@ public class RDFStar {
                     if (trace) if (isRequest) System.out.println("request: " + erequest.getObjectNode().getLabel());
                     if (trace) System.out.println("data: " + edata.getObjectNode().getLabel());
  
-                    suc = query(edata.getObjectNode().getLabel(), 
+                    suc = query(test.getLabel(), edata.getObjectNode().getLabel(), 
                             isQuery?
                              equery.getObjectNode().getLabel():
                              erequest.getObjectNode().getLabel()       ,
@@ -191,7 +191,7 @@ public class RDFStar {
                 }
             }
             else {
-                suc = action(node.getLabel(), result, type, entailment, bresult);
+                suc = action(test.getLabel(), node.getLabel(), result, type, entailment, bresult);
             }
         }
         else {
@@ -209,9 +209,6 @@ public class RDFStar {
             QueryProcess exec = QueryProcess.create(Graph.create());
             exec.compile(q);
         }
-//        else if (name.endsWith(".trig")) {
-//            ld.parse(name, Load.TURTLE_FORMAT,Load.TURTLE_FORMAT);
-//        }
         else {
             ld.parse(name);
         }
@@ -230,7 +227,7 @@ public class RDFStar {
     }
     
     // test with sparql query
-    boolean  query(String rdf, String query, String result, String type, String entailment, boolean isQuery) {       
+    boolean  query(String test, String rdf, String query, String result, String type, String entailment, boolean isQuery) {       
         Graph g = Graph.create();
         Load ld = Load.create(g);
         try {
@@ -253,7 +250,7 @@ public class RDFStar {
             Mappings map  = exec.query(q);
             Mappings map2 = result(result);            
             //String strResult = ql.readWE(result);
-            return genericompare(q, g, map, map2, ! type.contains("Negative"));   
+            return genericompare(test, q, g, map, map2, ! type.contains("Negative"));   
             
         } catch (LoadException | EngineException | IOException | ParserConfigurationException | SAXException ex) {
             Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
@@ -262,7 +259,7 @@ public class RDFStar {
     }
     
     // test with load
-     boolean action(String name, String result, String type, String entailment, Boolean bresult) throws EngineException {        
+     boolean action(String test, String name, String result, String type, String entailment, Boolean bresult) throws EngineException {        
         Graph g = Graph.create();
         Load ld = Load.create(g);
         try {
@@ -296,8 +293,8 @@ public class RDFStar {
             try {
                 //String myresult = check(name, result);
                 load(ldr, result);
-                String rdfstr = ql.readWE(result);
-                suc = compare(g, gres, !type.contains("Negative"));
+                //String rdfstr = ql.readWE(result);
+                suc = compare(test, g, gres, !type.contains("Negative"));
             } catch (LoadException ex) {
                 Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
                 suc = false;
@@ -312,33 +309,13 @@ public class RDFStar {
         return suc;
     }
      
-     String check(String data, String result) {
-         if (result.contains("trig/eval") && result.endsWith(".nq")) {
-             System.out.println("switch result: " + result + " to: " + data);
-             nbvariant++;
-             return data;
-         }
-         return result;
-     }
-     
-     void nquad(String name) {
-         Graph g = Graph.create();
-         Load ld = Load.create(g);
-        try {
-            ld.parse(name);
-            System.out.println("** nquad:\n"+g.display());
-        } catch (LoadException ex) {
-            Logger.getLogger(RDFStar.class.getName()).log(Level.SEVERE, null, ex);
-        }
-     }
-    
-    boolean genericompare(String q, Graph g, Mappings m1, Mappings m2, boolean positive) {
+    boolean genericompare(String test, String q, Graph g, Mappings m1, Mappings m2, boolean positive) {
         if (m2.getGraph() != null) {
             if (m1.getGraph() == null) {
-                return compare(g, (Graph) m2.getGraph(), positive);
+                return compare(test, g, (Graph) m2.getGraph(), positive);
             }
             else {
-                return compare((Graph) m1.getGraph(), (Graph) m2.getGraph(), positive);
+                return compare(test, (Graph) m1.getGraph(), (Graph) m2.getGraph(), positive);
             }
         } else {
            return compare(q, m1, m2);
@@ -366,11 +343,11 @@ public class RDFStar {
     }
     
     
-    boolean compare(Graph g, Graph r, boolean positive) {
+    boolean compare(String test, Graph g, Graph r, boolean positive) {
         g.init();
         r.init();
         try {
-            boolean b = query(g, r, positive);
+            boolean b = query(test, g, r, positive);
             if (b != positive) {
                 System.out.println("corese: " + b + " w3c: " + positive);
                 display(g, r);
@@ -382,22 +359,64 @@ public class RDFStar {
         return false;
     }
     
-    boolean query(Graph g, Graph r, boolean positive) 
+        // 
+    /**
+     * translate result graph into sparql ast query 
+     * return as result the projection of result graph ast query on input graph
+     * semantics: input graph => result graph
+     *
+     */
+    boolean query(String test, Graph ginput, Graph gresult, boolean positive) 
             throws EngineException {
-        QueryProcess exec = QueryProcess.create(g);
-        Mappings map = exec.queryTrig(r);
-        System.out.println(map.getAST());
-        //System.out.println("success: " + (map.size() > 0  == positive) + " " + map.size());
+        
+        Mappings map = query(test, ginput, gresult);
+        
         if (map.size() > 0  != positive) {
             System.out.println("result: "+map.size() + " positive: " + positive);
             System.out.println(map.getAST());
             System.out.println("w3c trig graph:");
-            System.out.println(TripleFormat.create(r, true));
-            System.out.println(TripleFormat.create(r));
+            System.out.println(TripleFormat.create(gresult, true));
+            System.out.println(TripleFormat.create(gresult));
         }
         return map.size()>0;
     }
     
+    Mappings query(String test, Graph ginput, Graph gresult) throws EngineException {
+        if (test.contains("semantics#malformed-literal-bnode-neg")) {
+            return sparqlQuery(test, ginput, gresult);
+        }
+        else {
+            return graphQuery(test, ginput, gresult);
+        }
+    }
+    
+    Mappings sparqlQuery(String test, Graph ginput, Graph gresult) throws EngineException {
+        String q = "select * where {?s ?p ?o} limit 1";
+        if (test.contains("semantics#malformed-literal-bnode-neg")) {
+            // negative test: query success => test failure
+            q = "# check that malformed literal in nested triple does not entail bnode\n"
+                    + "prefix : <http://example.com/ns#>\n"
+                    + "select * where {"
+                    + "<< :a :b ?x>> :p1 :o1 "
+                    + "filter isBlank(?x)"
+                    + "}";
+        }
+        QueryProcess exec = QueryProcess.create(ginput);
+        Mappings map = exec.query(q);
+        System.out.println("sparql:\n" + q);
+        System.out.println("result:\n" + map.size() + " " + map);
+        System.out.println("input graph:\n" + ginput.display());
+        System.out.println("result graph:\n" + gresult.display());
+        nbvariant++;
+        return map;
+    }
+
+    Mappings graphQuery(String test, Graph ginput, Graph gresult) throws EngineException {
+        QueryProcess exec = QueryProcess.create(ginput);
+        Mappings map = exec.queryTrig(gresult);
+        return map;
+    }
+
     void display(Graph g, Graph r) {
         System.out.println("corese:");
         display(g);
@@ -437,7 +456,7 @@ public class RDFStar {
         } else if (name.endsWith(".srx")) {
             SPARQLResult xml = SPARQLResult.create();
             map = xml.parse(name);
-        } else if (name.endsWith(".ttl") || name.endsWith(".trig")) {
+        } else if (name.endsWith(".ttl") || name.endsWith(".trig") || name.endsWith(".nq")) {
             Graph g = Graph.create();
             Load ld = Load.create(g);
             load(ld, name);

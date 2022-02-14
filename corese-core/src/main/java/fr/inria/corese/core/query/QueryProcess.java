@@ -390,12 +390,13 @@ public class QueryProcess extends QuerySolver {
         return doQuery(rdf, null, Dataset.create().setLoad(true));
     }
     
-    // translate graph g as ast query graph pattern
-    public Mappings query(Graph g) throws EngineException {
+    // translate graph g as turtle ast query graph pattern
+    public Mappings queryTurtle(Graph g) throws EngineException {
         String rdf = TripleFormat.create(g).setGraphQuery(true).toString();
         return doQuery(rdf, null, Dataset.create().setLoad(true));
     }
     
+    // translate graph g as trig ast query graph pattern
     public Mappings queryTrig(Graph g) throws EngineException {
         // trig where default graph kg:default is printed 
         // in turtle without embedding graph kg:default { }
@@ -403,8 +404,9 @@ public class QueryProcess extends QuerySolver {
         return doQuery(rdf, null, Dataset.create().setLoad(true));
     }
     
-    public Mappings queryTurtle(Graph g) throws EngineException {
-        return query(g);
+    // translate graph g as trig ast query graph pattern
+    public Mappings query(Graph g) throws EngineException {
+        return queryTrig(g);
     }
     /**
      * defaut and named specify a Dataset if the query has no from/using (resp.

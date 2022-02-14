@@ -210,7 +210,7 @@ public class JSONLDFormat {
 
         //iterate each node and add to this graph
         for (Node node : allNode) {
-            JSONLDObject jo = jsonldObject(gNode, node, false);
+            JSONLDObject jo = jsonldObject(gNode, node.getNode(), false);
             if (jo != null) {
                 jGraph.addObject(jo);
             }

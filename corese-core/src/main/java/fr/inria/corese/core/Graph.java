@@ -2704,6 +2704,7 @@ public class Graph extends GraphObject implements
     public Iterable<Node> getAllNodeIterator() {
         if (getEventManager().isDeletion()) {
             // recompute existing nodes (only if it has not been already recomputed)
+            // iterable NodeGraph(node, graph)
             return getNodeGraphIterator();
         } else {
             // get nodes from tables
@@ -2716,14 +2717,19 @@ public class Graph extends GraphObject implements
         meta.next(getNodes());
         meta.next(getBlankNodes());
         meta.next(getLiteralNodes());
+        meta.next(getTripleNodes());
         return meta;
     }
 
+    // return iterable of NodeGraph(node, graph)
+    // MUST perform n.getNode() to get the node
     public Iterable<Node> getNodeGraphIterator() {
         indexNode();
         return nodeGraphIndex.getNodes();
     }
 
+    // return iterable of NodeGraph(node, graph)
+    // MUST perform n.getNode() to get the node
     public Iterable<Node> getNodeGraphIterator(Node gNode) {
         indexNode();
         return nodeGraphIndex.getNodes(gNode);

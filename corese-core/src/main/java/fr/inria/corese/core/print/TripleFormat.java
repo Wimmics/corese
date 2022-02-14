@@ -14,6 +14,7 @@ import fr.inria.corese.kgram.api.core.Edge;
  * Olivier Corby, Wimmics INRIA 2013
  */
 public class TripleFormat extends RDFFormat {
+    public static boolean DISPLAY_GRAPH_KEYWORD = false;
 
     static final String PREFIX = "@prefix";
     static final String PV = " ;";
@@ -146,8 +147,11 @@ public class TripleFormat extends RDFFormat {
     }
     
     void graphNode(Node gNode) {
-        sdisplay(GRAPH);
-        sdisplay(SPACE);
+        if (DISPLAY_GRAPH_KEYWORD || isGraphQuery()) {
+            // isGraphQuery() : trig format for AST query graph pattern
+            sdisplay(GRAPH);
+            sdisplay(SPACE);
+        }
         node(gNode);
         sdisplay(SPACE);
         sdisplay(OGRAPH);
@@ -156,6 +160,7 @@ public class TripleFormat extends RDFFormat {
         basicGraphNode(gNode);
 
         display(CGRAPH);
+        display();
     }
     
     void basicGraphNode(Node gNode) {         

@@ -48,36 +48,17 @@ public class ProducerImplNode {
             if (from.size() > 0) {
                 return getNodes(namedGraphURI, from, env);
             } else {
-                //return graph.getAllNodeIterator();
                 return getDataBroker().getDefaultNodeList();
             }
         } // named graph nodes
-        else //if (namedGraphURI.isConstant()) 
+        else 
         {
             // return nodes of this named graph
-            //node = graph.getGraphNode(namedGraphURI.getLabel());
             node = getDataBroker().getGraph(namedGraphURI);
             if (node != null) {
-                //return graph.getNodeGraphIterator(node);
                 return getDataBroker().getGraphNodeList(node);
             }
         } 
-//        else if (env.isBound(namedGraphURI)) {
-//            // return nodes of this named graph
-//            node = env.getNode(namedGraphURI);
-//            // return nodes of this named graph
-//            node = graph.getGraphNode(node.getLabel());
-//            if (node != null) {
-//                return graph.getNodeGraphIterator(node);
-//            }
-//        }
-//        else if (from.size() > 0) {
-//            // return nodes of from named graph
-//            return getNodes(namedGraphURI, from, env);
-//        } else {
-//            // named graph nodes
-//            return graph.getNodeGraphIterator();
-//        }
 
         return new ArrayList<>(0);
     }
@@ -90,7 +71,6 @@ public class ProducerImplNode {
     Iterable<Node> getNodes(Node gNode, List<Node> from, Environment env) {
         MetaIterator<Node> meta = new MetaIterator<>();
         for (Node gn : p.getGraphNodes(gNode, from, env)) {
-            //meta.next(graph.getNodeGraphIterator(gn));
             meta.next(getDataBroker().getGraphNodeList(gn));
         }
         if (meta.isEmpty()) {

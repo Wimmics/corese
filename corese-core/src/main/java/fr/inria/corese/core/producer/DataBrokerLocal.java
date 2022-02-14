@@ -83,12 +83,13 @@ public class DataBrokerLocal implements DataBroker {
     }
     
     
-    
+    // iterable NodeGraph(node, graph)
     @Override
     public Iterable<Node> getDefaultNodeList() {
         return getGraph().getAllNodeIterator();
     }
     
+    // iterable of NodeGraph(node, graph)
     @Override
     public Iterable<Node> getGraphNodeList(Node node) {
         return getGraph().getNodeGraphIterator(node);

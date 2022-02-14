@@ -289,11 +289,11 @@ public class MatcherImpl implements Matcher {
     
     public boolean match(Edge query, Edge target, Node q, Node t, Environment env) {
         if (q.isBlank()) {
-            if (RDF_STAR_VALIDATION && 
-                    query.isNested() && DatatypeMap.isUndefined(t.getValue())) {
-                // nested undefined literal cannot entail bnode
-                return false;
-            }
+//            if (RDF_STAR_VALIDATION && 
+//                    query.isNested() && DatatypeMap.isUndefined(t.getValue())) {
+//                // nested undefined literal cannot entail bnode
+//                return false;
+//            }
             return true;
         }
         if (q.isVariable()) {

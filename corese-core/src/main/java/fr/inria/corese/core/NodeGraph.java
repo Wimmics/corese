@@ -17,9 +17,10 @@ public class NodeGraph extends NodeImpl {
     }
     
     public NodeGraph(Node node, Node graph) {
-        this( node.getDatatypeValue());
+        this(node.getDatatypeValue());
         this.node = node;
         this.graph = graph;
+        setIndex(node.getIndex());
     }
     
     @Override
@@ -32,9 +33,4 @@ public class NodeGraph extends NodeImpl {
         return graph;
     }
     
-    @Override
-    public int getIndex() {
-        return node.getIndex();
-    }
-
 }

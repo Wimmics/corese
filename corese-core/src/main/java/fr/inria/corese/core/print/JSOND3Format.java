@@ -210,7 +210,7 @@ public class JSOND3Format extends RDFFormat {
                 subject(gNode);
                 sdisplay(OOBJ);
                 for (Node node : graph.getNodeGraphIterator(gNode)) {
-                    print(gNode, node);
+                    print(gNode, node.getNode());
                 }
                 display(SPACE);
                 display(COBJ);

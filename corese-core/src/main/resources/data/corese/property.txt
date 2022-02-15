@@ -19,8 +19,11 @@ BLANK_NODE              = _:b
 # display ex:test vs <http://example.org/test>
 DISPLAY_URI_AS_PREFIX   = true
 
+# rdf star reference node displayed as nested triple
+DISPLAY_AS_TRIPLE = true
+
 # Graph node is instance of IDatatype (one object) or Node(IDatatype) (two objects)
-GRAPH_NODE_AS_DATATYPE  = true
+GRAPH_NODE_AS_DATATYPE  = false
 
 # graph ?g { } iterate external named graph
 EXTERNAL_NAMED_GRAPH    = true
@@ -32,13 +35,13 @@ CONSTRAINT_NAMED_GRAPH  = true
 CONSTRAINT_GRAPH        = true
 
 # load in kg:default or in file path as named graph
-LOAD_IN_DEFAULT_GRAPH   = true
+LOAD_IN_DEFAULT_GRAPH   = false
 
 # skolemize bnode as URI
 SKOLEMIZE               = false
 
 # run corese with rdf* prototype extension
-RDF_STAR                = false
+RDF_STAR                = true
 
 # clean OWL graph before OWL RL using update queries
 OWL_CLEAN               = true

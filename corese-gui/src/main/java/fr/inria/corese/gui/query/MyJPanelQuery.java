@@ -662,6 +662,9 @@ public final class MyJPanelQuery extends JPanel {
             }
             return dt.toString(); 
         } 
+        else if (dt.isTriple()) {
+            return dt.toString();
+        }
         else if (dt.isURI()){
             return dt.toString();
         }

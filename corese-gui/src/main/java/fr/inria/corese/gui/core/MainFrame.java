@@ -866,9 +866,10 @@ public class MainFrame extends JFrame implements ActionListener {
         }
 
         displayMenu.add(defDisplay("Turtle", ResultFormat.TURTLE_FORMAT));
-        displayMenu.add(defDisplay("Trig", ResultFormat.TRIG_FORMAT));
+        displayMenu.add(defDisplay("Trig",   ResultFormat.TRIG_FORMAT));
         displayMenu.add(defDisplay("RDF/XML", ResultFormat.RDF_XML_FORMAT));
         displayMenu.add(defDisplay("JSON LD", ResultFormat.JSON_LD_FORMAT));
+        displayMenu.add(defDisplay("Display", ResultFormat.UNDEF_FORMAT));
 
         shaclMenu.add(itypecheck);
         shaclMenu.add(defItem("Fast Engine", "shacl/fastengine.rq"));
@@ -1212,15 +1213,24 @@ public class MainFrame extends JFrame implements ActionListener {
     JMenuItem defDisplay(String name, int format) {
         JMenuItem it = new JMenuItem(name);
         it.addActionListener((ActionEvent event) -> {
-            displayMenu(name, format);
+            getCurrentQueryPanel().getTextArea().setText(
+                    displayMenu(name, format));
         });
         return it;
     }
 
-    void displayMenu(String name, int format) {
-        ResultFormat ft = ResultFormat.create(getMyCorese().getGraph(), format)
-                .setNbTriple(getTripleMax());
-        getCurrentQueryPanel().getTextArea().setText(ft.toString());
+    String displayMenu(String name, int format) {
+        if (format == ResultFormat.UNDEF_FORMAT) {
+            return getGraph().display();
+        } else {
+            ResultFormat ft = ResultFormat.create(getGraph(), format)
+                    .setNbTriple(getTripleMax());
+            return ft.toString();
+        }
+    }
+    
+    Graph getGraph() {
+        return getMyCorese().getGraph();
     }
 
     int getTripleMax() {

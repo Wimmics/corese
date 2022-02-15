@@ -1384,8 +1384,11 @@ public class Graph extends GraphObject implements
         }
     }
 
+    // declare subject/object as graph vertex
     public void define(Edge ent) {
-        nodeGraphIndex.add(ent);
+        if (ent.isAsserted()) {
+            nodeGraphIndex.add(ent);
+        }
     }
 
     public Iterable<Node> getProperties() {
@@ -2710,11 +2713,17 @@ public class Graph extends GraphObject implements
     }
 
     /**
-     * may return iterable of NodeGraph(node, graph) 
+     * return graph vertex: subject/object of asserted edges
+     * return iterable of NodeGraph(node, graph) 
      * MUST perform n.getNode() to get the node
+     * compute graph nodes (only if it has not been already computed)
      * 
      */
     public Iterable<Node> getAllNodeIterator() {
+        return getNodeGraphIterator();
+    }
+
+    public Iterable<Node> getAllNodeIterator2() {
         if (getEventManager().isDeletion()) {
             // recompute existing nodes (only if it has not been already recomputed)
             // iterable NodeGraph(node, graph)
@@ -2727,9 +2736,10 @@ public class Graph extends GraphObject implements
 
     /**
      * Iterate nodes from basic graph node tables
-     * @todo: 
-     * may iterate obsolete triple reference nodes
-     * that have been collapsed into one node
+     * not exactly graph vertex with rdf star
+     * @note: 
+     * consider nodes from nested triple
+     * although they are just quoted 
      */
     public Iterable<Node> getNodeIterator() {
         MetaIterator<Node> meta = new MetaIterator<>();
@@ -2741,8 +2751,8 @@ public class Graph extends GraphObject implements
     }
 
     /**
-     * return iterable of NodeGraph(node, graph) MUST perform n.getNode() to get
-     * the node
+     * return iterable of NodeGraph(node, graph) 
+     * MUST perform n.getNode() to get the node
      *
      */
     public Iterable<Node> getNodeGraphIterator() {

@@ -423,6 +423,8 @@ public interface ExprType {
         public static int EDGE_NESTED = 504;
         public static int XT_ASSERTED = 505;
         public static int XT_EDGE     = 506;
+        public static int XT_REFERENCE= 507;
+        public static int XT_LABEL    = 508;
         
         
         // DOM XML

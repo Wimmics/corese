@@ -15,7 +15,6 @@ import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.filter.Compile;
-import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
@@ -2646,18 +2645,7 @@ public class Query extends Exp implements Graphable {
         }
         return null;
     }
-    
-//    public void addExtension(Extension ext){
-//        if (ext == null){
-//            return;
-//        }
-//        if (getExtension() == null){
-//            setExtension(ext);
-//        }
-//        else {
-//            getExtension().add(ext);
-//        }
-//    }
+
 
     @Override
     public Iterable getLoop() { 

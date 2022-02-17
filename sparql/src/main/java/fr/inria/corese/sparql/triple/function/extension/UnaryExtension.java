@@ -5,6 +5,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.kgram.api.core.ExprType;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_LABEL;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -46,7 +47,10 @@ public class UnaryExtension extends TermEval {
                 return DatatypeMap.newInstance(dt.stringValue().toLowerCase());
                 
             case ExprType.XT_UPPERCASE:
-                return DatatypeMap.newInstance(dt.stringValue().toUpperCase());    
+                return DatatypeMap.newInstance(dt.stringValue().toUpperCase());
+                
+            case XT_LABEL: return DatatypeMap.newInstance(dt.getLabel());
+                
                 
         }
 

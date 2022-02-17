@@ -9,6 +9,7 @@ import static fr.inria.corese.kgram.api.core.ExprType.SUBJECT;
 import static fr.inria.corese.kgram.api.core.ExprType.TRIPLE;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_ASSERTED;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_EDGE;
+import static fr.inria.corese.kgram.api.core.ExprType.XT_REFERENCE;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -62,9 +63,10 @@ public class TripleAccess extends TermEval {
             return null;
         }
         switch (oper()) {
-            case SUBJECT:   return e.getSubjectValue();
-            case PREDICATE: return e.getPredicateValue();
-            case OBJECT:    return e.getObjectValue();
+            case SUBJECT:       return e.getSubjectValue();
+            case PREDICATE:     return e.getPredicateValue();
+            case OBJECT:        return e.getObjectValue();
+            case XT_REFERENCE:  return e.hasReferenceNode()?e.getReferenceNode().getDatatypeValue():null; 
             case IS_TRIPLE: return DatatypeMap.TRUE; 
             case SPARQL_COMPARE: 
                 IDatatype dt2 = getBasicArg(1).eval(eval, b, env, p);

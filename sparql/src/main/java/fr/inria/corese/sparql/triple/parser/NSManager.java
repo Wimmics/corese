@@ -663,6 +663,9 @@ public class NSManager extends ASTObject {
                 dt = DatatypeMap.newStringBuilder(dt.toString());
             }
         }
+        else if (dt.isTriple()) {
+            dt = DatatypeMap.newStringBuilder(dt.toString());
+        }
         return dt;
     }
 

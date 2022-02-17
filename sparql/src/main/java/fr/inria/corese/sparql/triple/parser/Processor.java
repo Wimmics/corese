@@ -762,6 +762,8 @@ public class Processor {
 		defoper(XT_OBJECT,       ExprType.XT_OBJECT);
 		defoper(XT_VALUE,        ExprType.XT_VALUE);                
 		defoper(XT_INDEX,        ExprType.XT_INDEX);
+		defoper(EXT+"label",     ExprType.XT_LABEL);
+		defoper(EXT+"reference", ExprType.XT_REFERENCE);
 		defoper(XT_VARIABLES,    ExprType.XT_VARIABLES);
 		defoper(XT_EDGES,        ExprType.XT_EDGES);
                 defoper(EXT+"node",      ExprType.XT_NODE);

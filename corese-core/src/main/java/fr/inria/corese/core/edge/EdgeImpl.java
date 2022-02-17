@@ -115,7 +115,7 @@ public class EdgeImpl extends EdgeTop
         if (isNested()) {
             return nestedTriple();
         }
-        else if (nbNode() > 2) {
+        else if (nbNode() > 2 && ! DatatypeMap.DISPLAY_AS_TRIPLE) {
             return tuple();
         }
         return super.toString();

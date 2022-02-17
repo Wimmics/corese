@@ -1079,7 +1079,7 @@ public class Graph extends GraphObject implements
             if (sb.length() > 0) {
                 sb.append(NL);
             }
-            sb.append(p).append(" (").append(getIndex().size(p)).append(") : ");
+            sb.append(String.format("predicate %s [%s]", p, getIndex().size(p)));
             sb.append(sep);
             int i = 0;
             for (Edge ent : (n == 0) ? getEdges(p) : getIndex(n).getEdges()) {

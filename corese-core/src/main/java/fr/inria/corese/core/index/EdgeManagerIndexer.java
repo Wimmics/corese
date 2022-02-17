@@ -996,7 +996,9 @@ public class EdgeManagerIndexer
     
     // record that n1 be replaced by n2
     void replace(Node n1, Node n2) {
-        replaceMap.put(n1, n2);
+        if (n1!=null && n2 !=null){
+            replaceMap.put(n1, n2);
+        }
     }
     
      /**

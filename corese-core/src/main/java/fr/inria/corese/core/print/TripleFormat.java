@@ -9,7 +9,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
 
 /**
- * Turtle Format
+ * Turtle & Trig Format
  * 
  * Olivier Corby, Wimmics INRIA 2013
  */
@@ -72,6 +72,7 @@ public class TripleFormat extends RDFFormat {
         return  q.getAST().getNSM();
     }
 
+    // isGraph = true -> Trig
     public static TripleFormat create(Graph g, boolean isGraph) {
         TripleFormat t = new TripleFormat(g, nsm());
         t.setGraph(isGraph);
@@ -133,6 +134,31 @@ public class TripleFormat extends RDFFormat {
 
     // iterate named graph nodes and pprint their content
     void graphNodes() {
+        // start by default graph
+        graphNodes(graph.getDefaultGraphNode());
+        
+        for (Node gNode : graph.getGraphNodes()) {
+            if (tripleCounter > getNbTriple()) {
+                break;
+            }
+            if (! graph.isDefaultGraphNode(gNode)) {
+                graphNodes(gNode);
+            }
+        }
+    }
+    
+    void graphNodes(Node gNode) {
+        if (accept(gNode)) {
+            if (graph.isDefaultGraphNode(gNode) && !isDisplayDefaultGraphURI()) {
+                basicGraphNode(gNode);
+
+            } else {
+                graphNode(gNode);
+            }
+        }
+    }
+    
+    void graphNodes2() {
         for (Node gNode : graph.getGraphNodes()) {
             if (tripleCounter > getNbTriple()) {
                 break;

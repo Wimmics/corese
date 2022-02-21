@@ -39,7 +39,7 @@ import java.util.HashMap;
  * abstract compiler to generate target edge/node/filter implementations
  *
  * sub query compiled as distinct edge/node to avoid inappropriate type
- * inference on nodes
+ * inference on nodes, except variable nodes which are shared
  *
  *
  * @author Olivier Corby, Edelweiss, INRIA 2009
@@ -287,7 +287,6 @@ public class Transformer implements ExpType {
     
     
      /**
-     * Also used by QueryGraph to compile RDF Graph as a Query
      */
     public Query transform(Query q, ASTQuery ast) throws EngineException {
 
@@ -336,10 +335,7 @@ public class Transformer implements ExpType {
         filters(q);
         relax(q);
         new QueryProfile(q).profile();
-       
-//        compileFunction(q, ast);
-//        define(q, ast);
-        
+               
         q.setSubQueryList(subQueryList);
         if (visit != null) {
             for (QueryVisitor v : visit) {
@@ -667,7 +663,7 @@ public class Transformer implements ExpType {
         // new
         Compiler save = compiler;
         compiler = fac.newInstance();
-        // share nodes
+        // share variable nodes
         compiler.share(save);
         compiler.setAST(ast);
 
@@ -922,7 +918,6 @@ public class Transformer implements ExpType {
 
     void complete(Query qCurrent, ASTQuery ast) throws EngineException {
         qCurrent.collect();
-        //qCurrent.setSelectFun(select(qCurrent, ast));
         select(qCurrent, ast);
         qCurrent.setOrderBy(orderBy(qCurrent, ast));
         qCurrent.setGroupBy(groupBy(qCurrent, ast));
@@ -990,7 +985,7 @@ public class Transformer implements ExpType {
         if (ast.isSelectAll() || ast.isConstruct() || ast.isInsert()) {
             // select *
             // get nodes from query nodes and edges
-            select = qCurrent.getSelectNodesExp();
+            select =  toExp(qCurrent.selectNodesFromPattern());  //qCurrent.selectNodesExp(); 
         }
 
         qCurrent.setSelectFun(select);
@@ -1011,6 +1006,7 @@ public class Transformer implements ExpType {
                 if (f != null) {
                     // select fun() as var
                     exp.setFilter(f);
+                    // create node in lNodes for var in filter f if needed
                     checkFilterVariables(qCurrent, f, select, lNodes);
                     function(qCurrent, exp, var);
                     aggregate(qCurrent, exp, ee, select);
@@ -1019,7 +1015,6 @@ public class Transformer implements ExpType {
 
             // TODO: check var in select * to avoid duplicates
 
-            //select.add(exp);
             add(select, exp);
 
             if (lNodes.contains(exp.getNode())) {
@@ -1035,8 +1030,30 @@ public class Transformer implements ExpType {
             select.add(exp);
         }
 
-        qCurrent.setSelectWithExp(select);
+        qCurrent.setSelect(selectNodeList(qCurrent));
+        
         return select;
+    }
+    
+        // compute select node list from list Exp(node, exp)
+    List<Node> selectNodeList(Query q) {
+        List<Node> list = new ArrayList<>();
+        
+        for (Exp ee : q.getSelectFun()) {
+            if (! list.contains(ee.getNode())) {
+                list.add(ee.getNode());
+            }
+        }
+        return list;
+    }
+      
+    
+     List<Exp> toExp(List<Node> lNode) {
+        List<Exp> lExp = new ArrayList<>();
+        for (Node node : lNode) {
+            lExp.add(Exp.create(NODE, node));
+        }
+        return lExp;
     }
 
     /**
@@ -1363,12 +1380,7 @@ public class Transformer implements ExpType {
                             cpl.setBind(null);
                         }
 
-//                        if (ee.isScope()) {
-//                            // add AND as a whole
-//                            exp.add(cpl);
-//
-//                        } else 
-                            if (isJoinable(exp, ee)) {
+                        if (isJoinable(exp, ee)) {
                             exp.join(cpl, bgpType());
                         } else {
                             // add elements of AND one by one
@@ -1802,16 +1814,11 @@ public class Transformer implements ExpType {
         return suc;
     }
 
-    /**
-     * @return the dataset
-     */
+
     public Dataset getDataset() {
         return dataset;
     }
 
-    /**
-     * @param dataset the dataset to set
-     */
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
     }
@@ -1831,87 +1838,51 @@ public class Transformer implements ExpType {
         return ee.isBGP() || ee.isUnion();
     }
 
-    /**
-     * @return the planner
-     */
     public int getPlanProfile() {
         return planner;
     }
 
-    /**
-     * @param planner the planner to set
-     */
     public void setPlanProfile(int planner) {
         this.planner = planner;
     }
 
-    /**
-     * @return the isUseBind
-     */
     public boolean isUseBind() {
         return isUseBind;
     }
 
-    /**
-     * @param isUseBind the isUseBind to set
-     */
-    public void setUseBind(boolean isUseBind) {
+   public void setUseBind(boolean isUseBind) {
         this.isUseBind = isUseBind;
     }
 
-    /**
-     * @return the isGenerateMain
-     */
-    public boolean isGenerateMain() {
+   public boolean isGenerateMain() {
         return isGenerateMain;
     }
 
-    /**
-     * @param isGenerateMain the isGenerateMain to set
-     */
-    public void setGenerateMain(boolean isGenerateMain) {
+   public void setGenerateMain(boolean isGenerateMain) {
         this.isGenerateMain = isGenerateMain;
     }
 
-    /**
-     * @return the sparql
-     */
-    public QuerySolver getSPARQLEngine() {
+   public QuerySolver getSPARQLEngine() {
         return sparql;
     }
 
-    /**
-     * @param sparql the sparql to set
-     */
-    public void setSPARQLEngine(QuerySolver sparql) {
+   public void setSPARQLEngine(QuerySolver sparql) {
         this.sparql = sparql;
     }
 
-    /**
-     * @return the serviceList
-     */
-    public List<Atom> getServiceList() {
+   public List<Atom> getServiceList() {
         return serviceList;
     }
 
-    /**
-     * @param serviceList the serviceList to set
-     */
-    public void setServiceList(List<Atom> serviceList) {
+   public void setServiceList(List<Atom> serviceList) {
         this.serviceList = serviceList;
     }
 
-    /**
-     * @return the functionCompiler
-     */
-    public FunctionCompiler getFunctionCompiler() {
+   public FunctionCompiler getFunctionCompiler() {
         return functionCompiler;
     }
 
-    /**
-     * @param functionCompiler the functionCompiler to set
-     */
-    public void setFunctionCompiler(FunctionCompiler functionCompiler) {
+   public void setFunctionCompiler(FunctionCompiler functionCompiler) {
         this.functionCompiler = functionCompiler;
     }
 
@@ -1927,31 +1898,19 @@ public class Transformer implements ExpType {
     public void setNumber(int number) {
         this.number = number;
     }
-    
-     /**
-     * @return the algebra
-     */
+
     public boolean isAlgebra() {
         return algebra;
     }
 
-    /**
-     * @param algebra the algebra to set
-     */
     public void setAlgebra(boolean algebra) {
         this.algebra = algebra;
     }
 
-    /**
-     * @return the BGP
-     */
     public boolean isBGP() {
         return isBGP;
     }
 
-    /**
-     * @param BGP the BGP to set
-     */
     public void setBGP(boolean BGP) {
         this.isBGP = BGP;
     }

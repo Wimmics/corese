@@ -1489,7 +1489,7 @@ public class Exp extends PointerObject
    */
     void queryNodeList(ExpHandler h) {
         List<Node> selectList    = h.getSelectNodeList();
-        List<Node> subSelectList = getQuery().getSelectNodeList();
+        List<Node> subSelectList = getQuery().getSelect(); //getSelectNodeList();
         
         if (h.isInSubScope()) {
             // focus on left optional etc. in query body 

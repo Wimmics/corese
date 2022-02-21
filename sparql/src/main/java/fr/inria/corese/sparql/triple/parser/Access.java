@@ -5,7 +5,9 @@ import fr.inria.corese.sparql.exceptions.SafetyException;
 import static fr.inria.corese.sparql.triple.parser.Access.Feature.*;
 import static fr.inria.corese.sparql.triple.parser.Access.Level.*;
 import static fr.inria.corese.sparql.triple.parser.Access.Mode.SERVER;
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 
 /**
  * Access model for features
@@ -274,15 +276,16 @@ public class Access {
         }
     }
     
-//    public static List<String> selectNamespace(Feature feature, Level level, List<String> list) {
-//        ArrayList<String> alist = new ArrayList<>();
-//        for (String uri : list) {
-//            if (acceptNamespace(feature, level, uri)) {
-//                alist.add(uri);
-//            }
-//        }
-//        return alist;
-//    }
+    // used by server
+    public static List<String> selectNamespace(Feature feature, Level level, List<String> list) {
+        ArrayList<String> alist = new ArrayList<>();
+        for (String uri : list) {
+            if (acceptNamespace(feature, level, uri)) {
+                alist.add(uri);
+            }
+        }
+        return alist;
+    }
     
     static boolean accept(String uri, boolean resultWhenEmptyAccept) {
         return NSManager.isPredefinedNamespace(uri) || AccessNamespace.access(uri, resultWhenEmptyAccept);

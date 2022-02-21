@@ -110,7 +110,7 @@ public class Aggregate extends LDScript {
             // use case: count(distinct exp)           
             if (arity() == 0) {
                 // count(distinct *)
-                List<Node> nodes = env.getQuery().getSelectNodes();
+                List<Node> nodes = env.getQuery().selectNodesFromPattern();
                 group = Group.create(nodes);
                 group.setDistinct(true);
             }

@@ -157,9 +157,10 @@ public class Mappings extends PointerObject
         isDistinct = b;
         isListGroup = q.isListGroup();
         setSelect(q.getSelect());
+        
         if (isDistinct) {
             if (all) {
-                List<Node> list = q.getSelectNodes();
+                List<Node> list = q.selectNodesFromPattern();
                 if (list.isEmpty()) {
                     setDistinct(group(q.getSelectFun()));
                 } else {
@@ -182,20 +183,19 @@ public class Mappings extends PointerObject
         return res;
     }
 
-    public Mappings distinctAll() {
-        List<Node> list = getQuery().getSelectNodes();
-        if (list.isEmpty()) {
-            list = getQuery().getSelect();
-        }
-        if (list.isEmpty()) {
-            list = getSelect();
-        }
-        return distinct(list, list);
-    }
+//    public Mappings distinctAll() {
+//        List<Node> list = getQuery().selectNodesFromPattern();
+//        if (list.isEmpty()) {
+//            list = getQuery().getSelect();
+//        }
+//        if (list.isEmpty()) {
+//            list = getSelect();
+//        }
+//        return distinct(list, list);
+//    }
 
     public Mappings distinct(List<Node> list) {
         Mappings map = distinct(getQuery().getSelect(), list);
-        //map.setNodeList(list);
         return map;
     }
 

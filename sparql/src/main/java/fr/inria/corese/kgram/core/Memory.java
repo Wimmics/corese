@@ -397,7 +397,7 @@ public class Memory extends PointerObject implements Environment {
              // select (exp as var) it may happen that var is already bound in
              // memory (bindings, subquery), so we should not allocate a
              // supplementary cell for var in Mapping node array             
-            for (Exp exp : q.getSelectWithExp()) {
+            for (Exp exp : q.getSelectFun()) { //q.getSelectWithExp()) {
                 if (exp.getFilter() != null && !isBound(exp.getNode())) {
                     nb++;
                 }

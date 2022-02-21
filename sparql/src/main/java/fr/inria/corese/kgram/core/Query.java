@@ -95,7 +95,9 @@ public class Query extends Exp implements Graphable {
             bindingNodes;
     private List<Node> constructNodes;
     List<Node> relaxEdges;
-    List<Exp> selectExp, selectWithExp, orderBy, groupBy;
+    List<Exp> selectExp, 
+            //selectWithExp, 
+            orderBy, groupBy;
     List<Filter> failure, pathFilter, funList;
     List<String> errors, info;
     Exp having, construct, delete;
@@ -226,7 +228,7 @@ public class Query extends Exp implements Graphable {
 		from 		= new ArrayList<Node>();
 		named 		= new ArrayList<Node>();
 		selectExp 	= new ArrayList<Exp>();
-		selectWithExp 	= new ArrayList<Exp>();
+		//selectWithExp 	= new ArrayList<Exp>();
 		orderBy 	= new ArrayList<Exp>();
 		groupBy 	= new ArrayList<Exp>();
 		failure 	= new ArrayList<Filter>();
@@ -242,6 +244,7 @@ public class Query extends Exp implements Graphable {
                 etable          = new HashMap<String, Edge>();
 		queries 	= new ArrayList<Query>();
 
+                selectNode              = new ArrayList<>();
 		patternNodes 		= new ArrayList<Node>();
 		queryNodes 		= new ArrayList<Node>();
 		patternSelectNodes 	= new ArrayList<Node>();
@@ -280,9 +283,9 @@ public class Query extends Exp implements Graphable {
     @Override
     public StringBuilder toString(StringBuilder sb) {
     
-        if (selectExp.size() > 0) {
+        if (getSelectFun().size() > 0) {
             sb.append("select ");
-            sb.append(selectExp);
+            sb.append(getSelectFun());
             sb.append("\n");
         }
         
@@ -687,9 +690,12 @@ public class Query extends Exp implements Graphable {
     }
   
     /**
-     * use case: select * list of nodes that are exposed as select *
+     * compute select * node list in body patterns
+     * pattern nodes U pattern select nodes
+     * the native select node list of this query (if any) is not taken into account here
+     * it may be taken onto account by compiler transformer 
      */
-    public List<Node> getSelectNodes() {
+    public List<Node> selectNodesFromPattern() {
         List<Node> list = new ArrayList<>();
         list.addAll(getPatternNodes());
 
@@ -700,9 +706,50 @@ public class Query extends Exp implements Graphable {
             }
         }
         return list;
-    }
+    }       
+     
 
+    
     /**
+     * select var node list, including (exp as var)
+     * computed by compiler transformer 
+     */    
+    public List<Node> getSelect() {        
+        return selectNode;
+    }
+    
+    public void setSelect(List<Node> list) {
+        selectNode = list;
+    }
+    
+    /**
+     * select var node list as Exp(node, exp) where exp may be null
+     * computed by compiler transformer 
+     */ 
+    public List<Exp> getSelectFun() {
+        return selectExp;
+    }
+    
+    // final list Exp = select * U (exp as var)
+//    public List<Exp> getSelectWithExp() {
+//        return selectWithExp;
+//    }
+     
+
+    
+    //    public List<Node> getSelect() {
+//        if (selectNode == null) {
+//            selectNode = new ArrayList<>();
+//            if (getSelectFun() != null) {
+//                for (Exp exp : getSelectFun()) {
+//                    selectNode.add(exp.getNode());
+//                }
+//            }
+//        }
+//        return selectNode;
+//    }
+    
+         /**
      *
      * use case: select ?x
      */
@@ -717,11 +764,7 @@ public class Query extends Exp implements Graphable {
         }
         return node;
     }
-
-    public List<Exp> getSelectNodesExp() {
-        List<Node> list = getSelectNodes();
-        return toExp(list);
-    }
+    
 
     public Node getPatternNode(String name) {
         return get(patternNodes, name);
@@ -934,34 +977,7 @@ public class Query extends Exp implements Graphable {
     public void setSelectFun(List<Exp> s) {
         selectExp = s;
     }
-
-    public List<Exp> getSelectFun() {
-        return selectExp;
-    }
     
-    public List<Node> getSelectNodeList() {
-        List<Node> list = new ArrayList<>();
-        for (Exp ee : getQuery().getSelectFun()) {
-            add(list, ee.getNode());
-        }
-        return list;
-    }
-
-    public List<Exp> getSelectWithExp() {
-        return selectWithExp;
-    }
-
-    /**
-     * Copy select (exp as var) in a sublist for optimization purpose
-     */
-    public void setSelectWithExp(List<Exp> s) {
-        for (Exp exp : s) {
-            if (exp.getFilter() != null) {
-                selectWithExp.add(exp);
-            }
-        }
-    }
-
     public void addSelect(Exp exp) {
         selectExp.add(exp);
     }
@@ -1184,32 +1200,7 @@ public class Query extends Exp implements Graphable {
         }
         return false;
     }
-
-    /**
-     * PRAGMA: do not use at compile time (use getSelectFun())
-     *
-     * @return all var in select, including fun() as ?var
-     */
-    public List<Node> getSelect() {
-        if (selectNode == null) {
-            selectNode = new ArrayList<Node>();
-            if (selectExp != null) {
-                for (Exp exp : selectExp) {
-                    selectNode.add(exp.getNode());
-                }
-            }
-        }
-        return selectNode;
-    }
-
-//    public List<String> getVariables() {
-//        List<String> list = new ArrayList<String>();
-//        for (Node node : getSelect()) {
-//            list.add(node.getLabel());
-//        }
-//        return list;
-//    }
-
+  
     public Exp getSelectExp(String label) {
         for (Exp exp : getSelectFun()) {
             Node node = exp.getNode();
@@ -1219,6 +1210,18 @@ public class Query extends Exp implements Graphable {
         }
         return null;
     }
+    
+
+    /**
+     * Copy select (exp as var) in a sublist for optimization purpose
+     */
+//    public void setSelectWithExp(List<Exp> s) {
+//        for (Exp exp : s) {
+//            if (exp.getFilter() != null) {
+//                selectWithExp.add(exp);
+//            }
+//        }
+//    }
 
     public Node getSelectNode(String label) {
         Exp exp = getSelectExp(label);
@@ -1775,12 +1778,9 @@ public class Query extends Exp implements Graphable {
      *
      * @return nodes for select * where BODY go into BODY
      */
-//	public List<Exp> getNodesExp(){
-//		List<Node> lNode = getNodes();
-//		return toExp(lNode);
-//	}
+
     public List<Exp> toExp(List<Node> lNode) {
-        List<Exp> lExp = new ArrayList<Exp>();
+        List<Exp> lExp = new ArrayList<>();
         for (Node node : lNode) {
             lExp.add(Exp.create(NODE, node));
         }

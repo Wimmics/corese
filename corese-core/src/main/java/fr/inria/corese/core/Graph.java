@@ -165,14 +165,12 @@ public class Graph extends GraphObject implements
     // Index of subject: edge list sorted by subject/object/graph
     // Index of object:  edge list sorted by object/subject/graph
     // Index of graph:   edge list sorted by graph/subject/object
-    private ArrayList<Index> tables;
-    // default graph (deprecated)
-    //Index[] dtables;
+    private ArrayList<EdgeManagerIndexer> tables;
     // Index of subject with index=0
-    private Index subjectIndex;
-    // specific edge Index for RuleEngine where edge are sorted newest first
-    private Index namedGraphIndex;
-    Index ruleEdgeIndex;
+    private EdgeManagerIndexer subjectIndex;
+    private EdgeManagerIndexer namedGraphIndex;
+    // edge Index for RuleEngine where edge are sorted newest first
+    EdgeManagerIndexer ruleEdgeIndex;
     // predefined individual Node such as kg:default named graph
     HashMap<String, Node> system;
     // key -> URI Node
@@ -211,11 +209,8 @@ public class Graph extends GraphObject implements
     private boolean isSkolem = SKOLEM_DEFAULT;
     boolean isIndex = true,
             isDebug = !true;
-    //hasDefault = !true;
     // edge index sorted by index
     boolean byIndex = byIndexDefault;
-    // optmize EdgeIndexer EdgeList
-    //private boolean optIndex = true;
     // number of edges
     int size = 0;
     // counter for Graph Node index
@@ -338,20 +333,10 @@ public class Graph extends GraphObject implements
         }
     }
 
-    Index createIndex(boolean b, int i) {
+    EdgeManagerIndexer createIndex(boolean b, int i) {
         return new EdgeManagerIndexer(this, b, i);
-
     }
 
-//
-//    public int getMode() {
-//        return mode;
-//    }
-//
-//  
-//    public void setMode(int mode) {
-//        this.mode = mode;
-//    }
     @Override
     public String toGraph() {
         return null;
@@ -663,6 +648,7 @@ public class Graph extends GraphObject implements
         individual = new Hashtable<>();
         // Blank Node
         blank = new Hashtable<>();
+        // rdf star triple reference node
         triple = new Hashtable<>();
         // Named Graph Node
         graph = new Hashtable<>();
@@ -2482,11 +2468,11 @@ public class Graph extends GraphObject implements
         return getDataStore().getNamed().from(gNode).iterate(node, 0);
     }
 
-    public List<Index> getIndexList() {
+    public List<EdgeManagerIndexer> getIndexList() {
         return tables;
     }
 
-    public Index getIndex(int n) {
+    public EdgeManagerIndexer getIndex(int n) {
         switch (n) {
             case IGRAPH:
                 return getNamedGraphIndex();
@@ -2499,7 +2485,7 @@ public class Graph extends GraphObject implements
         return getIndexList().get(n);
     }
 
-    void setIndex(int n, Index e) {
+    void setIndex(int n, EdgeManagerIndexer e) {
         getIndexList().add(n, e);
     }
 
@@ -3816,23 +3802,23 @@ public class Graph extends GraphObject implements
         this.allGraphNode = allGraphNode;
     }
 
-    Index getSubjectIndex() {
+    EdgeManagerIndexer getSubjectIndex() {
         return subjectIndex;
     }
 
-    void setSubjectIndex(Index table) {
+    void setSubjectIndex(EdgeManagerIndexer table) {
         this.subjectIndex = table;
     }
 
-    Index getNamedGraphIndex() {
+    EdgeManagerIndexer getNamedGraphIndex() {
         return namedGraphIndex;
     }
 
-    void setNamedGraphIndex(Index tgraph) {
+    void setNamedGraphIndex(EdgeManagerIndexer tgraph) {
         this.namedGraphIndex = tgraph;
     }
 
-    public void setIndexList(ArrayList<Index> tables) {
+    public void setIndexList(ArrayList<EdgeManagerIndexer> tables) {
         this.tables = tables;
     }
 

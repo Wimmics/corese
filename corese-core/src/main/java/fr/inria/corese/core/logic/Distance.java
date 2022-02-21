@@ -361,17 +361,18 @@ public class Distance {
         }
 
         NodeList(List<Node> l) {
-            for (Node n : l) {
-                add(n);
-            }
+            addAll(l);
         }
     }
 
     class Table extends Hashtable<Node, Double> {
 
         boolean hasRoot = false;
+        boolean change = true;
 
+        @Override
         public Double put(Node n, Double d) {
+            setChange(true);
             if (isRoot(n)) {
                 hasRoot = true;
             }
@@ -379,10 +380,15 @@ public class Distance {
         }
 
         public boolean contains(Node n) {
-            if (containsKey(n)) {
-                return true;
-            }
-            return false;
+            return containsKey(n);
+        }
+        
+        public void setChange(boolean b) {
+            change = b;
+        }
+        
+        public boolean isChange() {
+            return change;
         }
 
     }
@@ -393,29 +399,29 @@ public class Distance {
      */
     Object distance(Node n1, Node n2, boolean isDist) {
 
-        Table t1 = new Table();
-        Table t2 = new Table();
+        Table distanceTable1 = new Table();
+        Table distanceTable2 = new Table();
 
-        NodeList current1 = new NodeList();
-        NodeList current2 = new NodeList();
+        NodeList ancestorList1 = new NodeList();
+        NodeList ancestorList2 = new NodeList();
 
         boolean end = false;
         boolean endC1 = false;
         boolean endC2 = false;
-        int max1, max2; // maximal (deepest) depth of current
+        int maxDepth1, maxDepth2; // maximal (deepest) depth of current
 
         Double i = 0.0;
         Double j = 0.0;
         Node common = null;
         int count = 0;
-        t1.put(n1, i);
-        t2.put(n2, j);
-        max1 = getDDepth(n1);
-        max2 = getDDepth(n2);
-        current1.add(n1);
-        current2.add(n2);
+        distanceTable1.put(n1, i);
+        distanceTable2.put(n2, j);
+        maxDepth1 = getDDepth(n1);
+        maxDepth2 = getDDepth(n2);
+        ancestorList1.add(n1);
+        ancestorList2.add(n2);
 
-        if (max1 == 0) {
+        if (maxDepth1 == 0) {
             if (isRoot(n1)) {
                 endC1 = true;
             } else {
@@ -423,7 +429,7 @@ public class Distance {
             }
         }
 
-        if (max2 == 0) {
+        if (maxDepth2 == 0) {
             if (isRoot(n2)) {
                 endC2 = true;
             } else {
@@ -431,13 +437,13 @@ public class Distance {
             }
         }
         
-        if (max1 == 1) {
+        if (maxDepth1 == 1) {
             if (isTopLevel(n1)) {
                 endC1 = true;
             } 
         }
 
-        if (max2 == 1) {
+        if (maxDepth2 == 1) {
             if (isTopLevel(n2)) {
                 endC2 = true;
             } 
@@ -445,21 +451,25 @@ public class Distance {
         
         
 
-        if (t1.contains(n2)) {
+        if (distanceTable1.contains(n2)) {
             end = true;
         }
 
         while (!end) {
 
+            //if (!distanceTable1.isChange() && !distanceTable2.isChange()) 
             if (count++ > 10000) {
                 logger.debug("** Node distance suspect a loop " + n1 + " " + n2);
                 break;
             }
-
-            if (!endC1 && max1 >= max2) {
+            
+            distanceTable1.setChange(false);
+            distanceTable2.setChange(false);
+            
+            if (!endC1 && maxDepth1 >= maxDepth2) {
                 // distance from current to their fathers
-                endC1 = distance(current1, t1, max2);
-                max1 = getMax(current1); // max depth of current 1
+                endC1 = distance(ancestorList1, distanceTable1, maxDepth2);
+                maxDepth1 = getMax(ancestorList1); // max depth of current 1
             }
 
             // on ne considere comme candidat a type commun que ceux qui sont
@@ -469,19 +479,19 @@ public class Distance {
             // le type commun le plus profond
             double dd;
 
-            for (Node node : current2) {
+            for (Node node : ancestorList2) {
 
-                if (getDDepth(node) < max1) {
+                if (getDDepth(node) < maxDepth1) {
                     break;
                 }
 
-                if (t1.contains(node)) {
-                    dd = distance(node, t1, t2);
+                if (distanceTable1.contains(node)) {
+                    dd = distance(node, distanceTable1, distanceTable2);
                     return result(node, dd, isDist);
                 }
 
                 if (isDist) {
-                    dd = extDistance(node, t1, t2);
+                    dd = extDistance(node, distanceTable1, distanceTable2);
                     if (dd != -1) {
                         return result(node, dd, isDist);
                     }
@@ -489,25 +499,25 @@ public class Distance {
 
             }
 
-            if (!endC2 && max2 >= max1) {
+            if (!endC2 && maxDepth2 >= maxDepth1) {
                 // distance from current to their fathers
-                endC2 = distance(current2, t2, max1);
-                max2 = getMax(current2); // max depth of current 2
+                endC2 = distance(ancestorList2, distanceTable2, maxDepth1);
+                maxDepth2 = getMax(ancestorList2); // max depth of current 2
             }
 
-            for (Node node : current1) {
+            for (Node node : ancestorList1) {
 
-                if (getDDepth(node) < max2) {
+                if (getDDepth(node) < maxDepth2) {
                     break;
                 }
 
-                if (t2.contains(node)) {
-                    dd = distance(node, t1, t2);
+                if (distanceTable2.contains(node)) {
+                    dd = distance(node, distanceTable1, distanceTable2);
                     return result(node, dd, isDist);
                 }
 
                 if (isDist) {
-                    dd = extDistance(node, t2, t1);
+                    dd = extDistance(node, distanceTable2, distanceTable1);
                     if (dd != -1) {
                         return result(node, dd, isDist);
                     }
@@ -589,45 +599,46 @@ public class Distance {
      *
      * @return true if reach root
      */
-    boolean distance(NodeList current, Table ht, int max) {
+    boolean distance(NodeList ancestorList, Table distanceTable, int maxDepth) {
         boolean step = true;
-        NodeList father = new NodeList();
+        NodeList fatherList = new NodeList();
         boolean endC1 = false;
-        father.clear();
         double i, d;
         Node node;
         // Calcul des peres des derniers concepts traites
-        while (current.size() > 0) {
-            node = current.get(0);
-            if (getDDepth(node) < max) {
+        while (ancestorList.size() > 0) {
+            node = ancestorList.get(0);
+            if (getDDepth(node) < maxDepth) {
                 // process only deepest types ( >= max depth)
                 break;
             }
-            current.remove(node);
-            i = ht.get(node);
+            ancestorList.remove(node);
+            i = distanceTable.get(node);
             // distance of the fathers of ct
+            
             for (Node sup : getSuperEntities(node)) {
                 d = i + ((step) ? step(sup) : 1);
-                if (ht.get(sup) == null) {
-                    father.add(sup);
-                    ht.put(sup, d);
+                
+                if (distanceTable.get(sup) == null) {
+                    fatherList.add(sup);
+                    distanceTable.put(sup, d);
                 } else { // already passed through father f, is distance best (less) ?
-                    if (d < ht.get(sup)) {
-                        //logger.debug(f + " is cheaper ");
-                        ht.put(sup, d);
+                    if (d < distanceTable.get(sup)) {
+                        distanceTable.put(sup, d);
                     }
                 }
             }
         }
 
         // concepts courants += concepts peres
-        sort(current, father);
-        if (current.size() > 0) {
-            node = current.get(0);
+        sort(ancestorList, fatherList);
+        if (ancestorList.size() > 0) {
+            node = ancestorList.get(0);
             if (isRoot(node)) {
                 endC1 = true;
             }
         }
+        
         return endC1;
     }
 

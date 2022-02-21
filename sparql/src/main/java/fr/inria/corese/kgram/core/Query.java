@@ -82,13 +82,14 @@ public class Query extends Exp implements Graphable {
     private int edgeIndex = -1;
     List<Node> from, named, selectNode;
     // all nodes (on demand)
-    List<Node> // std patterns (including bindings) but  minus and exists (no select)
+    List<Node> 
+            // std pattern but minus/exists (without select)
             patternNodes,
-            // minus + exists (no select)
-            queryNodes,
-            // select nodes in std pattern
+            // std pattern but minus/exists select nodes  
             patternSelectNodes,
-            //  select nodes in minus and exists
+            // minus/exists (without select)
+            queryNodes,
+            // minus/exists select nodes  
             querySelectNodes,
             // final query bindings nodes
             bindingNodes;
@@ -690,9 +691,8 @@ public class Query extends Exp implements Graphable {
      */
     public List<Node> getSelectNodes() {
         List<Node> list = new ArrayList<>();
-        for (Node node : getPatternNodes()) {
-            list.add(node);
-        }
+        list.addAll(getPatternNodes());
+
         for (Node node : getPatternSelectNodes()) {
             if (!list.contains(node)) {
                 Node ext = getExtNode(node);
@@ -940,7 +940,7 @@ public class Query extends Exp implements Graphable {
     }
     
     public List<Node> getSelectNodeList() {
-        List<Node> list = new ArrayList<Node>();
+        List<Node> list = new ArrayList<>();
         for (Exp ee : getQuery().getSelectFun()) {
             add(list, ee.getNode());
         }
@@ -1202,13 +1202,13 @@ public class Query extends Exp implements Graphable {
         return selectNode;
     }
 
-    public List<String> getVariables() {
-        List<String> list = new ArrayList<String>();
-        for (Node node : getSelect()) {
-            list.add(node.getLabel());
-        }
-        return list;
-    }
+//    public List<String> getVariables() {
+//        List<String> list = new ArrayList<String>();
+//        for (Node node : getSelect()) {
+//            list.add(node.getLabel());
+//        }
+//        return list;
+//    }
 
     public Exp getSelectExp(String label) {
         for (Exp exp : getSelectFun()) {
@@ -1241,6 +1241,7 @@ public class Query extends Exp implements Graphable {
     }
 
     /**
+     * Called by Eval before query evaluation
      * Only on global query, not on subquery
      */
     public void complete(Producer prod) {
@@ -1260,7 +1261,7 @@ public class Query extends Exp implements Graphable {
         querySorter.compile(prod);
         setAggregate();
         // recurse on subquery
-        index(this, getBody(), true, false, -1);
+        index(this, getBody(), false, -1);
 
         for (Exp ee : getSelectFun()) {
             // use case: query node created to hold fun result
@@ -1342,13 +1343,7 @@ public class Query extends Exp implements Graphable {
         System.out.println("querySelectNodes: " + querySelectNodes);
     }
 
-    /**
-     * TODO: must also join: {select ?x where {?x rdf:first ?y}} filter (exists
-     * {?x}) minus {?x} and also {minus {select ?x where }} filter exists
-     * {{select ?x where }}
-     *
-     * embedding select * must evolve as well
-     */
+
     Node getOuterNode(Node subNode) {
         return getExtNode(subNode.getLabel());
     }
@@ -1370,7 +1365,8 @@ public class Query extends Exp implements Graphable {
     }
 
     /**
-     * get node with going in select sub query go into its own select because
+     * get node with going in select sub query 
+     * go into its own select because
      * order by may reuse a select variable use case: transformer find node for
      * select & group by
      */
@@ -1421,6 +1417,9 @@ public class Query extends Exp implements Graphable {
         }
     }
 
+    /**
+     * called by compiler transformer 
+     */ 
     public void collect() {
         if (getPathNode() != null) {
             /**
@@ -1452,8 +1451,9 @@ public class Query extends Exp implements Graphable {
         }
     }
 
+    // exist: inside exists { exp }
+    // or inside    A minus { exp } 
     void collect(Exp exp, boolean exist) {
-
         switch (exp.type()) {
 
             case FILTER:
@@ -1501,25 +1501,21 @@ public class Query extends Exp implements Graphable {
                 if (exp.rest() != null) {
                     collect(exp.rest(), true);
                 }
-
                 break;
 
             case QUERY:
-
-			// use case: select * where { {select ?y fun() as ?var where {}} }
-                // we want ?y & ?var for select *			
                 for (Exp ee : exp.getQuery().getSelectFun()) {
                     store(ee.getNode(), exist, true);
                 }
-
                 break;
 
             case BIND:
                 collectExist(exp.getFilter().getExp());
-                store(exp.getNode(), exist, true);
+                store(exp.getNode(), exist, false); //true);
                 if (exp.getNodeList() != null){
+                    // values {unnest()} compiled as bind ()
                     for (Node n : exp.getNodeList()){
-                        store(n, exist, true);
+                        store(n, exist, false); //true);
                     }
                 }
                 break;
@@ -1534,7 +1530,6 @@ public class Query extends Exp implements Graphable {
 
     void collectExist(Expr exp) {
         switch (exp.oper()) {
-
             case ExprType.EXIST:
                 Exp pat = getPattern(exp);
                 collect(pat, true);
@@ -1544,44 +1539,35 @@ public class Query extends Exp implements Graphable {
                 for (Expr ee : exp.getExpList()) {
                     collectExist(ee);
                 }
-
         }
     }
 
     /**
-     * set Index for EDGE & NODE check if subquery is aggregate in case of
-     * UNION, start is the start index for both branches if exp is free (no
-     * already bound variable, it is tagged as free) return the min of index of
-     * exp Nodes query is (sub)query this is global query
+     * set Index for EDGE & NODE 
+     * check if subquery is aggregate 
+     * in case of UNION, start is the start index for both branches  
+     * return the min of index of exp Nodes 
+     * query is (sub)query this is global query
      */
-    int index(Query query, Exp exp, boolean hasFree, boolean isExist, int start) {
+    int index(Query query, Exp exp, boolean isExist, int start) {
         int min = Integer.MAX_VALUE, n;
         int type = exp.type();
 
         switch (type) {
-
             case EDGE:
             case PATH:
             case XPATH:
             case EVAL:
                 Edge edge = exp.getEdge();
-                edge.setIndex(iEdge++);
-                for (int i = 0; i < exp.nbNode(); i++) {
-                    Node node = exp.getNode(i);
-                    n = qIndex(query, node);
-                    min = Math.min(min, n);
-                }
-
+                edge.setIndex(iEdge++);                
+                min = indexExpEdge(query, exp);
+                
                 if (exp.hasPath()) {
-                            // x rdf:type t
+                    // x rdf:type t
                     // x rdf:type/rdfs:subClassOf* t
                     Exp ep = exp.getPath();
-                    ep.getEdge().setIndex(edge.getIndex());
-                    for (int i = 0; i < ep.nbNode(); i++) {
-                        Node node = ep.getNode(i);
-                        n = qIndex(query, node);
-                        min = Math.min(min, n);
-                    }
+                    ep.getEdge().setIndex(edge.getIndex());                    
+                    indexExpEdge(query, ep);
                 }
                 break;
 
@@ -1601,87 +1587,30 @@ public class Query extends Exp implements Graphable {
                 Node qn = exp.getNode();
                 min = qIndex(query, qn);
                 if (exp.getNodeList() != null){
+                    // values () {unnest(expr)}
                     for (Node bn : exp.getNodeList()){
                         int ii = qIndex(query, bn);
                         min = Math.min(min, ii);
                     }
                 }
-                        // continue on filter below:
+                // continue on filter below:
 
             case FILTER:
-                // use case: filter(exists {?x ?p ?y})
-                boolean hasExist = index(query, exp.getFilter());
-                List<String> lVar = exp.getFilter().getVariables(true);
-                for (String var : lVar) {
-                    Node qNode = query.getProperAndSubSelectNode(var);
-                    if (qNode == null) {
-                        // TODO: does not work with filter in exists {}
-                        // because getProperAndSubSelectNode does not go into exists {} 
-                        if (! isTriple(exp, var)) {
-                            // no error message for use case: 
-                            // var = ?_bn = <<s p o>> 
-                            Message.log(Message.UNDEF_VAR, var);
-                            addError(Message.get(Message.UNDEF_VAR), var);
-                        }
-                    } else if (!isExist && !hasExist) {
-                        n = qIndex(query, qNode);
-                        min = Math.min(min, n);
-                    }
-                }
-                if (hasExist) {
-                    // by safety, outer exp will not be free
-                    // use case:
-                    // exists {?x p ?y filter(?x != ?z)}
-                    min = -1;
-                }
+                min = indexExpFilter(query, exp, isExist);
                 break;
 
             case QUERY:
-
-                Query qq = exp.getQuery();
-                qq.setCompiled(true);
-                qq.setGlobalQuery(this);
-                qq.setOuterQuery(query);
-                qq.setAggregate();
-
-                for (Exp e : exp) {
-                    // for subquery, do not consider index here
-                    index(qq, e, hasFree, isExist, -1);
-                }
-
-                for (Exp ee : qq.getSelectFun()) {
-				// use case: query node created to hold fun result
-                    // see Transformer compiler.compileSelectFun()
-                    Node sNode = ee.getNode();
-				// get the outer node for this select sNode
-                    // use case:
-                    // ?x ?p ?y 
-                    // {select * where {?y ?r ?t}}
-                    // get the index of outer sNode ?y 
-
-                    n = qIndex(qq, sNode);
-
-                    min = Math.min(min, n);
-
-                    if (ee.getFilter() != null) {
-                        index(qq, ee.getFilter());
-                    }
-
-                }
-
-                qq.complete2();
-
+                min = indexExpQuery(query, exp, isExist);
                 break;
 
             case OPT_BIND:
-
             case ACCEPT:
                 break;
 
             default:
                 // AND UNION OPTION GRAPH BIND
                 int startIndex = globalNodeIndex(),
-                 ind = -1;
+                ind = -1;
                 if (start >= 0) {
                     startIndex = start;
                 }
@@ -1689,30 +1618,9 @@ public class Query extends Exp implements Graphable {
                     ind = startIndex;
                 }
                 for (Exp e : exp) {
-                    n = index(query, e, hasFree && !exp.isGraph(), isExist, ind);
+                    n = index(query, e, isExist, ind);
                     min = Math.min(min, n);
                 }
-
-                switch (exp.type()) {
-
-                    case GRAPHNODE:
-                        break;
-
-                    default:
-                        if (startIndex > 0 && min >= startIndex && hasFree) {
-					// this exp has no variable in common with preceding exp
-                            // hasFree = false : 
-                            // except graph ?g {ei ej} because ek in graph share ?g implicitly !!!
-                            // pragma {kg:kgram kg:test true}
-                            if (isOptimize()) {
-                                exp.setFree(true);
-                            }
-                            if (isDebug()) {
-                                //Message.log(Message.FREE, exp);
-                            }
-                        }
-                }
-
         }
 
         // index the fake graph node (select/minus)
@@ -1721,9 +1629,76 @@ public class Query extends Exp implements Graphable {
         }
 
         return min;
-
     }
     
+    int indexExpFilter(Query query, Exp exp, boolean isExist) {
+        int min = Integer.MAX_VALUE;
+        // use case: filter(exists {?x ?p ?y})
+        boolean hasExist = index(query, exp.getFilter());
+        List<String> lVar = exp.getFilter().getVariables(true);
+
+        for (String var : lVar) {
+            Node qNode = query.getProperAndSubSelectNode(var);
+            if (qNode == null) {
+                // TODO: does not work with filter in exists {}
+                // because getProperAndSubSelectNode does not go into exists {} 
+                if (!isTriple(exp, var)) {
+                    // no error message for use case: 
+                    // var = ?_bn = <<s p o>> 
+                    Message.log(Message.UNDEF_VAR, var);
+                    addError(Message.get(Message.UNDEF_VAR), var);
+                }
+            } else if (!isExist && !hasExist) {
+                int n = qIndex(query, qNode);
+                min = Math.min(min, n);
+            }
+        }
+        if (hasExist) {
+            // use case:
+            // exists {?x p ?y filter(?x != ?z)}
+            min = -1;
+        }
+        return min;
+    }
+    
+    int indexExpQuery(Query query, Exp exp, boolean isExist) {
+        int min = Integer.MAX_VALUE;
+        Query qq = exp.getQuery();
+        qq.setCompiled(true);
+        qq.setGlobalQuery(this);
+        qq.setOuterQuery(query);
+        qq.setAggregate();
+
+        for (Exp e : exp) {
+            // for subquery, do not consider index here
+            index(qq, e, isExist, -1);
+        }
+
+        for (Exp ee : qq.getSelectFun()) {
+            // use case: query node created to hold fun result
+            // see Transformer compiler.compileSelectFun()
+            Node sNode = ee.getNode();
+            int n = qIndex(qq, sNode);
+            min = Math.min(min, n);
+
+            if (ee.getFilter() != null) {
+                index(qq, ee.getFilter());
+            }
+        }
+
+        qq.complete2();
+        return min;
+    }
+    
+    int indexExpEdge(Query query, Exp exp) {
+        int min = Integer.MAX_VALUE;
+        for (int i = 0; i < exp.nbNode(); i++) {
+            int n = qIndex(query, exp.getNode(i));
+            min = Math.min(min, n);
+        }
+        return min;
+    }
+
     
     boolean isTriple(Exp exp, String name) {
         List<Variable> varList = exp.getFilterExpression().getVariables(VariableScope.filterscopeNotLocal());
@@ -1748,19 +1723,20 @@ public class Query extends Exp implements Graphable {
     }
 
     /**
-     * Generate or retrieve index of node If node is in a sub query, return the
+     * Generate or retrieve index of node 
+     * If node is in a sub query, return the
      * index of the outer node corresponding to node and rec.
      */
     int qIndex(Query query, Node node) {
-        int n = index(node);
-        if (query != this && query.inSelect(node)) {
-            // get the outer node for this sub select sNode
-            Node oNode = query.getOuterQuery().getProperAndSubSelectNode(node.getLabel());
-            if (oNode != null) {
-                n = qIndex(query.getOuterQuery(), oNode);
-            }
-        }
-        return n;
+        return index(node);
+//        if (query != this && query.inSelect(node)) {
+//            // get the outer node for this sub select sNode
+//            Node oNode = query.getOuterQuery().getProperAndSubSelectNode(node.getLabel());
+//            if (oNode != null) {
+//                n = qIndex(query.getOuterQuery(), oNode);
+//            }
+//        }
+//        return n;
     }
 
     /**
@@ -1769,7 +1745,6 @@ public class Query extends Exp implements Graphable {
         if (node.getIndex() == -1) {
             node.setIndex(newGlobalNodeIndex());
         }
-        //System.out.println("** Q: " + node + " " + node.getIndex());
         return node.getIndex();
     }
 
@@ -1983,44 +1958,32 @@ public class Query extends Exp implements Graphable {
         argList.add(n);
     }
 
-    /**
-     * @return the edgeList
-     */
+    
     public List<Edge> getEdgeList() {
         return edgeList;
     }
 
-    /**
-     * @param edgeList the edgeList to set
-     */
+    
     public void setEdgeList(List<Edge> edgeList) {
         this.edgeList = edgeList;
     }
 
-    /**
-     * @return the constructNodes
-     */
+    
     public List<Node> getConstructNodes() {
         return constructNodes;
     }
 
-    /**
-     * @param constructNodes the constructNodes to set
-     */
+    
     public void setConstructNodes(List<Node> constructNodes) {
         this.constructNodes = constructNodes;
     }
 
-    /**
-     * @return the edgeIndex
-     */
+    
     public int getEdgeIndex() {
         return edgeIndex;
     }
 
-    /**
-     * @param edgeIndex the edgeIndex to set
-     */
+    
     public void setEdgeIndex(int edgeIndex) {
         this.edgeIndex = edgeIndex;
     }
@@ -2143,7 +2106,7 @@ public class Query extends Exp implements Graphable {
     boolean index(Query query, Expr exp) {
         boolean b = false;
         if (exp.oper() == ExprType.EXIST) {
-            index(query, getPattern(exp), false, true, -1);
+            index(query, getPattern(exp), true, -1);
             b = true;
         } else {
             for (Expr ee : exp.getExpList()) {

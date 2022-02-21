@@ -1801,8 +1801,6 @@ public class Eval implements ExpType, Plugin {
     }
 
     /**
-     * Special case: optional{} !bound(?x) When filter fail, backjump before
-     * optional
      *
      */
     private int filter(Producer p, Node gNode, Exp exp, Stack stack, int n) throws SparqlException {
@@ -2096,30 +2094,12 @@ public class Eval implements ExpType, Plugin {
                 }
             }
         }
-//        sw.stop();
-//        logger.info("\n\tGet EDGE in " + sw.getTime() + "ms.  \n\tFOR "+exp+"\n");
 
-        //edgeToDiffer = null;
         if (!isSuccess && optim) {
-            // backjump to max index where nodes are bound for first time:
-            // (2) x r t
-            // (1) y q z
-            // (0) x p y
-            // (2) may backjump to (0) because they share x
-            // in addition we may require to change the value of x by
-            // setting edgeToDiffer to x r t
-            //int bj = env.getIndex(gNode, qEdge);
-            int bj = env.getIndex(bNode, qEdge);
-            backtrack = bj;
-//			if (draft && !option && ! isSubQuery && bj >=0 && stack.get(bj).isEdge()){
-//				// advanced backjump between edge only
-//				// require that edge at index bj change at least one node
-//				// not with option 
-//				edgeToDiffer = exp;
-//				// fake index of x
-//				//indexToDiffer = bj;
-//			}
-
+            // compute index in the stack of exp where to backtrack
+            // backtrack index is the highest index in the stack among edge node index
+            // we backtrack as much as possible in the exp stack
+            backtrack = env.getIndex(bNode, qEdge);
         }
 
         return backtrack;

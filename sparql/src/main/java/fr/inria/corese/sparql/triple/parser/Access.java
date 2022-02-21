@@ -5,12 +5,11 @@ import fr.inria.corese.sparql.exceptions.SafetyException;
 import static fr.inria.corese.sparql.triple.parser.Access.Feature.*;
 import static fr.inria.corese.sparql.triple.parser.Access.Level.*;
 import static fr.inria.corese.sparql.triple.parser.Access.Mode.SERVER;
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 /**
- *
+ * Access model for features
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2019
  *
  */
@@ -32,13 +31,17 @@ public class Access {
         LIBRARY, GUI, SERVER
     }
     
-    // Protection Level Access Right: 
-    // function has access level, user action is granted access level
-    // access provided to function for action when function.level <= action.level
-    // private is default level: function definition is private
-    // restricted is access level for specific protected user query
-    // public  is access level for protected server: LDScript use is public, the rest is private or restricted
-    // super user is access level for LinkedFunction
+    /** 
+     * Protection Level Access Right: 
+    * feature has access level, user action (query) has access level
+    * action is granted access to feature when action.level >= feature.level 
+    * PUBLIC is access level granted to user query on protected server 
+    * for ex, LDScript use is PUBLIC, the rest is PRIVATE or RESTRICTED
+    * RESTRICTED is access level for specific protected user query
+    * PRIVATE is default level: function definition is private
+    * SUPER USER is access level for LinkedFunction
+    * 
+    */
     public enum Level     { 
         
         PUBLIC(1), RESTRICTED(2), PRIVATE(3), DENIED(4), SUPER_USER(5)  ; 
@@ -48,9 +51,11 @@ public class Access {
         // default feature access level 
         public static Level DEFAULT = PRIVATE;
         // default user access level (by default user have access to features)
+        // protected server may restrict user access level to PUBLIC
         public static Level USER_DEFAULT = DEFAULT;
         // user with weak access
         public static Level USER    = PUBLIC;
+        // deny access to feature
         public static Level DENY    = DENIED;
         
         private Level(int n) {
@@ -68,13 +73,10 @@ public class Access {
             return r2;
         }
         
-        boolean provide(Level l) {
+        // does this action level provide access to feature level 
+        boolean provide(Level featureLevel) {
             if (SKIP) { return true; }
-            return getValue() >= l.getValue();
-        }
-        
-        boolean subsume(Level l) {
-            return getValue() >= l.getValue();
+            return getValue() >= featureLevel.getValue();
         }
     
     } ;
@@ -98,14 +100,21 @@ public class Access {
         
         // may deny whole LDScript
         LDSCRIPT, 
-        // function us:test() {}
+        // define ldscript function us:test() {}
         DEFINE_FUNCTION, 
         // sparql query in LDScript: xt:sparql, query(select where), let (select where)
         LDSCRIPT_SPARQL, 
-        // xt:read xt:write,  xt:load
-        READ, WRITE, READ_WRITE, READ_FILE, SUPER_WRITE,
+        // xt:read 
+        READ, READ_FILE, 
+        // not used yet
+        WRITE, 
+        // xt:load xt:write in /tmp/
+        READ_WRITE, 
+        // write anywhere
+        SUPER_WRITE,
+        // not used yet
         LOAD_FILE,
-        // xt:http:get
+        // xt:httpget
         HTTP,
         // java:fun(xt:stack())
         JAVA_FUNCTION,
@@ -166,6 +175,7 @@ public class Access {
         return save;
     }
     
+    // when b = false, access checking is desactivated
     public static void setActive(boolean b) {
         SKIP = !b;
     }
@@ -202,12 +212,7 @@ public class Access {
     public static Level get(Feature feature) {
         return driver().get(feature);
     }
-    
-    // consider level value 
-//    public static boolean provide(Feature feature, Level level) {
-//        return level.provide(get(feature));
-//    }
-    
+      
     public static boolean provide(Feature feature) {
         return accept(feature, USER_DEFAULT);
     }
@@ -230,9 +235,13 @@ public class Access {
      * feature = LINKED_TRANSFORMATION uri=st:turtle
      * feature = IMPORT_FUNCTION       uri=ex:myfun.rq
      * check uri: 
+     * action level means user query level (action = query)
      * action level >= DEFAULT -> if accept is empty, every namespace is authorized
      * action level < DEFAULT  -> access to explicitely authorized namespace only
-     */
+     * hint: LINKED_TRANSFORMATION is public and there is a list
+     * of authorized namespace in server myprofile.ttl
+     * st:access st:namespace uri1, uri2 .
+    */
     public static boolean accept(Feature feature, Level actionLevel, String uri) {
        return accept(feature, actionLevel) && acceptNamespace(feature, actionLevel, uri);
     }
@@ -243,7 +252,6 @@ public class Access {
     
     public static void check(Feature feature, Level actionLevel, String uri, String mes) throws SafetyException {
         if (reject(feature, actionLevel, uri)) {
-            //TermEval.logger.error("reject: " + feature + " " + uri);
             throw new SafetyException(mes + ": " + uri);
         }
     }
@@ -266,15 +274,15 @@ public class Access {
         }
     }
     
-    public static List<String> selectNamespace(Feature feature, Level level, List<String> list) {
-        ArrayList<String> alist = new ArrayList<>();
-        for (String uri : list) {
-            if (acceptNamespace(feature, level, uri)) {
-                alist.add(uri);
-            }
-        }
-        return alist;
-    }
+//    public static List<String> selectNamespace(Feature feature, Level level, List<String> list) {
+//        ArrayList<String> alist = new ArrayList<>();
+//        for (String uri : list) {
+//            if (acceptNamespace(feature, level, uri)) {
+//                alist.add(uri);
+//            }
+//        }
+//        return alist;
+//    }
     
     static boolean accept(String uri, boolean resultWhenEmptyAccept) {
         return NSManager.isPredefinedNamespace(uri) || AccessNamespace.access(uri, resultWhenEmptyAccept);
@@ -308,21 +316,15 @@ public class Access {
     /**
      * Used by server to grant access right to server query (user query or system query)
      * user = true : user query coming from http request
-     * special = true: grant RESTRICTED access level (better than PUBLIC) 
-     * Return the access right granted to the query 
+     * Return access level granted to query 
      */
     public static Level getQueryAccessLevel(boolean user) {
         return getQueryAccessLevel(user, false);
     }
     
-//    public static Level getQueryAccessLevel(boolean user, boolean special) {
-//        return getQueryAccessLevel(DEFAULT, user, special);
-//    }
-    
     /**
-     * user query may have access level set by access=USER
-     * return the min of access levels
-     * 
+     * return access level granted to user query
+     * user query may have access key set by parameter access=key
      */
     public static Level getQueryAccessLevel(boolean user, boolean hasKey) {
         if (isProtect()) {

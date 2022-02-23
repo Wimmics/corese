@@ -282,18 +282,14 @@ public class MatcherImpl implements Matcher {
             return true;
         }
 
-        IDatatype qdt =  q.getValue();
-        IDatatype tdt =  t.getValue();
-        return (SparqlCompliant) ? qdt.sameTerm(tdt) : qdt.match(tdt);
+//        IDatatype qdt =  q.getValue();
+//        IDatatype tdt =  t.getValue();
+        //return (SparqlCompliant) ? qdt.sameTerm(tdt) : qdt.match(tdt);
+        return q.getValue().match(t.getValue());
     }
     
     public boolean match(Edge query, Edge target, Node q, Node t, Environment env) {
         if (q.isBlank()) {
-//            if (RDF_STAR_VALIDATION && 
-//                    query.isNested() && DatatypeMap.isUndefined(t.getValue())) {
-//                // nested undefined literal cannot entail bnode
-//                return false;
-//            }
             return true;
         }
         if (q.isVariable()) {
@@ -302,10 +298,11 @@ public class MatcherImpl implements Matcher {
         IDatatype qdt = q.getValue();
         IDatatype tdt = t.getValue();        
 
-        // nested triple require same-term on literal
-        return (SparqlCompliant || 
-                (RDF_STAR_VALIDATION && query.isNested())) 
-                ? qdt.sameTerm(tdt) : qdt.match(tdt);
+        if (RDF_STAR_VALIDATION && query.isNested()) {
+            // nested triple require same-term on literal
+            return qdt.sameTerm(tdt);
+        }
+        return qdt.match(tdt);
     }
 
   public MatchBNode getMatchBNode(){

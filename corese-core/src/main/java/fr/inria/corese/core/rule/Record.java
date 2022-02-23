@@ -44,9 +44,9 @@ public class Record  {
      * Accept a rule if there are new triples
      */
     boolean accept(Record told) {
-        if (rule.getQuery().hasFunctional()){
-            return true;
-        }
+//        if (rule.getQuery().hasFunctional()){
+//            return true;
+//        }
         
         int n = 0;
         for (Node pred : rule.getPredicates()) {

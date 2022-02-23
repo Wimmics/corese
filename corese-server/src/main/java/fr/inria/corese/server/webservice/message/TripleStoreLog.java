@@ -19,11 +19,10 @@ import fr.inria.corese.sparql.triple.cst.LogKey;
 import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_AST;
 import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_OUTPUT;
 import static fr.inria.corese.sparql.triple.cst.LogKey.SERVICE_URL;
-import static fr.inria.corese.sparql.triple.parser.Context.URL;
 import fr.inria.corese.sparql.triple.parser.context.LinkedResultLog;
 import java.util.Enumeration;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.json.JSONObject;
 
 

@@ -12,9 +12,9 @@ import fr.inria.corese.sparql.datatype.extension.CoreseMap;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.lang.reflect.InvocationTargetException;
 import java.util.Enumeration;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.ServletContext;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletContext;
+import jakarta.ws.rs.core.Response;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 /**

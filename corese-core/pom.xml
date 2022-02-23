@@ -41,20 +41,11 @@
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>compiler</artifactId>
         </dependency>
-<!--        <dependency>
-            <groupId>${project.parent.groupId}</groupId>
-            <artifactId>kgram</artifactId>
-        </dependency>-->
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
             <artifactId>sparql</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
-        <!--<dependency>-->
-        <!--<groupId>xerces</groupId>-->
-        <!--<artifactId>xercesImpl</artifactId>-->
-        <!--<scope>runtime</scope>-->
-        <!--</dependency>-->
         <dependency>
             <groupId>commons-lang</groupId>
             <artifactId>commons-lang</artifactId>
@@ -113,10 +104,6 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>javax.annotation</groupId>
-            <artifactId>javax.annotation-api</artifactId>
-        </dependency>
-        <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
             <scope>test</scope>
@@ -141,10 +128,6 @@
             <artifactId>log4j-slf4j18-impl</artifactId>
             <version>${log4j2.version}</version>
             <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>com.sun.activation</groupId>
-            <artifactId>javax.activation</artifactId>
         </dependency>
     </dependencies>
 

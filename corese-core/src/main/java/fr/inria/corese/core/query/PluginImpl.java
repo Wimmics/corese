@@ -68,14 +68,13 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
-import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.io.IOException;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 

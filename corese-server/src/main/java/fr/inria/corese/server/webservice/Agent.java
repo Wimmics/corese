@@ -1,10 +1,10 @@
 package fr.inria.corese.server.webservice;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.GET;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.core.Response;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.core.Response;
 import fr.inria.corese.sparql.api.IDatatype;
 
 /**
@@ -36,7 +36,7 @@ public class Agent {
      */
     @GET
     @Produces({"text/plain"})
-    public Response message(@javax.ws.rs.core.Context HttpServletRequest request) {
+    public Response message(@jakarta.ws.rs.core.Context HttpServletRequest request) {
         
         IDatatype dt = getVisitor().message(request);
         String mess = "undefined";

@@ -12,17 +12,17 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import java.util.HashMap;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.Response.ResponseBuilder;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.Response.ResponseBuilder;
 import org.apache.logging.log4j.Logger;
 import org.apache.logging.log4j.LogManager;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
@@ -74,7 +74,7 @@ public class Transformer {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces("text/html")
     public Response queryPOSTHTML(
-     @javax.ws.rs.core.Context HttpServletRequest request,
+     @jakarta.ws.rs.core.Context HttpServletRequest request,
             @FormParam("profile") String profile, // query + transform
             @FormParam("uri") String resource, // query + transform
             @FormParam("mode") String mode, 
@@ -105,7 +105,7 @@ public class Transformer {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("text/html")
     public Response queryPOSTHTML_MD(
-            @javax.ws.rs.core.Context HttpServletRequest request,
+            @jakarta.ws.rs.core.Context HttpServletRequest request,
             @FormDataParam("profile") String profile, // query + transform
             @FormDataParam("uri") String resource,
             @FormDataParam("mode") String mode,
@@ -135,7 +135,7 @@ public class Transformer {
     @GET
     @Produces("text/html")
     public Response queryGETHTML(
-     @javax.ws.rs.core.Context HttpServletRequest request,
+     @jakarta.ws.rs.core.Context HttpServletRequest request,
             @QueryParam("profile") String profile, // query + transform
             @QueryParam("uri") String resource, // URI of resource focus
             @QueryParam("mode") String mode, 

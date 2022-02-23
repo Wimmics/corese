@@ -23,8 +23,8 @@ import fr.inria.corese.sparql.triple.parser.URLParam;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.HashMap;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 import org.slf4j.LoggerFactory;
 
 /**

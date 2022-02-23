@@ -1,17 +1,17 @@
 package fr.inria.corese.server.webservice;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
-import javax.ws.rs.Path;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.MediaType;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.Response;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import java.util.List;
@@ -71,7 +71,7 @@ public class GraphProtocol  {
      */
     @GET
     @Produces({ResultFormat.TURTLE_TEXT, ResultFormat.TURTLE, ResultFormat.NT_TEXT})
-    public Response getTurtle(@javax.ws.rs.core.Context HttpServletRequest request,
+    public Response getTurtle(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name")    String name, 
             @QueryParam("graph")  String graph, 
             @QueryParam("access") String access, 
@@ -83,7 +83,7 @@ public class GraphProtocol  {
     
     @GET
     @Produces({ResultFormat.RDF_XML})
-    public Response getXML(@javax.ws.rs.core.Context HttpServletRequest request,
+    public Response getXML(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name")    String name, 
             @QueryParam("graph")  String graph, 
             @QueryParam("access") String access, 
@@ -95,7 +95,7 @@ public class GraphProtocol  {
     
     @GET
     @Produces({ResultFormat.JSON_LD})
-    public Response getJSON(@javax.ws.rs.core.Context HttpServletRequest request,
+    public Response getJSON(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name")    String name, 
             @QueryParam("graph")  String graph, 
             @QueryParam("access") String access, 
@@ -106,7 +106,7 @@ public class GraphProtocol  {
     }
     
     @PUT
-    public Response put(@javax.ws.rs.core.Context HttpServletRequest request,
+    public Response put(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name")    String name, 
             @QueryParam("graph")  String graph, 
             //@QueryParam("query")  
@@ -120,7 +120,7 @@ public class GraphProtocol  {
     
     @PUT
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response put2(@javax.ws.rs.core.Context HttpServletRequest request,
+    public Response put2(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name")   String name, 
             @FormParam("graph")  String graph, 
             @FormParam("query")  String query, 
@@ -132,7 +132,7 @@ public class GraphProtocol  {
     }
     
     @POST
-    public Response post(@javax.ws.rs.core.Context HttpServletRequest request,
+    public Response post(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name")    String name, 
             @QueryParam("graph")  String graph, 
             @QueryParam("query")  String query, 
@@ -145,7 +145,7 @@ public class GraphProtocol  {
     
     @POST
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
-    public Response post2(@javax.ws.rs.core.Context HttpServletRequest request,
+    public Response post2(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("name")   String name, 
             @FormParam("graph")  String graph, 
             @FormParam("query")  String query, 

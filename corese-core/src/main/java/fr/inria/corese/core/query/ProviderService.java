@@ -43,8 +43,8 @@ import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.ws.rs.ProcessingException;
-import javax.ws.rs.client.ResponseProcessingException;
+import jakarta.ws.rs.ProcessingException;
+import jakarta.ws.rs.client.ResponseProcessingException;
 import org.json.JSONObject;
 
 /**

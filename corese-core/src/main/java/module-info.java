@@ -11,7 +11,7 @@ module fr.inria.corese.corese_core {
     requires arp;
     requires java.logging;
     requires java.sql;
-    requires java.ws.rs;
+    requires jakarta.ws.rs;
     requires java.management;
     requires commons.lang;
     requires semargl.rdfa;

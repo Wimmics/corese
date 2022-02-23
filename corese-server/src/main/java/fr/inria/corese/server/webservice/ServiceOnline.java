@@ -8,23 +8,23 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 
 import java.util.List;
 
-import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
-import javax.ws.rs.GET;
-import javax.ws.rs.POST;
-import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
-import javax.ws.rs.Produces;
-import javax.ws.rs.QueryParam;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
+import jakarta.ws.rs.Consumes;
+import jakarta.ws.rs.FormParam;
+import jakarta.ws.rs.GET;
+import jakarta.ws.rs.POST;
+import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
+import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.QueryParam;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.glassfish.jersey.media.multipart.FormDataBodyPart;
 import org.glassfish.jersey.media.multipart.FormDataParam;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 /**
  * HTML SPARQL endpoint apply transformation (like Transformer)
@@ -95,7 +95,7 @@ public class ServiceOnline {
     @POST
     @Produces({"application/sparql-results+xml", "application/xml", "text/plain"})
     @Consumes("application/sparql-query")
-    public Response getXMLForPost(@javax.ws.rs.core.Context HttpServletRequest request,
+    public Response getXMLForPost(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("serv")      String serv,
             @QueryParam("profile")  String profile, // query + transform
             @QueryParam("uri")      String resource, // URI of resource focus
@@ -118,7 +118,7 @@ public class ServiceOnline {
     @POST
     @Produces("application/sparql-results+json")
     @Consumes("application/sparql-query")
-    public Response getJSONForPost(@javax.ws.rs.core.Context HttpServletRequest request,
+    public Response getJSONForPost(@jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("serv")      String serv,
             @QueryParam("profile")  String profile, // query + transform
             @QueryParam("uri")      String resource, // URI of resource focus
@@ -143,7 +143,7 @@ public class ServiceOnline {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces("text/html")
     public Response post(
-     @javax.ws.rs.core.Context HttpServletRequest request,
+     @jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("serv")      String serv,
             @FormParam("profile")   String profile, 
             @FormParam("uri")       String resource, 
@@ -170,7 +170,7 @@ public class ServiceOnline {
     @Consumes(MediaType.APPLICATION_FORM_URLENCODED)
     @Produces("application/rdf+xml")
     public Response postSPARQLEndpoint(
-     @javax.ws.rs.core.Context HttpServletRequest request,
+     @jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("serv")      String serv,
             @FormParam("profile")   String profile, 
             @FormParam("uri")       String resource, 
@@ -197,7 +197,7 @@ public class ServiceOnline {
     @Consumes(MediaType.MULTIPART_FORM_DATA)
     @Produces("text/html")
     public Response postMD(
-            @javax.ws.rs.core.Context HttpServletRequest request,
+            @jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("serv")      String serv,
             @FormDataParam("profile")   String profile, // query + transform
             @FormDataParam("uri")       String resource, // query + transform
@@ -223,7 +223,7 @@ public class ServiceOnline {
     @GET
     //@Produces(MediaType.TEXT_HTML)
     public Response get(
-     @javax.ws.rs.core.Context HttpServletRequest request,
+     @jakarta.ws.rs.core.Context HttpServletRequest request,
             @PathParam("serv")      String serv,
             @QueryParam("profile")  String profile, // query + transform
             @QueryParam("uri")      String resource, // URI of resource focus

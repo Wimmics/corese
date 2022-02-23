@@ -141,7 +141,7 @@ public class Query extends Exp implements Graphable {
     private ASTExtension extension;
 
     private boolean isCompiled = false;
-    private boolean hasFunctional = false;
+    //private boolean hasFunctional = false;
 
     boolean isCheck = false;
     private boolean isUseBind = true;
@@ -398,22 +398,18 @@ public class Query extends Exp implements Graphable {
         return planner;
     }
       
-    /**
-     * @return the hasFunctional
-     */
-    public boolean hasFunctional() {
-        return  // bind functional
-                hasFunctional || 
-                // query functional
-                isFunctional();
-    }
-
-    /**
-     * @param hasFunctional the hasFunctional to set
-     */
-    public void setHasFunctional(boolean hasFunctional) {
-        this.hasFunctional = hasFunctional;
-    }
+    
+//    public boolean hasFunctional() {
+//        return  // bind functional
+//                hasFunctional || 
+//                // query functional
+//                isFunctional();
+//    }
+//
+//    
+//    public void setHasFunctional(boolean hasFunctional) {
+//        this.hasFunctional = hasFunctional;
+//    }
     
     public void addError(String mes) {
         addError(mes, null);
@@ -933,10 +929,11 @@ public class Query extends Exp implements Graphable {
             if (exp.getFilter() != null) {
                 if (exp.isAggregate() && !exp.isExpGroupBy()) {
                     setAggregate(true);
-                } else if (exp.getFilter().isFunctional()) {
-                    setFunctional(true);
-                    getOuterQuery().setHasFunctional(true);                   
-                }
+                } 
+//                else if (exp.getFilter().isFunctional()) {
+//                    setFunctional(true);
+//                    getOuterQuery().setHasFunctional(true);                   
+//                }
             }
         }
         for (Exp exp : getOrderBy()) {

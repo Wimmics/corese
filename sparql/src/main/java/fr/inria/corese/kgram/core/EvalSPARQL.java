@@ -6,6 +6,7 @@ import java.util.HashMap;
 
 /**
  * SPARQL Statements implemented as SPARQL Algebra on Mappings
+ * Alternative interpreter not used
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2016
  *

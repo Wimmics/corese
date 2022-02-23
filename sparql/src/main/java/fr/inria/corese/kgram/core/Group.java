@@ -32,30 +32,22 @@ public class Group implements Comparator<Mappings> {
     private boolean isFake = false;
     private static boolean compareIndex = false;
 
-    /**
-     * @return the afake
-     */
+   
     public boolean isFake() {
         return isFake;
     }
 
-    /**
-     * @param afake the afake to set
-     */
+    
     public void setFake(boolean afake) {
         this.isFake = afake;
     }
 
-    /**
-     * @return the compareValue
-     */
+   
     public static boolean isCompareIndex() {
         return compareIndex;
     }
 
-    /**
-     * @param compareValue the compareValue to set
-     */
+    
     public static void setCompareIndex(boolean b) {
         compareIndex = b;
     }

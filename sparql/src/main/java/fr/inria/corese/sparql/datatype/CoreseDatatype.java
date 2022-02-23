@@ -1370,18 +1370,21 @@ public class CoreseDatatype
     
     @Override
     public boolean match(Node n) {
-        return match( n.getValue());
+        return match(n.getValue());
     }
     
     // for graph match
     public boolean match(IDatatype dt) {
-        if (equals(dt)){
-            return compatible(dt);
+        if (DatatypeMap.SPARQLCompliant) {
+            return sameTerm(dt);
         }
-        else {
-            return false;
-        }
+        return basicMatch(dt);
     }
+    
+    public boolean basicMatch(IDatatype dt) {
+        return equals(dt) && compatible(dt);       
+    }
+    
     
     // they are equal, are the datatypes compatible ?
     public boolean compatible(IDatatype dt) {

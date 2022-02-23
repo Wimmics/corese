@@ -24,7 +24,7 @@ public class EvalGraph {
     
     /**
      * gNode is possible named graphURI stemming from evaluation context
-     * It is not the current named graph 
+     * It is not the named graph at stake here
      */
     int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
@@ -85,6 +85,11 @@ public class EvalGraph {
         return backtrack;
     }
 
+    /**
+     * Iterate named graph pattern evaluation on named graph list 
+     * named graph list may come from Mappings map  from previous statement
+     * OR from the "from named" clause OR from dataset named graph list
+     */
     private Mappings graphNodes(Producer p, Exp exp, Mappings map, int n) throws SparqlException {
         Memory env = eval.getMemory();
         Query qq = eval.getQuery();
@@ -92,15 +97,17 @@ public class EvalGraph {
         int backtrack = n - 1;
         Node name = exp.getGraphName();
         Mappings res = null;
-
         Iterable<Node> graphNodes = null;
+        
         if (map != null && map.inScope(name)) {
+            // named graph list may come from evaluation context
             List<Node> list = map.aggregate(name);
             if (!list.isEmpty()) {
                 graphNodes = list;
             }
         }
         if (graphNodes == null) {
+            // from named clause OR dataset named graph list
             graphNodes = p.getGraphNodes(name, qq.getFrom(name), env);
         }
 
@@ -138,15 +145,16 @@ public class EvalGraph {
         Exp main = exp;
         Exp body = exp.rest();
         Mappings res;
-        Node var = null, target = graph;
+        Node var = null, target = null;
         
         if (external) {
             if (graphNode.isVariable() && graph.getDatatypeValue().isExtension()) {
                 var    = graphNode;
+                target = graph;
             }
-            else {
-                target = null;
-            }
+        }
+        else {
+            target = graph;
         }
         
         if (eval.isFederate(exp)) {
@@ -169,8 +177,7 @@ public class EvalGraph {
                 }
             }
             
-            // function call below can be reused with np = new Producer(graph) target=null var=null external=true
-            res = eval.subEval(np, target, var, ee, main, data, (Mapping)null, false, external);
+            res = eval.subEval(np, target, var, ee, main, data, null, false, external);
         }
         res.setNamedGraph(graph);
 

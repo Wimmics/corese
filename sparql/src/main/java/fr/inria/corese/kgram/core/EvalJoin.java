@@ -26,17 +26,17 @@ public class EvalJoin {
      * JOIN(e1, e2) Eval e1, eval e2, generate all joins that are compatible in
      * cartesian product
      */
-    int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
+    int eval(Producer p, Node graphNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
         Memory env = eval.getMemory();
-        Mappings map1 = eval.subEval(p, gNode, gNode, exp.first(), exp, data);
+        Mappings map1 = eval.subEval(p, graphNode, graphNode, exp.first(), exp, data);
         if (map1.size() == 0) {
-            eval.getVisitor().join(eval, eval.getGraphNode(gNode), exp, map1, map1);
+            eval.getVisitor().join(eval, eval.getGraphNode(graphNode), exp, map1, map1);
             return backtrack;
         }
         Date d1 = new Date();
         Mappings map1Extended = map1; 
-        if (data != null && isFirstWithValues(exp)) {
+        if (data != null && isFirstWithValuesOnly(exp)) {
             // use case: join(values ?s { <uri> }, service ?s { })
             // where values specify endpoint URL for service and 
             // previous data contains relevant bindings for service in rest
@@ -52,9 +52,9 @@ public class EvalJoin {
         
         MappingSet set1 = new MappingSet(getQuery(), map1Extended);
         Mappings joinMappings = set1.prepareMappingsRest(exp.rest());
-        Mappings map2 = eval.subEval(p, gNode, gNode, exp.rest(), exp, joinMappings);
+        Mappings map2 = eval.subEval(p, graphNode, graphNode, exp.rest(), exp, joinMappings);
 
-        eval.getVisitor().join(eval, eval.getGraphNode(gNode), exp, map1, map2);
+        eval.getVisitor().join(eval, eval.getGraphNode(graphNode), exp, map1, map2);
 
         if (map2.size() == 0) {
             return backtrack;
@@ -65,57 +65,57 @@ public class EvalJoin {
             System.out.println("join map2:\n" + 
                     map2.toString(false, false, 5));
         }
-        return join(p, gNode, stack, env, map1, map2, n);
+        return join(p, graphNode, stack, env, map1, map2, n);
     }
     
-    int eval2(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
-        int backtrack = n - 1;
-        Memory env = eval.getMemory();
-        Mappings map1 = eval.subEval(p, gNode, gNode, exp.first(), exp, data);
-        if (map1.size() == 0) {
-            eval.getVisitor().join(eval, eval.getGraphNode(gNode), exp, map1, map1);
-            return backtrack;
-        }
-        Date d1 = new Date();
-        Mappings map1Extended = map1; 
-        if (data != null && isFirstWithValues(exp)) {
-            // use case: join(values ?s { <uri> }, service ?s { })
-            // where values specify endpoint URL for service and 
-            // previous data contains relevant bindings for service in rest
-            // let's give a chance to pass relevant data to rest (service)
-            // although there is values in between
-            map1Extended = map1.join(data);
-        }
-
-        Date d2 = new Date();
-        if (stop) {
-            return STOP;
-        }
-        
-        MappingSet set1 = new MappingSet(getQuery(), map1Extended);
-        Exp rest = set1.prepareRest(exp);
-        Mappings map2 = eval.subEval(p, gNode, gNode, rest, exp, set1.getJoinMappings());
-
-        eval.getVisitor().join(eval, eval.getGraphNode(gNode), exp, map1, map2);
-
-        if (map2.size() == 0) {
-            return backtrack;
-        }
-       
-        return join(p, gNode, stack, env, map1, map2, n);
-    }
+//    int eval2(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
+//        int backtrack = n - 1;
+//        Memory env = eval.getMemory();
+//        Mappings map1 = eval.subEval(p, gNode, gNode, exp.first(), exp, data);
+//        if (map1.size() == 0) {
+//            eval.getVisitor().join(eval, eval.getGraphNode(gNode), exp, map1, map1);
+//            return backtrack;
+//        }
+//        Date d1 = new Date();
+//        Mappings map1Extended = map1; 
+//        if (data != null && isFirstWithValuesOnly(exp)) {
+//            // use case: join(values ?s { <uri> }, service ?s { })
+//            // where values specify endpoint URL for service and 
+//            // previous data contains relevant bindings for service in rest
+//            // let's give a chance to pass relevant data to rest (service)
+//            // although there is values in between
+//            map1Extended = map1.join(data);
+//        }
+//
+//        Date d2 = new Date();
+//        if (stop) {
+//            return STOP;
+//        }
+//        
+//        MappingSet set1 = new MappingSet(getQuery(), map1Extended);
+//        Exp rest = set1.prepareRest(exp);
+//        Mappings map2 = eval.subEval(p, gNode, gNode, rest, exp, set1.getJoinMappings());
+//
+//        eval.getVisitor().join(eval, eval.getGraphNode(gNode), exp, map1, map2);
+//
+//        if (map2.size() == 0) {
+//            return backtrack;
+//        }
+//       
+//        return join(p, gNode, stack, env, map1, map2, n);
+//    }
     
     Query getQuery() {
         return eval.getMemory().getQuery();
     }
     
     // use case: join(and(values ?s { <uri> }), service ?s { })
-    boolean isFirstWithValues(Exp exp) {
+    boolean isFirstWithValuesOnly(Exp exp) {
         Exp fst = exp.first();
         return fst.isBGPAnd() && fst.size() == 1 && fst.get(0).isValues() ;
     }
 
-    private int join(Producer p, Node gNode, Exp exp, Mappings map1, Mappings map2, Stack stack, int n) throws SparqlException {
+    private int join(Producer p, Node graphNode, Exp exp, Mappings map1, Mappings map2, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
         Memory env = eval.getMemory();
         Node qn1 = null, qn2 = null;
@@ -178,11 +178,11 @@ public class EvalJoin {
                                 // enumerate occurrences of ?y in map2
                                 Mapping m2 = map2.get(i);
                                 Node n2 = m2.getNode(qn2);
-                                if (n2 == null || !n1.match(n2)) { // was equals
+                                if (n2 == null || !n1.match(n2)) { 
                                     // as map2 is sorted, if ?x != ?y we can exit the loop
                                     break;
                                 } else if (env.push(m2, n)) {
-                                    backtrack = eval.eval(p, gNode, stack, n + 1);
+                                    backtrack = eval.eval(p, graphNode, stack, n + 1);
                                     env.pop(m2);
                                     if (backtrack < n) {
                                         return backtrack;
@@ -198,19 +198,19 @@ public class EvalJoin {
                 }
             }
         } else {
-            backtrack = join(p, gNode, stack, env, map1, map2, n);
+            backtrack = join(p, graphNode, stack, env, map1, map2, n);
         }
         return backtrack;
     }
 
-    int join(Producer p, Node gNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n) throws SparqlException {
+    int join(Producer p, Node graphNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n) throws SparqlException {
         int backtrack = n - 1;
 
-        Node q = map1.getCommonNode(map2);
+        Node commonQueryNode = map1.getCommonNode(map2);
 
-        if (q == null) {
+        if (commonQueryNode == null) {
             // no variable in common : simple cartesian product
-            backtrack = simpleJoin(p, gNode, stack, env, map1, map2, n);
+            backtrack = simpleJoin(p, graphNode, stack, env, map1, map2, n);
         } else {
             // map1 and map2 share a variable q
             // sort map2 on q
@@ -222,14 +222,14 @@ public class EvalJoin {
                 map1 = map2;
                 map2 = tmp;
             }
-            map2.sort(eval, q);
+            map2.sort(eval, commonQueryNode);
             //System.out.println("join sort map2:\n"+map2);
             for (Mapping m1 : map1) {
                 if (stop) {
                     return STOP;
                 }
                 // value of q in map1
-                Node n1 = m1.getNode(q);
+                Node n1 = m1.getNode(commonQueryNode);
                 if (env.push(m1, n)) {
 
                     if (n1 == null) {
@@ -239,7 +239,7 @@ public class EvalJoin {
                                 return STOP;
                             }
                             if (env.push(m2, n)) {
-                                backtrack = eval.eval(p, gNode, stack, n + 1);
+                                backtrack = eval.eval(p, graphNode, stack, n + 1);
                                 env.pop(m2);
                                 if (backtrack < n) {
                                     return backtrack;
@@ -253,12 +253,12 @@ public class EvalJoin {
                             if (stop) {
                                 return STOP;
                             }
-                            Node n2 = m2.getNode(q);
+                            Node n2 = m2.getNode(commonQueryNode);
                             if (n2 != null) {
                                 break;
                             }
                             if (env.push(m2, n)) {
-                                backtrack = eval.eval(p, gNode, stack, n + 1);
+                                backtrack = eval.eval(p, graphNode, stack, n + 1);
                                 env.pop(m2);
                                 if (backtrack < n) {
                                     return backtrack;
@@ -267,7 +267,7 @@ public class EvalJoin {
                         }
 
                         // second, try : n2 != null
-                        int nn = map2.find(n1, q);
+                        int nn = map2.find(n1, commonQueryNode);
 //                        System.out.println(
 //                        String.format("join: index of %s in map2 = %s",n1,nn ));
                         if (nn >= 0 && nn < map2.size()) {
@@ -276,12 +276,13 @@ public class EvalJoin {
 
                                 // get value of q in map2
                                 Mapping m2 = map2.get(i);
-                                Node n2 = m2.getNode(q);
+                                Node n2 = m2.getNode(commonQueryNode);
                                 if (n2 == null || !n1.match(n2)) { // was equals
                                     // as map2 is sorted, if ?x != ?y we can exit the loop
                                     break;
                                 } else if (env.push(m2, n)) {
-                                    backtrack = eval.eval(p, gNode, stack, n + 1);
+                                    //System.out.println("join:\n" + m1 + "\n" + m2);
+                                    backtrack = eval.eval(p, graphNode, stack, n + 1);
                                     env.pop(m2);
                                     if (backtrack < n) {
                                         return backtrack;
@@ -298,7 +299,7 @@ public class EvalJoin {
         return backtrack;
     }
 
-    int simpleJoin(Producer p, Node gNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n) throws SparqlException {
+    int simpleJoin(Producer p, Node graphNode, Stack stack, Memory env, Mappings map1, Mappings map2, int n) throws SparqlException {
         int backtrack = n - 1;
         for (Mapping m1 : map1) {
             if (stop) {
@@ -311,7 +312,7 @@ public class EvalJoin {
                         return STOP;
                     }
                     if (env.push(m2, n)) {
-                        backtrack = eval.eval(p, gNode, stack, n + 1);
+                        backtrack = eval.eval(p, graphNode, stack, n + 1);
                         env.pop(m2);
                         if (backtrack < n) {
                             return backtrack;

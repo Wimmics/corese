@@ -280,7 +280,7 @@ public class ASTQuery
     // @(a b) rewritten as rdf:rest*/rdf:first a, b
     private int listType = L_LIST;
     private String profile;
-    private boolean isFunctional;
+   // private boolean isFunctional;
     private final Map<String, List<String>> approximateSearchOptions = new HashMap<String, List<String>>();
     private String service;
     private List<Atom> serviceList;
@@ -338,13 +338,13 @@ public class ASTQuery
         return null;
     }
 
-    public void setHasFunctional(boolean b) {
-        isFunctional = b;
-    }
-
-    public boolean hasFunctional() {
-        return isFunctional;
-    }
+//    public void setHasFunctional(boolean b) {
+//        isFunctional = b;
+//    }
+//
+//    public boolean hasFunctional() {
+//        return isFunctional;
+//    }
 
     /**
      * @return the define

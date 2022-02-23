@@ -40,13 +40,13 @@ public class EvalOptional {
      * if m1.compatible(m2): merge = m1.merge(m2) if eval(F(merge)) result +=
      * merge ...
      */
-    int eval(Producer p, Node gNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
+    int eval(Producer p, Node graphNode, Exp exp, Mappings data, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
-        boolean hasGraph = gNode != null;
+        boolean hasGraph = graphNode != null;
         Memory env = eval.getMemory();
         Node queryNode = null;
 
-        Mappings map1 = eval.subEval(p, gNode, queryNode, exp.first(), exp, data);
+        Mappings map1 = eval.subEval(p, graphNode, queryNode, exp.first(), exp, data);
         if (isStop()) {
             return STOP;
         }
@@ -68,7 +68,7 @@ public class EvalOptional {
              *
              */
 
-            Mappings nmap = filter(gNode, exp, env, p, map);
+            Mappings nmap = filter(graphNode, exp, env, p, map);
             map = nmap;
         }
 
@@ -91,10 +91,10 @@ public class EvalOptional {
             map2 = Mappings.create(env.getQuery());
         } else {
             //rest = set1.getRest(exp, map); 
-            map2 = eval.subEval(p, gNode, queryNode, rest, exp, map); //set1.getJoinMappings());
+            map2 = eval.subEval(p, graphNode, queryNode, rest, exp, map); //set1.getJoinMappings());
         }
 
-        eval.getVisitor().optional(eval, eval.getGraphNode(gNode), exp, map1, map2);
+        eval.getVisitor().optional(eval, eval.getGraphNode(graphNode), exp, map1, map2);
 
         MappingSet set = new MappingSet(getQuery(), exp, set1,
                 new MappingSet(getQuery(), map2));
@@ -114,11 +114,11 @@ public class EvalOptional {
                 }
                 Mapping merge = m1.merge(m2);
                 if (merge != null) {
-                    success = filter(env, p, queryNode, gNode, merge, exp);
+                    success = filter(env, p, queryNode, graphNode, merge, exp);
                     if (success) {
                         nbsuc++;
                         if (env.push(merge, n)) {
-                            backtrack = eval.eval(p, gNode, stack, n + 1);
+                            backtrack = eval.eval(p, graphNode, stack, n + 1);
                             env.pop(merge);
                             if (backtrack < n) {
                                 return backtrack;
@@ -130,7 +130,7 @@ public class EvalOptional {
 
             if (nbsuc == 0) {
                 if (env.push(m1, n)) {
-                    backtrack = eval.eval(p, gNode, stack, n + 1);
+                    backtrack = eval.eval(p, graphNode, stack, n + 1);
                     env.pop(m1);
                     if (backtrack < n) {
                         return backtrack;

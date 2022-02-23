@@ -1484,9 +1484,7 @@ public class Term extends Expression {
         return (str.equals(Processor.UNNEST)
                 || str.equals(Processor.KGUNNEST)
                 || str.equals(Processor.SQL)
-                //|| str.equals(XPATH)
-                || //str.equals(Processor.SPARQL) ||
-                str.equals(Processor.EXTERN));
+                || str.equals(Processor.EXTERN));
     }
 
     @Override

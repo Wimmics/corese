@@ -687,7 +687,6 @@ public class Expression extends TopExp
 
     @Override
     public boolean isFunctional() {
-
         return false;
     }
 

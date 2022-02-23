@@ -729,26 +729,6 @@ public class Query extends Exp implements Graphable {
     public List<Exp> getSelectFun() {
         return selectExp;
     }
-    
-    // final list Exp = select * U (exp as var)
-//    public List<Exp> getSelectWithExp() {
-//        return selectWithExp;
-//    }
-     
-
-    
-    //    public List<Node> getSelect() {
-//        if (selectNode == null) {
-//            selectNode = new ArrayList<>();
-//            if (getSelectFun() != null) {
-//                for (Exp exp : getSelectFun()) {
-//                    selectNode.add(exp.getNode());
-//                }
-//            }
-//        }
-//        return selectNode;
-//    }
-    
          /**
      *
      * use case: select ?x
@@ -1211,18 +1191,6 @@ public class Query extends Exp implements Graphable {
         return null;
     }
     
-
-    /**
-     * Copy select (exp as var) in a sublist for optimization purpose
-     */
-//    public void setSelectWithExp(List<Exp> s) {
-//        for (Exp exp : s) {
-//            if (exp.getFilter() != null) {
-//                selectWithExp.add(exp);
-//            }
-//        }
-//    }
-
     public Node getSelectNode(String label) {
         Exp exp = getSelectExp(label);
         if (exp != null) {
@@ -1634,9 +1602,9 @@ public class Query extends Exp implements Graphable {
         return min;
     }
     
+    // use case: index filter exists {?x ?p ?y}
     int indexExpFilter(Query query, Exp exp, boolean isExist) {
         int min = Integer.MAX_VALUE;
-        // use case: filter(exists {?x ?p ?y})
         boolean hasExist = index(query, exp.getFilter());
         List<String> lVar = exp.getFilter().getVariables(true);
 
@@ -1732,14 +1700,6 @@ public class Query extends Exp implements Graphable {
      */
     int qIndex(Query query, Node node) {
         return index(node);
-//        if (query != this && query.inSelect(node)) {
-//            // get the outer node for this sub select sNode
-//            Node oNode = query.getOuterQuery().getProperAndSubSelectNode(node.getLabel());
-//            if (oNode != null) {
-//                n = qIndex(query.getOuterQuery(), oNode);
-//            }
-//        }
-//        return n;
     }
 
     /**
@@ -1776,9 +1736,8 @@ public class Query extends Exp implements Graphable {
 
     /**
      *
-     * @return nodes for select * where BODY go into BODY
+     * @return list Exp(node) for select * node list  
      */
-
     public List<Exp> toExp(List<Node> lNode) {
         List<Exp> lExp = new ArrayList<>();
         for (Node node : lNode) {
@@ -1790,6 +1749,7 @@ public class Query extends Exp implements Graphable {
     /**
      * use case: select distinct ?x where add an ACCEPT ?x statement to check
      * that ?x is new
+     * called by compiler transformer
      */
     public void distinct() {
         if (testJoin) {
@@ -1807,134 +1767,14 @@ public class Query extends Exp implements Graphable {
             }
         }
     }
+  
 
-    /**
-     * *************************************************************
-     * Compile before exec
-     */
-    /**
-     * search for: path(?from path ?to) . filter(?from = cst || ?to = cst)
-     * compile to: {path(?from path ?to) . filter(?from = cst)} UNION
-     * {path(?from path ?to) . filter(?to = cst)}
-     *
-     * By safety consider only path at index 0 to avoid unnecessary duplication
-     * of code (if ?x is already bound)
-     */
-    void checkPath(Exp exp, boolean compile) {
-        int i = 0;
-        boolean b = false;
-
-        for (Exp ee : exp) {
-            if ((ee.isPath() || ee.isEdge()) && i < exp.size() - 1 && exp.get(i + 1).isFilter()) {
-                b = checkPath(ee, exp.get(i + 1));
-                if (b) {
-                    break;
-                }
-            }
-            i++;
-        }
-
-        if (b) {
-            // found path + filter
-            Exp union = createUnion(exp, i);
-            if (compile) {
-                // compile to UNION on both filters
-                exp.set(i, union);
-            } else {
-                addInfo("Expensive pattern: \n", exp.get(i) + "\n" + exp.get(i + 1));
-                addInfo("Alternative: \n", union);
-            }
-        }
-    }
-
-    boolean checkPath(Exp exp, Exp filter) {
-        Edge edge = exp.getEdge();
-        Node n1 = edge.getNode(0);
-        Node n2 = edge.getNode(1);
-
-        boolean b = false;
-        if (n1.isVariable() && n2.isVariable()) {
-            b = compiler.check(n1.getLabel(), n2.getLabel(), filter);
-        }
-        return b;
-    }
-
-    /**
-     * path(?from path ?to) . filter(?from = cst || ?to = cst) create
-     * {path(?from path ?to) . filter(?from = cst)} UNION {path(?from path ?to)
-     * . filter(?to = cst)}
-     */
-    Exp createUnion(Exp exp, int i) {
-        Edge ee = exp.get(i).getEdge();
-        Node n1 = ee.getNode(0);
-
-        Expr ff = exp.get(i + 1).getFilter().getExp();
-        Filter f1 = ff.getExp(0).getFilter();
-        Filter f2 = ff.getExp(1).getFilter();
-        List<String> list = f1.getVariables();
-
-        if (!list.get(0).equals(n1.getLabel())) {
-            Filter tmp = f1;
-            f1 = f2;
-            f2 = tmp;
-        }
-
-        Exp e1 = Exp.create(AND, exp.get(i), Exp.create(FILTER, f1));
-        Exp e2 = Exp.create(AND, exp.get(i), Exp.create(FILTER, f2));
-        Exp e3 = Exp.create(UNION, e1, e2);
-        return e3;
-    }
-
-    void processFilter(Exp exp, boolean option) {
-        boolean correct = checkFilter(exp);
-
-        if (!correct) {
-            if (option) {
-                // in case of option, exp is the inner AND
-                exp.setFail(true);
-            } else {
-                this.setFail(true);
-            }
-        }
-
-    }
-
-    /**
-     * if exist EDGE with NODE n and exist also NODE n by itself then remove
-     * NODE n because it is redundant
-     */
-    void cleanNode(Exp exp) {
-        ArrayList<Exp> nodes = new ArrayList<Exp>();
-        for (Exp eNode : exp) {
-            if (eNode.isNode()) {
-                for (Exp eEdge : exp) {
-                    if (eEdge.type() == OPTION) {
-						// option may bind the node
-                        // hence cannot remove mandatory node
-                        // use case: ?x rdf:type CC  optional {?x p ?y}
-                        return;
-                    } else if (eEdge.isEdge() && !eEdge.isPath()
-                            && eEdge.contains(eNode.getNode())) {
-                        nodes.add(eNode);
-                    }
-                }
-            }
-        }
-        for (Exp node : nodes) {
-            exp.remove(node);
-        }
-    }
-
-    /**
-     * @return the isPrinterTemplate
-     */
+   
     public boolean isPrinterTemplate() {
         return isPrinterTemplate;
     }
 
-    /**
-     * @param isPrinterTemplate the isPrinterTemplate to set
-     */
+    
     public void setPrinterTemplate(boolean isPrinterTemplate) {
         this.isPrinterTemplate = isPrinterTemplate;
     }
@@ -1943,9 +1783,7 @@ public class Query extends Exp implements Graphable {
         return isMatch;
     }
 
-    /**
-     * @param match the match to set
-     */
+    
     public void setMatchBlank(boolean match) {
         this.isMatch = match;
     }
@@ -2011,41 +1849,13 @@ public class Query extends Exp implements Graphable {
     public boolean isNumbering() {
         return isNumbering;
     }
-
-    /**
-     * @return the templateProfile
-     */
+    
     public Query getTemplateProfile() {
         return templateProfile;
     }
-
-    /**
-     * @param templateProfile the templateProfile to set
-     */
+    
     public void setTemplateProfile(Query templateProfile) {
         this.templateProfile = templateProfile;
-    }
-
-    /**
-     * Check always true and always false filters return false if there is a
-     * always false filter
-     */
-    boolean checkFilter(Exp exp) {
-        boolean b = true;
-        for (int i = 0; i < exp.size(); i++) {
-            Exp e1 = exp.get(i);
-            if (e1.isFilter()) {
-                b = compiler.check(e1) && b;
-
-                for (int j = i + 1; j < exp.size(); j++) {
-                    Exp e2 = exp.get(j);
-                    if (e2.isFilter()) {
-                        b = compiler.check(e1, e2) && b;
-                    }
-                }
-            }
-        }
-        return b;
     }
 
     /**
@@ -2058,7 +1868,7 @@ public class Query extends Exp implements Graphable {
 
     public List<Node> getNodes(Filter f) {
         List<String> lVar = f.getVariables();
-        ArrayList<Node> lNode = new ArrayList<Node>();
+        ArrayList<Node> lNode = new ArrayList<>();
         for (String var : lVar) {
             Node node = getProperAndSubSelectNode(var);
             if (node != null && !lNode.contains(node)) {
@@ -2072,7 +1882,7 @@ public class Query extends Exp implements Graphable {
      * use case: select count(distinct ?x)
      */
     public List<Node> getAggNodes(Filter f) {
-        ArrayList<Node> lNode = new ArrayList<Node>();
+        ArrayList<Node> lNode = new ArrayList<>();
         getAggNodes(f.getExp(), lNode);
         return lNode;
     }
@@ -2220,15 +2030,6 @@ public class Query extends Exp implements Graphable {
             }
         }
     }
-
-//    public void setBind(boolean isBind) {
-//        this.isBind = isBind;
-//    }
-//
-//    @Override
-//    public boolean isBind() {
-//        return isBind;
-//    }
 
     public void setService(boolean isService) {
         this.isService = isService;
@@ -2440,100 +2241,73 @@ public class Query extends Exp implements Graphable {
         return etable.get(p.getLabel());
     }
 
-    /**
-     * @return the queryProfile
-     */
+    
     public int getQueryProfile() {
         return queryProfile;
     }
 
-    /**
-     * @param queryProfile the queryProfile to set
-     */
+    
     public void setQueryProfile(int queryProfile) {
         this.queryProfile = queryProfile;
     }
 
-    /**
-     * @return the isPathType
-     */
+    
     public boolean isPathType() {
         return isPathType;
     }
 
-    /**
-     * @param isPathType the isPathType to set
-     */
+    
     public void setPathType(boolean isPathType) {
         this.isPathType = isPathType;
     }
 
-    /**
-     * @return the isStorePath
-     */
+    
     public boolean isStorePath() {
         return isStorePath;
     }
 
-    /**
-     * @param isStorePath the isStorePath to set
-     */
+    
     public void setStorePath(boolean isStorePath) {
         this.isStorePath = isStorePath;
     }
 
-    /**
-     * @return the isCachePath
-     */
+   
     public boolean isCachePath() {
         return isCachePath;
     }
 
-    /**
-     * @param isCachePath the isCachePath to set
-     */
     public void setCachePath(boolean isCachePath) {
         this.isCachePath = isCachePath;
     }
 
-    /**
-     * @return the id
-     */
+   
     public int getID() {
         return id;
     }
 
-    /**
-     * @param id the id to set
-     */
+   
     public void setID(int id) {
         this.id = id;
     }
 
-    /**
-     * @return the provenance
-     */
+   
     public Node getProvenance() {
         return provenance;
     }
 
-    /**
-     * @param provenance the provenance to set
-     */
+   
     public void setProvenance(Node provenance) {
         this.provenance = provenance;
     }
 
-    /**
-     * @return the graph
-     */
+   
+    @Override
     public Object getGraph() {
         return graph;
     }
 
-    /**
-     * @param graph the graph to set
-     */
+ 
+    @Override
     public void setGraph(Object graph) {
         this.graph = graph;
     }
@@ -2551,9 +2325,6 @@ public class Query extends Exp implements Graphable {
         return isExtension;
     }
 
-    /**
-     * @return the extention
-     */
     public ASTExtension getExtension() {
         return extension;
     }
@@ -2562,9 +2333,7 @@ public class Query extends Exp implements Graphable {
         return getGlobalQuery().getExtension();
     }
 
-    /**
-     * @param extention the extention to set
-     */
+   
     public void setExtension(ASTExtension ext) {
         this.extension = ext;
     }
@@ -2625,7 +2394,7 @@ public class Query extends Exp implements Graphable {
     }
     
     public List<Edge> getEdges(){
-        ArrayList<Edge> list = new ArrayList<Edge>();
+        ArrayList<Edge> list = new ArrayList<>();
         getBody().getEdgeList(list);
         return list;
     }
@@ -2640,16 +2409,12 @@ public class Query extends Exp implements Graphable {
         return String.format("[Query]");
     }
     
-    /**
-     * @return the isUseBind
-     */
+   
     public boolean isUseBind() {
         return isUseBind;
     }
 
-    /**
-     * @param isUseBind the isUseBind to set
-     */
+   
     public void setUseBind(boolean isUseBind) {
         this.isUseBind = isUseBind;
     }
@@ -2679,28 +2444,24 @@ public class Query extends Exp implements Graphable {
         this.queryEdgeList = queryEdgeList;
     }
 
-    /**
-     * @return the isFun
-     */
+   
     public boolean isFun() {
         return isFun;
     }
 
-    /**
-     * @param isFun the isFun to set
-     */
+   
     public void setFun(boolean isFun) {
         this.isFun = isFun;
     }
 	 
-     public Object getTemplateVisitor() {
+    public Object getTemplateVisitor() {
         if (query == null){
             return templateVisitor;
         }
         return query.getTemplateVisitor();
     }
      
-      public void setTemplateVisitor(Object tv) {
+    public void setTemplateVisitor(Object tv) {
         if (query == null){
              templateVisitor = tv;
         }
@@ -2709,9 +2470,7 @@ public class Query extends Exp implements Graphable {
         }
     }
 
-    /**
-     * @return the Context
-     */
+   
     public Context getContext() {
         if (query == null){
             return context;
@@ -2719,9 +2478,7 @@ public class Query extends Exp implements Graphable {
         return query.getContext();
     }
 
-    /**
-     * @param Context the Context to set
-     */
+   
     public void setContext(Context context) {
         if (query == null){
             this.context = context;
@@ -2731,30 +2488,22 @@ public class Query extends Exp implements Graphable {
         }
     }
 
-    /**
-     * @return the isTransformationTemplate
-     */
+    
     public boolean isTransformationTemplate() {
         return isTransformationTemplate;
     }
 
-    /**
-     * @param isTransformationTemplate the isTransformationTemplate to set
-     */
+    
     public void setTransformationTemplate(boolean isTransformationTemplate) {
         this.isTransformationTemplate = isTransformationTemplate;
     }
 
-    /**
-     * @return the subQueryList
-     */
+    
     public ArrayList<Query> getSubQueryList() {
         return subQueryList;
     }
 
-    /**
-     * @param subQueryList the subQueryList to set
-     */
+    
     public void setSubQueryList(ArrayList<Query> subQueryList) {
         this.subQueryList = subQueryList;
     }
@@ -2778,52 +2527,38 @@ public class Query extends Exp implements Graphable {
         setContext(context);
     }
 
-    /**
-     * @return the mapping
-     */
+   
     @Override
     public Mapping getMapping() {
         return mapping;
     }
 
-    /**
-     * @param mapping the mapping to set
-     */
+    
     public void setMapping(Mapping mapping) {
         this.mapping = mapping;
     }
 
-    /**
-     * @return the priority
-     */
+    
     public int getPriority() {
         return priority;
     }
 
-    /**
-     * @param priority the priority to set
-     */
+   
     public void setPriority(int priority) {
         this.priority = priority;
     }
 
-    /**
-     * @return the initMode
-     */
+    
     public boolean isInitMode() {
         return initMode;
     }
 
-    /**
-     * @param initMode the initMode to set
-     */
+    
     public void setInitMode(boolean initMode) {
         this.initMode = initMode;
     }
 
-    /**
-     * @param isInsert the isInsert to set
-     */
+    
     public void setInsert(boolean isInsert) {
         this.isInsert = isInsert;
     }
@@ -2852,114 +2587,82 @@ public class Query extends Exp implements Graphable {
         return getAST().isUpdateLoad();
     }
     
-    /**
-     * @return the lock
-     */
+  
     public boolean isLock() {
         return lock;
     }
 
-    /**
-     * @param lock the lock to set
-     */
+
     public void setLock(boolean lock) {
         this.lock = lock;
     }
 
-    /**
-     * @return the parallel
-     */
+   
     public boolean isParallel() {
         return parallel;
     }
 
-    /**
-     * @param parallel the parallel to set
-     */
+    
     public void setParallel(boolean parallel) {
         this.parallel = parallel;
     }
 
-    /**
-     * @return the serviceResult
-     */
+   
     public boolean isServiceResult() {
         return serviceResult;
     }
 
-    /**
-     * @param serviceResult the serviceResult to set
-     */
+    
     public void setServiceResult(boolean serviceResult) {
         this.serviceResult = serviceResult;
     }
 
-    /**
-     * @return the federate
-     */
+   
     public boolean isFederate() {
         return federate;
     }
 
-    /**
-     * @param federate the federate to set
-     */
+   
     public void setFederate(boolean federate) {
         this.federate = federate;
     }
 
-    /**
-     * @return the validate
-     */
+   
     public boolean isValidate() {
         return validate;
     }
 
-    /**
-     * @param validate the validate to set
-     */
+    
     public void setValidate(boolean validate) {
         this.validate = validate;
     }
 
-    /**
-     * @return the algebra
-     */
+   
     public boolean isAlgebra() {
         return algebra;
     }
 
-    /**
-     * @param algebra the algebra to set
-     */
+   
     public void setAlgebra(boolean algebra) {
         this.algebra = algebra;
     }
 
-    /**
-     * @return the uri
-     */
+   
     public String getURI() {
         return uri;
     }
 
-    /**
-     * @param uri the uri to set
-     */
+    
     public void setURI(String uri) {
         this.uri = uri;
     }
 
-    /**
-     * @return the importFailure
-     */
+   
     public boolean isImportFailure() {
         return importFailure;
     }
 
-    /**
-     * @param importFailure the importFailure to set
-     */
+   
     public void setImportFailure(boolean importFailure) {
         this.importFailure = importFailure;
     }

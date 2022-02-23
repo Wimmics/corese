@@ -43,6 +43,8 @@ public interface Environment {
 	 * @return current graph node (only for filter interpreter)
 	 */
 	Node getGraphNode();
+        default void setGraphNode(Node n) {
+        }
 	
 	/**
 	 * Return the target node of variable var

@@ -92,7 +92,7 @@ public class CompleteSPARQL {
                 }
                 else {
                     Node qnode = e.getNode();
-                    Node tnode = eval.eval(f, m, p);
+                    Node tnode = eval.eval(null, f, m, p);
                     if (tnode != null) {
                         Node val = m.getNodeValue(qnode);
                         if (val == null) {
@@ -137,7 +137,7 @@ public class CompleteSPARQL {
             if (nodes[n] == null) {
                 Filter f = e.getFilter();
                 if (f != null && !e.isAggregate()) {
-                    nodes[n] = eval.eval(f, m, p);
+                    nodes[n] = eval.eval(null, f, m, p);
                 }
 
             }

@@ -114,7 +114,7 @@ public class EvalOptional {
                 }
                 Mapping merge = m1.merge(m2);
                 if (merge != null) {
-                    success = filter(env, queryNode, gNode, merge, exp);
+                    success = filter(env, p, queryNode, gNode, merge, exp);
                     if (success) {
                         nbsuc++;
                         if (env.push(merge, n)) {
@@ -164,13 +164,13 @@ public class EvalOptional {
             m.setQuery(memory.getQuery());
             m.setMap(memory.getMap());
             m.setBind(memory.getBind());
-            m.setGraphNode(gNode);
+            //m.setGraphNode(gNode);
             m.setEval(eval);
             boolean suc = true;
 
             for (Exp ft : exp.getInscopeFilter()) {
-                boolean b = eval.test(ft.getFilter(), m, p);
-                m.setGraphNode(null);
+                boolean b = eval.test(gNode, ft.getFilter(), m, p);
+                //m.setGraphNode(null);
                 if (!b) {
                     suc = false;
                     break;
@@ -191,7 +191,7 @@ public class EvalOptional {
 
     /**
      */
-    boolean filter(Environment memory, Node queryNode, Node gNode, Mapping map, Exp exp) throws SparqlException {
+    boolean filter(Environment memory, Producer p, Node queryNode, Node gNode, Mapping map, Exp exp) throws SparqlException {
         if (exp.isPostpone()) {
             // A optional B
             // filters of B must be evaluated now
@@ -199,10 +199,10 @@ public class EvalOptional {
                 map.setQuery(memory.getQuery());
                 map.setMap(memory.getMap());
                 map.setBind(memory.getBind());
-                map.setGraphNode(gNode);
+                //map.setGraphNode(gNode);
                 map.setEval(eval);
-                boolean b = eval.test(f.getFilter(), map);
-                map.setGraphNode(null);
+                boolean b = eval.test(gNode, f.getFilter(), map, p);
+                //map.setGraphNode(null);
                 if (eval.hasFilter) {
                     b = eval.getVisitor().filter(eval, gNode, f.getFilter().getExp(), b);
                 }

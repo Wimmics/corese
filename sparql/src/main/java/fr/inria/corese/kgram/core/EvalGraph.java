@@ -150,7 +150,7 @@ public class EvalGraph {
         }
         
         if (eval.isFederate(exp)) {
-            res = eval.subEvalNew(np, target, var, body, main, map, null, false, external);
+            res = eval.subEval(np, target, var, body, main, map, null, false, external);
         } 
         else {
             Exp ee = body;
@@ -170,7 +170,7 @@ public class EvalGraph {
             }
             
             // function call below can be reused with np = new Producer(graph) target=null var=null external=true
-            res = eval.subEvalNew(np, target, var, ee, main, data, (Mapping)null, false, external);
+            res = eval.subEval(np, target, var, ee, main, data, (Mapping)null, false, external);
         }
         res.setNamedGraph(graph);
 

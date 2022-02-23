@@ -119,7 +119,7 @@ public class EvalSPARQL {
                          m.setQuery(query);
                          m.setMap(hm);
                          hm.clear();
-                         if (! postpone(exp, m)){
+                         if (! postpone(graph, exp, m, p)){
                              success = false;
                          }
                      }
@@ -137,10 +137,10 @@ public class EvalSPARQL {
          return res;
     }
     
-    boolean postpone(Exp exp, Mapping m){
+    boolean postpone(Node gNode, Exp exp, Mapping m, Producer p){
         for (Exp e : exp.getPostpone()){
             try {
-                if (! eval.test(e.getFilter(), m)){
+                if (! eval.test(gNode, e.getFilter(), m, p)){
                     return false;
                 }
             } catch (SparqlException ex) {
@@ -243,7 +243,7 @@ public class EvalSPARQL {
     private boolean test(Producer p, Exp exp, Mapping m){
         for (Exp f : exp){
             try {
-                if (! eval.test(f.getFilter(), m, p)){
+                if (! eval.test(null, f.getFilter(), m, p)){
                     return false;
                 }
             } catch (SparqlException ex) {

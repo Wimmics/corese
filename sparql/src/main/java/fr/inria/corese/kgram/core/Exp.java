@@ -51,7 +51,6 @@ public class Exp extends PointerObject
             isFree = false,
             isAggregate = false,
             isBGP = false,
-            lock = false,
             isSilent = false;
     boolean isDebug = DEBUG_DEFAULT;
     private boolean isPostpone = false;
@@ -95,37 +94,27 @@ public class Exp extends PointerObject
     private boolean isSystem = false;
     private boolean mappings = false;
 
-    /**
-     * @return the bind
-     */
+    
     public Exp getBind() {
         return bind;
     }
 
-    /**
-     * @param bind the bind to set
-     */
+    
     public void setBind(Exp bind) {
         this.bind = bind;
     }
 
-    /**
-     * @return the isFunctional
-     */
+   
     public boolean isFunctional() {
         return isFunctional;
     }
 
-    /**
-     * @param isFunctional the isFunctional to set
-     */
+    
     public void setFunctional(boolean isFunctional) {
         this.isFunctional = isFunctional;
     }
 
-    /**
-     * @return the path
-     */
+    
     public Exp getPath() {
         return path;
     }
@@ -134,9 +123,7 @@ public class Exp extends PointerObject
         return path != null;
     }
 
-    /**
-     * @param path the path to set
-     */
+    
     public void setPath(Exp path) {
         this.path = path;
     }
@@ -149,16 +136,12 @@ public class Exp extends PointerObject
         return isSystem;
     }
 
-    /**
-     * @return the level
-     */
+    
     public int getLevel() {
         return level;
     }
 
-    /**
-     * @param level the level to set
-     */
+   
     public void setLevel(int level) {
         this.level = level;
     }
@@ -171,79 +154,56 @@ public class Exp extends PointerObject
         return type == AND || type == BGP;
     }
 
-    /**
-     * @return the BGPAble
-     */
+    
     public boolean isBGPAble() {
         return BGPAble;
     }
 
-    /**
-     * @param BGPAble the BGPAble to set
-     */
+   
     public void setBGPAble(boolean BGPAble) {
         this.BGPAble = BGPAble;
     }
 
-    /**
-     * @return the arg
-     */
     public Node getCacheNode() {
         return arg;
     }
 
-    /**
-     * @param arg the arg to set
-     */
+   
     public void setCacheNode(Node arg) {
         this.arg = arg;
     }
 
-    /**
-     * @return the values
-     */
+   
     public Exp getValues() {
         return values;
     }
 
-    /**
-     * @param values the values to set
-     */
+   
     public void setValues(Exp values) {
         this.values = values;
     }
 
-    /**
-     * @return the postpone
-     */
+   
     public boolean isPostpone() {
         return isPostpone;
     }
 
-    /**
-     * @param postpone the postpone to set
-     */
+  
     public void setPostpone(boolean postpone) {
         this.isPostpone = postpone;
     }
 
-    /**
-     * @param postpone the postpone to set
-     */
+   
     public void setPostpone(Exp postpone) {
         this.postpone = postpone;
     }
 
-    /**
-     * @return the nodeSet
-     */
+   
     public List<Node> getNodeSet() {
         return nodeSet;
     }
 
-    /**
-     * @param nodeSet the nodeSet to set
-     */
+   
     public void setNodeSet(List<Node> nodeSet) {
         this.nodeSet = nodeSet;
     }
@@ -367,35 +327,6 @@ public class Exp extends PointerObject
         }
     }
 
-    /**
-     * Add Exp rst into this exp 
-     * If this exp is BGP{e1 .. en}
-     * return: BGP{JOIN{BGP{e1 .. en} rst}}
-     */
-    public void join(Exp rst, int bgp) {
-        if (isBGPAnd() && size() > 0) { // type() == AND
-            Exp fst = get(0);
-            if (size() == 1) {
-                if (!fst.isBGPAnd()) { //first.type() != AND
-                    fst = Exp.create(bgp, fst);
-                }
-            } else {
-                fst = Exp.create(bgp);
-                for (Exp ee : this) {
-                    fst.add(ee);
-                }
-            }
-            //BGP ???
-            // first.setBGP(true);
-            // e.setBGP(true);
-            Exp body = Exp.create(JOIN, fst, rst);
-            getExpList().clear();
-            args.add(body);
-        } 
-        else {
-            args.add(rst);
-        }
-    }
     
     /**
      * This is a BGP
@@ -403,6 +334,7 @@ public class Exp extends PointerObject
      * if it contains statement and basic (eg triple/path/filter/values/bind) 
      * crate BGP for basics and JOIN them
      * otherwise leave as is
+     * called by compiler transformer when algebra = true (default is false)
      */
     public void dispatch(){
         if (size() == 0){
@@ -498,9 +430,6 @@ public class Exp extends PointerObject
     }
        
     StringBuilder toString(StringBuilder sb, int n) {
-//        if (isValues() || isOptional() || isMinus() || isGraph() || isUnion() || isService() || isQuery()){
-//             nl(sb, n);
-//        }
         sb.append(title()).append(SP);
 
         if (type() == VALUES) {
@@ -547,9 +476,6 @@ public class Exp extends PointerObject
             for (Exp e : this) {
                 nl(sb, n);
                 e.toString(sb, n+1).append(SP);
-//                if (type() == JOIN && i == 0) {
-//                    nl(sb, n);
-//                }
                 i++;
             }
         }
@@ -666,16 +592,6 @@ public class Exp extends PointerObject
         return isEdge() || isPath();
     }
 
-    public boolean isEdgesOrFilter() {
-        boolean result = true;
-        for (Exp e : args) {
-            if (!(e.isEdge() || e.isFilter())) {
-                return false;
-            }
-        }
-        return ((result) && (args.size() > 1));
-    }
-
     public boolean isOption() {
         return type == OPTION;
     }
@@ -784,6 +700,7 @@ public class Exp extends PointerObject
         return args.get(n);
     }
 
+    @Override
     public Edge getEdge() {
         return edge;
     }
@@ -840,7 +757,7 @@ public class Exp extends PointerObject
     }
     
     public List<Filter> getFilters(int n, int t) {
-        return new ArrayList<Filter>(0);
+        return new ArrayList<>(0);
     }
           
     public boolean isHaving() {
@@ -926,7 +843,7 @@ public class Exp extends PointerObject
 
     public void addNode(Node n) {
         if (lNodes == null) {
-            lNodes = new ArrayList<Node>();
+            lNodes = new ArrayList<>();
         }
         lNodes.add(n);
     }
@@ -946,20 +863,12 @@ public class Exp extends PointerObject
     public Producer getProducer() {
         return producer;
     }
-
-    public Exp getRestore() {
-        return (Exp) object;
-    }
-
-    public void setRestore(Object o) {
-        object = o;
-    }  
-
+    
     public List<Object> getObjectValues() {
         if (object instanceof List) {
             return (List<Object>) object;
         } else {
-            return new ArrayList<Object>();
+            return new ArrayList<>();
         }
     }
 
@@ -990,24 +899,13 @@ public class Exp extends PointerObject
     /**
      * use case: select distinct ?x where add an ACCEPT ?x statement to check
      * that ?x is new
+     * other exp than those listed here have no distinct processor at runtime
+     * in other words, this is only for main body BGP
      */
     boolean distinct(Node qNode) {
         switch (type()) {
-
-            case UNION:
-                //case OPTION:
-                boolean success = false;
-                for (Exp ee : this) {
-                    success = ee.distinct(qNode) || success;
-                }
-                if (success) {
-                    return true;
-                }
-                break;
-
             case AND:
             case BGP:
-            case GRAPH:
 
                 for (int i = 0; i < size(); i++) {
                     Exp exp = get(i);
@@ -1016,7 +914,6 @@ public class Exp extends PointerObject
                         case PATH:
                         case XPATH:
                         case EVAL:
-                            //Edge edge = exp.getEdge();
                             if (exp.contains(qNode)) {
                                 add(i + 1, Exp.create(ACCEPT, qNode));
                                 return true;
@@ -1024,15 +921,10 @@ public class Exp extends PointerObject
                             break;
 
                         case AND:
-                        case GRAPH:
-                        case UNION:
-                            //case OPTION:
                             if (exp.distinct(qNode)) {
                                 return true;
                             }
-
                             break;
-
                     }
                 }
         }
@@ -1289,7 +1181,6 @@ public class Exp extends PointerObject
             case BIND:
                 // bind may not bind the variable (in case of error) 
                 // hence variable cannot be considered as bound for filter
-                //share(getNode(), filterVar, expVar);
                 break;
 
             case EDGE:
@@ -1309,7 +1200,6 @@ public class Exp extends PointerObject
                 break;
 
             default:
-
                 for (Exp exp : this) {
                     exp.share(filterVar, expVar);
                 }
@@ -1689,13 +1579,7 @@ public class Exp extends PointerObject
                     if (bind.isBindCst()) {
                         // ?x = cst
                         lBind.add(bind);
-                    } else {
-                        // filter has BIND
-                        // TODO: when there is a UNION, variables of BIND may not be all bound 
-                        // so we cannot bind here
-                        //add(i, bind);
-                        //i++;
-                    }
+                    } 
                 }
             }
         }
@@ -1742,23 +1626,6 @@ public class Exp extends PointerObject
         return false;
     }
 
-    /**
-     * graph ?g {} filter(f(?g)) add filter to GRAPHNODE(?g, FILTER(f(?g))
-     *
-     */
-    void graphFilter() {
-        for (int i = 0; i < size(); i++) {
-            Exp f = get(i);
-            if (f.isFilter() && i >= 1 && get(i - 1).isGraph()) {
-                Exp graph = get(i - 1);
-                Node gNode = graph.getGraphName();
-                if (match(gNode, f.getFilter())) {
-                    graph.first().add(f);
-                }
-            }
-        }
-    }
-
     boolean match(Node node, Filter f) {
         if (!node.isVariable() || f.getExp().isRecExist()) {
             return false;
@@ -1768,51 +1635,6 @@ public class Exp extends PointerObject
             return false;
         }
         return lVar.get(0).equals(node.getLabel());
-    }
-
-    /**
-     * use case:
-     *
-     * ?x c:FirstName ?n filter(?n < 'B')
-     *
-     * ?x c:FirstName ?n filter(?n < ?n1)
-     */
-    void edgeFilter() {
-        for (int i = 0; i < size(); i++) {
-            Exp f = get(i);
-            if (f.isFilter() && f.size() > 0 && f.get(0).type() == TEST
-                    && i >= 1 && get(i - 1).isEdge()) {
-                Exp edge = get(i - 1);
-                if (match(edge, f)) {
-                    edge.add(f);
-                }
-            }
-        }
-    }
-
-    /**
-     * ?x c:FirstName ?n ?n < ?n1
-     */
-    boolean match(Exp edge, Exp filter) {
-        Exp test = filter.get(0);
-        for (Exp exp : test) {
-            Node node = exp.getNode();
-            if (edge.contains(node)) {
-                int indexNode = edge.indexNode(node);
-                int indexVar = filter.indexVar(node);
-                test.setIndex(indexNode);
-                test.setObject(indexVar);
-                test.setNode(node);
-//				if (check(filter, indexVar)){
-//					filter.status(true);
-//				}
-                filter.status(true);
-                test.status(order(filter, indexVar));
-
-                return true;
-            }
-        }
-        return false;
     }
 
     /**
@@ -1873,19 +1695,16 @@ public class Exp extends PointerObject
         return -1;
     }
 
+    
     /**
-     * *****************************************************************
-     *
-     * Draft Join
-     *
-     */
-    /**
-     * If content is disconnected, generate join(e1, e2).
+     * If content is disconnected, generate join(e1, e2)
+     * called by QuerySorter when testJoin=true (default is false)
+     * not used.
      */
     Exp join() {
         List<Node> connectedNode = null;
         Exp connectedExp = Exp.create(AND);
-        List<Exp> disconnectedExp = new ArrayList<Exp>();
+        List<Exp> disconnectedExp = new ArrayList<>();
         boolean disconnectedFilter = false;
 
         for (int i = 0; i < size(); i++) {
@@ -1910,15 +1729,6 @@ public class Exp extends PointerObject
                         add(disconnectedExp, e);
                     }
                     continue;
-
-                case OPTION:
-                    if (connectedNode == null) {
-                        connectedNode = e.getAllNodes();
-                    } else {
-                        connectedNode.addAll(e.getAllNodes());
-                    }
-
-                    break;
 
                 default:
                     // TODO: UNION 
@@ -1959,7 +1769,6 @@ public class Exp extends PointerObject
             return this;
         } else {
             Exp res = join(disconnectedExp);
-            //System.out.println("E: " + res);
             return res;
         }
     }
@@ -1990,8 +1799,6 @@ public class Exp extends PointerObject
                 }
             } else {
                 // variables that may be bound from environment (e.g. values)
-//                exp.setNodeList(exp.getNodes());
-//                cur.setNodeList(cur.getNodes());
                 exp = Exp.create(JOIN, exp, cur);
                 exp.bindNodes();
             }
@@ -2036,14 +1843,6 @@ public class Exp extends PointerObject
             }
         }
         return false;
-    }
-
-    public boolean isLock() {
-        return lock;
-    }
-
-    public void setLock(boolean lock) {
-        this.lock = lock;
     }
 
     public void cache(Node n) {
@@ -2237,16 +2036,12 @@ public class Exp extends PointerObject
         return null;
     }
 
-    /**
-     * @return the inscopeFilter
-     */
+   
     public List<Exp> getInscopeFilter() {
         return inscopeFilter;
     }
 
-    /**
-     * @param inscopeFilter the inscopeFilter to set
-     */
+    
     public void setInscopeFilter(List<Exp> inscopeFilter) {
         this.inscopeFilter = inscopeFilter;
     }
@@ -2347,58 +2142,42 @@ public class Exp extends PointerObject
         return createValues(map.getNodeList(), map);
     }
     
-    /**
-     * @return the mappings
-     */
+   
     public boolean isMappings() {
         return mappings;
     }
 
-    /**
-     * @param mappings the mappings to set
-     */
+    
     public void setMappings(boolean mappings) {
         this.mappings = mappings;
     }
 
-    /**
-     * @return the generated
-     */
+   
     public boolean isGenerated() {
         return generated;
     }
 
-    /**
-     * @param generated the generated to set
-     */
+   
     public void setGenerated(boolean generated) {
         this.generated = generated;
     }
 
-    /**
-     * @return the simpleNodeList
-     */
+   
     public List<Node> getInScopeNodeList() {
         return simpleNodeList;
     }
 
-    /**
-     * @param simpleNodeList the simpleNodeList to set
-     */
+  
     public void setInScopeNodeList(List<Node> simpleNodeList) {
         this.simpleNodeList = simpleNodeList;
     }
 
-    /**
-     * @return the externQuery
-     */
+   
     public Query getExternQuery() {
         return externQuery;
     }
 
-    /**
-     * @param externQuery the externQuery to set
-     */
+   
     public void setExternQuery(Query externQuery) {
         this.externQuery = externQuery;
     }

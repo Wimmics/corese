@@ -160,17 +160,24 @@ public class Mappings extends PointerObject
         
         if (isDistinct) {
             if (all) {
-                List<Node> list = q.selectNodesFromPattern();
-                if (list.isEmpty()) {
-                    setDistinct(group(q.getSelectFun()));
-                } else {
-                    setDistinct(group(q.toExp(list)));
-                }
+                setDistinct(group(getAllExpList(q)));
             } else {
                 setDistinct(group(q.getSelectFun()));
             }
             getDistinct().setDistinct(true);
             getDistinct().setDuplicate(q.isDistribute());
+        }
+    }
+    
+    // use case: service require distinct mappings for bindings
+    // for variables in body of q, not for select (exp as var)
+    List<Exp> getAllExpList(Query q) {
+        // variables in body of q
+        List<Node> list = q.selectNodesFromPattern();
+        if (list.isEmpty()) {
+            return q.getSelectFun();
+        } else {
+            return q.toExp(list);
         }
     }
 
@@ -182,17 +189,6 @@ public class Mappings extends PointerObject
         }
         return res;
     }
-
-//    public Mappings distinctAll() {
-//        List<Node> list = getQuery().selectNodesFromPattern();
-//        if (list.isEmpty()) {
-//            list = getQuery().getSelect();
-//        }
-//        if (list.isEmpty()) {
-//            list = getSelect();
-//        }
-//        return distinct(list, list);
-//    }
 
     public Mappings distinct(List<Node> list) {
         Mappings map = distinct(getQuery().getSelect(), list);
@@ -642,7 +638,7 @@ public class Mappings extends PointerObject
                     try {
                         // @todo: complete Mapping m with Binding, etc.
                         m.setBind(eval.getEnvironment().getBind());
-                        node = eval.eval(exp.getFilter(), m, eval.getProducer());
+                        node = eval.eval(null, exp.getFilter(), m, eval.getProducer());
                         if (q.isDebug()) {
                             System.out.println("Order By eval: " + exp);
                             System.out.println(m);

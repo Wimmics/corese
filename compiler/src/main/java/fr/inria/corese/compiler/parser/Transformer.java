@@ -1381,7 +1381,7 @@ public class Transformer implements ExpType {
                         }
 
                         if (isJoinable(exp, ee)) {
-                            exp.join(cpl, bgpType());
+                            join(exp, cpl, bgpType());
                         } else {
                             // add elements of AND one by one
                             exp.insert(cpl);
@@ -1403,7 +1403,33 @@ public class Transformer implements ExpType {
 
         exp.setNum(incrNumber());
         return exp;
-
+    }
+    
+    /**
+     * Add Exp rst into this exp 
+     * If this exp is BGP{e1 .. en}
+     * return: BGP{JOIN{BGP{e1 .. en} rst}}
+     */
+    void join(Exp exp, Exp rst, int bgp) {
+        if (exp.isBGPAnd() && exp.size() > 0) { 
+            Exp fst = exp.get(0);
+            if (exp.size() == 1) {
+                if (!fst.isBGPAnd()) { 
+                    fst = Exp.create(bgp, fst);
+                }
+            } else {
+                fst = Exp.create(bgp);
+                for (Exp ee : exp) {
+                    fst.add(ee);
+                }
+            }
+            Exp body = Exp.create(JOIN, fst, rst);
+            exp.getExpList().clear();
+            exp.add(body);
+        } 
+        else {
+            exp.add(rst);
+        }
     }
     
     int bgpType(){

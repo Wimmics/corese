@@ -39,25 +39,24 @@ import org.eclipse.jetty.server.handler.ResourceHandler;
 import org.eclipse.jetty.servlet.ServletContextHandler;
 import org.eclipse.jetty.servlet.ServletHolder;
 import org.eclipse.jetty.util.ssl.SslContextFactory;
-import org.glassfish.jersey.jetty.JettyHttpContainerFactory;
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
-import javax.ws.rs.ApplicationPath;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.Entity;
-import javax.ws.rs.client.WebTarget;
-import javax.ws.rs.core.MultivaluedHashMap;
-import javax.ws.rs.core.MultivaluedMap;
-import javax.ws.rs.core.UriBuilder;
+import jakarta.ws.rs.ApplicationPath;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.client.WebTarget;
+import jakarta.ws.rs.core.MultivaluedHashMap;
+import jakarta.ws.rs.core.MultivaluedMap;
+import jakarta.ws.rs.core.UriBuilder;
 import java.io.File;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 
-import static javax.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
 
 /**
  * Embedded HTTP server for Corese, Using Jetty implementation SPARQL endpoint:
@@ -308,7 +307,8 @@ public class EmbeddedJettyServer extends ResourceConfig {
             logger.info("----------------------------------------------");
             logger.info("Corese/KGRAM endpoint started on http://localhost:" + port + "/sparql");
 
-            Server server = JettyHttpContainerFactory.createServer(baseUri, false);
+            // Server server = JettyHttpContainerFactory.createServer(baseUri, false);
+            Server server = new Server(port);
             ContextHandlerCollection root = new ContextHandlerCollection();
             server.setHandler(root);
 
@@ -332,7 +332,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
 //            Server server = JettyHttpContainerFactory.createServer(baseUri, config, false);
             // === SSL Connector begin ====
             if (enableSsl) {
-                SslContextFactory sslContextFactory = new SslContextFactory();
+                SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
                 String keystorePath;
                 if (keystore.startsWith("file:")) {
                     keystorePath = keystore.replace("file:", "");

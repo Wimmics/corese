@@ -3,16 +3,17 @@ package fr.inria.corese.server.webservice;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
-import org.junit.AfterClass;
+import fr.inria.corese.sparql.triple.parser.URLServer;
+
 import org.junit.BeforeClass;
 import org.junit.Test;
 
 import javax.net.ssl.SSLContext;
 import javax.net.ssl.TrustManager;
 import javax.net.ssl.X509TrustManager;
-import javax.ws.rs.client.Client;
-import javax.ws.rs.client.ClientBuilder;
-import javax.ws.rs.client.WebTarget;
+import jakarta.ws.rs.client.Client;
+import jakarta.ws.rs.client.ClientBuilder;
+import jakarta.ws.rs.client.WebTarget;
 import java.io.IOException;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
@@ -57,7 +58,7 @@ public class HttpsIT {
     @Test
     public void test() throws Exception
     {
-        Service serv = new Service( SPARQL_ENDPOINT_URL , clientBuilder );
+        Service serv = new Service( new URLServer(SPARQL_ENDPOINT_URL) , clientBuilder );
 
         String q = "select * where {?x ?p ?y} limit 10";
         Mappings map = serv.select( q );

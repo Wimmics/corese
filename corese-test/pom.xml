@@ -19,26 +19,6 @@
 			<artifactId>shexjava-core</artifactId>
 			<version>1.0</version>
 		</dependency>
-		<!--            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-rdf-simple</artifactId>
-                <version>0.5.0</version>
-            </dependency>
-            <dependency>
-                <groupId>org.apache.commons</groupId>
-                <artifactId>commons-rdf-jena</artifactId>
-                <version>0.5.0</version>
-            </dependency>-->
-<!--		<dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>kgram</artifactId>
-			<version>4.1.1-jdk8</version>
-			<type>jar</type>
-		</dependency>-->
-		<!--                <dependency>
-			<groupId>${project.groupId}</groupId>
-			<artifactId>shex</artifactId>
-		</dependency>-->
 		<dependency>
 			<groupId>${project.groupId}</groupId>
 			<artifactId>sparql</artifactId>

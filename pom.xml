@@ -2,16 +2,14 @@
 <project xmlns="http://maven.apache.org/POM/4.0.0"
   xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <!--
-	Corese/KGRAM 3.0, Wimmics Inria I3S, 2013
-	Semantic Web Factory: RDF/S, SPARQL 1.1, Inference Rules
+	Corese 3.4.0, Wimmics Inria I3S, 2022
+	Semantic Web Factory: RDF/S, SPARQL 1.1, Inference Rules, Shacl, STTL, LDScript
 	Open Source Free Software 
 	CeCILL-C License: http://www.cecill.info/licences/Licence_CeCILL-C_V1-en.html
 	Web site: http://wimmics.inria.fr/corese
 	Contact: olivier.corby@inria.fr
 	-->
 
-  <!-- metadata: human readable informations for central -->
-  <!-- end of central metada -->
   <modelVersion>4.0.0</modelVersion>
 
   <groupId>fr.inria.corese</groupId>
@@ -20,8 +18,9 @@
   <packaging>pom</packaging>
 
   <name>corese-parent</name>
-  <description>Corese is a Semantic Web Factory (triple store and SPARQL endpoint) implementing RDF, RDFS, SPARQL 1.1
-        Query and Update.
+  <description>
+    Corese is a Semantic Web Factory (triple store and SPARQL endpoint)
+    implementing RDF, RDFS, SPARQL 1.1 Query and Update, Shacl. STTL. LDScript.
   </description>
   <url>https://github.com/Wimmics/corese</url>
   <licenses>
@@ -87,7 +86,6 @@
   </developers>
 
   <modules>
-    <!--    <module>kgram</module>-->
     <module>corese-core</module>
     <module>corese-server</module>
     <module>sparql</module>
@@ -134,7 +132,7 @@
     <log4j2.version>2.17.1</log4j2.version>
     <surefire.version>3.0.0-M3</surefire.version>
     <sesame.version>4.1.1</sesame.version>
-    <jersey.version>2.27</jersey.version>
+    <jersey.version>3.0.4</jersey.version>
     <semargl.groupId>fr.inria.corese.org.semarglproject</semargl.groupId>
     <semargl.version>0.7.1</semargl.version>
     <!--<maven.test.skip>true</maven.test.skip>-->
@@ -161,11 +159,6 @@
         <artifactId>compiler</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <!--      <dependency>
-        <groupId>${project.groupId}</groupId>
-        <artifactId>kgram</artifactId>
-        <version>${project.version}</version>
-      </dependency>-->
       <dependency>
         <groupId>${project.groupId}</groupId>
         <artifactId>corese-core</artifactId>
@@ -263,17 +256,17 @@
       <dependency>
         <groupId>org.glassfish.metro</groupId>
         <artifactId>webservices-rt</artifactId>
-        <version>2.4.0</version>
+        <version>3.0.3</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.metro</groupId>
         <artifactId>webservices-api</artifactId>
-        <version>2.4.0</version>
+        <version>3.0.3</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.metro</groupId>
         <artifactId>webservices-tools</artifactId>
-        <version>2.4.0</version>
+        <version>3.0.3</version>
       </dependency>
       <!-- ***************************** -->
       <dependency>
@@ -302,16 +295,6 @@
         <version>${jersey.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-server</artifactId>
-        <version>${jersey.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.jersey.contribs</groupId>
-        <artifactId>jersey-multipart</artifactId>
-        <version>${jersey.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.glassfish.jersey.media</groupId>
         <artifactId>jersey-media-multipart</artifactId>
         <version>${jersey.version}</version>
@@ -322,54 +305,14 @@
         <version>${jersey.version}</version>
       </dependency>
       <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-json</artifactId>
-        <version>${jersey.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.jersey</groupId>
-        <artifactId>jersey-servlet</artifactId>
-        <version>${jersey.version}</version>
-      </dependency>
-      <dependency>
         <groupId>org.glassfish.jersey.containers</groupId>
         <artifactId>jersey-container-jetty-http</artifactId>
         <version>${jersey.version}</version>
       </dependency>
       <dependency>
         <groupId>org.glassfish.jersey.containers</groupId>
-        <artifactId>jersey-container-jetty-servlet</artifactId>
+        <artifactId>jersey-container-servlet-core</artifactId>
         <version>${jersey.version}</version>
-      </dependency>
-      <dependency>
-        <groupId>com.sun.activation</groupId>
-        <artifactId>javax.activation</artifactId>
-        <version>1.2.0</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.servlet</groupId>
-        <artifactId>servlet-api</artifactId>
-        <version>2.5</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.xml.ws</groupId>
-        <artifactId>jaxws-api</artifactId>
-        <version>2.2.8</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.xml.bind</groupId>
-        <artifactId>jaxb-api</artifactId>
-        <version>2.2.2</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.jws</groupId>
-        <artifactId>jsr181-api</artifactId>
-        <version>1.0-MR1</version>
-      </dependency>
-      <dependency>
-        <groupId>javax.jws</groupId>
-        <artifactId>jsr181</artifactId>
-        <version>1.0</version>
       </dependency>
       <dependency>
         <groupId>com.hp.hpl.jena</groupId>
@@ -437,9 +380,11 @@
         <version>5.0.0</version>
       </dependency>
       <dependency>
-        <groupId>javax.annotation</groupId>
-        <artifactId>javax.annotation-api</artifactId>
-        <version>1.3.2</version>
+        <groupId>org.eclipse.jetty</groupId>
+        <artifactId>jetty-bom</artifactId>
+        <version>11.0.8</version>
+        <type>pom</type>
+        <scope>import</scope>
       </dependency>
     </dependencies>
   </dependencyManagement>

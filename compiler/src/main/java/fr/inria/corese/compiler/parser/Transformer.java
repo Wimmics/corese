@@ -75,8 +75,8 @@ public class Transformer implements ExpType {
             isSPARQL1 = true;
     private boolean isUseBind = true;
     private boolean isGenerateMain = true;
-    //private boolean isLoadFunction = false;
     private boolean isBGP = false;
+    // draft alternative interpreter not used 
     private boolean algebra = false;
     String namespaces, base;
     private Dataset dataset;
@@ -631,7 +631,7 @@ public class Transformer implements ExpType {
         q.setUseBind(isUseBind);
         //compileFunction(q, ast);
         q.setAST(ast);
-        q.setHasFunctional(ast.hasFunctional());
+        //q.setHasFunctional(ast.hasFunctional());
         q.setService(ast.getService());
         // use same compiler
         values(q, ast);
@@ -695,7 +695,7 @@ public class Transformer implements ExpType {
         exp.setFilter(f);
         exp.setNode(node);
         exp.setFunctional(f.isFunctional());
-        ast.setHasFunctional(f.isFunctional());
+        //ast.setHasFunctional(f.isFunctional());
         function(null, exp, var);
         return exp;
     }

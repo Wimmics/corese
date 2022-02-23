@@ -66,15 +66,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     public Interpreter() {
-        //this (new ProxyInterpreter());
     }
     
-//    Interpreter(ProxyInterpreter p) {
-//        proxy =  p;
-//        if (proxy.getEvaluator() == null) {
-//            proxy.setEvaluator(this);
-//        }
-//    }
     
     // for PluginImpl
     public void setPlugin(ProxyInterpreter plugin) {
@@ -82,7 +75,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         if (plugin.getEvaluator() == null) {
             plugin.setEvaluator(this);
         }
-        //proxy.setPlugin(plugin);
     }
     
     public static ASTExtension createExtension() {
@@ -123,15 +115,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
         return env.getEval();
     }
-    
-//    public ProxyInterpreter getProxy() {
-//        return proxy;
-//    }
-
-//    public ProxyInterpreter getComputerProxy() {
-//        return proxy;
-//    }
-
     
     @Override
     public void addResultListener(ResultListener rl) {
@@ -263,6 +246,15 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         return eval.getComputer();
     }
     
+    /**
+     * context: ldscript function call require new Interpreter with new Environment 
+     * see sparql.triple.function.script.Extension 
+     * use case: function contains a sparql query such as let(select where)
+     * the function must be executed with a fresh Environment 
+     * initialized with the function definition global query 
+     * hint: the function has been compiled within a public query q1
+     * which may be different from the query q2 where public function call occur
+     */
     @Override
     public InterpreterEval getComputerEval(Environment env, Producer p, Expr function) {
         Query q = getQuery(env, function);

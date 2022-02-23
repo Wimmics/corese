@@ -174,7 +174,7 @@
         <artifactId>corese-rdf4j</artifactId>
         <version>${project.version}</version>
       </dependency>
-      <dependency>
+<!--      <dependency>
         <groupId>org.openrdf.sesame</groupId>
         <artifactId>sesame-rio-api</artifactId>
         <version>${sesame.version}</version>
@@ -210,7 +210,7 @@
         <groupId>org.openrdf.sesame</groupId>
         <artifactId>sesame-rio-rdfxml</artifactId>
         <version>${sesame.version}</version>
-      </dependency>
+      </dependency>-->
       <dependency>
         <groupId>org.apache.logging.log4j</groupId>
         <artifactId>log4j-slf4j18-impl</artifactId>

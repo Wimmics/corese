@@ -5,7 +5,6 @@ import java.util.HashMap;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.tool.Distinct;
 import fr.inria.corese.kgram.tool.DistinctNode;
 import fr.inria.corese.kgram.tool.MetaIterator;
 

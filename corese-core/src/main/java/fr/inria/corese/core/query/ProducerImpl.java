@@ -444,7 +444,7 @@ public class ProducerImpl
             Eval eval = mem.getEval();
             // prevent loop on BGP exp:
             exp.setType(Exp.AND);
-            Mappings map = eval.subEval(this, gNode, gNode, exp, null);
+            Mappings map = eval.subEval(this, gNode, gNode, exp, exp, null);
             if (env.getQuery().isDebug()) {
                 System.out.println("BGP:\n" + map);
             }

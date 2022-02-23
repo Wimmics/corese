@@ -787,6 +787,7 @@ public class ProviderService implements URLParam {
         this.provider = provider;
     }
 
+    // query inside service
     public Query getQuery() {
         return query;
     }

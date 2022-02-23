@@ -70,7 +70,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <dependency>
+<!--        <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-rio-api</artifactId>
         </dependency>
@@ -83,7 +83,7 @@
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-util</artifactId>
             <scope>runtime</scope>
-        </dependency>
+        </dependency>-->
         <!--RDFa parser-->
         <dependency>
             <groupId>${semargl.groupId}</groupId>

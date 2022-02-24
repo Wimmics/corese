@@ -542,16 +542,7 @@ public class Mappings extends PointerObject
         }
     }
 
-    void sort(Eval eval) {
-        this.setEval(eval);
-        Collections.sort(getMappingList(), this);
-        this.setEval(null);
-    }
 
-    void sort() {
-        Collections.sort(getMappingList(), this);
-    }
-    
     /**
      * Query with new modifier
      * Prepare Mappings:
@@ -574,24 +565,24 @@ public class Mappings extends PointerObject
      */
     public void modifySelect(Eval eval, Query q) {
         for (Exp exp : q.getSelectFun()) {
-            if (exp.getFilter() != null && ! exp.isAggregate()) {
+            if (exp.getFilter() != null && !exp.isAggregate()) {
                 Node node = exp.getNode();
-                
+
                 for (Mapping m : this) {
                     //if (m.getNode(node) == null) {
-                        // @todo: bnode ?
-                        m.setBind(eval.getEnvironment().getBind());
-                        m.setEval(eval);
-                        m.setQuery(q);
-                        try {
-                            Node value = eval.getEvaluator().eval(exp.getFilter(), m, eval.getProducer());
-                            if (value != null) {
-                                m.setNode(node, value);
-                                addSelectVariable(node);
-                            }
-                        } catch (SparqlException ex) {
-                            logger.error(ex.getMessage());
+                    // @todo: bnode ?
+                    m.setBind(eval.getEnvironment().getBind());
+                    m.setEval(eval);
+                    m.setQuery(q);
+                    try {
+                        Node value = eval.getEvaluator().eval(exp.getFilter(), m, eval.getProducer());
+                        if (value != null) {
+                            m.setNode(node, value);
+                            addSelectVariable(node);
                         }
+                    } catch (SparqlException ex) {
+                        logger.error(ex.getMessage());
+                    }
                     //}
                 }
             }
@@ -656,30 +647,36 @@ public class Mappings extends PointerObject
             }
         }
     }
-
-    public void genericSort() {
-        Collections.sort(getMappingList(), new MappingSorter());
+    
+    
+    public static void setOrderUnboundFirst(boolean b) {
+        unbound = (b) ? -1 : 1;
     }
+    
+    
+    
+    
+    
+    /*********************************
+     * 
+     * MappingSet sort
+     * 
+     ********************************/
 
-    class MappingSorter implements Comparator<Mapping> {
-
-        @Override
-        public int compare(Mapping m1, Mapping m2) {
-            int res = 0;
-            for (int i = 0; i < getSelect().size() && res == 0; i++) {
-                Node n = getSelect().get(i);
-                Node n1 = m1.getNodeValue(n);
-                Node n2 = m2.getNodeValue(n);
-                res = genCompare(n1, n2);
-            }
-            return res;
-        }
-
-    }
 
     public void sort(List<String> varList) {
         Collections.sort(getMappingList(), new VariableSorter(varList));
     }
+    
+    
+   /**
+     * Is there a Mapping compatible with m
+     *
+     */
+    int find(Mapping m, List<String> list) {
+        return find(m, getVariableSorter(list), 0, size() - 1);
+    }
+
 
     VariableSorter getVariableSorter(List<String> varList) {
         return new VariableSorter(varList);
@@ -692,7 +689,7 @@ public class Mappings extends PointerObject
         VariableSorter(List<String> list) {
             this.varList = list;
         }
-
+        
         @Override
         public int compare(Mapping m1, Mapping m2) {
             int res = 0;
@@ -703,42 +700,8 @@ public class Mappings extends PointerObject
             }
             return res;
         }
-
     }
-
-    /**
-     *
-     * Sort according to node
-     */
-    void sort(Eval eval, Node node) {
-        this.setEval(eval);
-        sortWithDesc = false;
-        for (Mapping m : this) {
-            m.setOrderBy(m.getNode(node));
-        }
-        sort();
-        this.setEval(null);
-    }
-
-    int find(Node node, Node qnode) {
-        return find(node, qnode, 0, size() - 1);
-    }
-
-    int find(Node n2, Node qnode, int first, int last) {
-        if (first >= last) {
-            return first;
-        } else {
-            int mid = (first + last) / 2;
-            Node n1 = getMappingList().get(mid).getNodeValue(qnode);
-            int res = compare(n1, n2);
-            if (res >= 0) {
-                return find(n2, qnode, first, mid);
-            } else {
-                return find(n2, qnode, mid + 1, last);
-            }
-        }
-    }
-
+    
     int find(Mapping m, VariableSorter vs, int first, int last) {
         if (first >= last) {
             return first;
@@ -753,51 +716,88 @@ public class Mappings extends PointerObject
             }
         }
     }
-
-    public static void setOrderUnboundFirst(boolean b) {
-        unbound = (b) ? -1 : 1;
-    }
-
-    int compare(Node n1, Node n2) {
-        int res = 0;
-        if (n1 != null && n2 != null) { // sort ?x
-            res = n1.compare(n2);
-        } //      unbound 
-        else if (n1 == null) { // unbound var
-            if (n2 == null) {
-                res = 0;
-            } else {
-                res = unbound;
-            }
-        } else if (n2 == null) {
-            res = -unbound;
-        } else {
-            res = 0;
+    
+    boolean minusCompatible(Mapping m, List<String> list) {
+        int n = find(m, getVariableSorter(list), 0, size() - 1);
+        if (n >= 0 && n < size()) {
+            Mapping mm = get(n);
+            return m.minusCompatible(mm, list);
         }
-        return res;
+        return false;
+    }    
+
+    
+    /*****************************************
+     * 
+     * Standard sort
+     * order by
+     * join()
+     * 
+     *****************************************/
+    
+    void sort(Eval eval) {
+        this.setEval(eval);
+        sort();
+        this.setEval(null);
     }
 
-    int genCompare(Node n1, Node n2) {
-        return compare(n1, n2);
+    void sort() {
+        Collections.sort(getMappingList(), this);
+    }
+    
+    /**
+     *
+     * Sort according to node
+     * use case: join(exp, exp)
+     */
+    void sort(Eval eval, Node node) {
+        prepare(node);
+        sort(eval);
+    }
+    
+    void sort(Node node) {
+        prepare(node);
+        sort();
+    }
+    
+    void prepare(Node node) {
+        sortWithDesc = false;
+        for (Mapping m : this) {
+            m.setOrderBy(m.getNode(node));
+        }
+    }
+    
+        
+    // find index of node where qnode=node
+    // with standard sort
+    int find(Node node, Node qnode) {
+        return find(node, qnode, 0, size() - 1);
     }
 
+    
+    /**
+     * comparator of Node for standard sort
+     * use IDatatype compareTo()
+     * compare with sameTerm semantics: order 1 and 01 in deterministic way
+     * authorize overload of comparator for specific datatypes using a Visitor
+     */ 
     int comparator(Node n1, Node n2) {
         if (getEval() != null) {
             return getEval().getVisitor().compare(getEval(), n1.compare(n2), n1.getDatatypeValue(), n2.getDatatypeValue());
         }
         return n1.compare(n2);
     }
-
+    
+    
+    // comparator of Mapping for standard sort
     @Override
     public int compare(Mapping m1, Mapping m2) {
         Node[] order1 = m1.getOrderBy();
         Node[] order2 = m2.getOrderBy();
-
         List<Exp> orderBy = getQuery().getOrderBy();
-
         int res = 0;
+        
         for (int i = 0; i < order1.length && i < order2.length && res == 0; i++) {
-
             if (order1[i] != null && order2[i] != null) { // sort ?x
                 res = comparator(order1[i], order2[i]);
             } //      unbound 
@@ -812,11 +812,11 @@ public class Mappings extends PointerObject
             } else {
                 res = 0;
             }
-            if (!orderBy.isEmpty() && orderBy.get(i).status() && sortWithDesc) {
+            if (sortWithDesc && !orderBy.isEmpty() && orderBy.get(i).status() ) {
                 res = desc(res);
             }
-
         }
+        
         return res;
     }
 
@@ -829,6 +829,82 @@ public class Mappings extends PointerObject
             return -1;
         }
     }
+    
+
+    // find index of node where qnode=node
+    int find(Node node, Node qnode, int first, int last) {
+        if (first >= last) {
+            return first;
+        } else {
+            int mid = (first + last) / 2;
+            Node n1 = getMappingList().get(mid).getNodeValue(qnode);
+            int res = compare(n1, node);
+            if (res >= 0) {
+                return find(node, qnode, first, mid);
+            } else {
+                return find(node, qnode, mid + 1, last);
+            }
+        }
+    }
+
+    // standard node comparator where argument may be null
+    int compare(Node n1, Node n2) {
+        int res = 0;
+        if (n1 != null && n2 != null) { // sort ?x
+            res = comparator(n1, n2); //n1.compare(n2);
+        } //      unbound 
+        else if (n1 == null) { // unbound var
+            if (n2 == null) {
+                res = 0;
+            } else {
+                res = unbound;
+            }
+        } else if (n2 == null) {
+            res = -unbound;
+        } 
+//        else {
+//            res = 0;
+//        }
+        return res;
+    }
+
+     int genCompare(Node n1, Node n2) {
+        return compare(n1, n2);
+     }
+
+    
+
+    /**************************
+     * Alternative sorter
+     * not used
+     * 
+     **************************/
+    
+
+//    public void genericSort() {
+//        Collections.sort(getMappingList(), new MappingSorter());
+//    }
+//    
+
+//    
+//
+//    class MappingSorter implements Comparator<Mapping> {
+//
+//        @Override
+//        public int compare(Mapping m1, Mapping m2) {
+//            int res = 0;
+//            for (int i = 0; i < getSelect().size() && res == 0; i++) {
+//                Node n = getSelect().get(i);
+//                Node n1 = m1.getNodeValue(n);
+//                Node n2 = m2.getNodeValue(n);
+//                res = genCompare(n1, n2);
+//            }
+//            return res;
+//        }
+//
+//    }
+    
+    
 
     /**
      * *********************************************************
@@ -1366,25 +1442,6 @@ public class Mappings extends PointerObject
             }
         }
         return union;
-    }
-
-    /**
-     * Is there a Mapping compatible with m
-     *
-     * @param m
-     * @return
-     */
-    int find(Mapping m, List<String> list) {
-        return find(m, getVariableSorter(list), 0, size() - 1);
-    }
-
-    boolean minusCompatible(Mapping m, List<String> list) {
-        int n = find(m, getVariableSorter(list), 0, size() - 1);
-        if (n >= 0 && n < size()) {
-            Mapping mm = get(n);
-            return m.minusCompatible(mm, list);
-        }
-        return false;
     }
 
     public Mappings union(Mappings lm) {

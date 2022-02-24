@@ -52,6 +52,8 @@ public class Eval implements ExpType, Plugin {
     // true = new processing of named graph 
     public static boolean NAMED_GRAPH_DEFAULT = true;
     static Logger logger = LoggerFactory.getLogger(Eval.class);
+    public static boolean JOIN_MAPPINGS = true;
+
     // draft test: when edge() has Mappings map parameter, push clause values(map)
     private static boolean pushEdgeMappings = true;
     // draft test: graph() has Mappings map parameter and eval body with map parameter
@@ -125,6 +127,7 @@ public class Eval implements ExpType, Plugin {
             hasStatement = false,
             hasProduce = false;
     private boolean stop = false;
+    private boolean joinMappings = JOIN_MAPPINGS;
     
     public Eval() {
     }
@@ -568,8 +571,7 @@ public class Eval implements ExpType, Plugin {
     
     /**
      * subEval with bind parameters
-     * freshMemory inherits data from current memory to evaluate exp 
-     * Use case: template parameters are bound in memory, bind them in freshMemory
+     * freshMemory inherits data to evaluate exp 
      *
      */
     void bind(Memory freshMemory, Exp exp, Exp main, Mappings map, Mapping m, boolean bind) {
@@ -1143,6 +1145,11 @@ public class Eval implements ExpType, Plugin {
 
                 if (hasStatement) {
                     getVisitor().statement(this, getGraphNode(graphNode), exp);
+                }
+              
+                if (!isJoinMappings()) {
+                    // for testing and debug
+                    map = null;
                 }
 
                 switch (exp.type()) {
@@ -2542,6 +2549,12 @@ public class Eval implements ExpType, Plugin {
         }
     }
 
+    public boolean isJoinMappings() {
+        return joinMappings;
+    }
 
+    public void setJoinMappings(boolean joinMappings) {
+        this.joinMappings = joinMappings;
+    }
 
 }

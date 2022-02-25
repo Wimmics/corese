@@ -42,8 +42,7 @@ import java.util.UUID;
  * <p>Project: Acacia</p>
  * <br>
  * This class is the abstract syntax tree, it represents the initial query
- * (except for get:gui).<br>
- * When complete, it will be transformed into a Query Graph.java.
+ * When complete, it will be transformed into a Query.
  * <br>
  *
  * @author Olivier Corby & Virginie Bottollier
@@ -62,8 +61,8 @@ public class ASTQuery
      */
     public static Logger logger = LoggerFactory.getLogger(ASTQuery.class);
 
-    static String RootPropertyQN = RDFS.RootPropertyQN; // cos:Property
-    static String RootPropertyURI = RDFS.RootPropertyURI; //"http://www.inria.fr/acacia/corese#Property";
+    static String RootPropertyQN  = RDFS.RootPropertyQN; 
+    static String RootPropertyURI = RDFS.RootPropertyURI; 
     static final String LIST = "list";
     public static final String KGRAMVAR = "?_ast_";
     public static final String SYSVAR = "?_cos_";
@@ -97,56 +96,28 @@ public class ASTQuery
     
     public static boolean REFERENCE_DEFINITION_BNODE = true;
     public static boolean REFERENCE_QUERY_BNODE      = true;
-
-    /**
-     * if graph rule
-     */
+    
+    // inference rule     
     boolean rule = false;
-    boolean isConclusion = false;
-    /**
-     * approximate projection
-     */
+    //boolean isConclusion = false;
+    // approximate projection
     boolean more = false;
     private boolean isRelax = false;
     boolean isDelete = false;
-    /**
-     * default process join
-     */
-    boolean join = false;
-    /**
-     * join result into one graph
-     */
+     // default process join
+    //boolean join = false;
+    // join result into one graph
     boolean one = false;
-    /**
-     * sparql bind
-     */
+    // sparql bind
     boolean XMLBind = true;
-    /**
-     * select distinct where : all are distinct
-     */
+    // select distinct where : all are distinct
     boolean distinct = false;
-    /**
-     * true : sparql, false : corese
-     */
-    boolean strictDistinct = true;
-    /**
-     * relation on which join connex
-     */
+    boolean strictDistinct = false;
+    // relation on which join connex
     boolean connex = false;
-    boolean hasScore = false;
-    /**
-     * display blank node id
-     */
-    boolean displayBNID = false;
-   
-    /**
-     * display in RDF
-     */
+    //display in RDF
     boolean rdf = false, isJSON = false;
-    
-    /**
-     * select * : select all variables from query
-     */
+    // select * : select all variables from query
     boolean selectAll = false,
             // additional SPARQL constraints (dot, arg of type string type, ...)
             isSPARQLCompliant = false;
@@ -161,14 +132,10 @@ public class ASTQuery
             isLoad = false;
     private boolean isFail = false;
     boolean isCorrect = true;
-    /**
-     * booleans useful for the sparql pretty printer
-     */
+    // booleans useful for the sparql pretty printer
     boolean where = false;
     boolean merge = false;
-    /**
-     * used in QueryGraph.java to compile the construct
-     */
+    // used in QueryGraph.java to compile the construct
     boolean constructCompiled = false;
     // construct in the std graph:
     boolean isInsert = false;
@@ -177,22 +144,15 @@ public class ASTQuery
     private boolean ldscript = false;
     private boolean insideWhere = false;
     private boolean federateVisit = false;
-    /**
-     * max cg result
-     */
+    // max cg result
     int MaxResult = LIMIT_DEFAULT;
     int DefaultMaxResult = LIMIT_DEFAULT;
-    /**
-     * max projection
-     */
+    // max projection
     int MaxProjection = LIMIT_DEFAULT;
     int DefaultMaxProjection = LIMIT_DEFAULT;
     // path length max
     int DefaultMaxLength = 5;
-    int MaxDisplay = 10000;
-    /**
-     * Offset
-     */
+    int MaxDisplay = 10000;   
     int Offset = 0;
     int nbBNode = 0;
     int nbtriple = 0; // rdf*
@@ -201,18 +161,14 @@ public class ASTQuery
     int resultForm = QT_SELECT;
     private int priority = 100;
     int countVar = 0;
-    /**
-     * if more, reject 2 times worse projection than best one
-     */
+    // if more, reject 2 times worse projection than best one
     float Threshold = 1;
     float DefaultThreshold = 1;
     // predefined ns from server
     String namespaces, base;
     // relax by dd:distance
     String distance;
-    /**
-     * the source text of the query
-     */
+    // the source text of the query
     String text = null;
     /**
      * Represents the ASTQuery before compilation
@@ -466,12 +422,12 @@ public class ASTQuery
         return ast;
     }
 
-    public static ASTQuery create(String query, boolean isRule, boolean isConclusion) {
-        ASTQuery aq = new ASTQuery(query);
-        aq.setConclusion(isConclusion);
-        aq.setRule(isRule);
-        return aq;
-    }
+//    public static ASTQuery create(String query, boolean isRule, boolean isConclusion) {
+//        ASTQuery aq = new ASTQuery(query);
+//        aq.setConclusion(isConclusion);
+//        aq.setRule(isRule);
+//        return aq;
+//    }
 
     /**
      * AST for a subquery share prefix declaration
@@ -761,9 +717,9 @@ public class ASTQuery
         this.connex = connex;
     }
 
-    public void setDisplayBNID(boolean displayBNID) {
-        this.displayBNID = displayBNID;
-    }
+//    public void setDisplayBNID(boolean displayBNID) {
+//        this.displayBNID = displayBNID;
+//    }
 
     public void setDistinct(boolean distinct) {
         this.distinct = distinct;
@@ -793,13 +749,13 @@ public class ASTQuery
         return isJSON;
     }
 
-    public void setConclusion(boolean isConclusion) {
-        this.isConclusion = isConclusion;
-    }
+//    public void setConclusion(boolean isConclusion) {
+//        this.isConclusion = isConclusion;
+//    }
 
-    public void setJoin(boolean join) {
-        this.join = join;
-    }
+//    public void setJoin(boolean join) {
+//        this.join = join;
+//    }
 
     public void setMaxDisplay(int maxDisplay) {
         MaxDisplay = maxDisplay;
@@ -846,13 +802,13 @@ public class ASTQuery
 //        this.query = query;
 //    }
 
-    public void setScore(boolean score) {
-        this.hasScore = score;
-    }
-
-    public boolean getScore() {
-        return hasScore;
-    }
+//    public void setScore(boolean score) {
+//        this.hasScore = score;
+//    }
+//
+//    public boolean getScore() {
+//        return hasScore;
+//    }
 
     public void setDistance(String dist) {
         distance = dist;
@@ -908,13 +864,13 @@ public class ASTQuery
         return rdf;
     }
 
-    public boolean isConclusion() {
-        return isConclusion;
-    }
+//    public boolean isConclusion() {
+//        return isConclusion;
+//    }
 
-    public boolean isJoin() {
-        return join;
-    }
+//    public boolean isJoin() {
+//        return join;
+//    }
 
     public int getMaxDisplay() {
         return MaxDisplay;
@@ -2504,9 +2460,9 @@ public class ASTQuery
     }
 
 
-    public void setList(boolean b) {
-        this.setJoin(!b);
-    }
+//    public void setList(boolean b) {
+//        this.setJoin(!b);
+//    }
 
     public void setCorrect(boolean b) {
         isCorrect = b;

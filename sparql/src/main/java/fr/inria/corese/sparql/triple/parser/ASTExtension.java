@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ASTExtension implements Extension {
 
+    public static int FUNCTION_PARAMETER_MAX = 15;
     private static Logger logger = LoggerFactory.getLogger(ASTExtension.class);
     static final String NL = System.getProperty("line.separator");
     public static final String TYPE = ExpType.TYPE_METADATA;
@@ -34,7 +35,6 @@ public class ASTExtension implements Extension {
 
   
     public class FunMap extends HashMap<String, Function> {
-        
         // String is metadata such as @before
         HashMap<String, Function> metadata;
         
@@ -95,7 +95,7 @@ public class ASTExtension implements Extension {
     private boolean debug = false;
 
     public ASTExtension() {
-        maps = new FunMap[15];
+        maps = new FunMap[FUNCTION_PARAMETER_MAX];
         funList = new ArrayList<>();
         for (int i=0; i<maps.length; i++){
             maps[i] = new FunMap();

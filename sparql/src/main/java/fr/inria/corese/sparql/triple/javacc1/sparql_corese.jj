@@ -1246,7 +1246,6 @@ void GraphPatternNotTriples(Exp stack) : {ASTQuery ast; Values values;}
  	| LOOKAHEAD (2) GroupOrUnionGraphPattern(stack) 
  	| GraphGraphPattern(stack)
  	| ServicePattern(stack)
- 	| ScoreGraphPattern(stack)
  	| ScopeGraphPattern(stack)
  	| ExistGraphPattern(stack)
  	| Bind(stack) 
@@ -1414,17 +1413,6 @@ void ServicePattern(Exp stack) :
   	}
 }
 
-void ScoreGraphPattern(Exp stack) : { Atom src; Exp e; }
-{
-  <SCORE> 
-  src = VarOrBlankNodeOrIRIref(stack) 
-  e = GroupGraphPattern()
-  { 
-  	astq.setScore(true);
-  	e = Score.create(src, e);
-  	stack.add(e);
-  }
-}
 
 // G (union G)* can be a single group pattern
 // or a group pattern as part of an union.

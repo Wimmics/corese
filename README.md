@@ -80,7 +80,7 @@ Download source code and compile.
 ```shell
 git clone "https://github.com/Wimmics/corese.git"
 cd corese
-mvn -Dmaven.test.skip=true package
+mvn package
 ```
 
 ## Contributions and discussions

@@ -876,33 +876,31 @@ public class Mappings extends PointerObject
 
     /**************************
      * Alternative sorter
-     * not used
+     * use case: gui
      * 
      **************************/
     
 
-//    public void genericSort() {
-//        Collections.sort(getMappingList(), new MappingSorter());
-//    }
-//    
+    public void genericSort() {
+        Collections.sort(getMappingList(), new MappingSorter());
+    }
+    
 
-//    
-//
-//    class MappingSorter implements Comparator<Mapping> {
-//
-//        @Override
-//        public int compare(Mapping m1, Mapping m2) {
-//            int res = 0;
-//            for (int i = 0; i < getSelect().size() && res == 0; i++) {
-//                Node n = getSelect().get(i);
-//                Node n1 = m1.getNodeValue(n);
-//                Node n2 = m2.getNodeValue(n);
-//                res = genCompare(n1, n2);
-//            }
-//            return res;
-//        }
-//
-//    }
+    class MappingSorter implements Comparator<Mapping> {
+
+        @Override
+        public int compare(Mapping m1, Mapping m2) {
+            int res = 0;
+            for (int i = 0; i < getSelect().size() && res == 0; i++) {
+                Node n = getSelect().get(i);
+                Node n1 = m1.getNodeValue(n);
+                Node n2 = m2.getNodeValue(n);
+                res = genCompare(n1, n2);
+            }
+            return res;
+        }
+
+    }
     
     
 

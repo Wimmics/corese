@@ -62,7 +62,7 @@
 			<artifactId>log4j-slf4j18-impl</artifactId>
 			<scope>runtime</scope>
 		</dependency>
-		<dependency>
+<!--		<dependency>
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-nquads</artifactId>
 			<scope>runtime</scope>
@@ -71,7 +71,7 @@
 			<groupId>org.openrdf.sesame</groupId>
 			<artifactId>sesame-rio-api</artifactId>
 			<scope>runtime</scope>
-		</dependency>
+		</dependency>-->
 	</dependencies>
 
 	<build>		<!--<finalName>corese-${revision}</finalName>-->

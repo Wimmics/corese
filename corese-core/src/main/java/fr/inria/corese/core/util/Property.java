@@ -30,6 +30,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
@@ -152,6 +153,8 @@ public class Property {
         OWL_CLEAN,
         OWL_CLEAN_QUERY,
         OWL_RL,
+        
+        FUNCTION_PARAMETER_MAX,
         
         // init graph
         GUI_TITLE,
@@ -577,6 +580,10 @@ public class Property {
                 
             case LOAD_LIMIT:
                 Load.setLimitDefault(n);
+                break;
+                
+            case FUNCTION_PARAMETER_MAX:
+                ASTExtension.FUNCTION_PARAMETER_MAX = n;
                 break;
         }
     }

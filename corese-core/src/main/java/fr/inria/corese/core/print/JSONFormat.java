@@ -164,6 +164,9 @@ public class JSONFormat extends XMLFormat {
         if (dt.isTriple() && dt.getEdge()!=null) {
             triple(dt);
         }
+        else if (dt.isList()) {
+            list(dt);
+        }
         else {
             term(dt);
         }
@@ -187,6 +190,19 @@ public class JSONFormat extends XMLFormat {
         println();
         print("}}");
     }
+    
+    void list(IDatatype list) {
+        println("{ \"type\": \"list\",");
+        println("\"value\": [");
+        int i = 0;
+        for (IDatatype dt : list) {
+            if (i++ > 0) {
+                print(", ");
+            }
+            display(dt);
+        }
+        print("]}");
+    }   
     
     void term(IDatatype dt) {    
         print("{ \"type\": ");        

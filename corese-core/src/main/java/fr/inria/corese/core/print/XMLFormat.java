@@ -364,7 +364,10 @@ public class XMLFormat extends QueryResultFormat {
     
     void display(IDatatype dt) {
         String str = dt.getLabel();
-        if (dt.isLiteral()) {
+        if (dt.isList()) {
+            printList(dt);
+        }
+        else if (dt.isLiteral()) {
             str = toXML(str);
 
             if (dt.hasLang()) {
@@ -383,27 +386,38 @@ public class XMLFormat extends QueryResultFormat {
                 printf("<literal>%s</literal>" ,str );
             }
         } else if (dt.isTripleWithEdge()) {
-            // nested edge
-            Edge e = dt.getEdge();
-            
-            println("<triple>");
-            print("<subject>");
-            display(e.getSubjectValue());
-            println("</subject>");
-            print("<predicate>");
-            display(e.getPredicateValue());
-            println("</predicate>");
-            print("<object>");
-            display(e.getObjectValue());
-            println("</object>");
-            println("</triple>");
-        }            
+            // rdf star triple
+            print(dt.getEdge());            
+        }          
         else if (dt.isBlank()) {
             printf("<bnode>%s</bnode>", str);
         } 
         else if (dt.isURI()) {
             printf("<uri>%s</uri>", StringEscapeUtils.escapeXml(str));
         }
+    }
+    
+    void printList(IDatatype list) {
+        println("<list>");
+        for (IDatatype dt : list) {
+            display(dt);
+            println();
+        }
+        println("</list>");
+    }
+    
+    void print(Edge e) {
+        println("<triple>");
+        print("<subject>");
+        display(e.getSubjectValue());
+        println("</subject>");
+        print("<predicate>");
+        display(e.getPredicateValue());
+        println("</predicate>");
+        print("<object>");
+        display(e.getObjectValue());
+        println("</object>");
+        println("</triple>");
     }
 
     String display(Object o) {

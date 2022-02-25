@@ -28,6 +28,7 @@ import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.parser.CompilerFacKgram;
+import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mapping;
@@ -71,12 +72,15 @@ public class XMLResult {
     private static final int SUBJECT = 10;
     private static final int PREDICATE = 11;
     private static final int OBJECT = 12;
+    private static final int LIST = 13;
 
     private boolean debug = false;
     private boolean trapError = false;
     private boolean showResult = false;
     private List<String> link;
     ArrayList<Node> subject, predicate, object;
+    private ArrayList<IDatatype> listStack;
+    
     Node node;
 
     public XMLResult() {
@@ -173,6 +177,7 @@ public class XMLResult {
         subject = new ArrayList<>();
         predicate = new ArrayList<>();
         object = new ArrayList<>();
+        setListStack(new ArrayList<>());
         link = new ArrayList<>();
         varList = new ArrayList<>();
         setCompiler(new CompilerFacKgram().newInstance());
@@ -189,6 +194,7 @@ public class XMLResult {
         table.put("subject", SUBJECT);
         table.put("predicate", PREDICATE);
         table.put("object", OBJECT);
+        table.put("list", LIST);
     }
 
     int type(String name) {
@@ -235,6 +241,12 @@ public class XMLResult {
     public Node edge(Node sub, Node pred, Node obj) {
         return null;
     }
+    
+    Node list(List<IDatatype> list) {
+        IDatatype dt = DatatypeMap.newList(list);
+        Node node = NodeImpl.create(dt);
+        return node;
+    } 
 
     public void defineVariable(Node var) {
         varList.add(var);
@@ -284,6 +296,7 @@ public class XMLResult {
                 isBlank = false,
                 isVariable = false;
         int triple = 0;
+        int list = 0;
         String text, datatype, lang;
 
         MyHandler(Mappings m) {
@@ -313,7 +326,9 @@ public class XMLResult {
         
         void clear() {
             basicClear();
+            getListStack().clear();
             triple = 0;
+            list = 0;
         }
 
         /**
@@ -385,6 +400,11 @@ public class XMLResult {
                 case TRIPLE:
                     triple++;
                     break;
+                    
+                case LIST:
+                    list++;
+                    pushList();
+                    break;
             }
         }
       
@@ -396,11 +416,32 @@ public class XMLResult {
         void setNode(Node n) {
             node = n;
         }
+        
+        void addElement(Node n) {
+            getCurrentList().getList().add(n.getDatatypeValue());
+        }
+        
+        IDatatype getCurrentList() {
+            return getListStack().get(0);
+        }
+        
+        IDatatype popList() {
+            return getListStack().remove(0);
+        }
+        
+        void pushList() {
+            getListStack().add(0, DatatypeMap.newList());
+        }
 
         void record(Node n) {
-            if (triple > 0) {
+            if (triple > 0) { 
                 setNode(n);
-            } else {
+            } 
+            else if (list > 0) {
+                addElement(n);
+                basicClear();
+            }
+            else {
                 add(var, n);
             }
         }
@@ -428,6 +469,11 @@ public class XMLResult {
                     triple--;
                     record(edge(popSubject(), popPredicate(), popObject()));
                     break;
+                case LIST:
+                    list--;
+                    record(popList());
+                    break;
+                    
                 default:
 
                     if (isContent) {
@@ -541,30 +587,22 @@ public class XMLResult {
         return sb.toString();
     }
 
-    /**
-     * @return the showResult
-     */
+    
     public boolean isShowResult() {
         return showResult;
     }
 
-    /**
-     * @param showResult the showResult to set
-     */
+    
     public void setShowResult(boolean showResult) {
         this.showResult = showResult;
     }
 
-    /**
-     * @return the compiler
-     */
+    
     public fr.inria.corese.compiler.parser.Compiler getCompiler() {
         return compiler;
     }
 
-    /**
-     * @param compiler the compiler to set
-     */
+    
     public void setCompiler(fr.inria.corese.compiler.parser.Compiler compiler) {
         this.compiler = compiler;
     }
@@ -580,4 +618,14 @@ public class XMLResult {
     public void addLink(String link) {
         getLink().add(link);
     }
+
+    public ArrayList<IDatatype> getListStack() {
+        return listStack;
+    }
+
+    public void setListStack(ArrayList<IDatatype> listStack) {
+        this.listStack = listStack;
+    }
+
+   
 }

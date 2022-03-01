@@ -1208,17 +1208,11 @@ public class Eval implements ExpType, Plugin {
                         break;
 
                     case EDGE:
-                        if (query.getGlobalQuery().isPathType() && exp.hasPath()) {
-                            backtrack = path(p, graphNode, exp.getPath(), map, stack, n);
-                        } else {
-                            backtrack = edge(p, graphNode, exp, map, stack, n);
-                        }
+                        backtrack = edge(p, graphNode, exp, map, stack, n);
                         break;
 
                     case VALUES:
-
                         backtrack = values(p, graphNode, exp, stack, n);
-
                         break;
 
                     /**

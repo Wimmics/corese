@@ -388,16 +388,12 @@ public class QuerySorter implements ExpType {
         return exp.varBind();
     }
 
-    /**
-     * @return the sort
-     */
+    
     public Sorter getSorter() {
         return sort;
     }
 
-    /**
-     * @param sort the sort to set
-     */
+    
     public void setSorter(Sorter sort) {
         this.sort = sort;
     }

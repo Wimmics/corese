@@ -565,9 +565,7 @@ void Template(Exp stack) :
    List<Variable> varList;}
 {
     <TEMPLATE> { cst = null; astt = astq.defineTemplate(); }
-    
-    ( <DEBUG> { astq.setDebug(true); } ) ?
-    
+        
     ( cst = IRIrefConst() { astq.setName(cst); }    ) ?
  
         
@@ -745,8 +743,6 @@ Exp SelectQuery(Metadata la) : { Exp stack; }
 {
 
     <SELECT>
-    Debug()
-    (<NOSORT> {astq.setSorted(false); } )?
     OneMoreListMerge()
     GroupCountSortDisplayVar()
     ( DatasetClause() )*
@@ -760,22 +756,12 @@ Exp SelectQuery(Metadata la) : { Exp stack; }
 }
 
 
-void Debug(): {} 
-{
- (<DEBUG> { astq.setDebug(true); } )?
- (<CHECK> { astq.setCheck(true); } )?
-}
-
-
-
 Exp ConstructQuery(Metadata la) : { Exp stack1, stack2; boolean isRule = false;}
 {
   (<RULE> {isRule = true;} )? 
   
   <CONSTRUCT> 
-  
-  Debug()
-  
+    
   (
   (
   // with a construct pattern
@@ -818,7 +804,6 @@ Exp DescribeQuery(Metadata la) : { Exp stack; Variable v; String s; Atom at;}
 {  
   { stack = new And(); }	
   <DESCRIBE>
-  Debug()
   ( 
   	( LOOKAHEAD(2) 
   		( 
@@ -841,7 +826,6 @@ Exp DescribeQuery(Metadata la) : { Exp stack; Variable v; String s; Atom at;}
 Exp AskQuery(Metadata la) : { Exp stack; Values values;}
 {
   <ASK>
-  Debug()
   ( DatasetClause() )*
   stack = WhereClause()
   (values = Values()  {astq.setValues(values); } ) ?
@@ -3127,9 +3111,6 @@ TOKEN [IGNORE_CASE] :
 | <CURRENT: "current::" >
 | <DIRECT2: "direct::" >
 | <COLON2: "::" >
-| <DEBUG: "debug">
-| <CHECK: "check">
-| <NOSORT: "nosort">
 | <TUPLE: "tuple">
 | <TRIPLE: "triple">
 | <SUBJECT: "subject">

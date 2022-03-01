@@ -115,7 +115,7 @@ public class Query extends Exp implements Graphable {
 
     // Transformation profile template
     private Query templateProfile;
-    private Object templateVisitor;
+    //private Object templateVisitor;
     // st:set/st:get Context
     private Context context;
     // current transformer if any
@@ -134,6 +134,7 @@ public class Query extends Exp implements Graphable {
     // nb occurrences of predicates in where
     HashMap<String, Integer> ptable;
     HashMap<String, Edge> etable;
+    // query for class/property definition checking 
     HashMap<Edge, Query> table;
     // Extended queries for additional group by
     List<Query> queries;
@@ -495,7 +496,7 @@ public class Query extends Exp implements Graphable {
     }
     
     boolean needEdge(){
-            return getGlobalQuery().isRelax() || getGlobalQuery().isRule();
+        return getGlobalQuery().isRelax() || getGlobalQuery().isRule();
     }
     
     public boolean isRecDebug() {
@@ -2451,21 +2452,21 @@ public class Query extends Exp implements Graphable {
         this.isFun = isFun;
     }
 	 
-    public Object getTemplateVisitor() {
-        if (query == null){
-            return templateVisitor;
-        }
-        return query.getTemplateVisitor();
-    }
-     
-    public void setTemplateVisitor(Object tv) {
-        if (query == null){
-             templateVisitor = tv;
-        }
-        else {
-            query.setTemplateVisitor(tv);
-        }
-    }
+//    public Object getTemplateVisitor() {
+//        if (query == null){
+//            return templateVisitor;
+//        }
+//        return query.getTemplateVisitor();
+//    }
+//     
+//    public void setTemplateVisitor(Object tv) {
+//        if (query == null){
+//             templateVisitor = tv;
+//        }
+//        else {
+//            query.setTemplateVisitor(tv);
+//        }
+//    }
 
    
     public Context getContext() {

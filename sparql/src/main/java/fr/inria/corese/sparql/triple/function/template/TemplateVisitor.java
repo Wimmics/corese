@@ -32,8 +32,8 @@ public class TemplateVisitor extends TemplateFunction {
             return null;
         }
 
-        TransformVisitor visitor = eval.getVisitor(b, env, p);
-
+        TransformVisitor visitor = eval.getVisitor(b, env, p);  
+        
         switch (oper()) {
             case ExprType.STL_VISITED:
                 switch (param.length) {

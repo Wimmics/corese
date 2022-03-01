@@ -85,6 +85,17 @@ public class Values extends Exp {
         return this;
     }
     
+    public boolean isDefined() {
+        for (List<Constant> list : getValues()) {
+            for (Constant cst : list) {
+                if (cst != null) {
+                    return true;
+                }
+            }
+        }
+        return false;
+    }
+    
     @Override
     public Values getValuesExp() {
         return this;

@@ -1998,6 +1998,7 @@ public class Exp extends PointerObject
     
     
     /**
+     * isAlgebra() only, not used
      * This is a BGP
      * if it contains several statements (union, minus, optional, graph, query, bgp), JOIN them
      * if it contains statement and basic (eg triple/path/filter/values/bind) 

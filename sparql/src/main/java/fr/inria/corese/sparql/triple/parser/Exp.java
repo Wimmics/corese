@@ -220,9 +220,6 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         return null;
     }
 
-//	public void setAST(ASTQuery ast){
-//		
-//	}
     public ASTQuery getAST() {
         return null;
     }

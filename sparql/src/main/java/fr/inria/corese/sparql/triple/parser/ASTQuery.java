@@ -248,13 +248,6 @@ public class ASTQuery
     private ASTSelector astSelector;
 
 
-    public Object getTemplateVisitor(){
-        if (defaultDataset != null){
-            return defaultDataset.getTemplateVisitor();
-        }
-        return null;
-    }
-
     public boolean isUserQuery() {
         Context c = getContext();
         if (c == null) {
@@ -796,19 +789,6 @@ public class ASTQuery
     public void setOne(boolean one) {
         this.one = one;
     }
-
-
-//    public void setQuery(Exp query) {
-//        this.query = query;
-//    }
-
-//    public void setScore(boolean score) {
-//        this.hasScore = score;
-//    }
-//
-//    public boolean getScore() {
-//        return hasScore;
-//    }
 
     public void setDistance(String dist) {
         distance = dist;
@@ -3896,16 +3876,12 @@ public class ASTQuery
         return t;
     }
 
-    /**
-     * @return the updateQuery
-     */
+   
     public fr.inria.corese.kgram.core.Query getUpdateQuery() {
         return updateQuery;
     }
 
-    /**
-     * @param updateQuery the updateQuery to set
-     */
+   
     public void setUpdateQuery(fr.inria.corese.kgram.core.Query updateQuery) {
         this.updateQuery = updateQuery;
     } 
@@ -3917,16 +3893,17 @@ public class ASTQuery
     public void defWriteAccess(byte readAccess) {
     }
     
-        /**
-     * @return the defaultDataset
-     */
+//    public Object getTemplateVisitor(){
+//        if (getDefaultDataset() != null){
+//            return getDefaultDataset().getTemplateVisitor();
+//        }
+//        return null;
+//    }
+  
     public Dataset getDefaultDataset() {
         return defaultDataset;
     }
 
-    /**
-     * @param defaultDataset the defaultDataset to set
-     */
     public void setDefaultDataset(Dataset defaultDataset) {
         this.defaultDataset = defaultDataset;
         if (defaultDataset != null && defaultDataset.getContext() != null){

@@ -71,6 +71,8 @@ public class Binding implements Binder {
     private Access.Level accessLevel = Access.Level.USER_DEFAULT;
     private ContextLog contextLog;
     private Context context;
+    // data shared back and forth when calling share()
+    private Share share;
     // transformation Mappings with xt:mappings()
     private Mappings mappings;
     private IDatatype datatypeValue;
@@ -93,6 +95,28 @@ public class Binding implements Binder {
         setGlobalVariableNames(new HashMap<>());
         setAccessRight(new AccessRight());
         getCreateLog();
+        setShare(new Share());
+    }
+    
+    public class Share {
+        // Enables transformer to record data during processing
+        // using function st:visit()
+        // created by PluginTransform getVisitor()
+        // Visitor is shared among every Binding during transformation 
+        // processing because every Binding share the same Share object
+        // when a sub transformer creates a Visitor, the calling transformer
+        // get it through the same Share object. see function share()
+        // transformer also records its Binding and hence its Visitor
+        private Object transformerVisitor;
+
+        public Object getTransformerVisitor() {
+            return transformerVisitor;
+        }
+
+        public void setTransformerVisitor(Object transformerVisitor) {
+            this.transformerVisitor = transformerVisitor;
+        }
+
     }
 
     public static Binding create() {
@@ -613,6 +637,9 @@ public class Binding implements Binder {
         if (b.getReport()!=null) {
             setReport(b.getReport());
         }
+        if (b.getShare()!=null) {
+            setShare(b.getShare());
+        }
     }
     
     // use case: env inherit Log/Context from xt:sparql()
@@ -909,6 +936,22 @@ public class Binding implements Binder {
 
     public void setReport(IDatatype report) {
         this.report = report;
+    }
+
+    public Object getTransformerVisitor() {
+        return getShare().getTransformerVisitor();
+    }
+
+    public void setTransformerVisitor(Object transformerVisitor) {
+        getShare().setTransformerVisitor(transformerVisitor);
+    }
+
+    public Share getShare() {
+        return share;
+    }
+
+    public void setShare(Share share) {
+        this.share = share;
     }
     
 }

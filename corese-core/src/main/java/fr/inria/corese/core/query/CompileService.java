@@ -74,22 +74,20 @@ public class CompileService implements URLParam {
      * Create a copy of ast with bindings if any, otherwise return ast as is.
      */
     public ASTQuery compile(URLServer serv, Query q, Mappings map, int start, int limit) {
-        ASTQuery ast = getAST(q);
+        ASTQuery ast = q.getAST();
         complete(serv, q, ast);
         Query out = q.getOuterQuery();
-//        boolean isValues = isValues(serv, out) || 
-//                (!isFilter(serv, out) && !getProvider().isSparql0(serv.getNode()));
         boolean isValues = getIsValues(serv, out);
         if (map == null || (map.size() == 1 && map.get(0).size() == 0)) {
             // lmap may contain one empty Mapping
             // use env because it may have bindings
             if (isValues) {
-                return bindings(q, getEnv());
+                return bindings(q, getEnvironment());
             } else  {
-                return filter(q, getEnv());
+                return filter(q, getEnvironment());
             } 
         } else if (isValues) {
-            return bindings(serv, q, map, getEnv(), start, limit);
+            return bindings(serv, q, map, getEnvironment(), start, limit);
         } else {
             return filter(serv, q, map, start, limit);
         } 
@@ -346,7 +344,9 @@ public class CompileService implements URLParam {
             BasicGraphPattern body = BasicGraphPattern.create();
             body.add(values);
             for (Exp e : ast.getBody()) {
-                body.add(e);
+                if (accept(e)) {
+                   body.add(e);
+                }
             }
             ast.setBody(body);
             return ast;
@@ -355,16 +355,28 @@ public class CompileService implements URLParam {
         }
     }
     
+    // remove values var { undef }
+    boolean accept(Exp exp) {
+        if (exp.isValues()) {
+            return exp.getValuesExp().isDefined();
+        }
+        return true;
+    }
+    
+    
+    
     /**
      * Return a copy of ast with filter if any or ast itself
      */
     ASTQuery setFilter(ASTQuery aa, Term f) {
         if (f != null) {
-            ASTQuery ast = aa.copy();           
+            ASTQuery ast = aa.copy();
             BasicGraphPattern body = BasicGraphPattern.create();
             for (Exp e : ast.getBody()) {
-                body.add(e);
-            }  
+                if (accept(e)) {
+                    body.add(e);
+                }
+            }
             body.add(f);
             ast.setBody(body);
             return ast;
@@ -570,7 +582,7 @@ public class CompileService implements URLParam {
     /**
      * @return the env
      */
-    public Environment getEnv() {
+    public Environment getEnvironment() {
         return env;
     }
 

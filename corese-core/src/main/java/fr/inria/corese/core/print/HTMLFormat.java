@@ -13,6 +13,7 @@ import fr.inria.corese.core.util.MappingsGraph;
  * Used by STTL Server
  * construct : result graph
  * select    : serialization of Mappings into RDF
+ * used by corese server SPIN service
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2014
  *
@@ -115,13 +116,13 @@ public class HTMLFormat {
         complete(context, graph);
         t.setContext(context);
         
-        if (map != null && map.getQuery() != null){
-            // Transformer inherit Query Transformer Visitor if any
-            Transformer tr = (Transformer) map.getQuery().getTransformer();
-            if (tr != null && tr.getVisitor() != null){
-                t.setVisitor(tr.getVisitor());
-            }
-        }
+//        if (map != null && map.getQuery() != null){
+//            // Transformer inherit Query Transformer Visitor if any
+//            Transformer tr = (Transformer) map.getQuery().getTransformer();
+//            if (tr != null && tr.getVisitor() != null){
+//                t.setVisitor(tr.getVisitor());
+//            }
+//        }
         return t.toString();
     }
     

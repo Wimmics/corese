@@ -59,9 +59,6 @@ public class DatasetProcess extends WorkflowProcess {
     }
     
     Data visitor(Data data) {
-//        Data res = new Data(this, data.getVisitedGraph());
-//        res.setVisitor(data.getVisitor());
-//        return res;
        data.getGraph().setNamedGraph(Context.STL_VISITOR, data.getVisitedGraph());
        return data;
     }

@@ -14,10 +14,8 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.print.ResultFormat;
-import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.util.MappingsGraph;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.util.Date;
 import org.slf4j.Logger;
@@ -283,10 +281,10 @@ public class SPARQLProcess extends  WorkflowProcess {
     }
     
     void complete(Data data) {
-        TemplateVisitor vis = (TemplateVisitor) data.getMappings().getQuery().getTemplateVisitor();
-        if (vis != null){
-            data.setVisitor(vis);
-        }
+//        TemplateVisitor vis = (TemplateVisitor) data.getMappings().getQuery().getTemplateVisitor();
+//        if (vis != null){
+//            data.setVisitor(vis);
+//        }
         Node temp = data.getMappings().getTemplateResult();
         if (temp != null){
             data.setDatatypeValue( temp.getValue());

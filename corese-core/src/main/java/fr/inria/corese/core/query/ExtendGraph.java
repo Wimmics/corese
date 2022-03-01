@@ -120,6 +120,7 @@ public class ExtendGraph {
         return  q.getDatatypeValue();
     }
     
+    @Deprecated
     IDatatype visited(Producer p, Expr exp, Environment env) {
         TemplateVisitor vis = plugin.getVisitor((Binding)env.getBind(), env, p);
         if (vis == null){

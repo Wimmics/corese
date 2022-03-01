@@ -2,7 +2,6 @@ package fr.inria.corese.core.workflow;
 
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.core.transform.DefaultVisitor;
-import fr.inria.corese.core.transform.TemplateVisitor;
 
 /**
  * Execute a sub Process but return the input Data
@@ -21,9 +20,9 @@ public class ProbeProcess extends SemanticProcess {
     
     @Override
     void start(Data data){
-        if (getModeString() != null && getModeString().equals(WorkflowParser.VISITOR)){
-            data.setVisitor(new DefaultVisitor());
-        }
+//        if (getModeString() != null && getModeString().equals(WorkflowParser.VISITOR)){
+//            data.setVisitor(new DefaultVisitor());
+//        }
     }
     
     @Override
@@ -32,7 +31,7 @@ public class ProbeProcess extends SemanticProcess {
     
     @Override
     public Data run(Data data) throws EngineException {   
-        System.out.println("Probe");
+        logger.info("Probe workflow");
         for (WorkflowProcess wp : getProcessList()){
             System.out.println(wp);
             Data res = wp.compute(data);

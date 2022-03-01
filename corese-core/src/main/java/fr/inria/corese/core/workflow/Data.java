@@ -31,7 +31,7 @@ public class Data {
     private Graph graph;
     private Context context;
     private Binding binding;
-    private TemplateVisitor visitor;
+    //private TemplateVisitor visitor;
     private String templateResult;
     private List<Data> dataList;
     private String name;
@@ -71,10 +71,11 @@ public class Data {
         Data data = new Data(process, map, graph);
         data.setDatatypeValue(datatype);
         data.setDataList(dataList);
-        data.setVisitor(visitor);
+        //data.setVisitor(visitor);
         data.setDataset(dataset);
         data.setContext(context);
         data.setTemplateResult(templateResult);
+        data.setBinding(binding);
         return data;
     }
     
@@ -114,44 +115,32 @@ public class Data {
         return getClass().getName();
     }
 
-    /**
-     * @return the process
-     */
+    
     public WorkflowProcess getProcess() {
         return process;
     }
 
-    /**
-     * @param process the process to set
-     */
+    
     public void setProcess(WorkflowProcess process) {
         this.process = process;
     }
 
-    /**
-     * @return the map
-     */
+    
     public Mappings getMappings() {
         return map;
     }
 
-    /**
-     * @param map the map to set
-     */
+   
     public void setMappings(Mappings map) {
         this.map = map;
     }
 
-    /**
-     * @return the graph
-     */
+   
     public Graph getGraph() {
         return graph;
     }
 
-    /**
-     * @param graph the graph to set
-     */
+   
     public void setGraph(Graph graph) {
         this.graph = graph;
     }
@@ -163,65 +152,63 @@ public class Data {
         return getGraph().getEventManager();
     }
 
-    /**
-     * @return the context
-     */
+   
     public Context getContext() {
         return context;
     }
 
-    /**
-     * @param context the context to set
-     */
+   
     public void setContext(Context context) {
         this.context = context;
     }
 
-    /**
-     * @return the visitor
-     */
-    public TemplateVisitor getVisitor() {
-        return visitor;
-    }
-
-    /**
-     * @param visitor the visitor to set
-     */
-    public void setVisitor(TemplateVisitor visitor) {
-        this.visitor = visitor;
-    }
+//    public TemplateVisitor getVisitor() {
+//        return visitor;
+//    }
+//
+//   
+//    public void setVisitor(TemplateVisitor visitor) {
+//        this.visitor = visitor;
+//    }
     
     public Graph getVisitedGraph(){
-        if (visitor == null){
+        TemplateVisitor vis = getTransformerVisitor();
+        if (vis == null) {
             return null;
         }
-        return visitor.visitedGraph();
+        return vis.visitedGraph();
     }
+                
+    public TemplateVisitor getTransformerVisitor() {
+        if (getBinding() == null) {
+            return null;
+        }
+        return (TemplateVisitor) getBinding().getTransformerVisitor();
+    }  
+    
+//    public Graph getVisitedGraph(){
+//        if (getVisitor() == null){
+//            return null;
+//        }
+//        return getVisitor().visitedGraph();
+//    }
 
-    /**
-     * @return the templateResult
-     */
+    
     public String getTemplateResult() {
         return templateResult;
     }
 
-    /**
-     * @param templateResult the templateResult to set
-     */
+    
     public void setTemplateResult(String templateResult) {
         this.templateResult = templateResult;
     }
 
-    /**
-     * @return the dataset
-     */
+   
     public Dataset getDataset() {
         return dataset;
     }
 
-    /**
-     * @param dataset the dataset to set
-     */
+   
     public void setDataset(Dataset dataset) {
         this.dataset = dataset;
     }
@@ -231,16 +218,12 @@ public class Data {
         return datatype;
     }
 
-    /**
-     * @param datatype the datatype to set
-     */
+   
     public void setDatatypeValue(IDatatype datatype) {
         this.datatype = datatype;
     }
 
-    /**
-     * @return the dataList
-     */
+  
     public List<Data> getDataList() {
         return dataList;
     }
@@ -306,24 +289,22 @@ public class Data {
     
     
     Dataset dataset(Context c, Dataset ds) {
-        if (ds == null && (c != null || getVisitor()!= null || getBinding() != null)) {
+        if (ds == null && (c != null  || getBinding() != null)) { // || getVisitor()!= null
             ds = new Dataset();
         }
         if (c != null) {
             ds.setContext(c);
         }        
-        if (getVisitor()!= null) {
-            ds.setTemplateVisitor(getVisitor());
-        }
+//        if (getVisitor()!= null) {
+//            ds.setTemplateVisitor(getVisitor());
+//        }
         if (getBinding() != null) {
             ds.setBinding(getBinding());
         }
         return ds;
     }
 
-    /**
-     * @param dataList the dataList to set
-     */
+   
     public void setDataList(List<Data> dataList) {
         this.dataList = dataList;
     }
@@ -335,16 +316,12 @@ public class Data {
         dataList.add(d);
     }
 
-    /**
-     * @return the name
-     */
+    
     public String getName() {
         return name;
     }
 
-    /**
-     * @param name the name to set
-     */
+    
     public void setName(String name) {
         this.name = name;
     }
@@ -356,30 +333,21 @@ public class Data {
         return   getMappings().getValue(var);
     }
 
-    /**
-     * @return the success
-     */
+    
     public boolean isSuccess() {
         return success;
     }
 
-    /**
-     * @param success the success to set
-     */
+   
     public void setSuccess(boolean success) {
         this.success = success;
     }
-    
-        /**
-     * @return the binding
-     */
+  
     public Binding getBinding() {
         return binding;
     }
 
-    /**
-     * @param binding the binding to set
-     */
+    
     public void setBinding(Binding binding) {
         this.binding = binding;
     }

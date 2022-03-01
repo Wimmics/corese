@@ -5,12 +5,10 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.logic.RDF;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.HashMap;
 import java.util.List;
-import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -43,7 +41,7 @@ public class DefaultVisitor implements TemplateVisitor {
     IDatatype visitedNode;
     HashMap <String, Boolean> map;
     HashMap <IDatatype, List<IDatatype>> errors;
-    ArrayList<IDatatype> list;
+    private ArrayList<IDatatype> visitedList;
     private HashMap<IDatatype, IDatatype> distinct, value;
     
     private String transform = Transformer.TURTLE;
@@ -62,10 +60,16 @@ public class DefaultVisitor implements TemplateVisitor {
         map      = new HashMap();
         distinct = new HashMap();
         value    = new HashMap();
-        list     = new ArrayList();
+        visitedList     = new ArrayList();
         errors   = new HashMap<>();
         initVisitedGraph();
     }
+    
+    public DefaultVisitor(Graph g) {
+        this();
+        setGraph(g);
+    }
+
     
     void initVisitedGraph() {
         visitedGraph = Graph.create();
@@ -163,13 +167,13 @@ public class DefaultVisitor implements TemplateVisitor {
     	storeErrors(name, obj);
         if (isDistinct){
             if (! distinct.containsKey(obj)){
-                list.add(obj);
+                getVisitedList().add(obj);
                 distinct.put(obj, obj);
                 //storeGraph(name, obj);
             }
         }
         else {
-            list.add(obj);
+            getVisitedList().add(obj);
         }
     }
     
@@ -188,14 +192,14 @@ public class DefaultVisitor implements TemplateVisitor {
         visitedGraph.copy(g);
     }
     
-    void storeGraph(String name, IDatatype obj){
-        Edge ent = visitedGraph.add(obj, DatatypeMap.newResource(RDF.TYPE), DatatypeMap.newResource(name));
-    }
+//    void storeGraph(String name, IDatatype obj){
+//        Edge ent = visitedGraph.add(obj, DatatypeMap.newResource(RDF.TYPE), DatatypeMap.newResource(name));
+//    }
     
     StringBuilder toSB() {
         StringBuilder sb = new StringBuilder();
         Transformer t = Transformer.create(graph, getTransform());
-        for (IDatatype dt : list) {
+        for (IDatatype dt : getVisitedList()) {
             IDatatype res;
             try {
                 res = t.process(dt);
@@ -230,7 +234,7 @@ public class DefaultVisitor implements TemplateVisitor {
     
     @Override
     public Collection<IDatatype> visited(){  
-        return list;
+        return getVisitedList();
     }
     
     @Override
@@ -250,7 +254,7 @@ public class DefaultVisitor implements TemplateVisitor {
         if (isDistinct){
             return distinct.containsKey(dt);
         }
-        return list.contains(dt);
+        return getVisitedList().contains(dt);
     }
      
      boolean getValue(IDatatype arg){
@@ -337,5 +341,13 @@ public class DefaultVisitor implements TemplateVisitor {
             map.set(key, DatatypeMap.newList(errors.get(key)));
         }
         return map;
+    }
+
+    public ArrayList<IDatatype> getVisitedList() {
+        return visitedList;
+    }
+
+    public void setVisitedList(ArrayList<IDatatype> visitedList) {
+        this.visitedList = visitedList;
     }
 }

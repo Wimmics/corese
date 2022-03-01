@@ -3,6 +3,7 @@ package fr.inria.corese.core.query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.transform.DefaultVisitor;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.kgram.api.core.Expr;
@@ -20,6 +21,7 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.IOException;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -60,19 +62,34 @@ public class PluginTransform implements ComputerProxy {
     }
 
     @Override
-    public TemplateVisitor getVisitor(Binding b, Environment env, Producer p) {
-        TemplateVisitor tv = (TemplateVisitor) env.getQuery().getTemplateVisitor();
-        if (tv == null) {
-            try {
-                tv = getTransformer(b, env, p).defVisitor();
-            } catch (EngineException ex) {
-                logger.error("getTransformer fails in getVisitor");
-                Transformer t = Transformer.create(Graph.create(), null);
-                tv = t.defVisitor();
-            }
-            env.getQuery().setTemplateVisitor(tv);
-        }
-        return tv;
+    public TemplateVisitor getVisitor(Binding b, Environment env, Producer p) {        
+        return getVisitorNew(b, env, p);
+        //return getVisitorOld(b, env, p);
+    }
+    
+//    public TemplateVisitor getVisitorOld(Binding b, Environment env, Producer p) {
+//        TemplateVisitor tv = (TemplateVisitor) env.getQuery().getTemplateVisitor();
+//        if (tv == null) {
+//            try {
+//                tv = getTransformer(b, env, p).defVisitor();
+//            } catch (EngineException ex) {
+//                logger.error("getTransformer fails in getVisitor");
+//                Transformer t = Transformer.create(Graph.create(), null);
+//                tv = t.defVisitor();
+//            }
+//            env.getQuery().setTemplateVisitor(tv);
+//        }
+//        return tv;
+//    }
+         
+    // TemplateVisitor is shared among every Binding of every subtransformation
+    public TemplateVisitor getVisitorNew(Binding b, Environment env, Producer p) {        
+        TemplateVisitor vis = (TemplateVisitor) b.getTransformerVisitor();
+        if (vis == null) {            
+            vis = new DefaultVisitor((Graph) p.getGraph());
+            b.setTransformerVisitor(vis);
+        }        
+        return vis;
     }
 
     /**

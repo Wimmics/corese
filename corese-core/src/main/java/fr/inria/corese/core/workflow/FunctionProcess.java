@@ -41,7 +41,8 @@ public class FunctionProcess extends WorkflowProcess {
        IDatatype dt = eval(data, getContext(), getDataset());
        Data res = new Data(data.getGraph(), dt);
        res.setProcess(this);
-       res.setVisitor(data.getVisitor());
+       //res.setVisitor(data.getVisitor());
+       res.setBinding(data.getBinding());
        return res;  
     }
     

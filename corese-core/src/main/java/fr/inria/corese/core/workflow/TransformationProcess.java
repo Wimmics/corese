@@ -90,15 +90,15 @@ public class TransformationProcess extends  WorkflowProcess {
         if (data.getMappings() != null) {
             t.getContext().set(Context.STL_MAPPINGS, DatatypeMap.createObject(data.getMappings()));
         }
-        if (data.getVisitor() != null){
-            t.setVisitor(data.getVisitor());
-        }               
+//        if (data.getVisitor() != null){
+//            t.setVisitor(data.getVisitor());
+//        }               
     }
     
     void complete(Transformer t, Data data, Data res){
-        if (t.getVisitor() != null){
-            res.setVisitor(t.getVisitor());
-        }
+//        if (t.getVisitor() != null){
+//            res.setVisitor(t.getVisitor());
+//        }
     }
 
     /**

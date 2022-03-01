@@ -88,9 +88,9 @@ public class WorkflowProcess implements AbstractProcess {
     }
     
     private void after(Data in, Data data) {
-        if (in.getVisitor() != null && data.getVisitor() == null){
-            data.setVisitor(in.getVisitor());
-        }
+//        if (in.getVisitor() != null && data.getVisitor() == null){
+//            data.setVisitor(in.getVisitor());
+//        }
         afterDebug(data);
         if (recVisitor() != null){
             recVisitor().after(this, data);

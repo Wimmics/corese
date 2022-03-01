@@ -118,7 +118,7 @@ public class Transformer implements TransformProcessor {
     public static boolean DEFAULT_DEBUG = false;
     public static int count = 0;
     static HashMap<String, Boolean> dmap;
-    private TemplateVisitor visitor;
+    //private TemplateVisitor visitor;
     TransformerMapping tmap;
     Graph graph;
     QueryEngine qe;
@@ -1598,10 +1598,10 @@ public class Transformer implements TransformProcessor {
         if (ct != null) {
             complete(ct);
         }
-        TemplateVisitor vis = getVisitor(q, ct);
-        if (vis != null) {
-            setVisitor(vis);
-        }
+//        TemplateVisitor vis = getVisitor(q, ct);
+//        if (vis != null) {
+//            setVisitor(vis);
+//        }
         // query prefix overload ct transformer prefix
         // because query call this new transformer
         complete(ast.getNSM());
@@ -1642,13 +1642,13 @@ public class Transformer implements TransformProcessor {
         }
     }
 
-    TemplateVisitor getVisitor(Query q, Transformer ct) {
-        if (ct == null) {
-            return (TemplateVisitor) q.getTemplateVisitor();
-        } else {
-            return ct.getVisitor();
-        }
-    }
+//    TemplateVisitor getVisitor(Query q, Transformer ct) {
+//        if (ct == null) {
+//            return (TemplateVisitor) q.getTemplateVisitor();
+//        } else {
+//            return ct.getVisitor();
+//        }
+//    }
 
     Context getContext(Query q, Transformer ct) {
         if (ct == null) {
@@ -1672,52 +1672,45 @@ public class Transformer implements TransformProcessor {
         }
     }
 
-    /**
-     * @return the visitor
-     */
+    
     public TemplateVisitor getVisitor() {
-        return visitor;
-    }
-
-    /**
-     * @param visitor the visitor to set
-     */
-    public void setVisitor(TemplateVisitor visitor) {
-        this.visitor = visitor;
-        if (visitor != null) {
-            visitor.setGraph(graph);
+        if (getBinding()!=null) {
+            return (TemplateVisitor) getBinding().getTransformerVisitor();
         }
+        return null;
     }
 
-    public TemplateVisitor defVisitor() {
-        if (visitor == null) {
-            initVisit();
-        }
-        return visitor;
-    }
+  
+//    public void setVisitor(TemplateVisitor visitor) {
+//        this.visitor = visitor;
+//        if (visitor != null) {
+//            visitor.setGraph(getGraph());
+//        }
+//    }
+//
+//    public TemplateVisitor defVisitor() {
+//        if (getVisitor() == null) {
+//            setVisitor(new DefaultVisitor());
+//        }
+//        return getVisitor();
+//    }
 
-    public IDatatype visitedGraph() {
-        //       return defVisitor().visitedGraph();
-        if (visitor == null) {
-            return null;
-        }
-        return visitor.visitedGraphNode();
-    }
+//    public IDatatype visitedGraph() {
+//        if (getVisitor() == null) {
+//            return null;
+//        }
+//        return getVisitor().visitedGraphNode();
+//    }
 
-    void initVisit() {
-        setVisitor(new DefaultVisitor());
-    }
+//    void initVisit() {
+//        setVisitor(new DefaultVisitor());
+//    }
 
-    /**
-     * @return the transformerMap
-     */
     public HashMap<String, Transformer> getTransformerMap() {
         return transformerMap;
     }
 
-    /**
-     * @param transformerMap the transformerMap to set
-     */
+    
     public void setTransformerMap(HashMap<String, Transformer> transformerMap) {
         this.transformerMap = transformerMap;
     }

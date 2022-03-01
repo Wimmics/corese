@@ -10,6 +10,9 @@
 		<Logger name="log4j.test.Log4jTest" level="trace">
 			<AppenderRef ref="Console"/>
 		</Logger>
+		<Logger name="org.eclipse.jetty" level="info" additivity="true">
+            <appender-ref ref="Console" />
+        </Logger>
 		<Root level="trace">
 			<AppenderRef ref="Console"/>
 		</Root>

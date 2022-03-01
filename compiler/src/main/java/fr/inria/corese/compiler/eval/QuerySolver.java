@@ -60,15 +60,12 @@ public class QuerySolver implements SPARQLEngine {
     public static final int STD_ENTAILMENT = 0;
     public static final int RDF_ENTAILMENT = 1;
     public static final int RDFS_ENTAILMENT = 2;
-
-//    public static final int DEFAULT_MODE = 0;
-//    public static final int PROTECT_SERVER_MODE = 1;
-//    static int INIT_SERVER_MODE = DEFAULT_MODE;
-
     public static int QUERY_PLAN = Query.QP_DEFAULT;
-
     public static boolean BGP_DEFAULT = false;
     public static boolean ALGEBRA_DEFAULT = false;
+    // true: literal is different from string
+    // true: do not join 1 and 1.0 
+    // true: from named without from is sparql compliant
     public static boolean SPARQL_COMPLIANT_DEFAULT = false;
     private static boolean visitorable = false;
 
@@ -90,7 +87,7 @@ public class QuerySolver implements SPARQLEngine {
             isCountPath = false,
             isCheckLoop = false,
             isDebug = false,
-            isOptimize = false,
+            isOptimize = false,            
             isSPARQLCompliant = SPARQL_COMPLIANT_DEFAULT;
     private boolean isGenerateMain = true;
     private boolean isSynchronized = false;
@@ -129,7 +126,7 @@ public class QuerySolver implements SPARQLEngine {
 
     static boolean test = true;
     private int planner = QUERY_PLAN;
-    private boolean isUseBind;
+    private boolean isUseBind = false;
     Eval current;
 
     public QuerySolver() {
@@ -530,7 +527,7 @@ public class QuerySolver implements SPARQLEngine {
         q.setMatchBlank(isMatchBlank);
         q.setListGroup(isListGroup);
         q.setListPath(isListPath);
-        q.setPathType(isPathType);
+        q.setPathType(q.isPathType() || isPathType);
         q.setStorePath(isStorePath);
         q.setCachePath(isCachePath());
         q.setCountPath(isCountPath);
@@ -609,7 +606,7 @@ public class QuerySolver implements SPARQLEngine {
         transformer.setUseBind(isUseBind());
         transformer.setBGP(isBGP());
         transformer.setAlgebra(isAlgebra());
-        transformer.setServiceList(getServiceList());
+       // transformer.setServiceList(getServiceList());
     }
 
     public Query compileRule(String squery, Dataset ds) throws EngineException {
@@ -954,21 +951,21 @@ public class QuerySolver implements SPARQLEngine {
     }
 
     
-    public List<Atom> getServiceList() {
-        return serviceList;
-    }
+//    public List<Atom> getServiceList() {
+//        return serviceList;
+//    }
+//
+//    
+//    public void setServiceList(List<Atom> serviceList) {
+//        this.serviceList = serviceList;
+//    }
 
-    
-    public void setServiceList(List<Atom> serviceList) {
-        this.serviceList = serviceList;
-    }
-
-    public void service(String uri) {
-        if (getServiceList() == null) {
-            setServiceList(new ArrayList<Atom>());
-        }
-        getServiceList().add(Constant.createResource(uri));
-    }
+//    public void service(String uri) {
+//        if (getServiceList() == null) {
+//            setServiceList(new ArrayList<Atom>());
+//        }
+//        getServiceList().add(Constant.createResource(uri));
+//    }
 
    
     public boolean isAlgebra() {

@@ -14,6 +14,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 
@@ -82,11 +83,16 @@ public class EdgeImpl extends PointerObject implements Edge {
     String basicTriple() {    
         String str = "";
         String name = label;
-        if (getEdgeVariable() != null) {
-            name = getEdgeVariable().toString();
-        } else if (triple != null) {
-            name = triple.getProperty().getName();
+        
+        if (getTriple()!=null && getTriple().getRegex()!=null) {
+            name = getTriple().getRegex().toString();
         }
+        else if (getEdgeVariable() != null) {
+            name = getEdgeVariable().toString();
+        } else if (getTriple() != null) {
+            name = getTriple().getProperty().getName();
+        }
+        
         str += getNode(0) + " " + name;
         for (int i = 1; i < nodes.size(); i++) {
             str += " " + getNode(i);

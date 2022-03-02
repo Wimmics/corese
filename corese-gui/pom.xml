@@ -16,6 +16,10 @@
         </properties>-->
 	<dependencies>
 		<dependency>
+			<groupId>jakarta.activation</groupId>
+			<artifactId>jakarta.activation-api</artifactId>
+		</dependency>
+		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>shex</artifactId>
 			<version>${project.parent.version}</version>

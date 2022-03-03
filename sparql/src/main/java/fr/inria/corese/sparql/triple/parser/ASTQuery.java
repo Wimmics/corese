@@ -109,7 +109,7 @@ public class ASTQuery
     // join result into one graph
     boolean one = false;
     // sparql bind
-    boolean XMLBind = true;
+    //boolean XMLBind = true;
     // select distinct where : all are distinct
     boolean distinct = false;
     boolean strictDistinct = false;
@@ -170,17 +170,11 @@ public class ASTQuery
     String distance;
     // the source text of the query
     String text = null;
-    /**
-     * Represents the ASTQuery before compilation
-     */
+    // Represents the ASTQuery before compilation
     String queryPrettyPrint = "";
-    /**
-     * Source body of the query returned by javacc parser
-     */
+     // Source body of the query returned by javacc parser
     Exp bodyExp, bodySave;
-    /**
-     * Compiled triple query expression
-     */
+     // Compiled triple query expression
     //Exp query;
     // compiled construct (graph ?g removed)
     Exp constructExp,
@@ -263,14 +257,6 @@ public class ASTQuery
         return getContext().getLevel();
     }
 
-    
-    public Level getLevel2() {
-        if (isUserQuery()) {
-            return Level.PUBLIC;
-        }
-        return Level.USER_DEFAULT;
-    }
-
     @Override
     public String toGraph() {
         SPIN sp = SPIN.create();
@@ -287,17 +273,6 @@ public class ASTQuery
         return null;
     }
 
-//    public void setHasFunctional(boolean b) {
-//        isFunctional = b;
-//    }
-//
-//    public boolean hasFunctional() {
-//        return isFunctional;
-//    }
-
-    /**
-     * @return the define
-     */
     public ASTExtension getDefine() {
         return define;
     }
@@ -306,9 +281,6 @@ public class ASTQuery
         return lambdaDefine;
     }
 
-    /**
-     * @param define the define to set
-     */
     public void setDefine(ASTExtension define) {
         this.define = define;
     }
@@ -383,7 +355,7 @@ public class ASTQuery
     };
 
     /**
-     * The constructor of the class It looks like the one for QueryGraph
+     * The constructor of the class 
      */
     private ASTQuery() {
         dataset = Dataset.create();
@@ -414,13 +386,6 @@ public class ASTQuery
         ast.setBody(exp);
         return ast;
     }
-
-//    public static ASTQuery create(String query, boolean isRule, boolean isConclusion) {
-//        ASTQuery aq = new ASTQuery(query);
-//        aq.setConclusion(isConclusion);
-//        aq.setRule(isRule);
-//        return aq;
-//    }
 
     /**
      * AST for a subquery share prefix declaration
@@ -617,20 +582,17 @@ public class ASTQuery
     }
        
     public void createDataBlank() {
-        dataBlank = new HashMap<String, Atom>();
+        dataBlank = new HashMap<>();
     }
 
     public HashMap<String, Atom> getDataBlank() {
         return dataBlank;
     }
 
-    /**
-     *
-     * @param info
-     */
+   
     public void addInfo(String info) {
         if (vinfo == null) {
-            vinfo = new ArrayList<String>(1);
+            vinfo = new ArrayList<>(1);
         }
         vinfo.add(info);
     }
@@ -639,10 +601,6 @@ public class ASTQuery
         getGlobalAST().setFail(b);
     }
 
-    /**
-     *
-     * @param error
-     */
     public void addErrorMessage(String mes, Object... obj) {
         addError(String.format(mes, obj));
     }
@@ -710,10 +668,6 @@ public class ASTQuery
         this.connex = connex;
     }
 
-//    public void setDisplayBNID(boolean displayBNID) {
-//        this.displayBNID = displayBNID;
-//    }
-
     public void setDistinct(boolean distinct) {
         this.distinct = distinct;
     }
@@ -741,14 +695,6 @@ public class ASTQuery
     public boolean isJSON() {
         return isJSON;
     }
-
-//    public void setConclusion(boolean isConclusion) {
-//        this.isConclusion = isConclusion;
-//    }
-
-//    public void setJoin(boolean join) {
-//        this.join = join;
-//    }
 
     public void setMaxDisplay(int maxDisplay) {
         MaxDisplay = maxDisplay;
@@ -824,9 +770,9 @@ public class ASTQuery
         Threshold = threshold;
     }
 
-    public void setXMLBind(boolean bind) {
-        XMLBind = bind;
-    }
+//    public void setXMLBind(boolean bind) {
+//        XMLBind = bind;
+//    }
 
     public boolean isConnex() {
         return connex;
@@ -1011,9 +957,9 @@ public class ASTQuery
         return Threshold;
     }
 
-    public boolean isXMLBind() {
-        return XMLBind;
-    }
+//    public boolean isXMLBind() {
+//        return XMLBind;
+//    }
 
     /**
      * created for the new parser
@@ -1090,17 +1036,12 @@ public class ASTQuery
         } // else : oper.equals("+") => don't do anything
         return expression;
     }
-
-    
+   
     Constant functionName(){
         UUID uuid = UUID.randomUUID();
         return createQName(FUN_PREF +  uuid.toString());
     }
-    
-    Constant functionName2(){
-        return createQName(FUN_NAME + nbfun++);
-    }
-   
+
     /**
      * function name(el) { exp } -> function (name(el), exp)
      */
@@ -1130,7 +1071,6 @@ public class ASTQuery
         
     Function defineLambdaUtil(Constant name, ExpressionList el, Expression exp, Metadata annot) {    
         Function fun = defFunction(name, null, el, exp, annot, true);
-        //fun.defineLambda();
         record(fun);    
         return fun;
     }
@@ -1359,12 +1299,7 @@ public class ASTQuery
 
     /**
      * let (var = exp, body)
-     *
-     * @param el
-     * @param body
-     * @return
-     */
-    
+     */    
     Let let(Expression exp, Expression body) {
         List<Expression> list = new ArrayList<>();
         list.add(exp);
@@ -1638,7 +1573,7 @@ public class ASTQuery
                 ASTQuery ast = query.getAST();
                 ast.validate();
                 ExpressionList el = new ExpressionList();
-                for (Variable var : ast.getSelect()) { //ast.getSelectVariables()) {
+                for (Variable var : ast.getSelect()) { 
                     el.add(var);
                 }
                 lvar.add(el);
@@ -1656,22 +1591,13 @@ public class ASTQuery
             if (query != null){
                 ASTQuery ast = query.getAST();
                 ast.validate();
-                for (Variable var : ast.getSelect()) { //ast.getSelectVariables()) {
+                for (Variable var : ast.getSelect()) { 
                     lvar.add(var);
                 }
             }
         }
     }
-    
-    /**
-     * 
-     * 
-     * @param var
-     * @param exp
-     * @param i
-     * @return 
-     */
-    
+           
     Term defGenericGet(Variable var, Expression exp, int i) {
         Term fun = createFunction(createQName(Processor.FUN_XT_GGET), exp);
         fun.add(Constant.createString(var.getLabel()));
@@ -1783,27 +1709,14 @@ public class ASTQuery
         return term;
     }
 
-    public Term createFunction(Constant name, Expression exp) {
+    public Term createFunction(Constant name, Expression... exp) {
         Term term = createFunction(name);
-        term.add(exp);
+        for (Expression ee : exp) {
+            term.add(ee);
+        }
         return term;
     }
-
-    public Term createFunction(Constant name, Expression e1, Expression e2) {
-        Term term = createFunction(name);
-        term.add(e1);
-        term.add(e2);
-        return term;
-    }
-    
-    public Term createFunction(Constant name, Expression e1, Expression e2, Expression e3) {
-        Term term = createFunction(name);
-        term.add(e1);
-        term.add(e2);
-        term.add(e3);
-        return term;
-    }
-    
+       
     public Term createFunction(Constant name, ExpressionList el) {
         Term term = createFunction(name);
         setExpressionList(term, el);
@@ -1836,7 +1749,6 @@ public class ASTQuery
         term.add(expression1);
         return term;
     }
-
         
     Term createFun(String name, ExpressionList el) {
         Term term = createFunction(name);    
@@ -1890,9 +1802,7 @@ public class ASTQuery
     
     public static Exp createFilter(Expression exp) {
         return Filter.create(exp);
-        //return Triple.create(exp);
     }
-
 
     public Term createList(ExpressionList el) {
         Term list = Term.list();
@@ -1918,12 +1828,8 @@ public class ASTQuery
         return listType;
     }
 
-
     public Constant createLDSList(IDatatype dt){
-//        Constant list = Constant.createBlank("_:list");
-//        list.setDatatypeValue(dt);
-        Constant list = Constant.create(dt);
-        return list;
+        return Constant.create(dt);
     }
     
      /**
@@ -1984,8 +1890,6 @@ public class ASTQuery
     /**
      * Create list of Property Paths rdf:rest* / rdf:first that match list
      * elements
-     *
-     * @return
      */
     public RDFList path(RDFList exp) {
         RDFList ll = new RDFList(exp.head(), exp.getList());
@@ -2247,14 +2151,12 @@ public class ASTQuery
             }
         }
 
-
         exp.setDistinct(isDistinct);
         exp.setShort(isShort);
         t.setRegex(exp);
         t.setMode(mode);
         submit(t);
         return t;
-
     }
 
     // regex only
@@ -2265,7 +2167,7 @@ public class ASTQuery
         } else if (ope.equals(SMULT)) {
             fun = star(exp);
         } else if (ope.equals(SPLUS)) {
-            if (true){ //isKgram()) {
+            if (true){ 
                 // first exp is member of visited (SPARQL 1.1)
                 // for checking loop
                 fun = createOperator(1, Integer.MAX_VALUE, exp);
@@ -2438,11 +2340,6 @@ public class ASTQuery
         Triple triple = triple(expression1, atom, expression2);
         return triple;
     }
-
-
-//    public void setList(boolean b) {
-//        this.setJoin(!b);
-//    }
 
     public void setCorrect(boolean b) {
         isCorrect = b;
@@ -2631,11 +2528,6 @@ public class ASTQuery
         return isBind;
     }
 
-//    public void setBind(boolean b) {
-//        isBind = b;
-//    }
-
-
     public int getVariableId() {
         return nbd++;
     }
@@ -2658,10 +2550,6 @@ public class ASTQuery
         } else if (isTemplate()) {
             compileTemplate();
         }
-        Exp exp = getBody();
-//        if (exp != null) {
-//            setQuery(exp);
-//        }
     }
 
     // TODO: clean
@@ -2798,15 +2686,10 @@ public class ASTQuery
        ASTPrinter pr = new ASTPrinter(this);
        return pr.toString();
     }
-    
-   
-
+       
     boolean isData() {
         return isInsertData() || isDeleteData();
     }
-
-    
-
 
     public void duplicateConstruct(Exp exp) {
         boolean check = checkTriple(exp);
@@ -2943,7 +2826,7 @@ public class ASTQuery
 
     public void setPragma(String name, Exp exp) {
         if (pragma == null) {
-            pragma = new HashMap<String, Exp>();
+            pragma = new HashMap<>();
         }
         if (name == null) {
             name = RDFS.COSPRAGMA;
@@ -3004,8 +2887,6 @@ public class ASTQuery
 
     /**
      * Note: only for pretty print, do not really add the prefix in NSManager
-     *
-     * @param t
      */
     public void addPrefixExp(Triple t) {
         prefixExp.add(t);
@@ -3263,9 +3144,7 @@ public class ASTQuery
      * Use case: collect select *
      */
     public void defSelect(Variable var) {
-        //if (isSelectAll()){
         addSelect(var);
-        //}
     }
 
     void addSelect(Variable var) {
@@ -3379,14 +3258,6 @@ public class ASTQuery
     public boolean isSPARQLUpdate() {
         return isUpdate() || isInsert() || isDelete();
     }
-
-//    public boolean isConstructCompiled() {
-//        return constructCompiled;
-//    }
-//
-//    public void setConstructCompiled(boolean constructCompiled) {
-//        this.constructCompiled = constructCompiled;
-//    }
 
     public void setDefaultThreshold(float threshold) {
         DefaultThreshold = threshold;
@@ -3522,7 +3393,7 @@ public class ASTQuery
     }
 
     void newStack() {
-        stack = new ArrayList<Variable>();
+        stack = new ArrayList<>();
     }
 
     void setStack(List<Variable> list) {
@@ -3535,7 +3406,7 @@ public class ASTQuery
         }
     }
     
-       public boolean isRenameBlankNode() {
+    public boolean isRenameBlankNode() {
         return renameBlankNode;
     }
 
@@ -3699,16 +3570,10 @@ public class ASTQuery
         return this.approximateSearchOptions.get(key);
     }
 
-    /**
-     * @return the visitList
-     */
     public List<QueryVisitor> getVisitorList() {
         return visitList;
     }
-
-    /**
-     * @param visitList the visitList to set
-     */
+   
     public void setVisitorList(List<QueryVisitor> visitList) {
         this.visitList = visitList;
     }
@@ -3716,17 +3581,11 @@ public class ASTQuery
     public void addVisitor(QueryVisitor vis) {
         visitList.add(vis);
     }
-    
-    /**
-     * @return the ldscript
-     */
+       
     public boolean isLDScript() {
         return ldscript;
     }
-
-    /**
-     * @param ldscript the ldscript to set
-     */
+   
     public void setLDScript(boolean ldscript) {
         this.ldscript = ldscript;
     }
@@ -3875,31 +3734,15 @@ public class ASTQuery
         }
         return t;
     }
-
    
     public fr.inria.corese.kgram.core.Query getUpdateQuery() {
         return updateQuery;
     }
-
    
     public void setUpdateQuery(fr.inria.corese.kgram.core.Query updateQuery) {
         this.updateQuery = updateQuery;
     } 
     
-    // does not overload annotation
-    public void defReadAccess(byte readAccess) {
-    }
-    // does not overload annotation
-    public void defWriteAccess(byte readAccess) {
-    }
-    
-//    public Object getTemplateVisitor(){
-//        if (getDefaultDataset() != null){
-//            return getDefaultDataset().getTemplateVisitor();
-//        }
-//        return null;
-//    }
-  
     public Dataset getDefaultDataset() {
         return defaultDataset;
     }
@@ -3935,7 +3778,7 @@ public class ASTQuery
     }
     
     
-       // log generated by service interpreter ProviderImpl and Service (corese core)
+    // log generated by service interpreter ProviderImpl and Service (corese core)
     // through QueryProcess
     public ContextLog getLog() {
         return getCreateContext().getLog();

@@ -7,7 +7,6 @@ import static fr.inria.corese.core.Event.Finish;
 import static fr.inria.corese.core.Event.Process;
 import static fr.inria.corese.core.Event.Start;
 import fr.inria.corese.core.logic.Entailment;
-import fr.inria.corese.sparql.triple.update.Update;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 

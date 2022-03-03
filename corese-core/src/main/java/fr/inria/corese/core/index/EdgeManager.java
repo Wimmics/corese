@@ -1,6 +1,5 @@
 package fr.inria.corese.core.index;
 
-import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 import static fr.inria.corese.core.index.EdgeManagerIndexer.IGRAPH;
@@ -36,11 +35,13 @@ import java.util.HashMap;
  */
 public class EdgeManager implements Iterable<Edge> {
     Graph graph;
-    EdgeManagerIndexer indexer;
+    private EdgeManagerIndexer indexer;
     private Node predicate;
-    ArrayList<Edge> list;
-    Comparator<Edge> comp;
-    int index = 0, other = 0, next = IGRAPH;
+    private ArrayList<Edge> edgeList;
+    private Comparator<Edge> comparatorIndex, comparator;
+    private int index = 0;
+    private int other = 0;
+    private int next = IGRAPH;
     int meta = Edge.REF_INDEX;
     boolean indexedByNode = false;
 
@@ -48,7 +49,7 @@ public class EdgeManager implements Iterable<Edge> {
         graph = indexer.getGraph();
         this.indexer = indexer;        
         predicate = p;
-        list = new ArrayList<>();
+        edgeList = new ArrayList<>();
         index = i;
         if (index == 0) {
             other = 1;
@@ -63,19 +64,19 @@ public class EdgeManager implements Iterable<Edge> {
     }
 
     ArrayList<Edge> getList() {
-        return list;
+        return getEdgeList();
     }
 
     public int size() {
-        return list.size();
+        return getEdgeList().size();
     }
 
     void clear() {
-        list.clear();
+        getEdgeList().clear();
     }
 
     Edge get(int i) {
-        return list.get(i);
+        return getEdgeList().get(i);
     }
     
     int getIndex(){
@@ -84,6 +85,7 @@ public class EdgeManager implements Iterable<Edge> {
 
     /**
      * Remove duplicate edges
+     * pragma: edge list is sorted
      */
     int reduce(NodeManager mgr) {
         ArrayList<Edge> l = new ArrayList<>();
@@ -91,25 +93,25 @@ public class EdgeManager implements Iterable<Edge> {
         int count = 0, ind = 0;
         //System.out.println("before reduce: " + list);
         
-        for (Edge edge : list) {
+        for (Edge edge : getEdgeList()) {
             if (pred == null) {
                 l.add(edge);
-                mgr.add(edge.getNode(index), predicate, ind);
+                mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
                 ind++;
-            } else if (equalExceptIfMetadata(pred, edge)) {
-                // skip edge
+            } else if (equalExceptIfOneHasMetadata(pred, edge)) {
+                // skip edge because it is redundant with pred
                 count++;
             } else {
                 l.add(edge);
-                if (edge.getNode(index) != pred.getNode(index)) {
-                    mgr.add(edge.getNode(index), predicate, ind);
+                if (edge.getNode(getIndex()) != pred.getNode(getIndex())) {
+                    mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
                 }
                 ind++;
             }
             pred = edge;
         }
         
-        list = l;
+        setEdgeList(l);
         if (count > 0) {
             graph.setSize(graph.size() - count);
         }
@@ -120,17 +122,28 @@ public class EdgeManager implements Iterable<Edge> {
     /**
      * return true when edges are equal, except if one has metadata
      */
-    boolean equalExceptIfMetadata(Edge e1, Edge e2) {
-        if (comp.compare(e1, e2) == 0) {
-            if (graph.isEdgeMetadata() && (e1.getReferenceNode() != null || e2.getReferenceNode() != null)) {
-                indexer.setLoopMetadata(true);
+    boolean equalExceptIfOneHasMetadata(Edge e1, Edge e2) {
+        if (equalWithoutConsideringMetadata(e1, e2)) {
+            // equal g s p o
+            if (hasMetadata(e1, e2)) {
+                getIndexer().setLoopMetadata(true);
                 return false;
             }
             return true;
         }
         return false;
     }
-         
+    
+    // when rdf star: equal g s p o without considering reference node t
+    // g s p o = g s p o t = g s p o t2
+    boolean equalWithoutConsideringMetadata(Edge e1, Edge e2) {
+        return getComparatorEqualWithoutMetadata().compare(e1, e2) == 0;
+    }
+    
+    boolean hasMetadata(Edge e1, Edge e2) {
+        return graph.isEdgeMetadata() && (e1.getReferenceNode() != null || e2.getReferenceNode() != null);
+    }
+            
     /**
      * Context: RDF*
      * Merge duplicate triples, keep one metadata node
@@ -140,82 +153,25 @@ public class EdgeManager implements Iterable<Edge> {
      * we remove these duplicate here and keep triple with ref id if any
      */
     void metadata() {
-        ArrayList<Edge> l = new ArrayList<>();
-        Edge e1 = null;
-        int count = 0;
-        int i = 0;
+        new EdgeManagerMetadata(this).metadata();
+    }
         
-        for (Edge e2 : list) { 
-            if (e1 == null) {
-                e1 = e2;
-                l.add(e2);
-            }
-            else if (compare3(e1, e2) == 0){
-                //  g s p o t1 vs g s p o t2
-                //  keep g s p o t1
-                if (e1.getReferenceNode() == null) { 
-                    // e2 replace e1
-                    share(e2, e1);
-                    e1 = e2;
-                    l.set(l.size()-1, e2);
-                    count ++;
-                }  
-                else {
-                    share(e1, e2);
-                    merge(e1, e2);
-                    // e1 replace e2
-                    count ++;
-                }
-            }
-            else if (Graph.TRIPLE_UNIQUE_NAME && compare2(e1, e2) == 0) {
-                // g1 s p o t1 vs g2 s p o t2
-                // replace by 
-                // g1 s p o t1 vs g2 s p o t1
-                name(e1, e2, l, i);
-                e1 = l.get(l.size()-1);
-            }
-            else {
-                e1 = e2;
-                l.add(e2);
-            }
-            i++;
-        }
-        
-        list = l;
-        if (count > 0) {
-            graph.setSize(graph.size() - count);
-        }       
-    }
-    
-    // e1 replace e2
-    void share(Edge e1, Edge e2) {
-       if (e2.isAsserted()) {
-            e1.setAsserted(true);
-        }
-    }
-      
-
-     
-    // keep only one metadata node (e1)
-    // replace e2 reference by e1 reference
-    void merge(Edge e1, Edge e2) {
-        if (e1.getReferenceNode() != e2.getReferenceNode()) {
-            indexer.replace(e2.getReferenceNode(), e1.getReferenceNode());
-        }
-    }
     
     /**
      * Replace subject/object by target node in map if any
-     * In this case, these nodes are triple ID metadata
+     * map t1 -> t2 means replace t1 by t2
+     * These nodes are triple ID metadata
      */
     void replace(HashMap<Node, Node> map) {
         boolean b = false;
-        for (Edge e : list) {
+        for (Edge e : getEdgeList()) {
             for (int i = 0; i < 2; i++) {
-                Node n = map.get(e.getNode(i));
-                if (n != null) {
-                    b = true;
-                    e.setNode(i, n);
+                if (e.getNode(i).isTriple()) {
+                    Node n = map.get(e.getNode(i));
+                    if (n != null) {
+                        b = true;
+                        e.setNode(i, n);
+                    }
                 }
             }
         }
@@ -224,78 +180,11 @@ public class EdgeManager implements Iterable<Edge> {
         }
     }
     
-    /** 
-     *  e1 = g1 s p o t1 ; e2 = g2 s p o t2
-     *  merge reference nodes and replace by: 
-     *  g1 s p o t1 ; g2 s p o t1
-     *  e1 is in list, e2 is candidate
-     *  int i is index of e2 in Index main list
-     */
-    void name(Edge e1, Edge e2, List<Edge> edgeList, int i) {
-        if (e1.getReferenceNode() != null) {
-            if (e2.getReferenceNode() != null) {
-                // replace reference node t2 of e2 with t1
-                merge(e1, e2);
-                e2.setReferenceNode(e1.getReferenceNode());
-            } else {
-                // set/add reference node of e2 to t1
-                e2 = graph.getEdgeFactory().name(e2, predicate, e1.getReferenceNode());
-            }
-        } else if (e2.getReferenceNode() != null) {
-            // set/add reference node of e1 to t2
-            e1 = graph.getEdgeFactory().name(e1, predicate, e2.getReferenceNode());
-            edgeList.set(edgeList.size() - 1, e1);
-        } else {
-            Node ref = getSameEdgeReferenceNode(e2, i);
-            // e1, e2 have no reference node
-            // add reference node in case there is a third one with reference node
-            // e1 = g1 s p o -> g1 s p o t
-            // e2 = g2 s p o -> g2 s p o t
-            if (ref != null) {
-                e1 = graph.getEdgeFactory().name(e1, predicate, ref);
-                e2 = graph.getEdgeFactory().name(e2, predicate, ref);
-                edgeList.set(edgeList.size() - 1, e1);
-            }
-        }
-        edgeList.add(e2);
-    }
-    
-    /**
-     * Is there an edge similar to e in Index list after index n
-     * with a reference node
-     * similar: same subject/object
-     */
-    Node getSameEdgeReferenceNode(Edge e, int n) {
-        for (int i=n+1; i<list.size(); i++) {
-            Edge e2 = list.get(i);
-            if (compare2(e, e2) == 0) {
-                if (e2.hasReferenceNode()) {
-                    return e2.getReferenceNode();
-                }
-            }
-            else {
-                return null;
-            }
-        }
-        return null;
-    } 
-      
     void complete() {
         sort();
-        reduce(indexer.getNodeManager());
+        reduce(getIndexer().getNodeManager());
     }
     
-    // compare subject object graph (not compare reference node if any)
-//    int compare3old(Edge e1, Edge e2) {
-//        int res = compareNodeTerm(e1.getNode(index), e2.getNode(index));
-//        if (res == 0) {
-//            res = compareNodeTerm(e1.getNode(other), e2.getNode(other));
-//        }
-//        if (res == 0) {
-//            res = compareNodeTerm(e1.getNode(IGRAPH), e2.getNode(IGRAPH));
-//        }
-//        return res;
-//    }
     
     // compare subject object graph (not compare reference node if any)
     int compare3(Edge e1, Edge e2) {
@@ -306,7 +195,7 @@ public class EdgeManager implements Iterable<Edge> {
         return res;
     }
     
-    //compare subject object (not compare graph)
+    // compare subject object (not compare graph)
     int compare2(Edge e1, Edge e2) {
         for (int i = 0; i < 2; i++) {
             int res = compareNodeTerm(e1.getNode(i), e2.getNode(i));
@@ -318,16 +207,16 @@ public class EdgeManager implements Iterable<Edge> {
     }
     
     /**
-     * 
+     * generate map node -> index in edgeList
      */
     void indexNodeManager(NodeManager mgr) {
         Edge pred = null;
         int ind = 0;
-        for (Edge ent : list) {
+        for (Edge ent : getEdgeList()) {
             if (pred == null) {
-                mgr.add(ent.getNode(index), predicate, ind);
-            } else if (ent.getNode(index) != pred.getNode(index)) {
-                mgr.add(ent.getNode(index), predicate, ind);
+                mgr.add(ent.getNode(getIndex()), predicate, ind);
+            } else if (ent.getNode(getIndex()) != pred.getNode(getIndex())) {
+                mgr.add(ent.getNode(getIndex()), predicate, ind);
             }
             ind++;
             pred = ent;
@@ -349,53 +238,56 @@ public class EdgeManager implements Iterable<Edge> {
 
     // keep metadata, reset index
     void doCompactMetadata(){
-        for (Edge ent : list) {
+        for (Edge ent : getEdgeList()) {
            ent.setIndex(-1);
         }
     }
     
     void doCompact(){
-        ArrayList<Edge> l = new ArrayList<>(list.size());
-        for (Edge ent : list) {
+        ArrayList<Edge> l = new ArrayList<>(getEdgeList().size());
+        for (Edge ent : getEdgeList()) {
            Edge ee = graph.getEdgeFactory().compact(ent);
            l.add(ee);
         }
-        list = l;
+        setEdgeList(l);
     }
 
+    /**
+     * Main function that sort Index edge list
+     */ 
     void sort() {
-        Collections.sort(list, comp);
+        Collections.sort(getEdgeList(), getComparatorIndex());
     }
 
     /**
      * Copy Index(0) into this index
      */
     void copy(EdgeManager el) {
-        list.ensureCapacity(el.size());
-        if (index < 2) {
+        getEdgeList().ensureCapacity(el.size());
+        if (getIndex() < 2) {
             // we are sure that there are at least 2 nodes
-            list.addAll(el.getList());
+            getEdgeList().addAll(el.getList());
         } else {
             for (Edge ent : el) {
                 // if additional node is missing: do not index this edge
-                if (ent.nbNode() > index) {
-                    list.add(ent);
+                if (ent.nbNode() > getIndex()) {
+                    getEdgeList().add(ent);
                 }
             }
         }
     }
 
     void add(Edge ent) {
-        list.add(ent);
+        getEdgeList().add(ent);
     }
 
     void add(int i, Edge ent) {
-        list.add(i, ent);
+        getEdgeList().add(i, ent);
     }
 
     Edge remove(int i) {
-        Edge ent = list.get(i);
-        list.remove(i);
+        Edge ent = getEdgeList().get(i);
+        getEdgeList().remove(i);
         return ent;
     }
 
@@ -404,149 +296,17 @@ public class EdgeManager implements Iterable<Edge> {
      * Rule Engine
      */
     void add(List<Edge> l) {
-        list.ensureCapacity(l.size() + list.size());
-        list.addAll(l);
-    }
-
-    /**
-     * Return place where edge should be inserted in this Index return -1 if
-     * already exists
-     */
-    int getPlace(Edge edge) {
-        int i = find(edge);
-
-        if (i >= list.size()) {
-            i = list.size();
-        } else if (index == 0) {
-            if (equalExceptIfMetadata(list.get(i), edge)) {
-                // eliminate duplicate at load time for index 0                   
-                return -1;
-            }
-        }
-
-        return i;
+        getEdgeList().ensureCapacity(l.size() + getEdgeList().size());
+        getEdgeList().addAll(l);
     }
     
-    int getPlace2(Edge edge) {
-        int i = find(edge);
-
-        if (i >= list.size()) {
-            i = list.size();
-        } else if (index == 0) {
-            int res = comp.compare(edge, list.get(i));
-            if (res == 0) {
-                // eliminate duplicate at load time for index 0                   
-                return -1;
-            }
-        }
-
-        return i;
-    }
-
-    /**
-     * Place of edge in this Index
-     */
-    int find(Edge edge) {
-        return find(edge, 0, list.size());
-    }
-
-    int find(Edge edge, int first, int last) {
-        if (first >= last) {
-            return first;
-        } else {
-            int mid = (first + last) / 2;
-            int res = comp.compare(list.get(mid), edge);
-            if (res >= 0) {
-                return find(edge, first, mid);
-            } else {
-                return find(edge, mid + 1, last);
-            }
-        }
-    }
-
-    /**
-     * Test if an edge (n1 p n2) exist in this Index (in any named graph)
-     */
-    boolean exist(Node n1, Node n2) {
-        int n = findNodeTerm(n1, n2, 0, list.size());
-        if (n >= 0 && n < list.size()) {
-            Edge ent = list.get(n);
-            if (n1.getIndex() == getNodeIndex(ent, 0)
-                    && n2.getIndex() == getNodeIndex(ent, 1)) {
-                return true;
-            }
-        }
-        return false;
-    }
-
-    /**
-     * Find index of edge If not found, return -1
-     */
-    int findIndexNodeTerm(Edge ent) {
-        int i = find(ent);
-        if (i >= size()) {
-            return -1;
-        }
-
-        int res = comp.compare(ent, list.get(i));
-        if (res == 0) {
-            return i;
-        }
-
-        return -1;
-    }
-    
-    Edge findEdge(Edge edge) {
-        int i = findIndexNodeTerm(edge);
-        if (i == -1) {
-            return null;
-        }
-        return list.get(i);
-    }
-
-    /**
-     * Find index of node as node(index) -1 if not found
-     */
-    int findIndex(Node n) {
-        int i = findNodeTerm(n, 0, list.size());
-        if (i >= 0 && i < list.size()
-                && getNodeIndex(i, index) == n.getIndex()) {
-            return i;
-        }
-        return -1;
-    }
-
-    boolean exist(Edge ent) {
-        int i = findIndexNodeTerm(ent);
-        return i != -1;
-    }
-
-    /**
-     * Iterate edges with index node node1 (and other node node2)
-     */
-    Iterable<Edge> getEdges(Node node1, Node node2) {
-        int n = findNodeTerm(node1, node2, 0, list.size());
-        if (n >= 0 && n < list.size()) {
-            int n1 = getNodeIndex(n, index);
-            if (n1 == node1.getIndex()) {
-                int n2 = getNodeIndex(n, other);
-                if (n2 != node2.getIndex()) {
-                    return null;
-                }
-                Iterate it = new Iterate(this, n);
-                return it;
-            }
-        }
-        return null;
-    }
-
-    /**
+   /**
      * Iterate edges with index node node1
      */
-     Iterable<Edge> getEdges(Node node) {
+    Iterable<Edge> getEdges(Node node) {
         // node is bound, enumerate edges where node = edge.getNode(index)
         int n = findNodeIndex(node);
-        if (n >= 0 && n < list.size()) {
+        if (n >= 0 && n < getEdgeList().size()) {
            return new EdgeManagerIterate(this, n);
         }
         return null;
@@ -555,91 +315,111 @@ public class EdgeManager implements Iterable<Edge> {
     Iterable<Edge> getEdges(Node node, int n) {
         return new EdgeManagerIterate(this, n);
     }
+    
+        
+    // use case: rdfs entailment
+    boolean exist(Edge edge) {
+        int i = findEdgeEqualWithoutMetadata(edge);
+        return i != -1;
+    }
+
 
     /**
-     * return index of edge where edge.getNode(index) sameTerm node
+     * Return place where edge should be inserted in this Index return -1 if
+     * already exists
      */
-    int findNodeTerm(Node n, int first, int last) {
-        if (first >= last) {
-            return first;
-        } else {
-            int mid = (first + last) / 2;
-            int res = compareNodeTerm(getNode(mid, index), n);
-            if (res >= 0) {
-                return findNodeTerm(n, first, mid);
-            } else {
-                return findNodeTerm(n, mid + 1, last);
+    int getPlace(Edge edge) {
+        int i = find(edge);
+
+        if (i >= getEdgeList().size()) {
+            i = getEdgeList().size();
+        } else if (getIndex() == 0) {
+            //if (equalExceptIfMetadata(getEdgeList().get(i), edge)) {
+            if (equalWithoutConsideringMetadata(getEdgeList().get(i), edge)) {
+                if (hasMetadata(getEdgeList().get(i), edge)) {
+                    // equal but have metadata: insert it
+                    return i;
+                } else {
+                    // eliminate duplicate at load time for index 0                   
+                    return -1;
+                }
             }
         }
+
+        return i;
     }
     
-    int findNodeIndex(Node node) {
-        return getNodeIndex(node);
+
+
+    /**
+     * Place of edge in this Index, e.g. to insert edge
+     */
+    int find(Edge edge) {
+        return basicFind(getComparatorIndex(), edge, 0, getEdgeList().size());
     }
-    
-    int getNodeIndex(Node n) {
-        if (indexer.getNodeManager().isConsultable() 
-                && ! n.getDatatypeValue().isNumber()
-                && ! n.getDatatypeValue().isBoolean()){
-            return  indexer.getNodeManager().getPosition(n, predicate);
+
+    /**
+     * use case: Construct find occurrence of edge for rdf star
+     * @todo: Index is sorted and reduced ?
+     */
+    Edge findEdge(Edge edge) {
+        int i = findEdgeEqualWithoutMetadata(edge);
+        if (i == -1) {
+            return null;
         }
-        return findNodeIndexBasic(n);
+        return getEdgeList().get(i);
     }
-    
-    int findNodeIndexBasic(Node node) {
-        int n = findNodeIndex(node, 0, list.size());
-        if (n >= 0 && n < list.size()) {
-            int i = getNodeIndex(n, index);
-            if (i == node.getIndex()) {
-                return n;
-            }
+
+    /**
+     * Find index of edge If not found, return -1
+     */
+    int findEdgeEqualWithoutMetadata(Edge edge) {
+        int i = basicFind(getComparatorEqualWithoutMetadata(), edge, 0, getEdgeList().size());
+        if (i >= size()) {
+            return -1;
         }
+        int res = getComparatorEqualWithoutMetadata().compare(edge, getEdgeList().get(i));
+        if (res == 0) {
+            return i;
+        }
+
         return -1;
     }
-
-    
     
     /**
-     * return index of edge where edge.getNode(index).index() =  node.index()
+     * There are two comparator
+     * sort Index:     g s p o t < g s p o
+     * retrieve Edge:  g s p o t = g s p o
      */
-    int debugNodeIndex(Node n) {
-        if (indexer.getNodeManager().isConsultable() 
-                && ! n.getDatatypeValue().isNumber()
-                && ! n.getDatatypeValue().isBoolean()){
-            int i = indexer.getNodeManager().getPosition(n, predicate);
-            int i2 = findNodeIndexBasic(n);
-            if ((i < 0 && i2 >= 0)
-                    || (i >= 0 && i2 < 0)
-                    || (i >= 0 && i2 >= 0 && i != i2)) {
-                System.out.println("**************** EM: " + n + " " + predicate + " " + list.size());
-                System.out.println("**************** EM: " + i + " " + i2 + " " + n + " " + indexer.getNodeManager().size());
-                System.out.println(indexer.getNodeManager().display());
-                System.out.println(index + " : " + list);
-            }
-            else {
-                return i;
-            }
-        }
-   
-        return findNodeIndexBasic(n);
-    }
-    
- 
-    int findNodeIndex(Node n, int first, int last) {
+    int basicFind(Comparator<Edge> comp, Edge edge, int first, int last) {
         if (first >= last) {
             return first;
         } else {
             int mid = (first + last) / 2;
-            int res = compareNodeIndex(getNode(mid, index), n);
+            int res = comp.compare(getEdgeList().get(mid), edge);
             if (res >= 0) {
-                return findNodeIndex(n, first, mid);
+                return basicFind(comp, edge, first, mid);
             } else {
-                return findNodeIndex(n, mid + 1, last);
+                return basicFind(comp, edge, mid + 1, last);
             }
         }
     }
-    
-    
+     
+    /**
+     * Test if an edge (n1 p n2) exist in this Index (in any named graph)
+     * use case: rule engine
+     */
+    boolean exist(Node n1, Node n2) {
+        int n = findNodeTerm(n1, n2, 0, getEdgeList().size());
+        if (n >= 0 && n < getEdgeList().size()) {
+            Edge ent = getEdgeList().get(n);
+            if (n1.getIndex() == getNodeIndex(ent, 0)
+                    && n2.getIndex() == getNodeIndex(ent, 1)) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     /**
      * return index of edge where
@@ -651,18 +431,90 @@ public class EdgeManager implements Iterable<Edge> {
             return first;
         } else {
             int mid = (first + last) / 2;
-            if (compare(list.get(mid), n1, n2) >= 0) {
+            if (compare(getEdgeList().get(mid), n1, n2) >= 0) {
                 return findNodeTerm(n1, n2, first, mid);
             } else {
                 return findNodeTerm(n1, n2, mid + 1, last);
             }
         }
     }   
+
     
-     int compare(Edge ent, Node n1, Node n2) {
-        int res = compareNodeTerm(ent.getNode(index), n1);
+   /**
+     * Find index of node as node(index) -1 if not found
+     * use case: index of graph node n in graph node index
+     */
+    int findIndex(Node n) {
+        int i = findNodeTerm(n, 0, getEdgeList().size());
+        if (i >= 0 && i < getEdgeList().size()
+                && getNodeIndex(i, getIndex()) == n.getIndex()) {
+            return i;
+        }
+        return -1;
+    }
+
+    /**
+     * return index of edge where edge.getNode(index) sameTerm node
+     */
+    int findNodeTerm(Node n, int first, int last) {
+        if (first >= last) {
+            return first;
+        } else {
+            int mid = (first + last) / 2;
+            int res = compareNodeTerm(getNode(mid, getIndex()), n);
+            if (res >= 0) {
+                return findNodeTerm(n, first, mid);
+            } else {
+                return findNodeTerm(n, mid + 1, last);
+            }
+        }
+    }
+    
+    // use case: getEdges(node)
+    int findNodeIndex(Node node) {
+        return getNodeIndex(node);
+    }
+    
+    int getNodeIndex(Node n) {
+        if (getIndexer().getNodeManager().isConsultable() 
+                && ! n.getDatatypeValue().isNumber()
+                && ! n.getDatatypeValue().isBoolean()){
+            return  getIndexer().getNodeManager().getPosition(n, getPredicate());
+        }
+        return findNodeIndexBasic(n);
+    }
+    
+    int findNodeIndexBasic(Node node) {
+        int n = findNodeIndex(node, 0, getEdgeList().size());
+        if (n >= 0 && n < getEdgeList().size()) {
+            int i = getNodeIndex(n, getIndex());
+            if (i == node.getIndex()) {
+                return n;
+            }
+        }
+        return -1;
+    }
+
+ 
+    int findNodeIndex(Node n, int first, int last) {
+        if (first >= last) {
+            return first;
+        } else {
+            int mid = (first + last) / 2;
+            int res = compareNodeIndex(getNode(mid, getIndex()), n);
+            if (res >= 0) {
+                return findNodeIndex(n, first, mid);
+            } else {
+                return findNodeIndex(n, mid + 1, last);
+            }
+        }
+    }
+    
+    
+    int compare(Edge ent, Node n1, Node n2) {
+        int res = compareNodeTerm(ent.getNode(getIndex()), n1);
         if (res == 0) {
-            res = compareNodeTerm(ent.getNode(other), n2);
+            res = compareNodeTerm(ent.getNode(getOther()), n2);
         }
         return res;
     }
@@ -690,7 +542,7 @@ public class EdgeManager implements Iterable<Edge> {
         if (res == 0){
             // same node index (compatible datatypes)
             // check datatype and label
-            res = getValue(n1).compareTo(getValue(n2));
+            res = n1.getValue().compareTo(n2.getValue());
         }
         return res;
     }
@@ -720,65 +572,14 @@ public class EdgeManager implements Iterable<Edge> {
         return intCompare(n1.getIndex(), n2.getIndex());       
     }
     
-    IDatatype getValue(Node n){
-        return  n.getValue();
-    }
-
     @Override
     public Iterator<Edge> iterator() {
-        return list.iterator();
+        return getEdgeList().iterator();
     }
 
-    /**
-     * @return the predicate
-     */
     public Node getPredicate() {
         return predicate;
-    }
-
-
-    /**
-     * edge = list.get(n) node = edge.getNode(index) Return an iterator of edges
-     * with node as index element
-     */
-    @Deprecated
-    class Iterate implements Iterable<Edge>, Iterator<Edge> {
-
-        List<Edge> list;
-        int node;
-        int ind, start;
-
-        Iterate(EdgeManager l, int n) {
-            list = l.getList();
-            node = getNodeIndex(list.get(n), index);
-            start = n;
-        }
-
-        @Override
-        public Iterator<Edge> iterator() {
-            ind = start;
-            return this;
-        }
-
-        @Override
-        public boolean hasNext() {
-            boolean b = ind < list.size()
-                    && getNodeIndex(list.get(ind), index) == node;
-            return b;
-        }
-
-        @Override
-        public Edge next() {
-            Edge ent = list.get(ind++);
-            return ent; 
-        }
-
-        @Override
-        public void remove() {
-        }         
-    }
-    
-       
+    }      
 
     // getNode(IGRAPH) must return getGraph()
     int getNodeIndex(Edge ent, int n) {
@@ -787,83 +588,169 @@ public class EdgeManager implements Iterable<Edge> {
 
     // getNode(IGRAPH) must return getGraph()
     int getNodeIndex(int i, int n) {
-        Edge ent = list.get(i);
+        Edge ent = getEdgeList().get(i);
         return ent.getNode(n).getIndex();
     }
     
     // getNode(IGRAPH) must return getGraph()
     Node getNode(int i, int n) {
-        Edge ent = list.get(i);
+        Edge ent = getEdgeList().get(i);
         return ent.getNode(n);
     }
     
 
     /**
      * **************************************************************
+     * There are two comparator
+     * sort Index:     g s p o t < g s p o
+     * retrieve Edge:  g s p o t = g s p o
+     * after sort Index, reduce() + metadate() remove duplicates
+     * and we keep only g s p o t (g s p o is removed if any)
+     * At the end, the index contains only g s p o t (if any t)
+     * Then, to retrieve an edge g s p o [t], we can consider edge equality 
+     * without looking at metadata (because they are not both in the Index)
      */
-    Comparator<Edge> getComparator(int n) {
+    Comparator<Edge> createComparatorIndex(int n) {
         switch (n) {
             case ILIST:
-                return getListComparator();
+                return createListComparator();
         }
-        return getComparator();
+        return createComparatorIndex();
     }
     
-    void setComparator(Comparator<Edge> c){
-        comp = c;
+    Comparator<Edge> createComparator(int n) {
+        switch (n) {
+            case ILIST:
+                return createListComparator();
+        }
+        return createComparator();
+    }
+    
+    // called by EdegeManagerIndexer because every EdgeManager share same comparator object
+    void setComparatorIndex(Comparator<Edge> c){
+        comparatorIndex = c;
+    }
+    
+    // used to sort edgeList and find edge place in index
+    // g s p o t < g s p o
+    Comparator<Edge> getComparatorIndex() {
+        return comparatorIndex;
+    }  
+    
+    // used to compare and retrieve edge when Index is sorted and reduced 
+    // g s p o t = g s p o
+    Comparator<Edge> getComparatorEqualWithoutMetadata() {
+        return comparator;
     }
 
-
+    void setComparator(Comparator<Edge> c){
+        comparator = c;
+    }
+    
     /**
-     * Compare two edges to sort them in Index
-     * rdf star edge are equal when g s p o are equal 
-     * wether or not there is a triple ref id
-     * @note:  sort edge list is not deterministic for rdf star triple
+     * Compare two edges to sort and retrieve them in Index
+     * rdf star edges are compared on g s p o only, not on ref id
+     * hence they are considered equal when g s p o are equal 
+     * not considering triple ref id
+     * g s p o = g s p o t
+     * @note:  
+     * sort is not deterministic for rdf star triple with same g s p o 
      * list will be reduced by metadata()
      */
-     Comparator<Edge> getComparator() {
+    
+    // compare edges
+    // g s p o t = g s p o
+    Comparator<Edge> createComparator() {
+        return createComparator(true);
+    }
+    
+    // sort edgeList
+    // true:  g s p o t = g s p o
+    // false: g s p o t < g s p o
+    Comparator<Edge> createComparatorIndex() {
+        return createComparator(false);
+    }
+    
+    
+    //System.out.println("compare:\n"+e1 + " " + 
+//        (e1.hasReferenceNode()?e1.getReferenceNode().getLabel():""));
+//System.out.println(e2 + " " + 
+//        (e2.hasReferenceNode()?e2.getReferenceNode().getLabel():""));
+//                System.out.println("equalWithoutConsideringMetadata: " + equalWithoutConsideringMetadata);
 
-        return new Comparator<Edge>() {
-            
+    
+    Comparator<Edge> createComparator(boolean equalWithoutConsideringMetadataNode) {
+
+        return new Comparator<>() {
+            boolean equalWithoutConsideringMetadata = equalWithoutConsideringMetadataNode;
+     
             @Override
-            public int compare(Edge o1, Edge o2) {
-
+            public int compare(Edge e1, Edge e2) {
+                
                 // check the Index Node
-                int res = compareNodeTerm(o1.getNode(index), o2.getNode(index));
-                if (res != 0) {                   
+                int res = compareNodeTerm(e1.getNode(getIndex()), e2.getNode(getIndex()));
+                if (res != 0) {  
+                    //System.out.println("subject: " + res);
                     return res;
                 }
                 
-                res = compareNodeTerm(o1.getNode(other), o2.getNode(other));
+                res = compareNodeTerm(e1.getNode(getOther()), e2.getNode(getOther()));
                 if (res != 0) {
+                    //System.out.println("object: " + res);
                     return res;
                 }
                                 
-                if (o1.nbNode() == 2 && o2.nbNode() == 2 || graph.isMetadataNode()) {
-                    // compare third Node (i.e. graph in the general case)
-                    res = compareNodeTermNull(o1.getNode(next), o2.getNode(next));
+                if (e1.nbNode() == 2 && e2.nbNode() == 2) {
+                    // compare third Node (i.e. graph node in the general case)
+                    res = compareNodeTermNull(e1.getNode(getNext()), e2.getNode(getNext()));
+                    //System.out.println("graph: " + res);                    
                     return res;
                 }
+                
+                // one of them has metadata, compare third Node
+                if (getGraph().isMetadataNode()) {
+                    // rdf star:  g s p o = g s p o t = g s p o t2
+                    // compare third Node (i.e. graph in the general case)
+                    res = compareNodeTermNull(e1.getNode(getNext()), e2.getNode(getNext()));
+                    if (res == 0) {
+                        // equal on g s p o
+                        //System.out.println("equalWithoutConsideringMetadata: " + equalWithoutConsideringMetadata);
+                        if (equalWithoutConsideringMetadata) {
+                            //System.out.println("meta1: " + res);
+                            return res;
+                        }
+                        else {
+                            res = compareEqualWhenMetadata(e1, e2);
+                            //System.out.println("meta2: " + res);
+                            return res;
+                        }
+                    }
+                    else {
+                        //System.out.println("meta3: " + res);
+                        return res;
+                    }
+                }
 
+                // more than two nodes, not rdf star
                 // common arity
-                int min = Math.min(o1.nbNode(), o2.nbNode());
+                int min = Math.min(e1.nbNode(), e2.nbNode());
 
                 for (int i = 0; i < min; i++) {
                     // check other common arity nodes
-                    if (i != index) {
-                        res = compareNodeTerm(o1.getNode(i), o2.getNode(i));
+                    if (i != getIndex()) {
+                        res = compareNodeTerm(e1.getNode(i), e2.getNode(i));
                         if (res != 0) {
                             return res;
                         }
                     }
                 }
 
-                if (o1.nbNode() == o2.nbNode()) {
+                if (e1.nbNode() == e2.nbNode()) {
                     // same arity, nodes are equal
                     // check graph node
-                    return compareNodeTerm(o1.getNode(IGRAPH), o2.getNode(IGRAPH));
+                    return compareNodeTerm(e1.getNode(IGRAPH), e2.getNode(IGRAPH));
                 }
-                else if (o1.nbNode() < o2.nbNode()) {
+                else if (e1.nbNode() < e2.nbNode()) {
                     // smaller arity edge is before
                     return -1;
                 } else {
@@ -873,14 +760,35 @@ public class EdgeManager implements Iterable<Edge> {
             }
         };
     }
+     
+     /**
+      * Edges are equal on g s p o
+      * edge with metadata < edge without metadata
+      */ 
+     int compareEqualWhenMetadata(Edge e1, Edge e2) {
+         if (e1.hasReferenceNode()) {
+             if (e2.hasReferenceNode()) {
+                 return compareNodeTerm(e1.getReferenceNode(), e2.getReferenceNode());
+             }
+             else {
+                 return -1;
+             }
+         }
+         else if (e2.hasReferenceNode()) {
+             return 1;
+         }
+         else {
+             return 0;
+         }
+     }
 
     /**
      * sort in reverse order of edge timestamp
      * new edge first (for RuleEngine)
      */
-    Comparator<Edge> getListComparator() {
+    Comparator<Edge> createListComparator() {
 
-        return new Comparator<Edge>() {
+        return new Comparator<>() {
             @Override
             public int compare(Edge o1, Edge o2) {
                 int i1 = o1.getIndex();
@@ -896,6 +804,42 @@ public class EdgeManager implements Iterable<Edge> {
             }
         };
 
+    }
+
+    public ArrayList<Edge> getEdgeList() {
+        return edgeList;
+    }
+
+    public void setEdgeList(ArrayList<Edge> edgeList) {
+        this.edgeList = edgeList;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
+    }
+
+    public int getOther() {
+        return other;
+    }
+
+    public void setOther(int other) {
+        this.other = other;
+    }
+
+    public int getNext() {
+        return next;
+    }
+
+    public void setNext(int next) {
+        this.next = next;
+    }
+
+    public EdgeManagerIndexer getIndexer() {
+        return indexer;
+    }
+
+    public void setIndexer(EdgeManagerIndexer indexer) {
+        this.indexer = indexer;
     }
 
 }

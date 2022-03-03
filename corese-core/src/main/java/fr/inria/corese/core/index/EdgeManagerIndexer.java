@@ -54,7 +54,7 @@ public class EdgeManagerIndexer
             isIndexer = false,
             // do not create entailed edge in kg:entailment if it already exist in another graph
             isOptim = false;
-    Comparator<Edge> comp;
+    Comparator<Edge> comparatorIndex, comparator;
     Graph graph;
     List<Node> sortedProperties;
     PredicateList sortedPredicates;
@@ -179,7 +179,6 @@ public class EdgeManagerIndexer
         Collections.sort(sortedProperties, new Comparator<Node>() {
             @Override
             public int compare(Node o1, Node o2) {
-                // TODO Auto-generated method stub
                 return o1.compare(o2);
             }
         });
@@ -393,6 +392,10 @@ public class EdgeManagerIndexer
         return list.exist(edge);
     }
     
+    /**
+     * use case: Construct find occurrence of edge for rdf star
+     * Index is sorted and reduced
+     */
     @Override
     public Edge find(Edge edge) {
         EdgeManager list = getListByLabel(edge);
@@ -432,7 +435,10 @@ public class EdgeManagerIndexer
         EdgeManager list = get(predicate);
         if (list == null) {
             list = new EdgeManager(this, predicate, index);
-            setComparator(list);
+            // comparator index: g s p o t < g s p o
+            list.setComparatorIndex(getCreateComparatorIndex(list));
+            // comparator basic: g s p o t = g s p o 
+            list.setComparator(getCreateComparator(list));            
             put(predicate, list);
         }
         return list;
@@ -442,12 +448,18 @@ public class EdgeManagerIndexer
      * 
      * All EdgeManager(index) share same Comparator
      */       
-    void setComparator(EdgeManager el){
-        if (comp == null){
-            // create Comparator that will be shared
-            comp = el.getComparator(index);
+    Comparator<Edge> getCreateComparatorIndex(EdgeManager el){
+        if (comparatorIndex == null){
+            comparatorIndex = el.createComparatorIndex(index);
         }
-        el.setComparator(comp);
+        return comparatorIndex;
+    }
+    
+    Comparator<Edge> getCreateComparator(EdgeManager el){
+        if (comparator == null){
+            comparator = el.createComparator(index);
+        }
+        return comparator;
     }
 
     /**
@@ -704,7 +716,7 @@ public class EdgeManagerIndexer
             return null;
         }
 
-        int i = list.findIndexNodeTerm(edge);
+        int i = list.findEdgeEqualWithoutMetadata(edge);
 
         if (i == -1) {
             return null;
@@ -942,7 +954,8 @@ public class EdgeManagerIndexer
      */
     @Override
     public void finishUpdate() {
-        if (graph.isEdgeMetadata()) {
+        if (graph.isEdgeMetadata() && 
+          ! graph.getTripleNodeMap().isEmpty()) {
             graph.init();
             metadata();
         }

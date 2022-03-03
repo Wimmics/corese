@@ -427,72 +427,52 @@ public class Transformer implements TransformProcessor {
         set(QueryProcess.create(g, true));
     }
 
-    /**
-     * @return the isCheck
-     */
+   
     public boolean isCheck() {
         return isCheck;
     }
 
-    /**
-     * @param isCheck the isCheck to set
-     */
+   
     public void setCheck(boolean isCheck) {
         this.isCheck = isCheck;
     }
 
-    /**
-     * @return the isDetail
-     */
+   
     public boolean isDetail() {
         return isDetail;
     }
 
-    /**
-     * @param isDetail the isDetail to set
-     */
+   
     public void setDetail(boolean isDetail) {
         this.isDetail = isDetail;
     }
 
-    /**
-     * @return the isOptimizeDefault
-     */
+    
     public static boolean isOptimizeDefault() {
         return isOptimizeDefault;
     }
 
-    /**
-     * @param aIsOptimizeDefault the isOptimizeDefault to set
-     */
+   
     public static void setOptimizeDefault(boolean aIsOptimizeDefault) {
         isOptimizeDefault = aIsOptimizeDefault;
     }
 
-    /**
-     * @return the isExplainDefault
-     */
+   
     public static boolean isExplainDefault() {
         return isExplainDefault;
     }
 
-    /**
-     * @param aIsExplainDefault the isExplainDefault to set
-     */
+   
     public static void setExplainDefault(boolean aIsExplainDefault) {
         isExplainDefault = aIsExplainDefault;
     }
 
-    /**
-     * @return the isOptimize
-     */
+   
     public boolean isOptimize() {
         return isOptimize;
     }
 
-    /**
-     * @param isOptimize the isOptimize to set
-     */
+   
     public void setOptimize(boolean isOptimize) {
         this.isOptimize = isOptimize;
     }
@@ -1500,45 +1480,31 @@ public class Transformer implements TransformProcessor {
         return graph;
     }
 
-    /**
-     * @return the isTrace
-     */
+   
     public boolean isTrace() {
         return isTrace;
     }
 
-    /**
-     * @param isTrace the isTrace to set
-     */
     public void setTrace(boolean isTrace) {
         this.isTrace = isTrace;
     }
 
 
-    /**
-     * @return the hasDefault
-     */
     public boolean isHasDefault() {
         return hasDefault;
     }
 
-    /**
-     * @param hasDefault the hasDefault to set
-     */
+    
     public void setHasDefault(boolean hasDefault) {
         this.hasDefault = hasDefault;
     }
 
-    /**
-     * @return the dataset
-     */
+   
     public Dataset getDataset() {
         return ds;
     }
 
-    /**
-     * @param dataset the dataset to set
-     */
+   
     public void setDataset(Dataset dataset) {
         this.ds = dataset;
     }
@@ -1547,16 +1513,11 @@ public class Transformer implements TransformProcessor {
         return pp;
     }
 
-    /**
-     * @return the context
-     */
     public Context getContext() {
         return context;
     }
 
-    /**
-     * @param context the context to set
-     */
+  
     public void setContext(Context context) {
         this.context = context;
         initContext();

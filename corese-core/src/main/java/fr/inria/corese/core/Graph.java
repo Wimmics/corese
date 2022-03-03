@@ -1250,7 +1250,7 @@ public class Graph extends GraphObject implements
         return values;
     }
 
-    public Index getIndex() {
+    public EdgeManagerIndexer getIndex() {
         return getSubjectIndex();
     }
 
@@ -1311,7 +1311,7 @@ public class Graph extends GraphObject implements
     }
 
     void basicIndex() {
-        for (Index ei : getIndexList()) {
+        for (EdgeManagerIndexer ei : getIndexList()) {
             ei.index();
         }
     }

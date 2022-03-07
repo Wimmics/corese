@@ -48,7 +48,7 @@ public class CreateTriple {
         graph.getEventManager().start(Event.LoadAPI);
     }
     
-    Graph getGraph() {
+    public Graph getGraph() {
         return graph;
     }
     
@@ -102,6 +102,7 @@ public class CreateTriple {
             return getDataManager().insert(e);
         }
         else {
+            //System.out.println("CT: add " + e);
             return graph.addEdge(e);
         }
     }
@@ -200,44 +201,32 @@ public class CreateTriple {
         return true;
     }
 
-    /**
-     * @return the queryProcess
-     */
+   
     public QueryProcess getQueryProcess() {
         return queryProcess;
     }
 
-    /**
-     * @param queryProcess the queryProcess to set
-     */
+   
     public void setQueryProcess(QueryProcess queryProcess) {
         this.queryProcess = queryProcess;
     }
 
-    /**
-     * @return the path
-     */
+    
     public String getPath() {
         return path;
     }
 
-    /**
-     * @param path the path to set
-     */
+    
     public void setPath(String path) {
         this.path = path;
     }
 
-    /**
-     * @return the skip
-     */
+   
     public boolean isSkip() {
         return skip;
     }
 
-    /**
-     * @param skip the skip to set
-     */
+    
     public void setSkip(boolean skip) {
         this.skip = skip;
     }
@@ -246,9 +235,7 @@ public class CreateTriple {
         return limit;
     }
 
-    /**
-     * @param limit the limit to set
-     */
+    
     public void setLimit(int limit) {
         this.limit = limit;
     }

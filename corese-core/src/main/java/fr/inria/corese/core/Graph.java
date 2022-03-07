@@ -1483,7 +1483,7 @@ public class Graph extends GraphObject implements
                 tmp = addBlank();
             }
             add(n);
-            addEdge(g, cur, fst, n);
+            addEdge(g, cur, fst, n); 
             addEdge(g, cur, rst, tmp);
             cur = tmp;
         }
@@ -1491,6 +1491,7 @@ public class Graph extends GraphObject implements
     }
 
     public Edge addEdge(Edge edge) {
+        //System.out.println("graph add: " + edge);
         return addEdge(edge, true);
     }
 
@@ -3513,6 +3514,51 @@ public class Graph extends GraphObject implements
     
     public Node addTripleReference(String label) {
         return basicAddTripleReference(label);
+    }
+    
+    public Node addTripleReference(Node s, Node p, Node o) {
+        return basicAddTripleReference(reference(s, p, o));
+    }
+    
+    public Node getTripleReference(Node s, Node p, Node o) {
+        return getTripleNode(reference(s, p, o));
+    }  
+    
+    public Node getTripleReference(Edge edge) {
+        return getTripleNode(reference(edge.getSubjectNode(), edge.getPropertyNode(), edge.getObjectNode()));
+    }  
+    
+    /**
+     * generate unique reference node ID for given s p o
+     * pragma: nodes MUST have been inserted in the graph to have an index
+     * _:ti.j.k where i, j, k are node index
+     */
+    String reference(Node s, Node p, Node o) {
+        return String.format("%s%s.%s.%s", TRIPLE_REF, reference(s), reference(p), reference(o));
+    }
+    
+    String reference(Node n) {
+        IDatatype dt = n.getValue();
+        if (dt.isURI()) {
+            return Integer.toString(n.getIndex());
+        }
+        if (dt.isNumber()) {
+            // 1 and 1.0 may have same index -> consider value to differentiate them
+            return String.format("n%s", dt);
+        }
+        if (dt.isBoolean()) {
+            // distinguish true from 1
+            return String.format("b%s", dt.getLabel());
+        }
+        // dates may also have same index but different labels, see isDate() above
+        // date with Z and date with +00:00 have same index (same value) but different labels
+        // they should have different ID
+        if (dt.isDate()) {
+            if (DatatypeMap.getTZ(dt).equals("Z")) {
+                return String.format("d%s", n.getIndex());
+            }
+        }
+        return Integer.toString(n.getIndex());
     }
     
     public IDatatype createTripleReference() {

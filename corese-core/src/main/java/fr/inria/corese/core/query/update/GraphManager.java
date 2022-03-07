@@ -255,6 +255,10 @@ public class GraphManager {
         return graph.createTripleReference();
     }
     
+    public Node createTripleReference(Node s, Node p, Node o) {
+        return graph.addTripleReference(s, p, o);
+    }
+    
     
     /*****************************************************************************
      * 

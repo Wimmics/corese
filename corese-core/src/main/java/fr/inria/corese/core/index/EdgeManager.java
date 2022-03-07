@@ -82,12 +82,101 @@ public class EdgeManager implements Iterable<Edge> {
     int getIndex(){
         return index;
     }
+    
+    int reduce(NodeManager mgr) {
+        return reduceNew(mgr);
+    }
 
+    
+    
     /**
+     * input edge are sorted with reference node first: g s p o t <before> g s p o
+     * remove duplicate edges, share reference node if any, share asserted if any
+     * example:
+     * g s p o t - <<g s p o t>> - g s p o - g1 s p o - g1 s p o - g2 s p o - g3 s p o t
+     * reduce ->
+     * g s p o t - g1 s p o t - g2 s p o t - g3 s p o t
+     * In addition edges may be asserted or not
+     * Remaining edge becomes asserted if one occurrence (with same g s p o) is asserted
+     */
+    int reduceNew(NodeManager mgr) {
+        ArrayList<Edge> reduceNodeList = new ArrayList<>();
+        Edge pred = null;
+        int count = 0, ind = 0;
+        //System.out.println("before reduce: " + list);
+        boolean isMetadata = getGraph().isMetadataNode();
+        
+        for (Edge edge : getEdgeList()) {
+            if (pred == null) {
+                pred = edge;
+                reduceNodeList.add(edge);
+                mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
+                ind++;
+            } else if (equalWithoutConsideringMetadata(pred, edge)) {
+                // g s p o = g s p o -- with or without reference node
+                if (isMetadata) {
+                    // rdf star graph
+                    Node ref = pred.getReferenceNode();
+                    if (ref == null) {
+                        // pred have no reference node
+                        ref = getGraph().getTripleReference(edge.getSubjectNode(), getPredicate(), edge.getObjectNode());
+                    }
+                    if (ref == null) {
+                        // no reference node at all for any s p o
+                        // skip edge
+                        count++;
+                    }
+                    else {
+                        // reference node exist for some s p o, 
+                        // may be on pred g s p o or another following gi s p o
+                        if (pred.getReferenceNode() == null) {
+                            // pred must share ref node of other s p o
+                            Edge predCopy = getGraph().getEdgeFactory().name(pred, getPredicate(), ref);
+                            // replace pred by predCopy with shared ref node
+                            reduceNodeList.set(reduceNodeList.size() - 1, predCopy);
+                            pred = predCopy;
+                            // skip edge
+                            count++;
+                        }
+                        else {
+                            // pred has reference node
+                            if (edge.isAsserted()) {
+                                // in case pred was not asserted
+                                pred.setAsserted(true);
+                            }
+                            // skip edge
+                            count++;
+                        }
+                    }
+                }
+                else {
+                    // edge = pred, graph not metadata
+                    // skip redundant edge
+                    count++;
+                }
+            } else {
+                reduceNodeList.add(edge);
+                if (edge.getNode(getIndex()) != pred.getNode(getIndex())) {
+                    mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
+                }
+                pred = edge;
+                ind++;
+            }
+        }
+        
+        setEdgeList(reduceNodeList);
+        if (count > 0) {
+            graph.setSize(graph.size() - count);
+        }
+        //System.out.println("after reduce: " + list);
+        return count;
+    }
+    
+        /**
      * Remove duplicate edges
      * pragma: edge list is sorted
      */
-    int reduce(NodeManager mgr) {
+    int reduceOld(NodeManager mgr) {
         ArrayList<Edge> l = new ArrayList<>();
         Edge pred = null;
         int count = 0, ind = 0;
@@ -284,6 +373,10 @@ public class EdgeManager implements Iterable<Edge> {
     void add(int i, Edge ent) {
         getEdgeList().add(i, ent);
     }
+    
+    void set(int i, Edge ent) {
+        getEdgeList().set(i, ent);
+    }
 
     Edge remove(int i) {
         Edge ent = getEdgeList().get(i);
@@ -330,16 +423,47 @@ public class EdgeManager implements Iterable<Edge> {
      */
     int getPlace(Edge edge) {
         int i = find(edge);
+        if (i >= getEdgeList().size()) {
+            i = getEdgeList().size();
+        } else if (getIndex() == 0) {
+            if (getGraph().isMetadataNode()) {
+                // add edge with metadata take care of it
+                return i;
+            } else {
+                if (equalWithoutConsideringMetadata(getEdgeList().get(i), edge)) {
+                    // eliminate duplicate at load time for index 0                   
+                    return -1;
+                }
+            }
+        }
 
+        return i;
+    }
+    
+    int getPlace2(Edge edge) {
+        int i = find(edge);
         if (i >= getEdgeList().size()) {
             i = getEdgeList().size();
         } else if (getIndex() == 0) {
             //if (equalExceptIfMetadata(getEdgeList().get(i), edge)) {
             if (equalWithoutConsideringMetadata(getEdgeList().get(i), edge)) {
-                if (hasMetadata(getEdgeList().get(i), edge)) {
-                    // equal but have metadata: insert it
-                    return i;
-                } else {
+                if (getGraph().isMetadataNode()) {
+                    if (edge.hasReferenceNode() && ! getEdgeList().get(i).hasReferenceNode()) {
+                        return i;
+                    }
+                    else if (edge.isAsserted() && ! getEdgeList().get(i).isAsserted()) {
+                        return i;
+                    }
+                    else {
+                        return -1;
+                    }
+                }
+//                else 
+//                    if (hasMetadata(getEdgeList().get(i), edge)) {
+//                    // equal but have metadata: insert it
+//                    return i;
+//                } 
+                else {
                     // eliminate duplicate at load time for index 0                   
                     return -1;
                 }

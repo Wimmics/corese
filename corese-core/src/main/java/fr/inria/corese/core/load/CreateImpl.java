@@ -25,10 +25,11 @@ import fr.inria.corese.kgram.api.core.Edge;
  *
  */
 public class CreateImpl extends CreateTriple implements Creator {
-
+    public static boolean USE_REFERENCE_ID = true;
     private static Logger logger = LoggerFactory.getLogger(CreateImpl.class);
 
     HashMap<String, String> blank;
+    HashMap<String, Node> reference;
     NSManager nsm;
     Graph graph;
     Node source;
@@ -57,6 +58,7 @@ public class CreateImpl extends CreateTriple implements Creator {
         graph = g;
         load = ld;
         blank = new HashMap<>();
+        reference = new HashMap<>();
         nsm = NSManager.create();
         stack = new Stack();
     }
@@ -109,6 +111,29 @@ public class CreateImpl extends CreateTriple implements Creator {
         triple(source, subject, property, object);
     }
     
+    @Override
+    public void triple(Atom property, List<Atom> termList, boolean nested) {
+        if (source == null) {
+            source = addDefaultGraphNode();
+        }
+
+        Node predicate = getProperty(property);
+
+        ArrayList<Node> nodeList = new ArrayList<>();
+        for (Atom at : termList) {
+            Node n = getObject(at, predicate, nodeList);
+            nodeList.add(n);
+        }
+
+        Edge e = create(source, predicate, nodeList, nested);
+        add(e);
+    }
+    
+   @Override
+    public void triple(Atom property, List<Atom> termList) {
+        triple(property, termList, false);
+    }
+
     Edge triple(Node source, Atom subject, Atom property, Atom object) {
         if (accept(property.getLabel())) {           
             Node s = getSubject(subject);
@@ -138,28 +163,7 @@ public class CreateImpl extends CreateTriple implements Creator {
         }
     }
 
-    @Override
-    public void triple(Atom property, List<Atom> l, boolean nested) {
-        if (source == null) {
-            source = addDefaultGraphNode();
-        }
 
-        Node p = getProperty(property);
-
-        ArrayList<Node> list = new ArrayList<>();
-        for (Atom at : l) {
-            Node n = getObject(at);
-            list.add(n);
-        }
-
-        Edge e = create(source, p, list, nested);
-        add(e);
-    }
-
-   @Override
-    public void triple(Atom property, List<Atom> l) {
-        triple(property, l, false);
-    }
 
     @Override
     public void list(RDFList l) {
@@ -169,16 +173,6 @@ public class CreateImpl extends CreateTriple implements Creator {
                 triple(t.getSubject(), t.getProperty(), t.getObject());
             }
         }
-    }
-
-    Node getObject(Atom object) {
-        Node o;
-        if (object.isLiteral()) {
-            o = getLiteral(object.getConstant());
-        } else {
-            o = getNode(object);
-        }
-        return o;
     }
 
     Node getLiteral(Atom pred, Constant lit) {
@@ -208,10 +202,28 @@ public class CreateImpl extends CreateTriple implements Creator {
         }
         return addLiteral(lit.getLabel(), datatype, lang);
     }
+   
+    Node getObject(Atom object) {
+        return getObject(object, null, null);
+    }
 
+    Node getObject(Atom object, Node predicate, List<Node> nodeList) {
+        Node o;
+        if (object.isLiteral()) {
+            o = getLiteral(object.getConstant());
+        } else {
+            o = getNode(object, predicate, nodeList);
+        }
+        return o;
+    }
+    
     Node getNode(Atom c) {
+        return getNode(c, null, null);
+    }
+
+    Node getNode(Atom c, Node predicate, List<Node> nodeList) {
         if (c.isTriple()) {
-            return getTripleReference(c);
+            return getTripleReference(c, predicate, nodeList);
         }
         if (c.isBlank() || c.isBlankNode()) {
             return getBlank(c);
@@ -225,9 +237,44 @@ public class CreateImpl extends CreateTriple implements Creator {
         return n;
     }
     
-    Node getTripleReference(Atom c) {
-        Node n = addTripleReference(tripleID(c.getLabel()));
+    Node getTripleReference(Atom at, Node predicate, List<Node> nodeList) {
+        if (nodeList == null || nodeList.size() < 2) {
+            return addTripleReference(at);
+        }
+        else {
+            return addTripleReference(at, nodeList.get(0), predicate, nodeList.get(1));
+        }
+    }
+    
+    Node addTripleReference(Atom at) {
+        Node n = reference.get(at.getLabel());
+        if (n == null) {
+            // should not happen because references are created 
+            // before they are used
+            n = addTripleReference(tripleID(at.getLabel()));
+            reference.put(at.getLabel(), n);
+        }
         return n;
+    }
+    
+    Node addTripleReference(Atom at, Node s, Node p, Node o) {
+        if (USE_REFERENCE_ID){
+            // gerenare unique ID for every occurrence of same s p o
+            return addTripleReferenceNew(at, s, p, o);
+        }
+        else {
+            return addTripleReference(at);
+        }
+    }
+    
+    Node addTripleReferenceNew(Atom at, Node s, Node p, Node o) {
+        Node n = reference.get(at.getLabel());
+        if (n == null) {            
+            n = getGraph().addTripleReference(s, p, o);
+            reference.put(at.getLabel(), n);
+        }
+        return n;
+        
     }
 
     Node getSubject(Atom c) {

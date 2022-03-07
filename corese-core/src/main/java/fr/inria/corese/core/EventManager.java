@@ -174,13 +174,14 @@ public class EventManager {
          switch (e) {
             case Insert:
             case Delete:             
-            case LoadUpdate:    
+            case LoadUpdate: 
                 graph.indexGraph();            
                 break; 
                 
             case Construct: 
                 graph.indexGraph();
-                // continue
+                graph.finishUpdate();
+                break;
                 
             case LoadAPI: 
                 graph.finishUpdate();

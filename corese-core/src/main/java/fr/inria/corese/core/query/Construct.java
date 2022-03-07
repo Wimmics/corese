@@ -524,7 +524,16 @@ public class Construct
             list.add(object);
 
             for (int i = 2; i < edge.nbNode(); i++) {
-                Node n = construct(gNode, source, edge.getNode(i), env, null, true, rec);
+                Node queryNode = edge.getNode(i);
+                Node n;
+                
+                if (queryNode.isTriple()) {
+                    n = reference(queryNode, subject, property, object);
+                }
+                else {
+                    n = construct(gNode, source, queryNode, env, null, true, rec);
+                }
+                
                 if (n != null) {
                     if (!isDelete){
                         graphManager.add(n, i);
@@ -545,8 +554,32 @@ public class Construct
         ee.setNested(edge.isNested());
         return ee;
     }
+    
+    
+    
+    // refQueryNode is reference query node t of triple pattern s p o t
+    Node reference(Node refQueryNode, Node s, Node p, Node o) {
+        if (isDelete) {
+            // reference node useless in case of delete
+            // do not screw up future binding of this node in case it would appear as subject
+            return null;
+        }
+        return basicReference(refQueryNode, s, p, o);
+    }
 
-
+    /** 
+     * refQueryNode is reference query node t of triple pattern s p o t
+     * create target reference node in graph
+     * s p o must be inserted in graph because we use node index
+     */
+    Node basicReference(Node refQueryNode, Node s, Node p, Node o) {
+        Node refNode = get(refQueryNode);
+        if (refNode == null) {
+            refNode = graphManager.createTripleReference(s, p, o);
+            put(refQueryNode, refNode);
+        }
+        return refNode;
+    }
     
     Node construct(Node gNode, Node source, Node qNode, Environment map) {
         return construct(gNode, source, qNode, map, null, false, false);

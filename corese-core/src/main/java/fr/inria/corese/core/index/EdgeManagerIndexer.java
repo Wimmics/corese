@@ -38,7 +38,7 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
  */
 public class EdgeManagerIndexer 
         implements Index {
-
+    public static boolean TRACE_REDUCE = false;
     // true: store internal Edge without predicate Node
     public static boolean test = true;
     private static final String NL = System.getProperty("line.separator");
@@ -327,8 +327,17 @@ public class EdgeManagerIndexer
             }       
 
             if (onInsert(edge)) {
-                el.add(i, internal);
-                logInsert(edge);
+                // @todo: 
+                // when rdf star && edge == get(i) : replace get(i) by edge
+                // a) edge has ref node, current no ref node
+                // b) edge asserted, current not asserted
+                if (getGraph().isMetadataNode()) {
+                     return addWithMetadata(el, edge, internal, i);
+                }
+                else {
+                    el.add(i, internal);
+                    logInsert(edge);
+                }
             } else {
                 return null;
             }
@@ -345,6 +354,73 @@ public class EdgeManagerIndexer
 
         return edge;
     }
+    
+    // @todo: g s p o t < g s p o
+    // edge with ref node    compare with index i
+    // edge without ref node compare with index i-1
+    Edge addWithMetadata(EdgeManager el, Edge edge, Edge internal, int i) {
+        if (el.getEdgeList().isEmpty()) {
+            el.add(i, internal);
+            logInsert(edge);
+        }
+        else if (edge.hasReferenceNode()) {
+            if (i == el.getEdgeList().size()) {
+                el.add(i, internal);
+                logInsert(edge);
+            }
+            else {
+                Edge current = el.get(i);                              
+                if (el.equalWithoutConsideringMetadata(current, edge)) {
+                    // g s p o [t] == g s p o [t]
+                    if (!current.hasReferenceNode()) {
+                        // g s p o t replace g s p o
+                        el.set(i, edge);
+                        if (current.isAsserted()) {
+                            edge.setAsserted(true);
+                        }
+                    }
+                    // in case edge does not replace current
+                    if (edge.isAsserted()) {
+                        current.setAsserted(true);
+                    }
+                    return null;
+                } else {
+                    el.add(i, internal);
+                    logInsert(edge);
+                }
+            }
+        }
+        else {
+            // edge has no reference node
+            if (i < el.getEdgeList().size()) {
+                Edge current = el.get(i);
+                if (el.equalWithoutConsideringMetadata(current, edge)) {
+                    // current has no reference node (otherwise i would be after current)
+                    // skip edge
+                    return null;
+                }
+            }
+
+            if (i == 0) {
+                el.add(i, internal);
+                logInsert(edge);
+            } else {
+                Edge current = el.get(i - 1);
+                if (el.equalWithoutConsideringMetadata(current, edge)) {
+                    // current has reference node because it is before i
+                    // edge has no reference node => it is asserted
+                    current.setAsserted(true);
+                    return null;
+                } else {
+                    el.add(i, internal);
+                    logInsert(edge);
+                }
+            }      
+        }
+        
+        return edge;
+    }
+    
 
     /**
      * PRAGMA: 
@@ -514,11 +590,17 @@ public class EdgeManagerIndexer
      * index NodeManager
      */
     private void reduce() {
+        if (TRACE_REDUCE) {
+            System.out.println("before reduce:\n" + getGraph().display());
+        }
         nodeManager.start();
         for (Node pred : getSortedProperties()) {
             reduce(pred);
         }
         nodeManager.finish();
+        if (TRACE_REDUCE) {
+            System.out.println("after reduce:\n" + getGraph().display());
+        }
     }
 
     private void reduce(Node pred) {
@@ -954,12 +1036,15 @@ public class EdgeManagerIndexer
      */
     @Override
     public void finishUpdate() {
-        if (graph.isEdgeMetadata() && 
-          ! graph.getTripleNodeMap().isEmpty()) {
-            graph.init();
-            metadata();
-        }
     }
+    
+    //        if (graph.isEdgeMetadata() && 
+//          ! graph.getTripleNodeMap().isEmpty()) {
+//             //force reduce() because insert may have inserted edge with reference node
+//            graph.setIndex(true);
+//            graph.init();
+//            metadata();
+//        }
     
     /**
      * Merge duplicate rdf* triples:

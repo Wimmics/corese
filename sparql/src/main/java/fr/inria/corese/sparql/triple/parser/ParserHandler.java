@@ -27,10 +27,11 @@ public class ParserHandler {
     private boolean insideValues = false;
     int countWhere = 0;
     private boolean function = false;
+    boolean turtleLoader = false;
 
     // Broker to target Graph in Load context
     // Turtle Loader create Edge(g s p o) directly in the graph
-    Creator create;
+    private Creator create;
     SparqlCorese parser;
     private Metadata metadata;
     private ArrayList<EngineException> errorList;
@@ -43,50 +44,93 @@ public class ParserHandler {
         this.parser = parser;
     }
     
+    // create rdf graph Edge directly for rdf loader
     public void setCreator(Creator c) {
-        create = c;
+        setCreate(c);
+        if (c != null) {
+            setTurtleLoader(true);
+        }
     }
       
-    // s p o1, .. on
-    public Exp createTriples(ASTQuery ast, Exp stack, Expression subject, Atom p, ExpressionList objectList, int n)
+
+    public Exp createTriples(ASTQuery ast, Exp stack, Expression subject, Atom predicate, ExpressionList objectList, int n)
             throws ParseException {
-        ArrayList<Triple> tripleList = new ArrayList<>();
-        
         for (Expression object : objectList) {
-            Triple t = genericCreateTriple(ast, subject.getAtom(), p, object.getAtom()); 
-            if (t != null) {
-                stack.add(n++, t);
-                if (object.getAtom().getTripleReference()!=null) {
-                    tripleList.add(t);
-                }
-            }
+            createTripleWithAnnotation(ast, stack, subject.getAtom(), predicate, object.getAtom());
         }
-        
-        annotate(tripleList, stack);
         return stack;
     }
     
-    void annotate(List<Triple> tripleList, Exp stack) {
-        for (Triple t : tripleList) {
-            annotate(t, stack);
+    /**
+     * s p o1, o2, oi
+     * we may have s p o whith o.reference = t and o.annotation = (t q v)
+     * create triple s p o t and add its annotation t q v after triple in stack
+     */        
+    Exp createTripleWithAnnotation(ASTQuery ast, Exp stack, Atom subject, Atom predicate, Atom object) 
+            throws ParseException {
+        
+        boolean turtleLoaderStatus = isTurtleLoader();
+        
+        if (stack.isStack() && isTurtleLoader()) {
+            // create annotation triple t q v
+            // switch to sparql parser mode and create/record annotation Triple instead of Edge
+            // annotation Edge will be created from triple later by processTurtleAnnotation() 
+            // when subject Edge s p o t will be created 
+            // in order to get subject ref ID Node of subject Edge
+            setTurtleLoader(false);
+        }
+        
+        Triple triple = genericCreateTriple(ast, subject, predicate, object);
+
+        if (isTurtleLoader()) {
+            // edge created in graph
+            processTurtleAnnotation(ast, object);
+        } else {
+            // triple created in stack
+            stack.add(triple); // stack.add(n++, triple);
+            processSparqlAnnotation(ast, stack, triple, object);            
+        }
+        
+        setTurtleLoader(turtleLoaderStatus);
+        
+        return stack;
+    }
+    
+    /**
+     * Turtle loader create triple = s p o t where object = o
+     * o.annotation = (t q v)
+     * create Edge t q v now from stacked triple t q v 
+     * in order to get rdf ID graph node for t
+     */
+    void processTurtleAnnotation(ASTQuery ast, Atom object) throws ParseException {
+        if (object.getAnnotation() != null) {
+            for (Exp ee : object.getAnnotation()) {
+                // create edge for annotation triple t that have been stacked
+                Triple t = ee.getTriple();
+                genericCreateTriple(ast, t.getSubject(), t.getPredicate(), t.getObject());
+            }
         }
     }
     
     /**
-     * 
-     * @param triple: s p o t st exists t q v in stack
-     * @param stack 
+     * Sparql parser create triple = s p o t where object = o
+     * o.annotation = (t q v) 
      */
-    void annotate(Triple triple, Exp stack) {
-        for (Exp exp : stack) {
-            if (exp.isTriple()) {
-                Triple tr = exp.getTriple();
-                if (triple.getObject().getTripleReference() == tr.getSubject()) {
-                    triple.getCreateTripleList().add(tr);
-                }
+    void processSparqlAnnotation(ASTQuery ast, Exp stack, Triple triple, Atom object) {
+        if (object.getAnnotation() != null) {
+            // triple is annotated by a list of triple
+            // add annotation of triple in stack after t 
+            // ref ID t will be created in target graph before use of t
+            // in annotation
+            for (Exp ee : object.getAnnotation()) {
+                // add annotation of triple after triple in stack
+                stack.add(ee.getTriple());
+                // record annotation of triple
+                triple.getCreateTripleList().add(ee.getTriple());
             }
         }
     }
+
     
     Triple genericCreateTriple(ASTQuery ast, Atom s, Atom p, Atom o) throws ParseException {
         if (o.getTripleReference()==null) {
@@ -101,13 +145,13 @@ public class ParserHandler {
         }
     }
 
-    public Triple createTriple(ASTQuery ast, Expression s, Atom p, Expression o) throws ParseException {
-        if (create != null) {
+    Triple createTriple(ASTQuery ast, Atom s, Atom p, Atom o) throws ParseException {
+        if (isTurtleLoader()) {
             // load turtle
-            if (!create.accept(s.getAtom(), p, o.getAtom())) {
+            if (!getCreate().accept(s, p, o)) {
                 throw parser.generateParseException();
             }
-            create.triple(s.getAtom(), p, o.getAtom());
+            getCreate().triple(s, p, o);
             return null;
         } else {
             // sparql parser
@@ -116,8 +160,8 @@ public class ParserHandler {
     }
     
     public void createNquad(Atom subject, Atom predicate, Atom object, Atom graph) {
-        if (create != null) {
-           create.triple(graph, subject, predicate, object);
+        if (isTurtleLoader()) {
+            getCreate().triple(graph, subject, predicate, object);
         }
     }
     
@@ -126,38 +170,37 @@ public class ParserHandler {
     }
 
     Triple createTriple(ASTQuery ast, Atom p, List<Atom> list, boolean matchArity, boolean nested) {
-        if (create == null) {
+        if (isTurtleLoader()) {
+            // load turtle
+            getCreate().triple(p, list, nested);
+            return null;
+        } else {
             // sparql query
             Triple t = ast.createTriple(p, list, nested);
             t.setMatchArity(matchArity);
             return t;
-        } else {
-            // load turtle
-            create.triple(p, list, nested);
-            return null;
         }
     }
 
 
     public void graphPattern(Atom g) {
-        if (create != null) {
-            create.graph(g.getConstant());
+        if (isTurtleLoader()) {
+            getCreate().graph(g.getConstant());
         }
     }
 
     public void endGraphPattern(Atom g) {
-        if (create != null) {
-            create.endGraph(g.getConstant());
+        if (isTurtleLoader()) {
+            getCreate().endGraph(g.getConstant());
         }
     }
 
     public Atom list(ASTQuery ast, Exp stack, List<Atom> l, int arobase) {
         RDFList rlist = ast.createRDFList(l, arobase);
 
-        if (create != null) {
-            create.list(rlist);
+        if (isTurtleLoader()) {
+            getCreate().list(rlist);
         } else {
-            //stack.add(rlist);
             stack.addList(rlist);
         }
 
@@ -279,7 +322,7 @@ public class ParserHandler {
     
     public Atom createTripleReference(ASTQuery ast, Atom var) {
         Atom ref;
-        if (isLoad() || isInsideValues()) {
+        if (isTurtleLoader() || isInsideValues()) {
             // Constant with Datatype Blank Node with isTriple() == true
             // Once in the graph, Datatype will contain Edge(s p o t)
             ref = ast.tripleReferenceDefinition();
@@ -392,10 +435,6 @@ public class ParserHandler {
     public boolean isInsideDeleteData() {
         return insideDeleteData;
     }
-    
-    boolean isLoad() {
-        return create != null;
-    }
 
     public boolean isInsideValues() {
         return insideValues;
@@ -413,6 +452,24 @@ public class ParserHandler {
         this.errorList = errorList;
     }
     
+    boolean isTurtleLoader() {
+        return turtleLoader;
+    }
+    
+    void setTurtleLoader(boolean b) {
+        turtleLoader = b;
+    }
+    
+    boolean isSparqlParser() {
+        return ! isTurtleLoader();
+    }
 
+    public Creator getCreate() {
+        return create;
+    }
+
+    public void setCreate(Creator create) {
+        this.create = create;
+    }
     
 }

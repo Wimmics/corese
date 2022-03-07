@@ -1622,15 +1622,22 @@ ExpressionList ObjectList(Exp stack): { Expression expression1; ExpressionList v
 }
 
 
-Atom PropertyValue(Exp stack) : { Atom value; Atom tripleRef = null; }
+Atom PropertyValue(Exp stack) : 
+{ Atom value; Atom tripleRef = null; Exp newStack;}
 {
     (
         value = GraphNode(stack)
       | value = StarTriple(stack)
     )
 
-    (LOOKAHEAD(2) tripleRef = AssertedAnnotation(stack)
-        { value.setTripleReference(tripleRef); }
+    (LOOKAHEAD(2) 
+        { newStack = new And().setStack(true); }
+        //tripleRef = AssertedAnnotation(stack)
+        tripleRef = AssertedAnnotation(newStack)
+        { value.setTripleReference(tripleRef); 
+          // value = o in s p o with o.reference = t and o.annotation = (t q v)
+          value.setAnnotation(newStack);
+        }
     ) ?
 
     { return value; }
@@ -1638,6 +1645,8 @@ Atom PropertyValue(Exp stack) : { Atom value; Atom tripleRef = null; }
 
 
 // s p o  {| q v |}
+// parse {| q v |} with t as subject
+// create t q v triples in a fresh stack
 Atom AssertedAnnotation(Exp stack) : { Exp exp; Atom tripleRef = null; }
 {    
     

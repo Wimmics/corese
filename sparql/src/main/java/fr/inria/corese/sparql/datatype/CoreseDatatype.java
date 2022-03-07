@@ -170,7 +170,6 @@ public class CoreseDatatype
             } else {
                 datatype = String.format("<%s>", datatype);
             }
-
             value = protect(value) + "^^" + datatype;
         } else if (getLang() != null && !getLang().isEmpty()) {
             value = protect(value) + "@" + getLang();
@@ -179,8 +178,6 @@ public class CoreseDatatype
 //            value = getContent();
 //        }
         else if (isLiteral()) {
-                        System.out.println("D: false " + value);
-
             value = protect(value);
         } else if (isURI()) {
             if (DISPLAY_AS_PREFIX) {

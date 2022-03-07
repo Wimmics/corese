@@ -31,9 +31,10 @@ public class Atom extends Expression implements ElementClause {
     boolean isdirect = false;
     int star;
     // use case: parser generate triple reference for s p o {| q v |}
-    // object o contain triple reference, for parsing purpose
-    // not for semantics nor for eval
+    // object o contain triple reference for parsing purpose
     private Atom tripleReference;
+    // BGP with annotation triple list (t q v)
+    private Exp annotation;
     // this atom is a triple reference:
     private Triple triple;
     private boolean btriple = false;
@@ -198,6 +199,14 @@ public class Atom extends Expression implements ElementClause {
 
     public void setTripleReference(Atom tripleReference) {
         this.tripleReference = tripleReference;
+    }
+
+    public Exp getAnnotation() {
+        return annotation;
+    }
+
+    public void setAnnotation(Exp annotation) {
+        this.annotation = annotation;
     }
 
 }

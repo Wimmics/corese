@@ -380,6 +380,10 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
     public boolean isAnd() {
         return false;
     }
+    
+    public boolean isStack() {
+        return false;
+    }
 
     public boolean isValues() {
         return false;

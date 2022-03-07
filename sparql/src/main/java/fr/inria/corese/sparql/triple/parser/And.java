@@ -18,6 +18,8 @@ public class And extends Exp {
 	
 	/** Use to keep the class version, to be consistent with the interface Serializable.java */
 	private static final long serialVersionUID = 1L;
+        // true when this is a stack of annotation triple in parser
+        private boolean stack = false;
 	
 	public And() {
 	}
@@ -72,6 +74,15 @@ public class And extends Exp {
 	String getOper() {
 		return Keyword.SEAND;
 	}
+
+    public boolean isStack() {
+        return stack;
+    }
+
+    public And setStack(boolean stack) {
+        this.stack = stack;
+        return this;
+    }
 	
 	
 }

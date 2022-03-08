@@ -150,7 +150,7 @@ public class EventManager {
         if (graph.size() == 0) {
             // graph is empty, optimize loading as if the graph is to be indexed
             // because in this case, edges are added directly
-            graph.setIndex(true);
+            graph.setIndexable(true);
         }
     }
     

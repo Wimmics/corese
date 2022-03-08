@@ -279,7 +279,7 @@ public class EdgeManager implements Iterable<Edge> {
     int compare3(Edge e1, Edge e2) {
         int res = compare2(e1, e2);        
         if (res == 0) {
-            res = compareNodeTerm(e1.getNode(IGRAPH), e2.getNode(IGRAPH));
+            res = EdgeManager.this.compareNodeTerm(e1.getNode(IGRAPH), e2.getNode(IGRAPH));
         }
         return res;
     }
@@ -287,7 +287,7 @@ public class EdgeManager implements Iterable<Edge> {
     // compare subject object (not compare graph)
     int compare2(Edge e1, Edge e2) {
         for (int i = 0; i < 2; i++) {
-            int res = compareNodeTerm(e1.getNode(i), e2.getNode(i));
+            int res = EdgeManager.this.compareNodeTerm(e1.getNode(i), e2.getNode(i));
             if (res != 0) {
                 return res;
             }
@@ -544,6 +544,18 @@ public class EdgeManager implements Iterable<Edge> {
         }
         return false;
     }
+    
+    Edge findEdge(Node n1, Node n2) {
+        int n = findNodeTerm(n1, n2, 0, size());
+        if (n >= 0 && n < size()) {
+            Edge edge = getEdgeList().get(n);
+            if (compareNodeTerm(n1, edge.getNode(0)) == 0
+             && compareNodeTerm(n2, edge.getNode(1)) == 0) {
+                return edge;
+            }
+        }
+        return null;
+    }
 
     /**
      * return index of edge where
@@ -555,7 +567,7 @@ public class EdgeManager implements Iterable<Edge> {
             return first;
         } else {
             int mid = (first + last) / 2;
-            if (compare(getEdgeList().get(mid), n1, n2) >= 0) {
+            if (compareNodeTerm(getEdgeList().get(mid), n1, n2) >= 0) {
                 return findNodeTerm(n1, n2, first, mid);
             } else {
                 return findNodeTerm(n1, n2, mid + 1, last);
@@ -585,7 +597,7 @@ public class EdgeManager implements Iterable<Edge> {
             return first;
         } else {
             int mid = (first + last) / 2;
-            int res = compareNodeTerm(getNode(mid, getIndex()), n);
+            int res = EdgeManager.this.compareNodeTerm(getNode(mid, getIndex()), n);
             if (res >= 0) {
                 return findNodeTerm(n, first, mid);
             } else {
@@ -635,10 +647,10 @@ public class EdgeManager implements Iterable<Edge> {
     }
     
     
-    int compare(Edge ent, Node n1, Node n2) {
-        int res = compareNodeTerm(ent.getNode(getIndex()), n1);
+    int compareNodeTerm(Edge edge, Node n1, Node n2) {
+        int res = compareNodeTerm(edge.getNode(getIndex()), n1);
         if (res == 0) {
-            res = compareNodeTerm(ent.getNode(getOther()), n2);
+            res = compareNodeTerm(edge.getNode(getOther()), n2);
         }
         return res;
     }
@@ -688,7 +700,7 @@ public class EdgeManager implements Iterable<Edge> {
             return 0;
         }
         else {
-            return compareNodeTerm(n1, n2);
+            return EdgeManager.this.compareNodeTerm(n1, n2);
         }
     }
     
@@ -812,13 +824,13 @@ public class EdgeManager implements Iterable<Edge> {
             public int compare(Edge e1, Edge e2) {
                 
                 // check the Index Node
-                int res = compareNodeTerm(e1.getNode(getIndex()), e2.getNode(getIndex()));
+                int res = EdgeManager.this.compareNodeTerm(e1.getNode(getIndex()), e2.getNode(getIndex()));
                 if (res != 0) {  
                     //System.out.println("subject: " + res);
                     return res;
                 }
                 
-                res = compareNodeTerm(e1.getNode(getOther()), e2.getNode(getOther()));
+                res = EdgeManager.this.compareNodeTerm(e1.getNode(getOther()), e2.getNode(getOther()));
                 if (res != 0) {
                     //System.out.println("object: " + res);
                     return res;
@@ -862,7 +874,7 @@ public class EdgeManager implements Iterable<Edge> {
                 for (int i = 0; i < min; i++) {
                     // check other common arity nodes
                     if (i != getIndex()) {
-                        res = compareNodeTerm(e1.getNode(i), e2.getNode(i));
+                        res = EdgeManager.this.compareNodeTerm(e1.getNode(i), e2.getNode(i));
                         if (res != 0) {
                             return res;
                         }
@@ -872,7 +884,7 @@ public class EdgeManager implements Iterable<Edge> {
                 if (e1.nbNode() == e2.nbNode()) {
                     // same arity, nodes are equal
                     // check graph node
-                    return compareNodeTerm(e1.getNode(IGRAPH), e2.getNode(IGRAPH));
+                    return EdgeManager.this.compareNodeTerm(e1.getNode(IGRAPH), e2.getNode(IGRAPH));
                 }
                 else if (e1.nbNode() < e2.nbNode()) {
                     // smaller arity edge is before

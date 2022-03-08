@@ -25,15 +25,17 @@ import java.util.ArrayList;
 public class EdgeFactory {
     public static int std = 0, def = 0, rul = 0, ent = 0, typ = 0, sub = 0, fst = 0, rst = 0;
     static final String METADATA = NSManager.USER + "metadata";
+    public static boolean OPTIMIZE_EDGE = true;
+    public static boolean EDGE_TRIPLE_NODE = false;
     public static boolean trace = false;
     Graph graph;
     QueryProcess exec;
-    boolean isOptim = false,
+    boolean 
             isTag = false,
             isGraph = false;
     int count = 0;
     String key;
-    private boolean optimize = true;
+    private boolean optimize = OPTIMIZE_EDGE;
 
     public EdgeFactory(Graph g) {
         graph = g;
@@ -60,7 +62,7 @@ public class EdgeFactory {
         else if (graph.isMetadata()) {
              return EdgeImpl.createMetadata(source, subject, predicate, object, metadata());
         }
-        else if (optimize) {
+        else if (isOptimize()) {
             return genCreate(source, subject, predicate, object);
         }
         else {
@@ -88,7 +90,7 @@ public class EdgeFactory {
     }
          
     public Edge internal(Edge ent){
-        if (ent.nbNode() > 2) {
+        if (ent.nbNode() > 2 || ! isOptimize()) {
             return ent;
         }
         Edge edge = ent;
@@ -121,10 +123,6 @@ public class EdgeFactory {
             return ee;
         }
     }
-    
-    public Edge createGeneric(Node source, Node subject, Node predicate, Node value) {
-        return EdgeGeneric.create(source, subject, predicate, value);
-    }
                 
     public Edge compact(Edge ent){
         switch (ent.getGraph().getIndex()){
@@ -152,7 +150,7 @@ public class EdgeFactory {
                 return defaultCreate(source, subject, predicate, value);
             default:
                 std++;
-                return quad(source, subject, predicate, value);
+                return createQuad(source, subject, predicate, value);
         }
     }
     
@@ -209,11 +207,29 @@ public class EdgeFactory {
     }
 
     /**
-     * Edge for user named graph
+     * default when optimize
      */
-    public Edge quad(Node source, Node subject, Node predicate, Node value) {
-            return EdgeQuad.create(source, subject, predicate, value);
-   }
+    public Edge createQuad(Node source, Node subject, Node predicate, Node value) {
+        return EdgeQuad.create(source, subject, predicate, value);
+    }
+    
+    // default when not optimize
+    public Edge createGeneric(Node source, Node subject, Node predicate, Node value) {
+        if (EDGE_TRIPLE_NODE) {
+            return createTripleNode(source, subject, predicate, value);
+        }
+        else {
+            return createBasicGeneric(source, subject, predicate, value);
+        }
+    }
+    
+    public Edge createTripleNode(Node source, Node subject, Node predicate, Node value) {
+        return new EdgeTripleNode(source, subject, predicate, value);
+    }
+    
+    public Edge createBasicGeneric(Node source, Node subject, Node predicate, Node value) {
+        return EdgeGeneric.create(source, subject, predicate, value);
+    }
     
     public Edge create(Node source, Node predicate, List<Node> list) {
         return create(source, predicate, list, false);
@@ -323,5 +339,13 @@ public class EdgeFactory {
         Node time = graph.getNode(DatatypeMap.newDate(), true, true);
         Edge edge = new EdgeImpl(source, predicate, subject, value, time);
         return edge;
+    }
+
+    public boolean isOptimize() {
+        return optimize;
+    }
+
+    public void setOptimize(boolean optimize) {
+        this.optimize = optimize;
     }
 }

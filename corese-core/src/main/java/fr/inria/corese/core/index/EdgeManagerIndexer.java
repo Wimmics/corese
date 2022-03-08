@@ -39,6 +39,7 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
 public class EdgeManagerIndexer 
         implements Index {
     public static boolean TRACE_REDUCE = false;
+    public static boolean TRACE_INSERT = false;
     // true: store internal Edge without predicate Node
     public static boolean test = true;
     private static final String NL = System.getProperty("line.separator");
@@ -322,16 +323,14 @@ public class EdgeManagerIndexer
             // edges are sorted, check presence by dichotomy
             int i = el.getPlace(edge);
             if (i == -1) {
+                trace("skip insert edge: ", edge);
                 count++;
                 return null;
             }       
 
             if (onInsert(edge)) {
-                // @todo: 
-                // when rdf star && edge == get(i) : replace get(i) by edge
-                // a) edge has ref node, current no ref node
-                // b) edge asserted, current not asserted
                 if (getGraph().isMetadataNode()) {
+                    // rdf star edge with reference node: g s p o t
                      return addWithMetadata(el, edge, internal, i);
                 }
                 else {
@@ -355,29 +354,40 @@ public class EdgeManagerIndexer
         return edge;
     }
     
-    // @todo: g s p o t < g s p o
-    // edge with ref node    compare with index i
-    // edge without ref node compare with index i-1
+    /**
+     * g s p o t  before  g s p o
+     * edge with ref node    compare with index i
+     * edge without ref node compare with index i-1
+     * check redundancy in 4 cases:
+     * edge g s p o t vs edgeList (g s p o t) or (g s p o)
+     * edge g s p o   vs edgeList (g s p o t) or (g s p o)
+     * 
+    */ 
     Edge addWithMetadata(EdgeManager el, Edge edge, Edge internal, int i) {
+        trace("insert: %s at %s", edge, i);
         if (el.getEdgeList().isEmpty()) {
-            el.add(i, internal);
+            el.add(i, edge);
             logInsert(edge);
         }
         else if (edge.hasReferenceNode()) {
             if (i == el.getEdgeList().size()) {
-                el.add(i, internal);
+                el.add(i, edge);
+                share(el, edge, i);
                 logInsert(edge);
             }
             else {
-                Edge current = el.get(i);                              
+                Edge current = el.get(i); 
+                trace("current: %s", current);
                 if (el.equalWithoutConsideringMetadata(current, edge)) {
-                    // g s p o [t] == g s p o [t]
+                    trace("they are equal");
                     if (!current.hasReferenceNode()) {
+                        trace("set edge at: %s", i);
                         // g s p o t replace g s p o
                         el.set(i, edge);
                         if (current.isAsserted()) {
                             edge.setAsserted(true);
                         }
+                        share(el, edge, i);
                     }
                     // in case edge does not replace current
                     if (edge.isAsserted()) {
@@ -385,7 +395,9 @@ public class EdgeManagerIndexer
                     }
                     return null;
                 } else {
-                    el.add(i, internal);
+                    trace("insert at: %s", i);
+                    el.add(i, edge);
+                    share(el, edge, i);
                     logInsert(edge);
                 }
             }
@@ -395,25 +407,23 @@ public class EdgeManagerIndexer
             if (i < el.getEdgeList().size()) {
                 Edge current = el.get(i);
                 if (el.equalWithoutConsideringMetadata(current, edge)) {
-                    // current has no reference node (otherwise i would be after current)
+                    // current has no reference node (otherwise i would be just after current, i.e. i+1)
                     // skip edge
                     return null;
                 }
             }
 
             if (i == 0) {
-                el.add(i, internal);
-                logInsert(edge);
+                insertEdgeWhenMetadata(el, edge, internal, i);
             } else {
                 Edge current = el.get(i - 1);
                 if (el.equalWithoutConsideringMetadata(current, edge)) {
                     // current has reference node because it is before i
-                    // edge has no reference node => it is asserted
+                    // edge has no reference node => current asserted
                     current.setAsserted(true);
                     return null;
                 } else {
-                    el.add(i, internal);
-                    logInsert(edge);
+                    insertEdgeWhenMetadata(el, edge, internal, i);
                 }
             }      
         }
@@ -421,7 +431,68 @@ public class EdgeManagerIndexer
         return edge;
     }
     
+    void trace(String mes, Object... obj) {
+        if (TRACE_INSERT) {
+            System.out.println(String.format(mes, obj));
+        }
+    }
+    
+    /**
+     * edge with reference inserted at index i
+     * share its reference with equal edge before and after i
+     */
+    void share(EdgeManager el, Edge edge, int n) {
+        trace("share: %s at %s", edge, n);
+        boolean loop = true;        
+        for (int i = n + 1; i < el.size() && loop; i++) {
+            loop = shareReference(el, edge, i);
+        }
+        
+        loop = true;
+        for (int i = n - 1; i >= 0 && loop; i--) {
+            loop = shareReference(el, edge, i);
+        }
 
+    }
+    
+    /**
+     * return true while get(i) == edge
+     */
+    boolean shareReference(EdgeManager el, Edge edge, int i) {
+        Edge e = el.get(i);
+        trace("share test: %s", e);
+        if (el.compare2(e, edge) == 0) {
+            // same s p o, g may differ
+            trace("they are equal");
+            if (!e.hasReferenceNode()) {
+                trace("copy reference node");
+                Edge copy = getGraph().getEdgeFactory().name(e, el.getPredicate(), edge.getReferenceNode());
+                el.set(i, copy);
+                return true;
+            }
+        }
+        else {
+            trace("thay are not equal");
+        }
+        return false;
+    }
+    
+    /**
+     * insert edge with no reference
+     * if there exist similar edge with reference, 
+     * this edge share reference
+     */
+    void insertEdgeWhenMetadata(EdgeManager el, Edge edge, Edge internal, int i) {
+        Node ref = getGraph().getTripleReference(edge);
+        if (ref == null) {
+            el.add(i, internal);
+        } else {
+            Edge copy = getGraph().getEdgeFactory().name(edge, el.getPredicate(), ref);
+            el.add(i, copy);
+        }
+        logInsert(edge);
+    }
+    
     /**
      * PRAGMA: 
      * This is already reduced() ie there is no duplicates in this manager
@@ -483,7 +554,7 @@ public class EdgeManagerIndexer
 
 
     boolean isSort(Edge edge) {
-        return !graph.isIndex();
+        return !getGraph().isIndexable();
     }
 
     /**
@@ -736,6 +807,14 @@ public class EdgeManagerIndexer
             return false;
         }
         return list.exist(n1, n2);
+    }
+    
+    public Edge findEdge(Node s, Node p, Node o) {
+        EdgeManager list = checkGet(p);
+        if (list == null) {
+            return null;
+        }
+        return list.findEdge(s, o);
     }
 
     void trace(List<Edge> list) {

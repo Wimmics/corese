@@ -3,7 +3,6 @@ package fr.inria.corese.core.edge;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
  * Graph Edge for the defaultGraph
@@ -27,22 +26,7 @@ public abstract class EdgeBinary extends EdgeTop implements Edge {
     public boolean contains(Node node) {
         return getNode(0).same(node) || getNode(1).same(node);
     }
-
-    @Override
-    public int getIndex() {
-        return -1;
-    }
-
-    @Override
-    public void setIndex(int n) {
-
-    }
-
-    @Override
-    public String getLabel() {
-        return getEdgeNode().getLabel();
-    }
-
+   
     @Override
     public Node getNode(int n) {
         switch (n) {
@@ -81,16 +65,6 @@ public abstract class EdgeBinary extends EdgeTop implements Edge {
     @Override
     public Edge getEdge() {
         return this;
-    }
-
-    @Override
-    public Node getNode() {
-        return DatatypeMap.createObject(this.toString(), this);
-    }
-
-    @Override
-    public Node getEdgeVariable() {
-        return null;
     }
 
     @Override

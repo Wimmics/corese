@@ -124,7 +124,7 @@ public class NodeManager {
         if (isEffective()) {
            return getPredicateList(node);
         } 
-        else if (isAvailable() && ! graph.isIndex()) {
+        else if (isAvailable() && ! graph.isIndexable()) {
             synchronized (graph) {
                 graph.getIndex(index).indexNodeManager();
             }

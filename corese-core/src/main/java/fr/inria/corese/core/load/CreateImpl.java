@@ -36,7 +36,6 @@ public class CreateImpl extends CreateTriple implements Creator {
     Stack stack;
     String base;
     private boolean renameBlankNode = true;
-    int limit = Integer.MAX_VALUE;
     private String resource;
     private Node node;
     Load load;
@@ -67,10 +66,7 @@ public class CreateImpl extends CreateTriple implements Creator {
         return new CreateImpl(g, ld);
     }
  
-    @Override
-    public void setLimit(int max) {
-        limit = max;
-    }
+
 
     // init
     // TODO: check 

@@ -23,6 +23,8 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
     int index = -1;
     IDatatype dt;
 
+    public NodeImpl() {}
+    
     NodeImpl(IDatatype val) {
         dt = val;
     }

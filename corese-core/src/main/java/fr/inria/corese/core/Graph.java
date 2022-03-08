@@ -45,6 +45,8 @@ import fr.inria.corese.core.api.GraphListener;
 import fr.inria.corese.core.api.Log;
 import fr.inria.corese.core.api.Tagger;
 import fr.inria.corese.core.api.ValueResolver;
+import fr.inria.corese.core.edge.EdgeTripleNode;
+import fr.inria.corese.core.edge.TripleNode;
 import fr.inria.corese.core.query.QueryCheck;
 import java.util.Map;
 import fr.inria.corese.kgram.api.core.Edge;
@@ -1156,7 +1158,7 @@ public class Graph extends GraphObject implements
      * automatically run, use re.process()
      */
     public synchronized void init() {
-        if (isIndex()) {
+        if (isIndexable()) {
             index();
         }
 
@@ -1226,11 +1228,16 @@ public class Graph extends GraphObject implements
     }
 
     // true when index must be sorted 
-    public boolean isIndex() {
+    public boolean isIndexable() {
         return isIndex;
     }
+    
+    // already indexed
+    public boolean isIndexed() {
+        return ! isIndexable();
+    }
 
-    public void setIndex(boolean b) {
+    public void setIndexable(boolean b) {
         isIndex = b;
     }
 
@@ -1306,7 +1313,7 @@ public class Graph extends GraphObject implements
             getEventManager().start(Event.IndexGraph);
             basicIndex();
             getEventManager().finish(Event.IndexGraph);
-            setIndex(false);
+            setIndexable(false);
         }
     }
 
@@ -1340,7 +1347,7 @@ public class Graph extends GraphObject implements
     }
 
     void indexGraph() {
-        if (isIndex()) {
+        if (isIndexable()) {
             index();
         }
         performIndexNodeManager();
@@ -1426,6 +1433,18 @@ public class Graph extends GraphObject implements
     public Edge find(Edge edge) {
         return getSubjectIndex().find(edge);
     }
+    
+    public Edge findEdge(Node s, Node p, Node o) {
+        return getSubjectIndex().findEdge(s, p, o);
+    }
+    
+    public TripleNode findTriple(Node s, Node p, Node o) {
+        Edge edge = findEdge(s, p, o);
+        if (edge == null || ! (edge instanceof EdgeTripleNode)) {
+            return null;
+        }
+        return ((EdgeTripleNode) edge).getTriple();
+    }
 
     public boolean exist(Node p, Node n1, Node n2) {
         p = getPropertyNode(p);
@@ -1434,7 +1453,7 @@ public class Graph extends GraphObject implements
         }
         return getSubjectIndex().exist(p, n1, n2);
     }
-
+    
     public Edge addEdgeWithNode(Edge ee) {
         addEdgeNode(ee);
         return addEdge(ee);
@@ -1558,7 +1577,7 @@ public class Graph extends GraphObject implements
             return;
         }
         // fake index not sorted, hence add(edge) is done at end of index list
-        setIndex(true);
+        setIndexable(true);
         HashMap<String, Node> t = new HashMap<>();
 
         for (Edge ee : list) {
@@ -1576,7 +1595,7 @@ public class Graph extends GraphObject implements
                 ei.index(pred);
             }
         }
-        setIndex(false);
+        setIndexable(false);
     }
 
     /**
@@ -1594,14 +1613,14 @@ public class Graph extends GraphObject implements
         }
 
         // fake Index not sorted to add edges at the end of the Index
-        setIndex(true);
+        setIndexable(true);
         for (Edge ent : list) {
             Edge e = add(ent);
             if (e != null) {
                 getEventManager().process(Event.Insert, e);
             }
         }
-        setIndex(false);
+        setIndexable(false);
         // sort and reduce
         getSubjectIndex().index();
 
@@ -3528,14 +3547,20 @@ public class Graph extends GraphObject implements
         return getTripleNode(reference(edge.getSubjectNode(), edge.getPropertyNode(), edge.getObjectNode()));
     }  
     
+    public IDatatype createTripleReference(Node s, Node p, Node o) {
+        return createTripleReference(reference(s, p, o));
+    }
+    
     /**
      * generate unique reference node ID for given s p o
      * pragma: nodes MUST have been inserted in the graph to have an index
      * _:ti.j.k where i, j, k are node index
      */
-    String reference(Node s, Node p, Node o) {
+    public String reference(Node s, Node p, Node o) {
         return String.format("%s%s.%s.%s", TRIPLE_REF, reference(s), reference(p), reference(o));
     }
+    
+    
     
     String reference(Node n) {
         IDatatype dt = n.getValue();

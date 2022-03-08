@@ -14,12 +14,15 @@ import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import java.util.ArrayList;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author Olivier Corby, INRIA 2020
  */
 public class CreateTriple {
+    public static Logger logger = LoggerFactory.getLogger(CreateTriple.class);
     static final String STAR = "*";
 
     private QueryProcess queryProcess;
@@ -30,8 +33,8 @@ public class CreateTriple {
     IDatatype dtpath;
     ArrayList<String> exclude;
     private boolean skip = false;
-    private int limit = Integer.MAX_VALUE;
     int count = 1;
+    int limit = Integer.MAX_VALUE;
 
     
     CreateTriple(){}
@@ -187,7 +190,7 @@ public class CreateTriple {
         } else {
             count++;
         }
-        if (isSkip() || graph.size() > limit) {
+        if (isSkip()) {
             return false;
         }
         if (exclude.isEmpty()) {
@@ -199,6 +202,10 @@ public class CreateTriple {
             }
         }
         return true;
+    }
+    
+    public boolean raiseLimit() {
+        return graph.size() >= getLimit();
     }
 
    
@@ -231,15 +238,6 @@ public class CreateTriple {
         this.skip = skip;
     }
     
-    public int getLimit() {
-        return limit;
-    }
-
-    
-    public void setLimit(int limit) {
-        this.limit = limit;
-    }
-
     public DataManager getDataManager() {
         return dataManager;
     }
@@ -250,6 +248,14 @@ public class CreateTriple {
     
     boolean hasDataManager() {
         return getDataManager()!=null;
+    }
+    
+    public int getLimit() {
+        return limit;
+    }
+    
+    public void setLimit(int limit) {
+        this.limit = limit;
     }
 
 }

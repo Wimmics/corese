@@ -85,12 +85,6 @@ public class EdgeGeneric extends EdgeTop implements Edge {
     }
 
     @Override
-    public boolean contains(Node node) {
-        // TODO Auto-generated method stub
-        return getNode(0).same(node) || getNode(1).same(node);
-    }
-
-    @Override
     public Node getEdgeNode() {
         return predicate;
     }

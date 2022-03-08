@@ -14,6 +14,7 @@ import fr.inria.corese.sparql.triple.parser.RDFList;
  public interface Creator {
 	
 	 boolean accept(Atom subject, Atom predicate, Atom object);
+         boolean raiseLimit();
         
          void start();
 	

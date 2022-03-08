@@ -102,17 +102,25 @@ public class LoadTurtle {
 
     public void load() throws QueryLexicalException, QuerySyntaxException {
         try {
+            //logger.info("start parser");
             if (isNquad()) {
                 parser.nquad();
             }
             else {
                 parser.load();
             }
+            //logger.info("finish parser");
             for (EngineException e : parser.getHandler().getErrorList()) {
                 throw new QuerySyntaxException(e.getMessage());
             }
         } catch (JavaccParseException e) {
-            throw new QuerySyntaxException(e.getMessage());
+            if (e.isStop()) {
+                // parser stop after limit
+                logger.info("finish parser after limit");
+            }
+            else {
+                throw new QuerySyntaxException(e.getMessage());
+            }
         } catch (TokenMgrError e) {
             throw new QueryLexicalException(e.getMessage());
         }

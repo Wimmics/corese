@@ -151,6 +151,10 @@ public class ParserHandler {
             if (!getCreate().accept(s, p, o)) {
                 throw parser.generateParseException();
             }
+            if (getCreate().raiseLimit()) {
+                logger.info("Parser stop after raising limit");
+                throw parser.createStopException();
+            }
             getCreate().triple(s, p, o);
             return null;
         } else {

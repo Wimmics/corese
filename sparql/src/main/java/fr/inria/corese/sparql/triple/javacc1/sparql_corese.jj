@@ -103,6 +103,10 @@ PARSER_BEGIN(SparqlCorese)
 			logger.debug("*** \""+s1+"\" is deprecated, you should use \""+s2+"\" instead");
 		}
 	}
+
+        public ParseException createStopException() {
+            return new ParseException("stop");
+        }
     
     /**
      * @throws JavaccParseException
@@ -137,6 +141,9 @@ PARSER_BEGIN(SparqlCorese)
           astq.setBody(exp);
        	}
         catch(ParseException e) {
+            if (e.getMessage().equals("stop")) {
+                throw new JavaccParseException();
+            }
             throw new JavaccParseException(e);
         }
         return astq;

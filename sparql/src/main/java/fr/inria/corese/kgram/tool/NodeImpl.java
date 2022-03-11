@@ -169,7 +169,7 @@ public class NodeImpl implements Node {
     }
 
     @Override
-    public Object getObject() {
+    public Object getNodeObject() {
         return null;
     }
     

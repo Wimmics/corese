@@ -83,7 +83,7 @@ public class CoreseXML extends CoreseExtension {
     }
 
     @Override
-    public Node getObject() {
+    public Node getNodeObject() {
         return node;
     }
 

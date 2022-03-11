@@ -90,8 +90,8 @@ public class CoreseDatatype
     
     @Override
     public Class getJavaClass() {
-        if (getObject() != null) {
-            return getObject().getClass();
+        if (getNodeObject() != null) {
+            return getNodeObject().getClass();
         }
         return dtc.get(getCode());
     }
@@ -107,10 +107,10 @@ public class CoreseDatatype
     
     @Override
     public String getContent(){
-        if (getObject() == null){
+        if (getNodeObject() == null){
             return "";
         }
-        return getObject().toString();
+        return getNodeObject().toString();
     }
     
     /**
@@ -544,7 +544,7 @@ public class CoreseDatatype
     }
 
     @Override
-    public Object getObject() {
+    public Object getNodeObject() {
         return null;
     }
     

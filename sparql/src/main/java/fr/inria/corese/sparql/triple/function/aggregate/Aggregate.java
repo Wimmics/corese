@@ -85,7 +85,7 @@ public class Aggregate extends LDScript {
                     case ExprType.STL_GROUPCONCAT:
                     case ExprType.STL_AGGREGATE:    
                         if (dt.isFuture()) {
-                            Expression ee = (Expression) dt.getObject();
+                            Expression ee = (Expression) dt.getNodeObject();
                             // template ?out = future(concat(str, st:number(), str))
                             // eval(concat(str, st:number(), str))
                             dt = ee.eval(eval, bind, map, p);

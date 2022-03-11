@@ -87,7 +87,7 @@ public class CoresePointer extends CoreseUndefLiteral {
     }
     
     @Override
-    public Object getObject(){
+    public Object getNodeObject(){
         // use case: pobject = PointerObject(object)
         return pobject.getPointerObject();
     }

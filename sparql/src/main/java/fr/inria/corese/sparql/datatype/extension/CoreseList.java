@@ -132,7 +132,7 @@ public class CoreseList extends CoreseExtension implements IDatatypeList {
     }
 
     @Override
-    public Object getObject() {
+    public Object getNodeObject() {
         return list;
     }
 

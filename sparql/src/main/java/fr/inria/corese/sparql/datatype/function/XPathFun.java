@@ -219,7 +219,7 @@ public class XPathFun {
     }
 
     Node getNode(IDatatype dt) {
-        return (Node) dt.getObject();
+        return (Node) dt.getNodeObject();
     }
     
 }

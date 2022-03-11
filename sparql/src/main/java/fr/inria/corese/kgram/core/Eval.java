@@ -2519,8 +2519,8 @@ public class Eval implements ExpType, Plugin {
         if (res == null) {
             return null;
         }
-        if (res.getObject() != null && (res.getObject() instanceof Iterable)) {
-            return new IterableEntity((Iterable) res.getObject());
+        if (res.getNodeObject() != null && (res.getNodeObject() instanceof Iterable)) {
+            return new IterableEntity((Iterable) res.getNodeObject());
         } else if (res instanceof Loopable) {
             Iterable loop = ((Loopable) res).getLoop();
             if (loop != null) {

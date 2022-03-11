@@ -34,7 +34,7 @@ import fr.inria.corese.kgram.api.core.Edge;
             Object obj = it.next();
            if (obj instanceof Node) {
                 Node n = (Node) obj;               
-                return (Edge) n.getObject();
+                return (Edge) n.getNodeObject();
             }
 
             return (Edge) obj;

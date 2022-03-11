@@ -477,11 +477,11 @@ public class Mapping
         for (Node e : nodes) {
             sb.append(qNodes[i]); //.append("[").append(qNodes[i].getIndex()).append("]");
             sb.append(" = ").append(e).append(sep);
-            if (e != null && e.getObject() != null && e.getObject() != this) {
-                if ((e.getObject() instanceof TripleStore)) { 
+            if (e != null && e.getNodeObject() != null && e.getNodeObject() != this) {
+                if ((e.getNodeObject() instanceof TripleStore)) { 
                 }
                 else {
-                    sb.append(sep).append(e.getObject()).append(sep);
+                    sb.append(sep).append(e.getNodeObject()).append(sep);
                 }
             } 
             i++;
@@ -696,7 +696,7 @@ public class Mapping
         if (node == null) {
             return null;
         }
-        return node.getObject();
+        return node.getNodeObject();
     }
 
     public HashMap<String, Node> getNodeValues() {

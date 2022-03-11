@@ -52,8 +52,8 @@ public class Javacall extends JavaFunction {
             return null;
         }
         Object object = dt;
-        if (dt.getObject() != null) {
-            object = dt.getObject();           
+        if (dt.getNodeObject() != null) {
+            object = dt.getNodeObject();           
         }
         
         Object[] values       = new Object[param.length];
@@ -109,8 +109,8 @@ public class Javacall extends JavaFunction {
                 values[i] = val.booleanValue();
                 break;
             default:
-                if (val.getObject() != null) {
-                    values[i] = val.getObject();
+                if (val.getNodeObject() != null) {
+                    values[i] = val.getNodeObject();
                 } else {
                     values[i] = val;
                 }

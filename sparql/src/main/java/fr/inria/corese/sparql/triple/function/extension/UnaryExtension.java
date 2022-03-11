@@ -67,7 +67,7 @@ public class UnaryExtension extends TermEval {
     }
     
     IDatatype content(IDatatype dt){
-        if (dt.getObject() != null){
+        if (dt.getNodeObject() != null){
             return DatatypeMap.newInstance(dt.getContent());
         }
         return dt;

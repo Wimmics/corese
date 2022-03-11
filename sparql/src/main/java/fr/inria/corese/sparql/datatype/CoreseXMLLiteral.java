@@ -37,7 +37,7 @@ public class CoreseXMLLiteral extends CoreseStringLiteral {
 	}
     
     @Override
-    public Object getObject(){
+    public Object getNodeObject(){
     	return object;
     }
     

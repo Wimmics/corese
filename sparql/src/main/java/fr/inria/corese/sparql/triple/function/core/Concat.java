@@ -72,7 +72,7 @@ public class Concat extends TermEval {
                 if (dt == null) {
                     return null;
                 } else if (dt.isFuture()) {
-                    exp = (Expression) dt.getObject();
+                    exp = (Expression) dt.getNodeObject();
                 }
             }
 
@@ -165,7 +165,7 @@ public class Concat extends TermEval {
                 // group { format { st:number() }}
                 // compiled as group_concat(concat(st:format(st:number()))
                 // st:format freeze number: evaluate it now
-                Expression exp = (Expression) dt.getObject();
+                Expression exp = (Expression) dt.getNodeObject();
                 dt = exp.eval(eval, b, env, p);
                 if (dt == null) {
                     return null;

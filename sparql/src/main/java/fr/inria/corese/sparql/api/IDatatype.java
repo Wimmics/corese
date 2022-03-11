@@ -387,7 +387,7 @@ public interface IDatatype
     void setObject(Object obj);
 
     @Override
-    Object getObject();
+    Object getNodeObject();
 
     IDatatype getPublicDatatypeValue();
 

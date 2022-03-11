@@ -43,8 +43,8 @@ public class JavaDScall extends JavaFunction {
             return null;
         }
         Object object = dt;
-        if (dt.getObject() != null) {
-            object = dt.getObject();
+        if (dt.getNodeObject() != null) {
+            object = dt.getNodeObject();
         }
         
         Class<IDatatype>[] types = new Class[param.length];

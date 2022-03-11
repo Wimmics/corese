@@ -53,7 +53,7 @@ public class CoreseMap extends CoreseExtension {
     }
     
     @Override
-    public Map getObject() {
+    public Map getNodeObject() {
         return map;
     }
     
@@ -133,7 +133,7 @@ public class CoreseMap extends CoreseExtension {
     }
     
     public JSONObject toJSON() {
-        return jsonCast().getObject();
+        return jsonCast().getNodeObject();
     }
     
     public CoreseJSON jsonCast() {

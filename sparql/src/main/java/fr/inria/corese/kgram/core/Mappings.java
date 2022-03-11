@@ -357,7 +357,7 @@ public class Mappings extends PointerObject
 //            if (node.isTripleWithEdge()) {
 //                list.add(node);
 //            }
-            Object obj = node.getObject();
+            Object obj = node.getNodeObject();
             if (ptr && obj != null
                     && obj != this
                     && obj instanceof PointerObject) {

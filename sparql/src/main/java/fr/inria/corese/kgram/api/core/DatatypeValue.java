@@ -48,7 +48,7 @@ public interface DatatypeValue {
     
     boolean isExtension();
     
-    Object getObject();
+    Object getNodeObject();
 
     Value getRdf4jValue();
 }

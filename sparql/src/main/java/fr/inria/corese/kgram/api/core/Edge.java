@@ -20,61 +20,58 @@ public interface Edge extends Pointerable, Statement {
     // rdf star reference node index: index of t = 2 in tuple(s p o t)
     int REF_INDEX = 2;
 
-    /**
-     * Number of nodes.
-     *
-     * @return
-     */
-    int nbNode();
+    // nb nodes to consider in sparql query processing
+    default int nbNode() {
+        return 2;
+    }
+    
+    // nb nodes to consider in graph index
+    // edge triple node (g, t = (s p o)) has 2 nodes s,o for index and 3 nodes s,o,t for sparql
+    default int nbNodeIndex() {
+        return nbNode();
+    }
 
     /**
      * nodes that are vertex of the graph use case: metadata node is not a graph
      * vertex
      */
-    int nbGraphNode();
-
-    /**
-     * Node at index n.
-     *
-     * @param n
-     * @return
-     */
+    default int nbGraphNode() {
+        return nbNode();
+    }
+    
     Node getNode(int i);
 
-    default void setNode(int i, Node n) {
+    default void setNode(int i, Node n) {}
+
+   
+    default Node getEdgeNode() {
+        return getProperty();
+    }
+    
+    default Node getEdgeVariable() {
+        return null;
     }
 
-    /**
-     * Additional Node that represents the label of the edge as a Node. This
-     * node is matched with query edge node if any use case: ?x ?p ?y The target
-     * edge node is bound to ?p This node is not supposed to be returned by
-     * getNode() neither is it supposed to be counted in nbNode().
-     *
-     * @return
-     */
-    Node getEdgeNode();
+    // edge variable or edge node
+    Node getProperty();
 
+    default void setProperty(Node node) {}
+    
+    
     /**
      * Is node returned by getNode()
      *
      * @param n
      * @return
      */
-    boolean contains(Node node);
+    default boolean contains(Node node) {return false;}
 
-    /**
-     * The label of the edge.
-     *
-     * @return
-     */
+   
     String getLabel();
 
-    /**
-     * Query edge must have an index. Target edge are not committed to.
-     *
-     * @return
-     */
+   
     int getIndex();
+    void setIndex(int n);
 
     // manage access right
     default byte getLevel() {
@@ -85,27 +82,13 @@ public interface Edge extends Pointerable, Statement {
         return this;
     }
 
-    /**
-     * Query edge must have an index (computed by KGRAM). Target edge are not
-     * committed to.
-     *
-     * @return
-     */
-    void setIndex(int n);
-
-    /**
-     * Query edge may have variable Node Target edge are not committed to.
-     *
-     * @return
-     */
-    Node getEdgeVariable();
-
-    // edge variable or edge node
-    Node getProperty();
-
-    default void setProperty(Node node) {
+    
+    // use case: internal index edge
+    default boolean isInternal() {
+        return nbNode() == 2 && ! isTripleNode();
     }
 
+    @Override
     Node getNode();
 
     Node getGraph();
@@ -113,11 +96,12 @@ public interface Edge extends Pointerable, Statement {
     default void setGraph(Node n) {
     }
 
+    @Override
     Edge getEdge();
 
-    Object getProvenance();
+    default Object getProvenance() { return null;};
 
-    void setProvenance(Object obj);
+    default void setProvenance(Object obj) {}
 
     default boolean isMatchArity() {
         return false;
@@ -232,6 +216,16 @@ public interface Edge extends Pointerable, Statement {
     default void setReferenceNode(Node node) {
         setNode(REF_INDEX, node);
     }
+    
+    default boolean isTripleNode() {
+        return false;
+    }
+    
+    default Node getTripleNode() {
+        return null;
+    }
+    
+    default void setTripleNode(Node node) {}
 
     default boolean sameTerm(Edge e) {
         return sameTermWithoutGraph(e)

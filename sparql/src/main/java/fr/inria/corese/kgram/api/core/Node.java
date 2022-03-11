@@ -84,17 +84,15 @@ public interface Node extends Pointerable {
         @Override
         Node getNode();
 	
-	Object getObject();
+	Object getNodeObject();
+	void setObject(Object o);
                       
         Path getPath();
         
         @Override
-        TripleStore getTripleStore();
+        TripleStore getTripleStore();	
 	
-	void setObject(Object o);
-	
-	Object getProperty(int p);
-	
+	Object getProperty(int p);	
 	void setProperty(int p, Object o);
         
         // tagged as triple reference
@@ -109,5 +107,9 @@ public interface Node extends Pointerable {
         
         default void setEdge(Edge e) {
             getDatatypeValue().setEdge(e);
+        }
+        
+        default boolean isTripleNode() {
+            return false;
         }
 }

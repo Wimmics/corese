@@ -25,7 +25,7 @@ public class CoreseUndefFuture extends CoreseUndefLiteral {
      * @return the object
      */
     @Override
-    public Object getObject() {
+    public Object getNodeObject() {
         return object;
     }
 

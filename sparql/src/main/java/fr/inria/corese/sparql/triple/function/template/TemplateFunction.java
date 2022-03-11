@@ -54,7 +54,7 @@ public class TemplateFunction extends LDScript {
                     return null;
                 }
                 else if (dt.isFuture()) {
-                    list.add((Expression) dt.getObject());
+                    list.add((Expression) dt.getNodeObject());
                 }
                 else {
                     list.add(constant(dt));

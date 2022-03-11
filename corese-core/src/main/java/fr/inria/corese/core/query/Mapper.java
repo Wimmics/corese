@@ -85,8 +85,8 @@ public class Mapper {
         }    
         else if (dt.isPointer()) {
             return map(nodes, dt.getPointerObject());
-        } else if (dt.getObject() != null) {
-            return map(nodes, dt.getObject());
+        } else if (dt.getNodeObject() != null) {
+            return map(nodes, dt.getNodeObject());
         } else if (dt.isURI()) {
             return mapURI(nodes, dt);
         } 

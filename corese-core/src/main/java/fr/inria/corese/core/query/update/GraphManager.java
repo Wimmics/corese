@@ -155,6 +155,10 @@ public class GraphManager {
     public int size(Node pred) {
         return getDataBroker().graphSize(pred);
     }
+    
+    public Edge beforeInsert(Edge edge) {
+        return getGraph().beforeInsert(edge);
+    }
 
     /**
      * Return null if edge already exists in graph
@@ -220,7 +224,8 @@ public class GraphManager {
      * Do not insert it yet, it will be done explicitely by insert().
      */
     public Edge create(Node source, Node subject, Node property, Node object) {
-        return graph.create(source, subject, property, object);
+        //return graph.create(source, subject, property, object);
+        return graph.createForInsert(source, subject, property, object);
     }
     
     public Edge create(Node source, Node property, List<Node> list) {

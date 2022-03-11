@@ -69,7 +69,7 @@ public interface Index {
 
 	void declare(Edge edge);
         
-         void declare(Edge edge, boolean duplicate);        
+        void declare(Edge edge, boolean duplicate);        
 	
 	int size(Node pred);
         

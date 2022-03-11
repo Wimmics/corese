@@ -4,6 +4,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 import static fr.inria.corese.core.index.EdgeManagerIndexer.IGRAPH;
 import static fr.inria.corese.core.index.EdgeManagerIndexer.ILIST;
+import fr.inria.corese.core.util.Property;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -425,17 +426,18 @@ public class EdgeManager implements Iterable<Edge> {
         int i = find(edge);
         if (i >= getEdgeList().size()) {
             i = getEdgeList().size();
-        } else if (getIndex() == 0) {
-            if (getGraph().isMetadataNode()) {
-                // add edge with metadata take care of it
-                return i;
-            } else {
-                if (equalWithoutConsideringMetadata(getEdgeList().get(i), edge)) {
-                    // eliminate duplicate at load time for index 0                   
-                    return -1;
-                }
-            }
-        }
+        } 
+//        else if (getIndex() == 0) {
+//            if (getGraph().isFormerMetadata()) {
+//                // add edge with metadata take care of it
+//                return i;
+//            } else {
+//                if (equalWithoutConsideringMetadata(getEdgeList().get(i), edge)) {
+//                    // eliminate duplicate at load time for index 0                   
+//                    return -1;
+//                }
+//            }
+//        }
 
         return i;
     }
@@ -836,7 +838,7 @@ public class EdgeManager implements Iterable<Edge> {
                     return res;
                 }
                                 
-                if (e1.nbNode() == 2 && e2.nbNode() == 2) {
+                if (e1.nbNodeIndex()== 2 && e2.nbNodeIndex()== 2) {
                     // compare third Node (i.e. graph node in the general case)
                     res = compareNodeTermNull(e1.getNode(getNext()), e2.getNode(getNext()));
                     //System.out.println("graph: " + res);                    
@@ -869,7 +871,7 @@ public class EdgeManager implements Iterable<Edge> {
 
                 // more than two nodes, not rdf star
                 // common arity
-                int min = Math.min(e1.nbNode(), e2.nbNode());
+                int min = Math.min(e1.nbNodeIndex(), e2.nbNodeIndex());
 
                 for (int i = 0; i < min; i++) {
                     // check other common arity nodes
@@ -881,12 +883,12 @@ public class EdgeManager implements Iterable<Edge> {
                     }
                 }
 
-                if (e1.nbNode() == e2.nbNode()) {
+                if (e1.nbNodeIndex() == e2.nbNodeIndex()) {
                     // same arity, nodes are equal
                     // check graph node
                     return EdgeManager.this.compareNodeTerm(e1.getNode(IGRAPH), e2.getNode(IGRAPH));
                 }
-                else if (e1.nbNode() < e2.nbNode()) {
+                else if (e1.nbNodeIndex() < e2.nbNodeIndex()) {
                     // smaller arity edge is before
                     return -1;
                 } else {

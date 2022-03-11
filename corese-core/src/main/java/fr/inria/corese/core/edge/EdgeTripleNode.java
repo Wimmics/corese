@@ -26,6 +26,10 @@ public class EdgeTripleNode extends EdgeTop {
         setTriple(new TripleNode(s, p, o));
     }
     
+    public EdgeTripleNode copy(Node graphNode) {
+        return new EdgeTripleNode(graphNode, getTripleNode());
+    }
+    
     // TripleNode as Triple reference node
     public IDatatype createTripleReference() {
         return getTriple().createTripleReference();
@@ -34,6 +38,17 @@ public class EdgeTripleNode extends EdgeTop {
     public IDatatype createTripleReference(Graph g) {
         return getTriple().createTripleReference(g);
     }
+    
+    @Override
+    public boolean isTripleNode() {
+        return true;
+    }
+    
+    @Override
+    public String toString() {
+        return String.format(isNested()?"%s <<%s>> [%s]":"%s %s [%s]", 
+                getGraph(), getTriple(), getTriple().getDatatypeValue());
+    }    
 
     @Override
     public Node getGraph() {
@@ -45,35 +60,60 @@ public class EdgeTripleNode extends EdgeTop {
         this.graph = graph;
     }
     
-
+    /**
+     * for sparql query processing there are 3 nodes: s o t
+     */
+    @Override
+    public int nbNode() {
+        return 3;
+    }
+    
+    /**
+     * For graph index processing there are 2 nodes: s o
+     */
+    @Override
+    public int nbNodeIndex() {
+        return 2;
+    }
+    
     @Override
     public Node getNode(int n) {
         switch (n) {
             case Graph.IGRAPH:
                 return getGraph();
             case 0:
-                return getTriple().getSubject();
+                return getTriple().getSubjectNode();
             case 1:
-                return getTriple().getObject();
+                return getTriple().getObjectNode();
+            case 2:
+                return getTripleNode();
         }
         return null;
     }
     
     @Override
     public Node getEdgeNode() {
-        return getTriple().getPredicate();
+        return getTriple().getPropertyNode();
     }
 
     @Override
     public void setEdgeNode(Node pred) {
-        getTriple().setPredicate(pred);
+        getTriple().setPropertyNode(pred);
+    }
+        
+    
+    @Override
+    public TripleNode getTripleNode() {
+        return triple;
     }
     
+    @Override
+    public void setTripleNode(Node node) {
+        if (node instanceof TripleNode) {
+            setTriple((TripleNode) node);
+        }
+    }
     
-    
-    
-    
-
     public TripleNode getTriple() {
         return triple;
     }

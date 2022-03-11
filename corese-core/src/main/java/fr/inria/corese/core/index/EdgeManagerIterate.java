@@ -54,7 +54,7 @@ class EdgeManagerIterate implements Iterable<Edge>, Iterator<Edge> {
     @Override
     public Edge next() {
         Edge ent = list.get(ind++);
-        if (ent.nbNode() == 2) {
+        if (ent.isInternal()) { // (ent.nbNode() == 2 && ! ent.isTripleNode()) {
             fill(buffer, ent);
             return buffer;
         }

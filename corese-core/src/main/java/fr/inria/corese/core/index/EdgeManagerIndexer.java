@@ -322,6 +322,23 @@ public class EdgeManagerIndexer
         if (isSort(edge)) {
             // edges are sorted, check presence by dichotomy
             int i = el.getPlace(edge);
+            trace("insert: %s at %s", edge, i);
+            
+            if (getIndex() == 0) {
+                if (getGraph().isFormerMetadata()) {
+                    // add edge with metadata take care of it
+                    // ok
+                }
+                else if (i < el.size() &&
+                        el.equalWithoutConsideringMetadata(el.get(i), edge)) {
+                    // eliminate duplicate at insertion time for index 0 
+                    if (edge.isAsserted() && el.get(i).isNested()) {
+                        el.get(i).setAsserted(true);
+                    }
+                    i = -1;
+                }
+            }
+            
             if (i == -1) {
                 trace("skip insert edge: ", edge);
                 count++;
@@ -329,7 +346,7 @@ public class EdgeManagerIndexer
             }       
 
             if (onInsert(edge)) {
-                if (getGraph().isMetadataNode()) {
+                if (getGraph().isFormerMetadata()) {
                     // rdf star edge with reference node: g s p o t
                      return addWithMetadata(el, edge, internal, i);
                 }

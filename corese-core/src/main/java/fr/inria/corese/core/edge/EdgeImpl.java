@@ -261,7 +261,7 @@ public class EdgeImpl extends EdgeTop
     @Override
     public Object getProvenance() {
         if (nodes.length > 2) {
-            return nodes[nodes.length - 1].getObject();
+            return nodes[nodes.length - 1].getNodeObject();
         }
         return null;
     }

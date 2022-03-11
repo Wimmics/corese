@@ -291,6 +291,7 @@ public class ProducerImpl
             // GraphStore external named graph
             it = graph.getDataStore().getDefault(emptyFrom).iterate(predicate, focusNode, focusNodeIndex);
         } else {
+            // if query edge has no metadata: skip target edge metadata
             boolean skip = graph.isEdgeMetadata() && edge.nbNode()==2;
             it = getEdges(namedGraphURI, getNode(namedGraphURI, env), from, predicate, focusNode, objectNode, focusNodeIndex, 
                     skip, getAccessRight(env), isNested(q, edge));
@@ -789,8 +790,8 @@ public class ProducerImpl
     @Override
     public boolean isProducer(Node node) {
         IDatatype dt =  node.getValue();
-        if (dt.getObject() != null) {
-            return toRDF.isGraphAble(dt.getObject()) || dt.getObject() instanceof Producer;
+        if (dt.getNodeObject() != null) {
+            return toRDF.isGraphAble(dt.getNodeObject()) || dt.getNodeObject() instanceof Producer;
         }
         // system named graph in a GraphStore
         return graph.getNamedGraph(node.getLabel()) != null;
@@ -802,7 +803,7 @@ public class ProducerImpl
     @Override
     public Producer getProducer(Node node, Environment env) {
         IDatatype dt =  node.getValue();
-        Object obj = dt.getObject();
+        Object obj = dt.getNodeObject();
         Graph g = null;
 
         if (obj == null) {

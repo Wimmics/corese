@@ -114,6 +114,10 @@ public class EdgeFactory {
         return edge;
     }
        
+    /**
+     * Use case: Index edge iterator, edge is internal (predicate==null)
+     * create a buffer edge where to record index getPredicate()
+     */
     public EdgeTop createDuplicate(Edge ent) {
         if (ent.nbNode() == 2) {
             return new EdgeGeneric();
@@ -234,8 +238,19 @@ public class EdgeFactory {
     public Edge create(Node source, Node predicate, List<Node> list) {
         return create(source, predicate, list, false);
     }
-
+    
     public Edge create(Node source, Node predicate, List<Node> list, boolean nested) {
+        if (EDGE_TRIPLE_NODE && list.size() == 3 && list.get(2).isTripleNode()) {
+            // use case: Construct created triple node reference as additional node
+            TripleNode t = (TripleNode) list.get(2);
+            Edge edge =  new EdgeTripleNode(source, t);
+            edge.setNested(nested);
+            return edge;
+        }
+        return createEdgeList(source, predicate, list, nested);
+    }
+
+    public Edge createEdgeList(Node source, Node predicate, List<Node> list, boolean nested) {
         EdgeImpl ee = EdgeImpl.create(source, predicate, list);
         ee.setMetadata(graph.isMetadata());
         if (ee.hasReferenceNode()) {
@@ -260,17 +275,27 @@ public class EdgeFactory {
         return create(edge.getGraph(), edge.getNode(0), predicate, edge.getNode(1), name, edge.isNested());
     }
     
-    public Edge copy(Node node, Node pred, Edge ent) {
-        Edge edge;
-        if (ent instanceof EdgeImpl) {
-            edge = ((EdgeImpl)ent).copy();
-            edge.setGraph(node);
+    /**
+     * Return a copy of edge with new named graph 
+     * to be inserted in same Graph
+     * edge nodes are already inserted
+     * @pragma: pred == edge.getPredicate()
+     * 
+     */
+    public Edge copy(Node graphNode, Node pred, Edge edge) {
+        Edge copy;
+        if (edge.isTripleNode()) {           
+            return ((EdgeTripleNode)edge).copy(graphNode);
+        }
+        if (edge instanceof EdgeImpl) {
+            copy = ((EdgeImpl)edge).copy();
+            copy.setGraph(graphNode);
         }  
         else {
-            edge = create(node, ent.getNode(0), pred,  ent.getNode(1));
+            copy = create(graphNode, edge.getNode(0), pred,  edge.getNode(1));
         }
-        edge.setLevel(ent.getLevel());
-        return edge;
+        copy.setLevel(edge.getLevel());
+        return copy;
     }
     
     public Edge copy(Edge ent){

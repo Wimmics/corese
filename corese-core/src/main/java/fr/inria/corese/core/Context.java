@@ -46,7 +46,7 @@ public class Context implements Graphable {
     Node getRE(){
         RuleEngine re = RuleEngine.create(Graph.create());
         for (Node n : queryNodes){
-            Query q = (Query) n.getObject();
+            Query q = (Query) n.getNodeObject();
             re.defRule(q);
         }
         Node res = DatatypeMap.createObject("RuleEngine", re);

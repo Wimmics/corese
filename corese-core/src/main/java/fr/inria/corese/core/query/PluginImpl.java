@@ -497,7 +497,7 @@ public class PluginImpl
 
     // index of rule provenance object
     private IDatatype id(Expr exp, Environment env, IDatatype dt) {
-        Object obj = dt.getObject();
+        Object obj = dt.getNodeObject();
         if (obj != null && obj instanceof Query) {
             Query q = (Query) obj;
             return getValue(q.getID());

@@ -48,6 +48,7 @@ import fr.inria.corese.core.api.ValueResolver;
 import fr.inria.corese.core.edge.EdgeTripleNode;
 import fr.inria.corese.core.edge.TripleNode;
 import fr.inria.corese.core.query.QueryCheck;
+import fr.inria.corese.core.util.Property;
 import java.util.Map;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
@@ -1419,7 +1420,7 @@ public class Graph extends GraphObject implements
     }
 
     void declare(Edge edge, boolean duplicate) {
-        for (Index ei : getIndexList()) {
+        for (EdgeManagerIndexer ei : getIndexList()) {
             if (ei.getIndex() != 0) {
                 ei.declare(edge, duplicate);
             }
@@ -1440,7 +1441,7 @@ public class Graph extends GraphObject implements
     
     public TripleNode findTriple(Node s, Node p, Node o) {
         Edge edge = findEdge(s, p, o);
-        if (edge == null || ! (edge instanceof EdgeTripleNode)) {
+        if (edge == null || ! edge.isTripleNode()) {
             return null;
         }
         return ((EdgeTripleNode) edge).getTriple();
@@ -1629,6 +1630,40 @@ public class Graph extends GraphObject implements
 
     public Edge create(Node source, Node subject, Node predicate, Node value) {
         return fac.create(source, subject, predicate, value);
+    }
+    
+    /**
+     * create edge for insert in the graph
+     * pragma: nodes are already inserted
+     */
+    public Edge createForInsert(Node source, Node subject, Node predicate, Node value) {
+        Edge edge = fac.create(source, subject, predicate, value);
+        if (edge.isTripleNode()) {
+            initTripleNode(edge);
+        }
+        return edge;
+    }
+    
+    /**
+     * edge = (g, TripleNode(s p o))
+     * index or share existing (s p o)
+     */
+    void initTripleNode(Edge edge) {
+        Node tripleNode = edge.getTripleNode();
+        if (tripleNode.getDatatypeValue() == null) {
+            IDatatype dt = createTripleReference(edge);
+            Node node = getTripleNode(dt.getLabel());
+            if (node == null) {
+                tripleNode.setDatatypeValue(dt);
+                indexNode(dt, tripleNode);
+                addTripleNode(dt, tripleNode);
+            }
+            else {
+                // share existing TripleNode
+                edge.setTripleNode(node);
+            }
+            edge.getTripleNode().setEdge(tripleNode.getEdge());
+        }
     }
 
     public Edge createDelete(Node source, Node subject, Node predicate, Node value) {
@@ -2060,6 +2095,21 @@ public class Graph extends GraphObject implements
         }
         return node;
     }
+    
+     Node basicAddTripleReference(Node s, Node p, Node o) {
+        String label = reference(s, p, o);
+        Node node = getTripleNode(label);
+        if (node == null) {
+            IDatatype dt = createTripleReference(label);
+            node = new TripleNode(s, p, o);
+            node.setDatatypeValue(dt);
+            dt.setEdge(node.getEdge());
+            indexNode(dt, node);
+            addTripleNode(dt, node);
+        }
+        return node;
+    }
+    
 
 
     public void add(Node node) {
@@ -3302,17 +3352,17 @@ public class Graph extends GraphObject implements
      * *************************************************
      */
     /**
-     * Add a copy of the entity edge Use case: entity comes from another graph,
+     * Add a copy of edge Use case: edge comes from another graph,
      * create a local copy of nodes
      */
     public Edge copy(Edge edge) {
         Node g = basicAddGraph(edge.getGraph().getLabel());
         Node p = basicAddProperty(edge.getEdgeNode().getLabel());
 
-        ArrayList<Node> list = new ArrayList<Node>();
+        ArrayList<Node> list = new ArrayList<>();
 
         for (int i = 0; i < edge.nbNode(); i++) {
-            Node n = addNode( edge.getNode(i).getValue());
+            Node n = addNode(edge.getNode(i).getValue());
             list.add(n);
         }
         Edge e = addEdge(g, p, list);
@@ -3324,13 +3374,6 @@ public class Graph extends GraphObject implements
      */
     public Edge copy(Node gNode, Node pred, Edge ent) {
         Edge e = fac.copy(gNode, pred, ent);
-        //fac.setGraph(e, gNode);
-
-        if (hasTag() && e.nbNode() == 3) {
-            // edge has a tag
-            // copy must have a new tag
-            tag(e);
-        }
         Edge res = add(e);
         return res;
     }
@@ -3527,6 +3570,10 @@ public class Graph extends GraphObject implements
         }
     }
     
+    public Edge beforeInsert(Edge edge) {
+        return edge;
+    }
+    
     public Node addTripleReference() {
         return addTripleReference(newTripleReferenceID());
     }
@@ -3536,6 +3583,9 @@ public class Graph extends GraphObject implements
     }
     
     public Node addTripleReference(Node s, Node p, Node o) {
+        if (Property.booleanValue(Property.Value.RDF_STAR_TRIPLE)) {
+            return basicAddTripleReference(s, p, o);
+        }
         return basicAddTripleReference(reference(s, p, o));
     }
     
@@ -3549,6 +3599,10 @@ public class Graph extends GraphObject implements
     
     public IDatatype createTripleReference(Node s, Node p, Node o) {
         return createTripleReference(reference(s, p, o));
+    }
+    
+    public IDatatype createTripleReference(Edge edge) {
+        return createTripleReference(edge.getSubjectNode(), edge.getPropertyNode(), edge.getObjectNode());
     }
     
     /**
@@ -3818,6 +3872,10 @@ public class Graph extends GraphObject implements
 
     public boolean isMetadataNode() {
         return isEdgeMetadata() || isMetadata();
+    }
+    
+    public boolean isFormerMetadata() {
+        return isMetadataNode() && ! Property.booleanValue(Property.Value.RDF_STAR_TRIPLE);
     }
 
     public void setMetadata(boolean metadata) {

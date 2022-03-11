@@ -27,8 +27,9 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
  * Manage extended named graph 
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2014
- *
+ * 
  */
+@Deprecated
 public class ExtendGraph {
     static Logger logger = LoggerFactory.getLogger(ExtendGraph.class);
     

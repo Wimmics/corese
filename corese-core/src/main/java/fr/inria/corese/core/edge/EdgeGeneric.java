@@ -117,6 +117,7 @@ public class EdgeGeneric extends EdgeTop implements Edge {
         return null;
     }
 
+    @Override
     public void setNode(int i, Node n) {
         switch (i) {
             case 0:

@@ -2,6 +2,7 @@ package fr.inria.corese.core.util;
 
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.edge.EdgeTop;
@@ -123,6 +124,8 @@ public class Property {
         RDF_STAR_SELECT,
         // joker: asserted delete triple deletes asserted and nested triple (default false)
         RDF_STAR_DELETE,
+        // use TripleNode implementation
+        RDF_STAR_TRIPLE,
         // corese server for micro services
         REENTRANT_QUERY,
         // activate access level control (default is true)
@@ -388,7 +391,7 @@ public class Property {
             case GRAPH_NODE_AS_DATATYPE:
                 NodeImpl.byIDatatype = b;
                 break;
-                
+                                
             case CONSTRAINT_NAMED_GRAPH:
                 Graph.CONSTRAINT_NAMED_GRAPH = b;
                 break;
@@ -409,6 +412,11 @@ public class Property {
                 Graph.setDefaultSkolem(b);
                 break;
 
+            case RDF_STAR_TRIPLE:
+                EdgeFactory.EDGE_TRIPLE_NODE = b;
+                EdgeFactory.OPTIMIZE_EDGE = !b;
+                // continue;
+                
             case RDF_STAR:
                 Graph.setRDFStar(b);
                 ASTParser.RDF_STAR = b;

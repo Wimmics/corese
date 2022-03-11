@@ -173,11 +173,11 @@ public class Extension extends Core {
         if (dt.isTripleWithEdge()) {
             return list(dt.getEdge());
         }
-        if (dt.getObject() != null && dt.getObject() instanceof Enumeration) {
-            return DatatypeMap.newList((Enumeration) dt.getObject());
+        if (dt.getNodeObject() != null && dt.getNodeObject() instanceof Enumeration) {
+            return DatatypeMap.newList((Enumeration) dt.getNodeObject());
         }
-        if (dt.getObject() != null && dt.getObject() instanceof Object[]) {
-            return DatatypeMap.newList((Object[]) dt.getObject());
+        if (dt.getNodeObject() != null && dt.getNodeObject() instanceof Object[]) {
+            return DatatypeMap.newList((Object[]) dt.getNodeObject());
         }
         return DatatypeMap.list();
     }

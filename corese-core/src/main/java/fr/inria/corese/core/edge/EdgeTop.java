@@ -65,6 +65,11 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     public Node getEdgeNode() {
         return null;
     }
+    
+    @Override
+    public Node getProperty() {
+        return getEdgeNode();
+    }
 
     public void setEdgeNode(Node pred) {
     }
@@ -74,10 +79,6 @@ public abstract class EdgeTop extends GraphObject implements Edge {
         setEdgeNode(pred);
     }
 
-    @Override
-    public Node getProperty() {
-        return getEdgeNode();
-    }
 
     public void setTag(Node node) {
     }
@@ -245,10 +246,12 @@ public abstract class EdgeTop extends GraphObject implements Edge {
         this.nested = nested;
     }
 
+    @Override
     public boolean isCreated() {
         return created;
     }
 
+    @Override
     public void setCreated(boolean created) {
         this.created = created;
     }

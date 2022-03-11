@@ -84,7 +84,7 @@ public class CreateTriple {
     }
     
     Edge create(Node g, Node s, Node p, Node o) {
-        return graph.create(g, s, p, o);
+        return graph.createForInsert(g, s, p, o);
     }
     
     Edge create(Node g, Node p, List<Node> list) {

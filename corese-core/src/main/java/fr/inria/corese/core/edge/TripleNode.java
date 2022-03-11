@@ -2,6 +2,7 @@ package fr.inria.corese.core.edge;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.IDatatype;
 
@@ -10,20 +11,43 @@ import fr.inria.corese.sparql.api.IDatatype;
  * Can be used as Node in the graph
  * Can be subject/object of an Edge
  */
-public class TripleNode extends NodeImpl {
+public class TripleNode extends NodeImpl implements Edge 
+{
     private Node subject;
     private Node predicate;
     private Node object;
     
     public TripleNode(Node s, Node p, Node o) {
-        setSubject(s);
-        setPredicate(p);
-        setObject(o);
+        setSubjectNode(s);
+        setPropertyNode(p);
+        setObjectNode(o);
     }
     
     @Override
     public String toString() {
-        return String.format("%s %s %s", getSubject(), getPredicate(), getObject());
+        return String.format("%s %s %s", pretty(getSubjectNode()), getPropertyNode(), pretty(getObjectNode()));
+    }
+    
+    @Override
+    public Node getNode(){
+        return this;
+    }
+    
+    @Override
+    public Edge getEdge() {
+        return this;
+    }
+    
+    @Override
+    public boolean isTripleNode() {
+        return true;
+    }
+        
+    String pretty(Node n) {
+        if (n.isTriple()) {
+            return String.format("<<%s>>", n);
+        }
+        return n.toString();
     }
     
     public IDatatype createTripleReference() {
@@ -35,36 +59,60 @@ public class TripleNode extends NodeImpl {
     
     public IDatatype createTripleReference(Graph g) {
         setDatatypeValue(g.createTripleReference(
-                   getSubject(), getPredicate(), getObject()));
+                   getSubjectNode(), getPropertyNode(), getObjectNode()));
         return getDatatypeValue();
     }
     
     @Override
     public Graph getTripleStore() {
-        return (Graph) getSubject().getTripleStore();
+        return (Graph) getSubjectNode().getTripleStore();
     }
     
-    public Node getSubject() {
+     //@Override
+    public Node getNode(int n) {
+        switch (n) {            
+            case 0:
+                return getSubjectNode();
+            case 1:
+                return getObjectNode();            
+        }
+        return null;
+    }
+    
+    @Override
+    public Node getGraph() {
+        return null;
+    }
+    
+    //@Override
+    public Node getSubjectNode() {
         return subject;
     }
 
-    public void setSubject(Node subject) {
+    public void setSubjectNode(Node subject) {
         this.subject = subject;
     }
-
-    public Node getPredicate() {
+    
+    //@Override
+    public Node getProperty() {
         return predicate;
     }
 
-    public void setPredicate(Node predicate) {
+    //@Override
+    public Node getPropertyNode() {
+        return predicate;
+    }
+
+    public void setPropertyNode(Node predicate) {
         this.predicate = predicate;
     }
 
-    public Node getObject() {
+    //@Override
+    public Node getObjectNode() {
         return object;
     }
 
-    public void setObject(Node object) {
+    public void setObjectNode(Node object) {
         this.object = object;
     }
 

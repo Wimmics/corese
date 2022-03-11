@@ -285,7 +285,7 @@ public class Entailment implements Engine {
     }
 
     Edge create(Node src, Node sub, Node pred, Node obj) {
-        return graph.create(src, sub, pred, obj);
+        return graph.createForInsert(src, sub, pred, obj);
     }
 
     /**

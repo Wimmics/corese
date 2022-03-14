@@ -302,6 +302,8 @@ public class MatcherImpl implements Matcher {
             // nested triple require same-term on literal
             return qdt.sameTerm(tdt);
         }
+        // when SPARQL_COMPLIANT == true  -> sameTerm
+        // when SPARQL_COMPLIANT == false -> 1 match 01 and 1.0
         return qdt.match(tdt);
     }
 

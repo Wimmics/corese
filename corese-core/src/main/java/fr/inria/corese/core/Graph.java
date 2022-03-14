@@ -109,6 +109,7 @@ public class Graph extends GraphObject implements
     static final int TAGINDEX = 2;
     static boolean byIndexDefault = true;
     public static boolean VERBOSE = false;
+    public static boolean DEBUG_SPARQL = false;
     public static boolean SKOLEM_DEFAULT = false;
     // graph ?g { } iterate std and external named graph when true
     public static boolean EXTERNAL_NAMED_GRAPH = false;
@@ -212,6 +213,7 @@ public class Graph extends GraphObject implements
     private boolean isSkolem = SKOLEM_DEFAULT;
     boolean isIndex = true,
             isDebug = !true;
+    private boolean debugSparql = DEBUG_SPARQL;
     // edge index sorted by index
     boolean byIndex = byIndexDefault;
     // number of edges
@@ -478,7 +480,8 @@ public class Graph extends GraphObject implements
     /**
      * With CompareNode: manage 1, 01, 1.0 as different Node (with same index)
      * With CompareIndex: manage IDatatype(1) IDatatype(01) IDatatype(1.0) with
-     * same index With CompareIndexStrict: manage IDatatype(1) IDatatype(01)
+     * same index 
+     * With CompareIndexStrict: manage IDatatype(1) IDatatype(01)
      * with same index and 1.0 with different index (sparql compliant)
      */
     public class TreeNode extends TreeMap<IDatatype, Node> {
@@ -489,7 +492,7 @@ public class Graph extends GraphObject implements
 
         TreeNode(boolean strict) {
             super((strict)
-                    ? // todo ?
+                    ? 
                     new CompareIndexStrict()
                     : new CompareIndex());
         }
@@ -506,8 +509,8 @@ public class Graph extends GraphObject implements
     /**
      * Assign same node index when compatible datatypes (same datatypes or
      * datatypes both in (integer, long, decimal)) and same value (and possibly
-     * different labels) 1 = 01 = 1.0 = '1'^^xsd:long != 1e0 '1'^^xsd:boolean =
-     * true
+     * different labels) 1 = 01 = 1.0 = '1'^^xsd:long != 1e0 
+     * '1'^^xsd:boolean = true
      */
     class CompareIndex implements Comparator<IDatatype> {
 
@@ -578,7 +581,8 @@ public class Graph extends GraphObject implements
         @Override
         public int compare(IDatatype dt1, IDatatype dt2) {
 
-            if (dt1.getCode() == dt2.getCode() && dt1.getDatatypeURI().equals(dt2.getDatatypeURI())) {
+            if (dt1.getCode() == dt2.getCode() && 
+                dt1.getDatatypeURI().equals(dt2.getDatatypeURI())) {
                 if (dt1.equals(dt2)) {
                     // same datatype, same value: same index (even if labels are different)
                     // 1 = 01 ; 1 != 1.0
@@ -2348,10 +2352,18 @@ public class Graph extends GraphObject implements
         int index = (n == 0) ? 1 : 0;
         return NodeIterator.create(it, index);
     }
+    
+    public void trace(String format, Object... obj) {
+        if (isDebugSparql()) {
+            logger.info(String.format(format, obj));
+        }
+    }
 
     public Iterable<Edge> properGetEdges(Node predicate, Node node, int n) {
+        trace("Edge iterator for: p=%s n=%s", predicate, node);
         Iterable<Edge> it = getEdges(predicate, node, null, n);
         if (it == null) {
+            trace("Edge iterator fail for: p=%s n=%s",predicate, node);
             return EMPTY;
         }
         return it;
@@ -3949,6 +3961,14 @@ public class Graph extends GraphObject implements
 
     public void setIndexList(ArrayList<EdgeManagerIndexer> tables) {
         this.tables = tables;
+    }
+
+    public boolean isDebugSparql() {
+        return debugSparql;
+    }
+
+    public void setDebugSparql(boolean debugSparql) {
+        this.debugSparql = debugSparql;
     }
 
 }

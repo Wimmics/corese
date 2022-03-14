@@ -10,6 +10,9 @@ import fr.inria.corese.sparql.api.IDatatype;
  * Node that is a Triple 
  * Can be used as Node in the graph
  * Can be subject/object of an Edge
+ * @todo: function getIndex() is the same here for Node and Edge ->
+ * rename to getEdgeIndex() or getNodeIndex()
+ * It is not a pb because it is mostly used as Node
  */
 public class TripleNode extends NodeImpl implements Edge 
 {

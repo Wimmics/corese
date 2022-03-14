@@ -564,6 +564,7 @@ public class EdgeManagerIndexer
     public Edge find(Edge edge) {
         EdgeManager list = getListByLabel(edge);
         if (list == null) {
+            getGraph().trace("Find edge: undefined property %s", edge);
             return null;
         }
         return list.findEdge(edge);

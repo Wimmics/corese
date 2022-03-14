@@ -47,7 +47,7 @@ public class EdgeTripleNode extends EdgeTop {
     @Override
     public String toString() {
         return String.format(isNested()?"%s <<%s>> [%s]":"%s %s [%s]", 
-                getGraph(), getTriple(), getTriple().getDatatypeValue());
+                getGraph(), getTriple(), getTriple().getDatatypeValue().getLabel());
     }    
 
     @Override

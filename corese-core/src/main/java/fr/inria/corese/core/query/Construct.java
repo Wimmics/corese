@@ -44,8 +44,8 @@ public class Construct
     static final String DOT = ".";
     int count = 0, ruleIndex = 0, index = 0;
     String root;
-    Query query;
-    ASTQuery ast;
+    private Query query;
+    private ASTQuery ast;
     GraphManager graphManager;
     Node defaultGraph;
     List<Edge> lInsert, lDelete, globalDeleteList;
@@ -249,9 +249,9 @@ public class Construct
            
     void process(Mappings map, Environment env) {  
         graphManager.start(event());
-        Exp exp = query.getConstruct();
+        Exp exp = getQuery().getConstruct();
         if (isDelete) {
-            exp = query.getDelete();
+            exp = getQuery().getDelete();
         }
 
         // when external named graph, use specific GraphManager
@@ -309,7 +309,7 @@ public class Construct
                     }
                 }
             }
-            getVisitor().entailment(query, construct, whereList);
+            getVisitor().entailment(getQuery(), construct, whereList);
         }
     }
 
@@ -485,10 +485,10 @@ public class Construct
         }
         Node property = construct(pred, env);
         
-        Node subject = construct(gNode, source, edge.getNode(0), env, insertEdgeList, false, rec);
-        Node object  = construct(gNode, source, edge.getNode(1), env, insertEdgeList, false, rec);
+        Node subject = construct(gNode, source, edge.getNode(0), env, insertEdgeList, rec);
+        Node object  = construct(gNode, source, edge.getNode(1), env, insertEdgeList, rec);
 
-        if ((source == null && !isDelete) || subject == null || property == null || object == null) {
+        if ((source == null && !isDelete()) || subject == null || property == null || object == null) {
             return null;
         }
         
@@ -504,7 +504,7 @@ public class Construct
             }
         }
 
-        if (isDelete) {
+        if (isDelete()) {
             if (gNode == null) {
                 source = null;
             }
@@ -531,11 +531,11 @@ public class Construct
                     n = reference(queryNode, subject, property, object);
                 }
                 else {
-                    n = construct(gNode, source, queryNode, env, null, true, rec);
+                    n = construct(gNode, source, queryNode, env, insertEdgeList, rec);
                 }
                 
                 if (n != null) {
-                    if (!isDelete){
+                    if (!isDelete()){
                         graphManager.add(n, i);
                     }
                     list.add(n);
@@ -559,7 +559,7 @@ public class Construct
     
     // refQueryNode is reference query node t of triple pattern s p o t
     Node reference(Node refQueryNode, Node s, Node p, Node o) {
-        if (isDelete) {
+        if (isDelete()) {
             // reference node useless in case of delete
             // do not screw up future binding of this node in case it would appear as subject
             return null;
@@ -581,8 +581,16 @@ public class Construct
         return refNode;
     }
     
+    IDatatype tripleReference(Node refQueryNode, Environment map) {
+        return graphManager.createTripleReference();
+    }
+   
+    Node tripleReference(Node refQueryNode, Node s, Node p, Node o) {
+        return graphManager.createTripleReference(s, p, o);
+    }
+    
     Node construct(Node gNode, Node source, Node qNode, Environment map) {
-        return construct(gNode, source, qNode, map, null, false, false);
+        return construct(gNode, source, qNode, map, null, false);
     }
 
     /**
@@ -593,15 +601,9 @@ public class Construct
      * rec == true: recursive call for nested triple
      * <<_:b p o t>> q v
      */
-    Node construct(Node queryGraphNode, Node resultGraphNode, 
+    Node construct(Node queryGraph, Node resultGraph, 
             Node queryNode, Environment map, 
-            List<Edge> insertEdgeList, boolean additionalNode, boolean rec) {
-        
-        if (isDelete  && additionalNode && queryNode.isTriple()) {
-            // reference node useless in case of delete
-            // do not screw up future binding of this node in case it would appear as subject
-           return null;
-        }
+            List<Edge> insertEdgeList, boolean rec) {        
         
         if (rec && queryNode.isBlank()) {
             // bnode in rec nested triple: 
@@ -617,31 +619,20 @@ public class Construct
             // search map target node
             Node targetNode = map.getNode(queryNode.getLabel());
             IDatatype dt = null;
-            boolean processInsertEdgeList = false;
             
             if (targetNode == null) {
-                if (trace) System.out.println("query node: " + queryNode + " " + queryNode.isTriple() + " " + queryNode.isTripleWithEdge());
+                trace("query node: %s %s %s", queryNode, queryNode.isTriple(), queryNode.isTripleWithEdge());
                 if (queryNode.isTriple()) {
-                    if (!additionalNode && queryNode.isTripleWithEdge()) {
-                        // triple(s p o t) . t q v
-                        // queryNode = t 
-                        // find t from occurrence of (s p o t) in graph
-                        if (isDelete) {                        
-                            dt = reference(queryGraphNode, queryNode, map, emptyEdgeList, additionalNode, rec);
-                        }
-                        else {
-                            int size = insertEdgeList.size();
-                            dt = reference(queryGraphNode, queryNode, map, insertEdgeList, additionalNode, rec);
-                            if (insertEdgeList.size() > size) {
-                                // insert/construct edge s p o t of t 
-                                processInsertEdgeList = true;
-                            }
-                        }
+                    if (queryNode.getEdge() == null) {
+                        return null;
                     }
-                    else {
-                        dt = tripleReference(queryNode, map);
-                    }
-                } 
+                    // very specific case where queryTriple is a nested triple from target graph:
+                    // construct {?t :p :v} where {?s ?p ?o bind (<<?s ?p ?o>> as ?t)}
+                    // ?s match a nested triple <<a q b>>[s] p o
+                    // construct ?t -> construct s and s isTriple() 
+                    // queryNode = s and targetNode == null
+                    return createReference(queryGraph, resultGraph, queryNode, targetNode, map, insertEdgeList, rec);
+                }
                 else if (queryNode.isBlank()) {
                     dt = blank(queryNode, map);
                 }
@@ -654,90 +645,117 @@ public class Construct
                 }
             }
             else {
+                // targetNode != null
+                // check case:
                 // targetNode = value of ?t in bind(<<s p o>> as ?t)
                 // query edge = ?t q r
                 // ?t has a value in map result, but the value
                 // is not a reference in target graph (?t is created by bind)
                 // retrieve corresponding reference in graph
-                if (!additionalNode 
-                        && targetNode.isTripleWithEdge()  
+                if (targetNode.isTripleWithEdge()  
                         && (targetNode.getEdge().isCreated() || isConstruct())) {
-                    // <<triple(s p o t)>> . t q v
-                    // queryNode = t 
-                    // find t in occurrence of triple(s p o t) in graph
-                    int size = insertEdgeList.size();
-                    dt = reference(queryGraphNode, targetNode, map, insertEdgeList, additionalNode, rec);
-                    if (dt!=null&&insertEdgeList.size()>size) {
-                        // insert edge s p o t of t 
-                        processInsertEdgeList = true;
-                    }
+                    
+                    return createReference(queryGraph, resultGraph, queryNode, targetNode, 
+                            map, insertEdgeList, rec);
                 }
-                if (dt == null) {
+                else {
                     dt = targetNode.getDatatypeValue();
                 }
             }
             
-            resultNode = uniqueNode(resultGraphNode, dt);
+            resultNode = uniqueNode(resultGraph, dt);
             put(queryNode, resultNode);
-            
-            if (processInsertEdgeList) {
-                // insert { ?t q v } where { bind(<<s p o>> as ?t) }
-                // insertEdgeList = ( <<s p o>> )
-                // queryNode = ?t resultNode = t
-                // t in t q v becomes reference node <<s p o t>>
-                Edge ee = insertEdgeList.get(insertEdgeList.size() - 1);
-                ee.setReferenceNode(resultNode);
-                resultNode.setEdge(ee);
-            }
         }
 
         return resultNode;
     }   
     
+    
+    /**
+     * queryNode is triple reference
+     */
+    Node createReference(Node queryGraphNode, Node resultGraphNode, 
+            Node queryNode, Node targetNode, Environment map, 
+            List<Edge> insertEdgeList, boolean rec) {  
+        
+        Node resultNode = reference(queryGraphNode, resultGraphNode, queryNode, 
+                    targetNode == null ? queryNode : targetNode , 
+                    map,
+                    isDelete() ? emptyEdgeList : insertEdgeList, rec);
+
+        if (resultNode != null) {
+            put(queryNode, resultNode);
+        }
+        return resultNode;
+    }
+    
 
     /**
-     * qNode is a triple reference to edge: delete/insert/construct <<s p o>> q v -> t q v .
-     * tuple(s p o t) qNode = t in t q v and t.edge = s p o instantiate edge s p
-     * o, find it in graph, get its reference ref if any return ref as t
-     *
-     */
-    IDatatype reference(Node gNode, Node qNode, Environment map, List<Edge> insertEdgeList, 
-            boolean additionalNode, boolean rec) {
-        Edge edge   = qNode.getEdge();
-        if (trace) {
-            System.out.println("graph node: " + gNode );
-            System.out.println("input node: " + qNode + " ref: " + edge + " asserted: " + edge.isAsserted());
+     * refNode is a triple reference to edge: delete/insert/construct <<s p o t>> q v -> t q v .
+     * refNode = t in t q v and t.edge = s p o instantiate edge s p o = query
+     * case delete: find query edge in graph, get its reference ref if any return ref as t
+     * case insert/construct: return query reference node 
+     * in this case, ref node is graph ref node and it is inserted in graph by construction
+     */     
+    Node reference(Node gNode, Node resultGraphNode, Node queryNode, Node refNode, Environment map, List<Edge> insertEdgeList, 
+            boolean rec) {
+        // t.edge = s p o
+        Edge edge = refNode.getEdge();
+        trace1(gNode, refNode, edge);
+        // instantiate s p o wrt to target graph 
+        Edge query = construct(gNode, edge, map, insertEdgeList, true);
+        if (query == null) {
+            // when delete, we may have a null result when some node does not exist
+            return null;
         }
-        Edge query  = construct(gNode, edge, map, insertEdgeList, true);
-        Edge target = getGraphManager().find(query);
-        if (trace) {
-            System.out.println("edge inst: " + query + " asserted: " + query.isAsserted());
-            System.out.println("target triple: " + target);
-        }
-
-        if (target != null && target.hasReferenceNode()) {
-            // target edge exists in graph: return its reference
-            IDatatype dt = target.getReferenceNode().getDatatypeValue(); 
-            if (trace) {
-                System.out.println(qNode + " = " + dt);
+        trace("ref node query edge: %s %s %s", query, 
+                query.getReferenceNode(), query.getClass().getName());
+        
+       if (isDelete()) {
+            Edge target = getGraphManager().find(query);
+            trace2(query, target);
+            if (target == null) {
+                // edge does not exist in graph: skip this delete 
+                return null;
             }
-            return dt;
-        } 
-        // there is no such reference in graph: create it
-        // if edge isCreated() : edge = <<s p o>> in 
-        // insert { ?t us:wrt ?x } where {bind (<<s p o>> as ?t)}
-        // insert <<s p o>> as well as nested triple
-        else if (isConstruct() || (edge.isCreated() && ! isDelete())) {
-            // add nested triple <<s p o>> in <<s p o>> q v
-            // it must not be asserted here
-            query.setNested(true);
-            insertEdgeList.add(query);
-            // reference will be assigned as reference Node of (query) edge
-            // see setReferenceNode() above
-            return tripleReference(qNode, map);
+            return target.getReferenceNode();
+        } else {
+            if (isConstruct() || edge.isCreated()) {
+                // intermediate query edge will inserted as cited triple
+                // use case 1: construct {?t qq vv} where {<<s p o>> q v . ?t q v}
+                // use case 2: insert    {?t qq vv} where { bind (<<s p o>> as ?t) }
+                // in adition to t qq vv, insert query = <<s p o>> 
+                query.setNested(true);
+                insertEdgeList.add(query);
+            }
+            return query.getReferenceNode();
         }
-        else {
-            return tripleReference(qNode, map);
+    }
+    
+
+    
+    void trace(String mes, Object... obj) {
+        if (trace) {
+            System.out.println(String.format(mes, obj));
+        }
+    }
+    void trace1(Node gNode, Node refNode, Edge edge) {
+        if (trace) {
+            trace("graph node: %s", gNode);
+            trace("ref node: %s [%s] edge: %s", refNode, refNode.getLabel(), edge);
+        }
+    }
+    
+    void trace2(Edge query, Edge target) {
+        if (trace) {
+            System.out.println("query edge:  " + query);
+            System.out.println("target edge: " + target);
+        }
+    }
+    
+    void trace3(Node refNode, Node resultNode) {
+        if (trace) {
+            trace("ref node: %s=%s label: ",refNode, resultNode, resultNode.getLabel());
         }
     }
        
@@ -753,11 +771,6 @@ public class Construct
             str = graphManager.newBlankID();
         }
         IDatatype dt = graphManager.createBlank(str);
-        return dt;
-    }
-    
-    IDatatype tripleReference(Node qNode, Environment map) {
-        IDatatype dt = graphManager.createTripleReference();
         return dt;
     }
     
@@ -804,6 +817,10 @@ public class Construct
     void put(Node queryNode, Node targetNode) {
         if (isLabel(queryNode)) {
             getLabelMap().put(queryNode.getLabel(), targetNode);
+            if (targetNode.isTriple()) {
+                // for recursive calls
+                getLabelMap().put(targetNode.getLabel(), targetNode);
+            }
         }
         else {
             getLiteralMap().put(value(queryNode), targetNode);
@@ -1020,6 +1037,22 @@ public class Construct
     public void setLabelMap(HashMap<String, Node> labelMap) {
         this.labelMap = labelMap;
     }
+
+    public ASTQuery getAst() {
+        return ast;
+    }
+
+    public void setAst(ASTQuery ast) {
+        this.ast = ast;
+    }
+
+    public Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(Query query) {
+        this.query = query;
+    }
     
     public class TreeNode extends TreeMap<IDatatype, Node> {
 
@@ -1055,4 +1088,46 @@ public class Construct
         }
     }
     
+    
+//        @Deprecated
+//    Node reference1(Node gNode, Node resultGraphNode, Node queryNode, Node refNode, Environment map, List<Edge> insertEdgeList, 
+//            boolean rec) {
+//        
+//        Edge edge = refNode.getEdge();
+//        trace1(gNode, refNode, edge);
+//        Edge query = construct(gNode, edge, map, insertEdgeList, true);
+//        trace("ref node query edge: %s %s %s", query, 
+//                query.getReferenceNode(), query.getClass().getName());
+//        // when isDelete() search target edge in graph
+//        // @todo otherwise resultNode = query.getReferenceNode()
+//        // because reference node = ref(s p o) and it is unique (no need to search)
+//        Edge target = getGraphManager().find(query);
+//        trace2(query, target);
+//        
+//        Node resultNode;
+//        
+//        if (target != null && target.hasReferenceNode()) {
+//            // target edge exists in graph: return its reference
+//            resultNode = target.getReferenceNode();
+//            trace3(refNode, resultNode);
+//        }         
+//        else {
+//            // there is no such reference in graph: create it
+//            // if edge isCreated() : edge = <<s p o>> in 
+//            // insert { ?t us:wrt ?x } where {bind (<<s p o>> as ?t)}
+//            // insert <<s p o>> as well as triple
+//            // @todo: when isDelete(), do not create reference, return null and skip this delete 
+//            resultNode = tripleReference(refNode, query.getSubjectNode(), query.getPropertyNode(), query.getObjectNode());
+//            trace3(refNode, resultNode);
+//            if (isConstruct() || (edge.isCreated() && !isDelete())) {
+//                // add nested triple <<s p o>> in <<s p o>> q v
+//                // it must not be asserted here
+//                query.setNested(true);
+//                insertEdgeList.add(query);
+//            }
+//        }
+//        
+//        return resultNode;
+//    }
+//    
 }

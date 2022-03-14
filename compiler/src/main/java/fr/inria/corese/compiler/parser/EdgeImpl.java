@@ -14,7 +14,6 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Constant;
-import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 
@@ -93,15 +92,31 @@ public class EdgeImpl extends PointerObject implements Edge {
             name = getTriple().getProperty().getName();
         }
         
-        str += getNode(0) + " " + name;
+        str += getNode(0);        
+        str += " " + name;
         for (int i = 1; i < nodes.size(); i++) {
-            str += " " + getNode(i);
+            str += " " + getNode(i);           
         }
         return str;
     }
     
     String nestedTriple() {
-        String str = String.format("<<%s %s %s>> [%s]", getNode(0), getPredicateNode(), getNode(1), getNode(Edge.REF_INDEX));        
+        return nestedTripleBasic();
+    }
+    
+    String nestedTripleDebug() {
+        String str = String.format("<<%s[%s] %s %s[%s]>> [%s]", 
+                getNode(0), getNode(0).isVariable()?getNode(0).getLabel():"",
+                getPredicateNode(), 
+                getNode(1), getNode(1).isVariable()?getNode(1).getLabel():"",
+                getNode(Edge.REF_INDEX).getLabel());        
+        return str;
+    }
+    
+    String nestedTripleBasic() {
+        String str = String.format("<<%s %s %s>> [%s]", 
+                getNode(0), getPredicateNode(), getNode(1), 
+                getNode(Edge.REF_INDEX).getLabel());        
         return str;
     }
 

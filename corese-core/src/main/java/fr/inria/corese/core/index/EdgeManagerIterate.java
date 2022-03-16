@@ -40,6 +40,7 @@ class EdgeManagerIterate implements Iterable<Edge>, Iterator<Edge> {
         return this;
     }
     
+    // return node index of node at nth position
     int getNodeIndex(int n) {
         return list.get(n).getNode(list.getIndex()).getIndex();
     }
@@ -54,7 +55,7 @@ class EdgeManagerIterate implements Iterable<Edge>, Iterator<Edge> {
     @Override
     public Edge next() {
         Edge ent = list.get(ind++);
-        if (ent.isInternal()) { // (ent.nbNode() == 2 && ! ent.isTripleNode()) {
+        if (ent.isInternal()) { 
             fill(buffer, ent);
             return buffer;
         }

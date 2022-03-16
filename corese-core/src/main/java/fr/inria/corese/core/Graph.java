@@ -486,15 +486,25 @@ public class Graph extends GraphObject implements
      */
     public class TreeNode extends TreeMap<IDatatype, Node> {
 
+        // allocate Node, sameTerm semantics
+        // 1 and 01 and 1.0 have different Node
         public TreeNode() {
             super(new CompareNode());
         }
 
-        TreeNode(boolean strict) {
-            super((strict)
-                    ? 
-                    new CompareIndexStrict()
-                    : new CompareIndex());
+        // allocate Node index
+        TreeNode(boolean entailment) {
+            super((entailment)
+                    ? // with datatype entailment
+                    // index(1) = index(01) = index(1.0)
+                    // same value => same index 
+                    // integer|decimal vs integer|decimal => same index
+                    // integer|decimal vs double|float    => different index                    
+                    new CompareWithDatatypeEntailment() :
+                    // without datatype entailment
+                    // index(1) = index(01) != index(1.0) 
+                    // different datatype => different index
+                    new CompareWithoutDatatypeEntailment());
         }
 
         void put(Node node) {
@@ -506,97 +516,9 @@ public class Graph extends GraphObject implements
         }
     }
 
-    /**
-     * Assign same node index when compatible datatypes (same datatypes or
-     * datatypes both in (integer, long, decimal)) and same value (and possibly
-     * different labels) 1 = 01 = 1.0 = '1'^^xsd:long != 1e0 
-     * '1'^^xsd:boolean = true
-     */
-    class CompareIndex implements Comparator<IDatatype> {
-
-        CompareIndex() {
-        }
-
-        @Override
-        public int compare(IDatatype dt1, IDatatype dt2) {
-            int res;
-            try {
-                // number value comparison with = on values only
-                res = dt1.compare(dt2);
-            } catch (CoreseDatatypeException ex) {
-                return compareWhenException(dt1, dt2);
-            }
-
-            if (res == 0) {
-                // equal by value
-                if ((dt1.isDecimalInteger() && dt2.isDecimalInteger())
-                        || dt1.getCode() == dt2.getCode()) {
-                    // compatible datatypes, same value: same index
-                    return 0;
-                } else {
-                    return generalizedDatatype(dt1).compareTo(generalizedDatatype(dt2));
-                }
-            } else {
-                return res;
-            }
-        }
-
-        /**
-         * boolean vs number incomparable dates
-         *
-         */
-        int compareWhenException(IDatatype dt1, IDatatype dt2) {
-            if (dt1.isDate() && dt2.isDate()) {
-                // some dates are incomparable, compare string date
-                // as they are not equal, we just need to return -1 or +1 
-                // in a deterministic way
-                return dt1.getLabel().compareTo(dt2.getLabel());
-            }
-            return generalizedDatatype(dt1).compareTo(generalizedDatatype(dt2));
-        }
-
-        /*
-         * return same datatype URI for decimal/integer/long
-         * to secure the walk into the table
-         * 
-         */
-        String generalizedDatatype(IDatatype dt) {
-            if (dt.isDecimalInteger()) {
-                return XSD.xsddecimal;
-            }
-            return dt.getDatatypeURI();
-        }
-
-    }
 
     /**
-     * Assign same node index when same datatype and same value (and possibly
-     * different labels) 1 = 01 != 1e0 '1'^^xsd:boolean = true 1 != 1.0
-     */
-    class CompareIndexStrict implements Comparator<IDatatype> {
-
-        CompareIndexStrict() {
-        }
-
-        @Override
-        public int compare(IDatatype dt1, IDatatype dt2) {
-
-            if (dt1.getCode() == dt2.getCode() && 
-                dt1.getDatatypeURI().equals(dt2.getDatatypeURI())) {
-                if (dt1.equals(dt2)) {
-                    // same datatype, same value: same index (even if labels are different)
-                    // 1 = 01 ; 1 != 1.0
-                    return 0;
-                }
-            }
-
-            // compare with sameTerm instead of equal value
-            // 1 != 1.0 ; they have different index
-            return dt1.compareTo(dt2);
-        }
-    }
-
-    /**
+     * Comparator for Node allocation where 1 and 01 have different Node with same Node index
      * This Comparator enables to retrieve an occurrence of a given Literal
      * already existing in graph in such a way that two occurrences of same
      * Literal be represented by same Node It represents (1 integer) and (01
@@ -608,6 +530,7 @@ public class Graph extends GraphObject implements
         CompareNode() {
         }
 
+        // sameTerm semantics, strict order, 1 != 01 (to get different Node)
         @Override
         public int compare(IDatatype dt1, IDatatype dt2) {
             int res = dt1.compareTo(dt2);
@@ -648,7 +571,7 @@ public class Graph extends GraphObject implements
         // same index means that SPARQL perform a join on nodes with same index
         // when DatatypeMap.SPARQLCompliant = false (true), 1 and 1.0 have same (different) index
         // corese default is false, which means that corese sparql perform a join on 1 and 1.0 (which is not standard)
-        setLiteralIndexManager(Collections.synchronizedSortedMap(new TreeNode(DatatypeMap.SPARQLCompliant)));
+        setLiteralIndexManager(Collections.synchronizedSortedMap(new TreeNode(DatatypeMap.DATATYPE_ENTAILMENT)));
         // deprecated:
         vliteral = Collections.synchronizedMap(new HashMap<>());
         // URI Node
@@ -778,7 +701,7 @@ public class Graph extends GraphObject implements
      */
     public void setByIndex(boolean b) {
         byIndex = b;
-        for (Index id : getIndexList()) {
+        for (EdgeManagerIndexer id : getIndexList()) {
             id.setByIndex(b);
         }
     }
@@ -963,7 +886,7 @@ public class Graph extends GraphObject implements
 
     void localSet(String property, boolean value) {
         if (property.equals(Entailment.DUPLICATE_INFERENCE)) {
-            for (Index t : getIndexList()) {
+            for (EdgeManagerIndexer t : getIndexList()) {
                 t.setDuplicateEntailment(value);
             }
         }
@@ -1002,7 +925,7 @@ public class Graph extends GraphObject implements
 
         sb.close();
 
-        for (Index t : getIndexList()) {
+        for (EdgeManagerIndexer t : getIndexList()) {
             if (t.getIndex() == 0 || t.cardinality() > 0) {
                 sb.appendNL(t.toRDF());
             }
@@ -1285,7 +1208,7 @@ public class Graph extends GraphObject implements
     }
 
     public void clearNodeManager() {
-        for (Index id : getIndexList()) {
+        for (EdgeManagerIndexer id : getIndexList()) {
             id.getNodeManager().desactivate();
         }
     }
@@ -1296,7 +1219,7 @@ public class Graph extends GraphObject implements
      * @param b
      */
     public void tuneNodeManager(boolean b) {
-        for (Index id : getIndexList()) {
+        for (EdgeManagerIndexer id : getIndexList()) {
             if (b) {
                 id.getNodeManager().setAvailable(b);
                 if (id.getIndex() == 0) {
@@ -1336,7 +1259,7 @@ public class Graph extends GraphObject implements
     }
 
     public void cleanIndex() {
-        for (Index ei : getIndexList()) {
+        for (EdgeManagerIndexer ei : getIndexList()) {
             if (ei.getIndex() != 0) {
                 ei.clean();
             }
@@ -1565,7 +1488,7 @@ public class Graph extends GraphObject implements
      * Index list
      */
     void add(Node p, List<Edge> list) {
-        for (Index ei : getIndexList()) {
+        for (EdgeManagerIndexer ei : getIndexList()) {
             ei.add(p, list);
         }
         getEventManager().process(Event.Insert);
@@ -1595,7 +1518,7 @@ public class Graph extends GraphObject implements
         }
 
         for (Node pred : t.values()) {
-            for (Index ei : getIndexList()) {
+            for (EdgeManagerIndexer ei : getIndexList()) {
                 // sort but does not reduce:
                 ei.index(pred);
             }
@@ -1607,7 +1530,7 @@ public class Graph extends GraphObject implements
      * Use case: Entailment PRAGMA: edges in list may exist in graph
      */
     public List<Edge> copy(List<Edge> list) {
-        for (Index id : getIndexList()) {
+        for (EdgeManagerIndexer id : getIndexList()) {
             if (id.getIndex() != 0) {
                 id.clearCache();
             }
@@ -3154,7 +3077,7 @@ public class Graph extends GraphObject implements
     Edge basicDelete(Edge edge) {
         Edge res = null;
 
-        for (Index ie : getIndexList()) {
+        for (EdgeManagerIndexer ie : getIndexList()) {
             Edge ent = ie.delete(edge);
             if (isDebug) {
                 logger.debug("delete: " + ie.getIndex() + " " + edge);
@@ -3212,7 +3135,7 @@ public class Graph extends GraphObject implements
     public void clear() {
         clearIndex();
         clearNodes();
-        for (Index t : getIndexList()) {
+        for (EdgeManagerIndexer t : getIndexList()) {
             t.clear();
         }
         manager.onClear();
@@ -3373,7 +3296,8 @@ public class Graph extends GraphObject implements
 
         ArrayList<Node> list = new ArrayList<>();
 
-        for (int i = 0; i < edge.nbNode(); i++) {
+        // nbNodeIndex() exclude metadata TripleNode as getNode(2)
+        for (int i = 0; i < edge.nbNodeIndex(); i++) {
             Node n = addNode(edge.getNode(i).getValue());
             list.add(n);
         }
@@ -3723,7 +3647,7 @@ public class Graph extends GraphObject implements
     public void setDebugMode(boolean b) {
         setDebug(b);
         manager.setDebug(b);
-        for (Index id : getIndexList()) {
+        for (EdgeManagerIndexer id : getIndexList()) {
             id.getNodeManager().setDebug(b);
         }
         if (getEntailment() != null) {
@@ -3793,7 +3717,7 @@ public class Graph extends GraphObject implements
     }
 
     public void declareUpdate(boolean b) {
-        for (Index ind : getIndexList()) {
+        for (EdgeManagerIndexer ind : getIndexList()) {
             ind.declareUpdate(b);
         }
     }
@@ -3943,7 +3867,7 @@ public class Graph extends GraphObject implements
         this.allGraphNode = allGraphNode;
     }
 
-    EdgeManagerIndexer getSubjectIndex() {
+    public EdgeManagerIndexer getSubjectIndex() {
         return subjectIndex;
     }
 

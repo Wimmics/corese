@@ -29,9 +29,18 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
  * ?x p ?y . ?z q ?y 
  * Index(1) of q is built for 2nd triple pattern
  * Hence Index(1) may be partial (not for all properties)
- * Nodes are sorted by Node index 
+ * Nodes are sorted by Node index and then by compareTo when they are equal
  * Nodes with same node index which are not sameTerm are kept in the list:
  * s p 01, 1, 1.0, '1'^^xsd:long, 1e1
+ * 
+ * NodeManager is a Node Index with a table:
+ * s -> (p1:i1 .. pn:in)
+ * with for each node s the list of its predicates and for each predicate p
+ * the position i of the triple s p o in the graph index edge list
+ * given s and p we have direct access to triple s p o in the graph index at position i
+ * given s we have the list of predicates of s 
+ * hence ?s ?p ?o iterates directly the list of predicates of each subject s
+ * very interesting when there are many candidate properties
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
@@ -749,6 +758,8 @@ public class EdgeManagerIndexer
     }
     
     
+    // use case: node ?p ?o where ?p is unbound
+    // get node predicate list
     @Override
     public Iterable<Edge> getSortedEdges(Node node) {
         PredicateList list = getNodeManager().getPredicates(node);
@@ -1114,7 +1125,7 @@ public class EdgeManagerIndexer
     }
 
     private void clear(Node pred, Edge ent) {
-        for (Index ei : graph.getIndexList()) {
+        for (EdgeManagerIndexer ei : graph.getIndexList()) {
             if (ei.getIndex() != IGRAPH) {
                 Edge rem = ei.delete(pred, ent);
                 if (isDebug && rem != null) {
@@ -1150,7 +1161,7 @@ public class EdgeManagerIndexer
      * triple(s p o [q v ; r s])
      * PRAGMA: graph must be indexed (edges must be sorted)
      */
-    @Override
+    @Override @Deprecated
     public void metadata() {
         if (replaceMap == null) {
             replaceMap = new HashMap<>();

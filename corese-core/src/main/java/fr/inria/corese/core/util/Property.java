@@ -15,6 +15,7 @@ import fr.inria.corese.core.query.MatcherImpl;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.Transformer;
+import static fr.inria.corese.core.util.Property.Value.DATATYPE_ENTAILMENT;
 import static fr.inria.corese.core.util.Property.Value.IMPORT;
 import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
 import static fr.inria.corese.core.util.Property.Value.PREFIX;
@@ -149,7 +150,10 @@ public class Property {
         PREFIX,
         // Testing purpose
         INTERPRETER_TEST,
-        
+        // 1 ; 01 ; 1.0 have different Node
+        // when true:  nodes can be joined by graph matching
+        // when false: they do not join
+        DATATYPE_ENTAILMENT,
         SPARQL_COMPLIANT,
         SPARQL_ORDER_UNBOUND_FIRST,
         
@@ -208,6 +212,7 @@ public class Property {
     static {
         singleton = new Property();
         set(SERVICE_SEND_PARAMETER, true);
+        set(DATATYPE_ENTAILMENT, true);
     }
 
     Property() {
@@ -432,13 +437,19 @@ public class Property {
                 DataFilter.RDF_STAR_SELECT = b;
                 break;
                 
+            case DATATYPE_ENTAILMENT:
+                // when true: graph match can join 1, 01, 1.0 
+                DatatypeMap.DATATYPE_ENTAILMENT = b;
+                break;
+                
             case SPARQL_COMPLIANT:
                 // default is false
                 // true: literal is different from string
-                // true: do not join 1 and 1.0 
                 // true: from named without from is sparql compliant
                 DatatypeMap.setSPARQLCompliant(b);
                 QuerySolver.SPARQL_COMPLIANT_DEFAULT = b;
+                // SPARQL_COMPLIANT => ! DATATYPE_ENTAILMENT
+                set(DATATYPE_ENTAILMENT, !b);
                 break;
                 
             case SPARQL_ORDER_UNBOUND_FIRST:

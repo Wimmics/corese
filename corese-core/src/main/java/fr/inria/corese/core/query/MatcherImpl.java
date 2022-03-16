@@ -3,7 +3,6 @@ package fr.inria.corese.core.query;
 import java.util.HashMap;
 
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Query;
@@ -27,8 +26,7 @@ import fr.inria.corese.core.logic.Entailment;
  */
 public class MatcherImpl implements Matcher {
     private static boolean byIndex = false;
-    public static boolean RDF_STAR_VALIDATION = false;
-    boolean SparqlCompliant = DatatypeMap.SPARQLCompliant;
+    public static boolean RDF_STAR_VALIDATION = true;
 
     /**
      * @return the byIndex
@@ -240,32 +238,14 @@ public class MatcherImpl implements Matcher {
     }
 
     @Override
-     public boolean same(Node node, Node n1, Node n2, Environment env) {        
+    public boolean same(Node node, Node n1, Node n2, Environment env) {        
         return same(n1, n2);  
     }
-    
-    @Deprecated
-    public boolean same2(Node node, Node n1, Node n2, Environment env) {        
-        boolean b = same(n1, n2);        
-        if (b) {
-            return true;
-        }
-        Query q = env.getQuery();
-        if (q != null && q.isMatchBlank()
-                && n1.isBlank() && n2.isBlank()) {
-            b = bnode.same(n1, n2, env, 0);             
-            return b;
-        }
-        return false;
-    }
-    
+       
     boolean same(Node n1, Node n2){        
-        return  (n1.getIndex() == n2.getIndex() 
-                && n1.getTripleStore() == n2.getTripleStore()
-                && n1.getIndex() != -1) 
-                || n1.match(n2); // was same
+       return n1.match(n2); 
     }
-
+    
     @Override
     public void setMode(int mode) {
         this.mode = mode;
@@ -282,9 +262,6 @@ public class MatcherImpl implements Matcher {
             return true;
         }
 
-//        IDatatype qdt =  q.getValue();
-//        IDatatype tdt =  t.getValue();
-        //return (SparqlCompliant) ? qdt.sameTerm(tdt) : qdt.match(tdt);
         return q.getValue().match(t.getValue());
     }
     

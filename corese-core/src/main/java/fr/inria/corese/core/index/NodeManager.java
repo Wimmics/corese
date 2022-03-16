@@ -3,12 +3,15 @@ package fr.inria.corese.core.index;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.sparql.api.IDatatype.NodeKind;
+import java.util.ArrayList;
 import java.util.HashMap;
 
 /**
  * Manage a table of list of properties for each node
  * Node ni -> (p1, .. pn) ; (i1, .. in)
  * where ij = position of ni in  edge list of property pj
+ * each kind of node has a table (uri, bnode, triple, literal)
  *
  * Use case:
  * ?x rdfs:label "Antibes"@fr . ?x ?q ?v
@@ -23,8 +26,7 @@ import java.util.HashMap;
 public class NodeManager {
 
     private Graph graph;
-    private HashMap<Node, PredicateList> ptable;
-    HashMap<Integer, PredicateList> indexTable;
+    private ArrayList<PredicateTable> predicateTableList;
     // in some case content is obsolete
     private boolean active = true;
     // safety to switch off
@@ -33,30 +35,41 @@ public class NodeManager {
     private int index =0;
     private boolean debug = false;
     // record position of node in edge list
-    boolean isPosition = true;
-    private int i;
+    private boolean position = true;
     private static final String NL = System.getProperty("line.separator");
+    
+    public class PredicateTable extends HashMap<Node, PredicateList> {}
     
     NodeManager(Graph g, int index) {
         graph = g;
-        ptable = new HashMap<>();
-        indexTable = new HashMap<>();
+        predicateTableList = new ArrayList<>(NodeKind.size());
         this.index = index;
-        //setAvailable(index > 0);
+        init();
     }
 
+    void init() {        
+        for (int i = 0; i<NodeKind.size(); i++) {
+            getPredicateTableList().add(new PredicateTable());
+        }
+    }
+    
     public int size() {
-        return ptable.size();
+        int size = 0;
+        for (PredicateTable t : getPredicateTableList()) {
+            size += t.size();
+        }
+        return size;
     }
 
+    // nb property
     public int count() {
         return count;
     }
 
     void clear() {
-        ptable.clear();
-        indexTable.clear();
-        count = 0;
+        for (PredicateTable t : getPredicateTableList()) {
+            t.clear();
+        }
     }
     
     public int getIndex() {
@@ -76,43 +89,27 @@ public class NodeManager {
     // start indexing
     public void start() {
         activate();
-        graph.getEventManager().start(Event.IndexNodeManager);
+        getGraph().getEventManager().start(Event.IndexNodeManager);
     }
     
     // finish indexing
     public void finish() {
-        graph.getEventManager().finish(Event.IndexNodeManager, this);
+        getGraph().getEventManager().finish(Event.IndexNodeManager, this);
+    }
+     
+    void put(Node node, PredicateList list) {
+        getPredicateTable(node).put(node, list);
     }
     
     PredicateList get(Node node) {
-        return get1(node);
+        return getPredicateTable(node).get(node);
     }
-    
-    void put(Node node, PredicateList list) {
-        put1(node, list);
-    }
-    
-    PredicateList get1(Node node) {
-        return ptable.get(node);
-    }
-    
-    void put1(Node node, PredicateList list) {
-        ptable.put(node, list);
-    }
-    
-    PredicateList get2(Node node) {
-        return indexTable.get(node.getIndex());
-    }
-    
-    void put2(Node node, PredicateList list) {
-        indexTable.put(node.getIndex(), list);
-    }
-    
+        
     void add(Node node, Node predicate, int n) {
         if (isEffective()) {
             PredicateList list = get(node);
             if (list == null) {
-                list = new PredicateList(isPosition);
+                list = new PredicateList(isPosition());
                 put(node, list);
             }
             list.add(node, predicate, n);
@@ -125,23 +122,23 @@ public class NodeManager {
            return getPredicateList(node);
         } 
         else if (isAvailable() && ! graph.isIndexable()) {
-            synchronized (graph) {
-                graph.getIndex(index).indexNodeManager();
+            synchronized (getGraph()) {
+                getGraph().getIndex(getIndex()).indexNodeManager();
             }
             if (debug) {
-                System.out.println("NMP create: " + index + " " + node + " " + getPredicateList(node));
+                System.out.println("NMP create: " + getIndex() + " " + node + " " + getPredicateList(node));
             }
             return getPredicateList(node);
         } 
         else {
-            return graph.getIndex().getSortedPredicates();
+            return getGraph().getIndex().getSortedPredicates();
         }
     }
 
     PredicateList getPredicateList(Node node) {
         PredicateList list = get(node);
         if (list == null) {
-            list = new PredicateList(isPosition, 0);
+            list = new PredicateList(isPosition(), 0);
             put(node, list);
         }
         return list;
@@ -159,9 +156,7 @@ public class NodeManager {
         return active && available;
     }
 
-    /**
-     * @return the active
-     */
+   
     public boolean isActive() {
         return active ;
     }
@@ -170,61 +165,84 @@ public class NodeManager {
         return active && size()>0;
     }
 
-    /**
-     * @param active the active to set
-     */
+    
     public void setActive(boolean active) {
         this.active = active;
     }
 
-     /**
-     * @return the available
-     */
     public boolean isAvailable() {
         return available;
     }
 
-    /**
-     * @param available the available to set
-     */
+    
     public void setAvailable(boolean available) {
         this.available = available;
     }
 
-
-    /**
-     * @return the debug
-     */
+     
     public boolean isDebug() {
         return debug;
     }
 
-    /**
-     * @param debug the debug to set
-     */
+   
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
     
     public String display() {
         StringBuilder sb = new StringBuilder();
-        
-        for (Node n : ptable.keySet()) {
-            sb.append(n).append(" :");
-            PredicateList l = getPredicateList(n);
-            int i = 0;
-            for (Node p : l) {
-                sb.append(" ").append(p).append(" ").append(l.getPosition(i++)).append("; ");
+        int num = 0;
+        for (PredicateTable t : getPredicateTableList()) {
+            for (Node n : t.keySet()) {
+                sb.append(String.format("%s %s: ", num++, n));
+                PredicateList predicateList = getPredicateList(n);
+                int i = 0;
+                for (Node p : predicateList) {
+                    sb.append(String.format(" %s %s;", p, predicateList.getPosition(i++)));
+                }
+                sb.append(NL);
             }
-            sb.append(NL);
         }
-        
+
         return sb.toString();
     }
     
     @Override
     public String toString() {
-        return indexTable.toString();
+        return display();
+    }
+    
+    // one map per kind of Node
+    public HashMap<Node, PredicateList> getPredicateTable(Node node) {        
+        return getPredicateTableList().get(node.getNodeKind().getIndex());
+    }
+
+    public ArrayList<PredicateTable> getPredicateTableList() {
+        return predicateTableList;
+    }
+
+    public void setPredicateTableList(ArrayList<PredicateTable> predicateTableList) {
+        this.predicateTableList = predicateTableList;
+    }
+
+    public boolean isPosition() {
+        return position;
+    }
+
+    public void setPosition(boolean position) {
+        this.position = position;
+    }
+
+    public Graph getGraph() {
+        return graph;
+    }
+
+    public void setGraph(Graph graph) {
+        this.graph = graph;
+    }
+
+    public void setIndex(int index) {
+        this.index = index;
     }
 
 }

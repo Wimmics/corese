@@ -394,12 +394,13 @@ public class Service implements URLParam {
         return get(getURL().getServer(), query, mime);
     }
 
-    public String get(String uri, String query, String mime) {
-        if (isDebug()) {
-            System.out.println(query);
-        }
+    public String get(String uri, String query, String mime) {        
         String url;
         try {
+            if (isDebug()) {
+                logger.info(URLEncoder.encode(query, "UTF-8"));
+            }
+
             url = complete(uri, URLEncoder.encode(query, "UTF-8"));
         } catch (UnsupportedEncodingException ex) {
             url = complete(uri, query);
@@ -539,58 +540,42 @@ public class Service implements URLParam {
     }
 
 
-    /**
-     * @return the level
-     */
+   
     public Access.Level getLevel() {
         return level;
     }
 
-    /**
-     * @param level the level to set
-     */
+    
     public void setLevel(Access.Level level) {
         this.level = level;
     }
 
-    /**
-     * @return the post
-     */
+    
     public boolean isPost() {
         return post;
     }
 
-    /**
-     * @param post the post to set
-     */
+    
     public void setPost(boolean post) {
         this.post = post;
     }
 
-    /**
-     * @return the showResult
-     */
+   
     public boolean isShowResult() {
         return showResult;
     }
 
-    /**
-     * @param showResult the showResult to set
-     */
+    
     public void setShowResult(boolean showResult) {
         this.showResult = showResult;
     }
 
-    /**
-     * @return the trap
-     */
+    
     public boolean isTrap() {
         return trap;
     }
 
-    /**
-     * @param trap the trap to set
-     */
+   
     public void setTrap(boolean trap) {
         this.trap = trap;
     }

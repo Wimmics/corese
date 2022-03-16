@@ -5,16 +5,21 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * List of predicates of a Node
- * List of position of node in edge list of each Pi
- * (P1, .. Pn) (I1, .. In)
+ * List of predicates of a given Node in NodeManager
+ * List of positions of node in edge list of each predicate pi
+ * (p1, .. pn) (i1, .. in)
+ * in the edge list of predicate(j) = (t1 .. tn)
+ * index(node) = position(j)
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class PredicateList extends ArrayList<Node> {
+public class PredicateList 
+        // list of predicate Node of a given node (in NodeManager)
+        extends ArrayList<Node> {
     boolean isPosition = false;
     
+    // list of position(i) of given node in the list of edge of predicate(i) 
     ArrayList<Integer> positionList;
 
     PredicateList() {
@@ -43,6 +48,13 @@ public class PredicateList extends ArrayList<Node> {
         if (isPosition) {
             positionList = new ArrayList<>(n);
         }
+    }
+    
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder();
+        sb.append(super.toString()).append(positionList);
+        return sb.toString();
     }
 
     int getPosition(int n) {
@@ -83,7 +95,7 @@ public class PredicateList extends ArrayList<Node> {
             return first;
         } else {
             int mid = (first + last) / 2;
-            int res = get(mid).compare(predicate); //Integer.compare(predicate.getIndex(), get(mid).getIndex());
+            int res = get(mid).compare(predicate); 
             if (res >= 0) {
                 return findPosition(predicate, first, mid);
             } else {

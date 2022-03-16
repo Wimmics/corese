@@ -24,6 +24,11 @@ public class CoreseTriple extends CoreseResource {
     public int getCode() {
         return code;
     }
+    
+    @Override
+    public NodeKind getNodeKind() {
+        return NodeKind.TRIPLE;
+    }
 
     @Override
     public boolean isTriple() {
@@ -84,7 +89,7 @@ public class CoreseTriple extends CoreseResource {
    
     @Override
     public int compare(IDatatype dt) throws CoreseDatatypeException {
-        if (getEdge()!=null && dt.isTripleWithEdge()) {
+       if (getEdge()!=null && dt.isTripleWithEdge()) {
             return getEdge().compareWithoutGraph(dt.getEdge());
         }
         throw failure();

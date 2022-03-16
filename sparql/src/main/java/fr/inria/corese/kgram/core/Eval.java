@@ -1762,6 +1762,12 @@ public class Eval implements ExpType, Plugin {
             getMemory().pop(qNode);
         }
     }
+    
+    void trace(String mes, Object... obj) {
+        if (getQuery().isDebug()) {
+            System.out.println(String.format(mes, obj));
+        }
+    }
 
     /**
      * Enumerate candidate edges
@@ -1839,7 +1845,6 @@ public class Eval implements ExpType, Plugin {
             }
 
             Edge edge = it.next();
-            if (query.isDebug())System.out.println("E: " + edge);
             if (edge != null) {
                 nbEdge++;
                 if (hasListener && !listener.listen(qEdge, edge)) {
@@ -1848,6 +1853,7 @@ public class Eval implements ExpType, Plugin {
 
                 graph = edge.getGraph();
                 boolean bmatch = match(qEdge, edge, graphNode, graph, env);
+                trace ("I: %s Q: %s E: %s match: %s", qEdge.getIndex(), qEdge, edge, bmatch);
 
                 if (matchNBNode) {
                     bmatch &= (qEdge.nbNode() == edge.nbNode());
@@ -1862,6 +1868,7 @@ public class Eval implements ExpType, Plugin {
                     }
 
                     bmatch &= push(p, qEdge, edge, graphNode, graph, n);
+                    if (!bmatch) trace("push success: %s", bmatch);
                 }
 
                 if (isEvent) {

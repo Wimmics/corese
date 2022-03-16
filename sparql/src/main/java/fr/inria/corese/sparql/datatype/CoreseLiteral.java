@@ -48,6 +48,11 @@ public class CoreseLiteral extends CoreseStringLiteral {
 	public  int getCode(){
 		return code;
 	}
+     
+    @Override
+    public NodeKind getNodeKind() {
+        return NodeKind.LITERAL;
+    }
 
         @Override
 	public void setLang(String lang) {

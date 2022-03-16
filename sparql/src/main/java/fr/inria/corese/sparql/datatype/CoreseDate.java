@@ -13,7 +13,6 @@ import org.eclipse.rdf4j.model.Literal;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
-import java.util.Date;
 
 /**
  * An implementation of the xsd:date datatype used by Corese
@@ -175,6 +174,7 @@ public class CoreseDate extends CoreseDatatype {
         return res;
     }
 
+    // date vs dateTime
     void check(IDatatype icod) throws CoreseDatatypeException {
         if (DatatypeMap.SPARQLCompliant && this.getClass() != icod.getClass()) {
             throw failure();

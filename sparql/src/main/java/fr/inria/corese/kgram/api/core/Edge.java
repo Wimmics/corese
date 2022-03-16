@@ -2,7 +2,6 @@ package fr.inria.corese.kgram.api.core;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
-import java.util.Objects;
 import org.eclipse.rdf4j.model.IRI;
 import org.eclipse.rdf4j.model.Resource;
 import org.eclipse.rdf4j.model.Statement;
@@ -210,6 +209,9 @@ public interface Edge extends Pointerable, Statement {
     }
     
     default Node getReferenceNode() {
+        if (nbNode() <= REF_INDEX) {
+            return null;
+        }
         return getNode(REF_INDEX);
     }
     

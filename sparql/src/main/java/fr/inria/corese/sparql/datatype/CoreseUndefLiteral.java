@@ -84,7 +84,10 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
     }
 
     void check(IDatatype iod) throws CoreseDatatypeException {
-        if (iod.getCode() == UNDEF && getDatatype() != iod.getDatatype()) {
+        if ((getDatatype() == null || iod.getDatatype() == null) && getDatatype()!=iod.getDatatype()) {
+            throw failure();
+        }
+        if (! getDatatype().equals(iod.getDatatype())) {
             throw failure();
         }
     }
@@ -93,16 +96,15 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
     public boolean equalsWE(IDatatype iod) throws CoreseDatatypeException {
         switch (iod.getCode()) {
             case URI:
-            case BLANK: case TRIPLE:
+            case BLANK: 
+            case TRIPLE:
                 return false;
             // special case with literal !!!
             case LITERAL:
                 return iod.equalsWE(this);
 
             case UNDEF:
-                if (getDatatype() != iod.getDatatype()) {
-                    throw failure();
-                }
+                check(iod);
                 break;
 
             default:
@@ -114,7 +116,14 @@ public class CoreseUndefLiteral extends CoreseStringLiteral {
             throw failure();
         }
         return b;
-
+    }
+    
+    @Override
+    public int compare(IDatatype dt) throws CoreseDatatypeException{
+        if (equalsWE(dt)) {
+            return 0;
+        }
+        throw failure();
     }
 
     @Override

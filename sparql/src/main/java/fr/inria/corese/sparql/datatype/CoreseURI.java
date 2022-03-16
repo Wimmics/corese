@@ -43,6 +43,11 @@ public class CoreseURI extends CoreseResource {
     return code;
   }
   
+  @Override
+  public NodeKind getNodeKind() {
+      return NodeKind.URI;
+  }
+  
     @Override
   public int compare(IDatatype iod) throws CoreseDatatypeException {
 	  switch (iod.getCode()){

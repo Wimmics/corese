@@ -612,9 +612,16 @@ public class Memory extends PointerObject implements Environment {
         return push(null, q, ent, n);
     }
     
+    void trace(String mes, Object... obj){
+        if (getQuery().isDebug()) {
+            System.out.println(String.format(mes, obj));
+        }
+    }
+    
     boolean push(Producer p, Edge q, Edge ent, int n) {
         boolean success = true;
         int max = q.nbNode();
+        
         for (int i = 0; i < max; i++) {
             Node node = q.getNode(i);
             if (node != null) {
@@ -622,6 +629,7 @@ public class Memory extends PointerObject implements Environment {
                     success = pushNodeList(p, node, ent, i);
                 } else {
                     success = push(node, ent.getNode(i), n);
+                    if (!success) trace("push: %s=%s success: %s", node, ent.getNode(i), success);
                 }
 
                 if (!success) {
@@ -1195,17 +1203,7 @@ public class Memory extends PointerObject implements Environment {
     public void aggregate(Mapping map, int n) {
         current().prepareAggregate(map, getQuery(), getMap(), n);
     }
-       
-//    public void aggregate2(Mapping map, int n) {
-//        current().setCount(n);
-//        // in case there is a nested aggregate, map will be an Environment
-//        // it must implement aggregate() and hence must know current Mappings group
-//        map.setMappings(current());
-//        map.setQuery(getQuery());
-//        // share same bnode table in all Mapping of current group solution
-//        map.setMap(getMap());
-//    }
-
+      
     @Override
     public int pathLength(Node qNode) {
         Path path = getPath(qNode);

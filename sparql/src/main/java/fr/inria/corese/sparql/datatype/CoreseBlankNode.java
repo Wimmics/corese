@@ -29,6 +29,11 @@ public class CoreseBlankNode extends CoreseResource {
     public int getCode() {
         return code;
     }
+    
+    @Override
+    public NodeKind getNodeKind() {
+        return NodeKind.BNODE;
+    }
 
     @Override
     public boolean isBlank() {

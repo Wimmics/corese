@@ -3,6 +3,7 @@ package fr.inria.corese.kgram.api.core;
 import static fr.inria.corese.kgram.api.core.PointerType.NODE;
 import fr.inria.corese.kgram.path.Path;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatype.NodeKind;
 
 /**
  * Interface of Node provided by graph implementation
@@ -23,6 +24,10 @@ public interface Node extends Pointerable {
 	public static final int PSIZE 	= 4;
 
 	public static final int STATUS 	= 4;
+        
+        default NodeKind getNodeKind() {
+            return getValue().getNodeKind();
+        }
         
         @Override
         default PointerType pointerType(){

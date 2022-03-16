@@ -742,6 +742,7 @@ public class CoreseDatatype
     public boolean isDecimalInteger(){
         switch (getCode()){
             case DECIMAL:
+            // cover all integer subtypes (long, short, etc.)
             case INTEGER :return true;
         }
         return false;
@@ -931,7 +932,6 @@ public class CoreseDatatype
                 break;
 
             case UNDEF:
-
                 if (code == UNDEF) {
                     int res = getDatatypeURI().compareTo(d2.getDatatypeURI());
                     if (res == 0) {
@@ -1362,7 +1362,6 @@ public class CoreseDatatype
     @Override
     public boolean same(Node n) {
         return sameTerm( n.getValue());
-        //return equals( n.getValue());
     }
     
     @Override
@@ -1370,14 +1369,22 @@ public class CoreseDatatype
         return match(n.getValue());
     }
     
-    // for graph match
+    // for graph match     
     public boolean match(IDatatype dt) {
         if (DatatypeMap.SPARQLCompliant) {
             return sameTerm(dt);
         }
-        return basicMatch(dt);
+        if (DatatypeMap.DATATYPE_ENTAILMENT) {
+            // equal values and compatible datatypes
+            return basicMatch(dt);
+        }        
+        return sameTerm(dt);
     }
     
+    /**
+     * all kinds of integer match
+     * and integer match decimal
+     */
     public boolean basicMatch(IDatatype dt) {
         return equals(dt) && compatible(dt);       
     }
@@ -1390,9 +1397,8 @@ public class CoreseDatatype
             case DECIMAL:
                 return dt.isDecimalInteger();
             case DOUBLE:
-                return dt.getCode() == DOUBLE;
             case FLOAT:
-                return dt.getCode() == FLOAT;
+                return dt.getCode() == getCode();
         }
         return true;
     }

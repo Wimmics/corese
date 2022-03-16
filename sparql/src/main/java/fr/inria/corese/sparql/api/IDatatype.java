@@ -26,6 +26,23 @@ import java.util.Map;
  */
 public interface IDatatype
         extends Iterable<IDatatype>,  Node, Loopable, DatatypeValue, Comparable {
+    
+    public enum NodeKind {
+        URI(0), BNODE(1), TRIPLE(2), LITERAL(3), UNDEF(4);
+        int index;
+        
+        NodeKind(int n) {
+            index = n;
+        }
+
+        public int getIndex() {
+            return index;
+        }
+        
+        static public int size() {
+            return NodeKind.values().length;
+        }
+    };
 
     static final int VALUE = -1;
     static final int RESULT = -2;
@@ -587,7 +604,11 @@ public interface IDatatype
     String getLowerCaseLabel();
 
     int getCode();
-
+    
+    default NodeKind getNodeKind() {
+        return NodeKind.UNDEF;
+    }
+    
     boolean semiEquals(IDatatype iod); // get rid of @ lang
 
     boolean hasLang();

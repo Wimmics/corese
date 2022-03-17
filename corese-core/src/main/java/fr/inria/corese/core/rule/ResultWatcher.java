@@ -366,7 +366,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
     @Override
     public void insert(Graph g, Edge ent) {
         // TODO
-        if (ent.getLabel().equals(RDFS.SUBCLASSOF)) {
+        if (ent.getEdgeLabel().equals(RDFS.SUBCLASSOF)) {
             list.add(ent);
         }
     }

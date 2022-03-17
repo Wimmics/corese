@@ -110,8 +110,8 @@ public class MatcherImpl implements Matcher {
             return matchType(q, r, env);
         }
 
-        if (!q.getLabel().equals(Graph.TOPREL)
-                && !q.getLabel().equals(r.getLabel())) {
+        if (!q.getEdgeLabel().equals(Graph.TOPREL)
+                && !q.getEdgeLabel().equals(r.getEdgeLabel())) {
             return false;
         }
 

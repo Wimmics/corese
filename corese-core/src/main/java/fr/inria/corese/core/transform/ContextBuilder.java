@@ -71,7 +71,7 @@ public class ContextBuilder {
         importer(ctx);
 
         for (Edge ent : graph.getEdgeList(ctx)) {
-            String label = ent.getLabel();
+            String label = ent.getEdgeLabel();
             Node object = ent.getNode(1);
             
             if (label.equals(Context.STL_EXPORT) && object.isBlank()){

@@ -129,7 +129,7 @@ class TemplateIndex extends HashMap<String, List<Query>> {
      * ?in rdf:type xxx
      */
     boolean isType(Edge edge) {
-        return edge.getLabel().equals(RDF.TYPE)
+        return edge.getEdgeLabel().equals(RDF.TYPE)
                 && edge.getNode(0).getLabel().equals(ASTQuery.IN);
     }
 

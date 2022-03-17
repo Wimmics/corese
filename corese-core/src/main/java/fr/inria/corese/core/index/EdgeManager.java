@@ -331,7 +331,7 @@ public class EdgeManager implements Iterable<Edge> {
     // keep metadata, reset index
     void doCompactMetadata(){
         for (Edge ent : getEdgeList()) {
-           ent.setIndex(-1);
+           ent.setEdgeIndex(-1);
         }
     }
     

@@ -199,7 +199,7 @@ public class EdgeImpl extends EdgeTop
     }
 
     @Override
-    public String getLabel() {
+    public String getEdgeLabel() {
         return getEdgeNode().getLabel();
     }
 
@@ -227,7 +227,7 @@ public class EdgeImpl extends EdgeTop
     }
 
     @Override
-    public void setIndex(int n) {
+    public void setEdgeIndex(int n) {
         index = n;
     }
 
@@ -291,7 +291,7 @@ public class EdgeImpl extends EdgeTop
         for (int i = 0; i < nodes.length; i++) {
             nodes[i] = cur.getNode(i);
         }
-        setIndex(cur.getEdgeIndex());
+        setEdgeIndex(cur.getEdgeIndex());
     }
 
     /**

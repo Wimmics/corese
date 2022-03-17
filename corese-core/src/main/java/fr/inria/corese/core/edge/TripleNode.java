@@ -53,6 +53,11 @@ public class TripleNode extends NodeImpl implements Edge
         return n.toString();
     }
     
+    @Override
+    public String getEdgeLabel() {
+        return getPropertyNode().getLabel();
+    }
+    
     public IDatatype createTripleReference() {
         if (getTripleStore() == null) {
             return null;

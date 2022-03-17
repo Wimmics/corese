@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.compiler.api.QueryVisitor;
-import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Exp;
@@ -24,7 +23,6 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.transform.Transformer;
 import static fr.inria.corese.core.transform.Transformer.STL_PROFILE;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 /**
@@ -317,7 +315,7 @@ public class QueryEngine implements Engine {
 
                     if (ee.isEdge()) {
                         Edge edge = ee.getEdge();
-                        if (edge.getLabel().equals(pname)) {
+                        if (edge.getEdgeLabel().equals(pname)) {
 
                             Mapping bind = null;
                             if (start != null) {

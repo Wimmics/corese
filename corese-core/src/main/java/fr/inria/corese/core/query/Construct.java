@@ -344,7 +344,7 @@ public class Construct
                 
                 if (edge != null) {
                     // RuleEngine loop index
-                    edge.setIndex(loopIndex);
+                    edge.setEdgeIndex(loopIndex);
                     
                     if (isDelete) {
                         boolean accept = true;

@@ -165,19 +165,10 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     }
     
     @Override
-    public String getLabel() {
+    public String getEdgeLabel() {
         return getEdgeNode().getLabel();
     }
-    
-     @Override
-    public int getEdgeIndex() {
-        return -1;
-    }
-
-    @Override
-    public void setIndex(int n) {
-    }
-    
+     
     @Override
     public Node getEdgeVariable() {
         return null;

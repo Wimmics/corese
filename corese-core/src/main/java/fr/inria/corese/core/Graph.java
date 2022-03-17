@@ -1147,7 +1147,7 @@ public class Graph extends GraphObject implements
     public void cleanEdge() {
         // clean rule engine timestamp
         for (Edge ent : getEdges()) {
-            ent.setIndex(-1);
+            ent.setEdgeIndex(-1);
         }
     }
 

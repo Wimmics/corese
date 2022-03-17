@@ -122,7 +122,7 @@ public class QueryGraphVisitorImpl implements QueryGraphVisitor {
 
         EdgeImpl edge = (EdgeImpl) ent;
 
-        if (! predicates.contains(edge.getLabel())) {
+        if (! predicates.contains(edge.getEdgeLabel())) {
             return ent;
         }
         

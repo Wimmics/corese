@@ -300,7 +300,7 @@ public class Entailment implements Engine {
         //if (! edge.getLabel().startsWith(W3C)) return;
         boolean isMeta = true;
 
-        switch (getType(edge.getLabel())) {
+        switch (getType(edge.getEdgeLabel())) {
 
             case TYPE:
                 if (getType(edge.getNode(1).getLabel()) == SYMMETRIC) {
@@ -654,7 +654,7 @@ public class Entailment implements Engine {
     }
 
     boolean hasLabel(Edge edge, String type) {
-        return edge.getLabel().equals(type);
+        return edge.getEdgeLabel().equals(type);
     }
 
     boolean hasLabel(Node node, String type) {

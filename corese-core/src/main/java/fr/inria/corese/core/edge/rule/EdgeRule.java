@@ -31,7 +31,7 @@ public class EdgeRule extends EdgeTriple {
     }
     
     @Override
-    public void setIndex(int i){
+    public void setEdgeIndex(int i){
         index = i;
     }
     

@@ -176,7 +176,7 @@ static int count = 0;
 
                             if (!isConnected(pred1, n1, n2) && isDistinct(n1, n2)) {
                                 Edge ent = create(pred1, n1, n2);
-                                ent.setIndex(loopIndex);
+                                ent.setEdgeIndex(loopIndex);
                                 ltmp.add(ent);
                                 connect(n1, n2);
                             }

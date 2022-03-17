@@ -460,7 +460,7 @@ public class ProducerImpl
      *
      */
     boolean isFuzzy(Edge edge, int i) {
-        int type = fuzzy.fuzzy(edge.getLabel());
+        int type = fuzzy.fuzzy(edge.getEdgeLabel());
         return 0 <= i && i <= 1
                 && (i == type || type == 2);
     }

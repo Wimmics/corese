@@ -236,7 +236,7 @@ public class EdgeImpl extends PointerObject implements Edge {
     }
 
     @Override
-    public int getIndex() {
+    public int getEdgeIndex() {
         return index;
     }
 

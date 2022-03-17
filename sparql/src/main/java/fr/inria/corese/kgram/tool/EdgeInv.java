@@ -61,8 +61,8 @@ public class EdgeInv extends PointerObject implements Edge{
     }
 
     @Override
-    public int getIndex() {
-        return edge.getIndex();
+    public int getEdgeIndex() {
+        return edge.getEdgeIndex();
     }
 
     @Override

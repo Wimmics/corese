@@ -1853,7 +1853,7 @@ public class Eval implements ExpType, Plugin {
 
                 graph = edge.getGraph();
                 boolean bmatch = match(qEdge, edge, graphNode, graph, env);
-                trace ("I: %s Q: %s E: %s match: %s", qEdge.getIndex(), qEdge, edge, bmatch);
+                trace ("I: %s Q: %s E: %s match: %s", qEdge.getEdgeIndex(), qEdge, edge, bmatch);
 
                 if (matchNBNode) {
                     bmatch &= (qEdge.nbNode() == edge.nbNode());

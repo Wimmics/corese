@@ -79,7 +79,7 @@ public class StatListener extends EvalListener {
 				else enumFalse++;
 				
 				Edge edge = e.getExp().getEdge();
-				int index = edge.getIndex();
+				int index = edge.getEdgeIndex();
 				counter[index] += 1;
 				edges[index] = edge;
 				if (e.isSuccess()) status[index] += 1;

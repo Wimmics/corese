@@ -109,7 +109,7 @@ public class GraphFunction extends LDScript {
                 return  edge.getPropertyValue();
 
             case XT_INDEX:
-                return DatatypeMap.newInstance(edge.getIndex());
+                return DatatypeMap.newInstance(edge.getEdgeIndex());
         }
         return null;
     }

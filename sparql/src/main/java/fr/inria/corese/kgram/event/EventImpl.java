@@ -56,7 +56,7 @@ public class EventImpl implements Event {
 			if (object instanceof Exp){
 				Exp exp = (Exp) object;
 				if (exp.isEdge()){
-					str += "("+ exp.getEdge().getIndex() + ") ";
+					str += "("+ exp.getEdge().getEdgeIndex() + ") ";
 				}
 			}
 			str += object;

@@ -656,7 +656,7 @@ public class Memory extends PointerObject implements Environment {
         }
 
         if (isEdge && success) {
-            int index = q.getIndex();
+            int index = q.getEdgeIndex();
             if (nbEdges[index] == 0) {
                 nbEdge++;
             }
@@ -822,7 +822,7 @@ public class Memory extends PointerObject implements Environment {
     }
 
     void popEdge(Edge q, Edge r) {
-        int index = q.getIndex();
+        int index = q.getEdgeIndex();
         if (nbEdges[index] > 0) {
             nbEdges[index]--;
             if (nbEdges[index] == 0) {
@@ -987,7 +987,7 @@ public class Memory extends PointerObject implements Environment {
     }
 
     public Edge getEdge(Edge qEdge) {
-        return result[qEdge.getIndex()];
+        return result[qEdge.getEdgeIndex()];
     }
 
     public Edge getEdge(int n) {

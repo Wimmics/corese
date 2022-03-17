@@ -1535,7 +1535,7 @@ public class Query extends Exp implements Graphable {
                     // x rdf:type t
                     // x rdf:type/rdfs:subClassOf* t
                     Exp ep = exp.getPath();
-                    ep.getEdge().setIndex(edge.getIndex());                    
+                    ep.getEdge().setIndex(edge.getEdgeIndex());                    
                     indexExpEdge(query, ep);
                 }
                 break;

@@ -69,7 +69,7 @@ public interface Edge extends Pointerable, Statement {
     String getLabel();
 
    
-    int getIndex();
+    default int getEdgeIndex() { return -1;}
     void setIndex(int n);
 
     // manage access right

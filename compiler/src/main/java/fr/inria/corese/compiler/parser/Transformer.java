@@ -1624,7 +1624,7 @@ public class Transformer implements ExpType {
                     }
                 }
                 if (ee.getRegex() == null) {
-                    String name = ee.getEdge().getLabel();
+                    String name = ee.getEdge().getEdgeLabel();
                     Term star = Term.function(Term.STAR, Constant.create(name));
                     star.compile(getAST());
                     ee.setRegex(star);

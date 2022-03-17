@@ -241,7 +241,7 @@ public class EdgeImpl extends PointerObject implements Edge {
     }
 
     @Override
-    public String getLabel() {
+    public String getEdgeLabel() {
         return label;
     }
 
@@ -261,7 +261,7 @@ public class EdgeImpl extends PointerObject implements Edge {
     }
 
     @Override
-    public void setIndex(int n) {
+    public void setEdgeIndex(int n) {
         index = n;
     }
 

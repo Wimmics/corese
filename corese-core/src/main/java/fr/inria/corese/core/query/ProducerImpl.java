@@ -309,7 +309,7 @@ public class ProducerImpl
     // special case with tricky optimizations for rule engine
     Iterable<Edge> getRuleEdgeList(Query q, Edge edge, Environment env, Node gNode, List<Node> from, Node predicate) {
         if (q.getEdgeList() != null
-                && edge.getIndex() == q.getEdgeIndex()) {
+                && edge.getEdgeIndex() == q.getEdgeIndex()) {
             // transitive rule (see RuleEngine)
             // there is a list of candidate edges
             return q.getEdgeList();

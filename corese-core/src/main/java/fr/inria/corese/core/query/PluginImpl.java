@@ -510,7 +510,7 @@ public class PluginImpl
         if (e == null) {
             return null;
         }
-        int level = e.getIndex();
+        int level = e.getEdgeIndex();
         return getValue(level);
     }
 
@@ -875,7 +875,7 @@ public class PluginImpl
                 return  ent.getEdgeNode().getDatatypeValue();
 
             case XT_INDEX:
-                return getValue(ent.getIndex());
+                return getValue(ent.getEdgeIndex());
         }
         return null;
     }

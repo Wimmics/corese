@@ -22,7 +22,7 @@ public abstract class EdgeRuleTop extends EdgeBinary {
   }
     
     @Override
-    public int getIndex(){
+    public int getEdgeIndex(){
         return index;
     }
     

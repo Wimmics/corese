@@ -57,7 +57,7 @@ public class RuleProducer extends MetaProducer {
 			// first loop: rdf dataset only (new graph is empty)
 			return p1.getEdges(gNode, from, qEdge, env);
 		}
-		else if (n == 3 && qEdge.getIndex() == 1 ){
+		else if (n == 3 && qEdge.getEdgeIndex() == 1 ){
 			/**
 			 use case:
 			 construct {?x rdf:type ?d}

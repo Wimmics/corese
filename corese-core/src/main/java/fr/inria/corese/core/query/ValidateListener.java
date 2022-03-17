@@ -56,8 +56,8 @@ public class ValidateListener extends EvalListener {
 			
 			Edge edge = e.getExp().getEdge();
 			
-			if (! visited[edge.getIndex()] && graph != null){
-				visited[edge.getIndex()] = true;
+			if (! visited[edge.getEdgeIndex()] && graph != null){
+				visited[edge.getEdgeIndex()] = true;
 				validate(edge);
 			}
 			
@@ -84,7 +84,7 @@ public class ValidateListener extends EvalListener {
 	}
 	
 	void validate(Edge edge){
-		int i = edge.getIndex();
+		int i = edge.getEdgeIndex();
 		edges[i] = edge;
 		Node pred = edge.getEdgeNode();
 		cardinality[i] = graph.size(pred);

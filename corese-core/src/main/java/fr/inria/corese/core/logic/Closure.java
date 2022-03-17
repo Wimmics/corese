@@ -153,7 +153,7 @@ static int count = 0;
                 if (same && n1 == node) {
                     continue;
                 }
-                boolean ok1 = isFirst || e1.getIndex() >= prevIndex;
+                boolean ok1 = isFirst || e1.getEdgeIndex() >= prevIndex;
 
                Iterable<Edge> it2 = graph.getEdges(pred2, node, 0);
 
@@ -163,7 +163,7 @@ static int count = 0;
                         // join e2 on edge e1
                         if (e2 != null) {
 
-                            boolean ok2 = ok1 || e2.getIndex() >= prevIndex;
+                            boolean ok2 = ok1 || e2.getEdgeIndex() >= prevIndex;
                             if (!ok2) {
                                 // need at least one new edge
                                 continue;

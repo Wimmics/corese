@@ -194,7 +194,7 @@ public class EdgeImpl extends EdgeTop
     }
 
     @Override
-    public int getIndex() {
+    public int getEdgeIndex() {
         return index;
     }
 
@@ -291,7 +291,7 @@ public class EdgeImpl extends EdgeTop
         for (int i = 0; i < nodes.length; i++) {
             nodes[i] = cur.getNode(i);
         }
-        setIndex(cur.getIndex());
+        setIndex(cur.getEdgeIndex());
     }
 
     /**

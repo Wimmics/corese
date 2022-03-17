@@ -170,7 +170,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     }
     
      @Override
-    public int getIndex() {
+    public int getEdgeIndex() {
         return -1;
     }
 

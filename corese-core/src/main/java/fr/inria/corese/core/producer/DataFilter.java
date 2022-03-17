@@ -134,7 +134,7 @@ public class DataFilter implements ExprType {
 
             // Rule Engine optimization require edge with index >= index
             case EDGE_LEVEL:
-                return result(edge.getIndex() >= index);
+                return result(edge.getEdgeIndex() >= index);
                 
             case EDGE_ACCESS:
                 return getAccessRight().acceptWhere(edge.getLevel());  

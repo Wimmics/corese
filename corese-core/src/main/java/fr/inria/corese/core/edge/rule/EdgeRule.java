@@ -26,7 +26,7 @@ public class EdgeRule extends EdgeTriple {
     }
       
     @Override
-    public int getIndex(){
+    public int getEdgeIndex(){
         return index;
     }
     

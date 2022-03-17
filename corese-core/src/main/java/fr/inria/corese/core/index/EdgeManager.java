@@ -99,7 +99,6 @@ public class EdgeManager implements Iterable<Edge> {
      * In addition edges may be asserted or not
      * Remaining edge becomes asserted if one occurrence (with same g s p o) is asserted
      */
-    @Deprecated
     int reduceNew(NodeManager mgr) {
         ArrayList<Edge> reduceNodeList = new ArrayList<>();
         Edge pred = null;
@@ -165,6 +164,7 @@ public class EdgeManager implements Iterable<Edge> {
             }
         }
         
+        reduceNodeList.trimToSize();
         setEdgeList(reduceNodeList);
         if (count > 0) {
             graph.setSize(graph.size() - count);
@@ -177,37 +177,37 @@ public class EdgeManager implements Iterable<Edge> {
      * Remove duplicate edges
      * pragma: edge list is sorted
      */
-    int reduceOld(NodeManager mgr) {
-        ArrayList<Edge> l = new ArrayList<>();
-        Edge pred = null;
-        int count = 0, ind = 0;
-        //System.out.println("before reduce: " + list);
-        
-        for (Edge edge : getEdgeList()) {
-            if (pred == null) {
-                l.add(edge);
-                mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
-                ind++;
-            } else if (equalExceptIfOneHasMetadata(pred, edge)) {
-                // skip edge because it is redundant with pred
-                count++;
-            } else {
-                l.add(edge);
-                if (edge.getNode(getIndex()) != pred.getNode(getIndex())) {
-                    mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
-                }
-                ind++;
-            }
-            pred = edge;
-        }
-        
-        setEdgeList(l);
-        if (count > 0) {
-            graph.setSize(graph.size() - count);
-        }
-        //System.out.println("after reduce: " + list);
-        return count;
-    }
+//    int reduceOld(NodeManager mgr) {
+//        ArrayList<Edge> l = new ArrayList<>();
+//        Edge pred = null;
+//        int count = 0, ind = 0;
+//        //System.out.println("before reduce: " + list);
+//        
+//        for (Edge edge : getEdgeList()) {
+//            if (pred == null) {
+//                l.add(edge);
+//                mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
+//                ind++;
+//            } else if (equalExceptIfOneHasMetadata(pred, edge)) {
+//                // skip edge because it is redundant with pred
+//                count++;
+//            } else {
+//                l.add(edge);
+//                if (edge.getNode(getIndex()) != pred.getNode(getIndex())) {
+//                    mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
+//                }
+//                ind++;
+//            }
+//            pred = edge;
+//        }
+//        
+//        setEdgeList(l);
+//        if (count > 0) {
+//            graph.setSize(graph.size() - count);
+//        }
+//        //System.out.println("after reduce: " + list);
+//        return count;
+//    }
     
     /**
      * return true when edges are equal, except if one has metadata
@@ -951,8 +951,8 @@ public class EdgeManager implements Iterable<Edge> {
         return new Comparator<>() {
             @Override
             public int compare(Edge o1, Edge o2) {
-                int i1 = o1.getIndex();
-                int i2 = o2.getIndex();
+                int i1 = o1.getEdgeIndex();
+                int i2 = o2.getEdgeIndex();
                 
                 if (i1 > i2) {
                     return -1;

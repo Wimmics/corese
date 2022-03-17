@@ -105,7 +105,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
 
         if (nt.getCount() == 1
                 && rule.getQuery().nbPredicate(nt.getPredicate()) == 1) {
-            index = rule.getQuery().getEdge(nt.getPredicate()).getIndex();
+            index = rule.getQuery().getEdge(nt.getPredicate()).getEdgeIndex();
             if (index != -1) {
                 selectNewEdge = doit(true);
             }
@@ -178,7 +178,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
 
         for (Edge ent : env.getEdges()) {
 
-            if (ent != null && ent.getIndex() >= ruleLoop) {
+            if (ent != null && ent.getEdgeIndex() >= ruleLoop) {
                 return store(env);
             }
         }
@@ -265,8 +265,8 @@ public class ResultWatcher implements ResultListener, GraphListener {
     @Override
     public boolean listen(Edge edge, Edge ent) {
         if (selectNewEdge
-                && edge.getIndex() == index
-                && ent.getIndex() < ruleLoop) {
+                && edge.getEdgeIndex() == index
+                && ent.getEdgeIndex() < ruleLoop) {
             return false;
         }
         return true;

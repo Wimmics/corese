@@ -9,6 +9,7 @@ import java.util.List;
 /**
  * Reduce Edges with Metadata (rdf star)
  */
+@Deprecated
 public class EdgeManagerMetadata {
     static final int IGRAPH = Graph.IGRAPH;
     
@@ -196,7 +197,7 @@ public class EdgeManagerMetadata {
         for (Edge edge : getEdgeList()) {
             if (pred == null) {
                 l.add(edge);
-                mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
+                mgr.add(edge.getNode(getIndex()), getPredicate(), ind, ind);
                 ind++;
             } 
             else if (getGraph().isMetadataNode()) {
@@ -224,7 +225,7 @@ public class EdgeManagerMetadata {
             if (false) {
                 l.add(edge);
                 if (edge.getNode(getIndex()) != pred.getNode(getIndex())) {
-                    mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
+                    mgr.add(edge.getNode(getIndex()), getPredicate(), ind, ind);
                 }
                 ind++;
             }

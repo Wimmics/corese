@@ -98,11 +98,13 @@ public class EdgeManager implements Iterable<Edge> {
      * g s p o t - g1 s p o t - g2 s p o t - g3 s p o t
      * In addition edges may be asserted or not
      * Remaining edge becomes asserted if one occurrence (with same g s p o) is asserted
+     * Create NodeManager: node -> (predicate:position) 
      */
-    int reduceNew(NodeManager mgr) {
+    int reduceNew(NodeManager nodeManager) {
         ArrayList<Edge> reduceNodeList = new ArrayList<>();
         Edge pred = null;
         int count = 0, ind = 0;
+        int begin=0, end=0;
         //System.out.println("before reduce: " + list);
         boolean isMetadata = getGraph().isMetadataNode();
         
@@ -110,7 +112,8 @@ public class EdgeManager implements Iterable<Edge> {
             if (pred == null) {
                 pred = edge;
                 reduceNodeList.add(edge);
-                mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
+                begin = ind;
+                //nodeManager.add(edge.getNode(getIndex()), getPredicate(), ind);
                 ind++;
             } else if (equalWithoutConsideringMetadata(pred, edge)) {
                 // g s p o = g s p o -- with or without reference node
@@ -157,11 +160,16 @@ public class EdgeManager implements Iterable<Edge> {
             } else {
                 reduceNodeList.add(edge);
                 if (edge.getNode(getIndex()) != pred.getNode(getIndex())) {
-                    mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
+                    nodeManager.add(pred.getNode(getIndex()), getPredicate(), begin, ind);
+                    begin = ind;
                 }
                 pred = edge;
                 ind++;
             }
+        }
+        
+        if (pred!=null) {
+            nodeManager.add(pred.getNode(getIndex()), getPredicate(), begin, reduceNodeList.size());
         }
         
         reduceNodeList.trimToSize();
@@ -274,7 +282,11 @@ public class EdgeManager implements Iterable<Edge> {
         @Deprecated
     void complete() {
         sort();
-        reduce(getIndexer().getNodeManager());
+        reduce(getNodeManager());
+    }
+    
+    NodeManager getNodeManager() {
+        return getIndexer().getNodeManager();
     }
     
     
@@ -299,19 +311,27 @@ public class EdgeManager implements Iterable<Edge> {
     }
     
     /**
-     * generate map node -> index in edgeList
+     * generate map: node -> (p:position)
+     * with position of node in this edge list of predicate p 
      */
-    void indexNodeManager(NodeManager mgr) {
+    void indexNodeManager(NodeManager nodeManager) {
         Edge pred = null;
         int ind = 0;
-        for (Edge ent : getEdgeList()) {
+        int begin=0, end=0;
+        
+        for (Edge edge : getEdgeList()) {
+            Node focus = edge.getNode(getIndex());
             if (pred == null) {
-                mgr.add(ent.getNode(getIndex()), getPredicate(), ind);
-            } else if (ent.getNode(getIndex()) != pred.getNode(getIndex())) {
-                mgr.add(ent.getNode(getIndex()), getPredicate(), ind);
+            } 
+            else if (focus != pred.getNode(getIndex())) {
+                nodeManager.add(pred.getNode(getIndex()), getPredicate(), begin, ind);
+                begin = ind;
             }
             ind++;
-            pred = ent;
+            pred = edge;
+        }
+        if (pred!=null) {
+            nodeManager.add(pred.getNode(getIndex()), getPredicate(), begin, size());
         }
     }
     
@@ -401,13 +421,12 @@ public class EdgeManager implements Iterable<Edge> {
      */
     Iterable<Edge> getEdges(Node node) {
         // node is bound, enumerate edges where node = edge.getNode(index)
-        int n = findNodeIndex(node);
-        getGraph().trace(
-                "Get edges: node=%s label=%s index=%s place=%s", 
-                node, node.getLabel(), node.getIndex(), n);
+        int beginIndex = findNodeIndex(node);
+        getGraph().trace("Get edges: node=%s label=%s index=%s place=%s", 
+                node, node.getLabel(), node.getIndex(), beginIndex);
         
-        if (n >= 0 && n < getEdgeList().size()) {
-           return new EdgeManagerIterate(this, n);
+        if (beginIndex >= 0 && beginIndex < getEdgeList().size()) {
+           return new EdgeManagerIterate(this, beginIndex);
         }
         else if (getGraph().isDebugSparql()) {
             traceEdgeList();
@@ -424,8 +443,8 @@ public class EdgeManager implements Iterable<Edge> {
         }
     }
     
-    Iterable<Edge> getEdges(Node node, int n) {
-        return new EdgeManagerIterate(this, n);
+    Iterable<Edge> getEdges(Node node, int beginIndex) {
+        return new EdgeManagerIterate(this, beginIndex);
     }
     
         
@@ -636,10 +655,10 @@ public class EdgeManager implements Iterable<Edge> {
     }
     
     int getNodeIndex(Node n) {
-        if (getIndexer().getNodeManager().isConsultable() 
+        if (getNodeManager().isConsultable() 
                 && ! n.getDatatypeValue().isNumber()
                 && ! n.getDatatypeValue().isBoolean()){
-            return  getIndexer().getNodeManager().getPosition(n, getPredicate());
+            return  getNodeManager().getPosition(n, getPredicate());
         }
         return findNodeIndexBasic(n);
     }

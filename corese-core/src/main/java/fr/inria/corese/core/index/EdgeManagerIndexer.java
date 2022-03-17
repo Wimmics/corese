@@ -14,6 +14,7 @@ import fr.inria.corese.kgram.tool.MetaIterator;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.Index;
 import fr.inria.corese.core.Serializer;
+import fr.inria.corese.core.index.PredicateList.Cursor;
 import fr.inria.corese.core.util.Property;
 import java.util.HashMap;
 import fr.inria.corese.kgram.api.core.Edge;
@@ -49,6 +50,9 @@ public class EdgeManagerIndexer
         implements Index {
     public static boolean TRACE_REDUCE = false;
     public static boolean TRACE_INSERT = false;
+    // draft test to iterate edge list with subList(b, e) with rdf star only (predicate!=null)
+    public static boolean ITERATE_SUBLIST = false;
+    public static boolean RECORD_END = false;
     // true: store internal Edge without predicate Node
     public static boolean test = true;
     private static final String NL = System.getProperty("line.separator");
@@ -70,7 +74,7 @@ public class EdgeManagerIndexer
     PredicateList sortedPredicates;
     // Property Node -> Edge List 
     HashMap<Node, EdgeManager> table;
-    NodeManager nodeManager;
+    private NodeManager nodeManager;
     // replace key node by value node
     HashMap<Node, Node> replaceMap;
     private boolean debug = false;
@@ -284,7 +288,7 @@ public class EdgeManagerIndexer
             logClear();
         }
         table.clear();
-        nodeManager.clear();
+        getNodeManager().clear();
     }
 
     @Override
@@ -658,11 +662,11 @@ public class EdgeManagerIndexer
      */
     @Override
     public void indexNodeManager() {
-        nodeManager.start();
+        getNodeManager().start();
         for (Node pred : getSortedProperties()) {
-            checkGet(pred).indexNodeManager(nodeManager);
+            checkGet(pred).indexNodeManager(getNodeManager());
         }
-        nodeManager.finish();
+        getNodeManager().finish();
     }
     
     /**
@@ -674,7 +678,7 @@ public class EdgeManagerIndexer
      */
     @Override
     public void index(Node pred) {
-        nodeManager.desactivate();
+        getNodeManager().desactivate();
         basicIndex(pred);
     }
 
@@ -691,18 +695,18 @@ public class EdgeManagerIndexer
         if (TRACE_REDUCE) {
             System.out.println("before reduce:\n" + getGraph().display());
         }
-        nodeManager.start();
+        getNodeManager().start();
         for (Node pred : getSortedProperties()) {
             reduce(pred);
         }
-        nodeManager.finish();
+        getNodeManager().finish();
         if (TRACE_REDUCE) {
             System.out.println("after reduce:\n" + getGraph().display());
         }
     }
 
     private void reduce(Node pred) {
-        get(pred).reduce(nodeManager);
+        get(pred).reduce(getNodeManager());
     }
     
     @Override
@@ -757,15 +761,24 @@ public class EdgeManagerIndexer
         }
     }
     
+    @Override
+    public Iterable<Edge> getSortedEdges(Node node) {
+        if (ITERATE_SUBLIST) {
+            return getSortedEdgesSubList(node);
+        }
+        else {
+            return getSortedEdgesBasic(node);
+        }
+    }
+
     
     // use case: node ?p ?o where ?p is unbound
     // get node predicate list
-    @Override
-    public Iterable<Edge> getSortedEdges(Node node) {
+    public Iterable<Edge> getSortedEdgesBasic(Node node) {
         PredicateList list = getNodeManager().getPredicates(node);
         MetaIterator<Edge> meta = new MetaIterator<>();
         int i = 0;
-        for (Node pred : list) {
+        for (Node pred : list.getPredicateList()) {
             Iterable<Edge> it = getEdges(pred, node, list.getPosition(i++));
             if (it != null) {
                 meta.next(it);
@@ -775,6 +788,30 @@ public class EdgeManagerIndexer
             return new ArrayList<>();
         }
         return meta;
+    }
+    
+    public Iterable<Edge> getSortedEdgesSubList(Node node) {
+        PredicateList list = getNodeManager().getPredicates(node);
+        MetaIterator<Edge> meta = new MetaIterator<>();
+        int i = 0;
+        for (Node pred : list.getPredicateList()) {
+            Iterable<Edge> it = getEdgeSubList(pred, node, list.getCursor(i++));
+            if (it != null) {
+                meta.next(it);
+            }
+        }
+        if (meta.isEmpty()) {
+            return new ArrayList<>();
+        }
+        return meta;
+    }
+    
+    Iterable<Edge> getEdgeSubList(Node p, Node n, Cursor cursor) {
+        if (cursor == null) {
+            return getEdges(p, n);
+        }
+        EdgeManager man = checkGet(p);
+        return man.getEdgeList().subList(cursor.getBegin(), cursor.getEnd());
     }
 
     /**
@@ -800,8 +837,8 @@ public class EdgeManagerIndexer
     }
     
     @Override
-    public Iterable<Edge> getEdges(Node pred, Node node, int n) {
-        if (n == -1){
+    public Iterable<Edge> getEdges(Node pred, Node node, int beginIndex) {
+        if (beginIndex == -1){
             return getEdges(pred, node, null);
         }
         EdgeManager list = checkGet(pred);
@@ -810,9 +847,9 @@ public class EdgeManagerIndexer
         }
         else {
             if (debug) {
-                logger.info("getEdges: " + pred + " " + node + " " + n);
+                logger.info("getEdges: " + pred + " " + node + " " + beginIndex);
             }
-            return list.getEdges(node, n);
+            return list.getEdges(node, beginIndex);
         }    
     }
 
@@ -1227,6 +1264,10 @@ public class EdgeManagerIndexer
    
     public void setLoopMetadata(boolean loopMetadata) {
         this.loopMetadata = loopMetadata;
+    }
+
+    public void setNodeManager(NodeManager nodeManager) {
+        this.nodeManager = nodeManager;
     }
       
 }

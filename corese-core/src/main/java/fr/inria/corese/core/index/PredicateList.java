@@ -1,5 +1,7 @@
 package fr.inria.corese.core.index;
 
+import static fr.inria.corese.core.index.EdgeManagerIndexer.ITERATE_SUBLIST;
+import static fr.inria.corese.core.index.EdgeManagerIndexer.RECORD_END;
 import fr.inria.corese.kgram.api.core.Node;
 import java.util.ArrayList;
 import java.util.List;
@@ -14,64 +16,107 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class PredicateList 
-        // list of predicate Node of a given node (in NodeManager)
-        extends ArrayList<Node> {
-    boolean isPosition = false;
+public class PredicateList {
+    boolean isPosition = true;
     
-    // list of position(i) of given node in the list of edge of predicate(i) 
-    ArrayList<Integer> positionList;
+    // list of position(i) of given node in the list of edge of predicate(i)
+    private ArrayList<Node> predicateList;
+    private ArrayList<Integer> positionList;
+    private ArrayList<Integer> endList;
+    private ArrayList<Cursor> cursorList;
 
     PredicateList() {
         init();
     }
     
     PredicateList(boolean b) {
-        isPosition = b;
-        init();
+        this();
+        //isPosition = b;
     }
-    
-    void init() {
-        if (isPosition) {
-            positionList = new ArrayList<>();
-        }
-    }
-    
+       
     PredicateList(List<Node> l) {
-        addAll(l);
-        isPosition = false;
+        this();
+        getPredicateList().addAll(l);
+        //isPosition = false;
     }
 
     PredicateList(boolean b, int n) {
-        super(n);
-        isPosition = b;
+        this();
+        //isPosition = b;       
+    }
+    
+    void init() {
+        setPredicateList(new ArrayList<>());
         if (isPosition) {
-            positionList = new ArrayList<>(n);
+            setPositionList(new ArrayList<>());
+            setEndList(new ArrayList<>());
+            if (EdgeManagerIndexer.ITERATE_SUBLIST) {
+                setCursorList(new ArrayList<>());
+            }
         }
     }
     
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        sb.append(super.toString()).append(positionList);
+        sb.append(super.toString()).append(getPositionList());
         return sb.toString();
     }
-
-    int getPosition(int n) {
-        if (isPosition){
-            return positionList.get(n);
+    
+    public int getPosition(Node predicate) {
+        return findPosition(predicate);
+    }
+    
+    public int size() {
+        return getPredicateList().size();
+    }
+    
+    Node getPredicate(int i) {
+        return getPredicateList().get(i);
+    }
+    
+    int findPosition(Node predicate){
+        int i = findPosition(predicate, 0, size());
+        if (i >= 0 && i < size()){
+            if (predicate.getIndex() == getPredicate(i).getIndex()) {
+                return getPosition(i);
+            }
         }
         return -1;
     }
     
-    int getPosition(Node predicate) {
-        return findPosition(predicate);
+    public Cursor getCursor(Node predicate){
+        int i = findPosition(predicate, 0, size());
+        if (i >= 0 && i < size()){
+            if (predicate.getIndex() == getPredicate(i).getIndex()) {
+                return getCursor(i);
+            }
+        }
+        return null;
     }
-
     
+    Cursor getCursor(int n) {
+        //return new Cursor(getPosition(n), endList.get(n));
+        return getCursorList().get(n);
+    }
+    
+    int getPosition(int n) {
+        if (isPosition){
+            return getPositionList().get(n);
+        }
+        return -1;
+    }
+    
+    int getEnd(int n) {
+        if (n < getEndList().size()) {
+            return getEndList().get(n);
+        }
+        return -1;
+    }
+        
     int getPositionBasic(Node predicate) {
         int i = 0;
-        for (Node p : this) {
+        for (Node p : getPredicateList()) {
             if (predicate == p) {
                 return getPosition(i);
             }
@@ -80,22 +125,14 @@ public class PredicateList
         return -3;
     }
     
-    int findPosition(Node predicate){
-        int i = findPosition(predicate, 0, size());
-        if (i >= 0 && i < size()){
-            if (predicate.getIndex() == get(i).getIndex()) {
-                return getPosition(i);
-            }
-        }
-        return -1;
-    }
+    
     
     int findPosition(Node predicate, int first, int last) {
         if (first >= last) {
             return first;
         } else {
             int mid = (first + last) / 2;
-            int res = get(mid).compare(predicate); 
+            int res = getPredicate(mid).compare(predicate); 
             if (res >= 0) {
                 return findPosition(predicate, first, mid);
             } else {
@@ -105,26 +142,89 @@ public class PredicateList
     }
     
     
-    void add(Node node, Node predicate, int n) {
-        add(predicate);
+    void add(Node node, Node predicate, int begin, int end) {
+        getPredicateList().add(predicate);
         if (isPosition) {
-            if (node.getDatatypeValue().isNumber() ||
-                node.getDatatypeValue().isBoolean()){
+            if (node.getDatatypeValue().isNumber()
+                    || node.getDatatypeValue().isBoolean()) {
                 // for numbers we need to iterate all nodes with same value
                 // not just this node, hence we will perform a dichotomy
-                positionList.add(-1);
-            }
-            else {
-                positionList.add(n);
+                getPositionList().add(-1);
+            } else {
+                getPositionList().add(begin);
+                if (RECORD_END) {
+                    getEndList().add(end);
+                }
+                if (ITERATE_SUBLIST) {
+                    getCursorList().add(new Cursor(begin, end));
+                }
             }
         }
     }
 
-    @Override
     public void clear() {
-        super.clear();
+        getPredicateList().clear();
         if (isPosition) {
-            positionList.clear();
+            getPositionList().clear();
+            getEndList().clear();
+        }
+    }
+
+    public ArrayList<Node> getPredicateList() {
+        return predicateList;
+    }
+
+    public void setPredicateList(ArrayList<Node> predicateList) {
+        this.predicateList = predicateList;
+    }
+
+    public ArrayList<Integer> getEndList() {
+        return endList;
+    }
+
+    public void setEndList(ArrayList<Integer> endList) {
+        this.endList = endList;
+    }
+
+    public ArrayList<Integer> getPositionList() {
+        return positionList;
+    }
+
+    public void setPositionList(ArrayList<Integer> positionList) {
+        this.positionList = positionList;
+    }
+
+    public ArrayList<Cursor> getCursorList() {
+        return cursorList;
+    }
+
+    public void setCursorList(ArrayList<Cursor> cursorList) {
+        this.cursorList = cursorList;
+    }
+    
+    public class Cursor {
+        private int begin;
+        private int end;
+        
+        Cursor(int b, int e) {
+            begin = b;
+            end = e;
+        }
+
+        public int getBegin() {
+            return begin;
+        }
+
+        public void setBegin(int begin) {
+            this.begin = begin;
+        }
+
+        public int getEnd() {
+            return end;
+        }
+
+        public void setEnd(int end) {
+            this.end = end;
         }
     }
 }

@@ -66,11 +66,11 @@ public interface Edge extends Pointerable, Statement {
     default boolean contains(Node node) {return false;}
 
    
-    String getLabel();
+    String getEdgeLabel();
 
    
     default int getEdgeIndex() { return -1;}
-    void setIndex(int n);
+    default void setEdgeIndex(int n) {}
 
     // manage access right
     default byte getLevel() {

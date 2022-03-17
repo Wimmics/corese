@@ -1528,14 +1528,14 @@ public class Query extends Exp implements Graphable {
             case XPATH:
             case EVAL:
                 Edge edge = exp.getEdge();
-                edge.setIndex(iEdge++);                
+                edge.setEdgeIndex(iEdge++);                
                 min = indexExpEdge(query, exp);
                 
                 if (exp.hasPath()) {
                     // x rdf:type t
                     // x rdf:type/rdfs:subClassOf* t
                     Exp ep = exp.getPath();
-                    ep.getEdge().setIndex(edge.getEdgeIndex());                    
+                    ep.getEdge().setEdgeIndex(edge.getEdgeIndex());                    
                     indexExpEdge(query, ep);
                 }
                 break;

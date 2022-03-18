@@ -877,7 +877,7 @@ public final class MyJPanelQuery extends JPanel {
 
 
     private boolean isStyle(fr.inria.corese.kgram.api.core.Edge edge) {
-        return edge.getLabel().equals(KGSTYLE);
+        return edge.getEdgeLabel().equals(KGSTYLE);
     }
 
     /**

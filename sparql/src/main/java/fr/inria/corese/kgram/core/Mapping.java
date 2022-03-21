@@ -42,36 +42,33 @@ import java.util.Set;
 public class Mapping
         extends EnvironmentImpl
         implements Result, Environment, Pointerable {
- 
+
+
     public static boolean DEBUG_DEFAULT = false; 
     static final Edge[] emptyEdge = new Edge[0];
-    static final Edge[] emptyEntity = new Edge[0];
     static final Node[] emptyNode = new Node[0];
-    Edge[] qEdges;
-    Edge[] edges;
-    Node[] qNodes, nodes,
-            // select nodes
-            sNodes,
-            // order by
-            oNodes,
-            // group by
-            gNodes;
-    Node[] distinct, 
-            // draft for min(?l, groupBy(?x, ?y))
-            group;
-    // may record group Mappings when group by
+    private Edge[] queryEdges;
+    private Edge[] targetEdges;
+    private Node[] queryNodes;
+    private Node[] targetNodes;
+    private Node[] selectNodes;
+    private Node[] orderByNodes;
+    private Node[] groupByNodes;
+    private Node[] distinctNodes;
+    private Node[] groupAlterNodes;
+    // record group Mappings when group by
     Mappings lMap;
     // var -> Node
     HashMap<String, Node> values;
-    // Mapping as Environment
-    Query query;
     // aggregate may need to share bnode map 
     Map<String, IDatatype> bnode;
-    //boolean read = false;
-    // Mapping as Environment 
-    private Binding bind;
+    // Mapping as Environment
+    Query query;
+    // current named graph URI for eval filter
     private Node graphNode;
+    // value of graph ?g variable when eval named graph pattern
     private Node targetGraphNode;
+    private Binding bind;
     private Eval eval;
     private IDatatype report;
     boolean debug = DEBUG_DEFAULT;
@@ -79,20 +76,17 @@ public class Mapping
     private ProcessVisitor visitorParameter;
 
     public Mapping() {
-        this.qEdges = emptyEdge;;
-        this.edges = emptyEntity;
+        init(emptyEdge, emptyEdge);
         init(emptyNode, emptyNode);
     }
 
     Mapping(Edge[] query, Edge[] result, Node[] qnodes, Node[] nodes) {
-        this.qEdges = query;
-        this.edges = result;
+        init(query, result);
         init(qnodes, nodes);
     }
 
     Mapping(Node[] qnodes, Node[] nodes) {
-        this.qEdges = emptyEdge;
-        this.edges = emptyEntity;
+        init(emptyEdge, emptyEdge);
         init(qnodes, nodes);
     }
 
@@ -146,8 +140,8 @@ public class Mapping
     }
 
     static Mapping cleanCreate(Node[] qnodes, Node[] nodes) {
-        ArrayList<Node> query = new ArrayList<Node>();
-        ArrayList<Node> value = new ArrayList<Node>();
+        ArrayList<Node> query = new ArrayList<>();
+        ArrayList<Node> value = new ArrayList<>();
         int i = 0;
         for (Node node : nodes) {
             if (node != null) {
@@ -167,37 +161,37 @@ public class Mapping
         return new Mapping(qnodes, nodes);
     }
 
-    public static Mapping create(Node q1, Node n1, Node q2, Node n2) {
-        Node[] qnodes = new Node[2],
-                nodes = new Node[2];
-        qnodes[0] = q1;
-        nodes[0] = n1;
-        qnodes[1] = q2;
-        nodes[1] = n2;
-        return new Mapping(qnodes, nodes);
-    }
+//    public static Mapping create(Node q1, Node n1, Node q2, Node n2) {
+//        Node[] qnodes = new Node[2],
+//                nodes = new Node[2];
+//        qnodes[0] = q1;
+//        nodes[0] = n1;
+//        qnodes[1] = q2;
+//        nodes[1] = n2;
+//        return new Mapping(qnodes, nodes);
+//    }
 
-    public static Mapping create(Edge query, Edge result) {
-        ArrayList<Node> qNodes = new ArrayList<>(),
-                tNodes = new ArrayList<>();
-        for (int i = 0; i < query.nbNode(); i++) {
-            Node node = query.getNode(i);
-            if (node.isVariable()) {
-                qNodes.add(node);
-                tNodes.add(result.getNode(i));
-            }
-        }
-        if (query.getEdgeVariable() != null) {
-            qNodes.add(query.getEdgeVariable());
-            tNodes.add(result.getEdgeNode());
-        }
-        return new Mapping(qNodes, tNodes);
-    }
+//    public static Mapping create(Edge query, Edge result) {
+//        ArrayList<Node> qNodes = new ArrayList<>(),
+//                tNodes = new ArrayList<>();
+//        for (int i = 0; i < query.nbNode(); i++) {
+//            Node node = query.getNode(i);
+//            if (node.isVariable()) {
+//                qNodes.add(node);
+//                tNodes.add(result.getNode(i));
+//            }
+//        }
+//        if (query.getEdgeVariable() != null) {
+//            qNodes.add(query.getEdgeVariable());
+//            tNodes.add(result.getEdgeNode());
+//        }
+//        return new Mapping(qNodes, tNodes);
+//    }
 
-    public static Mapping create(Edge[] query, Edge[] result,
-            Node[] qnodes, Node[] nodes) {
-        return new Mapping(query, result, qnodes, nodes);
-    }
+//    public static Mapping create(Edge[] query, Edge[] result,
+//            Node[] qnodes, Node[] nodes) {
+//        return new Mapping(query, result, qnodes, nodes);
+//    }
     
     
      /**
@@ -237,24 +231,28 @@ public class Mapping
      *
      */
     void complete(List<Node> q, List<Node> t) {
-        Node[] qn = new Node[qNodes.length + q.size()];
-        Node[] tn = new Node[nodes.length + t.size()];
-        System.arraycopy(qNodes, 0, qn, 0, qNodes.length);
-        System.arraycopy(nodes, 0, tn, 0, nodes.length);
+        Node[] qn = new Node[getQueryNodes().length + q.size()];
+        Node[] tn = new Node[getTargetNodes().length + t.size()];
+        System.arraycopy(getQueryNodes(), 0, qn, 0, getQueryNodes().length);
+        System.arraycopy(getTargetNodes(), 0, tn, 0, getTargetNodes().length);
         int j = 0;
-        for (int i = qNodes.length; i < qn.length; i++) {
+        for (int i = getQueryNodes().length; i < qn.length; i++) {
             qn[i] = q.get(j);
             tn[i] = t.get(j);
             j++;
         }
-        this.qNodes = qn;
-        this.nodes = tn;
+        init(qn, tn);
     }
 
     void init(Node[] qnodes, Node[] nodes) {
-        this.qNodes = qnodes;
-        this.nodes = nodes;
+        this.setQueryNodes(qnodes);
+        this.setTargetNodes(nodes);
         initValues();
+    }
+    
+    void init(Edge[] query, Edge[] result) {
+        setQueryEdges(query);
+        setTargetEdges(result);
     }
 
     public void initValues() {
@@ -263,10 +261,10 @@ public class Mapping
             values = new HashMap<>();
         }
         int i = 0;
-        for (Node q : qNodes) {
-            if (i < nodes.length) {
-                if (q != null && q.isVariable() && nodes[i] != null) {
-                    setNodeValue(q, nodes[i]);
+        for (Node q : getQueryNodes()) {
+            if (i < getTargetNodes().length) {
+                if (q != null && q.isVariable() && getTargetNodes()[i] != null) {
+                    setNodeValue(q, getTargetNodes()[i]);
                 }
             }
             i++;
@@ -275,18 +273,18 @@ public class Mapping
 
     @Deprecated
     public void bind(Node qNode, Node tNode) {
-        Node[] qq = new Node[qNodes.length + 1];
-        Node[] tt = new Node[nodes.length + 1];
+        Node[] qq = new Node[getQueryNodes().length + 1];
+        Node[] tt = new Node[getTargetNodes().length + 1];
         int i = 0;
-        for (Node q : qNodes) {
+        for (Node q : getQueryNodes()) {
             qq[i] = q;
-            tt[i] = nodes[i];
+            tt[i] = getTargetNodes()[i];
             i++;
         }
         qq[i] = qNode;
         tt[i] = tNode;
-        qNodes = qq;
-        nodes = tt;
+        setQueryNodes(qq);
+        setTargetNodes(tt);
     }
 
     @Override
@@ -299,7 +297,7 @@ public class Mapping
 
     @Override
     public int size() {
-        return qNodes.length;
+        return getQueryNodes().length;
     }
 
     /**
@@ -320,16 +318,16 @@ public class Mapping
     }
 
     void setOrderBy(Node[] nodes) {
-        oNodes = nodes;
+        setOrderByNodes(nodes);
     }
 
     void setOrderBy(Node node) {
-        oNodes = new Node[1];
-        oNodes[0] = node;
+        setOrderByNodes(new Node[1]);
+        getOrderByNodes()[0] = node;
     }
 
     void setGroupBy(Node[] nodes) {
-        gNodes = nodes;
+        setGroupByNodes(nodes);
     }
 
     @Override
@@ -360,27 +358,27 @@ public class Mapping
     }
 
     public Node[] getOrderBy() {
-        return oNodes;
+        return getOrderByNodes();
     }
 
     public Node[] getGroupBy() {
-        return gNodes;
+        return getGroupByNodes();
     }
 
     public void setSelect(Node[] nodes) {
-        sNodes = nodes;
+        setSelectNodes(nodes);
     }
 
     public Node[] getSelect() {
-        return sNodes;
+        return getSelectNodes();
     }
 
     @Deprecated
     public void rename(Node oName, Node nName) {
         int i = 0;
-        for (Node qn : qNodes) {
+        for (Node qn : getQueryNodes()) {
             if (qn != null && qn.getLabel().equals(oName.getLabel())) {
-                qNodes[i] = nName;
+                getQueryNodes()[i] = nName;
                 return;
             }
             i++;
@@ -409,7 +407,7 @@ public class Mapping
      */
     int getIndex(Node qNode) {
         int i = 0;
-        for (Node node : qNodes) {
+        for (Node node : getQueryNodes()) {
             if (qNode == node) {
                 return i;
             }
@@ -441,10 +439,10 @@ public class Mapping
     }
 
     public Path getPath(int n) {
-        if (nodes[n] == null) {
+        if (getTargetNodes()[n] == null) {
             return null;
         }
-        return nodes[n].getPath();
+        return getTargetNodes()[n].getPath();
     }
 
     boolean isPath(Node qNode) {
@@ -474,8 +472,8 @@ public class Mapping
     String toString(String sep) {    
         StringBuilder sb = new StringBuilder();
         int i = 0;
-        for (Node e : nodes) {
-            sb.append(qNodes[i]); //.append("[").append(qNodes[i].getIndex()).append("]");
+        for (Node e : getTargetNodes()) {
+            sb.append(getQueryNodes()[i]); //.append("[").append(qNodes[i].getIndex()).append("]");
             sb.append(" = ").append(e).append(sep);
             if (e != null && e.getNodeObject() != null && e.getNodeObject() != this) {
                 if ((e.getNodeObject() instanceof TripleStore)) { 
@@ -521,13 +519,13 @@ public class Mapping
      * min(?l, groupBy(?x, ?y)) store value of ?x ?y in an array
      */
     void setGroup(List<Node> list) {
-        group = new Node[list.size()];
-        set(list, group);
+        setGroupAlter(new Node[list.size()]);
+        set(list, getGroupAlter());
     }
 
     void computeDistinct(List<Node> list) {
-        distinct = new Node[list.size()];
-        set(list, distinct);
+        setDistinctNodes(new Node[list.size()]);
+        set(list, getDistinctNodes());
     }
     
     void prepareModify(Query q) {
@@ -552,19 +550,19 @@ public class Mapping
      * min(?l, groupBy(?x, ?y)) retrieve value of ?x ?y in an array
      */
     Node getGroupNode(int n) {
-        return group[n];
+        return getGroupAlter()[n];
     }
 
     Node[] getGroupNodes() {
-        return group;
+        return getGroupAlter();
     }
 
     Node getDistinctNode(int n) {
-        return distinct[n];
+        return getDistinctNodes()[n];
     }
 
     public Node[] getDistinct() {
-        return distinct;
+        return getDistinctNodes();
     }
 
     public Node getTNode(Node node) {
@@ -572,19 +570,19 @@ public class Mapping
     }
 
     public Node getGroupBy(int n) {
-        return gNodes[n];
+        return getGroupByNodes()[n];
     }
 
     public Node getGroupBy(Node qNode, int n) {
-        if (gNodes.length == 0) {
+        if (getGroupByNodes().length == 0) {
             return getNode(qNode);
         }
-        return gNodes[n];
+        return getGroupByNodes()[n];
     }
 
     public void setNode(Node qNode, Node node) {
         int n = 0;
-        for (Node qrNode : qNodes) {
+        for (Node qrNode : getQueryNodes()) {
             if (qNode.same(qrNode)) {
                 // overload variable value
                 setNode(qNode, node, n);
@@ -596,7 +594,7 @@ public class Mapping
     }
     
     void setNode(Node qNode, Node node, int n) {
-        nodes[n] = node;
+        getTargetNodes()[n] = node;
         if (qNode.isVariable()) {
             setNodeValue(qNode, node);
         }
@@ -620,8 +618,8 @@ public class Mapping
     public void setNodes(List<Node> lNodes) {
         int n = 0;
         for (Node qNode : lNodes) {
-            if (n < qNodes.length) {
-                qNodes[n++] = qNode;
+            if (n < getQueryNodes().length) {
+                getQueryNodes()[n++] = qNode;
             }
         }
     }
@@ -634,9 +632,9 @@ public class Mapping
     public void rename(List<Node> oselect, List<Node> nselect) {
         int size = Math.min(oselect.size(), nselect.size());
         for (int i = 0; i < size; i++) {
-            for (int j = 0; j < qNodes.length; j++) {
-                if (oselect.get(i).equals(qNodes[j])) {
-                    qNodes[j] = nselect.get(i);
+            for (int j = 0; j < getQueryNodes().length; j++) {
+                if (oselect.get(i).equals(getQueryNodes()[j])) {
+                    getQueryNodes()[j] = nselect.get(i);
                     break;
                 }
             }
@@ -645,42 +643,42 @@ public class Mapping
 
     // TODO: manage Node isPath
     public void fixQueryNodes(Query q) {
-        for (int i = 0; i < qNodes.length; i++) {
-            Node node = qNodes[i];
+        for (int i = 0; i < getQueryNodes().length; i++) {
+            Node node = getQueryNodes()[i];
             Node qnode = q.getOuterNodeSelf(node);
-            qNodes[i] = qnode;
+            getQueryNodes()[i] = qnode;
         }
-        qEdges = emptyEdge;
-        edges = emptyEntity;
+        setQueryEdges(emptyEdge);
+        setTargetEdges(emptyEdge);
     }
 
     public void addNode(Node qNode, Node node) {
-        Node[] q = new Node[qNodes.length + 1];
-        Node[] t = new Node[nodes.length + 1];
-        System.arraycopy(qNodes, 0, q, 0, qNodes.length);
-        System.arraycopy(nodes, 0, t, 0, nodes.length);
+        Node[] q = new Node[getQueryNodes().length + 1];
+        Node[] t = new Node[getTargetNodes().length + 1];
+        System.arraycopy(getQueryNodes(), 0, q, 0, getQueryNodes().length);
+        System.arraycopy(getTargetNodes(), 0, t, 0, getTargetNodes().length);
         q[q.length - 1] = qNode;
         t[t.length - 1] = node;
-        qNodes = q;
-        nodes = t;
+        setQueryNodes(q);
+        setTargetNodes(t);
         setNodeValue(qNode, node);
     }
 
     public void setOrderBy(int n, Node node) {
-        oNodes[n] = node;
+        getOrderByNodes()[n] = node;
     }
 
     public void setGroupBy(int n, Node node) {
-        gNodes[n] = node;
+        getGroupByNodes()[n] = node;
     }
 
     public Node getNode(int n) {
-        return nodes[n];
+        return getTargetNodes()[n];
     }
     
     public Node getNodeProtect(int n) {
-        if (n < nodes.length) {
-            return nodes[n];
+        if (n < getTargetNodes().length) {
+            return getTargetNodes()[n];
         }
         return null;
     }
@@ -688,7 +686,7 @@ public class Mapping
 
     @Override
     public Node getQueryNode(int n) {
-        return qNodes[n];
+        return getQueryNodes()[n];
     }
 
     public Object getNodeObject(String name) {
@@ -765,9 +763,9 @@ public class Mapping
     
     Node getNodeBasic(Node node) {
         int n = 0;
-        for (Node qnode : qNodes) {
+        for (Node qnode : getQueryNodes()) {
             if (node.same(qnode)) {
-                return nodes[n];
+                return getTargetNodes()[n];
             }
             n++;
         }
@@ -776,9 +774,9 @@ public class Mapping
 
     Node getNodeBasic(String label) {
         int n = 0;
-        for (Node qnode : qNodes) {
+        for (Node qnode : getQueryNodes()) {
             if (qnode.getLabel().equals(label)) {
-                return nodes[n];
+                return getTargetNodes()[n];
             }
             n++;
         }
@@ -846,7 +844,7 @@ public class Mapping
 
     @Override
     public Node[] getQueryNodes() {
-        return qNodes;
+        return queryNodes;
     }
 
     public List<Node> getQueryNodeList() {
@@ -855,24 +853,24 @@ public class Mapping
 
     @Override
     public Node[] getNodes() {
-        return nodes;
+        return getTargetNodes();
     }
     
     public Edge[] getQueryEdges() {
-        return qEdges;
+        return queryEdges;
     }
 
     @Override
     public Edge[] getEdges() {
-        return edges;
+        return getTargetEdges();
     }
 
     Edge getEdge(int n) {
-        return edges[n];
+        return getTargetEdges()[n];
     }
 
     Edge getQueryEdge(int n) {
-        return qEdges[n];
+        return getQueryEdges()[n];
     }
     
      /**
@@ -1020,7 +1018,7 @@ public class Mapping
     int getIndex(String label) {
         // TODO Auto-generated method stub
         int n = 0;
-        for (Node qNode : qNodes) {
+        for (Node qNode : getQueryNodes()) {
             if (qNode.isVariable() && qNode.getLabel().equals(label)) {
                 return n;
             }
@@ -1054,7 +1052,7 @@ public class Mapping
 
     @Override
     public Node getQueryNode(String label) {
-        for (Node qNode : qNodes) {
+        for (Node qNode : getQueryNodes()) {
             if (qNode.getLabel().equals(label)) {
                 return qNode;
             }
@@ -1079,10 +1077,10 @@ public class Mapping
     }
 
     public Node getSelectNode(String label) {
-        if (sNodes == null) {
+        if (getSelectNodes() == null) {
             return null;
         }
-        for (Node qNode : sNodes) {
+        for (Node qNode : getSelectNodes()) {
             if (qNode.getLabel().equals(label)) {
                 return qNode;
             }
@@ -1102,7 +1100,7 @@ public class Mapping
     public boolean isBound(Node qNode) {
         // TODO Auto-generated method stub
         int n = getIndex(qNode.getLabel());
-        return n != -1 && nodes[n] != null;
+        return n != -1 && getTargetNodes()[n] != null;
     }
 
     /**
@@ -1301,16 +1299,6 @@ public class Mapping
         return getMappings();
     }
     
-//    public void aggregate(Mapping map, int n){
-//        getMappings().setCount(n);
-//        // in case there is a nested aggregate, map will be an Environment
-//        // it must implement aggregate() and hence must know current Mappings group
-//        map.setMappings(getMappings());
-//        map.setQuery(getQuery());
-//        // share same bnode table in all Mapping of current group solution
-//        map.setMap(getMap());
-//    }
-
     @Override
     public ASTExtension getExtension() {
         return query.getActualExtension();
@@ -1368,29 +1356,24 @@ public class Mapping
     @Override
     public TripleStore getTripleStore() {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
-    
+    }    
    
     @Override
     public Node getGraphNode() {
         return graphNode;
     }
-
-   
+  
     public void setGraphNode(Node graphNode) {
         this.graphNode = graphNode;
     }
     
-  
-//    public Node getResult() {
-//        return result;
-//    }
-//
-//   
-//    public void setResult(Node result) {
-//        this.result = result;
-//    }
-    
+    public Node getNamedGraph() {
+        return targetGraphNode;
+    }
+   
+    public void setNamedGraph(Node targetGraphNode) {
+        this.targetGraphNode = targetGraphNode;
+    }   
     
     @Override
     public Eval getEval() {
@@ -1403,34 +1386,16 @@ public class Mapping
             return null;
         }
         return getEval().getVisitor();
-    }
-
-    
+    }   
     @Override
     public void setEval(Eval eval) {
         this.eval = eval;
     }
 
-    
-    public Node getNamedGraph() {
-        return targetGraphNode;
-    }
-
-    
-    public void setNamedGraph(Node targetGraphNode) {
-        this.targetGraphNode = targetGraphNode;
-    }
-
-    /**
-     * @return the visitorParameter
-     */
     public ProcessVisitor getVisitorParameter() {
         return visitorParameter;
     }
 
-    /**
-     * @param visitorParameter the visitorParameter to set
-     */
     public void setVisitorParameter(ProcessVisitor visitorParameter) {
         this.visitorParameter = visitorParameter;
     }
@@ -1443,5 +1408,71 @@ public class Mapping
     public void setReport(IDatatype report) {
         this.report = report;
     }
+
+    public void setQueryNodes(Node[] qNodes) {
+        this.queryNodes = qNodes;
+    }
+    
+    public Node[] getTargetNodes() {
+        return targetNodes;
+    }
+
+    public void setTargetNodes(Node[] nodes) {
+        this.targetNodes = nodes;
+    }
+    
+    public Node[] getSelectNodes() {
+        return selectNodes;
+    }
+
+    public void setSelectNodes(Node[] sNodes) {
+        this.selectNodes = sNodes;
+    }
+
+    public Node[] getOrderByNodes() {
+        return orderByNodes;
+    }
+
+    public void setOrderByNodes(Node[] oNodes) {
+        this.orderByNodes = oNodes;
+    }
+
+    public Node[] getGroupByNodes() {
+        return groupByNodes;
+    }
+
+    public void setGroupByNodes(Node[] gNodes) {
+        this.groupByNodes = gNodes;
+    }
+
+    public Node[] getDistinctNodes() {
+        return distinctNodes;
+    }
+
+    public void setDistinctNodes(Node[] distinct) {
+        this.distinctNodes = distinct;
+    }
+
+    public Node[] getGroupAlter() {
+        return groupAlterNodes;
+    }
+
+    public void setGroupAlter(Node[] group) {
+        this.groupAlterNodes = group;
+    }
+
+    public void setQueryEdges(Edge[] qEdges) {
+        this.queryEdges = qEdges;
+    }
+
+    public Edge[] getTargetEdges() {
+        return targetEdges;
+    }
+
+    public void setTargetEdges(Edge[] edges) {
+        this.targetEdges = edges;
+    }
+
+ 
  
 }

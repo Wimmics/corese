@@ -63,7 +63,7 @@ public class Eval implements ExpType, Plugin {
     
     static final int STOP = -2;
     public static int count = 0;
-    ResultListener listener;
+    private ResultListener listener;
     EventManager manager;
     private ProcessVisitor visitor;
     private SPARQLEngine sparqlEngine;
@@ -987,7 +987,7 @@ public class Eval implements ExpType, Plugin {
         if (hasEvent) {
             pathFinder.set(manager);
         }
-        pathFinder.set(listener);
+        pathFinder.set(getListener());
         pathFinder.setList(query.getGlobalQuery().isListPath());
         // rdf:type/rdfs:subClassOf* generated system path does not store the list of edges
         // to be optimized
@@ -1108,7 +1108,7 @@ public class Eval implements ExpType, Plugin {
 
         Exp exp = stack.get(n);
         if (hasListener) {
-            exp = listener.listen(exp, n);
+            exp = getListener().listen(exp, n);
         }
         
         if (isEvent) {
@@ -2041,8 +2041,8 @@ public class Eval implements ExpType, Plugin {
      */
     private int store(Producer p, Mapping m) throws SparqlException {
         boolean store = true;
-        if (listener != null) {
-            store = listener.process(getMemory());
+        if (getListener() != null) {
+            store = getListener().process(getMemory());
         }
         if (store) {
             nbResult++;
@@ -2162,8 +2162,8 @@ public class Eval implements ExpType, Plugin {
      * @param el
      */
     public void addResultListener(ResultListener el) {
-        listener = el;
-        hasListener = listener != null;
+        setListener(el);
+        hasListener = getListener() != null;
         if (hasListener) {
             evaluator.addResultListener(el);
         }
@@ -2556,6 +2556,14 @@ public class Eval implements ExpType, Plugin {
 
     public void setJoinMappings(boolean joinMappings) {
         this.joinMappings = joinMappings;
+    }
+
+    public ResultListener getListener() {
+        return listener;
+    }
+
+    public void setListener(ResultListener listener) {
+        this.listener = listener;
     }
 
 }

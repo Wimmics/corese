@@ -239,10 +239,12 @@ public class Construct
          process(map, null);
     }
     
+    // rule engine
     public void entailment(Mappings map) {
         insert(map, null);
     }
 
+    // rule engine
     public void entailment(Mappings map, Environment env) {  
         process(map, env);
     }

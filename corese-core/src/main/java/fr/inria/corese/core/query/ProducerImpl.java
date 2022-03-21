@@ -306,7 +306,7 @@ public class ProducerImpl
         return edge.isNested() || q.getGlobalAST().hasMetadata(RDF_STAR_SELECT);
     }    
     
-    // special case with tricky optimizations for rule engine
+    // special case with optimizations for rule engine
     Iterable<Edge> getRuleEdgeList(Query q, Edge edge, Environment env, Node gNode, List<Node> from, Node predicate) {
         if (q.getEdgeList() != null
                 && edge.getEdgeIndex() == q.getEdgeIndex()) {
@@ -316,11 +316,11 @@ public class ProducerImpl
         } else {
             Exp exp = env.getExp();
             if (exp != null && exp.getEdge() == edge && exp.getLevel() != -1) {
+                // edge level computed by RuleEngine ResultWatcher
                 int level = exp.getLevel();
-                // int n = ILIST;
                 // rule engine requires new edges with level >= exp.getLevel()
                 // ILIST is index of specific Edge Index sorted by reverse level
-                Iterable<Edge> it = graph.getDataStore().getDefault(from).level(level).iterate(predicate, null, ILIST);
+                Iterable<Edge> it = getGraph().getDataStore().getDefault(from).level(level).iterate(predicate, null, ILIST);
                 return localMatch(it, gNode, edge, env);
             }
         }

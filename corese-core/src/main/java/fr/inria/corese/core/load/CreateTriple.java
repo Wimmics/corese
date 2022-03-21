@@ -184,6 +184,9 @@ public class CreateTriple {
 
 
     public boolean accept(String pred) {
+        if (raiseLimit()) {
+            return false;
+        }
         if (count > 100000) {
             graph.getEventManager().process(Event.LoadStep);
             count = 2;

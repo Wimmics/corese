@@ -29,8 +29,12 @@ public class Rule {
     static final String TPVAR = "?t";
     static final int UNDEF = -1;
     static final int DEFAULT = 0;
+    // transitive without triple pattern p a owl:TransitiveProperty
+    // c1 subClassOf c3 where c1 subClassOf c2 . c2 subClassOf c3
     static final int TRANSITIVE = 1;
+    // transitive with triple pattern p a owl:TransitiveProperty
     static final int GENERIC_TRANSITIVE = 2;
+    // s type c2 where s type c1 . c1 subClassOf c2
     static final int PSEUDO_TRANSITIVE = 3;
     static int COUNT = 0;
     Query query;
@@ -161,14 +165,17 @@ public class Rule {
             int res = DEFAULT;
             if (map.size() > 0) {
                 if (map.getNode(TPVAR) == null) {
+                    // without ?p a owl:TransitiveProperty
                     res = TRANSITIVE;
                 } else {
+                    // with ?p a owl:TransitiveProperty
                     res = GENERIC_TRANSITIVE;
                 }
             } 
             else {
                 map = exec.query(TRANS_PSEUDO_QUERY);
                 if (map.size() > 0) {
+                    // s type c2 where s type c1 . c1 subClassOf c2
                     res = PSEUDO_TRANSITIVE;
                 }
             }
@@ -181,12 +188,14 @@ public class Rule {
 
     }
 
-    public int getEdgeIndex() {
+    public int getNewEdgeIndex() {
         switch (type()) {
             case TRANSITIVE:
             case PSEUDO_TRANSITIVE:
                 return 0;
             case GENERIC_TRANSITIVE:
+                // edge 0 is ?p a owl:TransitiveProperty
+                // edge 1 is ?s ?p ?v, consider new edges for this one 
                 return 1;
             default:
                 return -1;
@@ -207,7 +216,7 @@ public class Rule {
     }
 
     public boolean isPseudoTransitive() {
-        return (type() == PSEUDO_TRANSITIVE); // || type() == TRANSITIVE);
+        return (type() == PSEUDO_TRANSITIVE); 
     }
     
     /**
@@ -223,14 +232,6 @@ public class Rule {
         return false;
     }
     
-    /**
-     * 
-     * TODO: 
-     * only if pseudo rdf:type is after it's transitive rdfs:subClassOf
-     */
-//    public boolean isLoop() {
-//        return isClosure() || isPseudoTransitive();
-//    }
 
     public boolean isClosure() {
         return isClosure;

@@ -41,31 +41,32 @@ public class ResultWatcher implements ResultListener, GraphListener {
     int cnode = 0;
     boolean selectNewResult = true, start = true;
     private boolean isDistinct = true;
-    private boolean isSkipPath = false;
+    //private boolean isSkipPath = false;
     private boolean test = false;
     boolean selectNewEdge = false;
-    int edgeIndex = -1;
+    int queryNewEdgeIndex = -1;
 
-    Construct cons;
+    // Factory to construct edge directly without intermediate Mapping
+    private Construct construct;
     Mappings map;
     private Rule rule;
-    Graph graph;
-    Distinct dist;
-    ArrayList<Edge> list;
+    private Graph graph;
+    Distinct distinct;
+    ArrayList<Edge> insertEdgeList;
     private boolean trace;
-    private boolean isTestable;
+    private boolean performSelectNewEdge;
 
     ResultWatcher(Graph g) {
         graph = g;
-        list = new ArrayList<>();
+        insertEdgeList = new ArrayList<>();
     }
 
     public Distinct getDistinct() {
-        return dist;
+        return distinct;
     }
 
     void setConstruct(Construct c) {
-        cons = c;
+        construct = c;
     }
 
     void setMappings(Mappings m) {
@@ -85,7 +86,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
         selectNewResult = doit(true);
         selectNewEdge = false;
         start = true;
-        isTestable = false;
+        performSelectNewEdge = false;
         init(r);
     }
     
@@ -97,7 +98,8 @@ public class ResultWatcher implements ResultListener, GraphListener {
      * (1) If there is only one predicate in where with new edges (Only one
      * occurrence of this predicate in where) We can focus on these new edge
      * using listen(Edge, Entity) (2) If there are two predicates and the
-     * proportion of new triples is small enough < 0.3 we will focus on new
+     * proportion of new edges (wrt new edges in previous record) 
+     * is small enough < 0.3 we will focus on new
      * triples using a specific Index of edges sorted by timestamp (see union())
      */
     void start(Record oldRecord, Record newRecord) {
@@ -105,8 +107,8 @@ public class ResultWatcher implements ResultListener, GraphListener {
 
         if (newRecord.nbNewPredicate() == 1
                 && getQuery().nbPredicate(newRecord.getPredicate()) == 1) {
-            edgeIndex = getQuery().getEdge(newRecord.getPredicate()).getEdgeIndex();
-            if (edgeIndex != -1) {
+            queryNewEdgeIndex = getQuery().getEdge(newRecord.getPredicate()).getEdgeIndex();
+            if (queryNewEdgeIndex != -1) {
                 selectNewEdge = doit(true);
             }
         } else if (loop > 0 && getQuery().getEdgeList() == null) {
@@ -117,14 +119,14 @@ public class ResultWatcher implements ResultListener, GraphListener {
             for (Node predicate : getRule().getPredicates()) {
                 if (newRecord.get(predicate) > oldRecord.get(predicate)) {
                     n++;
-                    // proportion of new edges
+                    // proportion of new edges for predicate wrt new edges in previous record
                     double dd = ((double) (newRecord.get(predicate) - oldRecord.get(predicate))) / (double) newRecord.get(predicate);
                     // sum of proportion of new edges
                     tt += dd;
                 }
             }
 
-            // 2 edges and may be 1 a filter
+            // 2 predicates with new edges and may be 1 a filter
             if (n <= 2 && tt < TOTAL) {
                 Exp body = getQuery().getBody();
                 int ne = 0, nf = 0;
@@ -138,7 +140,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
                 }
 
                 if (ne == 2 && nf <= 1) {
-                    isTestable = doit(true);
+                    performSelectNewEdge = doit(true);
                 }
             }
         }
@@ -152,12 +154,12 @@ public class ResultWatcher implements ResultListener, GraphListener {
         r.getQuery().setEdgeList(null);
         List<Node> list = r.getQuery().getConstructNodes();
         if (list != null && !list.isEmpty()) {
-            dist = Distinct.create(list);
+            distinct = Distinct.create(list);
         }
     }
 
     void finish(Rule r) {
-        dist = null;
+        distinct = null;
     }
 
     /**
@@ -178,7 +180,6 @@ public class ResultWatcher implements ResultListener, GraphListener {
         }
 
         for (Edge ent : env.getEdges()) {
-
             if (ent != null && ent.getEdgeIndex() >= timestamp) {
                 return store(env);
             }
@@ -194,21 +195,21 @@ public class ResultWatcher implements ResultListener, GraphListener {
     }
 
     boolean store(Environment env) {
-        if (isDistinct && dist != null) {
+        if (isDistinct && distinct != null) {
             // select distinct * on construct variables
-            if (!dist.isDistinct(env)) {
+            if (!distinct.isDistinct(env)) {
                 cneg += 1;
                 return false;
             }
         }
         cpos += 1;
-        if (cons == null) {
+        if (getConstruct() == null) {
             // Mapping created by kgram
             return true;
         } else {
-            // create Edge 
-            // no Mapping created by kgram
-            cons.entailment(map, env);
+            // Construct create Edge directly
+            // no intermediate Mapping created by sparql
+            getConstruct().entailment(map, env);
             return false;
         }
     }
@@ -228,6 +229,11 @@ public class ResultWatcher implements ResultListener, GraphListener {
         return true;
     }
 
+    /**
+     * sparql interpreter call listen(exp, n) and may get an optimized
+     * version of exp to evaluate
+     * 
+     */
     @Override
     public Exp listen(Exp exp, int n) {
         switch (exp.type()) {
@@ -248,13 +254,14 @@ public class ResultWatcher implements ResultListener, GraphListener {
         if (n == 0 && exp.type() == Exp.AND) {
 
             if (getRule().isGTransitive() && getRule().getQuery().getEdgeList() != null) {
-                // exp = where { ?p a owl:TransitiveProperty . ?x ?p ?y . ?y ?p ?z }
-                // there is a list of candidates for ?x ?p ?y
-                // skip first query edge: skip exp.get(0)
+                // rule exp = where { ?p a owl:TransitiveProperty . ?x ?p ?y . ?y ?p ?z }
+                // there is a list of new candidates for ?x ?p ?y
+                // sparql skip first query edge: skip exp.get(0)
                 exp = Exp.create(Exp.AND, exp.get(1), exp.get(2));
-            } else if (isTestable && graph.hasRuleEdgeList()) {
-                // focus on new edges in a specific graph Index sorted by timestamps
-                isTestable = false;
+            } else if (performSelectNewEdge && getGraph().hasRuleEdgeList()) {
+                // return an expression with 
+                // focus on new edges in a specific graph Index sorted by edge timestamp
+                performSelectNewEdge = false;
                 exp = union(exp);
             }
         }
@@ -262,11 +269,14 @@ public class ResultWatcher implements ResultListener, GraphListener {
         return exp;
     }
   
+    /**
+     * sparql check whether targetEdge is new
+     */
     @Override
-    public boolean listen(Edge edge, Edge ent) {
+    public boolean listen(Edge queryEdge, Edge targetEdge) {
         if (selectNewEdge
-                && edge.getEdgeIndex() == edgeIndex
-                && ent.getEdgeIndex() < timestamp) {
+                && queryEdge.getEdgeIndex() == queryNewEdgeIndex
+                && targetEdge.getEdgeIndex() < timestamp) {
             return false;
         }
         return true;
@@ -283,8 +293,9 @@ public class ResultWatcher implements ResultListener, GraphListener {
 
 
     /**
-     * exp = 2 edge (and may be 1 filter) return { getNew(e1) e2 } union {
-     * getNew(e2) e1 } where getNew(e) is a directive to Producer to focus on
+     * rule exp = 2 edge (and may be 1 filter) 
+     * return { getNew(e1) e2 } union {getNew(e2) e1 } 
+     * where getNew(e) is a directive to Producer to focus on
      * new edges only new edges are those with level(e) >= ruleLoop There is a
      * Graph Index where edges are sorted by level
      */
@@ -342,16 +353,16 @@ public class ResultWatcher implements ResultListener, GraphListener {
     /**
      * ************************************************************
      *
-     * GraphListener
+     * GraphListener: deprecated ?
      *
      ************************************************************
      */
     public void clear() {
-        list.clear();
+        insertEdgeList.clear();
     }
 
-    public List<Edge> getList() {
-        return list;
+    public List<Edge> getInsertEdgeList() {
+        return insertEdgeList;
     }
 
     @Override
@@ -365,9 +376,8 @@ public class ResultWatcher implements ResultListener, GraphListener {
 
     @Override
     public void insert(Graph g, Edge ent) {
-        // TODO
         if (ent.getEdgeLabel().equals(RDFS.SUBCLASSOF)) {
-            list.add(ent);
+            insertEdgeList.add(ent);
         }
     }
 
@@ -388,14 +398,14 @@ public class ResultWatcher implements ResultListener, GraphListener {
     }
 
     
-    public boolean isSkipPath() {
-        return isSkipPath;
-    }
-
-   
-    public void setSkipPath(boolean isSkipPath) {
-        this.isSkipPath = isSkipPath;
-    }
+//    public boolean isSkipPath() {
+//        return isSkipPath;
+//    }
+//
+//   
+//    public void setSkipPath(boolean isSkipPath) {
+//        this.isSkipPath = isSkipPath;
+//    }
 
     
     public boolean isDistinct() {
@@ -437,6 +447,18 @@ public class ResultWatcher implements ResultListener, GraphListener {
 
     public void setRule(Rule rule) {
         this.rule = rule;
+    }
+
+    public Graph getGraph() {
+        return graph;
+    }
+
+    public void setGraph(Graph graph) {
+        this.graph = graph;
+    }
+
+    public Construct getConstruct() {
+        return construct;
     }
 
 }

@@ -101,6 +101,8 @@ public class Property {
         VARIABLE,
         IMPORT,
         
+        TRACE_MEMORY,
+        
         // boolan value
         DISPLAY_URI_AS_PREFIX,
         DISPLAY_EDGE_AS_RDF4J,

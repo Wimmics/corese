@@ -71,19 +71,19 @@ static int count = 0;
     }
 
     public boolean isConnected(Node p, Node n1, Node n2) {
-        if (isConnect()){
-            int i1 = n1.getIndex();       
+        if (isConnect()) {
+            int i1 = n1.getIndex();
             if (i1 >= 0 && n2.getIndex() >= 0) {
                 if (connect[i1] == null) {
                     try {
-                        connect[i1] = new boolean[connect.length];                   
-                    } catch (OutOfMemoryError E) {  
-                        if (isMessage){
+                        connect[i1] = new boolean[connect.length];
+                    } catch (OutOfMemoryError E) {
+                        if (isMessage) {
                             isMessage = false;
-                            System.out.println("Skip Cache Out Of Memory:  "  + p);
+                            System.out.println("Skip Cache Out Of Memory:  " + p);
                             return graph.exist(p, n1, n2);
                         }
-                    }                   
+                    }
                 }
                 return connect[i1][n2.getIndex()];
             }

@@ -334,67 +334,48 @@ public class Shacl {
         return result;
     }
 
-    /**
-     * @return the graph
-     */
     public Graph getGraph() {
         return graph;
     }
 
-    /**
-     * @param graph the graph to set
-     */
+    
     public void setGraph(Graph graph) {
         graph.init();
         this.graph = graph;
     }
     
-    /**
-     * @param result the result to set
-     */
+   
     public void setResult(Graph result) {
         this.result = result;
     }
 
-    /**
-     * @return the shacl
-     */
+   
     public Graph getShacl() {
         return shacl;
     }
 
-    /**
-     * @param shacl the shacl to set
-     */
+   
     public void setShacl(Graph shacl) {
         shacl.init();
         this.shacl = shacl;
     }
 
-    /**
-     * @return the bind
-     */
+   
     public Binding getBind() {
         return bind;
     }
 
-    /**
-     * @param bind the bind to set
-     */
+   
     public void setBind(Binding bind) {
         this.bind = bind;
     }
 
-    /**
-     * @return the input
-     */
+    
     public Binding getInput() {
         return input;
     }
 
-    /**
-     * @param input the input to set
-     */
+    
     public void setInput(Binding input) {
         this.input = input;
     }

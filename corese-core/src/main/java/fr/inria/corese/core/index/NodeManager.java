@@ -39,7 +39,13 @@ public class NodeManager {
     private static final String NL = System.getProperty("line.separator");
     PredicateList emptyPredicateList;
     
-    public class PredicateTable extends HashMap<Node, PredicateList> {}
+    public class PredicateTable extends HashMap<Node, PredicateList> {
+        void trim() {
+            for (PredicateList t : values()) {
+                t.trim();
+            }
+        }
+    }
     
     NodeManager(Graph g, int index) {
         graph = g;
@@ -75,6 +81,16 @@ public class NodeManager {
         }
     }
     
+    void complete() {
+        trim();
+    }
+    
+    void trim() {
+        for (PredicateTable t : getPredicateTableList()) {
+            t.trim();
+        }
+    }
+    
     public int getIndex() {
         return index;
     }
@@ -97,6 +113,7 @@ public class NodeManager {
     
     // finish indexing
     public void finish() {
+        trim();
         getGraph().getEventManager().finish(Event.IndexNodeManager, this);
     }
      
@@ -203,10 +220,17 @@ public class NodeManager {
     }
     
     public String display() {
+        return display(Integer.MAX_VALUE);
+    }
+
+    public String display(int max) {
         StringBuilder sb = new StringBuilder();
         int num = 0;
         for (PredicateTable t : getPredicateTableList()) {
             for (Node n : t.keySet()) {
+                if (num >= max) {
+                    return sb.toString();
+                }
                 sb.append(String.format("%s %s: ", num++, n));
                 PredicateList plist = getPredicateList(n);
                 int i = 0;

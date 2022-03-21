@@ -4,7 +4,6 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Distinct;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.rule.Rule;
 import java.util.ArrayList;
 import fr.inria.corese.kgram.api.core.Edge;
 
@@ -129,8 +128,8 @@ static int count = 0;
         boolean go = true, isFirst = loop == 0;
         int n = 0;
 
-        ArrayList<Edge> lnew = new ArrayList<Edge>(),
-                ltmp = new ArrayList<Edge>();
+        ArrayList<Edge> lnew = new ArrayList<>(),
+                ltmp = new ArrayList<>();
         if (isTrace){
             System.out.println("Cl: 0 "  + graph.size(pred1));
         }

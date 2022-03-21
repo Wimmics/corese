@@ -63,6 +63,14 @@ public class PredicateList {
         return sb.toString();
     }
     
+    void trim() {
+        getPositionList().trimToSize();
+        getEndList().trimToSize();
+        if (ITERATE_SUBLIST) {
+            getCursorList().trimToSize();
+        }
+    }
+    
     public int getPosition(Node predicate) {
         return findPosition(predicate);
     }

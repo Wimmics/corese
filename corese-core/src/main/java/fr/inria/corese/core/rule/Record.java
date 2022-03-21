@@ -11,17 +11,17 @@ import java.util.HashMap;
  */
 public class Record  {
 
-    private int time, loop, size;
+    private int timestamp, loop, size;
     private Node predicate;
     private Rule rule;
     private int count = 0;
     
     HashMap<Node, Integer> map;
 
-    Record(Rule r, int n, int l, int s) {
+    Record(Rule r, int timestamp, int loop, int s) {
         rule = r;
-        time = n;
-        loop = l;
+        this.timestamp = timestamp;
+        this.loop = loop;
         size = s;
         map = new HashMap();
     }
@@ -30,7 +30,7 @@ public class Record  {
         String str = "[a kg:Index"
                 + " ; kg:rule " + rule.getIndex() 
                 + " ; kg:loop " + loop   
-                + " ; kg:time " + time 
+                + " ; kg:time " + timestamp 
                 + " ; kg:size " + size + " ; \n";
         for (Node p : map.keySet()){
             Integer n = map.get(p);
@@ -43,14 +43,10 @@ public class Record  {
     /**
      * Accept a rule if there are new triples
      */
-    boolean accept(Record told) {
-//        if (rule.getQuery().hasFunctional()){
-//            return true;
-//        }
-        
+    boolean accept(Record oldRecord) {
         int n = 0;
         for (Node pred : rule.getPredicates()) {
-            if (get(pred) > told.get(pred)) {
+            if (get(pred) > oldRecord.get(pred)) {
                 n++;
                 setPredicate(pred);
             }
@@ -77,58 +73,42 @@ public class Record  {
         map.put(n, i);
     }
 
-    /**
-     * @return the index
-     */
-    public int getIndex() {
-        return time;
+    
+    public int getTimestamp() {
+        return timestamp;
     }
 
-    /**
-     * @param index the index to set
-     */
-    public void setIndex(int index) {
-        this.time = index;
+   
+    public void setTimestamp(int index) {
+        this.timestamp = index;
     }
 
-    /**
-     * @return the count
-     */
-    public int getCount() {
+    
+    public int nbNewPredicate() {
         return count;
     }
 
-    /**
-     * @param count the count to set
-     */
+   
     public void setCount(int count) {
         this.count = count;
     }
 
-    /**
-     * @return the predicate
-     */
+    
     public Node getPredicate() {
         return predicate;
     }
 
-    /**
-     * @param predicate the predicate to set
-     */
+   
     public void setPredicate(Node predicate) {
         this.predicate = predicate;
     }
 
-    /**
-     * @return the rule
-     */
+   
     public Rule getRule() {
         return rule;
     }
 
-    /**
-     * @param rule the rule to set
-     */
+   
     public void setRule(Rule rule) {
         this.rule = rule;
     }

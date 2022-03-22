@@ -30,7 +30,10 @@ import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -455,7 +458,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     @Override
     public void finish(Environment env) {
-        //proxy.finish(producer, env);
         getPlugin().finish(producer, env);
     }
   
@@ -486,10 +488,39 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             throws EngineException{
         Function fun = getDefine(env, name, n);
         if (fun == null) {
-            //fun = proxy.getDefine(exp, env, name, n);
-            fun = getPlugin().getDefine(exp, env, name, n);
+            fun = getDefine(exp, env, name, n);
         }
         return fun;
+    }
+    
+    /**
+     * exp = funcall(arg, arg) arg evaluates to name 
+     * Generate extension function
+     * for predefined function name rq:plus -> function rq:plus(x, y){
+     * rq:plus(x, y) }
+     */
+    Function getDefine(Expr exp, Environment env, String name, int n) throws EngineException {
+        if (Processor.getOper(name) == ExprType.UNDEF) {
+            return null;
+        }
+        Query q = env.getQuery().getGlobalQuery();
+        ASTQuery ast = getAST((Expression) exp, q);
+        Function fun = ast.defExtension(name, name, n);
+        q.defineFunction(fun);
+        ASTExtension ext = Interpreter.getCreateExtension(q);
+        ext.define(fun);
+        return fun;
+    }
+    
+    // use exp AST to compile exp
+    // use case: uri() uses ast base
+    ASTQuery getAST(Expression exp, Query q) {
+        ASTQuery ast = exp.getAST();
+        if (ast != null) {
+            return ast.getGlobalAST();
+        } else {
+            return  q.getAST();
+        }
     }
 
     @Override

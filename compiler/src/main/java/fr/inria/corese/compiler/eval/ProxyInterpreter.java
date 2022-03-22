@@ -169,10 +169,10 @@ public abstract class ProxyInterpreter implements ExprType {
         //plugin.finish(p, env);
     }
 
-    public IDatatype getBufferedValue(StringBuilder sb, Environment env) {
-        //return plugin.getBufferedValue(sb, env);
-        return null;
-    }
+//    public IDatatype getBufferedValue(StringBuilder sb, Environment env) {
+//        //return plugin.getBufferedValue(sb, env);
+//        return null;
+//    }
    
     public Environment getEnvironment() {
         return environment;

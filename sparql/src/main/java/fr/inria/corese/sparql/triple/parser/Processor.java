@@ -798,6 +798,7 @@ public class Processor {
                 
 		defsysoper(REGEX, 	ExprType.REGEX);
                 defoper(APPROXIMATE,	ExprType.APPROXIMATE);
+                defoper(EXT+APPROXIMATE,ExprType.APPROXIMATE);
                 defoper(APP_SIM,	ExprType.APP_SIM);
                 defoper(EXT+"sim",      ExprType.APP_SIM);
 		defoper(DATATYPE, 	ExprType.DATATYPE);

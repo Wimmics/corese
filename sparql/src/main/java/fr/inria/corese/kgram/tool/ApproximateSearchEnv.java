@@ -81,7 +81,7 @@ public class ApproximateSearchEnv {
     }
 
     /**
-     * Aggreate and get value of similarity using all existing variables
+     * Aggregate and get value of similarity using all existing variables
      * 
      * @param env
      * @return 
@@ -122,7 +122,7 @@ public class ApproximateSearchEnv {
                 continue;
             }
 
-            Double s = this.getSimilarity(var, (Node) node.getValue());
+            Double s = this.getSimilarity(var, node.getValue());
             if (s != null) {
                 sim *= s;
             }

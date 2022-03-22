@@ -25,8 +25,6 @@ import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.datatype.XSD;
-import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.kgram.api.core.ExpType;
@@ -53,6 +51,10 @@ import java.util.Map;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
+import static fr.inria.corese.sparql.api.IDatatype.DECIMAL;
+import static fr.inria.corese.sparql.api.IDatatype.DOUBLE;
+import static fr.inria.corese.sparql.api.IDatatype.FLOAT;
+import static fr.inria.corese.sparql.api.IDatatype.INTEGER;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
@@ -3552,14 +3554,13 @@ public class Graph extends GraphObject implements
     
     
     
-    String reference(Node n) {
+    public String reference(Node n) {
         IDatatype dt = n.getValue();
         if (dt.isURI()) {
             return Integer.toString(n.getIndex());
         }
         if (dt.isNumber()) {
-            // 1 and 1.0 may have same index -> consider value to differentiate them
-            return String.format("n%s", dt);
+            return referenceNumber(dt);
         }
         if (dt.isBoolean()) {
             // distinguish true from 1
@@ -3574,6 +3575,15 @@ public class Graph extends GraphObject implements
             }
         }
         return Integer.toString(n.getIndex());
+    }
+    
+    // 1 and 1.0 may have same index -> consider value to differentiate them
+    String referenceNumber(IDatatype dt) {
+        return String.format("%s(%s)", shortDatatypeLabel(dt), dt.getLabel());
+    }
+    
+    String shortDatatypeLabel(IDatatype dt) {
+        return dt.getDatatype().getLabel().substring(NSManager.XSD_LENGTH, NSManager.XSD_LENGTH+3);
     }
     
     public IDatatype createTripleReference() {

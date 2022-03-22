@@ -878,7 +878,7 @@ public class Construct
             if (qnode != null && qnode.isVariable() && !qnode.isBlank()) {
                 // node value ID   
                 sb.append(DOT);
-                sb.append(map.getNode(qnode).getIndex());
+                sb.append(getGraphManager().reference(map.getNode(qnode)));
             }
         }
 

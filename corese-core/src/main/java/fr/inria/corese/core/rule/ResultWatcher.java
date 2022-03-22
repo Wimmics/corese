@@ -39,11 +39,14 @@ public class ResultWatcher implements ResultListener, GraphListener {
     int loop = 0, timestamp = 0;
     int cpos = 0, cneg = 0;
     int cnode = 0;
-    boolean selectNewResult = true, start = true;
+    // check that result have new target edge
+    boolean selectNewResult = true;
+    // check that (specific) query edge have new target edge
+    boolean selectNewEdge = false;
+    boolean start = true;
     private boolean isDistinct = true;
     //private boolean isSkipPath = false;
     private boolean test = false;
-    boolean selectNewEdge = false;
     int queryNewEdgeIndex = -1;
 
     // Factory to construct edge directly without intermediate Mapping
@@ -83,7 +86,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
 
     void start(Rule r) {
         setRule(r);
-        selectNewResult = doit(true);
+        selectNewResult = true;
         selectNewEdge = false;
         start = true;
         performSelectNewEdge = false;
@@ -109,7 +112,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
                 && getQuery().nbPredicate(newRecord.getPredicate()) == 1) {
             queryNewEdgeIndex = getQuery().getEdge(newRecord.getPredicate()).getEdgeIndex();
             if (queryNewEdgeIndex != -1) {
-                selectNewEdge = doit(true);
+                selectNewEdge = true;
             }
         } else if (loop > 0 && getQuery().getEdgeList() == null) {
             int n = 0;

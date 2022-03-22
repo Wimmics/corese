@@ -459,6 +459,12 @@ public class RuleEngine implements Engine, Graphable {
             logger.info("Memory before rule engine: " + Tool.getMemoryUsageMegabytes());
             logger.info("Graph size: " + getGraphManager().size());
         }
+        if (Property.get(Property.Value.RULE_TRANSITIVE_FUNCTION)!=null) {
+            setFunTransitive(Property.booleanValue(Property.Value.RULE_TRANSITIVE_FUNCTION));
+        }
+        if (Property.get(Property.Value.RULE_TRANSITIVE_OPTIMIZE)!=null) {
+            setOptTransitive(Property.booleanValue(Property.Value.RULE_TRANSITIVE_OPTIMIZE));
+        }
     }
     
     void after() throws EngineException {

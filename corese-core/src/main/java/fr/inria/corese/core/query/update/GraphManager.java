@@ -156,6 +156,10 @@ public class GraphManager {
         return getDataBroker().graphSize(pred);
     }
     
+    public String reference(Node n) {
+        return getGraph().reference(n);
+    }
+    
     public Edge beforeInsert(Edge edge) {
         return getGraph().beforeInsert(edge);
     }

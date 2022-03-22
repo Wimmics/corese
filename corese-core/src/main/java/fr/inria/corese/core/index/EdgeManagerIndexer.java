@@ -1183,78 +1183,11 @@ public class EdgeManagerIndexer
     public void finishUpdate() {
     }
     
-    //        if (graph.isEdgeMetadata() && 
-//          ! graph.getTripleNodeMap().isEmpty()) {
-//             //force reduce() because insert may have inserted edge with reference node
-//            graph.setIndex(true);
-//            graph.init();
-//            metadata();
-//        }
-    
-    /**
-     * Merge duplicate rdf* triples:
-     * triple(s p o [q v]) triple(s p o [r s])
-     * ->
-     * triple(s p o [q v ; r s])
-     * PRAGMA: graph must be indexed (edges must be sorted)
-     */
-    @Override @Deprecated
-    public void metadata() {
-        if (replaceMap == null) {
-            replaceMap = new HashMap<>();
-        }
-        graph.cleanIndex();
-        graph.clearNodeManager();
-        setLoopMetadata(true);
-        graph.getEventManager().start(Event.IndexMetadata);
-        // loop because edge merge may lead to duplicate triple(t1 p t2 t3) triple (t1 p t2 t3)
-        while (isLoopMetadata()) {
-            graph.getEventManager().process(Event.IndexMetadata);
-            setLoopMetadata(false);
-            for (Node p : getProperties()) {
-                // merge duplicate triples with metadata nodes
-                // keep only one triple with one metadata node
-                get(p).metadata();
-            }
-            if (replaceMap.size() > 0) {
-                // replace nodes that have been merged
-                replace();
-            }
-        }
-        clearReferenceNode();
-        graph.getEventManager().finish(Event.IndexMetadata);
-        replaceMap.clear();
-    }
-    
     void test() {
         System.out.println("AMI:\n" + graph.display());
         System.out.println(replaceMap);
     }
     
-    void clearReferenceNode() {
-        for (Node node : replaceMap.keySet()) {
-            graph.removeTripleNode(node);
-        }
-    }
-    
-    // record that n1 be replaced by n2
-    void replace(Node n1, Node n2) {
-        if (n1!=null && n2 !=null){
-            replaceMap.put(n1, n2);
-        }
-    }
-    
-     /**
-      * replace nodes that have been merged
-      * _:b1 q v _:b2 r s 
-      * ->
-      * _:b1 q v ; r s
-     */
-    void replace() {
-        for (Node p : getProperties()) {
-            get(p).replace(replaceMap);
-        }
-    }
     
   
     public boolean isLoopMetadata() {

@@ -163,6 +163,9 @@ public class Property {
         OWL_CLEAN_QUERY,
         OWL_RL,
         
+        RULE_TRANSITIVE_FUNCTION,
+        RULE_TRANSITIVE_OPTIMIZE,
+        
         FUNCTION_PARAMETER_MAX,
         
         // init graph

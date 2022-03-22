@@ -242,48 +242,6 @@ public class EdgeManager implements Iterable<Edge> {
         return graph.isEdgeMetadata() && (e1.getReferenceNode() != null || e2.getReferenceNode() != null);
     }
             
-    /**
-     * Context: RDF*
-     * Merge duplicate triples, keep one metadata node
-     * PRAGMA: index = 0, list is sorted and reduced
-     * rdf* triple with same g s p o  and with or without ref id are not yet reduced
-     * because they are considered equal by compare()
-     * we remove these duplicate here and keep triple with ref id if any
-     */
-    void metadata() {
-        new EdgeManagerMetadata(this).metadata();
-    }
-        
-    
-    /**
-     * Replace subject/object by target node in map if any
-     * map t1 -> t2 means replace t1 by t2
-     * These nodes are triple ID metadata
-     */
-    @Deprecated
-    void replace(HashMap<Node, Node> map) {
-        boolean b = false;
-        for (Edge e : getEdgeList()) {
-            for (int i = 0; i < 2; i++) {
-                if (e.getNode(i).isTriple()) {
-                    Node n = map.get(e.getNode(i));
-                    if (n != null) {
-                        b = true;
-                        e.setNode(i, n);
-                    }
-                }
-            }
-        }
-        if (b) {
-           complete();
-        }
-    }
-    
-        @Deprecated
-    void complete() {
-        sort();
-        reduce(getNodeManager());
-    }
     
     NodeManager getNodeManager() {
         return getIndexer().getNodeManager();

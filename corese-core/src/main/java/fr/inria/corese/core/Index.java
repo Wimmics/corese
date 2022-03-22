@@ -88,9 +88,7 @@ public interface Index {
         NodeManager getNodeManager();
         
         void finishUpdate();
-        
-        void metadata();
-        	
+                	
 	// ************** Update
 	
 	

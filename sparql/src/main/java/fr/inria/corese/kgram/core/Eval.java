@@ -1108,6 +1108,7 @@ public class Eval implements ExpType, Plugin {
 
         Exp exp = stack.get(n);
         if (hasListener) {
+            // rule engine may have a ResultWatcher listener
             exp = getListener().listen(exp, n);
         }
         

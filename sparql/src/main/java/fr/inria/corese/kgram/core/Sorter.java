@@ -48,9 +48,6 @@ public class Sorter {
                     }
                 }
 
-//                if (i > 0 && q.isTest()) {
-//                    check(q, e1, lNode);
-//                }
                 e1.bind(lNode);
             }
         }

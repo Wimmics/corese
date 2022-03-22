@@ -77,7 +77,7 @@ public class QuerySorter implements ExpType {
      * inserted at the earliest place where their variables are bound lVar is
      * the List of variables already bound
      */
-    Exp compile(Exp exp, VString lVar, boolean option) {
+    Exp compile(Exp exp, VString varList, boolean option) {
         int type = exp.type();
         switch (type) {
 
@@ -91,117 +91,121 @@ public class QuerySorter implements ExpType {
 
             case FILTER:
                 // compile inner exists {} if any
-                compile(exp.getFilter(), lVar, option);
+                compile(exp.getFilter(), varList, option);
                 break;
 
             case BIND:
-                compile(exp.getFilter(), lVar, option);
+                compile(exp.getFilter(), varList, option);
                 break;
 
             case QUERY:
                 // match query and subquery
                 Query q = exp.getQuery();
-//                System.out.println("LIST OF EDGES "+q.getQueryEdgeList());
                 modifier(q);
-                // lVar = select varList
-                if (!lVar.isEmpty()) {
-                    VString list = new VString();
-                    for (Exp ee : q.getSelectFun()) {
-                        Node node = ee.getNode();
-                        if (lVar.contains(node.getLabel())) {
-                            list.add(node.getLabel());
-                        }
-                    }
-                    lVar = list;
+                if (!varList.isEmpty()) {
+                    // lVar = intersection(select variables,lVar)                   
+                    varList = getSelectVariables(q, varList);
                 }
 
             // continue with subquery body
             default:
 
-                if (type == OPTION || type == OPTIONAL
-                        || type == UNION || type == MINUS) {
+                if (type == OPTIONAL || type == UNION || type == MINUS) {
                     option = true;
                 }
 
-                //******* Query plan BEGIN********
-                if (isSort) {
+               // Query planning
+               if (isSort) {
+                   exp = queryPlan(exp, varList);
+               }
 
-                    int num = exp.size();
-
-                    // identify remarkable filters such as ?x = <uri>
-                    // create OPT_BIND(?x = <uri>) store it in FILTER 
-                    List<Exp> lBind = findBindings(exp);
-                    if (exp.isBGPAnd()) {
-                        // sort edges wrt connection
-                        // take OPT_BIND(var = exp) into account
-                        // TODO: graph ?g does not take into account OPT_BIND ?g = uri
-                        switch (query.getPlanProfile()) {
-                            
-                            case Query.QP_T0:
-                                sortFilter(exp, lVar);
-                                break;
-                                
-                            case Query.QP_HEURISTICS_BASED:
-                                sort = new SorterNew();
-                                ((SorterNew) sort).sort(exp, lBind, prod, query.getPlanProfile());
-                                setBind(query, exp);
-                                break;
-                                
-                            case Query.QP_BGP:
-                                sort.sort(query, exp, lVar, lBind);
-                                sortFilter(exp, lVar);
-                                setBind(query, exp);
-                                if (query.getBgpGenerator() != null){
-                                    exp = query.getBgpGenerator().process(exp);
-                                }
-                                break;
-                                
-                            case Query.QP_DEFAULT:
-                                sort.sort(query, exp, lVar, lBind);
-                                sortFilter(exp, lVar);
-                                setBind(query, exp);
-                                break;
-
-                        }
-
-                        service(exp);
-                    }                  
-                }
-                //******* Query plan END********
-
-                int size = lVar.size();
+                int size = varList.size();
 
                 // bind graph variable
                 if (exp.isGraph() && exp.getGraphName().isVariable()) {
                     // GRAPH {GRAPHNODE NODE} {EXP}
                     Node gNode = exp.getGraphName();
-                    lVar.add(gNode.getLabel());
+                    varList.add(gNode.getLabel());
                 }
 
                 for (int i = 0; i < exp.size(); i++) {
-                    Exp e = compile(exp.args.get(i), lVar, option);
+                    Exp e = compile(exp.get(i), varList, option);
                     exp.set(i, e);
                     if (exp.isBGPAnd()) {
-                        exp.args.get(i).addBind(lVar);
+                        exp.get(i).addBind(varList);
                     }
                 }
 
-                lVar.clear(size);
+                varList.clear(size);
 
                 if (testJoin && exp.type() == AND) {
-                    // group statements that are not connected in separate BGP 
-                    // generate a JOIN between them.
+                    // group in separate BGP statements that are not connected
+                    // by variables
+                    // generate a JOIN between BGP.
                     Exp res = exp.join();
                     if (res != exp) {
                         exp.getExpList().clear();
                         exp.add(res);
                     }
                 }
-
         }
-
         InScopeNodes(exp);
 
+        return exp;
+    }
+    
+    VString getSelectVariables(Query q, VString lVar) {
+        VString list = new VString();
+        for (Exp ee : q.getSelectFun()) {
+            Node node = ee.getNode();
+            if (lVar.contains(node.getLabel())) {
+                list.add(node.getLabel());
+            }
+        }
+        return list;
+    }
+
+    
+    Exp queryPlan(Exp exp, VString lVar) {
+        int num = exp.size();
+        // identify remarkable filters such as ?x = <uri>
+        // create OPT_BIND(?x = <uri>) store it in FILTER 
+        List<Exp> lBind = findBindings(exp);
+        if (exp.isBGPAnd()) {
+            // sort edges wrt connection
+            // take OPT_BIND(var = exp) into account
+            // TODO: graph ?g does not take into account OPT_BIND ?g = uri
+            switch (query.getPlanProfile()) {
+
+                case Query.QP_T0:
+                    sortFilter(exp, lVar);
+                    break;
+
+                case Query.QP_HEURISTICS_BASED:
+                    sort = new SorterNew();
+                    ((SorterNew) sort).sort(exp, lBind, prod, query.getPlanProfile());
+                    setBind(query, exp);
+                    break;
+
+                case Query.QP_BGP:
+                    sort.sort(query, exp, lVar, lBind);
+                    sortFilter(exp, lVar);
+                    setBind(query, exp);
+                    if (query.getBgpGenerator() != null) {
+                        exp = query.getBgpGenerator().process(exp);
+                    }
+                    break;
+
+                case Query.QP_DEFAULT:
+                    sort.sort(query, exp, lVar, lBind);
+                    sortFilter(exp, lVar);
+                    setBind(query, exp);
+                    break;
+
+            }
+
+            service(exp);
+        }
         return exp;
     }
     
@@ -311,10 +315,10 @@ public class QuerySorter implements ExpType {
      * Move filter at place where variables are bound in exp expVar: list of
      * bound variables TODO: exists {} could be eval earlier
      */
-    void sortFilter(Exp exp, VString expVar) {
-        int size = expVar.size();
-        List<String> filterVar;
-        List<Exp> done = new ArrayList<Exp>();
+    void sortFilter(Exp exp, VString varList) {
+        int size = varList.size();
+        List<String> filterVarList;
+        List<Exp> done = new ArrayList<>();
 
         for (int jf = exp.size() - 1; jf >= 0; jf--) {
             // reverse to get them in same order after placement
@@ -323,9 +327,9 @@ public class QuerySorter implements ExpType {
 
             if (f.isFilter() && !done.contains(f)) {
 
-                Filter ff = f.getFilter();
+                Filter filter = f.getFilter();
 
-                if (compiler.isLocal(ff)) {
+                if (compiler.isLocal(filter)) {
                     //TODO: fix it
                     // optional {} !bound()
                     // !bound() should not be moved
@@ -333,17 +337,17 @@ public class QuerySorter implements ExpType {
                     continue;
                 }
 
-                expVar.clear(size);
+                varList.clear(size);
 
-                filterVar = ff.getVariables();
-                boolean isExist = ff.getExp().isRecExist();
+                filterVarList = filter.getVariables();
+                boolean isExist = filter.getExp().isRecExist();
 
                 for (int je = 0; je < exp.size(); je++) {
                     // search exp e after which filter f is bound
                     Exp e = exp.get(je);
 
-                    e.share(filterVar, expVar);
-                    boolean bound = query.bound(filterVar, expVar);
+                    e.share(filterVarList, varList);
+                    boolean bound = query.bound(filterVarList, varList);
 
                     if (bound || (isExist && je + 1 == exp.size())) {
                         // insert filter after exp
@@ -351,9 +355,9 @@ public class QuerySorter implements ExpType {
                         // may bound its own variables.
                         if (bound && e.isOptional() && e.first().size() > 0) {
                             // add filter in first arg of optional
-                            e.first().add(ff);
+                            e.first().add(filter);
                         }
-                        e.addFilter(ff);
+                        e.addFilter(filter);
                         done.add(f);
                         if (jf < je) {
                             // filter is before, move it after
@@ -371,8 +375,7 @@ public class QuerySorter implements ExpType {
                 }
             }
         }
-        expVar.clear(size);
-
+        varList.clear(size);
     }
 
     /**
@@ -408,7 +411,7 @@ public class QuerySorter implements ExpType {
                 hasService += 1;
             }
         }
-        if (hasService > 0) { // && q.isOptimize()){
+        if (hasService > 0) { 
             // replace pattern . service by join(pattern, service)
             service(exp, hasService);
         }

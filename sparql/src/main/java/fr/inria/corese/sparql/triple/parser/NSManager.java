@@ -128,6 +128,8 @@ public class NSManager extends ASTObject {
     // use case: determine if a string can be considered as an uri
     // use case: json string converted to uri or string
     static String[] protocol = {"http://", "https://", "file://", "ftp://", "urn:"};
+    
+    public static final int XSD_LENGTH = XSD.length();
 
     /**
      * prefix seed (ns1, ns2,...)

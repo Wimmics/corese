@@ -51,12 +51,6 @@ public class ManagerImpl implements Manager {
 
     @Override
     public boolean process(Query q, Basic ope, Dataset ds) throws EngineException  {
-//        String uri = ope.getGraph();
-//        boolean isDefault = ope.isDefault();
-//        boolean isNamed = ope.isNamed();
-//        boolean isAll = ope.isAll();
-//        boolean isSilent = ope.isSilent();
-
         getGraphManager().system(ope);
 
         switch (ope.type()) {
@@ -219,7 +213,6 @@ public class ManagerImpl implements Manager {
         cons.setAccessRight(getAccessRight());
         cons.setDebug(query.isDebug());
         cons.insert(lMap, ds);
-        //lMap.setGraph(getGraphManager().getGraph());
     }
 
     @Override
@@ -228,33 +221,26 @@ public class ManagerImpl implements Manager {
         cons.setAccessRight(getAccessRight());
         cons.setDebug(query.isDebug());
         cons.delete(lMap, ds);
-        //lMap.setGraph(getGraphManager().getGraph());
     }
 
-    /**
-     * @return the level
-     */
+    
     public Level getLevel() {
         return level;
     }
 
-    /**
-     * @param level the level to set
-     */
+    
+    @Override
     public void setLevel(Level level) {
         this.level = level;
     }
 
-    /**
-     * @return the accessRight
-     */
+    
     public AccessRight getAccessRight() {
         return accessRight;
     }
 
-    /**
-     * @param accessRight the accessRight to set
-     */
+   
+    @Override
     public void setAccessRight(AccessRight accessRight) {
         this.accessRight = accessRight;
     }

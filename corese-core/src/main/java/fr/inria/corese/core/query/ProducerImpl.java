@@ -67,7 +67,6 @@ public class ProducerImpl
     Mapper mapper;
     MatcherImpl match;
     QueryEngine qengine;
-    FuzzyMatch fuzzy = new FuzzyMatch();
     RDFizer toRDF;
     Node graphNode;
     private Query query;
@@ -96,10 +95,6 @@ public class ProducerImpl
     public static ProducerImpl create(Graph g) {
         ProducerImpl p = new ProducerImpl(g);
         return p;
-    }
-
-    public FuzzyMatch getFuzzyMatch() {
-        return fuzzy;
     }
 
     @Override
@@ -454,15 +449,6 @@ public class ProducerImpl
         } else {
             return Mappings.create(query, true);
         }
-    }
-
-    /**
-     *
-     */
-    boolean isFuzzy(Edge edge, int i) {
-        int type = fuzzy.fuzzy(edge.getEdgeLabel());
-        return 0 <= i && i <= 1
-                && (i == type || type == 2);
     }
 
     /**

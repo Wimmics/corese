@@ -20,8 +20,9 @@ import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
  *
  * There may be a Visitor that rewrites the Graph on the Fly, e.g. : - bnode to
  * variable - constant to variable - generalize type - eliminate edge
- *
+ * 
  */
+@Deprecated
 public class QueryGraph implements QueryGraphVisitor {
 
     boolean isDebug = false,

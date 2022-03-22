@@ -356,7 +356,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
     /**
      * ************************************************************
      *
-     * GraphListener: deprecated ?
+     * GraphListener: deprecated, not used
      *
      ************************************************************
      */
@@ -380,7 +380,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
     @Override
     public void insert(Graph g, Edge ent) {
         if (ent.getEdgeLabel().equals(RDFS.SUBCLASSOF)) {
-            insertEdgeList.add(ent);
+            getInsertEdgeList().add(ent);
         }
     }
 

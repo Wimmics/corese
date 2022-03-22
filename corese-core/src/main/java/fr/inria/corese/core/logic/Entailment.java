@@ -67,7 +67,7 @@ public class Entailment implements Engine {
     static final int SYMMETRIC = 30;
     public static boolean trace = false;
     Signature domain, range, inverse, symetric, subproperty;
-    Graph graph; //, target;
+    Graph graph; 
     List<Edge> targetList;
     Node hasType, subClassOf, graphNode;
     Edge last, current;
@@ -109,7 +109,6 @@ public class Entailment implements Engine {
 
     Entailment(Graph g) {
         graph = g;
-        //targetList= new ArrayList<Entity>();
         symetric = new Signature();
         inverse = new Signature();
         domain = new Signature();
@@ -215,6 +214,7 @@ public class Entailment implements Engine {
      * clear tables of meta statements (domain, range, etc.) fill these tables
      * with current graph
      */
+    @Override
     public void onDelete() {
         reset();
     }

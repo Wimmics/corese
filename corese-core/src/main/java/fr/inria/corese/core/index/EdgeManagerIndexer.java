@@ -1040,7 +1040,7 @@ public class EdgeManagerIndexer
     void logInsert(Edge ent) {
         recordUpdate(true);
         if (getIndex() == 0) {
-            graph.logInsert(ent);
+            getGraph().logInsert(ent);
         }
     }
 

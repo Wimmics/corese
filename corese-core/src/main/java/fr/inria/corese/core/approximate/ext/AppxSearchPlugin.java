@@ -115,7 +115,7 @@ public class AppxSearchPlugin implements ExprType {
 
     
     /** 
-     * filter approximate(var1, var2, 'alg1-alg2-alg3', 0.2, true)
+     * filter approximate(var1, var2, 'ng-jw-wn-eq-mult', 0.2, true)
         args[0] = var 1
         args[1] = uri
         args[2] = alg list

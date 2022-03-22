@@ -35,7 +35,7 @@ import java.util.List;
  * SPARQL 1.1 Update
  *
  * Called by QueryProcess.query() to handle update query
- *
+ * Compile update query into specific AST which is executed by ManagerImpl
  *
  * @author Olivier Corby, Edelweiss, INRIA 2011
  *
@@ -44,21 +44,21 @@ public class UpdateProcess {
 
     private static Logger logger = LoggerFactory.getLogger(UpdateProcess.class);
 
-    Manager manager; // see ManagerImpl
-    QueryProcess exec;
+    private ManagerImpl manager; 
+    private QueryProcess exec;
     Query query;
-    Dataset ds;
+    private Dataset dataset;
     private ProcessVisitor visitor;
 
     boolean isDebug = false;
 
-    UpdateProcess(QueryProcess e, Manager man, Dataset ds) {
+    UpdateProcess(QueryProcess e, ManagerImpl man, Dataset ds) {
         manager = man;
         exec = e;
-        this.ds = ds;
+        this.dataset = ds;
     }
 
-    public static UpdateProcess create(QueryProcess e, Manager man, Dataset ds) {
+    public static UpdateProcess create(QueryProcess e, ManagerImpl man, Dataset ds) {
         UpdateProcess u = new UpdateProcess(e, man, ds);
         return u;
     }
@@ -72,11 +72,12 @@ public class UpdateProcess {
         ASTQuery ast =  q.getAST();
         ASTUpdate astu = ast.getUpdate();
         Mappings map = Mappings.create(q);
-        manager.setLevel(getLevel(bind));
-        manager.setAccessRight(bind == null ? null : bind.getAccessRight());
+        getManager().setLevel(getLevel(bind));
+        getManager().setAccessRight(bind == null ? null : bind.getAccessRight());
         NSManager nsm = null;
         // Visitor was setup by QueryProcessUpdate init(q, m)
-        setVisitor(exec.getVisitor());
+        setVisitor(getQueryProcess().getVisitor());
+        
         for (Update u : astu.getUpdates()) {
             if (isDebug) {
                 logger.debug("** Update: " + u);
@@ -98,12 +99,12 @@ public class UpdateProcess {
                     }
             }
             
-            exec.getEventManager().start(Event.UpdateStep, u);
-            Eval eval = exec.getCurrentEval();
+            getQueryProcess().getEventManager().start(Event.UpdateStep, u);
+            Eval eval = getQueryProcess().getCurrentEval();
             if (u.isBasic()) {
                 // load copy ...
                 Basic b = u.getBasic();
-                suc = manager.process(q, b, ds);
+                suc = getManager().process(q, b, getDataset());
             } else {
                 // delete insert data where
                 Composite c = u.getComposite();
@@ -113,8 +114,8 @@ public class UpdateProcess {
             }
             // save and restore eval to get initial Visitor with possible @event function
             // because @event function may execute query and hence reset eval
-            exec.setCurrentEval(eval);
-            exec.getEventManager().finish(Event.UpdateStep, u);
+            getQueryProcess().setCurrentEval(eval);
+            getQueryProcess().getEventManager().finish(Event.UpdateStep, u);
 
             if (!suc) {
                 q.setCorrect(false);
@@ -149,17 +150,17 @@ public class UpdateProcess {
 
             case Update.INSERT:
                 // insert data
-                ast = getInsert(q, ope);
+                ast = getInsertData(q, ope);
                 break;
 
             case Update.DELETE:
                 // delete data
-                ast = getDelete(q, ope);
+                ast = getDeleteData(q, ope);
                 break;
 
             case Update.COMPOSITE:
                 // delete insert where
-                ast = getComposite(q, ope);
+                ast = getDeleteInsert(q, ope);
                 break;
 
         }
@@ -225,30 +226,32 @@ public class UpdateProcess {
     Mappings update(Query query, ASTQuery ast, Mapping m, Binding b) throws EngineException {
 
         //System.out.println("** QP:\n" + m.getBind());
-        exec.logStart(query);
+        getQueryProcess().logStart(query);
         Query q = compile(ast);
         inherit(q, query);
         Mapping mm = getMapping(q, m, b);  
         
         //System.out.println("UP: " + vis);
-        Mappings map = exec.basicQuery(null, q, mm);
+        // execute where part in delete insert where
+        Mappings map = getQueryProcess().basicQuery(null, q, mm);
         
         if (query.getAST().hasMetadata(Metadata.SELECT)) {
             // evaluate insert where as select where
             return map;
         }
    
-        // PRAGMA: update can be both delete & insert
+        // execute delete in delete insert where
         if (q.isDelete()) {
-            manager.delete(q, map, ds);
+            getManager().delete(q, map, getDataset());
         }
 
+        // execute insert in delete insert where
         if (q.isInsert()) {
-            manager.insert(q, map, ds);
+            getManager().insert(q, map, getDataset());
         }
 
         visitor(getVisitor(), q, map);
-        exec.logFinish(query, map);
+        getQueryProcess().logFinish(query, map);
 
         return map;
     }
@@ -256,7 +259,7 @@ public class UpdateProcess {
     Query compile(ASTQuery ast) throws EngineException {
         Query q = ast.getUpdateQuery();
         if (q == null) {
-            q = exec.compile(ast, ds);
+            q = getQueryProcess().compile(ast, getDataset());
             q.setUpdate(true);
             ast.setUpdateQuery(q);
         }
@@ -285,28 +288,28 @@ public class UpdateProcess {
         vis.update(q, delete, insert);
     }
     
-    ASTQuery getInsert(Query q, Composite ope) {
+    ASTQuery getInsertData(Query q, Composite ope) {
         ASTQuery ast = ope.getAST();
         if (ast == null) {
-            ast = insert(q, ope);
+            ast = insertData(q, ope);
             ope.setAST(ast);
         }
         return ast;
     }
     
-    ASTQuery getDelete(Query q, Composite ope) {
+    ASTQuery getDeleteData(Query q, Composite ope) {
         ASTQuery ast = ope.getAST();
         if (ast == null) {
-            ast = delete(q, ope);
+            ast = deleteData(q, ope);
             ope.setAST(ast);
         }
         return ast;
     }
     
-    ASTQuery getComposite(Query q, Composite ope) {
+    ASTQuery getDeleteInsert(Query q, Composite ope) {
         ASTQuery ast = ope.getAST();
         if (ast == null) {
-            ast = composite(q, ope);
+            ast = deleteInsertWhere(q, ope);
             ope.setAST(ast);
         }
         return ast;
@@ -317,7 +320,7 @@ public class UpdateProcess {
      * insert data {<a> ex:p <b>} Ground pattern (no variable) Processed as a
      * construct query in the target graph
      */
-    ASTQuery insert(Query q, Composite ope) {
+    ASTQuery insertData(Query q, Composite ope) {
 
         ASTQuery ast = createAST(q, ope);
         ast.setInsert(true);
@@ -346,7 +349,7 @@ public class UpdateProcess {
      * Construct as a delete query in the target graph
      *
      */
-    ASTQuery delete(Query q, Composite ope) {
+    ASTQuery deleteData(Query q, Composite ope) {
 
         ASTQuery ast = createAST(q, ope);
         ast.setDelete(true);
@@ -370,8 +373,9 @@ public class UpdateProcess {
 
     /**
      * with delete {pat} insert {pat} using where {pat}
+     * create specific AST ready to use
      */
-    ASTQuery composite(Query q, Composite ope) {
+    ASTQuery deleteInsertWhere(Query q, Composite ope) {
 
         // the graph where insert/delete occurs
         Constant src = ope.getWith();
@@ -405,9 +409,6 @@ public class UpdateProcess {
             }
         }
 
-        //Mappings map = update(q, ast, m);
-        //if (isDebug) logger.debug(map);	
-        //return map;
         return ast;
     }
 
@@ -454,6 +455,30 @@ public class UpdateProcess {
      */
     public void setVisitor(ProcessVisitor visitor) {
         this.visitor = visitor;
+    }
+
+    public QueryProcess getQueryProcess() {
+        return exec;
+    }
+
+    public void setQueryProcess(QueryProcess exec) {
+        this.exec = exec;
+    }
+
+    public Dataset getDataset() {
+        return dataset;
+    }
+
+    public void setDataset(Dataset dataset) {
+        this.dataset = dataset;
+    }
+
+    public ManagerImpl getManager() {
+        return manager;
+    }
+
+    public void setManager(ManagerImpl manager) {
+        this.manager = manager;
     }
 
 }

@@ -13,7 +13,7 @@ import java.util.Iterator;
 import java.util.List;
 
 /**
- *
+ * Node iterator for Property Path
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */

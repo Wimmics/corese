@@ -13,11 +13,9 @@ import fr.inria.corese.sparql.storage.api.IStorage;
 import fr.inria.corese.sparql.storage.util.StorageFactory;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Dataset;
-import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.ProxyInterpreter;
 import fr.inria.corese.compiler.parser.NodeImpl;
@@ -25,27 +23,21 @@ import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.eval.QuerySolverVisitorBasic;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
-import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
-import fr.inria.corese.core.edge.EdgeQuad;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.producer.DataProducer;
 import fr.inria.corese.core.logic.Distance;
-import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
@@ -61,9 +53,7 @@ import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.core.workflow.ShapeWorkflow;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.List;
-import java.util.TreeMap;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
@@ -79,7 +69,8 @@ import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
 /**
- * Plugin for filter evaluator Compute semantic similarity of classes and
+ * Plugin for filter evaluator 
+ * Compute semantic similarity of classes and
  * solutions Implement graph specific function for LDScript
  *
  * @author Olivier Corby, Edelweiss, INRIA 2011
@@ -121,15 +112,12 @@ public class PluginImpl
 
     String PPRINTER = DEF_PPRINTER;
     MatcherImpl match;
-    Loader ld;
-    //private Object dtnumber;
-    boolean isCache = false;
-    TreeNode cache;
-
-    //ExtendGraph ext;
+    // Plugin for Transformer functions
     private PluginTransform pt;
+    // draft storage for large literal values (not used)
     private static IStorage storageMgr;
-    private AppxSearchPlugin pas;
+    // Plugin for approximate search
+    private AppxSearchPlugin approximateSearch;
 
     int index = 0;
 
@@ -145,10 +133,8 @@ public class PluginImpl
     }
 
     void init() {
-        cache = new TreeNode();
-        //ext = new ExtendGraph(this);
         pt = new PluginTransform(this);
-        pas = new AppxSearchPlugin(this);
+        setApproximateSearch(new AppxSearchPlugin(this));
     }
 
     public static PluginImpl create(Matcher m) {
@@ -157,17 +143,6 @@ public class PluginImpl
 
     @Override
     public void setMode(int mode) {
-        switch (mode) {
-
-            case Evaluator.CACHE_MODE:
-                isCache = true;
-                break;
-
-            case Evaluator.NO_CACHE_MODE:
-                isCache = false;
-                cache.clear();
-                break;
-        }
     }
 
     @Override
@@ -204,6 +179,9 @@ public class PluginImpl
         }
     }
 
+    /**
+     * sparql states end of query processing
+     */
     @Override
     public void finish(Producer p, Environment env) {
         Graph g = getGraph(p);
@@ -212,6 +190,7 @@ public class PluginImpl
         }
     }
 
+    // function xt:spin
     @Override
     public IDatatype spin(IDatatype dt) {
         SPINProcess sp = SPINProcess.create();
@@ -224,6 +203,7 @@ public class PluginImpl
         return null;
     }
 
+    // function xt:graph
     @Override
     public IDatatype graph(IDatatype dt) {
         if (dt.getPointerObject() == null) {
@@ -250,6 +230,7 @@ public class PluginImpl
         return MappingsGraph.create(map).getGraph();
     }
     
+    // function xt:list xt:graph xt:map xt:json 
     @Override
     public IDatatype create(IDatatype dt) {
         switch (dt.getLabel()) {
@@ -265,27 +246,36 @@ public class PluginImpl
         return null;
     }
 
+    // function xt:xml xt:json xt:rdf
     @Override
     public IDatatype format(Mappings map, int format) {
         ResultFormat ft = ResultFormat.create(map, format);
         return DatatypeMap.newInstance(ft.toString());
     }
 
+    // function st:format
     @Override
     public IDatatype format(IDatatype[] ldt) {
-        return pt.format(ldt);
+        return getPluginTransform().format(ldt);
     }
 
+    // function xt:approximate
+    // xt:approximate(var, val, algo, threshold)
+    // algo: jw --jaro winckler ng --ngram wn eq
     @Override
     public IDatatype approximate(Expr exp, Environment env, Producer p, IDatatype[] param) {
-        return pas.eval(exp, env, p, param);
+        return getApproximateSearch().eval(exp, env, p, param);
     }
 
+    // function xt:sim
+    // compute similarity of solution ?
     @Override
     public IDatatype approximate(Expr exp, Environment env, Producer p) {
-        return pas.eval(exp, env, p);
+        return getApproximateSearch().eval(exp, env, p);
     }
 
+    // function xt:similarity
+    // compute similarity between classes wrt class hierarchy
     @Override
     public IDatatype similarity(Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         Graph g = getGraph(p);
@@ -300,6 +290,7 @@ public class PluginImpl
         return getValue(dd);
     }
 
+    // utility
     IDatatype ancestor(Graph g, IDatatype dt1, IDatatype dt2) {
         Node n1 = g.getNode(dt1);
         Node n2 = g.getNode(dt2);
@@ -312,6 +303,7 @@ public class PluginImpl
         return  n.getValue();
     }
 
+    // utility
     IDatatype pSimilarity(Graph g, IDatatype dt1, IDatatype dt2) {
         Node n1 = g.getNode(dt1.getLabel());
         Node n2 = g.getNode(dt2.getLabel());
@@ -325,10 +317,10 @@ public class PluginImpl
     }
 
     /**
-     * Similarity of a solution with Corese method Sum distance of approximate
+     * Similarity of a query solution  when @relax mode 
+     * Sum distance of approximate
      * types Divide by number of nodes and edge
      *
-     * TODO: cache distance in Environment during query proc
      */
     @Override
     public IDatatype similarity(Environment env, Producer p) {
@@ -343,7 +335,7 @@ public class PluginImpl
         if (memory.getQueryEdges() == null) {
             return getValue(0);
         }
-        Hashtable<Node, Boolean> visit = new Hashtable<Node, Boolean>();
+        Hashtable<Node, Boolean> visit = new Hashtable<>();
         Distance distance = g.setClassDistance();
 
         // number of node + edge in the answer
@@ -415,8 +407,10 @@ public class PluginImpl
         return load(dt, null, format, null, Level.USER_DEFAULT);
     }
 
-    // expectedFormat: st:text when argument is rdf text  
-    // st:turtle st:rdfxml st:json
+    // function xt:load
+    // expectedFormat: 
+    // st:text -> argument is rdf text  
+    // otherwise st:turtle st:rdfxml st:json
     @Override
     public IDatatype load(IDatatype dt, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat,
             Level level) throws SafetyException {
@@ -436,7 +430,6 @@ public class PluginImpl
                 ld.parse(dt.getLabel(), getFormat(expectedFormat));
             }            
             else {
-                //System.out.println("PI: " + requiredFormat + " " + getFormat(requiredFormat));
                 ld.parseWithFormat(dt.getLabel(), getFormat(requiredFormat));
             }
         } catch (LoadException ex) {
@@ -446,7 +439,6 @@ public class PluginImpl
             logger.error(String.format("Load error: %s \n%s %s", dt.stringValue(), 
                     ((expectedFormat == null) ? "" :expectedFormat), ((requiredFormat == null) ? "" :requiredFormat)));
             logger.error(ex.getMessage());
-            //ex.printStackTrace();
         }
         IDatatype res = DatatypeMap.createObject(g);
         return res;
@@ -457,6 +449,8 @@ public class PluginImpl
         return (dt == null) ? Load.UNDEF_FORMAT : LoadFormat.getDTFormat(dt.getLabel());
     }
 
+    // function xt:write
+    // write in /tmp/
     @Override
     public IDatatype write(IDatatype dtfile, IDatatype dt) {
         QueryLoad ql = QueryLoad.create();
@@ -467,6 +461,9 @@ public class PluginImpl
         return DatatypeMap.newInstance(str);
     }
     
+    // function xt:write
+    // write anywhere (need specific access right)
+    // see sparql GraphSpecifFunction
     @Override
     public IDatatype superWrite(IDatatype dtfile, IDatatype dt) {
         QueryLoad ql = QueryLoad.create();
@@ -474,54 +471,14 @@ public class PluginImpl
         return dtfile;
     }
 
+    // function xt:syntax
+    // syntax: st:rdfxml st:turtle
     @Override
     public IDatatype syntax(IDatatype syntax, IDatatype graph, IDatatype node) {
         Graph g = (Graph) graph.getPointerObject();
         ResultFormat ft = ResultFormat.create(g, syntax.getLabel());
         String str = (node == null) ? ft.toString() : ft.toString(node);
         return DatatypeMap.newInstance(str);
-    }
-
-    Edge getEdge(Expr exp, Environment env) {
-        Memory mem = (Memory) env;
-        return mem.getEdge(exp.getExp(0).getLabel());
-    }
-
-    private IDatatype provenance(Expr exp, Environment env, IDatatype dt) {
-        Edge e = getEdge(exp, env);
-        if (e == null) {
-            return null;
-        }
-        return DatatypeMap.createObject(e.getProvenance());
-    }
-
-    // index of rule provenance object
-    private IDatatype id(Expr exp, Environment env, IDatatype dt) {
-        Object obj = dt.getNodeObject();
-        if (obj != null && obj instanceof Query) {
-            Query q = (Query) obj;
-            return getValue(q.getID());
-        }
-        return null;
-    }
-
-    private IDatatype timestamp(Expr exp, Environment env, IDatatype dt) {
-        Edge e = getEdge(exp, env);
-        if (e == null) {
-            return null;
-        }
-        int level = e.getEdgeIndex();
-        return getValue(level);
-    }
-
-    public IDatatype index(Producer p, Expr exp, Environment env, IDatatype dt) {
-        Node n = p.getNode(dt);
-        return getValue(n.getIndex());
-    }
-
-    private IDatatype test(Producer p, Expr exp, Environment env, IDatatype dt) {
-        IDatatype res = DatatypeMap.createObject("rule", env.getQuery());
-        return res;
     }
 
     private IDatatype even(Expr exp, IDatatype dt) {
@@ -534,25 +491,17 @@ public class PluginImpl
         return getValue(b);
     }
 
-    private IDatatype bool(Expr exp, Environment env, Producer p, IDatatype dt) {
-        if (dt.stringValue().contains("false")) {
-            return FALSE;
-        }
-        return TRUE;
-    }
-
-    /**
-     * @return the pt
-     */
     public PluginTransform getPluginTransform() {
         return pt;
     }
 
+    // function st:index
     @Override
     public IDatatype index(Environment env, Producer p) {
         return getValue(index++);
     }
 
+    // function xt:entailment
     @Override
     public IDatatype entailment(Environment env, Producer p, IDatatype dt) throws EngineException {
         Binding bind =  env.getBind();
@@ -609,7 +558,7 @@ public class PluginImpl
     }
 
     /**
-     * param[0] = shapeGrah
+     * function xt:shaclGraph xt:shaclNode
      */
     @Override
     public IDatatype shape(Expr exp, Environment env, Producer p, IDatatype[] param) {
@@ -641,6 +590,9 @@ public class PluginImpl
         return null;
     }
 
+    // function xt:insert
+    // xt:insert(namedGraphURI, s, p o)
+    // xt:insert(graph, s, p, o)
     @Override
     public IDatatype insert(Environment env, Producer p, IDatatype... param) {
         Graph g = getGraph(p);
@@ -657,6 +609,10 @@ public class PluginImpl
         return (e == null) ? FALSE : TRUE;
     }
 
+    // function xt:delete
+    // xt:delete(s, p, o)
+    // xt:delete(namedGraphURI, s, p o)
+    // xt:delete(graph, s, p, o)    
     @Override
     public IDatatype delete(Environment env, Producer p, IDatatype... param) {
         Graph g = getGraph(p);
@@ -675,6 +631,12 @@ public class PluginImpl
         return (le == null) ? FALSE : TRUE;
     }
 
+    // function xt:value    
+    // xt:value(subject, predicate)
+    // xt:value(subject, predicate, index)
+    // xt:value(graph, subject, predicate)
+    // xt:value(graph, subject, predicate, index)  
+    // index: index of result node
     @Override
     public IDatatype value(Environment env, Producer p, IDatatype graph, IDatatype node, IDatatype predicate, int n) {
         Graph g = (Graph) ((graph == null) ? p.getGraph() : graph.getPointerObject());
@@ -685,6 +647,11 @@ public class PluginImpl
         return  val.getDatatypeValue();
     }
 
+    // function xt:exists
+    // xt:exist()
+    // xt:exist(p)
+    // xt:exist(s, p)
+    // xt:exist(s, p, o)
     @Override
     public IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
         DataProducer dp = new DataProducer(getGraph(p));
@@ -697,9 +664,16 @@ public class PluginImpl
         return FALSE;
     }
 
+    // function xt:mindegree
+    // check whether node has degree >= dtmin
+    // xt:mindegree(node, min)
+    // xt:mindegree(node, index, min)
+    // xt:mindegree(node, predicate, min)
+    // xt:mindegree(node, predicate, index, min) 
+    // index  = 0|1
     @Override
-    public IDatatype mindegree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index, IDatatype m) {
-        int min = m.intValue();
+    public IDatatype mindegree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index, IDatatype dtmin) {
+        int min = dtmin.intValue();
         if (index == null) {
             // input + output edges
             int d = degree(env, p, node, pred, 0, min) + degree(env, p, node, pred, 1, min);
@@ -709,6 +683,12 @@ public class PluginImpl
         return DatatypeMap.newInstance(d >= min);
     }
 
+    // function xt:degree
+    // xt:degree(node)
+    // xt:degree(node, index)
+    // xt:degree(node, predicate)
+    // xt:degree(node, predicate, index) 
+    // index  = 0|1
     @Override
     public IDatatype degree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index) {
         int min = Integer.MAX_VALUE;
@@ -752,16 +732,16 @@ public class PluginImpl
     }
 
     // name of  current named graph 
-    IDatatype name(Environment env) {
-        if (env.getGraphNode() == null) {
-            return null;
-        }
-        Node n = env.getNode(env.getGraphNode());
-        if (n == null) {
-            return null;
-        }
-        return  n.getDatatypeValue();
-    }
+//    IDatatype name(Environment env) {
+//        if (env.getGraphNode() == null) {
+//            return null;
+//        }
+//        Node n = env.getNode(env.getGraphNode());
+//        if (n == null) {
+//            return null;
+//        }
+//        return  n.getDatatypeValue();
+//    }
     
     /**
      * rdf star
@@ -779,14 +759,20 @@ public class PluginImpl
         return ref;
     }
 
-    /*
-     * Return Loopable with edges
-     */
+    // function xt:edge
+    // return iterator Edge
+    // xt:edge()
+    // xt:edge(p)
+    // xt:edge(s, p)
+    // xt:edge(s, p, o)
     @Override
     public IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
         return edgeList(env, p, subj, pred, obj, null);
     }
 
+    // function xt:edge
+    // return iterator Edge
+    // xt:edge(s, p, o, g)
     @Override
     public IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
         return edgeList(env, p, subj, pred, obj, graph);
@@ -805,12 +791,16 @@ public class PluginImpl
         return dp.getEdges();
     }
 
+    // function xt:subjects
+    // return list of subject of xt:edge()
     @Override
     public IDatatype subjects(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
         DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph).setDuplicate(false);
         return dp.getSubjects();
     }
 
+    // function xt:subjects
+    // return list of object of xt:edge()
     @Override
     public IDatatype objects(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
         DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph).setDuplicate(false);
@@ -831,69 +821,7 @@ public class PluginImpl
         return new DataProducer(getGraph(p)).setDuplicate(true).iterate(subj, pred, obj);
     }
 
-    IDatatype value(IDatatype dt) {
-        if (dt == null || dt.isBlank()) {
-            return null;
-        }
-        return dt;
-    }
-
-    IDatatype triple(Expr exp, Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
-        EdgeQuad edge = EdgeQuad.create(DatatypeMap.newResource(Entailment.DEFAULT), subj, pred, obj);
-        return edge.getNode().getValue();
-    }
-
-    private IDatatype accessGraph(Expr exp, Environment env, Producer p, IDatatype dt) {
-        if (dt.isPointer()) {
-            Pointerable obj = dt.getPointerObject();
-            switch (dt.pointerType()) {
-                case TRIPLE:
-                    return  obj.getEdge().getGraph().getValue();
-                case MAPPINGS:
-                    return DatatypeMap.createObject(obj.getMappings().getGraph());
-            }
-        }
-        return null;
-    }
-
-    private IDatatype access(Expr exp, Environment env, Producer p, IDatatype dt) {
-        if (!(dt.isPointer() && dt.pointerType() == PointerType.TRIPLE)) {
-            return null;
-        }
-        Edge ent = dt.getPointerObject().getEdge();
-        switch (exp.oper()) {
-            case XT_GRAPH:
-                return  ent.getGraph().getDatatypeValue();
-
-            case XT_SUBJECT:
-                return  ent.getNode(0).getDatatypeValue();
-
-            case XT_OBJECT:
-                return  ent.getNode(1).getDatatypeValue();
-
-            case XT_PROPERTY:
-                return  ent.getEdgeNode().getDatatypeValue();
-
-            case XT_INDEX:
-                return getValue(ent.getEdgeIndex());
-        }
-        return null;
-    }
-
-    public IDatatype value(Producer p, IDatatype subj, IDatatype pred, IDatatype dt) {
-        Graph g = getGraph(p);
-        Node ns = g.getNode(subj);
-        Node np = g.getPropertyNode(pred.getLabel());
-        if (ns == null || np == null) {
-            return null;
-        }
-        Edge edge = g.getEdge(np, ns, 0);
-        if (edge == null) {
-            return null;
-        }
-        return  edge.getNode(dt.intValue()).getDatatypeValue();
-    }
-
+    // function xt:union
     @Override
     public IDatatype union(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         if ((!(dt1.isPointer() && dt2.isPointer()))
@@ -915,7 +843,8 @@ public class PluginImpl
         return null;
     }
     
-     @Override
+    // function xt:merge
+    @Override
     public IDatatype merge(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {    
         if (dt1.pointerType() == GRAPH && dt2.pointerType() == GRAPH) {
             Graph g1 = (Graph) dt1.getPointerObject();
@@ -927,6 +856,7 @@ public class PluginImpl
         return null;
     }
 
+    // function xt:minus xt:optional xt:union xt:join
     @Override
     public IDatatype algebra(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         if ((!(dt1.isPointer() && dt2.isPointer()))
@@ -960,10 +890,7 @@ public class PluginImpl
         return null;
     }
 
-    Binding getBinding(Environment env) {
-        return  env.getBind();
-    }
-
+    // function xt:tune
     @Override
     public IDatatype tune(Expr exp, Environment env, Producer p, IDatatype... dt) {
         if (dt.length < 2) {
@@ -995,7 +922,7 @@ public class PluginImpl
                         break;
 
                     case BINDING:
-                        getBinding(env).setDebug(dt3.booleanValue());
+                        env.getBind().setDebug(dt3.booleanValue());
                         break;
 
                     default:
@@ -1073,6 +1000,7 @@ public class PluginImpl
         return n;
     }
 
+    // function xt:depth
     @Override
     public IDatatype depth(Environment env, Producer p, IDatatype dt) {
         Graph g = getGraph(p);
@@ -1098,9 +1026,9 @@ public class PluginImpl
         return DatatypeMap.createObject(p);
     }
 
-    /**
-     * param[0] = query param[i, i+1] = var, val
-     */
+    // function xt:sparql
+    // xt:sparql(query)
+    // xt:sparql(query, var, val)
     @Override
     public IDatatype sparql(Environment env, Producer p, IDatatype[] param) throws EngineException {
         Mapping m = createMapping(p, param, 1);
@@ -1128,24 +1056,7 @@ public class PluginImpl
         }
         return name;
     }
-
-//    Dataset getDataset(Environment env) {
-//        Context c =  env.getQuery().getContext();
-//        if (c != null) {
-//            return new Dataset(c);
-//        }
-//        return null;
-//    }
-
-//    Dataset getDataset() {
-//        Context c = getPluginTransform().getContext();
-//        if (c != null) {
-//            return new Dataset(c);
-//        }
-//        return null;
-//    }
-
-    
+   
     // share @report with subquery
     Dataset getDataset(Environment env) {
         Metadata meta = env.getQuery().getAST().getMetadata();
@@ -1197,10 +1108,6 @@ public class PluginImpl
         }
     }
 
-    IDatatype read(IDatatype dt, Environment env, Producer p) {
-        return read(dt);
-    }
-    
     public Mappings parseSPARQLResult(String path, String... format) throws EngineException {
         SPARQLResultParser parser = new SPARQLResultParser();
         try {
@@ -1219,6 +1126,9 @@ public class PluginImpl
         }
     }
     
+    // function xt:loadMappings
+    // parse Query Results Format from file
+    // format: xt:json xt:xml
     @Override
     public IDatatype readSPARQLResult(IDatatype path, IDatatype... dtformat) {
         Mappings map = null;
@@ -1237,6 +1147,9 @@ public class PluginImpl
         return DatatypeMap.createObject(map);
     }
     
+    // function xt:parseMappings
+    // parse Query Results Format from string
+    // format: xt:json xt:xml
     @Override
     public IDatatype readSPARQLResultString(IDatatype str, IDatatype... dtformat) {
         Mappings map = null;
@@ -1256,6 +1169,7 @@ public class PluginImpl
         return DatatypeMap.createObject(map);
     }
 
+    // function xt:read
     @Override
     public IDatatype read(IDatatype dt) {
         QueryLoad ql = QueryLoad.create();
@@ -1272,6 +1186,7 @@ public class PluginImpl
         return DatatypeMap.newInstance(str);
     }
 
+    // function xt:httpget
     @Override
     public IDatatype httpget(IDatatype uri) {
         try {
@@ -1285,6 +1200,8 @@ public class PluginImpl
         return null;
     }
     
+    // function xt:httpget
+    // accept: header accept format
     @Override
     public IDatatype httpget(IDatatype uri, IDatatype accept) {
         try {
@@ -1316,92 +1233,17 @@ public class PluginImpl
         return null;
     }
 
-    public Transformer getTransformer(Binding b, Environment env, Producer p) throws EngineException {
-        return pt.getTransformer(b, env, p);
-    }
-
     public TemplateVisitor getVisitor(Binding b, Environment env, Producer p) {
         return pt.getVisitor(b, env, p);
     }
-
-    public void setPPrinter(String str) {
-        PPRINTER = str;
-    }
-
-    /**
-     * exp = funcall(arg, arg) arg evaluates to name Generate extension function
-     * for predefined function name rq:plus -> function rq:plus(x, y){
-     * rq:plus(x, y) }
-     */
-    @Override
-    public Function getDefine(Expr exp, Environment env, String name, int n) throws EngineException {
-        if (Processor.getOper(name) == ExprType.UNDEF) {
-            return null;
-        }
-        Query q = env.getQuery().getGlobalQuery();
-        ASTQuery ast = getAST((Expression) exp, q);
-        Function fun = ast.defExtension(name, name, n);
-        q.defineFunction(fun);
-        ASTExtension ext = Interpreter.getCreateExtension(q);
-        ext.define(fun);
-        return fun;
-    }
-
-    // use exp AST to compile exp
-    // use case: uri() uses ast base
-    ASTQuery getAST(Expression exp, Query q) {
-        ASTQuery ast = exp.getAST();
-        if (ast != null) {
-            return ast.getGlobalAST();
-        } else {
-            return  q.getAST();
-        }
-    }
     
-    ASTQuery getAST(Environment env) {
-        return  env.getQuery().getAST();
-    }
-
-    public class TreeNode extends TreeMap<IDatatype, IDatatype> {
-
-        TreeNode() {
-            super(new Compare());
-        }
-
-    }
-
-    /**
-     * This Comparator enables to retrieve an occurrence of a given Literal
-     * already existing in graph in such a way that two occurrences of same
-     * Literal be represented by same Node in graph It (may) represent (1
-     * integer) and (1.0 float) as two different Nodes Current implementation of
-     * EdgeIndex sorted by values ensure join (by dichotomy ...)
-     */
-    class Compare implements Comparator<IDatatype> {
-
-        public int compare(IDatatype dt1, IDatatype dt2) {
-
-            // xsd:integer differ from xsd:decimal 
-            // same node for same datatype 
-            if (dt1.getDatatypeURI() != null && dt2.getDatatypeURI() != null) {
-                int cmp = dt1.getDatatypeURI().compareTo(dt2.getDatatypeURI());
-                if (cmp != 0) {
-                    return cmp;
-                }
-            }
-
-            int res = dt1.compareTo(dt2);
-            return res;
-        }
-    }
-
     /**
      * STTL create intermediate string result (cf Proxy STL_CONCAT) Save string
      * value to disk using Fuqi StrManager Each STTL Transformation would have
      * its own StrManager Managed in the Context to be shared between
      * subtransformation (cf OWL2)
      */
-    @Override
+    //@Override
     public IDatatype getBufferedValue(StringBuilder sb, Environment env) {
         if (storageMgr == null) {
             createManager();
@@ -1423,6 +1265,14 @@ public class PluginImpl
     @Override
     public GraphProcessor getGraphProcessor() {
         return this;
+    }
+
+    public AppxSearchPlugin getApproximateSearch() {
+        return approximateSearch;
+    }
+
+    public void setApproximateSearch(AppxSearchPlugin approximateSearch) {
+        this.approximateSearch = approximateSearch;
     }
 
 }

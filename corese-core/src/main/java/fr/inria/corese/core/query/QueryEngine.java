@@ -27,6 +27,7 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 /**
  * Equivalent of RuleEngine for Query and Template Run a set of query
+ * Used by Transformer to manage set of templates
  *
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *

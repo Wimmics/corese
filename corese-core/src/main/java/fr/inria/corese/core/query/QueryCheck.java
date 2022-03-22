@@ -9,7 +9,8 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Query;
 
 /**
- *
+ * Draft check if query may succeed on graph PRAGMA: 
+ * no RDFS entailments, simple RDF match
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */

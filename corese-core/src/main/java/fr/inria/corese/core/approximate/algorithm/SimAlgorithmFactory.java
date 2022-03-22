@@ -38,16 +38,6 @@ public class SimAlgorithmFactory {
                 return new Equality();
             case jw:
                 return new JaroWinkler();
-                // remove 2 lines comment:
-//            case wn:
-//                return TextSimilarity.create();
-                
-//                try {
-//                    return new TextSimilarity(NLPHelper.createInstance());
-//                } catch (Exception ex) {
-//                    //LoggerFactory.getLogger(SimAlgorithmFactory.class.getName()).log(Level.WARNING, "** Cannot initialize NLP helper, WordNet similarity algorithms are disabled!**");
-//                }
-//                return null;
             case ch:
             //integrate the old algorithm
             //return new ClassHieararchy(alg);

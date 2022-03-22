@@ -200,7 +200,7 @@ public class Graph extends GraphObject implements
     // Node iterator for named Graph
     NodeGraphIndex nodeGraphIndex;
     Log log;
-    List<GraphListener> listen;
+    private List<GraphListener> listenerList;
     Workflow manager;
     EventManager eventManager;
     // @deprecated (use case: crdt datatypes ...)
@@ -787,29 +787,29 @@ public class Graph extends GraphObject implements
     }
 
     public void addListener(GraphListener gl) {
-        if (listen == null) {
-            listen = new ArrayList<>();
+        if (getListenerList() == null) {
+            setListenerList(new ArrayList<>());
         }
-        if (!listen.contains(gl)) {
-            listen.add(gl);
+        if (!listenerList.contains(gl)) {
+            getListenerList().add(gl);
             gl.addSource(this);
         }
     }
 
     public void removeListener(GraphListener gl) {
-        if (listen != null) {
-            listen.remove(gl);
+        if (getListenerList() != null) {
+            getListenerList().remove(gl);
         }
     }
 
     public void removeListener() {
-        if (listen != null) {
-            listen.clear();
+        if (getListenerList() != null) {
+            getListenerList().clear();
         }
     }
 
     public List<GraphListener> getListeners() {
-        return listen;
+        return getListenerList();
     }
 
     public void setTagger(Tagger t) {
@@ -3711,16 +3711,16 @@ public class Graph extends GraphObject implements
      * This log would be used to broadcast deletion to peers
      */
     public void logDelete(Edge ent) {
-        if (listen != null) {
-            for (GraphListener gl : listen) {
+        if (getListenerList() != null) {
+            for (GraphListener gl : getListenerList()) {
                 gl.delete(this, ent);
             }
         }
     }
 
     public void logInsert(Edge ent) {
-        if (listen != null) {
-            for (GraphListener gl : listen) {
+        if (getListenerList() != null) {
+            for (GraphListener gl : getListenerList()) {
                 gl.insert(this, ent);
             }
         }
@@ -3733,8 +3733,8 @@ public class Graph extends GraphObject implements
     }
 
     public void logStart(Query q) {
-        if (listen != null) {
-            for (GraphListener gl : listen) {
+        if (getListenerList() != null) {
+            for (GraphListener gl : getListenerList()) {
                 gl.start(this, q);
             }
         }
@@ -3745,24 +3745,24 @@ public class Graph extends GraphObject implements
     }
 
     public void logFinish(Query q, Mappings m) {
-        if (listen != null) {
-            for (GraphListener gl : listen) {
+        if (getListenerList() != null) {
+            for (GraphListener gl : getListenerList()) {
                 gl.finish(this, q, m);
             }
         }
     }
 
     public void logLoad(String path) {
-        if (listen != null) {
-            for (GraphListener gl : listen) {
+        if (getListenerList() != null) {
+            for (GraphListener gl : getListenerList()) {
                 gl.load(path);
             }
         }
     }
 
     public boolean onInsert(Edge ent) {
-        if (listen != null) {
-            for (GraphListener gl : listen) {
+        if (getListenerList() != null) {
+            for (GraphListener gl : getListenerList()) {
                 if (!gl.onInsert(this, ent)) {
                     return false;
                 }
@@ -3903,6 +3903,14 @@ public class Graph extends GraphObject implements
 
     public void setDebugSparql(boolean debugSparql) {
         this.debugSparql = debugSparql;
+    }
+
+    public List<GraphListener> getListenerList() {
+        return listenerList;
+    }
+
+    public void setListenerList(List<GraphListener> listenerList) {
+        this.listenerList = listenerList;
     }
 
 }

@@ -175,14 +175,14 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
     }
 
 
-    @Override
-    public Object getProperty(int p) {
-        return null;
-    }
-
-    @Override
-    public void setProperty(int p, Object o) {
-    }
+//    @Override
+//    public Object getProperty(int p) {
+//        return null;
+//    }
+//
+//    @Override
+//    public void setProperty(int p, Object o) {
+//    }
 
  
     

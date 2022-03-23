@@ -42,7 +42,7 @@ public class CoreseInteger extends CoreseNumber {
     
     public CoreseInteger(String value) {
         setLabel(value);
-        lvalue = new Long(value).longValue();
+        lvalue =  Long.parseLong(value);
     }
 
     public CoreseInteger(int value) {
@@ -82,6 +82,11 @@ public class CoreseInteger extends CoreseNumber {
     @Override
     public boolean isTrue() {
         return booleanValue();
+    }
+    
+    @Override
+    public boolean isXSDInteger() { 
+        return true;
     }
     
      @Override
@@ -310,43 +315,43 @@ public class CoreseInteger extends CoreseNumber {
         return null;
     }
     
-    @Override    
-    public IDatatype plus(IDatatype dt) {
-        switch (dt.getCode()) {
-            case DOUBLE:
-                return CoreseDouble.create(doubleValue() + dt.doubleValue());
-            case FLOAT:
-                return CoreseFloat.create(floatValue() + dt.floatValue());
-            case DECIMAL:
-                return CoreseDecimal.create(doubleValue() + dt.doubleValue());
-            case INTEGER:
-                try {
-                    return CoreseInteger.create(Math.addExact(longValue(), dt.longValue()));
-                } catch (ArithmeticException e) {
-                    return null;
-                }
-        }
-        return null;
-    }
-    
-    @Override
-    public IDatatype minus(IDatatype dt) {
-        switch (dt.getCode()) {
-            case DOUBLE:
-                return CoreseDouble.create(doubleValue() - dt.doubleValue());
-            case FLOAT:
-                return new CoreseFloat(floatValue() - dt.floatValue());
-            case DECIMAL:
-                return CoreseDecimal.create(doubleValue() - dt.doubleValue());
-            case INTEGER:
-                try {
-                    return CoreseInteger.create(Math.subtractExact(longValue(), dt.longValue()));
-                } catch (ArithmeticException e) {
-                    return null;
-                }
-        }
-        return null;
-    }
+//    @Override    
+//    public IDatatype plus(IDatatype dt) {
+//        switch (dt.getCode()) {
+//            case DOUBLE:
+//                return CoreseDouble.create(doubleValue() + dt.doubleValue());
+//            case FLOAT:
+//                return CoreseFloat.create(floatValue() + dt.floatValue());
+//            case DECIMAL:
+//                return CoreseDecimal.create(doubleValue() + dt.doubleValue());
+//            case INTEGER:
+//                try {
+//                    return CoreseInteger.create(Math.addExact(longValue(), dt.longValue()));
+//                } catch (ArithmeticException e) {
+//                    return null;
+//                }
+//        }
+//        return null;
+//    }
+//    
+//    @Override
+//    public IDatatype minus(IDatatype dt) {
+//        switch (dt.getCode()) {
+//            case DOUBLE:
+//                return CoreseDouble.create(doubleValue() - dt.doubleValue());
+//            case FLOAT:
+//                return new CoreseFloat(floatValue() - dt.floatValue());
+//            case DECIMAL:
+//                return CoreseDecimal.create(doubleValue() - dt.doubleValue());
+//            case INTEGER:
+//                try {
+//                    return CoreseInteger.create(Math.subtractExact(longValue(), dt.longValue()));
+//                } catch (ArithmeticException e) {
+//                    return null;
+//                }
+//        }
+//        return null;
+//    }
     
     @Override
     public IDatatype minus(long val) {
@@ -362,7 +367,8 @@ public class CoreseInteger extends CoreseNumber {
     public String getLabel() {
         String str = super.getLabel();
         if (str == null){
-            return Long.toString(lvalue);
+            str = Long.toString(longValue());
+            setLabel(str);
         }
         return str;
     }

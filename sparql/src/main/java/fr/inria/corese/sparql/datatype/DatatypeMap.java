@@ -264,6 +264,8 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return IDatatype.UNDEF;
     }
 
+    // define specific code for datatype
+    // for subtype of integer and long -> GENERIC_INTEGER
     static Integer getCode(String datatype) {
         Integer i = dtCode.get(datatype);
         if (i == null) {

@@ -570,6 +570,9 @@ public interface IDatatype
     boolean isNumber();
 
     boolean isDecimalInteger();
+    
+    // exact datatype xsd:integer
+    default boolean isXSDInteger() { return false;}
 
     boolean isDate();
 

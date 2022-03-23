@@ -11,6 +11,8 @@ import fr.inria.corese.sparql.api.IDatatype;
 public class CoreseGenericInteger extends CoreseInteger {
 
     IDatatype datatype;
+    
+    CoreseGenericInteger(){}
 
     public CoreseGenericInteger(String label, String uri) {
         super(label);
@@ -31,6 +33,14 @@ public class CoreseGenericInteger extends CoreseInteger {
     public CoreseGenericInteger(long n) {
         super(n);
         setDatatype(XSD.xsdlong);
+    } 
+    
+    // for computing, without label
+    public static CoreseGenericInteger create(long n) {
+        CoreseGenericInteger i = new CoreseGenericInteger();
+        i.setValue(n);
+        i.setDatatype(XSD.xsdlong);
+        return i;
     }
 
     @Override
@@ -41,6 +51,11 @@ public class CoreseGenericInteger extends CoreseInteger {
     @Override
     public IDatatype getDatatype() {
         return datatype;
+    }
+    
+    @Override
+    public boolean isXSDInteger() { 
+        return false;
     }
 
     @Override

@@ -114,7 +114,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
                     case INTEGER:
                         try {
                             long l = Math.addExact(longValue(), dt.longValue());
-                            return  CoreseInteger.create(l);
+                            return  result(dt, l);
                         }
                         catch (ArithmeticException e) {
                             return null;
@@ -122,6 +122,17 @@ public abstract class CoreseNumber extends CoreseDatatype {
                 }
         }
         return null;
+    }
+    
+    // integer type promotion
+    IDatatype result(IDatatype dt, long res) {
+        if (isXSDInteger() && dt.isXSDInteger()) {
+            return CoreseInteger.create(res);
+        }
+        if (getDatatypeURI().equals(XSD.xsdlong) && dt.getDatatypeURI().equals(XSD.xsdlong)) {
+            return  CoreseGenericInteger.create(res);
+        }
+        return CoreseInteger.create(res);
     }
     
     @Override
@@ -177,7 +188,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
                     case INTEGER:
                         try {
                             long l = Math.subtractExact(longValue(), dt.longValue());
-                            return  CoreseInteger.create(l);    
+                            return  result(dt, l);    
                         }
                         catch (ArithmeticException e){
                             return null;
@@ -226,7 +237,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
                     case INTEGER:
                         try {
                             long l = Math.multiplyExact(longValue(), dt.longValue());
-                            return  CoreseInteger.create(l);
+                            return  result(dt, l);
                         } catch (ArithmeticException e) {
                             return null;
                         }

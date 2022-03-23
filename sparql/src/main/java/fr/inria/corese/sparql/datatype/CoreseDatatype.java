@@ -22,6 +22,8 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.kgram.path.Path;
+import static fr.inria.corese.sparql.datatype.CoreseBoolean.FALSE;
+import static fr.inria.corese.sparql.datatype.CoreseBoolean.TRUE;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
@@ -48,20 +50,23 @@ public class CoreseDatatype
     public static Logger logger = LoggerFactory.getLogger(CoreseDatatype.class);
     static final CoreseURI datatype = new CoreseURI(RDF.RDFSRESOURCE);
     static final CoreseString empty = new CoreseString("");
-    public static final CoreseBoolean TRUE = CoreseBoolean.TRUE;
-    public static final CoreseBoolean FALSE = CoreseBoolean.FALSE;
     static final CoreseDatatypeException failure = new CoreseDatatypeException("Datatype Exception, statically created");
-    static final Hashtable<String, IDatatype> lang2dataLang = new Hashtable<String, IDatatype>(); // 'en' -> CoreseString('en')
-    static final Hashtable<String, IDatatype> hdt = new Hashtable<String, IDatatype>(); // datatype name -> CoreseURI datatype
+    // lang tag string -> IDatatype value
+    static final Hashtable<String, IDatatype> lang2dataLang = new Hashtable<String, IDatatype>();
+    // datatype string -> IDatatype value
+    static final Hashtable<String, IDatatype> hdt = new Hashtable<String, IDatatype>(); 
+    // DatatypeMap singleton
     static final DatatypeMap dm = DatatypeMap.create();
     static final int LESSER = -1, GREATER = 1;
-    static int cindex = 0;
     static int code = -1;
     
-    static HashMap<Integer, Class> dtc;
+    static HashMap<Integer, Class> javaClassMap;
+    @Deprecated
     private static IDatatype publicDatatypeValue;
     
+    // Node getIndex()
     private int index = IDatatype.VALUE;
+    // Node getTripleStore()
     private TripleStore graph;
     
     static { 
@@ -69,7 +74,7 @@ public class CoreseDatatype
     }
     
     static void init() {
-        dtc = new HashMap<>();
+        javaClassMap = new HashMap<>();
         define(IDatatype.INTEGER,   int.class);
         define(IDatatype.DOUBLE,    double.class);
         define(IDatatype.DECIMAL,   double.class);
@@ -85,7 +90,7 @@ public class CoreseDatatype
     }
     
     static void define(int i, Class c) {
-        dtc.put(i, c);
+        javaClassMap.put(i, c);
     }
     
     @Override
@@ -93,7 +98,7 @@ public class CoreseDatatype
         if (getNodeObject() != null) {
             return getNodeObject().getClass();
         }
-        return dtc.get(getCode());
+        return javaClassMap.get(getCode());
     }
 
     /**
@@ -105,6 +110,7 @@ public class CoreseDatatype
         return empty;
     }
     
+    // for pointer datatype value
     @Override
     public String getContent(){
         if (getNodeObject() == null){
@@ -170,9 +176,9 @@ public class CoreseDatatype
             } else {
                 datatype = String.format("<%s>", datatype);
             }
-            value = protect(value) + "^^" + datatype;
+            value = String.format("%s^^%s", protect(value), datatype);
         } else if (getLang() != null && !getLang().isEmpty()) {
-            value = protect(value) + "@" + getLang();
+            value = String.format("%s@%s", protect(value), getLang());
         } 
 //        else if (isExtension()) {
 //            value = getContent();
@@ -314,16 +320,9 @@ public class CoreseDatatype
         return this;
     }
 
-    public boolean isBindable() {
-        if (isNumber()) {
-            return false;
-        }
-        return true;
-    }
-
-    public boolean isDatatype() {
-        return true;
-    }
+//    public boolean isDatatype() {
+//        return true;
+//    }
 
     @Override
     public boolean isXMLLiteral() {
@@ -367,7 +366,6 @@ public class CoreseDatatype
             
             return CoreseDatatype.create(type, null, getNormalizedLabel(), null, true);
         } catch (CoreseDatatypeException e) {
-            //e.printStackTrace();
             return null;
         } catch (Exception e) {
             return null;
@@ -385,11 +383,6 @@ public class CoreseDatatype
 
     @Override
     public boolean isTrueAble() {
-        return false;
-    }
-
-    @Override
-    public boolean isArray() {
         return false;
     }
 
@@ -553,10 +546,7 @@ public class CoreseDatatype
         return null;
     }
 
-    @Override
-    public void setBlank(boolean b) {
-    }
-
+    // redefined as false by CoreseResource
     @Override
     public boolean isLiteral() {
         return true;
@@ -579,6 +569,8 @@ public class CoreseDatatype
         return TRUE;
     }
 
+    // redefined by CoreseUndefFuture
+    // specific datatype for transformer future value
     @Override
     public boolean isFuture() {
         return false;
@@ -648,23 +640,6 @@ public class CoreseDatatype
     @Override
     public IDatatype getDatatype() {
         return datatype;
-    }
-    
-    @Override
-    public IDatatype datatype() {
-        return getDatatype();
-    }
-
-    @Deprecated
-    @Override
-    public IDatatype getExtDatatype() {
-        return getDatatype();
-    }
-
-    // URI has rdfs:Resource as datatype
-    @Override
-    public IDatatype getIDatatype() {
-        return getDatatype();
     }
 
     @Override
@@ -764,13 +739,13 @@ public class CoreseDatatype
             case INTEGER: 
                 return longValue();
             case DOUBLE:  
-            case DECIMAL:
                 return doubleValue();
+            case DECIMAL:
+                return decimalValue();
             case FLOAT:   
                 return floatValue();
             case BOOLEAN:
-                return booleanValue();
-                
+                return booleanValue();                
             default: 
                 return stringValue();
         }
@@ -811,20 +786,6 @@ public class CoreseDatatype
         return -1;
     }
 
-    @Override
-    public double getdValue() {
-        return -1;
-    }
-
-    @Override
-    public long getlValue() {
-        return -1;
-    }
-
-    @Override
-    public int getiValue() {
-        return -1;
-    }
 
     /**
      * Generic comparison between datatypes, used to sort the projection cache
@@ -1103,11 +1064,11 @@ public class CoreseDatatype
     /**
      * Same datatype or String & Literal
      */
-    boolean equivalentDatatype(IDatatype dt) {
-        return getDatatype() == dt.getDatatype()
-                || getCode() == STRING && dt.getCode() == LITERAL
-                || getCode() == LITERAL && dt.getCode() == STRING;
-    }
+//    boolean equivalentDatatype(IDatatype dt) {
+//        return getDatatype() == dt.getDatatype()
+//                || getCode() == STRING && dt.getCode() == LITERAL
+//                || getCode() == LITERAL && dt.getCode() == STRING;
+//    }
 
     // compare values (e.g. for numbers)
     @Override
@@ -1189,7 +1150,6 @@ public class CoreseDatatype
         return false;
     }
 
-    // overloaded by CoreseBlankNode for triple
     @Override
     public IDatatype eq(IDatatype dt) {
         try {
@@ -1204,7 +1164,6 @@ public class CoreseDatatype
         return ne(dt);
     }
     
-    // overloaded by CoreseBlankNode for triple
     @Override
     public IDatatype ne(IDatatype dt) {
         try {
@@ -1260,12 +1219,6 @@ public class CoreseDatatype
     }
 
     @Override
-    @Deprecated
-    public boolean semiEquals(IDatatype iod) {
-        return sameTerm(iod);
-    }
-
-    @Override
     public IDatatype plus(IDatatype iod) {
         return null;
     }
@@ -1312,27 +1265,14 @@ public class CoreseDatatype
     }
 
     @Override
-    public double getDoubleValue() {
-        return doubleValue();
-    }
-
-    @Override
-    public int getIntegerValue() {
-        return intValue();
-    }
-
-    @Override
     public IDatatype getDatatypeValue() {
         return this;
     }
     
+    // for extension CoreseXML
     @Override
     public IDatatype getObjectDatatypeValue() {
         return this;
-    }
-
-    public String getStringValue() {
-        return getLabel();
     }
 
     public boolean isPath() {
@@ -1405,6 +1345,9 @@ public class CoreseDatatype
     
     @Override
     public boolean conform(IDatatype type) {
+        if (getDatatype() == null) {
+            return false;
+        }
         if (getDatatype().equals(type)) {
             return true;
         }       
@@ -1436,14 +1379,14 @@ public class CoreseDatatype
         return this;
     }
 
-    @Override
-    public Object getProperty(int p) {
-        return null;
-    }
-
-    @Override
-    public void setProperty(int p, Object o) {
-    }
+//    @Override
+//    public Object getProperty(int p) {
+//        return null;
+//    }
+//
+//    @Override
+//    public void setProperty(int p, Object o) {
+//    }
 
     @Override
     public Node getNode() {
@@ -1484,17 +1427,13 @@ public class CoreseDatatype
         graph = store;
     }
     
-     /**
-     * @return the globalDatatypeValue
-     */
+    
     @Override
     public IDatatype getPublicDatatypeValue() {
         return publicDatatypeValue;
     }
 
-    /**
-     * @param aGlobalDatatypeValue the globalDatatypeValue to set
-     */
+    
     @Override
     public IDatatype setPublicDatatypeValue(IDatatype aGlobalDatatypeValue) {
         publicDatatypeValue = aGlobalDatatypeValue;

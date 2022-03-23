@@ -490,13 +490,13 @@ public class Visit {
         return ltable.getLength(n, exp);
     }
 
-    void setRegex(Node n, Regex e) {
-        n.setProperty(Node.REGEX, e);
-    }
-
-    Regex getRegex(Node n) {
-        return (Regex) n.getProperty(Node.REGEX);
-    }
+//    void setRegex(Node n, Regex e) {
+//        n.setProperty(Node.REGEX, e);
+//    }
+//
+//    Regex getRegex(Node n) {
+//        return (Regex) n.getProperty(Node.REGEX);
+//    }
 
     /**
      * ***********************************

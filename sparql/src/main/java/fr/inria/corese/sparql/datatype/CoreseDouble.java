@@ -3,6 +3,8 @@ package fr.inria.corese.sparql.datatype;
 import java.math.BigDecimal;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import static fr.inria.corese.sparql.datatype.CoreseBoolean.FALSE;
+import static fr.inria.corese.sparql.datatype.DatatypeMap.TRUE;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
 /**
@@ -89,16 +91,6 @@ public class CoreseDouble extends CoreseNumber {
     @Override
     public int intValue() {
         return (int) dvalue;
-    }
-
-    @Override
-    public double getdValue() {
-        return dvalue;
-    }
-
-    @Override
-    public long getlValue() {
-        return (long) dvalue;
     }
 
     @Override

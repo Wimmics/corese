@@ -594,10 +594,9 @@ public class PathFinder {
         Node node = null;
         try {
             node = evaluator.eval(f, memory, producer);
-        } catch (SparqlException ex) {
-            
+            node.setObject(p);
+        } catch (SparqlException ex) { 
         }
-        node.setObject(p);
         return node;
     }
 

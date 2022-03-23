@@ -1,6 +1,8 @@
 package fr.inria.corese.sparql.datatype.extension;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import static fr.inria.corese.sparql.datatype.CoreseBoolean.FALSE;
+import static fr.inria.corese.sparql.datatype.CoreseBoolean.TRUE;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import java.util.ArrayList;
 import java.util.Iterator;

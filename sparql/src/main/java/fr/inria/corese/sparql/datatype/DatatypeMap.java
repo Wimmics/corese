@@ -1100,10 +1100,6 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return dt.getCode() == IDatatype.DECIMAL;
     }
 
-    public static boolean isBindable(IDatatype dt) {
-        return ((CoreseDatatype) dt).isBindable();
-    }
-
     public static IDatatype getTZ(IDatatype dt) {
         if (!dt.isDate()) {
             return null;

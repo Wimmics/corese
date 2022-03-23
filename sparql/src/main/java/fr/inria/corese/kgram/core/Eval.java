@@ -12,7 +12,6 @@ import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Loopable;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Matcher;
@@ -30,6 +29,7 @@ import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.path.PathFinder;
 import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.kgram.tool.ResultsImpl;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 
 /**
@@ -1862,7 +1862,7 @@ public class Eval implements ExpType, Plugin {
 
                 if (bmatch) {
                     if (hasCandidate) {
-                        DatatypeValue dt = getVisitor().candidate(this, getGraphNode(graphNode), qEdge, edge);
+                        IDatatype dt = getVisitor().candidate(this, getGraphNode(graphNode), qEdge, edge);
                         if (dt != null) {
                             bmatch = dt.booleanValue();
                         }
@@ -2523,7 +2523,7 @@ public class Eval implements ExpType, Plugin {
      * Draf extension where a Visitor provides Edge iterator
      */
     Iterable<Edge> produce(Producer p, Node gNode, List<Node> from, Edge edge) {
-        DatatypeValue res = getVisitor().produce(this, gNode, edge);
+        IDatatype res = getVisitor().produce(this, gNode, edge);
         if (res == null) {
             return null;
         }

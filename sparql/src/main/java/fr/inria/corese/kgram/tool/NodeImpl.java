@@ -187,14 +187,14 @@ public class NodeImpl implements Node {
         return atom.getDatatypeValue().getPath();
     }
 
-    @Override
-    public Object getProperty(int p) {
-        return null;
-    }
-
-    @Override
-    public void setProperty(int p, Object o) {
-    }
+//    @Override
+//    public Object getProperty(int p) {
+//        return null;
+//    }
+//
+//    @Override
+//    public void setProperty(int p, Object o) {
+//    }
 
     @Override
     public String getKey() {

@@ -1,6 +1,5 @@
 package fr.inria.corese.kgram.core;
 
-import fr.inria.corese.kgram.api.core.DatatypeValue;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -1651,7 +1650,7 @@ public class Mappings extends PointerObject
                 Node val = m.getNode(node);
 
                 if (val != null) {
-                    DatatypeValue value = val.getDatatypeValue();
+                    IDatatype value = val.getDatatypeValue();
 
                     if (value.isBoolean() || value.isNumber()) {
                         if (value.booleanValue()) {
@@ -1709,7 +1708,7 @@ public class Mappings extends PointerObject
             if (m.size() > 0) {
                 Node var = m.getQueryNode(0);
                 if (var.isVariable()) {
-                    DatatypeValue value = m.getValue(var);
+                    IDatatype value = m.getValue(var);
                     if (value.isURI()) {
                         String ns = value.stringValue();
                         boolean check = check(var, ns);
@@ -1727,7 +1726,7 @@ public class Mappings extends PointerObject
     boolean check(Node var, String ns) {
         for (Mapping m : this) {
             if (m.size() > 0) {
-                DatatypeValue value = m.getValue(var);
+                IDatatype value = m.getValue(var);
                 if (!(value != null && value.isURI() && value.stringValue().startsWith(ns))) {
                     return false;
                 }

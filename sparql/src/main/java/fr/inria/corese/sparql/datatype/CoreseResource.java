@@ -57,10 +57,10 @@ public class CoreseResource extends CoreseStringableImpl {
     	   return null;
        }
        
-    @Override
-       public IDatatype getIDatatype(){
-   		 return datatype;
-       }
+//    @Override
+//       public IDatatype getIDatatype(){
+//   		 return datatype;
+//       }
        
     @Override
        public  int getCode(){

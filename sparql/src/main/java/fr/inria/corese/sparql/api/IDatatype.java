@@ -111,8 +111,6 @@ public interface IDatatype
 
     boolean isGeneralized(); // isExtension or isUndefined
 
-    boolean isArray();
-
     boolean isList();
 
     boolean isMap();
@@ -406,8 +404,9 @@ public interface IDatatype
     @Override
     Object getNodeObject();
 
+    @Deprecated
     IDatatype getPublicDatatypeValue();
-
+    @Deprecated
     IDatatype setPublicDatatypeValue(IDatatype dt);
 
     String getContent();
@@ -527,7 +526,7 @@ public interface IDatatype
     /**
      * @return the datatype of this
      */
-    IDatatype datatype();
+    //IDatatype datatype();
 
     IDatatype getDatatype();
 
@@ -535,7 +534,7 @@ public interface IDatatype
     IDatatype getObjectDatatypeValue();
 
     // same as getDatatype but URI return rdfs:Resource
-    IDatatype getIDatatype();
+    //IDatatype getIDatatype();
 
     /**
      * @return the lang of this ('fr', 'en',...)
@@ -582,23 +581,9 @@ public interface IDatatype
     /**
      * ************************************************
      */
-    @Deprecated
-    double getDoubleValue();
-
-    @Deprecated
-    int getIntegerValue();
-
-    @Deprecated
-    int getiValue();
-
-    @Deprecated
-    double getdValue();
 
     @Deprecated
     String getNormalizedLabel();
-
-    @Deprecated
-    IDatatype getExtDatatype();
 
     @Deprecated
     String getLowerCaseLabel();
@@ -609,15 +594,11 @@ public interface IDatatype
         return NodeKind.UNDEF;
     }
     
-    boolean semiEquals(IDatatype iod); // get rid of @ lang
-
     boolean hasLang();
 
     boolean isTrue() throws CoreseDatatypeException;
 
     boolean isTrueAble();
-
-    void setBlank(boolean b);
 
     void setDatatype(String uri);
 
@@ -628,8 +609,6 @@ public interface IDatatype
     void setValue(IDatatype dt);
 
     void setLang(String str);
-
-    long getlValue();
     
     default IDatatype duplicate () {
         return this;

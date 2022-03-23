@@ -97,8 +97,8 @@ public interface Node extends Pointerable {
         @Override
         TripleStore getTripleStore();	
 	
-	Object getProperty(int p);	
-	void setProperty(int p, Object o);
+//	Object getProperty(int p);	
+//	void setProperty(int p, Object o);
         
         // tagged as triple reference
         default boolean isTriple() {

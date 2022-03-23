@@ -6,6 +6,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import static fr.inria.corese.sparql.datatype.CoreseBoolean.FALSE;
+import static fr.inria.corese.sparql.datatype.CoreseBoolean.TRUE;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 
 /**
@@ -121,20 +123,6 @@ public class CoreseInteger extends CoreseNumber {
         return (float) lvalue;
     }
 
-    @Override
-    public double getdValue() {
-        return doubleValue();
-    }
-
-    @Override
-    public int getiValue() {
-        return intValue();
-    }
-
-    @Override
-    public long getlValue() {
-        return longValue();
-    }
 
     @Override
     public int compare(IDatatype iod) throws CoreseDatatypeException {

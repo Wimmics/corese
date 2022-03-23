@@ -46,7 +46,7 @@ public class UnaryFunction extends TermEval {
             case ExprType.ROUND:        return round(dt);
             case ExprType.FLOOR:        return floor(dt);
                 
-            case ExprType.DATATYPE:     return dt.datatype();
+            case ExprType.DATATYPE:     return dt.getDatatype();
             case ExprType.LANG:         return dt.getDataLang();
             case ExprType.STR:          return DatatypeMap.newLiteral(dt.getPrettyLabel());
             case ExprType.XSDSTRING:    return DatatypeMap.newInstance(dt.getPrettyLabel());

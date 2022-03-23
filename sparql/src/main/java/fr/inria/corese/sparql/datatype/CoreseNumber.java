@@ -276,7 +276,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
                             return CoreseFloat.create(floatValue() / dt.floatValue());
                         case DECIMAL:
                         case INTEGER:
-                            return CoreseDecimal.create(decimalValue().divide(dt.decimalValue()));
+                            return CoreseDecimal.create(doubleValue() / dt.doubleValue());
                         default:
                             return CoreseDecimal.create(doubleValue() / dt.doubleValue());
                     }
@@ -289,8 +289,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
                             return CoreseDecimal.create(decimalValue().divide(dt.decimalValue()));
                         case DECIMAL:
                         case INTEGER:                            
-                            //return CoreseDecimal.create(doubleValue() / dt.doubleValue());
-                            return CoreseDecimal.create(decimalValue().divide(dt.decimalValue()));
+                            return CoreseDecimal.create(doubleValue() / dt.doubleValue());
                         default:                            
                             return CoreseDecimal.create(longValue() / dt.doubleValue());
                     }

@@ -83,7 +83,7 @@ public class TemplatePrinter {
 		write("<?xml version='1.0' encoding='UTF-8'?>");
                 write("<!--");
                 write("SPARQL Template Transformation");
-                write("Olivier Corby - Wimmics - Inria UNS CNRS I3S");
+                write("Olivier Corby - Wimmics - Inria UCA I3S");
                 write(new Date().toString());
                 write("-->");
 		write("<rdf:RDF  xmlns:rdf='" + NSManager.RDF + "'");

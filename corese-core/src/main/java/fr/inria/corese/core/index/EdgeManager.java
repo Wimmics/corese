@@ -36,13 +36,19 @@ import java.util.HashMap;
 public class EdgeManager implements Iterable<Edge> {
     Graph graph;
     private EdgeManagerIndexer indexer;
+    // Predicate of this EdgeManager: edges in this edge list have this predicate
     private Node predicate;
     private ArrayList<Edge> edgeList;
-    private Comparator<Edge> comparatorIndex, comparator;
+    // comparator to sort edge list: g s p o t < g s p o
+    private Comparator<Edge> comparatorIndex;
+    // comparator to retrieve place of edge: g s p o t = g s p o
+    private Comparator<Edge> comparator;
+    // index of first Node to sort 
     private int index = 0;
+    // index of second Node to sort
     private int other = 0;
+    // index of third Node to sort
     private int next = IGRAPH;
-    int meta = Edge.REF_INDEX;
     boolean indexedByNode = false;
 
     EdgeManager(EdgeManagerIndexer indexer, Node p, int i) {
@@ -83,12 +89,7 @@ public class EdgeManager implements Iterable<Edge> {
         return index;
     }
     
-    int reduce(NodeManager mgr) {
-        return reduceNew(mgr);
-    }
-
-    
-    
+  
     /**
      * input edge are sorted with reference node first: g s p o t <before> g s p o
      * remove duplicate edges, share reference node if any, share asserted if any
@@ -100,7 +101,7 @@ public class EdgeManager implements Iterable<Edge> {
      * Remaining edge becomes asserted if one occurrence (with same g s p o) is asserted
      * Create NodeManager: node -> (predicate:position) 
      */
-    int reduceNew(NodeManager nodeManager) {
+    int reduce(NodeManager nodeManager) {
         ArrayList<Edge> reduceNodeList = new ArrayList<>();
         Edge pred = null;
         int count = 0, ind = 0;
@@ -179,70 +180,14 @@ public class EdgeManager implements Iterable<Edge> {
         }
         //System.out.println("after reduce: " + list);
         return count;
-    }
-    
-        /**
-     * Remove duplicate edges
-     * pragma: edge list is sorted
-     */
-//    int reduceOld(NodeManager mgr) {
-//        ArrayList<Edge> l = new ArrayList<>();
-//        Edge pred = null;
-//        int count = 0, ind = 0;
-//        //System.out.println("before reduce: " + list);
-//        
-//        for (Edge edge : getEdgeList()) {
-//            if (pred == null) {
-//                l.add(edge);
-//                mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
-//                ind++;
-//            } else if (equalExceptIfOneHasMetadata(pred, edge)) {
-//                // skip edge because it is redundant with pred
-//                count++;
-//            } else {
-//                l.add(edge);
-//                if (edge.getNode(getIndex()) != pred.getNode(getIndex())) {
-//                    mgr.add(edge.getNode(getIndex()), getPredicate(), ind);
-//                }
-//                ind++;
-//            }
-//            pred = edge;
-//        }
-//        
-//        setEdgeList(l);
-//        if (count > 0) {
-//            graph.setSize(graph.size() - count);
-//        }
-//        //System.out.println("after reduce: " + list);
-//        return count;
-//    }
-    
-    /**
-     * return true when edges are equal, except if one has metadata
-     */
-    boolean equalExceptIfOneHasMetadata(Edge e1, Edge e2) {
-        if (equalWithoutConsideringMetadata(e1, e2)) {
-            // equal g s p o
-            if (hasMetadata(e1, e2)) {
-                getIndexer().setLoopMetadata(true);
-                return false;
-            }
-            return true;
-        }
-        return false;
-    }
+    }   
     
     // when rdf star: equal g s p o without considering reference node t
     // g s p o = g s p o t = g s p o t2
     boolean equalWithoutConsideringMetadata(Edge e1, Edge e2) {
         return getComparatorEqualWithoutMetadata().compare(e1, e2) == 0;
     }
-    
-    boolean hasMetadata(Edge e1, Edge e2) {
-        return graph.isEdgeMetadata() && (e1.getReferenceNode() != null || e2.getReferenceNode() != null);
-    }
-            
-    
+     
     NodeManager getNodeManager() {
         return getIndexer().getNodeManager();
     }
@@ -269,23 +214,24 @@ public class EdgeManager implements Iterable<Edge> {
     }
     
     /**
-     * generate map: node -> (p:position)
-     * with position of node in this edge list of predicate p 
+     * generate map: node -> (predicate:position)
+     * with position of node in this edge list of predicate  
      */
     void indexNodeManager(NodeManager nodeManager) {
         Edge pred = null;
-        int ind = 0;
-        int begin=0, end=0;
+        int begin = 0;
+        int end = 0;
         
         for (Edge edge : getEdgeList()) {
             Node focus = edge.getNode(getIndex());
             if (pred == null) {
+                // first edge
             } 
             else if (focus != pred.getNode(getIndex())) {
-                nodeManager.add(pred.getNode(getIndex()), getPredicate(), begin, ind);
-                begin = ind;
+                nodeManager.add(pred.getNode(getIndex()), getPredicate(), begin, end);
+                begin = end;
             }
-            ind++;
+            end++;
             pred = edge;
         }
         if (pred!=null) {
@@ -316,7 +262,7 @@ public class EdgeManager implements Iterable<Edge> {
     void doCompact(){
         ArrayList<Edge> l = new ArrayList<>(getEdgeList().size());
         for (Edge ent : getEdgeList()) {
-           Edge ee = graph.getEdgeFactory().compact(ent);
+           Edge ee = getGraph().getEdgeFactory().compact(ent);
            l.add(ee);
         }
         setEdgeList(l);
@@ -422,54 +368,36 @@ public class EdgeManager implements Iterable<Edge> {
         if (i >= getEdgeList().size()) {
             i = getEdgeList().size();
         } 
-//        else if (getIndex() == 0) {
-//            if (getGraph().isFormerMetadata()) {
-//                // add edge with metadata take care of it
-//                return i;
-//            } else {
-//                if (equalWithoutConsideringMetadata(getEdgeList().get(i), edge)) {
+        return i;
+    }
+    
+//    int getPlace2(Edge edge) {
+//        int i = find(edge);
+//        if (i >= getEdgeList().size()) {
+//            i = getEdgeList().size();
+//        } else if (getIndex() == 0) {
+//            if (equalWithoutConsideringMetadata(getEdgeList().get(i), edge)) {
+//                if (getGraph().isMetadataNode()) {
+//                    if (edge.hasReferenceNode() && ! getEdgeList().get(i).hasReferenceNode()) {
+//                        return i;
+//                    }
+//                    else if (edge.isAsserted() && ! getEdgeList().get(i).isAsserted()) {
+//                        return i;
+//                    }
+//                    else {
+//                        return -1;
+//                    }
+//                }
+//                else {
 //                    // eliminate duplicate at load time for index 0                   
 //                    return -1;
 //                }
 //            }
 //        }
-
-        return i;
-    }
-    
-    int getPlace2(Edge edge) {
-        int i = find(edge);
-        if (i >= getEdgeList().size()) {
-            i = getEdgeList().size();
-        } else if (getIndex() == 0) {
-            //if (equalExceptIfMetadata(getEdgeList().get(i), edge)) {
-            if (equalWithoutConsideringMetadata(getEdgeList().get(i), edge)) {
-                if (getGraph().isMetadataNode()) {
-                    if (edge.hasReferenceNode() && ! getEdgeList().get(i).hasReferenceNode()) {
-                        return i;
-                    }
-                    else if (edge.isAsserted() && ! getEdgeList().get(i).isAsserted()) {
-                        return i;
-                    }
-                    else {
-                        return -1;
-                    }
-                }
-//                else 
-//                    if (hasMetadata(getEdgeList().get(i), edge)) {
-//                    // equal but have metadata: insert it
-//                    return i;
-//                } 
-                else {
-                    // eliminate duplicate at load time for index 0                   
-                    return -1;
-                }
-            }
-        }
-
-        return i;
-    }
-    
+//
+//        return i;
+//    }
+//    
 
 
     /**

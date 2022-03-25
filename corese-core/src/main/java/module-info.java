@@ -25,7 +25,6 @@ module fr.inria.corese.corese_core {
     exports fr.inria.corese.core.transform;
     exports fr.inria.corese.core.util;
     exports fr.inria.corese.core.print;
-    exports fr.inria.corese.core.pipe;
     exports fr.inria.corese.core.api;
     exports fr.inria.corese.core.edge;
     exports fr.inria.corese.core.logic;

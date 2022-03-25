@@ -1,6 +1,5 @@
 package fr.inria.corese.core.index;
 
-import fr.inria.corese.core.Event;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -75,10 +74,7 @@ public class EdgeManagerIndexer
     // Property Node -> Edge List 
     HashMap<Node, EdgeManager> table;
     private NodeManager nodeManager;
-    // replace key node by value node
-    HashMap<Node, Node> replaceMap;
     private boolean debug = false;
-    private boolean loopMetadata = false;
 
     public EdgeManagerIndexer(Graph g, boolean bi, int index) {
         init(g, bi, index);
@@ -294,7 +290,7 @@ public class EdgeManagerIndexer
     @Override
     public void clearIndex(Node pred) {
         EdgeManager l = get(pred);
-        if (l != null) { // && l.size() > 0) {            
+        if (l != null) {         
             l.clear();
         }
     }
@@ -314,8 +310,10 @@ public class EdgeManagerIndexer
         return add(edge, false);
     }
 
-    Edge internal(Edge ent){
-        return graph.getEdgeFactory().internal(ent);
+    // generate internal representation for edge, 
+    // possibly without predicate and named graph if kg:default
+    Edge internal(Edge edge){
+        return graph.getEdgeFactory().internal(edge);
     }
     
     /**
@@ -542,13 +540,13 @@ public class EdgeManagerIndexer
     }
 
     Edge tag(Edge ent) {
-        graph.tag(ent);
+        getGraph().tag(ent);
         return ent;
     }
 
 
     EdgeManager getListByLabel(Edge e) {
-        Node pred = graph.getPropertyNode(e.getEdgeNode().getLabel());
+        Node pred = getGraph().getPropertyNode(e.getEdgeNode().getLabel());
         if (pred == null) {
             return null;
         }
@@ -659,6 +657,7 @@ public class EdgeManagerIndexer
     
     /**
      * To be called after reduce is done
+     * Generate Node Index: node -> (predicate:position)
      */
     @Override
     public void indexNodeManager() {
@@ -1183,21 +1182,6 @@ public class EdgeManagerIndexer
     public void finishUpdate() {
     }
     
-    void test() {
-        System.out.println("AMI:\n" + graph.display());
-        System.out.println(replaceMap);
-    }
-    
-    
-  
-    public boolean isLoopMetadata() {
-        return loopMetadata;
-    }
-
-   
-    public void setLoopMetadata(boolean loopMetadata) {
-        this.loopMetadata = loopMetadata;
-    }
 
     public void setNodeManager(NodeManager nodeManager) {
         this.nodeManager = nodeManager;

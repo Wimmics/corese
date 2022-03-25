@@ -4,9 +4,13 @@ import java.util.Hashtable;
 
 import fr.com.hp.hpl.jena.rdf.arp.ALiteral;
 import fr.com.hp.hpl.jena.rdf.arp.AResource;
+import fr.com.hp.hpl.jena.rdf.arp.StatementHandler;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
+import static fr.inria.corese.core.load.Load.IMPORTS;
 import fr.inria.corese.kgram.api.core.Edge;
+import org.xml.sax.SAXException;
+import org.xml.sax.SAXParseException;
 
 /**
  * Graph creation Methods are public, Design to be refined
@@ -14,16 +18,17 @@ import fr.inria.corese.kgram.api.core.Edge;
  * @author Olivier Corby, Edelweiss INRIA 2011
  *
  */
-public class BuildImpl extends CreateTriple implements Build {
+public class BuildImpl extends CreateTriple 
+        implements Build, StatementHandler, org.xml.sax.ErrorHandler {
 
 
     Graph graph;
-    Node gnode;
+    private Node graphNode;
     Hashtable<String, String> blank;
 
-    private String resource, source;
+    private String resource, namedGraphURI;
     private Node node;
-    Load load;
+    private Load load;
 
     public BuildImpl() {
     }
@@ -48,8 +53,8 @@ public class BuildImpl extends CreateTriple implements Build {
             if (value == null) {
                 return;
             }
-            Edge edge = getEdge(gnode, subject, predicate, value);
-            process(gnode, edge);
+            Edge edge = getEdge(getGraphNode(), subject, predicate, value);
+            process(getGraphNode(), edge);
         }
     }
 
@@ -59,16 +64,29 @@ public class BuildImpl extends CreateTriple implements Build {
             Node subject = getSubject(subj);
             Node predicate = getProperty(pred);
             Node value = getNode(obj);
-            Edge edge = getEdge(gnode, subject, predicate, value);
-            process(gnode, edge);
+            Edge edge = getEdge(getGraphNode(), subject, predicate, value);
+            process(getGraphNode(), edge);
+            
+            if (pred.getURI().equals(IMPORTS)) {
+                getLoad().imports(obj.getURI());
+            }
         }
     }
 
     @Override
     public void setSource(String src) {
-        if (source == null || !src.equals(source)) {
-            source = src;
-            gnode = addGraph(src);
+        basicSetSource(src);
+    }
+    
+    public String getSource() {
+        return getNamedGraphURI();
+    }
+    
+        
+    void basicSetSource(String src) {
+        if (getNamedGraphURI() == null || !src.equals(getNamedGraphURI())) {
+            setNamedGraphURI(src);
+            setGraphNode(addGraph(src));
         }
     }
     
@@ -77,13 +95,6 @@ public class BuildImpl extends CreateTriple implements Build {
         super.start();
         blank.clear();
     }
-
-//    @Override
-//    public void setSkip(boolean b) {
-//        setSkip(b);
-//    }
-
-  
 
     public void process(Node gNode, Edge edge) {
         add(edge);
@@ -147,5 +158,44 @@ public class BuildImpl extends CreateTriple implements Build {
     public int nbBlank() {
         return blank.size();
     }
+
+    public Node getGraphNode() {
+        return graphNode;
+    }
+
+    public void setGraphNode(Node graphNode) {
+        this.graphNode = graphNode;
+    }
+
+    public String getNamedGraphURI() {
+        return namedGraphURI;
+    }
+
+    public void setNamedGraphURI(String namedGraphURI) {
+        this.namedGraphURI = namedGraphURI;
+    }
+
+    public Load getLoad() {
+        return load;
+    }
+
+    public void setLoad(Load load) {
+        this.load = load;
+    }
+    
+    
+       
+    @Override
+    public void error(SAXParseException exception) throws SAXException {
+    }
+
+    @Override
+    public void fatalError(SAXParseException exception) throws SAXException {
+    }
+
+    @Override
+    public void warning(SAXParseException exception) throws SAXException {
+    }
+    
 
 }

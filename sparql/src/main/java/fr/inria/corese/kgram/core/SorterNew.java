@@ -18,7 +18,7 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 /**
- * A new sorter for QPœ
+ * A new sorter for QP
  *
  * @author Fuqi Song, Wimmics Inria I3S
  * @date 5 juin 2014
@@ -28,7 +28,7 @@ public class SorterNew extends Sorter {
     boolean print = false;
 
     public void sort(Exp expression, List<Exp> bindings, Producer prod, int planType) {
-        if(expression.size() < 2) return;
+        if (expression.size() < 2) return;
 
         Map<Integer, List<Exp>> ESGs = tokenize(expression);
         if (ESGs.isEmpty()) return;
@@ -75,7 +75,7 @@ public class SorterNew extends Sorter {
             //** the graph pattern (because normally we put BIND just after where its variable 
             //** is used.
             //** bind (<uri> as ?g)
-            //** graph ? {?x ?p ?y}
+            //** graph ?g {?x ?p ?y}
             List<QPGNode> graphs = bpg.getAllNodes(GRAPH);
             for (QPGNode graph : graphs) {
                 List<QPGNode> linkedNodes = bpg.getLinkedNodes(graph);

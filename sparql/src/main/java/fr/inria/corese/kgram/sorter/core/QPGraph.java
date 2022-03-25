@@ -29,10 +29,8 @@ public class QPGraph {
 
     public QPGraph(Exp exp, List<Exp> bindings) {
         this.bindings = bindings;
-        this.nodes = new ArrayList<QPGNode>();
-        this.edges = new ArrayList<QPGEdge>();
-
-        //this.bindings = qs.findBindings(exp);
+        this.nodes = new ArrayList<>();
+        this.edges = new ArrayList<>();
         
         createNodes(exp);
         createEdges();
@@ -40,10 +38,8 @@ public class QPGraph {
 
     public QPGraph(List<Exp> exps, List<Exp> bindings) {
         this.bindings = bindings;
-        this.nodes = new ArrayList<QPGNode>();
-        this.edges = new ArrayList<QPGEdge>();
-
-        //this.bindings = qs.findBindings(exp);
+        this.nodes = new ArrayList<>();
+        this.edges = new ArrayList<>();
         
         createNodes(exps);
         createEdges();
@@ -73,11 +69,10 @@ public class QPGraph {
         // Filter 2...
         // ...
         //values ...
-        graph = new HashMap<QPGNode, List<QPGEdge>>();
+        graph = new HashMap<>();
         for (QPGNode bpn1 : nodes) {
-            //List<QPGEdge> ledges = new ArrayList<QPGEdge>();
             for (QPGNode bpn2 : nodes) {
-                if(bpn1.equals(bpn2)) continue;
+                if (bpn1.equals(bpn2)) continue;
                 
                 //make sure not repeated
                 if (bpn1.isShared(bpn2)) {
@@ -97,7 +92,7 @@ public class QPGraph {
         if (graph.containsKey(n1)) {
             graph.get(n1).add(edge);
         } else {
-            List<QPGEdge> ledges = new ArrayList<QPGEdge>();
+            List<QPGEdge> ledges = new ArrayList<>();
             ledges.add(edge);
             graph.put(n1, ledges);
         }
@@ -106,7 +101,7 @@ public class QPGraph {
         if (graph.containsKey(n2)) {
             graph.get(n2).add(edge);
         } else {
-            List<QPGEdge> ledges = new ArrayList<QPGEdge>();
+            List<QPGEdge> ledges = new ArrayList<>();
             ledges.add(edge);
             graph.put(n2, ledges);
         }
@@ -115,7 +110,6 @@ public class QPGraph {
     /**
      * Return all the edges contained in the graph
      *
-     * @return
      */
     public List<QPGEdge> getAllEdges() {
         return this.edges;
@@ -125,10 +119,9 @@ public class QPGraph {
      * Return all the edges with certain type contained in the graph
      *
      * @param edgeType type of edge: SIMPLE | BI_DIRECT
-     * @return
      */
     public List<QPGEdge> getEdges(int edgeType) {
-        List<QPGEdge> lEdges = new ArrayList<QPGEdge>();
+        List<QPGEdge> lEdges = new ArrayList<>();
         for (QPGEdge e : this.edges) {
             if (e.getType() == edgeType) {
                 lEdges.add(e);
@@ -146,7 +139,7 @@ public class QPGraph {
      * @return
      */
     public List<QPGEdge> getEdges(QPGNode node, int edgeType) {
-        List<QPGEdge> lEdges = new ArrayList<QPGEdge>();
+        List<QPGEdge> lEdges = new ArrayList<>();
         if (this.graph.get(node) == null) {
             return lEdges;
         }
@@ -197,7 +190,7 @@ public class QPGraph {
      */
     public List<QPGNode> getAllNodes(int type) {
         if (Const.plannable(type)) {
-            List<QPGNode> list = new ArrayList<QPGNode>();
+            List<QPGNode> list = new ArrayList<>();
             for (QPGNode node : this.nodes) {
                 if (node.getType() == type) {
                     list.add(node);
@@ -215,7 +208,7 @@ public class QPGraph {
      * @return list
      */
     public List<QPGNode> getLinkedNodes(QPGNode n) {
-        List<QPGNode> l = new ArrayList<QPGNode>();
+        List<QPGNode> l = new ArrayList<>();
         if(!graph.containsKey(n)){
             return l;
         }
@@ -239,7 +232,7 @@ public class QPGraph {
             return this.getLinkedNodes(n);
         }
 
-        List<QPGNode> l = new ArrayList<QPGNode>();
+        List<QPGNode> l = new ArrayList<>();
         if (!graph.containsKey(n)) {
             return l;
         }

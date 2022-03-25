@@ -16,8 +16,6 @@ import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.Build;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.load.LoadPlugin;
-import fr.inria.corese.core.pipe.Pipe;
 import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
@@ -49,7 +47,7 @@ public class GraphEngine {
     private QueryEngine qengine;
     QueryProcess exec;
     private QuerySolverVisitor visitor;
-    LoadPlugin plugin;
+    //LoadPlugin plugin;
     Build build;
 
     private boolean isListGroup = false,
@@ -181,14 +179,14 @@ public class GraphEngine {
         Load load = Load.create(graph);
         //load.setEngine(rengine);
         load.setEngine(qengine);
-        load.setPlugin(plugin);
+        //load.setPlugin(plugin);
         //load.setBuild(build);
         return load;
     }
 
-    public void setPlugin(LoadPlugin p) {
-        plugin = p;
-    }
+//    public void setPlugin(LoadPlugin p) {
+//        plugin = p;
+//    }
 
     public void load(String path) throws EngineException, LoadException {
         Load ld = loader();
@@ -264,12 +262,6 @@ public class GraphEngine {
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
         }
-    }
-
-    public void runPipeline(String path) {
-        Pipe pipe = Pipe.create(graph);
-        pipe.setDebug(true);
-        pipe.process(path);
     }
 
     public boolean validate(String path) {

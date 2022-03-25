@@ -2022,21 +2022,6 @@ public class MainFrame extends JFrame implements ActionListener {
         }
     }
 
-    public void loadPipe() {
-        // Load and run a pipeline
-        Filter FilterRUL = new Filter("RDF", "rdf", "ttl");
-        JFileChooser fileChooser = new JFileChooser(getPath());
-        fileChooser.addChoosableFileFilter(FilterRUL);
-        File selectedFile;
-        int returnValue = fileChooser.showOpenDialog(null);
-        if (returnValue == JFileChooser.APPROVE_OPTION) {
-            // Voici le fichier qu'on a selectionné
-            selectedFile = fileChooser.getSelectedFile();
-            setPath(selectedFile.getParent());
-            myCorese.runPipeline(selectedFile.getAbsolutePath());
-        }
-    }
-
     /**
      * Charge un fichier Rule dans CORESE
      */

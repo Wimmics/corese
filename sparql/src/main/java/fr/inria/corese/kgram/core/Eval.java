@@ -119,7 +119,6 @@ public class Eval implements ExpType, Plugin {
             optim = true,
             draft = true;
     private boolean hasListener = false;
-    private boolean isPathType = false;
     boolean storeResult = true;
     private int nbResult;
     boolean hasFilter = false;
@@ -233,6 +232,7 @@ public class Eval implements ExpType, Plugin {
 
     // store ProcessVisitor into Bind for future sharing by
     // Transformer and Interpreter exist
+    // use case: metadata @share
     void share(ProcessVisitor vis) {
         if (vis.isShareable() && getBind().getVisitor() == null) {
             getBind().setVisitor(vis);
@@ -683,7 +683,6 @@ public class Eval implements ExpType, Plugin {
             ev.setVisitor(getVisitor());
         }
         ev.startExtFun(q);
-        ev.setPathType(isPathType);
         if (hasEvent) {
             ev.setEventManager(manager);
         }
@@ -2219,18 +2218,7 @@ public class Eval implements ExpType, Plugin {
     public Stack getStack() {
         return current;
     }
-
-    
-    public boolean isPathType() {
-        return isPathType;
-    }
-
-    
-    public void setPathType(boolean isPathType) {
-        this.isPathType = isPathType;
-    }
-
-    
+       
     public SPARQLEngine getSPARQLEngine() {
         return sparqlEngine;
     }

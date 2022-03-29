@@ -9,6 +9,7 @@ import java.util.List;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.DATASET;
+import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 
@@ -32,6 +33,7 @@ public class Dataset extends ASTObject {
     private Binding binding;
     private Metadata metadata;
     private Object templateVisitor;
+    private ProcessVisitor visitor;
     private String base;
     private List<String> uriList;
 
@@ -64,6 +66,12 @@ public class Dataset extends ASTObject {
 
     public static Dataset create(Context c) {
         return new Dataset(c);
+    }
+    
+    public static Dataset create(ProcessVisitor vis) {
+        Dataset ds = new Dataset();
+        ds.setVisitor(vis);
+        return ds;
     }
     
     public static Dataset create(Binding b) {
@@ -390,6 +398,14 @@ public class Dataset extends ASTObject {
     public Dataset setLoad(boolean load) {
         this.load = load;
         return this;
+    }
+
+    public ProcessVisitor getVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(ProcessVisitor visitor) {
+        this.visitor = visitor;
     }
 
 }

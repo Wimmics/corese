@@ -73,8 +73,6 @@ public class Mapping
     private IDatatype report;
     boolean debug = DEBUG_DEFAULT;
     
-    private ProcessVisitor visitorParameter;
-
     public Mapping() {
         init(emptyEdge, emptyEdge);
         init(emptyNode, emptyNode);
@@ -116,12 +114,6 @@ public class Mapping
         return m;
     }
     
-    public static Mapping create(ProcessVisitor vis) {
-        Mapping m = new Mapping();
-        m.setVisitorParameter(vis);
-        return m;
-    }
-
     public static Mapping create(Node[] qnodes, Node[] nodes) {
         return simpleCreate(qnodes, nodes);
     }
@@ -1392,14 +1384,7 @@ public class Mapping
         this.eval = eval;
     }
 
-    public ProcessVisitor getVisitorParameter() {
-        return visitorParameter;
-    }
-
-    public void setVisitorParameter(ProcessVisitor visitorParameter) {
-        this.visitorParameter = visitorParameter;
-    }
-
+    @Override
     public IDatatype getReport() {
         return report;
     }

@@ -10,7 +10,7 @@ PREFIX        = d=http://ns.inria.fr/humans/data# ; h=http://ns.inria.fr/humans/
 # Property.init(graph);
 #
 
-GUI_TITLE = Corese Semantic Web Factory - Inria UCA - R&D version - 2022-02-02
+GUI_TITLE = Corese Semantic Web Factory - Inria UCA - R&D version - 2022-03-21
 
 # GUI browse Linked Result
 GUI_BROWSE      = true
@@ -20,6 +20,9 @@ GUI_XML_MAX     = 1000
 
 # Turtle max display
 GUI_TRIPLE_MAX     = 10000
+
+# DISPLAY GRAPH INDEX max element
+GUI_INDEX_MAX = 10
 
 # xml json
 GUI_SELECT_FORMAT       =  xml
@@ -49,7 +52,7 @@ RDFS_ENTAILMENT = false
 #LOAD_QUERY     = $demo/federateconstructwimmics.rq
 #LOAD_QUERY     = $demo/federateselectwimmics.rq
 #LOAD_QUERY      = $d2kab/federategui2.rq
-LOAD_QUERY = $new/ardfstar/insertdata.rq
+LOAD_QUERY = $new/aafranck2.rq
 
 
 #LOAD_DATASET  = $human/humans_owl.ttl

@@ -3,11 +3,9 @@ module fr.inria.corese.corese_core {
     requires fr.inria.corese.compiler;
     requires org.slf4j;
     requires org.apache.commons.text;
-    //requires sesame.rio.api;
     requires java.xml;
     requires jsonld.java;
     requires semargl.core;
-    //requires sesame.model;
     requires arp;
     requires java.logging;
     requires java.sql;
@@ -24,6 +22,7 @@ module fr.inria.corese.corese_core {
     exports fr.inria.corese.core.workflow;
     exports fr.inria.corese.core.transform;
     exports fr.inria.corese.core.util;
+    exports fr.inria.corese.core.index;
     exports fr.inria.corese.core.print;
     exports fr.inria.corese.core.api;
     exports fr.inria.corese.core.edge;

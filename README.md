@@ -43,7 +43,7 @@ There are three versions of Corese:
 </dependency>
 ```
 
-Documentation: [Getting Started With Corese](https://notes.inria.fr/s/hiiedLfVe#)
+Documentation: [Getting Started With Corese-library](https://notes.inria.fr/s/hiiedLfVe#)
 
 ### Corese-server
 
@@ -63,6 +63,8 @@ wget "files.inria.fr/corese/distrib/corese-server-${VERSION}.jar"
 java -jar "corese-server-${VERSION}.jar"
 ```
 
+Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/SoyFglO_1#)
+
 ### Corese-GUI
 
 - Download [Corese-gui jar file](https://project.inria.fr/corese/download/).
@@ -80,7 +82,7 @@ Download source code and compile.
 ```shell
 git clone "https://github.com/Wimmics/corese.git"
 cd corese
-mvn package
+mvn -Dmaven.test.skip=true package
 ```
 
 ## Contributions and discussions
@@ -95,4 +97,4 @@ We welcome everyone to contribute to [issue reports](https://github.com/Wimmics/
 - [Corese server demo](http://corese.inria.fr/)
 - [Changelog](https://notes.inria.fr/s/TjriAbX14#)
 - **Mailing list:** corese-users at inria.fr
-- **Subscribe to mailing list:** corese-users-request at inria.fr **subject:** subscribe
+- **Subscribe to the mailing list:** corese-users-request at inria.fr **subject:** subscribe

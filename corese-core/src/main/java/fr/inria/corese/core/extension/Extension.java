@@ -243,7 +243,7 @@ public class Extension extends Core {
         Cleaner clean = new Cleaner(getGraph());
         clean.setVisitor(new QuerySolverVisitorRule(new RuleEngine(), getEval()));
         try {
-            clean.clean();
+            clean.process();
         } catch (IOException | LoadException | EngineException ex) {
             logger.error(ex.getMessage());
         } 

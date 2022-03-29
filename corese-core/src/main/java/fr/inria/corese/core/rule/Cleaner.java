@@ -8,6 +8,7 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.LOG_RULE_CLEAN;
 import static fr.inria.corese.core.util.Property.Value.OWL_CLEAN_QUERY;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Mapping;
@@ -24,7 +25,7 @@ import java.util.Date;
 public class Cleaner {
     public static final int OWL = 0;
     static final String data = "/query/clean/";
-    static final String[] queries = { "allsome.rq", "card.rq", "intersection.rq", "union.rq"}; //"ui2.rq", "ui3.rq", "ui4.rq"};
+    static final String[] queries = { "allsome.rq", "card.rq", "intersection.rq", "union.rq"}; 
     
     Graph graph;
     private ProcessVisitor visitor;
@@ -38,12 +39,12 @@ public class Cleaner {
         switch (mode){
             
             case OWL: 
-                clean();
+                process();
                 break;
         }
     }
     
-    public void clean() throws IOException, EngineException, LoadException {
+    public void process() throws IOException, EngineException, LoadException {
         clean(graph, queries, true);
         if (Property.stringValue(OWL_CLEAN_QUERY) != null) {
             clean(graph, Property.stringValueList(OWL_CLEAN_QUERY), false);
@@ -64,9 +65,12 @@ public class Cleaner {
          // it works because init() is also synchronized
          exec.setSynchronized(true);
          for (String q : lq){
-             String qq = (resource) ? ql.getResource(data + q) : ql.readWE(q); 
-             //IDatatype dt = getVisitor().prepareEntailment(DatatypeMap.newInstance(qq));
+             String qq = (resource) ? ql.getResource(data + q) : ql.readWE(q);              
              Mappings map = exec.query(qq, createMapping(getVisitor()));
+             if (Property.booleanValue(LOG_RULE_CLEAN) && map.size()>0) {
+                 RuleEngine.logger.info(
+                    String.format("Clean: %s solutions\n%s", map.size(), qq));
+             }
              if (isDebug()) {
                  RuleEngine.logger.info(q + " nb res: "+ map.size());
              }             

@@ -445,7 +445,7 @@ public class QueryProcess extends QuerySolver {
     }
     
     public Mappings query(String squery, ProcessVisitor vis) throws EngineException {
-        return query(squery, Mapping.create(vis), null);
+        return query(squery, null, Dataset.create(vis));
     }
       
     Mappings doQuery(String squery, Mapping map, Dataset ds) throws EngineException {

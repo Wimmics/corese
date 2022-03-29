@@ -882,26 +882,12 @@ public class EdgeManagerIndexer
         return list.findEdge(s, o);
     }
 
-    void trace(List<Edge> list) {
-        Node nn = list.get(0).getNode(1);
-        for (int i = 0; i < list.size(); i++) {
-            if (!list.get(i).getNode(1).same(nn)) {
-                nn = list.get(i).getNode(1);
-                logger.debug(nn.toString());
-            }
-        }
-    }
-
-    /**
-     * @return the byIndex
-     */
+    
     public boolean isByIndex() {
         return byIndex;
     }
 
-    /**
-     * @param byIndex the byIndex to set
-     */
+    
     @Override
     public void setByIndex(boolean byIndex) {
         this.byIndex = byIndex;
@@ -1175,9 +1161,7 @@ public class EdgeManagerIndexer
     public void delete(Node pred) {
     }
     
-    /**
-     *
-     */
+    
     @Override
     public void finishUpdate() {
     }

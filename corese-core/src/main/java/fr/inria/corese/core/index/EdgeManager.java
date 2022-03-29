@@ -10,7 +10,6 @@ import java.util.Comparator;
 import java.util.Iterator;
 import java.util.List;
 import fr.inria.corese.kgram.api.core.Edge;
-import java.util.HashMap;
 
 /**
  * Edge List of a predicate
@@ -370,35 +369,7 @@ public class EdgeManager implements Iterable<Edge> {
         } 
         return i;
     }
-    
-//    int getPlace2(Edge edge) {
-//        int i = find(edge);
-//        if (i >= getEdgeList().size()) {
-//            i = getEdgeList().size();
-//        } else if (getIndex() == 0) {
-//            if (equalWithoutConsideringMetadata(getEdgeList().get(i), edge)) {
-//                if (getGraph().isMetadataNode()) {
-//                    if (edge.hasReferenceNode() && ! getEdgeList().get(i).hasReferenceNode()) {
-//                        return i;
-//                    }
-//                    else if (edge.isAsserted() && ! getEdgeList().get(i).isAsserted()) {
-//                        return i;
-//                    }
-//                    else {
-//                        return -1;
-//                    }
-//                }
-//                else {
-//                    // eliminate duplicate at load time for index 0                   
-//                    return -1;
-//                }
-//            }
-//        }
-//
-//        return i;
-//    }
-//    
-
+   
 
     /**
      * Place of edge in this Index, e.g. to insert edge
@@ -735,15 +706,7 @@ public class EdgeManager implements Iterable<Edge> {
     Comparator<Edge> createComparatorIndex() {
         return createComparator(false);
     }
-    
-    
-    //System.out.println("compare:\n"+e1 + " " + 
-//        (e1.hasReferenceNode()?e1.getReferenceNode().getLabel():""));
-//System.out.println(e2 + " " + 
-//        (e2.hasReferenceNode()?e2.getReferenceNode().getLabel():""));
-//                System.out.println("equalWithoutConsideringMetadata: " + equalWithoutConsideringMetadata);
-
-    
+       
     Comparator<Edge> createComparator(boolean equalWithoutConsideringMetadataNode) {
 
         return new Comparator<>() {

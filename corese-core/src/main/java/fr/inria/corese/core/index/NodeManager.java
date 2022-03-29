@@ -79,6 +79,7 @@ public class NodeManager {
         for (PredicateTable t : getPredicateTableList()) {
             t.clear();
         }
+        count = 0;
     }
     
     void complete() {
@@ -229,9 +230,10 @@ public class NodeManager {
         for (PredicateTable t : getPredicateTableList()) {
             for (Node n : t.keySet()) {
                 if (num >= max) {
-                    return sb.toString();
+                    num = 0;
+                    break;
                 }
-                sb.append(String.format("%s %s: ", num++, n));
+                sb.append(String.format("%s %s: %s", num++, n, NL));
                 PredicateList plist = getPredicateList(n);
                 int i = 0;
                 for (Node p : plist.getPredicateList()) {
@@ -241,6 +243,7 @@ public class NodeManager {
                 }
                 sb.append(NL);
             }
+            sb.append(NL);
         }
 
         return sb.toString();

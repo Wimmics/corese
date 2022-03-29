@@ -7,6 +7,8 @@ import static fr.inria.corese.core.Event.Finish;
 import static fr.inria.corese.core.Event.Process;
 import static fr.inria.corese.core.Event.Start;
 import fr.inria.corese.core.logic.Entailment;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.LOG_NODE_INDEX;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -143,6 +145,10 @@ public class EventManager {
                 
             case CleanOntology:
                 break;
+                
+            case IndexNodeManager:
+                log(LOG_NODE_INDEX, Event.Start, e, o);
+                break;
        }
     }
     
@@ -210,6 +216,16 @@ public class EventManager {
                 
             case IndexMetadata:
                 break;
+                
+            case IndexNodeManager:
+                log(LOG_NODE_INDEX, Event.Finish, e, o);
+                break;
+        }
+    }
+    
+    void log(Property.Value prop, Event type, Event e, Object o) {
+        if (Property.booleanValue(prop)) {
+            getLog().log(type, e, o);
         }
     }
 
@@ -218,7 +234,7 @@ public class EventManager {
     }
     
     public void process(Event e, Object o1, Object o2) {
-        trace(Process, e, o1, o2);        
+        //trace(Process, e, o1, o2);        
         switch(e) {
             case Insert: 
                 setUpdate(true); break;

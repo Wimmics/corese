@@ -6,6 +6,7 @@ import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.edge.EdgeTop;
+import fr.inria.corese.core.index.EdgeManagerIndexer;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
@@ -119,6 +120,7 @@ public class Property {
         CONSTRAINT_GRAPH,
         // graph ?g { } iterate std and external named graph
         EXTERNAL_NAMED_GRAPH,
+        GRAPH_INDEX_END,
         // rdf* draft
         RDF_STAR,
         // enforce compliance: no literal as subject
@@ -137,10 +139,15 @@ public class Property {
         ACCESS_RIGHT,
         // activate @event ldscript function call for sparql query processing
         EVENT,
-        VERBOSE,
         SKOLEMIZE,
+        
+        VERBOSE,
         SOLVER_DEBUG,
         TRANSFORMER_DEBUG,
+        
+        LOG_NODE_INDEX,
+        LOG_RULE_CLEAN,
+        
         SOLVER_SORT_CARDINALITY,
         SOLVER_QUERY_PLAN, // STD | ADVANCED
         // string value
@@ -173,6 +180,7 @@ public class Property {
         GUI_BROWSE,
         GUI_XML_MAX,
         GUI_TRIPLE_MAX,
+        GUI_INDEX_MAX,
         // rdf+xml turtle json
         GUI_CONSTRUCT_FORMAT,
         GUI_SELECT_FORMAT,
@@ -420,6 +428,10 @@ public class Property {
 
             case SKOLEMIZE:
                 Graph.setDefaultSkolem(b);
+                break;
+                
+            case GRAPH_INDEX_END:
+                EdgeManagerIndexer.RECORD_END = b;
                 break;
 
             case RDF_STAR_TRIPLE:

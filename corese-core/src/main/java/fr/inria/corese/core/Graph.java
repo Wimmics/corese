@@ -984,12 +984,16 @@ public class Graph extends GraphObject implements
 
         return str;
     }
-
-    public String display() {
-        return display(0);
+    
+    public String display(int max) {
+        return display(0, max);
     }
 
-    public String display(int n) {
+    public String display() {
+        return display(0, Integer.MAX_VALUE);
+    }
+
+    public String display(int n, int max) {
         String sep = System.getProperty("line.separator");
         StringBuilder sb = new StringBuilder();
 
@@ -1004,6 +1008,9 @@ public class Graph extends GraphObject implements
                 sb.append((i < 10) ? "0" : "").append(i++).append(" ");
                 sb.append(ent);
                 sb.append(sep);
+                if (i>=max) {
+                    break;
+                }
             }
         }
         return sb.toString();
@@ -1089,19 +1096,21 @@ public class Graph extends GraphObject implements
      */
     public synchronized void init() {
         if (isIndexable()) {
+            // sort edge list and reduce (delete duplicate edges)
             index();
         }
 
         if (getEventManager().isUpdate()) {
             // use case: previously load or sparql update
-            // clean meta properties 
-            // redefine meta properties
+            // clear nodeIndexManager
             update();
+            // recompute IndexNodeManager
             performIndexNodeManager();
         }
 
         if (getEventManager().isEntail() && getWorkflow().isAvailable()) {
             try {
+                // run manager inference engine
                 process();
             } catch (EngineException ex) {
                 logger.error(ex.getMessage());
@@ -1112,6 +1121,8 @@ public class Graph extends GraphObject implements
             }
         }
 
+        // when entailment has modified the graph
+        // recompute IndexNodeManager
         performIndexNodeManager();
 
         getEventManager().finish(Event.InitGraph);
@@ -1290,12 +1301,11 @@ public class Graph extends GraphObject implements
     }
 
     void clearIndex() {
-        //gindex.clear();
-        nodeGraphIndex.clear();
+        getNodeGraphIndex().clear();
     }
 
     synchronized void indexNode() {
-        if (nodeGraphIndex.size() == 0) {
+        if (getNodeGraphIndex().size() == 0) {
             getSubjectIndex().indexNode();
         }
     }

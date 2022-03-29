@@ -21,7 +21,6 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.IOException;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -122,9 +121,7 @@ public class PluginTransform implements ComputerProxy {
             else {
                 c = new Context();
                 q.setContext(c);
-                //if (b.getContext() == null) {
-                    b.setContext(c);
-                //}
+                b.setContext(c);
             }
         }
         return c;

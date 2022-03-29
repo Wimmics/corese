@@ -301,14 +301,24 @@ public class RuleEngine implements Engine, Graphable {
      * Clean OWL RDF graph
      */
     public void cleanOWL() throws IOException, EngineException, LoadException{
-        Cleaner cl = new Cleaner(graph);
+        Cleaner cl = new Cleaner(getGraphStore());
         cl.setDebug(isDebug());
         if (isEvent()) {
             cl.setVisitor(getVisitor());
         }
-        getEventManager().start(Event.CleanOntology);
+        beforeClean();
         cl.clean(Cleaner.OWL);
+        afterClean();
+    }
+    
+    void beforeClean() {
+        logger.info(String.format("Before clean graph size: %s", getGraphManager().size()));
+        getEventManager().start(Event.CleanOntology);
+    }
+    
+    void afterClean() {
         getGraphStore().getIndex(1).clean();
+        logger.info(String.format("After clean graph size: %s", getGraphManager().size()));
         getEventManager().finish(Event.CleanOntology);
     }
     
@@ -330,9 +340,6 @@ public class RuleEngine implements Engine, Graphable {
         }
     }
 
-    public void setOptimize(boolean b) {
-        setIsOptimize(b);
-    }
     
     /**
      * Consider rules if there are new triples
@@ -732,7 +739,7 @@ public class RuleEngine implements Engine, Graphable {
         // Rule manager with rule index
         stable = new STable();
 
-        if (isIsOptimize()) {
+        if (isOptimize()) {
             // consider only rules that match newly entailed edge predicates
             // consider solutions that contain at least one newly entailed edge           
             start();
@@ -750,7 +757,7 @@ public class RuleEngine implements Engine, Graphable {
             }
 
           
-            if (isIsOptimize()){
+            if (isOptimize()){
                 getResultWatcher().start(loop);
                 getResultWatcher().setTrace(trace);
             }
@@ -762,7 +769,7 @@ public class RuleEngine implements Engine, Graphable {
 
                 int nbres = 0;
 
-                if (isIsOptimize()) {
+                if (isOptimize()) {
                     // start exec ResultWatcher, it checks that each solution 
                     // of rule contains at least one new edge 
                     getResultWatcher().start(rule);
@@ -920,7 +927,7 @@ public class RuleEngine implements Engine, Graphable {
         getEventManager().start(Event.Rule);
         
         Date d1 = new Date();
-        boolean isConstruct = isIsOptimize() && isConstructResult;
+        boolean isConstruct = isOptimize() && isConstructResult;
 
         Query qq = rule.getQuery();  
         GraphManager mgr = getGraphManager().getGraphManager(rule.isConstraint());
@@ -947,7 +954,7 @@ public class RuleEngine implements Engine, Graphable {
 
         int start = getGraphManager().size();
         
-        if (isOptTransitive()  && rule.isTransitive() && isFunTransitive()){
+        if (isOptimize() &&  isOptTransitive()  && rule.isTransitive() && isFunTransitive()){
             // transitive rule without triple pattern ?p a owl:TransitiveProperty
             // Java code compute transitive closure
             Closure clos = getClosure(rule);
@@ -957,7 +964,7 @@ public class RuleEngine implements Engine, Graphable {
         else {
             process(rule, m, bind, cons);
             
-            if (isOptTransitive() && rule.isAnyTransitive()
+            if (isOptimize() && isOptTransitive() && rule.isAnyTransitive()
                     && getGraphManager().size() > start && isConstruct){ 
                  // transitive rule with or without triple pattern ?p a owl:TransitiveProperty
                  // optimization for transitive rules: eval at saturation in a loop
@@ -1499,12 +1506,12 @@ public class RuleEngine implements Engine, Graphable {
         this.record = record;
     }   
 
-    public boolean isIsOptimize() {
+    public boolean isOptimize() {
         return isOptimize;
     }
-
-    public void setIsOptimize(boolean isOptimize) {
-        this.isOptimize = isOptimize;
+    
+    public void setOptimize(boolean b) {
+        this.isOptimize = b;
     }
 
     public ResultWatcher getResultWatcher() {

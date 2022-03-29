@@ -228,9 +228,13 @@ public class EventLogger {
     }
     
     void logNodeManager(NodeManager nm) {
-        logger.info(String.format("index: %s ; subject: %s ; predicate: %s ; ratio: %s ; graph: %s" , 
-        nm.getIndex(), nm.size() , nm.count(), (nm.size() > 0) ? ((float) nm.count()) /  nm.size() : 0, 
+        logger.info(String.format("index: %s ; subject: %s ; predicate: %s ; ratio (p/s): %s ; graph: %s" , 
+        nm.getIndex(), nm.size() , nm.count(), 
+        (nm.size() > 0) ? ((float) nm.count()) /  nm.size() : 0, 
         mgr.getGraph().size()));
+//        if (nm.getIndex()==-1) {
+//            logger.info(nm.toString());
+//        }
     }
     
     NodeManager getNodeMgr() {

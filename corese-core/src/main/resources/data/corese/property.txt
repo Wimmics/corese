@@ -12,7 +12,7 @@ VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./
 
 IMPORT   = ./gui.txt
 
-
+TRACE_MEMORY = true
 
 BLANK_NODE              = _:b
 
@@ -28,23 +28,40 @@ GRAPH_NODE_AS_DATATYPE  = false
 # graph ?g { } iterate external named graph
 EXTERNAL_NAMED_GRAPH    = true
 
+
+# load in kg:default or in file path as named graph
+LOAD_IN_DEFAULT_GRAPH   = true
+
+# skolemize bnode as URI
+SKOLEMIZE               = false
+
+GRAPH_INDEX_END = true
+
+# run corese with rdf* prototype extension
+RDF_STAR                = false
+RDF_STAR_TRIPLE         = false
+
+# select target nested triple for asserted triple pattern
+RDF_STAR_SELECT = false
+
+# physically delete triple with reference
+RDF_STAR_DELETE = false
+
+# clean OWL graph before OWL RL using update queries
+OWL_CLEAN               = true
+
 # constraint rule entailment in kg:constraint named graph
 CONSTRAINT_NAMED_GRAPH  = true
 
 # constraint rule entailment in external kg:constraint named graph
 CONSTRAINT_GRAPH        = true
 
-# load in kg:default or in file path as named graph
-LOAD_IN_DEFAULT_GRAPH   = false
+# Specific processing of transitive rule
+RULE_TRANSITIVE_OPTIMIZE = true
 
-# skolemize bnode as URI
-SKOLEMIZE               = false
+# transitive closure rule computed by function
+RULE_TRANSITIVE_FUNCTION = false
 
-# run corese with rdf* prototype extension
-RDF_STAR                = true
-
-# clean OWL graph before OWL RL using update queries
-OWL_CLEAN               = true
 
 # additional queries for cleaning OWL
 #OWL_CLEAN_QUERY         = /user/corby/home/AAData/query/clean/test.rq
@@ -69,7 +86,7 @@ ACCESS_RIGHT            = false
 EVENT               = false
 
 # Visitor for trace
-RULE_VISITOR        = $vis.QuerySolverVisitorRuleUser
+#RULE_VISITOR        = $vis.QuerySolverVisitorRuleUser
 #SOLVER_VISITOR      = $vis.QuerySolverVisitorUser
 #TRANSFORMER_VISITOR = $vis.QuerySolverVisitorTransformerUser
 #SERVER_VISITOR      = fr.inria.corese.server.webservice.QuerySolverVisitorServerUser
@@ -80,6 +97,9 @@ RULE_VISITOR        = $vis.QuerySolverVisitorRuleUser
 VERBOSE        = false
 SOLVER_DEBUG   = false
 TRANSFORMER_DEBUG   = false
+
+LOG_NODE_INDEX = true
+LOG_RULE_CLEAN = true
 
 # draft: trace var in owl rl checker: trace_sttl_undo=true
 LDSCRIPT_VARIABLE        = mapsize=maplarge;mapzoom=6
@@ -104,6 +124,8 @@ LDSCRIPT_CHECK_DATATYPE  = false
 # check rdf:type of arguments at function call
 LDSCRIPT_CHECK_RDFTYPE   = false
 
+# ldscript function max number of parameters 
+FUNCTION_PARAMETER_MAX = 15
 
 # values filter
 SERVICE_BINDING     = values 
@@ -123,7 +145,7 @@ SERVICE_REPORT = false
 
 
 # limit number of triples loaded from any rdf document
-#LOAD_LIMIT   = 10
+#LOAD_LIMIT   = 100000
 
 # load take ?format=rdfxml into account
 #LOAD_WITH_PARAMETER = true

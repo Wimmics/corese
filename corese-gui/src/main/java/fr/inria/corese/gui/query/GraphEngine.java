@@ -18,6 +18,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.rule.Cleaner;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.util.Parameter;
 import fr.inria.corese.core.util.Property;
@@ -30,6 +31,7 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import static fr.inria.corese.core.util.Property.Value.ACCESS_LEVEL;
+import java.io.IOException;
 
 /**
  * Lite implementation of IEngine using kgraph and kgram
@@ -165,6 +167,15 @@ public class GraphEngine {
 
     public Graph getGraph() {
         return graph;
+    }
+    
+    public void cleanOWL() {
+        try {
+            Cleaner clean = new Cleaner(getGraph());
+            clean.process();
+        } catch (IOException | EngineException | LoadException ex) {           
+            logger.error(ex.getMessage());
+        }
     }
 
     public QueryProcess createQueryProcess() {

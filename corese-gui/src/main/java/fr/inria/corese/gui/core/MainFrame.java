@@ -78,6 +78,7 @@ import fr.inria.corese.core.transform.TemplatePrinter;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.Property;
 import fr.inria.corese.core.util.Property.Pair;
+import static fr.inria.corese.core.util.Property.Value.GUI_INDEX_MAX;
 import fr.inria.corese.core.workflow.Data;
 import fr.inria.corese.core.workflow.SemanticWorkflow;
 import fr.inria.corese.core.workflow.WorkflowParser;
@@ -108,7 +109,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static MainFrame singleton;
     private static final long serialVersionUID = 1L;
     private static final int LOAD = 1;
-    private static final String TITLE = "Corese 4.3.0 - Inria UCA - 2022-02-02";
+    private static final String TITLE = "Corese 4.3.0 - Inria UCA I3S - 2022-03-21";
     // On déclare notre conteneur d'onglets
     protected static JTabbedPane conteneurOnglets;
     // Compteur pour le nombre d'onglets query créés
@@ -175,7 +176,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JCheckBox checkBoxRule;
     private JCheckBox checkBoxVerbose;
     private JCheckBox checkBoxLoad;
-    private JCheckBox cbrdfs, cbowlrl, cbrdfsrl, cbowlrllite, cbowlrlext, cbtrace, cbnamed;
+    private JCheckBox cbrdfs, cbowlrl, cbclean, cbrdfsrl, cbowlrllite, cbowlrlext, cbtrace, cbnamed, cbindex;
     private JCheckBox cbshexClosed, cbshexExtend, cbshexCard, cbshexshex;
     private JMenuItem validate;
     // style correspondant au graphe
@@ -510,15 +511,16 @@ public class MainFrame extends JFrame implements ActionListener {
      * 
      * @return
      */
-    public MyJPanelQuery getPreviousQueryPanel() {
-        for (Component cp : conteneurOnglets.getComponents()) {
-            System.out.println("gui: " + cp.getClass().getName());
-        }
+    public MyJPanelQuery getPreviousQueryPanel() {        
         if (conteneurOnglets.getComponents().length >= 3) {
             Component cp = conteneurOnglets.getComponent(conteneurOnglets.getComponents().length - 3);
             if (cp instanceof MyJPanelQuery) {
                 return (MyJPanelQuery) cp;
             }
+        }
+        System.out.println("Previous Query Panel not found");
+        for (Component cp : conteneurOnglets.getComponents()) {
+            System.out.println("gui: " + cp.getClass().getName());
         }
         return null;
     }
@@ -746,6 +748,8 @@ public class MainFrame extends JFrame implements ActionListener {
         cbowlrllite = new JCheckBox("OWL RL Lite");
         cbowlrl = new JCheckBox("OWL RL");
         cbrdfsrl = new JCheckBox("RDFS RL");
+        cbindex = new JCheckBox("Graph Index");
+        cbclean = new JCheckBox("OWL Clean");
 
         cbnamed = new JCheckBox("Load Named");
 
@@ -824,11 +828,9 @@ public class MainFrame extends JFrame implements ActionListener {
         fileMenu.add(saveResult);
 
         queryMenu.add(iselect);
-        // queryMenu.add(iselecttuple);
         queryMenu.add(iconstruct);
         queryMenu.add(iconstructgraph);
         queryMenu.add(iask);
-        // queryMenu.add(idescribe);
         queryMenu.add(igraph);
         queryMenu.add(iserviceLocal);
         queryMenu.add(iserviceCorese);
@@ -882,9 +884,7 @@ public class MainFrame extends JFrame implements ActionListener {
         shaclMenu.add(defItem("Path Linked Data", "shacl/service.rq"));
 
         shexMenu.add(cbshexCard);
-        // shexMenu.add(cbshexClosed);
         shexMenu.add(cbshexExtend);
-        // shexMenu.add(cbshexshex);
 
         eventMenu.add(defItemFunction("SPARQL Query", "event/query.rq"));
         eventMenu.add(defItemFunction("SPARQL Update", "event/update.rq"));
@@ -918,6 +918,8 @@ public class MainFrame extends JFrame implements ActionListener {
         engineMenu.add(cbowlrl);
         engineMenu.add(cbowlrlext);
         engineMenu.add(cbrdfsrl);
+        engineMenu.add(cbclean);
+        engineMenu.add(cbindex);
 
         for (Pair pair : Property.getValueList(GUI_RULE_LIST)) {
             engineMenu.add(defineRuleBox(pair.getKey(), pair.getPath()));
@@ -931,84 +933,59 @@ public class MainFrame extends JFrame implements ActionListener {
         aboutMenu.add(doc);
 
         aboutMenu.add(help);
-        ActionListener lHelpListener = new ActionListener() {
-            public void actionPerformed(ActionEvent l_Event) {
-                set(Event.HELP);
-            }
+        ActionListener lHelpListener = (ActionEvent l_Event) -> {
+            set(Event.HELP);
         };
         help.addActionListener(lHelpListener);
 
         debugMenu.add(next);
-        ActionListener lNextListener = new ActionListener() {
-            public void actionPerformed(ActionEvent l_Event) {
-                set(Event.STEP);
-            }
+        ActionListener lNextListener = (ActionEvent l_Event) -> {
+            set(Event.STEP);
         };
         next.addActionListener(lNextListener);
 
         debugMenu.add(complete);
-        ActionListener lSkipListener = new ActionListener() {
-            public void actionPerformed(ActionEvent l_Event) {
-                set(Event.COMPLETE);
-
-            }
+        ActionListener lSkipListener = (ActionEvent l_Event) -> {
+            set(Event.COMPLETE);
         };
         complete.addActionListener(lSkipListener);
 
         debugMenu.add(forward);
-        ActionListener lPlusListener = new ActionListener() {
-            public void actionPerformed(ActionEvent l_Event) {
-                set(Event.FORWARD);
-
-            }
+        ActionListener lPlusListener = (ActionEvent l_Event) -> {
+            set(Event.FORWARD);
         };
         forward.addActionListener(lPlusListener);
 
         debugMenu.add(map);
-        ActionListener lMapListener = new ActionListener() {
-            public void actionPerformed(ActionEvent l_Event) {
-                set(Event.MAP);
-
-            }
+        ActionListener lMapListener = (ActionEvent l_Event) -> {
+            set(Event.MAP);
         };
         map.addActionListener(lMapListener);
 
         debugMenu.add(success);
-        ActionListener lSuccessListener = new ActionListener() {
-            public void actionPerformed(ActionEvent e) {
-                set(Event.SUCCESS);
-            }
+        ActionListener lSuccessListener = (ActionEvent e) -> {
+            set(Event.SUCCESS);
         };
         success.addActionListener(lSuccessListener);
 
         debugMenu.add(quit);
-        ActionListener lQuitListener = new ActionListener() {
-            public void actionPerformed(ActionEvent l_Event) {
-                set(Event.QUIT);
-            }
+        ActionListener lQuitListener = (ActionEvent l_Event) -> {
+            set(Event.QUIT);
         };
         quit.addActionListener(lQuitListener);
 
         debugMenu.add(checkBoxLoad);
 
         cbtrace.setEnabled(true);
-        cbtrace.addItemListener(
-                new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        trace = cbtrace.isSelected();
-                    }
-                });
+        cbtrace.addItemListener((ItemEvent e) -> {
+            trace = cbtrace.isSelected();
+        });
         cbtrace.setSelected(false);
 
         cbrdfs.setEnabled(true);
-        cbrdfs.addItemListener(
-                new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        setRDFSEntailment(cbrdfs.isSelected());
-                    }
-                });
+        cbrdfs.addItemListener((ItemEvent e) -> {
+            setRDFSEntailment(cbrdfs.isSelected());
+        });
         // default is true, may be set by property file
         cbrdfs.setSelected(Graph.RDFS_ENTAILMENT_DEFAULT);
 
@@ -1016,82 +993,67 @@ public class MainFrame extends JFrame implements ActionListener {
         // Property is for load file in default graph, hence the negation
         cbnamed.setSelected(!Property.booleanValue(LOAD_IN_DEFAULT_GRAPH));
         cbnamed.setEnabled(true);
-        cbnamed.addItemListener(
-                new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        Load.setDefaultGraphValue(!cbnamed.isSelected());
-                    }
-                });
+        cbnamed.addItemListener((ItemEvent e) -> {
+            Load.setDefaultGraphValue(!cbnamed.isSelected());
+        });
 
         cbshexClosed.setEnabled(true);
         cbshexClosed.setSelected(true);
-        cbshexClosed.addItemListener(
-                new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        shexClosed = cbshexClosed.isSelected();
-                    }
-                });
+        cbshexClosed.addItemListener((ItemEvent e) -> {
+            shexClosed = cbshexClosed.isSelected();
+        });
 
         cbshexCard.setEnabled(true);
         cbshexCard.setSelected(true);
-        cbshexCard.addItemListener(
-                new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        shexCard = cbshexCard.isSelected();
-                    }
-                });
+        cbshexCard.addItemListener((ItemEvent e) -> {
+            shexCard = cbshexCard.isSelected();
+        });
 
         cbshexExtend.setEnabled(true);
         cbshexExtend.setSelected(true);
-        cbshexExtend.addItemListener(
-                new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        shexExtend = cbshexExtend.isSelected();
-                    }
-                });
+        cbshexExtend.addItemListener((ItemEvent e) -> {
+            shexExtend = cbshexExtend.isSelected();
+        });
 
         cbshexshex.setEnabled(true);
         cbshexshex.setSelected(false);
-        cbshexshex.addItemListener(new ItemListener() {
-            @Override
-            public void itemStateChanged(ItemEvent e) {
-                setShexSemantics(cbshexshex.isSelected());
-            }
+        cbshexshex.addItemListener((ItemEvent e) -> {
+            setShexSemantics(cbshexshex.isSelected());
         });
 
         cbowlrl.setEnabled(true);
         cbowlrl.setSelected(false);
-        cbowlrl.addItemListener(
-                new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        setOWLRL(cbowlrl.isSelected(), RuleEngine.OWL_RL);
-                    }
-                });
+        cbowlrl.addItemListener((ItemEvent e) -> {
+            setOWLRL(cbowlrl.isSelected(), RuleEngine.OWL_RL);
+        });
+        
+        cbclean.setEnabled(true);
+        cbclean.setSelected(false);
+        cbclean.addItemListener((ItemEvent e) -> {
+            if (cbclean.isSelected()) {
+                cleanOWL();
+            }
+        });
+        
+        cbindex.setEnabled(true);
+        cbindex.setSelected(false);
+        cbindex.addItemListener((ItemEvent e) -> {
+            if (cbindex.isSelected()) {
+                graphIndex();
+            }
+        });
 
         cbrdfsrl.setEnabled(true);
         cbrdfsrl.setSelected(false);
-        cbrdfsrl.addItemListener(
-                new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        setOWLRL(cbrdfsrl.isSelected(), RuleEngine.RDFS_RL);
-                    }
-                });
+        cbrdfsrl.addItemListener((ItemEvent e) -> {
+            setOWLRL(cbrdfsrl.isSelected(), RuleEngine.RDFS_RL);
+        });
 
         cbowlrlext.setEnabled(true);
         cbowlrlext.setSelected(false);
-        cbowlrlext.addItemListener(
-                new ItemListener() {
-                    @Override
-                    public void itemStateChanged(ItemEvent e) {
-                        setOWLRL(cbowlrlext.isSelected(), RuleEngine.OWL_RL_EXT);
-                    }
-                });
+        cbowlrlext.addItemListener((ItemEvent e) -> {
+            setOWLRL(cbowlrlext.isSelected(), RuleEngine.OWL_RL_EXT);
+        });
 
         checkBoxLoad.addItemListener(
                 new ItemListener() {
@@ -1283,6 +1245,21 @@ public class MainFrame extends JFrame implements ActionListener {
             e.setTrace(trace);
             e.process();
         }
+    }
+    
+    void cleanOWL() {
+        getMyCorese().cleanOWL();
+    }
+    
+    void graphIndex() {
+        int max = 10;
+        if (Property.intValue(GUI_INDEX_MAX) !=null) {
+            max = Property.intValue(GUI_INDEX_MAX);
+        }
+        Graph g = getMyCorese().getGraph();
+        System.out.println(g.getIndex());
+        System.out.println(g.display(max));
+        System.out.println(g.getNodeManager().display(max));
     }
 
     // Actions du menu

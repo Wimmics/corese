@@ -1,8 +1,3 @@
-/*
- * To change this template, choose Tools | Templates
- * and open the template in the editor.
- */
-
 package fr.inria.corese.gui.core;
 
 import fr.inria.corese.core.load.LoadException;
@@ -10,7 +5,6 @@ import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.rule.RuleError;
 import fr.inria.corese.gui.query.GraphEngine;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import java.util.logging.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 

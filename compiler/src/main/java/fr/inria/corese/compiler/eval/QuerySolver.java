@@ -270,11 +270,6 @@ public class QuerySolver implements SPARQLEngine {
         return query(query, null);
     }
 
-
-//    public Mappings eval(Query query) throws EngineException {
-//        return query((Node) null, query, null);
-//    }
-
     @Override
     public Mappings eval(Query query, Mapping m, Producer p) throws SparqlException {
         return query((Node) null, query, m);
@@ -284,10 +279,6 @@ public class QuerySolver implements SPARQLEngine {
     public Mappings eval(Node gNode, Query query, Mapping m, Producer p) throws SparqlException {
         return query(gNode, query, m);
     }
-
-//    public Mappings eval(Query query, Mapping m) throws EngineException {
-//        return query((Node) null, query, m);
-//    }
 
     /**
      * Core QueryExec processor
@@ -433,7 +424,8 @@ public class QuerySolver implements SPARQLEngine {
     void tune(Eval kgram, Query q, Mapping m) {
         ASTQuery ast =  q.getAST();
         boolean event = ast.hasMetadata(Metadata.EVENT);
-        tune(kgram, m, event);
+        // Dataset ds parameter in QueryProcess is set as ast defaultDataset
+        tune(kgram, ast.getDefaultDataset(), m, event);
         if (q.isInitMode()) {
             // set visitor sleeping mode during init
             kgram.getVisitor().setActive(true);
@@ -441,14 +433,14 @@ public class QuerySolver implements SPARQLEngine {
     }
 
     void tune(Eval kgram) {
-        tune(kgram, null, false);
+        tune(kgram, null, null, false);
     }
 
-    void tune(Eval kgram, Mapping m, boolean isVisitor) {
+    void tune(Eval kgram, Dataset ds, Mapping m, boolean isVisitor) {
         if ((isVisitor || isVisitorable()) && isEvent(m)) {
-            if (m != null && m.getVisitorParameter()!= null) {
-                m.getVisitorParameter().setProcessor(kgram);
-                kgram.setVisitor(m.getVisitorParameter());
+            if (ds != null && ds.getVisitor()!= null) {
+                ds.getVisitor().setProcessor(kgram);
+                kgram.setVisitor(ds.getVisitor());
             }
             else {
                 kgram.setVisitor(createProcessVisitor(kgram));

@@ -184,6 +184,7 @@ public class ASTQuery
     // triples that define prefix/namespace
     Exp prefixExp = new And();
     ASTQuery globalAST;
+    private ASTFactory factory;
     Expression having;
     List<Variable> selectVar = new ArrayList<>();
     // select *
@@ -366,6 +367,7 @@ public class ASTQuery
         tripleList = new ArrayList<>();
         pathList = new ArrayList<>();
         visitList = new ArrayList<>();
+        factory = new ASTFactory(this);
     }
 
     ASTQuery(String query) {
@@ -770,10 +772,6 @@ public class ASTQuery
         Threshold = threshold;
     }
 
-//    public void setXMLBind(boolean bind) {
-//        XMLBind = bind;
-//    }
-
     public boolean isConnex() {
         return connex;
     }
@@ -789,14 +787,6 @@ public class ASTQuery
     public boolean isRDF() {
         return rdf;
     }
-
-//    public boolean isConclusion() {
-//        return isConclusion;
-//    }
-
-//    public boolean isJoin() {
-//        return join;
-//    }
 
     public int getMaxDisplay() {
         return MaxDisplay;
@@ -1059,11 +1049,15 @@ public class ASTQuery
              // lambda(?m) { let ((?x, ?y) = ?m) { exp }}
              Variable var = newLetVar();
              ExpressionList varList = new ExpressionList(var);
-             Term let = let(defLet(el.getList().get(0), var), exp);
+             Term let = getFactory().let(getFactory().defLet(el.getList().get(0), var), exp);
              return defineLambda(varList, let, annot);
          }
          return getGlobalAST().defineLambdaUtil(el, exp, annot);
      }
+     
+    Variable newLetVar() {
+        return new Variable(LET_VAR + getVariableId());
+    }
      
     Function defineLambdaUtil(ExpressionList el, Expression exp, Metadata annot) {
         return  defineLambdaUtil(functionName(), el, exp, annot);
@@ -1289,231 +1283,14 @@ public class ASTQuery
     }
     
     public TryCatch defTryCatch(Expression e1, Variable var, Expression e2) {
-        Let let = let(defLet(var, Term.function(Processor.XT_GET_DATATYPE_VALUE)), e2);
+        Let let = getFactory().let(getFactory().defLet(var, Term.function(Processor.XT_GET_DATATYPE_VALUE)), e2);
         return new TryCatch(e1, let);
     }
     
     public Term defThrow(Expression exp) {
         return Term.function(Processor.THROW, exp);
     }
-
-    /**
-     * let (var = exp, body)
-     */    
-    Let let(Expression exp, Expression body) {
-        List<Expression> list = new ArrayList<>();
-        list.add(exp);
-        return let(list, body, false);
-    }
-    
-    Let let(List<Expression> el, Expression body) {
-        return let(el, body, false);
-    }
-    
-    public Let let(List<Expression> el, Expression body, boolean dynamic) {
-        expandLet(el);
-        Let let = defineLet2(el, body, 0, dynamic);
-        return let;
-    }
-    
-    // new version where let has several declarations
-    Let defineLet2(List<Expression> el, Expression body, int n, boolean dynamic) {
-        return new Let(el, body, dynamic);
-    }
-
-    // old version where let has one declaration
-    Let defineLet(List<Expression> el, Expression body, int n, boolean dynamic) {
-        if (n == el.size() - 1) {
-            return createLet(el.get(n), body, dynamic);
-        }
-        return createLet(el.get(n), defineLet(el, body, n + 1, dynamic), dynamic);
-    }
-    
-    // expand ((x, y)) = exp
-    void expandLet(List<Expression> expList) {
-        for (int i = 0; i < expList.size();) {
-            Expression exp = expList.get(i);
-            if (exp.getArg(0).isTerm()) {
-                // match() = exp
-                Term match = exp.getArg(0).getTerm();
-                List<Expression> list;
-                
-                if (match.isNested()) {
-                    list = letList(match.getNestedList(), exp.getArg(1));
-
-                } else {
-                    list = expandMatch(exp);
-                }
-
-                int j = 0;
-                for (Expression ee : list) {
-                    if (j++ == 0) {
-                        expList.set(i++, ee);
-                    } else {
-                        expList.add(i++, ee);
-                    }
-                }
-                
-                if (list.isEmpty()) {
-                    i++;
-                }
-            } else {
-                i++;
-            }
-        }
-    }
-   
-    Let createLet(Expression exp, Expression body, boolean dynamic) {
-        return new Let(exp, body, dynamic);
-    }
-          
-    Variable newLetVar() {
-        return new Variable(LET_VAR + nbd++);
-    }
-    
-    /**
-     * let ((x, y) = exp)
-     * (x, y) was compiled as nested match((x, y)) 
-     * we have now let(match(varList) = exp)
-     * compile as 
-     * let (var = xt:get(exp, 0), match(varList) = var){ body }
-     * use case: let (((?x, ?y)) = select where)
-     * get first Mapping, match it
-     * use case: let (((?var, ?val)) = ?m)
-     * get first Binding, match it
-     */
-    ArrayList<Expression> letList(ExpressionList expList, Expression exp) { 
-         if (! exp.isTerm() || expList.getList().size() == 1){
-            return letList(expList, exp, 0);
-         }
-         // let (var = exp)
-         Variable var = newLetVar();
-         ArrayList<Expression> letList = letList(expList, var, 0);
-         letList.add(0, defLet(var, exp));
-         return letList;
-     }
-    
-    // recurse on  expList 
-    ArrayList<Expression> letList(ExpressionList expList, Expression exp, int n) { 
-        Variable var = newLetVar();
-        ExpressionList list = expList.getList().get(n) ;
-        Term fst = defGet(var, exp, n);
-        List<Expression> alist = defineExpand(list, var);
-        ArrayList<Expression> letList;
-        if (n+1 < expList.getList().size()){
-            letList = letList(expList, exp, n+1);
-        }
-        else {
-            letList = new ArrayList<>();           
-        }
-        for (int i = 0; i<alist.size(); i++) {
-            letList.add(i, alist.get(i));
-        }
-        letList.add(0, fst);
-        return letList;
-    }
-    
-    public List<Expression> defineExpand(ExpressionList expList, Expression exp) {
-         Term matchTerm = defLet(expList, exp); 
-         return expandMatch(matchTerm);
-    }
-    
-    public List<Expression> defLetList(Variable var, Constant type, Expression exp) {
-        ArrayList<Expression> list = new ArrayList<>();
-        list.add(defLet(var, type, exp));
-        return list;
-    }
-    
-    public Term defLet(Variable var, Constant type, Expression exp) {
-        return Term.create("=", var, exp);
-    }
-    
-    public Term defLet(Variable var, Expression exp) {
-        return Term.create("=", var, exp);
-    }
-    
-    /**
-     * place holder to manage lvar = (x | y) ;
-     * return (match(lvar) = exp)
-     * match() is expanded in let by expandMatch or letList
-     */
-    public Term defLet(ExpressionList lvar, Expression exp) {
-        complete(lvar, exp, true);
-        Term t = createFunction(Processor.MATCH, lvar);
-        t.setNestedList(lvar);
-        t.setNested(lvar.isNested());
-        return Term.create("=", t, exp);
-    }
-    
-    /**
-     * let (match(?x, ?p, ?y) = ?l) {} ::= 
-     * let (?x = xt:get(?l, 0), ?p =
-     * xt:get(?l, 1), ?y = xt:get(?l, 2)) {}
-     *
-     */
-    @Deprecated
-    void processMatch(Let let) {
-        Expression match = let.getVariableDefinition().getArg(0);
-        if (match.isFunction() && match.getLabel().equals(Processor.MATCH)) {
-            List<Expression> expList = expandMatch(let.getVariableDefinition());
-            Term tmpLet = let(expList, let.getBody(), let.isDynamic());
-            let.setArgs(tmpLet.getArgs());
-        }
-    }
-    
-    /**
-     * term : match(var) = list
-     */
-    List<Expression> expandMatch(Expression term) {
-        Expression match = term.getArg(0);
-        Expression list  = term.getArg(1);
-        ArrayList<Expression> expList = new ArrayList<>();
-
-        Variable var;
-        if (list.isVariable()) {
-            var = list.getVariable();
-        } else {
-            // eval list exp once, store it in variable
-            var = newLetVar();
-            expList.add(defLet(var, list));
-        }
-
-        ExpressionList nestedList = match.getTerm().getNestedList();
-        boolean isRest = nestedList != null && nestedList.isRest();
-        int subList = nestedList.getSubListIndex();
-        int lastElement = nestedList.getLastElementIndex();
-        int nbLast = 0;
-        if (subList >= 0 && lastElement >= 0) {
-            nbLast = nestedList.size() - lastElement;
-        }
-        int last = nestedList.size() - 1;
-        /**
-         * (?a ?b | ?l . ?c ?d) subList = 2 -- index of ?l subList variable
-         * lastElem = 3 -- index of last elements variable ?c /** (?a ?b | ?l .
-         * ?c ?d) subList = 2 -- index of ?l subList variable lastElem = 3 --
-         * index of last elements variable ?c
-         */
-
-        for (int i = 0; i < match.getArgs().size(); i++) {
-            Expression arg = match.getArg(i);
-
-            if (i == subList) {
-                expList.add(defRest(arg.getVariable(), var, i, nbLast));
-            } else if (lastElement >= 0 && i >= lastElement) {
-                expList.add(defGenericGetLast(arg.getVariable(), var, last - i));
-            } else {
-                expList.add(defGenericGet(arg.getVariable(), var, i));
-            }
-        }
-        
-        if (expList.isEmpty()) {
-            Term t = defLet(Variable.create("?_tmp_"), Constant.create(true));
-            expList.add(t);
-        }
-        
-        return expList;
-    }
-    
+       
     
     /**
          * map(rq:fun, ?list)
@@ -1598,47 +1375,6 @@ public class ASTQuery
         }
     }
            
-    Term defGenericGet(Variable var, Expression exp, int i) {
-        Term fun = createFunction(createQName(Processor.FUN_XT_GGET), exp);
-        fun.add(Constant.createString(var.getLabel()));
-        fun.add(Constant.create(i));
-        return defLet(var, fun);
-    }
-    
-    /**
-     * ith element of the target list in reverse order
-     * i = 0 => last element
-     * 
-     */
-    Term defGenericGetLast(Variable var, Expression exp, int i) {
-        Term fun = createFunction(createQName(Processor.FUN_XT_LAST), exp);
-        fun.add(Constant.create(i));
-        return defLet(var, fun);
-    }
-    
-    Term defRest(Variable var, Expression exp, int i) {
-        Term fun = createFunction(createQName(Processor.FUN_XT_GREST), exp);
-        fun.add(Constant.create(i));
-        return defLet(var, fun);
-    }
-    
-    /**
-     * Generate a subList starting at ith element of target list
-     * nbLast is the number of last elements of target list not to include in the subList
-     */
-    Term defRest(Variable var, Expression exp, int i, int nbLast) {
-        Term fun = createFunction(createQName(Processor.FUN_XT_GREST), exp);
-        fun.add(Constant.create(i));
-        fun.add(Constant.create(nbLast));
-        return defLet(var, fun);
-    }
-    
-    Term defGet(Variable var, Expression exp, int i) {
-        Term fun = createFunction(createQName(Processor.FUN_XT_GET), exp);
-        fun.add(Constant.create(i));
-        return defLet(var, fun);
-    }
-    
     @Deprecated
     public Term defineLoop(Variable var, ExpressionList lvar, 
             Expression exp, Expression body, boolean isLoop){
@@ -1661,7 +1397,7 @@ public class ASTQuery
     public Term defFor(ExpressionList lvar, Expression exp, Expression body) {
         Variable var = new Variable(FOR_VAR + nbd++);
         complete(lvar, exp);
-        return defFor(var, exp, let(defLet(lvar, var), body));
+        return defFor(var, exp, getFactory().let(getFactory().defLet(lvar, var), body));
     }
     
     /*
@@ -1677,7 +1413,7 @@ public class ASTQuery
     @Deprecated
     public Term defLoop(Variable var, Expression exp, Expression body) {
         Variable list = new Variable("?_list_" + nbd++);
-        Expression let = defLet(list, createFunction(createQName("xt:list")));
+        Expression let = getFactory().defLet(list, createFunction(createQName("xt:list")));
         Expression add = createFunction(createQName("xt:add"), list, body);
         Expression loop = new ForLoop(var, exp, add);
         Expression app  = 
@@ -1685,7 +1421,23 @@ public class ASTQuery
                 createQName("rq:concat"), list);
         Expression stmt = createFunction(Constant.createResource("sequence"), 
                 loop, app);
-        return createLet(let, stmt, false);
+        return getFactory().createLet(let, stmt, false);
+    }
+   
+    public Let let(List<Expression> el, Expression body, boolean dynamic) {
+        return getFactory().let(el, body, dynamic);
+    }
+    
+    public List<Expression> defLetList(Variable var, Constant type, Expression exp) {
+        return getFactory().defLetList(var, type, exp);
+    }
+    
+    public Term defLet(Variable var, Constant type, Expression exp) {
+        return getFactory().defLet(var, type, exp);
+    }
+    
+    public Term defLet(ExpressionList lvar, Expression exp) {
+        return getFactory().defLet(lvar, exp);
     }
 
     /**
@@ -1695,7 +1447,7 @@ public class ASTQuery
     @Deprecated
     public Term defLoop(ExpressionList lvar, Expression exp, Expression body) {
         Variable var = new Variable(FOR_VAR + nbd++);
-        return defLoop(var, exp, createLet(defLet(lvar, var), body, false));
+        return defLoop(var, exp, getFactory().createLet(getFactory().defLet(lvar, var), body, false));
     }
     
     public void exportFunction(Expression def) {
@@ -1816,10 +1568,6 @@ public class ASTQuery
         return Term.negation(e);
     }
 
-    public RDFList createRDFList(List<Atom> list) {
-        return createRDFList(list, 0);
-    }
-
     public void setListType(int n) {
         listType = n;
     }
@@ -1830,6 +1578,10 @@ public class ASTQuery
 
     public Constant createLDSList(IDatatype dt){
         return Constant.create(dt);
+    }
+    
+    public RDFList createRDFList(List<Atom> list) {
+        return createRDFList(list, L_DEFAULT);
     }
     
      /**
@@ -1885,6 +1637,17 @@ public class ASTQuery
         triple = generateRest(rest, createQName(RDFS.qrdfNil));
         rlist.add(triple);
         return rlist;
+    }
+    
+   
+    Exp generateFirst(Expression expression1, Expression expression2) {
+        Atom atom = createQName(RDFS.qrdfFirst);
+        return triple(expression1, atom, expression2);
+    }
+
+    Exp generateRest(Expression expression1, Expression expression2) {
+        Atom atom = createQName(RDFS.qrdfRest);
+        return triple(expression1, atom, expression2);
     }
 
     /**
@@ -2324,21 +2087,6 @@ public class ASTQuery
         } else {
             return false;
         }
-    }
-
-    /**
-     * used for collections
-     */
-    public Exp generateFirst(Expression expression1, Expression expression2) {
-        Atom atom = createQName(RDFS.qrdfFirst);
-        Triple triple = triple(expression1, atom, expression2);
-        return triple;
-    }
-
-    public Exp generateRest(Expression expression1, Expression expression2) {
-        Atom atom = createQName(RDFS.qrdfRest);
-        Triple triple = triple(expression1, atom, expression2);
-        return triple;
     }
 
     public void setCorrect(boolean b) {
@@ -3901,6 +3649,14 @@ public class ASTQuery
 
     public void setAstSelector(ASTSelector astSelector) {
         this.astSelector = astSelector;
+    }
+
+    public ASTFactory getFactory() {
+        return factory;
+    }
+
+    public void setFactory(ASTFactory factory) {
+        this.factory = factory;
     }
        
 }

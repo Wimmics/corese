@@ -1251,7 +1251,7 @@ public class Processor {
          * @param ast 
          */
        void processMatch(Let term, ASTQuery ast) {
-            ast.processMatch(term);
+            ast.getFactory().processMatch(term);
         }
                
         /**

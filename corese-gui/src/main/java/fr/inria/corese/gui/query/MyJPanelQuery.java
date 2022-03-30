@@ -50,6 +50,7 @@ import static fr.inria.corese.core.util.Property.Value.GUI_SELECT_FORMAT;
 import static fr.inria.corese.core.util.Property.Value.GUI_XML_MAX;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.kgram.core.SparqlException;
+import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.Date;
@@ -669,10 +670,7 @@ public final class MyJPanelQuery extends JPanel {
         } else if (dt.isPointer()) {
             return dt.getPointerObject().toString();
         } else if (dt.isLiteral()) { 
-            if (dt.getCode() == IDatatype.STRING || (dt.getCode() == IDatatype.LITERAL && ! dt.hasLang())){
-                return dt.stringValue();
-            }
-            return dt.toString(); 
+            return prettyLiteral(dt);
         } 
         else if (dt.isTriple()) {
             return dt.toString();
@@ -683,6 +681,19 @@ public final class MyJPanelQuery extends JPanel {
         else {
             return dt.getLabel();
         }
+    }
+    
+    String prettyLiteral(IDatatype dt) {
+        if (dt.getCode() == IDatatype.STRING || 
+           (dt.getCode() == IDatatype.LITERAL && !dt.hasLang())) {
+            return dt.stringValue();
+        }
+        if (dt.isDecimalInteger()) {
+            if (dt.getDatatypeURI().equals(RDF.xsddecimal)) {
+                return String.format("%g", dt.decimalValue());
+            }
+        }
+        return dt.toString();
     }
     
     String getResultText() {

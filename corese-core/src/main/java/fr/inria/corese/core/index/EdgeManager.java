@@ -4,6 +4,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
 import static fr.inria.corese.core.index.EdgeManagerIndexer.IGRAPH;
 import static fr.inria.corese.core.index.EdgeManagerIndexer.ILIST;
+import fr.inria.corese.core.util.Tool;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -319,11 +320,45 @@ public class EdgeManager implements Iterable<Edge> {
         getEdgeList().addAll(l);
     }
     
-   /**
-     * Iterate edges with index node node1
-     */
-    Iterable<Edge> getEdges(Node node) {
-        // node is bound, enumerate edges where node = edge.getNode(index)
+    // pragma: node is bound
+    // pragma: when node2 is bound: node=subject node2=object
+    // use case: DataProducer iterator provides two nodes only for subject/object
+    // otherwise it provides one node only
+    Iterable<Edge> getEdges(Node node, Node node2) {
+        if (node2 == null) {
+            return getEdgesBasic(node);
+        }
+        else {
+            return getEdgesBasic(node, node2);
+        }
+    }
+    
+    // specific iterator when subject/object are both known
+    Iterable<Edge> getEdgesBasic(Node subject, Node object) {
+        int beginIndex = 0;
+        if (getNodeManager().isConsultable()) {
+            beginIndex = getNodeManager().getPosition(subject, getPredicate());
+            if (beginIndex < 0 || beginIndex >= size()) {
+                return null;
+            }
+        }
+
+        // index of edge: node predicate node2
+        beginIndex = findEdgeNodeTerm(subject, object, beginIndex, size());
+                
+        if (beginIndex >= 0 && beginIndex < size()) {
+            // iterate edges with node and node2
+           return new EdgeManagerIterate(this, beginIndex, object.getIndex());
+        }
+        else if (getGraph().isDebugSparql()) {
+            traceEdgeList();
+        }
+        
+        return null;
+    }
+    
+    // node is bound, enumerate edges where node = edge.getNode(index)
+    Iterable<Edge> getEdgesBasic(Node node) {
         int beginIndex = findNodeIndex(node);
         getGraph().trace("Get edges: node=%s label=%s index=%s place=%s", 
                 node, node.getLabel(), node.getIndex(), beginIndex);
@@ -434,7 +469,7 @@ public class EdgeManager implements Iterable<Edge> {
      * use case: rule engine
      */
     boolean exist(Node n1, Node n2) {
-        int n = findNodeTerm(n1, n2, 0, getEdgeList().size());
+        int n = findEdgeNodeTerm(n1, n2);
         if (n >= 0 && n < getEdgeList().size()) {
             Edge ent = getEdgeList().get(n);
             if (n1.getIndex() == getNodeIndex(ent, 0)
@@ -446,7 +481,7 @@ public class EdgeManager implements Iterable<Edge> {
     }
     
     Edge findEdge(Node n1, Node n2) {
-        int n = findNodeTerm(n1, n2, 0, size());
+        int n = findEdgeNodeTerm(n1, n2);
         if (n >= 0 && n < size()) {
             Edge edge = getEdgeList().get(n);
             if (compareNodeTerm(n1, edge.getNode(0)) == 0
@@ -461,16 +496,19 @@ public class EdgeManager implements Iterable<Edge> {
      * return index of edge where
      * edge.getNode(index) == node1 and edge.getNode(other) == node2
      */
+    int findEdgeNodeTerm(Node n1, Node n2) {
+        return findEdgeNodeTerm(n1, n2, 0, size());
+    }
     
-    int findNodeTerm(Node n1, Node n2, int first, int last) {
+    int findEdgeNodeTerm(Node n1, Node n2, int first, int last) {
         if (first >= last) {
             return first;
         } else {
             int mid = (first + last) / 2;
             if (compareNodeTerm(getEdgeList().get(mid), n1, n2) >= 0) {
-                return findNodeTerm(n1, n2, first, mid);
+                return findEdgeNodeTerm(n1, n2, first, mid);
             } else {
-                return findNodeTerm(n1, n2, mid + 1, last);
+                return findEdgeNodeTerm(n1, n2, mid + 1, last);
             }
         }
     }   

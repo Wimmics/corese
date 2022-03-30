@@ -2294,9 +2294,9 @@ public class Graph extends GraphObject implements
         }
     }
 
-    public Iterable<Edge> properGetEdges(Node predicate, Node node, int n) {
-        trace("Edge iterator for: p=%s n=%s", predicate, node);
-        Iterable<Edge> it = getEdges(predicate, node, null, n);
+    public Iterable<Edge> properGetEdges(Node predicate, Node node, Node node2, int n) {
+        trace("Edge iterator for: p=%s n=%s n2=%s", predicate, node, node2);
+        Iterable<Edge> it = getEdges(predicate, node, node2, n);
         if (it == null) {
             trace("Edge iterator fail for: p=%s n=%s",predicate, node);
             return EMPTY;

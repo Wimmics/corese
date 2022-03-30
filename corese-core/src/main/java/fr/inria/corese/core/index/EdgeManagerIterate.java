@@ -18,6 +18,9 @@ class EdgeManagerIterate implements Iterable<Edge>, Iterator<Edge> {
 
     EdgeManager list;
     int focusNodeIndex;
+    // possibly Edge object Node index
+    // use case: subject and object are known
+    int objectNodeIndex=-1;
     int ind, start = 0;
     boolean isList = true;
     EdgeGeneric buffer;
@@ -27,11 +30,16 @@ class EdgeManagerIterate implements Iterable<Edge>, Iterator<Edge> {
         buffer = new EdgeGeneric(list.getPredicate());
     }
 
-    EdgeManagerIterate(EdgeManager l, int n) {
+    EdgeManagerIterate(EdgeManager l, int begin) {
        this(l);
-       start = n;
-       focusNodeIndex = getNodeIndex(n);
+       start = begin;
+       focusNodeIndex = getFocusNodeIndex(begin);
        isList = false;
+    }
+    
+    EdgeManagerIterate(EdgeManager l, int begin, int objectNodeIndex) {
+       this(l, begin);
+       this.objectNodeIndex = objectNodeIndex;
     }
 
     @Override
@@ -40,15 +48,23 @@ class EdgeManagerIterate implements Iterable<Edge>, Iterator<Edge> {
         return this;
     }
     
-    // return node index of node at nth position
-    int getNodeIndex(int n) {
+    // return node index of focus node at nth position in edge list
+    int getFocusNodeIndex(int n) {
         return list.get(n).getNode(list.getIndex()).getIndex();
+    }
+    
+    // return node index of object node at nth position in edge list
+    int getObjectNodeIndex(int n) {
+        return list.get(n).getNode(1).getIndex();
     }
 
     @Override
     public boolean hasNext() {
         boolean b = ind < list.size()
-                && (isList || getNodeIndex(ind) == focusNodeIndex);        
+                && (isList || getFocusNodeIndex(ind) == focusNodeIndex);
+        if (b && objectNodeIndex!=-1) {
+            b &= getObjectNodeIndex(ind) == objectNodeIndex;
+        }       
         return b;
     }
 

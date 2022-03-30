@@ -831,7 +831,7 @@ public class EdgeManagerIndexer
             return new EdgeManagerIterate(list);
         }
         else {
-            return list.getEdges(node);
+            return list.getEdges(node, node2);
         }
     }
     

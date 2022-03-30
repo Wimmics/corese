@@ -192,7 +192,7 @@ public class NodeManager {
         return active ;
     }
     
-     public boolean isConsultable() {
+    public boolean isConsultable() {
         return active && size()>0;
     }
 

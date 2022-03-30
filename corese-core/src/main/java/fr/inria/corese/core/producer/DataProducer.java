@@ -74,8 +74,12 @@ public class DataProducer extends GraphObject
         return iterate(getGraph().getTopProperty(), node, n);
     }
 
-    //@Override
     public DataProducer iterate(Node predicate, Node node, int n) {
+        return iterate(predicate, node, null, n);
+    }
+    
+    // pragma: if n == 0 && node2!=null then node2=object node
+    public DataProducer iterate(Node predicate, Node node, Node node2, int n) {
         // optimize special cases
         if (isNamedGraph) {
             if (node == null && from != null && !from.isEmpty()) {
@@ -95,7 +99,7 @@ public class DataProducer extends GraphObject
         } 
 
         // general case
-        setIterable(getGraph().properGetEdges(predicate, node, n));
+        setIterable(getGraph().properGetEdges(predicate, node, node2, n));
         return this;
     }
     

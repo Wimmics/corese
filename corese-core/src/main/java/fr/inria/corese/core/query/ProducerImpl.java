@@ -346,7 +346,7 @@ public class ProducerImpl
         } else {
             // corese graph iterator
             return getDataProducer(queryGraphNode, targetGraphNode, from, skip, access, nested)
-                    .iterate(predicate, focusNode, focusNodeIndex);
+                    .iterate(predicate, focusNode, objectNode, focusNodeIndex);
         }
     }
     

@@ -947,10 +947,6 @@ public class ASTQuery
         return Threshold;
     }
 
-//    public boolean isXMLBind() {
-//        return XMLBind;
-//    }
-
     /**
      * created for the new parser
      */
@@ -1946,12 +1942,6 @@ public class ASTQuery
         return fun;
     }
 
-    public Expression createOperator(String ope, Expression exp1, Expression exp2) {
-        if (ope.equals(SOR)) {
-            ope = SEOR;
-        }
-        return createTerm(ope, exp1, exp2);
-    }
 
     /**
      * exp is a subquery nest it in Term exists { exp } use case: for (?m in

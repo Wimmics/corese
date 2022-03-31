@@ -1,7 +1,6 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.triple.function.script.Let;
-import static fr.inria.corese.sparql.triple.parser.ASTQuery.LET_VAR;
 import java.util.ArrayList;
 import java.util.List;
 

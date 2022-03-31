@@ -79,6 +79,7 @@ import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.Property;
 import fr.inria.corese.core.util.Property.Pair;
 import static fr.inria.corese.core.util.Property.Value.GUI_INDEX_MAX;
+import fr.inria.corese.core.util.Tool;
 import fr.inria.corese.core.workflow.Data;
 import fr.inria.corese.core.workflow.SemanticWorkflow;
 import fr.inria.corese.core.workflow.WorkflowParser;
@@ -1052,7 +1053,9 @@ public class MainFrame extends JFrame implements ActionListener {
         cbowlrlext.setEnabled(true);
         cbowlrlext.setSelected(false);
         cbowlrlext.addItemListener((ItemEvent e) -> {
-            setOWLRL(cbowlrlext.isSelected(), RuleEngine.OWL_RL_EXT);
+            // OWL RL + extension: a owl:Restriction -> a owl:Class
+            setOWLRL(cbowlrlext.isSelected(), RuleEngine.OWL_RL_EXT, false);
+            setOWLRL(cbowlrlext.isSelected(), RuleEngine.OWL_RL);
         });
 
         checkBoxLoad.addItemListener(
@@ -1230,8 +1233,12 @@ public class MainFrame extends JFrame implements ActionListener {
     }
 
     private void setOWLRL(boolean selected, int owl) {
+        setOWLRL(selected, owl, true);
+    }
+        
+    private void setOWLRL(boolean selected, int owl, boolean inThread) {
         if (selected) {
-            Entailment e = new Entailment(myCorese);
+            Entailment e = new Entailment(myCorese, inThread);
             e.setOWLRL(owl);
             e.setTrace(trace);
             e.process();
@@ -1252,14 +1259,7 @@ public class MainFrame extends JFrame implements ActionListener {
     }
     
     void graphIndex() {
-        int max = 10;
-        if (Property.intValue(GUI_INDEX_MAX) !=null) {
-            max = Property.intValue(GUI_INDEX_MAX);
-        }
-        Graph g = getMyCorese().getGraph();
-        System.out.println(g.getIndex());
-        System.out.println(g.display(max));
-        System.out.println(g.getNodeManager().display(max));
+        getMyCorese().graphIndex();
     }
 
     // Actions du menu

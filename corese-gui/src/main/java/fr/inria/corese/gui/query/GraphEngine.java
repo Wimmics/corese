@@ -31,6 +31,7 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import static fr.inria.corese.core.util.Property.Value.ACCESS_LEVEL;
+import fr.inria.corese.core.util.Tool;
 import java.io.IOException;
 
 /**
@@ -151,6 +152,18 @@ public class GraphEngine {
 
     public static GraphEngine create(boolean rdfs) {
         return new GraphEngine(rdfs);
+    }
+    
+    public void graphIndex() {
+        int max = 10;
+        if (Property.intValue(GUI_INDEX_MAX) !=null) {
+            max = Property.intValue(GUI_INDEX_MAX);
+        }
+        Graph g = getGraph();
+        System.out.println(g.display(max));
+        System.out.println(g.getNodeManager().display(max));
+        System.out.println(g.getIndex());
+        Tool.trace("Memory used: %s", Tool.getMemoryUsageMegabytes());
     }
 
     public void definePrefix(String p, String ns) {

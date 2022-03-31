@@ -74,7 +74,7 @@ public class EdgeManagerIndexer
     // Property Node -> Edge List 
     HashMap<Node, EdgeManager> table;
     private NodeManager nodeManager;
-    TransitiveEdgeManager transitiveManager;
+    //TransitiveEdgeManager transitiveManager;
     private boolean debug = false;
 
     public EdgeManagerIndexer(Graph g, boolean bi, int index) {

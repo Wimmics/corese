@@ -121,6 +121,7 @@ public class Property {
         // graph ?g { } iterate std and external named graph
         EXTERNAL_NAMED_GRAPH,
         GRAPH_INDEX_END,
+        GRAPH_INDEX_TRANSITIVE,
         // rdf* draft
         RDF_STAR,
         // enforce compliance: no literal as subject

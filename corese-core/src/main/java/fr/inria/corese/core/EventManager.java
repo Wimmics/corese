@@ -208,6 +208,10 @@ public class EventManager {
                 getWorkflow().setActivate(Engine.RULE_ENGINE, false);
                 break;
                 
+            case RuleEngine:
+                getGraph().finishRuleEngine();
+                break;
+                
             case InferenceEngine:
                 break;
                 

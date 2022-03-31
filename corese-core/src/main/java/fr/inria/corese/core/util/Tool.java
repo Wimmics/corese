@@ -32,4 +32,8 @@ public class Tool {
     public static void display(String mes, Object... obj) {
         System.out.println(String.format(mes, obj));
     }
+    
+    public static void trace(String mes, Object... obj) {
+        System.out.println(String.format(mes, obj));
+    }
 }

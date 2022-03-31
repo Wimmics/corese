@@ -70,6 +70,11 @@ public class DataBrokerLocal implements DataBroker {
         return getGraph().getGraphNodes(from);
     }
     
+    // ?s rdf:type aClass with corese RDFS entailment
+    // do not focus on aClass because RDFS entailment 
+    // does not generate transitive closure
+    // hence another class may match aClass
+    // in this case return true
     @Override
     public boolean isTypeProperty(Query query, Edge edge) {
         return (getGraph().isType(edge) || query.isRelax(edge)) && getGraph().hasEntailment();

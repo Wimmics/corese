@@ -673,6 +673,8 @@ public class RuleEngine implements Engine, Graphable {
             getGraphStore().getContext().storeIndex(NSManager.KGRAM+"re1");
         }
         context();
+        getGraphStore().getEventManager().start(Event.RuleEngine);
+
     }
     
     void context(){
@@ -693,6 +695,7 @@ public class RuleEngine implements Engine, Graphable {
         if (isRecord()) {
             getGraphStore().getContext().storeIndex(NSManager.KGRAM+"re2");
         }
+        getGraphStore().getEventManager().finish(Event.RuleEngine);
     }
     
     
@@ -731,10 +734,6 @@ public class RuleEngine implements Engine, Graphable {
                 // number of results
                 tnbres = 0;
         boolean go = true;
-
-        // Entailment 
-        getGraphStore().getEventManager().start(Event.RuleEngine);
-
         Record newRecord = null;
         // Rule manager with rule index
         stable = new STable();

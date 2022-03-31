@@ -236,16 +236,10 @@ public class Workflow implements Engine {
         }
     }
 
-    /**
-     * @return the inference
-     */
     public Entailment getEntailment() {
         return inference;
     }
 
-    /**
-     * @param inference the inference to set
-     */
     public void setEntailment(Entailment inference) {
         this.inference = inference;
     }

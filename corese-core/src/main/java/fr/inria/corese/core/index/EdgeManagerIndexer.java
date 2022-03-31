@@ -14,7 +14,10 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.Index;
 import fr.inria.corese.core.Serializer;
 import fr.inria.corese.core.index.PredicateList.Cursor;
+import fr.inria.corese.core.logic.RDF;
+import fr.inria.corese.core.logic.RDFS;
 import fr.inria.corese.core.util.Property;
+import fr.inria.corese.core.util.Tool;
 import java.util.HashMap;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
@@ -74,6 +77,7 @@ public class EdgeManagerIndexer
     // Property Node -> Edge List 
     HashMap<Node, EdgeManager> table;
     private NodeManager nodeManager;
+    TransitiveEdgeManager transitiveManager;
     private boolean debug = false;
 
     public EdgeManagerIndexer(Graph g, boolean bi, int index) {
@@ -705,7 +709,7 @@ public class EdgeManagerIndexer
     }
 
     private void reduce(Node pred) {
-        get(pred).reduce(getNodeManager());
+        get(pred).reduce(getNodeManager());       
     }
     
     @Override
@@ -1161,6 +1165,37 @@ public class EdgeManagerIndexer
     public void delete(Node pred) {
     }
     
+    public void complete() {
+    }
+    
+//    void test() {
+//        if (Property.booleanValue(Property.Value.GRAPH_INDEX_TRANSITIVE)) {
+//            indexTransitive();
+//        }
+//    }
+//    
+//    void indexTransitive() {
+//        transitiveManager = new TransitiveEdgeManager();
+//        Node pred = getGraph().getPropertyNode(RDFS.SUBCLASSOF);
+//        if (pred != null) {
+//            indexTransitive(pred);
+//        }        
+//    }
+//    
+//    void indexTransitive(Node pred) {
+//        Tool.trace("Memory before transitive index: %s", Tool.getMemoryUsageMegabytes());
+//        for (Edge edge : getGraph().getEdges(pred)) {
+//            transitiveManager.add(edge.getSubjectNode(), edge.getObjectNode());
+//        }
+//        transitiveManager.trim();
+//        Tool.trace("Memory after create transitive index: %s", Tool.getMemoryUsageMegabytes());
+//        Tool.trace("Transitive list size: %s %s", pred, get(pred).size());
+//        get(pred).clear();
+//        Tool.trace("Memory after clear transitive edge list: %s", Tool.getMemoryUsageMegabytes());
+//        Tool.trace("Transitive list size: %s %s", pred, get(pred).size());
+//        Tool.trace("Transitive index size: %s", transitiveManager.getMap().size());
+//    }
+//    
     
     @Override
     public void finishUpdate() {

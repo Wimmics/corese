@@ -190,7 +190,12 @@ public class ProducerImpl
                 || node.getTripleStore() != graph;
     }
 
-    boolean isType(Query q, Edge edge) {
+    // ?s rdf:type aClass with corese RDFS entailment
+    // do not focus on aClass because RDFS entailment 
+    // does not generate transitive closure
+    // hence another class may match aClass
+    // in this case return true
+    boolean isSkipTypeObjectNode(Query q, Edge edge) {
         return getDataBroker().isTypeProperty(q, edge);
     }
     
@@ -231,7 +236,6 @@ public class ProducerImpl
         int focusNodeIndex = 0;
 
         Node focusNode = null, objectNode = null;
-        boolean isType = false;
       
         for (Index ei : graph.getIndexList()) {
             // enumerate graph index to get the index i of nodes in edge: 0, 1, GRAPHINDEX
@@ -245,12 +249,12 @@ public class ProducerImpl
                 if (qNode != null) {
                     if (index == 1
                             && qNode.isConstant()
-                            && isType(q, edge)) { //&& graph.hasEntailment())                     
-                        // RDFS entailment on ?x rdf:type c:Engineer
-                        // RDFS entailment does not compute transitive closure of subClassOf
-                        // but it checks subsumption with specific method
-                        // hence no focus on object node because
-                        // we want no dichotomy on c:Engineer because we check subsumption                           
+                            && isSkipTypeObjectNode(q, edge)) { 
+                            // ?s rdf:type aClass with corese RDFS entailment
+                            // do not focus on aClass because RDFS entailment 
+                            // does not generate transitive closure
+                            // hence another class may match aClass
+                            // in this case skip binding
                     } 
                     else {
                         Node val = qNode.isVariable() ? env.getNode(qNode) : null;
@@ -267,8 +271,8 @@ public class ProducerImpl
                             }
                         } else {
                             focusNodeIndex = index;
-                            if (index == 0 && !isType(q, edge)) {
-                                // in case query object Node also have a value
+                            if (index == 0 && !isSkipTypeObjectNode(q, edge)) {
+                                // use case where query edge object is also known
                                 objectNode = getValue(edge.getNode(1),  env);
                             }
                             break;

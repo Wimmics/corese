@@ -138,7 +138,7 @@ public class QueryExec {
      */
     public void complete(Query q, Mappings map) throws EngineException {
         map.setQuery(q);
-        map.setEval(exec.getEval());
+        map.setEval(exec.getCreateEval());
     }
 
     public Mappings query(String squery) throws EngineException {

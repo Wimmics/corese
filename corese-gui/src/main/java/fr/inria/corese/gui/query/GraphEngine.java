@@ -62,7 +62,7 @@ public class GraphEngine {
         qengine = QueryEngine.create(graph);
         exec = QueryProcess.create(graph, true);
         try {
-            setVisitor(new QuerySolverVisitor(exec.getEval()));
+            setVisitor(new QuerySolverVisitor(exec.getCreateEval()));
         } catch (EngineException ex) {
             java.util.logging.Logger.getLogger(GraphEngine.class.getName()).log(Level.SEVERE, null, ex);
         }

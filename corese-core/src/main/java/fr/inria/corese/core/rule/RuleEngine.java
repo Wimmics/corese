@@ -448,7 +448,7 @@ public class RuleEngine implements Engine, Graphable {
         getErrorList().clear();
         setEvent(Access.accept(Feature.EVENT, b.getAccessLevel()));
         try {
-            setVisitor(QuerySolverVisitorRule.create(this, getQueryProcess().getEval()));            
+            setVisitor(QuerySolverVisitorRule.create(this, getQueryProcess().getCreateEval()));            
             getVisitor().getProcessor().getEnvironment().setBind(b);
             if (isEvent()) {
                 getVisitor().init();

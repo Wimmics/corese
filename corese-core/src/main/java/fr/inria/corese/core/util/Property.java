@@ -122,6 +122,7 @@ public class Property {
         EXTERNAL_NAMED_GRAPH,
         GRAPH_INDEX_END,
         GRAPH_INDEX_TRANSITIVE,
+        GRAPH_INDEX_LOAD_SKIP,
         // rdf* draft
         RDF_STAR,
         // enforce compliance: no literal as subject

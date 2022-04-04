@@ -206,7 +206,7 @@ public class Transformer implements TransformProcessor {
         tmap = new TransformerMapping(qp.getGraph());  
         setDebug(p);
         try {
-            setEventVisitor( QuerySolverVisitorTransformer.create(this, qp.getEval()));
+            setEventVisitor( QuerySolverVisitorTransformer.create(this, qp.getCreateEval()));
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
         }

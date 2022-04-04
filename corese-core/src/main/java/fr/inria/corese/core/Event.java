@@ -16,10 +16,13 @@ public enum Event {
     IndexNodeManager, IndexNodeManagerReduce, ClearNodeManager,
     IndexGraph, IndexMetadata,
     
-    Query, Construct, Rule, 
+    Query, 
+    // fake select where query for initialization purpose e.g. Visitor
+    InitQuery, InitUpdateQuery, 
+    Construct, Rule, 
     Service,
     LoadAPI, LoadStep, // load()
-    Update, UpdateStep,
+    Update, UpdateStep, BasicUpdate,
     LoadUpdate, // SPARQL Update load
     DeleteInsert, DeleteData, InsertData, 
     Delete, Insert,

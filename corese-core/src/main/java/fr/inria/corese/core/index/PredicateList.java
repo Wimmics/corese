@@ -64,6 +64,7 @@ public class PredicateList {
     }
     
     void trim() {
+        getPredicateList().trimToSize();
         getPositionList().trimToSize();
         getEndList().trimToSize();
         if (ITERATE_SUBLIST) {

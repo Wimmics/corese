@@ -231,14 +231,6 @@ public class QueryProcessUpdate {
         getQueryProcess().setSynchronized(b);
     }
     
-    Eval getCurrentEval() {
-        return getQueryProcess().getCurrentEval();
-    }
-    
-    ProcessVisitor getCurrentVisitor() {
-        return getQueryProcess().getVisitor();
-    }
-
     String getWithName(Query query) {
         String name = getAST(query).getUpdate().getGraphName();
         if (isDebug()) {
@@ -296,6 +288,15 @@ public class QueryProcessUpdate {
         vis.afterUpdate(m);
         setSynchronized(b);
     }
+    
+    Eval getCurrentEval() {
+        return getQueryProcess().getCurrentEval();
+    }
+    
+    ProcessVisitor getCurrentVisitor() {
+        return getQueryProcess().getVisitor();
+    }
+
 
     /**
      * Save and restore current eval because function beforeLoad() may execute a
@@ -303,17 +304,17 @@ public class QueryProcessUpdate {
      */
     public void beforeLoad(IDatatype dt, boolean b) {
         setSynchronized(true);
-        Eval eval = getCurrentEval();
+        Eval eval = getQueryProcess().getCurrentEval();
         getCurrentVisitor().beforeLoad(dt);
-        getQueryProcess().setEval(eval);
+        getQueryProcess().setCurrentEval(eval);
         setSynchronized(b);
     }
 
     public void afterLoad(IDatatype dt, boolean b) {
         setSynchronized(true);
-        Eval eval = getCurrentEval();
+        Eval eval = getQueryProcess().getCurrentEval();
         getCurrentVisitor().afterLoad(dt);
-        getQueryProcess().setEval(eval);
+        getQueryProcess().setCurrentEval(eval);
         setSynchronized(b);
     }
 
@@ -321,30 +322,22 @@ public class QueryProcessUpdate {
         return QueryProcess.isReentrant();
     }
 
-    /**
-     * @return the debug
-     */
+   
     public boolean isDebug() {
         return debug;
     }
 
-    /**
-     * @param debug the debug to set
-     */
+   
     public void setDebug(boolean debug) {
         this.debug = debug;
     }
 
-    /**
-     * @return the exec
-     */
+   
     public QueryProcess getQueryProcess() {
         return exec;
     }
 
-    /**
-     * @param exec the exec to set
-     */
+   
     public void setQueryProcess(QueryProcess exec) {
         this.exec = exec;
     }

@@ -29,6 +29,10 @@ public class Tool {
         return (d2.getTime() - d1.getTime()) / 1000.0;
     }
     
+    public static double time(Date d1) {
+        return time(d1, new Date());
+    }
+    
     public static void display(String mes, Object... obj) {
         System.out.println(String.format(mes, obj));
     }

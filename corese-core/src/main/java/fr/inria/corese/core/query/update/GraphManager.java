@@ -46,9 +46,6 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 public class GraphManager {
     static Logger logger = LoggerFactory.getLogger(GraphManager.class);
 
-    //static final String DEFAULT_GRAPH = Entailment.DEFAULT;
-    // default loader, by meta protocol to preserve modularity
-    static final String LOADER = "fr.inria.corese.kgtool.load.Load";
     private Graph graph;
     Load load;
     private QueryProcess queryProcess;
@@ -64,10 +61,6 @@ public class GraphManager {
         setDataBroker(new DataBrokerConstructLocal(this));
     }
     
-   
-      /**
-     * @return the graph
-     */
     public Graph getGraph() {
         return graph;
     }
@@ -90,7 +83,7 @@ public class GraphManager {
      * Before construct/insert/delete starts
      */
     public void start(Event e){
-        graph.getEventManager().start(e);        
+        getGraph().getEventManager().start(e);        
     }
     
     /**
@@ -98,9 +91,9 @@ public class GraphManager {
      * Tell the graph to recompile its Index
      */
     public void finish(Event e) {
-        if (graph.size() > 0) {
+        if (getGraph().size() > 0) {
             // index graph
-            graph.getEventManager().finish(e);
+            getGraph().getEventManager().finish(e);
         }
     }
 
@@ -114,24 +107,24 @@ public class GraphManager {
      * Optional
      */
     public GraphManager getNamedGraph(String label) {
-        Graph g = graph.getNamedGraph(label);
-        if (g != null && g != graph.getGraph()) {
+        Graph g = getGraph().getNamedGraph(label);
+        if (g != null && g != getGraph().getGraph()) {
             return new GraphManager(g);
         }
         return null;
     }
     
     public Node getDefaultGraphNode(){
-        return graph.addDefaultGraphNode();
+        return getGraph().addDefaultGraphNode();
     }
     
     // When insert in new graph name, update insert dataset named += name
     public boolean isDefaultGraphNode(String name){
-        return graph.isDefaultGraphNode(name);
+        return getGraph().isDefaultGraphNode(name);
     }
     
     public Node getRuleGraphName(boolean constraint) {
-        return graph.getRuleGraphName(constraint);
+        return getGraph().getRuleGraphName(constraint);
     }
     
     /**
@@ -229,11 +222,11 @@ public class GraphManager {
      */
     public Edge create(Node source, Node subject, Node property, Node object) {
         //return graph.create(source, subject, property, object);
-        return graph.createForInsert(source, subject, property, object);
+        return getGraph().createForInsert(source, subject, property, object);
     }
     
     public Edge create(Node source, Node property, List<Node> list) {
-        return graph.create(source, property, list);
+        return getGraph().create(source, property, list);
     }
 
     /**
@@ -241,31 +234,31 @@ public class GraphManager {
      * Do not delete it yet, it will be done explicitely by delete().
      */
     public Edge createDelete(Node source, Node subject, Node property, Node object) {
-        return graph.createDelete(source, subject, property, object);
+        return getGraph().createDelete(source, subject, property, object);
     }
     
     public Edge createDelete(Node source, Node property, List<Node> list) {
-        return graph.createDelete(source, property, list);
+        return getGraph().createDelete(source, property, list);
     }
 
     public String newBlankID() {
-        return graph.newBlankID();
+        return getGraph().newBlankID();
     }
 
     public IDatatype createBlank(String str) {
-        return graph.createBlank(str);
+        return getGraph().createBlank(str);
     }
     
     public IDatatype createBlank() {
-        return graph.createBlank(graph.newBlankID());
+        return getGraph().createBlank(getGraph().newBlankID());
     }
     
     public IDatatype createTripleReference() {
-        return graph.createTripleReference();
+        return getGraph().createTripleReference();
     }
     
     public Node createTripleReference(Node s, Node p, Node o) {
-        return graph.addTripleReference(s, p, o);
+        return getGraph().addTripleReference(s, p, o);
     }
     
     
@@ -336,7 +329,7 @@ public class GraphManager {
     
     
    public boolean myLoad(Query q, Basic ope, Level level, AccessRight access) throws EngineException {
-        Load load = Load.create(graph);
+        Load load = Load.create(getGraph());
         load.setLevel(level);
         if (AccessRight.isActive()) {
             load.setAccessRight(access);
@@ -347,8 +340,8 @@ public class GraphManager {
         IDatatype dt = DatatypeMap.newResource(uri);
         String src = ope.getTarget();
         int format = getFormat(q);
-        graph.logStart(q);
-        graph.getEventManager().start(Event.LoadUpdate);
+        getGraph().logStart(q);
+        getGraph().getEventManager().start(Event.LoadUpdate);
         if (ope.isSilent()) {
             try {
                 if (NSManager.isFile(uri)) {
@@ -359,7 +352,7 @@ public class GraphManager {
             } catch (LoadException | SafetyException ex) {
                 logger.error("Load silent trap error: " + ex.getMessage());
             }
-            graph.logFinish(q);
+            getGraph().logFinish(q);
         } else {
             if (NSManager.isFile(uri)) {
                 Access.check(Feature.LOAD_FILE, level, uri, TermEval.LOAD_MESS);
@@ -377,8 +370,8 @@ public class GraphManager {
                 return ope.isSilent();
             }
             finally {
-                graph.logFinish(q);
-                graph.getEventManager().finish(Event.LoadUpdate);
+                getGraph().logFinish(q);
+                getGraph().getEventManager().finish(Event.LoadUpdate);
             }
         }
             
@@ -389,8 +382,8 @@ public class GraphManager {
             // cons: it is stored in the workflow and run forever on update
             // (des)activate
             // pragma {kg:kgram kg:rule true/false}
-            graph.addEngine(load.getRuleEngine());
-            graph.getEventManager().start(Event.ActivateEntailment);
+            getGraph().addEngine(load.getRuleEngine());
+            getGraph().getEventManager().start(Event.ActivateEntailment);
         }
 
         return true;
@@ -439,7 +432,7 @@ public class GraphManager {
             return;
         }
 
-        Workflow wf = graph.getWorkflow();
+        Workflow wf = getGraph().getWorkflow();
 
         switch (ope.type()) {
 
@@ -454,10 +447,10 @@ public class GraphManager {
 
                 if (isEntailment(uri)) {
                     //graph.setEntailment(false);
-                    graph.getEventManager().finish(Event.ActivateRDFSEntailment);
+                    getGraph().getEventManager().finish(Event.ActivateRDFSEntailment);
                 } else if (isRule(uri)) {
                    // wf.setActivate(Engine.RULE_ENGINE, false);
-                    graph.getEventManager().finish(Event.ActivateRuleEngine);
+                    getGraph().getEventManager().finish(Event.ActivateRuleEngine);
                 }
                 break;
 
@@ -467,11 +460,11 @@ public class GraphManager {
                 if (isEntailment(uri)) {
                     //graph.setEntailment(true);
                     //graph.setEntail(true);
-                    graph.getEventManager().start(Event.ActivateRDFSEntailment);
+                    getGraph().getEventManager().start(Event.ActivateRDFSEntailment);
                 } else if (isRule(uri)) {
 //                    wf.setActivate(Engine.RULE_ENGINE, true);
 //                    graph.setEntail(true);
-                    graph.getEventManager().start(Event.ActivateRuleEngine);
+                    getGraph().getEventManager().start(Event.ActivateRuleEngine);
                 }
                 break;
         }
@@ -509,6 +502,10 @@ public class GraphManager {
 
     public void setDataBroker(DataBrokerConstruct dataBroker) {
         this.dataBroker = dataBroker;
+    }
+
+    public void setGraph(Graph graph) {
+        this.graph = graph;
     }
 
 }

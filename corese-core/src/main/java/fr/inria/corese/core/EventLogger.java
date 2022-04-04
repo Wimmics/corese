@@ -72,7 +72,6 @@ public class EventLogger {
        return (show().isEmpty() || show().containsKey(e)) &&
              (hide().isEmpty() || ! hide().containsKey(e))  ;
     }
-
     
     void trace(Event type, Event e, Object o, Object o2) {
         if (accept(e)) {
@@ -99,8 +98,15 @@ public class EventLogger {
                     default: logger.info(type + " " + e + pretty(o));
                 }
                 break;
+                
             case Finish:
-                logger.info(type + " " + e + pretty(o));
+                switch (e) {
+                    case IndexNodeManager:
+                        logger.info(type + " " + e);
+                        break;
+                        
+                    default: logger.info(type + " " + e + pretty(o));
+                }
                 break;
         }
         log(type, e, o);
@@ -176,7 +182,7 @@ public class EventLogger {
         if (exec == null){
             exec = QueryProcess.create(getEventManager().getGraph());
             try {
-                exec.getEval().setVisitor(new QuerySolverVisitor(exec.getEval()));
+                exec.getCreateEval().setVisitor(new QuerySolverVisitor(exec.getCreateEval()));
             } catch (EngineException ex) {
                 java.util.logging.Logger.getLogger(EventLogger.class.getName()).log(Level.SEVERE, null, ex);
             }

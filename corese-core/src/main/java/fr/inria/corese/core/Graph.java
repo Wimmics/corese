@@ -209,7 +209,7 @@ public class Graph extends GraphObject implements
     // semantic distance in class/property Hierarchy
     private Distance classDistance, propertyDistance;
     private boolean isSkolem = SKOLEM_DEFAULT;
-    boolean isIndex = true,
+    boolean isIndexable = true,
             isDebug = !true;
     private boolean debugSparql = DEBUG_SPARQL;
     // edge index sorted by index
@@ -861,7 +861,6 @@ public class Graph extends GraphObject implements
     synchronized public void setRDFSEntailment(boolean b) {
         getWorkflow().setRDFSEntailment(b);
         if (b) {
-            //setEntail(true);
             getEventManager().start(Event.ActivateEntailment);
             init();
         }
@@ -870,7 +869,6 @@ public class Graph extends GraphObject implements
     public void pragmaRDFSentailment(boolean b) {
         getWorkflow().pragmaRDFSentailment(b);
         if (b) {
-            //setEntail(true);
             getEventManager().start(Event.ActivateEntailment);
         }
     }
@@ -1048,6 +1046,10 @@ public class Graph extends GraphObject implements
     public EventManager getEventManager() {
         return eventManager;
     }
+    
+    public void setEventHandler(EventHandler h) {
+        getEventManager().setEventHandler(h);
+    }
 
     public void setVerbose(boolean b) {
         getEventManager().setVerbose(b);
@@ -1084,13 +1086,14 @@ public class Graph extends GraphObject implements
     }
 
     /**
-     * send e.g. by kgram eval() before every query execution restore
-     * consistency if updates have been done, perform entailment when delete is
-     * performed, it is the user responsibility to delete the entailments that
-     * depend on it it can be done using: drop graph kg:entailment Rules are not
-     * automatically run, use re.process()
+     * EventManager call init() before query execution 
+     * First time: Index graph: edge list sorted and reduced, compute graph node index
+     * Next time:  recompute graph node index
+     * All time:   Perform entailment.
      */
     public synchronized void init() {
+        getEventManager().start(Event.InitGraph, isIndexable());
+
         if (isIndexable()) {
             // sort edge list and reduce (delete duplicate edges)
             index();
@@ -1099,7 +1102,7 @@ public class Graph extends GraphObject implements
         if (getEventManager().isUpdate()) {
             // use case: previously load or sparql update
             // clear nodeIndexManager
-            update();
+            onUpdate();
             // recompute IndexNodeManager
             performIndexNodeManager();
         }
@@ -1129,21 +1132,15 @@ public class Graph extends GraphObject implements
         return DatatypeMap.TRUE;
     }
 
-    private void update() {
+    private void onUpdate() {
         getEventManager().setUpdate(false);
         // node index
-        clearIndex();
+        clearNodeIndex();
         clearDistance();
         if (getEventManager().isDelete()) {
             manager.onDelete();
             getEventManager().setDelete(false);
         }
-    }
-
-    /**
-     */
-    void startUpdate() {
-
     }
 
     public void clean() {
@@ -1166,16 +1163,20 @@ public class Graph extends GraphObject implements
 
     // true when index must be sorted 
     public boolean isIndexable() {
-        return isIndex;
+        return isIndexable;
+    }
+    
+    public void setIndexable(boolean b) {
+        isIndexable = b;
     }
     
     // already indexed
     public boolean isIndexed() {
         return ! isIndexable();
     }
-
-    public void setIndexable(boolean b) {
-        isIndex = b;
+    
+    public void setIndexed(boolean b) {
+        isIndexable = !b;
     }
 
     /**
@@ -1198,33 +1199,49 @@ public class Graph extends GraphObject implements
         return getSubjectIndex();
     }
 
+    void startUpdate() {
+    }
+    
     public void finishUpdate() {
         getIndex().finishUpdate();
     }
     
     public void finishRuleEngine() {
-        getIndex().complete();
+        getIndex().finishRuleEngine();
+    }
+            
+    public void startLoad() {
+        if (size() == 0 || Property.booleanValue(Property.Value.GRAPH_INDEX_LOAD_SKIP)) {
+            // graph is empty, optimize loading as if the graph were not indexed
+            // because in this case, edges are added directly
+            //logger.info("Set graph as not indexed");
+            setIndexed(false);
+        }
     }
 
     /**
-     * Graph updated, nodeManager content is obsolete
+     * Graph updated: nodeManager content is obsolete
      */
     void eventUpdate() {
         clearNodeManager();
-    }
-
-    /**
-     * Pragma: graph must be indexed first
-     */
-    public void indexNodeManager() {
-        getIndex().indexNodeManager();
-    }
-
+    }   
+    
+    
+    
+    
+    // Clear Index node -> (predicate:position)
     public void clearNodeManager() {
         for (EdgeManagerIndexer id : getIndexList()) {
             id.getNodeManager().desactivate();
         }
     }
+    
+    // Clear Index of nodes in their named graph
+    void clearNodeIndex() {
+        getNodeGraphIndex().clear();
+    }
+
+
 
     /**
      * Pragma: to be called after reduce (after index()))
@@ -1254,7 +1271,7 @@ public class Graph extends GraphObject implements
             getEventManager().start(Event.IndexGraph);
             basicIndex();
             getEventManager().finish(Event.IndexGraph);
-            setIndexable(false);
+            setIndexed(true);
         }
     }
 
@@ -1299,11 +1316,16 @@ public class Graph extends GraphObject implements
             indexNodeManager();
         }
     }
-
-    void clearIndex() {
-        getNodeGraphIndex().clear();
+    
+   /**
+    * Index node -> (predicate:position)
+    * Pragma: graph must be indexed first
+    */
+    public void indexNodeManager() {
+        getIndex().indexNodeManager();
     }
 
+    // Index graph nodes in their named graph
     synchronized void indexNode() {
         if (getNodeGraphIndex().size() == 0) {
             getSubjectIndex().indexNode();
@@ -1457,30 +1479,29 @@ public class Graph extends GraphObject implements
     public Edge addEdge(Edge edge, boolean duplicate) {
         Edge ent = add(edge, duplicate);
         if (ent != null) {
-            //setUpdate(true);
             getEventManager().process(Event.Insert, ent);
             manager.onInsert(ent.getGraph(), edge);
         }
         return ent;
     }
 
-    public int add(List<Edge> lin) {
-        return add(lin, null, true);
-    }
-
-    public int add(List<Edge> lin, List<Edge> lout, boolean duplicate) {
-        int n = 0;
-        for (Edge ee : lin) {
-            Edge ent = addEdge(ee, duplicate);
-            if (ent != null) {
-                n++;
-                if (lout != null) {
-                    lout.add(ent);
-                }
-            }
-        }
-        return n;
-    }
+//    public int add(List<Edge> lin) {
+//        return add(lin, null, true);
+//    }
+//
+//    public int add(List<Edge> lin, List<Edge> lout, boolean duplicate) {
+//        int n = 0;
+//        for (Edge ee : lin) {
+//            Edge ent = addEdge(ee, duplicate);
+//            if (ent != null) {
+//                n++;
+//                if (lout != null) {
+//                    lout.add(ent);
+//                }
+//            }
+//        }
+//        return n;
+//    }
 
     public void addOpt(Node p, List<Edge> list) {
         if (list.isEmpty()) {
@@ -1504,7 +1525,6 @@ public class Graph extends GraphObject implements
             ei.add(p, list);
         }
         getEventManager().process(Event.Insert);
-        //setUpdate(true);
         size += list.size();
     }
 
@@ -1517,7 +1537,7 @@ public class Graph extends GraphObject implements
             return;
         }
         // fake index not sorted, hence add(edge) is done at end of index list
-        setIndexable(true);
+        setIndexed(false);
         HashMap<String, Node> t = new HashMap<>();
 
         for (Edge ee : list) {
@@ -1535,7 +1555,7 @@ public class Graph extends GraphObject implements
                 ei.index(pred);
             }
         }
-        setIndexable(false);
+        setIndexed(true);
     }
 
     /**
@@ -1553,14 +1573,14 @@ public class Graph extends GraphObject implements
         }
 
         // fake Index not sorted to add edges at the end of the Index
-        setIndexable(true);
+        setIndexed(false);
         for (Edge ent : list) {
             Edge e = add(ent);
             if (e != null) {
                 getEventManager().process(Event.Insert, e);
             }
         }
-        setIndexable(false);
+        setIndexed(true);
         // sort and reduce
         getSubjectIndex().index();
 
@@ -3145,7 +3165,7 @@ public class Graph extends GraphObject implements
     // clear all except graph names.
     // they must be cleared explicitely
     public void clear() {
-        clearIndex();
+        clearNodeIndex();
         clearNodes();
         for (EdgeManagerIndexer t : getIndexList()) {
             t.clear();
@@ -3153,9 +3173,7 @@ public class Graph extends GraphObject implements
         manager.onClear();
         clearDistance();
 
-        isIndex = true;
-//        isUpdate = false;
-//        isDelete = false;
+        setIndexable(true);
         getEventManager().initStatus();
 
         size = 0;
@@ -3215,7 +3233,6 @@ public class Graph extends GraphObject implements
         if (g1 == null) {
             return false;
         }
-        //setUpdate(true);
         getEventManager().process(Event.Insert);
         if (g2 == null) {
             g2 = addGraph(target);

@@ -89,7 +89,7 @@ public class Data {
     
     QuerySolverVisitorTransformer createVisitor() {
         try {
-            return QuerySolverVisitorTransformer.create(QueryProcess.create(getGraph()).getEval());
+            return QuerySolverVisitorTransformer.create(QueryProcess.create(getGraph()).getCreateEval());
         } catch (EngineException ex) {
             Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
             return null;

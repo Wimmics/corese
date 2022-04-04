@@ -68,7 +68,7 @@ public class EdgeManagerIndexer
             // do not create entailed edge in kg:entailment if it already exist in another graph
             isOptim = false;
     Comparator<Edge> comparatorIndex, comparator;
-    Graph graph;
+    private Graph graph;
     List<Node> sortedProperties;
     PredicateList sortedPredicates;
     // Property Node -> Edge List 
@@ -84,7 +84,7 @@ public class EdgeManagerIndexer
     }
 
     void init(Graph g, boolean bi, int n) {
-        graph = g;
+        setGraph(g);
         index = n;
         byIndex = bi;
         switch (index) {
@@ -314,7 +314,7 @@ public class EdgeManagerIndexer
     // generate internal representation for edge, 
     // possibly without predicate and named graph if kg:default
     Edge internal(Edge edge){
-        return graph.getEdgeFactory().internal(edge);
+        return getGraph().getEdgeFactory().internal(edge);
     }
     
     /**
@@ -713,7 +713,7 @@ public class EdgeManagerIndexer
     public void indexNode() {
         for (Node pred : getProperties()) {
             for (Edge ent : get(pred)) {
-                graph.define(ent);
+                getGraph().define(ent);
             }
         }
     }
@@ -753,7 +753,7 @@ public class EdgeManagerIndexer
         synchronized (pred) {
             EdgeManager list = get(pred);
             if (list != null && list.size() == 0) {
-                EdgeManager std = (EdgeManager) graph.getIndex().get(pred);
+                EdgeManager std = (EdgeManager) getGraph().getIndex().get(pred);
                 list.copy(std);
                 list.sort();
             }
@@ -909,7 +909,7 @@ public class EdgeManagerIndexer
      */
     @Override
     public Edge delete(Edge edge) {
-        Node pred = graph.getPropertyNode(edge.getEdgeNode());
+        Node pred = getGraph().getPropertyNode(edge.getEdgeNode());
         if (pred == null){
             return null;
         }
@@ -966,7 +966,7 @@ public class EdgeManagerIndexer
     
     void remove(EdgeManager list, int i) {
         if (getIndex() == 0) {
-            graph.setSize(graph.size() - 1);
+            getGraph().setSize(getGraph().size() - 1);
         }
         list.remove(i);
     }
@@ -994,14 +994,14 @@ public class EdgeManagerIndexer
     }
 
     boolean onInsert(Edge ent) {
-        return graph.onInsert(ent);
+        return getGraph().onInsert(ent);
     }
 
     void logDelete(Edge ent) {
         if (ent != null) {
             recordUpdate(true);
             if (getIndex() == 0) {
-                graph.logDelete(ent);
+                getGraph().logDelete(ent);
             }
         }
     }
@@ -1010,7 +1010,7 @@ public class EdgeManagerIndexer
         setUpdate(b);
         if (index == 0) {
             // tell all Index that update occur
-            graph.declareUpdate(b);
+            getGraph().declareUpdate(b);
         }
     }
     
@@ -1140,15 +1140,12 @@ public class EdgeManagerIndexer
         }
     }
 
-    /**
-     * TODO: setUpdate(true)
-     */
     private Edge copy(Node gNode, Node pred, Edge ent) {
-        return graph.copy(gNode, pred, ent);
+        return getGraph().copy(gNode, pred, ent);
     }
 
     private void clear(Node pred, Edge ent) {
-        for (EdgeManagerIndexer ei : graph.getIndexList()) {
+        for (EdgeManagerIndexer ei : getGraph().getIndexList()) {
             if (ei.getIndex() != IGRAPH) {
                 Edge rem = ei.delete(pred, ent);
                 if (isDebug && rem != null) {
@@ -1162,37 +1159,8 @@ public class EdgeManagerIndexer
     public void delete(Node pred) {
     }
     
-    public void complete() {
+    public void finishRuleEngine() {
     }
-    
-//    void test() {
-//        if (Property.booleanValue(Property.Value.GRAPH_INDEX_TRANSITIVE)) {
-//            indexTransitive();
-//        }
-//    }
-//    
-//    void indexTransitive() {
-//        transitiveManager = new TransitiveEdgeManager();
-//        Node pred = getGraph().getPropertyNode(RDFS.SUBCLASSOF);
-//        if (pred != null) {
-//            indexTransitive(pred);
-//        }        
-//    }
-//    
-//    void indexTransitive(Node pred) {
-//        Tool.trace("Memory before transitive index: %s", Tool.getMemoryUsageMegabytes());
-//        for (Edge edge : getGraph().getEdges(pred)) {
-//            transitiveManager.add(edge.getSubjectNode(), edge.getObjectNode());
-//        }
-//        transitiveManager.trim();
-//        Tool.trace("Memory after create transitive index: %s", Tool.getMemoryUsageMegabytes());
-//        Tool.trace("Transitive list size: %s %s", pred, get(pred).size());
-//        get(pred).clear();
-//        Tool.trace("Memory after clear transitive edge list: %s", Tool.getMemoryUsageMegabytes());
-//        Tool.trace("Transitive list size: %s %s", pred, get(pred).size());
-//        Tool.trace("Transitive index size: %s", transitiveManager.getMap().size());
-//    }
-//    
     
     @Override
     public void finishUpdate() {
@@ -1201,6 +1169,10 @@ public class EdgeManagerIndexer
 
     public void setNodeManager(NodeManager nodeManager) {
         this.nodeManager = nodeManager;
+    }
+
+    public void setGraph(Graph graph) {
+        this.graph = graph;
     }
       
 }

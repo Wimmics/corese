@@ -1180,32 +1180,17 @@ public class QueryProcess extends QuerySolver {
 
     // @todo: clean Binding/Context AccessLevel
     IDatatype call(String name, Function function, Context c, Binding b, IDatatype... param) throws EngineException {
-        Eval eval = getEval();
+        Eval eval = getCreateEval();
         eval.getEnvironment().getQuery().setContext(c);
         Binding bind = eval.getBinding();  
         bind.share(b, c);
         return new Funcall(name).callWE((Interpreter) eval.getEvaluator(),
                 bind, eval.getEnvironment(), eval.getProducer(), function, param);
-    } 
-    
-//    IDatatype call(String name, Function function, IDatatype[] param, Context c) throws EngineException {
-//        Eval eval = getEval();
-//        eval.getMemory().getQuery().setContext(c);
-//        Binding b = getBind(eval);
-//        if (c != null) { 
-//            if (c.getBind() != null) {
-//                // share global variables
-//                b.share(c.getBind());
-//            }
-//            b.setAccessLevel(c.getLevel());
-//        }
-//        return new Funcall(name).callWE((Interpreter) eval.getEvaluator(),
-//                b, eval.getMemory(), eval.getProducer(), function, param);
-//    }
+    }   
 
     // Use case: funcall @public functions
     @Override
-    public Eval getEval() throws EngineException {
+    public Eval getCreateEval() throws EngineException {
         if (eval == null) {
             eval = createEval("select where {}  ", null);
         }
@@ -1239,7 +1224,7 @@ public class QueryProcess extends QuerySolver {
      */
     public void prepare() {
         try {
-            new QuerySolverVisitor(getEval()).prepare();
+            new QuerySolverVisitor(getCreateEval()).prepare();
         } catch (EngineException ex) {
         }
     }
@@ -1247,7 +1232,7 @@ public class QueryProcess extends QuerySolver {
     // Default Visitor to execute @event functions
     public ProcessVisitor getDefaultVisitor() {
         try {
-            return getEval().getVisitor();
+            return getCreateEval().getVisitor();
         } catch (EngineException ex) {
             return new ProcessVisitorDefault();
         }

@@ -65,7 +65,7 @@ public class ServiceOnline {
     Eval createEval(TripleStore store) {
         QueryProcess exec = QueryProcess.create(store.getGraph());
         try {
-            return exec.getEval();
+            return exec.getCreateEval();
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
         }

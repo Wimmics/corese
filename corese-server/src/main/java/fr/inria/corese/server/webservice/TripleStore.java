@@ -49,7 +49,7 @@ public class TripleStore implements URLParam {
         this.name = name;
     }
 
-    public static org.slf4j.Logger logger = LoggerFactory.getLogger(QueryProcess.class);
+    public static org.slf4j.Logger logger = LoggerFactory.getLogger(TripleStore.class);
     static HashMap<String, Integer> metaMap ;
     GraphStore graph = GraphStore.create(false);
     //QueryProcess exec;// = QueryProcess.create(graph);

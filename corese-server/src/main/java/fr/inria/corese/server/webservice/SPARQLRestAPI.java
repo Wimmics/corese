@@ -107,7 +107,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     static Eval createEval() {
         QueryProcess exec = QueryProcess.create(getTripleStore().getGraph());
         try {
-            return exec.getEval();
+            return exec.getCreateEval();
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
         }

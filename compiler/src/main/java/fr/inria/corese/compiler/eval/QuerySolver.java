@@ -299,7 +299,7 @@ public class QuerySolver implements SPARQLEngine {
         }
 
         Eval kgram = makeEval();
-        setEval(kgram);
+        setCurrentEval(kgram);
 
         events(kgram);
         pragma(kgram, query);
@@ -396,8 +396,7 @@ public class QuerySolver implements SPARQLEngine {
     public Mappings modifier(Query q, Mappings map) throws SparqlException {
         if (getCurrentEval() == null) {
             logger.info("Undefined Eval");
-            //return;
-            return getEval().modifier(q, map);
+            return getCreateEval().modifier(q, map);
         }
         else {
             return getCurrentEval().modifier(q, map);
@@ -405,7 +404,7 @@ public class QuerySolver implements SPARQLEngine {
     }
     
     // defined in QueryProcess
-    public Eval getEval() throws EngineException{
+    public Eval getCreateEval() throws EngineException{
         return null;
     }
     
@@ -417,9 +416,9 @@ public class QuerySolver implements SPARQLEngine {
         current = e;
     }
 
-    public void setEval(Eval e) {
-        setCurrentEval(e);
-    }
+//    public void setEval(Eval e) {
+//        setCurrentEval(e);
+//    }
 
     void tune(Eval kgram, Query q, Mapping m) {
         ASTQuery ast =  q.getAST();
@@ -473,6 +472,7 @@ public class QuerySolver implements SPARQLEngine {
      */
     public Eval createEval(String str, Dataset ds) throws EngineException {
         Query q = compile(str, ds);
+        q.setInitMode(true);
         Eval eval = createEval(q);
         tune(eval);
         return eval;

@@ -108,7 +108,7 @@ public class Parameter {
     // call @init event function
     void start() {
         try {
-            QuerySolverVisitor vis = new QuerySolverVisitor(exec.getEval());
+            QuerySolverVisitor vis = new QuerySolverVisitor(exec.getCreateEval());
             vis.initParam();
         } catch (EngineException ex) {
             Logger.getLogger(Parameter.class.getName()).log(Level.SEVERE, null, ex);

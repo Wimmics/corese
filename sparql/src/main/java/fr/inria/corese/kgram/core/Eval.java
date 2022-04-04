@@ -70,7 +70,9 @@ public class Eval implements ExpType, Plugin {
     boolean hasEvent = false;
     boolean namedGraph = NAMED_GRAPH_DEFAULT;
     // Edge and Node producer
-    Producer producer, saveProducer;
+    private Producer producer;
+    // Edge and Node producer
+    Producer saveProducer;
     Provider provider;
     // Filter evaluator
     Evaluator evaluator;
@@ -161,7 +163,7 @@ public class Eval implements ExpType, Plugin {
     }
 
     public void set(Producer p) {
-        producer = p;
+        setProducer(p);
     }
 
     public void set(Matcher m) {
@@ -199,7 +201,7 @@ public class Eval implements ExpType, Plugin {
         }
         initMemory(q);
         share(m);
-        producer.start(q);
+        getProducer().start(q);
         getVisitor().init(q);
         share(getVisitor());
         getVisitor().before(q);
@@ -207,7 +209,7 @@ public class Eval implements ExpType, Plugin {
         getVisitor().orderby(map);
         getVisitor().after(map);
 
-        producer.finish(q);
+        getProducer().finish(q);
         if (hasEvent) {
             send(Event.END, q, map);
         }
@@ -412,7 +414,7 @@ public class Eval implements ExpType, Plugin {
         Mappings lMap = evaluator.eval(exp.getFilter(), memory, exp.getNodeList());
         if (lMap != null) {
             for (Mapping map : lMap) {
-                map = complete(map, producer);
+                map = complete(map, getProducer());
                 submit(map);
             }
         }
@@ -427,7 +429,7 @@ public class Eval implements ExpType, Plugin {
             Filter f = ee.getFilter();
             if (f != null && !f.isFunctional()) {
                 memory.push(map, -1);
-                Node node = eval(null, f, memory, producer);
+                Node node = eval(null, f, memory, getProducer());
                 memory.pop(map);
                 map.setNode(ee.getNode(), node);
             }
@@ -825,7 +827,7 @@ public class Eval implements ExpType, Plugin {
         if (memory == null) {
             // when subquery, memory is already assigned
             // assign stack index to EDGE and NODE
-            q.complete(producer);//service while1 / Query
+            q.complete(getProducer());//service while1 / Query
             memory = new Memory(match, evaluator);
             memory.setEval(this);
             getEvaluator().init(memory);
@@ -834,7 +836,7 @@ public class Eval implements ExpType, Plugin {
             if (hasEvent) {
                 memory.setEventManager(manager);
             }
-            producer.init(q);
+            getProducer().init(q);
             evaluator.start(memory);
             setDebug(q.isDebug());
             if (q.isAlgebra()) {
@@ -901,11 +903,11 @@ public class Eval implements ExpType, Plugin {
     }
 
     private void aggregate() throws SparqlException {
-        results.aggregate(evaluator, memory, producer);
+        results.aggregate(evaluator, memory, getProducer());
     }
 
     private void template() throws SparqlException {
-        results.template(evaluator, memory, producer);
+        results.template(evaluator, memory, getProducer());
     }
     
     /**
@@ -2410,7 +2412,7 @@ public class Eval implements ExpType, Plugin {
     private int cbind(Producer p, Node gNode, Exp exp, Stack stack, int n) throws SparqlException {
         int backtrack = n - 1;
         Memory env = memory;
-        Producer prod = producer;
+        Producer prod = getProducer();
 
         Node qNode = exp.get(0).getNode();
         if (!exp.status() || env.isBound(qNode)) {
@@ -2553,6 +2555,10 @@ public class Eval implements ExpType, Plugin {
 
     public void setListener(ResultListener listener) {
         this.listener = listener;
+    }
+
+    public void setProducer(Producer producer) {
+        this.producer = producer;
     }
 
 }

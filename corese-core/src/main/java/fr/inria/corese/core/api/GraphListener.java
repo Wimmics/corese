@@ -7,18 +7,18 @@ import fr.inria.corese.kgram.api.core.Edge;
 
 public interface GraphListener {
 	
-	void addSource(Graph g);
+    default void addSource(Graph g) {}
 	
-	boolean onInsert(Graph g, Edge ent);
+    default boolean onInsert(Graph g, Edge ent) { return true; }
 
-	void insert(Graph g, Edge ent);
+    default void insert(Graph g, Edge ent) {}
 
-	void delete(Graph g, Edge ent);
+    default void delete(Graph g, Edge ent) {}
         
-        void start(Graph g, Query q);
+    default void start(Graph g, Query q) {}
 	
-	void finish(Graph g, Query q, Mappings m);
+    default void finish(Graph g, Query q, Mappings m) {}
         
-        void load(String path);
+    default void load(String path) {}
 
 }

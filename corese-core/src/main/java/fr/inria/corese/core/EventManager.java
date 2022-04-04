@@ -22,11 +22,10 @@ import org.slf4j.Logger;
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class EventManager {
+public class EventManager implements EventHandler {
 
     private static Logger logger = LoggerFactory.getLogger(EventManager.class);
     public static boolean DEFAULT_VERBOSE = false;
-    public static EventHandler EVENT_HANDLER;
 
     private Graph graph;
     private boolean verbose    = DEFAULT_VERBOSE;
@@ -37,10 +36,12 @@ public class EventManager {
     
     
     EventLogger log;
-    private EventHandler handler = EVENT_HANDLER;
+    // User defined Event Handler
+    private EventHandler handler;
 
     EventManager(Graph g) {
         graph = g;
+        setEventHandler(this);
     }
     
     public void setMethod(boolean b){
@@ -114,7 +115,7 @@ public class EventManager {
     public void process(Event e, Edge o1) {
         switch (e) {
             case Insert:
-                insert(o1);
+                getEventHandler().insert(o1);
                 setUpdate(true);
                 break;
         }
@@ -123,28 +124,23 @@ public class EventManager {
     public void process(Event e, Edge target, Edge query) {
         switch(e) {           
             case Delete: 
-                delete(query, target);
+                getEventHandler().delete(query, target);
                 setDelete(true); break;            
         }
     }
     
-    void delete(Edge e) {
-        if (getEventHandler() !=null) {
-            getEventHandler().delete(e);
-        }
+    /*****************
+     * EventHandler
+     ****************/
+    @Override
+    public void delete(Edge q, Edge t) {        
     }
     
-    void delete(Edge q, Edge t) {
-        if (getEventHandler() !=null) {
-            getEventHandler().delete(q, t);
-        }
-    }
+    @Override
+    public void insert(Edge e) {
+    }  
     
-    void insert(Edge e) {
-        if (getEventHandler() !=null) {
-            getEventHandler().insert(e);
-        }
-    }    
+    
      
     public void start(Event e, Object o) {
         trace(Start, e, o);
@@ -429,10 +425,5 @@ public class EventManager {
     public void setEventHandler(EventHandler handler) {
         this.handler = handler;
     }
-    
-    public static void defineEventHandler(EventHandler h) {
-        EVENT_HANDLER = h;
-    }
-    
     
 }

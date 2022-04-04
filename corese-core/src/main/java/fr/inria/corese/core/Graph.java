@@ -804,10 +804,6 @@ public class Graph extends GraphObject implements
         }
     }
 
-    public List<GraphListener> getListeners() {
-        return getListenerList();
-    }
-
     public void setTagger(Tagger t) {
         tag = t;
         if (t != null) {
@@ -1524,7 +1520,10 @@ public class Graph extends GraphObject implements
         for (EdgeManagerIndexer ei : getIndexList()) {
             ei.add(p, list);
         }
-        getEventManager().process(Event.Insert);
+        //getEventManager().process(Event.Insert);
+        for (Edge e : list) {
+            getEventManager().process(Event.Insert, e);
+        }
         size += list.size();
     }
 

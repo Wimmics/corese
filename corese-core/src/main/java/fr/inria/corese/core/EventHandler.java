@@ -6,10 +6,7 @@ import fr.inria.corese.kgram.api.core.Edge;
  *
  */
 public interface EventHandler {
-    
-    default void delete(Edge edge) {
-    }
-    
+      
     default void delete(Edge query, Edge target) {
     }
     

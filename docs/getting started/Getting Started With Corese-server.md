@@ -24,6 +24,10 @@ To load data with command line use the `-l` option.
 java -jar corese-server.jar -l "[…]/beatles.ttl"
 ```
 
+> It's also possible to load data from several files or URL.
+>
+> E.g: `java -jar corese-server.jav -l "./file_1.ttl" -l "file_2.ttl" -l "http://file_3.ttl"`.
+
 ### 1.2. Profile file
 
 A profile is a Turtle file that allows users to configure the Corese-server.

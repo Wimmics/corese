@@ -21,7 +21,7 @@ pip install --user SPARQLWrapper pandas
 
 ### 2.2. Execute a update query
 
-```python=
+```python
 from SPARQLWrapper import JSON, POST, POSTDIRECTLY, SPARQLWrapper
 
 
@@ -64,7 +64,7 @@ Done
 
 ### 2.3. Execute a select query
 
-```python=
+```python
 import json
 
 import pandas as pd

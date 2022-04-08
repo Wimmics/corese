@@ -461,8 +461,8 @@ public class CombinationTestMusic {
                 + "SELECT ?name "
                 + "WHERE { "
                 + "SERVICE <https://query.wikidata.org/bigdata/namespace/wdq/sparql> { "
-                + "wd:Q1299 wdt:P527 ?member. "
-                + "?member wdt:P1559 ?name. "
+                + "wd:q1299 wdt:p527 ?member. "
+                + "?member wdt:p1559 ?name. "
                 + "} "
                 + "} ";
 

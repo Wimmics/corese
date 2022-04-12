@@ -1,0 +1,34 @@
+
+
+<!--
+Additional rule to check whether there is bnode as property.
+In this case, ontology is not OWL RL
+-->
+
+
+
+<rule rdf:about='&owl;owlrlcheck1'>
+<type rdf:resource='&rule;constraint'/>
+<body>  
+CONSTRUCT {
+    [] a sp:ConstraintViolation ;
+    sp:arg1 ?s ;
+    sp:arg2 ?o ;
+    sp:violationPath ?p ;
+    sp:violationRoot ?r ;
+    sp:violationRoot ?v ;
+    rdfs:label "Blank Node property not in OWL RL Profile" .
+}
+WHERE {
+    ?s ?p ?o
+    filter isBlank(?p)
+    optional {
+        ?restr owl:onProperty ?p .
+        ?p ?r ?v
+        filter (?p != ?v)
+        # use case: owl:onProperty [ owl:inverseOf ex:hasFriend ]
+        filter ((strstarts(?r, owl:) &amp;&amp; ?r != owl:sameAs)  || strstarts(?r, rdfs:))
+    } 
+}
+</body>
+</rule>

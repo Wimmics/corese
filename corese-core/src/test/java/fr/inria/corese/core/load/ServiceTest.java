@@ -17,10 +17,10 @@ public class ServiceTest {
         service = new Service("https://dbpedia.org/sparql");
     }
 
-    @Test
-    public void select() throws LoadException {
-        Mappings mappings = service.select("select distinct ?Concept where {[] a ?Concept} LIMIT 100");
-        logger.info("returned mappings = {}", mappings);
-        assertEquals(100, mappings.size());
-    }
+//    @Test
+//    public void select() throws LoadException {
+//        Mappings mappings = service.select("select distinct ?Concept where {[] a ?Concept} LIMIT 100");
+//        logger.info("returned mappings = {}", mappings);
+//        assertEquals(100, mappings.size());
+//    }
 }

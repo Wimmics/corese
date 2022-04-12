@@ -1,0 +1,161 @@
+#
+# Functions for st:logger
+#
+
+
+# generate a list of json description of IP address
+function us:jsonlist() {
+    let (amap = ?staticEventManagerMap,
+         #host = xt:get(amap, st:host),
+         host = us:map(),
+         iplist   = us:iplist(host),
+         jsonlist = maplist(us:describe, iplist)) {
+        return(jsonlist)
+    }
+}
+
+function us:jsonlist2() {
+    letdyn (iplist   = us:hostlist(),
+         ccount = 0, card = xt:size(iplist)) {
+        let (jsonlist = maplist(us:describe, iplist)) {
+            return(jsonlist)
+        }
+    }
+}
+
+
+function us:describe(ip) {
+    xt:print(set(ccount = ccount + 1), "/", card);
+    us:describe2(ip)
+}
+
+
+function us:hostlist() {
+    let (select (aggregate(?key) as ?list) 
+         where { 
+          service <http://corese.inria.fr/sparql> {
+          #service <http://localhost:8080/sparql> {
+            select * where {
+                bind (us:eventMap() as ?map)
+                bind (xt:get(?map, st:host) as ?host)
+                values (?key ?value) { unnest(?host) }
+            } 
+            limit 999
+         }}) {
+    ?list
+    }
+}
+
+@public 
+function us:eventMap() {
+    return (?staticEventManagerMap)
+}
+
+# list of location of IP address
+function us:location(jsonlist) {
+    maplist(us:locate, jsonlist)
+}
+
+# map(ip->nb)
+# generate a list of IP address
+function us:iplist(amap) {
+    maplist(lambda((key, value)) { key }, amap)
+}
+
+
+
+# extract location from json description of IP address
+function us:locate(json) {
+    let (location  = xt:get(json, "country"),
+         lat = xt:get(json, "lat"),
+         lon = xt:get(json, "lon")
+         ) {
+         xt:list(location, xsd:decimal(lat), xsd:decimal(lon))
+    }
+}
+
+# ipinfo.io
+# extract location from json description of IP address
+function us:compile1(json) {
+    let (pair = xt:get(json, "loc"),
+         lat  = strbefore(pair, ","),
+         lon  = strafter(pair,  ",")) {
+         xt:set(json, "lon", lon);
+         xt:set(json, "lat", lat)
+    } ;
+    return (json)
+}
+
+# geo.ipify.org
+# extract location from json description of IP address
+function us:compile2(json) {
+    let (pair = xt:get(json, "location"),
+         lat  = xt:get(pair, "lat"),
+         lon  = xt:get(pair, "lng"),
+         country = xt:get(pair, "country")
+         ) {
+        xt:set(json, "lon", lon);
+        xt:set(json, "lat", lat);   
+        xt:set(json, "country", country)  
+    } ;
+    return (json)
+}
+
+
+
+# call a service to get a json description of IP address
+function us:describe1(ip) {
+ let (res  = xt:read(concat("https://ipinfo.io/", ip)),
+      json = xt:json(res)) {
+      xt:print(json, "\n") ;
+      return(us:compile1(json))
+    }
+}
+
+# call a service to get a json description of IP address
+function us:describe2(ip) {
+ let (res  = xt:read(concat("https://geo.ipify.org/api/v1?apiKey=at_XoGzTcrWBTSvdYhyQygXxP2NgBCNJ&ipAddress=", ip)),
+      json = xt:json(res)) {
+      xt:print(json, "\n") ;
+      return (us:compile2(json))
+    }
+}
+
+# 'https://api.ipgeolocation.io/ipgeo?apiKey=03b3bee276c244b596e42f6be03290e4&ip='
+
+
+#
+# jsonlist: list of json description of IP address
+# generate a map(slotvalue->nb)
+function us:nbmap(jsonlist, key) {
+    let (amap = xt:map()) {
+        for (json in jsonlist) {
+            let (cc = xt:get(json, key)) {
+                xt:set(amap, cc, coalesce(1 + xt:get(amap, cc), 1))
+            }
+        } ;
+        #xt:set(amap, "total", xt:size(jsonlist)) ;
+        return (amap)
+    }
+}
+
+
+
+
+function us:map() {
+    let (amap = xt:map()) {
+    map(lambda(ip, amap) { xt:set(amap, ip, 1) }, 
+    xt:list(
+    # IP address list
+    ), xt:list(amap) );
+        return (amap)
+    }
+}
+
+function us:json(json, key) {
+    let (astr  = strafter(json, concat("\"", key, "\": \"")),
+         pair = strbefore(astr, "\"")) {
+         return(pair)
+    }
+}
+

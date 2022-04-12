@@ -2,7 +2,7 @@
 <!--
 SPARQL Template Transformation
 Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Sat Oct 02 15:51:31 CEST 2021
+Fri Oct 08 15:55:02 CEST 2021
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -23,6 +23,9 @@ where {}
   }
 
 
+function us:mytrace(suc) {
+    return (bound(trace_sttl) && ! suc)
+}
 ]]>
 </body>
 </rule>
@@ -63,8 +66,9 @@ where {
 
   { ?in owl:disjointUnionOf ?y }
   union { ?in a owl:ReflexiveProperty }
-  # unionOf only as left part of subClassOf hence in a bnode
-  union { ?in owl:unionOf|owl:intersectionOf ?y filter isURI(?in) }
+  # unionOf|intersectionOf only as argument of other expression, hence not in URI but in bnode
+  # [owl:unionOf()] rdfs:subClassOf ...
+  union { ?in owl:unionOf|owl:intersectionOf ?y  filter isURI(?in) }
   
   filter(st:alreadyVisited(?in, "fail", false))
  
@@ -141,10 +145,10 @@ where {
     not exists { ?x ?p ?in }
   )
   
-  bind (
-    st:call-template-with(st:subexp,   st:subClassExpression, ?in) &&
-    st:call-template-with(st:superexp, st:superClassExpression, ?y)  
-  as ?suc)
+  bind (st:call-template-with(st:subexp,   st:subClassExpression, ?in)  as ?b1)
+  bind (st:call-template-with(st:superexp, st:superClassExpression, ?y) as ?b2) 
+  bind (?b1 && ?b2 as ?suc)
+  filter if (us:mytrace(?suc), xt:print("error axiom:", ?in, rdfs:subClassOf, ?y, ?b1, ?b2), true)
   
   filter(st:alreadyVisited(?in, "subClass", ?suc))
 

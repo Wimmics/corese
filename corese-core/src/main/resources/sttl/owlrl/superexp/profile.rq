@@ -12,3 +12,6 @@ where {}
   }
 
 
+function us:mytrace(suc) {
+    return (bound(trace_sttl) && ! suc)
+}

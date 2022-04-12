@@ -10,4 +10,6 @@ where {
     as ?suc
   )
   
+  filter if (us:mytrace(?suc), xt:print("error super:", ?in, owl:intersectionOf, ?e), true)
+  
 }

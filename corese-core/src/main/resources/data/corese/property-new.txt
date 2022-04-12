@@ -1,0 +1,9 @@
+# define mode=map as mode=link&transform=st:map
+SERVICE_MODE    = map=mode=link&transform=st:map
+
+
+
+
+Mappings  isListGroup
+
+GUI sort results

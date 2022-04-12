@@ -1,0 +1,15 @@
+go.owl
+
+graph size: 1.461.623
+
+load default false 279.9998474121094
+
+
+
+load default true 
+before node index 162.6491241455078
+after  node index 268.9462585449219
+
+rdf star
+407.32186126708984
+with node index 513.2271881103516

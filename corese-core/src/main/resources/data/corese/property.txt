@@ -12,7 +12,6 @@ VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./
 
 IMPORT   = ./gui.txt
 
-TRACE_MEMORY = true
 
 BLANK_NODE              = _:b
 
@@ -94,10 +93,11 @@ EVENT               = false
 #
 # Test, debug
 #
-VERBOSE        = false
+VERBOSE        = true
 SOLVER_DEBUG   = false
 TRANSFORMER_DEBUG   = false
 
+TRACE_MEMORY = true
 LOG_NODE_INDEX = true
 LOG_RULE_CLEAN = true
 

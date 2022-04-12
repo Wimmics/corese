@@ -9,7 +9,7 @@ where {
     ?in ?p ?y
     
     bind (
-      ?p in (
+      ?p in (rdfs:subClassOf,
         owl:intersectionOf, owl:complementOf, 
 	owl:onProperty, owl:hasValue, owl:allValuesFrom, 
 	owl:maxCardinality, owl:maxQualifiedCardinality, owl:onClass,
@@ -18,6 +18,8 @@ where {
       as ?suc)
       	
       filter (st:visit(st:err("failSuper"), ?in, ?suc))
+      filter if (us:mytrace(?suc), xt:print("error super last:", ?in, ?p, ?y), true)
+
       filter (! ?suc)
 }
 limit 1

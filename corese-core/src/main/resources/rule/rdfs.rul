@@ -35,7 +35,19 @@
     xmlns:sp   = "&spin;"
     xmlns      = "&rule;"  >
 
-
+<rule  rdf:about='&rdfs;member'>
+<body>  <!--  prp-dom -->
+CONSTRUCT {
+    ?x rdfs:member ?y
+}
+WHERE {    
+    ?x ?p ?y 
+    filter strstarts(?p, rdf:_)
+}
+</body>
+</rule>
+    
+    
 <rule  rdf:about='&rdfs;domain'>
 <body>  <!--  prp-dom -->
 CONSTRUCT {

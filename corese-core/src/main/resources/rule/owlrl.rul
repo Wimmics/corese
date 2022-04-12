@@ -1223,9 +1223,9 @@ CONSTRUCT {
 }
 WHERE {
     ?s owl:sameAs ?s2 .
-    filter (?s != ?s2)
     ?s ?p ?o 
-     # do not modify list structure and ontology statement
+    filter (?s != ?s2)
+    # do not modify list structure and ontology statement
     filter (?p not in (rdf:first))
     filter (! strstarts(?p, owl:))
     filter (! strstarts(?p, rdfs:))
@@ -1244,7 +1244,7 @@ WHERE {
     ?o owl:sameAs ?o2 .
     ?s ?p ?o .
     filter (?o != ?o2)
-     # do not modify list structure and ontology statement
+    # do not modify list structure and ontology statement
     filter (?p not in (rdf:first))
     filter (! strstarts(?p, owl:))
     filter (! strstarts(?p, rdfs:))

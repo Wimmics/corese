@@ -1,0 +1,7 @@
+var pos%1$s = new google.maps.LatLng(%2$s, %3$s);
+		    
+var marker%1$s = new google.maps.Marker({ position: pos%1$s, map: map, icon: '%4$s' });
+    
+google.maps.event.addListener(marker%1$s, 'click', 
+    function () {window.location.href = '%5$s';}
+);

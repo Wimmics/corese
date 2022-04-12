@@ -1,0 +1,58 @@
+#
+# Corese configuration 
+# Property file interpreted by corese.core.util.Property
+# java -jar corese-gui.jar    -init property.txt
+# java -jar corese-server.jar -init property.txt
+# Property.load("property.txt");
+# Property.set(LOAD_IN_DEFAULT_GRAPH, true);
+# Property.init(graph);
+#
+
+VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./
+
+IMPORT   = ./gui.txt
+
+
+
+BLANK_NODE              = _:b
+
+# display ex:test vs <http://example.org/test>
+DISPLAY_URI_AS_PREFIX   = true
+
+# Graph node is instance of IDatatype (one object) or Node(IDatatype) (two objects)
+GRAPH_NODE_AS_DATATYPE  = false
+
+# graph ?g { } iterate external named graph
+EXTERNAL_NAMED_GRAPH    = true
+
+# constraint rule entailment in kg:constraint named graph
+CONSTRAINT_NAMED_GRAPH  = true
+
+# constraint rule entailment in external kg:constraint named graph
+CONSTRAINT_GRAPH        = true
+
+# load in kg:default or in file path as named graph
+LOAD_IN_DEFAULT_GRAPH   = false
+
+# skolemize bnode as URI
+SKOLEMIZE               = false
+
+# run corese with rdf* prototype extension
+RDF_STAR                = true
+
+# clean OWL graph before OWL RL using update queries
+OWL_CLEAN               = true
+
+# additional queries for cleaning OWL
+#OWL_CLEAN_QUERY         = /user/corby/home/AAData/query/clean/test.rq
+
+# user defined OWL RL rule base
+#OWL_RL                  = /user/corby/home/AAData/rule/owlrl.rul
+
+# when true: distinct decimal and integer, distinct string and literal, ...
+# used for w3c test case compliance
+SPARQL_COMPLIANT        = false
+
+# enable update during query for micro services 
+REENTRANT_QUERY         = false
+

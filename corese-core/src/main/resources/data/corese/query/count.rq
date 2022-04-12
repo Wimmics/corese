@@ -1,0 +1,5 @@
+select ?p (count(*) as ?c) where {
+  ?x ?p ?y
+}
+group by ?p
+order by desc(?c)

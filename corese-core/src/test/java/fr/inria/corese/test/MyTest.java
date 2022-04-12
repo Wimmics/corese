@@ -30,7 +30,7 @@ public class MyTest {
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
         IDatatype dt = (IDatatype) map.getValue("?res");
-        System.out.println(dt.getObject());
+        System.out.println(dt.getNodeObject());
         Date d;
         //assertEquals(10, dt.intValue());
     } 

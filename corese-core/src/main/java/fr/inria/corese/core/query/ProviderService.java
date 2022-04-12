@@ -348,7 +348,8 @@ public class ProviderService implements URLParam {
     void log(URLServer serv, Mappings map) {
         System.out.println("service: " + serv + "; nb results: " + map.size());
     }
-
+    
+   
     /**
      * Send query to sparql endpoint using HTTP request Generate variable
      * binding from map or env if any Consider subset of Mappings map within
@@ -366,17 +367,22 @@ public class ProviderService implements URLParam {
             // oririnal ast
             ASTQuery aa = getAST();
             // ast possibly modified with variable bindings from map/env 
-            ASTQuery ast = getCompiler().compile(serv, q, map, start, limit);
+            CompileServiceResult ares = new CompileServiceResult();
+            ASTQuery ast = getCompiler().compile(serv, q, map, ares, start, limit);
 
             if (aa == ast) {
+                
                 // no binding
-                if (start > 0) {
-                    // this is not the first slice and there is no more bindings: skip it
+                if (start > 0 || ares.isBnode()) {
+                    // no relevant binding: skip slice
+                    if (ares.isBnode()) {
+                        logger.info("Skip bindings with blank nodes");
+                    }
                     if (debug) {
                         logger.info("Skip slice for absence of relevant binding");
                     }
                     return Mappings.create(q);
-                }
+                }               
             }
 
             if (debug) {
@@ -386,8 +392,8 @@ public class ProviderService implements URLParam {
             targetAST = ast;
             traceAST(serv, ast);
             Mappings res = send(serv, ast, map, start, limit, timeout, count);
-            reportAST(ast, res, count);
-            if (debug) {
+            if (res !=null) reportAST(ast, res, count);
+            if (debug && res!=null) {
                 traceResult(serv, res);
             }
             if (res != null && res.isError()) {

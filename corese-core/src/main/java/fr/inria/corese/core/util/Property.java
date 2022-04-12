@@ -2,6 +2,7 @@ package fr.inria.corese.core.util;
 
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
@@ -103,6 +104,9 @@ public class Property {
         IMPORT,
         
         TRACE_MEMORY,
+        TRACE_GENERIC,
+        
+        TEST_FEDERATE,
         
         // boolan value
         DISPLAY_URI_AS_PREFIX,
@@ -519,6 +523,11 @@ public class Property {
                                         
             case INTERPRETER_TEST:
                 Interpreter.testNewEval = b;
+                break;
+                
+            case TEST_FEDERATE:
+                FederateVisitor.SEVERAL_URI=b;
+                FederateVisitor.PROCESS_LIST=b;
                 break;
 
             case SOLVER_SORT_CARDINALITY:

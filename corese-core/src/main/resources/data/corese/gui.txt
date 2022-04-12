@@ -36,7 +36,7 @@ GUI_CONSTRUCT_FORMAT    =  trig
 GUI_DEFAULT_QUERY    = $gui/select.rq
 
 # User defined query list displayed in User menu
-GUI_QUERY_LIST       = Map=$gui/mapcorese.rq;Chart=$gui/chart.rq;Mappings=$gui/valuesmappings.rq;Insert RDF*=$gui/insertdatardfstar.rq;Select RDF*=$gui/selectrdfstar.rq;Federate=$demo/federate2.rq
+GUI_QUERY_LIST       = Simple Count=$gui/simplecount.rq;Map=$gui/mapcorese.rq;Chart=$gui/chart.rq;Mappings=$gui/valuesmappings.rq;Insert RDF*=$gui/insertdatardfstar.rq;Select RDF*=$gui/selectrdfstar.rq;Federate=$demo/federate2.rq
 
 GUI_RULE_LIST   =   My Rule Base=$home/rule/rdfs.rul
 

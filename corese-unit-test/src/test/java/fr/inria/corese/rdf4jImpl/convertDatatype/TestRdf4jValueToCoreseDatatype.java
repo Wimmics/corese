@@ -138,7 +138,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_integer.isInteger());
-        assertEquals(value, corese_integer.getIntegerValue(), 0);
+        assertEquals(value, corese_integer.intValue(), 0);
         assertEquals(XSD.INTEGER.stringValue(), corese_integer.getDatatype().stringValue());
         assertEquals(XSD.INTEGER, rdf4j_integer.getDatatype());
     }
@@ -157,7 +157,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_year.isDateElement());
-        assertEquals(value, corese_year.getIntegerValue());
+        assertEquals(value, corese_year.intValue());
         assertEquals(XSD.GYEAR.stringValue(), corese_year.getDatatype().stringValue());
         assertEquals(XSD.GYEAR, rdf4j_year.getDatatype());
     }
@@ -176,7 +176,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_month.isDateElement());
-        assertEquals(value, corese_month.getIntegerValue());
+        assertEquals(value, corese_month.intValue());
         assertEquals(XSD.GMONTH.stringValue(), corese_month.getDatatype().stringValue());
         assertEquals(XSD.GMONTH, rdf4j_month.getDatatype());
     }
@@ -195,7 +195,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_day.isDateElement());
-        assertEquals(value, corese_day.getIntegerValue());
+        assertEquals(value, corese_day.intValue());
         assertEquals(XSD.GDAY.stringValue(), corese_day.getDatatype().stringValue());
         assertEquals(XSD.GDAY, rdf4j_day.getDatatype());
     }
@@ -214,7 +214,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_byte.isInteger());
-        assertEquals(value, corese_byte.getIntegerValue());
+        assertEquals(value, corese_byte.intValue());
         assertEquals(XSD.BYTE.stringValue(), corese_byte.getDatatype().stringValue());
         assertEquals(XSD.BYTE, rdf4j_byte.getDatatype());
     }
@@ -233,7 +233,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_short.isInteger());
-        assertEquals(value, corese_short.getIntegerValue());
+        assertEquals(value, corese_short.intValue());
         assertEquals(XSD.SHORT.stringValue(), corese_short.getDatatype().stringValue());
         assertEquals(XSD.SHORT, rdf4j_short.getDatatype());
     }
@@ -252,7 +252,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_int.isInteger());
-        assertEquals(value, corese_int.getIntegerValue());
+        assertEquals(value, corese_int.intValue());
         assertEquals(XSD.INT.stringValue(), corese_int.getDatatype().stringValue());
         assertEquals(XSD.INT, rdf4j_int.getDatatype());
     }
@@ -271,7 +271,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_positive_integer.isInteger());
-        assertEquals(value, corese_positive_integer.getIntegerValue());
+        assertEquals(value, corese_positive_integer.intValue());
         assertEquals(XSD.POSITIVE_INTEGER.stringValue(), corese_positive_integer.getDatatype().stringValue());
         assertEquals(XSD.POSITIVE_INTEGER, rdf4j_positive_integer.getDatatype());
     }
@@ -290,7 +290,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_negative_integer.isInteger());
-        assertEquals(value, corese_negative_integer.getIntegerValue());
+        assertEquals(value, corese_negative_integer.intValue());
         assertEquals(XSD.NEGATIVE_INTEGER.stringValue(), corese_negative_integer.getDatatype().stringValue());
         assertEquals(XSD.NEGATIVE_INTEGER, rdf4j_negative_integer.getDatatype());
     }
@@ -309,7 +309,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_non_negative_integer.isInteger());
-        assertEquals(value, corese_non_negative_integer.getIntegerValue());
+        assertEquals(value, corese_non_negative_integer.intValue());
         assertEquals(XSD.NON_NEGATIVE_INTEGER.stringValue(), corese_non_negative_integer.getDatatype().stringValue());
         assertEquals(XSD.NON_NEGATIVE_INTEGER, rdf4j_non_negative_integer.getDatatype());
     }
@@ -328,7 +328,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_non_positive_integer.isInteger());
-        assertEquals(value, corese_non_positive_integer.getIntegerValue());
+        assertEquals(value, corese_non_positive_integer.intValue());
         assertEquals(XSD.NON_POSITIVE_INTEGER.stringValue(), corese_non_positive_integer.getDatatype().stringValue());
         assertEquals(XSD.NON_POSITIVE_INTEGER, rdf4j_non_positive_integer.getDatatype());
     }
@@ -347,7 +347,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_unsigned_byte.isInteger());
-        assertEquals(value, corese_unsigned_byte.getIntegerValue());
+        assertEquals(value, corese_unsigned_byte.intValue());
         assertEquals(XSD.UNSIGNED_BYTE.stringValue(), corese_unsigned_byte.getDatatype().stringValue());
         assertEquals(XSD.UNSIGNED_BYTE, rdf4j_unsigned_byte.getDatatype());
     }
@@ -366,7 +366,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_unsigned_int.isInteger());
-        assertEquals(value, corese_unsigned_int.getIntegerValue());
+        assertEquals(value, corese_unsigned_int.intValue());
         assertEquals(XSD.UNSIGNED_INT.stringValue(), corese_unsigned_int.getDatatype().stringValue());
         assertEquals(XSD.UNSIGNED_INT, rdf4j_unsigned_int.getDatatype());
     }
@@ -385,7 +385,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_unsigned_long.isInteger());
-        assertEquals(value, corese_unsigned_long.getIntegerValue());
+        assertEquals(value, corese_unsigned_long.intValue());
         assertEquals(XSD.UNSIGNED_LONG.stringValue(), corese_unsigned_long.getDatatype().stringValue());
         assertEquals(XSD.UNSIGNED_LONG, rdf4j_unsigned_long.getDatatype());
     }
@@ -404,7 +404,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_unsigned_short.isInteger());
-        assertEquals(value, corese_unsigned_short.getIntegerValue());
+        assertEquals(value, corese_unsigned_short.intValue());
         assertEquals(XSD.UNSIGNED_SHORT.stringValue(), corese_unsigned_short.getDatatype().stringValue());
         assertEquals(XSD.UNSIGNED_SHORT, rdf4j_unsigned_short.getDatatype());
     }
@@ -440,7 +440,7 @@ public class TestRdf4jValueToCoreseDatatype {
         CoreseURILiteral corese_any_uri = (CoreseURILiteral) corese_any_uri_value;
 
         // Checks
-        assertEquals(value, corese_any_uri.getStringValue());
+        assertEquals(value, corese_any_uri.stringValue());
         assertEquals(XSD.ANYURI.stringValue(), corese_any_uri.getDatatype().stringValue());
         assertEquals(XSD.ANYURI, rdf4j_any_uri.getDatatype());
     }
@@ -457,7 +457,7 @@ public class TestRdf4jValueToCoreseDatatype {
         CoreseXMLLiteral corese_xml_literal = (CoreseXMLLiteral) corese_xml_literal_value;
 
         // Checks
-        assertEquals(value, corese_xml_literal.getStringValue());
+        assertEquals(value, corese_xml_literal.stringValue());
         assertEquals(RDF.XMLLITERAL.stringValue(), corese_xml_literal.getDatatype().stringValue());
         assertEquals(RDF.XMLLITERAL, rdf4j_xml_literal.getDatatype());
     }
@@ -474,7 +474,7 @@ public class TestRdf4jValueToCoreseDatatype {
         CoreseDate corese_date = (CoreseDate) corese_date_value;
 
         // Checks
-        assertEquals(value, corese_date.getStringValue());
+        assertEquals(value, corese_date.stringValue());
         assertEquals(XSD.DATE.stringValue(), corese_date.getDatatype().stringValue());
         assertEquals(XSD.DATE, rdf4j_date.getDatatype());
     }
@@ -491,7 +491,7 @@ public class TestRdf4jValueToCoreseDatatype {
         CoreseDate corese_date_time = (CoreseDate) corese_date_time_value;
 
         // Checks
-        assertEquals(value, corese_date_time.getStringValue());
+        assertEquals(value, corese_date_time.stringValue());
         assertEquals(XSD.DATETIME.stringValue(), corese_date_time.getDatatype().stringValue());
         assertEquals(XSD.DATETIME, rdf4j_date_time.getDatatype());
     }
@@ -524,7 +524,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(corese_literal_lang.isLiteral(), true);
-        assertEquals(value, corese_literal_lang.getStringValue());
+        assertEquals(value, corese_literal_lang.stringValue());
         assertEquals(RDF.LANGSTRING.stringValue(), corese_literal_lang.getDatatype().stringValue());
         assertEquals(RDF.LANGSTRING, rdf4j_literal_lang.getDatatype());
         assertEquals("fr", corese_literal_lang.getLang());
@@ -543,7 +543,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(corese_string.isLiteral(), true);
-        assertEquals(value, corese_string.getStringValue());
+        assertEquals(value, corese_string.stringValue());
         assertEquals(XSD.STRING.stringValue(), corese_string.getDatatype().stringValue());
         assertEquals(XSD.STRING, rdf4j_string.getDatatype());
     }
@@ -563,7 +563,6 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(corese_string.isLiteral(), true);
-        // assertEquals(value, corese_string.getIntegerValue());
         assertEquals(undef_datatype, corese_string.getDatatype().stringValue());
         assertEquals(undef_datatype, rdf4j_string.getDatatype().stringValue());
     }

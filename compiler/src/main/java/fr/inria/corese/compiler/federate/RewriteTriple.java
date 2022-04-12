@@ -14,6 +14,7 @@ import fr.inria.corese.sparql.triple.parser.Triple;
 import java.util.List;
 
 /**
+ * Rewrite one triple into one service with several URI 
  * from, from named and named graph have two rewrite solutions
  * 1- service s { select from g where exp }
  * 2- service s { graph g exp }
@@ -43,9 +44,8 @@ public class RewriteTriple {
      * service <Si> { graph g { t } }  
      * Add filters of body bound by t in the BGP, except exists filters.
      */
-    Service rewrite(Atom name, Triple t, Exp body, List<Exp> list) {
-        BasicGraphPattern bgp = BasicGraphPattern.create();
-        bgp.add(t);
+    Service rewriteTripleWithSeveralURI(Atom name, Triple t, Exp body, List<Exp> list) {
+        BasicGraphPattern bgp = BasicGraphPattern.create(t);
         filter(body, t, bgp, list);
         return rewrite(name, bgp, vis.getServiceList(t));
     }
@@ -55,9 +55,9 @@ public class RewriteTriple {
      * 1- One triple and several service URI
      * 2- A BGP and one service URI.
      */
-    Service rewrite(Atom name, BasicGraphPattern bgp, List<Atom> serviceList) {
+    Service rewrite(Atom namedGraph, BasicGraphPattern bgp, List<Atom> serviceList) {
         Exp exp;
-        if (name == null) {
+        if (namedGraph == null) {
             if (getAST().getDataset().hasFrom()) {
                 // select from gi where bgp
                 exp = from(bgp);
@@ -66,7 +66,7 @@ public class RewriteTriple {
             }
         } else {
             // graph name { bgp }
-            exp = named(name, bgp);
+            exp = named(namedGraph, bgp);
         }        
         Service s = service(serviceList, bgp(exp));
         return s;

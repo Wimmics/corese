@@ -259,7 +259,13 @@ public class Selector {
             body = bgp;
         }
         else {
-            Service service = Service.create(serv, bgp);                
+            Exp service;
+            if (ast.hasMetadata(Metadata.GRAPH)) {
+                service = Source.create(serv, bgp);
+            }
+            else {
+                service = Service.create(serv, bgp);
+            }                
             Values values   = Values.create(serv, list);        
             body = aa.bgp(values, service); 
         }

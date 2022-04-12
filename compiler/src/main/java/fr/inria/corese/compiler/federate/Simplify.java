@@ -17,7 +17,8 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *
+ * Merge several service with same URI into one service
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */

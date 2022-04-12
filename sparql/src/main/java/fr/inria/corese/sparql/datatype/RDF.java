@@ -8,6 +8,9 @@ public interface RDF {
 	 static final String XSD   =  "http://www.w3.org/2001/XMLSchema#";
 	 static final String OWL   =  "http://www.w3.org/2002/07/owl#";
 	 static final String RDF_HTML   =  RDF + "HTML";
+         
+         static final String FIRST = RDF+"first";
+         static final String REST  = RDF+"rest";    
 	 
 	 static final String XSDPrefix  = "xsd";
 	 static final String RDFPrefix =  "rdf";

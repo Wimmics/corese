@@ -1587,7 +1587,7 @@ public class ASTQuery
      * triple
      */   
     public RDFList createRDFList(List<Atom> list, int arobase) {
-        RDFList rlist = new RDFList(newBlankNode(), list);
+        RDFList rlist = new RDFList(newListPointer(), list);
         if (arobase == L_DEFAULT) {
             arobase = listType;
         }
@@ -1603,9 +1603,16 @@ public class ASTQuery
         }
         return rlist;
     }
+    
+    Atom newListPointer() {
+        if (hasMetadata(Metadata.FEDERATE)) {
+            return new Variable("?_list_"+getVariableId());
+        }
+        return newBlankNode();
+    }
 
     RDFList complete(RDFList rlist) {
-        Expression rest = null,
+        Atom rest = null,
                 blank = null;
         boolean isFirst = true;
         Exp triple;
@@ -1616,7 +1623,7 @@ public class ASTQuery
                 blank = rlist.head();
                 isFirst = false;
             } else {
-                blank = newBlankNode();
+                blank = newListPointer();
             }
 
             if (rest != null) {

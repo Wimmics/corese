@@ -86,7 +86,7 @@ public class NSManager extends ASTObject {
     public static final String SHAPE = SHACL;
     public static final String SHACL_JAVA = "function://fr.inria.corese.core.extension.SHACL.";
     public static final String SHACL_SHACL = RESOURCE+"data/shaclshacl.ttl";
-    
+
     public static final String COSNS = RDFS.COSNS;
     public static final String COS = RDFS.COS;
     public static final String SWL = ExpType.SWL;

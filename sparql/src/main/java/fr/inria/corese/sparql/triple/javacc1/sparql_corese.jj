@@ -218,7 +218,7 @@ Exp Query() : { Exp stack; Metadata global=null, la = null;}
   Prolog()
     (     la = Annotate()
        ( 
-            ( stack = SelectQuery(la)    
+            ( {astq.setAnnotation(la);}  stack = SelectQuery(la)    
             | stack = ConstructQuery(la) 
             | stack = DescribeQuery(la)  
             | stack = AskQuery(la)        
@@ -757,7 +757,6 @@ Exp SelectQuery(Metadata la) : { Exp stack; }
   SolutionModifier()  
   {
     astq.setResultForm(ASTQuery.QT_SELECT);
-    astq.setAnnotation(la);
     return stack; 
   }
 }

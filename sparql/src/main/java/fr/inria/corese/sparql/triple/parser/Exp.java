@@ -1,6 +1,7 @@
 package fr.inria.corese.sparql.triple.parser;
 
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.datatype.RDF;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -33,7 +34,7 @@ import java.util.logging.Level;
  * @author Olivier Corby
  */
 public abstract class Exp extends TopExp implements Iterable<Exp> {
-
+   
     /**
      * logger from log4j
      */
@@ -555,5 +556,103 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             }
         }
     }
+    
+    // return list of RDF list if any
+    public List<BasicGraphPattern> getRDFList() {
+        List<BasicGraphPattern> list = new ArrayList<>();
+        
+        for (Exp ee : this) {
+            if (ee.isTriple()) {
+                Triple t = ee.getTriple();
+                if (t.getProperty().getLabel().equals(RDF.FIRST) ||
+                    t.getProperty().getLabel().equals(RDF.REST)) {
+                    recordListTriple(list, t);
+                }                
+            }
+        }
+        
+        merge(list);
+        sort(list);
+        return list;
+    }
+    
+    void recordListTriple(List<BasicGraphPattern> list, Triple t) {
+        for (BasicGraphPattern exp : list) {
+            if (listConnected(exp, t)) {
+                exp.add(t);
+                return;
+            }
+        }
+        list.add(BasicGraphPattern.create(t));
+    }
+    
+    boolean listConnected(BasicGraphPattern bgp, Triple t) {
+        for (Exp ee : bgp) {
+            Triple t1 = ee.getTriple();
+            if (t.getSubject().equals(t1.getSubject())
+             || t.getSubject().equals(t1.getObject())
+             || t.getObject().equals(t1.getSubject())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    boolean listConnected(BasicGraphPattern bgp1, BasicGraphPattern bgp2) {
+        for (Exp ee : bgp1) {
+            if (listConnected(bgp2, ee.getTriple())) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    void merge(List<BasicGraphPattern> list) {
+        boolean run = true;
+        while (run) {
+            run = false;
+            for (int i = 0; i < list.size(); i++) {
+                BasicGraphPattern bgp1 = list.get(i);
+                for (int j = i + 1; j < list.size();) {
+                    BasicGraphPattern bgp2 = list.get(j);
+                    if (listConnected(bgp1, bgp2)) {
+                        bgp1.addAll(bgp2);
+                        list.remove(bgp2);
+                        run = true;
+                    } else {
+                        j++;
+                    }
+                }
+            }
+        }
+    }
+    
+    void sort(List<BasicGraphPattern> list) {
+        for (BasicGraphPattern bgp : list) {
+            sort(bgp);
+        }
+    }
+    
+    void sort(BasicGraphPattern rdfList) {
+        Exp fst;
+        for (int i = 0; i<rdfList.size();i++) {
+            Triple t1 = rdfList.get(i).getTriple();
+            boolean find = false;
+            Triple t2 = null;
+            for (int j = 0; j<rdfList.size();j++) {
+                t2 = rdfList.get(j).getTriple();
+                if (t1.getSubject().equals(t2.getObject())) {
+                    find = true;
+                    break;
+                }
+            }
+            if (!find) {
+                rdfList.getBody().remove(t1);
+                rdfList.add(0, t1);
+            }
+        }
+    }
+
+
 
 }

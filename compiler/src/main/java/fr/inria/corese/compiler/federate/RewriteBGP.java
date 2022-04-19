@@ -51,6 +51,7 @@ public class RewriteBGP {
             
         URI2BGPList uri2bgpList     = new URI2BGPList();
         URI2BGPList uriList2bgpList = new URI2BGPList();
+        uri2bgpList.setUriList2bgp(uriList2bgpList);
         List<Expression> localFilterList = new ArrayList<>();
         
         // create map: URI -> (BGP1 .. BGPn)        
@@ -72,7 +73,7 @@ public class RewriteBGP {
         // replace triple in body by service URI { BGP }
         // remove all such triples
         HashMap<BasicGraphPattern, Service> bgp2Service = 
-                triple2ServiceWithOneURI(name, body, triple2bgp);
+                triple2ServiceWithOneURI(name, body, triple2bgp, uri2bgpList);
                       
         // create local fake service for triple with several URI
         // just for processing filter below
@@ -91,8 +92,8 @@ public class RewriteBGP {
         // push filter into appropriate service clause where filter variables are bound
         filter(name, body, bgp2Service, filterList, success && tripleFilter);
         
-        //rewrite.tripleWithSeveralURI(body, uriList2bgpList);
-        return uriList2bgpList;
+        uri2bgpList.complete();
+        return uri2bgpList;
     }
         
 
@@ -112,15 +113,23 @@ public class RewriteBGP {
                 Triple triple = exp.getTriple();
                 List<Atom> list = visitor.getServiceList(triple);
                 
-                if (list.size() == 1) {
-                    // list of connected BGP of triple with one URI
-                    assignTripleToConnectedBGP(uri2bgpList, triple, list);
-                    uri2bgpList.add(triple);
-                } else {
-                    // list of connected BGP of triple with several URI
-                    assignTripleToConnectedBGP(uri2bgpList, triple, FAKE_URI);
+                if (visitor.isTestFederateNew()) {
+                    // do not distinguish one vs several URI
+                    // list of connected BGP of triple with any nb URI
                     assignTripleToConnectedBGP(uriList2bgpList, triple, list);
                     uriList2bgpList.add(triple);
+                } else {
+                    // distinguish one vs several URI
+                    if (list.size() == 1) {
+                        // list of connected BGP of triple with one URI
+                        assignTripleToConnectedBGP(uri2bgpList, triple, list);
+                        uri2bgpList.add(triple);
+                    } else {
+                        // list of connected BGP of triple with several URI
+                        uri2bgpList.assignTripleToConnectedBGP(triple, FAKE_URI);
+                        assignTripleToConnectedBGP(uriList2bgpList, triple, list);
+                        uriList2bgpList.add(triple);
+                    }
                 }
             }
         }
@@ -152,7 +161,10 @@ public class RewriteBGP {
     // for each triple member of BGP with one URI
     // replace first triple by service URI { BGP }
     HashMap<BasicGraphPattern, Service> triple2ServiceWithOneURI
-        (Atom name, Exp body, HashMap<Triple, BasicGraphPattern> triple2bgp) {
+        (Atom name, Exp body, 
+                HashMap<Triple, BasicGraphPattern> triple2bgp,
+                URI2BGPList uri2bgpList) {
+            
         HashMap<BasicGraphPattern, Service> bgp2Service = new HashMap<>();
 
         for (int i = 0; i < body.size(); i++) {
@@ -165,9 +177,17 @@ public class RewriteBGP {
                         Service serv = visitor.getRewriteTriple().rewrite(name, bgp, visitor.getServiceList(t));
                         // do it once for first triple of this BGP
                         bgp2Service.put(bgp, serv);
-                        // replace first triple of BGP by service BGP
-                        // other such triple will be removed as they are in BGP
-                        body.set(i, serv);
+                        uri2bgpList.addServiceWithOneURI(serv);
+                        
+                        if (visitor.isTestFederate()) {
+                            // do nothing yet, 
+                            // RewriteBGPList will complete with serv
+                        }
+                        else {
+                            // replace first triple of BGP by service BGP
+                            // other such triple are removed below as they are in BGP
+                            body.set(i, serv);
+                        }
                     }
                 }
             }
@@ -200,48 +220,48 @@ public class RewriteBGP {
      * connected to BGP 
      * merge BGPs that are connected with triple.
      */
-    void assignTripleToConnectedBGP(URI2BGPList map, Triple triple, List<Atom> list) {
-        for (Atom at : list) {
-            assignTripleToConnectedBGP(map, triple, at.getLabel());
+    void assignTripleToConnectedBGP(URI2BGPList map, Triple triple, List<Atom> uriList) {
+        for (Atom uri : uriList) {
+            map.assignTripleToConnectedBGP(triple, uri.getLabel());
         }
     }
         
-    void assignTripleToConnectedBGP(URI2BGPList map, Triple triple, String serv) {
-        List<BasicGraphPattern> bgpList = map.get(serv);
-        boolean isConnected = false;
-        int i = 0;
-
-        // find a connected BGP
-        for (BasicGraphPattern bgp : bgpList) {
-            if (bgp.isConnected(triple)) {
-                bgp.add(triple);
-                isConnected = true;
-                break;
-            }
-            i++;
-        }
-
-        if (isConnected) {
-            ArrayList<BasicGraphPattern> toRemove = new ArrayList<>();
-
-            // if  another BGP is connected to triple
-            // include it into the first BGP
-            for (int j = i + 1; j < bgpList.size(); j++) {
-                if (bgpList.get(j).isConnected(triple)) {
-                    bgpList.get(i).include(bgpList.get(j));
-                    toRemove.add(bgpList.get(j));
-                }
-            }
-
-            // remove BGPs that have been included
-            for (BasicGraphPattern bgp : toRemove) {
-                bgpList.remove(bgp);
-            }
-        } else {
-            // new BGP because triple is connected to nobody
-            bgpList.add(BasicGraphPattern.create(triple));
-        }
-    }
+//    void assignTripleToConnectedBGP(URI2BGPList map, Triple triple, String uri) {
+//        List<BasicGraphPattern> bgpList = map.get(uri);
+//        boolean isConnected = false;
+//        int i = 0;
+//
+//        // find a connected BGP
+//        for (BasicGraphPattern bgp : bgpList) {
+//            if (bgp.isConnected(triple)) {
+//                bgp.add(triple);
+//                isConnected = true;
+//                break;
+//            }
+//            i++;
+//        }
+//
+//        if (isConnected) {
+//            ArrayList<BasicGraphPattern> toRemove = new ArrayList<>();
+//
+//            // if  another BGP is connected to triple
+//            // include it into the first BGP
+//            for (int j = i + 1; j < bgpList.size(); j++) {
+//                if (bgpList.get(j).isConnected(triple)) {
+//                    bgpList.get(i).include(bgpList.get(j));
+//                    toRemove.add(bgpList.get(j));
+//                }
+//            }
+//
+//            // remove BGPs that have been included
+//            for (BasicGraphPattern bgp : toRemove) {
+//                bgpList.remove(bgp);
+//            }
+//        } else {
+//            // new BGP because triple is connected to nobody
+//            bgpList.add(BasicGraphPattern.create(triple));
+//        }
+//    }
 
     void filter(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpList, List<Exp> filterList, boolean tripleFilter) {
         // copy filters from body into BGP who bind all filter variables
@@ -292,24 +312,25 @@ public class RewriteBGP {
     }
 
     /**
-     * exp is filter or bind(exp as var) try to move it in service clause where
+     * exp is filter or bind (exp as var) 
+     * try to move it in service clause where
      * its variables are bound
      */
-    boolean move(Exp exp, HashMap<BasicGraphPattern, Service> bgpList, List<Exp> filterList) {
+    boolean move(Exp filterExp, HashMap<BasicGraphPattern, Service> bgpList, List<Exp> filterList) {
         boolean move = false;
         for (BasicGraphPattern bgp : bgpList.keySet()) {
             Service serv = bgpList.get(bgp);
             List<Variable> varList = bgp.getSubscopeVariables();
-            if (exp.getFilter().isBound(varList)) {
+            if (isBound(filterExp, varList)) {
                 if (serv.getServiceName().getLabel().equals(FAKE_URI)) {
                     // service with several URI
                 }
                 else {
                     // service with one URI
-                    bgp.add(exp);
+                    bgp.add(filterExp);
                     move = true;
-                    if (!filterList.contains(exp)) {
-                        filterList.add(exp);
+                    if (!filterList.contains(filterExp)) {
+                        filterList.add(filterExp);
                     }
                 }
             }
@@ -317,7 +338,21 @@ public class RewriteBGP {
         return move;
     }
     
- 
+    boolean isBound(Exp filterExp, List<Variable> varList) {
+        if (filterExp.getFilter().isBound(varList)) {
+            if (filterExp.isBind()) {
+                return varList.contains(filterExp.getBind().getVariable());
+            }
+            else {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+  void trace(String mes, Object... obj) {
+        System.out.println(String.format(mes, obj));
+    }
 
     /**
      * First phase: service with one URI

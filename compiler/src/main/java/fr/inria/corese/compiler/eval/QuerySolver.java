@@ -81,6 +81,8 @@ public class QuerySolver implements SPARQLEngine {
     protected Sorter sort;
     protected List<QueryVisitor> visit;
     private List<Atom> serviceList;
+    // use case: reuse federated visitor source selection
+    private Mappings mappings;
 
     boolean isListGroup = false,
             isListPath = true,
@@ -598,7 +600,7 @@ public class QuerySolver implements SPARQLEngine {
         transformer.setUseBind(isUseBind());
         transformer.setBGP(isBGP());
         transformer.setAlgebra(isAlgebra());
-       // transformer.setServiceList(getServiceList());
+        transformer.setMappings(getMappings());
     }
 
     public Query compileRule(String squery, Dataset ds) throws EngineException {
@@ -1010,6 +1012,14 @@ public class QuerySolver implements SPARQLEngine {
 
     public Binding getBinding() {
         return binding;
+    }
+
+    public Mappings getMappings() {
+        return mappings;
+    }
+
+    public void setMappings(Mappings mappings) {
+        this.mappings = mappings;
     }
 
 }

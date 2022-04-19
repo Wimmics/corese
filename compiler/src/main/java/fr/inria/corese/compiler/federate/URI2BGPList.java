@@ -2,6 +2,7 @@ package fr.inria.corese.compiler.federate;
 
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
@@ -9,47 +10,143 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- *
- */
-/**
- * service -> List of connected BGP
+ * This class has two instances and 
+ * the first instance contains the second
+ * a) uri2bgp:     uri -> (connected bgp) triple with one URI
+ * b) uriList2bgp: uri -> (connected bgp) triple with several URI
  */
 class URI2BGPList {
-
-    HashMap<String, List<BasicGraphPattern>> map;
+    // uri -> bgp list
+    HashMap<String, List<BasicGraphPattern>> uri2bgp;
+    // bgp -> uri list
+    private BGP2URI bgp2uri;
+    // list of triple in context a) or b)
     private ArrayList<Triple> tripleList;
+    // service with one URI
+    private ArrayList<Service> serviceList;
+    // main URI2BGPList for triple with one URI
+    // uriList2bgp for triple with several URI 
+    private URI2BGPList uriList2bgp;
+    
+    class BGP2URI extends HashMap<BasicGraphPattern, List<String>> {
+        
+        // equivalent of get when different bgp object which have same content
+        // must be same key
+        BasicGraphPattern getKey(BasicGraphPattern bgp) {
+            for (BasicGraphPattern exp : keySet()) {
+                if (bgp.bgpEqual(exp)) {
+                    return exp;
+                }
+            }
+            return bgp;
+        }
+        
+        List<BasicGraphPattern> keyList() {
+            ArrayList<BasicGraphPattern> list = new ArrayList<>();
+            list.addAll(keySet());
+            return list;
+        }
+        
+    }
+    
     
     URI2BGPList() {
-        map = new HashMap<>();
+        uri2bgp = new HashMap<>();
+        bgp2uri = new BGP2URI();
         tripleList = new ArrayList<>();
+        serviceList = new ArrayList<>();
+    }
+    
+    void complete() {
+        bgp2uri();
+        if (getUriList2bgp() !=null) {
+            getUriList2bgp().bgp2uri();
+        }
+    }
+    
+    void bgp2uri() {        
+        for (String uri : uri2bgp.keySet()) {
+            for (BasicGraphPattern bgp : uri2bgp.get(uri)) {
+                // different bgp object with same content 
+                // must have same key bgp
+                BasicGraphPattern key = getBgp2uri().getKey(bgp);
+                List<String> uriList  = getBgp2uri().get(key);
+                if (uriList == null) {
+                    uriList = new ArrayList<>();
+                    getBgp2uri().put(key, uriList);
+                }
+                uriList.add(uri);
+            }
+        }
     }
 
     List<BasicGraphPattern> get(String label) {
-        List<BasicGraphPattern> bgpList = map.get(label);
+        List<BasicGraphPattern> bgpList = uri2bgp.get(label);
         if (bgpList == null) {
             bgpList = new ArrayList<>();
-            map.put(label, bgpList);
+            uri2bgp.put(label, bgpList);
         }
         return bgpList;
     }
 
     void add(String label, BasicGraphPattern bgp) {
-        List<BasicGraphPattern> bgpList = map.get(label);
+        List<BasicGraphPattern> bgpList = uri2bgp.get(label);
         if (bgpList == null) {
             bgpList = new ArrayList<>();
-            map.put(label, bgpList);
+            uri2bgp.put(label, bgpList);
         }
         bgpList.add(bgp);
     }
 
     HashMap<String, List<BasicGraphPattern>> getMap() {
-        return map;
+        return uri2bgp;
     }
+    
+    // assign triple to connected bgp of service uri
+    // merge connected bgp
+    void assignTripleToConnectedBGP(Triple triple, String uri) {
+        List<BasicGraphPattern> bgpList = get(uri);
+        boolean isConnected = false;
+        int i = 0;
+
+        // find a connected BGP
+        for (BasicGraphPattern bgp : bgpList) {
+            if (bgp.isConnected(triple)) {
+                bgp.add(triple);
+                isConnected = true;
+                break;
+            }
+            i++;
+        }
+
+        if (isConnected) {
+            ArrayList<BasicGraphPattern> toRemove = new ArrayList<>();
+
+            // if  another BGP is connected to triple
+            // include it into former BGP
+            for (int j = i + 1; j < bgpList.size(); j++) {
+                if (bgpList.get(j).isConnected(triple)) {
+                    bgpList.get(i).include(bgpList.get(j));
+                    toRemove.add(bgpList.get(j));
+                }
+            }
+
+            // remove BGPs that have been included
+            for (BasicGraphPattern bgp : toRemove) {
+                bgpList.remove(bgp);
+            }
+        } else {
+            // create new BGP because triple is connected to nobody
+            bgpList.add(BasicGraphPattern.create(triple));
+        }
+    }
+    
 
     // for every URI: merge list of BGP into one BGP
+    // use case: bgp with one URI
     void merge() {
-        for (String uri : map.keySet()) {
-            List<BasicGraphPattern> list = map.get(uri);
+        for (String uri : uri2bgp.keySet()) {
+            List<BasicGraphPattern> list = uri2bgp.get(uri);
             BasicGraphPattern bgp = list.get(0);
             for (BasicGraphPattern exp : list) {
                 if (exp != bgp) {
@@ -67,8 +164,8 @@ class URI2BGPList {
      * and each service bind some (but not all) of the variables
      */
     void merge(List<Expression> filterList) {
-        for (String uri : map.keySet()) {
-            List<BasicGraphPattern> list = map.get(uri);
+        for (String uri : uri2bgp.keySet()) {
+            List<BasicGraphPattern> list = uri2bgp.get(uri);
             merge(list, filterList);
         }
     }
@@ -107,14 +204,33 @@ class URI2BGPList {
     @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
-        for (String uri : map.keySet()) {
+        sb.append("triple: ").append(getTripleList()).append("\n");
+        for (String uri : uri2bgp.keySet()) {
             sb.append(uri).append(": ");
-            for (BasicGraphPattern bgp : map.get(uri)) {
+            for (BasicGraphPattern bgp : uri2bgp.get(uri)) {
                 sb.append(bgp).append(" ");
             }
             sb.append("\n");
         }
         return sb.toString();
+    }
+    
+    void trace() {
+        // uri -> bgp list, triple with one uri
+        trace("uri\n%s", this);
+        // uri -> bgp list, triple with several uri
+        trace("uri list\n%s", getUriList2bgp());
+        trace("bgp2uri:\n");
+        
+        for (BasicGraphPattern bgp
+                : getUriList2bgp().getBgp2uri().keySet()) {
+            trace("%s: %s", bgp,
+                    getUriList2bgp().getBgp2uri().get(bgp));
+        }
+    }
+    
+    void trace(String mes, Object... obj) {
+        System.out.println(String.format(mes, obj));
     }
     
     void add(Triple t) {
@@ -127,6 +243,34 @@ class URI2BGPList {
 
     public void setTripleList(ArrayList<Triple> tripleList) {
         this.tripleList = tripleList;
+    }
+
+    public URI2BGPList getUriList2bgp() {
+        return uriList2bgp;
+    }
+
+    public void setUriList2bgp(URI2BGPList uriList2bgp) {
+        this.uriList2bgp = uriList2bgp;
+    }
+
+    public BGP2URI getBgp2uri() {
+        return bgp2uri;
+    }
+
+    public void setBgp2uri(BGP2URI bgp2uri) {
+        this.bgp2uri = bgp2uri;
+    }
+    
+    void addServiceWithOneURI(Service s) {
+        getServiceList().add(s);
+    }
+
+    public ArrayList<Service> getServiceList() {
+        return serviceList;
+    }
+
+    public void setServiceList(ArrayList<Service> serviceList) {
+        this.serviceList = serviceList;
     }
 
 }

@@ -1,6 +1,7 @@
 package fr.inria.corese.compiler.federate;
 
 import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.HashMap;
@@ -16,13 +17,53 @@ import java.util.List;
 public class Sorter {
     
     class Table extends HashMap<Exp, List<Variable>> { }
- 
+    
+    class Result {
+        private Triple triple;
+        private boolean find = false;
+
+        public Triple getTriple() {
+            return triple;
+        }
+
+        public void setTriple(Triple triple) {
+            this.triple = triple;
+        }
+        
+        void addTriple(Triple t) {
+            if (getTriple() == null) {
+                setTriple(t);
+                setFind(true);
+            }
+            else if (prefer(t, getTriple())){
+                // prefer local predicate vs system predicate
+                setTriple(t);
+                setFind(true);
+            }
+        }
+        
+        boolean prefer(Triple t1, Triple t2) {
+            return ! isSystem(t1) && isSystem(t2);
+        }
+        
+        boolean isSystem(Triple t) { 
+            return NSManager.nsm().isSystemURI(
+                    t.getPredicate().getLabel());
+        }
+
+        public boolean isFind() {
+            return find;
+        }
+
+        public void setFind(boolean find) {
+            this.find = find;
+        }
+    }
+     
     
     void process(Exp bgp) {
-        //if (sortable(bgp)) {
-            first(bgp);
-            sort(bgp);
-        //}
+        first(bgp);
+        sort(bgp);
     }
     
     /**
@@ -31,24 +72,37 @@ public class Sorter {
      */
     void first(Exp bgp) {
         int j = -1;
-        
+        int p = -1;
+        Result res = new Result();
+
         for (int i = 0; i<bgp.size(); i++) {
             Exp exp = bgp.get(i);
-            if (hasConstant(exp)) {
+            res.setFind(false);
+            if (hasConstant(exp, res)) {
                 if (i > 0) {
                     setFirst(bgp, i);
                 }
                 return;
             }
-            else if (j == -1 && hasFilter(exp)) {
-                j = i;
+            else {
+                if (j == -1 && hasFilter(exp)) {
+                    j = i;
+                }
+                if (res.isFind()) {
+                    // triple with constant predicate
+                    p = i;
+                }
             }
         }
+        
         if (j > 0) {
             // ee has a filter: put it first
             setFirst(bgp, j);
+        } 
+        else if (p > 0) {
+            // triple with cst predicate
+            setFirst(bgp, p);
         }
-        
     }
     
     void setFirst(Exp bgp, int i) {
@@ -58,31 +112,41 @@ public class Sorter {
     }
     
     boolean hasConstant(Exp exp) {
+        return hasConstant(exp, new Result());
+    }
+
+
+    boolean hasConstant(Exp exp, Result res) {
         if (exp.isFilter()) {
         } // nothing yet
-        else if (exp.isTriple() && exp.getTriple().isConstantNode()) {
-            return true;
+        else if (exp.isTriple()) { 
+            if (exp.getTriple().isConstantNode()) {
+                return true;
+            }
+            if (exp.getTriple().getPredicate().isConstant()) {
+                res.addTriple(exp.getTriple());
+            }
         } else if (exp.isBGP()) {
             for (Exp ee : exp.getBody()) {
-                if (hasConstant(ee)) {
+                if (hasConstant(ee, res)) {
                     return true;
                 }
             }
         } else if (exp.isService() || exp.isGraph()) {
-            if (hasConstant(exp.getBodyExp())) {
+            if (hasConstant(exp.getBodyExp(), res)) {
                 return true;
             }
         } else if (exp.isUnion()) {
-            if (hasConstant(exp.get(0)) && hasConstant(exp.get(1))) {
+            if (hasConstant(exp.get(0), res) && hasConstant(exp.get(1), res)) {
                 return true;
             }
         } else if (exp.isOptional() || exp.isMinus()) {
-            if (hasConstant(exp.get(0))) {
+            if (hasConstant(exp.get(0), res)) {
                 return true;
             }
         }
         else if (exp.isQuery()) {
-            if (hasConstant(exp.getAST().getBody())) {
+            if (hasConstant(exp.getAST().getBody(), res)) {
                 return true;
             }
         }

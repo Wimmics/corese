@@ -2,11 +2,8 @@ package fr.inria.corese.compiler.federate;
 
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
-import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
-import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Service;
-import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Union;
 import java.util.ArrayList;
 import java.util.List;
@@ -22,64 +19,50 @@ public class RewriteList {
         visitor = vis;
     }
     
-    // map: uri -> ({t1 t2} {t3 t4})
-    // list of connected bgp where triples have several uri
-    // hence triple occur several times in the map
-    // @pragma: triple with one uri are rewritten as service uri {t} in body
-    // triple with several uri are as is in body
-    void process(Exp body) {
+    // group rdf list in specific service bgp
+    // group connected triple with bnode variable in specific service bgp
+    // modify body
+    // return false when one bgp has no service
+    boolean process(Exp body) {
+        boolean suc = true;
         if (visitor.isProcessList()) {
-            processList(body);
+            List<BasicGraphPattern> list = new ArrayList<>();
+            body.getRDFList(list);
+            body.getBGPWithBnodeVariable(list);
+            suc = bgp2service(body, list);
         }
+        return suc;
     }
-    
-    
-    
-    void processList(Exp body) {
-        List<Exp> alist = new ArrayList<>();
-        List<BasicGraphPattern> list = body.getRDFList();
-        if (list.isEmpty()) {
-            // no rdf list
-        } else {
-            for (BasicGraphPattern rdfList : list) {
-                Exp serviceExp = processRDFList(rdfList);
-                if (serviceExp == null) {
-                    // no service handle list
-                    visitor.logger.info("No service for list: " + rdfList);
-                } else {
-                    replace(body, rdfList, serviceExp);
-                }
+        
+    boolean bgp2service(Exp body, List<BasicGraphPattern> list) {
+        boolean suc = true;
+        for (BasicGraphPattern exp : list) {
+            Exp service = bgp2service(exp);
+            if (service == null) {
+                // no service handle list
+                visitor.logger.info("No service for exp: " + exp);
+                suc = false;
+            } else {
+                replace(body, exp, service);
             }
         }
+        return suc;
     }
     
-    // replace list as triple in body
-    // by service
-    void replace(Exp body, BasicGraphPattern rdfList, Exp serviceExp) {
-        for (Exp triple : rdfList) {
+    void replace(Exp body, BasicGraphPattern bgp, Exp serviceExp) {
+        for (Exp triple : bgp) {
             body.getBody().remove(triple);
-        }
-        Triple t = rdfList.get(0).getTriple();
-        ArrayList<Exp> list = new ArrayList<>();
-        
-        for (Exp exp : body) {
-            if (exp.isTriple() && 
-                    exp.getTriple().getObject().equals(t.getSubject())) {
-                list.add(exp);
-            }
-        }
-        
-        for (Exp exp : list) {
-            serviceExp.getBodyExp().add(0, exp);
-            body.getBody().remove(exp);
         }
         body.add(serviceExp);
     }
     
-    Exp processRDFList(BasicGraphPattern rdfList) {
+
+    // rewrite rdf list as service (S) { bgp }
+    // where all rdf list triple are in all s in S
+    Exp bgp2service(BasicGraphPattern bgp) {
         List<Atom> uriList = new ArrayList<>();
         int count = 0;
-        for (Exp triple : rdfList) {
+        for (Exp triple : bgp) {
             List<Atom> list = visitor.getServiceList(triple.getTriple());
             if (count++ == 0) {
                 uriList = list;
@@ -92,7 +75,7 @@ public class RewriteList {
         if (uriList.isEmpty()) {
             return null;
         }
-        Service s = Service.create(uriList, rdfList);
+        Service s = Service.create(uriList, bgp);
         return s;
     }
     

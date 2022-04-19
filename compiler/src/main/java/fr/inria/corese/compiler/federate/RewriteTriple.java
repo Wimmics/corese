@@ -160,9 +160,11 @@ public class RewriteTriple {
     void filter(Exp body, Triple t, Exp bgp, List<Exp> list) {
         for (Exp exp : body) {
             if (exp.isFilter()) {
-                if (! vis.isRecExist(exp)) {
-                    Expression f = exp.getFilter();
-                    if (t.bind(f) && ! bgp.getBody().contains(exp)) {
+                if (vis.isRecExist(exp)) {
+                    // skip
+                }
+                else {
+                    if (t.bind(exp.getFilter()) && ! bgp.getBody().contains(exp)) {
                         bgp.add(exp);
                         if (! list.contains(exp)) {
                             list.add(exp);

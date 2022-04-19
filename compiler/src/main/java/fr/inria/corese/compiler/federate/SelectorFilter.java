@@ -88,6 +88,7 @@ public class SelectorFilter {
         }
     }
         
+    // collect relevant filter or values for triple variables
     void process(Triple t, Exp body) {
         BasicGraphPattern bgp = ast.bgp(t);
         res.add(bgp);
@@ -96,6 +97,11 @@ public class SelectorFilter {
             for (Exp exp : body) {
                 if (exp.isFilter() && accept(exp.getFilter())) {
                     if (exp.getFilter().isBound(list)) {
+                        bgp.add(exp);
+                    }
+                }
+                else if (exp.isValues()) {
+                    if (exp.getValuesExp().isBound(list)) {
                         bgp.add(exp);
                     }
                 }

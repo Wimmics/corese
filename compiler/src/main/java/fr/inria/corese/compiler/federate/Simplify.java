@@ -67,7 +67,11 @@ public class Simplify {
      *
      * TODO: merge when there is only one URI ???
      */ 
-    Exp merge(Exp bgp) {    
+    Exp merge(Exp bgp) {  
+        return merge(bgp, false);
+    }
+
+    Exp merge(Exp bgp, boolean all) {    
         ServiceList include = new ServiceList();
         ServiceList exclude = new ServiceList();        
         // create map: service URI -> list (Service)
@@ -75,7 +79,10 @@ public class Simplify {
             if (exp.isService()){ 
                 if (exp.getService().isFederate()) {
                     // several URI: skip
-                }               
+                } 
+                else if (all) {
+                    include.add(exp.getService());
+                }
                 else if (isTripleFilterOnly(exp.getBodyExp())) {
                     // do not merge basic BGP with same service URI
                     // because they are not connected 
@@ -114,12 +121,11 @@ public class Simplify {
             }
 
             if (mod) {
+                simplifyGraph2(first.getBodyExp());
                 new Sorter().process(first.getBodyExp());
             }
-        }
-        
-        bgp = move(bgp, exclude);
-        
+        }        
+        bgp = move(bgp, exclude);       
         return bgp;
     }
     
@@ -438,7 +444,8 @@ public class Simplify {
             if (e1.isGraph() && e2.isGraph()){
                 Source g1 = e1.getNamedGraph();
                 Source g2 = e2.getNamedGraph();                
-               if (g1.getSource().isConstant() && g1.getSource().equals(g2.getSource())) {
+               if (g1.getSource().isConstant() && 
+                       g1.getSource().equals(g2.getSource())) {
                     exp.set(0, g1.getBodyExp());
                     exp.set(1, g2.getBodyExp());
                     Source g = Source.create(g1.getSource(), exp);
@@ -449,7 +456,34 @@ public class Simplify {
         return exp;       
     }
     
-    
+    Exp simplifyGraph2(Exp exp) {
+        int i = 0;
+        ArrayList<Source> list = new ArrayList<>();
+        for (Exp ee1 : exp) {
+            if (ee1.isNamedGraph()) {
+                for (int j = i + 1; j < exp.size(); j++) {
+                    Exp ee2 = exp.get(j);
+                    if (ee2.isNamedGraph()) {
+                        Source g1 = ee1.getNamedGraph();
+                        Source g2 = ee2.getNamedGraph();
+                        if (g1.getSource().isConstant()
+                         && g1.getSource().equals(g2.getSource())) {                            
+                            Source g = g1.merge(g2);
+                            exp.set(i, g);
+                            list.add(g2);
+                            ee1 = g;
+                            new Sorter().process(g.getBodyExp());
+                        }
+                    }
+                }
+            }
+            i++;
+        }
+        for (Source g : list) {
+            exp.getBody().remove(g);
+        }
+        return exp;
+    }
     
     
     /**

@@ -40,12 +40,14 @@ public class Selector {
     
     private static final String SERVER_VAR = "?serv";
     
-    FederateVisitor vis;
+    private FederateVisitor vis;
     ASTQuery ast;
     private ASTSelector astSelector;
     HashMap<String, String> predicateVariable;
     HashMap<Triple, String> tripleVariable;
     QuerySolver exec;
+    // use case: reuse federated visitor source selection    
+    private Mappings mappings;
     boolean sparql10 = false;
     boolean count = false;
     boolean trace = false;
@@ -111,7 +113,17 @@ public class Selector {
         Date d1 = new Date();
         ASTQuery aa = createSelector(list, false);
         metadata(aa);
-        Mappings map = exec.basicQuery(aa);
+        Mappings map;
+        
+        if (getMappings() == null) {
+            // compute selection
+            map = exec.basicQuery(aa);
+            getVisitor().setMappings(map);
+        }
+        else {
+            // reuse selection
+            map = getMappings();
+        }
         
         exec.getLog().setASTSelect(aa);
         exec.getLog().setSelectMap(map);
@@ -243,7 +255,7 @@ public class Selector {
         // triple selector
         BasicGraphPattern bgp ;
         
-        if (vis.isIndex()) {
+        if (getVisitor().isIndex()) {
             bgp = createBGPIndex(serv, aa);
         }
         else if (sparql10) {
@@ -254,7 +266,7 @@ public class Selector {
         }              
         
         BasicGraphPattern body;
-        if (vis.isIndex()) {
+        if (getVisitor().isIndex()) {
             bgp.add(0,Values.create(serv, list));
             body = bgp;
         }
@@ -412,7 +424,7 @@ public class Selector {
     }
     
     void selectTriple(ASTQuery aa, BasicGraphPattern bgp, int i) {
-        if (vis.isSelectFilter()) {
+        if (getVisitor().isSelectFilter()) {
             selectTripleFilter(aa, bgp, i);
         }
         else {
@@ -555,6 +567,23 @@ public class Selector {
 
     public void setAstSelector(ASTSelector astSelector) {
         this.astSelector = astSelector;
+    }
+
+    public Mappings getMappings() {
+        return mappings;
+    }
+
+    public Selector setMappings(Mappings mappings) {
+        this.mappings = mappings;
+        return this;
+    }
+
+    public FederateVisitor getVisitor() {
+        return vis;
+    }
+
+    public void setVisitor(FederateVisitor vis) {
+        this.vis = vis;
     }
 
 }

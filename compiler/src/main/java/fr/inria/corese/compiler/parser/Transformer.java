@@ -69,11 +69,11 @@ public class Transformer implements ExpType {
     // @metadata: uncertainty, @ldpath: ldpath
     // @visitor className: user defined visitor  
     private List<QueryVisitor> visit;
-    //private List<Atom> serviceList;
     // Refine std query sorter
     // corese core SorterImpl take cardinality into account
     Sorter sort;
-    //Table table;
+    // use case: reuse federated visitor source selection
+    private Mappings mappings;
     private ASTQuery ast;
     // Compiler to generate type checker
     Checker check;
@@ -417,11 +417,15 @@ public class Transformer implements ExpType {
         }
     }
     
-    void visit(ASTQuery ast){
+    void visit(ASTQuery ast) {
         visitor(ast);
-         if (getVisitorList() != null) {
+        if (getVisitorList() != null) {
             for (QueryVisitor v : getVisitorList()) {
                 v.visit(ast);
+                if (v.getMappings() != null) {
+                    // federate visitor return source selection Mappings 
+                    getSPARQLEngine().setMappings(v.getMappings());
+                }
             }
         }
     }
@@ -463,19 +467,12 @@ public class Transformer implements ExpType {
      */
     void federate(ASTQuery ast) {
         if (ast.hasMetadata(Metadata.FEDERATION) && !ast.hasMetadata(Metadata.FEDERATE)) {
-            add(new FederateVisitor(getSPARQLEngine()));
+            add(new FederateVisitor(getSPARQLEngine()).setMappings(getMappings()));
         }
-//        else if (ast.getServiceList() == null){// && getServiceList() != null) {
-//            // default service list
-//            ast.setServiceList(getServiceList());
-//            if (ast.getServiceList().size() == 1) {
-//                ast.defService(ast.getServiceList().get(0).getLabel());
-//            }
-//        } 
         
         if (ast.getServiceList() != null && ast.getServiceList().size() > 1) {
             ast.defService((String) null);
-            add(new FederateVisitor(getSPARQLEngine()));
+            add(new FederateVisitor(getSPARQLEngine()).setMappings(getMappings()));
         }
     }
 
@@ -1986,6 +1983,14 @@ public class Transformer implements ExpType {
 
     public void setSPARQL1(boolean b) {
         isSPARQL1 = b;
+    }
+
+    public Mappings getMappings() {
+        return mappings;
+    }
+
+    public void setMappings(Mappings mappings) {
+        this.mappings = mappings;
     }
     
 

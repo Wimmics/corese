@@ -373,11 +373,12 @@ public class XMLFormat extends QueryResultFormat {
             if (dt.hasLang()) {
                 printf("<literal xml:lang='%s'>%s</literal>", dt.getLang(), str);
             } else if (dt.getDatatype() != null && dt.getCode() != IDatatype.LITERAL) {
-                if (DatatypeMap.isDouble(dt)) {
-                    //str =  nf.format(dt.doubleValue());
-                    str = String.format("%g", dt.doubleValue());
-                }
-                else if (dt.isExtension()) {
+//                if (DatatypeMap.isDouble(dt)) {
+//                    //str =  nf.format(dt.doubleValue());
+//                    str = String.format("%g", dt.doubleValue());
+//                }
+//                else 
+                if (dt.isExtension()) {
                     str = toXML(dt.getContent());
                 }
                 printf("<literal datatype='%s'>%s</literal>",

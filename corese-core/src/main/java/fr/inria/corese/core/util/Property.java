@@ -526,8 +526,11 @@ public class Property {
                 break;
                 
             case TEST_FEDERATE:
-                FederateVisitor.SEVERAL_URI=b;
-                FederateVisitor.PROCESS_LIST=b;
+                FederateVisitor.TEST_FEDERATE=b;
+                break;
+                
+            case TRACE_GENERIC:
+                FederateVisitor.TRACE_FEDERATE=b;
                 break;
 
             case SOLVER_SORT_CARDINALITY:

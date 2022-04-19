@@ -181,7 +181,10 @@ public class Constant extends Atom {
     }
     
     String pretty(String datatype) {
-        if (datatype.startsWith("http://")) {
+        if (datatype.startsWith(NSManager.XSD)) {
+            return String.format("^^%s", nsm().toPrefix(datatype));
+        }
+        else if (datatype.startsWith("http://")) {
             return String.format("^^<%s>", datatype);
         }
         return String.format("^^%s", datatype);
@@ -215,7 +218,7 @@ public class Constant extends Atom {
                 } else if (datatype.startsWith("http://")) {
                     toString(name, sb);
                     if (!datatype.equals(RDF.xsdstring) || isString() || isNativeDatatype()) {
-                        // value with datatype with syntax ^^<http://>
+                        // xsd: or value with datatype with syntax ^^<http://>
                         sb.append(pretty(datatype));
                     }
                 } else {
@@ -571,16 +574,12 @@ public class Constant extends Atom {
         return this;
     }
 
-    /**
-     * @return the nativeDatatype
-     */
+    
     public boolean isNativeDatatype() {
         return nativeDatatype;
     }
 
-    /**
-     * @param nativeDatatype the nativeDatatype to set
-     */
+    
     public void setNativeDatatype(boolean nativeDatatype) {
         this.nativeDatatype = nativeDatatype;
     }

@@ -102,7 +102,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 
     @Override
     public Iterator<Exp> iterator() {
-        return body.iterator();
+        return getBody().iterator();
     }
 
     boolean isBinary() {
@@ -114,11 +114,19 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
     }
 
     public void add(int n, Exp exp) {
-        body.add(n, exp);
+        getBody().add(n, exp);
     }
 
     public void addAll(Exp exp) {
-        body.addAll(exp.getBody());
+        getBody().addAll(exp.getBody());
+    }
+    
+    public void addDistinct(Exp exp) {
+        for (Exp e : exp) {
+            if (! getBody().contains(e)) {
+                getBody().add(e);
+            }
+        }
     }
 
     public List<Exp> getBody() {
@@ -127,7 +135,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 
     public boolean isConnected(Triple t) {
         for (Exp exp : this) {
-            if (exp.isTriple() && !exp.isFilter()) {
+            if (exp.isTriple()) {
                 if (exp.getTriple().isConnected(t)) {
                     return true;
                 }
@@ -138,7 +146,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
 
     public boolean isConnected(Exp exp) {
         for (Exp ee : exp) {
-            if (ee.isTriple() && !ee.isFilter()) {
+            if (ee.isTriple()) {
                 if (isConnected(ee.getTriple())) {
                     return true;
                 }
@@ -158,6 +166,18 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
             }
         }
         return false;
+    }
+    
+    public List<Triple> intersectionTriple(BasicGraphPattern bgp) {
+        ArrayList<Triple> list = new ArrayList<>();
+        for (Exp exp : this) {
+            if (exp.isTriple()) {
+                if (bgp.getBody().contains(exp)) {
+                    list.add(exp.getTriple());
+                }
+            }
+        }
+        return list;
     }
 
     // BGP body of service, graph
@@ -557,102 +577,13 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         }
     }
     
-    // return list of RDF list if any
-    public List<BasicGraphPattern> getRDFList() {
-        List<BasicGraphPattern> list = new ArrayList<>();
-        
-        for (Exp ee : this) {
-            if (ee.isTriple()) {
-                Triple t = ee.getTriple();
-                if (t.getProperty().getLabel().equals(RDF.FIRST) ||
-                    t.getProperty().getLabel().equals(RDF.REST)) {
-                    recordListTriple(list, t);
-                }                
-            }
-        }
-        
-        merge(list);
-        sort(list);
-        return list;
+    // return bgp list of RDF list if any
+    public List<BasicGraphPattern> getRDFList(List<BasicGraphPattern> list) {
+        return new ExtractList().getRDFList(this, list);
     }
     
-    void recordListTriple(List<BasicGraphPattern> list, Triple t) {
-        for (BasicGraphPattern exp : list) {
-            if (listConnected(exp, t)) {
-                exp.add(t);
-                return;
-            }
-        }
-        list.add(BasicGraphPattern.create(t));
+    public List<BasicGraphPattern> getBGPWithBnodeVariable(List<BasicGraphPattern> list) {
+        return new ExtractList().getBGPWithBnodeVariable(this, list);
     }
-    
-    boolean listConnected(BasicGraphPattern bgp, Triple t) {
-        for (Exp ee : bgp) {
-            Triple t1 = ee.getTriple();
-            if (t.getSubject().equals(t1.getSubject())
-             || t.getSubject().equals(t1.getObject())
-             || t.getObject().equals(t1.getSubject())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    boolean listConnected(BasicGraphPattern bgp1, BasicGraphPattern bgp2) {
-        for (Exp ee : bgp1) {
-            if (listConnected(bgp2, ee.getTriple())) {
-                return true;
-            }
-        }
-        return false;
-    }
-    
-    void merge(List<BasicGraphPattern> list) {
-        boolean run = true;
-        while (run) {
-            run = false;
-            for (int i = 0; i < list.size(); i++) {
-                BasicGraphPattern bgp1 = list.get(i);
-                for (int j = i + 1; j < list.size();) {
-                    BasicGraphPattern bgp2 = list.get(j);
-                    if (listConnected(bgp1, bgp2)) {
-                        bgp1.addAll(bgp2);
-                        list.remove(bgp2);
-                        run = true;
-                    } else {
-                        j++;
-                    }
-                }
-            }
-        }
-    }
-    
-    void sort(List<BasicGraphPattern> list) {
-        for (BasicGraphPattern bgp : list) {
-            sort(bgp);
-        }
-    }
-    
-    void sort(BasicGraphPattern rdfList) {
-        Exp fst;
-        for (int i = 0; i<rdfList.size();i++) {
-            Triple t1 = rdfList.get(i).getTriple();
-            boolean find = false;
-            Triple t2 = null;
-            for (int j = 0; j<rdfList.size();j++) {
-                t2 = rdfList.get(j).getTriple();
-                if (t1.getSubject().equals(t2.getObject())) {
-                    find = true;
-                    break;
-                }
-            }
-            if (!find) {
-                rdfList.getBody().remove(t1);
-                rdfList.add(0, t1);
-            }
-        }
-    }
-
-
-
+ 
 }

@@ -339,6 +339,10 @@ public class NSManager extends ASTObject {
     public boolean isSystem(String ns) {
         return def.containsKey(ns);
     }
+    
+    public boolean isSystemURI(String uri) {
+        return isSystem(namespace(uri));
+    }
 
     public boolean isNamespace(String ns) {
         return tns.containsKey(ns);

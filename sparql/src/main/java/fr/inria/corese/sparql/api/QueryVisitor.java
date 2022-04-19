@@ -15,5 +15,5 @@ public interface QueryVisitor {
         default void before(Query q) {}
         
         default void after(Mappings map) {}
-
+        
 }

@@ -121,5 +121,12 @@ public class Source extends SourceExp {
         }
         return true;
     }
+    
+    public Source merge(Source exp) {
+        BasicGraphPattern bgp = BasicGraphPattern.create();
+        bgp.addAll(getBodyExp());
+        bgp.addAll(exp.getBodyExp());
+        return Source.create(getSource(), bgp);
+    }
 
 }

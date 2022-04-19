@@ -1605,9 +1605,9 @@ public class ASTQuery
     }
     
     Atom newListPointer() {
-        if (hasMetadata(Metadata.FEDERATE)) {
-            return new Variable("?_list_"+getVariableId());
-        }
+//        if (hasMetadata(Metadata.FEDERATE)) {
+//            return new Variable("?_list_"+getVariableId());
+//        }
         return newBlankNode();
     }
 
@@ -2053,7 +2053,12 @@ public class ASTQuery
         } 
         else if (knownDatatype(datatype)) {
             // record prefix namespace for pprint if any
-            getNSM().toNamespaceB(datatype);
+            if (datatype.startsWith(NSManager.XSD)) {
+               getNSM().toPrefix(datatype);
+            }
+            else {
+                getNSM().toNamespaceB(datatype);
+            }
         }
         else {
             datatype = getNSM().toNamespaceB(datatype);

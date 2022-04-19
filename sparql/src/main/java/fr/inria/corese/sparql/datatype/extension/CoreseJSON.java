@@ -318,6 +318,9 @@ public class CoreseJSON extends CoreseExtension {
             if (NSManager.isURI(str)) {
                 return DatatypeMap.newResource(str);
             }
+            else {
+                return DatatypeMap.newInstance(str);
+            }
         }
         return DatatypeMap.castObject(obj);
     }

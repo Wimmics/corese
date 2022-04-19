@@ -276,8 +276,11 @@ public abstract class CoreseNumber extends CoreseDatatype {
                             return CoreseFloat.create(floatValue() / dt.floatValue());
                         case DECIMAL:
                         case INTEGER:
+                            // decimal divide fail on:
+                            // java.lang.ArithmeticException: Non-terminating decimal expansion; 
+                            // no exact representable decimal result. "1.0"^^xsd:decimal 6
+                            // CoreseDecimal.create(new BigDecimal(doubleValue()).divide(new BigDecimal(dt.doubleValue())));
                             return CoreseDecimal.create(doubleValue() / dt.doubleValue());
-                            //return CoreseDecimal.create(new BigDecimal(doubleValue()).divide(new BigDecimal(dt.doubleValue())));
                         default:
                             return CoreseDecimal.create(doubleValue() / dt.doubleValue());
                     }
@@ -296,6 +299,7 @@ public abstract class CoreseNumber extends CoreseDatatype {
                     }
             }
         } catch (java.lang.ArithmeticException a) {
+            logger.error(a.toString() + " " + this + " " + dt);
         }
         return null;
     }

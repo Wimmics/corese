@@ -59,6 +59,18 @@ public class Service extends SourceExp {
         return create(list, body, false);
     }
     
+    public static Service newInstance(List<String> list, Exp body) {
+        return create(getList(list), body, false);
+    }
+    
+    static List<Atom> getList(List<String> list) {
+        ArrayList<Atom> alist = new ArrayList<>();
+        for (String uri : list) {
+            alist.add(Constant.create(uri));
+        }
+        return alist;
+    }
+    
     public URLServer getCreateURL() {
         if (getURL() == null) {
             if (getServiceName().isConstant()) {

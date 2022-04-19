@@ -127,7 +127,7 @@ public class Values extends Exp {
                     if (value == null) {
                         sb.append(KeywordPP.UNDEF);
                     } else {
-                        sb.append(value);
+                        value.toString(sb);
                     }
                     sb.append(SPACE);
                 }
@@ -148,6 +148,16 @@ public class Values extends Exp {
         for (Variable var : getVarList()) {
             add(var, list);
         }
+    }
+    
+    // this variable list includedIn varList   
+    public boolean isBound(List<Variable> varList) {
+        for (Variable var : getVarList()) {
+            if (!varList.contains(var)) {
+                return false;
+            }
+        }
+        return true;
     }
     
     @Override

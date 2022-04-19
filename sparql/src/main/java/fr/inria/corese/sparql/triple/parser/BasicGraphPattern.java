@@ -65,6 +65,21 @@ public class BasicGraphPattern extends And {
     public static BasicGraphPattern create(Exp e1, Exp e2) {
         return new BasicGraphPattern(e1, e2);
     }
+        
+    // @pragma: bgp are sorted and contain same physical objects
+    // use case: federated query compiler specific hashmap: bgp -> list uri
+    public boolean bgpEqual(BasicGraphPattern bgp) {
+        if (size() == bgp.size()) {
+            int i = 0;
+            for (Exp ee : this) {
+                if (ee != bgp.get(i++)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 
     public void addFilter(Expression e) {
         add(e);

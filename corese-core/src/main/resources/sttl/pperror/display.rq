@@ -1,8 +1,8 @@
-template st:display (?amap) {
+template st:display (?title, ?amap) {
 
     if (xt:size(?amap) = 0, 
-        "OWL RL Ontology",
-        concat("Ontology not in OWL RL: ", xt:size(?amap), " failures"))
+        str(?title),
+        concat(str(?title), " not correct: ", xt:size(?amap), " failures"))
         
     st:nl() st:nl() 
     

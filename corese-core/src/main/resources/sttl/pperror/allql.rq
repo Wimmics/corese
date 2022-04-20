@@ -1,6 +1,13 @@
 template st:allQL(?tag) {
 
-	"<span class=owlql>OWL QL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
+if (st:get(st:execmode, st:standalone), 
+    st:format("%s", ?mess), 
+    st:format(
+        "<span class='owlql'>OWL QL: <a href='%s'>%s</a>.</span>", 
+        str(?href), str(?mess)))
+
+
+#	"<span class=owlql>OWL QL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
 	
 }
 where {
@@ -26,4 +33,7 @@ where {
 	### super Class Expression ###
 	("failSuper" "Statement not supported in a Super Class Expression" "Class_Expressions_2")
 	("super" "Not a valid Sub Class Expression" "Class_Expressions_2")
+	
+		###  Individual ###
+	("individual"  "Not a valid individual type expression" "Axioms_2" )
 }

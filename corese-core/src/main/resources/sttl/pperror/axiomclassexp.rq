@@ -1,14 +1,18 @@
 template st:axiomClassExp(?tag) {
 
-	"<span class=owl>OWL: Statement not supported without a <a href='" str(?href) "'>" str(?mess) "</a> or a <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
+if (st:get(st:execmode, st:standalone), 
+    st:format("OWL: %s %s", ?mess1, ?mess2), 
+    st:format("<span class='owl'>OWL: %s %s</span>", ?mess1, ?mess2)
+)            
+
+#	"<span class=owl>OWL: Statement not supported without a <a href='" str(?href) "'>" str(?mess) "</a> or a <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
 
 }
 where {
-
-	bind(st:linkOWL(?id) as ?href)
-	bind(st:linkOWL(?idb) as ?hrefb)
 	
-} values (?tag ?mess ?id ?messb ?idb) {
+}
+
+values (?tag ?mess1 ?mess2) {
 	### axiom ###
-	("axiomClassExp" "Class Expression" "Class_Expressions" "Data Range" "Data_Ranges")
+	("axiomClassExp" "Expression E in: unionOf, intersectionOf, complementOf, oneOf" "require: subClassOf E, equivalentClass E, etc.")
 }

@@ -1,6 +1,12 @@
 template st:allEL(?tag) {
 
-	"<span class=owlel>OWL EL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
+if (st:get(st:execmode, st:standalone), 
+    st:format("%s", ?mess), 
+    st:format(
+        "<span class='owlel'>OWL EL: <a href='%s'>%s</a>.</span>", 
+        str(?href), str(?mess)))
+
+#	"<span class=owlel>OWL EL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
 
 }
 where {
@@ -22,4 +28,7 @@ where {
 	### classExp ###
 	("failClassExp" "Statement not supported in a Class Expression" "Class_Expressions")
 	("classExp" "Not a valid Class Expression" "Class_Expressions")
+	
+	###  Individual ###
+	("individual"  "Not a valid individual type expression" "Axioms_2" )
 }

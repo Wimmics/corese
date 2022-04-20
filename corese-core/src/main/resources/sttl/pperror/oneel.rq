@@ -1,7 +1,13 @@
 template st:oneEL(?tag) {
 
-	"<span class=owlel>OWL EL: Enumeration with more than one <a href='" str(?hrefa) "'>" str(?messa) "</a> or <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
-
+if (st:get(st:execmode, st:standalone), 
+    st:format("OWL EL: Enumeration with more than one %s or %s", str(?messa), str(?messb)),
+    st:format("<span class='owlel'>OWL EL: Enumeration with more than one <a href='%s'>%s</a> or <a href='%s'>%s</a></span>", 
+        str(?hrefa), str(?messa), str(?hrefb), str(?messb))
+)
+    
+#	"<span class='owlel'>OWL EL: Enumeration with more than one <a href='" str(?hrefa) "'>" str(?messa) "</a> or <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
+	
 }
 where {
 

@@ -1,5 +1,5 @@
 template st:main(?in) {
-    str(?res)  
+    str(?mes)
 }
 where {
   values ?e { unnest(st:errors(?in)) }
@@ -17,6 +17,6 @@ values (?type ?uri) {
 } 
 
  bind ( st:call-template(?uri, ?desc)  as ?res)
- 
- filter (strlen(?res) > 0)
-} 
+ bind (if (strlen(?res) = 0, ?e, ?res) as ?mes)
+ #filter (strlen(?res) > 0)
+}

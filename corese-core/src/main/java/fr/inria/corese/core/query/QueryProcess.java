@@ -42,6 +42,7 @@ import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.print.TripleFormat;
 import fr.inria.corese.core.producer.DataBrokerConstructExtern;
 import fr.inria.corese.core.query.update.GraphManager;
+import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.util.Extension;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
@@ -1245,6 +1246,10 @@ public class QueryProcess extends QuerySolver {
             return getDefaultVisitor();
         }
         return getCurrentEval().getVisitor();
+    }
+    
+    public TemplateVisitor getTemplateVisitor() {
+        return (TemplateVisitor) getCreateBinding().getTransformerVisitor();
     }
     
     

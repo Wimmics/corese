@@ -179,6 +179,15 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         }
         return list;
     }
+    
+    public boolean hasIntersection(List<BasicGraphPattern> list) {
+        for (BasicGraphPattern exp : list) {
+            if (!intersectionTriple(exp).isEmpty()) {
+                return true;
+            }
+        }
+        return false;
+    }
 
     // BGP body of service, graph
     public Exp getBodyExp() {

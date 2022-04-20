@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!--
 SPARQL Template Transformation
-Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri May 07 14:42:27 CEST 2021
+Olivier Corby - Wimmics - Inria UCA I3S
+Wed Apr 20 10:04:21 CEST 2022
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -10,10 +10,11 @@ Fri May 07 14:42:27 CEST 2021
 <body>
 <![CDATA[
 template st:allRL(?tag) {
+
 if (st:get(st:execmode, st:standalone), 
     st:format("%s", ?mess), 
     st:format(
-        "<span class=owlrl>OWL RL: <a href='%s'>%s</a>.</span>", 
+        "<span class='owlrl'>OWL RL: <a href='%s'>%s</a>.</span>", 
         str(?href), str(?mess)))
 }
 where {
@@ -100,7 +101,7 @@ where {
 <body>
 <![CDATA[
 template st:main(?in) {
-    str(?res)  
+    str(?mes)
 }
 where {
   values ?e { unnest(st:errors(?in)) }
@@ -118,9 +119,9 @@ values (?type ?uri) {
 } 
 
  bind ( st:call-template(?uri, ?desc)  as ?res)
- 
- filter (strlen(?res) > 0)
-} 
+ bind (if (strlen(?res) = 0, ?e, ?res) as ?mes)
+ #filter (strlen(?res) > 0)
+}
 ]]>
 </body>
 </rule>
@@ -167,7 +168,14 @@ function st:linkOWL(?x) {
 <![CDATA[
 template st:allQL(?tag) {
 
-	"<span class=owlql>OWL QL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
+if (st:get(st:execmode, st:standalone), 
+    st:format("%s", ?mess), 
+    st:format(
+        "<span class='owlql'>OWL QL: <a href='%s'>%s</a>.</span>", 
+        str(?href), str(?mess)))
+
+
+#	"<span class=owlql>OWL QL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
 	
 }
 where {
@@ -193,6 +201,9 @@ where {
 	### super Class Expression ###
 	("failSuper" "Statement not supported in a Super Class Expression" "Class_Expressions_2")
 	("super" "Not a valid Sub Class Expression" "Class_Expressions_2")
+	
+		###  Individual ###
+	("individual"  "Not a valid individual type expression" "Axioms_2" )
 }
 ]]>
 </body>
@@ -203,7 +214,13 @@ where {
 <![CDATA[
 template st:allEL(?tag) {
 
-	"<span class=owlel>OWL EL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
+if (st:get(st:execmode, st:standalone), 
+    st:format("%s", ?mess), 
+    st:format(
+        "<span class='owlel'>OWL EL: <a href='%s'>%s</a>.</span>", 
+        str(?href), str(?mess)))
+
+#	"<span class=owlel>OWL EL: <a href='" str(?href) "'>" str(?mess) "</a>.</span>"
 
 }
 where {
@@ -225,6 +242,9 @@ where {
 	### classExp ###
 	("failClassExp" "Statement not supported in a Class Expression" "Class_Expressions")
 	("classExp" "Not a valid Class Expression" "Class_Expressions")
+	
+	###  Individual ###
+	("individual"  "Not a valid individual type expression" "Axioms_2" )
 }
 ]]>
 </body>
@@ -235,8 +255,14 @@ where {
 <![CDATA[
 template st:oneEL(?tag) {
 
-	"<span class=owlel>OWL EL: Enumeration with more than one <a href='" str(?hrefa) "'>" str(?messa) "</a> or <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
-
+if (st:get(st:execmode, st:standalone), 
+    st:format("OWL EL: Enumeration with more than one %s or %s", str(?messa), str(?messb)),
+    st:format("<span class='owlel'>OWL EL: Enumeration with more than one <a href='%s'>%s</a> or <a href='%s'>%s</a></span>", 
+        str(?hrefa), str(?messa), str(?hrefb), str(?messb))
+)
+    
+#	"<span class='owlel'>OWL EL: Enumeration with more than one <a href='" str(?hrefa) "'>" str(?messa) "</a> or <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
+	
 }
 where {
 
@@ -282,17 +308,21 @@ where {
 <![CDATA[
 template st:axiomClassExp(?tag) {
 
-	"<span class=owl>OWL: Statement not supported without a <a href='" str(?href) "'>" str(?mess) "</a> or a <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
+if (st:get(st:execmode, st:standalone), 
+    st:format("OWL: %s %s", ?mess1, ?mess2), 
+    st:format("<span class='owl'>OWL: %s %s</span>", ?mess1, ?mess2)
+)            
+
+#	"<span class=owl>OWL: Statement not supported without a <a href='" str(?href) "'>" str(?mess) "</a> or a <a href='" str(?hrefb) "'>" str(?messb) "</a>.</span>"
 
 }
 where {
-
-	bind(st:linkOWL(?id) as ?href)
-	bind(st:linkOWL(?idb) as ?hrefb)
 	
-} values (?tag ?mess ?id ?messb ?idb) {
+}
+
+values (?tag ?mess1 ?mess2) {
 	### axiom ###
-	("axiomClassExp" "Class Expression" "Class_Expressions" "Data Range" "Data_Ranges")
+	("axiomClassExp" "Expression E in: unionOf, intersectionOf, complementOf, oneOf" "require: subClassOf E, equivalentClass E, etc.")
 }
 ]]>
 </body>
@@ -301,11 +331,11 @@ where {
 <rule>
 <body>
 <![CDATA[
-template st:display (?amap) {
+template st:display (?title, ?amap) {
 
     if (xt:size(?amap) = 0, 
-        "OWL RL Ontology",
-        concat("Ontology not in OWL RL: ", xt:size(?amap), " failures"))
+        str(?title),
+        concat(str(?title), " not correct: ", xt:size(?amap), " failures"))
         
     st:nl() st:nl() 
     

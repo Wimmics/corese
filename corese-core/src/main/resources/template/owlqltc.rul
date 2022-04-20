@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!--
 SPARQL Template Transformation
-Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Jun 21 13:43:42 CEST 2019
+Olivier Corby - Wimmics - Inria UCA I3S
+Tue Apr 19 17:10:54 CEST 2022
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -21,6 +21,31 @@ template st:start {
 }
 where {
 }
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Olivier Corby - Wimmics - INRIA I3S UNS CNRS - 2015
+#
+template st:main {
+    st:call-template-with(st:pperror, st:display, "OWL QL", ?map)
+}
+where {
+    bind (st:visit(st:start, st:trace) as ?vis)
+    bind (st:call-template(st:start)   as ?b)    
+    bind (st:errormap()                as ?map)
+}  
+
+function st:process(?x) {
+    ?x
+}
+
+
 
 ]]>
 </body>

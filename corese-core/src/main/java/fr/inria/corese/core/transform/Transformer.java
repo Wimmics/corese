@@ -71,6 +71,16 @@ public class Transformer implements TransformProcessor {
     public static final String TOSPIN = STL + "tospin";
     public static final String OWL = STL + "owl";
     public static final String OWLRL = STL + "owlrl";
+    public static final String OWL_RL = STL + "owlrl";
+    public static final String OWL_EL = STL + "owleltc";
+    public static final String OWL_QL = STL + "owlqltc";
+    public static final String OWL_TC = STL + "owltc";
+    
+    public static final String OWL_MAIN = STL + "main";
+    
+    public static final String PP_ERROR = STL + "pperror";
+    public static final String PP_ERROR_MAIN = STL + "main";
+    public static final String PP_ERROR_DISPLAY = STL + "display";
     public static final String DATASHAPE = STL + "dsmain";
     public static final String TEXT = STL + "text";
     public static final String TURTLE = STL + "turtle";
@@ -419,7 +429,7 @@ public class Transformer implements TransformProcessor {
         tune(exec);
     }
     
-    QueryProcess getQueryProcess() {
+    public QueryProcess getQueryProcess() {
         return exec;
     }
 
@@ -834,10 +844,13 @@ public class Transformer implements TransformProcessor {
     }
     
     public IDatatype process(String temp, IDatatype... ldt) throws EngineException {
-        return process(temp, false, null, null, null, ldt[0], (ldt.length == 1) ? null : ldt);
+        return process(temp, false, null, null, (Environment)null, ldt[0], (ldt.length == 1) ? null : ldt);
     }
 
-
+    public IDatatype process(String temp, Binding b, IDatatype... ldt) throws EngineException {
+        return process(temp, false, null, null, Mapping.create(b), ldt[0], (ldt.length == 1) ? null : ldt);
+    }
+    
     public static int getCount() {
         return count;
     }

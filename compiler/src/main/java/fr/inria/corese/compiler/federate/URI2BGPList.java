@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -44,6 +45,19 @@ class URI2BGPList {
         List<BasicGraphPattern> keyList() {
             ArrayList<BasicGraphPattern> list = new ArrayList<>();
             list.addAll(keySet());
+            return list;
+        }
+        
+        List<BasicGraphPattern> sortKeyList() {
+            return sort(keyList());
+        }
+        
+        List<BasicGraphPattern> sort(List<BasicGraphPattern> list) {
+            list.sort(new Comparator<>(){
+                public int compare(BasicGraphPattern bgp1, BasicGraphPattern bgp2) {
+                    return - Integer.compare(bgp1.size(), bgp2.size());
+                }
+            });
             return list;
         }
         

@@ -7,7 +7,6 @@ import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Union;
-import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -18,6 +17,12 @@ import java.util.List;
  * create:
  * map: bgp -> uriList where bgp are connected
  * 
+ * when BGP_LIST = true
+ * generate list or partition of connected bgp  with |bgp|>1
+ * generate service S {bgp}
+ * and complete each partition with missing triples
+ * 
+ * when BGP_LIST = false
  * for each |bgp| > 1
  * create: exp = service (uriList) {bgp}
  * complete exp with every triple not in bgp: 
@@ -30,8 +35,10 @@ import java.util.List;
  * 
  */
 public class RewriteBGPList {
+    public static boolean BGP_LIST = true;
+    public static boolean TRACE_BGP_LIST = false;
     
-    FederateVisitor visitor;
+    private FederateVisitor visitor;
     // connected bgp of triple with one uri
     URI2BGPList uri2bgp;
     // connected bgp of triple with several uri
@@ -51,20 +58,38 @@ public class RewriteBGPList {
     // return union
     Exp process(Atom namedGraph, Exp body, ArrayList<Exp> filterList) {
         ArrayList<Exp> list = new ArrayList<>();
-        // rewrite connected bgp where triple have several uri
-        for (BasicGraphPattern bgp : bgp2uri.keySet()) {
-            if (bgp.size()>1) {
-                // rewrite bgp and complete with triples not in bgp
-                BasicGraphPattern exp = 
-                        process(namedGraph, body, bgp, filterList);
+        // rewrite connected bgp 
+        List<BasicGraphPattern> sortedList = bgp2uri.sortKeyList();
+        
+        if (BGP_LIST) {
+            // compute list of partition of connected bgp
+            // and complete each partition with missing triple
+            List<List<BasicGraphPattern>> partitionList = partition(sortedList);
+            trace(sortedList, partitionList);
+            
+            for (List<BasicGraphPattern> bgpList : partitionList) {
+                // rewrite each partition and complete with missing triples 
+                BasicGraphPattern exp
+                        = process(namedGraph, body, bgpList, filterList);
                 list.add(exp);
             }
+
+        } else {
+            // consider each bgp and complete with missing triple
+            for (BasicGraphPattern bgp : sortedList) {
+                if (bgp.size() > 1) {
+                    // rewrite bgp and complete with triples not in bgp
+                    BasicGraphPattern exp
+                            = process(namedGraph, body, List.of(bgp), filterList);
+                    list.add(exp);
+                }
+            }
         }
-        
+                
         if (list.isEmpty()) {
-            // no bgp with several uri and size > 1
+            // no bgp (with several uri) and size > 1
             // process with one empty bgp to get all triples
-            Exp exp = process(namedGraph, body, BasicGraphPattern.create(), filterList);
+            Exp exp = process(namedGraph, body, new ArrayList<>(), filterList);
             if (exp.size()==0) {
                 return null;
             }
@@ -74,50 +99,35 @@ public class RewriteBGPList {
         return union;
     }
     
-    // find two bgp with no triple intersection
-    void bgpIntersection() {
-        List<BasicGraphPattern> bgpList = bgp2uri.keyList();
-        
-        for (int i = 0; i < bgpList.size(); i++) {
-            BasicGraphPattern bgp1 = bgpList.get(i);
-            if (bgp1.size() > 1) {
-                for (int j = i + 1; j < bgpList.size(); j++) {
-                    BasicGraphPattern bgp2 = bgpList.get(j);
-                    if (bgp2.size()>1) {
-                        trace("bgp1: %s\nbgp2: %s\ninter:%s", 
-                        bgp1, bgp2, bgp1.intersectionTriple(bgp2));
-                    }
-                }
-            }
-        }
-    }
-    
-    // rewrite one connected bgp where triple have several uri
+    // rewrite partition of connected bgp list
+    // complete with other triple
     BasicGraphPattern process
-        (Atom namedGraph, Exp body, BasicGraphPattern bgp, ArrayList<Exp> filterList) {
+        (Atom namedGraph, Exp body, List<BasicGraphPattern> bgpList, ArrayList<Exp> filterList) {
 
         BasicGraphPattern exp = BasicGraphPattern.create();
         
-        if (bgp.size() > 0) {
-            // list of uri for the bgp.
-            List<String> uriList = bgp2uri.get(bgp);
-            // insert relevant filter from body into bgp
-            filter(body, bgp);
-            Service service = Service.newInstance(uriList, bgp);
-            exp.add(service);
+        if (bgpList.size() > 0) {
+            for (BasicGraphPattern bgp : bgpList) {
+                // list of uri for the bgp.
+                List<String> uriList = bgp2uri.get(bgp);
+                // insert relevant filter from body into bgp
+                getVisitor().filter(body, bgp);
+                Service service = Service.newInstance(uriList, bgp);
+                exp.add(service);
+            }
         }
 
         // complete with other triple (with several uri) not in bgp
         for (Triple triple : uriList2bgp.getTripleList()) {
-            if (!bgp.getBody().contains(triple)) {
-                Service service = visitor.getRewriteTriple()
-                 .rewriteTripleWithSeveralURI(namedGraph, triple, bgp, filterList);
-                filter(body, service.getBodyExp());
+            if (! contains(bgpList, triple)) {
+                Service service = getVisitor().getRewriteTriple()
+                 .rewriteTripleWithSeveralURI(namedGraph, triple, body, filterList);
+               // getVisitor().filter(body, service.getBodyExp());
                 exp.add(service);
             }
         }
         
-        if (!visitor.isTestFederateNew()) {
+        if (!visitor.isTestFederate()) {
             // complete with triple with one URI, not in bgp
             // these triple are already rewritten as service
             for (Service srv : uri2bgp.getServiceList()) {
@@ -132,28 +142,61 @@ public class RewriteBGPList {
         // @hint: 
         // merge(true)  merge all bgp
         // merge(false) merge connected bgp only
-        visitor.getSimplify().merge(exp, true);
+        getVisitor().getSimplify().merge(exp, true);
         // @todo: filter
 
         return exp;
     }
         
+    boolean contains(List<BasicGraphPattern> list, Triple t) {
+        for (BasicGraphPattern bgp : list) {
+            if (bgp.getBody().contains(t)) {
+                return true;
+            }
+        }
+        return false;
+    }
+        
+    // return list of partition of connected bgp
+    List<List<BasicGraphPattern>> partition(List<BasicGraphPattern> bgpList) {
+        List<List<BasicGraphPattern>> res  = new ArrayList<>();
+        rec(bgpList, new ArrayList<>(), res, 0);        
+        return res;
+    }
+
+    // compute all combinaisons of disjoint bgp of in where |bgp| > 1 
+    void rec(List<BasicGraphPattern> bgpList, List<BasicGraphPattern> res, List<List<BasicGraphPattern>> resList, int i) {
+        boolean suc = false;
+        
+        for (int j = i; j<bgpList.size(); j++) {
+            BasicGraphPattern bgp = bgpList.get(j);
+            if (bgp.size()>1 && ! bgp.hasIntersection(res)) {
+                suc = true;
+                res.add(bgp);
+                rec(bgpList, res, resList, j+1);
+                res.remove(res.size()-1);
+            }
+        }
+        
+        if (!suc && !res.isEmpty()) {
+            resList.add(List.copyOf(res));
+        }
+    }   
+    
+
     void trace(String mes, Object... obj) {
         System.out.println(String.format(mes, obj));
     }
         
-    // copy relevant filter from body into bgp
-    void filter(Exp body, Exp bgp) {
-        List<Variable> varList = bgp.getInscopeVariables();
-        for (Exp exp : body) {
-            if (exp.isFilter()) {
-                if (exp.getFilter().isTermExistRec()) {
-                    // skip
-                }
-                else if (exp.getFilter().isBound(varList) && 
-                        !bgp.getBody().contains(exp)) {
-                    bgp.add(exp);
-                }               
+    void trace(List<BasicGraphPattern> sortedList, List<List<BasicGraphPattern>> alist) {
+        if (TRACE_BGP_LIST) {
+            for (BasicGraphPattern bgp : sortedList) {
+                System.out.println("bgp: " + bgp);
+                System.out.println("");
+            }
+            for (List<BasicGraphPattern> ll : alist) {
+                System.out.println("partition: " + ll);
+                System.out.println("");
             }
         }
     }
@@ -165,6 +208,14 @@ public class RewriteBGPList {
         else {
             return Union.create(list.get(n), union(list, n+1));
         }
+    }
+
+    public FederateVisitor getVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(FederateVisitor visitor) {
+        this.visitor = visitor;
     }
     
     

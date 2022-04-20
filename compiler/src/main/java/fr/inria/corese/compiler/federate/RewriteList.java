@@ -9,11 +9,12 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- *
+ * Rewrite rdf list into one service bgp 
+ * Rewrite bgp with bnode into one service bgp: ?s :p [ :q ?v ]
  */
 public class RewriteList {
       
-    FederateVisitor visitor;
+    private FederateVisitor visitor;
     
     RewriteList(FederateVisitor vis){
         visitor = vis;
@@ -25,7 +26,7 @@ public class RewriteList {
     // return false when one bgp has no service
     boolean process(Exp body) {
         boolean suc = true;
-        if (visitor.isProcessList()) {
+        if (getVisitor().isProcessList()) {
             List<BasicGraphPattern> list = new ArrayList<>();
             body.getRDFList(list);
             body.getBGPWithBnodeVariable(list);
@@ -40,9 +41,10 @@ public class RewriteList {
             Exp service = bgp2service(exp);
             if (service == null) {
                 // no service handle list
-                visitor.logger.info("No service for exp: " + exp);
+                getVisitor().logger.info("No service for exp: " + exp);
                 suc = false;
             } else {
+                getVisitor().filter(body, exp);
                 replace(body, exp, service);
             }
         }
@@ -50,8 +52,10 @@ public class RewriteList {
     }
     
     void replace(Exp body, BasicGraphPattern bgp, Exp serviceExp) {
-        for (Exp triple : bgp) {
-            body.getBody().remove(triple);
+        for (Exp exp : bgp) {
+            if (exp.isTriple()) {
+                body.getBody().remove(exp);
+            }
         }
         body.add(serviceExp);
     }
@@ -63,7 +67,7 @@ public class RewriteList {
         List<Atom> uriList = new ArrayList<>();
         int count = 0;
         for (Exp triple : bgp) {
-            List<Atom> list = visitor.getServiceList(triple.getTriple());
+            List<Atom> list = getVisitor().getServiceList(triple.getTriple());
             if (count++ == 0) {
                 uriList = list;
             }
@@ -97,6 +101,14 @@ public class RewriteList {
         else {
             return Union.create(list.get(n), union(list, n+1));
         }
+    }
+
+    public FederateVisitor getVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(FederateVisitor visitor) {
+        this.visitor = visitor;
     }
     
     

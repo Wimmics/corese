@@ -63,8 +63,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     // Federation definitions: URL -> list URL
     private static HashMap<String, List<Atom>> federation;
     public static boolean SEVERAL_URI = false;
-    public static boolean TEST_FEDERATE = false;
-    public static boolean TEST_FEDERATE_NEW = false;
+    public static boolean TEST_FEDERATE = true;
     public static boolean TRACE_FEDERATE = false;
     public static boolean PROCESS_LIST = true;
     
@@ -102,15 +101,13 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean sparql = false;
     private boolean severalURI = SEVERAL_URI;
     private boolean processList = PROCESS_LIST;
-    boolean traceFederate = TRACE_FEDERATE;
+    private boolean traceFederate = TRACE_FEDERATE;
     // when true: process connected bgp with several uri for join on bnode
     private boolean testFederate = TEST_FEDERATE;
     // process triple with one or several URI in the same way
     // use case: connected bgp {t1 t2 t3} where t1 t2 have uri u1 u2 and t3 has uri u2
     // we must process service u2 {t1 t2 t3} for join on bnode
     // when testFederateNew=true we do
-    // when false we do not because we separate triple with one uri from triple with several uri
-    private boolean testFederateNew = TEST_FEDERATE_NEW;
 
     ASTQuery ast;
     Stack stack;
@@ -513,10 +510,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             if (! suc) {
                 // @todo: fail
             }
+            // if testFederate, compute uri2bgp 
+            // but do not rewrite triple with one uri
             URI2BGPList uri2bgp = 
                  getGroupBGP().rewriteTripleWithOneURI(namedGraph, main, body, filterList); 
             
-            if (traceFederate) {
+            if (isTraceFederate()) {
                 trace("body first phase:\n%s", body);
                 uri2bgp.trace();
             }     
@@ -680,6 +679,22 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
         for (Exp exp : list) {
             body.getBody().remove(exp);
+        }
+    }
+    
+     // copy relevant filter from body into bgp
+    void filter(Exp body, Exp bgp) {
+        List<Variable> varList = bgp.getInscopeVariables();
+        for (Exp exp : body) {
+            if (exp.isFilter()) {
+                if (exp.getFilter().isTermExistRec()) {
+                    // skip
+                }
+                else if (exp.getFilter().isBound(varList) && 
+                        !bgp.getBody().contains(exp)) {
+                    bgp.add(exp);
+                }               
+            }
         }
     }
     
@@ -1072,12 +1087,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         return this;
     }
 
-    public boolean isTestFederateNew() {
-        return testFederateNew;
+    public boolean isTraceFederate() {
+        return traceFederate;
     }
 
-    public void setTestFederateNew(boolean testFederateNew) {
-        this.testFederateNew = testFederateNew;
+    public void setTraceFederate(boolean traceFederate) {
+        this.traceFederate = traceFederate;
     }
 
    

@@ -5,7 +5,6 @@ import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
-import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.Triple;
@@ -113,7 +112,7 @@ public class RewriteBGP {
                 Triple triple = exp.getTriple();
                 List<Atom> list = visitor.getServiceList(triple);
                 
-                if (visitor.isTestFederateNew()) {
+                if (visitor.isTestFederate()) {
                     // do not distinguish one vs several URI
                     // list of connected BGP of triple with any nb URI
                     assignTripleToConnectedBGP(uriList2bgpList, triple, list);

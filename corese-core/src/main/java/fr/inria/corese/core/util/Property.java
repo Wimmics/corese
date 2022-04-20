@@ -3,6 +3,7 @@ package fr.inria.corese.core.util;
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.federate.FederateVisitor;
+import fr.inria.corese.compiler.federate.RewriteBGPList;
 import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
@@ -531,6 +532,7 @@ public class Property {
                 
             case TRACE_GENERIC:
                 FederateVisitor.TRACE_FEDERATE=b;
+                RewriteBGPList.TRACE_BGP_LIST=b;
                 break;
 
             case SOLVER_SORT_CARDINALITY:

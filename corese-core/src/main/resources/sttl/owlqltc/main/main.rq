@@ -1,0 +1,18 @@
+#
+# Olivier Corby - Wimmics - INRIA I3S UNS CNRS - 2015
+#
+template st:main {
+    st:call-template-with(st:pperror, st:display, "OWL QL", ?map)
+}
+where {
+    bind (st:visit(st:start, st:trace) as ?vis)
+    bind (st:call-template(st:start)   as ?b)    
+    bind (st:errormap()                as ?map)
+}  
+
+function st:process(?x) {
+    ?x
+}
+
+
+

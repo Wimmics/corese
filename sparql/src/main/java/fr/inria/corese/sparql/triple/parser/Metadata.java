@@ -88,11 +88,13 @@ public class Metadata extends ASTObject
     // delete update query remove (nested) edge
     public static final int RDF_STAR_DELETE  = 68;
     
+    
     // uncertainty triple metadata
     public static final int METADATA  = 70;
     public static final int VISITOR   = 71;
     public static final int MOVE      = 72;
     public static final int PATH_TYPE = 73;
+    public static final int SLICE     = 74;
       
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
@@ -170,6 +172,7 @@ public class Metadata extends ASTObject
         define("@sparql",   SPARQL);      
         define("@index",    INDEX);      
         define("@limit",    LIMIT);      
+        define("@slice",    SLICE);      
         define("@move",     MOVE);      
         define("@bounce",   BOUNCE);      
         define("@sparqlzero", SPARQL10);      

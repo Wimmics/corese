@@ -72,7 +72,8 @@ public class NSManager extends ASTObject {
     public static final String CORESE = "http://ns.inria.fr/corese/";
     public static final String RULE  = CORESE+"rule/";
     public static final String HTTP = "http://ns.inria.fr/http/";
-    
+    public static final String GEO = "http://www.w3.org/2003/01/geo/wgs84_pos#";
+   
     public static final String INDEX    = "http://ns.inria.fr/rdf/index/";
     public static final String FEDERATE = "http://ns.inria.fr/federation/";
     
@@ -325,7 +326,7 @@ public class NSManager extends ASTObject {
         def.put(DOM, "dom");
         def.put(RESOURCE, "res");
         def.put(INDEX, "idx");
-        //def.put(HTTP, "http");
+        def.put(GEO, "geo");
     }
 
     // add default namespaces

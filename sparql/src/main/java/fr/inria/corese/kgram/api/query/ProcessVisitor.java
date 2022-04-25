@@ -97,7 +97,7 @@ public interface ProcessVisitor extends Pointerable {
     default int timeout(Node serv) { return 0; }
     
     default int slice() { return SLICE_DEFAULT; }
-
+    @Deprecated
     default int slice(Node serv, Mappings map) { return SLICE_DEFAULT; }
     
     // return result for ldscript call java:setSlice()

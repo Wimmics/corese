@@ -122,7 +122,7 @@ public class Simplify {
 
             if (mod) {
                 simplifyGraph2(first.getBodyExp());
-                new Sorter().process(first.getBodyExp());
+                visitor.sort(first.getBodyExp());
             }
         }        
         bgp = move(bgp, exclude);       
@@ -472,7 +472,7 @@ public class Simplify {
                             exp.set(i, g);
                             list.add(g2);
                             ee1 = g;
-                            new Sorter().process(g.getBodyExp());
+                            visitor.sort(g.getBodyExp());
                         }
                     }
                 }

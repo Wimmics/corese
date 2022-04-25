@@ -31,7 +31,7 @@ import java.util.List;
 /**
  *
  * Ask remote endpoints if they contain predicates of the federated query
- * Build a table: triple | predicate -> { Service_1, Service_n }
+ * Build a table: triple | predicate -> ( uri )
  * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
@@ -39,12 +39,14 @@ import java.util.List;
 public class Selector {
     
     private static final String SERVER_VAR = "?serv";
+    public static boolean TEST_JOIN = false;
     
     private FederateVisitor vis;
     ASTQuery ast;
     private ASTSelector astSelector;
     HashMap<String, String> predicateVariable;
     HashMap<Triple, String> tripleVariable;
+    HashMap<BasicGraphPattern, String> bgpVariable;
     QuerySolver exec;
     // use case: reuse federated visitor source selection    
     private Mappings mappings;
@@ -63,7 +65,7 @@ public class Selector {
         setAstSelector(new ASTSelector());
         predicateVariable = new HashMap<>();
         tripleVariable    = new HashMap<>();
-
+        bgpVariable       = new HashMap<>();
         if (ast.hasMetadata(Metadata.SPARQL10)) {
             sparql10 = true;
         }
@@ -153,8 +155,18 @@ public class Selector {
                 }
             }
             
+            // table: bgp -> exists boolean variable
+            // map: {t1 t2} -> (uri) list of uri where join(t1, t2) = true
+            for (BasicGraphPattern bgp : bgpVariable.keySet()) {
+                String var = bgpVariable.get(bgp);
+                IDatatype val =  m.getValue(var);
+                if (val != null && val.booleanValue()) {
+                    getBgpService().get(bgp).add(Constant.create(serv));
+                }
+            }
         }
         Date d2 = new Date();
+        getAstSelector().complete();       
         trace(map, d1, d2);
     }
     
@@ -229,13 +241,18 @@ public class Selector {
     void declare(Constant p, Variable var) {
         predicateVariable.put(p.getLabel(), var.getLabel());
         if (! getPredicateService().containsKey(p.getLabel())) {
-            getPredicateService().put(p.getLabel(), new ArrayList<Atom>());
+            getPredicateService().put(p.getLabel(), new ArrayList<>());
         }
     }
     
     void declare(Triple t, Variable var) {
         tripleVariable.put(t, var.getLabel());
-        getTripleService().put(t, new ArrayList<Atom>());
+        getTripleService().put(t, new ArrayList<>());
+    }
+    
+    void declare(BasicGraphPattern bgp, Variable var) {
+        bgpVariable.put(bgp, var.getLabel());
+        getBgpService().put(bgp, new ArrayList<>());
     }
     
     /**
@@ -359,73 +376,42 @@ public class Selector {
     
     BasicGraphPattern createBGP(Variable serv, ASTQuery aa) {
         BasicGraphPattern bgp = BasicGraphPattern.create();
-        int i = 0;
-        
+        int i = 0;        
+        i = selectPredicate(aa, bgp, i);        
+        selectTriple(aa, bgp, i);                
+        return bgp;
+    }
+    
+    int selectPredicate(ASTQuery aa, BasicGraphPattern bgp, int i) {
         for (Constant p : ast.getPredicateList()) {
             if (p.getLabel().equals(ASTQuery.getRootPropertyURI())) {
-
+                // predicate with variable: skip it
             } else {
                 Variable s = Variable.create("?s");
                 Variable o = Variable.create("?o");
-                Triple t   = aa.triple(s, p, o);
-                
+                Triple t = aa.triple(s, p, o);
+
                 Variable var;
                 if (count) {
                     var = count(aa, bgp, t, i);
-                }
-                else {
+                } else {
                     var = exist(aa, bgp, t, i);
                 }
                 declare(p, var);
-                                
-                i++;
-            }                      
-        }
-        
-        selectTriple(aa, bgp, i);
-                
-        return bgp;
-    }
-    
-    /**
-     * Create BGP to query graph index
-     */
-    BasicGraphPattern createBGPIndex(Variable serv, ASTQuery aa) {
-        BasicGraphPattern bgp = BasicGraphPattern.create();
-        int i = 0;
-        
-        for (Constant p : ast.getPredicateList()) {
-            if (p.getLabel().equals(ASTQuery.getRootPropertyURI())) {
 
-            } else {
-                Constant pns = aa.createQName("idx:namespace");
-                Constant pdt = aa.createQName("idx:data");
-                Constant ppr = aa.createQName("idx:predicate");
-                
-                Variable ns  = Variable.create("?ns");
-                Variable dt  = Variable.create("?dt");
-                Variable pr  = Variable.create("?pr");
-                
-                Triple t1 = aa.triple(serv, pns, ns);
-                Triple t2 = aa.triple(ns, pdt, dt);
-                Triple t3 = aa.triple(dt, ppr, p);
-                
-                // exists { ?serv idx:namespace/idx:data/idx:predicate predicate }
-                Variable var = exist(aa, bgp, aa.bgp(t3, t2, t1), i);
-                declare(p, var);
-                                
                 i++;
-            }                      
+            }
         }
-        
-        selectTriple(aa, bgp, i);
-                
-        return bgp;
+        return i;
     }
     
+    // consider specific triple such as triple with constant value
     void selectTriple(ASTQuery aa, BasicGraphPattern bgp, int i) {
         if (getVisitor().isSelectFilter()) {
-            selectTripleFilter(aa, bgp, i);
+            i = selectTripleFilter(aa, bgp, i);
+            if (TEST_JOIN) {
+                selectTripleJoin(aa, bgp, i);
+            }
         }
         else {
             selectTripleBasic(aa, bgp, i);
@@ -434,9 +420,11 @@ public class Selector {
 
     /**
      * generate exists { s p o filter F } where F variables are bound by s p o
-     * by default filter limited to x = y 
+     * consider also triple with constant
+     * by default filter limited to subset of filters: 
+     * = regex strstarts strcontains
      */
-    void selectTripleFilter(ASTQuery aa, BasicGraphPattern bgp, int i) {
+    int selectTripleFilter(ASTQuery aa, BasicGraphPattern bgp, int i) {
         List<BasicGraphPattern> list = new SelectorFilter(ast).process();
         for (BasicGraphPattern exp : list) {
             Triple t = exp.get(0).getTriple();
@@ -451,6 +439,26 @@ public class Selector {
                 i++;
             }
         }
+        return i;
+    }
+    
+    void selectTripleJoin(ASTQuery aa, BasicGraphPattern bgp, int i) {
+        List<BasicGraphPattern> list = new SelectorFilter(ast).processJoin();
+        for (BasicGraphPattern exp : list) {
+            // @todo: check exp not already processed
+            Variable var;
+            if (count) {
+                var = count(aa, bgp, exp, i);
+            } else {
+                var = exist(aa, bgp, exp, i);
+            }
+            declare(exp, var);
+            i++;
+        }
+    }
+    
+    boolean selectable(Triple t) {
+        return (t.getSubject().isConstant() || t.getObject().isConstant());
     }
 
     
@@ -506,9 +514,7 @@ public class Selector {
     }
     
     
-    boolean selectable(Triple t) {
-        return (t.getSubject().isConstant() || t.getObject().isConstant());
-    }
+
     
     /**
      * for SPARQL 1.0 
@@ -545,6 +551,42 @@ public class Selector {
         return bgp;
     }
     
+     /**
+     * Create BGP to query graph index
+     */
+    BasicGraphPattern createBGPIndex(Variable serv, ASTQuery aa) {
+        BasicGraphPattern bgp = BasicGraphPattern.create();
+        int i = 0;
+        
+        for (Constant p : ast.getPredicateList()) {
+            if (p.getLabel().equals(ASTQuery.getRootPropertyURI())) {
+
+            } else {
+                Constant pns = aa.createQName("idx:namespace");
+                Constant pdt = aa.createQName("idx:data");
+                Constant ppr = aa.createQName("idx:predicate");
+                
+                Variable ns  = Variable.create("?ns");
+                Variable dt  = Variable.create("?dt");
+                Variable pr  = Variable.create("?pr");
+                
+                Triple t1 = aa.triple(serv, pns, ns);
+                Triple t2 = aa.triple(ns, pdt, dt);
+                Triple t3 = aa.triple(dt, ppr, p);
+                
+                // exists { ?serv idx:namespace/idx:data/idx:predicate predicate }
+                Variable var = exist(aa, bgp, aa.bgp(t3, t2, t1), i);
+                declare(p, var);
+                                
+                i++;
+            }                      
+        }
+        
+        selectTriple(aa, bgp, i);
+                
+        return bgp;
+    }
+    
     Exp optional(List<Triple> list) {
         Optional option = new Optional(BasicGraphPattern.create(), BasicGraphPattern.create(list.get(0)));
         for (int i = 1; i < list.size(); i++) {
@@ -559,6 +601,12 @@ public class Selector {
 
     public HashMap<Triple, List<Atom>> getTripleService() {
         return getAstSelector().getTripleService();
+    }
+    
+    // map: bgp -> (uri)
+    // where bgp is join of (two) triples
+    public HashMap<BasicGraphPattern, List<Atom>> getBgpService() {
+        return getAstSelector().getBgpService();
     }
     
     public ASTSelector getAstSelector() {

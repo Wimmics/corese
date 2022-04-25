@@ -10,11 +10,13 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-
+/**
+ * Subset of filter to be considered in source selection and in 
+ * sort bgp
+ */
 public class SelectorFilter {
     static HashMap<String, Boolean> map;
     static String[] ope = {"=", "regex", "contains", "strstarts"};
-    
     ASTQuery ast;
     ArrayList<BasicGraphPattern> res;
     
@@ -44,11 +46,32 @@ public class SelectorFilter {
         return res;
     }
     
+    List<BasicGraphPattern> processJoin() {
+        processJoin(ast);       
+        return res;
+    }
+    
     void process(ASTQuery ast) {
         for (Expression exp : ast.getModifierExpressions()) {
-            process(exp);
+            processFilter(exp);
         }
         process(ast.getBody());
+    }
+    
+    void processJoin(ASTQuery ast) {
+        processJoin(ast.getBody());
+    }
+    
+    void processJoin(Exp body) {
+        if (body.isBGP()) {
+            processBGPJoin(body);
+        }
+        else if (body.isQuery()) {
+            processJoin(body.getAST());
+        }
+        else for (Exp exp : body) {
+            processJoin(exp);
+        }
     }
     
     
@@ -65,9 +88,38 @@ public class SelectorFilter {
     }
     
     void processBGP(Exp body) {
+        processBGPTriple(body);
+    }
+    
+    // generate test of join {t1 t2}
+    void processBGPJoin(Exp body) {
+        int i = 0;
+        for (Exp exp : body) {
+            if (exp.isTriple()) {
+                for (int j = i+1; j<body.size(); j++) {
+                    Exp ee = body.get(j);
+                    if (ee.isTriple()) {
+                        Triple t1 = exp.getTriple();
+                        Triple t2 = ee.getTriple();
+                        if (t1.isConnected(t2)) {
+                            add(t1, t2);
+                        }
+                    }
+                }
+            }
+            i++;
+        }
+    }
+    
+    void add(Triple t1, Triple t2) {
+        BasicGraphPattern bgp = BasicGraphPattern.create(t1, t2);
+        res.add(bgp);
+    }
+    
+    void processBGPTriple(Exp body) {
         for (Exp exp : body) {
             if (exp.isFilter() || exp.isBind()) {
-                process(exp.getFilter());
+                processFilter(exp.getFilter());
             }
             else if (exp.isTriple()) {
                 process(exp.getTriple(), body);
@@ -77,22 +129,25 @@ public class SelectorFilter {
         }
     }
     
-    void process (Expression exp) {
+    void processFilter (Expression exp) {
         if (exp.isTermExist()) {
             process(exp.getTerm().getExistBGP());
         }
         else if (exp.isTerm()) {
             for (Expression e : exp.getArgs()) {
-                process(e);
+                processFilter(e);
             }
         }
     }
         
+    // for each triple:
     // collect relevant filter or values for triple variables
+    // create a candidate bgp with filter, add bgp in res
     void process(Triple t, Exp body) {
         BasicGraphPattern bgp = ast.bgp(t);
         res.add(bgp);
         List<Variable> list = t.getVariables();
+        
         if (!list.isEmpty()) {
             for (Exp exp : body) {
                 if (exp.isFilter() && accept(exp.getFilter())) {

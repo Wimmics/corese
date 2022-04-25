@@ -127,7 +127,7 @@ public class RewriteBGPList {
             }
         }
         
-        if (!visitor.isTestFederate()) {
+        if (!visitor.isFederateBGP()) {
             // complete with triple with one URI, not in bgp
             // these triple are already rewritten as service
             for (Service srv : uri2bgp.getServiceList()) {

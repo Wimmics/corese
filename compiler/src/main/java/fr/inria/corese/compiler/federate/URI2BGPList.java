@@ -1,6 +1,10 @@
 package fr.inria.corese.compiler.federate;
 
+import fr.inria.corese.kgram.api.query.ASTQ;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Triple;
@@ -28,6 +32,7 @@ class URI2BGPList {
     // main URI2BGPList for triple with one URI
     // uriList2bgp for triple with several URI 
     private URI2BGPList uriList2bgp;
+    private FederateVisitor visitor;
     
     class BGP2URI extends HashMap<BasicGraphPattern, List<String>> {
         
@@ -64,11 +69,12 @@ class URI2BGPList {
     }
     
     
-    URI2BGPList() {
+    URI2BGPList(FederateVisitor vis) {
         uri2bgp = new HashMap<>();
         bgp2uri = new BGP2URI();
         tripleList = new ArrayList<>();
         serviceList = new ArrayList<>();
+        visitor = vis;
     }
     
     void complete() {
@@ -116,6 +122,11 @@ class URI2BGPList {
         return uri2bgp;
     }
     
+
+    boolean join(BasicGraphPattern bgp, Triple t, String uri) {
+        return getVisitor().getAST().getAstSelector().join(bgp, t, uri);        
+    }
+    
     // assign triple to connected bgp of service uri
     // merge connected bgp
     void assignTripleToConnectedBGP(Triple triple, String uri) {
@@ -127,8 +138,8 @@ class URI2BGPList {
         for (BasicGraphPattern bgp : bgpList) {
             if (bgp.isConnected(triple)) {
                 bgp.add(triple);
-                isConnected = true;
-                break;
+                    isConnected = true;
+                    break;
             }
             i++;
         }
@@ -285,6 +296,14 @@ class URI2BGPList {
 
     public void setServiceList(ArrayList<Service> serviceList) {
         this.serviceList = serviceList;
+    }
+
+    public FederateVisitor getVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(FederateVisitor visitor) {
+        this.visitor = visitor;
     }
 
 }

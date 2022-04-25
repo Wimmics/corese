@@ -64,6 +64,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private static HashMap<String, List<Atom>> federation;
     public static boolean SEVERAL_URI = false;
     public static boolean TEST_FEDERATE = true;
+    public static boolean FEDERATE_BGP= true;
     public static boolean TRACE_FEDERATE = false;
     public static boolean PROCESS_LIST = true;
     
@@ -104,6 +105,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean traceFederate = TRACE_FEDERATE;
     // when true: process connected bgp with several uri for join on bnode
     private boolean testFederate = TEST_FEDERATE;
+    private boolean federateBGP = FEDERATE_BGP;
     // process triple with one or several URI in the same way
     // use case: connected bgp {t1 t2 t3} where t1 t2 have uri u1 u2 and t3 has uri u2
     // we must process service u2 {t1 t2 t3} for join on bnode
@@ -520,7 +522,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 uri2bgp.trace();
             }     
             
-            if (testFederate) {
+            if (isFederateBGP()) {
                 // process connected bgp with triple with several uri
                 Exp exp = new RewriteBGPList(this, uri2bgp)
                         .process(namedGraph, body, filterList);
@@ -556,7 +558,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 // remaining triple with several services
                 // triple t -> service (<Si>) { t }
                 // copy relevant filters in service
-                if (testFederate) {
+                if (isFederateBGP()) {
                     // triple processed by RewriteBGPList
                     body.getBody().remove(exp);
                     i--;
@@ -599,11 +601,11 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             getSimplify().simplifyBGP(body);
             bind(body);
             filter(body);
-            new Sorter().process(body);           
+            sort(body);           
 
             if (isMergeService()) {
                 body = new SimplifyService().simplify(body);
-                new Sorter().process(body);           
+                sort(body);           
             }           
         }
                 
@@ -698,6 +700,10 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
     }
     
+    void sort(Exp exp) {
+        new Sorter(this).process(exp);
+    }
+    
     /**
      * Filter may be copied into additional service
      */
@@ -743,7 +749,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     
     List<Atom> getServiceListTriple(Triple t) {     
         if (isSelect()) {
-            List<Atom> list = getPredicateService(t); //getSelector().getPredicateService(t);
+            List<Atom> list = getPredicateService(t); 
             if (list != null && ! list.isEmpty()) {
                 return list;
             }
@@ -752,7 +758,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     }
     
     List<Atom> getPredicateService(Triple t) {
-        List<Atom> list = getAstSelector().getPredicateService(t);//  getSelector().getPredicateService(t);
+        List<Atom> list = getAstSelector().getPredicateService(t);
         if (list == null) {
             if (t.getPredicate().isVariable()) {
                 return ast.getServiceList();
@@ -1093,6 +1099,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setTraceFederate(boolean traceFederate) {
         this.traceFederate = traceFederate;
+    }
+
+    public boolean isFederateBGP() {
+        return federateBGP;
+    }
+
+    public void setFederateBGP(boolean federateBGP) {
+        this.federateBGP = federateBGP;
     }
 
    

@@ -25,7 +25,7 @@ public class RewriteBGP {
     static final String FAKE_URI = "http://ns.inria.fr/_fake_";
 
 
-    FederateVisitor visitor;
+    private FederateVisitor visitor;
     private boolean debug = false;
     //RewriteBGPSeveralURI rewrite;
 
@@ -48,8 +48,8 @@ public class RewriteBGP {
     URI2BGPList rewriteTripleWithOneURI
         (Atom name, Exp main, Exp body, List<Exp> filterList) {
             
-        URI2BGPList uri2bgpList     = new URI2BGPList();
-        URI2BGPList uriList2bgpList = new URI2BGPList();
+        URI2BGPList uri2bgpList     = new URI2BGPList(getVisitor());
+        URI2BGPList uriList2bgpList = new URI2BGPList(getVisitor());
         uri2bgpList.setUriList2bgp(uriList2bgpList);
         List<Expression> localFilterList = new ArrayList<>();
         
@@ -110,9 +110,9 @@ public class RewriteBGP {
                 // do nothing
             } else if (exp.isTriple()) {
                 Triple triple = exp.getTriple();
-                List<Atom> list = visitor.getServiceList(triple);
+                List<Atom> list = getVisitor().getServiceList(triple);
                 
-                if (visitor.isTestFederate()) {
+                if (getVisitor().isFederateBGP()) {
                     // do not distinguish one vs several URI
                     // list of connected BGP of triple with any nb URI
                     assignTripleToConnectedBGP(uriList2bgpList, triple, list);
@@ -173,12 +173,12 @@ public class RewriteBGP {
                     BasicGraphPattern bgp = triple2bgp.get(t);
                     if (bgp2Service.get(bgp) == null) {
                         // service s { bgp }
-                        Service serv = visitor.getRewriteTriple().rewrite(name, bgp, visitor.getServiceList(t));
+                        Service serv = getVisitor().getRewriteTriple().rewrite(name, bgp, getVisitor().getServiceList(t));
                         // do it once for first triple of this BGP
                         bgp2Service.put(bgp, serv);
                         uri2bgpList.addServiceWithOneURI(serv);
                         
-                        if (visitor.isTestFederate()) {
+                        if (getVisitor().isFederateBGP()) {
                             // do nothing yet, 
                             // RewriteBGPList will complete with serv
                         }
@@ -201,7 +201,7 @@ public class RewriteBGP {
     }
     
     void merge(Exp main, URI2BGPList uri2bgpList, List<Expression> localFilterList) {
-        if (visitor.isMerge()) {
+        if (getVisitor().isMerge()) {
             if (main.isBinaryExp()) {
                 // optional|minus|union
                 // in each branch: merge BGP with same URI into one BGP
@@ -225,49 +225,13 @@ public class RewriteBGP {
         }
     }
         
-//    void assignTripleToConnectedBGP(URI2BGPList map, Triple triple, String uri) {
-//        List<BasicGraphPattern> bgpList = map.get(uri);
-//        boolean isConnected = false;
-//        int i = 0;
-//
-//        // find a connected BGP
-//        for (BasicGraphPattern bgp : bgpList) {
-//            if (bgp.isConnected(triple)) {
-//                bgp.add(triple);
-//                isConnected = true;
-//                break;
-//            }
-//            i++;
-//        }
-//
-//        if (isConnected) {
-//            ArrayList<BasicGraphPattern> toRemove = new ArrayList<>();
-//
-//            // if  another BGP is connected to triple
-//            // include it into the first BGP
-//            for (int j = i + 1; j < bgpList.size(); j++) {
-//                if (bgpList.get(j).isConnected(triple)) {
-//                    bgpList.get(i).include(bgpList.get(j));
-//                    toRemove.add(bgpList.get(j));
-//                }
-//            }
-//
-//            // remove BGPs that have been included
-//            for (BasicGraphPattern bgp : toRemove) {
-//                bgpList.remove(bgp);
-//            }
-//        } else {
-//            // new BGP because triple is connected to nobody
-//            bgpList.add(BasicGraphPattern.create(triple));
-//        }
-//    }
 
     void filter(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpList, List<Exp> filterList, boolean tripleFilter) {
         // copy filters from body into BGP who bind all filter variables
         for (Exp exp : body) {
             if (exp.isFilter()) {
-                if (visitor.isRecExist(exp)) {
-                    if (visitor.isExist() && tripleFilter && accept(exp)) {
+                if (getVisitor().isRecExist(exp)) {
+                    if (getVisitor().isExist() && tripleFilter && accept(exp)) {
                         filterExist(name, body, bgpList, filterList, exp);
                     }
                 } else {
@@ -278,7 +242,7 @@ public class RewriteBGP {
     }
 
     boolean accept(Exp exp) {
-        return visitor.isExist(exp) || visitor.isNotExist(exp);
+        return getVisitor().isExist(exp) || getVisitor().isNotExist(exp);
     }
 
     /**
@@ -293,8 +257,8 @@ public class RewriteBGP {
 //                if (visitor.isRecExist(exp)) {
 //                    success = false;
 //                } 
-                if (visitor.isRecExist(exp)) {
-                    if (visitor.isExist() && tripleFilter && accept(exp)) {
+                if (getVisitor().isRecExist(exp)) {
+                    if (getVisitor().isExist() && tripleFilter && accept(exp)) {
                         boolean move = filterExist(name, body, bgpList, filterList, exp);
                         success &= move;
                     }
@@ -370,7 +334,7 @@ public class RewriteBGP {
     boolean filterExist(Atom name, Exp body, HashMap<BasicGraphPattern, Service> bgpMap, List<Exp> filterList, Exp filterExist) {
         Expression filter = filterExist.getFilter();
         // rewrite exists {} with service clause inside
-        visitor.rewriteFilter(name, filter);
+        getVisitor().rewriteFilter(name, filter);
         Term termExist = filterExist.getFilter().getTermExist();        
         Exp bgpExist = termExist.getExistBGP();
 
@@ -646,6 +610,14 @@ public class RewriteBGP {
      */
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+
+    public FederateVisitor getVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(FederateVisitor visitor) {
+        this.visitor = visitor;
     }
 
 }

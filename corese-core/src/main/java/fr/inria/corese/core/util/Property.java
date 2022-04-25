@@ -107,6 +107,7 @@ public class Property {
         TRACE_MEMORY,
         TRACE_GENERIC,
         
+        FEDERATE_BGP,
         TEST_FEDERATE,
         
         // boolan value
@@ -526,8 +527,8 @@ public class Property {
                 Interpreter.testNewEval = b;
                 break;
                 
-            case TEST_FEDERATE:
-                FederateVisitor.TEST_FEDERATE=b;
+            case FEDERATE_BGP:
+                FederateVisitor.FEDERATE_BGP=b;
                 break;
                 
             case TRACE_GENERIC:

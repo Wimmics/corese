@@ -101,7 +101,7 @@ public class CompileService implements URLParam {
             ASTQuery gast = getAST(q.getOuterQuery());
             if (gast.hasMetadata(Metadata.LIMIT)) {
                 int limit = gast.getLimit();
-                IDatatype dt = ast.getMetadata().getDatatypeValue(Metadata.LIMIT);
+                IDatatype dt = gast.getMetadata().getDatatypeValue(Metadata.LIMIT);
                 if (dt != null) {
                     limit = dt.intValue();
                 }

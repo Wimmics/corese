@@ -60,6 +60,7 @@ public class ProviderService implements URLParam {
     public static final String UNDEFINED_SERVICE = "http://example.org/undefined/sparql";
     private static final String SERVICE_ERROR = "Service error: ";
     private static final String DB = "db:";
+    public static int SLICE_DEFAULT = 50;
 
     private QueryProcess defaut;
     private ProviderImpl provider;
@@ -579,6 +580,7 @@ public class ProviderService implements URLParam {
     void traceResult(URLServer serv, Mappings res) {
         if (res.size() > 0) {
             logger.info(String.format("** Service %s result: \n%s", serv, res.toString(false, false, 10)));
+            logger.info(String.format("** Service %s result size: %s", serv, res.size()));
         } else {
             logger.info(String.format("** Service %s result size: %s", serv, res.size()));
         }
@@ -716,19 +718,25 @@ public class ProviderService implements URLParam {
     }
 
     int getSlice(Node serv, Mappings map) {
-        // former: 
-        //getQuery().getGlobalQuery().getSlice();
+        IDatatype dtslice = getGlobalAST().getMetadataDatatypeValue(Metadata.SLICE);
+        if (dtslice != null) {
+            return dtslice.intValue();
+        }
         Integer slice = Property.intValue(SERVICE_SLICE);
         if (slice != null) {
             return slice;
         }
-        slice = getEval().getVisitor().slice(serv, map == null ? Mappings.create(getQuery()) : map);
-        IDatatype dt = getBinding().getGlobalVariable(Binding.SLICE_SERVICE);
-        if (dt == null) {
-            return slice;
-        }
-        return dt.intValue();
+        return SLICE_DEFAULT;
     }
+    
+// former: 
+        //getQuery().getGlobalQuery().getSlice();        //slice = getEval().getVisitor().slice(serv, map == null ? Mappings.create(getQuery()) : map);
+//        IDatatype dt = getBinding().getGlobalVariable(Binding.SLICE_SERVICE);
+//        if (dt == null) {
+//            return slice;
+//        }
+//        return dt.intValue();
+ 
 
     Mappings eval(ASTQuery ast, URLServer serv, int timeout, int count)
             throws IOException, EngineException {

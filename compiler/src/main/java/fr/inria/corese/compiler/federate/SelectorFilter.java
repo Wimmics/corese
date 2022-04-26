@@ -91,21 +91,24 @@ public class SelectorFilter {
         processBGPTriple(body);
     }
     
-    // generate test of join {t1 t2}
+    // generate bgp for test of join {t1 t2}
     void processBGPJoin(Exp body) {
         int i = 0;
-        for (Exp exp : body) {
-            if (exp.isTriple()) {
+        for (Exp e1 : body) {
+            if (e1.isTriple()) {
                 for (int j = i+1; j<body.size(); j++) {
-                    Exp ee = body.get(j);
-                    if (ee.isTriple()) {
-                        Triple t1 = exp.getTriple();
-                        Triple t2 = ee.getTriple();
+                    Exp e2 = body.get(j);
+                    if (e2.isTriple()) {
+                        Triple t1 = e1.getTriple();
+                        Triple t2 = e2.getTriple();
                         if (t1.isConnected(t2)) {
                             add(t1, t2);
                         }
                     }
                 }
+            }
+            else {
+                processJoin(e1);
             }
             i++;
         }
@@ -145,7 +148,6 @@ public class SelectorFilter {
     // create a candidate bgp with filter, add bgp in res
     void process(Triple t, Exp body) {
         BasicGraphPattern bgp = ast.bgp(t);
-        res.add(bgp);
         List<Variable> list = t.getVariables();
         
         if (!list.isEmpty()) {
@@ -162,6 +164,8 @@ public class SelectorFilter {
                 }
             }
         }
+        
+        res.add(bgp);
     }
     
     boolean accept(Expression exp) {

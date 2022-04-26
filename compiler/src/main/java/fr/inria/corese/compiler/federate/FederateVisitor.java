@@ -62,9 +62,15 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static final String PROXY = "_proxy_";
     // Federation definitions: URL -> list URL
     private static HashMap<String, List<Atom>> federation;
-    public static boolean SEVERAL_URI = false;
+    // draft
     public static boolean TEST_FEDERATE = true;
+    // generate partition of connnected bgp
     public static boolean FEDERATE_BGP= true;
+    // source selection generate bind (exists {t1 . t2} as ?b)
+    // for each pair of connected triple
+    public static boolean SELECT_JOIN = true;
+    // use source selection join to generate connected bgp with join
+    public static boolean USE_JOIN = true;
     public static boolean TRACE_FEDERATE = false;
     public static boolean PROCESS_LIST = true;
     
@@ -100,16 +106,11 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean index = false;
     // generate one service for the whole body  (no recursive rewrite)
     private boolean sparql = false;
-    private boolean severalURI = SEVERAL_URI;
     private boolean processList = PROCESS_LIST;
     private boolean traceFederate = TRACE_FEDERATE;
-    // when true: process connected bgp with several uri for join on bnode
     private boolean testFederate = TEST_FEDERATE;
+    // generate partition of connected bgp:
     private boolean federateBGP = FEDERATE_BGP;
-    // process triple with one or several URI in the same way
-    // use case: connected bgp {t1 t2 t3} where t1 t2 have uri u1 u2 and t3 has uri u2
-    // we must process service u2 {t1 t2 t3} for join on bnode
-    // when testFederateNew=true we do
 
     ASTQuery ast;
     Stack stack;
@@ -198,18 +199,26 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             if (ast.getContext() != null) {
                 // tune service URL with Context
                 ast.setServiceList(tune(ast.getContext(), ast.getServiceList()));
-            }            
+            }  
+            boolean suc = true;
             if (isSelect()) {
                 // triple selection
-                sourceSelection(ast);
+                suc = sourceSelection(ast);
             }
             verbose("\nbefore:\n%s", ast.getBody());
-            rewrite(ast);
+            
+            if (suc) {
+                rewrite(ast);
+            }
+            else {
+                logger.info("Source selection fail");
+            }
         }
         after(ast);
     }
     
-    void sourceSelection(ASTQuery ast) {
+    boolean sourceSelection(ASTQuery ast) {
+        boolean suc = true;
         try {
             if (ast.getContext() != null
                     && ast.getContext().getAST() != null
@@ -221,13 +230,15 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 setAstSelector(sel.copy(ast));
             } else {
                 setSelector(new Selector(this, exec, ast).setMappings(getMappings()));
-                getSelector().process();
+                suc = getSelector().process();
                 setAstSelector(getSelector().getAstSelector());
             }
             ast.setAstSelector(getAstSelector());
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
+            suc = false;
         }
+        return suc;
     }
     
     void after(ASTQuery ast) {
@@ -512,7 +523,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             if (! suc) {
                 // @todo: fail
             }
-            // if testFederate, compute uri2bgp 
+            // if isFederateBGP(), compute uri2bgp 
             // but do not rewrite triple with one uri
             URI2BGPList uri2bgp = 
                  getGroupBGP().rewriteTripleWithOneURI(namedGraph, main, body, filterList); 
@@ -738,7 +749,13 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
     }
     
-
+    List<Atom> getAtomList(List<String> list) {
+        ArrayList<Atom> alist = new ArrayList<>();
+        for (String str : list) {
+            alist.add(Constant.create(str));
+        }
+        return alist;
+    }
          
     List<Atom> getServiceList(Triple t) {
         if (t.isPath()){
@@ -1057,14 +1074,6 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setRewriteTriple(RewriteTriple rwt) {
         this.rewriteTriple = rwt;
-    }
-
-    public boolean isSeveralURI() {
-        return severalURI;
-    }
-
-    public void setSeveralURI(boolean severalURI) {
-        this.severalURI = severalURI;
     }
 
     public boolean isProcessList() {

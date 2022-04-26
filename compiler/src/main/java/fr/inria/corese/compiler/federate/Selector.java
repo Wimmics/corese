@@ -39,7 +39,6 @@ import java.util.List;
 public class Selector {
     
     private static final String SERVER_VAR = "?serv";
-    public static boolean TEST_JOIN = false;
     
     private FederateVisitor vis;
     ASTQuery ast;
@@ -74,11 +73,16 @@ public class Selector {
         trace = ast.hasMetadata(Metadata.TRACE);
     }
     
+
+    boolean process() throws EngineException {
+       return process11(ast.getServiceListConstant());
+    }
+    
     /**
      * BUG when service 1.0 & service 1.1 and there are triples in 1.1
      * the triples of 1.0 are considered as absent although they are present as predicate
      */
-    void process() throws EngineException {
+    void process2() throws EngineException {
         if (sparql10) {
             process10(getServiceList(true));
             predicateVariable.clear();
@@ -108,9 +112,9 @@ public class Selector {
         return res;
     }
     
-    void process11(List<Constant> list) throws EngineException {
+    boolean process11(List<Constant> list) throws EngineException {
         if (list.isEmpty()) {
-            return;
+            return false;
         }
         Date d1 = new Date();
         ASTQuery aa = createSelector(list, false);
@@ -166,8 +170,9 @@ public class Selector {
             }
         }
         Date d2 = new Date();
-        getAstSelector().complete();       
+        boolean b = getAstSelector().complete();       
         trace(map, d1, d2);
+        return b;
     }
     
     void metadata(ASTQuery aa) {
@@ -409,7 +414,10 @@ public class Selector {
     void selectTriple(ASTQuery aa, BasicGraphPattern bgp, int i) {
         if (getVisitor().isSelectFilter()) {
             i = selectTripleFilter(aa, bgp, i);
-            if (TEST_JOIN) {
+            if (getVisitor().SELECT_JOIN) {
+                // generate bind (exists {s p o . o q r} as ?b)
+                // for each pair of connected triple
+                // to test existence of join on each endpoint
                 selectTripleJoin(aa, bgp, i);
             }
         }
@@ -426,35 +434,90 @@ public class Selector {
      */
     int selectTripleFilter(ASTQuery aa, BasicGraphPattern bgp, int i) {
         List<BasicGraphPattern> list = new SelectorFilter(ast).process();
+        HashMap<Triple, Triple> mapNoFilter = new HashMap<>();
+        
         for (BasicGraphPattern exp : list) {
             Triple t = exp.get(0).getTriple();
             if (exp.size() > 1 || selectable(t)) {
-                Variable var;
-                if (count) {
-                    var = count(aa, bgp, exp, i);
-                } else {
-                    var = exist(aa, bgp, exp, i);
+                Variable var = null;
+                String name = null;
+                // if t already processed (same triple but not same java object)
+                // if both t have no filter
+                // no need to duplicate bind (exists {s p o} as ?b)
+                // reuse former t variable
+
+                if (exp.size() == 1) {
+                    // no filter, just t
+                    // former t must have no filter
+                    name = getVariable(t, mapNoFilter);
+                    mapNoFilter.put(t, t);
                 }
+                
+                if (name !=null) {
+                    // occurrence of same triple already processed with variable name
+                    // do not duplicate exists clause on same triple
+                    // reuse former variable name
+                    var = new Variable(name);
+                }                
+                else if (count) {
+                    var = count(aa, bgp, exp, i++);
+                } else {
+                    var = exist(aa, bgp, exp, i++);
+                }
+                
                 declare(t, var);
-                i++;
             }
         }
+        
         return i;
     }
     
+    // if triple t1 is already processed with bind (exists {t1} as ?b)
+    // return variable ?b
+    // former occurrence t2 of t1 must have no filter
+    String getVariable(Triple t1, HashMap<Triple, Triple> mapNoFilter) {
+        for (Triple t2 : tripleVariable.keySet()) {
+            if (t1.equals(t2) && mapNoFilter.containsKey(t2)) {
+                return tripleVariable.get(t2);
+            }
+        }
+        return null;
+    }
+    
+    // generate bind (exists {t1 . t2} as ?b)
+    // for each pair of connected triple
+    // to test existence of join on each endpoint
+    // use case: determine if service uri {t1 t2} exists    
     void selectTripleJoin(ASTQuery aa, BasicGraphPattern bgp, int i) {
         List<BasicGraphPattern> list = new SelectorFilter(ast).processJoin();
         for (BasicGraphPattern exp : list) {
-            // @todo: check exp not already processed
+            // exp = {t1 . t2}
             Variable var;
-            if (count) {
-                var = count(aa, bgp, exp, i);
+            String name = getVariable(exp);
+            
+            if (name != null) {
+                // {t1 . t2} already processed
+                // do not duplicate exists {t1 . t2}
+                // reuse variable
+                var = new Variable(name);
+            } else if (count) {
+                var = count(aa, bgp, exp, i++);
             } else {
-                var = exist(aa, bgp, exp, i);
+                var = exist(aa, bgp, exp, i++);
             }
             declare(exp, var);
-            i++;
         }
+    }
+    
+    // retrieve occurrence of same bgp = {t1 . t2}
+    // return variable if any
+    String getVariable(BasicGraphPattern bgp) {
+        for (BasicGraphPattern exp : bgpVariable.keySet()) {
+            if (bgp.equalsTriple(exp)) {
+                return bgpVariable.get(exp);
+            }
+        }
+        return null;
     }
     
     boolean selectable(Triple t) {

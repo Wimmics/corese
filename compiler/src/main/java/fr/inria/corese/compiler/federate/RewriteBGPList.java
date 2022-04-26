@@ -99,7 +99,7 @@ public class RewriteBGPList {
         return union;
     }
     
-    // rewrite partition of connected bgp list
+    // rewrite bgpList partition of connected bgp list
     // complete with other triple
     BasicGraphPattern process
         (Atom namedGraph, Exp body, List<BasicGraphPattern> bgpList, ArrayList<Exp> filterList) {
@@ -112,7 +112,9 @@ public class RewriteBGPList {
                 List<String> uriList = bgp2uri.get(bgp);
                 // insert relevant filter from body into bgp
                 getVisitor().filter(body, bgp);
-                Service service = Service.newInstance(uriList, bgp);
+                //Service service = Service.newInstance(uriList, bgp);
+                Service service = getVisitor().getRewriteTriple()
+                        .rewrite(namedGraph, bgp, getVisitor().getAtomList(uriList));
                 exp.add(service);
             }
         }

@@ -2,6 +2,7 @@ package fr.inria.corese.compiler.federate;
 
 import fr.inria.corese.kgram.api.query.ASTQ;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.ASTSelector;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Exp;
@@ -122,47 +123,97 @@ class URI2BGPList {
         return uri2bgp;
     }
     
-
-    boolean join(BasicGraphPattern bgp, Triple t, String uri) {
-        return getVisitor().getAST().getAstSelector().join(bgp, t, uri);        
+    ASTSelector getSelector() {
+        return getVisitor().getAST().getAstSelector();
     }
     
-    // assign triple to connected bgp of service uri
-    // merge connected bgp
+    // does triple t join with each connected triple in bgp
+    boolean join(BasicGraphPattern bgp, Triple t, String uri) {
+        return getSelector().join(bgp, t, uri);        
+    }
+    
+    // do every pair of connected triple in bgp1 and bgp2 join ?
+    boolean join(BasicGraphPattern bgp1, BasicGraphPattern bgp2, String uri) {
+        for (Exp e : bgp2) {
+            if (e.isTriple()) {
+                if (! getSelector().join(bgp1, e.getTriple(), uri)) {
+                    return false;
+                }
+            }
+        }
+        return true;
+    }
+    
+    // assign triple to one bgp of uri, connected with triple 
+    // and merge all connected bgp
+    // otherwise create new bgp
     void assignTripleToConnectedBGP(Triple triple, String uri) {
         List<BasicGraphPattern> bgpList = get(uri);
-        boolean isConnected = false;
-        int i = 0;
+        int i = insert(bgpList, triple, uri);
 
-        // find a connected BGP
+        if (i>=0) {
+            // triple inserted in ith bgp
+            // merge other connected bgp if any
+            merge(bgpList, triple, uri, i);
+        } 
+        else {
+            // create new bgp because triple is connected to no existing bgp
+            // or it does not join
+            bgpList.add(BasicGraphPattern.create(triple));
+        }
+    }
+    
+    // find connected bgp where triple join: insert triple in bgp
+    int insert(List<BasicGraphPattern> bgpList, Triple triple, String uri) {
+        int i = 0;
         for (BasicGraphPattern bgp : bgpList) {
             if (bgp.isConnected(triple)) {
-                bgp.add(triple);
-                    isConnected = true;
-                    break;
+                if (getVisitor().USE_JOIN) {
+                    if (join(bgp, triple, uri)) {
+                        // source selection confirm that triple join with bgp
+                        bgp.add(triple);
+                        return i;
+                    } else {
+                        // source selection confirm that triple does not join with bgp
+//                        System.out.println("skip: " + triple + " " + uri);
+//                        System.out.println(bgp);
+                    }
+                } else {
+                    bgp.add(triple);
+                    return i;
+                }
             }
             i++;
         }
-
-        if (isConnected) {
-            ArrayList<BasicGraphPattern> toRemove = new ArrayList<>();
-
-            // if  another BGP is connected to triple
-            // include it into former BGP
-            for (int j = i + 1; j < bgpList.size(); j++) {
-                if (bgpList.get(j).isConnected(triple)) {
-                    bgpList.get(i).include(bgpList.get(j));
-                    toRemove.add(bgpList.get(j));
+        // no connected bgp with join
+        return -1;
+    }
+    
+    // if bgp2 is connected to triple, include it into former ith bgp1    
+    void merge(List<BasicGraphPattern> bgpList, Triple triple, String uri, int i) {
+        BasicGraphPattern bgp1 = bgpList.get(i);
+        ArrayList<BasicGraphPattern> toRemove = new ArrayList<>();
+ 
+        for (int j = i + 1; j < bgpList.size(); j++) {
+            BasicGraphPattern bgp2 = bgpList.get(j);
+            if (bgp2.isConnected(triple)) {
+                if (getVisitor().USE_JOIN) {
+                    if (join(bgp1, bgp2, uri)) {
+                        // merge only if source selection confirm join
+                        // in connected bgp
+                        bgp1.include(bgp2);
+                        toRemove.add(bgp2);
+                    }
+                } else {
+                    bgp1.include(bgp2);
+                    toRemove.add(bgp2);
                 }
             }
+        }
 
-            // remove BGPs that have been included
-            for (BasicGraphPattern bgp : toRemove) {
-                bgpList.remove(bgp);
-            }
-        } else {
-            // create new BGP because triple is connected to nobody
-            bgpList.add(BasicGraphPattern.create(triple));
+        // remove bgp that have been merged
+        for (BasicGraphPattern bgp : toRemove) {
+            bgpList.remove(bgp);
         }
     }
     

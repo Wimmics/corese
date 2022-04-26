@@ -107,7 +107,10 @@ public class Property {
         TRACE_MEMORY,
         TRACE_GENERIC,
         
+        // generate partition of connected bgp
         FEDERATE_BGP,
+        // source selection process bind (exists {t1 . t2} as ?b)
+        FEDERATE_JOIN,
         TEST_FEDERATE,
         
         // boolan value
@@ -529,6 +532,11 @@ public class Property {
                 
             case FEDERATE_BGP:
                 FederateVisitor.FEDERATE_BGP=b;
+                break;
+                
+            case FEDERATE_JOIN:
+                FederateVisitor.SELECT_JOIN=b;
+                FederateVisitor.USE_JOIN=b;
                 break;
                 
             case TRACE_GENERIC:

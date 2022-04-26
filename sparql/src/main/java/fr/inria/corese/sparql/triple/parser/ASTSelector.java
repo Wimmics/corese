@@ -31,26 +31,33 @@ public class ASTSelector {
     }
     
    
-    public void complete() {
-        System.out.println("before:\n"+getTripleService());
-        restrict();
-        System.out.println("after:\n"+getTripleService());
+    public boolean complete() {
+        //System.out.println("before:\n"+getBgpService());
+        boolean b = restrict();
+//        System.out.println("triple:\n"+getTripleService());
+//        System.out.println("bgp:\n"+getBgpService());
+        return b;
     }
     
-    void restrict() {
+    boolean restrict() {
+        boolean suc = true;
         for (BasicGraphPattern bgp : getBgpService().keySet()) {
             if (getBgpService().get(bgp).isEmpty()) {
-                restrict(bgp);
+                boolean b = restrict(bgp);
+                if (!b) {
+                    suc = false;
+                }
             }
-        }   
+        }  
+        return suc;
     }
     
-    // when join bgp {t1 t2} -> ()
-    // and t1 -> (u1 u2) and t2 -> (u1)
-    // we know that t1 is not in u1 otherwise bgp uri list -> (u1)
+    // t1 -> (u1 u2) and t2 -> (u1)
+    // join bgp {t1 t2} -> ()
+    // we know that t1 is not in u1 otherwise: {t1 t2} -> (u1)
     // in this case, modify (or set) map: t1 -> (u1 u2) into t1 -> (u2)    
     // @todo: triple with filter ?
-    void restrict(BasicGraphPattern bgp) {
+    boolean restrict(BasicGraphPattern bgp) {
         Triple t1 = bgp.get(0).getTriple();
         Triple t2 = bgp.get(1).getTriple();
         List<Atom> l1 = getPredicateService(t1);
@@ -63,7 +70,12 @@ public class ASTSelector {
             else if (l1.size() > 1 && l2.size() == 1 && l1.contains(l2.get(0))) {
                 restrict(t2, t1, l2, l1);
             }
+            else if (l1.size()==1 && l2.size()==1 && l1.contains(l2.get(0))) {
+                // t1 and t2 are in same server but do not join: query fail
+                return false;
+            }
         }
+        return true;
     }
     
     void restrict(Triple t1, Triple t2, List<Atom> l1, List<Atom> l2) {
@@ -110,21 +122,24 @@ public class ASTSelector {
         return sel;
     }
     
+    // does triple t join with each connected triple in bgp
     public boolean join(BasicGraphPattern bgp, Triple t, String uri) {
         boolean suc = false;
         for (Exp exp : bgp) {
             if (exp.isTriple()) {
-                if (join(exp.getTriple(), t, uri)) {
-                    suc = true;
-                }
-                else {
-                    return false;
+                if (exp.getTriple().isConnected(t)) {
+                    if (join(exp.getTriple(), t, uri)) {
+                        suc = true;
+                    } else {
+                        return false;
+                    }
                 }
             }
         }
         return suc;
     }
     
+    // do triple t1 and t2 join at uri according to source selection
     public boolean join(Triple t1, Triple t2, String uri) {
         for (BasicGraphPattern bgp : getBgpService().keySet()) {
             if (bgp.getBody().contains(t1) && bgp.getBody().contains(t2)) {

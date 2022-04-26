@@ -80,6 +80,19 @@ public class BasicGraphPattern extends And {
         }
         return false;
     }
+    
+    // not same physical triple but triple are equal
+    public boolean equalsTriple(BasicGraphPattern bgp) {
+        if (size() == bgp.size()) {
+            for (Exp e : this) {
+                if (!bgp.getBody().contains(e)) {
+                    return false;
+                }
+            }
+            return true;
+        }
+        return false;
+    }
 
     public void addFilter(Expression e) {
         add(e);

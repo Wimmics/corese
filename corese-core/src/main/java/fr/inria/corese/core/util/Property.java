@@ -106,12 +106,22 @@ public class Property {
         
         TRACE_MEMORY,
         TRACE_GENERIC,
-        
+        // generic property for testing purpose
+        TEST_FEDERATE,
+        // turtle file path where federation are defined
+        FEDERATION,
         // generate partition of connected bgp
         FEDERATE_BGP,
-        // source selection process bind (exists {t1 . t2} as ?b)
+        // do not split complete partition if any
+        FEDERATE_PARTITION,
+        // complete bgp partition with additional partition of triple alone (as before)
+        FEDERATE_COMPLETE,
+        // source selection with filter
+        FEDERATE_FILTER,
+        // source selection with bind (exists {t1 . t2} as ?b_i)
         FEDERATE_JOIN,
-        TEST_FEDERATE,
+        // authorize path in join test
+        FEDERATE_JOIN_PATH,
         
         // boolan value
         DISPLAY_URI_AS_PREFIX,
@@ -373,7 +383,7 @@ public class Property {
         }
     }
 
-    void define(String name, String value) throws IOException {
+    public void define(String name, String value) throws IOException {
         Value pname = Value.valueOf(name);
         if (value.equals("true") | value.equals("false")) {
             Boolean b = Boolean.valueOf(value);
@@ -534,11 +544,27 @@ public class Property {
                 FederateVisitor.FEDERATE_BGP=b;
                 break;
                 
+            case FEDERATE_PARTITION:
+                FederateVisitor.PARTITION=b;
+                break;
+                
+            case FEDERATE_COMPLETE:
+                FederateVisitor.COMPLETE_BGP=b;
+                break;
+                
+            case FEDERATE_FILTER:
+                FederateVisitor.SELECT_FILTER=b;
+                break;
+                
             case FEDERATE_JOIN:
                 FederateVisitor.SELECT_JOIN=b;
                 FederateVisitor.USE_JOIN=b;
                 break;
                 
+            case FEDERATE_JOIN_PATH:
+                FederateVisitor.SELECT_JOIN_PATH=b;
+                break;
+                    
             case TRACE_GENERIC:
                 FederateVisitor.TRACE_FEDERATE=b;
                 RewriteBGPList.TRACE_BGP_LIST=b;
@@ -568,6 +594,10 @@ public class Property {
         }
         getStringProperty().put(value, str);
         switch (value) {
+            
+            case FEDERATION:
+                defineFederation(str);
+                break;
             
             case LOAD_FORMAT:
                 Load.LOAD_FORMAT = str;
@@ -694,6 +724,16 @@ public class Property {
             default:
                 QuerySolver.QUERY_PLAN = Query.QP_HEURISTICS_BASED;
                 break;
+        }
+    }
+    
+    void defineFederation(String path) {
+        logger.info("federation: " + path);
+        QueryProcess exec = QueryProcess.create(Graph.create());
+        try {
+            Graph g = exec.defineFederation(path);
+        } catch (IOException | EngineException | LoadException ex) {
+                logger.error(ex.toString());
         }
     }
     

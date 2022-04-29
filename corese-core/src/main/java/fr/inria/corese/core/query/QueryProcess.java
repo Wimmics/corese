@@ -22,6 +22,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.QuerySolverVisitor;
+import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
@@ -34,6 +35,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.api.DataBroker;
 import fr.inria.corese.core.api.DataBrokerConstruct;
 import fr.inria.corese.core.api.DataManager;
+import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
@@ -1372,6 +1374,32 @@ public class QueryProcess extends QuerySolver {
 
     void getLinkedFunctionBasic(String label) throws EngineException {
         getTransformer().getLinkedFunctionBasic(label);
+    }
+    
+    public Graph defineFederation(String path) throws IOException, EngineException, LoadException {
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        ld.parse(path);
+        QueryLoad ql = QueryLoad.create();
+        String str = ql.getResource("/query/federation.rq");
+        QueryProcess exec = QueryProcess.create(g);
+        Mappings map = exec.query(str);
+
+        for (Mapping m : map) {
+            IDatatype dt = m.getValue("?uri");
+            IDatatype list = m.getValue("?list");
+            if (dt != null) {
+                System.out.println("federation: " + dt + " : " + list);
+                FederateVisitor.declareFederation(dt.getLabel(), list.getValueList());
+
+                for (IDatatype serv : list.getValueList()) {
+                    System.out.println("access: " + serv.getLabel());
+                    Access.define(serv.getLabel(), true);
+                }
+            }
+        }
+        
+        return g;
     }
 
     Transformer getTransformer() {

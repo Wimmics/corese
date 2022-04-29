@@ -8,6 +8,7 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.sparql.exceptions.QuerySemanticException;
 import fr.inria.corese.sparql.triple.api.ASTVisitor;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
+import fr.inria.corese.sparql.triple.api.FederateMerge;
 import fr.inria.corese.sparql.triple.api.Walker;
 import java.util.ArrayList;
 import java.util.Iterator;
@@ -593,6 +594,10 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
     
     public List<BasicGraphPattern> getBGPWithBnodeVariable(List<BasicGraphPattern> list) {
         return new ExtractList().getBGPWithBnodeVariable(this, list);
+    }
+    
+    public List<BasicGraphPattern> getBGPWithBnodeVariable(List<BasicGraphPattern> list, FederateMerge fm) {
+        return new ExtractList().getBGPWithBnodeVariable(this, list, fm);
     }
  
 }

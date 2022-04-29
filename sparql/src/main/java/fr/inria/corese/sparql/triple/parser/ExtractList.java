@@ -1,14 +1,14 @@
 package fr.inria.corese.sparql.triple.parser;
 
-import java.util.ArrayList;
+import fr.inria.corese.sparql.triple.api.FederateMerge;
 import java.util.List;
 
 /**
  *
  */
-public class ExtractList {
+public class ExtractList implements FederateMerge {
     
-     // return bgp list of RDF list if any
+     // create and return bgp list of RDF list if any
      public List<BasicGraphPattern> getRDFList(Exp exp, List<BasicGraphPattern> list) {        
         for (Exp ee : exp) {
             if (ee.isTriple() && ee.getTriple().isList()) {
@@ -22,17 +22,43 @@ public class ExtractList {
     }
           
      
-     // list of connected bgp made of triple connected by bnode variable:
+     // create and return list of connected bgp made of triple connected by bnode variable:
      // ?s :p [ :q :a ; :r :b ]
     public List<BasicGraphPattern> getBGPWithBnodeVariable(Exp exp, List<BasicGraphPattern> list) {
+        return getBGPWithBnodeVariable(exp, list, this);
+    }
+
+    // merge triple on specific criteria
+    public List<BasicGraphPattern> getBGPWithBnodeVariable(Exp exp, List<BasicGraphPattern> list, FederateMerge fm) {
+        bgpMerge(exp, list, fm);
+        merge(list, false);
+        return list;
+    }
+    
+    List<BasicGraphPattern> bgpMerge(Exp exp, List<BasicGraphPattern> list, FederateMerge fm) {
         for (Exp ee : exp) {
-            if (ee.isTriple() && hasBlank(ee.getTriple())) {
+            if (ee.isTriple() && fm.merge(ee.getTriple())) {
                 recordListTriple(list, ee.getTriple(), false);
             }
         }
-
-        merge(list, false);
         return list;
+    }
+    
+    // @todo
+    // s p [ q r ] . s q v
+    // bgp = s p [q r]
+    // merge s q v in bgp because it share variable s with bgp
+    List<BasicGraphPattern> bgpComplete(Exp exp, List<BasicGraphPattern> list, FederateMerge fm) {
+        for (Exp ee : exp) {
+            if (ee.isTriple()) {
+            }
+        }
+        return list;
+     }
+    
+     @Override
+    public boolean merge(Triple t) {
+        return hasBlank(t);
     }
           
     boolean hasBlank(Triple t) {

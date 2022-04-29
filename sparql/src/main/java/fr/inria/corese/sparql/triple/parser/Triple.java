@@ -67,8 +67,6 @@ public class Triple extends Exp implements Pointerable {
     // rdf star annotation triples t q v 
     // s p o t {| t q v |}
     private List<Triple> tripleList;
-    // tuple contain a filter
-    //Expression exp;
     // path regex
     Expression regex;
     String mode;
@@ -164,11 +162,13 @@ public class Triple extends Exp implements Pointerable {
 
     @Override
     public Triple copy() {
-//        if (isFilter()) {
-//            Expression exp = getFilter().copy();
-//            return create(exp);
-//        }
         return this;
+    }
+    
+    public Triple duplicate() {
+        Triple t =  create(getSubject(), getPredicate(), getObject());
+        t.setRegex(getRegex());
+        return t;
     }
 
     private void setTriple(Atom exp1, Atom atom, Atom exp2) {
@@ -355,6 +355,14 @@ public class Triple extends Exp implements Pointerable {
                 list.add(at);
             }
         }
+        return list;
+    }
+    
+    public List<Atom> getElements() {
+        ArrayList<Atom> list = new ArrayList<>();
+        list.add(getSubject());
+        list.add(getPredicate());
+        list.add(getObject());
         return list;
     }
     

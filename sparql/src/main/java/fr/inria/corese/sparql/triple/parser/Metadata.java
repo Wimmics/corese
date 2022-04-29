@@ -95,6 +95,7 @@ public class Metadata extends ASTObject
     public static final int MOVE      = 72;
     public static final int PATH_TYPE = 73;
     public static final int SLICE     = 74;
+    public static final int FOCUS     = 75;
       
     static final String PREF = NSManager.KGRAM;
     public static final String DISPLAY_TURTLE   = PREF + "turtle";
@@ -214,6 +215,7 @@ public class Metadata extends ASTObject
         define("@message",  MESSAGE); 
         define("@browse",   BROWSE); 
         define("@merge",    MERGE_SERVICE); 
+        define("@focus",    FOCUS); 
         define("@format",   FORMAT); 
         // update query evaluated as select query
         define("@select",   SELECT); 

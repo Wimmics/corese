@@ -39,6 +39,7 @@ import java.util.List;
 public class Selector {
     
     private static final String SERVER_VAR = "?serv";
+    private static final String BNODE_ID = "_:fbn";
     
     private FederateVisitor vis;
     ASTQuery ast;
@@ -52,6 +53,7 @@ public class Selector {
     boolean sparql10 = false;
     boolean count = false;
     boolean trace = false;
+    int bnode = 0;
     
     Selector(FederateVisitor vis, QuerySolver e, ASTQuery ast) {
         this.ast = ast;
@@ -411,19 +413,22 @@ public class Selector {
     }
     
     // consider specific triple such as triple with constant value
-    void selectTriple(ASTQuery aa, BasicGraphPattern bgp, int i) {
+    int selectTriple(ASTQuery aa, BasicGraphPattern bgp, int i) {
         if (getVisitor().isSelectFilter()) {
             i = selectTripleFilter(aa, bgp, i);
-            if (getVisitor().SELECT_JOIN) {
-                // generate bind (exists {s p o . o q r} as ?b)
-                // for each pair of connected triple
-                // to test existence of join on each endpoint
-                selectTripleJoin(aa, bgp, i);
-            }
+
+        } else {
+            i = selectTripleBasic(aa, bgp, i);
         }
-        else {
-            selectTripleBasic(aa, bgp, i);
+
+        if (getVisitor().SELECT_JOIN) {
+            // generate bind (exists {s p o . o q r} as ?b)
+            // for each pair of connected triple
+            // to test existence of join on each endpoint
+            i = selectTripleJoin(aa, bgp, i);
         }
+        
+        return i;
     }
 
     /**
@@ -433,7 +438,7 @@ public class Selector {
      * = regex strstarts strcontains
      */
     int selectTripleFilter(ASTQuery aa, BasicGraphPattern bgp, int i) {
-        List<BasicGraphPattern> list = new SelectorFilter(ast).process();
+        List<BasicGraphPattern> list = new SelectorFilter(getVisitor(), ast).process();
         HashMap<Triple, Triple> mapNoFilter = new HashMap<>();
         
         for (BasicGraphPattern exp : list) {
@@ -460,15 +465,117 @@ public class Selector {
                     var = new Variable(name);
                 }                
                 else if (count) {
-                    var = count(aa, bgp, exp, i++);
+                    var = count(aa, bgp, protect(exp), i++);
                 } else {
-                    var = exist(aa, bgp, exp, i++);
+                    var = exist(aa, bgp, protect(exp), i++);
                 }
                 
                 declare(t, var);
             }
         }
         
+        return i;
+    }
+    
+    // rewrite bnode with unique bnode ID because 
+    // different exists clause must not reuse same bnode !!!
+    BasicGraphPattern protect(BasicGraphPattern bgp) {
+        BasicGraphPattern exp = BasicGraphPattern.create();
+        HashMap<Atom, Atom> map = new HashMap<>();
+        
+        for (Exp e : bgp) {
+            if (e.isTriple()) {
+                Triple t = e.getTriple();
+                if (t.getSubject().isBlankNode() || t.getObject().isBlankNode()) {
+                    Triple nt = protect(map, t); 
+                    exp.add(nt);
+                }
+                else {
+                    exp.add(t);
+                }
+            }
+            else {
+                exp.add(e);
+            }
+        }
+        
+        if (map.isEmpty()) {
+            return bgp;
+        }
+        return exp;
+    }
+    
+    Triple protect(HashMap<Atom, Atom> map, Triple t) {
+        Triple nt = t.duplicate();
+        if (t.getSubject().isBlankNode()) {
+            nt.setSubject(bnode(map, t.getSubject()));
+        }
+        if (t.getObject().isBlankNode()) {
+            nt.setObject(bnode(map, t.getObject()));
+        }
+        return nt;
+    }
+    
+    Triple protect(Triple t) {
+        return protect(new HashMap<>(), t);
+    }
+    
+    Atom bnode(HashMap<Atom, Atom> map, Atom node) {
+        Atom bn = map.get(node);
+        if (bn == null) {
+            bn = bnode();
+            map.put(node, bn);
+        }
+        return bn;
+    }
+    
+    Atom bnode() {
+        return Constant.createBlank(BNODE_ID+bnode++);
+    }
+    
+    
+    // generate bind (exists {t1 . t2} as ?b)
+    // for each pair of connected triple
+    // to test existence of join on each endpoint
+    // use case: determine if service uri {t1 t2} exists    
+    int selectTripleJoin(ASTQuery aa, BasicGraphPattern bgp, int i) {
+        List<BasicGraphPattern> list = new SelectorFilter(getVisitor(), ast).processJoin();
+        for (BasicGraphPattern exp : list) {
+            // exp = {t1 . t2}
+            Variable var;
+            String name = getVariable(exp);
+            
+            if (name != null) {
+                // {t1 . t2} already processed
+                // do not duplicate exists {t1 . t2}
+                // reuse variable
+                var = new Variable(name);
+            } else if (count) {
+                var = count(aa, bgp, protect(exp), i++);
+            } else {
+                var = exist(aa, bgp, protect(exp), i++);
+            }
+            declare(exp, var);
+        }
+        return i;
+    }
+
+    int selectTripleBasic(ASTQuery aa, BasicGraphPattern bgp, int i) {
+        for (Triple t : ast.getTripleList()) {
+            if (selectable(t)) {
+                // triple with constant
+
+                Variable var;
+                if (count) {
+                    var = count(aa, bgp, protect(t), i);
+                } else {
+                    var = exist(aa, bgp, protect(t), i);
+                }
+                declare(t, var);
+
+                i++;
+            }
+        }
         return i;
     }
     
@@ -483,32 +590,7 @@ public class Selector {
         }
         return null;
     }
-    
-    // generate bind (exists {t1 . t2} as ?b)
-    // for each pair of connected triple
-    // to test existence of join on each endpoint
-    // use case: determine if service uri {t1 t2} exists    
-    void selectTripleJoin(ASTQuery aa, BasicGraphPattern bgp, int i) {
-        List<BasicGraphPattern> list = new SelectorFilter(ast).processJoin();
-        for (BasicGraphPattern exp : list) {
-            // exp = {t1 . t2}
-            Variable var;
-            String name = getVariable(exp);
             
-            if (name != null) {
-                // {t1 . t2} already processed
-                // do not duplicate exists {t1 . t2}
-                // reuse variable
-                var = new Variable(name);
-            } else if (count) {
-                var = count(aa, bgp, exp, i++);
-            } else {
-                var = exist(aa, bgp, exp, i++);
-            }
-            declare(exp, var);
-        }
-    }
-    
     // retrieve occurrence of same bgp = {t1 . t2}
     // return variable if any
     String getVariable(BasicGraphPattern bgp) {
@@ -523,26 +605,7 @@ public class Selector {
     boolean selectable(Triple t) {
         return (t.getSubject().isConstant() || t.getObject().isConstant());
     }
-
-    
-    void selectTripleBasic(ASTQuery aa, BasicGraphPattern bgp, int i) {
-        for (Triple t : ast.getTripleList()) {
-            if (selectable(t)) {
-                // triple with constant
-
-                Variable var;
-                if (count) {
-                    var = count(aa, bgp, t, i);
-                } else {
-                    var = exist(aa, bgp, t, i);
-                }
-                declare(t, var);
-
-                i++;
-            }
-        }
-    }
-    
+        
     Variable count(ASTQuery aa, BasicGraphPattern bgp, Triple t, int i) {
         return count(aa, bgp, aa.bgp(t), i);
     }

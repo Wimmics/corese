@@ -21,7 +21,7 @@ public class Sorter {
     
     Sorter(FederateVisitor vis) {
         visitor = vis;
-        selector = new SelectorFilter(vis.getAST());
+        selector = new SelectorFilter(vis, vis.getAST());
     }
     
     void process(Exp bgp) {

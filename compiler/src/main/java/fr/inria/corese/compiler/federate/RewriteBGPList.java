@@ -1,6 +1,5 @@
 package fr.inria.corese.compiler.federate;
 
-import fr.inria.corese.compiler.federate.URI2BGPList.BGP2URI;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Exp;
@@ -72,8 +71,7 @@ public class RewriteBGPList {
                 BasicGraphPattern exp
                         = process(namedGraph, body, bgpList, filterList);
                 list.add(exp);
-            }
-
+            }          
         } else {
             // consider each bgp and complete with missing triple
             for (BasicGraphPattern bgp : sortedList) {
@@ -86,16 +84,26 @@ public class RewriteBGPList {
             }
         }
                 
-        if (list.isEmpty()) {
+        if (list.isEmpty() || getVisitor().COMPLETE_BGP) {
             // no bgp (with several uri) and size > 1
             // process with one empty bgp to get all triples
             Exp exp = process(namedGraph, body, new ArrayList<>(), filterList);
             if (exp.size()==0) {
-                return null;
+                if (list.isEmpty()) {
+                    return null;
+                }
             }
-            return exp;
+            else {
+                list.add(exp);
+            }
         }
-        Exp union = union(list, 0);
+        
+        // clean filter from body
+        for (Exp exp : filterList) {
+            body.getBody().remove(exp);
+        }
+        
+        Exp union = union(list, 0);               
         return union;
     }
     
@@ -111,7 +119,9 @@ public class RewriteBGPList {
                 // list of uri for the bgp.
                 List<String> uriList = bgp2uri.get(bgp);
                 // insert relevant filter from body into bgp
-                getVisitor().filter(body, bgp);
+                // @todo: record filter that is inserted in bgp
+                // and remove it from body
+                getVisitor().filter(body, bgp, filterList);
                 //Service service = Service.newInstance(uriList, bgp);
                 Service service = getVisitor().getRewriteTriple()
                         .rewrite(namedGraph, bgp, getVisitor().getAtomList(uriList));
@@ -144,9 +154,10 @@ public class RewriteBGPList {
         // @hint: 
         // merge(true)  merge all bgp
         // merge(false) merge connected bgp only
+        ctrace("before simplify: %s", exp);
         getVisitor().getSimplify().merge(exp, true);
         // @todo: filter
-
+        ctrace("after simplify: %s", exp);
         return exp;
     }
         
@@ -158,34 +169,86 @@ public class RewriteBGPList {
         }
         return false;
     }
+    
+  
         
-    // return list of partition of connected bgp
+    // bgpList = list of all connected bgp (including when |bgp|=1) of all uri
+    // list sorted by decreasing size
+    // return list partition of connected bgp where |bgp|>1
+    // (bgp1 bgp2) (bgp1 bgp3) (bgp2) (bgp3)
+    // each partition is not necessarily complete wrt triple list (hence not a set partition)
+    // each partition will be completed with missing triple from uriList2bgp.getTripleList()
     List<List<BasicGraphPattern>> partition(List<BasicGraphPattern> bgpList) {
-        List<List<BasicGraphPattern>> res  = new ArrayList<>();
-        rec(bgpList, new ArrayList<>(), res, 0);        
+        List<List<BasicGraphPattern>> res = new ArrayList<>();
+        
+        if (!bgpList.isEmpty() && getVisitor().PARTITION) {
+            BasicGraphPattern bgp = bgpList.get(0);
+            if (bgp.size() == uriList2bgp.getTripleList().size()) {
+                // first bgp contains all triple
+                // return it directly
+                res.add(List.of(bgp));
+                return res;
+            }
+        }
+        
+        // natural partition with |bgp|>1 and |uri|=1, if any
+        List<BasicGraphPattern> partition = bgp2uri.partition();
+        ctrace("natural partition:\n%s", partition);
+        // remove natural partition from candidate bgpList, if any
+        List<BasicGraphPattern> subList = substract(bgpList, partition); 
+        ctrace("start bgpList:\n%s", subList);
+        // start rec computing with natural partition, if any
+        rec(subList, partition, res, 0); 
+        ctrace("list: %s", uriList2bgp.getTripleList());
+        ctrace("map: %s", bgp2uri);
         return res;
     }
+    
+    // remove natural partition sub from candidate main, if any
+    List<BasicGraphPattern> substract(List<BasicGraphPattern> main, List<BasicGraphPattern> sub) {
+        if (sub.isEmpty()) {
+            return main;
+        }
+        ArrayList<BasicGraphPattern> list = new ArrayList<>();
+        for (BasicGraphPattern bgp : main) {
+            if (! sub.contains(bgp)) {
+                list.add(bgp);
+            }
+        }
+        return list;
+    }
 
-    // compute all combinaisons of disjoint bgp of in where |bgp| > 1 
+    // rec compute combinaisons of disjoint bgp of bgpList where |bgp| > 1 
     void rec(List<BasicGraphPattern> bgpList, List<BasicGraphPattern> res, List<List<BasicGraphPattern>> resList, int i) {
-        boolean suc = false;
+        boolean rec = false;
         
         for (int j = i; j<bgpList.size(); j++) {
+            // pick one bgp
             BasicGraphPattern bgp = bgpList.get(j);
             if (bgp.size()>1 && ! bgp.hasIntersection(res)) {
-                suc = true;
+                // bgp has no triple in common with current solution
+                rec = true;
+                // add bgp to current solution
                 res.add(bgp);
+                // recurse on the rest of bgpList
                 rec(bgpList, res, resList, j+1);
+                // remove current bgp and consider next bgp
                 res.remove(res.size()-1);
             }
         }
         
-        if (!suc && !res.isEmpty()) {
+        if (!rec && !res.isEmpty()) {
+            // no more recursive call, there is a solution: record it
             resList.add(List.copyOf(res));
         }
     }   
     
-
+    void ctrace(String mes, Object... obj) {
+        if (TRACE_BGP_LIST) {
+            trace(mes, obj);
+        }
+    }
+    
     void trace(String mes, Object... obj) {
         System.out.println(String.format(mes, obj));
     }
@@ -193,12 +256,12 @@ public class RewriteBGPList {
     void trace(List<BasicGraphPattern> sortedList, List<List<BasicGraphPattern>> alist) {
         if (TRACE_BGP_LIST) {
             for (BasicGraphPattern bgp : sortedList) {
-                System.out.println("bgp: " + bgp);
-                System.out.println("");
+                trace("bgp: %s", bgp);
+                trace("");
             }
             for (List<BasicGraphPattern> ll : alist) {
-                System.out.println("partition: " + ll);
-                System.out.println("");
+                trace("partition: %s",ll);
+                trace("");
             }
         }
     }
@@ -218,6 +281,32 @@ public class RewriteBGPList {
 
     public void setVisitor(FederateVisitor visitor) {
         this.visitor = visitor;
+    }
+    
+        // @todo:
+    // when a partition is complete on triples and each part has only one uri
+    // generate this partition only
+    // (u1 -> t1 t2)(u2 -> t3 t4)
+    // no need to generate (u2 -> t3 t4) alone because the completed first part will be the same    
+    void select(List<List<BasicGraphPattern>> list) {       
+        int size = uriList2bgp.getTripleList().size();
+        
+        for (List<BasicGraphPattern> alist : list) {
+            int count = 0;
+            int nbUri = 0;
+            for (BasicGraphPattern bgp : alist) {
+                count += bgp.size();
+                List<String> uriList = bgp2uri.get(bgp);
+                if (uriList.size()>nbUri) {
+                    nbUri = uriList.size();
+                }
+                trace("%s\n%s", uriList, bgp);
+            }
+            if (count==size && nbUri==1) {
+                trace("complete");
+            }
+            trace("__");
+        }
     }
     
     

@@ -1,9 +1,6 @@
 package fr.inria.corese.compiler.federate;
 
-import fr.inria.corese.kgram.api.query.ASTQ;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.ASTSelector;
-import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
@@ -11,7 +8,6 @@ import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
-import java.util.Comparator;
 import java.util.HashMap;
 import java.util.List;
 
@@ -22,6 +18,7 @@ import java.util.List;
  * b) uriList2bgp: uri -> (connected bgp) triple with several URI
  */
 class URI2BGPList {
+    public static boolean TRACE_SKIP = false;
     // uri -> bgp list
     HashMap<String, List<BasicGraphPattern>> uri2bgp;
     // bgp -> uri list
@@ -35,39 +32,8 @@ class URI2BGPList {
     private URI2BGPList uriList2bgp;
     private FederateVisitor visitor;
     
-    class BGP2URI extends HashMap<BasicGraphPattern, List<String>> {
-        
-        // equivalent of get when different bgp object which have same content
-        // must be same key
-        BasicGraphPattern getKey(BasicGraphPattern bgp) {
-            for (BasicGraphPattern exp : keySet()) {
-                if (bgp.bgpEqual(exp)) {
-                    return exp;
-                }
-            }
-            return bgp;
-        }
-        
-        List<BasicGraphPattern> keyList() {
-            ArrayList<BasicGraphPattern> list = new ArrayList<>();
-            list.addAll(keySet());
-            return list;
-        }
-        
-        List<BasicGraphPattern> sortKeyList() {
-            return sort(keyList());
-        }
-        
-        List<BasicGraphPattern> sort(List<BasicGraphPattern> list) {
-            list.sort(new Comparator<>(){
-                public int compare(BasicGraphPattern bgp1, BasicGraphPattern bgp2) {
-                    return - Integer.compare(bgp1.size(), bgp2.size());
-                }
-            });
-            return list;
-        }
-        
-    }
+    // optional does not
+    private boolean join = true;
     
     
     URI2BGPList(FederateVisitor vis) {
@@ -129,6 +95,9 @@ class URI2BGPList {
     
     // does triple t join with each connected triple in bgp
     boolean join(BasicGraphPattern bgp, Triple t, String uri) {
+        if (getVisitor().acceptWithoutJoinTest(t)) {
+            return true;
+        }
         return getSelector().join(bgp, t, uri);        
     }
     
@@ -136,7 +105,10 @@ class URI2BGPList {
     boolean join(BasicGraphPattern bgp1, BasicGraphPattern bgp2, String uri) {
         for (Exp e : bgp2) {
             if (e.isTriple()) {
-                if (! getSelector().join(bgp1, e.getTriple(), uri)) {
+                if (getVisitor().acceptWithoutJoinTest(e.getTriple())) {
+                    return true;
+                }
+                if (!join(bgp1, e.getTriple(), uri)) {
                     return false;
                 }
             }
@@ -168,15 +140,17 @@ class URI2BGPList {
         int i = 0;
         for (BasicGraphPattern bgp : bgpList) {
             if (bgp.isConnected(triple)) {
-                if (getVisitor().USE_JOIN) {
+                if (isJoin()) {
                     if (join(bgp, triple, uri)) {
                         // source selection confirm that triple join with bgp
                         bgp.add(triple);
                         return i;
                     } else {
                         // source selection confirm that triple does not join with bgp
-//                        System.out.println("skip: " + triple + " " + uri);
-//                        System.out.println(bgp);
+                        if (TRACE_SKIP) {
+                            trace("skip: %s %s", triple, uri);
+                            trace("%s", bgp);
+                        }
                     }
                 } else {
                     bgp.add(triple);
@@ -197,7 +171,7 @@ class URI2BGPList {
         for (int j = i + 1; j < bgpList.size(); j++) {
             BasicGraphPattern bgp2 = bgpList.get(j);
             if (bgp2.isConnected(triple)) {
-                if (getVisitor().USE_JOIN) {
+                if (isJoin()) {
                     if (join(bgp1, bgp2, uri)) {
                         // merge only if source selection confirm join
                         // in connected bgp
@@ -355,6 +329,15 @@ class URI2BGPList {
 
     public void setVisitor(FederateVisitor visitor) {
         this.visitor = visitor;
+    }
+
+    public boolean isJoin() {
+        return join;
+    }
+
+    public URI2BGPList setJoin(boolean join) {
+        this.join = join;
+        return this;
     }
 
 }

@@ -40,11 +40,12 @@ import org.slf4j.LoggerFactory;
 import java.util.List;
 
 /**
- * Filter Evaluator 
+ * Filter Evaluator
  *
  * @author Olivier Corby INRIA
  */
 public class Interpreter implements Computer, Evaluator, ExprType {
+
     public static boolean testNewEval = false;
     private static Logger logger = LoggerFactory.getLogger(Interpreter.class);
     static final String MEMORY = Exp.KGRAM + "memory";
@@ -70,20 +71,19 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     public Interpreter() {
     }
-    
-    
+
     // for PluginImpl
     public void setPlugin(ProxyInterpreter plugin) {
-        this.plugin = plugin; 
+        this.plugin = plugin;
         if (plugin.getEvaluator() == null) {
             plugin.setEvaluator(this);
         }
     }
-    
+
     public static ASTExtension createExtension() {
         return new ASTExtension();
     }
-    
+
     public static ASTExtension getCreateExtension(Query q) {
         ASTExtension ext = q.getExtension();;
         if (ext == null) {
@@ -97,7 +97,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     public void setProducer(Producer p) {
         producer = p;
     }
-    
+
     public Producer getProducer() {
         return producer;
     }
@@ -106,19 +106,19 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     public void setKGRAM(Eval o) {
         //kgram = o;
     }
-    
+
     @Override
     public void setDebug(boolean b) {
         isDebug = b;
     }
-   
+
     Eval getEval(Environment env) {
         if (env.getEval() == null) {
             logger.warn("env.getEval() = null");
         }
         return env.getEval();
     }
-    
+
     @Override
     public void addResultListener(ResultListener rl) {
         listener = rl;
@@ -138,11 +138,11 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     /**
-     * Extension: Functions that return several variables as result such as: 
+     * Extension: Functions that return several variables as result such as:
      * values (VAR+) { unnest(exp) }
      */
     @Override
-    public Mappings eval(Filter f, Environment env, List<Node> nodes) 
+    public Mappings eval(Filter f, Environment env, List<Node> nodes)
             throws EngineException {
         int n = 1;
         Expr exp = f.getExp();
@@ -170,9 +170,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
                 return getProducer().map(nodes, res, n);
         }
     }
-    
-    
-    
 
     /**
      * Evaluator of filter exp
@@ -203,9 +200,9 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     /**
      * Bridge to expression evaluation for SPARQL filter and LDScript expression
-     * Expressions are defined in fr.inria.corese.sparql.triple.parser
-     * Each expression implements function:
-     * eval(Computer e, Binding b, Environment env, Producer p)
+     * Expressions are defined in fr.inria.corese.sparql.triple.parser Each
+     * expression implements function: eval(Computer e, Binding b, Environment
+     * env, Producer p)
      */
     public IDatatype eval(Expr exp, Environment env, Producer p) throws EngineException {
         // evalWE clean the binding stack if an EngineException is thrown
@@ -232,31 +229,29 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
     }
 
-
     @Override
     public IDatatype function(Expr exp, Environment env, Producer p) throws EngineException {
-        throw new EngineException("Undefined expression: "+ exp.toString());
+        throw new EngineException("Undefined expression: " + exp.toString());
     }
-    
-     /**
-     * function.isSystem() == true
-     * function contains nested query or exists
-     * use case: exists { exists { } }  the inner exists need outer exists
-     * BGP to be bound // hence we need a fresh Memory to start
+
+    /**
+     * function.isSystem() == true function contains nested query or exists use
+     * case: exists { exists { } } the inner exists need outer exists BGP to be
+     * bound // hence we need a fresh Memory to start
      */
     public Computer getComputer(Environment env, Producer p, Expr function) {
         InterpreterEval eval = getComputerEval(env, p, function);
         return eval.getComputer();
     }
-    
+
     /**
-     * context: ldscript function call require new Interpreter with new Environment 
-     * see sparql.triple.function.script.Extension 
-     * use case: function contains a sparql query such as let(select where)
-     * the function must be executed with a fresh Environment 
-     * initialized with the function definition global query 
-     * hint: the function has been compiled within a public query q1
-     * which may be different from the query q2 where public function call occur
+     * context: ldscript function call require new Interpreter with new
+     * Environment see sparql.triple.function.script.Extension use case:
+     * function contains a sparql query such as let(select where) the function
+     * must be executed with a fresh Environment initialized with the function
+     * definition global query hint: the function has been compiled within a
+     * public query q1 which may be different from the query q2 where public
+     * function call occur
      */
     @Override
     public InterpreterEval getComputerEval(Environment env, Producer p, Expr function) {
@@ -280,7 +275,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
         return env.getQuery();
     }
-    
+
     Eval createEval(Eval currentEval, Expr exp, Environment env, Producer p) {
         Exp pat = env.getQuery().getPattern(exp);
         Memory memory = currentEval.createMemory(env, pat);
@@ -300,87 +295,85 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     @Override
     public IDatatype exist(Expr exp, Environment env, Producer p) throws EngineException {
         try {
-        if (hasListener) {
-            listener.listen(exp);
-        }
-        if (exp.arity() == 1) {
-            // argument return a graph on which we evaluate the exists
-            IDatatype res = eval(exp.getExp(0), env, p);
-            if (res == ERROR_VALUE) {
-                return ERROR_VALUE;
+            if (hasListener) {
+                listener.listen(exp);
             }
-            if (p.isProducer((Node) res)) {
-                p = p.getProducer((Node) res, env);
+            if (exp.arity() == 1) {
+                // argument return a graph on which we evaluate the exists
+                IDatatype res = eval(exp.getExp(0), env, p);
+                if (res == ERROR_VALUE) {
+                    return ERROR_VALUE;
+                }
+                if (p.isProducer((Node) res)) {
+                    p = p.getProducer((Node) res, env);
+                }
             }
-        }
-        Query q = env.getQuery();
-        Exp pat = q.getPattern(exp);
-        Node gNode = env.getGraphNode();
-        Eval currentEval = getEval(env);               
-        Mappings map = null;
+            Query q = env.getQuery();
+            Exp pat = q.getPattern(exp);
+            Node gNode = env.getGraphNode();
+            Eval currentEval = getEval(env);
+            Mappings map = null;
 
-        // in case of // evaluation of a pattern
-        synchronized (exp) {
-            if (exp.isSystem()) {
-                // system generated for LDScript nested query 
-                // e.g. for (?m in select where) {}
-                // is compiled with internal system exists 
-                // for (?m in exists {select where}){}
-                Exp sub = pat.get(0).get(0);
+            // in case of // evaluation of a pattern
+            synchronized (exp) {
+                if (exp.isSystem()) {
+                    // system generated for LDScript nested query 
+                    // e.g. for (?m in select where) {}
+                    // is compiled with internal system exists 
+                    // for (?m in exists {select where}){}
+                    Exp sub = pat.get(0).get(0);
 
-                if (sub.isQuery()) {
-                    Query qq = sub.getQuery();
-                    qq.setFun(true);
-                    if (qq.isConstruct() || qq.isUpdate()) {
-                        Mappings m = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
-                        return DatatypeMap.createObject((m.getGraph()==null)?p.getGraph():m.getGraph());
-                    }
-                    if (qq.getService() != null) {
-                        // @federate <uri> let (?m = select where)
+                    if (sub.isQuery()) {
+                        Query qq = sub.getQuery();
+                        qq.setFun(true);
+                        if (qq.isConstruct() || qq.isUpdate()) {
+                            Mappings m = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
+                            return DatatypeMap.createObject((m.getGraph() == null) ? p.getGraph() : m.getGraph());
+                        }
+                        if (qq.getService() != null) {
+                            // @federate <uri> let (?m = select where)
                             Mappings m = currentEval.getSPARQLEngine().eval(qq, getMapping(env, qq), p);
                             return DatatypeMap.createObject(m);
-                    } else {
-                        // let (?m = select where)
-                        if (testNewEval) {
-                            map = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
-                        }
-                        else {
-                            Eval eval = createEval(currentEval, exp, env, p);
-                            if (eval == null) {
-                                return null;
+                        } else {
+                            // let (?m = select where)
+                            if (testNewEval) {
+                                map = currentEval.getSPARQLEngine().eval(gNode, qq, getMapping(env, qq), p);
+                            } else {
+                                Eval eval = createEval(currentEval, exp, env, p);
+                                if (eval == null) {
+                                    return null;
+                                }
+                                map = eval.subEval(qq, gNode, Stack.create(sub), 0);
                             }
-                            map = eval.subEval(qq, gNode, Stack.create(sub), 0);
                         }
+                    } else {
+                        // never happen
+                        return null;
                     }
                 } else {
-                    // never happen
-                    return null;
+                    // SPARQL exists {}               
+                    Eval eval = createEval(currentEval, exp, env, p);
+                    if (eval == null) {
+                        return null;
+                    }
+                    eval.setLimit(1);
+                    map = eval.subEval(q, gNode, Stack.create(pat), 0);
                 }
-            } else {
-                // SPARQL exists {}               
-                Eval eval = createEval(currentEval, exp, env, p);
-                if (eval == null) {
-                    return null;
-                }
-                eval.setLimit(1);
-                map = eval.subEval(q, gNode, Stack.create(pat), 0);
             }
-        }
 
-        boolean b = map.size() > 0;
+            boolean b = map.size() > 0;
 
-        if (exp.isSystem()) {
-            return DatatypeMap.createObject(map);
-        } else { 
-            //report(q, env, map);
-            return DatatypeMap.newInstance(b);
-        }
-        }
-        catch (SparqlException e) {
+            if (exp.isSystem()) {
+                return DatatypeMap.createObject(map);
+            } else {
+                //report(q, env, map);
+                return DatatypeMap.newInstance(b);
+            }
+        } catch (SparqlException e) {
             throw EngineException.cast(e);
         }
     }
-    
+
     // draft test
     // @todo: it does not clean the report in case of failure of the rest of the pattern
     void report(Query q, Environment env, Mappings map) {
@@ -391,21 +384,21 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             dt.set("exists", list);
         }
     }
-    
+
     IDatatype getCreateReport(Environment env) {
         IDatatype dt = env.getReport();
         if (dt == null) {
             dt = DatatypeMap.newServiceReport();
             env.setReport(dt);
         }
-        if (dt.get("exists") == null){
+        if (dt.get("exists") == null) {
             dt.set("exists", DatatypeMap.newList());
         }
         return dt;
     }
 
     /**
-     * Create a mapping with var = val coming from Bind stack 
+     * Create a mapping with var = val coming from Bind stack
      */
     Mapping getMapping(Environment env, Query q) {
         if (env.hasBind()) {
@@ -414,13 +407,11 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             // share global variables and ProcessVisitor
             map.setBind(env.getBind());
             return map;
-        }
-        else {
+        } else {
             // share global variables and ProcessVisitor
             return Mapping.create(env.getBind());
         }
     }
-
 
     @Override
     public void setMode(int m) {
@@ -453,14 +444,14 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     @Override
     public Binding getBinder() {
-        return Binding.create() ;
+        return Binding.create();
     }
 
     @Override
     public void finish(Environment env) {
         getPlugin().finish(producer, env);
     }
-  
+
     public static boolean isDefined(Expr exp) {
         return extension.isDefined(exp);
     }
@@ -484,18 +475,17 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     }
 
     @Override
-    public Function getDefineGenerate(Expr exp, Environment env, String name, int n) 
-            throws EngineException{
+    public Function getDefineGenerate(Expr exp, Environment env, String name, int n)
+            throws EngineException {
         Function fun = getDefine(env, name, n);
         if (fun == null) {
             fun = getDefine(exp, env, name, n);
         }
         return fun;
     }
-    
+
     /**
-     * exp = funcall(arg, arg) arg evaluates to name 
-     * Generate extension function
+     * exp = funcall(arg, arg) arg evaluates to name Generate extension function
      * for predefined function name rq:plus -> function rq:plus(x, y){
      * rq:plus(x, y) }
      */
@@ -511,7 +501,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         ext.define(fun);
         return fun;
     }
-    
+
     // use exp AST to compile exp
     // use case: uri() uses ast base
     ASTQuery getAST(Expression exp, Query q) {
@@ -519,7 +509,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         if (ast != null) {
             return ast.getGlobalAST();
         } else {
-            return  q.getAST();
+            return q.getAST();
         }
     }
 
@@ -534,7 +524,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         }
         return extension.get(name, n);
     }
-    
+
     @Override
     public Function getDefineMetadata(Environment env, String metadata, int n) {
         ASTExtension ext = env.getExtension();
@@ -577,17 +567,15 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         //return proxy.getComputerPlugin();
         return getPlugin();
     }
-    
+
     @Override
     public GraphProcessor getGraphProcessor() {
         return getComputerPlugin().getGraphProcessor();
     }
 
-
     public ComputerProxy getComputerTransform() {
         return getComputerPlugin().getComputerTransform();
     }
-
 
     @Override
     public TransformProcessor getTransformer(Binding b, Environment env, Producer p) throws EngineException {
@@ -603,7 +591,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     public TransformVisitor getVisitor(Binding b, Environment env, Producer p) {
         return getComputerTransform().getVisitor(b, env, p);
     }
-    
+
     @Override
     public Context getContext(Binding b, Environment env, Producer p) {
         return getComputerTransform().getContext(b, env, p);
@@ -617,6 +605,5 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     public ProxyInterpreter getPlugin() {
         return plugin;
     }
-
 
 }

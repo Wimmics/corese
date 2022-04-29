@@ -27,11 +27,9 @@ public class RewriteBGP {
 
     private FederateVisitor visitor;
     private boolean debug = false;
-    //RewriteBGPSeveralURI rewrite;
 
     RewriteBGP(FederateVisitor vis) {
         visitor = vis;
-        //rewrite = new RewriteBGPSeveralURI(vis);
     }
 
    
@@ -48,8 +46,12 @@ public class RewriteBGP {
     URI2BGPList rewriteTripleWithOneURI
         (Atom name, Exp main, Exp body, List<Exp> filterList) {
             
-        URI2BGPList uri2bgpList     = new URI2BGPList(getVisitor());
-        URI2BGPList uriList2bgpList = new URI2BGPList(getVisitor());
+        URI2BGPList uri2bgpList     = new URI2BGPList(getVisitor())
+                .setJoin(join(main, body));
+        
+        URI2BGPList uriList2bgpList = new URI2BGPList(getVisitor())
+                .setJoin(join(main, body));
+        
         uri2bgpList.setUriList2bgp(uriList2bgpList);
         List<Expression> localFilterList = new ArrayList<>();
         
@@ -95,7 +97,13 @@ public class RewriteBGP {
         return uri2bgpList;
     }
         
-
+    // right exp of optional does not use select join to create bgp list
+    boolean join(Exp main, Exp body) {
+        if (main.isOptional() && body == main.get(1)) {
+            return false;
+        }
+        return getVisitor().USE_JOIN;
+    }
         
     // create map URI -> (BGP1 .. BGPn)        
     // group connected triples with one URI in uri2bgpList 

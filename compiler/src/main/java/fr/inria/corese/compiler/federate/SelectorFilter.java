@@ -18,14 +18,16 @@ public class SelectorFilter {
     static HashMap<String, Boolean> map;
     static String[] ope = {"=", "regex", "contains", "strstarts"};
     ASTQuery ast;
+    private FederateVisitor visitor;
     ArrayList<BasicGraphPattern> res;
     
     static {
         init();
     }
     
-    SelectorFilter(ASTQuery ast) {
+    SelectorFilter(FederateVisitor vis, ASTQuery ast) {
         this.ast = ast;
+        visitor = vis;
         res = new ArrayList<>();
     }
     
@@ -95,29 +97,56 @@ public class SelectorFilter {
     void processBGPJoin(Exp body) {
         int i = 0;
         for (Exp e1 : body) {
-            if (e1.isTriple()) {
-                for (int j = i+1; j<body.size(); j++) {
+            if (e1.isTriple() && accept(e1.getTriple())) {
+                Triple t1 = e1.getTriple();
+                for (int j = i + 1; j < body.size(); j++) {
                     Exp e2 = body.get(j);
-                    if (e2.isTriple()) {
-                        Triple t1 = e1.getTriple();
+                    if (e2.isTriple() && accept(e2.getTriple())) {
                         Triple t2 = e2.getTriple();
                         if (t1.isConnected(t2)) {
                             add(t1, t2);
                         }
                     }
                 }
-            }
-            else {
+            } else {
                 processJoin(e1);
             }
             i++;
         }
     }
     
-    void add(Triple t1, Triple t2) {
-        BasicGraphPattern bgp = BasicGraphPattern.create(t1, t2);
-        res.add(bgp);
+    // accept for join test
+    boolean accept(Triple t) {
+        return getVisitor().createJoinTest(t);            
     }
+    
+    void add(Triple t1, Triple t2) {
+        if (t1.getPredicate().isVariable() && t2.getPredicate().isConstant()) {
+            basicAdd(t2, t1);
+        }
+        else {
+            basicAdd(t1, t2);
+        }
+    }
+    
+    void basicAdd(Triple t1, Triple t2) {
+        BasicGraphPattern bgp = BasicGraphPattern.create(t1, t2);
+        if (accept(bgp)) {
+            res.add(bgp);
+        }
+    }
+    
+    // do not generate "duplicate" pair of triple
+    boolean accept(BasicGraphPattern bgp) {
+        for (BasicGraphPattern exp : res) {
+            boolean sim = bgp.similarPair(exp);
+            if (sim) {
+                return false;
+            }
+        }
+        return true;
+    }
+    
     
     void processBGPTriple(Exp body) {
         for (Exp exp : body) {
@@ -171,6 +200,14 @@ public class SelectorFilter {
     boolean accept(Expression exp) {
         Boolean b = map.get(exp.getName().toLowerCase());
         return b!= null && b;
+    }
+
+    public FederateVisitor getVisitor() {
+        return visitor;
+    }
+
+    public void setVisitor(FederateVisitor visitor) {
+        this.visitor = visitor;
     }
     
     

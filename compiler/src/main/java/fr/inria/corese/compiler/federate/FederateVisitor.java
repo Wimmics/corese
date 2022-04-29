@@ -65,10 +65,16 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     // draft
     public static boolean TEST_FEDERATE = true;
     // generate partition of connnected bgp
-    public static boolean FEDERATE_BGP= true;
+    public static boolean FEDERATE_BGP = true;
+    // if we find a complete partition, do not split it in subparts
+    public static boolean PARTITION = true;
+    // complete with list of triple alone
+    public static boolean COMPLETE_BGP = false;
     // source selection generate bind (exists {t1 . t2} as ?b)
     // for each pair of connected triple
     public static boolean SELECT_JOIN = true;
+    public static boolean SELECT_JOIN_PATH = true;
+    public static boolean SELECT_FILTER = true;
     // use source selection join to generate connected bgp with join
     public static boolean USE_JOIN = true;
     public static boolean TRACE_FEDERATE = false;
@@ -83,7 +89,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     // service selection for triples
     private boolean select = true;
     // consider filter in source selection
-    private boolean selectFilter = true;
+    private boolean selectFilter = SELECT_FILTER;
     // group connected triples with same service into connected service s { BGP }
     boolean group = true;
     // in optional/minus/union: group every triples with same service into one service s { BGP }
@@ -491,11 +497,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
      * ast is global or subquery
      * name is embedding named graph if any
      */
-    void rewrite(Atom name, ASTQuery ast) {
+    void rewrite(Atom name, ASTQuery ast) {       
         for (Expression exp : ast.getModifierExpressions()) {
             rewriteFilter(name, exp);
         }       
         rewrite(name, ast.getBody());
+        
     }
     
     /**
@@ -524,7 +531,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 // @todo: fail
             }
             // if isFederateBGP(), compute uri2bgp 
-            // but do not rewrite triple with one uri
+            // and do not rewrite anything yet
             URI2BGPList uri2bgp = 
                  getGroupBGP().rewriteTripleWithOneURI(namedGraph, main, body, filterList); 
             
@@ -547,6 +554,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 }
             } 
         }
+        
         //System.out.println("process body: "+body);
         ArrayList<Exp> expandList = new ArrayList<> ();
         for (int i = 0; i < body.size(); i++) {
@@ -695,8 +703,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
     }
     
-     // copy relevant filter from body into bgp
     void filter(Exp body, Exp bgp) {
+        filter(body, bgp, new ArrayList<>());
+    }
+
+     // copy relevant filter from body into bgp
+    void filter(Exp body, Exp bgp, List<Exp> list) {
         List<Variable> varList = bgp.getInscopeVariables();
         for (Exp exp : body) {
             if (exp.isFilter()) {
@@ -706,6 +718,10 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 else if (exp.getFilter().isBound(varList) && 
                         !bgp.getBody().contains(exp)) {
                     bgp.add(exp);
+                    
+                    if (!list.contains(exp)) {
+                        list.add(exp);
+                    }
                 }               
             }
         }
@@ -841,8 +857,22 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         return list;      
     }
  
-           
-   
+    // accept for create join test
+    boolean createJoinTest(Triple t) {
+        if (t.isPath()) {
+            return SELECT_JOIN_PATH;            
+        }
+        return true;
+    }
+       
+    boolean acceptWithoutJoinTest(Triple t) {
+        if (t.isPath() && !SELECT_JOIN_PATH) {
+            // there is no join test for path: accept it
+           return true;            
+        }
+        return false;
+    }
+    
     boolean rewriteFilter(Atom name, Expression exp) {
         boolean exist = false;
         if (exp.isTerm()) {

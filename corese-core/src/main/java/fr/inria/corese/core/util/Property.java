@@ -114,6 +114,8 @@ public class Property {
         FEDERATE_BGP,
         // do not split complete partition if any
         FEDERATE_PARTITION,
+        // test and use join between right and left exp of optional
+        FEDERATE_OPTIONAL,
         // complete bgp partition with additional partition of triple alone (as before)
         FEDERATE_COMPLETE,
         // source selection with filter
@@ -559,6 +561,10 @@ public class Property {
             case FEDERATE_JOIN:
                 FederateVisitor.SELECT_JOIN=b;
                 FederateVisitor.USE_JOIN=b;
+                break;
+                
+            case FEDERATE_OPTIONAL:
+                FederateVisitor.OPTIONAL=b;
                 break;
                 
             case FEDERATE_JOIN_PATH:

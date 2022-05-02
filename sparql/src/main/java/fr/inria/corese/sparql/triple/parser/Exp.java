@@ -197,7 +197,7 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         }
         return this;
     }
-
+    
     public void setBodyExp(Exp exp) {
         set(0, exp);
     }
@@ -397,6 +397,10 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
     }
 
     public Union getUnion() {
+        return null;
+    }
+    
+    public BasicGraphPattern getBasicGraphPattern(){
         return null;
     }
 

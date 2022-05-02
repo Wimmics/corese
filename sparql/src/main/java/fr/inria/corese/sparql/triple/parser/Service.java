@@ -95,6 +95,15 @@ public class Service extends SourceExp {
     }
     
     @Override
+    public BasicGraphPattern getBasicGraphPattern() {
+        return getBodyExp().getBasicGraphPattern();        
+    }
+    
+    public BasicGraphPattern bgp() {
+        return getBodyExp().getBasicGraphPattern();        
+    }
+    
+    @Override
     public ASTBuffer toString(ASTBuffer sb) {
         sb.append(Term.SERVICE);
         int i = 0;

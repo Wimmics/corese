@@ -134,6 +134,13 @@ public class Metadata extends ASTObject
     public static final String FORM   = "@form";
     public static final String OLD_SERVICE   = "@oldService";
     public static final String SHOW   = "@show";
+    
+    public static final String FED_BGP      = "@federateBgp";
+    public static final String FED_JOIN     = "@federateJoin";
+    public static final String FED_OPTIONAL = "@federateOptional";
+    public static final String FED_COMPLETE = "@federateComplete";
+    public static final String FED_PARTITION= "@federatePartition";
+    
              
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 

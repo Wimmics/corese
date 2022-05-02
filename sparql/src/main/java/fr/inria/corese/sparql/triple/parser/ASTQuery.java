@@ -1176,6 +1176,13 @@ public class ASTQuery
         return getMetadata().getDatatypeValue(type);
     }
     
+    public IDatatype getMetaValue(String type) {
+        if (getMetadata() == null) {
+            return null;
+        }
+        return getMetadata().getDatatypeValue(type);
+    }
+    
     public boolean isFederate() {
         return getGlobalAST().hasMetadata(Metadata.FEDERATE) 
             || getGlobalAST().hasMetadata(Metadata.FEDERATION); 

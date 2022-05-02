@@ -11,7 +11,7 @@ import java.util.List;
  * Group and restrict federated services on the intersection of their URL list
  * 
  */
-public class SimplifyService {
+public class SimplifyService extends Util {
     
     
     Exp simplify(Exp bgp) {
@@ -53,23 +53,5 @@ public class SimplifyService {
         
         return bgp;
     }
-    
-    List<Atom> myIntersection(List<Atom> l1, List<Atom> l2) {
-        if (l1 == null) {
-            return l2;
-        }
-        return intersection(l1, l2);
-    }
-
-    
-    List<Atom> intersection(List<Atom> l1, List<Atom> l2) {
-        List<Atom> list = new ArrayList<Atom>();
-        for (Atom at : l1) {
-            if (l2.contains(at)) {
-                list.add(at);
-            }
-        }
-        return list;
-    }
-    
+       
 }

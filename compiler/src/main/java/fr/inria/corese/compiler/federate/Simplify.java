@@ -1,6 +1,7 @@
 package fr.inria.corese.compiler.federate;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.ASTSelector;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
@@ -22,7 +23,12 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */
-public class Simplify {
+public class Simplify extends Util {
+    // heuristics to simplify service s bgp1 optional service (S) bgp2 
+    // when all triple of bgp2
+    // join with connected triple of bgp1 in s
+    // and s memberOf S
+    // heuristics similar to federate bgp, heuristics cover both arg of optional
     
     FederateVisitor visitor;
     private boolean debug = false;
@@ -52,14 +58,25 @@ public class Simplify {
         }
     }
     
-    
-    Exp simplifyBGP(Exp bgp) {
+    // main function
+    // exp is binary
+    Exp simplify(Exp exp) {
+        Exp res = simplifyBinary(exp);
+        return res;
+    }
+
+    // main function
+    Exp process(Exp bgp) {
         bgp = merge(bgp);
         if (visitor.isBounce()){
+            // @deprecated
             bgp = bounce(bgp);
         }
         return bgp;
     }
+    
+
+
         
     /**
      * BGP { service URI {EXP1} service URI {EXP2} EXP3 } ::= 
@@ -314,7 +331,10 @@ public class Simplify {
         return isUnionTripleOnly(bgp) || isTripleFilterOnly(bgp);
     }
     
-    Exp simplify(Exp exp) {
+    
+    
+    // second main function
+    Exp simplifyBinary(Exp exp) {
         Exp simple = basicSimplify(exp);
         if (simple.isOptional() || simple.isMinus()) {
             Exp split = split(simple);
@@ -322,7 +342,7 @@ public class Simplify {
         }
         return simple;
     }
-    
+       
     
     /**
      * service s {e1} optional { service s {e2}}
@@ -347,17 +367,83 @@ public class Simplify {
         if (isSimplifyUnion(exp, s1, s2)) {
             return simplifyUnion(exp, s1, s2);
         }
-        if (!s1.isFederate() && !s2.isFederate()
-                && s1.getServiceName().equals(s2.getServiceName())) {
-            exp.set(0, s1.getBodyExp());
-            exp.set(1, s2.getBodyExp());
-            Exp simple = simplifyGraph(exp);
-            Service s = Service.create(s1.getServiceName(),
-                            BasicGraphPattern.create(simple));
-            return s;
+        else if (!s1.isFederate() && !s2.isFederate()
+          && s1.getServiceName().equals(s2.getServiceName())) {
+            // both service with same uri            
+            return merge(exp, s1, s2, s1.getServiceList());
         }
-        return simplifyService2(exp, s1, s2);
+        else if (exp.isOptional() && visitor.isFederateOptional()) {
+            return optional(exp);
+        }
+        //return simplifyService2(exp, s1, s2);
+        return exp;
     }
+    
+    Service merge(Exp exp, Service s1, Service s2, List<Atom> list) {
+        exp.set(0, s1.getBodyExp());
+        exp.set(1, s2.getBodyExp());
+        Exp simple = simplifyGraph(exp);
+        Service s = Service.create(list, BasicGraphPattern.create(simple));
+        return s;
+    }
+    
+    // service S1 {bgp1} optional {service S2 {bgp2}}
+    // heuristics to simplify optional when triples in bgp2 
+    // are present in service S1 inter S2
+    // and for all t in bgp2, connected(t, bgp1) => join(t, bgp1, S1 inter S2) == true
+    // -> service S1 {bgp1 optional {bgp2}}
+    Exp optional(Exp exp) {
+        if (exp.get(0).size() == 1 && exp.get(1).size() == 1) {
+            Exp e1 = exp.get(0).get(0);
+            Exp e2 = exp.get(1).get(0);
+            
+            if (e1.isService() && e2.isService()) {
+                Service s1 = e1.getService();
+                Service s2 = e2.getService();
+                List<Atom> inter = intersection(s1, s2);
+
+                if (! inter.isEmpty()) {
+                    if (join(s1.bgp(), s2.bgp(), inter)) {
+                        return merge(exp, s1, s2, s1.getServiceList());
+                    }
+                }
+            }
+        }
+        return exp;
+    }
+    
+    boolean join(BasicGraphPattern bgp1, BasicGraphPattern bgp2, List<Atom> list) {
+        for (Atom uri : list) {
+            if (!join(bgp1, bgp2, uri.getLabel())) {
+                return false;
+            }
+        }
+        return true;
+    }
+
+    
+    // for all t in bgp2, connected(t, bgp1) => join(t, bgp1) == true
+    // and at least one such t
+    boolean join(BasicGraphPattern bgp1, BasicGraphPattern bgp2, String uri) {
+        boolean join = false;
+        for (Exp e : bgp2) {
+            if (e.isTriple()) {
+                Triple t = e.getTriple();
+                if (bgp1.isConnected(t)) {
+                    join = visitor.getAstSelector().join(bgp1, t, uri); 
+                    if (!join) {
+                        return false;
+                    }
+                }
+            }
+        }
+        return join;
+    }
+    
+    ASTSelector getSelector() {
+        return visitor.getAstSelector();
+    }
+    
     
     /**
      * {service S {t1}} union {service S {t2}}

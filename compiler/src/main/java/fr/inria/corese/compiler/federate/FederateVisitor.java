@@ -17,6 +17,11 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTSelector;
 import fr.inria.corese.sparql.triple.parser.Context;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_BGP;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_COMPLETE;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_JOIN;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_OPTIONAL;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_PARTITION;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.URLParam;
@@ -68,6 +73,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static boolean FEDERATE_BGP = true;
     // if we find a complete partition, do not split it in subparts
     public static boolean PARTITION = true;
+    // test and use join between right and left bgp of optional
+    public static boolean OPTIONAL = true;
     // complete with list of triple alone
     public static boolean COMPLETE_BGP = false;
     // source selection generate bind (exists {t1 . t2} as ?b)
@@ -78,6 +85,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     // use source selection join to generate connected bgp with join
     public static boolean USE_JOIN = true;
     public static boolean TRACE_FEDERATE = false;
+    // specific processing for rdf list and bnode variable
     public static boolean PROCESS_LIST = true;
     
     // false: evaluate named graph pattern as a whole on each server 
@@ -117,6 +125,10 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean testFederate = TEST_FEDERATE;
     // generate partition of connected bgp:
     private boolean federateBGP = FEDERATE_BGP;
+    private boolean federateJoin = SELECT_JOIN;
+    private boolean federatePartition = PARTITION;
+    private boolean federateOptional = OPTIONAL;
+    private boolean federateComplete = COMPLETE_BGP;
 
     ASTQuery ast;
     Stack stack;
@@ -366,6 +378,18 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             setSparql(true);
         }
         
+        setFederateBGP(getValue(FED_BGP, isFederateBGP()));
+        setFederateJoin(getValue(FED_JOIN, isFederateJoin()));
+        setFederatePartition(getValue(FED_PARTITION, isFederatePartition()));
+        setFederateComplete(getValue(FED_COMPLETE, isFederateComplete()));
+        setFederateOptional(getValue(FED_OPTIONAL, isFederateOptional()));        
+    }
+    
+    boolean getValue(String meta, boolean b) {
+        if (ast.getMetaValue(meta)!=null) {
+            return ast.getMetaValue(meta).booleanValue();
+        }
+        return b;
     }
     
     boolean skip(String name) {
@@ -617,7 +641,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
         
         if (body.isBGP()) {
-            getSimplify().simplifyBGP(body);
+            getSimplify().process(body);
             bind(body);
             filter(body);
             sort(body);           
@@ -1146,6 +1170,38 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setFederateBGP(boolean federateBGP) {
         this.federateBGP = federateBGP;
+    }
+
+    public boolean isFederateJoin() {
+        return federateJoin;
+    }
+
+    public void setFederateJoin(boolean federateJoin) {
+        this.federateJoin = federateJoin;
+    }
+
+    public boolean isFederatePartition() {
+        return federatePartition;
+    }
+
+    public void setFederatePartition(boolean federatePartition) {
+        this.federatePartition = federatePartition;
+    }
+
+    public boolean isFederateOptional() {
+        return federateOptional;
+    }
+
+    public void setFederateOptional(boolean federateOptional) {
+        this.federateOptional = federateOptional;
+    }
+
+    public boolean isFederateComplete() {
+        return federateComplete;
+    }
+
+    public void setFederateComplete(boolean federateComplete) {
+        this.federateComplete = federateComplete;
     }
 
    

@@ -84,7 +84,7 @@ public class RewriteBGPList {
             }
         }
                 
-        if (list.isEmpty() || getVisitor().COMPLETE_BGP) {
+        if (list.isEmpty() || getVisitor().isFederateComplete()) {
             // no bgp (with several uri) and size > 1
             // process with one empty bgp to get all triples
             Exp exp = process(namedGraph, body, new ArrayList<>(), filterList);
@@ -181,7 +181,7 @@ public class RewriteBGPList {
     List<List<BasicGraphPattern>> partition(List<BasicGraphPattern> bgpList) {
         List<List<BasicGraphPattern>> res = new ArrayList<>();
         
-        if (!bgpList.isEmpty() && getVisitor().PARTITION) {
+        if (!bgpList.isEmpty() && getVisitor().isFederatePartition()) {
             BasicGraphPattern bgp = bgpList.get(0);
             if (bgp.size() == uriList2bgp.getTripleList().size()) {
                 // first bgp contains all triple

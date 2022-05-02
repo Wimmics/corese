@@ -4,6 +4,7 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.Optional;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
@@ -14,7 +15,7 @@ import java.util.List;
  * Subset of filter to be considered in source selection and in 
  * sort bgp
  */
-public class SelectorFilter {
+public class SelectorFilter {    
     static HashMap<String, Boolean> map;
     static String[] ope = {"=", "regex", "contains", "strstarts"};
     ASTQuery ast;
@@ -59,24 +60,7 @@ public class SelectorFilter {
         }
         process(ast.getBody());
     }
-    
-    void processJoin(ASTQuery ast) {
-        processJoin(ast.getBody());
-    }
-    
-    void processJoin(Exp body) {
-        if (body.isBGP()) {
-            processBGPJoin(body);
-        }
-        else if (body.isQuery()) {
-            processJoin(body.getAST());
-        }
-        else for (Exp exp : body) {
-            processJoin(exp);
-        }
-    }
-    
-    
+           
     void process(Exp body) {
         if (body.isBGP()) {
             processBGP(body);
@@ -93,6 +77,48 @@ public class SelectorFilter {
         processBGPTriple(body);
     }
     
+    
+    
+    
+    void processJoin(ASTQuery ast) {
+        processJoin(ast.getBody());
+    }
+    
+    void processJoin(Exp body) {
+        if (body.isBGP()) {
+            processBGPJoin(body);
+        }
+        else if (body.isOptional()) {
+           processJoin(body.getOptional());
+        }
+        else if (body.isQuery()) {
+            processJoin(body.getAST());
+        }
+        else for (Exp exp : body) {
+            processJoin(exp);
+        }
+    }
+    
+    void processJoin(Optional body) {
+        processBGPJoin(body.get(0));
+        processBGPJoin(body.get(1));
+        if (getVisitor().isFederateOptional()) {
+            // test join(t1, t2) on triple of both arg of optional
+            BasicGraphPattern bgp = BasicGraphPattern.create();
+            addTriple(body.get(0), bgp);
+            addTriple(body.get(1), bgp);
+            processBGPJoin(bgp);
+        }
+    }
+
+    void addTriple(Exp exp, BasicGraphPattern bgp) {
+        for (Exp e : exp) {
+            if (e.isTriple()) {
+                bgp.add(e);
+            }
+        }
+    }
+
     // generate bgp for test of join {t1 t2}
     void processBGPJoin(Exp body) {
         int i = 0;
@@ -101,9 +127,11 @@ public class SelectorFilter {
                 Triple t1 = e1.getTriple();
                 for (int j = i + 1; j < body.size(); j++) {
                     Exp e2 = body.get(j);
-                    if (e2.isTriple() && accept(e2.getTriple())) {
+                    if (e2.isTriple()) {
                         Triple t2 = e2.getTriple();
-                        if (t1.isConnected(t2)) {
+                        if (accept(t2)
+                                //&& accept(t1, t2)
+                                && t1.isConnected(t2)) {
                             add(t1, t2);
                         }
                     }
@@ -113,6 +141,13 @@ public class SelectorFilter {
             }
             i++;
         }
+    }
+    
+    boolean accept(Triple t1, Triple t2) {
+        if (t1.getPredicate().isVariable() && t2.getPredicate().isVariable()) {
+        
+        }
+        return true;
     }
     
     // accept for join test

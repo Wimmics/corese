@@ -421,7 +421,7 @@ public class Selector {
             i = selectTripleBasic(aa, bgp, i);
         }
 
-        if (getVisitor().SELECT_JOIN) {
+        if (getVisitor().isFederateJoin()) {
             // generate bind (exists {s p o . o q r} as ?b)
             // for each pair of connected triple
             // to test existence of join on each endpoint

@@ -20,7 +20,7 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */
-public class RewriteBGP {
+public class RewriteBGP extends Util {
 
     static final String FAKE_URI = "http://ns.inria.fr/_fake_";
 
@@ -364,7 +364,7 @@ public class RewriteBGP {
                     Service servBGP = bgpMap.get(bgp);
                     List<Variable> bgpVarList = bgp.getInscopeVariables();
                     // intersection of BGP and exists variables
-                    List<Variable> currentIntersection = intersection(existVarList, bgpVarList);
+                    List<Variable> currentIntersection = intersectionVariable(existVarList, bgpVarList);
 
                     if (isDebug()) {
                         System.out.println("R: bgp: " + bgpVarList  + " exist: " + existVarList);
@@ -491,7 +491,7 @@ public class RewriteBGP {
                     else if (exp.isService()) {
                         Service service = exp.getService();
                         List<Variable> bgpVarList = service.getInscopeVariables();
-                        List<Variable> currentIntersection = intersection(existVarList, bgpVarList);
+                        List<Variable> currentIntersection = intersectionVariable(existVarList, bgpVarList);
 
                         if (isDebug()) {
                             System.out.println("R: " + existVarList + " " + bgpVarList);
@@ -544,67 +544,7 @@ public class RewriteBGP {
         return false;
     }
     
-    boolean equalURI(List<Atom> list1, List<Atom> list2) {
-        if (list1.size() != list2.size()) {
-            return false;
-        }
-        for (Atom var : list1) {
-            if (!list2.contains(var)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-
-    boolean equal(List<Variable> list1, List<Variable> list2) {
-        if (list1.size() != list2.size()) {
-            return false;
-        }
-        for (Variable var : list1) {
-            if (!list2.contains(var)) {
-                return false;
-            }
-        }
-        return true;
-    }
-
-    boolean hasIntersection(List<Variable> list1, List<Variable> list2) {
-        return !intersection(list1, list2).isEmpty();
-    }
-
-    List<Variable> intersection(List<Variable> list1, List<Variable> list2) {
-        ArrayList<Variable> list = new ArrayList<>();
-        for (Variable var : list1) {
-            if (list2.contains(var) && !list.contains(var)) {
-                list.add(var);
-            }
-        }
-        return list;
-    }
-
-    boolean includedIn(List<Variable> list1, List<Variable> list2) {
-        for (Variable var : list1) {
-            if (!list2.contains(var)) {
-                return false;
-            }
-        }
-        return true;
-    }
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
+   
 
     /**
      * @return the debug

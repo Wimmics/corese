@@ -1,5 +1,6 @@
 package fr.inria.corese.compiler.federate;
 
+import static fr.inria.corese.compiler.federate.util.RewriteErrorMessage.FILTER_EXISTS;
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
@@ -421,6 +422,42 @@ public class RewriteBGP extends Util {
         return false;
     }
     
+    /**
+     * Move filter into appropriate service 
+     */
+    boolean moveFilter(Exp body) {
+        boolean suc = true;
+        ArrayList<Exp> list = new ArrayList<>();
+        for (Exp exp : body) {
+            if (exp.isFilter()) {
+                if (exp.getFilter().isTermExistRec()) {
+                    boolean b = filterExist(exp, body);
+                    // move filter exists { service uri {}} into 
+                    // service uri {} where filter variables are bound appropriately
+                    if (b) {
+                        list.add(exp);
+                    }
+                    else {
+                        // filter exists with service clause remain
+                        // on its own
+                        suc = false;
+                        getVisitor().getErrorManager()
+                                .add(FILTER_EXISTS, exp);
+                    }
+                }
+                else {
+                   boolean b = move(exp, body);
+                    if (b) {
+                        list.add(exp);
+                    } 
+                }
+            }
+        }
+        for (Exp exp : list) {
+            body.getBody().remove(exp);
+        }
+        return suc;
+    }
     
     /**
      * Second phase: 

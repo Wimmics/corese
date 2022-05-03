@@ -331,6 +331,31 @@ public class Simplify extends Util {
         return isUnionTripleOnly(bgp) || isTripleFilterOnly(bgp);
     }
     
+    // bgp = filter exists { bgp }
+    // in filter exists, merge services with same URI list 
+    void simplifyFilterExist(Exp bgp) {
+        ArrayList<Service> list = new ArrayList<>();
+        for (int i = 0; i < bgp.size(); i++) {
+            if (bgp.get(i).isService()) {
+                Service s1 = bgp.get(i).getService();
+                if (!list.contains(s1)) {
+                    for (int j = i + 1; j < bgp.size(); j++) {
+                        if (bgp.get(j).isService()) {
+                            Service s2 = bgp.get(j).getService();
+                            if (equalURI(s1.getServiceList(), s2.getServiceList())) {
+                                s1.getBodyExp().addAll(s2.getBodyExp());
+                                list.add(s2);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        for (Service s : list) {
+            bgp.getBody().remove(s);
+        }
+    }
     
     
     // second main function

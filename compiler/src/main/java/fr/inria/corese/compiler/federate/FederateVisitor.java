@@ -12,6 +12,8 @@ import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.compiler.federate.util.RewriteError;
+import fr.inria.corese.compiler.federate.util.RewriteErrorManager;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
@@ -146,6 +148,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     RewriteList rewriteList;
     // Group several services with same URI into one service
     RewriteNamedGraph rewriteNamed;
+    private RewriteErrorManager errorManager;
     private Simplify sim;
     List<Atom> empty;
     // Federation URL
@@ -166,6 +169,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         rewriteList = new RewriteList(this);
         sim = new Simplify(this);
         empty = new ArrayList<>(0);
+        errorManager = new RewriteErrorManager();
     }
     
     /**
@@ -260,6 +264,19 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     }
     
     void after(ASTQuery ast) {
+        error();
+        verbose(ast);
+    }
+    
+    void error() {
+        if (!getErrorManager().getErrorList().isEmpty()) {
+            for (RewriteError err : getErrorManager().getErrorList()) {
+                logger.error(err.toString());
+            }
+        }
+    }
+    
+    void verbose(ASTQuery ast) {
         if (verbose) {
             System.out.println("\nafter:");
             System.out.println(ast.getMetadata());
@@ -643,7 +660,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         if (body.isBGP()) {
             getSimplify().process(body);
             bind(body);
-            filter(body);
+            boolean b = moveFilter(body);
             sort(body);           
 
             if (isMergeService()) {
@@ -702,29 +719,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     /**
      * Move filter into appropriate service 
      */
-    void filter(Exp body) {
-        ArrayList<Exp> list = new ArrayList<>();
-        for (Exp exp : body) {
-            if (exp.isFilter()) {
-                if (exp.getFilter().isTermExistRec()) {
-                    boolean b = getGroupBGP().filterExist(exp, body);
-                    // move filter exists { service uri {}} into 
-                    // service uri {} where filter variables are bound appropriately
-                    if (b) {
-                        list.add(exp);
-                    }
-                }
-                else {
-                   boolean b = getGroupBGP().move(exp, body);
-                    if (b) {
-                        list.add(exp);
-                    } 
-                }
-            }
-        }
-        for (Exp exp : list) {
-            body.getBody().remove(exp);
-        }
+    boolean moveFilter(Exp body) {
+        return getGroupBGP().moveFilter(body);
     }
     
     void filter(Exp body, Exp bgp) {
@@ -917,34 +913,9 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     void rewriteExist(Atom name, Expression exp) {
         Exp body = exp.getTerm().getExist().get(0);
         rewrite(name, body);
-        simplifyService(body);
+        getSimplify().simplifyFilterExist(body);
     }
     
-    // bgp = filter exists { bgp }
-    // in filter exists, merge services with same URI list 
-    void simplifyService(Exp bgp) {
-        ArrayList<Service> list = new ArrayList<>();
-        for (int i = 0; i < bgp.size(); i++) {
-            if (bgp.get(i).isService()) {
-                Service s1 = bgp.get(i).getService();
-                if (!list.contains(s1)) {
-                    for (int j = i + 1; j < bgp.size(); j++) {
-                        if (bgp.get(j).isService()) {
-                            Service s2 = bgp.get(j).getService();
-                            if (groupBGP.equalURI(s1.getServiceList(), s2.getServiceList())) {
-                                s1.getBodyExp().addAll(s2.getBodyExp());
-                                list.add(s2);
-                            }
-                        }
-                    }
-                }
-            }
-        }
-
-        for (Service s : list) {
-            bgp.getBody().remove(s);
-        }
-    }
     
 
     /**
@@ -1194,6 +1165,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setFederateComplete(boolean federateComplete) {
         this.federateComplete = federateComplete;
+    }
+
+    public RewriteErrorManager getErrorManager() {
+        return errorManager;
+    }
+
+    public void setErrorManager(RewriteErrorManager errorManager) {
+        this.errorManager = errorManager;
     }
 
    

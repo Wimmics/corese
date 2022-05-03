@@ -1,5 +1,6 @@
 package fr.inria.corese.compiler.federate;
 
+import static fr.inria.corese.compiler.federate.util.RewriteErrorMessage.NO_SERVICE;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.api.FederateMerge;
 import fr.inria.corese.sparql.triple.parser.Atom;
@@ -83,7 +84,7 @@ public class RewriteList implements FederateMerge {
             Exp service = bgp2service(exp);
             if (service == null) {
                 // no service handle list
-                getVisitor().logger.info("No service for exp: " + exp);
+                getVisitor().getErrorManager().add(NO_SERVICE, exp);
                 suc = false;
             } else {
                 getVisitor().filter(body, exp);

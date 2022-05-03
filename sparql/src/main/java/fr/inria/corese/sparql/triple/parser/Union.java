@@ -88,13 +88,6 @@ public class Union extends Binary {
         return sb;
     }
 
-    public ASTBuffer toString2(ASTBuffer sb) {
-        sb.append("{ ").incr();
-        get(0).display(sb);
-        sb.decr().nl().append("} ").append(KeywordPP.UNION).append(" ");
-        get(1).pretty(sb);
-        return sb;
-    }
 
     /**
      * Each branch of union binds its variable (in parallel)

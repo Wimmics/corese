@@ -30,12 +30,21 @@ public class Minus extends Binary {
         return this;
     }
 
+//    @Override
+//    public ASTBuffer toString(ASTBuffer sb) {
+//        sb.append("{ ").incr();
+//        get(0).display(sb);
+//        sb.decr().nl().append("} ").append(KeywordPP.MINUS).append(" ");
+//        get(1).pretty(sb);
+//        return sb;
+//    }
+    
     @Override
-    public ASTBuffer toString(ASTBuffer sb) {
-        sb.append("{ ").incr();
-        get(0).display(sb);
-        sb.decr().nl().append("} ").append(KeywordPP.MINUS).append(" ");
-        get(1).pretty(sb);
+    public ASTBuffer toString(ASTBuffer sb) {        
+        toString(eget(0), sb);
+        sb.nl().append(KeywordPP.MINUS)
+                .append(KeywordPP.SPACE);
+        eget(1).pretty(sb);
         return sb;
     }
 

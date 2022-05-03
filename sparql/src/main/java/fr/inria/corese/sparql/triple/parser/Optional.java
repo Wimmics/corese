@@ -94,26 +94,14 @@ public class Optional extends Binary {
     }
 
     @Override
-    public ASTBuffer toString(ASTBuffer sb) {
-        if (!isOptional()) {
-            return unaryToString(sb);
-
-        }
+    public ASTBuffer toString(ASTBuffer sb) {        
         toString(eget(0), sb);
         sb.nl().append(KeywordPP.OPTIONAL)
                 .append(KeywordPP.SPACE);
         eget(1).pretty(sb);
         return sb;
     }
-
-    ASTBuffer unaryToString(ASTBuffer sb) {
-        sb.append(KeywordPP.OPTIONAL + KeywordPP.SPACE);
-        for (int i = 0; i < size(); i++) {
-            sb.append(eget(i).toString());
-        }
-        return sb;
-    }
-
+        
     void basicVariables(VariableScope sort, List<Variable> list) {
         if (size() > 0) {
             get(0).getVariables(sort, list);
@@ -128,18 +116,7 @@ public class Optional extends Binary {
         }
     }
 
-    void toString(Exp exp, ASTBuffer sb) {
-        if (exp.isBGP()) {
-            if (exp.size() > 0 && exp.get(0).isQuery()) {
-                exp.toString(sb);
-            } else {
-                // skip { } around first arg of optional
-                exp.display(sb);
-            }
-        } else {
-            exp.toString(sb);
-        }
-    }
+
 
     @Override
     public boolean validate(ASTQuery ast, boolean exist) {

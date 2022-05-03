@@ -27,6 +27,8 @@ public class URLServer implements URLParam {
     // param=value&...
     private String param;
     private HashMapList<String> amap;
+    // default-graph-uri & named-graph-uri
+    private Dataset dataset;
     // service Node for service clause
     private Node node;
     private Graph graph;
@@ -433,16 +435,12 @@ public class URLServer implements URLParam {
         return uri;
     }
     
-    /**
-     * @return the param
-     */
+   
     public String getParam() {
         return param;
     }
 
-    /**
-     * @param param the param to set
-     */
+    
     public void setParam(String param) {
         this.param = param;
     }
@@ -455,9 +453,7 @@ public class URLServer implements URLParam {
         server = s;
     }
 
-    /**
-     * @return the map
-     */
+    
     public HashMapList<String> getMap() {
         return amap;
     }
@@ -469,16 +465,12 @@ public class URLServer implements URLParam {
         return getMap();
     }
 
-    /**
-     * @param map the map to set
-     */
+   
     public void setMap(HashMapList<String> map) {
         this.amap = map;
     }
 
-    /**
-     * @return the url
-     */
+    
     public String getURL() {
         return url;
     }
@@ -491,44 +483,31 @@ public class URLServer implements URLParam {
         return String.format("%s.%s", getServer(), getNumber());
     }
     
-    /**
-     * @return the node
-     */
+    
     public Node getNode() {
         return node;
     }
 
-    /**
-     * @param node the node to set
-     */
+   
     public void setNode(Node node) {
         this.node = node;
     }
 
-    /**
-     * @return the graph
-     */
     public Graph getGraph() {
         return graph;
     }
 
-    /**
-     * @param graph the graph to set
-     */
+    
     public void setGraph(Graph graph) {
         this.graph = graph;
     }
 
-    /**
-     * @return the number
-     */
+    
     public int getNumber() {
         return number;
     }
 
-    /**
-     * @param number the number to set
-     */
+   
     public void setNumber(int number) {
         this.number = number;
     }
@@ -539,6 +518,21 @@ public class URLServer implements URLParam {
 
     public void setUndefined(boolean undefined) {
         this.undefined = undefined;
+    }
+
+    public Dataset getDataset() {
+        return dataset;
+    }
+
+    public void setDataset(Dataset dataset) {
+        this.dataset = dataset;
+    }
+    
+    public String getURLParameter() {
+         if (getDataset()==null) {
+             return null;
+         }
+         return getDataset().getURLParameter();
     }
     
 }

@@ -58,7 +58,10 @@ public class RewriteTriple {
     Service rewrite(Atom namedGraph, BasicGraphPattern bgp, List<Atom> serviceList) {
         Exp exp;
         if (namedGraph == null) {
-            if (getAST().getDataset().hasFrom()) {
+            if (vis.isFederateBGP()) {
+                exp = bgp;
+            }
+            else if (getAST().getDataset().hasFrom()) {
                 // select from gi where bgp
                 exp = from(bgp);
             } else {
@@ -90,6 +93,9 @@ public class RewriteTriple {
      
     // select from where bgp
     Exp from(BasicGraphPattern bgp) {
+        if (getAST().getFrom().size() == 1) {
+            return basicGraphFrom(bgp);
+        }
         return graphFrom(bgp.copy());
     }
     
@@ -103,7 +109,7 @@ public class RewriteTriple {
      * for all t in bgp, for all g in from : 
      * graph g1 { t1 } union .. graph gn { t1 }
      * graph g1 { tm } union .. graph gn { tm }
-     */
+     */       
     Exp graphFrom(Exp bgp) {
         int i = 0;
         for (Exp exp : bgp) {
@@ -114,6 +120,11 @@ public class RewriteTriple {
             i++;
         }
         return bgp;
+    }
+    
+    Exp basicGraphFrom(Exp bgp) {
+        Source src = Source.create(getAST().getFrom().get(0), bgp);
+        return src;
     }
     
     Exp bgpSelectDistinct(Exp exp) {

@@ -8,6 +8,7 @@ import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Source;
+import fr.inria.corese.sparql.triple.parser.URLServer;
 import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Values;
 import fr.inria.corese.sparql.triple.parser.Variable;
@@ -28,7 +29,7 @@ public class RewriteNamedGraph {
     
     
     
-        /**
+    /**
      * named graph sent as a whole in service clause    
      */
     Exp simpleNamed(ASTQuery ast, Source exp) {
@@ -115,6 +116,5 @@ public class RewriteNamedGraph {
             }
         }
     }
-     
     
 }

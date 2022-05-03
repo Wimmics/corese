@@ -137,7 +137,7 @@ public class Simplify extends Util {
                 }
             }
 
-            if (mod) {
+            if (true) { //  if (mod) {
                 simplifyGraph2(first.getBodyExp());
                 visitor.sort(first.getBodyExp());
             }
@@ -524,14 +524,16 @@ public class Simplify extends Util {
      * graph g { e1 optional { e2 } }
      */
     Exp simplifyGraph(Exp exp) {
+        System.out.println("simplify1: " + exp);
         if (exp.get(0).size() == 1 && exp.get(1).size() == 1) {
             Exp e1 = exp.get(0).get(0);
             Exp e2 = exp.get(1).get(0);
             if (e1.isGraph() && e2.isGraph()){
                 Source g1 = e1.getNamedGraph();
-                Source g2 = e2.getNamedGraph();                
-               if (g1.getSource().isConstant() && 
-                       g1.getSource().equals(g2.getSource())) {
+                Source g2 = e2.getNamedGraph();  
+                System.out.println("simplify1: " + g1 + " " + g2);
+               if (//g1.getSource().isConstant() && 
+                   g1.getSource().equals(g2.getSource())) {
                     exp.set(0, g1.getBodyExp());
                     exp.set(1, g2.getBodyExp());
                     Source g = Source.create(g1.getSource(), exp);
@@ -552,8 +554,9 @@ public class Simplify extends Util {
                     if (ee2.isNamedGraph()) {
                         Source g1 = ee1.getNamedGraph();
                         Source g2 = ee2.getNamedGraph();
-                        if (g1.getSource().isConstant()
-                         && g1.getSource().equals(g2.getSource())) {                            
+                        System.out.println("simplify2: " + g1 + " " + g2);
+                        if (//g1.getSource().isConstant() &&
+                            g1.getSource().equals(g2.getSource())) {                            
                             Source g = g1.merge(g2);
                             exp.set(i, g);
                             list.add(g2);

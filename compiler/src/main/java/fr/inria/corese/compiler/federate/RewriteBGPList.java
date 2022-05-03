@@ -107,11 +107,10 @@ public class RewriteBGPList {
         return union;
     }
     
-    // rewrite bgpList partition of connected bgp list
+    // rewrite one bgpList partition of connected bgp list
     // complete with other triple
     BasicGraphPattern process
         (Atom namedGraph, Exp body, List<BasicGraphPattern> bgpList, ArrayList<Exp> filterList) {
-
         BasicGraphPattern exp = BasicGraphPattern.create();
         
         if (bgpList.size() > 0) {
@@ -122,9 +121,10 @@ public class RewriteBGPList {
                 // @todo: record filter that is inserted in bgp
                 // and remove it from body
                 getVisitor().filter(body, bgp, filterList);
-                //Service service = Service.newInstance(uriList, bgp);
+                //System.out.println("rew: " + namedGraph + " " + bgp);
                 Service service = getVisitor().getRewriteTriple()
                         .rewrite(namedGraph, bgp, getVisitor().getAtomList(uriList));
+                //System.out.println("rew: " + service);
                 exp.add(service);
             }
         }

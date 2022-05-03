@@ -623,6 +623,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 if (simplify) {
                     exp = getSimplify().simplify(exp);
                 } 
+                System.out.println("sim: " + exp);
                 i = insert(body, exp, i);
 
             } else {
@@ -755,19 +756,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         new Sorter(this).process(exp);
     }
     
-    /**
-     * Filter may be copied into additional service
-     */
-//    void filter(Exp body, List<Exp> filterList) {
-//        for (Exp exp : filterList) {
-//            if (exp.isFilter() && !exp.getFilter().isTermExistRec()) {
-//                boolean b = getGroupBGP().move(exp, body);               
-//            }
-//        }
-//    }
     
-    
-     
      ASTQuery getAST() {
          return ast;
      }
@@ -782,7 +771,11 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     * graph URI EXP is rewritten as graph URI t for all t in EXP
     */
     Exp rewrite(Source exp) {
-        if (distributeNamed) {
+        if (isFederateBGP()) {
+            Exp res = rewrite(exp.getSource(), exp.getBodyExp());
+            return res;
+        }
+        else if (distributeNamed) {
             return rewriteNamed.rewriteNamed(ast, exp);
         } else {
             return rewriteNamed.simpleNamed(ast, exp);

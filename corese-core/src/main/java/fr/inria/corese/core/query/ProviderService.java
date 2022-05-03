@@ -208,6 +208,7 @@ public class ProviderService implements URLParam {
 
             String name = service.getLabel();
             URLServer url = new URLServer(name, Property.stringValue(SERVICE_PARAMETER));
+            url.setDataset(getGlobalAST().getDataset());
             if (!ok) {
                 url.setUndefined(true);
             }

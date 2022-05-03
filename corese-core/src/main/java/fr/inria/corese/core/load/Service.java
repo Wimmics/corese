@@ -17,6 +17,8 @@ import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
@@ -371,11 +373,20 @@ public class Service implements URLParam {
         return post(getURL().getServer(), query, mime);
     }
     
-
     
     Form getForm() {
         if (sendParameter()) {
-            return getURL().getMap() == null ? new Form() : new Form(getMap(getURL().getMap()));
+            if  (getURL().getMap() == null) {
+                if (getURL().getDataset() == null) {
+                    return new Form(); 
+                }
+                else {
+                   return new Form(getMap(new HashMapList<>())); 
+                }
+            }
+            else {
+                return new Form(getMap(getURL().getMap()));
+            }
         } else {
             return new Form();
         }
@@ -386,7 +397,19 @@ public class Service implements URLParam {
         for (String key : map.keySet()) {
             amap.put(key, map.get(key));
         }
+        complete(amap, getURL().getDataset());
         return amap;
+    }
+    
+    void complete(MultivaluedMap<String, String> amap, Dataset ds) {
+        if (ds != null) {
+            if (!ds.getFrom().isEmpty()) {
+                amap.put("default-graph-uri", ds.getFromStringList());
+            }
+            if (!ds.getNamed().isEmpty()) {
+                amap.put("named-graph-uri", ds.getNamedStringList());
+            }
+        }
     }
 
     public String get(String query, String mime) {
@@ -412,6 +435,9 @@ public class Service implements URLParam {
         if (getURL().hasParameter() && sendParameter()) {
             return String.format("%s?%s&query=%s", uri, param(), query);
         }
+        if (getURL().getDataset()!=null && !getURL().getDataset().isEmpty()) {
+            return String.format("%s?%s&query=%s", uri, dataset(), query);
+        }
         return String.format("%s?query=%s", uri, query);
     }
     
@@ -430,7 +456,23 @@ public class Service implements URLParam {
                 String format = sb.length() == 0 ? "%s=%s" : "&%s=%s";
                 sb.append(String.format(format, key, value));
             }
+        }  
+        complete(sb, getURL().getDataset());
+        return sb.toString();
+    }
+    
+    void complete(StringBuilder sb, Dataset ds) {
+        if (ds != null && !ds.isEmpty()) {
+            if (sb.length()>0) {
+                sb.append("&");
+            }
+            sb.append(ds.getURLParameter());
         }
+    }
+    
+    String dataset() {
+        StringBuilder sb = new StringBuilder();
+        complete(sb, getURL().getDataset());
         return sb.toString();
     }
         

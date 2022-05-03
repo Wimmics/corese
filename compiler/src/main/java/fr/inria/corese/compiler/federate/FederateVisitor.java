@@ -623,7 +623,6 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 if (simplify) {
                     exp = getSimplify().simplify(exp);
                 } 
-                System.out.println("sim: " + exp);
                 i = insert(body, exp, i);
 
             } else {

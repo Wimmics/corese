@@ -21,6 +21,8 @@ import fr.inria.corese.sparql.triple.parser.ASTSelector;
 import fr.inria.corese.sparql.triple.parser.Context;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_BGP;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_COMPLETE;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_EXCLUDE;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_INCLUDE;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_JOIN;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_OPTIONAL;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_PARTITION;
@@ -126,6 +128,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean federateOptional = OPTIONAL;
     private boolean federateComplete = COMPLETE_BGP;
     public static List<String> BLACKLIST = new ArrayList<>();
+    private List<String> include;
+    private List<String> exclude;
 
     ASTQuery ast;
     Stack stack;
@@ -165,6 +169,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         sim = new Simplify(this);
         empty = new ArrayList<>(0);
         errorManager = new RewriteErrorManager();
+        include = new ArrayList<>();
+        exclude = new ArrayList<>();
     }
     
     /**
@@ -329,7 +335,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 int start = (define)?1:0;
                 for (int i = start; i < list.size(); i++) {
                     String uri = list.get(i);
-                    if (! BLACKLIST.contains(uri)){
+                    if (accept(uri)){
+                        serviceList.add(Constant.createResource(uri));
+                    }
+                }
+                for (String uri : getInclude()) {
+                    if (! list.contains(uri) && accept(uri)) {
                         serviceList.add(Constant.createResource(uri));
                     }
                 }
@@ -346,7 +357,9 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         return true;
     }
     
-    
+    boolean accept(String uri) {
+        return !BLACKLIST.contains(uri) && !getExclude().contains(uri);
+    }
 
     
     public Provenance getProvenance(Mappings map) {
@@ -421,6 +434,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         if (ast.getMetaValue(FED_SUCCESS) !=null) {
             SelectorIndex.NBSUCCESS = 
                     ast.getMetaValue(FED_SUCCESS).doubleValue();
+        }
+        if (ast.hasMetadata(FED_INCLUDE)) {            
+            setInclude(ast.getMetadata().getValues(FED_INCLUDE));
+        }
+        if (ast.hasMetadata(FED_EXCLUDE)) {            
+            setExclude(ast.getMetadata().getValues(FED_EXCLUDE));
         }
     }
     
@@ -1208,6 +1227,22 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setSimplify(Simplify sim) {
         this.sim = sim;
+    }
+
+    public List<String> getInclude() {
+        return include;
+    }
+
+    public void setInclude(List<String> include) {
+        this.include = include;
+    }
+
+    public List<String> getExclude() {
+        return exclude;
+    }
+
+    public void setExclude(List<String> exclude) {
+        this.exclude = exclude;
     }
 
    

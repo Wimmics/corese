@@ -120,7 +120,9 @@ public class RewriteBGP extends Util {
             } else if (exp.isTriple()) {
                 Triple triple = exp.getTriple();
                 List<Atom> list = getVisitor().getServiceList(triple);
-                
+                if (list.isEmpty()) {
+                    getVisitor().error(triple);
+                }
                 if (getVisitor().isFederateBGP()) {
                     // do not distinguish one vs several URI
                     // list of connected BGP of triple with any nb URI
@@ -182,7 +184,11 @@ public class RewriteBGP extends Util {
                     BasicGraphPattern bgp = triple2bgp.get(t);
                     if (bgp2Service.get(bgp) == null) {
                         // service s { bgp }
-                        Service serv = getVisitor().getRewriteTriple().rewrite(name, bgp, getVisitor().getServiceList(t));
+                        List<Atom> uriList = getVisitor().getServiceList(t);
+                        if (uriList.isEmpty()) {
+                            getVisitor().error(t);
+                        }
+                        Service serv = getVisitor().getRewriteTriple().rewrite(name, bgp, uriList);
                         // do it once for first triple of this BGP
                         bgp2Service.put(bgp, serv);
                         uri2bgpList.addServiceWithOneURI(serv);

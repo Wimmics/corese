@@ -24,6 +24,7 @@ import static fr.inria.corese.sparql.triple.parser.Metadata.FED_COMPLETE;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_JOIN;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_OPTIONAL;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_PARTITION;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_SUCCESS;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.URLParam;
@@ -55,16 +56,9 @@ import org.slf4j.Logger;
  */
 public class FederateVisitor implements QueryVisitor, URLParam {
 
-    public Simplify getSimplify() {
-        return sim;
-    }
-
-    public void setSimplify(Simplify sim) {
-        this.sim = sim;
-    }
 
     public static Logger logger = LoggerFactory.getLogger(FederateVisitor.class);
-    static final String UNDEF = "?undef_serv";
+    //static final String UNDEF = "?undef_serv";
     
     public static final String PROXY = "_proxy_";
     // Federation definitions: URL -> list URL
@@ -131,6 +125,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean federatePartition = PARTITION;
     private boolean federateOptional = OPTIONAL;
     private boolean federateComplete = COMPLETE_BGP;
+    public static List<String> BLACKLIST = new ArrayList<>();
 
     ASTQuery ast;
     Stack stack;
@@ -206,11 +201,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     // start function
     void process(ASTQuery ast) {
         this.ast = ast;
+        option();
         if (! init()) {
             return;
         }
         getGroupBGP().setDebug(ast.isDebug());
-        option();
+        //option();
         
         if (isSparql()) {
             // select where { BGP } -> select where { service URLs { BGP } }
@@ -239,6 +235,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         after(ast);
     }
     
+    // return false when two connected triple that are in only one endpoint
+    // do not join according to source selection
     boolean sourceSelection(ASTQuery ast) {
         boolean suc = true;
         try {
@@ -292,10 +290,23 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     }
        
     // Federation definition
-    boolean init() {
+    boolean init()  {
         if (ast.hasMetadata(Metadata.FEDERATION)) {
             List<String> list = ast.getMetadata().getValues(Metadata.FEDERATION);
             List<Atom> serviceList;
+            boolean define = true;
+            
+            if (list == null) {
+                define = false;
+                // discover relevant endpoints on kg graph index
+                Selector sel = new Selector(this, exec, ast);
+                try {
+                    list = sel.getIndexURIList();
+                } catch (EngineException ex) {
+                    logger.error(ex.getMessage());
+                    return false;
+                }
+            }
             
             if (list.isEmpty()) {
                 return false;
@@ -315,10 +326,16 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             } else {
                 // define federation
                 serviceList = new ArrayList<>();
-                for (int i = 1; i < list.size(); i++) {
-                    serviceList.add(Constant.createResource(list.get(i)));
+                int start = (define)?1:0;
+                for (int i = start; i < list.size(); i++) {
+                    String uri = list.get(i);
+                    if (! BLACKLIST.contains(uri)){
+                        serviceList.add(Constant.createResource(uri));
+                    }
                 }
-                defFederation(list.get(0), serviceList);
+                if (define) {
+                    defFederation(list.get(0), serviceList);
+                }
             }
             ast.setServiceList(serviceList);
             // same as Transformer federate()
@@ -399,7 +416,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         setFederateJoin(getValue(FED_JOIN, isFederateJoin()));
         setFederatePartition(getValue(FED_PARTITION, isFederatePartition()));
         setFederateComplete(getValue(FED_COMPLETE, isFederateComplete()));
-        setFederateOptional(getValue(FED_OPTIONAL, isFederateOptional()));        
+        setFederateOptional(getValue(FED_OPTIONAL, isFederateOptional())); 
+        //System.out.println("suc: "+ast.getMetaValue(FED_SUCCESS));
+        if (ast.getMetaValue(FED_SUCCESS) !=null) {
+            SelectorIndex.NBSUCCESS = 
+                    ast.getMetaValue(FED_SUCCESS).doubleValue();
+        }
     }
     
     boolean getValue(String meta, boolean b) {
@@ -777,6 +799,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
     }
     
+    // no endpoint URL for triple t
+    void error(Triple t) {
+        logger.error("Undefined triple: " + t);
+        ast.setFail(true);
+    }
+    
     List<Atom> getAtomList(List<String> list) {
         ArrayList<Atom> alist = new ArrayList<>();
         for (String str : list) {
@@ -845,7 +873,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
        
     List<Atom> getServiceList(Constant p) {          
         if (isSelect()) {
-            List<Atom> list = getAstSelector().getPredicateService(p); //getSelector().getPredicateService(p);
+            List<Atom> list = getAstSelector().getPredicateService(p); 
             if (list != null && ! list.isEmpty()) {
                 return list;
             }
@@ -860,12 +888,11 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             return undefinedService();
         }
         return ast.getServiceList();
-        //return empty;
     }
     
     List<Atom> undefinedService() {
         ArrayList<Atom> list = new ArrayList<>();
-        list.add(Variable.create(UNDEF));
+        //list.add(Variable.create(UNDEF));
         return list;      
     }
  
@@ -1173,6 +1200,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setErrorManager(RewriteErrorManager errorManager) {
         this.errorManager = errorManager;
+    }
+    
+    public Simplify getSimplify() {
+        return sim;
+    }
+
+    public void setSimplify(Simplify sim) {
+        this.sim = sim;
     }
 
    

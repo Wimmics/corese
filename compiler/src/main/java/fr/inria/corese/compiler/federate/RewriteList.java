@@ -111,6 +111,9 @@ public class RewriteList implements FederateMerge {
         int count = 0;
         for (Exp triple : bgp) {
             List<Atom> list = getVisitor().getServiceList(triple.getTriple());
+            if (list.isEmpty()) {
+                getVisitor().error(triple.getTriple());
+            }
             if (count++ == 0) {
                 uriList = list;
             }

@@ -40,14 +40,16 @@ public class Selector {
     
     private static final String SERVER_VAR = "?serv";
     private static final String BNODE_ID = "_:fbn";
+    public static boolean SELECT_EXIST = true;
     
+    String indexURI = "http://prod-dekalog.inria.fr/sparql";
     private FederateVisitor vis;
     ASTQuery ast;
     private ASTSelector astSelector;
     HashMap<String, String> predicateVariable;
     HashMap<Triple, String> tripleVariable;
     HashMap<BasicGraphPattern, String> bgpVariable;
-    QuerySolver exec;
+    private QuerySolver exec;
     // use case: reuse federated visitor source selection    
     private Mappings mappings;
     boolean sparql10 = false;
@@ -77,43 +79,38 @@ public class Selector {
     
 
     boolean process() throws EngineException {
-       return process11(ast.getServiceListConstant());
+       return process11(getURIList());
     }
     
-    /**
-     * BUG when service 1.0 & service 1.1 and there are triples in 1.1
-     * the triples of 1.0 are considered as absent although they are present as predicate
-     */
-    void process2() throws EngineException {
-        if (sparql10) {
-            process10(getServiceList(true));
-            predicateVariable.clear();
-            process11(getServiceList(false));
-        }
-        else {
-            process11(ast.getServiceListConstant());
-        }
+    List<Constant> getURIList() throws EngineException{
+        List<Constant> list = ast.getServiceListConstant();        
+        return list;
     }
     
-    
-    List<Constant> getServiceList(boolean sparql10) {
-        List<Constant> list = ast.getServiceListConstant();
-        List<Constant> res = new ArrayList<>();
-        for (Constant serv : list) {
-            if (sparql10){
-                if (ast.hasMetadataValue(Metadata.SPARQL10, serv.getLabel())) {
-                    res.add(serv);
-                }
-            }
-            else {
-                if (! ast.hasMetadataValue(Metadata.SPARQL10, serv.getLabel())) {
-                    res.add(serv);
-                }
-            }
-        }
-        return res;
+    // query graph index for source discovery
+    List<String> getIndexURIList() throws EngineException {
+        Date d1 = new Date();
+        // create query to discover relevant endpoint
+        // who know ast federate query predicates
+        ASTQuery a = new SelectorIndex(this, ast, indexURI)
+                .process();
+        Mappings map = getQuerySolver().basicQuery(a);                    
+        List<String> list = map.getStringValueList(SERVER_VAR);  
+        
+        System.out.println("source selection time: " + time(d1));
+        System.out.println("res:\n"+map);
+        System.out.println("res: " + list);    
+        return list;
     }
     
+     public static double time(Date d1, Date d2) {
+        return (d2.getTime() - d1.getTime()) / 1000.0;
+    }
+    
+    public static double time(Date d1) {
+        return time(d1, new Date());
+    }
+        
     boolean process11(List<Constant> list) throws EngineException {
         if (list.isEmpty()) {
             return false;
@@ -125,7 +122,7 @@ public class Selector {
         
         if (getMappings() == null) {
             // compute selection
-            map = exec.basicQuery(aa);
+            map = getQuerySolver().basicQuery(aa);
             getVisitor().setMappings(map);
         }
         else {
@@ -133,12 +130,12 @@ public class Selector {
             map = getMappings();
         }
         
-        exec.getLog().setASTSelect(aa);
-        exec.getLog().setSelectMap(map);
+        getQuerySolver().getLog().setASTSelect(aa);
+        getQuerySolver().getLog().setSelectMap(map);
         
         ast.getLog().setASTSelect(aa);
         ast.getLog().setSelectMap(map);
-        ast.getLog().setExceptionList(exec.getLog().getExceptionList());
+        ast.getLog().setExceptionList(getQuerySolver().getLog().getExceptionList());
         
         for (Mapping m : map) {
             IDatatype serv =  m.getValue(SERVER_VAR);
@@ -189,28 +186,9 @@ public class Selector {
             aa.process(walk);
         }
     }
-          
-    void process10(List<Constant> list) throws EngineException {
-        Date d1 = new Date();
-        ASTQuery aa = createSelector(list, true);
-        Mappings map = exec.basicQuery(aa);
-        if (ast.isDebug()) {
-            System.out.println(map);
-        }
-        for (Mapping m : map) {
-            IDatatype serv =  m.getValue(SERVER_VAR);
-            for (String pred : predicateVariable.keySet()) {
-                String var = predicateVariable.get(pred);
-                IDatatype val = m.getValue(var);
-                if (val != null) {
-                    getPredicateService().get(pred).add(Constant.create(serv));
-                }
-            }
-        }
         
-        Date d2 = new Date();
-        trace(map, d1, d2);
-    }
+    
+
     
     List<Atom> getPredicateService(Constant pred) {
         return getPredicateService().get(pred.getLabel());
@@ -279,10 +257,15 @@ public class Selector {
         // triple selector
         BasicGraphPattern bgp ;
         
-        if (getVisitor().isIndex()) {
-            bgp = createBGPIndex(serv, aa);
-        }
-        else if (sparql10) {
+//        if (getVisitor().isIndex()) {
+//            //bgp = createBGPIndex(serv, aa);
+//            ASTQuery a = new SelectorIndex(this, ast, 
+//                    Constant.create(indexURI), list)
+//                    .process(serv, aa);
+//            return a;
+//        }
+//        else 
+        if (sparql10) {
             bgp = createBGP10(aa);
         }
         else {
@@ -291,7 +274,6 @@ public class Selector {
         
         BasicGraphPattern body;
         if (getVisitor().isIndex()) {
-            bgp.add(0,Values.create(serv, list));
             body = bgp;
         }
         else {
@@ -633,13 +615,34 @@ public class Selector {
     }
     
     Variable exist(ASTQuery aa, BasicGraphPattern bgp, BasicGraphPattern bb, int i) {
+        if (SELECT_EXIST) {
+            return selectExist(aa, bgp, bb, i);
+        }
+        else {
+            return basicExist(aa, bgp, bb, i);
+        }
+    }
+    
+    Variable basicExist(ASTQuery aa, BasicGraphPattern bgp, BasicGraphPattern bb, int i) {
         Variable var = aa.variable("?b" + i++);
         Binding exist = Binding.create(aa.createExist(bb, false), var);
         bgp.add(exist);
         return var;
     }
     
-    
+    Variable selectExist(ASTQuery aa, BasicGraphPattern bgp, BasicGraphPattern bb, int i) {
+        Variable var = aa.variable("?b" + i++);
+        
+        ASTQuery a = aa.subCreate();
+        a.setSelectAll(true);
+        a.setBody(bb);
+        a.setLimit(1); 
+        
+        BasicGraphPattern exp = BasicGraphPattern.create(Query.create(a));
+        Binding exist = Binding.create(aa.createExist(exp, false), var);
+        bgp.add(exist);
+        return var;
+    }
 
     
     /**
@@ -758,6 +761,68 @@ public class Selector {
 
     public void setVisitor(FederateVisitor vis) {
         this.vis = vis;
+    }
+
+    public QuerySolver getQuerySolver() {
+        return exec;
+    }
+
+    public void setQuerySolver(QuerySolver exec) {
+        this.exec = exec;
+    }
+    
+        /**
+     * BUG when service 1.0 & service 1.1 and there are triples in 1.1
+     * the triples of 1.0 are considered as absent although they are present as predicate
+     */
+    void process2() throws EngineException {
+        if (sparql10) {
+            process10(getServiceList(true));
+            predicateVariable.clear();
+            process11(getServiceList(false));
+        }
+        else {
+            process11(ast.getServiceListConstant());
+        }
+    }
+    void process10(List<Constant> list) throws EngineException {
+        Date d1 = new Date();
+        ASTQuery aa = createSelector(list, true);
+        Mappings map = getQuerySolver().basicQuery(aa);
+        if (ast.isDebug()) {
+            System.out.println(map);
+        }
+        for (Mapping m : map) {
+            IDatatype serv =  m.getValue(SERVER_VAR);
+            for (String pred : predicateVariable.keySet()) {
+                String var = predicateVariable.get(pred);
+                IDatatype val = m.getValue(var);
+                if (val != null) {
+                    getPredicateService().get(pred).add(Constant.create(serv));
+                }
+            }
+        }
+        
+        Date d2 = new Date();
+        trace(map, d1, d2);
+    }
+    
+        List<Constant> getServiceList(boolean sparql10) {
+        List<Constant> list = ast.getServiceListConstant();
+        List<Constant> res = new ArrayList<>();
+        for (Constant serv : list) {
+            if (sparql10){
+                if (ast.hasMetadataValue(Metadata.SPARQL10, serv.getLabel())) {
+                    res.add(serv);
+                }
+            }
+            else {
+                if (! ast.hasMetadataValue(Metadata.SPARQL10, serv.getLabel())) {
+                    res.add(serv);
+                }
+            }
+        }
+        return res;
     }
 
 }

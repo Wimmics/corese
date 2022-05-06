@@ -5,7 +5,6 @@ import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
-import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Query;
 import fr.inria.corese.sparql.triple.parser.Service;
@@ -47,7 +46,11 @@ public class RewriteTriple {
     Service rewriteTripleWithSeveralURI(Atom name, Triple t, Exp body, List<Exp> list) {
         BasicGraphPattern bgp = BasicGraphPattern.create(t);
         filter(body, t, bgp, list);
-        return rewrite(name, bgp, vis.getServiceList(t));
+        List<Atom> alist = vis.getServiceList(t);
+        if (alist.isEmpty()) {
+            vis.error(t);
+        }
+        return rewrite(name, bgp, alist);
     }
 
     /**

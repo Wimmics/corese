@@ -17,17 +17,17 @@ import java.util.List;
  */
 public class SorterResult { 
     // ?s rdfs:label ?l (better than ?s ?p ?l)
-    private static final double SYSTEM_PREDICATE = 0.25;
+    public static  double SYSTEM_PREDICATE = 0.25;
     // ?s rdf:type dbo:Country
-    private static final double CONSTANT_TRIPLE_TYPE = 0.5;
+    public static  double CONSTANT_TRIPLE_TYPE = 0.5;
     // not rdfs: rdf: owl: skos:, for example: ?s vs:country-name ?o
-    private static final double DOMAIN_PREDICATE = 0.75;
+    public static  double DOMAIN_PREDICATE = 0.75;
     // filter: = regex strstarts contains   -- see SelectorFilter
-    private static final double FILTER = 1;
+    public static  double FILTER = 1;
     // ?s ?p "arboriculture"@fr
-    private static final double CONSTANT_TRIPLE_VARIABLE = 1.5;
+    public static  double CONSTANT_TRIPLE_VARIABLE = 1.5;
     // ?s rdfs:label "arboriculture"@fr
-    private static final double CONSTANT_TRIPLE = 1.5;
+    public static  double CONSTANT_TRIPLE = 1.5;
 
     // triple with predicate URI
     private Triple triple;

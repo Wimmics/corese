@@ -93,7 +93,7 @@ EVENT               = false
 #
 # Test, debug
 #
-VERBOSE        = true
+VERBOSE        = false
 SOLVER_DEBUG   = false
 TRANSFORMER_DEBUG   = false
 
@@ -129,7 +129,7 @@ FUNCTION_PARAMETER_MAX = 15
 
 # values filter
 SERVICE_BINDING     = values 
-SERVICE_SLICE       = 20
+SERVICE_SLICE       = 500
 SERVICE_LIMIT       = 1000
 #SERVICE_TIMEOUT     = 2000
 #SERVICE_PARAMETER   = mode=link;debug;show&transform=st:xml&format=json
@@ -138,6 +138,23 @@ SERVICE_LIMIT       = 1000
 SERVICE_GRAPH       = false
 SERVICE_SEND_PARAMETER = true
 SERVICE_REPORT = false
+
+FEDERATION = /user/corby/home/AAData/data/corese/federation.ttl
+# generate partition of connected bgp
+FEDERATE_BGP = true
+# do not split complete partition
+FEDERATE_PARTITION = true
+# complete with triple alone
+FEDERATE_COMPLETE = false
+FEDERATE_FILTER = true
+#  bind (exists {t1 . t2} as ?b_i)
+FEDERATE_JOIN = true
+FEDERATE_JOIN_PATH = true
+# exploit join on optional ; require FEDERATE_BGP = true 
+FEDERATE_OPTIONAL = true
+FEDERATE_BLACKLIST = http://ldf.fi/warsa/sparql
+
+TRACE_GENERIC = false
 
 #
 # Dataset

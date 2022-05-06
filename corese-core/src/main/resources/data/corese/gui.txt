@@ -10,7 +10,7 @@ PREFIX        = d=http://ns.inria.fr/humans/data# ; h=http://ns.inria.fr/humans/
 # Property.init(graph);
 #
 
-GUI_TITLE = Corese Semantic Web Factory - Inria UCA - R&D version - 2022-03-21
+GUI_TITLE = Corese Semantic Web Factory - Inria UCA - R&D version - 2022-05-01
 
 # GUI browse Linked Result
 GUI_BROWSE      = true

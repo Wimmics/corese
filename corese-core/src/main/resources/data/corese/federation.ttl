@@ -1,0 +1,33 @@
+<http://fed.corese.inria.fr/d2kab/sparql> a st:Federation ;
+    rdfs:label "d2kab" ;
+    st:definition (
+#<http://fr.dbpedia.org/sparql>
+
+<http://147.100.179.235:8082/blazegraph/namespace/AnaEE_sites/sparql>
+#<https://ico.iate.inra.fr/fuseki/annotation/query> 
+#<https://ico.iate.inra.fr/fuseki/ontology/query> 
+<http://taxref-graphdb.i3s.unice.fr/repositories/geco>
+<http://quantum.agroparistech.fr/graphdb/repositories/Composite_making_process>
+<http://ontology.irstea.fr/ppdo/sparql>
+<https://opendata.inra.fr/openrdf-sesame/repositories/Ahol> 
+<http://agrold.southgreen.fr/sparql> 
+<http://ontology.inrae.fr/frenchcropusage/sparql>
+<http://ontology.inrae.fr/bsv_test/sparql>
+<http://ontology.irstea.fr/bsv/sparql> 
+<http://ontology.irstea.fr/weather/sparql> 
+<http://weakg.i3s.unice.fr/sparql>
+
+#<http://sparql.agroportal.lirmm.fr/sparql/>
+#<http://geco.ecophytopic.fr:8890/sparql> 
+)
+.
+
+#blacklist:
+#<http://ldf.fi/warsa/sparql>
+
+<http://fake.inria.fr/sparql> a st:Federation ;
+    st:definition (
+    <http://prod-dekalog.inria.fr/sparql>
+    <http://ontology.inrae.fr/ppdo/sparql>
+    )
+    .

@@ -4,6 +4,7 @@ import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.compiler.federate.RewriteBGPList;
+import fr.inria.corese.compiler.federate.SelectorIndex;
 import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
@@ -124,6 +125,11 @@ public class Property {
         FEDERATE_JOIN,
         // authorize path in join test
         FEDERATE_JOIN_PATH,
+        
+        FEDERATE_INDEX_PATTERN,
+        FEDERATE_INDEX_SUCCESS,
+        FEDERATE_BLACKLIST,
+
         
         // boolan value
         DISPLAY_URI_AS_PREFIX,
@@ -604,6 +610,18 @@ public class Property {
             case FEDERATION:
                 defineFederation(str);
                 break;
+                
+            case FEDERATE_INDEX_PATTERN:
+                SelectorIndex.QUERY_PATTERN = str;
+                break;
+                
+            case FEDERATE_BLACKLIST:
+                blacklist(str);
+                break;
+                
+            case FEDERATE_INDEX_SUCCESS:
+                SelectorIndex.NBSUCCESS = Double.valueOf(str);
+                break;    
             
             case LOAD_FORMAT:
                 Load.LOAD_FORMAT = str;
@@ -659,6 +677,14 @@ public class Property {
                 break;
 
         }
+    }
+    
+    void blacklist(String list) {
+        ArrayList<String> alist = new ArrayList<>();
+        for (String str : list.split(SEP)) {
+            alist.add(str);
+        }
+        FederateVisitor.BLACKLIST = alist;
     }
     
     void basicSet(Value value, int n) {

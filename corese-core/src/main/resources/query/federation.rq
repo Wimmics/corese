@@ -1,0 +1,12 @@
+#
+# Process federation definitions from /data/demo/fedprofile.ttl
+# Used in Profile.java
+#
+
+select * (aggregate(distinct ?url) as ?list) 
+where {
+  ?uri a st:Federation ;
+    (owl:sameAs?/st:definition/rdf:rest*/rdf:first)+ ?url
+  filter not exists { ?url a st:Federation }
+}
+group by ?uri

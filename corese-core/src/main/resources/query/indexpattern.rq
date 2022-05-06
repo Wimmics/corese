@@ -1,0 +1,32 @@
+#
+# Federated Query pattern for LOD graph index
+# Perform source selection
+# Pattern completed by FederatedVisitor SelectorIndex
+# Return endpoint URI -> predicate: true|false
+#
+prefix kgi:     <http://ns.inria.fr/kg/index#>
+prefix void:    <http://rdfs.org/ns/void#>
+prefix dcterms: <http://purl.org/dc/terms/>
+
+select *
+where {
+service <http://prod-dekalog.inria.fr/sparql> {
+# values ?serv {uri}
+%s
+graph ?g {
+    ?metadata dcterms:modified ?modif .
+    # variable ?s MUST be ?s (see SelectorIndex)
+    ?metadata kgi:curated ?s .
+    ?s void:sparqlEndpoint ?serv
+   # bind (exists {?s void:propertyPartition/void:property $predicate} as ?b)) 
+   %s
+}   
+# get latest metadata
+filter not exists {
+    ?m kgi:curated/void:sparqlEndpoint ?serv
+    ?m dcterms:modified ?modif0 
+    filter (?modif0 < ?modif) 
+}
+
+}}
+order by ?serv

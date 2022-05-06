@@ -32,17 +32,17 @@ public class ASTSelector {
     
    
     public boolean complete() {
-        //System.out.println("before:\n"+getBgpService());
         boolean b = restrict();
-//        System.out.println("triple:\n"+getTripleService());
-//        System.out.println("bgp:\n"+getBgpService());
         return b;
     }
     
+    // return false when a join fail in its endpoint
     boolean restrict() {
         boolean suc = true;
         for (BasicGraphPattern bgp : getBgpService().keySet()) {
             if (getBgpService().get(bgp).isEmpty()) {
+                // connected pair {t1.t2} do not join in any endpoint
+                // they may join on two different endpoints
                 boolean b = restrict(bgp);
                 if (!b) {
                     suc = false;

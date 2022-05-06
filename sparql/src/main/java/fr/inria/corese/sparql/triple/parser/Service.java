@@ -9,6 +9,7 @@ import java.util.List;
  * @author Olivier Corby, Edelweiss, INRIA 2011
  */
 public class Service extends SourceExp {
+    private static final String UNDEF_SERV = "?undef_serv";
     public static String SERVER_SEED = "?_server_";
     public static String SERVER_VAR = SERVER_SEED+"0";
     private int number = 0;
@@ -46,7 +47,7 @@ public class Service extends SourceExp {
     
     static Atom getDefaultService(List<Atom> list) {
         if (list.isEmpty()) {
-            return Variable.create("?undef_serv");           
+            return Variable.create(UNDEF_SERV);           
         }
         return list.get(0);     
     }

@@ -209,7 +209,13 @@ public class BasicGraphPattern extends And {
         sb.append("}");
         return sb;
     }
-
+    
+    public ASTBuffer toStringBasic() {
+        ASTBuffer sb = new ASTBuffer();
+        super.toString(sb);
+        return sb;
+    }
+    
     /**
      * This function add a new blank bode in the hashtable bnodes
      *

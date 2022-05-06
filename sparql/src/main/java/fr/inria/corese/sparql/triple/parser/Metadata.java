@@ -140,6 +140,7 @@ public class Metadata extends ASTObject
     public static final String FED_OPTIONAL = "@federateOptional";
     public static final String FED_COMPLETE = "@federateComplete";
     public static final String FED_PARTITION= "@federatePartition";
+    public static final String FED_SUCCESS=    "@federateSuccess";
     
              
     private static HashMap<String, Integer> annotation;    

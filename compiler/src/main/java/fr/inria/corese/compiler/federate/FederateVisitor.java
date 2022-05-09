@@ -452,6 +452,28 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         if (ast.hasMetadata(FED_EXCLUDE)) {            
             setExclude(ast.getMetadata().getValues(FED_EXCLUDE));
         }
+        if (ast.getContext()!=null) {
+            option(ast.getContext());
+        }
+    }
+    
+    void option(Context ct) {
+        IDatatype dt = ct.getFirst(Metadata.FED_LENGTH);
+        if (dt != null) {
+            Selector.NB_ENDPOINT = Integer.valueOf(dt.stringValue());
+        }
+        dt = ct.getFirst(Metadata.FED_SUCCESS);
+        if (dt != null) {
+            SelectorIndex.NBSUCCESS = Double.valueOf(dt.stringValue());
+        }
+        dt = ct.get(Metadata.FED_INCLUDE);
+        if (dt != null) {
+            for (IDatatype uri : dt) {
+                if (! getInclude().contains(uri.getLabel())) {
+                    getInclude().add(uri.getLabel());
+                }
+            }
+        }
     }
     
     boolean getValue(String meta, boolean b) {

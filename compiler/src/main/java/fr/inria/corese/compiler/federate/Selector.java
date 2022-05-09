@@ -137,9 +137,11 @@ public class Selector {
         
         if (getMappings() == null) {
             // compute selection
-            Context ct = null;
+            Context ct = Context.create();
+            // source selection inherit timeout if any as parameter sv:timeout=1000
+            ct.inherit(ast.getContext());
             if (getVisitor().isFederateIndex()) {
-                ct = Context.create().setFederateIndex(true);
+                ct.setFederateIndex(true);
             }
             map = getQuerySolver().basicQuery(aa, ct);
             getVisitor().setMappings(map);

@@ -26,6 +26,7 @@ public interface LogKey {
     static final String AST = "ns:ast";
     // federate source selection
     static final String AST_SELECT = "ns:astSelect";
+    static final String AST_INDEX = "ns:astIndex";
     // intermediate service call:
     static final String AST_SERVICE = "ns:astService";
     static final String INPUT_SIZE = "ns:astServiceLength";
@@ -48,6 +49,7 @@ public interface LogKey {
     static final String RESULT = OUTPUT;
     static final String RESULT_TEXT = "ns:outputText";
     static final String RESULT_SELECT = "ns:outputSelect";
+    static final String RESULT_INDEX = "ns:outputIndex";
     static final String BNODE = "ns:bnode";
     static final String NL = System.getProperty("line.separator");
 

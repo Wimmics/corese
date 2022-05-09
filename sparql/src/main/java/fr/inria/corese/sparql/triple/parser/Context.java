@@ -95,6 +95,7 @@ public class Context extends ASTObject implements URLParam {
     
     private boolean userQuery = false;
     private String key;
+    private boolean federateIndex = false;
    
    static {
        sexport = new HashMap();
@@ -970,6 +971,15 @@ public class Context extends ASTObject implements URLParam {
 
     public Context setAST(ASTQuery ast) {
         this.ast = ast;
+        return this;
+    }
+
+    public boolean isFederateIndex() {
+        return federateIndex;
+    }
+
+    public Context setFederateIndex(boolean federateIndex) {
+        this.federateIndex = federateIndex;
         return this;
     }
     

@@ -434,6 +434,7 @@ public class Access {
         // features below require RESTRICTED access level instead of PRIVATE level
         // hence they are accessible for user query with access key
         set(SPARQL_UPDATE, RESTRICTED);
+        set(SPARQL_SERVICE, RESTRICTED);
         // draft test for st:logger
         set(LDSCRIPT_SPARQL, RESTRICTED);
         set(DEFINE_FUNCTION, RESTRICTED);

@@ -30,12 +30,14 @@ public class ContextLog implements URLParam, LogKey {
     private List<String> linkList;
     // federated visitor endpoint selector Mappings
     private Mappings selectMap;
+    private Mappings indexMap;
     // subject -> property map
     private SubjectMap subjectMap;
     // federated query
     private ASTQuery ast;
     // federated visitor endpoint selector Mappings
     private ASTQuery astSelect;
+    private ASTQuery astIndex;
     private StringBuilder trace; 
     private List<String> formatList;
 
@@ -322,6 +324,12 @@ public class ContextLog implements URLParam, LogKey {
         if (getSelectMap() == null) {
             setSelectMap(log.getSelectMap());
         }
+        if (getASTIndex() == null) {
+            setASTIndex(log.getASTIndex());
+        }
+        if (getIndexMap() == null) {
+            setIndexMap(log.getIndexMap());
+        }
         if (getExceptionList().isEmpty()) {
             getExceptionList().addAll(log.getExceptionList());
         }
@@ -502,6 +510,22 @@ public class ContextLog implements URLParam, LogKey {
 
     public void setFormatList(List<String> formatList) {
         this.formatList = formatList;
+    }
+
+    public ASTQuery getASTIndex() {
+        return astIndex;
+    }
+
+    public void setASTIndex(ASTQuery astIndex) {
+        this.astIndex = astIndex;
+    }
+
+    public Mappings getIndexMap() {
+        return indexMap;
+    }
+
+    public void setIndexMap(Mappings indexMap) {
+        this.indexMap = indexMap;
     }
 
 }

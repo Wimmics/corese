@@ -106,6 +106,8 @@ public class LinkedResult implements URLParam {
     void linkedResult(JSONObject json) {
         // original query
         process(json, SRC, true);
+        // source discovery 
+        process(json, INDEX, true);
         // source selection query
         process(json, SEL, true);
         // rewritten federated query

@@ -234,31 +234,54 @@ public class TripleStoreLog implements URLParam {
             getJson().setLink(SRC, create(url));
         }
         
-        if (log.getASTSelect() != null) {
-            String query = log.getASTSelect().toString();
-            query = String.format("# source selection query \n%s", query);
-            String result = null;
-                                   
-            if (log.getSelectMap() != null) {
-                ResultFormat fm = ResultFormat.create(log.getSelectMap());
-                result = fm.toString();               
-            }
-            
-            String url1 = document(query, QUERY.concat(SEL), "");
-            String url2 = null;
-            if (result != null) {
-                url2 = document(result, OUTPUT, "");
-            }
-            
-            getJson().setLink(SEL, create(url1, url2));
-
-        }
+//        if (log.getASTSelect() != null) {
+//            String query = log.getASTSelect().toString();
+//            query = String.format("# source selection query \n%s", query);
+//            String result = null;
+//                                   
+//            if (log.getSelectMap() != null) {
+//                ResultFormat fm = ResultFormat.create(log.getSelectMap());
+//                result = fm.toString();               
+//            }
+//            
+//            String url1 = document(query, QUERY.concat(SEL), "");
+//            String url2 = null;
+//            if (result != null) {
+//                url2 = document(result, OUTPUT, "");
+//            }
+//            
+//            getJson().setLink(SEL, create(url1, url2));
+//        }
+        
+        logAST("selection", log.getASTSelect(), log.getSelectMap(), SEL, OUTPUT);
+        logAST("discovery", log.getASTIndex(), log.getIndexMap(), INDEX, OUTPUT_INDEX);
         
         if (log.getAST() != null) {
             String query = log.getAST().toString();
             query = String.format("# federated query \n%s", query);
             String url = document(query, QUERY.concat(REW), "");
             getJson().setLink(REW, create(url));
+        }
+    }
+    
+    void logAST(String title, ASTQuery ast, Mappings map, String name, String key) {
+        if (ast != null) {
+            String query = ast.toString();
+            query = String.format("# source %s query \n%s", title, query);
+            String result = null;
+
+            if (map != null) {
+                ResultFormat fm = ResultFormat.create(map);
+                result = fm.toString();
+            }
+
+            String url1 = document(query, QUERY.concat(name), "");
+            String url2 = null;
+            if (result != null) {
+                url2 = document(result, key, "");
+            }
+
+            getJson().setLink(name, create(url1, url2));
         }
     }
     

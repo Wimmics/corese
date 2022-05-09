@@ -210,11 +210,9 @@ public class TripleStore implements URLParam {
                     // federate sparql query with @federate uri
                     if (isCompile(c)) {
                         Query qq = exec.compile(federate(query, ds), ds);
-                        //map = tsl.logCompile();
                         map = Mappings.create(qq);
                     } else {
                         map = exec.query(federate(query, ds), ds);
-                        //tsl.log(map);
                     }
                 } else if (isShacl(c)) {
                     map = shacl(query, ds);
@@ -339,8 +337,8 @@ public class TripleStore implements URLParam {
     // federate?query=select where {}
     boolean isFederate(Dataset ds) {
         Context c = ds.getContext();
-        return (c.hasValue(FEDERATE)) && 
-                ds.getUriList() != null && !ds.getUriList().isEmpty();
+        return c.hasValue(FEDERATE) ; 
+                //&& ds.getUriList() != null && !ds.getUriList().isEmpty();
     }
     
     Mappings spin(String query, Dataset ds) throws EngineException {
@@ -400,7 +398,9 @@ public class TripleStore implements URLParam {
     ASTQuery federate(String query, Dataset ds) throws EngineException {
         QueryProcess exec = getQueryProcess();
         ASTQuery ast = exec.parse(query, ds);
-        ast.setAnnotation(metadata(ast, ds));
+        //ast.setAnnotation(metadata(ast, ds));
+        ast.addMetadata(metadata(ast, ds));
+        logger.info("metadata: " + ast.getMetadata());
         return ast;
     }
     
@@ -410,9 +410,13 @@ public class TripleStore implements URLParam {
      */
     Metadata metadata(ASTQuery ast, Dataset ds) {
         Metadata meta = new Metadata();
-        //int type = (ds.getUriList().size() > 1) ? Metadata.FEDERATE : Metadata.FEDERATION;
-        int type = Metadata.FEDERATION;
-        meta.set(type, ds.getUriList());
+        if (ds.getContext().hasValue(FEDERATE)) {
+            if (ds.getUriList() == null) {
+                meta.add(Metadata.FEDERATION);
+            } else {
+                meta.set(Metadata.FEDERATION, ds.getUriList());
+            }
+        }
         if (ds.getContext().hasValue(MERGE)) {
             // heuristic to merge services on the intersection of service URLs
             meta.add(Metadata.MERGE_SERVICE);

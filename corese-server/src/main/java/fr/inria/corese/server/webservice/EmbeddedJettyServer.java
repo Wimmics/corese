@@ -378,7 +378,8 @@ public class EmbeddedJettyServer extends ResourceConfig {
             server.start();
             // server initialization
             Client client = ClientBuilder.newClient();
-            WebTarget target = client.target(new URI("http://localhost:" + port + "/"));
+            URI uri = new URI("http://localhost:" + port + "/");
+            WebTarget target = client.target(uri);
             MultivaluedMap<String, String> formData = new MultivaluedHashMap<>();
             formData.add("entailments", Boolean.toString(entailments));
             formData.add("owlrl", Boolean.toString(owlrl));
@@ -389,9 +390,17 @@ public class EmbeddedJettyServer extends ResourceConfig {
             if (isLocalHost) {
                 formData.add("localhost", "true");
             }
+            logger.info("before localhost uri: " + uri);
+            
+            if (true) {
             target.path("sparql").path("reset")
                     .request(APPLICATION_FORM_URLENCODED_TYPE)
                     .post(Entity.form(formData));
+            }
+            else {
+                new SPARQLRestAPI().initRDF();
+            }
+            logger.info("after localhost uri");
 
             if (dataPaths != null) {
                 for (String dataPath : dataPaths) {

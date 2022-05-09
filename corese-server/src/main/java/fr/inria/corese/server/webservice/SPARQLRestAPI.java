@@ -137,6 +137,10 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     void setVisitor(QuerySolverVisitorServer vis) {
         visitor = vis;
     }
+    
+    public Response initRDF() {
+        return initRDF("false", "false", "false", null, "false");
+    }
 
     /**
      * This webservice is used to reset the endpoint. This could be useful if we would like our endpoint to point on another dataset

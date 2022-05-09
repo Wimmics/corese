@@ -225,6 +225,18 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
                     // when id is a federation: union of query results of endpoint of id federation
                     // otherwise query triple store with name=id
                     String surl = ds.getContext().get(URL).getLabel();
+                    
+                    if (surl.contains("/federate/sparql")) {
+                        // federate query with graph index
+                        mode = leverage(mode);
+                        mode.add(FEDERATE);
+                        // authorize service clause
+//                        Level level = Access.getQueryAccessLevel(true, true);
+//                        ds.getCreateContext().setLevel(level);
+                        logger.info("Federate query with graph index");
+                        break;
+                    }
+                    
                     String furl = surl;
                     
                     if (FederateVisitor.getFederation(furl) == null) {
@@ -234,11 +246,9 @@ public class SPARQLResult implements ResultFormatDef, URLParam    {
                     if (FederateVisitor.getFederation(furl) != null) {
                         // federation is defined 
                         mode = leverage(mode);
-                        //uri = leverage(uri);
                         mode.add(FEDERATE);
                         mode.add(SPARQL);
                         // record the name of the federation
-                        //uri.add(furl);
                         federation.add(furl);
                         defineFederation(ds, federation);
                     }

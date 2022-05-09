@@ -88,6 +88,7 @@ public class Profile {
                 server = stdLocalhost();
             }
         }
+        logger.info("host name: " + server);
         completeHostData();
     }
      

@@ -3,18 +3,19 @@
 # Perform source selection
 # Pattern completed by FederatedVisitor SelectorIndex
 # Return endpoint URI -> predicate: true|false
-# new version
 #
+prefix dqv:     <http://www.w3.org/ns/dqv#>
 prefix kgi:     <http://ns.inria.fr/kg/index#>
 prefix void:    <http://rdfs.org/ns/void#>
 prefix dcterms: <http://purl.org/dc/terms/>
 
-select distinct ?serv
+select distinct ?serv ?c 
 where {
 service <http://prod-dekalog.inria.fr/sparql> {
 graph ?g {
     ?metadata dcterms:modified ?modif .
     ?metadata kgi:curated ?s .
+    ?metadata dqv:hasQualityMeasurement ?qualityMeasure .
     ?s void:sparqlEndpoint  ?serv
 
    # optional {?s void:propertyPartition/void:property <$predicate>} 
@@ -28,4 +29,4 @@ filter not exists {
 }
 
 }}
-order by ?serv
+order by desc(?c) ?serv

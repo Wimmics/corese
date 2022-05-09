@@ -17,7 +17,6 @@ import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.URLParam;
@@ -211,12 +210,12 @@ public class Service implements URLParam {
             String accept = getAccept(mime);
             Builder rb = target.request(accept); // .cookie(cook)
             //setHeader(rb);
-            logger.info("Header Accept: " + accept);
+            //logger.info("Header Accept: " + accept);
             
             Date d1 = new Date();
-            if (isDebug()) {
+            //if (isDebug()) {
                 logger.info("Post " + getURL().getURL());
-            }
+            //}
             
             Response resp =  rb.post(Entity.entity(form, MediaType.APPLICATION_FORM_URLENCODED_TYPE));
             
@@ -248,6 +247,7 @@ public class Service implements URLParam {
                
             trace(resp);
             logger.info("Response status: " + resp.getStatus());
+            logger.info("From " + getURL().getURL());
             
             recordFormat(resp.getMediaType().toString());  
             getCreateReport().setResponse(resp);

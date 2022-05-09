@@ -217,6 +217,7 @@ public class ProviderService implements URLParam {
             // /sparql?param={?this} 
             // get ?this=value in Binding global variable and set param=value
             url.complete(getBinding());
+            // complete URL with timeout=1000 from context
             url.complete(getContext());
             url.encode();
             getLog().add(LogKey.ENDPOINT, url.getServer());
@@ -262,7 +263,6 @@ public class ProviderService implements URLParam {
             length = url.intValue(SLICE, length);
             // sparql?timeout=123
             timeout = url.intValue(TIMEOUT, timeout);
-
             if (parallel) {
                 ProviderThread p = parallelProcess(url, input, sol, slice, length, timeout);
                 pList.add(p);

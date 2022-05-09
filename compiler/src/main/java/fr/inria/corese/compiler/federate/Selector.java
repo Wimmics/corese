@@ -15,6 +15,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTSelector;
+import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Optional;
@@ -27,6 +28,8 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -38,9 +41,11 @@ import java.util.List;
  */
 public class Selector {
     
+    public static Logger logger = LoggerFactory.getLogger(Selector.class);
     private static final String SERVER_VAR = "?serv";
     private static final String BNODE_ID = "_:fbn";
     public static boolean SELECT_EXIST = true;
+    public static int NB_ENDPOINT = 10;
     
     String indexURI = "http://prod-dekalog.inria.fr/sparql";
     private FederateVisitor vis;
@@ -94,16 +99,26 @@ public class Selector {
         // who know ast federate query predicates
         ASTQuery a = new SelectorIndex(this, ast, indexURI)
                 .process();
-        Mappings map = getQuerySolver().basicQuery(a);                    
-        List<String> list = map.getStringValueList(SERVER_VAR);  
+        Mappings map = getQuerySolver().basicQuery(a);  
         
-        System.out.println("source selection time: " + time(d1));
-        System.out.println("res:\n"+map);
-        System.out.println("res: " + list);    
+        getQuerySolver().getLog().setASTIndex(a);
+        getQuerySolver().getLog().setIndexMap(map);
+        
+        ast.getLog().setASTIndex(a);
+        ast.getLog().setIndexMap(map);
+        //ast.getLog().setExceptionList(getQuerySolver().getLog().getExceptionList());
+                        
+        List<String> list = map.getStringValueList(SERVER_VAR); 
+        
+        logger.info("Source discovery:\n"+map);
+        logger.info("URL list: " + list);
+        logger.info("Source discovery time: " + time(d1));
+        // @todo: remove exclude uri before sublist
+        list = list.subList(0, Math.min(list.size(), NB_ENDPOINT));
         return list;
     }
     
-     public static double time(Date d1, Date d2) {
+    public static double time(Date d1, Date d2) {
         return (d2.getTime() - d1.getTime()) / 1000.0;
     }
     
@@ -122,7 +137,11 @@ public class Selector {
         
         if (getMappings() == null) {
             // compute selection
-            map = getQuerySolver().basicQuery(aa);
+            Context ct = null;
+            if (getVisitor().isFederateIndex()) {
+                ct = Context.create().setFederateIndex(true);
+            }
+            map = getQuerySolver().basicQuery(aa, ct);
             getVisitor().setMappings(map);
         }
         else {

@@ -1,26 +1,62 @@
 package fr.inria.corese.compiler.federate;
 
+import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.federate.util.ResourceReader;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.io.IOException;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
- *
+ * Given federate query, create query to graph index to retrieve candidate endpoint uri list
+ * who know federate query predicates
+ * The uri list will be the input of standard source selection
+ * Graph index plays the role of a search engine that discover relevant candidate endpoints
+ * Graph index is an endpoint identified by a service clause in a predefined query pattern
+ * Current graph index is: http://prod-dekalog.inria.fr/sparql
+ * There is a default graph index query pattern: DEFAULT_QUERY_PATTERN
+ * There is a Property FEDERATE_INDEX_PATTERN whose value is the path of a query pattern
+ * By convention the query pattern MUST return distinct values of variable Selector.SERVER_VAR 
+ * 
  */
 public class SelectorIndex {
+    public static Logger logger = LoggerFactory.getLogger(SelectorIndex.class);
     public static boolean SELECT_ENDPOINT = false;
     public static double NBSUCCESS = 0.5;
+    
+    // %s(1) = predicate uri
+    // %s(2) = i in ?b_i
+    public static final String OPTIONAL1 = 
+        "optional {?s void:propertyPartition/void:property <%s> "
+      + "bind (%s as ?b_%s)}\n";
+    
+    // %s = exp1+exp2 in bind(exp1+exp2 as ?c) 
+    public static final String BIND     = "bind (%s as ?c)";
+    
+    // %s = i in expi = coalesce(?b_i, 0)
+    public static final String EXP      = "coalesce(?b_%s, 0)";
+    
+    // %s = n in filter (?c >= n) where n = number of bound ?bi = number of present predicates in endpoint
+    public static final String FILTER   = "filter (?c >= %s)";
+                   
+    // draft test for property partition
+    public static final String OPTIONAL2 = 
+        "optional {?s void:classPartition[void:propertyPartition[void:property <%s>]]." +
+        "bind (1 as ?b_%s) }\n";
+    
     private static final String FILTER_EXISTS = 
     "filter exists {?s void:propertyPartition/void:property <%s>}\n";
-    private static final String OPTIONAL = 
-"optional {?s void:propertyPartition/void:property <%s> bind (1 as ?b_%s)}\n";
+    
+    public static String OPTIONAL = OPTIONAL1;
+    
     // default source discovery query pattern
     private static final String DEFAULT_QUERY_PATTERN = 
             "/query/indexpatternendpoint.rq";
@@ -31,7 +67,9 @@ public class SelectorIndex {
     ASTQuery ast;
     String uri;
     List<Constant> uriList;
+    int totalValue = 0;
     
+    // ast: input federate query
     SelectorIndex(Selector s, ASTQuery ast) {
         selector = s;
         this.ast = ast;
@@ -42,9 +80,12 @@ public class SelectorIndex {
         this.ast = ast;
         this.uri = uriIndex;
     }
+    
+    
                    
     // generate query for endpoint URL source discovery
-    // with federate query ast as input      
+    // with federate query ast as input 
+    // ast evaluation return candidate list of endpoint uri
     ASTQuery process() {
         try {
             ASTQuery a = getQuery();
@@ -67,9 +108,13 @@ public class SelectorIndex {
         String queryString = String.format(pattern, test);
         //System.out.println("pattern:\n"+pattern);
         //System.out.println("test:\n"+test);
-        System.out.println("query:\n"+queryString);
-        Query q = selector.getQuerySolver().compile(queryString);
+        logger.info("Index query:\n"+queryString);
+        Query q = getQuerySolver().compile(queryString);
         return q.getAST();
+    }
+    
+    QuerySolver getQuerySolver() {
+        return selector.getQuerySolver();
     }
     
     // generate test part to find federate query predicates
@@ -82,8 +127,11 @@ public class SelectorIndex {
                 // skip variable predicate 
             } 
             else {
-                // generate test for predicate
-                sb.append(String.format(OPTIONAL, p.getLongName(), i++)); 
+                // generate test for predicate 
+                // specific namespace have more value than rdf: rdfs:
+                int value = getValue(p.getLongName());
+                totalValue += value;
+                sb.append(String.format(OPTIONAL, p.getLongName(), value, i++)); 
             }
         }        
         // count number of predicates present in endpoint url
@@ -91,23 +139,46 @@ public class SelectorIndex {
         return sb.toString();
     }
     
+    // @todo
+    // specific domain namespace: value 3
+    // skos: owl: foaf: value 2
+    // rdf: rdfs:  value 1    
+    int getValue(String uri) {
+        if (NSManager.nsm().isSystemURI(uri)) {
+            return 1;
+        }
+        return 2;
+    }
+    
     // count number of predicates present in endpoint url
     // endpoint succeed when: 
-    // endpoint nb predicates >= query nb predicates * rate
-    // e.g. it has 0.5 * query nb predicates
+    // endpoint nb predicates >= federate query nb predicates * rate
+    // e.g. it has 0.5 * federate query nb predicates
     // NBSUCCESS can be set by 
     // property FEDERATE_INDEX_SUCCESS 0.75
     // annotation @fedSuccess 0.75
-    void count(StringBuilder sb, int i) {
-        sb.append("bind (");
-        for (int j = 0; j < i; j++) {
+    // default is 0.5
+    void count(StringBuilder sb, int i) {                
+        // bind (coalesce(?b_i, 0) + coalesce(?b_j, 0) as ?c)
+        sb.append(String.format(BIND, sum(i)));
+        sb.append("\n");
+        // filter (?c >= n)
+        sb.append(String.format(FILTER, totalValue * NBSUCCESS));
+    }
+    
+    // return bind (coalesce(?b_1, 0) + ... coalesce(?b_n) as ?c)
+    // compurte number of fed query predicates found in endpoint
+    StringBuilder sum(int n) {
+        StringBuilder b = new StringBuilder();
+
+        for (int j = 0; j < n; j++) {
             if (j > 0) {
-                sb.append(" + ");
+                b.append(" + ");
             }
-            sb.append("coalesce(?b_").append(j).append(", 0)");
+            // exp = coalesce(?b_j, 0)
+            b.append(String.format(EXP, j));
         }
-        sb.append(" as ?c)\n");
-        sb.append(String.format("filter (?c >= %s)", i * NBSUCCESS));
+        return b;
     }
         
        

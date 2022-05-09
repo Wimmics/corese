@@ -24,6 +24,7 @@ import static fr.inria.corese.sparql.triple.parser.Metadata.FED_COMPLETE;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_EXCLUDE;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_INCLUDE;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_JOIN;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_LENGTH;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_OPTIONAL;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_PARTITION;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_SUCCESS;
@@ -127,6 +128,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean federatePartition = PARTITION;
     private boolean federateOptional = OPTIONAL;
     private boolean federateComplete = COMPLETE_BGP;
+    private boolean federateIndex = false;
     public static List<String> BLACKLIST = new ArrayList<>();
     private List<String> include;
     private List<String> exclude;
@@ -304,20 +306,22 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             
             if (list == null) {
                 define = false;
-                // discover relevant endpoints on kg graph index
+                // discover relevant endpoints in kg graph index
                 Selector sel = new Selector(this, exec, ast);
                 try {
                     list = sel.getIndexURIList();
+                    ast.getCreateContext().setFederateIndex(true);
+                    setFederateIndex(true);
                 } catch (EngineException ex) {
                     logger.error(ex.getMessage());
                     return false;
                 }
             }
             
-            if (list.isEmpty()) {
+            if (list.isEmpty() && getInclude().isEmpty()) {
                 return false;
             }
-            else if (list.size() == 1) {
+            else if (list.size() == 1 && define) {
                 // refer to federation
                 serviceList = getFederation().get(list.get(0));
                 setURL(new URLServer(list.get(0)));
@@ -333,17 +337,20 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 // define federation
                 serviceList = new ArrayList<>();
                 int start = (define)?1:0;
+                
                 for (int i = start; i < list.size(); i++) {
                     String uri = list.get(i);
                     if (accept(uri)){
                         serviceList.add(Constant.createResource(uri));
                     }
                 }
+                
                 for (String uri : getInclude()) {
                     if (! list.contains(uri) && accept(uri)) {
                         serviceList.add(Constant.createResource(uri));
                     }
                 }
+                
                 if (define) {
                     defFederation(list.get(0), serviceList);
                 }
@@ -434,6 +441,10 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         if (ast.getMetaValue(FED_SUCCESS) !=null) {
             SelectorIndex.NBSUCCESS = 
                     ast.getMetaValue(FED_SUCCESS).doubleValue();
+        }
+        if (ast.getMetaValue(FED_LENGTH) !=null) {
+            Selector.NB_ENDPOINT = 
+                    ast.getMetaValue(FED_LENGTH).intValue();
         }
         if (ast.hasMetadata(FED_INCLUDE)) {            
             setInclude(ast.getMetadata().getValues(FED_INCLUDE));
@@ -1243,6 +1254,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setExclude(List<String> exclude) {
         this.exclude = exclude;
+    }
+
+    public boolean isFederateIndex() {
+        return federateIndex;
+    }
+
+    public void setFederateIndex(boolean federateIndex) {
+        this.federateIndex = federateIndex;
     }
 
    

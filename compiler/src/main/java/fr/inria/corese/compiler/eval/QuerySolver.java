@@ -241,9 +241,35 @@ public class QuerySolver implements SPARQLEngine {
     public Mappings basicQuery(ASTQuery ast) throws EngineException {
         return basicQuery(ast, null, null);
     }
+    
+    public Mappings basicQuery(ASTQuery ast, Context ct) throws EngineException {
+        return basicQuery(ast, null, Dataset.create(ct));
+    }
+    
+     /**
+     * Dataset may contain Binding and/or Context 
+     * Prepare Mapping with Binding/Context for Eval query processing
+     * Binding records Context if any
+     * Note that st:get/st:set consider Context in Query (cf PluginTransform getContext())
+     * ProviderService consider Context in Binding 
+     * Hence we have  Context both in Query and in Binding 
+     * 
+     */
+    public Mapping completeMappings(Query q, Mapping m, Dataset ds) {
+        if (ds != null) {           
+            if (ds.getBinding() != null || ds.getContext() != null) {
+                if (m == null) {
+                    m = new Mapping();
+                }
+                return ds.call(m);
+            }
+        }
+        return m;
+    }
 
     public Mappings basicQuery(ASTQuery ast, Mapping m, Dataset ds) throws EngineException {
         Query query = compile(ast, ds);
+        m = completeMappings(query, m, ds);
         return query(query, m);
     }
 

@@ -811,6 +811,22 @@ public class Context extends ASTObject implements URLParam {
         return url;
     }
     
+    // source selection inherit some context parameters
+    public Context inherit(Context ct) {
+        if (ct == null) {
+            return this;
+        }
+        if (ct.hasValue(EXPORT)) {
+            for (IDatatype key : ct.get(EXPORT)) {
+                if (key.getLabel().equals(TIMEOUT)) {
+                    set(TIMEOUT, ct.get(TIMEOUT));
+                    add(EXPORT, key);
+                }
+            }
+        }
+        return this;
+    }
+    
     
     /**
      * mode=demo 

@@ -222,11 +222,16 @@ public class ProviderService implements URLParam {
             getLog().add(LogKey.ENDPOINT, url.getServer());
             getLog().add(LogKey.ENDPOINT_CALL, url.getLogURLNumber());
             
-            if (ok && Access.reject(Feature.SPARQL_SERVICE, getBinding().getAccessLevel(), service.getLabel())) {
-                logger.error(TermEval.SERVICE_MESS + " " + service.getLabel());
-                SafetyException ex = new SafetyException(TermEval.SERVICE_MESS, service.getLabel());
-                getLog().addException(ex.setURL(url));
-                throw ex;
+            if (ok) {
+                if (getContext() != null && getContext().isFederateIndex()) {
+                    // service clause accepted
+                }
+                else if (Access.reject(Feature.SPARQL_SERVICE, getBinding().getAccessLevel(), service.getLabel())) {
+                    logger.error(TermEval.SERVICE_MESS + " " + service.getLabel());
+                    SafetyException ex = new SafetyException(TermEval.SERVICE_MESS, service.getLabel());
+                    getLog().addException(ex.setURL(url));
+                    throw ex;
+                }
             }
 
             if (eval.isStop()) {

@@ -4,6 +4,7 @@ import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.compiler.federate.RewriteBGPList;
+import fr.inria.corese.compiler.federate.Selector;
 import fr.inria.corese.compiler.federate.SelectorIndex;
 import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
@@ -128,6 +129,7 @@ public class Property {
         
         FEDERATE_INDEX_PATTERN,
         FEDERATE_INDEX_SUCCESS,
+        FEDERATE_INDEX_LENGTH,
         FEDERATE_BLACKLIST,
 
         
@@ -289,7 +291,15 @@ public class Property {
         getSingleton().basicSet(value, str);
     }
     
-     public static void set(Value value, int n) {
+    public static void set(Value value, String... str)  {
+        getSingleton().basicSet(value, str);
+    }
+    
+    public static void set(Value value, double d)  {
+        getSingleton().basicSet(value, Double.toString(d));
+    }
+    
+    public static void set(Value value, int n) {
         getSingleton().basicSet(value, n);
     }
 
@@ -599,6 +609,17 @@ public class Property {
                 break;
         }
     }
+    
+    void basicSet(Value value, String... str) {
+        if (isDebug()) {
+          logger.info(value + " = " + str);
+        }  
+        switch (value) {
+            case FEDERATE_BLACKLIST:
+                blacklist(str);
+                break;
+        }
+    }
 
     void basicSet(Value value, String str)  {
         if (isDebug()) {
@@ -687,6 +708,14 @@ public class Property {
         FederateVisitor.BLACKLIST = alist;
     }
     
+    void blacklist(String... list) {
+        ArrayList<String> alist = new ArrayList<>();
+        for (String str : list) {
+            alist.add(str);
+        }
+        FederateVisitor.BLACKLIST = alist;
+    }
+    
     void basicSet(Value value, int n) {
         if (isDebug()) {
             logger.info(value + " = " + n);
@@ -707,6 +736,10 @@ public class Property {
                 
             case FUNCTION_PARAMETER_MAX:
                 ASTExtension.FUNCTION_PARAMETER_MAX = n;
+                break;
+                
+            case FEDERATE_INDEX_LENGTH:
+                Selector.NB_ENDPOINT = n;
                 break;
         }
     }

@@ -129,6 +129,12 @@ public class LogManager implements LogKey {
         if (log.getSelectMap() != null) {
             property("[] %s \"\"\"\n%s\"\"\" .\n", RESULT_SELECT, log.getSelectMap());
         }
+        if (log.getASTIndex() != null) {
+            property("[] %s \"\"\"\n%s\"\"\" .\n", AST_INDEX, log.getASTIndex());
+        }
+        if (log.getIndexMap() != null) {
+            property("[] %s \"\"\"\n%s\"\"\" .\n", RESULT_INDEX, log.getIndexMap());
+        }
     }
     
     void processComment() {

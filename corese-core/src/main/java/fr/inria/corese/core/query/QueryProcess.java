@@ -715,26 +715,7 @@ public class QueryProcess extends QuerySolver {
     }
      
     
-    /**
-     * Dataset may contain Binding and/or Context 
-     * Prepare Mapping with Binding/Context for Eval query processing
-     * Binding records Context if any
-     * Note that st:get/st:set consider Context in Query (cf PluginTransform getContext())
-     * ProviderService consider Context in Binding 
-     * Hence we have  Context both in Query and in Binding 
-     * 
-     */
-    Mapping completeMappings(Query q, Mapping m, Dataset ds) {
-        if (ds != null) {           
-            if (ds.getBinding() != null || ds.getContext() != null) {
-                if (m == null) {
-                    m = new Mapping();
-                }
-                return ds.call(m);
-            }
-        }
-        return m;
-    }
+   
     
  
     void dbProducer(Query q) {

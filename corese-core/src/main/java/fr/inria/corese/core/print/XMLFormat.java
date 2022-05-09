@@ -286,27 +286,31 @@ public class XMLFormat extends QueryResultFormat {
 
             println(OCOM);
             if (ast.getText() != null) {
-                println(ast.getText());
+                println(protect(ast.getText()));
             }
             println("");
 
             if (b1) {
                 for (String mes : ast.getErrors()) {
-                    println(mes);
+                    println(protect(mes));
                 }
             }
             if (b2) {
                 for (String mes : query.getErrors()) {
-                    println(mes);
+                    println(protect(mes));
                 }
             }
             if (b3) {
                 for (String mes : query.getInfo()) {
-                    println(mes);
+                    println(protect(mes));
                 }
             }
             println(CCOM);
         }
+    }
+    
+    String protect(String mes) {
+        return mes.replace("<!--", "").replace("-->", "");
     }
 
     /**

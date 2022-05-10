@@ -132,6 +132,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static List<String> BLACKLIST = new ArrayList<>();
     private List<String> include;
     private List<String> exclude;
+    private String indexURL;
 
     ASTQuery ast;
     Stack stack;
@@ -309,7 +310,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 // discover relevant endpoints in kg graph index
                 Selector sel = new Selector(this, exec, ast);
                 try {
-                    list = sel.getIndexURIList();
+                    list = sel.getIndexURIList(getIndexURL());
                     ast.getCreateContext().setFederateIndex(true);
                     setFederateIndex(true);
                 } catch (EngineException ex) {
@@ -426,7 +427,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             provenance = true;
         }
         if (ast.hasMetadata(Metadata.INDEX)) {
-            setIndex(true);
+            setIndexURL(ast.getMetadata().getValue(Metadata.INDEX));
+            logger.info("Index URL: "+ getIndexURL());
         }
         if (ast.hasMetadata(Metadata.SPARQL)) {
             setSparql(true);
@@ -1284,6 +1286,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setFederateIndex(boolean federateIndex) {
         this.federateIndex = federateIndex;
+    }
+
+    public String getIndexURL() {
+        return indexURL;
+    }
+
+    public void setIndexURL(String indexURL) {
+        this.indexURL = indexURL;
     }
 
    

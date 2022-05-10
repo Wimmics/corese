@@ -11,6 +11,7 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.io.IOException;
+import java.util.HashMap;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -31,9 +32,10 @@ public class SelectorIndex {
     public static Logger logger = LoggerFactory.getLogger(SelectorIndex.class);
     public static boolean SELECT_ENDPOINT = false;
     public static double NBSUCCESS = 0.5;
+    public static String INDEX_URL = "http://prod-dekalog.inria.fr/sparql";
     
-    // %s(1) = predicate uri
-    // %s(2) = i in ?b_i
+    // %1$s = predicate uri
+    // %2$s = i in ?b_i
     public static final String OPTIONAL1 = 
         "optional {?s void:propertyPartition/void:property <%s> "
       + "bind (%s as ?b_%s)}\n";
@@ -63,11 +65,36 @@ public class SelectorIndex {
     // path set by Property FEDERATE_INDEX_PATTERN
     public static String QUERY_PATTERN = null;
     
+    static HashMap<String, String> url2predicatePattern;
+    static HashMap<String, String> url2queryPattern;
+
+        
     Selector selector;
     ASTQuery ast;
-    String uri;
+    String indexURL;
     List<Constant> uriList;
     int totalValue = 0;
+    
+    static {
+        url2predicatePattern = new HashMap<>();
+        url2queryPattern = new HashMap<>();
+        init();
+    }
+    
+    // define for each index url: 
+    // the sparql query pattern to search predicate p
+    static void init() {
+        definePredicatePattern(INDEX_URL, OPTIONAL);
+        defineQueryPattern(INDEX_URL, getDefaultPattern(QUERY_PATTERN, DEFAULT_QUERY_PATTERN));
+    }
+    
+    public static void definePredicatePattern(String url, String pattern) {
+        url2predicatePattern.put(url, pattern);
+    }
+    
+    public static void defineQueryPattern(String url, String pattern) {
+        url2queryPattern.put(url, pattern);
+    }
     
     // ast: input federate query
     SelectorIndex(Selector s, ASTQuery ast) {
@@ -76,22 +103,22 @@ public class SelectorIndex {
     }
     
     SelectorIndex(Selector s, ASTQuery ast, String uriIndex) {
-        selector = s;
-        this.ast = ast;
-        this.uri = uriIndex;
+        this(s, ast);
+        this.indexURL = uriIndex;
     }
     
-    
-                   
+
+                       
     // generate query for endpoint URL source discovery
     // with federate query ast as input 
     // ast evaluation return candidate list of endpoint uri
+    // variable for endpoint url is Selector.SERVER_VAR
     ASTQuery process() {
         try {
-            ASTQuery a = getQuery();
+            ASTQuery a = getGraphIndexQuery();
             return a;
         } catch (EngineException ex) {
-            selector.getVisitor().logger.error(ex.getMessage());
+            logger.error(ex.getMessage());
             return ASTQuery.create();
         }
     }
@@ -100,9 +127,9 @@ public class SelectorIndex {
 
     // generate query for endpoint URL source discovery    
     // for ast federate query
-    ASTQuery getQuery() throws EngineException {
+    ASTQuery getGraphIndexQuery() throws EngineException {
         // get query pattern with %s
-        String pattern = getPattern(QUERY_PATTERN, DEFAULT_QUERY_PATTERN);
+        String pattern = getQueryPattern(indexURL);
         // generate test part to find federate query predicates
         String test = predicateTest(ast);
         String queryString = String.format(pattern, test);
@@ -131,7 +158,8 @@ public class SelectorIndex {
                 // specific namespace have more value than rdf: rdfs:
                 int value = getValue(p.getLongName());
                 totalValue += value;
-                sb.append(String.format(OPTIONAL, p.getLongName(), value, i++)); 
+                sb.append(String.format(getPredicatePattern(indexURL), 
+                        p.getLongName(), value, i++)); 
             }
         }        
         // count number of predicates present in endpoint url
@@ -253,9 +281,25 @@ public class SelectorIndex {
         return bgp;
     }
     
+    String getPredicatePattern(String url) {
+        String str = url2predicatePattern.get(url);
+        if (str == null) {
+            return OPTIONAL;
+        }
+        return str;
+    }
+            
+    String getQueryPattern(String url) {
+        String str = url2queryPattern.get(url);
+        if (str == null) {
+            return getDefaultPattern(QUERY_PATTERN, DEFAULT_QUERY_PATTERN);
+        }
+        return str;
+    }
     
-    
-    String getPattern(String path, String defaut) {
+    // path is given by Property FEDERATE_INDEX_PATTERN
+    // defaut is default graph index query pattern
+    static String getDefaultPattern(String path, String defaut) {
         String pattern = "select * where {%s}";
         try {
             if (path == null) {
@@ -264,7 +308,7 @@ public class SelectorIndex {
                 return new ResourceReader().readWE(path);
             }
         } catch (IOException ex) {
-            selector.getVisitor().logger.error(ex.getMessage());
+            logger.error(ex.getMessage());
         }
         return pattern;
     }

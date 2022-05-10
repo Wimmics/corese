@@ -47,7 +47,6 @@ public class Selector {
     public static boolean SELECT_EXIST = true;
     public static int NB_ENDPOINT = 10;
     
-    String indexURI = "http://prod-dekalog.inria.fr/sparql";
     private FederateVisitor vis;
     ASTQuery ast;
     private ASTSelector astSelector;
@@ -92,30 +91,48 @@ public class Selector {
         return list;
     }
     
-    // query graph index for source discovery
     List<String> getIndexURIList() throws EngineException {
-        Date d1 = new Date();
-        // create query to discover relevant endpoint
-        // who know ast federate query predicates
-        ASTQuery a = new SelectorIndex(this, ast, indexURI)
-                .process();
-        Mappings map = getQuerySolver().basicQuery(a);  
-        
-        getQuerySolver().getLog().setASTIndex(a);
-        getQuerySolver().getLog().setIndexMap(map);
-        
-        ast.getLog().setASTIndex(a);
-        ast.getLog().setIndexMap(map);
-        //ast.getLog().setExceptionList(getQuerySolver().getLog().getExceptionList());
-                        
-        List<String> list = map.getStringValueList(SERVER_VAR); 
-        
-        logger.info("Source discovery:\n"+map);
-        logger.info("URL list: " + list);
-        logger.info("Source discovery time: " + time(d1));
+        return getIndexURIList(getIndexURL());
+    }
+    
+    List<String> getIndexURIList(String url) throws EngineException {
+        if (url==null) {
+            url = getIndexURL();
+        }
+        List<String> list = getBasicIndexURIList(url);
         // @todo: remove exclude uri before sublist
         list = list.subList(0, Math.min(list.size(), NB_ENDPOINT));
         return list;
+    }
+    
+    // default index url
+    String getIndexURL() {
+        return SelectorIndex.INDEX_URL;
+    }
+    
+    // query graph index for source discovery
+    List<String> getBasicIndexURIList(String url) throws EngineException {
+        Date d1 = new Date();
+        // create query to discover relevant endpoint
+        // who know ast federate query predicates
+        ASTQuery a = new SelectorIndex(this, ast, url).process();
+        Mappings map = getQuerySolver().basicQuery(a);                           
+        List<String> list = map.getStringValueList(SERVER_VAR); 
+        
+        log(a, map);
+        logger.info("Source discovery:\n"+map);
+        logger.info("Source discoveryURL list:\n" + list);
+        logger.info("Source discovery time: " + time(d1));
+        
+        return list;
+    }
+    
+    void log(ASTQuery a, Mappings map) {
+        getQuerySolver().getLog().setASTIndex(a);
+        getQuerySolver().getLog().setIndexMap(map);
+        ast.getLog().setASTIndex(a);
+        ast.getLog().setIndexMap(map);
+        //ast.getLog().setExceptionList(getQuerySolver().getLog().getExceptionList());
     }
     
     public static double time(Date d1, Date d2) {
@@ -298,6 +315,7 @@ public class Selector {
         
         BasicGraphPattern body;
         if (getVisitor().isIndex()) {
+            // @deprecated
             body = bgp;
         }
         else {

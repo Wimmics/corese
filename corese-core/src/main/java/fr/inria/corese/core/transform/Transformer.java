@@ -762,9 +762,11 @@ public class Transformer implements TransformProcessor {
         query = null;
 
         if (all) {
-            IDatatype dt2 = result(env, nodes);
-            afterTransformer(astart, dt2);
-            return dt2;
+            if (!nodes.isEmpty()) {
+                IDatatype dt2 = result(env, nodes);
+                afterTransformer(astart, dt2);
+                return dt2;
+            }
         }
         
         IDatatype fin = isBoolean() ? defaultBooleanResult() : EMPTY;

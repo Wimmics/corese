@@ -142,7 +142,7 @@ public class Selector {
             ct.inherit(ast.getContext());
             if (getVisitor().isFederateIndex()) {
                 ct.setFederateIndex(true);
-            }
+            }            
             map = getQuerySolver().basicQuery(aa, ct);
             getVisitor().setMappings(map);
         }
@@ -205,6 +205,9 @@ public class Selector {
             aa.getCreateMetadata().add(Metadata.REPORT);
             ASTParser walk = new ASTParser(aa).report();
             aa.process(walk);
+        }
+        if (ast.hasMetadata(Metadata.TIMEOUT)) {
+            aa.getCreateMetadata().add(Metadata.TIMEOUT, ast.getMetaValue(Metadata.TIMEOUT));
         }
     }
         

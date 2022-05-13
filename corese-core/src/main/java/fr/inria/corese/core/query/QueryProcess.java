@@ -467,7 +467,11 @@ public class QueryProcess extends QuerySolver {
             // Rewrite query when @relax annotation, otherwise do nothing
             addVisitor(new ASTRewriter());
         }
-        return super.compile(squery, ds);
+        Query q = super.compile(squery, ds);
+        if (q.getAST().getLog().getASTSelect()!=null) {
+            getLog().share(q.getAST().getLog());
+        }
+        return q;
     }
     
     public Mappings modifier(String str, Mappings map) throws SparqlException {

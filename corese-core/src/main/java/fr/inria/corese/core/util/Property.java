@@ -4,7 +4,7 @@ import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.federate.FederateVisitor;
 import fr.inria.corese.compiler.federate.RewriteBGPList;
-import fr.inria.corese.compiler.federate.Selector;
+import fr.inria.corese.compiler.federate.SelectorFilter;
 import fr.inria.corese.compiler.federate.SelectorIndex;
 import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
@@ -13,6 +13,7 @@ import fr.inria.corese.core.edge.EdgeTop;
 import fr.inria.corese.core.index.EdgeManagerIndexer;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.producer.DataFilter;
 import fr.inria.corese.core.query.CompileService;
@@ -122,6 +123,8 @@ public class Property {
         FEDERATE_COMPLETE,
         // source selection with filter
         FEDERATE_FILTER,
+        FEDERATE_FILTER_ACCEPT,
+        FEDERATE_FILTER_REJECT,
         // source selection with bind (exists {t1 . t2} as ?b_i)
         FEDERATE_JOIN,
         // authorize path in join test
@@ -131,6 +134,8 @@ public class Property {
         FEDERATE_INDEX_SUCCESS,
         FEDERATE_INDEX_LENGTH,
         FEDERATE_BLACKLIST,
+        FEDERATE_QUERY_PATTERN,
+        FEDERATE_PREDICATE_PATTERN,
 
         
         // boolan value
@@ -636,12 +641,28 @@ public class Property {
                 SelectorIndex.QUERY_PATTERN = str;
                 break;
                 
+             case FEDERATE_QUERY_PATTERN:
+                 setQueryPattern(str);
+                break; 
+                
+             case FEDERATE_PREDICATE_PATTERN:
+                 setPredicatePattern(str);
+                break;  
+                
+             case FEDERATE_FILTER_ACCEPT:
+                 setFilterAccept(str);
+                 break;
+                 
+            case FEDERATE_FILTER_REJECT:
+                 setFilterReject(str);
+                 break;     
+                
             case FEDERATE_BLACKLIST:
                 blacklist(str);
                 break;
                 
             case FEDERATE_INDEX_SUCCESS:
-                SelectorIndex.NBSUCCESS = Double.valueOf(str);
+                FederateVisitor.NB_SUCCESS = Double.valueOf(str);
                 break;    
             
             case LOAD_FORMAT:
@@ -700,6 +721,40 @@ public class Property {
         }
     }
     
+    void setQueryPattern(String str) {
+        QueryLoad ql = QueryLoad.create();
+        for (Pair pair : getValueList(Value.FEDERATE_QUERY_PATTERN)) {
+            try {
+                SelectorIndex.defineQueryPattern(pair.getKey(), ql.readWE(pair.getPath()));
+            } catch (LoadException ex) {
+                logger.error(ex.getMessage());
+            }
+        }
+    }
+    
+    void setPredicatePattern(String str) {
+        QueryLoad ql = QueryLoad.create();
+        for (Pair pair : getValueList(Value.FEDERATE_PREDICATE_PATTERN)) {
+            try {
+                SelectorIndex.definePredicatePattern(pair.getKey(), ql.readWE(pair.getPath()));
+            } catch (LoadException ex) {
+                logger.error(ex.getMessage());
+            }
+        }
+    }
+    
+    void setFilterAccept(String str) {
+        for (String ope : str.split(SEP)) {
+            SelectorFilter.defineOperator(ope, true);
+        }
+    }
+    
+    void setFilterReject(String str) {
+        for (String ope : str.split(SEP)) {
+            SelectorFilter.rejectOperator(ope, true);
+        }
+    }
+    
     void blacklist(String list) {
         ArrayList<String> alist = new ArrayList<>();
         for (String str : list.split(SEP)) {
@@ -739,7 +794,7 @@ public class Property {
                 break;
                 
             case FEDERATE_INDEX_LENGTH:
-                Selector.NB_ENDPOINT = n;
+                FederateVisitor.NB_ENDPOINT = n;
                 break;
         }
     }

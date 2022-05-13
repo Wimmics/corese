@@ -256,6 +256,10 @@ public class QuerySolver implements SPARQLEngine {
      * 
      */
     public Mapping completeMappings(Query q, Mapping m, Dataset ds) {
+        if (q.getContext()!=null && ds==null) {
+            // use case: federate visitor create context
+            ds = Dataset.create(q.getContext());
+        }
         if (ds != null) {           
             if (ds.getBinding() != null || ds.getContext() != null) {
                 if (m == null) {
@@ -272,15 +276,7 @@ public class QuerySolver implements SPARQLEngine {
         m = completeMappings(query, m, ds);
         return query(query, m);
     }
-
-    public Query compile(ASTQuery ast, Dataset ds) throws EngineException {
-        if (ds != null) {
-            ast.setDefaultDataset(ds);
-        }
-        Transformer transformer = transformer();
-        return transformer.transform(ast);
-    }
-
+  
     public Mappings query(String squery) throws EngineException {
         return query(squery, null, null);
     }
@@ -657,6 +653,14 @@ public class QuerySolver implements SPARQLEngine {
         transformer.setBase(defaultBase);
         transformer.set(ds);
         return transformer;
+    }
+    
+    public Query compile(ASTQuery ast, Dataset ds) throws EngineException {
+        if (ds != null) {
+            ast.setDefaultDataset(ds);
+        }
+        Transformer transformer = transformer();
+        return transformer.transform(ast);
     }
 
     public Query compile(ASTQuery ast) throws EngineException {

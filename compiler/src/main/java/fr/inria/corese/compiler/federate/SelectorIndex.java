@@ -31,17 +31,18 @@ import org.slf4j.LoggerFactory;
 public class SelectorIndex {
     public static Logger logger = LoggerFactory.getLogger(SelectorIndex.class);
     public static boolean SELECT_ENDPOINT = false;
-    public static double NBSUCCESS = 0.5;
+    //public static double NB_SUCCESS = 0.5;
     public static String INDEX_URL = "http://prod-dekalog.inria.fr/sparql";
     
     // %1$s = predicate uri
-    // %2$s = i in ?b_i
+    // %2$s = bind(n as ?b_i)
     public static final String OPTIONAL1 = 
-        "optional {?s void:propertyPartition/void:property <%s> "
-      + "bind (%s as ?b_%s)}\n";
+        "optional {?s void:propertyPartition/void:property <%s> %s}\n";
     
+    public static final String BIND    = "bind (%s as ?b_%s)";
+   
     // %s = exp1+exp2 in bind(exp1+exp2 as ?c) 
-    public static final String BIND     = "bind (%s as ?c)";
+    public static final String BIND_TOTAL    = "bind (%s as ?c)";
     
     // %s = i in expi = coalesce(?b_i, 0)
     public static final String EXP      = "coalesce(?b_%s, 0)";
@@ -74,6 +75,7 @@ public class SelectorIndex {
     String indexURL;
     List<Constant> uriList;
     int totalValue = 0;
+    private double nbSuccess = FederateVisitor.NB_SUCCESS;
     
     static {
         url2predicatePattern = new HashMap<>();
@@ -82,7 +84,7 @@ public class SelectorIndex {
     }
     
     // define for each index url: 
-    // the sparql query pattern to search predicate p
+    // the sparql query patterns to search predicate p
     static void init() {
         definePredicatePattern(INDEX_URL, OPTIONAL);
         defineQueryPattern(INDEX_URL, getDefaultPattern(QUERY_PATTERN, DEFAULT_QUERY_PATTERN));
@@ -158,8 +160,11 @@ public class SelectorIndex {
                 // specific namespace have more value than rdf: rdfs:
                 int value = getValue(p.getLongName());
                 totalValue += value;
-                sb.append(String.format(getPredicatePattern(indexURL), 
-                        p.getLongName(), value, i++)); 
+                sb.append(String.format(getPredicatePattern(indexURL),
+                        // predicate
+                        p.getLongName(), 
+                        // bind (value as ?b_i)
+                        String.format(BIND, value, i++))); 
             }
         }        
         // count number of predicates present in endpoint url
@@ -182,16 +187,16 @@ public class SelectorIndex {
     // endpoint succeed when: 
     // endpoint nb predicates >= federate query nb predicates * rate
     // e.g. it has 0.5 * federate query nb predicates
-    // NBSUCCESS can be set by 
+    // NB_SUCCESS can be set by 
     // property FEDERATE_INDEX_SUCCESS 0.75
     // annotation @fedSuccess 0.75
     // default is 0.5
     void count(StringBuilder sb, int i) {                
         // bind (coalesce(?b_i, 0) + coalesce(?b_j, 0) as ?c)
-        sb.append(String.format(BIND, sum(i)));
+        sb.append(String.format(BIND_TOTAL, sum(i)));
         sb.append("\n");
         // filter (?c >= n)
-        sb.append(String.format(FILTER, totalValue * NBSUCCESS));
+        sb.append(String.format(FILTER, totalValue * getNbSuccess()));
     }
     
     // return bind (coalesce(?b_1, 0) + ... coalesce(?b_n) as ?c)
@@ -208,29 +213,7 @@ public class SelectorIndex {
         }
         return b;
     }
-        
-       
-//    ASTQuery process(Variable serv, ASTQuery aa) {
-//        try {
-//            BasicGraphPattern bgp = compile(serv, aa);
-//            ASTQuery a = getQuery2(serv, bgp);
-//            return a;
-//        } catch (EngineException ex) {
-//            selector.getVisitor().logger.error(ex.getMessage());
-//            return aa;
-//        }
-//    }
-    
-    
-//    ASTQuery getQuery2(Variable serv, BasicGraphPattern bgp) throws EngineException {
-//        Values values = Values.create(serv, uriList);
-//        String pattern = getPattern("/query/indexpattern.rq");
-//        String str = String.format(pattern, (SELECT_ENDPOINT?"":values), bgp.toStringBasic());
-//        System.out.println("pattern:\n"+str);
-//        Query q = selector.getQuerySolver().compile(str);
-//        return q.getAST();
-//    }
-    
+             
     
     String generate2(ASTQuery ast) {   
         StringBuilder sb = new StringBuilder();
@@ -312,7 +295,14 @@ public class SelectorIndex {
         }
         return pattern;
     }
-    
-    
-    
+
+    public double getNbSuccess() {
+        return nbSuccess;
+    }
+
+    public SelectorIndex setNbSuccess(double nbSuccess) {
+        this.nbSuccess = nbSuccess;
+        return this;
+    }
+   
 }

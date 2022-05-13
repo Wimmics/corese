@@ -45,7 +45,7 @@ public class Selector {
     private static final String SERVER_VAR = "?serv";
     private static final String BNODE_ID = "_:fbn";
     public static boolean SELECT_EXIST = true;
-    public static int NB_ENDPOINT = 10;
+    //public static int NB_ENDPOINT = 10;
     
     private FederateVisitor vis;
     ASTQuery ast;
@@ -60,6 +60,8 @@ public class Selector {
     boolean count = false;
     boolean trace = false;
     int bnode = 0;
+    private int nbEndpoint = FederateVisitor.NB_ENDPOINT;
+    private double nbSuccess = FederateVisitor.NB_SUCCESS;
     
     Selector(FederateVisitor vis, QuerySolver e, ASTQuery ast) {
         this.ast = ast;
@@ -95,13 +97,32 @@ public class Selector {
         return getIndexURIList(getIndexURL());
     }
     
+    // @todo: nb endpoint sublist
+    List<String> getIndexURIList(List<String> urlList) throws EngineException {
+        if (urlList!=null && !urlList.isEmpty()) {
+            ArrayList<String> list = new ArrayList<>();
+            
+            for (String url : urlList) {
+                List<String> alist = getIndexURIList(url);
+                
+                for (String res : alist) {
+                    if (!list.contains(res)) {
+                        list.add(res);
+                    }
+                }
+            }
+            return list;
+        }
+        return getIndexURIList();
+    }
+    
     List<String> getIndexURIList(String url) throws EngineException {
         if (url==null) {
             url = getIndexURL();
         }
         List<String> list = getBasicIndexURIList(url);
         // @todo: remove exclude uri before sublist
-        list = list.subList(0, Math.min(list.size(), NB_ENDPOINT));
+        list = list.subList(0, Math.min(list.size(), getNbEndpoint()));
         return list;
     }
     
@@ -115,7 +136,9 @@ public class Selector {
         Date d1 = new Date();
         // create query to discover relevant endpoint
         // who know ast federate query predicates
-        ASTQuery a = new SelectorIndex(this, ast, url).process();
+        ASTQuery a = new SelectorIndex(this, ast, url)
+                .setNbSuccess(getNbSuccess())
+                .process();
         Mappings map = getQuerySolver().basicQuery(a);                           
         List<String> list = map.getStringValueList(SERVER_VAR); 
         
@@ -865,6 +888,24 @@ public class Selector {
             }
         }
         return res;
+    }
+
+    public int getNbEndpoint() {
+        return nbEndpoint;
+    }
+
+    public Selector setNbEndpoint(int nbEndpoint) {
+        this.nbEndpoint = nbEndpoint;
+        return this;
+    }
+
+    public double getNbSuccess() {
+        return nbSuccess;
+    }
+
+    public Selector setNbSuccess(double nbSuccess) {
+        this.nbSuccess = nbSuccess;
+        return this;
     }
 
 }

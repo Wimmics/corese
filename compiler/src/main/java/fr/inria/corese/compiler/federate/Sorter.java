@@ -44,7 +44,6 @@ public class Sorter {
             hasConstant(exp, res);
             hasFilter(exp, res);            
             double score = res.score();
-            
             if (exp.isFilter()) {
                 //skip
             } 
@@ -109,7 +108,7 @@ public class Sorter {
         if (exp.isFilter()) {
             res.submit(exp.getFilter());
         }
-        else if (exp.isValues()) {
+        else if (exp.isValues() && exp.getValuesExp().isDefined()) {
             res.incrFilter();
         }
         else if (exp.isBGP()) {

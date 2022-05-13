@@ -86,6 +86,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static boolean TRACE_FEDERATE = false;
     // specific processing for rdf list and bnode variable
     public static boolean PROCESS_LIST = true;
+    public static int    NB_ENDPOINT = 10;
+    public static double NB_SUCCESS  = 0.5;
     
     // false: evaluate named graph pattern as a whole on each server 
     // true:  evaluate the triples of the named graph pattern on the merge of 
@@ -132,7 +134,9 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static List<String> BLACKLIST = new ArrayList<>();
     private List<String> include;
     private List<String> exclude;
-    private String indexURL;
+    private List<String> indexURLList;
+    private int nbEndpoint   = NB_ENDPOINT;
+    private double nbSuccess = NB_SUCCESS;
 
     ASTQuery ast;
     Stack stack;
@@ -258,7 +262,10 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 ASTSelector sel = ast.getContext().getAST().getAstSelector();
                 setAstSelector(sel.copy(ast));
             } else {
-                setSelector(new Selector(this, exec, ast).setMappings(getMappings()));
+                setSelector(new Selector(this, exec, ast)
+                        .setMappings(getMappings())
+                        .setNbEndpoint(getNbEndpoint())
+                        .setNbSuccess(getNbSuccess()));
                 suc = getSelector().process();
                 setAstSelector(getSelector().getAstSelector());
             }
@@ -308,9 +315,11 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             if (list == null) {
                 define = false;
                 // discover relevant endpoints in kg graph index
-                Selector sel = new Selector(this, exec, ast);
+                Selector sel = new Selector(this, exec, ast)
+                        .setNbEndpoint(getNbEndpoint())
+                        .setNbSuccess(getNbSuccess());
                 try {
-                    list = sel.getIndexURIList(getIndexURL());
+                    list = sel.getIndexURIList(getIndexURLList());
                     ast.getCreateContext().setFederateIndex(true);
                     setFederateIndex(true);
                 } catch (EngineException ex) {
@@ -427,8 +436,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             provenance = true;
         }
         if (ast.hasMetadata(Metadata.INDEX)) {
-            setIndexURL(ast.getMetadata().getValue(Metadata.INDEX));
-            logger.info("Index URL: "+ getIndexURL());
+            setIndexURLList(ast.getMetadata().getValues(Metadata.INDEX));
+            logger.info("Index URL: "+ getIndexURLList());
         }
         if (ast.hasMetadata(Metadata.SPARQL)) {
             setSparql(true);
@@ -438,15 +447,13 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         setFederateJoin(getValue(FED_JOIN, isFederateJoin()));
         setFederatePartition(getValue(FED_PARTITION, isFederatePartition()));
         setFederateComplete(getValue(FED_COMPLETE, isFederateComplete()));
-        setFederateOptional(getValue(FED_OPTIONAL, isFederateOptional())); 
-        //System.out.println("suc: "+ast.getMetaValue(FED_SUCCESS));
+        setFederateOptional(getValue(FED_OPTIONAL, isFederateOptional()));
+        
         if (ast.getMetaValue(FED_SUCCESS) !=null) {
-            SelectorIndex.NBSUCCESS = 
-                    ast.getMetaValue(FED_SUCCESS).doubleValue();
+            setNbSuccess(ast.getMetaValue(FED_SUCCESS).doubleValue());
         }
         if (ast.getMetaValue(FED_LENGTH) !=null) {
-            Selector.NB_ENDPOINT = 
-                    ast.getMetaValue(FED_LENGTH).intValue();
+            setNbEndpoint(ast.getMetaValue(FED_LENGTH).intValue());
         }
         if (ast.hasMetadata(FED_INCLUDE)) {            
             setInclude(ast.getMetadata().getValues(FED_INCLUDE));
@@ -459,16 +466,19 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
     }
     
+    // option from service parameter sv:@federateLength=20
+    // service parameter prefixed with sv: are available in ast context
     void option(Context ct) {
         IDatatype dt = ct.getFirst(Metadata.FED_LENGTH);
         if (dt != null) {
-            Selector.NB_ENDPOINT = Integer.valueOf(dt.stringValue());
+            setNbEndpoint(Integer.valueOf(dt.stringValue()));
         }
         dt = ct.getFirst(Metadata.FED_SUCCESS);
         if (dt != null) {
-            SelectorIndex.NBSUCCESS = Double.valueOf(dt.stringValue());
+            setNbSuccess(Double.valueOf(dt.stringValue()));
         }
         dt = ct.get(Metadata.FED_INCLUDE);
+        
         if (dt != null) {
             for (IDatatype uri : dt) {
                 if (! getInclude().contains(uri.getLabel())) {
@@ -1288,12 +1298,28 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         this.federateIndex = federateIndex;
     }
 
-    public String getIndexURL() {
-        return indexURL;
+    public int getNbEndpoint() {
+        return nbEndpoint;
     }
 
-    public void setIndexURL(String indexURL) {
-        this.indexURL = indexURL;
+    public void setNbEndpoint(int nbEndpoint) {
+        this.nbEndpoint = nbEndpoint;
+    }
+
+    public double getNbSuccess() {
+        return nbSuccess;
+    }
+
+    public void setNbSuccess(double nbSuccess) {
+        this.nbSuccess = nbSuccess;
+    }
+
+    public List<String> getIndexURLList() {
+        return indexURLList;
+    }
+
+    public void setIndexURLList(List<String> indexURLList) {
+        this.indexURLList = indexURLList;
     }
 
    

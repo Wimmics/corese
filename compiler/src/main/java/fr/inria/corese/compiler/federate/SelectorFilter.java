@@ -17,7 +17,7 @@ import java.util.List;
  */
 public class SelectorFilter {    
     static HashMap<String, Boolean> map;
-    static String[] ope = {"=", "regex", "contains", "strstarts"};
+    public static String[] OPER_LIST = {"=", "regex", "contains", "strstarts"};
     ASTQuery ast;
     private FederateVisitor visitor;
     ArrayList<BasicGraphPattern> res;
@@ -34,9 +34,17 @@ public class SelectorFilter {
     
     static void init() {
         map = new HashMap<>();
-        for (String ope : ope) {
-            map.put(ope, true);
+        for (String ope : OPER_LIST) {
+            defineOperator(ope, true);
         }
+    }
+    
+    public static void defineOperator(String oper, boolean b)  {
+        map.put(oper, b);
+    }
+    
+    public static void rejectOperator(String oper, boolean b)  {
+        map.remove(oper);
     }
     
     /**

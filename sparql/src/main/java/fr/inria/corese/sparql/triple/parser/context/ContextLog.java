@@ -214,7 +214,12 @@ public class ContextLog implements URLParam, LogKey {
         StringBuilder sb = new StringBuilder();
         sb.append(String.format("Link List: %s\n", getLinkList().toString()));
         sb.append(getSubjectMap());
-        if (getASTSelect()!=null) {
+        if (getASTIndex()!= null) {
+            sb.append("Source discovery\n");
+            sb.append(getASTIndex()).append(NL);
+        }
+        if (getASTSelect() != null) {
+            sb.append("Source selection\n");
             sb.append(getASTSelect()).append(NL);
         }
         return sb.toString();

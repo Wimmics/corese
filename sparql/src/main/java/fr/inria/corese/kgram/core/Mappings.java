@@ -1234,8 +1234,6 @@ public class Mappings extends PointerObject
         // bind the Mapping in memory to retrieve group by variables
         memory.aggregate(firstMap);
         if (size() == 1) {
-            // memory.getNode(?out)
-            //Node node = memory.getNode(exp.getFilter().getExp().getExp(0));
             Node node = eval.eval(exp.getFilter().getExp().getExp(0).getFilter(), memory, p);
             if (node != null && !node.isFuture()) {
                 // if (node == null) go to aggregate below because we want it to be uniform

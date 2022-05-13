@@ -690,6 +690,9 @@ public final class MyJPanelQuery extends JPanel {
         }
         if (dt.isDecimalInteger()) {
             if (dt.getDatatypeURI().equals(RDF.xsddecimal)) {
+                if (dt.doubleValue() == 0.0) {
+                    return "0";
+                }
                 return String.format("%g", dt.decimalValue());
             }
         }

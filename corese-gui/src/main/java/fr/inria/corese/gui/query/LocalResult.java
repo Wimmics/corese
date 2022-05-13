@@ -100,6 +100,12 @@ public class LocalResult {
             display(sourceURL, sourceQuery);
         }
         
+        if (log.getASTIndex()!= null) {
+            String query = log.getASTIndex().toString();
+            query = String.format("# source discovery query \n%s", query);                                   
+            display("", query, log.getIndexMap());            
+        }
+        
         if (log.getASTSelect() != null) {
             String query = log.getASTSelect().toString();
             query = String.format("# source selection query \n%s", query);                                   

@@ -17,6 +17,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import org.apache.logging.log4j.Level;
 
 /**
@@ -140,7 +141,15 @@ public class Exec extends Thread {
         try {
             Query q = exec.compile(query);
             q.setValidate(true);
+            ContextLog log = exec.getQueryProcess().getLog();
             Mappings map = exec.SPARQLQuery(q);
+            // Compile time log and eval time log may be managed
+            // in two different Binding
+            // hence we get compile time log
+            // during std eval, service clause manage this duality of log
+            // here it is validation, hence no service clause is executed 
+            // by eval
+            exec.getQueryProcess().getCreateBinding().setLog(log);
             ASTQuery ast = exec.getQueryProcess().getAST(map);
             if (ast!=null && !ast.hasMetadata(Metadata.EXPLAIN)) {
                 // display mappings will check existence of query resource URI in the graph

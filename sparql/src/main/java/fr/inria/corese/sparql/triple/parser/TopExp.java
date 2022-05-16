@@ -12,10 +12,7 @@ import java.util.List;
  *
  */
 public class TopExp implements ASTVisitable {
-
-    /**
-     * @return the generated
-     */
+   
     public boolean isGenerated() {
         return generated;
     }

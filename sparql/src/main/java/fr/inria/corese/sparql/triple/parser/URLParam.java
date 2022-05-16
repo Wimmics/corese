@@ -37,7 +37,11 @@ public interface URLParam {
     // service clause does not return variable in service result
     static final String UNSELECT = "unselect";
     static final String LOCAL = "local";
-
+    
+    public static final String FED_SUCCESS  = "federateSuccess";
+    public static final String FED_LENGTH   = "federateLength";    
+    public static final String FED_INCLUDE  = "include";
+    
     // value of mode=
     static final String DISPLAY = "display";
     static final String TRACE = "trace";

@@ -12,9 +12,9 @@ import static fr.inria.corese.kgram.api.core.PointerType.DATASET;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import static fr.inria.corese.sparql.triple.parser.URLParam.INDEX;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
-import java.util.logging.Logger;
 
 /**
  *
@@ -29,8 +29,8 @@ public class Dataset extends ASTObject {
     static final String EMPTY = KG + "empty";
     static final Constant CEMPTY = Constant.create(EMPTY);
     private List<Constant> from;
-
     private List<Constant> named;
+    private List<String> index;
     List<Constant> with;
     private Context context;
     private Binding binding;
@@ -50,7 +50,8 @@ public class Dataset extends ASTObject {
     private boolean load = false;
 
     public Dataset() {
-        this(new ArrayList<Constant>(), new ArrayList<Constant>());
+        this(new ArrayList<>(), new ArrayList<>());
+        index = new ArrayList<>();
     }
 
     public Dataset(Context c) {
@@ -433,6 +434,38 @@ public class Dataset extends ASTObject {
         } catch (UnsupportedEncodingException ex) {
             return url;
         }
+    }
+    
+    // select *
+    // from <index:http://prod-dekalog.inria.fr>
+    // where 
+    public boolean index() {
+        boolean hasIndex = false;
+        
+        for (int i = 0; i < getFrom().size();) {
+            Atom at = getFrom().get(i);
+            if (at.getLabel().startsWith(INDEX)) {
+                hasIndex = true;
+                String uri = at.getLabel().substring(INDEX.length()+1);
+                getIndex().add(uri);
+                getFrom().remove(i);
+            }
+            else {
+                i++;
+            }
+        }
+        
+        return hasIndex;
+    }
+    
+    
+
+    public List<String> getIndex() {
+        return index;
+    }
+
+    public void setIndex(List<String> index) {
+        this.index = index;
     }
 
 }

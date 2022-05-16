@@ -320,6 +320,9 @@ public class ContextLog implements URLParam, LogKey {
 
     // share data from federated visitor log
     public void share(ContextLog log) {
+        if (log == null) {
+            return;
+        }
         if (getAST() == null) {
             setAST(log.getAST());
         }

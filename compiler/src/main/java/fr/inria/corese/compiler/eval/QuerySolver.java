@@ -660,7 +660,9 @@ public class QuerySolver implements SPARQLEngine {
             ast.setDefaultDataset(ds);
         }
         Transformer transformer = transformer();
-        return transformer.transform(ast);
+        Query query = transformer.transform(ast);
+        completeCompile(query);
+        return query;
     }
 
     public Query compile(ASTQuery ast) throws EngineException {
@@ -668,7 +670,16 @@ public class QuerySolver implements SPARQLEngine {
         setParameter(transformer);
         transformer.setSPARQLCompliant(isSPARQLCompliant);
         Query query = transformer.transform(ast);
+        completeCompile(query);
         return query;
+    }
+    
+    // FederateVisitor set data in ast Log
+    // share it in solver log
+    void completeCompile(Query query) {
+        if (query.isFederate()) {
+            getLog().share(query.getAST().getLog());
+        }
     }
 
 //    Query compileFilter(String filter) throws EngineException {

@@ -314,6 +314,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             
             if (list == null) {
                 define = false;
+                // source discovery
                 // discover relevant endpoints in kg graph index
                 Selector sel = new Selector(this, exec, ast)
                         .setNbEndpoint(getNbEndpoint())
@@ -435,10 +436,6 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             variable = true;
             provenance = true;
         }
-        if (ast.hasMetadata(Metadata.INDEX)) {
-            setIndexURLList(ast.getMetadata().getValues(Metadata.INDEX));
-            logger.info("Index URL: "+ getIndexURLList());
-        }
         if (ast.hasMetadata(Metadata.SPARQL)) {
             setSparql(true);
         }
@@ -461,23 +458,31 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         if (ast.hasMetadata(FED_EXCLUDE)) {            
             setExclude(ast.getMetadata().getValues(FED_EXCLUDE));
         }
+        if (ast.hasMetadata(Metadata.INDEX)) {
+            setIndexURLList(ast.getMetadata().getValues(Metadata.INDEX));
+            logger.info("Index URL: "+ getIndexURLList());
+        }
+        if (!ast.getDataset().getIndex().isEmpty()) {
+            setIndexURLList(ast.getDataset().getIndex());
+            logger.info("Index URL: " + getIndexURLList());
+        }
         if (ast.getContext()!=null) {
             option(ast.getContext());
         }
     }
     
-    // option from service parameter sv:@federateLength=20
+    // option from service parameter sv:federateLength=20
     // service parameter prefixed with sv: are available in ast context
     void option(Context ct) {
-        IDatatype dt = ct.getFirst(Metadata.FED_LENGTH);
+        IDatatype dt = ct.getFirst(FED_LENGTH);
         if (dt != null) {
             setNbEndpoint(Integer.valueOf(dt.stringValue()));
         }
-        dt = ct.getFirst(Metadata.FED_SUCCESS);
+        dt = ct.getFirst(FED_SUCCESS);
         if (dt != null) {
             setNbSuccess(Double.valueOf(dt.stringValue()));
         }
-        dt = ct.get(Metadata.FED_INCLUDE);
+        dt = ct.get(FED_INCLUDE);
         
         if (dt != null) {
             for (IDatatype uri : dt) {

@@ -7,10 +7,14 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.HashMap;
 import java.util.List;
 import org.slf4j.Logger;
@@ -30,6 +34,8 @@ import org.slf4j.LoggerFactory;
  */
 public class SelectorIndex {
     public static Logger logger = LoggerFactory.getLogger(SelectorIndex.class);
+    final static String INDEX = "index";
+    
     public static boolean SELECT_ENDPOINT = false;
     //public static double NB_SUCCESS = 0.5;
     public static String INDEX_URL = "http://prod-dekalog.inria.fr/sparql";
@@ -74,6 +80,7 @@ public class SelectorIndex {
     ASTQuery ast;
     String indexURL;
     List<Constant> uriList;
+    private Service indexService;
     int totalValue = 0;
     private double nbSuccess = FederateVisitor.NB_SUCCESS;
     
@@ -117,6 +124,7 @@ public class SelectorIndex {
     // variable for endpoint url is Selector.SERVER_VAR
     ASTQuery process() {
         try {
+            before();
             ASTQuery a = getGraphIndexQuery();
             return a;
         } catch (EngineException ex) {
@@ -125,7 +133,22 @@ public class SelectorIndex {
         }
     }
     
-
+    // service <index:http://prod-dekalog.inria.fr> 
+    // { filter regex(str(?serv), ".fr")}
+    void before() {
+        Exp body = ast.getBody();
+        if (body.size() > 0 && body.get(0).isService()) {
+            Service serv = body.get(0).getService();
+            try {
+                URI uri = new URI(serv.getServiceName().getLabel());
+                if (uri.getScheme().equals(INDEX)) {
+                    setIndexService(serv);
+                    body.remove(0);
+                }
+            } catch (URISyntaxException ex) {
+            }
+        }
+    }
 
     // generate query for endpoint URL source discovery    
     // for ast federate query
@@ -134,9 +157,18 @@ public class SelectorIndex {
         String pattern = getQueryPattern(indexURL);
         // generate test part to find federate query predicates
         String test = predicateTest(ast);
+        
+        if (getIndexService() != null) {
+            Exp exp = getIndexService().getBodyExp();
+            for (Exp ee : exp) {
+                test = test.concat("\n").concat(ee.toString());
+            }
+        }
+        
         String queryString = String.format(pattern, test);
         //System.out.println("pattern:\n"+pattern);
         //System.out.println("test:\n"+test);
+        
         logger.info("Index query:\n"+queryString);
         Query q = getQuerySolver().compile(queryString);
         return q.getAST();
@@ -275,6 +307,7 @@ public class SelectorIndex {
     String getQueryPattern(String url) {
         String str = url2queryPattern.get(url);
         if (str == null) {
+            logger.info("Use default index query pattern");
             return getDefaultPattern(QUERY_PATTERN, DEFAULT_QUERY_PATTERN);
         }
         return str;
@@ -303,6 +336,14 @@ public class SelectorIndex {
     public SelectorIndex setNbSuccess(double nbSuccess) {
         this.nbSuccess = nbSuccess;
         return this;
+    }
+
+    public Service getIndexService() {
+        return indexService;
+    }
+
+    public void setIndexService(Service indexService) {
+        this.indexService = indexService;
     }
    
 }

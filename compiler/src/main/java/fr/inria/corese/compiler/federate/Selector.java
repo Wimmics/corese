@@ -139,7 +139,8 @@ public class Selector {
         ASTQuery a = new SelectorIndex(this, ast, url)
                 .setNbSuccess(getNbSuccess())
                 .process();
-        Mappings map = getQuerySolver().basicQuery(a);                           
+        Context ct = Context.create().setDiscovery(true);
+        Mappings map = getQuerySolver().basicQuery(a, ct);                           
         List<String> list = map.getStringValueList(SERVER_VAR); 
         
         log(a, map);
@@ -177,9 +178,9 @@ public class Selector {
         
         if (getMappings() == null) {
             // compute selection
-            Context ct = Context.create();
+            Context ct = Context.create().setSelection(true);
             // source selection inherit timeout if any as parameter sv:timeout=1000
-            ct.inherit(ast.getContext());
+            ct.inherit(ast.getContext());      
             if (getVisitor().isFederateIndex()) {
                 ct.setFederateIndex(true);
             }            

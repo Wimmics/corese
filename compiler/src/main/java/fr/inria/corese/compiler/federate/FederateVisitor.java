@@ -379,6 +379,11 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         return !BLACKLIST.contains(uri) && !getExclude().contains(uri);
     }
 
+    public static synchronized void blacklist(String uri) {
+        if (! BLACKLIST.contains(uri)) {
+            BLACKLIST.add(uri);
+        }
+    } 
     
     public Provenance getProvenance(Mappings map) {
         Provenance prov = new Provenance(rs.getServiceList(), map);

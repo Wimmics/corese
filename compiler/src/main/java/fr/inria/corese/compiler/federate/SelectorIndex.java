@@ -74,6 +74,7 @@ public class SelectorIndex {
     
     static HashMap<String, String> url2predicatePattern;
     static HashMap<String, String> url2queryPattern;
+    static HashMap<String, String> skipPredicate;
 
         
     Selector selector;
@@ -87,6 +88,7 @@ public class SelectorIndex {
     static {
         url2predicatePattern = new HashMap<>();
         url2queryPattern = new HashMap<>();
+        skipPredicate = new HashMap<>();
         init();
     }
     
@@ -158,6 +160,8 @@ public class SelectorIndex {
         // generate test part to find federate query predicates
         String test = predicateTest(ast);
         
+        // additional exp coming from
+        // service <index:http://index.fr/sparql> { exp }
         if (getIndexService() != null) {
             Exp exp = getIndexService().getBodyExp();
             for (Exp ee : exp) {
@@ -186,7 +190,10 @@ public class SelectorIndex {
         for (Constant p : ast.getPredicateList()) {
             if (p.getLabel().equals(ASTQuery.getRootPropertyURI())) {
                 // skip variable predicate 
-            } 
+            }
+            else if (skip(p.getLongName())) {
+            
+            }
             else {
                 // generate test for predicate 
                 // specific namespace have more value than rdf: rdfs:
@@ -196,12 +203,28 @@ public class SelectorIndex {
                         // predicate
                         p.getLongName(), 
                         // bind (value as ?b_i)
-                        String.format(BIND, value, i++))); 
+                        String.format(BIND, value, i), 
+                        // in case of variable ?p%3$s
+                        i));
+                i++;
             }
         }        
         // count number of predicates present in endpoint url
         count(sb, i);               
         return sb.toString();
+    }
+    
+    boolean skip(String predicate) {
+        for (String key : skipPredicate.keySet()) {
+            if (predicate.startsWith(key)) {
+                return true;
+            }
+        }
+        return false;
+    }
+    
+    public static void skipPredicate(String predicate) {
+        skipPredicate.put(predicate, predicate);        
     }
     
     // @todo

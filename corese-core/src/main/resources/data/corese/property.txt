@@ -8,7 +8,7 @@
 # Property.init(graph);
 #
 
-VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./;fed=/user/corby/home/AADemoNew/federate
+VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./;fed=/user/corby/home/AADemoNew/federate;sys=/user/corby/home/AAData/query
 
 IMPORT   = ./gui.txt
 
@@ -147,7 +147,7 @@ FEDERATE_BGP = true
 FEDERATE_PARTITION = true
 # complete with triple alone
 FEDERATE_COMPLETE = false
-// source selection with filter 
+# source selection with filter 
 FEDERATE_FILTER = true
 FEDERATE_FILTER_ACCEPT = !=
 FEDERATE_FILTER_REJECT = test
@@ -161,9 +161,10 @@ FEDERATE_BLACKLIST = http://ldf.fi/warsa/sparql
 FEDERATE_INDEX_LENGTH = 20
 # success rate to accept endpoint url in source discovery
 FEDERATE_INDEX_SUCCESS = 0.5
-FEDERATE_QUERY_PATTERN =     http://d2kab.fr=$fed/indexpattern/indexqueryd2kab.rq
-FEDERATE_PREDICATE_PATTERN = http://d2kab.fr=$fed/indexpattern/indexpatternd2kab.rq
+FEDERATE_QUERY_PATTERN =     http://d2kab.fr=$fed/indexpattern/indexqueryd2kab.rq;http://prod-dekalog.inria.fr/sparql=$sys/indexpatternendpoint.rq
+FEDERATE_PREDICATE_PATTERN = http://d2kab.fr=$fed/indexpattern/indexpatternd2kab.rq;http://prod-dekalog.inria.fr/sparql=$sys/indexpredicatetest.rq
 
+#FEDERATE_INDEX_SKIP = http://rdfs.org/ns/void#
 
 TRACE_GENERIC = false
 

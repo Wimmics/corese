@@ -130,6 +130,8 @@ public class Property {
         // authorize path in join test
         FEDERATE_JOIN_PATH,
         
+        // index query pattern skip predicate for source discovery
+        FEDERATE_INDEX_SKIP,
         FEDERATE_INDEX_PATTERN,
         FEDERATE_INDEX_SUCCESS,
         FEDERATE_INDEX_LENGTH,
@@ -655,7 +657,11 @@ public class Property {
                  
             case FEDERATE_FILTER_REJECT:
                  setFilterReject(str);
-                 break;     
+                 break;
+                 
+            case FEDERATE_INDEX_SKIP:
+                setIndexSkip(str);
+                break;
                 
             case FEDERATE_BLACKLIST:
                 blacklist(str);
@@ -752,6 +758,12 @@ public class Property {
     void setFilterReject(String str) {
         for (String ope : str.split(SEP)) {
             SelectorFilter.rejectOperator(ope, true);
+        }
+    }
+    
+    void setIndexSkip(String str) {
+        for (String ope : str.split(SEP)) {
+            SelectorIndex.skipPredicate(ope);
         }
     }
     

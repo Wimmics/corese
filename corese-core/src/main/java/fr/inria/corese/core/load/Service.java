@@ -531,7 +531,7 @@ public class Service implements URLParam {
             String myUrl = resp.getLocation().toString();
             logger.warn(String.format("Service redirection: %s to: %s", url, myUrl));
             if (myUrl.equals(url)) {
-                throw new jakarta.ws.rs.RedirectionException(resp);
+                throw new RedirectionException(resp);
             }
             return getResponse(myUrl, mime);
         }

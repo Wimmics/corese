@@ -1,5 +1,6 @@
 package fr.inria.corese.core.query;
 
+import fr.inria.corese.compiler.federate.FederateVisitor;
 import java.io.IOException;
 
 import org.slf4j.Logger;
@@ -427,6 +428,14 @@ public class ProviderService implements URLParam {
         logger.error(e.getMessage());
         logger.error(ast.toString());
         gq.addError(SERVICE_ERROR.concat(serv.getServer()).concat("\n"), e);
+        submitError(serv);
+    }
+    
+    void submitError(URLServer url) {
+        if (getContext()!=null && getContext().isSelection()) {
+            logger.info("Blacklist: " + url.getServer());
+            FederateVisitor.blacklist(url.getServer());
+        }
     }
 
     /**

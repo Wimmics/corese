@@ -1,0 +1,6 @@
+optional {
+    ?s void:propertyPartition [ 
+        void:property <%1$s> ;
+    ]
+    %2$s
+}

@@ -5,8 +5,11 @@ import fr.inria.corese.sparql.triple.api.Creator;
 import fr.inria.corese.sparql.triple.javacc1.ParseException;
 import fr.inria.corese.sparql.triple.javacc1.SparqlCorese;
 import fr.inria.corese.sparql.triple.javacc1.Token;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -401,7 +404,7 @@ public class ParserHandler {
         }
     }
     
-        public void enterWhere() {
+    public void enterWhere() {
         countWhere++;
     }
     
@@ -409,6 +412,15 @@ public class ParserHandler {
         countWhere--;
     }
     
+    public void enterService(ASTQuery ast, Atom at) {
+        if (at.isConstant()) {
+            ast.enterService(at);
+        }
+    }
+    
+    public void leaveService(ASTQuery ast) {
+        ast.leaveService();
+    }
     
     public boolean isInsideWhere() {
         return countWhere>0;

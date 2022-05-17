@@ -259,7 +259,8 @@ public class CoreseDatatype
         try {
             return create(valueJType, datatype, label, lang, false);
         } catch (CoreseDatatypeException e) {
-            if ((CoreseDatatype.isNumber(datatype, valueJType) || datatype.equals(XSD.xsddate))
+            if ((CoreseDatatype.isNumber(datatype, valueJType) || 
+                    datatype.equals(XSD.xsddate))
                     && !valueJType.equals(Cst.jTypeUndef)) {
                 // toto^^xsd:integer
                 // try UndefLiteral with integer datatype

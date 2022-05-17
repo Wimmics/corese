@@ -592,6 +592,21 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return null;
     }
     
+    static String clean(String date) {
+        String[] str = date.split("T");
+        String[] adate = str[0].split("-");
+        if (adate.length==3 && adate[2].length()==4) {
+            String mydate = adate[2]+"-"+adate[1]+"-"+adate[0];
+            if (str.length==1) {
+                return mydate;
+            }
+            else {
+                return mydate+"T"+str[1];
+            }
+        }
+        return date;
+    }
+    
     public static IDatatype newDate(Date date) {
         return newInstance(date);
     }
@@ -662,7 +677,6 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         try {
             dt = createLiteralWE(label, datatype, lang);
         } catch (CoreseDatatypeException e) {
-            // TODO Auto-generated catch block
             logger.error(e.getMessage());
             dt = createUndef(label, datatype);
         }

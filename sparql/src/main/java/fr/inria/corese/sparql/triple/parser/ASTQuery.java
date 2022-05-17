@@ -31,6 +31,8 @@ import fr.inria.corese.sparql.triple.function.script.TryCatch;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.io.IOException;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.util.Map;
 import java.util.UUID;
 
@@ -227,6 +229,7 @@ public class ASTQuery
     private String groupSeparator = " ";
     private boolean isTemplate = false;
     private boolean isAllResult = false;
+    private boolean submitTriple = true;
     private String name;
     // @(a b) rewritten as rdf:rest*/rdf:first a, b
     private int listType = L_LIST;
@@ -1816,8 +1819,28 @@ public class ASTQuery
         return t;
     }
     
+    public void enterService(Atom at) {
+        try {
+            URI uri = new URI(at.getLongName());
+            if (uri.getScheme().equals(URLParam.INDEX)) {
+                // service <index:http://myindex.org/sparql> { exp }
+                // do not record triple for federate query rewrite
+                // because exp will be removed from this ast and
+                // copied into index query
+                getGlobalAST().setSubmitTriple(false);
+            }
+        } catch (URISyntaxException ex) {
+        }
+    }
+    
+    public void leaveService() {
+        getGlobalAST().setSubmitTriple(true);
+    }
+    
     void submit(Triple t) {
-        getGlobalAST().basicSubmit(t);
+        if (getGlobalAST().isSubmitTriple()) {
+            getGlobalAST().basicSubmit(t);
+        }
     }
        
     void basicSubmit(Triple t) {
@@ -3673,6 +3696,14 @@ public class ASTQuery
 
     public void setFactory(ASTFactory factory) {
         this.factory = factory;
+    }
+
+    public boolean isSubmitTriple() {
+        return submitTriple;
+    }
+
+    public void setSubmitTriple(boolean submitTriple) {
+        this.submitTriple = submitTriple;
     }
        
 }

@@ -96,7 +96,9 @@ public class Context extends ASTObject implements URLParam {
     private boolean userQuery = false;
     private String key;
     private boolean federateIndex = false;
-   
+    private boolean discovery = false;
+    private boolean selection = false;
+    
    static {
        sexport = new HashMap();
        sexport.put(STL_DATASET, true);
@@ -996,6 +998,24 @@ public class Context extends ASTObject implements URLParam {
 
     public Context setFederateIndex(boolean federateIndex) {
         this.federateIndex = federateIndex;
+        return this;
+    }
+
+    public boolean isDiscovery() {
+        return discovery;
+    }
+
+    public Context setDiscovery(boolean discovery) {
+        this.discovery = discovery;
+        return this;
+    }
+
+    public boolean isSelection() {
+        return selection;
+    }
+
+    public Context setSelection(boolean selection) {
+        this.selection = selection;
         return this;
     }
     

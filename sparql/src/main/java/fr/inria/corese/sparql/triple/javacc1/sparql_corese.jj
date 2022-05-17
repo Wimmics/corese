@@ -1394,12 +1394,14 @@ void ServicePattern(Exp stack) :
 	{silent = false; list = new ArrayList<Atom>() ;}
 	 <SERVICE>  (<SILENT> { silent = true;} )?
 	 
-  	(src = VarOrIRIref(stack) { list.add(src); })+
+  	(src = VarOrIRIref(stack) 
+        { handler.enterService(astq, src); list.add(src); })+
 
   	e = GroupGraphPattern()
   	{ 
   		st =  Service.create(list, e, silent);
   		stack.add(st);
+                handler.leaveService(astq);
   	}
 }
 

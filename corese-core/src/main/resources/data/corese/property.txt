@@ -131,7 +131,7 @@ FUNCTION_PARAMETER_MAX = 15
 SERVICE_BINDING     = values 
 SERVICE_SLICE       = 500
 SERVICE_LIMIT       = 1000
-#SERVICE_TIMEOUT     = 2000
+SERVICE_TIMEOUT     = 5000
 #SERVICE_PARAMETER   = mode=link;debug;show&transform=st:xml&format=json
 # service may return RDF graph as result
 # when true: execute service query locally on this graph
@@ -156,13 +156,14 @@ FEDERATE_JOIN = true
 FEDERATE_JOIN_PATH = true
 # exploit join on optional ; require FEDERATE_BGP = true 
 FEDERATE_OPTIONAL = true
-FEDERATE_BLACKLIST = http://ldf.fi/warsa/sparql
+FEDERATE_BLACKLIST = http://ldf.fi/warsa/sparql;http://data.semanticweb.org/sparql
 # number of endpoint url considered in source discovery result
 FEDERATE_INDEX_LENGTH = 20
 # success rate to accept endpoint url in source discovery
 FEDERATE_INDEX_SUCCESS = 0.5
 FEDERATE_QUERY_PATTERN =     http://d2kab.fr=$fed/indexpattern/indexqueryd2kab.rq;http://prod-dekalog.inria.fr/sparql=$sys/indexpatternendpoint.rq
-FEDERATE_PREDICATE_PATTERN = http://d2kab.fr=$fed/indexpattern/indexpatternd2kab.rq;http://prod-dekalog.inria.fr/sparql=$sys/indexpredicatetest.rq
+FEDERATE_PREDICATE_PATTERN = http://d2kab.fr=$fed/indexpattern/indexpatternd2kab.rq;http://prod-dekalog.inria.fr/sparql=$sys/indexpredicate.rq
+FEDERATE_SPLIT = owl:sameAs
 
 #FEDERATE_INDEX_SKIP = http://rdfs.org/ns/void#
 

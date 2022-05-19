@@ -373,7 +373,7 @@ public class Transformer implements ExpType {
         Metadata meta = ast.getMetadata();
         if (meta != null) {
             if (ast.hasMetadata(Metadata.TRACE)) {
-                System.out.println(ast);
+                System.out.println(ast.toString());
             }
             if (ast.hasMetadata(Metadata.TEST)) {
                 q.setTest(true);

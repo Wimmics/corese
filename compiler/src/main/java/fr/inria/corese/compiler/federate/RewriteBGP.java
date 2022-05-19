@@ -25,9 +25,9 @@ public class RewriteBGP extends Util {
 
     static final String FAKE_URI = "http://ns.inria.fr/_fake_";
 
-
     private FederateVisitor visitor;
     private boolean debug = false;
+    private boolean skipSameAs = true;
 
     RewriteBGP(FederateVisitor vis) {
         visitor = vis;
@@ -235,6 +235,16 @@ public class RewriteBGP extends Util {
      * merge BGPs that are connected with triple.
      */
     void assignTripleToConnectedBGP(URI2BGPList map, Triple triple, List<Atom> uriList) {
+        if (getVisitor().isSplit(triple)) {
+            // owl:sameAs will be processed later as a lonely missing triple
+            // in order not to screw up bgp connectivity building
+        }
+        else {
+            basicAssignTripleToConnectedBGP(map, triple, uriList);
+        }
+    }
+    
+    void basicAssignTripleToConnectedBGP(URI2BGPList map, Triple triple, List<Atom> uriList) {
         for (Atom uri : uriList) {
             map.assignTripleToConnectedBGP(triple, uri.getLabel());
         }
@@ -609,6 +619,14 @@ public class RewriteBGP extends Util {
 
     public void setVisitor(FederateVisitor visitor) {
         this.visitor = visitor;
+    }
+
+    public boolean isSkipSameAs() {
+        return skipSameAs;
+    }
+
+    public void setSkipSameAs(boolean skipSameAs) {
+        this.skipSameAs = skipSameAs;
     }
 
 }

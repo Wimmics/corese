@@ -19,6 +19,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTSelector;
 import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_BGP;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_COMPLETE;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_EXCLUDE;
@@ -131,9 +132,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean federateOptional = OPTIONAL;
     private boolean federateComplete = COMPLETE_BGP;
     private boolean federateIndex = false;
-    public static List<String> BLACKLIST = new ArrayList<>();
+    public static List<String> BLACKLIST;
+    // split connected bgp when owl:sameAs 
+    public static List<String> DEFAULT_SPLIT;
     private List<String> include;
     private List<String> exclude;
+    public static List<String> split;
     private List<String> indexURLList;
     private int nbEndpoint   = NB_ENDPOINT;
     private double nbSuccess = NB_SUCCESS;
@@ -164,6 +168,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     
     static {
         federation = new HashMap<>();
+        DEFAULT_SPLIT = new ArrayList<>();
+        BLACKLIST = new ArrayList<>();    
     }
     
     public FederateVisitor(QuerySolver e){
@@ -178,6 +184,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         errorManager = new RewriteErrorManager();
         include = new ArrayList<>();
         exclude = new ArrayList<>();
+        split = DEFAULT_SPLIT;
     }
     
     /**
@@ -330,6 +337,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             }
             
             if (list.isEmpty() && getInclude().isEmpty()) {
+                logger.info("Candidate and include endpoint empty");
                 return false;
             }
             else if (list.size() == 1 && define) {
@@ -376,7 +384,11 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     }
     
     boolean accept(String uri) {
-        return !BLACKLIST.contains(uri) && !getExclude().contains(uri);
+        boolean b = !BLACKLIST.contains(uri) && !getExclude().contains(uri);
+        if (!b) {
+            logger.info("Candidate endpoint is blacklisted: " + uri);
+        }
+        return b;
     }
 
     public static synchronized void blacklist(String uri) {
@@ -451,28 +463,52 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         setFederateComplete(getValue(FED_COMPLETE, isFederateComplete()));
         setFederateOptional(getValue(FED_OPTIONAL, isFederateOptional()));
         
-        if (ast.getMetaValue(FED_SUCCESS) !=null) {
-            setNbSuccess(ast.getMetaValue(FED_SUCCESS).doubleValue());
+        if (ast.getMetaValue(Metadata.FED_SUCCESS) !=null) {
+            // success rate for source discovery
+            // 0.5 means half of the predicates are required
+            // to consider an endpoint
+            setNbSuccess(ast.getMetaValue(Metadata.FED_SUCCESS).doubleValue());
         }
-        if (ast.getMetaValue(FED_LENGTH) !=null) {
-            setNbEndpoint(ast.getMetaValue(FED_LENGTH).intValue());
+        if (ast.getMetaValue(Metadata.FED_LENGTH) !=null) {
+            // number of endpoint url considered from source discovery
+            setNbEndpoint(ast.getMetaValue(Metadata.FED_LENGTH).intValue());
         }
-        if (ast.hasMetadata(FED_INCLUDE)) {            
-            setInclude(ast.getMetadata().getValues(FED_INCLUDE));
+        if (ast.hasMetadata(Metadata.FED_INCLUDE)) { 
+            // add endpoint uri to result of index source discovery
+            setInclude(ast.getMetadata().getValues(Metadata.FED_INCLUDE));
+            logger.info("Include: " + getInclude());
         }
-        if (ast.hasMetadata(FED_EXCLUDE)) {            
-            setExclude(ast.getMetadata().getValues(FED_EXCLUDE));
+        if (ast.hasMetadata(Metadata.FED_EXCLUDE)) {            
+            // remove endpoint uri from result of index source discovery
+            setExclude(ast.getMetadata().getValues(Metadata.FED_EXCLUDE));
         }
         if (ast.hasMetadata(Metadata.INDEX)) {
+            // federate query with index for source discovery
+            // @index <http://index.org/sparql>
             setIndexURLList(ast.getMetadata().getValues(Metadata.INDEX));
             logger.info("Index URL: "+ getIndexURLList());
         }
-        if (!ast.getDataset().getIndex().isEmpty()) {
-            setIndexURLList(ast.getDataset().getIndex());
-            logger.info("Index URL: " + getIndexURLList());
+        
+        if (ast.hasMetadataValue(Metadata.SPLIT)) {
+            // federate query with index for source discovery
+            // @index <http://index.org/sparql>
+            setSplit(ast.getMetadata().getValues(Metadata.SPLIT));
+            logger.info("Split: "+ getSplit());
         }
+        
+        option(ast.getDataset());
+        
         if (ast.getContext()!=null) {
             option(ast.getContext());
+        }
+    }
+    
+    void option(Dataset ds) {
+        if (!ds.getIndex().isEmpty()) {
+            // federate query with index for source discovery
+            // select * from <index:http://index.org/sparql>
+            setIndexURLList(ds.getIndex());
+            logger.info("Index URL: " + getIndexURLList());
         }
     }
     
@@ -1053,7 +1089,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public boolean isBounce() {
         return bounce;
     }
-    
+       
     public static void defineFederation(String name, List<String> list) {
         List<Atom> serviceList = new ArrayList<>();
         for (String url : list) {
@@ -1330,6 +1366,18 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setIndexURLList(List<String> indexURLList) {
         this.indexURLList = indexURLList;
+    }
+    
+    public boolean isSplit(Triple t) {
+        return getSplit().contains(t.getProperty().getLabel());
+    }
+
+    public List<String> getSplit() {
+        return split;
+    }
+
+    public void setSplit(List<String> list) {
+        split = list;
     }
 
    

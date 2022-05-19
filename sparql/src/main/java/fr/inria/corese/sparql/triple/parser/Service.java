@@ -106,6 +106,15 @@ public class Service extends SourceExp {
     
     @Override
     public ASTBuffer toString(ASTBuffer sb) {
+        if (sb.isService()) {
+            if (getServiceList().size()>1) {
+                return union().toString(sb);
+            }
+        }
+        return basicToString(sb);
+    }
+    
+    ASTBuffer basicToString(ASTBuffer sb) {
         sb.append(Term.SERVICE);
         int i = 0;
         if (getServiceName().isVariable()) {
@@ -124,6 +133,21 @@ public class Service extends SourceExp {
         sb.append(" ");
         getBodyExp().pretty(sb);
         return sb;
+    }
+    
+    public Exp union() {
+        Exp res = null;
+        for (int i = getServiceList().size()-1; i>= 0; i--) {
+            Atom at  = getServiceList().get(i);
+            Exp serv = Service.create(at, getBodyExp());
+            if (res == null) {
+                res = serv;
+            }
+            else {
+                res = Union.create(serv, res);
+            }
+        }
+        return res;
     }
 
     public boolean isSilent() {

@@ -13,6 +13,7 @@ public class ASTBuffer  {
     static final String NL = System.getProperty("line.separator");
     static final String SPACE = " ";
     private HashMap<Triple, Triple> done;
+    private boolean service = false;
     
     int count = 0;
     
@@ -118,6 +119,15 @@ public class ASTBuffer  {
             return ! getDone().containsKey(exp.getTriple());
         }
         return true;
+    }
+
+    public boolean isService() {
+        return service;
+    }
+
+    public ASTBuffer setService(boolean service) {
+        this.service = service;
+        return this;
     }
 
 }

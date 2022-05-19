@@ -10,7 +10,8 @@ public interface RDF {
 	 static final String RDF_HTML   =  RDF + "HTML";
          
          static final String FIRST = RDF+"first";
-         static final String REST  = RDF+"rest";    
+         static final String REST  = RDF+"rest";           
+         static final String OWL_SAME_AS = OWL+"sameAs";
 	 
 	 static final String XSDPrefix  = "xsd";
 	 static final String RDFPrefix =  "rdf";

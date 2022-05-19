@@ -3,6 +3,8 @@ package fr.inria.corese.sparql.triple.parser;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.RDF;
+import static fr.inria.corese.sparql.datatype.RDF.OWL;
+import static fr.inria.corese.sparql.datatype.RDF.OWL_SAME_AS;
 import fr.inria.corese.sparql.triple.api.ExpressionVisitor;
 import java.util.List;
 
@@ -418,7 +420,12 @@ public class Triple extends Exp implements Pointerable {
     public boolean isList() {
         return getProperty().getLabel().equals(RDF.FIRST) ||
                getProperty().getLabel().equals(RDF.REST);
-     }
+    }
+    
+    public boolean isSameAs() {
+        return getProperty().getLabel().equals(OWL_SAME_AS);
+    }
+
 
     /**
      *

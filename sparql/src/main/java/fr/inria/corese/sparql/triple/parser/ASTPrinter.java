@@ -15,6 +15,7 @@ public class ASTPrinter implements KeywordPP {
     private ASTBuffer sb;
     private boolean prefix = true;
     private boolean lambda = false;
+    private boolean service = false;
     
     public ASTPrinter(ASTQuery a){
         ast = a;
@@ -37,6 +38,8 @@ public class ASTPrinter implements KeywordPP {
     }
     
     public void process() {
+        getBuffer().setService(isService());
+        
         if (ast.isUpdate()) {
             ast.getUpdate().toString(sb);
         } else {
@@ -341,46 +344,43 @@ public class ASTPrinter implements KeywordPP {
         }
     }
     
-    /**
-     * @return the prefix
-     */
+    
     public boolean isPrefix() {
         return prefix;
     }
 
-    /**
-     * @param prefix the prefix to set
-     */
+    
     public void setPrefix(boolean prefix) {
         this.prefix = prefix;
     }
     
-    /**
-     * @return the lambda
-     */
+    
     public boolean isLambda() {
         return lambda;
     }
 
-    /**
-     * @param lambda the lambda to set
-     */
+   
     public void setLambda(boolean lambda) {
         this.lambda = lambda;
     }
 
-    /**
-     * @return the sb
-     */
+    
     public ASTBuffer getBuffer() {
         return sb;
     }
 
-    /**
-     * @param sb the sb to set
-     */
+   
     public void setBuffer(ASTBuffer sb) {
         this.sb = sb;
+    }
+
+    public boolean isService() {
+        return service;
+    }
+
+    public ASTPrinter setService(boolean service) {
+        this.service = service;
+        return this;
     }
     
 

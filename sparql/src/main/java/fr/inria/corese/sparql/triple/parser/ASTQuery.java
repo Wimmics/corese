@@ -1219,6 +1219,10 @@ public class ASTQuery
         return metadata != null && metadata.hasValues(type, value);
     }
     
+    public boolean hasMetadataValue(int type) {
+        return metadata != null && metadata.getValues(type)!=null;
+    }
+    
     public boolean hasReportKey(String key) {
         Metadata meta = getMetadata();
         if (meta == null) {
@@ -2470,8 +2474,14 @@ public class ASTQuery
     
     @Override
     public String toString() {
-       ASTPrinter pr = new ASTPrinter(this);
-       return pr.toString();
+       return new ASTPrinter(this).toString();
+    }
+    
+    // service s1 s2 -> service s1 union service s2
+    public String toString(boolean std) {
+       return new ASTPrinter(this)
+               .setService(true)
+               .toString();
     }
        
     boolean isData() {

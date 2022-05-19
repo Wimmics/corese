@@ -432,7 +432,8 @@ public class ProviderService implements URLParam {
     }
     
     void submitError(URLServer url) {
-        if (getContext()!=null && getContext().isSelection()) {
+        if ((getContext()!=null && getContext().isSelection()) ||
+             getQuery().getGlobalQuery().isFederate()) {
             logger.info("Blacklist: " + url.getServer());
             FederateVisitor.blacklist(url.getServer());
         }

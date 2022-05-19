@@ -129,12 +129,14 @@ public class Property {
         FEDERATE_JOIN,
         // authorize path in join test
         FEDERATE_JOIN_PATH,
+        FEDERATE_SPLIT,
         
         // index query pattern skip predicate for source discovery
         FEDERATE_INDEX_SKIP,
         FEDERATE_INDEX_PATTERN,
         FEDERATE_INDEX_SUCCESS,
         FEDERATE_INDEX_LENGTH,
+        
         FEDERATE_BLACKLIST,
         FEDERATE_QUERY_PATTERN,
         FEDERATE_PREDICATE_PATTERN,
@@ -667,6 +669,10 @@ public class Property {
                 blacklist(str);
                 break;
                 
+            case FEDERATE_SPLIT:
+                split(str);
+                break;
+                
             case FEDERATE_INDEX_SUCCESS:
                 FederateVisitor.NB_SUCCESS = Double.valueOf(str);
                 break;    
@@ -773,6 +779,15 @@ public class Property {
             alist.add(str);
         }
         FederateVisitor.BLACKLIST = alist;
+    }
+    
+    void split(String list) {
+        ArrayList<String> alist = new ArrayList<>();
+        for (String str : list.split(SEP)) {
+            alist.add(NSManager.nsm().toNamespace(str));
+        }
+        logger.info("Split: " + alist);
+        FederateVisitor.DEFAULT_SPLIT = alist;
     }
     
     void blacklist(String... list) {

@@ -99,7 +99,6 @@ public class QueryProcess extends QuerySolver {
     ReentrantReadWriteLock lock;
     // Producer may perform match locally
     boolean isMatch = false;
-
     static {
         dbmap = new HashMap<>();
         new Extension().process();

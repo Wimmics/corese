@@ -330,8 +330,7 @@ public class ASTQuery
     
     public void setRelax(boolean isRelax) {
         this.isRelax = isRelax;
-    }
-
+    }    
     
     public boolean isFederateVisitorable() {
         return hasMetadata(Metadata.FEDERATION) || 
@@ -1193,6 +1192,16 @@ public class ASTQuery
         return getMetadata().getDatatypeValue(type);
     }
     
+    public boolean isFederateIndex() {
+        if (hasMetadata(Metadata.INDEX)) {
+            return true;
+        }
+        if (!getDataset().getIndex().isEmpty()) {
+            return true;
+        }
+        return false;
+    }
+    
     public boolean isFederate() {
         return getGlobalAST().hasMetadata(Metadata.FEDERATE) 
             || getGlobalAST().hasMetadata(Metadata.FEDERATION); 
@@ -1220,6 +1229,10 @@ public class ASTQuery
     }
     
     public boolean hasMetadataValue(int type) {
+        return metadata != null && metadata.getValues(type)!=null;
+    }
+    
+    public boolean hasMetadataValue(String type) {
         return metadata != null && metadata.getValues(type)!=null;
     }
     
@@ -3325,7 +3338,9 @@ public class ASTQuery
     
     void switchProcess(Walker walker) {
         if (isUpdate()) {
+            walker.enter(this); 
             getUpdate().walk(walker);
+            walker.leave(this);
         } else {
             walk(walker);
         }

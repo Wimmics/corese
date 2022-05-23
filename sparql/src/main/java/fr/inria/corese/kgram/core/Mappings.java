@@ -24,6 +24,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -2102,6 +2103,18 @@ public class Mappings extends PointerObject
             }
         }
         return false;
+    }
+    
+    public Mappings getResult() {
+        Query q = getQuery();
+        ASTQuery ast = getAST();
+        if (ast.hasMetadata(Metadata.SELECTION) && q.getSelection()!=null) {
+            return q.getSelection();
+        }
+        if (ast.hasMetadata(Metadata.DISCOVERY) && q.getDiscorevy()!=null) {
+            return q.getDiscorevy();
+        }
+        return this;
     }
        
 }

@@ -221,6 +221,8 @@ public class Query extends Exp implements Graphable {
     private List<Edge> queryEdgeList;
 
     private HashMap<Edge, Exp> edgeAndContext;
+    private Mappings selection;
+    private Mappings discorevy;
 
     private String service;
 	
@@ -2663,6 +2665,22 @@ public class Query extends Exp implements Graphable {
    
     public void setImportFailure(boolean importFailure) {
         this.importFailure = importFailure;
+    }
+
+    public Mappings getSelection() {
+        return selection;
+    }
+
+    public void setSelection(Mappings selection) {
+        this.selection = selection;
+    }
+
+    public Mappings getDiscorevy() {
+        return discorevy;
+    }
+
+    public void setDiscorevy(Mappings discorevy) {
+        this.discorevy = discorevy;
     }
 
 }

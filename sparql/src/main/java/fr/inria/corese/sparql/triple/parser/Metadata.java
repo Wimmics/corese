@@ -134,6 +134,8 @@ public class Metadata extends ASTObject
     public static final String FORM   = "@form";
     public static final String OLD_SERVICE   = "@oldService";
     public static final String SHOW   = "@show";
+    public static final String SELECTION   = "@selection";
+    public static final String DISCOVERY   = "@discovery";
     
     public static final String FED_BGP      = "@federateBgp";
     public static final String FED_JOIN     = "@federateJoin";
@@ -144,6 +146,10 @@ public class Metadata extends ASTObject
     public static final String FED_LENGTH   = "@"+URLParam.FED_LENGTH;   
     public static final String FED_INCLUDE  = "@"+URLParam.FED_INCLUDE;
     public static final String FED_EXCLUDE  = "@exclude";
+    public static final String FED_BLACKLIST= "@blacklist";
+    public static final String FED_WHITELIST= "@whitelist";
+    public static final String FED_CLASS    = "@federateClass";
+    
          
     private static HashMap<String, Integer> annotation;    
     private static HashMap<Integer, String> back; 

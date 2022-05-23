@@ -304,7 +304,12 @@ public class ASTParser implements Walker, URLParam {
             }
         }
         exp.setNumber(nbService++);
-        top().getServiceExpList().add(exp);
+        if (top() == null) {
+            ast.logger.error("AST stack empty");
+        }
+        else {
+            top().getServiceExpList().add(exp);
+        }
     }
 
     /**

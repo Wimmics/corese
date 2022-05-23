@@ -307,6 +307,11 @@ public class ProviderService implements URLParam {
      */
     void process(URLServer service, Mappings map, Mappings sol, boolean slice, int length, int timeout)
             throws EngineException {
+        
+        if (FederateVisitor.isBlackListed(service.getServer())) {
+            logger.info(String.format("Endpoint %s is blacklisted", service.getServer()));
+            return ;
+        }
         int size = 0, count = 0;
         traceInput(service, map);
         Date d1 = new Date();
@@ -399,6 +404,8 @@ public class ProviderService implements URLParam {
 
             targetAST = ast;
             traceAST(serv, ast);
+            complete(ast);
+            
             Mappings res = send(serv, ast, map, start, limit, timeout, count);
             if (res !=null) reportAST(ast, res, count);
             if (debug && res!=null) {
@@ -422,10 +429,26 @@ public class ProviderService implements URLParam {
 
         return null;
     }
+    
+    // when query is select distinct and query body is a service:
+    // service ast inherits select distinct
+    void complete(ASTQuery ast) {
+        if (getGlobalAST().isDistinct() &&
+            getGlobalAST().getBody().size() == 1 &&
+            getGlobalAST().getBody().get(0).isService()) {
+           ast.setDistinct(true);
+           //logger.info("distinct:\n"+ast);
+        }
+    }
 
     void error(URLServer serv, Query gq, ASTQuery ast, Exception e) {
         logger.error("service error: " + serv.getServer());
-        logger.error(e.getMessage());
+        if (e.getMessage().length()>1000) {
+            logger.error(e.getMessage().substring(0, 1000));
+        }
+        else {
+            logger.error(e.getMessage());
+        }
         logger.error(ast.toString());
         gq.addError(SERVICE_ERROR.concat(serv.getServer()).concat("\n"), e);
         submitError(serv);
@@ -433,8 +456,9 @@ public class ProviderService implements URLParam {
     
     void submitError(URLServer url) {
         if ((getContext()!=null && getContext().isSelection()) ||
-             getQuery().getGlobalQuery().isFederate()) {
-            logger.info("Blacklist: " + url.getServer());
+             getQuery().getGlobalQuery().isFederate() ||
+             getGlobalAST().hasMetadata(Metadata.FED_BLACKLIST)) {
+            logger.info("Blacklist: " + url.getServer() + " " + FederateVisitor.getBlacklist().size());
             FederateVisitor.blacklist(url.getServer());
         }
     }

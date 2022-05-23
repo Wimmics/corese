@@ -41,6 +41,7 @@ import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Cookie;
+import java.util.HashMap;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -60,6 +61,7 @@ public class Service implements URLParam {
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
     public static final String XML = SPARQL_RESULTS_XML;
     public static final String RDF = RDF_XML;
+    static HashMap<String, String> redirect;
     
     private ClientBuilder clientBuilder;
 
@@ -78,6 +80,10 @@ public class Service implements URLParam {
     private Response response;
     private boolean log = false;
     private double time = 0;
+    
+    static {
+        redirect = new HashMap<>();
+    }
     
     public Service() {
         clientBuilder = ClientBuilder.newBuilder();
@@ -195,8 +201,17 @@ public class Service implements URLParam {
         }
     }
     
-    // https://docs.oracle.com/javaee/7/api/index.html
     public String post(String url, String query, String mime) {
+        if (redirect.containsKey(url)) {
+            return post(redirect.get(url), query, mime);
+        }
+        else {
+            return basicPost(url, query, mime);
+        }
+    }
+    
+    // https://docs.oracle.com/javaee/7/api/index.html
+    public String basicPost(String url, String query, String mime) {
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         clientBuilder.readTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build(); 
@@ -241,6 +256,7 @@ public class Service implements URLParam {
                 if (myUrl.equals(url)) {
                     throw new RedirectionException(resp);
                 }
+                redirect(url, myUrl);
                 getCreateReport().setLocation(myUrl);
                 return post(myUrl, query, mime);
             }
@@ -249,7 +265,9 @@ public class Service implements URLParam {
             logger.info("Response status: " + resp.getStatus());
             logger.info("From " + getURL().getURL());
             
-            recordFormat(resp.getMediaType().toString());  
+            if (resp.getMediaType()!=null) {
+                recordFormat(resp.getMediaType().toString());
+            }
             getCreateReport().setResponse(resp);
             getCreateReport().setResult(res);
             
@@ -280,6 +298,11 @@ public class Service implements URLParam {
             logger.error(e.getClass().getName() + " " + e.getMessage());
             throw e;
         }
+    }
+    
+    void redirect(String url1, String url2) {
+        logger.info(String.format("Record %s redirect to %s", url1, url2));
+        redirect.put(url1, url2);
     }
     
     void trace(Response res) {
@@ -514,6 +537,15 @@ public class Service implements URLParam {
     }
     
     Response getResponse(String url, String mime) {
+        if (redirect.containsKey(url)) {
+            return getResponse(redirect.get(url), mime);
+        }
+        else {
+            return basicGetResponse(url, mime);
+        }
+    }
+        
+    Response basicGetResponse(String url, String mime) {
         logger.info("Service:  " + url + " " + mime);
         clientBuilder.connectTimeout(timeout, TimeUnit.MILLISECONDS);
         Client client = clientBuilder.build();
@@ -533,6 +565,7 @@ public class Service implements URLParam {
             if (myUrl.equals(url)) {
                 throw new RedirectionException(resp);
             }
+            redirect(url, myUrl);
             return getResponse(myUrl, mime);
         }
         

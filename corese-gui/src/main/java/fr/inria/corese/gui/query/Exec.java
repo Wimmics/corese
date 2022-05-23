@@ -1,5 +1,6 @@
 package fr.inria.corese.gui.query;
 
+import fr.inria.corese.compiler.federate.FederateVisitor;
 import java.util.Date;
 
 import org.apache.logging.log4j.Logger;
@@ -69,7 +70,6 @@ public class Exec extends Thread {
         Mappings res = null;
         MyJPanelQuery panel = frame.getPanel();
         if (isValidate()) {
-            //res = validate();
             res = compile();
             if (res != null) {
                 if (res.getQuery().isDebug()) {
@@ -119,16 +119,26 @@ public class Exec extends Thread {
                 q = (isShex()) ? qshex : qshacl;
             }
             // draft test: Mappings available using xt:mappings()
-            Mappings l_Results = exec.SPARQLQuery(q, getMappings());
+            Mappings map = exec.SPARQLQuery(q, getMappings());
             Date d2 = new Date();
-            System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
-            return l_Results;
+            logger.info("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
+            trace(map);
+            return map;
         } catch (EngineException e) {
             // TODO Auto-generated catch block
             e.printStackTrace();
             frame.getPanel().getTextArea().setText(e.toString());
         }
         return null;
+    }
+    
+    void trace(Mappings map) {
+        ASTQuery ast = map.getAST();
+        if (ast.isFederateIndex()) {
+            if (!FederateVisitor.getBlacklist().isEmpty()) {
+                logger.info("Blacklist:\n" + FederateVisitor.getBlacklist());
+            }
+        }
     }
 
     Mappings compile() {
@@ -156,8 +166,9 @@ public class Exec extends Thread {
                 ast.setMetadata(Metadata.EXPLAIN);
             }
             Date d2 = new Date();
-            System.out.println("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
-            return map;
+            logger.info("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
+            trace(map);
+            return map.getResult();
         } catch (EngineException e) {
             e.printStackTrace();
             frame.getPanel().getTextArea().setText(e.toString());
@@ -165,6 +176,7 @@ public class Exec extends Thread {
         return null;
     }
 
+    
     /**
      * Translate SPARQL query to SPIN graph Apply spin typecheck transformation
      */

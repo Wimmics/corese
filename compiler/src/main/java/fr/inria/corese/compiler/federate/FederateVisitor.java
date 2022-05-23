@@ -16,19 +16,16 @@ import fr.inria.corese.compiler.federate.util.RewriteError;
 import fr.inria.corese.compiler.federate.util.RewriteErrorManager;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTSelector;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_BGP;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_COMPLETE;
-import static fr.inria.corese.sparql.triple.parser.Metadata.FED_EXCLUDE;
-import static fr.inria.corese.sparql.triple.parser.Metadata.FED_INCLUDE;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_JOIN;
-import static fr.inria.corese.sparql.triple.parser.Metadata.FED_LENGTH;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_OPTIONAL;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_PARTITION;
-import static fr.inria.corese.sparql.triple.parser.Metadata.FED_SUCCESS;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.URLParam;
@@ -132,12 +129,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean federateOptional = OPTIONAL;
     private boolean federateComplete = COMPLETE_BGP;
     private boolean federateIndex = false;
+    private boolean federateClass = true;
     public static List<String> BLACKLIST;
-    // split connected bgp when owl:sameAs 
+    // predicate such as owl:sameAs that split bgp connectivity
     public static List<String> DEFAULT_SPLIT;
     private List<String> include;
     private List<String> exclude;
-    public static List<String> split;
+    // predicate such as owl:sameAs that split bgp connectivity
+    public List<String> split;
     private List<String> indexURLList;
     private int nbEndpoint   = NB_ENDPOINT;
     private double nbSuccess = NB_SUCCESS;
@@ -165,10 +164,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private URLServer url;
     // use case: reuse federated visitor source selection
     private Mappings mappings;
+    private Mappings selection;
+    private Mappings discovery;
     
     static {
         federation = new HashMap<>();
         DEFAULT_SPLIT = new ArrayList<>();
+        // can be removed with @split us:test or with FEDERATE_SPLIT = <<empty string>>
+        DEFAULT_SPLIT.add(RDF.OWL_SAME_AS);
         BLACKLIST = new ArrayList<>();    
     }
     
@@ -203,11 +206,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         ASTQuery ast =  query.getAST();
         ast.getLog().setAST(ast);
         exec.getLog().setAST(ast);
+        query.setSelection(getMappings());
+        query.setDiscorevy(getDiscovery());
     }
     
+    // before solver query exec
     @Override
     public void before(fr.inria.corese.kgram.core.Query q) {
-        
+       
     }
     
     @Override
@@ -226,7 +232,6 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             return;
         }
         getGroupBGP().setDebug(ast.isDebug());
-        //option();
         
         if (isSparql()) {
             // select where { BGP } -> select where { service URLs { BGP } }
@@ -397,6 +402,14 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
     } 
     
+    public static boolean isBlackListed(String uri) {
+        return BLACKLIST.contains(uri);
+    }
+    
+    public static List<String> getBlacklist() {
+        return BLACKLIST;
+    }
+    
     public Provenance getProvenance(Mappings map) {
         Provenance prov = new Provenance(rs.getServiceList(), map);
         map.setProvenance(prov);
@@ -463,6 +476,9 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         setFederateComplete(getValue(FED_COMPLETE, isFederateComplete()));
         setFederateOptional(getValue(FED_OPTIONAL, isFederateOptional()));
         
+        if (ast.getMetaValue(Metadata.FED_CLASS) !=null) {            
+            setFederateClass(ast.getMetaValue(Metadata.FED_CLASS).booleanValue());
+        }
         if (ast.getMetaValue(Metadata.FED_SUCCESS) !=null) {
             // success rate for source discovery
             // 0.5 means half of the predicates are required
@@ -487,6 +503,17 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             // @index <http://index.org/sparql>
             setIndexURLList(ast.getMetadata().getValues(Metadata.INDEX));
             logger.info("Index URL: "+ getIndexURLList());
+        }
+        
+        if (ast.hasMetadata(Metadata.FED_WHITELIST)) {
+             if (ast.hasMetadataValue(Metadata.FED_WHITELIST)) {
+                 for (String uri : ast.getMetadata().getValues(Metadata.FED_WHITELIST)) {
+                     getBlacklist().remove(uri);
+                 }
+             }
+             else {
+                 getBlacklist().clear();
+             }
         }
         
         if (ast.hasMetadataValue(Metadata.SPLIT)) {
@@ -1378,6 +1405,30 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setSplit(List<String> list) {
         split = list;
+    }
+
+    public boolean isFederateClass() {
+        return federateClass;
+    }
+
+    public void setFederateClass(boolean federateClass) {
+        this.federateClass = federateClass;
+    }
+
+    public Mappings getSelection() {
+        return selection;
+    }
+
+    public void setSelection(Mappings selection) {
+        this.selection = selection;
+    }
+
+    public Mappings getDiscovery() {
+        return discovery;
+    }
+
+    public void setDiscovery(Mappings discovery) {
+        this.discovery = discovery;
     }
 
    

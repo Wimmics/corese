@@ -5,6 +5,7 @@ import fr.inria.corese.compiler.federate.util.ResourceReader;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
+import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Exp;
@@ -37,13 +38,18 @@ public class SelectorIndex {
     final static String INDEX = "index";
     
     public static boolean SELECT_ENDPOINT = false;
-    //public static double NB_SUCCESS = 0.5;
+    // default dekalog index
     public static String INDEX_URL = "http://prod-dekalog.inria.fr/sparql";
+    // local dataset index
+    public static String INDEX_URL_LOCAL = "http://localhost:8080/index";
     
     // %1$s = predicate uri
     // %2$s = bind(n as ?b_i)
     public static final String OPTIONAL1 = 
         "optional {?s void:propertyPartition/void:property <%s> %s}\n";
+    
+    public static final String OPTIONAL_CLASS = 
+        "optional {?s void:classPartition/void:class <%s> %s}\n";
     
     public static final String BIND    = "bind (%s as ?b_%s)";
    
@@ -73,6 +79,7 @@ public class SelectorIndex {
     public static String QUERY_PATTERN = null;
     
     static HashMap<String, String> url2predicatePattern;
+    static HashMap<String, String> url2classPattern;
     static HashMap<String, String> url2queryPattern;
     static HashMap<String, String> skipPredicate;
 
@@ -87,6 +94,7 @@ public class SelectorIndex {
     
     static {
         url2predicatePattern = new HashMap<>();
+        url2classPattern = new HashMap<>();
         url2queryPattern = new HashMap<>();
         skipPredicate = new HashMap<>();
         init();
@@ -96,11 +104,19 @@ public class SelectorIndex {
     // the sparql query patterns to search predicate p
     static void init() {
         definePredicatePattern(INDEX_URL, OPTIONAL);
+        defineClassPattern(INDEX_URL, OPTIONAL_CLASS);
         defineQueryPattern(INDEX_URL, getDefaultPattern(QUERY_PATTERN, DEFAULT_QUERY_PATTERN));
+
+        defineClassPattern(INDEX_URL_LOCAL, OPTIONAL_CLASS);
+        definePredicatePattern(INDEX_URL_LOCAL, OPTIONAL);
     }
     
     public static void definePredicatePattern(String url, String pattern) {
         url2predicatePattern.put(url, pattern);
+    }
+    
+    public static void defineClassPattern(String url, String pattern) {
+        url2classPattern.put(url, pattern);
     }
     
     public static void defineQueryPattern(String url, String pattern) {
@@ -208,7 +224,27 @@ public class SelectorIndex {
                         i));
                 i++;
             }
-        }        
+        } 
+        
+        if (getVisitor().isFederateClass() && getClassPattern(indexURL)!=null) {
+            for (Triple t : ast.getTripleList()) {
+                if (t.isType() && t.getObject().isConstant()) {
+                    Atom obj = t.getObject();
+                    int value = getValue(obj.getLongName());
+                    totalValue += value;
+                    sb.append(String.format(
+                            getClassPattern(indexURL),
+                            // predicate
+                            obj.getLongName(),
+                            // bind (value as ?b_i)
+                            String.format(BIND, value, i),
+                            // in case of variable ?p%3$s
+                            i));
+                    i++;
+                }
+            }
+        }
+        
         // count number of predicates present in endpoint url
         count(sb, i);               
         return sb.toString();
@@ -326,6 +362,11 @@ public class SelectorIndex {
         }
         return str;
     }
+    
+    String getClassPattern(String url) {
+        String str = url2classPattern.get(url);        
+        return str;
+    }
             
     String getQueryPattern(String url) {
         String str = url2queryPattern.get(url);
@@ -367,6 +408,10 @@ public class SelectorIndex {
 
     public void setIndexService(Service indexService) {
         this.indexService = indexService;
+    }
+    
+    FederateVisitor getVisitor() {
+        return selector.getVisitor();
     }
    
 }

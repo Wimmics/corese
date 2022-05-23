@@ -140,7 +140,8 @@ public class Selector {
                 .setNbSuccess(getNbSuccess())
                 .process();
         Context ct = Context.create().setDiscovery(true);
-        Mappings map = getQuerySolver().basicQuery(a, ct);                           
+        Mappings map = getQuerySolver().basicQuery(a, ct); 
+        getVisitor().setDiscovery(map);
         List<String> list = map.getStringValueList(SERVER_VAR); 
         
         log(a, map);

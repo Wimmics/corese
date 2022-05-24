@@ -1,4 +1,4 @@
-package fr.inria.corese.core.load;
+package fr.inria.corese.core.load.result;
 
 import java.io.ByteArrayInputStream;
 import java.io.FileInputStream;

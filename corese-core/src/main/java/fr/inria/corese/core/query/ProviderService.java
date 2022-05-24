@@ -458,8 +458,9 @@ public class ProviderService implements URLParam {
         if ((getContext()!=null && getContext().isSelection()) ||
              getQuery().getGlobalQuery().isFederate() ||
              getGlobalAST().hasMetadata(Metadata.FED_BLACKLIST)) {
-            logger.info("Blacklist: " + url.getServer() + " " + FederateVisitor.getBlacklist().size());
-            FederateVisitor.blacklist(url.getServer());
+            if (FederateVisitor.blacklist(url.getServer())) {
+                logger.info("Blacklist: " + url.getServer() + " " + FederateVisitor.getBlacklist().size());
+            }
         }
     }
 

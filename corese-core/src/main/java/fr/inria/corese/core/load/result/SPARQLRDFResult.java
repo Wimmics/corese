@@ -1,7 +1,9 @@
-package fr.inria.corese.core.load;
+package fr.inria.corese.core.load.result;
 
 import fr.inria.corese.compiler.parser.NodeImpl;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;

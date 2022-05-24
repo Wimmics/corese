@@ -138,6 +138,7 @@ public class Property {
         FEDERATE_INDEX_LENGTH,
         
         FEDERATE_BLACKLIST,
+        FEDERATE_BLACKLIST_EXCEPT,
         FEDERATE_QUERY_PATTERN,
         FEDERATE_PREDICATE_PATTERN,
 
@@ -627,6 +628,9 @@ public class Property {
             case FEDERATE_BLACKLIST:
                 blacklist(str);
                 break;
+            case FEDERATE_BLACKLIST_EXCEPT:
+                blacklistExcept(str);
+                break;
         }
     }
 
@@ -668,6 +672,10 @@ public class Property {
             case FEDERATE_BLACKLIST:
                 blacklist(str);
                 break;
+                
+            case FEDERATE_BLACKLIST_EXCEPT:
+                blacklistExcept(str);
+                break; 
                 
             case FEDERATE_SPLIT:
                 split(str);
@@ -772,15 +780,7 @@ public class Property {
             SelectorIndex.skipPredicate(ope);
         }
     }
-    
-    void blacklist(String list) {
-        ArrayList<String> alist = new ArrayList<>();
-        for (String str : list.split(SEP)) {
-            alist.add(str);
-        }
-        FederateVisitor.BLACKLIST = alist;
-    }
-    
+        
     void split(String list) {
         ArrayList<String> alist = new ArrayList<>();
         for (String str : list.split(SEP)) {
@@ -790,12 +790,36 @@ public class Property {
         FederateVisitor.DEFAULT_SPLIT = alist;
     }
     
+    void blacklist(String list) {
+        ArrayList<String> alist = new ArrayList<>();
+        for (String str : list.split(SEP)) {
+            alist.add(str);
+        }
+        FederateVisitor.BLACKLIST = alist;
+    }
+    
+    void blacklistExcept(String list) {
+        ArrayList<String> alist = new ArrayList<>();
+        for (String str : list.split(SEP)) {
+            alist.add(str);
+        }
+        FederateVisitor.BLACKLIST_EXCEPT = alist;
+    }
+
     void blacklist(String... list) {
         ArrayList<String> alist = new ArrayList<>();
         for (String str : list) {
             alist.add(str);
         }
         FederateVisitor.BLACKLIST = alist;
+    }
+    
+    void blacklistExcept(String... list) {
+        ArrayList<String> alist = new ArrayList<>();
+        for (String str : list) {
+            alist.add(str);
+        }
+        FederateVisitor.BLACKLIST_EXCEPT = alist;
     }
     
     void basicSet(Value value, int n) {

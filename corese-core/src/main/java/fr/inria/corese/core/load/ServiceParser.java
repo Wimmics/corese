@@ -1,6 +1,8 @@
 package fr.inria.corese.core.load;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.result.SPARQLJSONResult;
+import fr.inria.corese.core.load.result.SPARQLResult;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;

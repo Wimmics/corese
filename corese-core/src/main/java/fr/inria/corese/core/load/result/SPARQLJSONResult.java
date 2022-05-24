@@ -1,7 +1,9 @@
-package fr.inria.corese.core.load;
+package fr.inria.corese.core.load.result;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
@@ -41,7 +43,7 @@ public class SPARQLJSONResult extends SPARQLResult {
     @Override
     public Mappings parse(String path) throws IOException {
         try {
-            String str = new QueryLoad().readWE(path);
+            String str = QueryLoad.create().readWE(path);
             return parseString(str);
         } catch (LoadException ex) {
             throw new IOException(ex.getMessage());

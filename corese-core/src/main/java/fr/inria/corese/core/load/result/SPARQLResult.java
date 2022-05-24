@@ -1,4 +1,4 @@
-package fr.inria.corese.core.load;
+package fr.inria.corese.core.load.result;
 
 import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.sparql.api.IDatatype;

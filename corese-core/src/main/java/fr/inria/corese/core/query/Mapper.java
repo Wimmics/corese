@@ -13,7 +13,7 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.load.SPARQLResultParser;
+import fr.inria.corese.core.load.result.SPARQLResultParser;
 import fr.inria.corese.core.producer.DataProducer;
 import java.util.ArrayList;
 import java.util.Collection;

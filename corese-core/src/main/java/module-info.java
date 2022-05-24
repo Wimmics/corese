@@ -16,6 +16,7 @@ module fr.inria.corese.corese_core {
     requires jdk.management;
 
     exports fr.inria.corese.core.load;
+    exports fr.inria.corese.core.load.result;
     exports fr.inria.corese.core;
     exports fr.inria.corese.core.query;
     exports fr.inria.corese.core.rule;

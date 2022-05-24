@@ -70,7 +70,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
-import fr.inria.corese.core.load.SPARQLResultParser;
+import fr.inria.corese.core.load.result.SPARQLResultParser;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;

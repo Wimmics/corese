@@ -1,6 +1,6 @@
 package fr.inria.corese.gui.query;
 
-import fr.inria.corese.core.load.SPARQLResult;
+import fr.inria.corese.core.load.result.SPARQLResult;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.query.ProviderService;
 import fr.inria.corese.core.query.QueryProcess;

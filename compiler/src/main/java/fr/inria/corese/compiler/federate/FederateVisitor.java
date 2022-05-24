@@ -131,6 +131,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean federateIndex = false;
     private boolean federateClass = true;
     public static List<String> BLACKLIST;
+    public static List<String> BLACKLIST_EXCEPT;
     // predicate such as owl:sameAs that split bgp connectivity
     public static List<String> DEFAULT_SPLIT;
     private List<String> include;
@@ -173,6 +174,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         // can be removed with @split us:test or with FEDERATE_SPLIT = <<empty string>>
         DEFAULT_SPLIT.add(RDF.OWL_SAME_AS);
         BLACKLIST = new ArrayList<>();    
+        BLACKLIST_EXCEPT = new ArrayList<>();    
     }
     
     public FederateVisitor(QuerySolver e){
@@ -396,10 +398,13 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         return b;
     }
 
-    public static synchronized void blacklist(String uri) {
-        if (! BLACKLIST.contains(uri)) {
+    public  static synchronized boolean blacklist(String uri) {
+        if (! BLACKLIST.contains(uri) && 
+            ! BLACKLIST_EXCEPT.contains(uri)) {
             BLACKLIST.add(uri);
+            return true;
         }
+        return false;
     } 
     
     public static boolean isBlackListed(String uri) {

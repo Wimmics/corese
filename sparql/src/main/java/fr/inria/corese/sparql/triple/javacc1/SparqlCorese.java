@@ -8536,7 +8536,7 @@ ExpressionList arg, el = null; Metadata meta = null;
       break;
     case DECIMAL:
       t = jj_consume_token(DECIMAL);
-                     datatype = RDFS.qxsdDecimal;
+                      datatype = RDFS.qxsdDecimal;
       break;
     case DOUBLE:
       t = jj_consume_token(DOUBLE);

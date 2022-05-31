@@ -16,6 +16,7 @@ import fr.inria.corese.kgram.event.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.util.SPINProcess;
+import fr.inria.corese.core.util.Tool;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
@@ -121,8 +122,9 @@ public class Exec extends Thread {
             // draft test: Mappings available using xt:mappings()
             Mappings map = exec.SPARQLQuery(q, getMappings());
             Date d2 = new Date();
-            logger.info("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
             trace(map);
+            logger.info(String.format("** Time: %s ; nb result: %s", 
+                    Tool.time(d1, d2), map.size()));            
             return map;
         } catch (EngineException e) {
             // TODO Auto-generated catch block
@@ -166,8 +168,9 @@ public class Exec extends Thread {
                 ast.setMetadata(Metadata.EXPLAIN);
             }
             Date d2 = new Date();
-            logger.info("** Time : " + (d2.getTime() - d1.getTime()) / (1000.0));
             trace(map);
+            logger.info(String.format("** Time: %s ; nb result: %s", 
+                    Tool.time(d1, d2), map.size()));
             return map.getResult();
         } catch (EngineException e) {
             e.printStackTrace();

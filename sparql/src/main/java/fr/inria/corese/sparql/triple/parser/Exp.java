@@ -574,6 +574,18 @@ public abstract class Exp extends TopExp implements Iterable<Exp> {
         }
         walker.leave(this);
     }
+    
+    public boolean hasUndefinedService() {
+        for (Exp e : this) {
+            if (e.isService() && e.getService().isUndefined()) {
+                return  true;
+            }
+            if (e.hasUndefinedService()) {
+                return true;
+            }
+        }
+        return false;
+    } 
 
     Exp expandList() {
         BasicGraphPattern bgp = BasicGraphPattern.create();

@@ -1854,6 +1854,10 @@ public class ASTQuery
         getGlobalAST().setSubmitTriple(true);
     }
     
+    public boolean hasUndefinedService() {
+        return getBody().hasUndefinedService();
+    }
+    
     void submit(Triple t) {
         if (getGlobalAST().isSubmitTriple()) {
             getGlobalAST().basicSubmit(t);

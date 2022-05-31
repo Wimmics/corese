@@ -1,3 +1,6 @@
+#
+# ?x is subject of   owl:unionOf owl:intersectionOf owl:complementOf owl:oneOf
+#
 template st:checkConformity(?x) {
 	?suc
 }
@@ -8,7 +11,7 @@ where {
 		exists {
 			?in ?p ?x
 		
-			filter(?p IN (
+			filter (?p IN (
 				rdfs:subClassOf, owl:equivalentClass,
 				owl:disjointWith,
 					

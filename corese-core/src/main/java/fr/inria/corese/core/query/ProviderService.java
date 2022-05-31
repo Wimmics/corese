@@ -61,7 +61,8 @@ public class ProviderService implements URLParam {
     public static final String UNDEFINED_SERVICE = "http://example.org/undefined/sparql";
     private static final String SERVICE_ERROR = "Service error: ";
     private static final String DB = "db:";
-    public static int SLICE_DEFAULT = 50;
+    public static int SLICE_DEFAULT = 100;
+    public static int TIMEOUT_DEFAULT = 5000;
 
     private QueryProcess defaut;
     private ProviderImpl provider;
@@ -201,7 +202,7 @@ public class ProviderService implements URLParam {
 
         ArrayList<Mappings> mapList = new ArrayList<>();
         ArrayList<ProviderThread> pList = new ArrayList<>();
-        int timeout = getTimeout(serviceNode);
+        int timeout = getTimeout(serviceNode, map);
         // by default in parallel (unless mode=sequence)
         boolean parallel = q.getOuterQuery().isParallel() && ! hasValue(SEQUENCE);
         
@@ -747,15 +748,16 @@ public class ProviderService implements URLParam {
         return map.aggregate(serviceNode);
     }
 
-    int getTimeout(Node serv) {
-        if (getGlobalAST().getMetadataDatatypeValue(Metadata.TIMEOUT)!=null) {
-            return getGlobalAST().getMetadataDatatypeValue(Metadata.TIMEOUT).intValue();
+    int getTimeout(Node serv, Mappings map) {
+        IDatatype dttimeout = getGlobalAST().getMetadataDatatypeValue(Metadata.TIMEOUT);
+        if (dttimeout != null) {
+            return dttimeout.intValue();
         }
-        Integer time = Property.intValue(SERVICE_TIMEOUT);
-        if (time == null) {
-            return getEval().getVisitor().timeout(serv);
+        Integer timeout = Property.intValue(SERVICE_TIMEOUT);
+        if (timeout != null) {
+            return timeout;
         }
-        return time;
+        return TIMEOUT_DEFAULT;
     }
 
     int getSlice(Node serv, Mappings map) {

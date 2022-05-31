@@ -12,6 +12,8 @@ template st:mapper {
     st:call-template(st:mapmap, xt:mappings())        
 } 
 where { 
+    # display url as is in map, see map2.rq
+    bind (st:set(st:maplod, st:url) as ?tmp)
     bind (st:set(st:mapsize, coalesce(funcall(function(){ ?mapsize }), "maplarge")) as ?s)
     bind (st:set(st:mapzoom, coalesce(funcall(function(){ ?mapzoom }), 6)) as ?z)    
 }

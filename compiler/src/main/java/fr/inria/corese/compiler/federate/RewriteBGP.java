@@ -121,7 +121,7 @@ public class RewriteBGP extends Util {
                 Triple triple = exp.getTriple();
                 List<Atom> list = getVisitor().getServiceList(triple);
                 if (list.isEmpty()) {
-                    getVisitor().error(triple);
+                    //getVisitor().error(triple, "triple 2 bgp");
                 }
                 if (getVisitor().isFederateBGP()) {
                     // do not distinguish one vs several URI
@@ -186,7 +186,7 @@ public class RewriteBGP extends Util {
                         // service s { bgp }
                         List<Atom> uriList = getVisitor().getServiceList(t);
                         if (uriList.isEmpty()) {
-                            getVisitor().error(t);
+                            getVisitor().error(t, "triple 2 service");
                         }
                         Service serv = getVisitor().getRewriteTriple().rewrite(name, bgp, uriList);
                         // do it once for first triple of this BGP

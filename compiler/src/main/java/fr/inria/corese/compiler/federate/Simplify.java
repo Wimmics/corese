@@ -16,6 +16,8 @@ import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Merge several service with same URI into one service
@@ -24,6 +26,7 @@ import java.util.List;
  *
  */
 public class Simplify extends Util {
+    static Logger logger = LoggerFactory.getLogger(Simplify.class);
     // heuristics to simplify service s bgp1 optional service (S) bgp2 
     // when all triple of bgp2
     // join with connected triple of bgp1 in s
@@ -361,11 +364,31 @@ public class Simplify extends Util {
     // second main function
     Exp simplifyBinary(Exp exp) {
         Exp simple = basicSimplify(exp);
+        
         if (simple.isOptional() || simple.isMinus()) {
             Exp split = split(simple);
+            if (visitor.isFederateUndefined()) {
+                return skipUndefined(split);
+            }
             return split;
         }
+
+        if (visitor.isFederateUndefined()) {
+            return skipUndefined(simple);
+        }
+        
         return simple;
+    }
+    
+    // skip undefined service for union/optional/minus
+    Exp skipUndefined(Exp exp) {
+        if (exp.isUnion()) {
+            return unionUndefined(exp);
+        }
+        else if (exp.isOptional()||exp.isMinus()) {
+            return binaryUndefined(exp);
+        }
+        return exp;
     }
        
     
@@ -398,12 +421,16 @@ public class Simplify extends Util {
             return merge(exp, s1, s2, s1.getServiceList());
         }
         else if (exp.isOptional() && visitor.isFederateOptional()) {
-            return optional(exp);
+            return binary(exp);
         }
-        //return simplifyService2(exp, s1, s2);
+        else if (exp.isMinus()&& visitor.isFederateMinus()) {
+            return binary(exp);
+        }
         return exp;
     }
     
+    // exp =  service S1 {bgp1} optional {service S2 {bgp2}}
+    // return service S1 {bgp1 optional {bgp2}}
     Service merge(Exp exp, Service s1, Service s2, List<Atom> list) {
         exp.set(0, s1.getBodyExp());
         exp.set(1, s2.getBodyExp());
@@ -415,9 +442,11 @@ public class Simplify extends Util {
     // service S1 {bgp1} optional {service S2 {bgp2}}
     // heuristics to simplify optional when triples in bgp2 
     // are present in service S1 inter S2
-    // and for all t in bgp2, connected(t, bgp1) => join(t, bgp1, S1 inter S2) == true
+    // and for all t in bgp2, connected(t, bgp1) 
+    // => join(t, bgp1, S1 inter S2) == true
     // -> service S1 {bgp1 optional {bgp2}}
-    Exp optional(Exp exp) {
+    // @todo: generalize with several service in right exp
+    Exp binary(Exp exp) {
         if (exp.get(0).size() == 1 && exp.get(1).size() == 1) {
             Exp e1 = exp.get(0).get(0);
             Exp e2 = exp.get(1).get(0);
@@ -464,6 +493,42 @@ public class Simplify extends Util {
         }
         return join;
     }
+    
+    // case where there is undefined service in one branch
+    Exp unionUndefined(Exp exp) {
+        if (hasUndefinedService(exp.get(0))
+                && !hasUndefinedService(exp.get(1))) {
+            logger.info("Skip union exp:\n" + exp.get(0));
+            return exp.get(1);
+        } else if (hasUndefinedService(exp.get(1))
+                && !hasUndefinedService(exp.get(0))) {
+            logger.info("Skip union exp:\n" + exp.get(1));
+            return exp.get(0);
+        }
+        return exp;
+    }
+    
+    // optional/minus
+    Exp binaryUndefined(Exp exp) {
+        if (hasUndefinedService(exp.get(1)) &&
+          ! hasUndefinedService(exp.get(0))) {
+            logger.info("Skip minus|optional exp:\n" + exp.get(1));            
+            return exp.get(0);
+        }
+        return exp;
+    }
+    
+    boolean hasUndefinedService(Exp exp) {
+        for (Exp e : exp) {
+            if (e.isService() && e.getService().isUndefined()) {
+                return  true;
+            }
+            if (hasUndefinedService(e)) {
+                return true;
+            }
+        }
+        return false;
+    } 
     
     ASTSelector getSelector() {
         return visitor.getAstSelector();

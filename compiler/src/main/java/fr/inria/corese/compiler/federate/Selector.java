@@ -170,6 +170,7 @@ public class Selector {
         
     boolean process11(List<Constant> list) throws EngineException {
         if (list.isEmpty()) {
+            logger.info("URL list is empty");
             return false;
         }
         Date d1 = new Date();
@@ -234,6 +235,7 @@ public class Selector {
         Date d2 = new Date();
         boolean b = getAstSelector().complete();       
         trace(map, d1, d2);
+        logger.info("Source Selection success: " + b);
         return b;
     }
     

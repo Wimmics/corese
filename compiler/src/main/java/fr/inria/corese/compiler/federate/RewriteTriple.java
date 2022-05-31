@@ -48,7 +48,7 @@ public class RewriteTriple {
         filter(body, t, bgp, list);
         List<Atom> alist = vis.getServiceList(t);
         if (alist.isEmpty()) {
-            vis.error(t);
+            vis.error(t, "rewrite triple");
         }
         return rewrite(name, bgp, alist);
     }

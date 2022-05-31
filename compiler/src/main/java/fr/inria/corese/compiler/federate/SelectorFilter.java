@@ -2,6 +2,7 @@ package fr.inria.corese.compiler.federate;
 
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
+import fr.inria.corese.sparql.triple.parser.Binary;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Optional;
@@ -99,6 +100,9 @@ public class SelectorFilter {
         else if (body.isOptional()) {
            processJoin(body.getOptional());
         }
+        else if (body.isMinus()) {
+           processJoin(body.getMinus());
+        }
         else if (body.isQuery()) {
             processJoin(body.getAST());
         }
@@ -107,11 +111,14 @@ public class SelectorFilter {
         }
     }
     
-    void processJoin(Optional body) {
+    void processJoin(Binary body) {
         processBGPJoin(body.get(0));
         processBGPJoin(body.get(1));
-        if (getVisitor().isFederateOptional()) {
-            // test join(t1, t2) on triple of both arg of optional
+        
+        if ((body.isOptional() && getVisitor().isFederateOptional()) ||
+            (body.isMinus()    && getVisitor().isFederateMinus())) {
+            // test join(t1, t2) on triple of both arg of optional/minus
+            // to enable simplification of body
             BasicGraphPattern bgp = BasicGraphPattern.create();
             addTriple(body.get(0), bgp);
             addTriple(body.get(1), bgp);
@@ -121,7 +128,8 @@ public class SelectorFilter {
 
     void addTriple(Exp exp, BasicGraphPattern bgp) {
         for (Exp e : exp) {
-            if (e.isTriple()) {
+            if (e.isTriple() && !bgp.getBody().contains(e)) {
+                // skip duplicate triples
                 bgp.add(e);
             }
         }

@@ -112,7 +112,7 @@ public class RewriteList implements FederateMerge {
         for (Exp triple : bgp) {
             List<Atom> list = getVisitor().getServiceList(triple.getTriple());
             if (list.isEmpty()) {
-                getVisitor().error(triple.getTriple());
+                getVisitor().error(triple.getTriple(), "rdf list 2 service");
             }
             if (count++ == 0) {
                 uriList = list;

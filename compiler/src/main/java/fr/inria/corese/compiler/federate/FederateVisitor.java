@@ -25,6 +25,7 @@ import static fr.inria.corese.sparql.triple.parser.Metadata.FED_BGP;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_COMPLETE;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_JOIN;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_OPTIONAL;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_MINUS;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_PARTITION;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
@@ -72,6 +73,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static boolean PARTITION = true;
     // test and use join between right and left bgp of optional
     public static boolean OPTIONAL = true;
+    public static boolean MINUS = true;
     // complete with list of triple alone
     public static boolean COMPLETE_BGP = false;
     // source selection generate bind (exists {t1 . t2} as ?b)
@@ -127,9 +129,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean federateJoin = SELECT_JOIN;
     private boolean federatePartition = PARTITION;
     private boolean federateOptional = OPTIONAL;
+    private boolean federateMinus = MINUS;
     private boolean federateComplete = COMPLETE_BGP;
     private boolean federateIndex = false;
     private boolean federateClass = true;
+    // in union/optional/minus, skip arg with undefined service
+    private boolean federateUndefine = true;
     public static List<String> BLACKLIST;
     public static List<String> BLACKLIST_EXCEPT;
     // predicate such as owl:sameAs that split bgp connectivity
@@ -285,6 +290,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             }
             ast.setAstSelector(getAstSelector());
         } catch (EngineException ex) {
+            logger.error("Selection error");
             logger.error(ex.getMessage());
             suc = false;
         }
@@ -480,6 +486,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         setFederatePartition(getValue(FED_PARTITION, isFederatePartition()));
         setFederateComplete(getValue(FED_COMPLETE, isFederateComplete()));
         setFederateOptional(getValue(FED_OPTIONAL, isFederateOptional()));
+        setFederateMinus(getValue(FED_MINUS, isFederateMinus()));
         
         if (ast.getMetaValue(Metadata.FED_CLASS) !=null) {            
             setFederateClass(ast.getMetaValue(Metadata.FED_CLASS).booleanValue());
@@ -805,7 +812,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                     exp = getSimplify().simplify(exp);
                 } 
                 i = insert(body, exp, i);
-
+                
             } else {
                 // BGP
                 rewrite(namedGraph, body, exp);
@@ -853,8 +860,10 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             //     service s1 {A} service s2 {B} optional/minus {service s2 C}
             // -> exp = {service s1 {A} . service s2 {B optional/minus C}}
             body.set(i, exp.get(0));     // s1
-            body.add(i + 1, exp.get(1)); // s2
-            i++;
+            if (exp.size()==2) {
+                body.add(i + 1, exp.get(1)); // s2
+                i++;
+            }
         } else {
             body.set(i, exp);
         }
@@ -942,6 +951,11 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     }
     
     // no endpoint URL for triple t
+    void error(Triple t, String mes) {
+        logger.error(mes);
+        error(t);
+    }
+    
     void error(Triple t) {
         logger.error("Undefined triple: " + t);
         ast.setFail(true);
@@ -983,6 +997,18 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     }
 
     List<Atom> getServiceListPath(Triple t) {
+        List<Atom> serviceList = getAstSelector().getPredicateService(t);
+        if (serviceList==null) {
+            // path t was not tested because it has no constant
+            return getServiceListPathPredicate(t);
+        }
+        if (serviceList.isEmpty()) {
+            return getDefaultServiceList();
+        }
+        return serviceList;
+    }
+    
+    List<Atom> getServiceListPathPredicate(Triple t) {
         List<Atom> serviceList = new ArrayList<>();
         
         for (Constant p : t.getRegex().getPredicateList()) {
@@ -1434,6 +1460,22 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setDiscovery(Mappings discovery) {
         this.discovery = discovery;
+    }
+
+    public boolean isFederateUndefined() {
+        return federateUndefine;
+    }
+
+    public void setFederateUndefined(boolean federateUndefine) {
+        this.federateUndefine = federateUndefine;
+    }
+
+    public boolean isFederateMinus() {
+        return federateMinus;
+    }
+
+    public void setFederateMinus(boolean federateMinus) {
+        this.federateMinus = federateMinus;
     }
 
    

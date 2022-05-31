@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!--
 SPARQL Template Transformation
-Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Fri Oct 15 18:25:32 CEST 2021
+Olivier Corby - Wimmics - Inria UCA I3S
+Tue May 24 08:16:10 CEST 2022
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -74,6 +74,7 @@ where {
     filter (xt:size(?list) > 0)
 }
 
+
 ]]>
 </body>
 </rule>
@@ -95,6 +96,8 @@ template st:mapper {
     st:call-template(st:mapmap, xt:mappings())        
 } 
 where { 
+    # display url as is in map, see map2.rq
+    bind (st:set(st:maplod, st:url) as ?tmp)
     bind (st:set(st:mapsize, coalesce(funcall(function(){ ?mapsize }), "maplarge")) as ?s)
     bind (st:set(st:mapzoom, coalesce(funcall(function(){ ?mapzoom }), 6)) as ?z)    
 }
@@ -547,7 +550,9 @@ template st:map2(?list) {
     str(?lat)
     str(?lon)
     coalesce(st:get(st:mapicon2), "/img/smarker.png")
-    coalesce(st:plink(?r), str(?r))
+    #coalesce(st:plink(?r), str(?r))
+    # see mapper.rq for st:maplod
+    coalesce(if (st:get(st:maplod, st:url), ?r, st:plink(?r)), str(?r))
   }
 }
 where {

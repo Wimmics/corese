@@ -158,6 +158,8 @@ FEDERATE_JOIN_PATH = true
 FEDERATE_OPTIONAL = true
 # exploit join on minus ; require FEDERATE_BGP = true 
 FEDERATE_MINUS = true
+# skip undefined arg of union optional minus
+FEDERATE_UNDEFINED = true
 
 FEDERATE_BLACKLIST        = http://ldf.fi/warsa/sparql;http://data.semanticweb.org/sparql
 FEDERATE_BLACKLIST_EXCEPT = http://corese.inria.fr/sparql;http://prod-dekalog.inria.fr/sparql

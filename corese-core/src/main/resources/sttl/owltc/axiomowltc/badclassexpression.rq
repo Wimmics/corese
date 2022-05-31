@@ -1,15 +1,17 @@
-
 template {
 	?suc
 }
 where {
-	# search all the triples how contains the predicate ?p
+	# for triples with predicate ?p
+	# there must be something like: ?s rdfs:subClassOf|owl:equivalentClass ?in 
+	
 	VALUES ?p { owl:unionOf owl:intersectionOf owl:complementOf owl:oneOf }
+	
 	?in ?p ?z
 	
 	bind (
 		st:call-template-with(st:classexpconformityowltc, st:checkConformity, ?in)
 	as ?suc)
 	
-	filter(st:visit(st:err("axiomClassExp"), ?in, ?suc))
+	filter st:visit(st:err("axiomClassExp"), ?in, ?suc)
 }

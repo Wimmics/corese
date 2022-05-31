@@ -519,15 +519,7 @@ public class Simplify extends Util {
     }
     
     boolean hasUndefinedService(Exp exp) {
-        for (Exp e : exp) {
-            if (e.isService() && e.getService().isUndefined()) {
-                return  true;
-            }
-            if (hasUndefinedService(e)) {
-                return true;
-            }
-        }
-        return false;
+        return exp.hasUndefinedService();
     } 
     
     ASTSelector getSelector() {

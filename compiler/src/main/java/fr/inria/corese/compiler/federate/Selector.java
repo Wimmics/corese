@@ -235,7 +235,7 @@ public class Selector {
         Date d2 = new Date();
         boolean b = getAstSelector().complete();       
         trace(map, d1, d2);
-        logger.info("Source Selection success: " + b);
+        logger.info("Source Selection Join Test Success: " + b);
         return b;
     }
     

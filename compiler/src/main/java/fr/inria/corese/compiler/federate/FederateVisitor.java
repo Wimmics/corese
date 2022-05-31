@@ -27,6 +27,7 @@ import static fr.inria.corese.sparql.triple.parser.Metadata.FED_JOIN;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_OPTIONAL;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_MINUS;
 import static fr.inria.corese.sparql.triple.parser.Metadata.FED_PARTITION;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_UNDEFINED;
 import fr.inria.corese.sparql.triple.parser.Processor;
 import fr.inria.corese.sparql.triple.parser.Term;
 import fr.inria.corese.sparql.triple.parser.URLParam;
@@ -71,9 +72,11 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static boolean FEDERATE_BGP = true;
     // if we find a complete partition, do not split it in subparts
     public static boolean PARTITION = true;
+    public static boolean MINUS = true;
     // test and use join between right and left bgp of optional
     public static boolean OPTIONAL = true;
-    public static boolean MINUS = true;
+    // skip undefined arg of union optional minus
+    public static boolean UNDEFINED = true;   
     // complete with list of triple alone
     public static boolean COMPLETE_BGP = false;
     // source selection generate bind (exists {t1 . t2} as ?b)
@@ -134,7 +137,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean federateIndex = false;
     private boolean federateClass = true;
     // in union/optional/minus, skip arg with undefined service
-    private boolean federateUndefine = true;
+    private boolean federateUndefine = UNDEFINED;
     public static List<String> BLACKLIST;
     public static List<String> BLACKLIST_EXCEPT;
     // predicate such as owl:sameAs that split bgp connectivity
@@ -298,15 +301,19 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     }
     
     void after(ASTQuery ast) {
-        error();
+        error(ast);
         verbose(ast);
     }
     
-    void error() {
+    void error(ASTQuery ast) {
         if (!getErrorManager().getErrorList().isEmpty()) {
             for (RewriteError err : getErrorManager().getErrorList()) {
                 logger.error(err.toString());
             }
+        }
+        if (ast.hasUndefinedService()) {
+            logger.error("Query rewrite fail due to undefined triple");
+            ast.setFail(true);
         }
     }
     
@@ -487,6 +494,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         setFederateComplete(getValue(FED_COMPLETE, isFederateComplete()));
         setFederateOptional(getValue(FED_OPTIONAL, isFederateOptional()));
         setFederateMinus(getValue(FED_MINUS, isFederateMinus()));
+        setFederateUndefined(getValue(FED_UNDEFINED, isFederateUndefined()));
         
         if (ast.getMetaValue(Metadata.FED_CLASS) !=null) {            
             setFederateClass(ast.getMetaValue(Metadata.FED_CLASS).booleanValue());
@@ -529,8 +537,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
         
         if (ast.hasMetadataValue(Metadata.SPLIT)) {
-            // federate query with index for source discovery
-            // @index <http://index.org/sparql>
+            // @split owl:sameAs
             setSplit(ast.getMetadata().getValues(Metadata.SPLIT));
             logger.info("Split: "+ getSplit());
         }
@@ -958,7 +965,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     
     void error(Triple t) {
         logger.error("Undefined triple: " + t);
-        ast.setFail(true);
+        //ast.setFail(true);
     }
     
     List<Atom> getAtomList(List<String> list) {

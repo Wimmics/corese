@@ -9,7 +9,7 @@ import java.util.List;
  * @author Olivier Corby, Edelweiss, INRIA 2011
  */
 public class Service extends SourceExp {
-    private static final String UNDEF_SERV = "?undef_serv";
+    private static final String UNDEFINED_SERVER = "http://example.org/sparl"; //?_undef_serv";
     public static String SERVER_SEED = "?_server_";
     public static String SERVER_VAR = SERVER_SEED+"0";
     private int number = 0;
@@ -34,6 +34,9 @@ public class Service extends SourceExp {
     }
 
     public static Service create(List<Atom> list, Exp body, boolean b) {
+        if (list.isEmpty()) {
+            list = List.of(getDefaultService(list));
+        } 
         Service s = new Service(getDefaultService(list), body, b);
         s.setServiceList(list);
         return s;
@@ -47,7 +50,8 @@ public class Service extends SourceExp {
     
     static Atom getDefaultService(List<Atom> list) {
         if (list.isEmpty()) {
-            return Variable.create(UNDEF_SERV);           
+            //return Variable.create(UNDEFINED_SERVER);           
+            return Constant.create(UNDEFINED_SERVER);           
         }
         return list.get(0);     
     }
@@ -62,6 +66,10 @@ public class Service extends SourceExp {
     
     public static Service newInstance(List<String> list, Exp body) {
         return create(getList(list), body, false);
+    }
+    
+    public boolean isUndefined() {
+        return getServiceName().getLabel().equals(UNDEFINED_SERVER);
     }
     
     static List<Atom> getList(List<String> list) {

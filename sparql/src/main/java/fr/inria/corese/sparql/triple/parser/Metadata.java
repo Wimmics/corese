@@ -140,6 +140,7 @@ public class Metadata extends ASTObject
     public static final String FED_BGP      = "@federateBgp";
     public static final String FED_JOIN     = "@federateJoin";
     public static final String FED_OPTIONAL = "@federateOptional";
+    public static final String FED_MINUS    = "@federateMinus";
     public static final String FED_COMPLETE = "@federateComplete";
     public static final String FED_PARTITION= "@federatePartition";
     public static final String FED_SUCCESS  = "@"+URLParam.FED_SUCCESS;

@@ -24,6 +24,8 @@ public interface URLParam {
 
     // specific for service clause
     static final String LOOP = "loop";
+    static final String START = "start";
+    static final String UNTIL = "until";
     static final String LIMIT = "limit";
     static final String SLICE = "slice";
     static final String TIMEOUT = "timeout";

@@ -18,7 +18,7 @@ public class Metadata extends ASTObject
     implements Iterable<String> {
     static final String NL = System.getProperty("line.separator");
     static final int UNDEFINED  = -1;
-    
+    static final String AT = "@";
     public static final int TEST   = 0;
     public static final int DEBUG  = 1;
     public static final int TRACE  = 2;
@@ -136,6 +136,10 @@ public class Metadata extends ASTObject
     public static final String SHOW   = "@show";
     public static final String SELECTION   = "@selection";
     public static final String DISCOVERY   = "@discovery";
+    public static final String LOOP   = AT+URLParam.LOOP;
+    public static final String START  = AT+URLParam.START;
+    public static final String UNTIL  = AT+URLParam.UNTIL;;
+    public static final String HIDE   = "@hide";
     
     public static final String FED_BGP      = "@federateBgp";
     public static final String FED_JOIN     = "@federateJoin";

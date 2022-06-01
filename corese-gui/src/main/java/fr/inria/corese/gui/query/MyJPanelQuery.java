@@ -595,6 +595,7 @@ public final class MyJPanelQuery extends JPanel {
     
     void fillTable(Mappings map, int sort) {
         Query q = map.getQuery();
+        ASTQuery ast = q.getAST();
         List<fr.inria.corese.kgram.api.core.Node> vars = q.getSelect();
         if (q.isUpdate() && map.size() > 0){            
            vars = map.get(0).getQueryNodeList();           
@@ -610,23 +611,25 @@ public final class MyJPanelQuery extends JPanel {
         model.addColumn("num", col);
         
         for (fr.inria.corese.kgram.api.core.Node var : vars) {
-            String columnName = var.getLabel();
-            //System.out.println(sv);
-            String[] colmunData = new String[size];
-            for (int j = 0; j < map.size(); j++) {
-                if (j >= maxres){
-                    logger.warn("Stop display after " + maxres + " results out of " + map.size());
-                    break;
+            if (accept(ast, var.getLabel())) {
+                String columnName = var.getLabel();
+                //System.out.println(sv);
+                String[] colmunData = new String[size];
+                for (int j = 0; j < map.size(); j++) {
+                    if (j >= maxres) {
+                        logger.warn("Stop display after " + maxres + " results out of " + map.size());
+                        break;
+                    }
+                    Mapping m = map.get(j);
+                    fr.inria.corese.kgram.api.core.Node value = m.getNode(columnName);
+
+                    if (value != null) {
+                        IDatatype dt = value.getValue();
+                        colmunData[j] = pretty(dt);
+                    }
                 }
-                Mapping m = map.get(j);
-                fr.inria.corese.kgram.api.core.Node value = m.getNode(columnName);
-                
-                if (value != null) {
-                    IDatatype dt =  value.getValue();
-                    colmunData[j] = pretty(dt);
-                }
+                model.addColumn(columnName, colmunData);
             }
-            model.addColumn(columnName, colmunData);
         }
         
         if (sort>=0) {
@@ -634,6 +637,14 @@ public final class MyJPanelQuery extends JPanel {
         }
         
         this.tableResults.setModel(model);
+    }
+    
+    // @hide ?_service_report
+    boolean accept(ASTQuery ast, String var) {
+        if (ast.hasMetadata(Metadata.HIDE)) {
+            return ! var.startsWith(Binding.SERVICE_REPORT);
+        }
+        return true;
     }
     
     TableModel getTable() {

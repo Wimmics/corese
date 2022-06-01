@@ -120,6 +120,7 @@ public class Property {
         // test and use join between right and left exp of optional
         FEDERATE_OPTIONAL,
         FEDERATE_MINUS,
+        FEDERATE_UNDEFINED,
         // complete bgp partition with additional partition of triple alone (as before)
         FEDERATE_COMPLETE,
         // source selection with filter
@@ -596,6 +597,10 @@ public class Property {
                 
             case FEDERATE_MINUS:
                 FederateVisitor.MINUS=b;
+                break;
+                
+            case FEDERATE_UNDEFINED:
+                FederateVisitor.UNDEFINED=b;
                 break;
                 
             case FEDERATE_JOIN_PATH:

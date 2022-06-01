@@ -36,6 +36,8 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import static fr.inria.corese.sparql.triple.parser.Metadata.START;
+import static fr.inria.corese.sparql.triple.parser.Metadata.UNTIL;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
@@ -56,7 +58,7 @@ import org.json.JSONObject;
 public class ProviderService implements URLParam {
 
     static Logger logger = LoggerFactory.getLogger(ProviderService.class);
-    public static final String LOCAL_SERVICE    = "http://ns.inria.fr/corese/sparql"; //http://example.org/sparql";
+    public static final String LOCAL_SERVICE = "http://ns.inria.fr/corese/sparql"; //http://example.org/sparql";
     public static final String LOCAL_SERVICE_NS = LOCAL_SERVICE + "/%s";
     public static final String UNDEFINED_SERVICE = "http://example.org/undefined/sparql";
     private static final String SERVICE_ERROR = "Service error: ";
@@ -186,6 +188,7 @@ public class ProviderService implements URLParam {
      * buckets with size = slice Iterate service on each bucket When several
      * services, they are evaluated in parallel by default, unless @sequence
      * metadata When several services, return distinct Mappings when
+     *
      * @distinct metadata.
      */
     Mappings send(List<Node> serverList, Node serviceNode, Mappings map, boolean slice, int length) throws EngineException {
@@ -204,8 +207,8 @@ public class ProviderService implements URLParam {
         ArrayList<ProviderThread> pList = new ArrayList<>();
         int timeout = getTimeout(serviceNode, map);
         // by default in parallel (unless mode=sequence)
-        boolean parallel = q.getOuterQuery().isParallel() && ! hasValue(SEQUENCE);
-        
+        boolean parallel = q.getOuterQuery().isParallel() && !hasValue(SEQUENCE);
+
         for (Node service : serverList) {
 
             String name = service.getLabel();
@@ -224,12 +227,11 @@ public class ProviderService implements URLParam {
             url.encode();
             getLog().add(LogKey.ENDPOINT, url.getServer());
             getLog().add(LogKey.ENDPOINT_CALL, url.getLogURLNumber());
-            
+
             if (ok) {
                 if (getContext() != null && getContext().isFederateIndex()) {
                     // service clause accepted
-                }
-                else if (Access.reject(Feature.SPARQL_SERVICE, getBinding().getAccessLevel(), service.getLabel())) {
+                } else if (Access.reject(Feature.SPARQL_SERVICE, getBinding().getAccessLevel(), service.getLabel())) {
                     logger.error(TermEval.SERVICE_MESS + " " + service.getLabel());
                     SafetyException ex = new SafetyException(TermEval.SERVICE_MESS, service.getLabel());
                     getLog().addException(ex.setURL(url));
@@ -249,8 +251,8 @@ public class ProviderService implements URLParam {
                 // service is variable: select appropriate subset of  Mappings with service URL
                 // service is URL: consider all Mappings. 
                 // Hint: Mappings are already result of former select 
-                input = getMappings(q, getServiceExp(), getServiceExp().getServiceNode(), service, map);                
-                if (input.size() > 0) {                   
+                input = getMappings(q, getServiceExp(), getServiceExp().getServiceNode(), service, map);
+                if (input.size() > 0) {
                     g.getEventManager().process(Event.Service, "input: \n" + input.toString(true, false, 5));
                 } else {
                     g.getEventManager().process(Event.Service, "no input");
@@ -308,10 +310,10 @@ public class ProviderService implements URLParam {
      */
     void process(URLServer service, Mappings map, Mappings sol, boolean slice, int length, int timeout)
             throws EngineException {
-        
+
         if (FederateVisitor.isBlackListed(service.getServer())) {
             logger.info(String.format("Endpoint %s is blacklisted", service.getServer()));
-            return ;
+            return;
         }
         int size = 0, count = 0;
         traceInput(service, map);
@@ -362,8 +364,7 @@ public class ProviderService implements URLParam {
     void log(URLServer serv, Mappings map) {
         System.out.println("service: " + serv + "; nb results: " + map.size());
     }
-    
-   
+
     /**
      * Send query to sparql endpoint using HTTP request Generate variable
      * binding from map or env if any Consider subset of Mappings map within
@@ -385,7 +386,7 @@ public class ProviderService implements URLParam {
             ASTQuery ast = getCompiler().compile(serv, q, map, ares, start, limit);
 
             if (aa == ast) {
-                
+
                 // no binding
                 if (start > 0 || ares.isBnode()) {
                     // no relevant binding: skip slice
@@ -396,7 +397,7 @@ public class ProviderService implements URLParam {
                         logger.info("Skip slice for absence of relevant binding");
                     }
                     return Mappings.create(q);
-                }               
+                }
             }
 
             if (debug) {
@@ -406,10 +407,12 @@ public class ProviderService implements URLParam {
             targetAST = ast;
             traceAST(serv, ast);
             complete(ast);
-            
+
             Mappings res = send(serv, ast, map, start, limit, timeout, count);
-            if (res !=null) reportAST(ast, res, count);
-            if (debug && res!=null) {
+            if (res != null) {
+                reportAST(ast, res, count);
+            }
+            if (debug && res != null) {
                 traceResult(serv, res);
             }
             if (res != null && res.isError()) {
@@ -430,47 +433,108 @@ public class ProviderService implements URLParam {
 
         return null;
     }
-    
+
     // when query is select distinct and query body is a service:
     // service ast inherits select distinct
     void complete(ASTQuery ast) {
-        if (getGlobalAST().isDistinct() &&
-            getGlobalAST().getBody().size() == 1 &&
-            getGlobalAST().getBody().get(0).isService()) {
-           ast.setDistinct(true);
-           //logger.info("distinct:\n"+ast);
+        if (getGlobalAST().isDistinct()
+                && getGlobalAST().getBody().size() == 1
+                && getGlobalAST().getBody().get(0).isService()) {
+            ast.setDistinct(true);
+            //logger.info("distinct:\n"+ast);
         }
     }
 
     void error(URLServer serv, Query gq, ASTQuery ast, Exception e) {
         logger.error("service error: " + serv.getServer());
-        if (e.getMessage().length()>1000) {
+        if (e.getMessage().length() > 1000) {
             logger.error(e.getMessage().substring(0, 1000));
-        }
-        else {
+        } else {
             logger.error(e.getMessage());
         }
         logger.error(ast.toString());
         gq.addError(SERVICE_ERROR.concat(serv.getServer()).concat("\n"), e);
         submitError(serv);
     }
-    
+
     void submitError(URLServer url) {
-        if ((getContext()!=null && getContext().isSelection()) ||
-             getQuery().getGlobalQuery().isFederate() ||
-             getGlobalAST().hasMetadata(Metadata.FED_BLACKLIST)) {
+        if ((getContext() != null && getContext().isSelection())
+                || getQuery().getGlobalQuery().isFederate()
+                || getGlobalAST().hasMetadata(Metadata.FED_BLACKLIST)) {
             if (FederateVisitor.blacklist(url.getServer())) {
                 logger.info("Blacklist: " + url.getServer() + " " + FederateVisitor.getBlacklist().size());
             }
         }
     }
 
-    /**
-     * Intermediate send function with graph processing extension
-     * Endpoint may return RDF graph as query result
-     * use case: format=turtle => return W3C Query Results RDF Format => RDF Graph
-     */
+    // @loop @limit 1000 @start 0 @until 9
+    // for (i=0; i<until; i++) offset = i*limit
     Mappings send(URLServer serv, ASTQuery ast, Mappings map,
+            int start, int limit, int timeout, int count)
+            throws EngineException, IOException {
+
+        if (getGlobalAST().hasMetadata(Metadata.LOOP) ||
+            serv.hasParameter(LOOP)) {
+            int begin   = getValue(serv, START, URLParam.START, 0);
+            int end     = getValue(serv, UNTIL, URLParam.UNTIL, Integer.MAX_VALUE);
+            int myLimit = getValue(serv, LIMIT, URLParam.LIMIT, ast.getLimit());
+            logger.info(
+                    String.format("send loop: begin %s end %s limit %s", begin, end, myLimit));
+            Mappings sol = new Mappings();
+
+            for (int i = begin;; i++) {
+                ast.setLimit(myLimit);
+                ast.setOffset(myLimit * i);
+                logger.info(
+                        String.format("send loop: index %s limit %s offset %s",
+                                i, ast.getLimit(), ast.getOffset()));
+//                if (getGlobalAST().hasMetadata(Metadata.TRACE)) {
+//                    logger.info(ast.toString());
+//                }
+                Mappings res = sendStep(serv, ast, map, start, limit, timeout, count);
+                if (res == null) {
+                    break;
+                }
+                sol.setQuery(res.getQuery());
+                if (res.isEmpty()) {
+                    break;
+                }
+                //System.out.println(res);
+                addResult(serv, sol, res);
+                if (i >= end) {
+                    break;
+                }
+            }
+
+            return sol;
+        }
+
+        return sendStep(serv, ast, map, start, limit, timeout, count);
+    }
+
+    int getValue(URLServer url, String meta, String param, int n) {
+        return getValue(url, getGlobalAST(), meta, param, n);
+    }
+
+    int getValue(URLServer url, ASTQuery ast, String meta, String param, int n) {
+        if (url.hasParameter(param)) {
+            int value = url.intValue(param);
+            if (value != -1) {
+                return value;
+            }
+        }
+        if (ast.hasMetadata(meta) && ast.getMetaValue(meta) != null) {
+            return ast.getMetaValue(meta).intValue();
+        }
+        return n;
+    }
+
+    /**
+     * Intermediate send function with graph processing extension Endpoint may
+     * return RDF graph as query result use case: format=turtle => return W3C
+     * Query Results RDF Format => RDF Graph
+     */
+    Mappings sendStep(URLServer serv, ASTQuery ast, Mappings map,
             int start, int limit, int timeout, int count)
             throws EngineException, IOException {
 
@@ -479,29 +543,27 @@ public class ProviderService implements URLParam {
         }
         if (Property.booleanValue(SERVICE_GRAPH)) {
             return sendWithGraph(serv, ast, map, start, limit, timeout, count);
-        }
-        else {
+        } else {
             return sendBasic(serv, ast, map, start, limit, timeout, count);
         }
     }
-    
-     Mappings sendBasic(URLServer serv, ASTQuery ast, Mappings map,
+
+    Mappings sendBasic(URLServer serv, ASTQuery ast, Mappings map,
             int start, int limit, int timeout, int count)
             throws EngineException, IOException {
-      
+
         Mappings res = eval(ast, serv, timeout, count);
         processLinkList(res.getLinkList());
         return res;
     }
-           
+
     /**
-     * Extension: service may return RDF graph 
-     * Evaluate service query on graph
+     * Extension: service may return RDF graph Evaluate service query on graph
      */
     Mappings sendWithGraph(URLServer serv, ASTQuery ast, Mappings map,
             int start, int limit, int timeout, int count)
             throws EngineException, IOException {
-               
+
         Mappings res = null;
         Graph g;
 
@@ -512,7 +574,7 @@ public class ProviderService implements URLParam {
             res = sendBasic(serv, ast, map, start, limit, timeout, count);
             g = (Graph) res.getGraph();
         }
-        if (g != null) {            
+        if (g != null) {
             QueryProcess exec = QueryProcess.create(g);
             ast.inheritFunction(getGlobalAST());
             res = exec.query(ast, getBinding());
@@ -522,13 +584,13 @@ public class ProviderService implements URLParam {
 
         return res;
     }
-    
+
     void processLinkList(List<String> list) {
-        if (! list.isEmpty()) {
-            getLog().addLink(list);                        
+        if (!list.isEmpty()) {
+            getLog().addLink(list);
         }
     }
-    
+
     boolean processMessage(Mappings map) {
         String url = map.getLink(URLParam.MES);
         if (url != null) {
@@ -536,7 +598,7 @@ public class ProviderService implements URLParam {
         }
         return true;
     }
-    
+
     boolean processMessage(String url) {
         String text = new Service().getString(url);
         JSONObject obj = new JSONObject(text);
@@ -545,7 +607,7 @@ public class ProviderService implements URLParam {
         for (String key : obj.keySet()) {
             System.out.println(key + " " + obj.get(key));
         }
-        
+
         return true;
     }
 
@@ -575,21 +637,17 @@ public class ProviderService implements URLParam {
         return false;
     }
 
-    ASTQuery getAST(Query q) {
-        return  q.getAST();
-    }
-
     void traceAST(URLServer serv, ASTQuery ast) {
         getLog().traceAST(serv, ast);
     }
-    
+
     void reportAST(ASTQuery ast, Mappings map, int count) {
         if (getGlobalAST().hasMetadata(Metadata.DETAIL)) {
             map.completeReport(URLParam.QUERY, ast.toString());
         }
         map.completeReport(CALL, count);
     }
-    
+
     DatatypeMap map() {
         return DatatypeMap.getSingleton();
     }
@@ -599,22 +657,22 @@ public class ProviderService implements URLParam {
     }
 
     /**
-     * 
+     *
      * @param serv
      * @param map: final result Mappings of service serv
      * @param nbcall: number of service call to evaluate service serv
-     * @param time 
+     * @param time
      */
     void traceOutput(URLServer serv, Mappings map, int nbcall, double time) {
         getLog().traceOutput(serv, map, nbcall, time);
-        
+
         if (getGlobalAST().hasReportKey(FULL_SIZE)) {
             map.completeReport(FULL_SIZE, map.size());
-            map.completeReport(NB_CALL,   nbcall);
+            map.completeReport(NB_CALL, nbcall);
             map.completeReport(FULL_TIME, time);
-            
-            if (map.getReport()!=null) {
-                 map.getReport().dispatch(REPORT);
+
+            if (map.getReport() != null) {
+                map.getReport().dispatch(REPORT);
             }
         }
     }
@@ -629,14 +687,14 @@ public class ProviderService implements URLParam {
     }
 
     /**
-     * 
-     * @param sol: total   result of service evaluation 
-     * @param res: partial result of service evaluation 
+     *
+     * @param sol: total result of service evaluation
+     * @param res: partial result of service evaluation
      */
     void addResult(URLServer serv, Mappings sol, Mappings res) {
         if (res != null) {
-            if (sol.getReport() != null && sol.getReport().getList() != null && 
-                    res.getReport() != null) {
+            if (sol.getReport() != null && sol.getReport().getList() != null
+                    && res.getReport() != null) {
                 sol.getReport().getList().add(res.getReport());
             }
             sol.add(res);
@@ -648,36 +706,36 @@ public class ProviderService implements URLParam {
             }
         }
     }
-    
+
     void addResultBasic(Mappings sol, Mappings res) {
         if (res != null) {
-            sol.add(res);           
+            sol.add(res);
         }
     }
 
     /**
      * Return final result Mappings mapList is the list of result Mappings of
-     * each service When there are *several* services, return distinct
-     * Mappings with @distinct metadata
+     * each service When there are *several* services, return distinct Mappings
+     * with @distinct metadata
      */
     Mappings getResult(List<Mappings> mapList) {
         if (mapList.size() == 1) {
             return mapList.get(0);
         }
         Mappings res = null;
-        
+
         if (!mapList.isEmpty()) {
             res = new Mappings();
-            
+
             for (Mappings m : mapList) {
-                if (res.getQuery() == null && m.getQuery()!=null) {
+                if (res.getQuery() == null && m.getQuery() != null) {
                     res.setQuery(m.getQuery());
                     res.init(m.getQuery());
                 }
                 addResultBasic(res, m);
             }
         }
-    
+
         boolean distinct = getGlobalAST().hasMetadata(Metadata.DISTINCT);
         // TODO: if two Mappings have their own duplicates, they are removed
         if (res != null && res.getSelect() != null && distinct) {
@@ -771,16 +829,14 @@ public class ProviderService implements URLParam {
         }
         return SLICE_DEFAULT;
     }
-    
+
 // former: 
-        //getQuery().getGlobalQuery().getSlice();        //slice = getEval().getVisitor().slice(serv, map == null ? Mappings.create(getQuery()) : map);
+    //getQuery().getGlobalQuery().getSlice();        //slice = getEval().getVisitor().slice(serv, map == null ? Mappings.create(getQuery()) : map);
 //        IDatatype dt = getBinding().getGlobalVariable(Binding.SLICE_SERVICE);
 //        if (dt == null) {
 //            return slice;
 //        }
 //        return dt.intValue();
- 
-
     Mappings eval(ASTQuery ast, URLServer serv, int timeout, int count)
             throws IOException, EngineException {
         if (isDB(serv.getNode())) {
@@ -799,7 +855,7 @@ public class ProviderService implements URLParam {
      */
     Mappings db(Query q, Node serv) throws EngineException {
         QueryProcess exec = QueryProcess.dbCreate(Graph.create(), true, QueryProcess.DB_FACTORY, serv.getLabel().substring(DB.length()));
-        return exec.query(getAST(q));
+        return exec.query(q.getAST());
     }
 
     boolean isDB(Node serv) {

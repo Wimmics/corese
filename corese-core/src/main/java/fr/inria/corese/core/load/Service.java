@@ -725,21 +725,7 @@ public class Service implements URLParam {
     }
     
     void metadata(ASTQuery ast) {
-        if (!ast.hasLimit()) {
-            if (ast.hasMetadata(Metadata.LIMIT)) {
-                ast.setLimit(ast.getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());
-            }
-            // DRAFT: for testing (modify ast ...)
-            Integer lim = getURL().intValue(LIMIT);
-            if (lim != -1) {
-                ast.setLimit(lim);
-            }
-            lim = Property.intValue(SERVICE_LIMIT);            
-            if (lim != null) {
-                ast.setLimit(lim);
-            }
-            
-        }
+        limit(ast);
         if (getURL().isGET() || ast.getGlobalAST().hasMetadata(Metadata.GET)) {
             setPost(false);
         }
@@ -753,6 +739,26 @@ public class Service implements URLParam {
         if (! isShowResult()) {
             setShowResult(ast.getGlobalAST().hasMetadata(Metadata.SHOW));
             getCreateParser().setShowResult(isShowResult());        
+        }
+    }
+    
+    // use case for limit: @federate with one URL -> direct service
+    void limit(ASTQuery ast) {
+        if (!ast.hasLimit()) {
+            if (ast.hasMetadata(Metadata.LIMIT)) {
+                ast.setLimit(ast.getMetaValue(Metadata.LIMIT).intValue());
+            } else {
+                Integer lim = getURL().intValue(LIMIT);
+                if (lim != -1) {
+                    ast.setLimit(lim);
+                }
+                else {
+                    lim = Property.intValue(SERVICE_LIMIT);
+                    if (lim != null) {
+                        ast.setLimit(lim);
+                    }
+                }
+            }
         }
     }
 

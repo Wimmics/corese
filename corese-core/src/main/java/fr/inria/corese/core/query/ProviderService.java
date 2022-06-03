@@ -36,8 +36,6 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Metadata;
-import static fr.inria.corese.sparql.triple.parser.Metadata.START;
-import static fr.inria.corese.sparql.triple.parser.Metadata.UNTIL;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
@@ -474,7 +472,8 @@ public class ProviderService implements URLParam {
             throws EngineException, IOException {
 
         if (getGlobalAST().hasMetadata(Metadata.LOOP) ||
-            serv.hasParameter(LOOP)) {
+            serv.hasParameter(LOOP) ||
+            serv.hasParameter(MODE, LOOP)) {
             int begin   = getValue(serv, START, URLParam.START, 0);
             int end     = getValue(serv, UNTIL, URLParam.UNTIL, Integer.MAX_VALUE);
             int myLimit = getValue(serv, LIMIT, URLParam.LIMIT, ast.getLimit());

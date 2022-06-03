@@ -1,6 +1,8 @@
 package fr.inria.corese.core.query;
 
 import fr.inria.corese.compiler.eval.Interpreter;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_LIMIT;
 import java.util.ArrayList;
 
 import fr.inria.corese.sparql.api.IDatatype;
@@ -28,8 +30,11 @@ import fr.inria.corese.sparql.triple.cst.LogKey;
 import fr.inria.corese.sparql.triple.parser.VariableLocal;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class CompileService implements URLParam {
+    static Logger logger = LoggerFactory.getLogger(CompileService.class);
     public static final String KG_VALUES = NSManager.KGRAM + "values";
     public static final String KG_FILTER = NSManager.KGRAM + "filter";
     // default binding
@@ -93,21 +98,33 @@ public class CompileService implements URLParam {
         } 
     }
        
+    // q is service query
+    // ast is query ast
     void complete(URLServer serv, Query q, ASTQuery ast) {
-        int myLimit = serv.intValue(LIMIT);
-        if (myLimit >= 0) {
-            ast.setLimit(myLimit);
-        } else {
+        if (!ast.hasLimit()) {
             ASTQuery gast = q.getGlobalQuery().getAST();
-            if (gast.hasMetadata(Metadata.LIMIT)) {
+            int myLimit = serv.intValue(LIMIT);
+            if (myLimit >= 0) {
+                // service URL parameter limit=n
+                ast.setLimit(myLimit);
+            } else if (gast.hasMetadata(Metadata.LIMIT)) {
+                // limit of outer query of service (if any)
                 int limit = q.getOuterQuery().getAST().getLimit();
-                IDatatype dt = gast.getMetadata().getDatatypeValue(Metadata.LIMIT);
+                // @limit of global query
+                IDatatype dt = gast.getMetaValue(Metadata.LIMIT);
                 if (dt != null) {
                     limit = dt.intValue();
                 }
+                // select lower limit
                 ast.setLimit(Math.min(limit, ast.getLimit()));
+            } else {
+                Integer limit = Property.intValue(SERVICE_LIMIT);
+                if (limit != null) {
+                    ast.setLimit(limit);
+                }
             }
         }
+        logger.info("Limit: " + ast.getLimit());
     }
 
     boolean getIsValues(URLServer serv, Query q) {

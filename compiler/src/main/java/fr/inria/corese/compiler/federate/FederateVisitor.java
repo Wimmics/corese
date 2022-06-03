@@ -1070,6 +1070,10 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         //list.add(Variable.create(UNDEF));
         return list;      
     }
+    
+    Service service(List<Atom> list, Exp exp) {
+        return Service.create(list, exp, false);
+    }
  
     // accept for create join test
     boolean createJoinTest(Triple t) {

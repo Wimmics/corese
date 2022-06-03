@@ -146,7 +146,7 @@ public class Selector {
         
         log(a, map);
         logger.info("Source discovery:\n"+map);
-        logger.info("Source discoveryURL list:\n" + list);
+        logger.info("Source discovery URL list:\n" + list);
         logger.info("Source discovery time: " + time(d1));
         
         return list;

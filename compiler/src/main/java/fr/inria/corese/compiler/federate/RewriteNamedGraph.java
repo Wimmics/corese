@@ -37,9 +37,9 @@ public class RewriteNamedGraph {
         if (ast.getDataset().hasNamed()) {
             Query q = vis.getRewriteTriple().query(BasicGraphPattern.create(exp));
             q.getAST().getDataset().setNamed(ast.getNamed());
-            return Service.create(ast.getServiceList(), q, false);
+            return vis.service(ast.getServiceList(), BasicGraphPattern.create(q));
         }
-        return Service.create(ast.getServiceList(), BasicGraphPattern.create(exp), false);
+        return vis.service(ast.getServiceList(), BasicGraphPattern.create(exp));
     }
     
     

@@ -74,14 +74,10 @@ public class RewriteTriple {
             // graph name { bgp }
             exp = named(namedGraph, bgp);
         }        
-        Service s = service(serviceList, bgp(exp));
+        Service s = vis.service(serviceList, bgp(exp));
         return s;
     }
-     
-    Service service(List<Atom> serviceList, Exp exp) {
-        return Service.create(serviceList, exp, false);
-    }
-    
+             
     Exp bgp(Exp exp) {
         if (exp.isBGP()) {
             return exp;

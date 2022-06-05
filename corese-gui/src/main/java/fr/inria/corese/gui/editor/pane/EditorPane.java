@@ -4,12 +4,17 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 
+import javax.swing.AbstractAction;
 import javax.swing.BorderFactory;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
+import javax.swing.undo.*;
 
 public class EditorPane {
 
@@ -17,13 +22,14 @@ public class EditorPane {
     private JTextArea lineCounter;
     private Font font;
     private String title;
-
+    private UndoManager undoManager;
     private int old_line_number;
 
     public EditorPane(String title) {
         this.editor = new JTextPane();
         this.lineCounter = new JTextArea(10, 1);
         this.font = new Font("Sanserif", Font.BOLD, 16);
+        this.undoManager = new UndoManager();
         this.title = title;
         this.initLineCounter();
         this.initEditor();
@@ -42,6 +48,9 @@ public class EditorPane {
         this.editor.setBorder(BorderFactory.createTitledBorder(this.title + " editor:"));
         this.editor.setPreferredSize(new Dimension(400, 250));
         this.editor.setFont(this.font);
+        // Activate undo/redo features
+        this.undoRedoOperations();
+       
         this.editor.getDocument().addDocumentListener(new DocumentListener() {
 
             private void updatelineCounter() {
@@ -81,6 +90,35 @@ public class EditorPane {
         });
     }
 
+    private void undoRedoOperations(){
+        this.editor.getDocument().addUndoableEditListener(
+                new UndoableEditListener() {
+                    public void undoableEditHappened(UndoableEditEvent e) {
+                        undoManager.addEdit(e.getEdit());
+                    }
+                });
+        // Detect ctrl-z and ctrl-y to undo and redo
+        this.editor.getInputMap().put(KeyStroke.getKeyStroke("control Z"), "undo");
+        this.editor.getActionMap().put("undo", new AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                try {
+                    undoManager.undo();
+                } catch (CannotUndoException ex) {
+                    System.out.println("Unable to undo: " + ex);
+                }
+            }
+        });
+        this.editor.getInputMap().put(KeyStroke.getKeyStroke("control Y"), "redo");
+        this.editor.getActionMap().put("redo", new AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                try {
+                    undoManager.redo();
+                } catch (CannotRedoException ex) {
+                    System.out.println("Unable to redo: " + ex);
+                }
+            }
+        });
+    }
     public String getContent() {
         return this.editor.getText();
     }

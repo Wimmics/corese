@@ -339,12 +339,21 @@ public class ProviderService implements URLParam {
                 addResult(service, sol, res);
                 size += length;
                 count++;
-
+                if (getGlobalAST().hasMetadata(Metadata.TRACE)) {
+                    logger.info(String.format(
+                    "Service %s with %s parameters out of %s, results: %s, total results: %s",
+                     service.getURL(), Math.min(size, map.size()), 
+                     map.size(), res==null?0:res.size(), sol.size()
+                    ));
+                }
                 if (stop(service, sol, d1)) {
                     break;
                 }
             }
-
+            if (getGlobalAST().hasMetadata(Metadata.TRACE)) {
+                    logger.info(String.format(
+                    "Service %s total results: %s", service.getURL(), sol.size()));
+            }
         } else {
             Mappings res = send(service, map, 0, 0, timeout, count++);
             // join (serviceNode = serviceURI)
@@ -359,9 +368,7 @@ public class ProviderService implements URLParam {
         }
     }
 
-    void log(URLServer serv, Mappings map) {
-        System.out.println("service: " + serv + "; nb results: " + map.size());
-    }
+   
 
     /**
      * Send query to sparql endpoint using HTTP request Generate variable
@@ -483,28 +490,26 @@ public class ProviderService implements URLParam {
 
             for (int i = begin;; i++) {
                 ast.setLimit(myLimit);
-                ast.setOffset(myLimit * i);
-                logger.info(
-                        String.format("send loop: index %s limit %s offset %s",
-                                i, ast.getLimit(), ast.getOffset()));
-//                if (getGlobalAST().hasMetadata(Metadata.TRACE)) {
-//                    logger.info(ast.toString());
-//                }
+                ast.setOffset(myLimit * i);                
                 Mappings res = sendStep(serv, ast, map, start, limit, timeout, count);
                 if (res == null) {
                     break;
                 }
+                logger.info(
+                String.format(
+                "send loop: index %s limit %s offset %s results: %s, loop results: %s",
+                i, ast.getLimit(), ast.getOffset(), res.size(), res.size() + sol.size()));
                 sol.setQuery(res.getQuery());
                 if (res.isEmpty()) {
                     break;
                 }
-                //System.out.println(res);
                 addResult(serv, sol, res);
-                if (i >= end) {
+                if (i >= end || res.size() < myLimit) {
+                    // less results than limit: no use to loop anymore
                     break;
                 }
             }
-
+            logger.info(String.format("send loop total results: %s", sol.size()));
             return sol;
         }
 

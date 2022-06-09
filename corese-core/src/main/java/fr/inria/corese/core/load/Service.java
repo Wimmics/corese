@@ -263,7 +263,7 @@ public class Service implements URLParam {
                
             trace(resp);
             logger.info("Response status: " + resp.getStatus());
-            logger.info("From " + getURL().getURL());
+            //logger.info("From " + getURL().getURL());
             
             if (resp.getMediaType()!=null) {
                 recordFormat(resp.getMediaType().toString());
@@ -681,7 +681,7 @@ public class Service implements URLParam {
      * format = text/turtle;charset=UTF-8
      */
     void recordFormat(String str) {
-        logger.info("Content type: " + str);
+        //logger.info("Content type: " + str);
         String format = clean(str);
         setFormat(format);
         getCreateReport().setFormat(format);

@@ -124,7 +124,7 @@ public class CompileService implements URLParam {
                 }
             }
         }
-        logger.info("Limit: " + ast.getLimit());
+        //logger.info("Limit: " + ast.getLimit());
     }
 
     boolean getIsValues(URLServer serv, Query q) {

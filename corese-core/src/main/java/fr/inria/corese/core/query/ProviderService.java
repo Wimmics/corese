@@ -63,7 +63,10 @@ public class ProviderService implements URLParam {
     private static final String DB = "db:";
     public static int SLICE_DEFAULT = 100;
     public static int TIMEOUT_DEFAULT = 5000;
+    public static int DISPLAY_RESULT_MAX = 10;
     private static final String TIMEOUT_EXCEPTION = "SocketTimeoutException";
+    private static final String READ_TIMEOUT_EXCEPTION = "SSLProtocolException: Read timed out";
+    private static final String LOOP_RETURN_PARTIAL_SOLUTION_AFTER_TIMEOUT = "Loop return partial solution after timeout";
     private static final String RETURN_PARTIAL_SOLUTION_AFTER_TIMEOUT = "Return partial solution after timeout";
 
     private QueryProcess defaut;
@@ -77,6 +80,7 @@ public class ProviderService implements URLParam {
     private CompileService compiler;
     private Binding binding;
     private boolean bind = true;
+    private int displayResultMax = DISPLAY_RESULT_MAX;
 
     /**
      *
@@ -343,7 +347,7 @@ public class ProviderService implements URLParam {
                         res = send(service, map, size, size + length, timeout, count);
                     } catch (ProcessingException e) {
                         if (isTimeout(e) && !sol.isEmpty()) {
-                            logger.info(RETURN_PARTIAL_SOLUTION_AFTER_TIMEOUT);
+                            logger.info(RETURN_PARTIAL_SOLUTION_AFTER_TIMEOUT);                            
                         } else {
                             throw e;
                         }
@@ -498,7 +502,7 @@ public class ProviderService implements URLParam {
                     res = sendStep(serv, ast, map, start, limit, timeout, count);
                 } catch (ProcessingException e) {
                     if (isTimeout(e) && !sol.isEmpty()) {
-                        logger.info(RETURN_PARTIAL_SOLUTION_AFTER_TIMEOUT);
+                        logger.info(LOOP_RETURN_PARTIAL_SOLUTION_AFTER_TIMEOUT);
                     } else {
                         throw e;
                     }
@@ -513,7 +517,7 @@ public class ProviderService implements URLParam {
                                 "send loop: index %s limit %s offset %s results: %s, loop results: %s",
                                 i, ast.getLimit(), ast.getOffset(), res.size(), res.size() + sol.size()));
 
-                sol.setQuery(res.getQuery());
+                sol.initQuery(res.getQuery());
                 if (res.isEmpty()) {
                     break;
                 }
@@ -537,7 +541,8 @@ public class ProviderService implements URLParam {
 
     boolean isTimeout(ProcessingException e) {
         return e.getMessage() != null
-                && e.getMessage().contains(TIMEOUT_EXCEPTION);
+                && (e.getMessage().contains(TIMEOUT_EXCEPTION)
+                ||  e.getMessage().contains(READ_TIMEOUT_EXCEPTION));
     }
 
     // when query is select distinct and query body is a service:
@@ -739,11 +744,9 @@ public class ProviderService implements URLParam {
 
     void traceResult(URLServer serv, Mappings res) {
         if (res.size() > 0) {
-            logger.info(String.format("** Service %s result: \n%s", serv, res.toString(false, false, 10)));
-            logger.info(String.format("** Service %s result size: %s", serv, res.size()));
-        } else {
-            logger.info(String.format("** Service %s result size: %s", serv, res.size()));
-        }
+            logger.info(String.format("** Service %s result: \n%s", serv, res.toString(false, false, getDisplayResultMax())));
+        } 
+        logger.info(String.format("** Service %s result size: %s", serv, res.size()));
     }
 
     /**
@@ -761,8 +764,7 @@ public class ProviderService implements URLParam {
             sol.setLength(sol.getLength() + res.getLength());
             sol.setQueryLength(sol.getQueryLength() + res.getQueryLength());
             if (sol.getQuery() == null) {
-                sol.setQuery(res.getQuery());
-                sol.init(res.getQuery());
+                sol.initQuery(res.getQuery());
             }
         }
     }
@@ -789,8 +791,7 @@ public class ProviderService implements URLParam {
 
             for (Mappings m : mapList) {
                 if (res.getQuery() == null && m.getQuery() != null) {
-                    res.setQuery(m.getQuery());
-                    res.init(m.getQuery());
+                    res.initQuery(m.getQuery());
                 }
                 addResultBasic(res, m);
             }
@@ -1051,5 +1052,13 @@ public class ProviderService implements URLParam {
 
     boolean hasValue(String key) {
         return getContext() != null && getContext().hasValue(key);
+    }
+
+    public int getDisplayResultMax() {
+        return displayResultMax;
+    }
+
+    public void setDisplayResultMax(int displayResultMax) {
+        this.displayResultMax = displayResultMax;
     }
 }

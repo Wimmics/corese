@@ -18,6 +18,7 @@ import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.producer.DataFilter;
 import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.query.MatcherImpl;
+import fr.inria.corese.core.query.ProviderService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.Transformer;
@@ -29,6 +30,7 @@ import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
 import static fr.inria.corese.core.util.Property.Value.VARIABLE;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
+import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
@@ -45,6 +47,7 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.ParserHandler;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import fr.inria.corese.sparql.triple.parser.visitor.ASTParser;
 import java.io.File;
 import java.io.FileNotFoundException;
@@ -259,6 +262,7 @@ public class Property {
         SERVICE_PARAMETER,
         SERVICE_LOG,
         SERVICE_REPORT,
+        SERVICE_DISPLAY_RESULT,
 
         // service result may be RDF graph (e.g. when format=turtle)
         // apply service query on the graph 
@@ -844,6 +848,12 @@ public class Property {
             case SERVICE_LIMIT:                
             case SERVICE_TIMEOUT:
                 // use integer table
+                break;
+                
+            case SERVICE_DISPLAY_RESULT:
+                ProviderService.DISPLAY_RESULT_MAX = n;
+                ContextLog.DISPLAY_RESULT_MAX=n;
+                Eval.DISPLAY_RESULT_MAX=n;
                 break;
                 
             case LOAD_LIMIT:

@@ -130,7 +130,7 @@ FUNCTION_PARAMETER_MAX = 15
 # values filter
 SERVICE_BINDING     = values 
 SERVICE_SLICE       = 500
-SERVICE_LIMIT       = 1000
+SERVICE_LIMIT       = 5000
 SERVICE_TIMEOUT     = 3000
 #SERVICE_PARAMETER   = mode=link;debug;show&transform=st:xml&format=json
 # service may return RDF graph as result
@@ -138,6 +138,7 @@ SERVICE_TIMEOUT     = 3000
 SERVICE_GRAPH       = false
 SERVICE_SEND_PARAMETER = true
 SERVICE_REPORT = false
+SERVICE_DISPLAY_RESULT = 20
 
 
 FEDERATION = /user/corby/home/AAData/data/corese/federation.ttl
@@ -162,7 +163,7 @@ FEDERATE_MINUS = true
 FEDERATE_UNDEFINED = true
 
 FEDERATE_BLACKLIST        = http://ldf.fi/warsa/sparql;http://data.semanticweb.org/sparql
-FEDERATE_BLACKLIST_EXCEPT = http://corese.inria.fr/sparql;http://prod-dekalog.inria.fr/sparql
+FEDERATE_BLACKLIST_EXCEPT = http://corese.inria.fr/sparql;http://prod-dekalog.inria.fr/sparql;https://dbpedia.org/sparql;https://query.wikidata.org/sparql;http://fr.dbpedia.org/sparql
 
 # number of endpoint url considered in source discovery result
 FEDERATE_INDEX_LENGTH = 20

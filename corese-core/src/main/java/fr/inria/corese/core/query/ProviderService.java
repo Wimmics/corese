@@ -63,6 +63,8 @@ public class ProviderService implements URLParam {
     private static final String DB = "db:";
     public static int SLICE_DEFAULT = 100;
     public static int TIMEOUT_DEFAULT = 5000;
+    private static final String TIMEOUT_EXCEPTION = "SocketTimeoutException";
+    private static final String RETURN_PARTIAL_SOLUTION_AFTER_TIMEOUT = "Return partial solution after timeout";
 
     private QueryProcess defaut;
     private ProviderImpl provider;
@@ -317,48 +319,65 @@ public class ProviderService implements URLParam {
         traceInput(service, map);
         Date d1 = new Date();
 
-        if (slice) {
-            boolean debug = service.hasParameter(MODE, DEBUG) || getQuery().isRecDebug();
+        try {
+            if (slice) {
+                boolean debug = service.hasParameter(MODE, DEBUG) || getQuery().isRecDebug();
 
-            if (map.isEmpty()) {
-                if (debug) {
-                    logger.info("Candidate Mappings are empty: skip service " + service.getURL());
+                if (map.isEmpty()) {
+                    if (debug) {
+                        logger.info("Candidate Mappings are empty: skip service " + service.getURL());
+                    }
+                    traceAST(service, getAST());
                 }
-                traceAST(service, getAST());
-            }
 
-            while (size < map.size() && !stop(service, size)) {
-                if (eval.isStop()) {
-                    break;
+                while (size < map.size() && !stop(service, size)) {
+                    if (eval.isStop()) {
+                        break;
+                    }
+                    // consider subset of Mappings of size slice
+                    // it may produce bindings for target service
+
+                    Mappings res = null;
+
+                    try {
+                        res = send(service, map, size, size + length, timeout, count);
+                    } catch (ProcessingException e) {
+                        if (isTimeout(e) && !sol.isEmpty()) {
+                            logger.info(RETURN_PARTIAL_SOLUTION_AFTER_TIMEOUT);
+                        } else {
+                            throw e;
+                        }
+                    }
+
+                    // join (serviceNode = serviceURI)
+                    complete(getServiceExp().getServiceNode(), service.getNode(), res);
+                    addResult(service, sol, res);
+                    size += length;
+                    count++;
+                    if (getGlobalAST().hasMetadata(Metadata.TRACE)) {
+                        logger.info(String.format(
+                                "Service %s with %s parameters out of %s, results: %s, total results: %s",
+                                service.getURL(), Math.min(size, map.size()),
+                                map.size(), res == null ? 0 : res.size(), sol.size()
+                        ));
+                    }
+                    if (stop(service, sol, d1)) {
+                        break;
+                    }
                 }
-                // consider subset of Mappings of size slice
-                // it may produce bindings for target service
-                Mappings res = send(service, map, size, size + length, timeout, count);
+                if (getGlobalAST().hasMetadata(Metadata.TRACE)) {
+                    logger.info(String.format(
+                            "Service %s total results: %s", service.getURL(), sol.size()));
+                }
+            } else {
+                Mappings res = send(service, map, 0, 0, timeout, count++);
                 // join (serviceNode = serviceURI)
                 complete(getServiceExp().getServiceNode(), service.getNode(), res);
                 addResult(service, sol, res);
-                size += length;
-                count++;
-                if (getGlobalAST().hasMetadata(Metadata.TRACE)) {
-                    logger.info(String.format(
-                    "Service %s with %s parameters out of %s, results: %s, total results: %s",
-                     service.getURL(), Math.min(size, map.size()), 
-                     map.size(), res==null?0:res.size(), sol.size()
-                    ));
-                }
-                if (stop(service, sol, d1)) {
-                    break;
-                }
             }
-            if (getGlobalAST().hasMetadata(Metadata.TRACE)) {
-                    logger.info(String.format(
-                    "Service %s total results: %s", service.getURL(), sol.size()));
-            }
-        } else {
-            Mappings res = send(service, map, 0, 0, timeout, count++);
-            // join (serviceNode = serviceURI)
-            complete(getServiceExp().getServiceNode(), service.getNode(), res);
-            addResult(service, sol, res);
+        } catch (ProcessingException e) {
+            // timeout exception 
+            exception(e, service, getQuery().getGlobalQuery(), getQuery().getAST());
         }
 
         traceOutput(service, sol, count, (new Date().getTime() - d1.getTime()) / 1000.0);
@@ -367,8 +386,6 @@ public class ProviderService implements URLParam {
             eval.getVisitor().service(eval, service.getNode(), getServiceExp(), sol);
         }
     }
-
-   
 
     /**
      * Send query to sparql endpoint using HTTP request Generate variable
@@ -413,7 +430,7 @@ public class ProviderService implements URLParam {
             traceAST(serv, ast);
             complete(ast);
 
-            Mappings res = send(serv, ast, map, start, limit, timeout, count);
+            Mappings res = sendWithLoop(serv, ast, map, start, limit, timeout, count);
             if (res != null) {
                 reportAST(ast, res, count);
             }
@@ -425,18 +442,102 @@ public class ProviderService implements URLParam {
             }
             return res;
         } catch (ResponseProcessingException e) {
-            logger.error("ResponseProcessingException: " + serv.getURL());
-            getLog().addException(new EngineException(e, e.getMessage())
-                    .setURL(serv).setAST(targetAST).setObject(e.getResponse()));
-            error(serv, q.getGlobalQuery(), getAST(), e);
-        } catch (ProcessingException | IOException | SparqlException e) {
-            logger.error("ProcessingException: " + serv.getURL());
-            getLog().addException(new EngineException(e, e.getMessage())
-                    .setURL(serv).setAST(targetAST));
-            error(serv, q.getGlobalQuery(), getAST(), e);
+            exception(e, serv, q.getGlobalQuery(), targetAST, e.getResponse());
+        } catch (ProcessingException e) {
+            // timeout -> ProcessingException
+            if (isTimeout(e)) {
+                logger.info("Service timeout detected");
+                throw e;
+            }
+            exception(e, serv, q.getGlobalQuery(), targetAST);
+        } catch (IOException | SparqlException e) {
+            exception(e, serv, q.getGlobalQuery(), targetAST);
         }
 
         return null;
+    }
+    
+    void exception(Exception e, URLServer serv, Query q, ASTQuery ast) {
+        exception(e, serv, q, ast, null);
+    }
+        
+    void exception(Exception e, URLServer serv, Query q, ASTQuery ast, Object obj) {
+        logger.error(String.format("%s %s", e.getClass().getName(), serv.getURL()));
+        getLog().addException(new EngineException(e, e.getMessage())
+                .setURL(serv).setAST(ast).setObject(obj));
+        error(serv, q, getAST(), e);
+    }
+                   
+//            logger.error("ProcessingException: " + serv.getURL());
+//            getLog().addException(new EngineException(e, e.getMessage())
+//                    .setURL(serv).setAST(targetAST));
+//            error(serv, q.getGlobalQuery(), getAST(), e);
+            
+
+    // @loop @limit 1000 @start 0 @until 9
+    // for (i=0; i<until; i++) offset = i*limit
+    Mappings sendWithLoop(URLServer serv, ASTQuery ast, Mappings map,
+            int start, int limit, int timeout, int count)
+            throws EngineException, IOException {
+
+        if (getGlobalAST().hasMetadata(Metadata.LOOP)
+                || serv.hasParameter(LOOP)
+                || serv.hasParameter(MODE, LOOP)) {
+            int begin   = getValue(serv, START, URLParam.START, 0);
+            int end     = getValue(serv, UNTIL, URLParam.UNTIL, Integer.MAX_VALUE);
+            int myLimit = getValue(serv, LIMIT, URLParam.LIMIT, ast.getLimit());
+            logger.info(String.format("send loop: begin %s end %s limit %s", begin, end, myLimit));
+            
+            Mappings sol = new Mappings();
+
+            for (int i = begin;; i++) {
+                ast.setLimit(myLimit);
+                ast.setOffset(myLimit * i);
+                Mappings res = null;
+                try {
+                    res = sendStep(serv, ast, map, start, limit, timeout, count);
+                } catch (ProcessingException e) {
+                    if (isTimeout(e) && !sol.isEmpty()) {
+                        logger.info(RETURN_PARTIAL_SOLUTION_AFTER_TIMEOUT);
+                    } else {
+                        throw e;
+                    }
+                }
+
+                if (res == null) {
+                    break;
+                }
+
+                logger.info(
+                        String.format(
+                                "send loop: index %s limit %s offset %s results: %s, loop results: %s",
+                                i, ast.getLimit(), ast.getOffset(), res.size(), res.size() + sol.size()));
+
+                sol.setQuery(res.getQuery());
+                if (res.isEmpty()) {
+                    break;
+                }
+
+                addResult(serv, sol, res);
+                if (i >= end || res.size() < myLimit) {
+                    // less results than limit: no use to loop anymore
+                    break;
+                }
+            }
+            logger.info(String.format("send loop total results: %s", sol.size()));
+            return sol;
+        } else {
+            Mappings res = sendStep(serv, ast, map, start, limit, timeout, count);
+            if (getGlobalAST().hasMetadata(Metadata.TRACE)) {
+                logger.info(String.format("service results: %s %s", serv, res.size()));
+            }
+            return res;
+        }
+    }
+
+    boolean isTimeout(ProcessingException e) {
+        return e.getMessage() != null
+                && e.getMessage().contains(TIMEOUT_EXCEPTION);
     }
 
     // when query is select distinct and query body is a service:
@@ -446,7 +547,6 @@ public class ProviderService implements URLParam {
                 && getGlobalAST().getBody().size() == 1
                 && getGlobalAST().getBody().get(0).isService()) {
             ast.setDistinct(true);
-            //logger.info("distinct:\n"+ast);
         }
     }
 
@@ -470,50 +570,6 @@ public class ProviderService implements URLParam {
                 logger.info("Blacklist: " + url.getServer() + " " + FederateVisitor.getBlacklist().size());
             }
         }
-    }
-
-    // @loop @limit 1000 @start 0 @until 9
-    // for (i=0; i<until; i++) offset = i*limit
-    Mappings send(URLServer serv, ASTQuery ast, Mappings map,
-            int start, int limit, int timeout, int count)
-            throws EngineException, IOException {
-
-        if (getGlobalAST().hasMetadata(Metadata.LOOP) ||
-            serv.hasParameter(LOOP) ||
-            serv.hasParameter(MODE, LOOP)) {
-            int begin   = getValue(serv, START, URLParam.START, 0);
-            int end     = getValue(serv, UNTIL, URLParam.UNTIL, Integer.MAX_VALUE);
-            int myLimit = getValue(serv, LIMIT, URLParam.LIMIT, ast.getLimit());
-            logger.info(
-                    String.format("send loop: begin %s end %s limit %s", begin, end, myLimit));
-            Mappings sol = new Mappings();
-
-            for (int i = begin;; i++) {
-                ast.setLimit(myLimit);
-                ast.setOffset(myLimit * i);                
-                Mappings res = sendStep(serv, ast, map, start, limit, timeout, count);
-                if (res == null) {
-                    break;
-                }
-                logger.info(
-                String.format(
-                "send loop: index %s limit %s offset %s results: %s, loop results: %s",
-                i, ast.getLimit(), ast.getOffset(), res.size(), res.size() + sol.size()));
-                sol.setQuery(res.getQuery());
-                if (res.isEmpty()) {
-                    break;
-                }
-                addResult(serv, sol, res);
-                if (i >= end || res.size() < myLimit) {
-                    // less results than limit: no use to loop anymore
-                    break;
-                }
-            }
-            logger.info(String.format("send loop total results: %s", sol.size()));
-            return sol;
-        }
-
-        return sendStep(serv, ast, map, start, limit, timeout, count);
     }
 
     int getValue(URLServer url, String meta, String param, int n) {

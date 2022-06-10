@@ -301,8 +301,15 @@ public class Mappings extends PointerObject
         return getQuery().getContext();
     }
 
-    public void setQuery(Query q) {
+    public Mappings setQuery(Query q) {
         query = q;
+        return this;
+    }
+    
+    public Mappings initQuery(Query q) {
+        setQuery(q);
+        init(q);
+        return this;
     }
 
     @Override

@@ -22,7 +22,7 @@ import org.json.JSONObject;
  */
 public class ContextLog implements URLParam, LogKey {
 
-    static final int nbshow=10;
+    public static int DISPLAY_RESULT_MAX=10;
 
     // log service exception list
     private List<EngineException> exceptionList;
@@ -267,7 +267,7 @@ public class ContextLog implements URLParam, LogKey {
     void addURLInput(URLServer url, Mappings map) {
         incr(url.getLogURLNumber(), INPUT_CARD, mapSize(map));
         if (map != null && !map.isEmpty()) {
-            map.setDisplay(url.intValue(NBINPUT, nbshow));
+            map.setDisplay(url.intValue(NBINPUT, DISPLAY_RESULT_MAX));
             set(url.getLogURLNumber(), LogKey.INPUT, map);
         }
     }
@@ -278,7 +278,7 @@ public class ContextLog implements URLParam, LogKey {
         if (map!=null && !map.isEmpty()) {
             if (!url.hasParameter(URLParam.RESULT) || url.getLogURLNumber().contains(url.getParameter(URLParam.RESULT))) {
                 // we may filter the endpoint for which we ask results  
-                map.setDisplay(url.intValue(NBRESULT, nbshow));
+                map.setDisplay(url.intValue(NBRESULT, DISPLAY_RESULT_MAX));
                 set(url.getLogURLNumber(), LogKey.RESULT, map);
             }
         }

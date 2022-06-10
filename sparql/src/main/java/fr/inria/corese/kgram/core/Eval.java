@@ -60,6 +60,7 @@ public class Eval implements ExpType, Plugin {
     private static boolean parameterGraphMappings = true;
     // draft test: union() has Mappings map parameter and eval branch with map parameter
     private static boolean parameterUnionMappings = true;
+    public static int DISPLAY_RESULT_MAX = 10;
     
     static final int STOP = -2;
     public static int count = 0;

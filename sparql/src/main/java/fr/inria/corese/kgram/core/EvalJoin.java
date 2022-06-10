@@ -4,6 +4,7 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Producer;
 import static fr.inria.corese.kgram.core.Eval.STOP;
 import java.util.Date;
+import static fr.inria.corese.kgram.core.Eval.DISPLAY_RESULT_MAX;
 
 /**
  *
@@ -12,7 +13,7 @@ import java.util.Date;
 public class EvalJoin {
     public static boolean SORT_OVERLOAD = true;
     public static boolean DEBUG_JOIN = false;
-    
+
     Eval eval;
     boolean stop = false;
     boolean debug = DEBUG_JOIN;
@@ -79,9 +80,9 @@ public class EvalJoin {
         }
         if (eval.isDebug()) {
             System.out.println("join map1:\n" + 
-                    map1.toString(false, false, 5));
+                    map1.toString(false, false, DISPLAY_RESULT_MAX));
             System.out.println("join map2:\n" + 
-                    map2.toString(false, false, 5));
+                    map2.toString(false, false, DISPLAY_RESULT_MAX));
         }
         
         return join(p, graphNode, stack, env, map1, map2, n);

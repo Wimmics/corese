@@ -1,7 +1,5 @@
 package fr.inria.corese.sparql.datatype;
 
-import javax.xml.datatype.DatatypeConfigurationException;
-
 import fr.inria.corese.sparql.api.IDatatype;
 
 public class CoreseDateTime extends CoreseDate {
@@ -9,11 +7,11 @@ public class CoreseDateTime extends CoreseDate {
 
 	static final CoreseURI datatype = new CoreseURI(RDF.xsddateTime);
 
-	public CoreseDateTime(String label) throws DatatypeConfigurationException {
+	public CoreseDateTime(String label) {
 		super(label);
 	}
 
-	public CoreseDateTime() throws DatatypeConfigurationException {
+	public CoreseDateTime()  {
 		super();
 	}
 

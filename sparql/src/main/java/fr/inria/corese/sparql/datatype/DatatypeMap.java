@@ -32,6 +32,7 @@ import java.util.Enumeration;
 import java.util.GregorianCalendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.logging.Level;
 
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
@@ -91,6 +92,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     private static Hashtable<String, Mapping> ht;
     private static HashMap<String, Integer> dtCode;
     static DatatypeMap dm;
+    static DatatypeFactory factory;
     // if true, number values are equal by = but not match same sparql variable 
     // otherwise same value space, match same sparql variable
     // 
@@ -116,6 +118,11 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     static {
         intCache = new IDatatype[INTMAX];
         dm = DatatypeMap.create();
+        try {
+            factory = DatatypeFactory.newInstance();
+        } catch (DatatypeConfigurationException ex) {
+            logger.error("DatatypeFactory DatatypeConfigurationException");
+        }
     }
 
     private class Mapping {
@@ -574,22 +581,11 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }
 
     public static IDatatype newDate() {
-        try {
-            return new CoreseDateTime();
-        } catch (DatatypeConfigurationException e) {
-            e.printStackTrace();
-        }
-
-        return null;
+        return new CoreseDateTime();
     }
 
     public static IDatatype newDate(String date) {
-        try {
-            return new CoreseDate(date);
-        } catch (DatatypeConfigurationException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return new CoreseDate(date);
     }
     
     static String clean(String date) {
@@ -623,24 +619,20 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return newInstance(cal);
     }
     
-    public static XMLGregorianCalendar newXMLGregorianCalendar(Date date) {
-        try {
-            long milli = date.getTime()%1000;
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(
-                    year(date), month(date), date.getDate(),
-                    date.getHours(), date.getMinutes(), date.getSeconds(), (int)Math.max(0, milli), timeZone(date)
-            );
-        } catch (DatatypeConfigurationException ex) {
-            return null;
-        }
+    public static XMLGregorianCalendar newXMLGregorianCalendar(Date date)  {
+        long milli = date.getTime() % 1000;
+        return factory.newXMLGregorianCalendar(
+                year(date), month(date), date.getDate(),
+                date.getHours(), date.getMinutes(), date.getSeconds(), (int) Math.max(0, milli), timeZone(date)
+        );
     }
     
-    public static XMLGregorianCalendar newXMLGregorianCalendar() {
-        try {
-            return DatatypeFactory.newInstance().newXMLGregorianCalendar(new GregorianCalendar());
-        } catch (DatatypeConfigurationException ex) {
-            return null;
-        }
+    public static XMLGregorianCalendar newXMLGregorianCalendar()  {
+        return factory.newXMLGregorianCalendar(new GregorianCalendar());
+    }
+    
+    public static XMLGregorianCalendar newXMLGregorianCalendar(String label) {
+        return factory.newXMLGregorianCalendar(label);
     }
     
     static int timeZone(Date d) {
@@ -656,12 +648,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
     }   
 
     public static IDatatype newDateTime(String date) {
-        try {
-            return new CoreseDateTime(date);
-        } catch (DatatypeConfigurationException e) {
-            e.printStackTrace();
-        }
-        return null;
+        return new CoreseDateTime(date);
     }
 
     /**

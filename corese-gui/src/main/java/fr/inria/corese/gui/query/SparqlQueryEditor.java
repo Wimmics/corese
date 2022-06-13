@@ -11,17 +11,21 @@ import java.awt.event.FocusEvent;
 import java.awt.event.FocusListener;
 import java.util.ArrayList;
 
+import javax.swing.AbstractAction;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JScrollPane;
 import javax.swing.JTextArea;
 import javax.swing.JTextPane;
+import javax.swing.KeyStroke;
 import javax.swing.SwingUtilities;
 import javax.swing.event.CaretEvent;
 import javax.swing.event.CaretListener;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.event.UndoableEditEvent;
+import javax.swing.event.UndoableEditListener;
 import javax.swing.text.BadLocationException;
 import javax.swing.text.DefaultHighlighter;
 import javax.swing.text.Document;
@@ -33,6 +37,9 @@ import javax.swing.text.Style;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyleContext;
 import javax.swing.text.StyledDocument;
+import javax.swing.undo.CannotRedoException;
+import javax.swing.undo.CannotUndoException;
+import javax.swing.undo.UndoManager;
 
 import fr.inria.corese.gui.core.MainFrame;
 
@@ -71,11 +78,14 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
     private MainFrame mainFrame;
     static int FontSize = 16;
     private int old_line_number = 0;
+    private UndoManager undoManager;
 
     ArrayList<String> listWords     = new ArrayList<>();
     ArrayList<String> listFunctions = new ArrayList<>();
    
     void init() {
+        this.undoManager = new UndoManager();
+        this.undoRedoOperations();
         for (String word : kw) {
             listWords.add(word);
         }
@@ -96,6 +106,38 @@ public class SparqlQueryEditor extends JPanel implements Runnable, ActionListene
         mainFrame = coreseFrame;
     }
 
+    private void undoRedoOperations() {
+        this.textPaneQuery.getDocument().addUndoableEditListener(
+                new UndoableEditListener() {
+                    public void undoableEditHappened(UndoableEditEvent e) {
+                        if (!e.getEdit().getPresentationName().equals("style change")) {
+                            undoManager.addEdit(e.getEdit());
+                        }
+                    }
+                });
+        // Detect ctrl-z and ctrl-y to undo and redo
+        this.textPaneQuery.getInputMap().put(KeyStroke.getKeyStroke("control Z"), "undo");
+        this.textPaneQuery.getActionMap().put("undo", new AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                try {
+                    undoManager.undo();
+                } catch (CannotUndoException ex) {
+                    System.out.println("Unable to undo: " + ex);
+                }
+            }
+        });
+        this.textPaneQuery.getInputMap().put(KeyStroke.getKeyStroke("control Y"), "redo");
+        this.textPaneQuery.getActionMap().put("redo", new AbstractAction() {
+            public void actionPerformed(java.awt.event.ActionEvent e) {
+                try {
+                    undoManager.redo();
+                } catch (CannotRedoException ex) {
+                    System.out.println("Unable to redo: " + ex);
+                }
+            }
+        });
+    }
+    
     private void initComponents() {
         textPaneQuery = new JTextPane();
         textPaneQuery.setName("textPaneQuery");

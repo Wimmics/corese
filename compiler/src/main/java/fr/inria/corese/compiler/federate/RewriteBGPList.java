@@ -36,6 +36,7 @@ import java.util.List;
 public class RewriteBGPList {
     public static boolean BGP_LIST = true;
     public static boolean TRACE_BGP_LIST = false;
+    private static boolean MERGE_EVEN_IF_NOT_CONNECTED = true;
     
     private FederateVisitor visitor;
     // connected bgp of triple with one uri
@@ -43,6 +44,7 @@ public class RewriteBGPList {
     // connected bgp of triple with several uri
     URI2BGPList uriList2bgp;
     BGP2URI bgp2uri;
+    private boolean mergeEvenIfNotConnected = MERGE_EVEN_IF_NOT_CONNECTED;
     
     RewriteBGPList(FederateVisitor vis, URI2BGPList map) {
         visitor = vis;
@@ -51,28 +53,33 @@ public class RewriteBGPList {
         bgp2uri = uriList2bgp.getBgp2uri();
     }
     
-    // for each connected bgp with |bgp|>1 
+    // for connected bgp with |bgp|>1 
     // generate service (uriList) {bgp}
     // complete with other triples
     // return union
     Exp process(Atom namedGraph, Exp body, ArrayList<Exp> filterList) {
         ArrayList<Exp> list = new ArrayList<>();
-        // rewrite connected bgp 
+        // list of all candidate connected bgp with |bgp|>1 
+        // sorted by greater size first
         List<BasicGraphPattern> sortedList = bgp2uri.sortKeyList();
         
         if (BGP_LIST) {
+            // new version
             // compute list of partition of connected bgp
-            // and complete each partition with missing triple
+            // partition means cover body with partition of triple
+            // complete each partition with missing triple from body
             List<List<BasicGraphPattern>> partitionList = partition(sortedList);
             trace(sortedList, partitionList);
             
             for (List<BasicGraphPattern> bgpList : partitionList) {
-                // rewrite each partition and complete with missing triples 
+                // rewrite each partition of bgp as service {bgp} 
+                // and complete with missing triples 
                 BasicGraphPattern exp
                         = process(namedGraph, body, bgpList, filterList);
                 list.add(exp);
             }          
         } else {
+            // former deprecated version
             // consider each bgp and complete with missing triple
             for (BasicGraphPattern bgp : sortedList) {
                 if (bgp.size() > 1) {
@@ -85,9 +92,10 @@ public class RewriteBGPList {
         }
                 
         if (list.isEmpty() || getVisitor().isFederateComplete()) {
-            // no bgp (with several uri) and size > 1
-            // process with one empty bgp to get all triples
+            // complete with all lonely triples
+            // process with a fake empty bgp to get all triples
             Exp exp = process(namedGraph, body, new ArrayList<>(), filterList);
+            
             if (exp.size()==0) {
                 if (list.isEmpty()) {
                     return null;
@@ -107,8 +115,9 @@ public class RewriteBGPList {
         return union;
     }
     
-    // rewrite one bgpList partition of connected bgp list
-    // complete with other triple
+    // rewrite one bgpList partition of connected bgp as list of service {bgp}
+    // complete with missing triples
+    // return one bgp with result of rewrite
     BasicGraphPattern process
         (Atom namedGraph, Exp body, List<BasicGraphPattern> bgpList, ArrayList<Exp> filterList) {
         BasicGraphPattern exp = BasicGraphPattern.create();
@@ -121,15 +130,13 @@ public class RewriteBGPList {
                 // @todo: record filter that is inserted in bgp
                 // and remove it from body
                 getVisitor().filter(body, bgp, filterList);
-                //System.out.println("rew: " + namedGraph + " " + bgp);
                 Service service = getVisitor().getRewriteTriple()
                         .rewrite(namedGraph, bgp, getVisitor().getAtomList(uriList));
-                //System.out.println("rew: " + service);
                 exp.add(service);
             }
         }
 
-        // complete with other triple (with several uri) not in bgp
+        // complete with missing triples if any
         for (Triple triple : uriList2bgp.getTripleList()) {
             if (! contains(bgpList, triple)) {
                 Service service = getVisitor().getRewriteTriple()
@@ -140,7 +147,7 @@ public class RewriteBGPList {
         }
         
         if (!visitor.isFederateBGP()) {
-            // complete with triple with one URI, not in bgp
+            // complete with missing triple with one URI, not in bgp
             // these triple are already rewritten as service
             for (Service srv : uri2bgp.getServiceList()) {
                 exp.add(srv);
@@ -155,7 +162,7 @@ public class RewriteBGPList {
         // merge(true)  merge all bgp
         // merge(false) merge connected bgp only
         ctrace("before simplify: %s", exp);
-        getVisitor().getSimplify().merge(exp, true);
+        getVisitor().getSimplify().merge(exp, isMergeEvenIfNotConnected());
         // @todo: filter
         ctrace("after simplify: %s", exp);
         return exp;
@@ -307,6 +314,14 @@ public class RewriteBGPList {
             }
             trace("__");
         }
+    }
+
+    public boolean isMergeEvenIfNotConnected() {
+        return mergeEvenIfNotConnected;
+    }
+
+    public void setMergeEvenIfNotConnected(boolean mergeEvenIfNotConnected) {
+        this.mergeEvenIfNotConnected = mergeEvenIfNotConnected;
     }
     
     

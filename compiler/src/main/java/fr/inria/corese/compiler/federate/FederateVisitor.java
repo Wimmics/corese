@@ -158,7 +158,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private ASTSelector astSelector;
     QuerySolver exec;
     // Group triple patterns that share a unique service URI into one service URI
-    private RewriteBGP groupBGP;
+    private PrepareBGP groupBGP;
     // Rewrite BGP as service {}
     private RewriteTriple rewriteTriple;
     // Rewrite service (uri) { } as values var { (uri) } service var { }
@@ -188,7 +188,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public FederateVisitor(QuerySolver e){
         stack = new Stack();
         exec = e;
-        groupBGP = new RewriteBGP(this);
+        groupBGP = new PrepareBGP(this);
         rewriteTriple = new RewriteTriple(this);
         rewriteNamed = new RewriteNamedGraph(this);
         rewriteList = new RewriteList(this);
@@ -752,7 +752,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             // if isFederateBGP(), compute uri2bgp 
             // and do not rewrite anything yet
             URI2BGPList uri2bgp = 
-                 getGroupBGP().rewriteTripleWithOneURI(namedGraph, main, body, filterList); 
+                 getGroupBGP().process(namedGraph, main, body, filterList); 
             
             if (isTraceFederate()) {
                 trace("body first phase:\n%s", body);
@@ -760,9 +760,12 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             }     
             
             if (isFederateBGP()) {
-                // process connected bgp with triple with several uri
+                // process connected bgp with several uri
+                // filter that have been copied in specific bgp service
+                // have been removed from body
                 Exp exp = new RewriteBGPList(this, uri2bgp)
                         .process(namedGraph, body, filterList);
+                
                 if (exp != null) {
                     if (exp.isUnion()) {
                         body.add(exp);
@@ -774,12 +777,10 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             } 
         }
         
-        //System.out.println("process body: "+body);
         ArrayList<Exp> expandList = new ArrayList<> ();
         for (int i = 0; i < body.size(); i++) {
             // rewrite remaining triples into service with several URI
             Exp exp = body.get(i);
-            //System.out.println("process: " + exp + " " + exp.isTriple());
             if (exp.isQuery()) {
                 // TODO: graph name ??
                 rewrite(namedGraph, exp.getAST());
@@ -1283,11 +1284,11 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         this.select = select;
     }
     
-    public RewriteBGP getGroupBGP() {
+    public PrepareBGP getGroupBGP() {
         return groupBGP;
     }
 
-    public void setGroupBGP(RewriteBGP rew) {
+    public void setGroupBGP(PrepareBGP rew) {
         this.groupBGP = rew;
     }
     

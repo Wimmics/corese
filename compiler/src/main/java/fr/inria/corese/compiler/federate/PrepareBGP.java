@@ -16,12 +16,12 @@ import java.util.HashMap;
 import java.util.List;
 
 /**
- * Group triple patterns that share a unique service URI into one service URI
+ * Group connected triple in bgp wrt service url
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2018
  *
  */
-public class RewriteBGP extends Util {
+public class PrepareBGP extends Util {
 
     static final String FAKE_URI = "http://ns.inria.fr/_fake_";
 
@@ -29,22 +29,24 @@ public class RewriteBGP extends Util {
     private boolean debug = false;
     private boolean skipSameAs = true;
 
-    RewriteBGP(FederateVisitor vis) {
+    PrepareBGP(FederateVisitor vis) {
         visitor = vis;
     }
 
    
-
+    // create map: URI -> (BGP1 .. BGPn)        
+    // create BGP for triples that share same service URI
+    // group connected triples with one URI in uri2bgpList 
+    // (triple with several URI in FAKE_URI URI here)
+    // group connected triples with several URI in uriList2bgpList 
     /**
-     * group triple patterns that share the same service URI into one or several 
-     * connected service URI 
      * modify the body (replace triples by BGPs) 
      * copy bind (exp as var) if possible and copy filters if possible
      * filterList: list to be filled with bind & filters that are copied into service
      * TODO: bind (exp as var) could also be assignToConnectedBGP
      * @return BGP list of connected triples with several service URI
      */
-    URI2BGPList rewriteTripleWithOneURI
+    URI2BGPList process
         (Atom name, Exp main, Exp body, List<Exp> filterList) {
             
         URI2BGPList uri2bgpList     = new URI2BGPList(getVisitor())
@@ -58,10 +60,16 @@ public class RewriteBGP extends Util {
         
         // create map: URI -> (BGP1 .. BGPn)        
         // create BGP for triples that share same service URI
+        // new version:
+        // group connected triples with several URI in uriList2bgpList
+        // former version:
         // group connected triples with one URI in uri2bgpList 
         // (triple with several URI in FAKE_URI URI here)
-        // group connected triples with several URI in uriList2bgpList 
         assign(body, uri2bgpList, uriList2bgpList, localFilterList);
+        
+        // PRAGMA: the rest of the function process former case
+        // where we distinguished one/several uri
+        // not used for new case with bgp and several uri
         
         // merge BGP of arguments of optional/minus/union
         // merge BGP when filter need it

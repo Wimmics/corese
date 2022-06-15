@@ -27,6 +27,7 @@ import org.slf4j.LoggerFactory;
  */
 public class Simplify extends Util {
     static Logger logger = LoggerFactory.getLogger(Simplify.class);
+    private static boolean MERGE_EVEN_IF_NOT_CONNECTED = false;
     // heuristics to simplify service s bgp1 optional service (S) bgp2 
     // when all triple of bgp2
     // join with connected triple of bgp1 in s
@@ -35,6 +36,7 @@ public class Simplify extends Util {
     
     FederateVisitor visitor;
     private boolean debug = false;
+    private boolean mergeEvenIfNotConnected = MERGE_EVEN_IF_NOT_CONNECTED;
     
     Simplify(FederateVisitor vis) {
         visitor = vis;
@@ -88,10 +90,10 @@ public class Simplify extends Util {
      * TODO: merge when there is only one URI ???
      */ 
     Exp merge(Exp bgp) {  
-        return merge(bgp, false);
+        return merge(bgp, isMergeEvenIfNotConnected());
     }
 
-    Exp merge(Exp bgp, boolean all) {    
+    Exp merge(Exp bgp, boolean mergeEvenIfNotConnected) {    
         ServiceList include = new ServiceList();
         ServiceList exclude = new ServiceList();        
         // create map: service URI -> list (Service)
@@ -100,7 +102,7 @@ public class Simplify extends Util {
                 if (exp.getService().isFederate()) {
                     // several URI: skip
                 } 
-                else if (all) {
+                else if (mergeEvenIfNotConnected) {
                     include.add(exp.getService());
                 }
                 else if (isTripleFilterOnly(exp.getBodyExp())) {
@@ -719,6 +721,14 @@ public class Simplify extends Util {
         } else {
             return a.optional(e1, e2);
         }
+    }
+
+    public boolean isMergeEvenIfNotConnected() {
+        return mergeEvenIfNotConnected;
+    }
+
+    public void setMergeEvenIfNotConnected(boolean mergeEvenIfNotConnected) {
+        this.mergeEvenIfNotConnected = mergeEvenIfNotConnected;
     }
     
     

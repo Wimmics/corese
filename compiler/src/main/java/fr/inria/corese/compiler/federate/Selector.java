@@ -236,7 +236,9 @@ public class Selector {
         boolean b = getAstSelector().complete();       
         trace(map, d1, d2);
         logger.info("Source Selection Join Test Success: " + b);
-        return b;
+        // @todo: check if join failure occur in optional/minus/union
+        // when true: succeed else: fail
+        return true;
     }
     
     void metadata(ASTQuery aa) {

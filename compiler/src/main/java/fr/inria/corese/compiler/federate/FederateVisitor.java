@@ -72,17 +72,18 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static boolean FEDERATE_BGP = true;
     // if we find a complete partition, do not split it in subparts
     public static boolean PARTITION = true;
+    // test and use join between left and right bgp of minus/optional
     public static boolean MINUS = true;
-    // test and use join between right and left bgp of optional
     public static boolean OPTIONAL = true;
     // skip undefined arg of union optional minus
     public static boolean UNDEFINED = true;   
-    // complete with list of triple alone
+    // complete partition with list of all triple alone
     public static boolean COMPLETE_BGP = false;
     // source selection generate bind (exists {t1 . t2} as ?b)
     // for each pair of connected triple
     public static boolean SELECT_JOIN = true;
     public static boolean SELECT_JOIN_PATH = true;
+    // take filter into account in source selection
     public static boolean SELECT_FILTER = true;
     // use source selection join to generate connected bgp with join
     public static boolean USE_JOIN = true;
@@ -750,7 +751,8 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                 // @todo: fail
             }
             // if isFederateBGP(), compute uri2bgp 
-            // and do not rewrite anything yet
+            // and do not rewrite anything yet (effective)
+            // else rewrite triple as service  (deprecated)
             URI2BGPList uri2bgp = 
                  getGroupBGP().process(namedGraph, main, body, filterList); 
             
@@ -760,13 +762,15 @@ public class FederateVisitor implements QueryVisitor, URLParam {
             }     
             
             if (isFederateBGP()) {
-                // process connected bgp with several uri
+                // rewrite connected bgp with several uri as service
                 // filter that have been copied in specific bgp service
-                // have been removed from body
+                // have been removed from body and copied into filterList
                 Exp exp = new RewriteBGPList(this, uri2bgp)
                         .process(namedGraph, body, filterList);
                 
                 if (exp != null) {
+                    // rewritten bgp inserted in body
+                    // triples that have been rewritten will be removed below
                     if (exp.isUnion()) {
                         body.add(exp);
                     }
@@ -778,6 +782,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
         
         ArrayList<Exp> expandList = new ArrayList<> ();
+        
         for (int i = 0; i < body.size(); i++) {
             // rewrite remaining triples into service with several URI
             Exp exp = body.get(i);
@@ -794,16 +799,17 @@ public class FederateVisitor implements QueryVisitor, URLParam {
                     rewriteFilter(namedGraph, exp.getFilter());
                 }
             } else if (exp.isTriple()) {
-                // remaining triple with several services
-                // triple t -> service (<Si>) { t }
-                // copy relevant filters in service
                 if (isFederateBGP()) {
-                    // triple processed by RewriteBGPList
+                    // triple already processed by RewriteBGPList
+                    // remove it
                     body.getBody().remove(exp);
                     i--;
                 } else {
+                    // remaining triple with several services
+                    // triple t -> service (<Si>) { t }
+                    // copy relevant filters in service
                     Exp res = getRewriteTriple()
-                         .rewriteTripleWithSeveralURI(namedGraph, exp.getTriple(), body, filterList);
+                            .rewriteTripleWithSeveralURI(namedGraph, exp.getTriple(), body, filterList);
                     body.set(i, res);
                 }
             } else if (exp.isGraph()) {
@@ -833,16 +839,21 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         }
                 
         if (!expandList.isEmpty()) {
+            // named graph expansion
             rewriteNamed.expand(body, expandList);
         }
         
         if (body.isBGP()) {
+            // merge different service and graph with same url
             getSimplify().process(body);
+            // move bind in appropriate service
             bind(body);
-            boolean b = moveFilter(body);
+            // move filter in appropriate service
+            moveFilter(body);
             sort(body);           
 
             if (isMergeService()) {
+                // draft not default behavior
                 body = new SimplifyService().simplify(body);
                 sort(body);           
             }           
@@ -878,7 +889,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
         return i;
     }
     
-      /**
+   /**
      * Move bind (exp as var) into appropriate service uri { } if any
      */
     void bind(Exp body) {
@@ -936,21 +947,23 @@ public class FederateVisitor implements QueryVisitor, URLParam {
      ASTQuery getAST() {
          return ast;
      }
-     
-    
-   /**
-    * graph ?g EXP
-    * when from named gi is provided:
-    * rewrite every triple t in EXP as UNION(i) graph gi t 
-    * otherwise graph ?g EXP is left as is and is evaluated 
-    * as is on each endpoint.
-    * graph URI EXP is rewritten as graph URI t for all t in EXP
-    */
+       
+   
+    // exp = graph name { bgp }
     Exp rewrite(Source exp) {
         if (isFederateBGP()) {
+            // 1) bgp partition { e_i } computed without named graph
+            // 2) generate service S { graph name { e_i } }
             Exp res = rewrite(exp.getSource(), exp.getBodyExp());
             return res;
         }
+        /**
+         * former case:
+         * graph ?g EXP when from named gi is provided: rewrite every triple t
+         * in EXP as UNION(i) graph gi t otherwise graph ?g EXP is left as is
+         * and is evaluated as is on each endpoint. graph URI EXP is rewritten
+         * as graph URI t for all t in EXP
+         */
         else if (distributeNamed) {
             return rewriteNamed.rewriteNamed(ast, exp);
         } else {

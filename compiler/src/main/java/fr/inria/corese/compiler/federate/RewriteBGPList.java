@@ -39,9 +39,9 @@ public class RewriteBGPList {
     private static boolean MERGE_EVEN_IF_NOT_CONNECTED = true;
     
     private FederateVisitor visitor;
-    // connected bgp of triple with one uri
+    // connected bgp of triple with one uri (deprecated)
     URI2BGPList uri2bgp;
-    // connected bgp of triple with several uri
+    // connected bgp of triple with several uri (current)
     URI2BGPList uriList2bgp;
     BGP2URI bgp2uri;
     private boolean mergeEvenIfNotConnected = MERGE_EVEN_IF_NOT_CONNECTED;

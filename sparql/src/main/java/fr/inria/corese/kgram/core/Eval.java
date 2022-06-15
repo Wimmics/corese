@@ -1096,7 +1096,7 @@ public class Eval implements ExpType, Plugin {
                     Message.log(Message.EVAL, s + " " + maxExp);
                     if (map!=null) {
                         logger.warn(String.format("With mappings:\nvalues %s\n%s",
-                                map.getNodeList(), map.toString(false, false, 5)));
+                                map.getNodeList(), map.toString(false, false, DISPLAY_RESULT_MAX)));
                     }
                     getTrace().append(String.format("Eval: %02d %s", n, maxExp))
                             .append(Message.NL).append(Message.NL);
@@ -1645,7 +1645,7 @@ public class Eval implements ExpType, Plugin {
         if (data!=null && data.getNodeList()!=null && isPushEdgeMappings()) {   
             // push values(data) before edge in stack
             logger.info(String.format("Push path mappings:\nvalue %s\n%s", 
-                 data.getNodeList(), data.toString(false, false, 5)));
+                 data.getNodeList(), data.toString(false, false, DISPLAY_RESULT_MAX)));
             return eval(p, graphNode, stack.addCopy(n, exp.getValues(data)), n);
         }
 
@@ -1806,12 +1806,12 @@ public class Eval implements ExpType, Plugin {
                 // push values(data) before edge in stack
                 if (isDebug()) {
                     logger.warn(String.format("Push edge mappings:\nvalues %s\n%s",
-                            data.getNodeList(), data.toString(false, false, 5)));
+                            data.getNodeList(), data.toString(false, false, DISPLAY_RESULT_MAX)));
                 }
                 return eval(p, graphNode, stack.addCopy(n, exp.getValues(data)), n);
             } else if (isDebug()) {
                 logger.warn(String.format("Eval edge skip mappings:\nvalues %s\n%s",
-                        data.getNodeList(), data.toString(false, false, 5)));
+                        data.getNodeList(), data.toString(false, false, DISPLAY_RESULT_MAX)));
             }
         }
 

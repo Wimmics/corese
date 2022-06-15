@@ -70,9 +70,9 @@ public class ASTSelector {
             else if (l1.size() > 1 && l2.size() == 1 && l1.contains(l2.get(0))) {
                 restrict(t2, t1, l2, l1);
             }
-            else if (l1.size()==1 && l2.size()==1 && l1.contains(l2.get(0))) {
+            else if (l1.size()==1 && l2.size()==1 && l1.equals(l2)) {
                 // t1 and t2 are in same server but do not join: query fail
-                ASTQuery.logger.info("AST Selector fail: ");
+                ASTQuery.logger.info("AST Selector detect no join: ");
                 ASTQuery.logger.info(t1 + " " + l1);
                 ASTQuery.logger.info(t2 + " " + l2);
                 return false;

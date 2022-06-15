@@ -61,6 +61,9 @@ public class Service implements URLParam {
     public static final String MIME_TYPE = "application/sparql-results+xml,application/rdf+xml";
     public static final String XML = SPARQL_RESULTS_XML;
     public static final String RDF = RDF_XML;
+    private static final String NAMED_GRAPH_URI = "named-graph-uri";
+    private static final String DEFAULT_GRAPH_URI = "default-graph-uri";
+
     static HashMap<String, String> redirect;
     
     private ClientBuilder clientBuilder;
@@ -427,13 +430,17 @@ public class Service implements URLParam {
     void complete(MultivaluedMap<String, String> amap, Dataset ds) {
         if (ds != null) {
             if (!ds.getFrom().isEmpty()) {
-                amap.put("default-graph-uri", ds.getFromStringList());
+                logger.info(String.format("%s\n%s %s", getURL().toString(), DEFAULT_GRAPH_URI, ds.getFromStringList()));
+                amap.put(DEFAULT_GRAPH_URI, ds.getFromStringList());
             }
             if (!ds.getNamed().isEmpty()) {
-                amap.put("named-graph-uri", ds.getNamedStringList());
+                logger.info(getURL().toString());
+                logger.info(String.format("%s\n%s %s", getURL().toString(), NAMED_GRAPH_URI, ds.getNamedStringList()));
+                amap.put(NAMED_GRAPH_URI, ds.getNamedStringList());
             }
         }
     }
+
 
     public String get(String query, String mime) {
         // Server URL without parameters

@@ -217,7 +217,10 @@ public class ProviderService implements URLParam {
 
             String name = service.getLabel();
             URLServer url = new URLServer(name, Property.stringValue(SERVICE_PARAMETER));
-            url.setDataset(getGlobalAST().getDataset());
+            if (q.getGlobalQuery().isFederate()) {
+                // federate rewrite service inherit from/from named    
+                url.setDataset(getGlobalAST().getDataset());
+            }
             if (!ok) {
                 url.setUndefined(true);
             }

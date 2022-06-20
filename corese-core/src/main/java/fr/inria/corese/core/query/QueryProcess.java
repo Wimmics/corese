@@ -46,6 +46,8 @@ import fr.inria.corese.core.producer.DataBrokerConstructExtern;
 import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.util.Extension;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
 import fr.inria.corese.kgram.core.SparqlException;
@@ -55,11 +57,13 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.URLParam;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.io.IOException;
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import jakarta.ws.rs.client.ResponseProcessingException;
+import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -745,8 +749,21 @@ public class QueryProcess extends QuerySolver {
         if (!getLog().getLinkList().isEmpty()) {
             map.setLinkList(getLog().getLinkList());
         }
-        
+        traceLog(map);
         processMessage(map);
+    }
+    
+    // subset of loag that must be displayed
+    // service http  header properties 
+    void traceLog(Mappings map) {
+        List<String> header = Property.listValue(SERVICE_HEADER);
+        if (header != null) {
+            String log = getLog().log();
+            if (! log.isEmpty()) {
+                logger.info("\n"+log);
+                map.getQuery().addInfo(log);
+            }
+        }
     }
     
     void processLog(Query q, Mappings map) {

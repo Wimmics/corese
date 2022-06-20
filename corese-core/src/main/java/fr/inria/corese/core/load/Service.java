@@ -63,6 +63,7 @@ public class Service implements URLParam {
     public static final String RDF = RDF_XML;
     private static final String NAMED_GRAPH_URI = "named-graph-uri";
     private static final String DEFAULT_GRAPH_URI = "default-graph-uri";
+    public static final String NB_RESULT_MAX = "X-SPARQL-MaxRows";
 
     static HashMap<String, String> redirect;
     
@@ -171,8 +172,12 @@ public class Service implements URLParam {
             }
             map.setQuery(query);
             map.init(query);
+            // complete report with response and header
+            // report was recorded in map by ServiceParser 
+            // call to ServiceReport parserReport()
             getCreateReport(query).setAccept(accept)
                     .completeReport(map);
+            //log(getCreateReport());
             return map;
         } catch (LoadException e) {
             // ServiceParser throw exception
@@ -180,6 +185,18 @@ public class Service implements URLParam {
                 return getCreateReport(query).parserReport(e);
             }
             throw e;
+        }
+    }
+    
+    void log(ServiceReport report) {
+        log(report.getResponse());
+    }
+    
+    void log(Response res) {
+        if (res != null) {
+            if (res.getHeaderString(NB_RESULT_MAX) != null) {
+                logger.info(String.format("%s = %s", NB_RESULT_MAX, res.getHeaderString(NB_RESULT_MAX)));
+            }
         }
     }
     

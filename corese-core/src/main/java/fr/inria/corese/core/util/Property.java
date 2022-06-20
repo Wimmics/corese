@@ -26,6 +26,7 @@ import static fr.inria.corese.core.util.Property.Value.DATATYPE_ENTAILMENT;
 import static fr.inria.corese.core.util.Property.Value.IMPORT;
 import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
 import static fr.inria.corese.core.util.Property.Value.PREFIX;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
 import static fr.inria.corese.core.util.Property.Value.VARIABLE;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
@@ -95,6 +96,7 @@ public class Property {
     private HashMap<Value, Boolean> booleanProperty;
     private HashMap<Value, String> stringProperty;
     private HashMap<Value, Integer> integerProperty;
+    private HashMap<Value, List<String>> listProperty;
     private HashMap<String, String> variableMap;
     private HashMap<String, String> imports;
 
@@ -263,6 +265,7 @@ public class Property {
         SERVICE_LOG,
         SERVICE_REPORT,
         SERVICE_DISPLAY_RESULT,
+        SERVICE_HEADER,
 
         // service result may be RDF graph (e.g. when format=turtle)
         // apply service query on the graph 
@@ -279,6 +282,7 @@ public class Property {
         booleanProperty = new HashMap<>();
         stringProperty = new HashMap<>();
         integerProperty = new HashMap<>();
+        listProperty = new HashMap<>();
         properties = new Properties();
         variableMap = new HashMap<>();
         imports = new HashMap<>();
@@ -711,6 +715,10 @@ public class Property {
                 // set in table
                 break;
                 
+            case SERVICE_HEADER:
+                getListProperty().put(SERVICE_HEADER, getList(str));
+                break;
+                
                 
             case LDSCRIPT_VARIABLE:
                 variable();
@@ -804,20 +812,21 @@ public class Property {
         FederateVisitor.DEFAULT_SPLIT = alist;
     }
     
-    void blacklist(String list) {
+    List<String> getList(String list) {
         ArrayList<String> alist = new ArrayList<>();
         for (String str : list.split(SEP)) {
             alist.add(str);
         }
-        FederateVisitor.BLACKLIST = alist;
+        return alist;
     }
     
-    void blacklistExcept(String list) {
-        ArrayList<String> alist = new ArrayList<>();
-        for (String str : list.split(SEP)) {
-            alist.add(str);
-        }
-        FederateVisitor.BLACKLIST_EXCEPT = alist;
+ 
+    void blacklist(String list) {        
+        FederateVisitor.BLACKLIST = getList(list);
+    }
+    
+    void blacklistExcept(String list) {        
+        FederateVisitor.BLACKLIST_EXCEPT = getList(list);
     }
 
     void blacklist(String... list) {
@@ -1123,6 +1132,10 @@ public class Property {
         return getSingleton().getIntegerProperty().get(val);
     }
     
+    public static List<String> listValue(Value value) {
+        return getSingleton().getListProperty().get(value);
+    }
+       
     String getPropertiesValue(Value value) {
         if (getProperties().containsKey(value.toString())) {
             return (String) getProperties().get(value.toString());
@@ -1184,6 +1197,14 @@ public class Property {
 
     public void setImports(HashMap<String, String> imports) {
         this.imports = imports;
+    }
+
+    public HashMap<Value, List<String>> getListProperty() {
+        return listProperty;
+    }
+
+    public void setListProperty(HashMap<Value, List<String>> listProperty) {
+        this.listProperty = listProperty;
     }
 
 }

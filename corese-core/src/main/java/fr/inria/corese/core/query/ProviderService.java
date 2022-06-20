@@ -18,8 +18,11 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
+import static fr.inria.corese.core.load.Service.NB_RESULT_MAX;
+import fr.inria.corese.core.load.ServiceReport;
 import fr.inria.corese.core.util.Property;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_GRAPH;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_PARAMETER;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SLICE;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_TIMEOUT;
@@ -50,6 +53,7 @@ import org.json.JSONObject;
 
 /**
  * Service call
+ * Service Report is recorded by ServiceParser -> ServiceReport
  *
  * @author Olivier Corby, Edelweiss INRIA 2021
  */
@@ -942,9 +946,26 @@ public class ProviderService implements URLParam {
             //service.setLog(getLog());
             service.setDebug(q.isRecDebug());
             Mappings map = service.query(q, ast, null);
+            log(serv, service.getReport());
             return map;
         } catch (LoadException ex) {
             throw (new IOException(ex.getMessage() + " " + serv.getURL()));
+        }
+    }
+    
+    void log(URLServer url, ServiceReport report) {
+        if (report != null && report.getResponse() != null
+                && report.getResponse().getHeaders() != null) {
+            List<String> headerList = Property.listValue(SERVICE_HEADER);
+            if (headerList != null) {
+                for (String header : headerList) {
+                    String res = report.getResponse().getHeaderString(header);
+                    if (res != null) {
+                        //logger.info(String.format("%s %s=%s", url.toString(), header, res));
+                        getLog().defLabel(url.getLogURLNumber(), header, res);
+                    }
+                }
+            }
         }
     }
 

@@ -54,7 +54,7 @@ public class SubjectMap extends HashMap<String, PropertyMap> implements LogKey {
     public IDatatype get(String subject, String property) {
         return getPropertyMap(subject).get(property);
     }
-    
+       
     public List<String> getStringList(String subject, String property) {
         IDatatype dt = getPropertyMap(subject).get(property);
         if (dt == null) {

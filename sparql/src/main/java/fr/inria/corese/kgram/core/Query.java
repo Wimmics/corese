@@ -457,9 +457,13 @@ public class Query extends Exp implements Graphable {
         return errors;
     }
 
+    public void addInfo(String mes) {
+        addInfo(mes, null);
+    }
+    
     public void addInfo(String mes, Object obj) {
         if (info == null) {
-            info = new ArrayList<String>();
+            info = new ArrayList<>();
         }
         if (obj != null) {
             mes += obj;

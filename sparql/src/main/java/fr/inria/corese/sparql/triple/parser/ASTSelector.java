@@ -14,6 +14,7 @@ public class ASTSelector {
     private HashMap<Triple, List<Atom>> tripleService;
     // map: {t1 t2} -> (uri) where join(t1, t2) = true
     private HashMap<BasicGraphPattern, List<Atom>> bgpService;
+    private HashMap<BasicGraphPattern, Boolean>  bgpFail;
     
     public ASTSelector() {
         predicateService = new HashMap<>();
@@ -52,6 +53,8 @@ public class ASTSelector {
         return suc;
     }
     
+    // connected pair {t1.t2} do not join in same endpoint
+    // but they may join on two different endpoints
     // t1 -> (u1 u2) and t2 -> (u1)
     // join bgp {t1 t2} -> ()
     // we know that t1 is not in u1 otherwise: {t1 t2} -> (u1)
@@ -70,12 +73,17 @@ public class ASTSelector {
             else if (l1.size() > 1 && l2.size() == 1 && l1.contains(l2.get(0))) {
                 restrict(t2, t1, l2, l1);
             }
-            else if (l1.size()==1 && l2.size()==1 && l1.equals(l2)) {
-                // t1 and t2 are in same server but do not join: query fail
-                ASTQuery.logger.info("AST Selector detect no join: ");
-                ASTQuery.logger.info(t1 + " " + l1);
-                ASTQuery.logger.info(t2 + " " + l2);
-                return false;
+            else if (l1.size()==1 && l2.size()==1 && l1.equals(l2)) {  
+                // FederateVisitor SelectorFilter join has prepared a map
+                // bgp -> fail
+                if (getBgpFail()!=null && getBgpFail().containsKey(bgp) &&
+                    getBgpFail().get(bgp)) {
+                     // t1 and t2 are in same endpoint but do not join: query may fail
+                    ASTQuery.logger.info("AST Selector detect no join: ");
+                    ASTQuery.logger.info(t1 + " " + l1);
+                    ASTQuery.logger.info(t2 + " " + l2);
+                    return false;
+                }
             }
         }
         return true;
@@ -179,5 +187,13 @@ public class ASTSelector {
 
     public void setBgpService(HashMap<BasicGraphPattern, List<Atom>> bgpService) {
         this.bgpService = bgpService;
+    }
+
+    public HashMap<BasicGraphPattern, Boolean> getBgpFail() {
+        return bgpFail;
+    }
+
+    public void setBgpFail(HashMap<BasicGraphPattern, Boolean> bgpFail) {
+        this.bgpFail = bgpFail;
     }
 }

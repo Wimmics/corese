@@ -17,7 +17,7 @@ import java.util.List;
  * a) main instance: uri -> (connected bgp) triple with one URI (deprecated)
  * b) uriList2bgp:   uri -> (connected bgp) triple with several URI
  */
-class URI2BGPList {
+public class URI2BGPList {
     public static boolean TRACE_SKIP = false;
     // uri -> bgp list
     HashMap<String, List<BasicGraphPattern>> uri2bgp;
@@ -153,7 +153,7 @@ class URI2BGPList {
                     } else {
                         // source selection confirm that triple does not join with bgp
                         if (TRACE_SKIP) {
-                            trace("skip: %s %s", triple, uri);
+                            trace("bgp join skip connection: %s %s", triple, uri);
                             trace("%s", bgp);
                         }
                     }

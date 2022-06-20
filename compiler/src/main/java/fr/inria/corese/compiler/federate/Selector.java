@@ -236,9 +236,11 @@ public class Selector {
         boolean b = getAstSelector().complete();       
         trace(map, d1, d2);
         logger.info("Source Selection Join Test Success: " + b);
-        // @todo: check if join failure occur in optional/minus/union
-        // when true: succeed else: fail
-        return true;
+        // if selection join failure occurs in optional/minus/union/exists
+        // do not fail, else fail
+        // when return false below, query is considered as failing 
+        // and will not be executed
+        return b;
     }
     
     void metadata(ASTQuery aa) {
@@ -592,7 +594,12 @@ public class Selector {
     // to test existence of join on each endpoint
     // use case: determine if service uri {t1 t2} exists    
     int selectTripleJoin(ASTQuery aa, BasicGraphPattern bgp, int i) {
-        List<BasicGraphPattern> list = new SelectorFilter(getVisitor(), ast).processJoin();
+        SelectorFilter.JoinResult ares = new SelectorFilter(getVisitor(), ast).processJoin();
+        List<BasicGraphPattern> list = ares.getBgpList();
+        // join bgp should fail or not
+        // map: bgp -> fail
+        getAstSelector().setBgpFail(ares.getBgpFail());
+        
         for (BasicGraphPattern exp : list) {
             // exp = {t1 . t2}
             Variable var;

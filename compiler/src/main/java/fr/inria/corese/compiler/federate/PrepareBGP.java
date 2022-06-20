@@ -106,9 +106,11 @@ public class PrepareBGP extends Util {
         return uri2bgpList;
     }
         
-    // right exp of optional does not use select join to create bgp list
+    // right exp of optional/minus do not use select join to create bgp list
+    // it means that connected triples remain in same bgp even if they do not join
+    // this is a heuristics in favor of simplification of A optional/minus B
     boolean join(Exp main, Exp body) {
-        if (main.isOptional() && body == main.get(1)) {
+        if ((main.isOptional()|| main.isMinus()) && body == main.get(1)) {
             return false;
         }
         return getVisitor().USE_JOIN;

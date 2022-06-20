@@ -5,8 +5,8 @@ import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Binary;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Expression;
-import fr.inria.corese.sparql.triple.parser.Optional;
 import fr.inria.corese.sparql.triple.parser.Triple;
+import fr.inria.corese.sparql.triple.parser.Union;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -22,6 +22,8 @@ public class SelectorFilter {
     ASTQuery ast;
     private FederateVisitor visitor;
     ArrayList<BasicGraphPattern> res;
+    // when join bgp fail, query should fail
+    HashMap<BasicGraphPattern, Boolean>  bgpFail;
     
     static {
         init();
@@ -31,6 +33,7 @@ public class SelectorFilter {
         this.ast = ast;
         visitor = vis;
         res = new ArrayList<>();
+        bgpFail = new HashMap<>();
     }
     
     static void init() {
@@ -48,6 +51,35 @@ public class SelectorFilter {
         map.remove(oper);
     }
     
+    class JoinResult {
+        // list of join connected pair {t1 . t2}
+        private ArrayList<BasicGraphPattern> bgpList;
+        // query may fail when bgp {t1 t2} has no join
+        private HashMap<BasicGraphPattern, Boolean>  bgpFail;
+        
+        JoinResult(ArrayList<BasicGraphPattern> res, HashMap<BasicGraphPattern, Boolean>  fail) {
+            bgpList = res;
+            bgpFail = fail;
+        }
+
+        public ArrayList<BasicGraphPattern> getBgpList() {
+            return bgpList;
+        }
+
+        public void setBgpList(ArrayList<BasicGraphPattern> bgpList) {
+            this.bgpList = bgpList;
+        }
+
+        public HashMap<BasicGraphPattern, Boolean> getBgpFail() {
+            return bgpFail;
+        }
+
+        public void setBgpFail(HashMap<BasicGraphPattern, Boolean> bgpFail) {
+            this.bgpFail = bgpFail;
+        }
+
+    }
+    
     /**
      * Return list of all triples with possibly filters bound by triples
      * One BGP per triple/filters
@@ -58,9 +90,10 @@ public class SelectorFilter {
         return res;
     }
     
-    List<BasicGraphPattern> processJoin() {
-        processJoin(ast);       
-        return res;
+    JoinResult processJoin() {
+        processJoin(ast); 
+        JoinResult ares = new JoinResult(res, bgpFail);
+        return ares;
     }
     
     void process(ASTQuery ast) {
@@ -85,35 +118,70 @@ public class SelectorFilter {
     void processBGP(Exp body) {
         processBGPTriple(body);
     }
-    
-    
-    
-    
+       
+    // By default, basic bgp fail when join fail
     void processJoin(ASTQuery ast) {
-        processJoin(ast.getBody());
+        processJoin(ast, true);
     }
     
-    void processJoin(Exp body) {
+    void processJoin(ASTQuery ast, boolean fail) {
+        processJoin(ast.getBody(), fail);
+    }
+    
+    void processJoin(Exp body, boolean fail) {
         if (body.isBGP()) {
-            processBGPJoin(body);
+            processBGPJoin(body, fail);
         }
         else if (body.isOptional()) {
-           processJoin(body.getOptional());
+           processJoin(body.getOptional(), fail);
         }
         else if (body.isMinus()) {
-           processJoin(body.getMinus());
+           processJoin(body.getMinus(), fail);
+        }
+        else if (body.isUnion()) {
+           processJoin(body.getUnion(), fail);
         }
         else if (body.isQuery()) {
-            processJoin(body.getAST());
+            processJoin(body.getAST(), fail);
+        }
+        else if (body.isFilter()) {
+            processJoinFilter(body.getFilter());
         }
         else for (Exp exp : body) {
-            processJoin(exp);
+            processJoin(exp, fail);
         }
+    }   
+    
+    // filter exists { bgp }
+    // participate to bgp join selection in order to benefit
+    // from bgp processing heuristics
+    boolean processJoinFilter(Expression exp) {
+        boolean exist = false;
+        if (exp.isTerm()) {
+            if (exp.getTerm().isTermExist()) {
+                exist = true;
+                processJoinExist(exp);
+            } else {
+                for (Expression arg : exp.getArgs()) {
+                    if (processJoinFilter(arg)) {
+                        exist = true;
+                    }
+                }
+            }
+        }
+        return exist;
     }
     
-    void processJoin(Binary body) {
-        processBGPJoin(body.get(0));
-        processBGPJoin(body.get(1));
+    // exp = exists { bgp }
+    void processJoinExist(Expression exp) {
+        Exp bgp = exp.getTerm().getExist().get(0);
+        processJoin(bgp, false);
+    }
+    
+    // optional minus
+    void processJoin(Binary body, boolean fail) {
+        processBGPJoin(body.get(0), fail);
+        processBGPJoin(body.get(1), false);
         
         if ((body.isOptional() && getVisitor().isFederateOptional()) ||
             (body.isMinus()    && getVisitor().isFederateMinus())) {
@@ -122,8 +190,14 @@ public class SelectorFilter {
             BasicGraphPattern bgp = BasicGraphPattern.create();
             addTriple(body.get(0), bgp);
             addTriple(body.get(1), bgp);
-            processBGPJoin(bgp);
+            processBGPJoin(bgp, false);
         }
+    }
+    
+    // union
+    void processJoin(Union body, boolean fail) {
+        processBGPJoin(body.get(0), false);
+        processBGPJoin(body.get(1), false);               
     }
 
     void addTriple(Exp exp, BasicGraphPattern bgp) {
@@ -136,7 +210,7 @@ public class SelectorFilter {
     }
 
     // generate bgp for test of join {t1 t2}
-    void processBGPJoin(Exp body) {
+    void processBGPJoin(Exp body, boolean fail) {
         int i = 0;
         for (Exp e1 : body) {
             if (e1.isTriple() && accept(e1.getTriple())) {
@@ -148,12 +222,12 @@ public class SelectorFilter {
                         if (accept(t2)
                                 //&& accept(t1, t2)
                                 && t1.isConnected(t2)) {
-                            add(t1, t2);
+                            add(t1, t2, fail);
                         }
                     }
                 }
             } else {
-                processJoin(e1);
+                processJoin(e1, fail);
             }
             i++;
         }
@@ -171,20 +245,35 @@ public class SelectorFilter {
         return getVisitor().createJoinTest(t);            
     }
     
-    void add(Triple t1, Triple t2) {
+    void add(Triple t1, Triple t2, boolean fail) {
         if (t1.getPredicate().isVariable() && t2.getPredicate().isConstant()) {
-            basicAdd(t2, t1);
+            basicAdd(t2, t1, fail);
         }
         else {
-            basicAdd(t1, t2);
+            basicAdd(t1, t2, fail);
         }
     }
     
-    void basicAdd(Triple t1, Triple t2) {
+    void basicAdd(Triple t1, Triple t2, boolean fail) {
         BasicGraphPattern bgp = BasicGraphPattern.create(t1, t2);
-        if (accept(bgp)) {
-            res.add(bgp);
+        BasicGraphPattern key = getKey(bgp);
+        if (key==bgp) {
+            res.add(bgp);            
         }
+        if (fail) { 
+           bgpFail.put(key, fail); 
+        }
+    }
+    
+    // return unique key bgp
+    BasicGraphPattern getKey(BasicGraphPattern bgp) {
+        for (BasicGraphPattern exp : res) {
+            boolean sim = bgp.similarPair(exp);
+            if (sim) {
+                return exp;
+            }
+        }
+        return bgp;
     }
     
     // do not generate "duplicate" pair of triple

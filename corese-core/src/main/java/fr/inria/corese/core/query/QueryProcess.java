@@ -65,6 +65,7 @@ import java.util.HashMap;
 import jakarta.ws.rs.client.ResponseProcessingException;
 import java.io.File;
 import java.io.FileWriter;
+import java.util.ArrayList;
 import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -807,6 +808,32 @@ public class QueryProcess extends QuerySolver {
                 logger.error(ex.getMessage());
             }
         }
+    }
+    
+    // translate log header into Mappings
+    // use case: gui display log header as query results
+    public Mappings log2Mappings(ContextLog log) throws EngineException {
+        String str = "select * where {?s ?p ?o}";
+        Query q = compile(str);
+        Mappings map = Mappings.create(q);
+        map.init(q);
+        
+        for (String url : log.getSubjectMap().getKeys()) {
+            for (String name : log.getLabelList()) {
+                IDatatype value = log.getLabel(url, name);
+                
+                if (value !=null) {
+                    ArrayList<Node> valueList = new ArrayList<>();
+                    valueList.add(DatatypeMap.newResource(url));
+                    valueList.add(DatatypeMap.newResource(name));
+                    valueList.add(value);
+                    Mapping m = Mapping.create(q.getSelect(), valueList);
+                    map.add(m);
+                }
+            }
+        }
+        
+        return map;
     }
     
     /**

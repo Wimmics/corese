@@ -81,6 +81,7 @@ public class Property {
 
     private static Logger logger = LoggerFactory.getLogger(Property.class);
     final static String VAR_CHAR = "$";
+    public static final String STAR = "*";
     final static String LOCAL = "./";
     final static String SEP = ";";
     final static String EQ = "=";

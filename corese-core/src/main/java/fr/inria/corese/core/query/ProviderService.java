@@ -958,11 +958,23 @@ public class ProviderService implements URLParam {
                 && report.getResponse().getHeaders() != null) {
             List<String> headerList = Property.listValue(SERVICE_HEADER);
             if (headerList != null) {
+                
                 for (String header : headerList) {
-                    String res = report.getResponse().getHeaderString(header);
-                    if (res != null) {
-                        //logger.info(String.format("%s %s=%s", url.toString(), header, res));
-                        getLog().defLabel(url.getLogURLNumber(), header, res);
+                    if (header.equals(Property.STAR)) {
+                        for (String name : report.getResponse().getHeaders().keySet()) {
+                            String res = report.getResponse().getHeaderString(name);
+                            if (res != null) {
+                                //logger.info(String.format("%s %s=%s", url.toString(), header, res));
+                                getLog().defLabel(url.getLogURLNumber(), name, res);
+                            }
+                        }
+                    }
+                    else {
+                        String res = report.getResponse().getHeaderString(header);
+                        if (res != null) {
+                            //logger.info(String.format("%s %s=%s", url.toString(), header, res));
+                            getLog().defLabel(url.getLogURLNumber(), header, res);
+                        }
                     }
                 }
             }

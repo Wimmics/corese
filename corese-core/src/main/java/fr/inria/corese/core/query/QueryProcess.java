@@ -63,6 +63,8 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.util.HashMap;
 import jakarta.ws.rs.client.ResponseProcessingException;
+import java.io.File;
+import java.io.FileWriter;
 import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -753,15 +755,40 @@ public class QueryProcess extends QuerySolver {
         processMessage(map);
     }
     
-    // subset of loag that must be displayed
-    // service http  header properties 
+    // display service http header log
+    // header properties specified by SERVICE_HEADER = p1;p2
+    // display whole header: SERVICE_HEADER = * 
     void traceLog(Mappings map) {
         List<String> header = Property.listValue(SERVICE_HEADER);
+        
         if (header != null) {
             String log = getLog().log();
-            if (! log.isEmpty()) {
-                logger.info("\n"+log);
+            
+            if (!log.isEmpty()) {
+                logger.info("\n" + log);
+                // record log in query info 
+                // to be displayed as comment in XML Results format
                 map.getQuery().addInfo(log);
+                traceLogFile(map);
+            }
+        }
+    }   
+    
+    // write header log to file
+    // @save
+    // @save <filename>
+    void traceLogFile(Mappings map) {
+        if (map.getAST().hasMetadata(Metadata.SAVE)) {
+            String fileName = map.getAST().getMetadata().getValue(Metadata.SAVE);
+
+            try {
+                if (fileName == null) {
+                    File tempFile = File.createTempFile("log-", ".txt");
+                    fileName = tempFile.getAbsolutePath();
+                }
+                getLog().logToFile(fileName);
+            } catch (IOException ex) {
+                logger.error(ex.getMessage());
             }
         }
     }

@@ -1,7 +1,6 @@
 package fr.inria.corese.core.extension;
 
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -14,6 +13,10 @@ import java.util.ArrayList;
  * execution Service Report is the value of a variable ?_service_report_n where
  * n is the number of the service Variable ?_service_report_n is bound in the
  * environment Variable value is a LDScript JSON object, with dt:json datatype
+ * prefix js: <function://fr.inria.corese.core.extension.Report>
+ * @report @header [@enum]
+ * values (?akey ?aval) { unnest(js:report()) }
+ * values (?akey ?aval) { unnest(js:header()) }
  */
 public class Report extends Extension implements URLParam {
      

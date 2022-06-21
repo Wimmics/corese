@@ -42,6 +42,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.XMLFormat;
+import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.CompareMappings;
 import fr.inria.corese.core.util.Property;
@@ -53,6 +54,7 @@ import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import java.util.Date;
 import java.util.List;
 import org.apache.logging.log4j.Level;
@@ -95,7 +97,9 @@ public final class MyJPanelQuery extends JPanel {
     int maxresxml = 1000;
     
     //Boutton du panneau Query
-    private JButton buttonRun, buttonShacl, buttonPush, buttonCopy, 
+    private JButton buttonRun, buttonShacl, buttonPush, 
+            buttonLog,
+            buttonCopy, 
             buttonSort, buttonCompare,
             buttonShex, 
             buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL, 
@@ -166,6 +170,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonShacl = new JButton();
         buttonShex = new JButton();
         buttonPush = new JButton();
+        buttonLog = new JButton();
         buttonCopy = new JButton();
         buttonSort = new JButton();
         buttonCompare = new JButton();
@@ -294,6 +299,7 @@ public final class MyJPanelQuery extends JPanel {
         //Lancer une requête
         // copy current result into new query panel (template)
         buttonPush.setText("Push");
+        buttonLog.setText("Log");
         // copy current result into last result panel
         buttonCopy.setText("Copy");
         buttonSort.setText("Modifier");
@@ -368,14 +374,15 @@ public final class MyJPanelQuery extends JPanel {
 
         hSeq2.addPreferredGap(LayoutStyle.ComponentPlacement.RELATED, 257, Short.MAX_VALUE);
         hSeq2.addComponent(buttonRun);
+        hSeq2.addComponent(buttonSort);
         hSeq2.addComponent(buttonShacl);
         hSeq2.addComponent(buttonShex);
+        hSeq2.addComponent(buttonLog);
         hSeq2.addComponent(buttonPush);
         hSeq2.addComponent(buttonCopy);
-        hSeq2.addComponent(buttonSort);
         hSeq2.addComponent(buttonCompare);
         hSeq2.addComponent(buttonStop);
-        hSeq2.addComponent(buttonKill);
+        //hSeq2.addComponent(buttonKill);
         hSeq2.addComponent(buttonValidate);
         hSeq2.addComponent(buttonToSPIN);
         hSeq2.addComponent(buttonToSPARQL);
@@ -406,14 +413,15 @@ public final class MyJPanelQuery extends JPanel {
         GroupLayout.SequentialGroup vSeq1 = pane_listenerLayout.createSequentialGroup();
 
         vParallel2.addComponent(buttonRun);
+        vParallel2.addComponent(buttonSort);
         vParallel2.addComponent(buttonShacl);
         vParallel2.addComponent(buttonShex);
+        vParallel2.addComponent(buttonLog);
         vParallel2.addComponent(buttonPush);
         vParallel2.addComponent(buttonCopy);
-        vParallel2.addComponent(buttonSort);
         vParallel2.addComponent(buttonCompare);
         vParallel2.addComponent(buttonStop);
-        vParallel2.addComponent(buttonKill);
+        //vParallel2.addComponent(buttonKill);
         vParallel2.addComponent(buttonValidate);
         vParallel2.addComponent(buttonToSPIN);
         vParallel2.addComponent(buttonToSPARQL);
@@ -468,6 +476,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonShacl.addActionListener(l_RunListener);
         buttonShex.addActionListener(l_RunListener);
         buttonPush.addActionListener(l_RunListener);
+        buttonLog.addActionListener(l_RunListener);
         buttonCopy.addActionListener(l_RunListener);
         buttonSort.addActionListener(l_RunListener);
         buttonCompare.addActionListener(l_RunListener);
@@ -975,6 +984,9 @@ public final class MyJPanelQuery extends JPanel {
                         // copy current result into new query editor (as if load query were done)
                         coreseFrame.newQuery(txt, "generated");
                     } 
+                    else if (ev.getSource() == buttonLog) { 
+                        log(coreseFrame, query);
+                    } 
                     else if (ev.getSource() == buttonCopy) { 
                         // copy current result into last result panel 
                         // (as if load result), for xt:mappings()
@@ -1021,6 +1033,19 @@ public final class MyJPanelQuery extends JPanel {
                 textPaneValidation.setText(l_message + "Done.");
             }
         };
+    }
+    
+    // translate Log header into Mappings with s p o
+    // display Log header as query results into new panel
+    void log(MainFrame coreseFrame, String query) {
+        try {
+            ContextLog log = getMappings().getBinding().getLog();
+            Mappings map = QueryProcess.create().log2Mappings(log);
+            coreseFrame.newQuery(map.getAST().toString(), "generated");
+            coreseFrame.getLastQueryPanel().basicDisplay(map);
+        } catch (EngineException ex) {
+        }
+        
     }
     
     /**

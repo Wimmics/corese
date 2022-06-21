@@ -155,6 +155,7 @@ public class Metadata extends ASTObject
     public static final String FED_BLACKLIST= "@blacklist";
     public static final String FED_WHITELIST= "@whitelist";
     public static final String FED_CLASS    = "@federateClass";
+    public static final String SAVE         = "@save";
     
          
     private static HashMap<String, Integer> annotation;    

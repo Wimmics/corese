@@ -8,6 +8,8 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
@@ -75,6 +77,19 @@ public class ContextLog implements URLParam, LogKey {
     
     public IDatatype getLabel(String subject, String property) {
         return getSubjectMap().get(subject, getPredicate(property));
+    }
+    
+    public List<List<String>> getLabelList(String property) {
+        ArrayList<List<String>> list = new ArrayList<>();
+        
+        for (String url : keySet()) {
+            IDatatype dt = getLabel(url, property);
+            if (dt != null) {
+                list.add(List.of(url, property, dt.getLabel()));
+            }
+        }
+        
+        return list;
     }
     
     public String getString(String subject, String property) {
@@ -275,6 +290,13 @@ public class ContextLog implements URLParam, LogKey {
         }
         
         return sb.toString();
+    }
+    
+    public void logToFile(String fileName) throws IOException {
+        FileWriter file = new FileWriter(fileName);
+        file.write(log());
+        file.flush();
+        file.close();
     }
 
     public boolean isEmpty() {

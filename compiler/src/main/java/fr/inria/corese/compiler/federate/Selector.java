@@ -141,6 +141,7 @@ public class Selector {
                 .process();
         Context ct = Context.create().setDiscovery(true);
         Mappings map = getQuerySolver().basicQuery(a, ct); 
+        traceLog(map);
         getVisitor().setDiscovery(map);
         List<String> list = map.getStringValueList(SERVER_VAR); 
         
@@ -187,6 +188,7 @@ public class Selector {
                 ct.setFederateIndex(true);
             }            
             map = getQuerySolver().basicQuery(aa, ct);
+            traceLog(map);
             getVisitor().setMappings(map);
         }
         else {
@@ -243,6 +245,12 @@ public class Selector {
         return b;
     }
     
+    void traceLog(Mappings map) {
+        for (List list : getQuerySolver().getLog().getLabelList("Server")) {
+            logger.info(list.toString());
+        }
+    }
+
     void metadata(ASTQuery aa) {
         if (ast.hasMetadata(Metadata.SHOW)) {
             Metadata meta = new Metadata();

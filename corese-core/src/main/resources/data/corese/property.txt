@@ -97,14 +97,16 @@ VERBOSE        = false
 SOLVER_DEBUG   = false
 TRANSFORMER_DEBUG   = false
 
-TRACE_MEMORY = true
-LOG_NODE_INDEX = true
-LOG_RULE_CLEAN = true
+TRACE_MEMORY = false
+LOG_NODE_INDEX = false
+LOG_RULE_CLEAN = false
 
 # draft: trace var in owl rl checker: trace_sttl_undo=true
 LDSCRIPT_VARIABLE        = mapsize=maplarge;mapzoom=6
 
+# generic property, not used
 INTERPRETER_TEST = false
+TRACE_GENERIC = false
 
 # take property cardinality into account to sort query pattern
 SOLVER_SORT_CARDINALITY   = false
@@ -129,18 +131,27 @@ FUNCTION_PARAMETER_MAX = 15
 
 # values filter
 SERVICE_BINDING     = values 
+# split variable bindings
 SERVICE_SLICE       = 500
+# limit added to service unless service has a limit
 #SERVICE_LIMIT       = 5000
 SERVICE_TIMEOUT     = 3000
+# add parameter to service url
 #SERVICE_PARAMETER   = mode=link;debug;show&transform=st:xml&format=json
 # service may return RDF graph as result
 # when true: execute service query locally on this graph
 SERVICE_GRAPH       = false
+# service parameter sent to endpoint
 SERVICE_SEND_PARAMETER = true
+# generate service evaluation report
 SERVICE_REPORT = false
+# max number of results displayed in debug/trace/log mode
 SERVICE_DISPLAY_RESULT = 10
-SERVICE_HEADER = X-SPARQL-MaxRows;Server;Content-Type
+# service http header recorded in log and displayed by logger
+SERVICE_HEADER = *
+#SERVICE_HEADER = X-SPARQL-MaxRows;Server;Content-Type
 
+# define federation for federated query
 FEDERATION = /user/corby/home/AAData/data/corese/federation.ttl
 # generate partition of connected bgp
 FEDERATE_BGP = true
@@ -150,7 +161,9 @@ FEDERATE_PARTITION = true
 FEDERATE_COMPLETE = false
 # source selection with filter 
 FEDERATE_FILTER = true
+# filters used in source selection in adition to predefined list
 FEDERATE_FILTER_ACCEPT = !=
+# reject filters from predefined list
 FEDERATE_FILTER_REJECT = test
 #  source selection with bind (exists {t1 . t2} as ?b_i)
 FEDERATE_JOIN = true
@@ -165,20 +178,23 @@ FEDERATE_UNDEFINED = true
 FEDERATE_BLACKLIST        = http://ldf.fi/warsa/sparql;http://data.semanticweb.org/sparql
 FEDERATE_BLACKLIST_EXCEPT = http://corese.inria.fr/sparql;http://prod-dekalog.inria.fr/sparql;https://dbpedia.org/sparql;https://query.wikidata.org/sparql;http://fr.dbpedia.org/sparql
 
-# number of endpoint url considered in source discovery result
+# max number of endpoint url returned by source discovery 
 FEDERATE_INDEX_LENGTH = 20
 # success rate to accept endpoint url in source discovery
 FEDERATE_INDEX_SUCCESS = 0.5
 
+# query pattern for source discovery
 FEDERATE_QUERY_PATTERN =     http://d2kab.fr=$fed/indexpattern/indexqueryd2kab.rq;http://prod-dekalog.inria.fr/sparql=$sys/indexpatternendpoint.rq;http://localhost:8080/index=$fed/testindex/indexpatternendpoint.rq
 
+# predicate pattern for source discovery
 FEDERATE_PREDICATE_PATTERN = http://d2kab.fr=$fed/indexpattern/indexpatternd2kab.rq;http://prod-dekalog.inria.fr/sparql=$sys/indexpredicate.rq;http://localhost:8080/index=$fed/testindex/indexpredicate.rq
 
-#FEDERATE_SPLIT = owl:sameAs
+# predicates used to split connected bgp in two subparts
+FEDERATE_SPLIT = owl:sameAs
 
+# predicates to be skipped during source discovery
 #FEDERATE_INDEX_SKIP = http://rdfs.org/ns/void#
 
-TRACE_GENERIC = false
 
 #
 # Dataset

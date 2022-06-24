@@ -90,7 +90,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static boolean TRACE_FEDERATE = false;
     // specific processing for rdf list and bnode variable
     public static boolean PROCESS_LIST = true;
-    public static int    NB_ENDPOINT = 10;
+    public static int    NB_ENDPOINT = 20;
     public static double NB_SUCCESS  = 0.5;
     
     // false: evaluate named graph pattern as a whole on each server 

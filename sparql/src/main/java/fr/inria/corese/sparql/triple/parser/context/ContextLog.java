@@ -195,7 +195,7 @@ public class ContextLog implements URLParam, LogKey {
         if (name.startsWith(LogKey.PREF)) {
             return name;
         }
-        return LogKey.PREF.concat(name);
+        return LogKey.HEADER_PREF.concat(name);
     }
 
     public void set(String subject, String property, String value) {

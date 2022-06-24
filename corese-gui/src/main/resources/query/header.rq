@@ -1,0 +1,11 @@
+prefix ns: <http://ns.inria.fr/corese/log/>
+prefix hd: <http://ns.inria.fr/corese/log/header/>
+
+select ?s ?p ?o 
+where {
+    ?s ?p ?o ;
+        ns:endpointNumber ?n 
+        filter strstarts(?p, hd:)
+       
+}
+order by ?n ?s ?p ?o

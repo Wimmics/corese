@@ -38,11 +38,11 @@ import org.slf4j.LoggerFactory;
 public class LogManager implements LogKey {
 
     private static Logger logger = LoggerFactory.getLogger(LogManager.class);
-
+ 
     ContextLog log;
     StringBuilder sb;
     private boolean debug = false;
-
+    
     public LogManager(ContextLog log) {
         this.log = log;
     }
@@ -117,9 +117,8 @@ public class LogManager implements LogKey {
 
     void main() {
         sb.append(String.format("prefix %s <%s>\n", PREF, NS));
+        sb.append(String.format("prefix %s <%s>\n", HEADER_PREF, HEADER_NS));
 
-//        property("[] a %s ;\n ", EVALUATION_REPORT);
-//        property("%s %s . \n",   DATE, DatatypeMap.newDate());
         if (log.getAST() != null) {
             property("[] %s \"\"\"\n%s\"\"\" .\n", AST, log.getAST());
         }

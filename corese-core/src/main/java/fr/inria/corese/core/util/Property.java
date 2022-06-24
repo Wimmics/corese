@@ -274,6 +274,10 @@ public class Property {
     };
 
     static {
+        start();
+    }
+    
+    static void start() {
         singleton = new Property();
         set(SERVICE_SEND_PARAMETER, true);
         set(DATATYPE_ENTAILMENT, true);
@@ -294,6 +298,7 @@ public class Property {
     }
 
     public static void load(String path) throws FileNotFoundException, IOException {
+        start();
         getSingleton().basicLoad(path);
     }
 

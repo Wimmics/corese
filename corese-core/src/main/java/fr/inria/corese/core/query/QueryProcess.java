@@ -66,6 +66,7 @@ import jakarta.ws.rs.client.ResponseProcessingException;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 import org.json.JSONObject;
 import org.slf4j.Logger;
@@ -813,13 +814,21 @@ public class QueryProcess extends QuerySolver {
     // translate log header into Mappings
     // use case: gui display log header as query results
     public Mappings log2Mappings(ContextLog log) throws EngineException {
+        return log2Mappings(log, false);
+    }
+       
+    public Mappings log2Mappings(ContextLog log, boolean blog) throws EngineException {
         String str = "select * where {?s ?p ?o}";
         Query q = compile(str);
         Mappings map = Mappings.create(q);
         map.init(q);
+        Collection<String> nameList = log.getLabelList();
         
         for (String url : log.getSubjectMap().getKeys()) {
-            for (String name : log.getLabelList()) {
+            if (blog) {
+                nameList = log.getPropertyMap(url).keySet();
+            }
+            for (String name : nameList) {
                 IDatatype value = log.getLabel(url, name);
                 
                 if (value !=null) {

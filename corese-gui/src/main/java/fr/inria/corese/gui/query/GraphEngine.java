@@ -220,6 +220,11 @@ public class GraphEngine {
             setRuleEngine(ld.getRuleEngine());
         }
     }
+    
+    public void loadString(String rdf) throws EngineException, LoadException {
+        Load ld = loader();
+        ld.loadString(rdf, ld.TURTLE_FORMAT);       
+    }
 
     public void loadDirProtect(String path) {
         try {

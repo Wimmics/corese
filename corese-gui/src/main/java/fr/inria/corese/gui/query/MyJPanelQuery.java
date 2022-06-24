@@ -40,6 +40,7 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.XMLFormat;
 import fr.inria.corese.core.query.QueryProcess;
@@ -52,9 +53,12 @@ import static fr.inria.corese.core.util.Property.Value.GUI_XML_MAX;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.datatype.RDF;
+import static fr.inria.corese.sparql.triple.cst.LogKey.NS;
+import static fr.inria.corese.sparql.triple.cst.LogKey.PREF;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
+import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import org.apache.logging.log4j.Level;
@@ -64,7 +68,6 @@ import javax.swing.JFrame;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
-import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 import org.graphstream.graph.Edge;
 import org.graphstream.graph.Node;
@@ -90,7 +93,7 @@ public final class MyJPanelQuery extends JPanel {
     static final int GRAPH_PANEL    = 0;
     static final int XML_PANEL      = 1;
     static final int TABLE_PANEL    = 2;
-
+    
     // display max table result
     int maxres = 1000000;
     // display max xml result format
@@ -98,6 +101,7 @@ public final class MyJPanelQuery extends JPanel {
     
     //Boutton du panneau Query
     private JButton buttonRun, buttonShacl, buttonPush, 
+            buttonHeader,
             buttonLog,
             buttonCopy, 
             buttonSort, buttonCompare,
@@ -130,14 +134,18 @@ public final class MyJPanelQuery extends JPanel {
     private SparqlQueryEditor sparqlQueryEditor;
     private JTextPane serviceEditor;
     private MainFrame mainFrame;
+    // default graph enfine is mainFrame graph engine
+    // but there may be a local graph engine here
+    // use case: query log graph
+    private GraphEngine graphEngine;
     private Exec current;
     private static final String KGSTYLE = ExpType.KGRAM + "style";
     private static final String KGGRAPH = Pragma.GRAPH;
-    private static final Logger logger = LogManager.getLogger(MyJPanelQuery.class.getName());
+    private static final Logger logger = org.apache.logging.log4j.LogManager.getLogger(MyJPanelQuery.class.getName());
     private boolean displayLink = true;
     private QueryExec queryExec;
     private Mappings mappings;
-
+    
     public MyJPanelQuery() {
         super();
         initComponents();
@@ -170,6 +178,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonShacl = new JButton();
         buttonShex = new JButton();
         buttonPush = new JButton();
+        buttonHeader = new JButton();
         buttonLog = new JButton();
         buttonCopy = new JButton();
         buttonSort = new JButton();
@@ -299,6 +308,7 @@ public final class MyJPanelQuery extends JPanel {
         //Lancer une requête
         // copy current result into new query panel (template)
         buttonPush.setText("Push");
+        buttonHeader.setText("Header");
         buttonLog.setText("Log");
         // copy current result into last result panel
         buttonCopy.setText("Copy");
@@ -377,6 +387,7 @@ public final class MyJPanelQuery extends JPanel {
         hSeq2.addComponent(buttonSort);
         hSeq2.addComponent(buttonShacl);
         hSeq2.addComponent(buttonShex);
+        hSeq2.addComponent(buttonHeader);
         hSeq2.addComponent(buttonLog);
         hSeq2.addComponent(buttonPush);
         hSeq2.addComponent(buttonCopy);
@@ -416,6 +427,7 @@ public final class MyJPanelQuery extends JPanel {
         vParallel2.addComponent(buttonSort);
         vParallel2.addComponent(buttonShacl);
         vParallel2.addComponent(buttonShex);
+        vParallel2.addComponent(buttonHeader);
         vParallel2.addComponent(buttonLog);
         vParallel2.addComponent(buttonPush);
         vParallel2.addComponent(buttonCopy);
@@ -476,6 +488,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonShacl.addActionListener(l_RunListener);
         buttonShex.addActionListener(l_RunListener);
         buttonPush.addActionListener(l_RunListener);
+        buttonHeader.addActionListener(l_RunListener);
         buttonLog.addActionListener(l_RunListener);
         buttonCopy.addActionListener(l_RunListener);
         buttonSort.addActionListener(l_RunListener);
@@ -984,9 +997,20 @@ public final class MyJPanelQuery extends JPanel {
                         // copy current result into new query editor (as if load query were done)
                         coreseFrame.newQuery(txt, "generated");
                     } 
+                    else if (ev.getSource() == buttonHeader) { 
+                        try {
+                            log(coreseFrame, coreseFrame.readQuery("header.rq"));
+                        } catch (LoadException | IOException ex) {
+                            logger.equals(ex.getMessage());
+                        }
+                    }
                     else if (ev.getSource() == buttonLog) { 
-                        log(coreseFrame, query);
-                    } 
+                        try {
+                            log(coreseFrame, coreseFrame.readQuery("log.rq"));
+                        } catch (LoadException | IOException ex) {
+                            logger.equals(ex.getMessage());
+                        }
+                    }
                     else if (ev.getSource() == buttonCopy) { 
                         // copy current result into last result panel 
                         // (as if load result), for xt:mappings()
@@ -998,10 +1022,10 @@ public final class MyJPanelQuery extends JPanel {
                     else if (ev.getSource() == buttonCompare) { 
                         compare();
                     } 
-                    else if (ev.getSource() == buttonRun || ev.getSource() == buttonValidate 
-                            || ev.getSource() == buttonShacl || ev.getSource() == buttonShex) {
+                    else if (ev.getSource() == buttonRun   || ev.getSource() == buttonValidate 
+                          || ev.getSource() == buttonShacl || ev.getSource() == buttonShex) {
                         // buttonRun
-                        Exec exec = new Exec(coreseFrame, query, isTrace);
+                        Exec exec = newExec(coreseFrame, query, isTrace);
                         setCurrent(exec);
                         exec.setValidate(ev.getSource() == buttonValidate);
                         exec.setShacl(ev.getSource()    == buttonShacl || ev.getSource()    == buttonShex);
@@ -1035,17 +1059,22 @@ public final class MyJPanelQuery extends JPanel {
         };
     }
     
-    // translate Log header into Mappings with s p o
-    // display Log header as query results into new panel
+    // translate log into rdf graph and query this graph
+    // display query results into new panel
     void log(MainFrame coreseFrame, String query) {
         try {
             ContextLog log = getMappings().getBinding().getLog();
-            Mappings map = QueryProcess.create().log2Mappings(log);
-            coreseFrame.newQuery(map.getAST().toString(), "generated");
-            coreseFrame.getLastQueryPanel().basicDisplay(map);
-        } catch (EngineException ex) {
+            LogManager man = new LogManager(log);
+            GraphEngine eng = GraphEngine.create(false);
+            eng.loadString(man.toString());
+            Mappings map = eng.query(query);
+            MyJPanelQuery panel = coreseFrame.newQuery(query, "log.rq");
+            // this panel query log graph instead of corese graph
+            panel.setGraphEngine(eng);
+            panel.basicDisplay(map);
+        } catch (EngineException | LoadException ex) {
+            logger.error(ex.getMessage());
         }
-        
     }
     
     /**
@@ -1055,7 +1084,7 @@ public final class MyJPanelQuery extends JPanel {
     void modifier(String query) {
         if (getCurrent() == null) {
             logger.info("Undefined Query Exec");
-            setCurrent(new Exec(MainFrame.getSingleton(), query, false));
+            setCurrent(newExec(MainFrame.getSingleton(), query));
         } 
         
         //else {
@@ -1140,8 +1169,19 @@ public final class MyJPanelQuery extends JPanel {
     
     public void exec(MainFrame frame, String query) {
         logger.info("Simple Exec");
-        Exec exec = new Exec(frame, query, false); 
-        exec.process();
+        newExec(frame, query).process();
+    }
+    
+    Exec newExec(MainFrame frame, String query) {
+        return newExec(frame, query, false);
+    }
+    
+    Exec newExec(MainFrame frame, String query, boolean trace) {
+        Exec exec = new Exec(frame, query, trace);
+        if (getGraphEngine()!=null) {
+            exec.setGraphEngine(getGraphEngine());
+        }
+        return exec;
     }
 
     //getteurs et setteurs utiles
@@ -1220,6 +1260,14 @@ public final class MyJPanelQuery extends JPanel {
             return null;
         }
         return getCurrent().getQueryExec();
+    }
+
+    public GraphEngine getGraphEngine() {
+        return graphEngine;
+    }
+
+    public void setGraphEngine(GraphEngine graphEngine) {
+        this.graphEngine = graphEngine;
     }
    
 }

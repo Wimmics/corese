@@ -2115,6 +2115,10 @@ public class MainFrame extends JFrame implements ActionListener {
     public Logger getLogger() {
         return LOGGER;
     }
+    
+    public String readQuery(String name) throws LoadException, IOException {
+        return read(QUERY+name);
+    }
 
     String read(String name) throws LoadException, IOException {
         InputStream stream = getClass().getResourceAsStream(name);

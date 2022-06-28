@@ -279,16 +279,26 @@ public class ContextLog implements URLParam, LogKey {
     
     public String log(List<String> propertyList) {
         StringBuilder sb = new StringBuilder();
-        
+
         for (String url : getSubjectMap().getKeys()) {
             for (String name : propertyList) {
-                IDatatype value = getLabel(url, name);
-                if (value != null) {
-                    sb.append(String.format("%s %s %s\n", url, name, value));
+                if (name.equals(STAR)) {
+                    for (String pred : getLabelList()) {
+                        IDatatype value = getLabel(url, pred);
+                        if (value != null) {
+                            sb.append(String.format("%s %s %s\n", url, pred, value));
+                        }
+                    }
+                } 
+                else {
+                    IDatatype value = getLabel(url, name);
+                    if (value != null) {
+                        sb.append(String.format("%s %s %s\n", url, name, value));
+                    }
                 }
             }
         }
-        
+
         return sb.toString();
     }
     

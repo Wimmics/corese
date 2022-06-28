@@ -764,7 +764,7 @@ public class QueryProcess extends QuerySolver {
         List<String> header = Property.listValue(SERVICE_HEADER);
         
         if (header != null) {
-            String log = getLog().log();
+            String log = getLog().log(header);
             
             if (!log.isEmpty()) {
                 logger.info("\n" + log);

@@ -954,7 +954,28 @@ public class ProviderService implements URLParam {
         }
     }
     
+    // record whole header
     void log(URLServer url, ServiceReport report) {
+        if (report != null && report.getResponse() != null
+                && report.getResponse().getHeaders() != null) {
+
+            for (String name : report.getResponse().getHeaders().keySet()) {
+                String res = report.getResponse().getHeaderString(name);
+                if (res != null) {
+                    getLog().defLabel(url.getLogURLNumber(), name, res);
+                }
+            }
+            for (String name : report.getResponse().getCookies().keySet()) {
+                Cookie res = report.getResponse().getCookies().get(name);
+                if (res != null) {
+                    getLog().defLabel(url.getLogURLNumber(), name.concat("-cookie"), res.toString());
+                }
+            }
+        }
+    }
+
+    // record subset of header
+    void log2(URLServer url, ServiceReport report) {
         if (report != null && report.getResponse() != null
                 && report.getResponse().getHeaders() != null) {
             List<String> headerList = Property.listValue(SERVICE_HEADER);

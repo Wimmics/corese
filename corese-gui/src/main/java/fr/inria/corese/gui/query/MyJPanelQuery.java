@@ -999,17 +999,13 @@ public final class MyJPanelQuery extends JPanel {
                     } 
                     else if (ev.getSource() == buttonHeader) { 
                         try {
-                            log(coreseFrame, coreseFrame.readQuery("header.rq"));
+                            header(coreseFrame, coreseFrame.readQuery("header.rq"));
                         } catch (LoadException | IOException ex) {
                             logger.equals(ex.getMessage());
                         }
                     }
                     else if (ev.getSource() == buttonLog) { 
-                        try {
-                            log(coreseFrame, coreseFrame.readQuery("log.rq"));
-                        } catch (LoadException | IOException ex) {
-                            logger.equals(ex.getMessage());
-                        }
+                        logger();
                     }
                     else if (ev.getSource() == buttonCopy) { 
                         // copy current result into last result panel 
@@ -1061,20 +1057,29 @@ public final class MyJPanelQuery extends JPanel {
     
     // translate log into rdf graph and query this graph
     // display query results into new panel
-    void log(MainFrame coreseFrame, String query) {
+    void header(MainFrame coreseFrame, String query) {
         try {
             ContextLog log = getMappings().getBinding().getLog();
             LogManager man = new LogManager(log);
             GraphEngine eng = GraphEngine.create(false);
+            // load log as rdf graph
             eng.loadString(man.toString());
+            // query log rdf graph
             Mappings map = eng.query(query);
+            // create query panel with log graph instead of corese graph
             MyJPanelQuery panel = coreseFrame.newQuery(query, "log.rq");
-            // this panel query log graph instead of corese graph
             panel.setGraphEngine(eng);
             panel.basicDisplay(map);
         } catch (EngineException | LoadException ex) {
             logger.error(ex.getMessage());
         }
+    }
+    
+    // display in gui elementary query/results from federated query log 
+    void logger() {
+        Binding bind = getMappings().getBinding();
+        ContextLog log = bind.getLog();
+        new LocalResult(mainFrame).process(log);
     }
     
     /**

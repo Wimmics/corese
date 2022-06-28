@@ -1,3 +1,6 @@
+#
+# Query Service HTTP Header RDF graph
+#
 prefix ns: <http://ns.inria.fr/corese/log/>
 prefix hd: <http://ns.inria.fr/corese/log/header/>
 
@@ -6,6 +9,5 @@ where {
     ?s ?p ?o ;
         ns:endpointNumber ?n 
         filter strstarts(?p, hd:)
-       
 }
 order by ?n ?s ?p ?o

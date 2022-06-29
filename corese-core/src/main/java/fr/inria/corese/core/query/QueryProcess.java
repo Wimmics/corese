@@ -66,6 +66,7 @@ import jakarta.ws.rs.client.ResponseProcessingException;
 import java.io.File;
 import java.io.FileWriter;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import org.json.JSONObject;
@@ -1464,6 +1465,14 @@ public class QueryProcess extends QuerySolver {
         }
         
         return g;
+    }
+    
+    public void defineFederation(String name, List<String> list) {
+        FederateVisitor.defineFederation(name, list);
+    }
+    
+    public void defineFederation(String name, String... list) {
+        FederateVisitor.defineFederation(name, Arrays.asList(list));
     }
 
     Transformer getTransformer() {

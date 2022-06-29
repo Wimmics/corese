@@ -103,15 +103,16 @@ public class CompileService implements URLParam {
     void complete(URLServer serv, Query q, ASTQuery ast) {
         if (!ast.hasLimit()) {
             ASTQuery gast = q.getGlobalQuery().getAST();
-            int myLimit = serv.intValue(LIMIT);
+            IDatatype dt  = gast.getMetaValue(Metadata.LIMIT);
+            int myLimit   = serv.intValue(LIMIT);
+            
             if (myLimit >= 0) {
                 // service URL parameter limit=n
                 ast.setLimit(myLimit);
-            } else if (gast.hasMetadata(Metadata.LIMIT)) {
+            } else if (dt != null) {
                 // limit of outer query of service (if any)
                 int limit = q.getOuterQuery().getAST().getLimit();
                 // @limit of global query
-                IDatatype dt = gast.getMetaValue(Metadata.LIMIT);
                 if (dt != null) {
                     limit = dt.intValue();
                 }
@@ -124,7 +125,7 @@ public class CompileService implements URLParam {
                 }
             }
         }
-        //logger.info("Limit: " + ast.getLimit());
+        logger.info("Limit: " + ast.getLimit());
     }
 
     boolean getIsValues(URLServer serv, Query q) {

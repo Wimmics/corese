@@ -495,9 +495,9 @@ public class ProviderService implements URLParam {
         if (getGlobalAST().hasMetadata(Metadata.LOOP)
                 || serv.hasParameter(LOOP)
                 || serv.hasParameter(MODE, LOOP)) {
-            int begin   = getValue(serv, START, URLParam.START, 0);
-            int end     = getValue(serv, UNTIL, URLParam.UNTIL, Integer.MAX_VALUE);
-            int myLimit = getValue(serv, LIMIT, URLParam.LIMIT, ast.getLimit());
+            int begin   = getValue(serv, Metadata.START, URLParam.START, 0);
+            int end     = getValue(serv, Metadata.UNTIL, URLParam.UNTIL, Integer.MAX_VALUE);
+            int myLimit = getValue(serv, Metadata.LIMIT_STR, URLParam.LIMIT, ast.getLimit());
             logger.info(String.format("send loop: begin %s end %s limit %s", begin, end, myLimit));
             
             Mappings sol = new Mappings();
@@ -876,7 +876,7 @@ public class ProviderService implements URLParam {
     }
 
     int getTimeout(Node serv, Mappings map) {
-        IDatatype dttimeout = getGlobalAST().getMetadataDatatypeValue(Metadata.TIMEOUT);
+        IDatatype dttimeout = getGlobalAST().getMetaValue(Metadata.TIMEOUT);
         if (dttimeout != null) {
             return dttimeout.intValue();
         }

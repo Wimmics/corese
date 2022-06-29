@@ -26,6 +26,8 @@ import org.json.JSONObject;
 public class ContextLog implements URLParam, LogKey {
 
     public static int DISPLAY_RESULT_MAX=10;
+    
+    static String[] shareable = {LogKey.INDEX};
 
     // log service exception list
     private List<EngineException> exceptionList;
@@ -65,6 +67,10 @@ public class ContextLog implements URLParam, LogKey {
 
     String getSubject() {
         return SUBJECT;
+    }
+    
+    public PropertyMap getPropertyMap() {
+        return getSubjectMap().getPropertyMap(getSubject());
     }
 
     public PropertyMap getPropertyMap(String subject) {
@@ -245,10 +251,26 @@ public class ContextLog implements URLParam, LogKey {
     public void add(String property, String value) {
         getSubjectMap().add(getSubject(), property, value);
     }
+    
+    public void add(String property, IDatatype value) {
+        getSubjectMap().add(getSubject(), property, value);
+    }
+    
+    public void addDistinct(String property, IDatatype value) {
+        addDistinct(getSubject(), property, value);
+    }
 
     // add value to list of value
     public void add(String subject, String property, String value) {
         getSubjectMap().add(subject, property, value);
+    }
+    
+    public void add(String subject, String property, IDatatype value) {
+        getSubjectMap().add(subject, property, value);
+    }
+    
+    public void addDistinct(String subject, String property, IDatatype value) {
+        getSubjectMap().addDistinct(subject, property, value);
     }
 
     public void add(String subject, String property, Object value) {
@@ -425,10 +447,19 @@ public class ContextLog implements URLParam, LogKey {
         if (getExceptionList().isEmpty()) {
             getExceptionList().addAll(log.getExceptionList());
         }
+        
+        for (String prop : getShareable())  {
+            IDatatype dt = log.get(prop);
+            if (dt !=null) {
+                set(prop, dt);
+            }
+        }
     }
     
     
-    
+    String[] getShareable() {
+        return shareable;
+    }
     
     /*****************************
      * 

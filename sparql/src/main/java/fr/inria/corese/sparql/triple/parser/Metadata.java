@@ -140,6 +140,7 @@ public class Metadata extends ASTObject
     public static final String START  = AT+URLParam.START;
     public static final String UNTIL  = AT+URLParam.UNTIL;;
     public static final String HIDE   = "@hide";
+    public static final String LIMIT_STR   = "@limit";
     
     public static final String FED_BGP      = "@federateBgp";
     public static final String FED_JOIN     = "@federateJoin";
@@ -195,7 +196,7 @@ public class Metadata extends ASTObject
         define("@federation",FEDERATION);      
         define("@sparql",   SPARQL);      
         define("@index",    INDEX);      
-        define("@limit",    LIMIT);      
+        define(LIMIT_STR,    LIMIT);      
         define("@slice",    SLICE);      
         define("@move",     MOVE);      
         define("@bounce",   BOUNCE);      
@@ -279,6 +280,11 @@ public class Metadata extends ASTObject
             }
             sb.append(NL);
         }
+        
+        for (String key : literal.keySet()) {
+            sb.append(key).append(" : ").append(getDatatypeValue(key));
+        }
+        
         return sb.toString();
     }
     

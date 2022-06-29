@@ -31,6 +31,10 @@ public class PropertyMap extends HashMap<String, IDatatype> {
         return sort(keySet());
     }
     
+    public StringBuilder display() {
+        return display(new StringBuilder());
+    }
+    
     public StringBuilder display(StringBuilder sb) {   
         int n = 0;
         for (String prop : getKeys()) {

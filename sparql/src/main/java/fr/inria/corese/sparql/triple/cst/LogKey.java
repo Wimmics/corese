@@ -21,6 +21,7 @@ public interface LogKey {
     static final String SERVICE_OUTPUT = "ns:serviceOutput"; 
     // list of endpoints
     static final String ENDPOINT = "ns:endpoint";
+    static final String INDEX = "ns:index";
     static final String ENDPOINT_CALL = "ns:endpointCall";
     static final String ENDPOINT_NUMBER = "ns:endpointNumber";
     // query that generated an exception 

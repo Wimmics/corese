@@ -24,6 +24,7 @@ public interface LogKey {
     static final String INDEX = "ns:index";
     static final String ENDPOINT_CALL = "ns:endpointCall";
     static final String ENDPOINT_NUMBER = "ns:endpointNumber";
+    static final String ENDPOINT_URL    = "ns:endpointURL";
     // query that generated an exception 
     static final String QUERY = "ns:query";
     // federate query result of federate rewrite

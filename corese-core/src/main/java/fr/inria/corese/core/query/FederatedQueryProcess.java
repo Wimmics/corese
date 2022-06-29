@@ -9,7 +9,9 @@ import fr.inria.corese.sparql.triple.parser.Metadata;
 import java.util.Arrays;
 
 /**
- *
+ * Specific class for Federated Query Processing
+ * Define a federation
+ * Execute query on federation
  */
 public class FederatedQueryProcess  {
     

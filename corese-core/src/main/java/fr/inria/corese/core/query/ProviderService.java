@@ -239,6 +239,7 @@ public class ProviderService implements URLParam {
             getLog().add(LogKey.ENDPOINT, url.getServer());
             getLog().add(LogKey.ENDPOINT_CALL, url.getLogURLNumber());
             getLog().set(url.getLogURLNumber(), LogKey.ENDPOINT_NUMBER, url.getNumber());
+            getLog().set(url.getLogURLNumber(), LogKey.ENDPOINT_URL, url.getServer());
 
             if (ok) {
                 if (getContext() != null && getContext().isFederateIndex()) {

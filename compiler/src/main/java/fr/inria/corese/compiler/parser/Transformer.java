@@ -214,6 +214,9 @@ public class Transformer implements ExpType {
         if (getDataset()!=null && getDataset().getMetadata()!=null) {
             ast.addMetadata(getDataset().getMetadata());
         }
+        if (getMetadata()!=null) {
+            ast.addMetadata(getMetadata());
+        }
         ASTParser walk = new ASTParser(ast).configure();
         // preprocessing: @report -> service report, bnode scope checking
         ast.process(walk);
@@ -477,8 +480,8 @@ public class Transformer implements ExpType {
     }
 
     void annotate(ASTQuery ast) {
-        if (metadata != null) {
-            ast.addMetadata(metadata);
+        if (getMetadata() != null) {
+            ast.addMetadata(getMetadata());
         }
         if (ast.getContext() != null) {
             context(ast);
@@ -1991,6 +1994,10 @@ public class Transformer implements ExpType {
 
     public void setMappings(Mappings mappings) {
         this.mappings = mappings;
+    }
+
+    public Metadata getMetadata() {
+        return metadata;
     }
     
 

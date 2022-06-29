@@ -444,6 +444,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
      * @type kg:exist kg:verbose
      */
     void option()  {
+        logger.info(ast.getMetadata().toString());
         if (ast.hasMetadataValue(Metadata.TYPE, Metadata.VERBOSE)) {
             verbose = true;
         }

@@ -14,6 +14,7 @@ import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.cst.LogKey;
 import fr.inria.corese.sparql.triple.parser.ASTSelector;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Exp;
@@ -145,7 +146,7 @@ public class Selector {
         getVisitor().setDiscovery(map);
         List<String> list = map.getStringValueList(SERVER_VAR); 
         
-        log(a, map);
+        log(url, a, map);
         logger.info("Source discovery:\n"+map);
         logger.info("Source discovery URL list:\n" + list);
         logger.info("Source discovery time: " + time(d1));
@@ -153,11 +154,13 @@ public class Selector {
         return list;
     }
     
-    void log(ASTQuery a, Mappings map) {
+    void log(String url, ASTQuery a, Mappings map) {
         getQuerySolver().getLog().setASTIndex(a);
         getQuerySolver().getLog().setIndexMap(map);
+        getQuerySolver().getLog().set(LogKey.INDEX, url);
         ast.getLog().setASTIndex(a);
         ast.getLog().setIndexMap(map);
+        ast.getLog().set(LogKey.INDEX, url);
         //ast.getLog().setExceptionList(getQuerySolver().getLog().getExceptionList());
     }
     

@@ -4,10 +4,13 @@
 prefix ns: <http://ns.inria.fr/corese/log/>
 prefix hd: <http://ns.inria.fr/corese/log/header/>
 
-select ?s ?p ?o 
+select ?url ?serv ?out ?p ?o 
 where {
     ?s ?p ?o ;
-        ns:endpointNumber ?n 
+        ns:endpointNumber ?n ;
+        ns:endpointURL ?url 
         filter strstarts(?p, hd:)
+        optional { ?s hd:Server ?serv }
+        optional { ?s ns:outputCard ?out }
 }
 order by ?n ?s ?p ?o

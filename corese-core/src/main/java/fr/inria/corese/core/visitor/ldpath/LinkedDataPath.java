@@ -351,7 +351,7 @@ public class LinkedDataPath implements QueryVisitor {
     }
     
     void complete(ASTQuery a) {
-        if (getAST().hasMetadata(Metadata.LIMIT)) {
+        if (getAST().getMetaValue(Metadata.LIMIT)!=null) {
             System.out.println("limit: " + getAST().getMetadata().getDatatypeValue(Metadata.LIMIT));
             a.getMetadata().add(Metadata.LIMIT, getAST().getMetadata().getDatatypeValue(Metadata.LIMIT));
             a.setLimit(getAST().getMetadata().getDatatypeValue(Metadata.LIMIT).intValue());

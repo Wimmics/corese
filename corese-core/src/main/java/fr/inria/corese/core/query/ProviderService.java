@@ -597,7 +597,7 @@ public class ProviderService implements URLParam {
                 return value;
             }
         }
-        if (ast.hasMetadata(meta) && ast.getMetaValue(meta) != null) {
+        if (ast.getMetaValue(meta) != null) {
             return ast.getMetaValue(meta).intValue();
         }
         return n;

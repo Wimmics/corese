@@ -769,7 +769,7 @@ public class Service implements URLParam {
     // use case for limit: @federate with one URL -> direct service
     void limit(ASTQuery ast) {
         if (!ast.hasLimit()) {
-            if (ast.hasMetadata(Metadata.LIMIT)) {
+            if (ast.getMetaValue(Metadata.LIMIT)!=null) {
                 ast.setLimit(ast.getMetaValue(Metadata.LIMIT).intValue());
             } else {
                 Integer lim = getURL().intValue(LIMIT);

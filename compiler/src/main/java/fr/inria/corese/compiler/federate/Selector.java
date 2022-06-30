@@ -265,7 +265,7 @@ public class Selector {
             ASTParser walk = new ASTParser(aa).report();
             aa.process(walk);
         }
-        if (ast.hasMetadata(Metadata.TIMEOUT)) {
+        if (ast.getMetaValue(Metadata.TIMEOUT)!=null) {
             aa.getCreateMetadata().add(Metadata.TIMEOUT, ast.getMetaValue(Metadata.TIMEOUT));
         }
     }

@@ -1163,34 +1163,6 @@ public class ASTQuery
         }
         return getMetadata();
     }
-        
-    public String getMetadataValue(int type) {
-        if (getMetadata() == null) {
-            return null;
-        }
-        return getMetadata().getValue(type);
-    }
-    
-    public IDatatype getMetadataDatatypeValue(int type) {
-        if (getMetadata() == null) {
-            return null;
-        }
-        return getMetadata().getDatatypeValue(type);
-    }
-    
-    public IDatatype getMetaValue(String type) {
-        if (getMetadata() == null) {
-            return null;
-        }
-        return getMetadata().getDatatypeValue(type);
-    }
-    
-    public IDatatype getMetaValue(int type) {
-        if (getMetadata() == null) {
-            return null;
-        }
-        return getMetadata().getDatatypeValue(type);
-    }
     
     public boolean isFederateIndex() {
         if (hasMetadata(Metadata.INDEX)) {
@@ -1207,6 +1179,8 @@ public class ASTQuery
             || getGlobalAST().hasMetadata(Metadata.FEDERATION); 
     }
 
+    // hasMetadata functions for string value only
+    // not for other datatype value such as number, boolean
     public boolean hasMetadata(int type) {
         return getMetadata() != null && getMetadata().hasMetadata(type);
     }
@@ -1234,6 +1208,35 @@ public class ASTQuery
     
     public boolean hasMetadataValue(String type) {
         return metadata != null && metadata.getValues(type)!=null;
+    }
+    
+    // string value only
+    public String getMetadataValue(int type) {
+        if (getMetadata() == null) {
+            return null;
+        }
+        return getMetadata().getValue(type);
+    }
+    
+    // datatype value other than string, e.g. number, boolean
+    public IDatatype getMetadataDatatypeValue(int type) {
+        if (getMetadata() == null) {
+            return null;
+        }
+        return getMetadata().getDatatypeValue(type);
+    }
+    
+    // datatype value other than string, e.g. number, boolean
+    public IDatatype getMetaValue(int type) {
+        return getMetadataDatatypeValue(type);
+    }
+    
+    // datatype value other than string, e.g. number, boolean
+    public IDatatype getMetaValue(String type) {
+        if (getMetadata() == null) {
+            return null;
+        }
+        return getMetadata().getDatatypeValue(type);
     }
     
     public boolean hasReportKey(String key) {

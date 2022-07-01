@@ -20,6 +20,9 @@ import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 
+/**
+ * Implements the Corese Datamanger interface for RDF4J
+ */
 public class Rdf4jDataManager implements DataManager {
 
     private Model rdf4j_model;
@@ -49,7 +52,7 @@ public class Rdf4jDataManager implements DataManager {
     @Override
     public int countEdges(Node predicate) {
         // convert Corese node to RDF4J Value
-        IRI rdf4j_predicate = (IRI) Convert.coreseNodeToRdf4jValue(predicate);
+        IRI rdf4j_predicate = (IRI) ConvertRdf4jCorese.coreseNodeToRdf4jValue(predicate);
 
         return this.rdf4j_model.filter(null, rdf4j_predicate, null).size();
     }
@@ -65,7 +68,7 @@ public class Rdf4jDataManager implements DataManager {
         // convert Statements to Edges
         // remove duplicate edges (same edge with different context)
         HashMap<Integer, Edge> result = new HashMap<>();
-        for (Edge statement : Convert.statementsToEdges(statements)) {
+        for (Edge statement : ConvertRdf4jCorese.statementsToEdges(statements)) {
             int hash = Objects.hash(statement.getSubject(), statement.getPredicate(), statement.getObject());
             result.put(hash, statement);
         }
@@ -85,11 +88,11 @@ public class Rdf4jDataManager implements DataManager {
         if (corese_context == null) {
             subjects = this.rdf4j_model.subjects();
         } else {
-            Resource rdf4j_context = Convert.coreseContextToRdf4jContext(corese_context);
+            Resource rdf4j_context = ConvertRdf4jCorese.coreseContextToRdf4jContext(corese_context);
             subjects = this.rdf4j_model.filter(null, null, null, rdf4j_context).subjects();
         }
 
-        return Convert.rdf4jvaluestoCoresNodes(new ArrayList<>(subjects));
+        return ConvertRdf4jCorese.rdf4jvaluestoCoresNodes(new ArrayList<>(subjects));
     }
 
     @Override
@@ -100,11 +103,11 @@ public class Rdf4jDataManager implements DataManager {
         if (corese_context == null) {
             predicates = this.rdf4j_model.predicates();
         } else {
-            Resource rdf4j_context = Convert.coreseContextToRdf4jContext(corese_context);
+            Resource rdf4j_context = ConvertRdf4jCorese.coreseContextToRdf4jContext(corese_context);
             predicates = this.rdf4j_model.filter(null, null, null, rdf4j_context).predicates();
         }
 
-        return Convert.rdf4jvaluestoCoresNodes(new ArrayList<>(predicates));
+        return ConvertRdf4jCorese.rdf4jvaluestoCoresNodes(new ArrayList<>(predicates));
     }
 
     @Override
@@ -115,17 +118,17 @@ public class Rdf4jDataManager implements DataManager {
         if (corese_context == null) {
             objects = this.rdf4j_model.objects();
         } else {
-            Resource rdf4j_context = Convert.coreseContextToRdf4jContext(corese_context);
+            Resource rdf4j_context = ConvertRdf4jCorese.coreseContextToRdf4jContext(corese_context);
             objects = this.rdf4j_model.filter(null, null, null, rdf4j_context).objects();
         }
 
-        return Convert.rdf4jvaluestoCoresNodes(new ArrayList<>(objects));
+        return ConvertRdf4jCorese.rdf4jvaluestoCoresNodes(new ArrayList<>(objects));
     }
 
     @Override
     public Iterable<Node> contexts() {
         Set<Resource> rdf4j_contexts = this.rdf4j_model.contexts();
-        Node[] corese_contexts = Convert
+        Node[] corese_contexts = ConvertRdf4jCorese
                 .rdf4jContextsToCoreseContexts(rdf4j_contexts.toArray(new Resource[rdf4j_contexts.size()]));
         return Arrays.asList(corese_contexts);
     }
@@ -154,9 +157,9 @@ public class Rdf4jDataManager implements DataManager {
         return added;
     }
 
-    /****************
-     * Delete edges *
-     ****************/
+    /**********
+     * Delete *
+     **********/
     @Override
     public Iterable<Edge> delete(Node subject, Node predicate, Node object, List<Node> contexts) {
         Iterable<Statement> statements = this.choose(subject, predicate, object, contexts);
@@ -164,7 +167,7 @@ public class Rdf4jDataManager implements DataManager {
         ArrayList<Edge> results = new ArrayList<>();
         for (Statement statement : statements) {
             if (this.rdf4j_model.remove(statement)) {
-                results.add(Convert.statementToEdge(statement));
+                results.add(ConvertRdf4jCorese.statementToEdge(statement));
             }
         }
 
@@ -178,8 +181,8 @@ public class Rdf4jDataManager implements DataManager {
     public boolean add(Node source, Node target, boolean silent) {
         // convert source and target to RDF4J context
         ValueFactory vf = SimpleValueFactory.getInstance();
-        Resource source_context = Convert.coreseContextToRdf4jContext(source);
-        Resource target_context = Convert.coreseContextToRdf4jContext(target);
+        Resource source_context = ConvertRdf4jCorese.coreseContextToRdf4jContext(source);
+        Resource target_context = ConvertRdf4jCorese.coreseContextToRdf4jContext(target);
 
         // get list of statement in source context
         ArrayList<Statement> source_statements = new ArrayList<>();
@@ -237,12 +240,13 @@ public class Rdf4jDataManager implements DataManager {
      */
     private Iterable<Statement> choose(Node subject, Node predicate, Node object, List<Node> contexts) {
         // convert Corese node to RDF4J Value
-        Resource rdf4j_subject = (Resource) Convert.coreseNodeToRdf4jValue(subject);
-        IRI rdf4j_predicate = (IRI) Convert.coreseNodeToRdf4jValue(predicate);
-        Value rdf4j_object = Convert.coreseNodeToRdf4jValue(object);
+        Resource rdf4j_subject = (Resource) ConvertRdf4jCorese.coreseNodeToRdf4jValue(subject);
+        IRI rdf4j_predicate = (IRI) ConvertRdf4jCorese.coreseNodeToRdf4jValue(predicate);
+        Value rdf4j_object = ConvertRdf4jCorese.coreseNodeToRdf4jValue(object);
 
         // convert list of corese contexts to list of RDF4J contexts
-        Resource[] rdf4j_contexts = Convert.coreseContextsToRdf4jContexts(this.ConvertToJavaArrayNode(contexts));
+        Resource[] rdf4j_contexts = ConvertRdf4jCorese
+                .coreseContextsToRdf4jContexts(this.ConvertToJavaArrayNode(contexts));
 
         ArrayList<Statement> statements = new ArrayList<>();
         this.rdf4j_model.getStatements(rdf4j_subject, rdf4j_predicate, rdf4j_object, rdf4j_contexts)

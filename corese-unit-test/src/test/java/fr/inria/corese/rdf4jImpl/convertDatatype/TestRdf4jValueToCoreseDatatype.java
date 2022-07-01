@@ -2,7 +2,7 @@ package fr.inria.corese.rdf4jImpl.convertDatatype;
 
 import static org.junit.Assert.assertEquals;
 
-import com.ibm.icu.math.BigDecimal;
+import java.math.BigDecimal;
 
 import org.eclipse.rdf4j.model.Literal;
 import org.eclipse.rdf4j.model.Value;
@@ -33,7 +33,7 @@ import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
 public class TestRdf4jValueToCoreseDatatype {
 
-    private static ValueFactory rdf4j_factory = SimpleValueFactory.getInstance();
+    private ValueFactory rdf4j_factory = SimpleValueFactory.getInstance();
 
     @Test
     public void convertUri() {
@@ -107,8 +107,9 @@ public class TestRdf4jValueToCoreseDatatype {
 
     @Test
     public void convertDecimal() {
-        double double_value = 1.234;
-        BigDecimal value = new BigDecimal(String.valueOf(double_value));
+        String value_string = "1098491072963113850.7436076939614540479";
+        double double_value = Double.parseDouble(value_string);
+        BigDecimal value = new BigDecimal(value_string);
 
         // Build RDF4J decimal
         Literal rdf4j_decimal = rdf4j_factory.createLiteral(String.valueOf(value), XSD.DECIMAL);
@@ -119,6 +120,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
         // Checks
         assertEquals(true, corese_decimal.isDecimal());
+        assertEquals(value, corese_decimal.decimalValue());
         assertEquals(double_value, corese_decimal.doubleValue(), 0);
         assertEquals(XSD.DECIMAL.stringValue(), corese_decimal.getDatatype().stringValue());
         assertEquals(XSD.DECIMAL, rdf4j_decimal.getDatatype());
@@ -447,7 +449,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
     @Test
     public void convertXmlLiteral() {
-        String value = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"></xs:schema>";
+        String value = "<span xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"ja\">シェイクスピアの<ruby><rbc><rb>演</rb><rb>劇</rb></rbc><rtc><rt>えん</rt><rt>げき</rt></rtc></ruby></span>";
 
         // Build RDF4J XML literal
         Literal rdf4j_xml_literal = rdf4j_factory.createLiteral(value, RDF.XMLLITERAL);
@@ -481,7 +483,7 @@ public class TestRdf4jValueToCoreseDatatype {
 
     @Test
     public void convertDateTime() {
-        String value = "2021-06-17T07:12:19.0";
+        String value = "2021-06-17T07:12:19";
 
         // Build RDF4J date and time
         Literal rdf4j_date_time = rdf4j_factory.createLiteral(value, XSD.DATETIME);
@@ -508,6 +510,9 @@ public class TestRdf4jValueToCoreseDatatype {
 
         assertEquals(value, rdf4j_date_time.getLabel());
         assertEquals(value, corese_date_time_value.stringValue());
+        assertEquals(XSD.DATETIME.stringValue(), corese_date_time_value.getDatatype().stringValue());
+        assertEquals(XSD.DATETIME, rdf4j_date_time.getDatatype());
+
     }
 
     @Test

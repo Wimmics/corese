@@ -138,11 +138,11 @@ public class Exec extends Thread {
     
     void trace(Mappings map) {
         ASTQuery ast = map.getAST();
-        if (ast.isFederateIndex()) {
+        //if (ast.isFederateIndex()) {
             if (!FederateVisitor.getBlacklist().isEmpty()) {
                 logger.info("Blacklist:\n" + FederateVisitor.getBlacklist());
             }
-        }
+        //}
     }
 
     Mappings compile() {

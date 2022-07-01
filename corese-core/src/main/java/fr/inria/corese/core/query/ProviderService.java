@@ -66,7 +66,7 @@ public class ProviderService implements URLParam {
     private static final String SERVICE_ERROR = "Service error: ";
     private static final String DB = "db:";
     public static int SLICE_DEFAULT = 100;
-    public static int TIMEOUT_DEFAULT = 5000;
+    public static int TIMEOUT_DEFAULT = 10000;
     public static int DISPLAY_RESULT_MAX = 10;
     private static final String TIMEOUT_EXCEPTION = "SocketTimeoutException";
     private static final String READ_TIMEOUT_EXCEPTION = "SSLProtocolException: Read timed out";
@@ -877,15 +877,18 @@ public class ProviderService implements URLParam {
     }
 
     int getTimeout(Node serv, Mappings map) {
+        Integer timeout = TIMEOUT_DEFAULT;
         IDatatype dttimeout = getGlobalAST().getMetaValue(Metadata.TIMEOUT);
         if (dttimeout != null) {
-            return dttimeout.intValue();
+            timeout = dttimeout.intValue();
+        } else {
+            timeout = Property.intValue(SERVICE_TIMEOUT);
+            if (timeout == null) {
+                timeout = TIMEOUT_DEFAULT;
+            }
         }
-        Integer timeout = Property.intValue(SERVICE_TIMEOUT);
-        if (timeout != null) {
-            return timeout;
-        }
-        return TIMEOUT_DEFAULT;
+        logger.info("Timeout: " + timeout);
+        return timeout;
     }
 
     int getSlice(Node serv, Mappings map) {

@@ -27,6 +27,7 @@ import org.xml.sax.SAXException;
  */
 public class ServiceParser implements URLParam {
      public static final String ENCODING = "UTF-8";
+     public static boolean DISPLAY_MESSAGE = false;
      private boolean trap;
      private boolean showResult;
      private String format;
@@ -86,7 +87,10 @@ public class ServiceParser implements URLParam {
 
                 default:
                     Service.logger.warn(
-                      "Format not handled by local parser: " + getFormat());
+                    String.format("Format not handled by local parser: %s %s", getFormat(), getURL().getServer()));
+                    if (DISPLAY_MESSAGE) {
+                        Service.logger.info(str.substring(0, Math.min(800, str.length())));
+                    }
                     map = Mappings.create(q).setFake(true);
                     suc = false;
             }

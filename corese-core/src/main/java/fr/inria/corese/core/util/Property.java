@@ -15,6 +15,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.load.ServiceParser;
 import fr.inria.corese.core.producer.DataFilter;
 import fr.inria.corese.core.query.CompileService;
 import fr.inria.corese.core.query.MatcherImpl;
@@ -266,6 +267,7 @@ public class Property {
         SERVICE_LOG,
         SERVICE_REPORT,
         SERVICE_DISPLAY_RESULT,
+        SERVICE_DISPLAY_MESSAGE,
         SERVICE_HEADER,
 
         // service result may be RDF graph (e.g. when format=turtle)
@@ -640,6 +642,10 @@ public class Property {
                 
             case SERVICE_REPORT:
                 ASTParser.SERVICE_REPORT = b;
+                break;
+                
+            case SERVICE_DISPLAY_MESSAGE:
+                ServiceParser.DISPLAY_MESSAGE=b;
                 break;
         }
     }

@@ -95,7 +95,6 @@ public class TestCoreseDatatypeToRdf4jValue {
         assertEquals(value, rdf4j_float.floatValue(), 0);
         assertEquals(XSD.FLOAT, rdf4j_float.getDatatype());
         assertEquals(XSD.FLOAT.stringValue(), corese_float.getDatatype().stringValue());
-
     }
 
     @Test
@@ -174,7 +173,7 @@ public class TestCoreseDatatypeToRdf4jValue {
 
     @Test
     public void convertXmlLiteral() {
-        String value = "<?xml version=\"1.0\" encoding=\"ISO-8859-1\" ?>\n<xs:schema xmlns:xs=\"http://www.w3.org/2001/XMLSchema\"></xs:schema>";
+        String value = "<span xmlns=\"http://www.w3.org/1999/xhtml\" xml:lang=\"ja\">シェイクスピアの<ruby><rbc><rb>演</rb><rb>劇</rb></rbc><rtc><rt>えん</rt><rt>げき</rt></rtc></ruby></span>";
 
         // Build Corese XML literal
         IDatatype corese_xml_literal = DatatypeMap.createLiteral(value, DatatypeMap.XMLLITERAL);
@@ -238,8 +237,12 @@ public class TestCoreseDatatypeToRdf4jValue {
         Value rdf4j_date_time_value = CoreseDatatypeToRdf4jValue.convert(corese_date_time);
 
         assertEquals(value, corese_date_time.getLabel());
-        assertEquals(value, rdf4j_date_time_value.stringValue());
+        Literal rdf4j_date_time = (Literal) rdf4j_date_time_value;
+        assertEquals(value, rdf4j_date_time.stringValue());
+        assertEquals(XSD.DATETIME, rdf4j_date_time.getDatatype());
+        assertEquals(XSD.DATETIME.stringValue(), corese_date_time.getDatatype().stringValue());
     }
+
 
     @Test
     public void convertLiteralLang() {

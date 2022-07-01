@@ -260,12 +260,12 @@ public class CoreseModel extends AbstractModel {
         this.corese_graph.init();
 
         // convert subject, predicate, object into Corese Node
-        Node subj_node = Convert.rdf4jValueToCoreseNode(subj);
-        Node pred_node = Convert.rdf4jValueToCoreseNode(pred);
-        Node obj_node = Convert.rdf4jValueToCoreseNode(obj);
+        Node subj_node = ConvertRdf4jCorese.rdf4jValueToCoreseNode(subj);
+        Node pred_node = ConvertRdf4jCorese.rdf4jValueToCoreseNode(pred);
+        Node obj_node = ConvertRdf4jCorese.rdf4jValueToCoreseNode(obj);
 
         // convert contexts into Corese Nodes
-        Node[] contexts_node = Convert.rdf4jContextsToCoreseContexts(contexts);
+        Node[] contexts_node = ConvertRdf4jCorese.rdf4jContextsToCoreseContexts(contexts);
 
         // get edges
         Iterable<Edge> corese_iterable;
@@ -347,7 +347,7 @@ public class CoreseModel extends AbstractModel {
         }
 
         // get edges
-        Iterable<Statement> edges = Convert.EdgesTostatements(this.choose(subj, pred, obj, contexts));
+        Iterable<Statement> edges = ConvertRdf4jCorese.EdgesTostatements(this.choose(subj, pred, obj, contexts));
         return new CoreseModelIterator(edges.iterator());
     }
 

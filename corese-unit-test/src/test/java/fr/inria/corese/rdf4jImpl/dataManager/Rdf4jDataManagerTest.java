@@ -22,7 +22,7 @@ import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.rdf4j.Convert;
+import fr.inria.corese.rdf4j.ConvertRdf4jCorese;
 import fr.inria.corese.rdf4j.CoreseModel;
 import fr.inria.corese.rdf4j.Rdf4jDataManager;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -115,8 +115,8 @@ public class Rdf4jDataManagerTest {
     @Test
     public void countEdges() {
         DataManager data_manager;
-        Node fnp_corese_node = Convert.rdf4jValueToCoreseNode(this.first_name_property);
-        Node ip_corese_node = Convert.rdf4jValueToCoreseNode(this.isa_property);
+        Node fnp_corese_node = ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.first_name_property);
+        Node ip_corese_node = ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property);
 
         data_manager = new Rdf4jDataManager(new CoreseModel());
         assertEquals(0, data_manager.countEdges(fnp_corese_node));
@@ -193,7 +193,7 @@ public class Rdf4jDataManagerTest {
         // All edges of context 1 (with a ignore null value)
         ArrayList<Node> contexts = new ArrayList<>();
         contexts.add(null);
-        contexts.add(Convert.rdf4jContextToCoreseContext(this.context1));
+        contexts.add(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1));
         Iterable<Edge> iterable = data_manager.getEdges(null, null, null, contexts);
         List<Edge> result = new ArrayList<>();
         iterable.forEach(result::add);
@@ -217,16 +217,24 @@ public class Rdf4jDataManagerTest {
         iterable = data_manager.subjects(null);
         result = new ArrayList<>();
         iterable.forEach(result::add);
+
         assertEquals(2, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.edith_piaf_node)));
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.george_brassens_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.george_brassens_node)));
 
         // Context 1
-        iterable = data_manager.subjects(Convert.rdf4jContextToCoreseContext(this.context1));
+        iterable = data_manager.subjects(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1));
         result = new ArrayList<>();
         iterable.forEach(result::add);
         assertEquals(1, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.edith_piaf_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node)));
+
+        // Default context
+        iterable = data_manager.predicates(this.default_context);
+        result = new ArrayList<>();
+        iterable.forEach(result::add);
+        assertEquals(1, result.size());
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property)));
     }
 
     @Test
@@ -243,22 +251,22 @@ public class Rdf4jDataManagerTest {
         result = new ArrayList<>();
         iterable.forEach(result::add);
         assertEquals(2, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.isa_property)));
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.first_name_property)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.first_name_property)));
 
         // Context 1
-        iterable = data_manager.predicates(Convert.rdf4jContextToCoreseContext(this.context1));
+        iterable = data_manager.predicates(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1));
         result = new ArrayList<>();
         iterable.forEach(result::add);
         assertEquals(1, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.first_name_property)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.first_name_property)));
 
         // Default context
         iterable = data_manager.predicates(this.default_context);
         result = new ArrayList<>();
         iterable.forEach(result::add);
         assertEquals(1, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.isa_property)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property)));
     }
 
     @Test
@@ -275,22 +283,22 @@ public class Rdf4jDataManagerTest {
         result = new ArrayList<>();
         iterable.forEach(result::add);
         assertEquals(2, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.singer_node)));
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.edith_literal)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_literal)));
 
         // Context 1
-        iterable = data_manager.objects(Convert.rdf4jContextToCoreseContext(this.context1));
+        iterable = data_manager.objects(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1));
         result = new ArrayList<>();
         iterable.forEach(result::add);
         assertEquals(1, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.edith_literal)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_literal)));
 
         // Default context
         iterable = data_manager.objects(this.default_context);
         result = new ArrayList<>();
         iterable.forEach(result::add);
         assertEquals(1, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.singer_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node)));
     }
 
     @Test
@@ -303,9 +311,9 @@ public class Rdf4jDataManagerTest {
         iterable.forEach(result::add);
 
         assertEquals(4, result.size());
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.context1)));
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.context2)));
-        assertEquals(true, result.contains(Convert.rdf4jValueToCoreseNode(this.context3)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context1)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context2)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context3)));
         assertEquals(true, result.contains(this.default_context));
     }
 
@@ -315,11 +323,12 @@ public class Rdf4jDataManagerTest {
         DataManager data_manager = new Rdf4jDataManager(model);
 
         ArrayList<Node> contexts = new ArrayList<>();
-        contexts.add(Convert.rdf4jValueToCoreseNode(this.context1));
-        contexts.add(Convert.rdf4jValueToCoreseNode(this.context2));
+        contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context1));
+        contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context2));
 
-        data_manager.insert(Convert.rdf4jValueToCoreseNode(this.edith_piaf_node),
-                Convert.rdf4jValueToCoreseNode(this.isa_property), Convert.rdf4jValueToCoreseNode(this.singer_node),
+        data_manager.insert(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node),
+                ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property),
+                ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node),
                 contexts);
 
         assertEquals(2, model.size());
@@ -337,8 +346,9 @@ public class Rdf4jDataManagerTest {
         ArrayList<Node> contexts = new ArrayList<>();
         contexts.add(this.default_context);
 
-        Iterable<Edge> results = data_manager.insert(Convert.rdf4jValueToCoreseNode(this.edith_piaf_node),
-                Convert.rdf4jValueToCoreseNode(this.isa_property), Convert.rdf4jValueToCoreseNode(this.singer_node),
+        Iterable<Edge> results = data_manager.insert(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node),
+                ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property),
+                ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node),
                 contexts);
 
         assertEquals(1, model.size());
@@ -355,11 +365,11 @@ public class Rdf4jDataManagerTest {
         DataManager data_manager = new Rdf4jDataManager(model);
 
         ArrayList<Node> contexts = new ArrayList<>();
-        contexts.add(Convert.rdf4jValueToCoreseNode(this.context1));
-        contexts.add(Convert.rdf4jValueToCoreseNode(this.context2));
+        contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context1));
+        contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context2));
 
-        data_manager.insert(null, Convert.rdf4jValueToCoreseNode(this.isa_property),
-                Convert.rdf4jValueToCoreseNode(this.singer_node), contexts);
+        data_manager.insert(null, ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property),
+                ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node), contexts);
     }
 
     @Test(expected = UnsupportedOperationException.class)
@@ -368,12 +378,13 @@ public class Rdf4jDataManagerTest {
         DataManager data_manager = new Rdf4jDataManager(model);
 
         ArrayList<Node> contexts = new ArrayList<>();
-        contexts.add(Convert.rdf4jValueToCoreseNode(this.context1));
-        contexts.add(Convert.rdf4jValueToCoreseNode(this.context2));
-        contexts.add(Convert.rdf4jValueToCoreseNode(null));
+        contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context1));
+        contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context2));
+        contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(null));
 
-        data_manager.insert(Convert.rdf4jValueToCoreseNode(this.edith_piaf_node),
-                Convert.rdf4jValueToCoreseNode(this.isa_property), Convert.rdf4jValueToCoreseNode(this.singer_node),
+        data_manager.insert(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node),
+                ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property),
+                ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node),
                 contexts);
     }
 
@@ -383,7 +394,7 @@ public class Rdf4jDataManagerTest {
 
         // Insert new statement
         assertEquals(false, this.model.contains(this.statement_bonus));
-        Edge edge_bonus = Convert.statementToEdge(this.statement_bonus);
+        Edge edge_bonus = ConvertRdf4jCorese.statementToEdge(this.statement_bonus);
 
         Edge iterable = data_manager.insert(edge_bonus);
         assertEquals(iterable, edge_bonus);
@@ -401,13 +412,14 @@ public class Rdf4jDataManagerTest {
 
         ArrayList<Node> contexts = new ArrayList<>();
         contexts.add(this.default_context);
-        contexts.add(Convert.rdf4jValueToCoreseNode(this.context2));
+        contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context2));
 
         assertEquals(true, model_copy.contains(this.statement_0));
         assertEquals(4, model_copy.size());
 
-        data_manager.delete(Convert.rdf4jValueToCoreseNode(this.edith_piaf_node),
-                Convert.rdf4jValueToCoreseNode(this.isa_property), Convert.rdf4jValueToCoreseNode(this.singer_node),
+        data_manager.delete(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node),
+                ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property),
+                ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node),
                 contexts);
 
         assertEquals(false, model_copy.contains(this.statement_0));
@@ -420,7 +432,7 @@ public class Rdf4jDataManagerTest {
         DataManager data_manager = new Rdf4jDataManager(model_copy);
 
         ArrayList<Node> contexts = new ArrayList<>();
-        contexts.add(Convert.rdf4jValueToCoreseNode(this.context2));
+        contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context2));
 
         assertEquals(true, model_copy.contains(this.statement_2));
         assertEquals(4, model_copy.size());
@@ -441,7 +453,7 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, model_copy.contains(this.statement_3));
         assertEquals(4, model_copy.size());
 
-        data_manager.delete(null, Convert.rdf4jValueToCoreseNode(this.first_name_property), null, null);
+        data_manager.delete(null, ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.first_name_property), null, null);
 
         assertEquals(false, model_copy.contains(this.statement_1));
         assertEquals(false, model_copy.contains(this.statement_2));
@@ -469,7 +481,7 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, model_copy.contains(this.statement_0));
         assertEquals(true, model_copy.contains(this.statement_1));
 
-        Edge edge_0 = Convert.statementToEdge(this.statement_0);
+        Edge edge_0 = ConvertRdf4jCorese.statementToEdge(this.statement_0);
         data_manager.delete(edge_0);
 
         assertEquals(false, model_copy.contains(this.statement_0));
@@ -485,7 +497,7 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, model_copy.contains(this.statement_1));
         assertEquals(true, model_copy.contains(this.statement_2));
 
-        Edge edge_1 = Convert.statementToEdge(this.statement_1);
+        Edge edge_1 = ConvertRdf4jCorese.statementToEdge(this.statement_1);
         data_manager.delete(edge_1);
 
         assertEquals(true, model_copy.contains(this.statement_0));
@@ -504,10 +516,10 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, model_copy.contains(this.statement_3));
 
         List<Node> contexts = new ArrayList<>();
-        contexts.add(Convert.rdf4jContextToCoreseContext(this.context1));
-        contexts.add(Convert.rdf4jContextToCoreseContext(this.context2));
+        contexts.add(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1));
+        contexts.add(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context2));
 
-        Edge edge_1 = Convert.statementToEdge(this.statement_1);
+        Edge edge_1 = ConvertRdf4jCorese.statementToEdge(this.statement_1);
         Iterable<Edge> removed = data_manager.delete(edge_1.getSubjectNode(), edge_1.getProperty(),
                 edge_1.getObjectNode(), contexts);
 
@@ -534,10 +546,10 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, model_copy.contains(this.statement_3));
 
         List<Node> contexts = new ArrayList<>();
-        contexts.add(Convert.rdf4jContextToCoreseContext(this.context1));
-        contexts.add(Convert.rdf4jContextToCoreseContext(this.context2));
+        contexts.add(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1));
+        contexts.add(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context2));
 
-        Edge edge_0 = Convert.statementToEdge(this.statement_0);
+        Edge edge_0 = ConvertRdf4jCorese.statementToEdge(this.statement_0);
         Iterable<Edge> removed = data_manager.delete(edge_0.getSubjectNode(), edge_0.getProperty(),
                 edge_0.getObjectNode(), contexts);
 
@@ -559,7 +571,7 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, model_copy.contains(this.statement_0));
         assertEquals(true, model_copy.contains(this.statement_1));
 
-        data_manager.clear(List.of(Convert.rdf4jContextToCoreseContext(this.context1)), false);
+        data_manager.clear(List.of(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1)), false);
 
         assertEquals(true, model_copy.contains(this.statement_0));
         assertEquals(false, model_copy.contains(this.statement_1));
@@ -595,8 +607,8 @@ public class Rdf4jDataManagerTest {
         // tests
         assertEquals(true, modelCopy.contains(theoretical_old_statement));
         assertEquals(false, modelCopy.contains(theoretical_new_statement));
-        data_manager.add(Convert.rdf4jContextToCoreseContext(this.context1),
-                Convert.rdf4jContextToCoreseContext(this.context2), false);
+        data_manager.add(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1),
+                ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context2), false);
         assertEquals(true, modelCopy.contains(theoretical_old_statement));
         assertEquals(true, modelCopy.contains(theoretical_new_statement));
     }
@@ -623,8 +635,8 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, modelCopy.contains(theoretical_old_statement));
         assertEquals(false, modelCopy.contains(this.statement_2));
         assertEquals(false, modelCopy.contains(theoretical_new_statement));
-        data_manager.move(Convert.rdf4jContextToCoreseContext(this.context1),
-                Convert.rdf4jContextToCoreseContext(this.context2), false);
+        data_manager.move(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1),
+                ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context2), false);
         assertEquals(false, modelCopy.contains(this.statement_1));
         assertEquals(false, modelCopy.contains(theoretical_old_statement));
         assertEquals(true, modelCopy.contains(this.statement_2));
@@ -653,8 +665,8 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, modelCopy.contains(theoretical_old_statement));
         assertEquals(false, modelCopy.contains(this.statement_2));
         assertEquals(false, modelCopy.contains(theoretical_new_statement));
-        data_manager.copy(Convert.rdf4jContextToCoreseContext(this.context1),
-                Convert.rdf4jContextToCoreseContext(this.context2), false);
+        data_manager.copy(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1),
+                ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context2), false);
         assertEquals(true, modelCopy.contains(this.statement_1));
         assertEquals(true, modelCopy.contains(theoretical_old_statement));
         assertEquals(true, modelCopy.contains(this.statement_2));

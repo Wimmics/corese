@@ -120,19 +120,19 @@ public class LogManager implements LogKey {
         sb.append(String.format("prefix %s <%s>\n", HEADER_PREF, HEADER_NS));
 
         if (log.getAST() != null) {
-            property("[] %s \"\"\"\n%s\"\"\" .\n", AST, log.getAST());
+            property("<%s> %s \"\"\"\n%s\"\"\" .\n", SUBJECT, AST, log.getAST());
         }
         if (log.getASTSelect() != null) {
-            property("[] %s \"\"\"\n%s\"\"\" .\n", AST_SELECT, log.getASTSelect());
+            property("<%s> %s \"\"\"\n%s\"\"\" .\n", SUBJECT, AST_SELECT, log.getASTSelect());
         }
         if (log.getSelectMap() != null) {
-            property("[] %s \"\"\"\n%s\"\"\" .\n", RESULT_SELECT, log.getSelectMap());
+            property("<%s> %s \"\"\"\n%s\"\"\" .\n", SUBJECT, RESULT_SELECT, log.getSelectMap());
         }
         if (log.getASTIndex() != null) {
-            property("[] %s \"\"\"\n%s\"\"\" .\n", AST_INDEX, log.getASTIndex());
+            property("<%s> %s \"\"\"\n%s\"\"\" .\n", SUBJECT, AST_INDEX, log.getASTIndex());
         }
         if (log.getIndexMap() != null) {
-            property("[] %s \"\"\"\n%s\"\"\" .\n", RESULT_INDEX, log.getIndexMap());
+            property("<%s> %s \"\"\"\n%s\"\"\" .\n", SUBJECT, RESULT_INDEX, log.getIndexMap());
         }
     }
     

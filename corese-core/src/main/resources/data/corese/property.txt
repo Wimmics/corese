@@ -147,9 +147,11 @@ SERVICE_SEND_PARAMETER = true
 SERVICE_REPORT = false
 # max number of results displayed in debug/trace/log mode
 SERVICE_DISPLAY_RESULT = 10
+# when there is a parse error
+SERVICE_DISPLAY_MESSAGE = true
 # service http header recorded in log and displayed by logger
-SERVICE_HEADER = *
-#SERVICE_HEADER = X-SPARQL-MaxRows;Server;Content-Type
+#SERVICE_HEADER = *
+SERVICE_HEADER = X-SPARQL-MaxRows;Server;Content-Type
 
 # define federation for federated query
 FEDERATION = /user/corby/home/AAData/data/corese/federation.ttl
@@ -175,7 +177,7 @@ FEDERATE_MINUS = true
 # skip undefined arg of union optional minus
 FEDERATE_UNDEFINED = true
 
-FEDERATE_BLACKLIST        = http://ldf.fi/warsa/sparql;http://data.semanticweb.org/sparql
+FEDERATE_BLACKLIST        = http://ldf.fi/warsa/sparql;http://data.semanticweb.org/sparql;http://biordf.net/sparql
 FEDERATE_BLACKLIST_EXCEPT = http://corese.inria.fr/sparql;http://prod-dekalog.inria.fr/sparql;https://dbpedia.org/sparql;https://query.wikidata.org/sparql;http://fr.dbpedia.org/sparql
 
 # max number of endpoint url returned by source discovery 

@@ -14,6 +14,7 @@ import java.util.stream.Collectors;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.query.Dataset;
+import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.core.Quad;
 import org.apache.jena.tdb.TDBFactory;
@@ -26,7 +27,7 @@ import fr.inria.corese.kgram.api.core.Node;
 /**
  * Implements the Corese Datamanger interface for Jena-TDB.
  */
-public class JenaDataManager implements DataManager {
+public class JenaDataManager implements DataManager, AutoCloseable {
 
     private Dataset jena_dataset;
 
@@ -67,16 +68,39 @@ public class JenaDataManager implements DataManager {
 
     @Override
     public int graphSize() {
-        return (int) this.jena_dataset.asDatasetGraph().stream().count();
+        int result;
+
+        this.jena_dataset.begin(ReadWrite.READ);
+        try {
+
+            result = (int) this.jena_dataset.asDatasetGraph().stream().count();
+
+            this.jena_dataset.commit();
+        } finally {
+            this.jena_dataset.end();
+        }
+
+        return result;
+
     }
 
     @Override
     public int countEdges(Node predicate) {
+        int result;
 
-        // convert Corese node to Jena RdfNode
-        org.apache.jena.graph.Node jena_predicate = ConvertJenaCorese.coreseNodeToJenaNode(predicate);
+        this.jena_dataset.begin(ReadWrite.READ);
+        try {
 
-        return (int) this.jena_dataset.asDatasetGraph().stream(null, null, jena_predicate, null).count();
+            // convert Corese node to Jena RdfNode
+            org.apache.jena.graph.Node jena_predicate = ConvertJenaCorese.coreseNodeToJenaNode(predicate);
+
+            result = (int) this.jena_dataset.asDatasetGraph().stream(null, null, jena_predicate, null).count();
+
+            this.jena_dataset.commit();
+        } finally {
+            this.jena_dataset.end();
+        }
+        return result;
     }
 
     /************
@@ -85,8 +109,16 @@ public class JenaDataManager implements DataManager {
 
     @Override
     public Iterable<Edge> getEdges(Node subject, Node predicate, Node object, List<Node> contexts) {
+        Iterable<Edge> statements;
 
-        Iterable<Edge> statements = this.choose(subject, predicate, object, contexts);
+        this.jena_dataset.begin(ReadWrite.READ);
+        try {
+            statements = this.choose(subject, predicate, object, contexts);
+
+            this.jena_dataset.commit();
+        } finally {
+            this.jena_dataset.end();
+        }
 
         // remove duplicate edges (same edge with different context)
         HashMap<Integer, Edge> result = new HashMap<>();
@@ -104,44 +136,86 @@ public class JenaDataManager implements DataManager {
 
     @Override
     public Iterable<Node> subjects(Node corese_context) {
-        return this.choose(null, null, null, Arrays.asList(corese_context))
-                .stream()
-                .map((o) -> o.getSubjectNode())
-                .filter(distinctByKey(o -> o.getValue().stringValue()))
-                .collect(Collectors.toList());
+        Iterable<Node> result;
+        this.jena_dataset.begin(ReadWrite.READ);
+        try {
+            result = this.choose(null, null, null, Arrays.asList(corese_context))
+                    .stream()
+                    .map((o) -> o.getSubjectNode())
+                    .filter(distinctByKey(o -> o.getValue().stringValue()))
+                    .collect(Collectors.toList());
+
+            this.jena_dataset.commit();
+        } finally {
+            this.jena_dataset.end();
+        }
+
+        return result;
     }
 
     @Override
     public Iterable<Node> predicates(Node corese_context) {
-        return this.choose(null, null, null, Arrays.asList(corese_context))
-                .stream()
-                .map((o) -> o.getPropertyNode())
-                .filter(distinctByKey(o -> o.getValue().stringValue()))
-                .collect(Collectors.toList());
+        Iterable<Node> result;
+
+        this.jena_dataset.begin(ReadWrite.READ);
+        try {
+            result = this.choose(null, null, null, Arrays.asList(corese_context))
+                    .stream()
+                    .map((o) -> o.getPropertyNode())
+                    .filter(distinctByKey(o -> o.getValue().stringValue()))
+                    .collect(Collectors.toList());
+
+            this.jena_dataset.commit();
+        } finally {
+            this.jena_dataset.end();
+        }
+
+        return result;
     }
 
     @Override
     public Iterable<Node> objects(Node corese_context) {
-        return this.choose(null, null, null, Arrays.asList(corese_context))
-                .stream()
-                .map((o) -> o.getObjectNode())
-                .filter(distinctByKey(o -> o.getValue().stringValue()))
-                .collect(Collectors.toList());
+        Iterable<Node> result;
+
+        this.jena_dataset.begin(ReadWrite.READ);
+        try {
+
+            result = this.choose(null, null, null, Arrays.asList(corese_context))
+                    .stream()
+                    .map((o) -> o.getObjectNode())
+                    .filter(distinctByKey(o -> o.getValue().stringValue()))
+                    .collect(Collectors.toList());
+
+            this.jena_dataset.commit();
+        } finally {
+            this.jena_dataset.end();
+        }
+
+        return result;
     }
 
     @Override
     public Iterable<Node> contexts() {
-        Iterator<Resource> iterator = this.jena_dataset.listModelNames();
-
-        // Add named named graph
         ArrayList<Node> result = new ArrayList<>();
-        while (iterator.hasNext()) {
-            result.add(ConvertJenaCorese.jenaContextToCoreseContext(iterator.next().asNode()));
-        }
 
-        // Add default graph
-        if (!this.jena_dataset.getDefaultModel().isEmpty()) {
-            result.add(ConvertJenaCorese.jenaContextToCoreseContext(Quad.defaultGraphIRI));
+        this.jena_dataset.begin(ReadWrite.READ);
+        try {
+
+            Iterator<Resource> iterator = this.jena_dataset.listModelNames();
+
+            // Add named named graph
+            while (iterator.hasNext()) {
+                result.add(ConvertJenaCorese.jenaContextToCoreseContext(iterator.next().asNode()));
+            }
+
+            // Add default graph
+            if (!this.jena_dataset.getDefaultModel().isEmpty()) {
+                result.add(ConvertJenaCorese.jenaContextToCoreseContext(Quad.defaultGraphIRI));
+            }
+
+            this.jena_dataset.commit();
+        } finally {
+            this.jena_dataset.end();
         }
 
         return result;
@@ -152,25 +226,35 @@ public class JenaDataManager implements DataManager {
      **********/
     @Override
     public Iterable<Edge> insert(Node subject, Node predicate, Node object, List<Node> contexts) {
+        ArrayList<Edge> added = new ArrayList<>();
 
         if (subject == null || predicate == null || object == null || contexts == null) {
             throw new UnsupportedOperationException("Incomplete statement");
         }
 
-        ArrayList<Edge> added = new ArrayList<>();
-        for (Node context : contexts) {
-            if (context == null) {
-                throw new UnsupportedOperationException("Context can't be null");
+        this.jena_dataset.begin(ReadWrite.WRITE);
+        try {
+
+            for (Node context : contexts) {
+                if (context == null) {
+                    this.jena_dataset.abort();
+                    throw new UnsupportedOperationException("Context can't be null");
+                }
+
+                Edge corese_edge = EdgeImpl.create(context, subject, predicate, object);
+                Quad jena_quad = ConvertJenaCorese.edgeToQuad(corese_edge);
+
+                if (!this.jena_dataset.asDatasetGraph().contains(jena_quad)) {
+                    this.jena_dataset.asDatasetGraph().add(jena_quad);
+                    added.add(corese_edge);
+                }
             }
 
-            Edge corese_edge = EdgeImpl.create(context, subject, predicate, object);
-            Quad jena_quad = ConvertJenaCorese.edgeToQuad(corese_edge);
-
-            if (!this.jena_dataset.asDatasetGraph().contains(jena_quad)) {
-                this.jena_dataset.asDatasetGraph().add(jena_quad);
-                added.add(corese_edge);
-            }
+            this.jena_dataset.commit();
+        } finally {
+            this.jena_dataset.end();
         }
+
         return added;
     }
 
@@ -179,17 +263,26 @@ public class JenaDataManager implements DataManager {
      **********/
     @Override
     public Iterable<Edge> delete(Node subject, Node predicate, Node object, List<Node> contexts) {
-        Iterable<Edge> edges = this.choose(subject, predicate, object, contexts);
-
         ArrayList<Edge> results = new ArrayList<>();
-        for (Edge edge : edges) {
 
-            Quad quad = ConvertJenaCorese.edgeToQuad(edge);
+        this.jena_dataset.begin(ReadWrite.WRITE);
+        try {
 
-            if (this.jena_dataset.asDatasetGraph().contains(quad)) {
-                this.jena_dataset.asDatasetGraph().delete(quad);
-                results.add(edge);
+            Iterable<Edge> edges = this.choose(subject, predicate, object, contexts);
+
+            for (Edge edge : edges) {
+
+                Quad quad = ConvertJenaCorese.edgeToQuad(edge);
+
+                if (this.jena_dataset.asDatasetGraph().contains(quad)) {
+                    this.jena_dataset.asDatasetGraph().delete(quad);
+                    results.add(edge);
+                }
             }
+
+            this.jena_dataset.commit();
+        } finally {
+            this.jena_dataset.end();
         }
 
         return results;
@@ -201,18 +294,29 @@ public class JenaDataManager implements DataManager {
 
     @Override
     public boolean add(Node source, Node target, boolean silent) {
+        long nb_graph_before;
+        long nb_graph_after;
 
-        long nb_graph_before = this.jena_dataset.asDatasetGraph().size();
+        this.jena_dataset.begin(ReadWrite.WRITE);
+        try {
 
-        // Convert source and target to Jena context
-        org.apache.jena.graph.Node source_context = ConvertJenaCorese.coreseContextToJenaContext(source);
-        org.apache.jena.graph.Node target_context = ConvertJenaCorese.coreseContextToJenaContext(target);
+            nb_graph_before = this.jena_dataset.asDatasetGraph().size();
 
-        // Add Graph
-        Graph graph_source = this.jena_dataset.asDatasetGraph().getGraph(source_context);
-        this.jena_dataset.asDatasetGraph().addGraph(target_context, graph_source);
+            // Convert source and target to Jena context
+            org.apache.jena.graph.Node source_context = ConvertJenaCorese.coreseContextToJenaContext(source);
+            org.apache.jena.graph.Node target_context = ConvertJenaCorese.coreseContextToJenaContext(target);
 
-        long nb_graph_after = this.jena_dataset.asDatasetGraph().size();
+            // Add Graph
+            Graph graph_source = this.jena_dataset.asDatasetGraph().getGraph(source_context);
+            this.jena_dataset.asDatasetGraph().addGraph(target_context, graph_source);
+
+            nb_graph_after = this.jena_dataset.asDatasetGraph().size();
+
+            this.jena_dataset.commit();
+        } finally {
+            this.jena_dataset.end();
+        }
+
         return nb_graph_before != nb_graph_after;
     }
 
@@ -221,6 +325,11 @@ public class JenaDataManager implements DataManager {
      *********/
     public Dataset getDataset() {
         return this.jena_dataset;
+    }
+
+    @Override
+    public void close() {
+        this.jena_dataset.close();
     }
 
     /*********

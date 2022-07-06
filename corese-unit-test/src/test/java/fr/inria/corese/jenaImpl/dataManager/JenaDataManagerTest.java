@@ -20,7 +20,6 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.corese.core.NodeImpl;
-import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
@@ -198,34 +197,39 @@ public class JenaDataManagerTest {
 
                 jt1dm = new JenaDataManager();
                 assertEquals(0, jt1dm.graphSize());
+                jt1dm.close();
 
                 jt1dm = new JenaDataManager(this.dataset);
                 assertEquals(4, jt1dm.graphSize());
+                jt1dm.close();
         }
 
         @Test
         public void countEdges() {
-                DataManager data_manager;
+                JenaDataManager data_manager;
 
                 data_manager = new JenaDataManager();
                 assertEquals(0, data_manager.countEdges(this.first_name_property_corese));
                 assertEquals(0, data_manager.countEdges(this.isa_property_corese));
                 assertEquals(0, data_manager.countEdges(null));
+                data_manager.close();
 
                 data_manager = new JenaDataManager(this.dataset);
                 assertEquals(3, data_manager.countEdges(this.first_name_property_corese));
                 assertEquals(1, data_manager.countEdges(this.isa_property_corese));
                 assertEquals(4, data_manager.countEdges(null));
+                data_manager.close();
         }
 
         @Test
         public void getEdgesAll() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 // All edges
                 Iterable<Edge> iterable = data_manager.getEdges(null, null, null, null);
                 List<Edge> result = new ArrayList<>();
                 iterable.forEach(result::add);
+                data_manager.close();
 
                 assertEquals(2, result.size());
                 assertEquals(true, result.contains(this.statement_0_corese));
@@ -237,7 +241,7 @@ public class JenaDataManagerTest {
 
         @Test
         public void getEdgesDefault() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 // All edges of default context
                 ArrayList<Node> contexts = new ArrayList<>();
@@ -246,6 +250,7 @@ public class JenaDataManagerTest {
                 Iterable<Edge> iterable = data_manager.getEdges(null, null, null, contexts);
                 List<Edge> result = new ArrayList<>();
                 iterable.forEach(result::add);
+                data_manager.close();
 
                 assertEquals(1, result.size());
                 assertEquals(true, result.contains(this.statement_0_corese));
@@ -254,7 +259,7 @@ public class JenaDataManagerTest {
 
         @Test
         public void getEdgesIgnoreNull() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 // All edges (with ignore null values)
                 ArrayList<Node> contexts = new ArrayList<>();
@@ -265,6 +270,7 @@ public class JenaDataManagerTest {
                 Iterable<Edge> iterable = data_manager.getEdges(null, null, null, contexts);
                 List<Edge> result = new ArrayList<>();
                 iterable.forEach(result::add);
+                data_manager.close();
 
                 assertEquals(2, result.size());
                 assertEquals(true, result.contains(this.statement_0_corese));
@@ -276,7 +282,7 @@ public class JenaDataManagerTest {
 
         @Test
         public void getEdgesIgnoreNull2() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 // All edges of context 1 (with a ignore null value)
                 ArrayList<Node> contexts = new ArrayList<>();
@@ -286,6 +292,7 @@ public class JenaDataManagerTest {
                 Iterable<Edge> iterable = data_manager.getEdges(null, null, null, contexts);
                 List<Edge> result = new ArrayList<>();
                 iterable.forEach(result::add);
+                data_manager.close();
 
                 assertEquals(1, result.size());
                 assertEquals(false, result.contains(this.statement_0_corese));
@@ -300,7 +307,7 @@ public class JenaDataManagerTest {
                 List<Node> result;
 
                 this.dataset.asDatasetGraph().add(this.statement_bonus_jena);
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 // All contexts
                 iterable = data_manager.subjects(null);
@@ -323,6 +330,7 @@ public class JenaDataManagerTest {
                 iterable.forEach(result::add);
                 assertEquals(1, result.size());
                 assertEquals(true, result.contains(this.isa_property_corese));
+                data_manager.close();
         }
 
         @Test
@@ -331,7 +339,7 @@ public class JenaDataManagerTest {
                 List<Node> result;
 
                 this.dataset.asDatasetGraph().add(this.statement_bonus_jena);
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 // All contexts
                 iterable = data_manager.predicates(null);
@@ -354,6 +362,7 @@ public class JenaDataManagerTest {
                 iterable.forEach(result::add);
                 assertEquals(1, result.size());
                 assertEquals(true, result.contains(this.isa_property_corese));
+                data_manager.close();
         }
 
         @Test
@@ -362,7 +371,7 @@ public class JenaDataManagerTest {
                 List<Node> result;
 
                 this.dataset.asDatasetGraph().add(this.statement_bonus_jena);
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 // All contexts
                 iterable = data_manager.objects(null);
@@ -385,14 +394,16 @@ public class JenaDataManagerTest {
                 iterable.forEach(result::add);
                 assertEquals(1, result.size());
                 assertEquals(true, result.contains(this.singer_node_corese));
+                data_manager.close();
         }
 
         @Test
         public void contexts() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
                 Iterable<Node> iterable = data_manager.contexts();
                 List<Node> result = new ArrayList<>();
                 iterable.forEach(result::add);
+                data_manager.close();
 
                 assertEquals(4, result.size());
                 assertEquals(true, result.contains(this.context1_corese));
@@ -404,7 +415,7 @@ public class JenaDataManagerTest {
         @Test
         public void insertSPO() {
                 Dataset dataset = DatasetFactory.create();
-                DataManager data_manager = new JenaDataManager(dataset);
+                JenaDataManager data_manager = new JenaDataManager(dataset);
 
                 ArrayList<Node> contexts = new ArrayList<>();
                 contexts.add(this.context1_corese);
@@ -412,6 +423,7 @@ public class JenaDataManagerTest {
 
                 data_manager.insert(this.edith_piaf_node_corese, this.first_name_property_corese,
                                 this.edith_literal_corese, contexts);
+                data_manager.close();
 
                 assertEquals(2, dataset.asDatasetGraph().stream().count());
                 assertEquals(false, dataset.asDatasetGraph().contains(this.statement_0_jena));
@@ -423,7 +435,7 @@ public class JenaDataManagerTest {
         @Test
         public void insertSPODefault() {
                 Dataset dataset = DatasetFactory.create();
-                DataManager data_manager = new JenaDataManager(dataset);
+                JenaDataManager data_manager = new JenaDataManager(dataset);
 
                 ArrayList<Node> contexts = new ArrayList<>();
                 contexts.add(this.default_context_corese);
@@ -433,6 +445,7 @@ public class JenaDataManagerTest {
                                 this.isa_property_corese,
                                 this.singer_node_corese,
                                 contexts);
+                data_manager.close();
 
                 assertEquals(1, dataset.asDatasetGraph().stream().count());
                 assertEquals(results.iterator().next().getGraph(), this.default_context_corese);
@@ -457,19 +470,20 @@ public class JenaDataManagerTest {
         @Test(expected = UnsupportedOperationException.class)
         public void insertSPOError1() {
                 Dataset dataset = DatasetFactory.create();
-                DataManager data_manager = new JenaDataManager(dataset);
+                JenaDataManager data_manager = new JenaDataManager(dataset);
 
                 ArrayList<Node> contexts = new ArrayList<>();
                 contexts.add(this.context1_corese);
                 contexts.add(this.context2_corese);
 
                 data_manager.insert(null, this.isa_property_corese, this.singer_node_corese, contexts);
+                data_manager.close();
         }
 
         @Test(expected = UnsupportedOperationException.class)
         public void insertSPOError2() {
                 Dataset dataset = DatasetFactory.create();
-                DataManager data_manager = new JenaDataManager(dataset);
+                JenaDataManager data_manager = new JenaDataManager(dataset);
                 ArrayList<Node> contexts = new ArrayList<>();
                 contexts.add(this.context1_corese);
                 contexts.add(this.context2_corese);
@@ -477,11 +491,12 @@ public class JenaDataManagerTest {
 
                 data_manager.insert(this.edith_piaf_node_corese, this.isa_property_corese, this.singer_node_corese,
                                 contexts);
+                data_manager.close();
         }
 
         @Test
         public void insertEdgeEdge() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 // Insert new statement
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_bonus_jena));
@@ -493,11 +508,12 @@ public class JenaDataManagerTest {
                 // Try insert statement already in graph
                 iterable = data_manager.insert(this.statement_bonus_corese);
                 assertEquals(null, iterable);
+                data_manager.close();
         }
 
         @Test
         public void deleteSPO() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 ArrayList<Node> contexts = new ArrayList<>();
                 contexts.add(this.default_context_corese);
@@ -508,6 +524,7 @@ public class JenaDataManagerTest {
 
                 data_manager.delete(this.edith_piaf_node_corese, this.isa_property_corese, this.singer_node_corese,
                                 contexts);
+                data_manager.close();
 
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_0_jena));
                 assertEquals(3, dataset.asDatasetGraph().stream().count());
@@ -515,7 +532,7 @@ public class JenaDataManagerTest {
 
         @Test
         public void deleteContext2() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 ArrayList<Node> contexts = new ArrayList<>();
                 contexts.add(this.context2_corese);
@@ -524,6 +541,7 @@ public class JenaDataManagerTest {
                 assertEquals(4, dataset.asDatasetGraph().stream().count());
 
                 data_manager.delete(null, null, null, contexts);
+                data_manager.close();
 
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_2_jena));
                 assertEquals(3, dataset.asDatasetGraph().stream().count());
@@ -531,7 +549,7 @@ public class JenaDataManagerTest {
 
         @Test
         public void deleteFirstName() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_2_jena));
@@ -539,6 +557,7 @@ public class JenaDataManagerTest {
                 assertEquals(4, dataset.asDatasetGraph().stream().count());
 
                 data_manager.delete(null, this.first_name_property_corese, null, null);
+                data_manager.close();
 
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_2_jena));
@@ -548,23 +567,25 @@ public class JenaDataManagerTest {
 
         @Test
         public void deleteSPOAll() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 assertEquals(false, this.dataset.asDatasetGraph().isEmpty());
 
                 data_manager.delete(null, null, null, null);
+                data_manager.close();
 
                 assertEquals(true, this.dataset.asDatasetGraph().isEmpty());
         }
 
         @Test
         public void deleteEdgeStatement0() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_0_jena));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
 
                 data_manager.delete(this.statement_0_corese);
+                data_manager.close();
 
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_0_jena));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
@@ -572,13 +593,14 @@ public class JenaDataManagerTest {
 
         @Test
         public void deleteEdgeStatement1() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_0_jena));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_2_jena));
 
                 data_manager.delete(this.statement_1_corese);
+                data_manager.close();
 
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_0_jena));
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
@@ -587,7 +609,7 @@ public class JenaDataManagerTest {
 
         @Test
         public void deleteFromContext() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_0_jena));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
@@ -601,6 +623,7 @@ public class JenaDataManagerTest {
                 Edge edge_1 = this.statement_1_corese;
                 Iterable<Edge> removed = data_manager.delete(edge_1.getSubjectNode(), edge_1.getProperty(),
                                 edge_1.getObjectNode(), contexts);
+                data_manager.close();
 
                 List<Edge> result = new ArrayList<>();
                 removed.forEach(result::add);
@@ -616,7 +639,7 @@ public class JenaDataManagerTest {
 
         @Test
         public void deleteFromContextNoRemove() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_0_jena));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
@@ -630,6 +653,7 @@ public class JenaDataManagerTest {
                 Edge edge_0 = this.statement_0_corese;
                 Iterable<Edge> removed = data_manager.delete(edge_0.getSubjectNode(), edge_0.getProperty(),
                                 edge_0.getObjectNode(), contexts);
+                data_manager.close();
 
                 List<Edge> result = new ArrayList<>();
                 removed.forEach(result::add);
@@ -643,12 +667,13 @@ public class JenaDataManagerTest {
 
         @Test
         public void clearContext1() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_0_jena));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
 
                 data_manager.clear(List.of(this.context1_corese), false);
+                data_manager.close();
 
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_0_jena));
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
@@ -656,7 +681,7 @@ public class JenaDataManagerTest {
 
         @Test
         public void addContext() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 // build and add a new statement in context_1
                 Quad theoretical_old_statement = new Quad(this.context1_jena, this.george_brassens_node_jena,
@@ -673,11 +698,12 @@ public class JenaDataManagerTest {
                 data_manager.add(this.context1_corese, this.context2_corese, false);
                 assertEquals(true, this.dataset.asDatasetGraph().contains(theoretical_old_statement));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(theoretical_new_statement));
+                data_manager.close();
         }
 
         @Test
         public void moveContext() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 // build and add a new statement in context_1
                 Quad theoretical_old_statement = new Quad(this.context1_jena, this.george_brassens_node_jena,
@@ -700,11 +726,12 @@ public class JenaDataManagerTest {
                 assertEquals(false, this.dataset.asDatasetGraph().contains(theoretical_old_statement));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_2_jena));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(theoretical_new_statement));
+                data_manager.close();
         }
 
         @Test
         public void copyContext() {
-                DataManager data_manager = new JenaDataManager(this.dataset);
+                JenaDataManager data_manager = new JenaDataManager(this.dataset);
 
                 // build and add a new statement in context_1
                 Quad theoretical_old_statement = new Quad(this.context1_jena, this.george_brassens_node_jena,
@@ -727,5 +754,6 @@ public class JenaDataManagerTest {
                 assertEquals(true, this.dataset.asDatasetGraph().contains(theoretical_old_statement));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_2_jena));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(theoretical_new_statement));
+                data_manager.close();
         }
 }

@@ -354,7 +354,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      *                  edge with any contexts.
      * @return Edge that match the specified pattern.
      */
-    private ArrayList<Edge> choose(Node subject, Node predicate, Node object, List<Node> contexts) {
+    public ArrayList<Edge> choose(Node subject, Node predicate, Node object, List<Node> contexts) {
 
         org.apache.jena.graph.Node jena_subject = ConvertJenaCorese.coreseNodeToJenaNode(subject);
         org.apache.jena.graph.Node jena_predicate = ConvertJenaCorese.coreseNodeToJenaNode(predicate);

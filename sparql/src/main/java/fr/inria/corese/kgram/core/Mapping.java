@@ -321,6 +321,10 @@ public class Mapping
     void setGroupBy(Node[] nodes) {
         setGroupByNodes(nodes);
     }
+    
+    public void dispose() {
+        setMappings(null);
+    }
 
     @Override
     public Mappings getMappings() {

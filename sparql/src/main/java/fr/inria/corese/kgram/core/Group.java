@@ -58,6 +58,10 @@ public class Group implements Comparator<Mappings> {
             super(new Compare(ln));
         }
     }
+    
+    public void dispose() {
+        table.clear();
+    }
 
     class Compare implements Comparator<Mapping> {
 

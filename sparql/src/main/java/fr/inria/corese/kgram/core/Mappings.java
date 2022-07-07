@@ -1162,6 +1162,18 @@ public class Mappings extends PointerObject
         }
     }
     
+    public void dispose() {
+        for (Mapping m : this) {
+            m.dispose();
+        }
+        if (getGroup()!=null) {
+            getGroup().dispose();
+        }
+        if (getDistinct() !=null) {
+            getDistinct().dispose();
+        }
+    }
+    
     public void prepareAggregate(Mapping map, Query q, Map<String, IDatatype> bn, int n) {
         setCount(n);
         // in case there is a nested aggregate, map will be an Environment

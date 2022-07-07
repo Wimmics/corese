@@ -45,6 +45,26 @@
 			<groupId>org.graphstream</groupId>
 			<artifactId>gs-core</artifactId>
 		</dependency>
+<!--                <dependency>
+                    <groupId>${project.groupId}</groupId>
+                    <artifactId>corese-storage</artifactId>
+                    <version>${revision}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.jena</groupId>
+                    <artifactId>jena-tdb</artifactId>
+                    <version>4.4.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.jena</groupId>
+                    <artifactId>jena-arq</artifactId>
+                    <version>4.4.0</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.apache.jena</groupId>
+                    <artifactId>jena-core</artifactId>
+                    <version>4.4.0</version>
+                </dependency>-->
 		<dependency>
 			<groupId>org.graphstream</groupId>
 			<artifactId>gs-ui</artifactId>

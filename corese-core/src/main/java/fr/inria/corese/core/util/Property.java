@@ -275,7 +275,7 @@ public class Property {
         SERVICE_GRAPH,
         
         
-        STORAGE_PATH
+        STORAGE_PATH, STORAGE_SERVICE
     };
 
     static {

@@ -272,7 +272,10 @@ public class Property {
 
         // service result may be RDF graph (e.g. when format=turtle)
         // apply service query on the graph 
-        SERVICE_GRAPH
+        SERVICE_GRAPH,
+        
+        
+        STORAGE_PATH
     };
 
     static {

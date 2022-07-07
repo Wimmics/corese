@@ -12,7 +12,8 @@ VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./;fed=/user/corby/home
 
 IMPORT   = ./gui.txt
 
-STORAGE_PATH = $db/go
+STORAGE_SERVICE = false
+STORAGE_PATH    = $db/human
 #$db/human
 #/tmp/tmp
 

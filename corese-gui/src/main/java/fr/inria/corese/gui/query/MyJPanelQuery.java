@@ -766,6 +766,7 @@ public final class MyJPanelQuery extends JPanel {
             tabbedPaneResults.setSelectedIndex(XML_PANEL);
             return;
         }
+        map.dispose();
         setMappings(map);
         Query q = map.getQuery();
         ASTQuery ast =  q.getAST();

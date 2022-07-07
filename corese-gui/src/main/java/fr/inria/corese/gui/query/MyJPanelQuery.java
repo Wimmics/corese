@@ -43,7 +43,6 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.print.XMLFormat;
-import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.CompareMappings;
 import fr.inria.corese.core.util.Property;
@@ -53,8 +52,6 @@ import static fr.inria.corese.core.util.Property.Value.GUI_XML_MAX;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.datatype.RDF;
-import static fr.inria.corese.sparql.triple.cst.LogKey.NS;
-import static fr.inria.corese.sparql.triple.cst.LogKey.PREF;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
@@ -162,9 +159,24 @@ public final class MyJPanelQuery extends JPanel {
         setFileName(name);
         stylesheet = coreseFrame.getDefaultStylesheet();
     }
-    
+       
     public void setFileName(String name) {
          serviceEditor.setText(name);
+    }
+    
+    @Override
+    public void setVisible(boolean b) {
+        if (!b) {
+            clean();
+        }
+        super.setVisible(b);
+    }
+    
+    void clean() {
+        setMappings(null);
+        if (getCurrent()!=null) {
+            setCurrent(null);
+        }
     }
     
     private void initComponents() {
@@ -1098,7 +1110,6 @@ public final class MyJPanelQuery extends JPanel {
                 Mappings res = getQueryExec().modifier(query, getMappings());
                 Date d2 = new Date();
                 fillTable(res);
-                //setMappings(res);
             } catch (EngineException ex) {
                 logger.error(ex);
             } catch (SparqlException ex) {
@@ -1163,7 +1174,7 @@ public final class MyJPanelQuery extends JPanel {
     void show(String mes, Object... obj) {
         System.out.println(String.format(mes, obj));
     }
-
+    
     void setCurrent(Exec e) {
         current = e;
     }
@@ -1248,7 +1259,6 @@ public final class MyJPanelQuery extends JPanel {
      * here to be processed by xt:mappings()
      */
     Mappings getQueryMappings() {
-        //return mainFrame.getPreviousMappings();
         return getMappings();
     }
 

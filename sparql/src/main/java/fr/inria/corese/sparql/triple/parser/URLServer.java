@@ -17,6 +17,7 @@ import java.util.List;
  * @author Olivier Corby, Wimmics INRIA I3S, 2021
  */
 public class URLServer implements URLParam {
+    public static final String STORE = "store:"; 
     
     static HashMap<String, Boolean> encode;
     
@@ -533,6 +534,14 @@ public class URLServer implements URLParam {
              return null;
          }
          return getDataset().getURLParameter();
+    }
+    
+    public boolean isStorage() {
+        return getServer().startsWith(STORE);
+    }
+    
+    public String getStoragePath() {
+        return getServer().substring(STORE.length());
     }
     
 }

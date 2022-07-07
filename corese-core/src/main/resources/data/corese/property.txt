@@ -8,10 +8,13 @@
 # Property.init(graph);
 #
 
-VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./;fed=/user/corby/home/AADemoNew/federate;sys=/user/corby/home/AAData/query
+VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./;fed=/user/corby/home/AADemoNew/federate;sys=/user/corby/home/AAData/query;db=/user/corby/home/AADemoNew/storage
 
 IMPORT   = ./gui.txt
 
+STORAGE_PATH = $db/go
+#$db/human
+#/tmp/tmp
 
 BLANK_NODE              = _:b
 

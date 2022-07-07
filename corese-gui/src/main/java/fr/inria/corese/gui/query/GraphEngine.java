@@ -19,6 +19,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.query.StorageFactory;
 import fr.inria.corese.core.rule.Cleaner;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.util.Parameter;
@@ -63,8 +64,10 @@ public class GraphEngine {
         graph = GraphStore.create(b);
         qengine = QueryEngine.create(graph);
         
-        if (Property.stringValue(STORAGE_PATH)!=null) {
-            //setDataManager(new JenaDataManager(Property.pathValue(STORAGE_PATH)));
+        if (Property.stringValue(STORAGE_PATH) != null) {
+//            setDataManager(new JenaDataManager(Property.pathValue(STORAGE_PATH)));
+            StorageFactory.defineDataManager(Property.pathValue(STORAGE_PATH), getDataManager());
+            logger.info("storage dataset: " + Property.pathValue(STORAGE_PATH));
         }
         
         exec = createQueryProcess();
@@ -202,12 +205,12 @@ public class GraphEngine {
     public QueryProcess createQueryProcess() {
         QueryProcess qp;
         
-        if (Property.stringValue(STORAGE_PATH)==null) {
+        if (Property.stringValue(STORAGE_PATH)==null || 
+            Property.booleanValue(STORAGE_SERVICE)) {
             logger.info("std dataset");
             qp = createBasicQueryProcess();
         }
         else {
-            logger.info("storage dataset: " + Property.pathValue(STORAGE_PATH));
             qp = createStorageQueryProcess();
         }
         

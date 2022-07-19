@@ -72,7 +72,7 @@ public class ConvertJenaCorese {
     public static org.apache.jena.graph.Node coreseContextToJenaContext(Node corese_context) {
 
         if (corese_context == null) {
-            return null;
+            return org.apache.jena.graph.Node.ANY;
         } else if (corese_context.equals(corese_default_context)) {
             return jena_default_context;
         } else {
@@ -92,7 +92,7 @@ public class ConvertJenaCorese {
      */
     public static Node jenaContextToCoreseContext(org.apache.jena.graph.Node jena_context) {
 
-        if (jena_context == null) {
+        if (jena_context == null || jena_context == org.apache.jena.graph.Node.ANY) {
             return null;
         } else if (jena_context.equals(jena_default_context)) {
             return corese_default_context;

@@ -23,6 +23,7 @@ import javax.swing.JTree;
 import javax.swing.LayoutStyle;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
+import javax.swing.plaf.ColorUIResource;
 import javax.swing.text.Document;
 import javax.swing.text.JTextComponent;
 import javax.swing.tree.DefaultMutableTreeNode;
@@ -62,6 +63,7 @@ import org.apache.logging.log4j.Level;
 
 
 import javax.swing.JFrame;
+import javax.swing.JLabel;
 import javax.swing.JTable;
 import javax.swing.table.DefaultTableModel;
 import javax.swing.table.TableModel;
@@ -142,7 +144,8 @@ public final class MyJPanelQuery extends JPanel {
     private boolean displayLink = true;
     private QueryExec queryExec;
     private Mappings mappings;
-    
+    private JPanel loadPanel;
+
     public MyJPanelQuery() {
         super();
         initComponents();
@@ -517,17 +520,6 @@ public final class MyJPanelQuery extends JPanel {
         sparqlQueryEditor.setQueryText(newRequest);
     }
 
-    private String find(String mySearch, Iterator<Node> iterator) {
-        while (iterator.hasNext()) {
-            String temp = iterator.next().getId();
-            if (mySearch.equals(temp)) {
-                return temp;
-            }
-        }
-        return null;
-    }
-
-
     private String getLabel(NSManager nsm, fr.inria.corese.kgram.api.core.Node n) {
         IDatatype dt =  n.getValue();
         if (dt.isURI()){
@@ -761,6 +753,11 @@ public final class MyJPanelQuery extends JPanel {
     }
     
     void display(Mappings map, Binding bind, int sort, boolean link) {
+
+        // Clear load message
+        tabbedPaneResults.setEnabled(true);
+        tabbedPaneResults.remove(loadPanel);
+
         if (map == null) {
             // go to XML for error message
             tabbedPaneResults.setSelectedIndex(XML_PANEL);
@@ -980,6 +977,7 @@ public final class MyJPanelQuery extends JPanel {
     private ActionListener createListener(final MainFrame coreseFrame, final boolean isTrace) {
 
         return new ActionListener() {            
+
             @Override
             public void actionPerformed(ActionEvent ev) {
                 String txt = getTextArea().getText();
@@ -1034,6 +1032,19 @@ public final class MyJPanelQuery extends JPanel {
                     else if (ev.getSource() == buttonRun   || ev.getSource() == buttonValidate 
                           || ev.getSource() == buttonShacl || ev.getSource() == buttonShex) {
                         // buttonRun
+                        
+                        // Print load message
+                        tabbedPaneResults.setEnabled(false);
+                        
+                        loadPanel = new JPanel(new BorderLayout());
+                        JLabel label = new JLabel("Loading …");
+                        label.setFont(new Font("Sanserif", Font.PLAIN, 28));
+                        loadPanel.add(label, BorderLayout.CENTER);
+                        tabbedPaneResults.add(loadPanel);
+
+                        tabbedPaneResults.setSelectedComponent(loadPanel);
+
+
                         Exec exec = newExec(coreseFrame, query, isTrace);
                         setCurrent(exec);
                         exec.setValidate(ev.getSource() == buttonValidate);

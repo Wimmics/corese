@@ -113,7 +113,7 @@ public class Rdf4jDataManagerTestSparql {
                     System.out.println("?s = " + solution.getValue("s"));
                     System.out.println("?p = " + solution.getValue("p"));
                     System.out.println("?o = " + solution.getValue("o"));
-                    System.out.println("---––––––––––––---");
+                    System.out.println("----------");
                 }
             }
 

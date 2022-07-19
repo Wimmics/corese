@@ -2,15 +2,16 @@ package fr.inria.corese.storage.jenatdb1;
 
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collections;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Function;
 import java.util.function.Predicate;
 import java.util.stream.Collectors;
+import java.util.stream.StreamSupport;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.query.Dataset;
@@ -18,6 +19,10 @@ import org.apache.jena.query.ReadWrite;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.core.Quad;
 import org.apache.jena.tdb.TDBFactory;
+
+import com.google.common.base.Function;
+import com.google.common.collect.Iterators;
+import com.google.common.collect.Lists;
 
 import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.edge.EdgeImpl;
@@ -110,23 +115,21 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     @Override
     public Iterable<Edge> getEdges(Node subject, Node predicate, Node object, List<Node> contexts) {
         Iterable<Edge> statements;
-
+        HashMap<Integer, Edge> result = new HashMap<>();
         this.jena_dataset.begin(ReadWrite.READ);
         try {
-            statements = this.choose(subject, predicate, object, contexts);
+            statements = () -> this.choose(subject, predicate, object, contexts);
+
+            // remove duplicate edges (same edge with different context)
+            for (Edge statement : statements) {
+                int hash = Objects.hash(statement.getSubject(), statement.getPredicate(), statement.getObject());
+                result.put(hash, statement);
+            }
 
             this.jena_dataset.commit();
         } finally {
             this.jena_dataset.end();
         }
-
-        // remove duplicate edges (same edge with different context)
-        HashMap<Integer, Edge> result = new HashMap<>();
-        for (Edge statement : statements) {
-            int hash = Objects.hash(statement.getSubject(), statement.getPredicate(), statement.getObject());
-            result.put(hash, statement);
-        }
-
         return result.values();
     }
 
@@ -139,8 +142,9 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         Iterable<Node> result;
         this.jena_dataset.begin(ReadWrite.READ);
         try {
-            result = this.choose(null, null, null, Arrays.asList(corese_context))
-                    .stream()
+            Iterable<Edge> iter = () -> this.choose(null, null, null, Arrays.asList(corese_context));
+
+            result = StreamSupport.stream(iter.spliterator(), false)
                     .map((o) -> o.getSubjectNode())
                     .filter(distinctByKey(o -> o.getValue().stringValue()))
                     .collect(Collectors.toList());
@@ -159,8 +163,9 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
         this.jena_dataset.begin(ReadWrite.READ);
         try {
-            result = this.choose(null, null, null, Arrays.asList(corese_context))
-                    .stream()
+            Iterable<Edge> iter = () -> this.choose(null, null, null, Arrays.asList(corese_context));
+
+            result = StreamSupport.stream(iter.spliterator(), false)
                     .map((o) -> o.getPropertyNode())
                     .filter(distinctByKey(o -> o.getValue().stringValue()))
                     .collect(Collectors.toList());
@@ -179,9 +184,9 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
         this.jena_dataset.begin(ReadWrite.READ);
         try {
+            Iterable<Edge> iter = () -> this.choose(null, null, null, Arrays.asList(corese_context));
 
-            result = this.choose(null, null, null, Arrays.asList(corese_context))
-                    .stream()
+            result = StreamSupport.stream(iter.spliterator(), false)
                     .map((o) -> o.getObjectNode())
                     .filter(distinctByKey(o -> o.getValue().stringValue()))
                     .collect(Collectors.toList());
@@ -263,29 +268,29 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      **********/
     @Override
     public Iterable<Edge> delete(Node subject, Node predicate, Node object, List<Node> contexts) {
-        ArrayList<Edge> results = new ArrayList<>();
+        ArrayList<Edge> edges = new ArrayList<>();
 
         this.jena_dataset.begin(ReadWrite.WRITE);
         try {
 
-            Iterable<Edge> edges = this.choose(subject, predicate, object, contexts);
+            edges = Lists.newArrayList(this.choose(subject, predicate, object, contexts));
 
             for (Edge edge : edges) {
-
                 Quad quad = ConvertJenaCorese.edgeToQuad(edge);
 
                 if (this.jena_dataset.asDatasetGraph().contains(quad)) {
                     this.jena_dataset.asDatasetGraph().delete(quad);
-                    results.add(edge);
                 }
             }
 
             this.jena_dataset.commit();
+        } catch (Exception e) {
+            e.printStackTrace();
         } finally {
             this.jena_dataset.end();
         }
 
-        return results;
+        return edges;
     }
 
     /*******************
@@ -337,7 +342,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      *********/
 
     /**
-     * Return edge with the specified subject, predicate, object and
+     * Return edge iterator with the specified subject, predicate, object and
      * (optionally) context exist in this model. The subject, predicate, object and
      * context parameters can be null to indicate wildcards. The contexts parameter
      * is a wildcard and accepts zero or more values. If contexts is {@code null},
@@ -352,23 +357,27 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      *                  with any object.
      * @param contexts  Contexts of the edge to match, null to match
      *                  edge with any contexts.
-     * @return Edge that match the specified pattern.
+     * @return Edge iteraor that match the specified pattern.
      */
-    public ArrayList<Edge> choose(Node subject, Node predicate, Node object, List<Node> contexts) {
+    public Iterator<Edge> choose(Node subject, Node predicate, Node object, List<Node> contexts) {
+
+        Function<Quad, Edge> convertIterator = new Function<Quad, Edge>() {
+            @Override
+            public Edge apply(Quad quad) {
+                return ConvertJenaCorese.quadToEdge(quad);
+            }
+        };
 
         org.apache.jena.graph.Node jena_subject = ConvertJenaCorese.coreseNodeToJenaNode(subject);
         org.apache.jena.graph.Node jena_predicate = ConvertJenaCorese.coreseNodeToJenaNode(predicate);
         org.apache.jena.graph.Node jena_object = ConvertJenaCorese.coreseNodeToJenaNode(object);
 
-        ArrayList<Edge> statements = new ArrayList<>();
-
+        Iterator<Edge> edges = Collections.emptyIterator();
         if (contexts == null || contexts.stream().allMatch(Objects::isNull)) {
             Iterator<Quad> iterator = this.jena_dataset.asDatasetGraph().find(
                     null, jena_subject, jena_predicate, jena_object);
 
-            while (iterator.hasNext()) {
-                statements.add(ConvertJenaCorese.quadToEdge(iterator.next()));
-            }
+            edges = Iterators.transform(iterator, convertIterator);
         } else {
             for (Node context : contexts) {
                 if (context != null) {
@@ -377,13 +386,12 @@ public class JenaDataManager implements DataManager, AutoCloseable {
                     Iterator<Quad> iterator = this.jena_dataset.asDatasetGraph().find(
                             jena_context, jena_subject, jena_predicate, jena_object);
 
-                    while (iterator.hasNext()) {
-                        statements.add(ConvertJenaCorese.quadToEdge(iterator.next()));
-                    }
+                    edges = Iterators.concat(edges, Iterators.transform(iterator, convertIterator));
                 }
             }
         }
-        return statements;
+
+        return edges;
     }
 
     public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {

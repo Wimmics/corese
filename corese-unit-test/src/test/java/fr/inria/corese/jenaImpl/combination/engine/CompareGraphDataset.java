@@ -1,11 +1,10 @@
 package fr.inria.corese.jenaImpl.combination.engine;
 
 import java.util.ArrayList;
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.StreamSupport;
 
 import org.apache.jena.query.Dataset;
+
+import com.google.common.collect.Lists;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
@@ -15,12 +14,10 @@ public class CompareGraphDataset {
 
     public static boolean compareGraph(Dataset jena_dataset, Graph corese_graph) {
 
-        List<Edge> jena_edges;
+        ArrayList<Edge> jena_edges;
         try (JenaDataManager dm = new JenaDataManager(jena_dataset)) {
             // Get edges from Jena
-            jena_edges = StreamSupport
-                    .stream(dm.choose(null, null, null, null).spliterator(), false)
-                    .collect(Collectors.toList());
+            jena_edges = Lists.newArrayList(dm.choose(null, null, null, null));
         }
 
         // Get edges from Corese
@@ -38,7 +35,6 @@ public class CompareGraphDataset {
         // Compare
         return corese_edges.containsAll(jena_edges) && jena_edges.containsAll(corese_edges);
     }
-
 
     public static boolean compareGraph(Graph graph1, Graph graph2) {
 

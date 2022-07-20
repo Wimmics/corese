@@ -1,12 +1,14 @@
 package fr.inria.corese.core.load.jsonld;
 
+import java.util.List;
+
 import com.github.jsonldjava.core.JsonLdTripleCallback ;
 import com.github.jsonldjava.core.RDFDataset;
-import fr.inria.corese.kgram.api.core.Node;
+
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.AddTripleHelper;
 import fr.inria.corese.core.load.ILoadSerialization;
-import java.util.List;
+import fr.inria.corese.kgram.api.core.Node;
 
 /**
  * Implementation of interface from Jsonld-java (json-ld parser) for adding

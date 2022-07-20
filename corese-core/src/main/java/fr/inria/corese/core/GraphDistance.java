@@ -5,7 +5,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import java.math.BigDecimal;
 import org.apache.commons.text.similarity.LevenshteinDistance;
 import org.json.JSONObject;
 

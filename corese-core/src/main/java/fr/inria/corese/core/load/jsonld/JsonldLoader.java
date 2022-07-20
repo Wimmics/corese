@@ -1,9 +1,5 @@
 package fr.inria.corese.core.load.jsonld;
 
-import com.github.jsonldjava.core.JsonLdTripleCallback;
-import com.github.jsonldjava.core.JsonLdError;
-import com.github.jsonldjava.core.JsonLdProcessor;
-import com.github.jsonldjava.utils.JSONUtils;
 import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.IOException;
@@ -12,6 +8,11 @@ import java.io.Reader;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import com.github.jsonldjava.core.JsonLdError;
+import com.github.jsonldjava.core.JsonLdProcessor;
+import com.github.jsonldjava.core.JsonLdTripleCallback;
+import com.github.jsonldjava.utils.JsonUtils;
 
 
 /**
@@ -72,7 +73,7 @@ public class JsonldLoader {
      */
     public void load(JsonLdTripleCallback callback) throws IOException, JsonLdError {
         // resolve the "reader" to JSON objects using parser
-        Object jsonObject = JSONUtils.fromReader(this.reader);
+        Object jsonObject = JsonUtils.fromReader(this.reader);
         
         JsonLdProcessor.toRDF(jsonObject, callback);
     }

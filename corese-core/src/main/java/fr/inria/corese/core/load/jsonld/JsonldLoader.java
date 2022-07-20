@@ -1,6 +1,6 @@
 package fr.inria.corese.core.load.jsonld;
 
-import com.github.jsonldjava.core.JSONLDTripleCallback;
+import com.github.jsonldjava.core.JsonLdTripleCallback;
 import com.github.jsonldjava.core.JsonLdError;
 import com.github.jsonldjava.core.JsonLdProcessor;
 import com.github.jsonldjava.utils.JSONUtils;
@@ -70,7 +70,7 @@ public class JsonldLoader {
      * @throws java.io.IOException
      * @throws com.github.jsonldjava.core.JsonLdError
      */
-    public void load(JSONLDTripleCallback callback) throws IOException, JsonLdError {
+    public void load(JsonLdTripleCallback callback) throws IOException, JsonLdError {
         // resolve the "reader" to JSON objects using parser
         Object jsonObject = JSONUtils.fromReader(this.reader);
         

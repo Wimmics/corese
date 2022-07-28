@@ -73,7 +73,12 @@ public interface DataBroker {
 
     private Iterable<Node> mergeListOfNodeNoDuplicate(Iterable<Node> l1, Iterable<Node> l2) {
         List<Node> result = new ArrayList<>();
-        l1.forEach(result::add);
+
+        for (Node l1_node : l1) {
+            if (!result.contains(l1_node)) {
+                result.add(l1_node);
+            }
+        }
 
         for (Node l2_node : l2) {
             if (!result.contains(l2_node)) {

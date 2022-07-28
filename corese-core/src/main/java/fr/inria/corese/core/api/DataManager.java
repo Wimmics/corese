@@ -10,4 +10,12 @@ package fr.inria.corese.core.api;
  * @author Rémi ceres
  */
 public interface DataManager extends DataManagerRead, DataManagerUpdate {
+
+    default void startReadTransaction(){};
+
+    default void startWriteTransaction(){};
+
+    default void endTransaction(){};
+
+    default void commitTransaction(){};
 }

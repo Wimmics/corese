@@ -51,6 +51,7 @@ import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
 import fr.inria.corese.kgram.core.SparqlException;
+import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
@@ -65,6 +66,7 @@ import java.util.HashMap;
 import jakarta.ws.rs.client.ResponseProcessingException;
 import java.io.File;
 import java.io.FileWriter;
+import java.net.DatagramSocket;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
@@ -164,11 +166,41 @@ public class QueryProcess extends QuerySolver {
      * SPARQL construct where return a corese graph
      */
     public static QueryProcess create(DataManager dm) {
-        QueryProcess exec = create();
+       return create(Graph.create(), dm);
+    }
+    
+    public static QueryProcess create(Graph g, DataManager dm) {
+        QueryProcess exec = create(g);
         exec.getLocalProducer().defineDataManager(dm);
         return exec;
     }
-
+    
+    // several Producer for several DataManager
+    public static QueryProcess create(Graph g, DataManager[] dmList) {
+        QueryProcess exec = create(g);
+        
+        if (dmList.length>0) {
+            exec.setDataManager(g, dmList);
+        }
+        
+        return exec;
+    }
+    
+    void setDataManager(Graph g, DataManager[] dmList) {
+        getLocalProducer().defineDataManager(dmList[0]);
+        MetaProducer meta = MetaProducer.create();
+        
+        for (DataManager dm : dmList) {
+            ProducerImpl p = ProducerImpl.create(g);
+            Matcher match  = MatcherImpl.create(g);
+            p.set(match);
+            p.defineDataManager(dm);
+            meta.add(p);
+        }
+        
+        setProducer(meta);
+    }
+ 
     public static QueryProcess create(Graph g) {
         return create(g, false);
     }

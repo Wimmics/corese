@@ -1,10 +1,8 @@
 
 package fr.inria.corese.core.query;
 
-import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.api.DataManager;
-import fr.inria.corese.core.producer.DataProducer;
-import fr.inria.corese.sparql.triple.parser.URLServer;
+import java.util.Collection;
 import java.util.HashMap;
 
 /**
@@ -23,15 +21,17 @@ public class StorageFactory {
         setMap(new HashMap<>());
     }
     
-    public static void defineDataManager(String url, DataManager man) {
-        getSingleton().getMap().put(url, man);
+    public static void defineDataManager(String path, DataManager man) {
+        getSingleton().getMap().put(path, man);
     }
     
-    public static DataManager getDataManager(String url) {
-        return getSingleton().getMap().get(url);
+    public static DataManager getDataManager(String path) {
+        return getSingleton().getMap().get(path);
     } 
     
-    
+    public static Collection<DataManager> getDataManagerList() {
+        return getSingleton().getMap().values();
+    }
 
     public HashMap<String, DataManager> getMap() {
         return map;

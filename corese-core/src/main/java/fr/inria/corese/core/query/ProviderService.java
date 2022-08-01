@@ -61,7 +61,11 @@ import org.json.JSONObject;
 public class ProviderService implements URLParam {
 
     static Logger logger = LoggerFactory.getLogger(ProviderService.class);
-    public static final String LOCAL_SERVICE = "http://ns.inria.fr/corese/sparql"; //http://example.org/sparql";
+    // pseudo service: call current QueryProcess on current dataset (db or graph)
+    public static final String LOCAL_SERVICE   = "http://ns.inria.fr/corese/sparql"; 
+    // pseudo service: call QueryProcess on graph dataset (if it was db, switch to graph dataset)
+    public static final String DATASET_SERVICE = "http://ns.inria.fr/corese/dataset"; 
+    
     public static final String LOCAL_SERVICE_NS = LOCAL_SERVICE + "/%s";
     public static final String UNDEFINED_SERVICE = "http://example.org/undefined/sparql";
     private static final String SERVICE_ERROR = "Service error: ";
@@ -281,6 +285,8 @@ public class ProviderService implements URLParam {
             length = url.intValue(SLICE, length);
             // sparql?timeout=123
             timeout = url.intValue(TIMEOUT, timeout);
+            // @todo: storage and dataset service url cannot run in // 
+            // because it is same ast and it is not reentrant
             if (parallel) {
                 ProviderThread p = parallelProcess(url, input, sol, slice, length, timeout);
                 pList.add(p);
@@ -910,17 +916,43 @@ public class ProviderService implements URLParam {
             return db(getQuery(), serv.getNode());
         }
         if (serv.isStorage()) {
-            return storage(ast, serv);
+            // service store:path -> query db with data manager
+            return storage(ast.acopy(), serv, getBinding());
         }
         if (serv.getServer().startsWith(LOCAL_SERVICE)) {
-            logger.info("Local service: " + serv);
-            logger.info(ast.toString());
-            return getDefault().query(ast, getBinding());
+            // pseudo service call current QueryProcess
+            return local(ast.acopy(), serv, getBinding());
+        }
+        if (serv.getServer().startsWith(DATASET_SERVICE)) {
+            // switch to graph dataset (in case of db)
+           return dataset(ast.acopy(), serv, getBinding());
         }
         return send(getQuery(), ast, serv, timeout, count);
     }
     
-    Mappings storage(ASTQuery ast, URLServer url) throws EngineException {
+    // @todo: these 3 functions are synchronized because 
+    // ast query process does not support parallel threads
+    // in particular exists {} record graph pattern inside filter
+    // graph pattern is shared among threads and 
+    // node indexing of this graph pattern fails in parallel threads
+    
+    // pseudo service call current QueryProcess
+    synchronized Mappings local(ASTQuery ast, URLServer url, Binding b) throws EngineException {
+        logger.info("Local service: " + url);
+        logger.info(ast.toString());
+        return getDefault().query(ast, b);
+    }
+    
+    // switch to graph dataset (in case where mode=db)
+    synchronized Mappings dataset(ASTQuery ast, URLServer url, Binding b) throws EngineException {
+        logger.info("Dataset service: " + url);
+        logger.info(ast.toString());
+        QueryProcess exec = QueryProcess.create(getDefault().getGraph());
+        return exec.query(ast, b);
+    }
+    
+    // pseudo service store:path to query db
+    synchronized Mappings storage(ASTQuery ast, URLServer url, Binding b) throws EngineException {
         DataManager man = StorageFactory.getDataManager(url.getStoragePath());
         if (man == null) {
             throw new EngineException(
@@ -928,7 +960,7 @@ public class ProviderService implements URLParam {
         }
         QueryProcess exec = QueryProcess.create(man);
         logger.info(String.format("storage: %s\n%s", url, ast));
-        return exec.query(ast);
+        return exec.query(ast, b);
     }
 
     /**

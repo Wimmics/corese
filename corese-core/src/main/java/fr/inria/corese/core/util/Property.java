@@ -29,6 +29,8 @@ import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
 import static fr.inria.corese.core.util.Property.Value.PREFIX;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
+import static fr.inria.corese.core.util.Property.Value.STORAGE_MODE;
+import static fr.inria.corese.core.util.Property.Value.STORAGE_PATH;
 import static fr.inria.corese.core.util.Property.Value.VARIABLE;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
@@ -93,6 +95,9 @@ public class Property {
     public static final String TRIG = "trig";
     public static final String JSON = "json";
     public static final String XML = "xml";
+    public static final String DATASET = "dataset";
+    public static final String DB = "db";
+    public static final String DB_ALL = "db_all";
     
     
     private HashMap<Value, Boolean> booleanProperty;
@@ -275,7 +280,10 @@ public class Property {
         SERVICE_GRAPH,
         
         
-        STORAGE_PATH, STORAGE_SERVICE
+        STORAGE_PATH, 
+        STORAGE_SERVICE, 
+        // default storage: db|dataset
+        STORAGE_MODE
     };
 
     static {
@@ -1166,6 +1174,17 @@ public class Property {
         return getSingleton().expand(stringValue(val));
     }
     
+    public static String[] pathValueList(Value val) {
+        String[] res = stringValueList(val);
+        int i = 0;
+        
+        for (String path : res) {
+            res[i++] = getSingleton().expand(path);
+        }
+        
+        return res;
+    }
+    
     public static String[] stringValueList(Value val) {
         String str = stringValue(val);
         if (val == null) {
@@ -1220,6 +1239,35 @@ public class Property {
 
     public void setListProperty(HashMap<Value, List<String>> listProperty) {
         this.listProperty = listProperty;
+    }
+    
+    // current storage mode to create QueryProcess
+    public static boolean isDataset() {
+        if (stringValue(STORAGE_PATH) == null) {
+            // there is no db storage path
+            return true;
+        }
+        if (stringValue(STORAGE_MODE)==null) {
+            // there is db storage path and no mode specified -> db mode, not dataset
+            return false;
+        }
+        // STORAGE_MODE = db|dataset
+        return stringValue(STORAGE_MODE).equals(DATASET);
+    }
+    
+    // current storage mode
+    public static boolean isStorage() {
+        return ! isDataset();
+    }
+    
+    // consider all db
+    public static boolean isStorageAll() {
+        return isStorage() && 
+               protectEquals(stringValue(STORAGE_MODE), DB_ALL);
+    }
+    
+    static boolean  protectEquals(String var, String val) {
+        return var!=null && var.equals(val);
     }
 
 }

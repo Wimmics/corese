@@ -161,5 +161,7 @@ public interface Environment {
         
         void setReport(IDatatype dt);
         IDatatype getReport();
+        
+        int size();
 
 }

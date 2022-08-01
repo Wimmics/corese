@@ -32,13 +32,20 @@ public class EnvironmentImpl implements Environment {
 		return new EnvironmentImpl(q);
 	}
 	
+        @Override
 	public int count() {
 		return 0;
 	}
 	
+        @Override
 	public Node getNode(Expr var){
 		return null;
 	}
+        
+        @Override
+        public int size() {
+            return 0;
+        }
 
 	@Override
 	public Node getNode(String label) {

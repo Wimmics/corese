@@ -2476,6 +2476,13 @@ public class ASTQuery
         ast.setValues(getValues());
         return ast;
     }
+    
+    public ASTQuery acopy() {
+        ASTQuery ast = copy();
+        ast.setGlobalAST(null);
+        return ast;
+    }
+
 
    
     /**

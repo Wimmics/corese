@@ -445,7 +445,7 @@ public class Processor {
 	VariableResolver resolver;
 	Object processor;
 	Method fun;
-	ExpPattern pattern;
+	//ExpPattern pattern;
 	private boolean isCorrect = true;
         boolean isCompiled = false;
 	public static int count = 0;
@@ -488,13 +488,13 @@ public class Processor {
 			
 	
 	// filter(exist {PAT})
-	public ExpPattern getPattern(){
-		return pattern;
-	}
-	
-	public void setPattern(ExpPattern pat){
-		 pattern = pat;
-	}
+//	public ExpPattern getPattern(){
+//		return pattern;
+//	}
+//	
+//	public void setPattern(ExpPattern pat){
+//		 pattern = pat;
+//	}
 	       	
 	public void type(Term term, ASTQuery ast){
                 if (term.type() != ExprType.UNDEF){

@@ -14,6 +14,7 @@ module fr.inria.corese.corese_core {
     requires commons.lang;
     requires semargl.rdfa;
     requires jdk.management;
+    requires org.json;
 
     exports fr.inria.corese.core.load;
     exports fr.inria.corese.core.load.result;

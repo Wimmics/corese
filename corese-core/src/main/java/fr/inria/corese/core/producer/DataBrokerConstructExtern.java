@@ -20,7 +20,8 @@ import fr.inria.corese.sparql.triple.update.Basic;
 /**
  * Broker between GraphManager and external graph DataManager
  * For SPARQL Update
- * Update -> GraphManager -> DataBrokerUpdateExtern -> DataManager -> external graph
+ * Update -> GraphManager -> DataBrokerUpdateExtern -> DataManager -> external
+ * graph
  * DataBroker is here to adapt api between GraphManager and DataManager
  * For example: Constant -> Node
  * DataBrokerUpdateExtern implement relevant subset of DataBrokerConstruct
@@ -37,12 +38,14 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
      * keep other occurrences
      * edge has no named graph
      * Return list of deleted edges
+     * 
      * @todo: Constant -> IDatatype as Node
-     */  
+     */
     @Override
     public List<Edge> delete(Edge edge, List<Constant> from) {
         List<Edge> deleted = new ArrayList<>();
-        getDataManager().delete(edge.getSubjectNode(), edge.getProperty(), edge.getObjectNode(), nodeList(from)).forEach(deleted::add);
+        getDataManager().delete(edge.getSubjectNode(), edge.getProperty(), edge.getObjectNode(), nodeList(from))
+                .forEach(deleted::add);
         return deleted;
     }
 

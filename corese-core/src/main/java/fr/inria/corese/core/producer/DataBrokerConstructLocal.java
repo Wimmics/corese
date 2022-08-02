@@ -1,6 +1,8 @@
 
 package fr.inria.corese.core.producer;
 
+import java.util.List;
+
 import fr.inria.corese.core.api.DataBrokerConstruct;
 import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.kgram.api.core.Edge;
@@ -12,105 +14,100 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.update.Basic;
-import java.util.List;
 
 /**
  * Broker between GraphManager and Corese graph
  * Used by:
  * sparql construct/update with corese graph
- * sparql construct when external graph 
+ * sparql construct when external graph
  * Hence, construct always a corese graph.
  * 
  */
-public class DataBrokerConstructLocal 
+public class DataBrokerConstructLocal
         extends DataBrokerLocal
         implements DataBrokerConstruct {
-    
+
     private GraphManager graphManager;
-    
+
     public DataBrokerConstructLocal(GraphManager mgr) {
         super(mgr.getGraph());
         setGraphManager(mgr);
     }
-    
+
     @Override
     public Node getNode(Node gNode, IDatatype dt) {
         return getGraph().getNode(gNode, dt, true, false);
     }
-    
+
     @Override
     public void add(Node node) {
         getGraph().add(node);
     }
-    
+
     @Override
-    public void add(Node node, int n) {      
+    public void add(Node node, int n) {
         getGraph().add(node, n);
     }
-    
+
     @Override
     public void addPropertyNode(Node node) {
         getGraph().addPropertyNode(node);
     }
 
     @Override
-    public void addGraphNode(Node node) {        
+    public void addGraphNode(Node node) {
         getGraph().addGraphNode(node);
     }
-    
+
     @Override
     public boolean exist(Node property, Node subject, Node object) {
         return getGraph().exist(property, subject, object);
     }
-    
+
     @Override
     public Edge find(Edge edge) {
         return getGraph().find(edge);
     }
-   
-    
-     /**
-     * Return null if edge already exists 
+
+    /**
+     * Return null if edge already exists
      */
     @Override
     public Edge insert(Edge ent) {
         return getGraph().addEdge(ent);
     }
-    
+
     @Override
     public void insert(Node predicate, List<Edge> list) {
         getGraph().addOpt(predicate, list);
     }
-    
-    
+
     /******************
      * Update
      */
-    
- 
+
     @Override
     public List<Edge> delete(Edge edge) {
         return getGraph().delete(edge);
     }
-    
+
     /**
      * Delete occurrences of edge in named graphs of from list
      * keep other occurrences
      * edge has no named graph
      * Return the list of deleted edges
-     */      
+     */
     @Override
-     public List<Edge> delete(Edge ent, List<Constant> from) {
+    public List<Edge> delete(Edge ent, List<Constant> from) {
         return getGraph().delete(ent, from);
     }
-    
-    
+
     @Override
-    public boolean load(Query q, Basic ope, Access.Level level, AccessRight access) 
+    public boolean load(Query q, Basic ope, Access.Level level, AccessRight access)
             throws EngineException {
-        return getGraphManager().myLoad(q, ope, level, access);    
+        return getGraphManager().myLoad(q, ope, level, access);
     }
-     
+
     @Override
     public void clear(String name, boolean silent) {
         getGraph().clear(name, silent);
@@ -154,9 +151,7 @@ public class DataBrokerConstructLocal
     @Override
     public void addGraph(String uri) {
         getGraph().addGraph(uri);
-    }     
-     
- 
+    }
 
     public GraphManager getGraphManager() {
         return graphManager;
@@ -165,5 +160,5 @@ public class DataBrokerConstructLocal
     public void setGraphManager(GraphManager graphManager) {
         this.graphManager = graphManager;
     }
-    
+
 }

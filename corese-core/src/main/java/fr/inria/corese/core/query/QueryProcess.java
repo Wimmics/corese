@@ -55,6 +55,7 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.core.SparqlException;
+import fr.inria.corese.kgram.tool.MetaProducer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.QueryVisitor;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -155,6 +156,10 @@ public class QueryProcess extends QuerySolver {
         return create(Graph.create());
     }
     
+    public static QueryProcess create(Graph g) {
+        return create(g, false);
+    }
+    
     /**
      * Query processor for external graph
      * Provide DataManager for query and update of external graph 
@@ -165,16 +170,52 @@ public class QueryProcess extends QuerySolver {
      * and core.producer.DataBrokerUpdateExtern
      * SPARQL construct where return a corese graph
      */
+   /**
+     * Query processor for external graph
+     * Provide DataManager for query and update of external graph 
+     * DataManager is stored in ProducerImpl
+     * DataManager is used when create GraphManager for update
+     * There is still a local corese graph for compatibility
+     * Use of DataManager is done in core.producer.DataBrokerExtern 
+     * and core.producer.DataBrokerUpdateExtern
+     * SPARQL construct where return a corese graph
+     */
     public static QueryProcess create(DataManager dm) {
-        QueryProcess exec = create();
+       return create(Graph.create(), dm);
+    }
+    
+    public static QueryProcess create(Graph g, DataManager dm) {
+        QueryProcess exec = create(g);
         exec.getLocalProducer().defineDataManager(dm);
         return exec;
     }
-
-    public static QueryProcess create(Graph g) {
-        return create(g, false);
+    
+        // several Producer for several DataManager
+    public static QueryProcess create(Graph g, DataManager[] dmList) {
+        QueryProcess exec = create(g);
+        
+        if (dmList.length>0) {
+            exec.setDataManager(g, dmList);
+        }
+        
+        return exec;
     }
-
+    
+    void setDataManager(Graph g, DataManager[] dmList) {
+        getLocalProducer().defineDataManager(dmList[0]);
+        MetaProducer meta = MetaProducer.create();
+        
+        for (DataManager dm : dmList) {
+            ProducerImpl p = ProducerImpl.create(g);
+            Matcher match  = MatcherImpl.create(g);
+            p.set(match);
+            p.defineDataManager(dm);
+            meta.add(p);
+        }
+        
+        setProducer(meta);
+    }
+ 
     /**
      * isMatch = true:  ?x a h:Person return one occurrence  for each instance of Person
      * isMatch = false: ?x a h:Person return all occurrences for each instance of Person 

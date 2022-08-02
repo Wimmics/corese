@@ -1,45 +1,42 @@
 package fr.inria.corese.core.query;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
+
+import java.io.File;
+import java.io.IOException;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.List;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
-import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.Context;
-import fr.inria.corese.sparql.triple.parser.Dataset;
-import fr.inria.corese.sparql.triple.parser.Metadata;
-import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.compiler.eval.QuerySolver;
-import fr.inria.corese.compiler.parser.Transformer;
-import fr.inria.corese.kgram.api.query.Evaluator;
-import fr.inria.corese.kgram.api.query.Matcher;
-import fr.inria.corese.kgram.api.query.Producer;
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.core.Eval;
-import fr.inria.corese.kgram.core.Mapping;
-import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.kgram.core.Query;
+
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.inria.corese.compiler.eval.Interpreter;
+import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.compiler.federate.FederateVisitor;
-import fr.inria.corese.sparql.triple.function.script.Funcall;
-import fr.inria.corese.sparql.triple.function.script.Function;
-import fr.inria.corese.sparql.triple.function.term.Binding;
-import fr.inria.corese.core.api.Loader;
-import fr.inria.corese.core.api.Log;
-import fr.inria.corese.core.approximate.ext.ASTRewriter;
+import fr.inria.corese.compiler.parser.Transformer;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.api.DataBroker;
 import fr.inria.corese.core.api.DataBrokerConstruct;
 import fr.inria.corese.core.api.DataManager;
+import fr.inria.corese.core.api.Loader;
+import fr.inria.corese.core.api.Log;
+import fr.inria.corese.core.approximate.ext.ASTRewriter;
 import fr.inria.corese.core.load.Load;
-import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.print.LogManager;
 import fr.inria.corese.core.print.TripleFormat;
 import fr.inria.corese.core.producer.DataBrokerConstructExtern;
@@ -47,33 +44,36 @@ import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.util.Extension;
 import fr.inria.corese.core.util.Property;
-import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Evaluator;
+import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.kgram.api.query.Producer;
+import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.ProcessVisitorDefault;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.core.SparqlException;
-import fr.inria.corese.kgram.tool.MetaProducer;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.QueryVisitor;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.function.script.Funcall;
+import fr.inria.corese.sparql.triple.function.script.Function;
+import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
-import java.io.IOException;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
-import java.util.HashMap;
 import jakarta.ws.rs.client.ResponseProcessingException;
-import java.io.File;
-import java.io.FileWriter;
-import java.net.DatagramSocket;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.Collection;
-import java.util.List;
-import org.json.JSONObject;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Evaluator of SPARQL query by KGRAM 
@@ -166,41 +166,11 @@ public class QueryProcess extends QuerySolver {
      * SPARQL construct where return a corese graph
      */
     public static QueryProcess create(DataManager dm) {
-       return create(Graph.create(), dm);
-    }
-    
-    public static QueryProcess create(Graph g, DataManager dm) {
-        QueryProcess exec = create(g);
+        QueryProcess exec = create();
         exec.getLocalProducer().defineDataManager(dm);
         return exec;
     }
-    
-    // several Producer for several DataManager
-    public static QueryProcess create(Graph g, DataManager[] dmList) {
-        QueryProcess exec = create(g);
-        
-        if (dmList.length>0) {
-            exec.setDataManager(g, dmList);
-        }
-        
-        return exec;
-    }
-    
-    void setDataManager(Graph g, DataManager[] dmList) {
-        getLocalProducer().defineDataManager(dmList[0]);
-        MetaProducer meta = MetaProducer.create();
-        
-        for (DataManager dm : dmList) {
-            ProducerImpl p = ProducerImpl.create(g);
-            Matcher match  = MatcherImpl.create(g);
-            p.set(match);
-            p.defineDataManager(dm);
-            meta.add(p);
-        }
-        
-        setProducer(meta);
-    }
- 
+
     public static QueryProcess create(Graph g) {
         return create(g, false);
     }
@@ -712,7 +682,7 @@ public class QueryProcess extends QuerySolver {
         ASTQuery ast = getAST(q);
         if (ast.isLDScript()) {
             if (Access.reject(Feature.LDSCRIPT, getLevel(m, ds))) {
-                throw new EngineException("LDScript unauthorized") ;
+                throw new EngineException("LDScript unauthorized");
             }
         }
         m = completeMappings(q, m, ds);
@@ -721,38 +691,67 @@ public class QueryProcess extends QuerySolver {
             vis.visit(q, getGraph());
         }
         if (q.getService() != null) {
-            //@federate <http://dbpedia.org/sparql>
-            //select where {}
+            // @federate <http://dbpedia.org/sparql>
+            // select where {}
             return service(q, m);
         } else {
             dbProducer(q);
         }
-        Mappings map;
+        Mappings map = null;
 
         if (q.isUpdate() || q.isRule()) {
-            log(Log.UPDATE, q);
-            if (Access.reject(Access.Feature.SPARQL_UPDATE, getLevel(m, ds))) { 
-                throw new EngineException("SPARQL Update unauthorized") ;
+            if (this.hasDataManager()) {
+                this.getDataManager().startWriteTransaction();
             }
-            map = getQueryProcessUpdate().synUpdate(q, m, ds);
-            // map is the result of the last Update in q
-            // hence the query in map is a local query corresponding to the last Update in q
-            // return the Mappings of the last Update and the global query q
-            map.setQuery(q);
+            try {
+                log(Log.UPDATE, q);
+                if (Access.reject(Access.Feature.SPARQL_UPDATE, getLevel(m, ds))) {
+                    throw new EngineException("SPARQL Update unauthorized");
+                }
+                map = getQueryProcessUpdate().synUpdate(q, m, ds);
+                // map is the result of the last Update in q
+                // hence the query in map is a local query corresponding to the last Update in q
+                // return the Mappings of the last Update and the global query q
+                map.setQuery(q);
+                if (this.hasDataManager()) {
+                    this.getDataManager().commitTransaction();
+                }
+            } finally {
+                if (this.hasDataManager()) {
+                    this.getDataManager().endTransaction();
+                }
+            }
         } else {
-            map = synQuery(gNode, q, m);
-
-            if (q.isConstruct()) {
-                // construct where
-                construct(map, null, getAccessRight(m));
+            if (this.hasDataManager()) {
+                this.getDataManager().startReadTransaction();
             }
-            log(Log.QUERY, q, map);
+
+            try {
+
+                map = synQuery(gNode, q, m);
+
+                if (q.isConstruct()) {
+                    // construct where
+                    construct(map, null, getAccessRight(m));
+                }
+                log(Log.QUERY, q, map);
+                if (this.hasDataManager()) {
+                    this.getDataManager().commitTransaction();
+                }
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            } finally {
+                if (this.hasDataManager()) {
+                    this.getDataManager().endTransaction();
+                }
+            }
         }
 
         finish(q, map);
         return map;
     }
-    
+
     AccessRight getAccessRight(Mapping m) {
         Binding b = getBinding(m);
         return b==null?null:b.getAccessRight();

@@ -13,13 +13,11 @@ import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
-import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.Build;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.core.query.StorageFactory;
 import fr.inria.corese.core.rule.Cleaner;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.util.Parameter;
@@ -34,7 +32,6 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Constant;
 import static fr.inria.corese.core.util.Property.Value.ACCESS_LEVEL;
 import fr.inria.corese.core.util.Tool;
-//import fr.inria.corese.storage.jenatdb1.JenaDataManager;
 import java.io.IOException;
 
 /**
@@ -54,21 +51,17 @@ public class GraphEngine {
     QueryProcess exec;
     private QuerySolverVisitor visitor;
     Build build;
-    private DataManager dataManager;
-
+    // manage db or dataset storage access
+    private DatasetManager datasetManager;
+    
     private boolean isListGroup = false,
             isDebug = false, linkedFunction = false;
 
     GraphEngine(boolean b) {
         //DatatypeMap.setLiteralAsString(false);
         graph = GraphStore.create(b);
-        qengine = QueryEngine.create(graph);
-        
-        if (Property.stringValue(STORAGE_PATH) != null) {
-//            setDataManager(new JenaDataManager(Property.pathValue(STORAGE_PATH)));
-            StorageFactory.defineDataManager(Property.pathValue(STORAGE_PATH), getDataManager());
-            logger.info("storage dataset: " + Property.pathValue(STORAGE_PATH));
-        }
+        qengine = QueryEngine.create(graph);        
+        datasetManager = new DatasetManager().init();
         
         exec = createQueryProcess();
         
@@ -205,8 +198,7 @@ public class GraphEngine {
     public QueryProcess createQueryProcess() {
         QueryProcess qp;
         
-        if (Property.stringValue(STORAGE_PATH)==null || 
-            Property.booleanValue(STORAGE_SERVICE)) {
+        if (getDatasetManager().isDataset()) {
             logger.info("std dataset");
             qp = createBasicQueryProcess();
         }
@@ -217,14 +209,16 @@ public class GraphEngine {
         return qp;
     }
     
+    // db storage mode
     public QueryProcess createStorageQueryProcess() {
-        QueryProcess qp = QueryProcess.create(getDataManager());
+        QueryProcess qp = getDatasetManager().createQueryProcess(graph);
         Load load = Load.create();
-        load.setDataManager(getDataManager());
+        load.setDataManager(getDatasetManager().getDataManager());
         qp.setLoader(load);
         return qp;
     }
 
+    // graph dataset mode
     public QueryProcess createBasicQueryProcess() {
         QueryProcess qp = QueryProcess.create(graph, true);
         qp.setLoader(loader());
@@ -524,12 +518,12 @@ public class GraphEngine {
         this.rengine = rengine;
     }
 
-    public DataManager getDataManager() {
-        return dataManager;
+    public DatasetManager getDatasetManager() {
+        return datasetManager;
     }
 
-    public void setDataManager(DataManager dataManager) {
-        this.dataManager = dataManager;
+    public void setDatasetManager(DatasetManager datasetManager) {
+        this.datasetManager = datasetManager;
     }
 
 }

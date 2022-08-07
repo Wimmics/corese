@@ -8,7 +8,7 @@ import fr.inria.corese.core.query.StorageFactory;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.util.Property;
 import static fr.inria.corese.core.util.Property.Value.STORAGE_PATH;
-import fr.inria.corese.storage.jenatdb1.JenaDataManager;
+//import fr.inria.corese.storage.jenatdb1.JenaDataManager;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
@@ -55,7 +55,7 @@ public class DatasetManager {
     // define db data manager, whatever mode is
     void defineDataManager(String path) {
         logger.info("Create data manager for: " + path);
-        StorageFactory.defineDataManager(path, new JenaDataManager(path));
+        //StorageFactory.defineDataManager(path, new JenaDataManager(path));
     }
     
     public QueryProcess createQueryProcess(Graph g) {

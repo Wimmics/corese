@@ -58,13 +58,15 @@ public class GraphEngine {
             isDebug = false, linkedFunction = false;
 
     GraphEngine(boolean b) {
-        //DatatypeMap.setLiteralAsString(false);
         graph = GraphStore.create(b);
         qengine = QueryEngine.create(graph);        
+        init();
+    }
+    
+    void init() {
         datasetManager = new DatasetManager().init();
-        
         exec = createQueryProcess();
-        
+
         try {
             setVisitor(new QuerySolverVisitor(exec.getCreateEval()));
         } catch (EngineException ex) {
@@ -198,7 +200,7 @@ public class GraphEngine {
     public QueryProcess createQueryProcess() {
         QueryProcess qp;
         
-        if (getDatasetManager().isDataset()) {
+        if (getDatasetManager()==null||getDatasetManager().isDataset()) {
             logger.info("std dataset");
             qp = createBasicQueryProcess();
         }
@@ -296,7 +298,7 @@ public class GraphEngine {
 
     // TODO: clean timestamp, clean graph index
     public void setOWLRL(int owl, boolean trace) throws EngineException {
-        setOwlEngine(RuleEngine.create(graph));
+        setOwlEngine(getDatasetManager().createRuleEngine(graph));
         getOwlEngine().setProfile(owl);
         getOwlEngine().setTrace(trace);
         Date d1 = new Date();

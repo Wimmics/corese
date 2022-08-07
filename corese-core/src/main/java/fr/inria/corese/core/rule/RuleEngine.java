@@ -414,9 +414,15 @@ public class RuleEngine implements Engine, Graphable {
         before(b);
         int size = getGraphManager().size(); 
         Mapping m = Mapping.create(b);
-        entail(m, b);
-        after();
-        return getGraphManager().size() > size;
+        try {
+            getGraphManager().startRuleEngine();
+            entail(m, b);
+            after();
+            return getGraphManager().size() > size;
+        }
+        finally {
+            getGraphManager().endRuleEngine();
+        }
     }
     
     /**

@@ -32,6 +32,17 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
     public DataBrokerConstructExtern(DataManager mgr) {
         super(mgr);
     }
+    
+    @Override
+    public void startRuleEngine() {
+        getDataManager().startWriteTransaction();
+    }
+    
+    @Override
+    public void endRuleEngine() {
+        getDataManager().commitTransaction();
+        getDataManager().endTransaction();
+    }
 
     /**
      * Delete occurrences of edge in named graphs of from list

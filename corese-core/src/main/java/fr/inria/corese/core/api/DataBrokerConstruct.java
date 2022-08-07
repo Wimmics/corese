@@ -21,6 +21,11 @@ import fr.inria.corese.sparql.triple.update.Basic;
  * DataManager
  */
 public interface DataBrokerConstruct extends DataBroker {
+    
+    default void startRuleEngine() {}
+    
+    default void endRuleEngine() {}
+    
 
     default Node getNode(Node gNode, IDatatype dt) {
         return dt;

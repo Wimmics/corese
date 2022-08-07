@@ -78,6 +78,14 @@ public class GraphManager {
      * Construct Graph Manager
      *     
      **********************************************************/
+    
+    public void startRuleEngine() {
+        getDataBroker().startRuleEngine();
+    }
+    
+    public void endRuleEngine() {
+        getDataBroker().endRuleEngine();
+    }
 
     /**
      * Before construct/insert/delete starts

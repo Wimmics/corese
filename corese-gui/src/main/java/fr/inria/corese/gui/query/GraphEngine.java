@@ -231,6 +231,9 @@ public class GraphEngine {
 
     public Load loader() {
         Load load = Load.create(graph);
+        if (getDatasetManager()!=null) {
+            load = getDatasetManager().createLoad(graph);
+        }
         load.setEngine(qengine);
         return load;
     }

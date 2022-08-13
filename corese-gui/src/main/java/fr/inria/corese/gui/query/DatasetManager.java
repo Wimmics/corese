@@ -99,7 +99,7 @@ public class DatasetManager {
             return RuleEngine.create(g);
         }
         else {
-            return RuleEngine.create(getDataManager());
+            return RuleEngine.create(g, getDataManager());
         }
     }
     

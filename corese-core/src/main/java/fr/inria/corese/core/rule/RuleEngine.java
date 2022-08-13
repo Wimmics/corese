@@ -178,9 +178,16 @@ public class RuleEngine implements Engine, Graphable {
     }
     
     public static RuleEngine create(DataManager dm) {
+        return create(Graph.create(), dm);
+    }
+    
+    public static RuleEngine create(Graph g, DataManager dm) {
+        if (dm == null) {
+            return create(g);
+        }
         RuleEngine eng = new RuleEngine();
-        eng.set(QueryProcess.create(dm));
-        eng.set(eng.getQueryProcess().getGraph());
+        eng.set(QueryProcess.create(g, dm));
+        eng.set(g);
         eng.setGraphManager(eng.getQueryProcess().getUpdateGraphManager());
         // optimizer needs to record index in entailed edges
         // here we have no waranty that external graph record index
@@ -412,15 +419,14 @@ public class RuleEngine implements Engine, Graphable {
     public boolean process(Binding b) throws EngineException {
         logger.info("process: " + getPath());
         before(b);
-        int size = getGraphManager().size(); 
-        Mapping m = Mapping.create(b);
         try {
             getGraphManager().startRuleEngine();
+            int size = getGraphManager().size();
+            Mapping m = Mapping.create(b);
             entail(m, b);
             after();
             return getGraphManager().size() > size;
-        }
-        finally {
+        } finally {
             getGraphManager().endRuleEngine();
         }
     }

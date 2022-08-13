@@ -666,8 +666,15 @@ public class Load
         }
         try {
             lock();
+            if (getDataManager()!=null) {
+                getDataManager().startWriteTransaction();
+            }
             parse(stream, path, base, name, format);            
         } finally {
+            if (getDataManager()!=null) {
+                getDataManager().commitTransaction();
+                getDataManager().endTransaction();
+            }
             unlock();
         }
     }
@@ -917,7 +924,7 @@ public class Load
     void loadRulePath(String path, String name) throws LoadException {
         check(Feature.LINKED_RULE, name, TermEval.LINKED_RULE_MESS);
         if (engine == null) {
-            engine = RuleEngine.create(getGraph());
+            engine = RuleEngine.create(getGraph(), getDataManager());
         }
         // rule base
         RuleLoad load = RuleLoad.create(engine);
@@ -954,7 +961,7 @@ public class Load
     
     public void loadRuleBasic(Reader stream, String name) throws LoadException {
         if (engine == null) {
-            engine = RuleEngine.create(getGraph());
+            engine = RuleEngine.create(getGraph(), getDataManager());
         }
         RuleLoad load = RuleLoad.create(engine);
         load.setLevel(getLevel());

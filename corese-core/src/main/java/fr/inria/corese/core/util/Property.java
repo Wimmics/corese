@@ -1187,7 +1187,7 @@ public class Property {
     
     public static String[] stringValueList(Value val) {
         String str = stringValue(val);
-        if (val == null) {
+        if (val == null || str == null) {
             return new String[0];
         }
         return str.split(SEP);

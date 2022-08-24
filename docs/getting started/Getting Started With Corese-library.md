@@ -460,16 +460,19 @@ This section details how to apply a set of rules on a graph using the [SPARQL Ru
 The example below shows the application of two rules (symmetry and transitivity) on a simple graph.
 
 ```java
-// Load data graph
+// Create and load data in a graph
 Graph dataGraph = Graph.create();
-Load ld = Load.create(dataGraph);
-ld.parse("input graph file path");
+Load dataLoader = Load.create(dataGraph);
+dataLoader.parse("input graph file path");
 
-// Load rules
-ld.parse("input rules file path.rul");
 
-// Apply rules
-RuleEngine ruleEngine = ld.getRuleEngine();
+// Create and load rules into a rules engine
+RuleEngine ruleEngine = RuleEngine.create(dataGraph);
+RuleLoad ruleLoader = RuleLoad.create(ruleEngine);
+ruleLoader.parse("input rules file path.rul");
+
+
+// Apply rules on graph
 ruleEngine.process();
 ```
 

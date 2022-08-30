@@ -11,11 +11,35 @@ package fr.inria.corese.core.api;
  */
 public interface DataManager extends DataManagerRead, DataManagerUpdate {
 
-    default void startReadTransaction(){};
+    default void startReadTransaction() {
+    };
 
-    default void startWriteTransaction(){};
+    default void startWriteTransaction() {
+    };
 
-    default void endTransaction(){};
+    default void endTransaction() {
+    };
 
-    default void commitTransaction(){};
+    default void abortTransaction() {
+    };
+
+    default void commitTransaction() {
+    };
+
+    default boolean isInTransaction() {
+        return false;
+    };
+
+    default boolean isInReadTransaction() {
+        return false;
+    };
+
+    default boolean isInWriteTransaction() {
+        return false;
+    };
+
+    default String getStoragePath() {
+        return null;
+    };
+
 }

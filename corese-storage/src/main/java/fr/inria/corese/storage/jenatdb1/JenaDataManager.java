@@ -32,6 +32,7 @@ import fr.inria.corese.kgram.api.core.Node;
 public class JenaDataManager implements DataManager, AutoCloseable {
 
     private Dataset jena_dataset;
+    private String storage_path;
 
     /****************
      * Constructors *
@@ -42,6 +43,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      * by an in-memory block manager. For testing.
      */
     public JenaDataManager() {
+        this.storage_path = null;
         this.jena_dataset = TDBFactory.createDataset();
     }
 
@@ -49,10 +51,11 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      * Constructor of JenaTdbDataManager. Create or connect to a Jena dataset backed
      * in file system.
      * 
-     * @param directory Path of the directory where the data is stored.
+     * @param storage_path Path of the directory where the data is stored.
      */
-    public JenaDataManager(String directory) {
-        this.jena_dataset = TDBFactory.createDataset(directory);
+    public JenaDataManager(String storage_path) {
+        this.storage_path = storage_path;
+        this.jena_dataset = TDBFactory.createDataset(storage_path);
     }
 
     /**
@@ -352,7 +355,42 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     }
 
     @Override
+    public void abortTransaction() {
+        this.jena_dataset.abort();
+    }
+
+    @Override
     public void commitTransaction() {
         this.jena_dataset.commit();
+    }
+
+    @Override
+    public boolean isInTransaction() {
+        return this.jena_dataset.isInTransaction();
+    }
+
+    @Override
+    public boolean isInReadTransaction() {
+        ReadWrite transaction = this.jena_dataset.transactionMode();
+
+        if (transaction == null) {
+            return false;
+        }
+        return transaction.equals(ReadWrite.READ);
+    }
+
+    @Override
+    public boolean isInWriteTransaction() {
+        ReadWrite transaction = this.jena_dataset.transactionMode();
+
+        if (transaction == null) {
+            return false;
+        }
+        return transaction.equals(ReadWrite.WRITE);
+    }
+
+    @Override
+    public String getStoragePath() {
+        return this.storage_path;
     }
 }

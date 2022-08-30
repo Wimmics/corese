@@ -28,6 +28,7 @@ public class Service {
     // name of the service if any (e.g. cdn for template/cdn)
     // value of st:service property
     private String service;
+    private String storagePath;
     private String query;
     private String transform;
     private String variable;
@@ -347,5 +348,13 @@ public class Service {
             }
         }
         list.add(doc);
+    }
+
+    public String getStoragePath() {
+        return storagePath;
+    }
+
+    public void setStoragePath(String storagePath) {
+        this.storagePath = storagePath;
     }
 }

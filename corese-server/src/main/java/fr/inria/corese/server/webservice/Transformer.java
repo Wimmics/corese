@@ -169,7 +169,9 @@ public class Transformer {
             par = getProfile().complete(par);  
             par.setAjax(SPARQLRestAPI.isAjax);
             
-            TransformerEngine engine = new TransformerEngine(store.getGraph(), Profile.getProfile().getProfileGraph(), par);
+            TransformerEngine engine = 
+                    new TransformerEngine(store.getGraph(), Profile.getProfile().getProfileGraph(), par);
+            engine.setDataManager(store.getDataManager());
             engine.setDebug(EmbeddedJettyServer.isDebug());
             engine.setEventManager(EventManager.getSingleton());
             context = engine.getContext();

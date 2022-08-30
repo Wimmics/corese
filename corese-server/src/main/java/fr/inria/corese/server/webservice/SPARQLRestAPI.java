@@ -85,6 +85,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
 
     static String localProfile;
 
+    // default sparql endpoint
     static TripleStore store = new TripleStore(false, false);
 
     private static Profile mprofile;
@@ -119,6 +120,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         return getTripleStore().getQueryProcess();
     }
 
+    // default sparql endpoint
     static TripleStore getTripleStore() {
         return store;
     }
@@ -143,7 +145,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
     }
 
     /**
-     * This webservice is used to reset the endpoint. This could be useful if we would like our endpoint to point on another dataset
+     * This webservice is used to define (and reset) the endpoint. 
      */
     @POST
     @Path("/reset")
@@ -160,10 +162,19 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         boolean ld = load.equals("true");
         localProfile = profile;
         System.out.println("entailment: " + ent);
+        // option -init propertyFile may declare db storage path 
+        // with property STORAGE_PATH=path
+        // DatasetManager create appropriate DataManager for db storage
+        DatasetManager man = new DatasetManager().init();
+        Manager.getManager().setDatasetManager(man);
+        // create default sparql endpoint
         store = new TripleStore(ent, owl);
+        // default db storage DataManager is for sparql endpoint
+        store.setDataManager(man.getDataManager());
+        //logger.info("DatasetManager: " + store.getDataManager());
         init(localhost.equals("true"));
         if (ld) {
-            // loadProfileData();
+            // load data from st:default or st:user service profile if any
             Manager.getManager().init(store);
         }
         store.init(isProtected);

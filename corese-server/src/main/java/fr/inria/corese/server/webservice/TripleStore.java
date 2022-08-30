@@ -6,6 +6,7 @@ import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.Load;
@@ -33,21 +34,7 @@ import org.slf4j.LoggerFactory;
  *
  */
 public class TripleStore implements URLParam {
-    private static final String LOG_DIR = "/log/";
-
-    /**
-     * @return the name
-     */
-    public String getName() {
-        return name;
-    }
-
-    /**
-     * @param name the name to set
-     */
-    public void setName(String name) {
-        this.name = name;
-    }
+    private static final String LOG_DIR = "/log/";   
 
     public static org.slf4j.Logger logger = LoggerFactory.getLogger(TripleStore.class);
     static HashMap<String, Integer> metaMap ;
@@ -58,6 +45,7 @@ public class TripleStore implements URLParam {
     private boolean match   = false;
     private boolean protect = false;
     private String name = Manager.DEFAULT;
+    private DataManager dataManager;
     
     static {
        init();
@@ -82,7 +70,6 @@ public class TripleStore implements URLParam {
         graph = GraphStore.create(rdfs);
         init(graph);
         setMatch(b);
-        //exec  = QueryProcess.create(graph, b);
         this.owl = owl;
     }
     
@@ -90,7 +77,6 @@ public class TripleStore implements URLParam {
         graph = g;
         init(g);
         setMatch(false);
-        //exec = QueryProcess.create(g);
     }
     
     TripleStore(GraphStore g, boolean b){
@@ -106,7 +92,6 @@ public class TripleStore implements URLParam {
     
     void finish(boolean b){
         setMatch(true);
-        //exec = QueryProcess.create(graph, true);
         init(b);
     }
     
@@ -116,7 +101,15 @@ public class TripleStore implements URLParam {
     }
     
     QueryProcess getQueryProcess(){
-        QueryProcess exec = QueryProcess.create(graph, isMatch());
+        if (getDataManager()!=null) {
+            logger.info("QueryProcess DataManager: " + getDataManager());
+            return QueryProcess.create(getGraph(), getDataManager());
+        }
+        return getLocalQueryProcess();
+    }
+    
+    QueryProcess getLocalQueryProcess(){
+        QueryProcess exec = QueryProcess.create(getGraph(), isMatch());
         return exec;
     }
     
@@ -128,7 +121,7 @@ public class TripleStore implements URLParam {
         graph = g;
     }
     
-     void setGraph(Graph g){
+    void setGraph(Graph g){
          if (g instanceof GraphStore){
             graph = (GraphStore) g;
          }
@@ -159,21 +152,22 @@ public class TripleStore implements URLParam {
     }
     
     
-    void load(String[] load) {
-        Load ld = Load.create(graph);
-        for (String f : load) {
-            try {
-                logger.info("Load: " + f);
-                //ld.loadWE(f, f, Load.TURTLE_FORMAT);
-                ld.parse(f, Load.TURTLE_FORMAT);
-            } catch (LoadException ex) {
-                logger.error(ex.getMessage());
-            }
-        }
-    }
+//    void load(String[] load) {
+//        Load ld = Load.create(graph);
+//        for (String f : load) {
+//            try {
+//                logger.info("Load: " + f);
+//                //ld.loadWE(f, f, Load.TURTLE_FORMAT);
+//                ld.parse(f, Load.TURTLE_FORMAT);
+//            } catch (LoadException ex) {
+//                logger.error(ex.getMessage());
+//            }
+//        }
+//    }
     
     void load(String path, String src) throws LoadException{
-        Load ld = Load.create(graph);
+        Load ld = Load.create(getGraph());
+        ld.setDataManager(getDataManager());
         ld.parse(path, src, Load.TURTLE_FORMAT);
     }
     
@@ -211,6 +205,7 @@ public class TripleStore implements URLParam {
                     if (isCompile(c)) {
                         Query qq = exec.compile(federate(query, ds), ds);
                         map = Mappings.create(qq);
+                        //exec.getLog().share(qq.getAST().getLog());
                     } else {
                         map = exec.query(federate(query, ds), ds);
                     }
@@ -467,31 +462,40 @@ public class TripleStore implements URLParam {
         return query(request, query, new Dataset());
     }
 
-    /**
-     * @return the match
-     */
+   
     public boolean isMatch() {
         return match;
     }
 
-    /**
-     * @param match the match to set
-     */
+    
     public void setMatch(boolean match) {
         this.match = match;
     }
 
-    /**
-     * @return the protect
-     */
+    
     public boolean isProtect() {
         return protect;
     }
 
-    /**
-     * @param protect the protect to set
-     */
+   
     public void setProtect(boolean protect) {
         this.protect = protect;
     }
+    
+    public String getName() {
+        return name;
+    }
+   
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
+            
 }

@@ -13,6 +13,7 @@ import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.api.DataManager;
 import java.util.HashMap;
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
@@ -49,16 +50,16 @@ public class Manager {
     static Manager manager;
     
     boolean initDone = false;
+    private DatasetManager datasetManager;
 
     static {
-        //init();
-        mapShare = new HashMap<String, TripleStore>();
+        mapShare = new HashMap<>();
         manager = new Manager();
     }
 
     static Manager getManager() {
         return manager;
-   }
+    }
 
     /**
      * Create a TripleStore for each server definition from profile and load its
@@ -68,13 +69,14 @@ public class Manager {
         if (initDone) {}
         else {
             initDone = true;
-            mapURI = new HashMap<String, TripleStore>();
-            mapService = new HashMap<String, String>();
+            mapURI = new HashMap<>();
+            mapService = new HashMap<>();
             nsm = NSManager.create();
             Profile p = getProfile();
+            
             for (Service s : p.getServers()) {
                 if (!s.getName().equals(DEFAULT) && !s.getName().equals(USER)) {
-                    // default/user if the sparql endpoint
+                    // default/user is the sparql endpoint
                     logger.info("Load: " + s.getName());
                     try {
                         initTripleStore(p, s);
@@ -87,8 +89,6 @@ public class Manager {
             }
             system();
         }
-        // draft
-        // complete();
     }
     
     void system() {
@@ -161,7 +161,14 @@ public class Manager {
 //            }
 //        }
         TripleStore store = new TripleStore(g, true);
-        //store.setOWL(s.isOWLEntailment());
+        
+        if (s.getStoragePath()!=null && getDatasetManager()!=null) {
+            DataManager man = getDatasetManager().getDataManager(s.getStoragePath());
+            store.setDataManager(man);
+            logger.info(String.format("Service: %s ; path: %s ; data manager: %s", 
+                    s.getService(), s.getStoragePath(), store.getDataManager()));
+        }
+        
         init(store, s);
         return store;
     }
@@ -225,8 +232,9 @@ public class Manager {
     }
     
     Graph createContent(TripleStore ts, Graph profile, Node server, Node swnode) throws LoadException, EngineException {
-        SemanticWorkflow sw = new WorkflowParser(profile).parse(swnode);
-        Data res = sw.process(new Data(ts.getGraph()));
+        WorkflowParser wp = new WorkflowParser(profile);
+        SemanticWorkflow sw = wp.parse(swnode);
+        Data res = sw.process(new Data(ts.getGraph(), ts.getDataManager()));
         return res.getGraph();
     }
 
@@ -304,6 +312,14 @@ public class Manager {
         } catch (EngineException ex) {
             LogManager.getLogger(Manager.class.getName()).log(Level.ERROR, "", ex);
         }
+    }
+
+    public DatasetManager getDatasetManager() {
+        return datasetManager;
+    }
+
+    public void setDatasetManager(DatasetManager datasetManager) {
+        this.datasetManager = datasetManager;
     }
 
 }

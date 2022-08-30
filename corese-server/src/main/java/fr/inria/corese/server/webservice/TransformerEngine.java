@@ -11,6 +11,7 @@ import fr.inria.corese.core.workflow.SemanticWorkflow;
 import fr.inria.corese.core.workflow.WorkflowParser;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import java.util.List;
@@ -25,27 +26,14 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class TransformerEngine {
-
-    /**
-     * @return the eventManager
-     */
-    public EventManager getEventManager() {
-        return eventManager;
-    }
-
-    /**
-     * @param eventManager the eventManager to set
-     */
-    public void setEventManager(EventManager eventManager) {
-        this.eventManager = eventManager;
-    }
     
     private static Logger logger = LogManager.getLogger(Transformer.class);
     private static final String PARAM = "$param";
     private static final String MODE  = "$mode";
 
     // TripleStore RDF Graph  
-    GraphStore graph;
+    private GraphStore graph;
+    private DataManager dataManager;
     // Profile RDF graph: profile, server and workflow definitions
     GraphStore profile;
     // Context shared by Workflow and transformations
@@ -74,7 +62,7 @@ public class TransformerEngine {
     
     void init(){
         setContext(create(param));
-        complete(graph, profile, context);
+        complete(getGraph(), profile, context);
     }
     
    
@@ -94,7 +82,7 @@ public class TransformerEngine {
         if (getEventManager() != null) {
             getEventManager().call(sw.getContext());
         }
-        Data data = sw.process(new Data(graph));
+        Data data = sw.process(new Data(getGraph(), getDataManager()));
         return data;
     }
           
@@ -272,6 +260,31 @@ public class TransformerEngine {
      */
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
+    
+    public EventManager getEventManager() {
+        return eventManager;
+    }
+
+    
+    public void setEventManager(EventManager eventManager) {
+        this.eventManager = eventManager;
+    }    
+
+    public GraphStore getGraph() {
+        return graph;
+    }
+
+    public void setGraph(GraphStore graph) {
+        this.graph = graph;
     }
 
 }

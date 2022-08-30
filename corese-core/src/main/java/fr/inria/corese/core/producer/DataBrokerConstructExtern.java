@@ -65,6 +65,7 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
         Graph g = Graph.create();
         Load load = Load.create(g);
         load.setDataManager(getDataManager());
+        load.setSparqlUpdate(true);
         try {
             load.parse(ope.getURI(), ope.getTarget());
         } catch (LoadException ex) {

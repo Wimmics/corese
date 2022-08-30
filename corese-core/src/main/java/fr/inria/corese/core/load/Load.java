@@ -102,6 +102,8 @@ public class Load
     private boolean event = true;
     // true when load transformation
     private boolean transformer = false;
+    // when sparql update load statement
+    private boolean sparqlUpdate = false;
     int nb = 0;
     // max number of triples to load 
     private int limit = LIMIT_DEFAULT;
@@ -666,12 +668,14 @@ public class Load
         }
         try {
             lock();
-            if (getDataManager()!=null) {
+            if (! isSparqlUpdate() && getDataManager()!=null) {
+                // sparql update already execute startWriteTransaction
                 getDataManager().startWriteTransaction();
             }
             parse(stream, path, base, name, format);            
         } finally {
-            if (getDataManager()!=null) {
+            if (! isSparqlUpdate() && getDataManager()!=null) {
+                // sparql update will execute commit and end
                 getDataManager().commitTransaction();
                 getDataManager().endTransaction();
             }
@@ -1324,6 +1328,14 @@ public class Load
 
     public void setNamedGraphURI(String namedGraphURI) {
         this.namedGraphURI = namedGraphURI;
+    }
+
+    public boolean isSparqlUpdate() {
+        return sparqlUpdate;
+    }
+
+    public void setSparqlUpdate(boolean sparqlUpdate) {
+        this.sparqlUpdate = sparqlUpdate;
     }
 
 }

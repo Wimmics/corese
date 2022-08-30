@@ -8,6 +8,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
@@ -29,6 +30,7 @@ public class Data {
     private Mappings map;
     private IDatatype datatype;
     private Graph graph;
+    private DataManager dataManager;
     private Context context;
     private Binding binding;
     //private TemplateVisitor visitor;
@@ -39,6 +41,11 @@ public class Data {
           
     public Data(Graph g){
         graph = g;
+    }
+    
+    public Data(Graph g, DataManager man){
+        graph = g;
+        setDataManager(man);
     }
     
     Data(Graph g, IDatatype dt){
@@ -350,6 +357,14 @@ public class Data {
     
     public void setBinding(Binding binding) {
         this.binding = binding;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
     }
 
 }

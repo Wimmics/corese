@@ -6,6 +6,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.query.DatasetManager;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import org.slf4j.LoggerFactory;
@@ -82,6 +83,9 @@ public class LoadProcess extends WorkflowProcess {
     public Data run(Data data) throws EngineException {
         Graph g = data.getGraph();
         Load ld = Load.create(g);
+        if (data.getDataManager()!=null) {
+            ld.setDataManager(data.getDataManager());
+        }
         boolean isURL = true;
         try {
             if (getProcessor() != null) {

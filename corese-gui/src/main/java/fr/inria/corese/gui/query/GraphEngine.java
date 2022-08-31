@@ -13,6 +13,7 @@ import fr.inria.corese.compiler.eval.QuerySolverVisitor;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.Build;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
@@ -529,6 +530,10 @@ public class GraphEngine {
 
     public void setDatasetManager(DatasetManager datasetManager) {
         this.datasetManager = datasetManager;
+    }
+    
+    public DataManager getDataManager() {
+        return getDatasetManager().getDataManager();
     }
 
 }

@@ -55,7 +55,9 @@ public class ValidateShaclButton extends Button {
                 }
 
                 // Eval
-                Shacl shacl = new Shacl(coreseGraph, shapeGraph);
+                Shacl shacl = new Shacl(coreseGraph, shapeGraph);                
+                shacl.setDataManager(mainFrame.getMyCorese().getDataManager());
+                                
                 Graph result = null;
                 try {
                     result = shacl.eval();

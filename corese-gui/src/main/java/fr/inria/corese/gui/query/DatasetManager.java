@@ -1,7 +1,7 @@
 package fr.inria.corese.gui.query;
 
 import fr.inria.corese.core.query.StorageFactory;
-import fr.inria.corese.storage.jenatdb1.JenaDataManager;
+//import fr.inria.corese.storage.jenatdb1.JenaDataManager;
 
 
 /**
@@ -23,7 +23,7 @@ public class DatasetManager
     @Override
     public void defineDataManager(String path) {
         super.defineDataManager(path);
-        StorageFactory.defineDataManager(path, new JenaDataManager(path));
+        //StorageFactory.defineDataManager(path, new JenaDataManager(path));
     }
     
 }

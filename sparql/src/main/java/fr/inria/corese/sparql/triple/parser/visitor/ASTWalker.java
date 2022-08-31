@@ -70,6 +70,7 @@ public class ASTWalker implements Walker {
     
     @Override
     public void enter(ASTQuery ast) {
+        trace("Walker enter ast");
     }
     
     @Override
@@ -109,7 +110,7 @@ public class ASTWalker implements Walker {
     
     @Override
     public void enter(Exp exp) {
-        trace("Statement: " + exp);
+        trace("Walker enter statement: " + exp);
         if (exp.isService()) {
             enter(exp.getService());
         }
@@ -126,16 +127,15 @@ public class ASTWalker implements Walker {
     /**
      * Filter expression
      * exists {} can be checked by isExist(), BGP can be retrieved by getExist()
+     * walker enter here with exp = ExistFunction exists BGP  and then walk in BGP as BGP.walk(walker)
+     * see triple.function.core.ExistFunction.walk()
      */
     
     @Override
     public void enter(Expression exp) {
-        trace("Expression: " + exp);
+        trace("Walker enter expression: " + exp);
         process(exp);
-        processService(exp);
-        if (exp.isExist()) {
-            exp.getExist();
-        }
+        processService(exp);       
     }
 
     @Override
@@ -176,7 +176,7 @@ public class ASTWalker implements Walker {
     void process(Expression exp) {
         switch (exp.oper()) {
             case READ:
-                check(Feature.READ_WRITE, getLevel(), TermEval.READ_MESS, exp);
+                check(Feature.READ, getLevel(), TermEval.READ_MESS, exp);
                 break;             
             case LOAD:
                 check(Feature.READ_WRITE, getLevel(), TermEval.LOAD_MESS, exp);
@@ -245,7 +245,7 @@ public class ASTWalker implements Walker {
                 case MAP:
                     if (Access.reject(Feature.READ_WRITE, getLevel())
                             || Access.reject(Feature.JAVA_FUNCTION, getLevel())) {
-                        record(Feature.JAVA_FUNCTION, TermEval.JAVA_FUNCTION_MESS, exp);
+                        //record(Feature.JAVA_FUNCTION, TermEval.JAVA_FUNCTION_MESS, exp);
                     }
                     break;
                 

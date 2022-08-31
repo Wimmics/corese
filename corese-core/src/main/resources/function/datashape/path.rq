@@ -245,7 +245,7 @@ function sh:lessThanOrEquals(report, sh, vis, s, p, q, nodeList){
 }
 
 function sh:lessThanList(report, sh, vis, s, p, q, leq, oper, nodeList){
-    let (suc = true, targetList = xt:objects(s, q)) {
+    let (suc = true, targetList = sh:myobjects(s, q)) {
         for (o in nodeList) { 
             for (v in targetList) {
                 let (res = coalesce(if (leq, o <= v, o < v), false)) {
@@ -257,6 +257,16 @@ function sh:lessThanList(report, sh, vis, s, p, q, leq, oper, nodeList){
             }
         } ;
         return (suc)
+    }
+}
+
+function sh:myobjects2(s, q) {
+    xt:objects(s, q)
+}
+
+function sh:myobjects(s, q) {
+    let (select ?s ?q (aggregate(distinct ?o) as ?list) where { ?s ?q ?o }) {
+        return (list)
     }
 }
 

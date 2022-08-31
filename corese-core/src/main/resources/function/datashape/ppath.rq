@@ -276,10 +276,35 @@ function dt:list sh:pathProperty(focus, asubject, node, p, xsd:boolean inv, url)
 }
 
 function dt:list sh:step(focus, node, apredicate) {
+    if (xt:size(focus) > 0) {
+        xt:objects(node, apredicate, bnode(), focus)
+    }
+    else {
+        let (select (aggregate(distinct ?object) as ?list) node apredicate
+             where { ?node ?apredicate ?object }) {
+                return (list)
+        }
+    }
+}
+
+function dt:list sh:step2(focus, node, apredicate) {
     xt:objects(node, apredicate, bnode(), focus)
 }
 
-function dt:list sh:inverse(focus, node, apredicate){
+
+function dt:list sh:inverse(focus, node, apredicate) {
+    if (xt:size(focus) > 0) {
+        xt:subjects(bnode(), apredicate, node, focus)
+    }
+    else {
+        let (select (aggregate(distinct ?subject) as ?list) node apredicate
+             where { ?subject ?apredicate ?node }) {
+                return (list)
+        }
+    }
+}
+
+function dt:list sh:inverse2(focus, node, apredicate){
     xt:subjects(bnode(), apredicate, node, focus)
 }
 

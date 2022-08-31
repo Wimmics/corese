@@ -846,7 +846,7 @@ public class RuleEngine implements Engine, Graphable {
                 trun += nbrule;
             }
 
-            if (graph.size() > size) {
+            if (getGraphManager().size() > size) {
                 // There are new edges: entailment again
                 size = getGraphManager().size();
                 loop++;
@@ -861,7 +861,7 @@ public class RuleEngine implements Engine, Graphable {
         if (isDebug()) {
             System.out.println("Total Skip: " + tskip);
             System.out.println("Total Run: " + trun);     
-            logger.debug("** Rule: " + (graph.size() - start));
+            logger.debug("** Rule: " + (getGraphManager().size() - start));
         }               
     }
     

@@ -186,8 +186,14 @@ public class QueryProcess extends QuerySolver {
     
     public static QueryProcess create(Graph g, DataManager dm) {
         QueryProcess exec = create(g);
-        exec.getLocalProducer().defineDataManager(dm);
+        exec.defineDataManager(dm);
         return exec;
+    }
+    
+    public void defineDataManager(DataManager dm) {
+        if (dm != null && getLocalProducer()!=null) {
+            getLocalProducer().defineDataManager(dm);
+        }
     }
     
         // several Producer for several DataManager
@@ -235,12 +241,25 @@ public class QueryProcess extends QuerySolver {
         }
     }
 
-   public static QueryProcess stdCreate(Graph g, boolean isMatch) {
+    public static QueryProcess stdCreate(Graph g, boolean isMatch) {
         ProducerImpl p = ProducerImpl.create(g);
         p.setMatch(isMatch);
         QueryProcess exec = QueryProcess.create(p);
         exec.setMatch(isMatch);
         return exec;
+    }
+    
+    public static QueryProcess copy(Producer p, boolean isMatch) {
+        QueryProcess exec = stdCreate(getGraph(p), isMatch);
+        exec.defineDataManager(exec.getDataManager(p));
+        return exec;
+    }
+    
+    DataManager getDataManager(Producer p) {
+        if (p instanceof ProducerImpl) {
+            return ((ProducerImpl)p).getDataManager();
+        }
+        return null;
     }
    
     public static QueryProcess create(ProducerImpl p) {
@@ -763,8 +782,11 @@ public class QueryProcess extends QuerySolver {
                 }
             }
         } else {
-            if (this.hasDataManager()) {
-                this.getDataManager().startReadTransaction();
+            boolean start = hasDataManager() && 
+               ! getDataManager().isInReadTransaction();
+            
+            if (start) {
+                 getDataManager().startReadTransaction();
             }
 
             try {
@@ -775,15 +797,11 @@ public class QueryProcess extends QuerySolver {
                     // construct where
                     construct(map, null, getAccessRight(m));
                 }
-                log(Log.QUERY, q, map);
-                if (this.hasDataManager()) {
-                    this.getDataManager().commitTransaction();
-                }
-
+                log(Log.QUERY, q, map);                
             } catch (Exception e) {
                 e.printStackTrace();
             } finally {
-                if (this.hasDataManager()) {
+                if (start) {
                     this.getDataManager().endTransaction();
                 }
             }
@@ -1095,7 +1113,7 @@ public class QueryProcess extends QuerySolver {
         return getGraph(getProducer());
     }
 
-    Graph getGraph(Producer p) {
+    static Graph getGraph(Producer p) {
         if (p.getGraph() instanceof Graph) {
             return (Graph) p.getGraph();
         }

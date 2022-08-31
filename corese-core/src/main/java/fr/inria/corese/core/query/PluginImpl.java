@@ -1033,7 +1033,7 @@ public class PluginImpl
         Mapping m = createMapping(p, param, 1);
         // share global variables, context, log and access level
         m.setBind(env.getBind());
-        return kgram(env, getGraph(p), param[0].getLabel(), m);
+        return kgram(env, p, param[0].getLabel(), m);
     }
 
     /**
@@ -1068,8 +1068,10 @@ public class PluginImpl
         return null;
     }
     
-    IDatatype kgram(Environment env, Graph g, String query, Mapping m) throws EngineException{
-        QueryProcess exec = QueryProcess.create(g, true);
+    IDatatype kgram(Environment env, Producer p, String query, Mapping m) throws EngineException {
+        Graph g = getGraph(p);
+        //QueryProcess exec = QueryProcess.create(g, true);
+        QueryProcess exec = QueryProcess.copy(p, true);
         exec.setRule(env.getQuery().isRule());
         try {
             Mappings map;

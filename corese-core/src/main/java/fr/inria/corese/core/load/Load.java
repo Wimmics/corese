@@ -139,6 +139,12 @@ public class Load
     public static Load create(Graph g) {
         return new Load(g);
     }
+    
+    public static Load create(Graph g, DataManager man) {
+        Load ld = new Load(g);
+        ld.setDataManager(man);
+        return ld;
+    }
 
     public static Load create() {
         return new Load();

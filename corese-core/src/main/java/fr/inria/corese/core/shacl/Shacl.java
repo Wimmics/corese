@@ -1,6 +1,7 @@
 package fr.inria.corese.core.shacl;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.logic.RDF;
 import fr.inria.corese.core.producer.DataProducer;
 import fr.inria.corese.core.query.QueryProcess;
@@ -53,6 +54,7 @@ public class Shacl {
     private Graph graph;
     private Graph shacl;
     private Graph result;
+    private DataManager dataManager;
     private Binding bind;
     private Binding input;
 
@@ -301,13 +303,22 @@ public class Shacl {
    
     
     IDatatype funcall(String name, Object... obj) throws EngineException {
-        QueryProcess exec = QueryProcess.create(getGraph());
-        IDatatype res = exec.funcall(name, getInput(), param(obj));
-        setBind(exec.getCreateBinding());
-        if (res == null) {
-            throw new EngineException("SHACL Error") ;
+        try {
+            QueryProcess exec = QueryProcess.create(getGraph(), getDataManager());
+            if (getDataManager() != null) {
+                getDataManager().startReadTransaction();
+            }
+            IDatatype res = exec.funcall(name, getInput(), param(obj));
+            setBind(exec.getCreateBinding());
+            if (res == null) {
+                throw new EngineException("SHACL Error");
+            }
+            return res;
+        } finally {
+            if (getDataManager() != null) {
+                getDataManager().endTransaction();
+            }
         }
-        return res;
     }
     
     IDatatype[] param(Object[] param) {
@@ -378,6 +389,14 @@ public class Shacl {
     
     public void setInput(Binding input) {
         this.input = input;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
     }
     
     

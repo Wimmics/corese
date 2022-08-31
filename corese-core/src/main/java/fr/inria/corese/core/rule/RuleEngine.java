@@ -90,6 +90,7 @@ public class RuleEngine implements Engine, Graphable {
     public static Logger logger = LoggerFactory.getLogger(RuleEngine.class);
     Graph graph;
     private GraphManager graphManager;
+    private DataManager dataManager;
     QueryProcess exec;
     private QueryEngine qengine;
     private List<Rule> rules;
@@ -108,6 +109,8 @@ public class RuleEngine implements Engine, Graphable {
     // LIMITATION: do not use if Corese RDFS entailment is set to true
     // because we test predicate equality (we do not check rdfs:subPropertyOf)
     private boolean isOptimize = false;
+    // true when a set of optimizations is possible, e.g. with std graph
+    // false with DataManager
     private boolean optimizable = true;
     private boolean debug = false;
     boolean trace = false;
@@ -187,8 +190,10 @@ public class RuleEngine implements Engine, Graphable {
         }
         RuleEngine eng = new RuleEngine();
         eng.set(QueryProcess.create(g, dm));
+        eng.getQueryProcess().setProcessTransaction(false);
         eng.set(g);
         eng.setGraphManager(eng.getQueryProcess().getUpdateGraphManager());
+        eng.setDataManager(dm);
         // optimizer needs to record index in entailed edges
         // here we have no waranty that external graph record index
         // hence skip optimization
@@ -728,7 +733,7 @@ public class RuleEngine implements Engine, Graphable {
     }
     
     
-     
+    // loop on rules until nothing new happens
     void infer(Mapping mapping, Binding bind) throws EngineException{
         int size = getGraphManager().size(),
                 start = size;
@@ -757,6 +762,7 @@ public class RuleEngine implements Engine, Graphable {
             initOptimize();
         }
 
+        // loop while there is something new
         while (go) {
             getEventManager().start(Event.InferenceCycle);
             if (isEvent()) getVisitor().loopEntailment(getPath());
@@ -984,8 +990,7 @@ public class RuleEngine implements Engine, Graphable {
         }
        
         trace(d1, new Date(), rule, start);        
-        getEventManager().finish(Event.Rule);
-
+        getEventManager().finish(Event.Rule);       
         return getGraphManager().size() - start;
     }
     
@@ -1037,6 +1042,7 @@ public class RuleEngine implements Engine, Graphable {
         if (isEvent()) getVisitor().beforeRule(qq);
         Mappings map = getQueryProcess().query(qq, m);
         
+        getGraphManager().startRule();
         if (cons.isBuffer()) {
             // cons insert list contains only new edges that do not exist
             cons.getGraphManager().insert(r.getUniquePredicate(), cons.getInsertList());
@@ -1044,6 +1050,7 @@ public class RuleEngine implements Engine, Graphable {
             // create edges from Mappings as usual
             cons.entailment(map);
         }
+        getGraphManager().endRule();
 
         if (r.isConstraint()) {
             // constraint succeed when there is no solution (cf owlrl.rul)
@@ -1531,6 +1538,14 @@ public class RuleEngine implements Engine, Graphable {
 
     public void setResultWatcher(ResultWatcher resultWatcher) {
         this.resultWatcher = resultWatcher;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
     }
 
 }

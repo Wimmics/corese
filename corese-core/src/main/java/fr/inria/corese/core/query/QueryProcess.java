@@ -120,6 +120,7 @@ public class QueryProcess extends QuerySolver {
     // pragma: the update is done an external named graph
     // hence it does not brake the graph that is queried
     private static boolean overWrite = false;
+    private boolean processTransaction = true;
 
     public QueryProcess() {
     }
@@ -760,10 +761,10 @@ public class QueryProcess extends QuerySolver {
         Mappings map = null;
 
         if (q.isUpdate() || q.isRule()) {
-            if (this.hasDataManager()) {
-                this.getDataManager().startWriteTransaction();
-            }
             try {
+                if (isProcessTransaction() && hasDataManager()) {
+                    getDataManager().startWriteTransaction();
+                }
                 log(Log.UPDATE, q);
                 if (Access.reject(Access.Feature.SPARQL_UPDATE, getLevel(m, ds))) {
                     throw new EngineException("SPARQL Update unauthorized");
@@ -773,20 +774,15 @@ public class QueryProcess extends QuerySolver {
                 // hence the query in map is a local query corresponding to the last Update in q
                 // return the Mappings of the last Update and the global query q
                 map.setQuery(q);
-                if (this.hasDataManager()) {
-                    this.getDataManager().commitTransaction();
-                }
             } finally {
-                if (this.hasDataManager()) {
-                    this.getDataManager().endTransaction();
+                if (isProcessTransaction() && hasDataManager()) {
+                    getDataManager().commitTransaction();
                 }
             }
-        } else {
-            boolean start = hasDataManager() && 
-               ! getDataManager().isInReadTransaction();
-            
-            if (start) {
-                 getDataManager().startReadTransaction();
+
+        } else {            
+            if (isProcessTransaction() && hasDataManager()) {
+                getDataManager().startReadTransaction();
             }
 
             try {
@@ -798,11 +794,13 @@ public class QueryProcess extends QuerySolver {
                     construct(map, null, getAccessRight(m));
                 }
                 log(Log.QUERY, q, map);                
-            } catch (Exception e) {
-                e.printStackTrace();
-            } finally {
-                if (start) {
-                    this.getDataManager().endTransaction();
+            } 
+//            catch (Exception e) {
+//                e.printStackTrace();
+//            } 
+            finally {
+                if (isProcessTransaction() && hasDataManager()) {
+                    getDataManager().endTransaction();
                 }
             }
         }
@@ -1667,6 +1665,14 @@ public class QueryProcess extends QuerySolver {
 
     public void setDataBrokerUpdate(DataBrokerConstruct dataBrokerUpdate) {
         this.dataBrokerUpdate = dataBrokerUpdate;
+    }
+
+    public boolean isProcessTransaction() {
+        return processTransaction;
+    }
+
+    public void setProcessTransaction(boolean processTransaction) {
+        this.processTransaction = processTransaction;
     }
     
 }

@@ -22,9 +22,15 @@ import fr.inria.corese.sparql.triple.update.Basic;
  */
 public interface DataBrokerConstruct extends DataBroker {
     
-    default void startRuleEngine() {}
+    default void startRuleEngine() {
+        System.out.println("DataBrokerConstruct startRuleEngine");
+    }
     
     default void endRuleEngine() {}
+    
+    default void startRule() {}
+    
+    default void endRule() {}
     
 
     default Node getNode(Node gNode, IDatatype dt) {

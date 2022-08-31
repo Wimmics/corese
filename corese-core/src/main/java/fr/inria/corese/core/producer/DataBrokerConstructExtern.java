@@ -41,7 +41,16 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
     @Override
     public void endRuleEngine() {
         getDataManager().commitTransaction();
-        getDataManager().endTransaction();
+    }
+    
+    @Override
+    public void startRule() {
+    }
+    
+    @Override
+    public void endRule() {
+        getDataManager().commitTransaction();
+        getDataManager().startWriteTransaction();
     }
 
     /**

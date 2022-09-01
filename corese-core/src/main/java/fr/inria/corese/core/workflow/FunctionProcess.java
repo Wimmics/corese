@@ -47,7 +47,7 @@ public class FunctionProcess extends WorkflowProcess {
     }
     
     IDatatype eval(Data data, Context c, Dataset ds) throws EngineException{
-        QueryProcess exec = QueryProcess.create(data.getGraph());
+        QueryProcess exec = QueryProcess.create(data.getGraph(), data.getDataManager());
         if (path != null){
             exec.setDefaultBase(path);
         }

@@ -96,7 +96,7 @@ public class Data {
     
     QuerySolverVisitorTransformer createVisitor() {
         try {
-            return QuerySolverVisitorTransformer.create(QueryProcess.create(getGraph()).getCreateEval());
+            return QuerySolverVisitorTransformer.create(QueryProcess.create(getGraph(), getDataManager()).getCreateEval());
         } catch (EngineException ex) {
             Logger.getLogger(Data.class.getName()).log(Level.SEVERE, null, ex);
             return null;

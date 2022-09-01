@@ -131,7 +131,7 @@ public class SPARQLProcess extends  WorkflowProcess {
         if (g == null){
             g = GraphStore.create();
         }
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess exec = QueryProcess.create(g, data.getDataManager());
 //        if (getWorkflow().getGraph() != null){
 //            // draft: additional graph considered as contextual dataset
 //            exec.add(getWorkflow().getGraph());

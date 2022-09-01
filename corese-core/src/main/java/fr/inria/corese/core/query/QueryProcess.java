@@ -120,6 +120,9 @@ public class QueryProcess extends QuerySolver {
     // pragma: the update is done an external named graph
     // hence it does not brake the graph that is queried
     private static boolean overWrite = false;
+    // true: execute start/end transaction before query 
+    // false: case where we execute a subquery (e.g. xt:sparql) 
+    // or a query within rule engine
     private boolean processTransaction = true;
 
     public QueryProcess() {
@@ -250,6 +253,11 @@ public class QueryProcess extends QuerySolver {
         return exec;
     }
     
+    // inherit DataManager if any
+    public QueryProcess copy() {
+        return copy(getProducer(), isMatch());
+    }
+
     public static QueryProcess copy(Producer p, boolean isMatch) {
         QueryProcess exec = stdCreate(getGraph(p), isMatch);
         exec.defineDataManager(exec.getDataManager(p));
@@ -289,7 +297,7 @@ public class QueryProcess extends QuerySolver {
         Matcher match = MatcherImpl.create(Graph.create());
         match.setMode(Matcher.RELAX);
         QueryProcess exec = QueryProcess.create(p, createInterpreter(p, match), match);
-        // for compatibility reason:
+        // for compatibility reason e.g. with DataManager:
         exec.setLocalProducer(new ProducerImpl(Graph.create()));
         return exec;
     }
@@ -387,6 +395,10 @@ public class QueryProcess extends QuerySolver {
 
     void setMatch(boolean b) {
         isMatch = b;
+    }
+    
+    public boolean isMatch() {
+        return isMatch;
     }
 
     public Producer add(Graph g) {
@@ -762,9 +774,7 @@ public class QueryProcess extends QuerySolver {
 
         if (q.isUpdate() || q.isRule()) {
             try {
-                if (isProcessTransaction() && hasDataManager()) {
-                    getDataManager().startWriteTransaction();
-                }
+                startUpdate();
                 log(Log.UPDATE, q);
                 if (Access.reject(Access.Feature.SPARQL_UPDATE, getLevel(m, ds))) {
                     throw new EngineException("SPARQL Update unauthorized");
@@ -774,34 +784,25 @@ public class QueryProcess extends QuerySolver {
                 // hence the query in map is a local query corresponding to the last Update in q
                 // return the Mappings of the last Update and the global query q
                 map.setQuery(q);
-            } finally {
-                if (isProcessTransaction() && hasDataManager()) {
-                    getDataManager().commitTransaction();
-                }
+            } 
+            
+            finally {
+                endUpdate();
             }
 
         } else {            
-            if (isProcessTransaction() && hasDataManager()) {
-                getDataManager().startReadTransaction();
-            }
-
             try {
-
+                startQuery();
                 map = synQuery(gNode, q, m);
-
                 if (q.isConstruct()) {
                     // construct where
                     construct(map, null, getAccessRight(m));
                 }
                 log(Log.QUERY, q, map);                
             } 
-//            catch (Exception e) {
-//                e.printStackTrace();
-//            } 
+
             finally {
-                if (isProcessTransaction() && hasDataManager()) {
-                    getDataManager().endTransaction();
-                }
+                endQuery();
             }
         }
 
@@ -1673,6 +1674,34 @@ public class QueryProcess extends QuerySolver {
 
     public void setProcessTransaction(boolean processTransaction) {
         this.processTransaction = processTransaction;
+    }
+    
+    boolean processTransaction() {
+        return isProcessTransaction() && hasDataManager();
+    }
+    
+    void startQuery() {
+        if (processTransaction()) {
+            getDataManager().startReadTransaction();
+        }
+    }
+    
+    void endQuery() {
+        if (processTransaction()) {
+            getDataManager().endTransaction();
+        }
+    }
+    
+    void startUpdate() {
+        if (processTransaction()) {
+            getDataManager().startWriteTransaction();
+        }
+    }
+    
+    void endUpdate() {
+        if (processTransaction()) {
+            getDataManager().commitTransaction();
+        }
     }
     
 }

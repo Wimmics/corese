@@ -1072,6 +1072,8 @@ public class PluginImpl
         Graph g = getGraph(p);
         //QueryProcess exec = QueryProcess.create(g, true);
         QueryProcess exec = QueryProcess.copy(p, true);
+        // sub query process, if transaction was needed, it is already done
+        exec.setProcessTransaction(false);
         exec.setRule(env.getQuery().isRule());
         try {
             Mappings map;

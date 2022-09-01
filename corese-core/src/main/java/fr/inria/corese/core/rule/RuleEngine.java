@@ -313,7 +313,7 @@ public class RuleEngine implements Engine, Graphable {
      * Clean OWL RDF graph
      */
     public void cleanOWL() throws IOException, EngineException, LoadException{
-        Cleaner cl = new Cleaner(getGraphStore());
+        Cleaner cl = new Cleaner(getGraphStore(), getDataManager());
         cl.setDebug(isDebug());
         if (isEvent()) {
             cl.setVisitor(getVisitor());

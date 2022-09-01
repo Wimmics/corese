@@ -189,8 +189,16 @@ public class QueryProcessUpdate {
         synchronized (g) {
             gg.shareNamedGraph(g);
         }
-        Graph targetGraph = (toName) ? gg : g;
-        QueryProcess exec = QueryProcess.create(targetGraph);
+        QueryProcess exec;
+        if (toName) {
+            // eval where bgp on external graph gg
+            exec = QueryProcess.create(gg);
+        }
+        else {
+            // eval where bgp on std graph or DataManager 
+            // exec = QueryProcess.create(g);
+            exec = getQueryProcess().copy();
+        }
         // bypass lock if any
         Mappings map = exec.getQueryProcessUpdate().update(query, m, ds);
         if (gg.isVerbose()) {

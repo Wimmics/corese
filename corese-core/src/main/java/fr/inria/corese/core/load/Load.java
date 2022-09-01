@@ -673,22 +673,30 @@ public class Load
             throw new LoadException(new EngineException("Read lock while parsing: " + path));
         }
         try {
-            lock();
-            if (! isSparqlUpdate() && getDataManager()!=null) {
-                // sparql update already execute startWriteTransaction
-                getDataManager().startWriteTransaction();
-            }
+            startLoad();
             parse(stream, path, base, name, format);            
         } finally {
-            if (! isSparqlUpdate() && getDataManager()!=null) {
-                // sparql update will execute commit and end
-                getDataManager().commitTransaction();
-                getDataManager().endTransaction();
-            }
-            unlock();
+            endLoad();
         }
     }
     
+    void startLoad() {
+        lock();
+        if (processTransaction()) {
+            getDataManager().startWriteTransaction();
+        }
+    }
+    
+    void endLoad() {
+        try {
+            if (processTransaction()) {
+                getDataManager().commitTransaction();
+            }
+        } finally {
+            unlock();
+        }
+    }
+
     
     void lock() {
         if (getQueryProcess() != null && getQueryProcess().isSynchronized()) {
@@ -1252,7 +1260,7 @@ public class Load
     
     QueryProcess getCreateQueryProcess() {
         if (getQueryProcess() == null) {
-            setQueryProcess(QueryProcess.create(getGraph()));
+            setQueryProcess(QueryProcess.create(getGraph(), getDataManager()));
         }      
         return getQueryProcess();
     }
@@ -1342,6 +1350,12 @@ public class Load
 
     public void setSparqlUpdate(boolean sparqlUpdate) {
         this.sparqlUpdate = sparqlUpdate;
+    }
+    
+    // do not process transaction when load is in sparql update 
+    // because transaction is already processed by sparql update call
+    boolean processTransaction() {
+        return ! isSparqlUpdate() && getDataManager()!=null;
     }
 
 }

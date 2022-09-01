@@ -4,6 +4,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.QueryLoad;
@@ -28,12 +29,19 @@ public class Cleaner {
     static final String[] queries = { "allsome.rq", "card.rq", "intersection.rq", "union.rq"}; 
     
     Graph graph;
+    private DataManager dataManager;
     private ProcessVisitor visitor;
     private boolean debug = false;
+    
+    public Cleaner(Graph g, DataManager man){
+        graph = g;
+        setDataManager(man);
+    }
     
     public Cleaner(Graph g){
         graph = g;
     }
+
     
     void clean(int mode) throws IOException, EngineException, LoadException{
         switch (mode){
@@ -58,7 +66,7 @@ public class Cleaner {
     void clean(Graph g, String[] lq, boolean resource) throws IOException, EngineException, LoadException{
         Date d1 = new Date();
          QueryLoad ql = QueryLoad.create();
-         QueryProcess exec = QueryProcess.create(g);
+         QueryProcess exec = QueryProcess.create(g, getDataManager());
          // escape QueryProcess write lock in case 
          // RuleEngine was run by Workflow Manager by init() by query()
          // because query() have read lock
@@ -124,6 +132,14 @@ public class Cleaner {
 
     public void setDebug(boolean debug) {
         this.debug = debug;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
     }
 
 }

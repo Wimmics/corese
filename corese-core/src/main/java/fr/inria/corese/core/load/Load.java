@@ -690,7 +690,7 @@ public class Load
     void endLoad() {
         try {
             if (processTransaction()) {
-                getDataManager().commitTransaction();
+                getDataManager().endWriteTransaction();
             }
         } finally {
             unlock();

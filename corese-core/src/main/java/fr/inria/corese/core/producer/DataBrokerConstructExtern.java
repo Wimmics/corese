@@ -40,7 +40,7 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
     
     @Override
     public void endRuleEngine() {
-        getDataManager().commitTransaction();
+        getDataManager().endWriteTransaction();
     }
     
     @Override
@@ -49,7 +49,7 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
     
     @Override
     public void endRule() {
-        getDataManager().commitTransaction();
+        getDataManager().endWriteTransaction();
         getDataManager().startWriteTransaction();
     }
 

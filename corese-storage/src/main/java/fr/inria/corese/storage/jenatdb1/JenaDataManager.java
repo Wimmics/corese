@@ -350,7 +350,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     }
 
     @Override
-    public void endTransaction() {
+    public void endReadTransaction() {
         this.jena_dataset.end();
     }
 
@@ -360,7 +360,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     }
 
     @Override
-    public void commitTransaction() {
+    public void endWriteTransaction() {
         this.jena_dataset.commit();
     }
 

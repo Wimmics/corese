@@ -316,7 +316,7 @@ public class Shacl {
             return res;
         } finally {
             if (getDataManager() != null) {
-                getDataManager().endTransaction();
+                getDataManager().endReadTransaction();
             }
         }
     }

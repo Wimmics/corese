@@ -1688,7 +1688,7 @@ public class QueryProcess extends QuerySolver {
     
     void endQuery() {
         if (processTransaction()) {
-            getDataManager().endTransaction();
+            getDataManager().endReadTransaction();
         }
     }
     
@@ -1700,7 +1700,7 @@ public class QueryProcess extends QuerySolver {
     
     void endUpdate() {
         if (processTransaction()) {
-            getDataManager().commitTransaction();
+            getDataManager().endWriteTransaction();
         }
     }
     

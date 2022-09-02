@@ -1,8 +1,8 @@
 <?xml version='1.0' encoding='UTF-8'?>
 <!--
 SPARQL Template Transformation
-Olivier Corby - Wimmics - Inria UNS CNRS I3S
-Thu Sep 17 16:12:54 CEST 2020
+Olivier Corby - Wimmics - Inria UCA I3S
+Fri Sep 02 15:54:13 CEST 2022
 -->
 <rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
   xmlns='http://ns.inria.fr/sparql-template/'>
@@ -110,8 +110,8 @@ template st:main {
 where {
   select distinct ?x where { 
     bind (st:focus() as ?x)
-    bind (bnode() as ?z)
-    bind (bnode() as ?q)
+    bind (st:joker() as ?z)
+    bind (st:joker() as ?q)
     ?x ?p ?y  
     #filter (isURI(?x) || not exists { ?z ?q ?x })   
     filter (isURI(?x) || ! xt:exists(?z, ?q, ?x))          
@@ -288,6 +288,10 @@ where {}
     st:turtle(?in)
  }
  
+ function st:joker() {
+    #return (bnode())
+    return (xt:_joker)
+ }
 ]]>
 </body>
 </rule>
@@ -319,7 +323,7 @@ where {
         (
         #(st:get(st:allgraph, true) &&  exists { ?x ?p ?e . filter(?x != ?r) })
         (st:get(st:allgraph, true) &&  xt:mindegree(?e, 1, 2))
-        || let (?qq = bnode()) { xt:exists(?e, ?qq, ?e) }
+        || let (?qq = st:joker()) { xt:exists(?e, ?qq, ?e) }
         #exists { ?e ?q ?e }
         ))
     )
@@ -382,7 +386,7 @@ template {
 where {
   ?in ?p ?y   
   filter isBlank(?in)
-  bind (bnode() as ?e)
+  bind (st:joker() as ?e)
   filter (! xt:exists(?in, rdf:first, ?e) )
      
   bind (

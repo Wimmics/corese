@@ -1680,25 +1680,25 @@ public class QueryProcess extends QuerySolver {
         return isProcessTransaction() && hasDataManager();
     }
     
-    void startQuery() {
+    public void startQuery() {
         if (processTransaction()) {
             getDataManager().startReadTransaction();
         }
     }
     
-    void endQuery() {
+    public void endQuery() {
         if (processTransaction()) {
             getDataManager().endReadTransaction();
         }
     }
     
-    void startUpdate() {
+    public void startUpdate() {
         if (processTransaction()) {
             getDataManager().startWriteTransaction();
         }
     }
     
-    void endUpdate() {
+    public void endUpdate() {
         if (processTransaction()) {
             getDataManager().endWriteTransaction();
         }

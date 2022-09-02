@@ -149,6 +149,12 @@ public class DataProducer extends GraphObject
         }
         return n;
     }
+    
+    public DataProducer iterate(Node s, Node p, Node o) {
+        return iterate(s==null?null:s.getDatatypeValue(),
+                p==null?null:p.getDatatypeValue(),
+                o==null?null:o.getDatatypeValue());
+    }
      
     /**
      * if arg is bnode: 
@@ -227,6 +233,13 @@ public class DataProducer extends GraphObject
             dp.filter(df);
         }
         return dp;
+    }
+    
+    public boolean exist(IDatatype s, IDatatype p, IDatatype o) {
+        for (Edge ent : iterate(s, p, o)) {
+            return (ent != null);
+        }
+        return false;
     }
     
     boolean isPropertyVariable(IDatatype dt) {

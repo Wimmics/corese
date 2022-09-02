@@ -646,21 +646,36 @@ public class PluginImpl
         return  val.getDatatypeValue();
     }
 
+
+    public IDatatype exists2(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
+        DataProducer dp = new DataProducer(getGraph(p));
+        if (env.getGraphNode() != null) {
+            dp.from(env.getGraphNode());
+        }
+        return dp.exist(subj, pred, obj) ? TRUE : FALSE;
+    }
+    
     // function xt:exists
     // xt:exist()
     // xt:exist(p)
     // xt:exist(s, p)
     // xt:exist(s, p, o)
+    // xt:_joker stands as a joker for null value
+    // bnode not in graph interpreted as joker by corese graph DataProducer
     @Override
-    public IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
-        DataProducer dp = new DataProducer(getGraph(p));
-        if (env.getGraphNode() != null) {
-            dp.from(env.getGraphNode());
-        }
-        for (Edge ent : dp.iterate(subj, pred, obj)) {
-            return (ent == null) ? FALSE : TRUE;
+    public IDatatype exists(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o) {
+        for (Edge e : prod.getEdges(s, p, o, getNodeList(env.getGraphNode()))) {
+            return e==null ? FALSE : TRUE;
         }
         return FALSE;
+    }
+    
+        
+    List<Node> getNodeList(Node node) {
+        if (node == null) {
+            return null;
+        }
+        return List.of(node);
     }
 
     // function xt:mindegree

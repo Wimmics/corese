@@ -28,6 +28,7 @@ import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.filter.Extension;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.load.Load;
@@ -247,10 +248,14 @@ public class Transformer implements TransformProcessor {
         Transformer t = new Transformer();
         t.init(qp, p);
         return t;
-    }
+    }    
     
     public static Transformer createWE(Graph g, String p) throws LoadException {
         return createWE(QueryProcess.create(g), p);
+    }
+    
+    public static Transformer createWE(DataManager man, String p) throws LoadException {        
+        return createWE(QueryProcess.create(man), p);
     }
    
     public static Transformer createWE(Graph g, String p, Level level) throws LoadException {
@@ -694,84 +699,89 @@ public class Transformer implements TransformProcessor {
      * st:start template.
      */
     @Override
-    public IDatatype process(String temp, boolean all, String sep, Expr exp, Environment env) 
-    throws EngineException {       
-        boolean astart = isStarting();
-        beforeTransformer(astart);
-        count++;
-        query = null;
-        ArrayList<Node> nodes = new ArrayList<>();
-        if (temp == null) {
-            temp = start;
-        }
-        List<Query> list = getTemplateList(temp);
-        if (list == null) {
-            list = qe.getTemplates();
-        }
-        if (list.isEmpty()) {
-            logger.error("No templates");
-        }
-
-        Mapping m = Mapping.create();
-        share(m, env);
-        
-        for (Query qq : list) {
-            
-            if (nsm(qq).isUserDefine()) {
-                // import prefix from st:start template
-                getNSM().complete(nsm(qq));
-            }
-
-            if (isDebug) {
-                //qq.setDebug(true);
-            }
-            // remember start with qq for function pprint below
-            query = qq;
-            if (query.getName() != null) {
-                context.setURI(STL_START, qq.getName());
-            } else {
-                context.set(STL_START, (String) null);
-            }
-            
-            if (isDebug) { //(getTransformation().contains("turtlehtml")) {
-                System.out.println("transformer start: " + getTransformation());
-                System.out.println(qq.getAST()); 
-                System.out.println("graph size: "+ getGraph().size());
-            }
-            
-            Mappings map = exec.query(qq, m);
-            save(map);
+    public IDatatype process(String temp, boolean all, String sep, Expr exp, Environment env)
+            throws EngineException {
+        startTransformer();
+        try {
+            boolean astart = isStarting();
+            beforeTransformer(astart);
+            count++;
             query = null;
-            IDatatype res = getResult(map);
-            
-            if (isDebug) {
-                System.out.println("transformer result: \n" + map.toString(true));
-                System.out.println(res);
+            ArrayList<Node> nodes = new ArrayList<>();
+            if (temp == null) {
+                temp = start;
+            }
+            List<Query> list = getTemplateList(temp);
+            if (list == null) {
+                list = qe.getTemplates();
+            }
+            if (list.isEmpty()) {
+                logger.error("No templates");
             }
 
-            if (res != null) {
-                if (all) {
-                    nodes.add(map.getTemplateResult());
+            Mapping m = Mapping.create();
+            share(m, env);
+
+            for (Query qq : list) {
+
+                if (nsm(qq).isUserDefine()) {
+                    // import prefix from st:start template
+                    getNSM().complete(nsm(qq));
+                }
+
+                if (isDebug) {
+                    //qq.setDebug(true);
+                }
+                // remember start with qq for function pprint below
+                query = qq;
+                if (query.getName() != null) {
+                    context.setURI(STL_START, qq.getName());
                 } else {
-                    afterTransformer(astart, res);
-                    return res;
+                    context.set(STL_START, (String) null);
+                }
+
+                if (isDebug) { //(getTransformation().contains("turtlehtml")) {
+                    System.out.println("transformer start: " + getTransformation());
+                    System.out.println(qq.getAST());
+                    System.out.println("graph size: " + getGraph().size());
+                }
+
+                Mappings map = exec.query(qq, m);
+                save(map);
+                query = null;
+                IDatatype res = getResult(map);
+
+                if (isDebug) {
+                    System.out.println("transformer result: \n" + map.toString(true));
+                    System.out.println(res);
+                }
+
+                if (res != null) {
+                    if (all) {
+                        nodes.add(map.getTemplateResult());
+                    } else {
+                        afterTransformer(astart, res);
+                        return res;
+                    }
                 }
             }
-        }
 
-        query = null;
+            query = null;
 
-        if (all) {
-            if (!nodes.isEmpty()) {
-                IDatatype dt2 = result(env, nodes);
-                afterTransformer(astart, dt2);
-                return dt2;
+            if (all) {
+                if (!nodes.isEmpty()) {
+                    IDatatype dt2 = result(env, nodes);
+                    afterTransformer(astart, dt2);
+                    return dt2;
+                }
             }
+
+            IDatatype fin = isBoolean() ? defaultBooleanResult() : EMPTY;
+            afterTransformer(astart, fin);
+            return fin;
+        } finally {
+            endTransformer();
         }
-        
-        IDatatype fin = isBoolean() ? defaultBooleanResult() : EMPTY;
-        afterTransformer(astart, fin);
-        return fin;
     }
     
     void beforeTransformer(boolean astart) {
@@ -786,6 +796,14 @@ public class Transformer implements TransformProcessor {
             if (isEvent()) getEventVisitor().afterTransformer(getTransformation(), dt.getLabel());
             setStarting(true);
         }
+    }
+    
+    void startTransformer() {
+        //getQueryProcess().startQuery();
+    }
+    
+    void endTransformer() {
+        //getQueryProcess().endQuery();    
     }
     
     ASTQuery ast(Query q) {
@@ -879,172 +897,173 @@ public class Transformer implements TransformProcessor {
 
     @Override
     public IDatatype process(String temp, boolean allTemplates, String sep,
-            Expr exp, Environment env, IDatatype dt, IDatatype[] args) 
-        throws EngineException
-    { 
+            Expr exp, Environment env, IDatatype dt, IDatatype[] args)
+            throws EngineException {
         count++;
         if (dt == null) {
             return EMPTY;
         }
-               
+        startTransformer();
         boolean astart = isStarting();
         beforeTransformer(astart);
-
-        if (level() >= levelMax) {
-            //return defaut(dt, q);
-            IDatatype res =  eval(STL_DEFAULT, dt, (isBoolean() ? defaultBooleanResult() : turtle(dt)), env);
-            afterTransformer(astart, res);
-            return res;
-        }
-
-        ArrayList<Node> nodes = null;
-        if (allTemplates) {
-            nodes = new ArrayList<>();
-        }
-        boolean start = false;
-
-        if (query != null && stack.size() == 0) {
-            // just started with query in process() above
-            // without focus node at that time
-            // push dt -> query in the stack
-            // query is the first template that started process (see function above)
-            // and at that time ?in was not bound
-            start = true;
-            stack.push(dt, args, query);
-        }
-
-        if (isDebug || isTrace) {
-            trace(temp, dt, args, exp);
-        }
-
-        QueryProcess exec = this.exec;
-
-        int count = 0, n = 0;
-
-        IDatatype type = null;
-        if (isOptimize) {
-            type = graph.getValue(fr.inria.corese.core.logic.RDF.TYPE, dt);
-        }
-
-        List<Query> templateList = getTemplates(temp, type);       
-                    
-        Query tq = null;
-        if (temp != null && templateList.size() == 1) {
-            // named template may have specific arguments
-            tq = templateList.get(0);
-        }
-        // Mapping of tq or default Mapping ?in = dt
-        Mapping m = tmap.getMapping(tq, args, dt);
-        share(m, env);
-        
-   
-        for (Query qq : templateList) {
-
-            Mapping bm = m;
-
-            if (isDetail) {
-                qq.setDebug(true);
-            }
-
-            if (isDebug) {
-                if (qq.isFail()) {
-                    System.out.println("template fail: " + dt + "\n" +qq.getAST());                
-                }
-                if (stack.contains(dt, args, qq)) {
-                    System.out.println("stack contains: " + dt + "\n" +qq.getAST());
-                }
-            }
-            
-            if (!qq.isFail() && !stack.contains(dt, args, qq)) {
-
-                nbt++;
-
-                if (allTemplates) {
-                    count++;
-                }
-                stack.push(dt, args, qq);
-                if (stack.size() > max) {
-                    max = stack.size();
-                }
-
-                if (stat) {
-                    incr(qq);
-                }
-
-                n++;
-                if (qq != tq && qq.getArgList() != null) {
-                    // std template has arg list: create appropriate Mapping
-                    bm = tmap.getMapping(qq, args, dt);
-                    share(bm, env);
-                }
-
-                if (isDebug) {
-                    System.out.println("try:\n"+qq.getAST());
-                }
-                
-                Mappings map = exec.query(qq, bm);
-                save(map);
-                stack.visit(dt);
-                stack.pop();
-                IDatatype res = getResult(map);
-                
-                if (isDebug) {
-                    System.out.println("map:\n" + map);
-                    System.out.println("res:\n" + res);
-                }
-
-                if (res != null) {
-                    if (isTrace) {
-                        System.out.println(qq.getAST());
-                    }
-
-                    if (allTemplates) {
-                        nodes.add(map.getTemplateResult());
-                    } else {
-                        if (start) {
-                            stack.pop();
-                        }
-                        afterTransformer(astart, res);
-                        return res;
-                    }
-                }
-            }
-        }
-
-        if (start) {
-            stack.pop();
-        }
-
-        if (allTemplates) {
-            // gather results of several templates
-            if (nodes.size() > 0) {
-                IDatatype mres = result(env, nodes);
-                afterTransformer(astart, mres);
-                return mres;
-            }
-        }
-
-        // **** no template match dt ****      
-        if (temp != null) {
-            // named template does not match focus node dt
-            // try funcall st:defaultNamed(dt)
-            IDatatype res = eval(STL_DEFAULT_NAMED, dt, (isBoolean() ? defaultBooleanResult() : EMPTY), env);
-            afterTransformer(astart, res);
-            return res;
-        } else if (isHasDefault()) {
-            // apply named template st:default 
-            IDatatype res = process(STL_DEFAULT, allTemplates, sep, exp, env, dt, args);
-            if (res != EMPTY) {
+        try {
+            if (level() >= levelMax) {
+                //return defaut(dt, q);
+                IDatatype res = eval(STL_DEFAULT, dt, (isBoolean() ? defaultBooleanResult() : turtle(dt)), env);
                 afterTransformer(astart, res);
                 return res;
             }
-        }
 
-        // return a default result (may be dt)
-        // may be overloaded by function st:default(?x) { st:turtle(?x) }
-        IDatatype res = eval(STL_DEFAULT, dt, (isBoolean() ? defaultBooleanResult() : turtle(dt)), env);
-        afterTransformer(astart, res);        
-        return res;
+            ArrayList<Node> nodes = null;
+            if (allTemplates) {
+                nodes = new ArrayList<>();
+            }
+            boolean start = false;
+
+            if (query != null && stack.size() == 0) {
+                // just started with query in process() above
+                // without focus node at that time
+                // push dt -> query in the stack
+                // query is the first template that started process (see function above)
+                // and at that time ?in was not bound
+                start = true;
+                stack.push(dt, args, query);
+            }
+
+            if (isDebug || isTrace) {
+                trace(temp, dt, args, exp);
+            }
+
+            QueryProcess exec = this.exec;
+
+            int count = 0, n = 0;
+
+            IDatatype type = null;
+            if (isOptimize) {
+                type = graph.getValue(fr.inria.corese.core.logic.RDF.TYPE, dt);
+            }
+
+            List<Query> templateList = getTemplates(temp, type);
+
+            Query tq = null;
+            if (temp != null && templateList.size() == 1) {
+                // named template may have specific arguments
+                tq = templateList.get(0);
+            }
+            // Mapping of tq or default Mapping ?in = dt
+            Mapping m = tmap.getMapping(tq, args, dt);
+            share(m, env);
+
+            for (Query qq : templateList) {
+
+                Mapping bm = m;
+
+                if (isDetail) {
+                    qq.setDebug(true);
+                }
+
+                if (isDebug) {
+                    if (qq.isFail()) {
+                        System.out.println("template fail: " + dt + "\n" + qq.getAST());
+                    }
+                    if (stack.contains(dt, args, qq)) {
+                        System.out.println("stack contains: " + dt + "\n" + qq.getAST());
+                    }
+                }
+
+                if (!qq.isFail() && !stack.contains(dt, args, qq)) {
+
+                    nbt++;
+
+                    if (allTemplates) {
+                        count++;
+                    }
+                    stack.push(dt, args, qq);
+                    if (stack.size() > max) {
+                        max = stack.size();
+                    }
+
+                    if (stat) {
+                        incr(qq);
+                    }
+
+                    n++;
+                    if (qq != tq && qq.getArgList() != null) {
+                        // std template has arg list: create appropriate Mapping
+                        bm = tmap.getMapping(qq, args, dt);
+                        share(bm, env);
+                    }
+
+                    if (isDebug) {
+                        System.out.println("try:\n" + qq.getAST());
+                    }
+
+                    Mappings map = exec.query(qq, bm);
+                    save(map);
+                    stack.visit(dt);
+                    stack.pop();
+                    IDatatype res = getResult(map);
+
+                    if (isDebug) {
+                        System.out.println("map:\n" + map);
+                        System.out.println("res:\n" + res);
+                    }
+
+                    if (res != null) {
+                        if (isTrace) {
+                            System.out.println(qq.getAST());
+                        }
+
+                        if (allTemplates) {
+                            nodes.add(map.getTemplateResult());
+                        } else {
+                            if (start) {
+                                stack.pop();
+                            }
+                            afterTransformer(astart, res);
+                            return res;
+                        }
+                    }
+                }
+            }
+
+            if (start) {
+                stack.pop();
+            }
+
+            if (allTemplates) {
+                // gather results of several templates
+                if (nodes.size() > 0) {
+                    IDatatype mres = result(env, nodes);
+                    afterTransformer(astart, mres);
+                    return mres;
+                }
+            }
+
+            // **** no template match dt ****      
+            if (temp != null) {
+                // named template does not match focus node dt
+                // try funcall st:defaultNamed(dt)
+                IDatatype res = eval(STL_DEFAULT_NAMED, dt, (isBoolean() ? defaultBooleanResult() : EMPTY), env);
+                afterTransformer(astart, res);
+                return res;
+            } else if (isHasDefault()) {
+                // apply named template st:default 
+                IDatatype res = process(STL_DEFAULT, allTemplates, sep, exp, env, dt, args);
+                if (res != EMPTY) {
+                    afterTransformer(astart, res);
+                    return res;
+                }
+            }
+
+            // return a default result (may be dt)
+            // may be overloaded by function st:default(?x) { st:turtle(?x) }
+            IDatatype res = eval(STL_DEFAULT, dt, (isBoolean() ? defaultBooleanResult() : turtle(dt)), env);
+            afterTransformer(astart, res);
+            return res;
+        } finally {
+            endTransformer();
+        }
 
     }
     

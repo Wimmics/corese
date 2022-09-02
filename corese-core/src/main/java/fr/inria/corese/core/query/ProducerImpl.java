@@ -379,6 +379,22 @@ public class ProducerImpl
         return getDataBroker().getEdgeList(subject, property, object, list);
     }
     
+    @Override
+    public Iterable<Edge> getEdges(Node s, Node p, Node o, List<Node> from) {
+        if (hasDataManager()) {
+            return getDataManager().getEdges(s, p, o, from);
+        }
+        return getLocalEdges(s, p, o, from);
+    }
+    
+    Iterable<Edge> getLocalEdges(Node s, Node p, Node o, List<Node> from) {
+        DataProducer dp = new DataProducer(getGraph());
+        if (from!=null && !from.isEmpty()) {
+            dp.from(from.get(0));
+        }
+        return dp.iterate(s, p, o);
+    }
+        
     List<Node> getFrom(Node graph, List<Node> from) {
         if (graph == null) {
             return from;

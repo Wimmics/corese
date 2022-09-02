@@ -12,6 +12,7 @@ import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.api.IDatatype;
+import java.util.ArrayList;
 
 /**
  * Interface for the Connector that produces candidate edges for KGRAM 
@@ -78,6 +79,10 @@ public interface Producer {
 	 * @return Candidate edge iterator
 	 */
 	Iterable<Edge> getEdges(Node gNode, List<Node> from, Edge qEdge,  Environment env);
+        
+        default Iterable<Edge> getEdges(Node s, Node p, Node o, List<Node> from) {
+            return new ArrayList<>(0);
+        }
         
         Mappings getMappings(Node gNode, List<Node> from, Exp exp,  Environment env) throws SparqlException ;
 	

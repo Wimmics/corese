@@ -45,13 +45,15 @@ import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  *
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
-public class GraphSpecificFunction extends LDScript {  
+public class GraphSpecificFunction extends LDScript { 
+    public static final String JOKER = NSManager.EXT + "_joker";
     
     public GraphSpecificFunction(String name){
         super(name);
@@ -324,13 +326,23 @@ public class GraphSpecificFunction extends LDScript {
             case 0:
                 return proc.exists(env, p, null, null, null);
             case 1:
-                return proc.exists(env, p, null, param[0], null);
+                return proc.exists(env, p, null, clean(param[0]), null);
             case 2:
-                return proc.exists(env, p, param[0], param[1], null);
+                return proc.exists(env, p, clean(param[0]), clean(param[1]), null);
             default:
-                return proc.exists(env, p, param[0], param[1], param[2]);
-
+                return proc.exists(env, p, clean(param[0]), clean(param[1]), clean(param[2]));
         }
+    }
+    
+    IDatatype clean(IDatatype dt) {
+        if (dt==null) {
+            return dt;
+        }
+        if (dt.getLabel().startsWith(JOKER)) {
+            // xt:_joker stands for null joker value 
+            return null;
+        }
+        return dt;
     }
     
     IDatatype degree(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {

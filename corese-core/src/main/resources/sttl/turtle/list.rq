@@ -22,7 +22,7 @@ where {
         (
         #(st:get(st:allgraph, true) &&  exists { ?x ?p ?e . filter(?x != ?r) })
         (st:get(st:allgraph, true) &&  xt:mindegree(?e, 1, 2))
-        || let (?qq = bnode()) { xt:exists(?e, ?qq, ?e) }
+        || let (?qq = st:joker()) { xt:exists(?e, ?qq, ?e) }
         #exists { ?e ?q ?e }
         ))
     )

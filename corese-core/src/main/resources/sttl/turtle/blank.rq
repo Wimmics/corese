@@ -14,7 +14,7 @@ template {
 where {
   ?in ?p ?y   
   filter isBlank(?in)
-  bind (bnode() as ?e)
+  bind (st:joker() as ?e)
   filter (! xt:exists(?in, rdf:first, ?e) )
      
   bind (

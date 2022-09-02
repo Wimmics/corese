@@ -23,3 +23,7 @@ where {}
     st:turtle(?in)
  }
  
+ function st:joker() {
+    #return (bnode())
+    return (xt:_joker)
+ }

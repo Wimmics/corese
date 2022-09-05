@@ -25,6 +25,7 @@ import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import java.util.HashMap;
 
 /**
  * Implements the Corese Datamanger interface for Jena-TDB.
@@ -33,6 +34,9 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     private Dataset jena_dataset;
     private String storage_path;
+    private int readCounter = 0;
+    private boolean  reentrant = false;
+    HashMap<Thread, Integer> threadCounter;
 
     /****************
      * Constructors *
@@ -45,6 +49,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     public JenaDataManager() {
         this.storage_path = null;
         this.jena_dataset = TDBFactory.createDataset();
+        init();
     }
 
     /**
@@ -56,6 +61,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     public JenaDataManager(String storage_path) {
         this.storage_path = storage_path;
         this.jena_dataset = TDBFactory.createDataset(storage_path);
+        init();
     }
 
     /**
@@ -65,6 +71,11 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      */
     public JenaDataManager(Dataset jena_dataset) {
         this.jena_dataset = jena_dataset;
+        init();
+    }
+    
+    void init() {
+        threadCounter = new HashMap<>();
     }
 
     /*********
@@ -341,18 +352,61 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     @Override
     public void startReadTransaction() {
+        if (isReentrant()) {
+            startReentrantReadTransaction();
+        }
+        else {
+            startBasicReadTransaction();
+        }
+    }
+    
+    @Override
+    public void endReadTransaction() {
+       if (isReentrant()) {
+           endReentrantReadTransaction();
+       }
+       else {
+           endBasicReadTransaction();
+       }
+    }
+
+    void startBasicReadTransaction() {
         this.jena_dataset.begin(ReadWrite.READ);
     }
+    
+    
+    void endBasicReadTransaction() {
+        this.jena_dataset.end();
+    }
+
+    public synchronized void startReentrantReadTransaction() {
+        int count = getReadCounter();
+        if (count == 0) {
+            this.jena_dataset.begin(ReadWrite.READ);
+        }
+        setReadCounter(count+1);
+        System.out.println("start read counter: " + getReadCounter());
+    }
+    
+    public synchronized void endReentrantReadTransaction() {
+        int count = getReadCounter();
+        if (count>0) {
+            setReadCounter(count-1);
+        }
+        System.out.println("end read counter: " + getReadCounter());
+        if (count == 1) {
+            // count was 1, now 0
+            this.jena_dataset.end();
+        }
+    }
+    
 
     @Override
     public void startWriteTransaction() {
         this.jena_dataset.begin(ReadWrite.WRITE);
     }
-
-    @Override
-    public void endReadTransaction() {
-        this.jena_dataset.end();
-    }
+    
+    
 
     @Override
     public void abortTransaction() {
@@ -392,5 +446,26 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     @Override
     public String getStoragePath() {
         return this.storage_path;
+    }
+
+    Integer getReadCounter() {
+        Integer count = threadCounter.get(Thread.currentThread());
+        if (count == null) {
+            threadCounter.put(Thread.currentThread(), 0);
+            count = 0;
+        }
+        return count;
+    }
+
+    void setReadCounter(int count) {
+        threadCounter.put(Thread.currentThread(), count);
+    }
+
+    public boolean isReentrant() {
+        return reentrant;
+    }
+
+    public void setReentrant(boolean reentrant) {
+        this.reentrant = reentrant;
     }
 }

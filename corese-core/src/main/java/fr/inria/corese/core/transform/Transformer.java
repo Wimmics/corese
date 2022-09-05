@@ -799,11 +799,11 @@ public class Transformer implements TransformProcessor {
     }
     
     void startTransformer() {
-        //getQueryProcess().startQuery();
+        getQueryProcess().startQuery();
     }
     
     void endTransformer() {
-        //getQueryProcess().endQuery();    
+        getQueryProcess().endQuery();    
     }
     
     ASTQuery ast(Query q) {

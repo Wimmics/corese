@@ -18,8 +18,6 @@ module fr.inria.corese.corese_server {
 
     requires jakarta.ws.rs;
 
-    requires jena.arq;
-
     requires org.apache.logging.log4j;
 
     requires commons.cli;
@@ -31,5 +29,7 @@ module fr.inria.corese.corese_server {
     requires org.jsoup;
 
     requires org.slf4j;
+
+    requires fr.inria.corese.corese_storage;
 
 }

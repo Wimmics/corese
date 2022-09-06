@@ -17,6 +17,7 @@ import static fr.inria.corese.kgram.api.core.PointerType.PRODUCER;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import java.util.ArrayList;
+import java.util.Collections;
 
 /**
  * Transient Dataset over graph in order to iterate edges 
@@ -365,6 +366,30 @@ public class DataProducer extends GraphObject
                     nodeList.add(node);
                 }
             }
+            from(nodeList);
+        }
+        return this;
+    }
+    
+    // check that node exist in graph
+    public DataProducer fromSelect(List<Node> list) {  
+        if (list != null && ! list.isEmpty()){
+            ArrayList<Node> nodeList = new ArrayList<>(list.size());
+            
+            for (Node n : list) {
+                Node node = getGraph().getNode(n.getDatatypeValue(), false, false);
+                if (node != null) {
+                    nodeList.add(node);
+                }
+            }
+            if (nodeList.isEmpty()) {
+                // no named graph from list exist in  target graph: fail
+                for (Node node : list) {
+                    nodeList.add(node);
+                }
+            }
+            
+            Collections.sort(nodeList);
             from(nodeList);
         }
         return this;

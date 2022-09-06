@@ -40,6 +40,8 @@ import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import static fr.inria.corese.sparql.triple.parser.Metadata.RDF_STAR_SELECT;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Producer Implement getEdges() for KGRAM interpreter rely on
@@ -50,7 +52,9 @@ import static fr.inria.corese.sparql.triple.parser.Metadata.RDF_STAR_SELECT;
  */
 public class ProducerImpl 
         implements Producer, IProducerQP 
-{
+{    
+    private static Logger logger = LoggerFactory.getLogger(ProducerImpl.class);
+
     public static final int OWL_RL = 1;
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST = Graph.ILIST;
@@ -379,6 +383,8 @@ public class ProducerImpl
         return getDataBroker().getEdgeList(subject, property, object, list);
     }
     
+    // use case: xt:exists(s, p, o) -- see PluginImpl exists()
+    // future use case: xt:edge(s, p, o [,g])
     @Override
     public Iterable<Edge> getEdges(Node s, Node p, Node o, List<Node> from) {
         if (hasDataManager()) {
@@ -388,13 +394,14 @@ public class ProducerImpl
     }
     
     Iterable<Edge> getLocalEdges(Node s, Node p, Node o, List<Node> from) {
-        DataProducer dp = new DataProducer(getGraph());
+        DataProducer dp = new DataProducer(getGraph()).setDuplicate(true);
         if (from!=null && !from.isEmpty()) {
-            dp.from(from.get(0));
+            //dp.from(from.get(0));
+            dp.fromSelect(from);
         }
         return dp.iterate(s, p, o);
     }
-        
+           
     List<Node> getFrom(Node graph, List<Node> from) {
         if (graph == null) {
             return from;

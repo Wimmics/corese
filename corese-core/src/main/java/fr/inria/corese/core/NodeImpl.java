@@ -14,7 +14,9 @@ import fr.inria.corese.kgram.path.Path;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl> {
+public class NodeImpl extends GraphObject implements Node
+        //,  Comparable<NodeImpl> 
+{
 
     // true means graph nodes are IDatatype instead of NodeImpl
     // todo: duplicate IDatatype when insert node in new graph, e.g. construct
@@ -207,8 +209,8 @@ public class NodeImpl extends GraphObject implements Node,  Comparable<NodeImpl>
         return graph;
     }
 
-	@Override
-	public int compareTo(NodeImpl o) {
-		return o.dt.compareTo(dt);
-	}
+//	@Override
+//	public int compareTo(NodeImpl o) {
+//		return o.dt.compareTo(dt);
+//	}
 }

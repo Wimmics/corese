@@ -64,6 +64,7 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.io.IOException;
 import jakarta.ws.rs.core.Response;
+import java.util.Collections;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -655,29 +656,6 @@ public class PluginImpl
         return dp.exist(subj, pred, obj) ? TRUE : FALSE;
     }
     
-    // function xt:exists
-    // xt:exist()
-    // xt:exist(p)
-    // xt:exist(s, p)
-    // xt:exist(s, p, o)
-    // xt:_joker stands as a joker for null value
-    // bnode not in graph interpreted as joker by corese graph DataProducer
-    @Override
-    public IDatatype exists(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o) {
-        for (Edge e : prod.getEdges(s, p, o, getNodeList(env.getGraphNode()))) {
-            return e==null ? FALSE : TRUE;
-        }
-        return FALSE;
-    }
-    
-        
-    List<Node> getNodeList(Node node) {
-        if (node == null) {
-            return null;
-        }
-        return List.of(node);
-    }
-
     // function xt:mindegree
     // check whether node has degree >= dtmin
     // xt:mindegree(node, min)
@@ -772,8 +750,25 @@ public class PluginImpl
         e.setNested(true);
         return ref;
     }
+    
+    // function xt:exists
+    // xt:exist()
+    // xt:exist(p)
+    // xt:exist(s, p)
+    // xt:exist(s, p, o)
+    // xt:_joker stands as a joker for null value
+    // bnode not in graph interpreted as joker by corese graph DataProducer
+    @Override
+    public IDatatype exists(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o) {
+        for (Edge e : prod.getEdges(s, p, o, getNodeList(env.getGraphNode()))) {
+            return e==null ? FALSE : TRUE;
+        }
+        return FALSE;
+    }
+ 
 
-    // function xt:edge
+
+    // function xt:edges
     // return iterator Edge
     // xt:edge()
     // xt:edge(p)
@@ -781,14 +776,82 @@ public class PluginImpl
     // xt:edge(s, p, o)
     @Override
     public IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
-        return edgeList(env, p, subj, pred, obj, null);
+        return edge(env, p, subj, pred, obj, null);
     }
 
-    // function xt:edge
+    // function xt:edges
     // return iterator Edge
     // xt:edge(s, p, o, g)
+    // g may be null, IDatatype or IDatatypeList    
     @Override
-    public IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
+    public IDatatype edge(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o, IDatatype g) {
+        return prod.getEdges(prod.getEdges(s, p, o, getNodeList(env, g)));
+    }
+    
+    // function xt:subjects
+    // return list of subject of xt:edge()
+    @Override
+    public IDatatype subjects(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o, IDatatype g) {
+        Iterable<Edge> it = prod.getEdges(s, p, o, getNodeList(env, g));
+        return getNodes(it, 0);
+    }
+
+    // function xt:objects
+    // return list of object of xt:edge()
+    @Override
+    public IDatatype objects(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o, IDatatype g) {
+        Iterable<Edge> it = prod.getEdges(s, p, o, getNodeList(env, g));
+        return getNodes(it, 1);
+    }
+    
+    
+    
+    
+    IDatatype getNodes(Iterable<Edge> it, int n) {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        for (Edge edge : it) {
+            if (edge != null) {
+                list.add(edge.getNode(n).getDatatypeValue());
+            }
+        }
+        return DatatypeMap.newList(list);
+    }
+    
+    
+
+        
+    List<Node> getNodeList(Node node) {
+        if (node == null) {
+            return null;
+        }
+        return List.of(node);
+    }
+    // graph may be a list
+    List<Node> getNodeList(Environment env, IDatatype graph) {
+        if (graph == null) {
+            return getNodeList(env.getGraphNode());
+        }
+        return DatatypeMap.toNodeList(graph);
+    }
+    
+    // function xt:subjects
+    // return list of subject of xt:edge()
+    //@Override
+    public IDatatype subjects2(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
+        DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph).setDuplicate(false);
+        return dp.getSubjects();
+    }
+    
+    // function xt:objects
+    // return list of object of xt:edge()
+    //@Override
+    public IDatatype objects2(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
+        DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph).setDuplicate(false);
+        return dp.getObjects();
+    }
+
+    //@Override
+    public IDatatype edge2(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
         return edgeList(env, p, subj, pred, obj, graph);
     }
 
@@ -805,22 +868,11 @@ public class PluginImpl
         return dp.getEdges();
     }
 
-    // function xt:subjects
-    // return list of subject of xt:edge()
-    @Override
-    public IDatatype subjects(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
-        DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph).setDuplicate(false);
-        return dp.getSubjects();
-    }
 
-    // function xt:subjects
-    // return list of object of xt:edge()
-    @Override
-    public IDatatype objects(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
-        DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph).setDuplicate(false);
-        return dp.getObjects();
-    }
 
+    // graph is either null, IDatatype or IDatatypeList
+    // use case for list: shacl ldscript interpreter focus argument 
+    // may be a list of focus graph
     DataProducer getEdgeProducer(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
         DataProducer dp = getDataProducer(env, p, subj, pred, obj);
         if (graph != null && (!graph.isList() || graph.size() > 0)) {

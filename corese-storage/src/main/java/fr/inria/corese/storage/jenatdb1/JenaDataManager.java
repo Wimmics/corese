@@ -35,7 +35,9 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     private Dataset jena_dataset;
     private String storage_path;
     private int readCounter = 0;
-    private boolean  reentrant = false;
+    private boolean  reentrant = true;
+    // each thread has its own counter for read transaction
+    // there may be several start/end read transaction in each thread
     HashMap<Thread, Integer> threadCounter;
 
     /****************
@@ -385,7 +387,6 @@ public class JenaDataManager implements DataManager, AutoCloseable {
             this.jena_dataset.begin(ReadWrite.READ);
         }
         setReadCounter(count+1);
-        System.out.println("start read counter: " + getReadCounter());
     }
     
     public synchronized void endReentrantReadTransaction() {
@@ -393,7 +394,6 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         if (count>0) {
             setReadCounter(count-1);
         }
-        System.out.println("end read counter: " + getReadCounter());
         if (count == 1) {
             // count was 1, now 0
             this.jena_dataset.end();

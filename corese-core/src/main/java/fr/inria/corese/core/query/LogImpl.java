@@ -86,7 +86,7 @@ public class LogImpl implements Log {
 	
 	public void log(int type, Object obj1, Object obj2){
 		switch(type){
-		case QUERY:	query((Query)obj1, (Mappings)obj2); break;
+		case QUERY:	query((Query)obj1); break;
 		}
 	}
 	
@@ -105,16 +105,6 @@ public class LogImpl implements Log {
 		if (isLoad){
 			load.add(name);
 		}
-	}
-	
-	
-	void query(Query q, Mappings m){
-		ASTQuery ast =  q.getAST();
-		trace("Query: " + query.size() + " " + ast.getText());
-		if (isQuery){
-			query.add(ast.getText());
-		}
-		
 	}
 	
 	void query(Query q){

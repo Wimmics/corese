@@ -281,13 +281,13 @@ public class GraphSpecificFunction extends LDScript {
             case 0:
                 return proc.edge(env, p, null, null, null);
             case 1:
-                return proc.edge(env, p, null, param[0], null);
+                return proc.edge(env, p, null, clean(param[0]), null);
             case 2:
-                return proc.edge(env, p, param[0], param[1], null);
+                return proc.edge(env, p, clean(param[0]), clean(param[1]), null);
             case 3 :
-                return proc.edge(env, p, param[0], param[1], param[2]);
+                return proc.edge(env, p, clean(param[0]), clean(param[1]), clean(param[2]));
             default:                
-                return proc.edge(env, p, param[0], param[1], param[2], param[3]);
+                return proc.edge(env, p, clean(param[0]), clean(param[1]), clean(param[2]), clean(param[3]));
         }
     }
     
@@ -296,13 +296,13 @@ public class GraphSpecificFunction extends LDScript {
             case 0:
                 return proc.subjects(env, p, null, null, null, null);
             case 1:
-                return proc.subjects(env, p, null, param[0], null, null);
+                return proc.subjects(env, p, null, clean(param[0]), null, null);
             case 2:
-                return proc.subjects(env, p, param[0], param[1], null, null);
+                return proc.subjects(env, p, clean(param[0]), clean(param[1]), null, null);
             case 3 :
-                return proc.subjects(env, p, param[0], param[1], param[2], null);
+                return proc.subjects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), null);
             default:                
-                return proc.subjects(env, p, param[0], param[1], param[2], param[3]);
+                return proc.subjects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), clean(param[3]));
         }
     }
     
@@ -311,13 +311,13 @@ public class GraphSpecificFunction extends LDScript {
             case 0:
                 return proc.objects(env, p, null, null, null, null);
             case 1:
-                return proc.objects(env, p, null, param[0], null, null);
+                return proc.objects(env, p, null, clean(param[0]), null, null);
             case 2:
-                return proc.objects(env, p, param[0], param[1], null, null);
+                return proc.objects(env, p, clean(param[0]), clean(param[1]), null, null);
             case 3 :
-                return proc.objects(env, p, param[0], param[1], param[2], null);
+                return proc.objects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), null);
             default:                
-                return proc.objects(env, p, param[0], param[1], param[2], param[3]);
+                return proc.objects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), clean(param[3]));
         }
     }
     

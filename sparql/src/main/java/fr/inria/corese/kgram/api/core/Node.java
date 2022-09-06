@@ -12,7 +12,7 @@ import fr.inria.corese.sparql.api.IDatatype.NodeKind;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public interface Node extends Pointerable {
+public interface Node extends Pointerable, Comparable {
         public static final String INITKEY = "";
 
 	public static final int DEPTH 	= 0;
@@ -61,6 +61,18 @@ public interface Node extends Pointerable {
         boolean match(Node n);
 	
 	int compare(Node node);
+        
+        @Override
+        default int compareTo(Object node) {
+            if (node instanceof Node) {
+                return compareTo((Node)node);
+            }
+            return -1;
+        }
+        
+        default int compareTo(Node node) {
+            return getDatatypeValue().compareTo(node.getDatatypeValue());
+        }
 
 	String getLabel();
 		

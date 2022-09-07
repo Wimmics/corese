@@ -96,6 +96,14 @@ public interface Producer {
     default Iterable<Edge> getEdges(Node s, Node p, Node o, List<Node> from) {
         return new ArrayList<>(0);
     }
+    
+    default Edge insert(Node g, Node s, Node p, Node o) {
+        return null;
+    }
+    
+    default Iterable<Edge> delete(Node g, Node s, Node p, Node o) {
+        return null;
+    }
 
     //return IDatatype list of IDatatype edge
     // ldscript iterator

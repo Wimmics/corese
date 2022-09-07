@@ -3399,19 +3399,41 @@ public class Graph extends GraphObject implements
         Edge ee = addEdgeWithNode(e);
         return ee;
     }
+    
+    public Edge insert(Node s, Node p, Node o) {
+        return add(s.getDatatypeValue(), p.getDatatypeValue(), o.getDatatypeValue());
+    }
+    
+    public Edge insert(Node g, Node s, Node p, Node o) {
+        if (g == null) {
+            return insert(s, p, o);
+        }
+        else {
+            return add(g.getDatatypeValue(), s.getDatatypeValue(), p.getDatatypeValue(), o.getDatatypeValue());
+        }
+    }
 
     /**
      * Add edge and add it's nodes
      */
     public Edge add(IDatatype subject, IDatatype predicate, IDatatype value) {
         Node def = addDefaultGraphNode();
-        return add( def.getValue(), subject, predicate, value);
+        return add(def.getValue(), subject, predicate, value);
     }
 
     public Edge add(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
         Edge e = fac.create(createNode(source), createNode(subject), createNode(predicate), createNode(value));
         Edge ee = addEdgeWithNode(e);
         return ee;
+    }
+    
+    public List<Edge> delete(Node s, Node p, Node o) {
+        return delete(null, s.getDatatypeValue(), p.getDatatypeValue(), o.getDatatypeValue());
+    }
+
+    public List<Edge> delete(Node g, Node s, Node p, Node o) {       
+        return delete(g==null?null:g.getDatatypeValue(), 
+                s.getDatatypeValue(), p.getDatatypeValue(), o.getDatatypeValue());
     }
 
     public List<Edge> delete(IDatatype subject, IDatatype predicate, IDatatype value) {

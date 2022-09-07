@@ -40,6 +40,7 @@ import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import static fr.inria.corese.sparql.triple.parser.Metadata.RDF_STAR_SELECT;
+import java.util.Iterator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -391,6 +392,41 @@ public class ProducerImpl
             return getDataManager().getEdges(s, p, o, from);
         }
         return getLocalEdges(s, p, o, from);
+    }
+    
+    List<Node> nodeList(Node node) {
+        if (node == null) {
+            return null;
+        }
+        return List.of(node);
+    }
+    
+    Edge result(Iterable<Edge> it) {
+        if (it == null) {
+            return null;
+        }
+        Iterator<Edge> iter = it.iterator();
+        if (iter.hasNext()) {
+            return iter.next();
+        }
+        return null;
+    }
+    
+    @Override
+    public Edge insert(Node g, Node s, Node p, Node o) {
+        if (hasDataManager()) {
+            Iterable<Edge> it = getDataManager().insert(s, p, o, nodeList(g));
+            return result(it);
+        }
+        return getGraph().insert(g, s, p, o);
+    }
+    
+    @Override
+    public Iterable<Edge> delete(Node g, Node s, Node p, Node o) {
+        if (hasDataManager()) {
+            return getDataManager().delete(s, p, o, nodeList(g));
+        }
+        return getGraph().delete(g, s, p, o);
     }
     
     Iterable<Edge> getLocalEdges(Node s, Node p, Node o, List<Node> from) {

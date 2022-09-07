@@ -35,7 +35,6 @@ import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.Load;
-import fr.inria.corese.core.producer.DataProducer;
 import fr.inria.corese.core.logic.Distance;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.load.LoadException;
@@ -64,7 +63,6 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.io.IOException;
 import jakarta.ws.rs.core.Response;
-import java.util.Collections;
 import javax.xml.parsers.ParserConfigurationException;
 import org.xml.sax.SAXException;
 
@@ -411,6 +409,7 @@ public class PluginImpl
     // expectedFormat: 
     // st:text -> argument is rdf text  
     // otherwise st:turtle st:rdfxml st:json
+    // @todo DataManager
     @Override
     public IDatatype load(IDatatype dt, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat,
             Level level) throws SafetyException {
@@ -473,6 +472,7 @@ public class PluginImpl
 
     // function xt:syntax
     // syntax: st:rdfxml st:turtle
+    // @todo DataManager
     @Override
     public IDatatype syntax(IDatatype syntax, IDatatype graph, IDatatype node) {
         Graph g = (Graph) graph.getPointerObject();
@@ -502,6 +502,7 @@ public class PluginImpl
     }
 
     // function xt:entailment
+    // @todo DataManager
     @Override
     public IDatatype entailment(Environment env, Producer p, IDatatype dt) throws EngineException {
         Binding bind =  env.getBind();
@@ -559,6 +560,7 @@ public class PluginImpl
 
     /**
      * function xt:shaclGraph xt:shaclNode
+     * @todo DataManager
      */
     @Override
     public IDatatype shape(Expr exp, Environment env, Producer p, IDatatype[] param) {
@@ -591,20 +593,23 @@ public class PluginImpl
     }
 
     // function xt:insert
-    // xt:insert(namedGraphURI, s, p o)
+    // xt:insert(s, p, o)
+    // xt:insert(uri, s, p o)
     // xt:insert(graph, s, p, o)
     @Override
     public IDatatype insert(Environment env, Producer p, IDatatype... param) {
-        Graph g = getGraph(p);
         IDatatype first = param[0];
         Edge e;
         if (param.length == 3) {
-            e = g.add(first, param[1], param[2]);
+            // insert(s, p, o)
+            e = p.insert(null, first, param[1], param[2]);            
         } else if (first.pointerType() == PointerType.GRAPH) {
+            // insert(graph, s, p, o)
             Graph gg = (Graph) first.getPointerObject();
             e = gg.add(param[1], param[2], param[3]);
         } else {
-            e = g.add(first, param[1], param[2], param[3]);
+            // insert(uri, s, p, o)
+            e = p.insert(first, param[1], param[2], param[3]);
         }
         return (e == null) ? FALSE : TRUE;
     }
@@ -615,46 +620,23 @@ public class PluginImpl
     // xt:delete(graph, s, p, o)    
     @Override
     public IDatatype delete(Environment env, Producer p, IDatatype... param) {
-        Graph g = getGraph(p);
         IDatatype first = param[0];
-        List<Edge> le;
+        Iterable<Edge> le;
+        
         if (param.length == 3) {
-            le = g.delete(first, param[1], param[2]);
+            le = p.delete(null, first, param[1], param[2]);
         } 
         else if (first.pointerType() == PointerType.GRAPH) {
             Graph gg = (Graph) first.getPointerObject();
             le = gg.delete(param[1], param[2], param[3]);
         }
         else {
-            le = g.delete(first, param[1], param[2], param[3]);
+            le = p.delete(first, param[1], param[2], param[3]);
         }
-        return (le == null) ? FALSE : TRUE;
+        
+        return (le == null || !le.iterator().hasNext()) ? FALSE : TRUE;
     }
 
-    // function xt:value    
-    // xt:value(subject, predicate)
-    // xt:value(subject, predicate, index)
-    // xt:value(graph, subject, predicate)
-    // xt:value(graph, subject, predicate, index)  
-    // index: index of result node
-    @Override
-    public IDatatype value(Environment env, Producer p, IDatatype graph, IDatatype node, IDatatype predicate, int n) {
-        Graph g = (Graph) ((graph == null) ? p.getGraph() : graph.getPointerObject());
-        Node val = g.value(node, predicate, n);
-        if (val == null) {
-            return null;
-        }
-        return  val.getDatatypeValue();
-    }
-
-
-    public IDatatype exists2(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
-        DataProducer dp = new DataProducer(getGraph(p));
-        if (env.getGraphNode() != null) {
-            dp.from(env.getGraphNode());
-        }
-        return dp.exist(subj, pred, obj) ? TRUE : FALSE;
-    }
     
     // function xt:mindegree
     // check whether node has degree >= dtmin
@@ -692,18 +674,14 @@ public class PluginImpl
         int d = degree(env, p, node, pred, index.intValue(), min);
         return DatatypeMap.newInstance(d);
     }
-
+    
     int degree(Environment env, Producer p, IDatatype node, IDatatype pred, int n, int min) {
         IDatatype sub = (n == 0) ? node : null;
         IDatatype obj = (n == 1) ? node : null;
-        DataProducer dp = new DataProducer(getGraph(p));
-        Node graph = env.getGraphNode();
-        if (graph != null) {
-            dp = dp.from(graph);
-        }
+                
         int count = 0;
 
-        for (Edge edge : dp.iterate(sub, pred, obj)) {
+        for (Edge edge : p.getEdges(sub, pred, obj, getNodeList(env.getGraphNode()))) {
             if (edge == null) {
                 break;
             }
@@ -719,27 +697,18 @@ public class PluginImpl
         return count;
     }
 
+
     public Graph getGraph() {
         return (Graph) getProducer().getGraph();
     }
 
-    // name of  current named graph 
-//    IDatatype name(Environment env) {
-//        if (env.getGraphNode() == null) {
-//            return null;
-//        }
-//        Node n = env.getNode(env.getGraphNode());
-//        if (n == null) {
-//            return null;
-//        }
-//        return  n.getDatatypeValue();
-//    }
-    
+
     /**
      * rdf star
      * triple(s, p, o)  
      * filter bind <<s p o>>
      */
+    // @todo DataManager
     @Override
     public IDatatype triple(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
         IDatatype ref = getGraph(p).createTripleReference();
@@ -750,6 +719,45 @@ public class PluginImpl
         e.setNested(true);
         return ref;
     }
+    
+    // function xt:value    
+    // xt:value(subject, predicate)
+    // xt:value(subject, predicate, index)
+    // xt:value(graph, subject, predicate)
+    // xt:value(graph, subject, predicate, index)  
+    // index n: index of result node
+    @Override
+    public IDatatype value(Environment env, Producer prod, IDatatype graph, IDatatype node, IDatatype predicate, int n) {
+        if (graph == null) {
+            return value(prod, node, predicate, null, n);
+        }
+        else if (graph.getPointerObject() instanceof Graph){
+            return value((Graph)graph.getPointerObject(), node, predicate, n);
+        }
+        else {
+            return null;
+        }
+    }
+    
+    // value in dataset or in DataManager
+    IDatatype value(Producer prod, IDatatype s, IDatatype p, IDatatype o, int n) {
+        for (Edge edge : prod.getEdges(s, p, o, null)) {
+            if (edge !=null) {
+                return edge.getNode(n).getDatatypeValue();
+            }
+        }
+        return null;
+    }
+    
+    // value in graph g
+    IDatatype value(Graph g, IDatatype node, IDatatype predicate, int n) {
+        Node val = g.value(node, predicate, n);
+        if (val == null) {
+            return null;
+        }
+        return val.getDatatypeValue();
+    }
+
     
     // function xt:exists
     // xt:exist()
@@ -834,58 +842,6 @@ public class PluginImpl
         return DatatypeMap.toNodeList(graph);
     }
     
-    // function xt:subjects
-    // return list of subject of xt:edge()
-    //@Override
-    public IDatatype subjects2(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
-        DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph).setDuplicate(false);
-        return dp.getSubjects();
-    }
-    
-    // function xt:objects
-    // return list of object of xt:edge()
-    //@Override
-    public IDatatype objects2(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
-        DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph).setDuplicate(false);
-        return dp.getObjects();
-    }
-
-    //@Override
-    public IDatatype edge2(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
-        return edgeList(env, p, subj, pred, obj, graph);
-    }
-
-    public IDatatype edge(IDatatype subj, IDatatype pred) {
-        return DatatypeMap.createObject(getDataProducer(null, getProducer(), subj, pred, null));
-    }
-
-    public IDatatype edge(IDatatype subj, IDatatype pred, IDatatype obj) {
-        return DatatypeMap.createObject(getDataProducer(null, getProducer(), subj, pred, obj));
-    }
-
-    IDatatype edgeList(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
-        DataProducer dp = getEdgeProducer(env, p, subj, pred, obj, graph);
-        return dp.getEdges();
-    }
-
-
-
-    // graph is either null, IDatatype or IDatatypeList
-    // use case for list: shacl ldscript interpreter focus argument 
-    // may be a list of focus graph
-    DataProducer getEdgeProducer(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph) {
-        DataProducer dp = getDataProducer(env, p, subj, pred, obj);
-        if (graph != null && (!graph.isList() || graph.size() > 0)) {
-            dp.from(graph);
-        } else if (env != null && env.getGraphNode() != null) {
-            dp.from(env.getGraphNode());
-        }
-        return dp;
-    }
-
-    DataProducer getDataProducer(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
-        return new DataProducer(getGraph(p)).setDuplicate(true).iterate(subj, pred, obj);
-    }
 
     // function xt:union
     @Override
@@ -1068,6 +1024,7 @@ public class PluginImpl
 
     // function xt:depth
     @Override
+    // @todo DataManager
     public IDatatype depth(Environment env, Producer p, IDatatype dt) {
         Graph g = getGraph(p);
         Node n = node(g, dt);

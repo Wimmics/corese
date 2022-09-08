@@ -1,5 +1,7 @@
 package fr.inria.corese.core.api;
 
+import fr.inria.corese.core.producer.MetadataManager;
+
 /**
  * Interface to adapt an external graph implementation to Corese.
  * 
@@ -11,6 +13,11 @@ package fr.inria.corese.core.api;
  */
 public interface DataManager extends DataManagerRead, DataManagerUpdate {
 
+    default MetadataManager getMetadataManager() {
+        return new MetadataManager();
+    }
+    
+    default void setMetadataManager(MetadataManager mgr) {};
 
     default void startWriteTransaction() {
     };

@@ -386,7 +386,10 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     public synchronized void startReentrantReadTransaction() {
         int count = getReadCounter();
         if (count == 0) {
-            this.jena_dataset.begin(ReadWrite.READ);
+            startBasicReadTransaction();
+            if (hasMetadataManager()) {
+                getMetadataManager().startReadTransaction();
+            }
         }
         setReadCounter(count+1);
     }
@@ -394,11 +397,14 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     public synchronized void endReentrantReadTransaction() {
         int count = getReadCounter();
         if (count>0) {
-            setReadCounter(count-1);
+            count--;
+            setReadCounter(count);
         }
-        if (count == 1) {
-            // count was 1, now 0
-            this.jena_dataset.end();
+        if (count == 0) {
+            endBasicReadTransaction();
+            if (hasMetadataManager()) {
+                getMetadataManager().endReadTransaction();
+            }
         }
     }
     

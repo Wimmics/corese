@@ -405,6 +405,9 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     @Override
     public void startWriteTransaction() {
+        if (hasMetadataManager()) {
+            getMetadataManager().startWriteTransaction();
+        }
         this.jena_dataset.begin(ReadWrite.WRITE);
     }
     
@@ -417,7 +420,14 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     @Override
     public void endWriteTransaction() {
-        this.jena_dataset.commit();
+        try {
+            this.jena_dataset.commit();
+        }
+        finally {
+            if (hasMetadataManager()) {
+                getMetadataManager().endWriteTransaction();
+            }
+        }
     }
 
     @Override
@@ -479,5 +489,9 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     @Override
     public void setMetadataManager(MetadataManager metaDataManager) {
         this.metadataManager = metaDataManager;
+    }
+    
+    public boolean hasMetadataManager() {
+        return getMetadataManager() != null;
     }
 }

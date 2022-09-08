@@ -23,6 +23,7 @@ import com.google.common.collect.Lists;
 
 import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.edge.EdgeImpl;
+import fr.inria.corese.core.producer.MetadataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import java.util.HashMap;
@@ -39,6 +40,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     // each thread has its own counter for read transaction
     // there may be several start/end read transaction in each thread
     HashMap<Thread, Integer> threadCounter;
+    private MetadataManager metadataManager;
 
     /****************
      * Constructors *
@@ -467,5 +469,15 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     public void setReentrant(boolean reentrant) {
         this.reentrant = reentrant;
+    }
+
+    @Override
+    public MetadataManager getMetadataManager() {
+        return metadataManager;
+    }
+
+    @Override
+    public void setMetadataManager(MetadataManager metaDataManager) {
+        this.metadataManager = metaDataManager;
     }
 }

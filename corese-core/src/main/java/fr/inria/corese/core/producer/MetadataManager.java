@@ -15,6 +15,9 @@ public class MetadataManager {
     
     }
     
+    public void startWriteTransaction() {
+    }
+    
     public void endWriteTransaction() {
         setDistance(null);
     }

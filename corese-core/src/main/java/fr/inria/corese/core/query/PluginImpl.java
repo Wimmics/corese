@@ -34,6 +34,7 @@ import fr.inria.corese.core.Event;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.logic.Distance;
 import fr.inria.corese.core.rule.RuleEngine;
@@ -43,6 +44,7 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.result.SPARQLResultParser;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.producer.MetadataManager;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphListen;
@@ -276,6 +278,13 @@ public class PluginImpl
     // compute similarity between classes wrt class hierarchy
     @Override
     public IDatatype similarity(Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
+        if (p.hasDataManager()) {
+            return similarityDM(p, dt1, dt2);
+        }
+        return similarity(p, dt1, dt2);
+    }
+    
+    IDatatype similarity(Producer p, IDatatype dt1, IDatatype dt2) {
         Graph g = getGraph(p);
         Node n1 = g.getNode(dt1);
         Node n2 = g.getNode(dt2);
@@ -285,6 +294,14 @@ public class PluginImpl
 
         Distance distance = g.setClassDistance();
         double dd = distance.similarity(n1, n2);
+        return getValue(dd);
+    }
+    
+    IDatatype similarityDM(Producer p, IDatatype dt1, IDatatype dt2) {   
+        ProducerImpl pp = (ProducerImpl) p;
+        MetadataManager meta = pp.getDataManager().getCreateMetadataManager();
+        Distance distance = meta.getCreateDistance();      
+        double dd = distance.similarity(dt1, dt2);
         return getValue(dd);
     }
 

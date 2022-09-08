@@ -1730,6 +1730,16 @@ public class Graph extends GraphObject implements
         }
         return n;
     }
+    
+     public Node getTopClass(String defaut, String... nameList) {
+        for (String name : nameList) {
+            Node n = getNode(name);
+            if (n != null) {
+                return n;
+            }
+        }
+        return createNode(defaut);
+    }
 
     public Node getTopProperty() {
         Node n = getNode(TOPREL);

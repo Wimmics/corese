@@ -13,8 +13,19 @@ import fr.inria.corese.core.producer.MetadataManager;
  */
 public interface DataManager extends DataManagerRead, DataManagerUpdate {
 
+    default boolean hasMetadataManager() {
+        return getMetadataManager()!=null;
+    }
+    
     default MetadataManager getMetadataManager() {
-        return new MetadataManager();
+        return null;
+    }
+    
+    default MetadataManager getCreateMetadataManager() {
+        if (!hasMetadataManager()) {
+            setMetadataManager(new MetadataManager(this));
+        }
+        return getMetadataManager();
     }
     
     default void setMetadataManager(MetadataManager mgr) {};

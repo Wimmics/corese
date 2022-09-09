@@ -104,6 +104,8 @@ public interface Producer {
     default Iterable<Edge> delete(Node g, Node s, Node p, Node o) {
         return null;
     }
+    
+    default boolean hasDataManager() { return false; }
 
     //return IDatatype list of IDatatype edge
     // ldscript iterator

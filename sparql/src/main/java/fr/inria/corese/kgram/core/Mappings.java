@@ -387,6 +387,17 @@ public class Mappings extends PointerObject
         return map.getValue(qNode);
     }
     
+    public List<Node> getNodeValueList(String var) {
+        List<Node> alist = new ArrayList<>();
+        for (Mapping m : this) {
+            Node n = m.getNode(var);
+            if (n != null) {
+                alist.add(n);
+            }
+        }
+        return alist;
+    }
+    
     public List<String> getStringValueList(String var) {
         List<String> alist = new ArrayList<>();
         for (Mapping m : this) {

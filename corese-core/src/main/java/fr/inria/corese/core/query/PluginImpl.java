@@ -45,6 +45,7 @@ import fr.inria.corese.core.load.result.SPARQLResultParser;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.producer.MetadataManager;
+import fr.inria.corese.core.shacl.Shacl;
 import fr.inria.corese.core.transform.TemplateVisitor;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphListen;
@@ -581,33 +582,91 @@ public class PluginImpl
      */
     @Override
     public IDatatype shape(Expr exp, Environment env, Producer p, IDatatype[] param) {
-        switch (exp.oper()) {
-            case XT_SHAPE_GRAPH:
-                return shapeGraph(getGraph(p), param);
-            case XT_SHAPE_NODE:
-                return shapeNode(getGraph(p), param);
+        try {
+            switch (exp.oper()) {
+                case XT_SHAPE_GRAPH:
+                    return shapeGraph(p, param);
+                case XT_SHAPE_NODE:
+                    return shapeNode(p, param);
+            }
+            return null;
+        } catch (EngineException ex) {
+            return null;
+        }
+    }
+    
+    DataManager dataManager(Producer p) {
+        if (p instanceof ProducerImpl) {
+            return ((ProducerImpl)p).getDataManager();
         }
         return null;
     }
-
-    // param[0] = shapeGrah ; param [1] = shape
-    IDatatype shapeGraph(Graph g, IDatatype[] param) {
+        
+    // param[0] = shacl graph ; param[1] = shape 
+    IDatatype shapeGraph(Producer p, IDatatype[] param) throws EngineException {
+        Graph shaclGraph = getGraph(param[0]);
         if (param.length == 2) {
-            return new ShapeWorkflow().processGraph(g, param[0], param[1]);
+            return shacl(p, shaclGraph, param[1], null);
         }
-        return new ShapeWorkflow().processGraph(g, param[0]);
+        return shacl(p, shaclGraph, null, null);
     }
-
-    // param[0] = shapeGrah = s ; param.length >= 2
-    IDatatype shapeNode(Graph g, IDatatype[] param) {
+    
+      // param[0] = shacl graph ; param[1] = node ; param[2] = shape
+    IDatatype shapeNode(Producer p, IDatatype[] param) throws EngineException {
+        Graph shaclGraph = getGraph(param[0]);
         switch (param.length) {
             case 2:
-                return new ShapeWorkflow().processNode(g, param[0], param[1]);
+                // param[1] = node, param[2] = shape = null
+                return shacl(p, shaclGraph, null, param[1]);
             case 3:
-                return new ShapeWorkflow().processNode(g, param[0], param[1], param[2]);
+                // param[1] = node, param[2] = shape
+                return shacl(p, shaclGraph, param[2], param[1]);
         }
         return null;
     }
+    
+    IDatatype shacl(Producer p, Graph shaclGraph, IDatatype shape, IDatatype node) throws EngineException {
+        Shacl shacl = new Shacl(getGraph(p), shaclGraph);
+        shacl.setDataManager(dataManager(p));
+        Graph res;
+        if (shape == null && node == null) {
+            res = shacl.eval();
+        }
+        else if (shape != null) {
+            res = shacl.shaclshape(shape, node);
+        }
+        else {
+            res = shacl.shaclnode(node);
+        }
+        
+        return DatatypeMap.createObject(res);
+    }
+    
+    
+    Graph getGraph(IDatatype dt) {
+        if (dt.isURI()) {
+            return parse(dt.getLabel());
+        }
+        else if (dt.pointerType() == PointerType.GRAPH){
+            return (Graph) dt.getPointerObject();
+        }
+        logger.warn("Empty graph: " + dt);
+        return Graph.create();
+    }
+    
+    Graph parse(String uri) {
+        Graph g = Graph.create();
+        Load ld = Load.create(g);
+        try {
+            ld.parse(uri);
+            g.init();
+            return g;
+        } catch (LoadException ex) {
+            logger.error(ex.getMessage());
+        }
+        return Graph.create();
+    }
+    
 
     // function xt:insert
     // xt:insert(s, p, o)

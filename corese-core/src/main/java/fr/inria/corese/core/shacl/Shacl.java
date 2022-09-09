@@ -45,6 +45,8 @@ public class Shacl {
     static final String SHEX    = SH+"shex";
     static final String SHAPE   = SH+"shaclshape";
     static final String NODE    = SH+"shaclnode";
+    static final String SHAPE_GRAPH   = SH+"shaclShapeGraph";
+    static final String NODE_GRAPH    = SH+"shaclNodeGraph";
     static final String FOCUS   = SH+"focuslist";
     static final String CONFORM = SH+"conforms";
     static final String TRACE   = SH+"trace";
@@ -159,6 +161,9 @@ public class Shacl {
     }
     
     public Graph shaclshape(IDatatype shape, IDatatype node) throws EngineException {
+        if (node == null) {
+            return shape(shape);
+        }
         return shape(shape, node);
     }
     
@@ -209,16 +214,29 @@ public class Shacl {
      * Evaluate shape/node
      */
     public Graph shape(IDatatype sh) throws EngineException {
-        return eval(SHAPE, sh);
+        return eval(SHAPE_GRAPH, getShacl(), sh);
     }
     
     public Graph shape(IDatatype sh, IDatatype node) throws EngineException {
-        return eval(SHAPE, sh, node);
+        return eval(SHAPE_GRAPH, getShacl(), sh, node);
     }
     
     public Graph node(IDatatype node) throws EngineException {
-        return eval(NODE, node);
+        return eval(NODE_GRAPH, getShacl(), node);
     }
+    
+    
+//    public Graph shape(IDatatype sh) throws EngineException {
+//        return eval(SHAPE, sh);
+//    }
+//    
+//    public Graph shape(IDatatype sh, IDatatype node) throws EngineException {
+//        return eval(SHAPE, sh, node);
+//    }
+//    
+//    public Graph node(IDatatype node) throws EngineException {
+//        return eval(NODE, node);
+//    }
     
     
      

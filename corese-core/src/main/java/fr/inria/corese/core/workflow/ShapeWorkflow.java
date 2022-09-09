@@ -10,8 +10,8 @@ import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.sparql.api.IDatatype;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -21,6 +21,7 @@ import java.util.logging.Logger;
  *
  */
 public class ShapeWorkflow extends SemanticWorkflow {
+    private static Logger logger = LoggerFactory.getLogger(ShapeWorkflow.class);
     public static final String SHAPE_NAME           = NSManager.STL + "shape";
     public static final String SHAPE_TRANS_TEST     = "/user/corby/home/AAData/sttl/datashape/main";
     public static final String SHAPE_TRANS_TEST_LDS = "/user/corby/home/AAData/sttl/datashape/main";
@@ -84,7 +85,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
             super.start(data);
             validate();
         } catch (EngineException ex) {
-            Logger.getLogger(ShapeWorkflow.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
         }
     }
     
@@ -154,7 +155,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
         else if (dt.pointerType() == PointerType.GRAPH){
             return (Graph) dt.getPointerObject();
         }
-        Logger.getLogger(ShapeWorkflow.class.getName()).warning("Empty graph: " + dt);
+        logger.warn("Empty graph: " + dt);
         return Graph.create();
     }
     
@@ -166,7 +167,7 @@ public class ShapeWorkflow extends SemanticWorkflow {
             g.init();
             return g;
         } catch (LoadException ex) {
-            Logger.getLogger(ShapeWorkflow.class.getName()).log(Level.SEVERE, null, ex);
+            logger.error(ex.getMessage());
         }
         return Graph.create();
     }

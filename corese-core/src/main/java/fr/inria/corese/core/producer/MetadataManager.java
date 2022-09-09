@@ -2,16 +2,20 @@ package fr.inria.corese.core.producer;
 
 import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.logic.Distance;
+import fr.inria.corese.core.query.QueryProcess;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Corese object associated to DataManager
  * enables corese core to manage additional data such as Distance
  */
 public class MetadataManager {
+    private static Logger logger = LoggerFactory.getLogger(MetadataManager.class);
 
     private DataManager dataManager;
     private Distance distance;
-    private boolean debug = false;
+    private boolean debug = true;
     
     
     public MetadataManager() {    
@@ -19,44 +23,38 @@ public class MetadataManager {
     
     public MetadataManager(DataManager man) {
         setDataManager(man);
+        startDataManager();
+    }
+    
+    void startDataManager() {
+        trace("create data manager");
+    }
+    
+    public void endDataManager() {
+        trace("end data manager");
     }
     
     public void startReadTransaction() {
-        traceStart("read");
+        trace("start read");
     }
     
     public void endReadTransaction() {
-        traceEnd("read");
+        trace("end read");
     }
     
     public void startWriteTransaction() {
-        traceStart("write");
+        trace("start write");
     }
     
     public void endWriteTransaction() {
         clean();
-        traceEnd("write");
+        trace("end write");
     }
     
     void clean() {
         setDistance(null);    
     }
     
-    void traceStart(String name) {
-        if (isDebug()) {
-            System.out.println(
-                String.format("start %s %s", name,
-                        getDataManager().getStoragePath()));
-        }
-    }
-
-    void traceEnd(String name) {
-        if (isDebug()) {
-            System.out.println(
-                String.format("end %s %s", name,
-                        getDataManager().getStoragePath()));
-        }
-    }
 
     public Distance getCreateDistance() {
         if (getDistance() == null) {
@@ -90,5 +88,14 @@ public class MetadataManager {
         this.debug = debug;
     }
     
+    void trace(String mes) {
+        if (isDebug()) {
+            logger.info(
+                String.format("%s %s", mes,
+                        getDataManager().getStoragePath()));
+        }
+    }
+
+   
     
 }

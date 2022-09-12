@@ -187,7 +187,7 @@ public class GraphSpecificFunction extends LDScript {
 
             case LOAD:
                 check(Feature.READ_WRITE, b, LOAD_MESS);
-                return load(proc, b, param);
+                return load(p, proc, b, param);
 
             case WRITE:
                 check(Feature.READ_WRITE, b, WRITE_MESS);
@@ -218,17 +218,17 @@ public class GraphSpecificFunction extends LDScript {
     }
 
     
-    public IDatatype load(GraphProcessor proc, Binding b, IDatatype[] param) throws EngineException {
+    public IDatatype load(Producer p, GraphProcessor proc, Binding b, IDatatype[] param) throws EngineException {
         switch (param.length) {
             case 0: return null;
             case 1:
-                return proc.load(param[0], null, null, null, b.getAccessLevel());
+                return proc.load(p, param[0], null, null, null, b.getAccessLevel());
             default:
                 IDatatype dt = param[1];
                 if (dt.pointerType() == PointerType.GRAPH) {
-                    return proc.load(param[0], dt, getParam(param, 2), getParam(param, 3), b.getAccessLevel());
+                    return proc.load(p, param[0], dt, getParam(param, 2), getParam(param, 3), b.getAccessLevel());
                 } else {
-                    return proc.load(param[0], null, dt, getParam(param, 2), b.getAccessLevel());
+                    return proc.load(p, param[0], null, dt, getParam(param, 2), b.getAccessLevel());
                 }
         }
     }

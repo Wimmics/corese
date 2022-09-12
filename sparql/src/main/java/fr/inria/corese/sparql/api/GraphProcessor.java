@@ -14,7 +14,7 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
  */
 public interface GraphProcessor {
     
-    IDatatype load(IDatatype dtfile, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat, Level level)
+    IDatatype load(Producer p, IDatatype dtfile, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat, Level level)
             throws EngineException;
     
     IDatatype write(IDatatype dtfile, IDatatype dt); 

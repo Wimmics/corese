@@ -274,6 +274,39 @@ public class PluginImpl
     public IDatatype approximate(Expr exp, Environment env, Producer p) {
         return getApproximateSearch().eval(exp, env, p);
     }
+    
+    // function xt:depth
+    @Override
+    public IDatatype depth(Environment env, Producer p, IDatatype dt) {
+        if (p.hasDataManager()) {
+            return depthDM(p, dt);
+        }
+        return depthGraph(p, dt);
+    }
+    
+    public IDatatype depthGraph(Producer p, IDatatype dt) {
+        Graph g = getGraph(p);
+        Node n = node(g, dt);
+        if (n == null) {
+            return null;
+        }
+        Integer d = g.setClassDistance().getDepth(n);
+        if (d == null) {
+            return null;
+        }
+        return getValue(d);
+    }
+     
+    IDatatype depthDM(Producer p, IDatatype dt) {  
+        MetadataManager meta = dataManager(p).getCreateMetadataManager();
+        Distance distance = meta.getCreateDistance();      
+        Integer d = distance.getDepth(dt);
+        if (d == null) {
+            return null;
+        }
+        return getValue(d);
+    }
+
 
     // function xt:similarity
     // compute similarity between classes wrt class hierarchy
@@ -299,8 +332,7 @@ public class PluginImpl
     }
     
     IDatatype similarityDM(Producer p, IDatatype dt1, IDatatype dt2) {   
-        ProducerImpl pp = (ProducerImpl) p;
-        MetadataManager meta = pp.getDataManager().getCreateMetadataManager();
+        MetadataManager meta = dataManager(p).getCreateMetadataManager();
         Distance distance = meta.getCreateDistance();      
         double dd = distance.similarity(dt1, dt2);
         return getValue(dd);
@@ -415,13 +447,13 @@ public class PluginImpl
         return g.isSubClassOf(n1, n2);
     }
 
-    IDatatype load(IDatatype dt) throws SafetyException {
-        return load(dt, null);
-    }
-
-    public IDatatype load(IDatatype dt, IDatatype format) throws SafetyException {
-        return load(dt, null, format, null, Level.USER_DEFAULT);
-    }
+//    IDatatype load(IDatatype dt) throws SafetyException {
+//        return load(dt, null);
+//    }
+//
+//    public IDatatype load(IDatatype dt, IDatatype format) throws SafetyException {
+//        return load(dt, null, format, null, Level.USER_DEFAULT);
+//    }
 
     // function xt:load
     // expectedFormat: 
@@ -429,7 +461,7 @@ public class PluginImpl
     // otherwise st:turtle st:rdfxml st:json
     // @todo DataManager
     @Override
-    public IDatatype load(IDatatype dt, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat,
+    public IDatatype load(Producer p, IDatatype dt, IDatatype graph, IDatatype expectedFormat, IDatatype requiredFormat,
             Level level) throws SafetyException {
         Graph g;
         if (graph == null || graph.pointerType() != GRAPH) {
@@ -437,24 +469,40 @@ public class PluginImpl
         } else {
             g = (Graph) graph.getPointerObject();
         }
-        Load ld = Load.create(g);
+        Load ld = Load.create(g); 
+        // not available yet because we are inside update 
+        // and startWriteTransaction is set by update
+        // and function parse reset startWriteTransaction and raise an error
+//        if (graph == null && p!=null && p.hasDataManager()) {
+//            // when there is data manager:
+//            // use xt:load(uri, xt:graph()) to load in current graph
+//            // use xt:load(uri, xt:create(dt:graph()) to load in new graph
+//            // use xt:load(uri) to load in data manager
+//            ld.setDataManager(dataManager(p));
+//        }
         ld.setLevel(level);
+        
+        return load(ld, dt, g, expectedFormat, requiredFormat);
+    }
+    
+    IDatatype load(Load ld, IDatatype dt, Graph g, IDatatype expectedFormat, IDatatype requiredFormat) throws SafetyException {
         try {
-            if (expectedFormat != null && expectedFormat.getLabel().equals(Transformer.TEXT)) {
-                ld.loadString(dt.stringValue(), getFormat(requiredFormat));
-            }
-            else if (requiredFormat == null) {
+            if (expectedFormat == null) {
+                // use content negotiation for format
                 ld.parse(dt.getLabel(), getFormat(expectedFormat));
-            }            
-            else {
-                ld.parseWithFormat(dt.getLabel(), getFormat(requiredFormat));
+            } else if (expectedFormat.getLabel().equals(Transformer.TEXT)) {
+                // xt:load(uri, st:text, st:turtle)
+                ld.loadString(dt.stringValue(), getFormat(requiredFormat));
+            } else {
+                ld.parse(dt.getLabel(), getFormat(expectedFormat));
             }
+
         } catch (LoadException ex) {
             if (ex.isSafetyException()) {
                 throw ex.getSafetyException();
             }
-            logger.error(String.format("Load error: %s \n%s %s", dt.stringValue(), 
-                    ((expectedFormat == null) ? "" :expectedFormat), ((requiredFormat == null) ? "" :requiredFormat)));
+            logger.error(String.format("Load error: %s \n%s %s", dt.stringValue(),
+                    ((expectedFormat == null) ? "" : expectedFormat), ((requiredFormat == null) ? "" : requiredFormat)));
             logger.error(ex.getMessage());
         }
         IDatatype res = DatatypeMap.createObject(g);
@@ -578,7 +626,6 @@ public class PluginImpl
 
     /**
      * function xt:shaclGraph xt:shaclNode
-     * @todo DataManager
      */
     @Override
     public IDatatype shape(Expr exp, Environment env, Producer p, IDatatype[] param) {
@@ -1098,21 +1145,6 @@ public class PluginImpl
         return n;
     }
 
-    // function xt:depth
-    @Override
-    // @todo DataManager
-    public IDatatype depth(Environment env, Producer p, IDatatype dt) {
-        Graph g = getGraph(p);
-        Node n = node(g, dt);
-        if (n == null) {
-            return null;
-        }
-        Integer d = g.setClassDistance().getDepth(n);
-        if (d == null) {
-            return null;
-        }
-        return getValue(d);
-    }
 
     IDatatype db(Environment env, Graph g) {
         ASTQuery ast =  env.getQuery().getAST();

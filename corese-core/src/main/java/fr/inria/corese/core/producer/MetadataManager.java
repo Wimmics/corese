@@ -2,7 +2,6 @@ package fr.inria.corese.core.producer;
 
 import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.logic.Distance;
-import fr.inria.corese.core.query.QueryProcess;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

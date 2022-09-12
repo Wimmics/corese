@@ -1657,6 +1657,17 @@ public class Graph extends GraphObject implements
         return create(getCreateNode(source), getCreateNode(predicate), list);
     }
     
+    // rdf star 
+    // triple(s, p, o)  
+    // filter bind <<s p o>>
+    public IDatatype createTriple(IDatatype s, IDatatype p, IDatatype o) {
+        IDatatype ref = createTripleReference();
+        Edge e = create(getDefaultGraphDatatypeValue(), s, p, o, ref);
+        e.setCreated(true);
+        e.setNested(true);
+        return ref;
+    }
+    
     List<Node> list(Node... list) {
         ArrayList<Node> alist = new ArrayList<>();
         alist.addAll(Arrays.asList(list));

@@ -833,14 +833,8 @@ public class PluginImpl
      */
     // @todo DataManager
     @Override
-    public IDatatype triple(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
-        IDatatype ref = getGraph(p).createTripleReference();
-        Edge e = getGraph(p).create(
-                getGraph(p).getDefaultGraphDatatypeValue(), 
-                subj, pred, obj, ref);
-        e.setCreated(true);
-        e.setNested(true);
-        return ref;
+    public IDatatype triple(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o) {        
+        return getGraph(p).createTriple(s, p, o);
     }
     
     // function xt:value    

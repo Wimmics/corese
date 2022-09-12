@@ -230,11 +230,12 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node)));
 
         // Default context
-        iterable = data_manager.predicates(this.default_context);
+        iterable = data_manager.subjects(this.default_context);
         result = new ArrayList<>();
         iterable.forEach(result::add);
-        assertEquals(1, result.size());
-        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property)));
+        assertEquals(2, result.size());
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.george_brassens_node)));
     }
 
     @Test

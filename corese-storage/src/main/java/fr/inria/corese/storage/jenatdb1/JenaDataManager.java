@@ -3,16 +3,19 @@ package fr.inria.corese.storage.jenatdb1;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
 import java.util.Objects;
-import java.util.concurrent.ConcurrentHashMap;
-import java.util.function.Predicate;
 
 import org.apache.jena.graph.Graph;
+import org.apache.jena.graph.GraphUtil;
+import org.apache.jena.graph.Triple;
+import org.apache.jena.graph.compose.Union;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
+import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.core.Quad;
 import org.apache.jena.tdb.TDBFactory;
@@ -26,7 +29,6 @@ import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.core.producer.MetadataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
-import java.util.HashMap;
 
 /**
  * Implements the Corese Datamanger interface for Jena-TDB.
@@ -35,8 +37,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     private Dataset jena_dataset;
     private String storage_path;
-    private int readCounter = 0;
-    private boolean  reentrant = true;
+    private boolean reentrant = true;
     // each thread has its own counter for read transaction
     // there may be several start/end read transaction in each thread
     HashMap<Thread, Integer> threadCounter;
@@ -47,8 +48,8 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      ****************/
 
     /**
-     * Constructor of JenaTdbDataManager. Create or connect to a Jena dataset backed
-     * by an in-memory block manager. For testing.
+     * Constructor of JenaTdbDataManager. Create to a Jena dataset backed by an
+     * in-memory block manager. For testing.
      */
     public JenaDataManager() {
         this.storage_path = null;
@@ -71,15 +72,18 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     /**
      * Constructor of JenajDataManager from a Jena dataset.
      * 
-     * @param jena_dataset Jena dataset.
+     * @param dataset      Jena dataset.
+     * @param storage_path Path of the directory where the dataset is stored, null
+     *                     if it is in memory.
      */
-    public JenaDataManager(Dataset jena_dataset) {
-        this.jena_dataset = jena_dataset;
+    public JenaDataManager(Dataset dataset, String storage_path) {
+        this.storage_path = storage_path;
+        this.jena_dataset = dataset;
         init();
     }
-    
-    void init() {
-        threadCounter = new HashMap<>();
+
+    private void init() {
+        this.threadCounter = new HashMap<>();
     }
 
     /*********
@@ -88,24 +92,14 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     @Override
     public int graphSize() {
-        int result;
-
-        result = (int) this.jena_dataset.asDatasetGraph().stream().count();
-
-        return result;
-
+        return (int) this.jena_dataset.asDatasetGraph().stream().count();
     }
 
     @Override
     public int countEdges(Node predicate) {
-        int result;
-
         // convert Corese node to Jena RdfNode
         org.apache.jena.graph.Node jena_predicate = ConvertJenaCorese.coreseNodeToJenaNode(predicate);
-
-        result = (int) this.jena_dataset.asDatasetGraph().stream(null, null, jena_predicate, null).count();
-
-        return result;
+        return (int) this.jena_dataset.asDatasetGraph().stream(null, null, jena_predicate, null).count();
     }
 
     /************
@@ -114,7 +108,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     @Override
     public Iterable<Edge> getEdges(Node subject, Node predicate, Node object, List<Node> contexts) {
-        return () -> this.choose(subject, predicate, object, contexts);
+        return () -> this.chooseTripleWithoutDuplicatesReadOnly(subject, predicate, object, contexts);
     }
 
     /*************
@@ -124,55 +118,81 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     @Override
     public Iterable<Node> subjects(Node corese_context) {
 
-        Function<Edge, Node> convertIteratorQuadToEdge = new Function<Edge, Node>() {
+        Function<Resource, Node> convertIteratorQuadToEdge = new Function<Resource, Node>() {
             @Override
-            public Node apply(Edge edge) {
-                return edge.getSubjectNode();
+            public Node apply(Resource resource) {
+                return ConvertJenaCorese.JenaNodeToCoreseNode(resource.asNode());
             }
         };
 
-        Iterator<Node> result;
+        Iterator<Resource> iter;
+        if (corese_context == null) {
+            // Default graph
+            iter = ModelFactory.createModelForGraph(defaultGraph()).listSubjects();
+        } else {
+            String context_iri = ConvertJenaCorese.coreseContextToJenaContext(corese_context).getURI();
+            iter = this.jena_dataset.getNamedModel(context_iri).listSubjects();
+        }
 
-        result = Iterators.transform(this.choose(null, null, null, Arrays.asList(corese_context)),
+        return () -> Iterators.transform(
+                iter,
                 convertIteratorQuadToEdge);
-
-        return () -> result;
     }
 
     @Override
     public Iterable<Node> predicates(Node corese_context) {
 
-        Function<Edge, Node> convertIteratorQuadToEdge = new Function<Edge, Node>() {
+        Function<org.apache.jena.graph.Node, Node> convertIteratorQuadToEdge = new Function<org.apache.jena.graph.Node, Node>() {
             @Override
-            public Node apply(Edge edge) {
-                return edge.getPropertyNode();
+            public Node apply(org.apache.jena.graph.Node resource) {
+                return ConvertJenaCorese.JenaNodeToCoreseNode(resource);
             }
         };
 
-        Iterator<Node> result;
+        Iterator<org.apache.jena.graph.Node> iter;
+        if (corese_context == null) {
+            // Default graph
 
-        result = Iterators.transform(this.choose(null, null, null, Arrays.asList(corese_context)),
+            iter = GraphUtil.listPredicates(
+                    defaultGraph(),
+                    org.apache.jena.graph.Node.ANY,
+                    org.apache.jena.graph.Node.ANY);
+
+        } else {
+            String context_iri = ConvertJenaCorese.coreseContextToJenaContext(corese_context).getURI();
+            iter = GraphUtil.listPredicates(
+                    this.jena_dataset.getNamedModel(context_iri).getGraph(),
+                    org.apache.jena.graph.Node.ANY,
+                    org.apache.jena.graph.Node.ANY);
+        }
+
+        return () -> Iterators.transform(
+                iter,
                 convertIteratorQuadToEdge);
-
-        return () -> result;
     }
 
     @Override
     public Iterable<Node> objects(Node corese_context) {
 
-        Function<Edge, Node> convertIteratorQuadToEdge = new Function<Edge, Node>() {
+        Function<RDFNode, Node> convertIteratorQuadToEdge = new Function<RDFNode, Node>() {
             @Override
-            public Node apply(Edge edge) {
-                return edge.getObjectNode();
+            public Node apply(RDFNode resource) {
+                return ConvertJenaCorese.JenaNodeToCoreseNode(resource.asNode());
             }
         };
 
-        Iterator<Node> result;
+        Iterator<RDFNode> iter;
+        if (corese_context == null) {
+            // Default graph
+            iter = ModelFactory.createModelForGraph(defaultGraph()).listObjects();
+        } else {
+            String context_iri = ConvertJenaCorese.coreseContextToJenaContext(corese_context).getURI();
+            iter = this.jena_dataset.getNamedModel(context_iri).listObjects();
+        }
 
-        result = Iterators.transform(this.choose(null, null, null, Arrays.asList(corese_context)),
+        return () -> Iterators.transform(
+                iter,
                 convertIteratorQuadToEdge);
-
-        return () -> result;
     }
 
     @Override
@@ -185,21 +205,16 @@ public class JenaDataManager implements DataManager, AutoCloseable {
             }
         };
 
-        Iterator<Node> result;
+        Iterator<Node> contextsNamedGraphs = Iterators.transform(this.jena_dataset.listModelNames(),
+                convertIteratorResourceToNode);
 
-        Iterator<Node> temp;
-
-        temp = Iterators.transform(this.jena_dataset.listModelNames(), convertIteratorResourceToNode);
-
-        // Add default graph
-        if (!this.jena_dataset.getDefaultModel().isEmpty()) {
-            Node default_context = ConvertJenaCorese.jenaContextToCoreseContext(Quad.defaultGraphIRI);
-            result = Iterators.concat(temp, Arrays.asList(default_context).iterator());
+        if (this.jena_dataset.getDefaultModel().isEmpty()) {
+            return () -> contextsNamedGraphs;
         } else {
-            result = temp;
+            Node default_context = ConvertJenaCorese.jenaContextToCoreseContext(Quad.defaultGraphIRI);
+            Iterator<Node> contextDefaultGraph = Arrays.asList(default_context).iterator();
+            return () -> Iterators.concat(contextsNamedGraphs, contextDefaultGraph);
         }
-
-        return () -> result;
     }
 
     /**********
@@ -239,7 +254,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         ArrayList<Edge> edges = new ArrayList<>();
 
         try {
-            edges = Lists.newArrayList(this.choose(subject, predicate, object, contexts));
+            edges = Lists.newArrayList(this.chooseQuadDuplicatesWrite(subject, predicate, object, contexts));
 
             for (Edge edge : edges) {
                 Quad quad = ConvertJenaCorese.edgeToQuad(edge);
@@ -314,7 +329,64 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      *                  edge with any contexts.
      * @return Edge iteraor that match the specified pattern.
      */
-    public Iterator<Edge> choose(Node subject, Node predicate, Node object, List<Node> contexts) {
+    private Iterator<Edge> chooseTripleWithoutDuplicatesReadOnly(Node subject, Node predicate, Node object,
+            List<Node> contexts) {
+
+        Function<Triple, Edge> convertIteratorQuadToEdge = new Function<Triple, Edge>() {
+            @Override
+            public Edge apply(Triple triple) {
+                Quad quad = new Quad(
+                        Quad.defaultGraphIRI, triple.getSubject(), triple.getPredicate(), triple.getObject());
+                return ConvertJenaCorese.quadToEdge(quad);
+            }
+        };
+
+        // Convert Corese (subject, predicate, object) to Jena format
+        org.apache.jena.graph.Node jena_subject = ConvertJenaCorese.coreseNodeToJenaNode(subject);
+        org.apache.jena.graph.Node jena_predicate = ConvertJenaCorese.coreseNodeToJenaNode(predicate);
+        org.apache.jena.graph.Node jena_object = ConvertJenaCorese.coreseNodeToJenaNode(object);
+
+        // Create a graph that is the union of all requested graphs/contexts.
+        Graph unionGraph = Graph.emptyGraph;
+        if (contexts == null || contexts.stream().allMatch(Objects::isNull)) {
+            // If contexts is null, then defaut graph
+            unionGraph = defaultGraph();
+        } else {
+            // If the contexts are not null, then the union of the requested graphs
+            for (Node context : contexts) {
+                if (context != null) {
+                    String context_IRI = ConvertJenaCorese.coreseContextToJenaContext(context).getURI();
+                    unionGraph = this.union(unionGraph, this.jena_dataset.getNamedModel(context_IRI).getGraph());
+                }
+            }
+        }
+
+        Iterator<Triple> iterator = unionGraph.find(jena_subject, jena_predicate, jena_object);
+        Iterator<Edge> edges = Iterators.transform(iterator, convertIteratorQuadToEdge);
+
+        return edges;
+    }
+
+    private Graph union(Graph... graphs) {
+        Graph result = Graph.emptyGraph;
+
+        for (Graph graph : graphs) {
+            result = new Union(result, graph);
+        }
+
+        return result;
+    }
+
+    private Graph defaultGraph() {
+        // In Corese, the concept of an explicit default graph as defined by Jena does
+        // not exist.
+        // The default graph as defined in Corese is the union of all named graphs.
+        return this.union(
+                this.jena_dataset.asDatasetGraph().getDefaultGraph(),
+                this.jena_dataset.asDatasetGraph().getUnionGraph());
+    }
+
+    public Iterator<Edge> chooseQuadDuplicatesWrite(Node subject, Node predicate, Node object, List<Node> contexts) {
 
         Function<Quad, Edge> convertIteratorQuadToEdge = new Function<Quad, Edge>() {
             @Override
@@ -329,6 +401,9 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
         Iterator<Edge> edges = Collections.emptyIterator();
         if (contexts == null || contexts.stream().allMatch(Objects::isNull)) {
+            // In Corese, the concept of an explicit default graph as defined by Jena does
+            // not exist.
+            // The default graph as defined in Corese is the union of all named graphs.
             Iterator<Quad> iterator = this.jena_dataset.asDatasetGraph().find(
                     null, jena_subject, jena_predicate, jena_object);
 
@@ -349,36 +424,28 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         return edges;
     }
 
-    public static <T> Predicate<T> distinctByKey(Function<? super T, Object> keyExtractor) {
-        Map<Object, Boolean> map = new ConcurrentHashMap<>();
-        return t -> map.putIfAbsent(keyExtractor.apply(t), Boolean.TRUE) == null;
-    }
-
     @Override
     public void startReadTransaction() {
         if (isReentrant()) {
             startReentrantReadTransaction();
-        }
-        else {
+        } else {
             startBasicReadTransaction();
         }
     }
-    
+
     @Override
     public void endReadTransaction() {
-       if (isReentrant()) {
-           endReentrantReadTransaction();
-       }
-       else {
-           endBasicReadTransaction();
-       }
+        if (isReentrant()) {
+            endReentrantReadTransaction();
+        } else {
+            endBasicReadTransaction();
+        }
     }
 
     void startBasicReadTransaction() {
         this.jena_dataset.begin(ReadWrite.READ);
     }
-    
-    
+
     void endBasicReadTransaction() {
         this.jena_dataset.end();
     }
@@ -391,12 +458,12 @@ public class JenaDataManager implements DataManager, AutoCloseable {
                 getMetadataManager().startReadTransaction();
             }
         }
-        setReadCounter(count+1);
+        setReadCounter(count + 1);
     }
-    
+
     public synchronized void endReentrantReadTransaction() {
         int count = getReadCounter();
-        if (count>0) {
+        if (count > 0) {
             count--;
             setReadCounter(count);
         }
@@ -407,7 +474,6 @@ public class JenaDataManager implements DataManager, AutoCloseable {
             }
         }
     }
-    
 
     @Override
     public void startWriteTransaction() {
@@ -416,8 +482,6 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         }
         this.jena_dataset.begin(ReadWrite.WRITE);
     }
-    
-    
 
     @Override
     public void abortTransaction() {
@@ -428,8 +492,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     public void endWriteTransaction() {
         try {
             this.jena_dataset.commit();
-        }
-        finally {
+        } finally {
             if (hasMetadataManager()) {
                 getMetadataManager().endWriteTransaction();
             }
@@ -496,7 +559,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     public void setMetadataManager(MetadataManager metaDataManager) {
         this.metadataManager = metaDataManager;
     }
-    
+
     public boolean hasMetadataManager() {
         return getMetadataManager() != null;
     }

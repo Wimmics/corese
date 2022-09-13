@@ -52,11 +52,6 @@ public interface GraphProcessor {
     
     IDatatype triple(Environment env,  Producer p, IDatatype subj, IDatatype pred, IDatatype obj);
     IDatatype value(Environment env,  Producer p, IDatatype graph, IDatatype node, IDatatype predicate, int n);
-    IDatatype edge(Environment env,   Producer p, IDatatype subj, IDatatype pred, IDatatype obj);   
-    IDatatype edge(Environment env,   Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph);
-    IDatatype subjects(Environment env,  Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph);
-    IDatatype objects(Environment env,   Producer p, IDatatype subj, IDatatype pred, IDatatype obj, IDatatype graph);
-    IDatatype exists(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj);
     IDatatype insert(Environment env, Producer p, IDatatype[] param);
     IDatatype delete(Environment env, Producer p, IDatatype[] param);
     

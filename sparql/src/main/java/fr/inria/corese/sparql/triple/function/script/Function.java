@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.function.script;
 
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.sparql.api.Computer;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -508,13 +509,20 @@ public class Function extends Statement {
             }
             if (rdftypecheck) {
                 // test xt:exists(value, rdf:type, type)
-                boolean bb = proc.exists(env, p, value, RDF_TYPE, type).booleanValue();
+                boolean bb = exists(env, p, value, RDF_TYPE, type);
                 if (!bb) {
                     return false;
                 }
             }
         }
         return true;
+    }
+    
+    boolean exists(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o) {
+        for (Edge e : prod.getEdges(s, p, o, null)) {
+            return e != null;
+        }
+        return false;
     }
 
    

@@ -1,5 +1,6 @@
 package fr.inria.corese.sparql.triple.function.proxy;
 
+import fr.inria.corese.kgram.api.core.Edge;
 import static fr.inria.corese.kgram.api.core.ExprType.APPROXIMATE;
 import static fr.inria.corese.kgram.api.core.ExprType.APP_SIM;
 import static fr.inria.corese.kgram.api.core.ExprType.DEPTH;
@@ -40,12 +41,15 @@ import static fr.inria.corese.kgram.api.core.ExprType.XT_OBJECTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SUBJECTS;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_SYNTAX;
 import static fr.inria.corese.kgram.api.core.ExprType.XT_VALUE;
+import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import java.util.ArrayList;
+import java.util.List;
 
 /**
  *
@@ -115,10 +119,10 @@ public class GraphSpecificFunction extends LDScript {
                 return exists(proc, env, p, param); 
                 
             case XT_INSERT:
-                return proc.insert(env, p, param);
+                return insert(proc, env, p, param);
                 
             case XT_DELETE:
-                return proc.delete(env, p, param);    
+                return delete(proc, env, p, param);    
                 
             case XT_DEGREE:
                 return degree(proc, env, p, param); 
@@ -165,6 +169,37 @@ public class GraphSpecificFunction extends LDScript {
         
     }
     
+    IDatatype insert(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
+        IDatatype first = param[0];
+        Edge e;
+        if (first.pointerType() == PointerType.GRAPH) {
+            // insert(graph, s, p, o)
+            return proc.insert(env, p, param);
+        } else if (param.length == 3) {
+            // insert(s, p, o)
+            e = p.insert(null, first, param[1], param[2]);
+        } else {
+            // insert(uri, s, p, o)
+            e = p.insert(first, param[1], param[2], param[3]);
+        }
+        return (e == null) ? FALSE : TRUE;
+    }
+
+    IDatatype delete(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
+        IDatatype first = param[0];
+        Iterable<Edge> le;
+
+        if (first.pointerType() == PointerType.GRAPH) {
+            return proc.delete(env, p, param);
+        } else if (param.length == 3) {
+            le = p.delete(null, first, param[1], param[2]);
+        } else {
+            le = p.delete(first, param[1], param[2], param[3]);
+        }
+
+        return (le == null || !le.iterator().hasNext()) ? FALSE : TRUE;
+    }
+
    boolean isList(IDatatype[] arr) {
        for (IDatatype dt : arr) {
            if (! dt.isList()) {
@@ -276,62 +311,85 @@ public class GraphSpecificFunction extends LDScript {
         }        
     }
     
+
     public IDatatype edge(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
         switch (param.length) {
             case 0:
-                return proc.edge(env, p, null, null, null);
+                return edge(env, p, null, null, null, null);
             case 1:
-                return proc.edge(env, p, null, clean(param[0]), null);
+                return edge(env, p, null, clean(param[0]), null, null);
             case 2:
-                return proc.edge(env, p, clean(param[0]), clean(param[1]), null);
+                return edge(env, p, clean(param[0]), clean(param[1]), null, null);
             case 3 :
-                return proc.edge(env, p, clean(param[0]), clean(param[1]), clean(param[2]));
+                return edge(env, p, clean(param[0]), clean(param[1]), clean(param[2]), null);
             default:                
-                return proc.edge(env, p, clean(param[0]), clean(param[1]), clean(param[2]), clean(param[3]));
+                return edge(env, p, clean(param[0]), clean(param[1]), clean(param[2]), clean(param[3]));
         }
+    }
+    
+    IDatatype edge(Environment env, Producer prod, 
+            IDatatype s, IDatatype p, IDatatype o, IDatatype g) {
+        return prod.getEdges(prod.getEdges(s, p, o, getNodeList(env, g)));
     }
     
     IDatatype subjects(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
         switch (param.length) {
             case 0:
-                return proc.subjects(env, p, null, null, null, null);
+                return subjects(env, p, null, null, null, null);
             case 1:
-                return proc.subjects(env, p, null, clean(param[0]), null, null);
+                return subjects(env, p, null, clean(param[0]), null, null);
             case 2:
-                return proc.subjects(env, p, clean(param[0]), clean(param[1]), null, null);
+                return subjects(env, p, clean(param[0]), clean(param[1]), null, null);
             case 3 :
-                return proc.subjects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), null);
+                return subjects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), null);
             default:                
-                return proc.subjects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), clean(param[3]));
+                return subjects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), clean(param[3]));
         }
+    }
+    
+    IDatatype subjects(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o, IDatatype g) {
+        Iterable<Edge> it = prod.getEdges(s, p, o, getNodeList(env, g));
+        return getNodes(it, 0);
     }
     
     IDatatype objects(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
         switch (param.length) {
             case 0:
-                return proc.objects(env, p, null, null, null, null);
+                return objects(env, p, null, null, null, null);
             case 1:
-                return proc.objects(env, p, null, clean(param[0]), null, null);
+                return objects(env, p, null, clean(param[0]), null, null);
             case 2:
-                return proc.objects(env, p, clean(param[0]), clean(param[1]), null, null);
+                return objects(env, p, clean(param[0]), clean(param[1]), null, null);
             case 3 :
-                return proc.objects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), null);
+                return objects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), null);
             default:                
-                return proc.objects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), clean(param[3]));
+                return objects(env, p, clean(param[0]), clean(param[1]), clean(param[2]), clean(param[3]));
         }
+    }
+    
+    IDatatype objects(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o, IDatatype g) {
+        Iterable<Edge> it = prod.getEdges(s, p, o, getNodeList(env, g));
+        return getNodes(it, 1);
     }
     
     IDatatype exists(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
         switch (param.length) {
             case 0:
-                return proc.exists(env, p, null, null, null);
+                return exists(env, p, null, null, null);
             case 1:
-                return proc.exists(env, p, null, clean(param[0]), null);
+                return exists(env, p, null, clean(param[0]), null);
             case 2:
-                return proc.exists(env, p, clean(param[0]), clean(param[1]), null);
+                return exists(env, p, clean(param[0]), clean(param[1]), null);
             default:
-                return proc.exists(env, p, clean(param[0]), clean(param[1]), clean(param[2]));
+                return exists(env, p, clean(param[0]), clean(param[1]), clean(param[2]));
         }
+    }
+    
+    IDatatype exists(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o) {
+        for (Edge e : prod.getEdges(s, p, o, getNodeList(env.getGraphNode()))) {
+            return e==null ? FALSE : TRUE;
+        }
+        return FALSE;
     }
     
     IDatatype clean(IDatatype dt) {
@@ -373,6 +431,31 @@ public class GraphSpecificFunction extends LDScript {
             default: return null;
         }
         return proc.mindegree(env, p, node, pred, index, min);
-    }     
+    } 
+
+    List<Node> getNodeList(Node node) {
+        if (node == null) {
+            return null;
+        }
+        return List.of(node);
+    }
+    // graph may be a list
+    List<Node> getNodeList(Environment env, IDatatype graph) {
+        if (graph == null) {
+            return getNodeList(env.getGraphNode());
+        }
+        return DatatypeMap.toNodeList(graph);
+    }
+    
+    IDatatype getNodes(Iterable<Edge> it, int n) {
+        ArrayList<IDatatype> list = new ArrayList<>();
+        for (Edge edge : it) {
+            if (edge != null) {
+                list.add(edge.getNode(n).getDatatypeValue());
+            }
+        }
+        return DatatypeMap.newList(list);
+    }
+        
 }
 

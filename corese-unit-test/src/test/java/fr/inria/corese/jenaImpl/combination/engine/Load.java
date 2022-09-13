@@ -4,6 +4,7 @@ import org.apache.jena.query.Dataset;
 import org.apache.jena.query.DatasetFactory;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
+import org.apache.jena.sparql.core.Quad;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.LoadException;
@@ -44,9 +45,10 @@ public class Load {
 
             model.read(input);
 
-            // Fixme: Convert Defaut context
-
             for (String context : contexts) {
+                if (context == "http://ns.inria.fr/corese/kgram/default") {
+                    context = Quad.defaultGraphIRI.getURI();
+                }
                 dataset.addNamedModel(context, model);
             }
         }

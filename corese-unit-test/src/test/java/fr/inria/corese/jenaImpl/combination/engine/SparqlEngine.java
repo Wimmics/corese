@@ -1,6 +1,5 @@
 package fr.inria.corese.jenaImpl.combination.engine;
 
-
 import org.apache.jena.query.Dataset;
 
 import fr.inria.corese.core.Graph;
@@ -21,7 +20,7 @@ public class SparqlEngine {
     }
 
     public static SelectResults selectQuery(String query, Dataset dataset) {
-        DataManager dataManage = new JenaDataManager(dataset);
+        DataManager dataManage = new JenaDataManager(dataset, null);
         return SparqlEngine.coreseSelectQuery(query, QueryProcess.create(dataManage));
     }
 
@@ -46,7 +45,7 @@ public class SparqlEngine {
     }
 
     public static Graph constructQuery(String query, Dataset dataset) {
-        DataManager dataManage = new JenaDataManager(dataset);
+        DataManager dataManage = new JenaDataManager(dataset, null);
         return SparqlEngine.coreseConstructQuery(query, QueryProcess.create(dataManage));
     }
 
@@ -71,7 +70,7 @@ public class SparqlEngine {
     }
 
     public static Boolean askQuery(String query, Dataset dataset) {
-        DataManager dataManage = new JenaDataManager(dataset);
+        DataManager dataManage = new JenaDataManager(dataset, null);
         return SparqlEngine.coreseAskQuery(query, QueryProcess.create(dataManage));
     }
 
@@ -98,7 +97,7 @@ public class SparqlEngine {
     }
 
     public static Dataset updateQuery(String query, Dataset dataset) {
-        DataManager dataManage = new JenaDataManager(dataset);
+        DataManager dataManage = new JenaDataManager(dataset, null);
         SparqlEngine.coreseUpdateQuery(query, QueryProcess.create(dataManage));
         return dataset;
     }

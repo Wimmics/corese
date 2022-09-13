@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Objects;
+import java.util.stream.Collectors;
 
 import org.apache.jena.graph.Graph;
 import org.apache.jena.graph.GraphUtil;
@@ -109,9 +110,17 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     @Override
     public Iterable<Edge> getEdges(Node subject, Node predicate, Node object, List<Node> contexts) {
 
-        // if context == 1, no need for union. (in order not to lose information of context)
-        if (contexts != null && contexts.size() == 1) {
-            return () -> this.chooseQuadDuplicatesWrite(subject, predicate, object, contexts);
+        if (contexts != null) {
+            // Clear null values in list of contexts
+            List<Node> clear_contexts = contexts.stream().filter(x -> x != null).collect(Collectors.toList());
+
+            // if context == 1, no need for union. (in order not to lose information of
+            // context)
+            if (clear_contexts.size() == 1) {
+                return () -> this.chooseQuadDuplicatesWrite(subject, predicate, object, clear_contexts);
+            } else {
+                return () -> this.chooseTripleWithoutDuplicatesReadOnly(subject, predicate, object, clear_contexts);
+            }
         } else {
             return () -> this.chooseTripleWithoutDuplicatesReadOnly(subject, predicate, object, contexts);
         }
@@ -392,7 +401,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
                 this.jena_dataset.asDatasetGraph().getUnionGraph());
     }
 
-    public Iterator<Edge> chooseQuadDuplicatesWrite(Node subject, Node predicate, Node object, List<Node> contexts) {
+    private Iterator<Edge> chooseQuadDuplicatesWrite(Node subject, Node predicate, Node object, List<Node> contexts) {
 
         Function<Quad, Edge> convertIteratorQuadToEdge = new Function<Quad, Edge>() {
             @Override
@@ -407,9 +416,6 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
         Iterator<Edge> edges = Collections.emptyIterator();
         if (contexts == null || contexts.stream().allMatch(Objects::isNull)) {
-            // In Corese, the concept of an explicit default graph as defined by Jena does
-            // not exist.
-            // The default graph as defined in Corese is the union of all named graphs.
             Iterator<Quad> iterator = this.jena_dataset.asDatasetGraph().find(
                     null, jena_subject, jena_predicate, jena_object);
 

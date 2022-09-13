@@ -8,12 +8,16 @@ public class Combination {
 
     public static boolean selectQuery(String query_string, LoadableFile... load_files) {
 
+        System.out.println("=================================================");
+        System.out.println(query_string);
+        System.out.println("=================================================");
+
         // build dataset and graph
         Dataset jena_dataset = Load.JenaDataset(load_files);
         Graph corese_graph = Load.coreseGraph(load_files);
 
         // get results of all combinations
-        System.out.println("SPARQL engine: Corese, Model: Jena Datasar");
+        System.out.println("SPARQL engine: Corese, Model: Jena Dataset");
         SelectResults result_dataset = SparqlEngine.selectQuery(query_string, jena_dataset);
         System.out.println(result_dataset);
 
@@ -26,7 +30,7 @@ public class Combination {
     }
 
     public static boolean constructQuery(String query_string, LoadableFile... load_files) {
-      
+
         // get results of all combinations
         System.out.println("SPARQL engine: Corese, Model: Jena Dataset");
         Graph result_dataset = SparqlEngine.constructQuery(query_string, Load.JenaDataset(load_files));

@@ -110,7 +110,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     public Iterable<Edge> getEdges(Node subject, Node predicate, Node object, List<Node> contexts) {
 
         // if context == 1, no need for union. (in order not to lose information of context)
-        if (contexts.size() == 1) {
+        if (contexts != null && contexts.size() == 1) {
             return () -> this.chooseQuadDuplicatesWrite(subject, predicate, object, contexts);
         } else {
             return () -> this.chooseTripleWithoutDuplicatesReadOnly(subject, predicate, object, contexts);

@@ -31,6 +31,9 @@ public interface DataBroker {
     }
 
     // from provides union of triples (select from where default graph semantics)
+    // when from.size == 1, it is used for default graph AND named graph semantics
+    // and we cannot distinguish the case here
+    // when from.size == 1, it MUST return quads with the uri of the named graph 
     default Iterable<Edge> getEdgeList(Node subject, Node predicate, Node object, List<Node> from) {
         return getDataManager().getEdges(subject, predicate, object, from);
     }

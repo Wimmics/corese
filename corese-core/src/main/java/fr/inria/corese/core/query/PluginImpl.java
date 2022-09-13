@@ -716,47 +716,31 @@ public class PluginImpl
     
 
     // function xt:insert
-    // xt:insert(s, p, o)
-    // xt:insert(uri, s, p o)
     // xt:insert(graph, s, p, o)
     @Override
     public IDatatype insert(Environment env, Producer p, IDatatype... param) {
         IDatatype first = param[0];
-        Edge e;
-        if (param.length == 3) {
-            // insert(s, p, o)
-            e = p.insert(null, first, param[1], param[2]);            
-        } else if (first.pointerType() == PointerType.GRAPH) {
+        Edge e = null;
+        if (first.pointerType() == PointerType.GRAPH) {
             // insert(graph, s, p, o)
             Graph gg = (Graph) first.getPointerObject();
             e = gg.add(param[1], param[2], param[3]);
-        } else {
-            // insert(uri, s, p, o)
-            e = p.insert(first, param[1], param[2], param[3]);
-        }
+        } 
         return (e == null) ? FALSE : TRUE;
     }
 
     // function xt:delete
-    // xt:delete(s, p, o)
-    // xt:delete(namedGraphURI, s, p o)
     // xt:delete(graph, s, p, o)    
     @Override
     public IDatatype delete(Environment env, Producer p, IDatatype... param) {
         IDatatype first = param[0];
-        Iterable<Edge> le;
-        
-        if (param.length == 3) {
-            le = p.delete(null, first, param[1], param[2]);
-        } 
-        else if (first.pointerType() == PointerType.GRAPH) {
+        Iterable<Edge> le = null;
+
+        if (first.pointerType() == PointerType.GRAPH) {
             Graph gg = (Graph) first.getPointerObject();
             le = gg.delete(param[1], param[2], param[3]);
-        }
-        else {
-            le = p.delete(first, param[1], param[2], param[3]);
-        }
-        
+        } 
+
         return (le == null || !le.iterator().hasNext()) ? FALSE : TRUE;
     }
 
@@ -875,60 +859,6 @@ public class PluginImpl
         return val.getDatatypeValue();
     }
 
-    
-    // function xt:exists
-    // xt:exist()
-    // xt:exist(p)
-    // xt:exist(s, p)
-    // xt:exist(s, p, o)
-    // xt:_joker stands as a joker for null value
-    // bnode not in graph interpreted as joker by corese graph DataProducer
-    @Override
-    public IDatatype exists(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o) {
-        for (Edge e : prod.getEdges(s, p, o, getNodeList(env.getGraphNode()))) {
-            return e==null ? FALSE : TRUE;
-        }
-        return FALSE;
-    }
- 
-
-
-    // function xt:edges
-    // return iterator Edge
-    // xt:edge()
-    // xt:edge(p)
-    // xt:edge(s, p)
-    // xt:edge(s, p, o)
-    @Override
-    public IDatatype edge(Environment env, Producer p, IDatatype subj, IDatatype pred, IDatatype obj) {
-        return edge(env, p, subj, pred, obj, null);
-    }
-
-    // function xt:edges
-    // return iterator Edge
-    // xt:edge(s, p, o, g)
-    // g may be null, IDatatype or IDatatypeList    
-    @Override
-    public IDatatype edge(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o, IDatatype g) {
-        return prod.getEdges(prod.getEdges(s, p, o, getNodeList(env, g)));
-    }
-    
-    // function xt:subjects
-    // return list of subject of xt:edge()
-    @Override
-    public IDatatype subjects(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o, IDatatype g) {
-        Iterable<Edge> it = prod.getEdges(s, p, o, getNodeList(env, g));
-        return getNodes(it, 0);
-    }
-
-    // function xt:objects
-    // return list of object of xt:edge()
-    @Override
-    public IDatatype objects(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o, IDatatype g) {
-        Iterable<Edge> it = prod.getEdges(s, p, o, getNodeList(env, g));
-        return getNodes(it, 1);
-    }
-    
     
     
     

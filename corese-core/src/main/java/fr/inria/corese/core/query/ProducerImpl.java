@@ -1060,6 +1060,7 @@ public class ProducerImpl
         }
     }
     
+    @Override
     public boolean hasDataManager() {
         return getDataManager()!=null;
     }

@@ -148,22 +148,22 @@ public class Core extends PluginImpl implements FunctionEvaluator {
         return value(null, getProducer(), null, s, p, 1);
     }
 
-    IDatatype xt_objects(IDatatype s, IDatatype p) {
-        return enumerate(s, p, null, 1);
-    }
-
-    IDatatype xt_subjects(IDatatype p, IDatatype o) {
-        return enumerate(null, p, o, 0);
-    }
-
-    IDatatype enumerate(IDatatype s, IDatatype p, IDatatype o, int n) {
-        ArrayList<IDatatype> list = new ArrayList<>();
-        for (IDatatype dt : edge(null, getProducer(), s, p, o)) {
-            Edge edge = dt.getPointerObject().getEdge();
-            list.add( edge.getNode(n).getDatatypeValue());
-        }
-        return DatatypeMap.newList(list);
-    }
+//    IDatatype xt_objects(IDatatype s, IDatatype p) {
+//        return enumerate(s, p, null, 1);
+//    }
+//
+//    IDatatype xt_subjects(IDatatype p, IDatatype o) {
+//        return enumerate(null, p, o, 0);
+//    }
+//
+//    IDatatype enumerate(IDatatype s, IDatatype p, IDatatype o, int n) {
+//        ArrayList<IDatatype> list = new ArrayList<>();
+//        for (IDatatype dt : edge(null, getProducer(), s, p, o)) {
+//            Edge edge = dt.getPointerObject().getEdge();
+//            list.add( edge.getNode(n).getDatatypeValue());
+//        }
+//        return DatatypeMap.newList(list);
+//    }
 
     IDatatype xt_insert(IDatatype... ldt) {
         return insert(null, getProducer(), ldt);

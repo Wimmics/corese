@@ -1,7 +1,6 @@
 package fr.inria.corese.core.query;
 
 import fr.inria.corese.core.approximate.ext.AppxSearchPlugin;
-import java.util.Hashtable;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -449,8 +448,27 @@ public class PluginImpl
             }
             return g.isSubClassOf(n1, n2);
         } else {
-            return man.getMetadataManager().transitiveRelation(n1, SUB_CLASS_OF, n2);
+            return transitiveRelation(man, env, n1, SUB_CLASS_OF, n2);
         }
+    }
+    
+    boolean transitiveRelation(DataManager man, Environment env, Node n1, Node p, Node n2) {
+        Cache cache = getCache(env);
+        Boolean b = cache.get(n1, n2);
+        if (b == null) {
+            b = man.getMetadataManager().transitiveRelation(n1, p, n2);
+            cache.put(n1, n2, b);
+        }
+        return b;
+    }
+    
+    Cache getCache(Environment env) {
+        Cache table = (Cache) env.getObject();
+        if (table == null) {
+            table = new Cache(env.getQuery());
+            env.setObject(table);
+        }
+        return table;
     }
 
     // function xt:load

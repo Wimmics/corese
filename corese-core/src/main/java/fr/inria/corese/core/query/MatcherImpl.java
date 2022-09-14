@@ -47,43 +47,6 @@ public class MatcherImpl implements Matcher {
     MatchBNode bnode;
     int mode = SUBSUME;
 
-    class BTable extends HashMap<Node, Boolean> {
-    }
-
-    class STable extends HashMap<Node, BTable> {
-    }
-
-    /**
-     *
-     * Cache: store subsumption between query and target node
-     */
-    class Cache {
-
-        STable table;
-
-        Cache(Query q) {
-            table = new STable();
-        }
-
-        BTable getTable(Node q) {
-            BTable bt = table.get(q);
-            if (bt == null) {
-                bt = new BTable();
-                table.put(q, bt);
-            }
-            return bt;
-        }
-
-        Boolean get(Node q, Node t) {
-            BTable bt = getTable(q);
-            return bt.get(t);
-        }
-
-        void put(Node q, Node t, Boolean b) {
-            BTable bt = getTable(q);
-            bt.put(t, b);
-        }
-    }
 
     MatcherImpl(Graph g) {
         graph = g;

@@ -761,64 +761,6 @@ public class PluginImpl
     }
 
     
-    // function xt:mindegree
-    // check whether node has degree >= dtmin
-    // xt:mindegree(node, min)
-    // xt:mindegree(node, index, min)
-    // xt:mindegree(node, predicate, min)
-    // xt:mindegree(node, predicate, index, min) 
-    // index  = 0|1
-    @Override
-    public IDatatype mindegree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index, IDatatype dtmin) {
-        int min = dtmin.intValue();
-        if (index == null) {
-            // input + output edges
-            int d = degree(env, p, node, pred, 0, min) + degree(env, p, node, pred, 1, min);
-            return DatatypeMap.newInstance(d >= min);
-        }
-        int d = degree(env, p, node, pred, index.intValue(), min);
-        return DatatypeMap.newInstance(d >= min);
-    }
-
-    // function xt:degree
-    // xt:degree(node)
-    // xt:degree(node, index)
-    // xt:degree(node, predicate)
-    // xt:degree(node, predicate, index) 
-    // index  = 0|1
-    @Override
-    public IDatatype degree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index) {
-        int min = Integer.MAX_VALUE;
-        if (index == null) {
-            // input + output edges
-            int d = degree(env, p, node, pred, 0, min) + degree(env, p, node, pred, 1, min);
-            return DatatypeMap.newInstance(d);
-        }
-        int d = degree(env, p, node, pred, index.intValue(), min);
-        return DatatypeMap.newInstance(d);
-    }
-    
-    int degree(Environment env, Producer p, IDatatype node, IDatatype pred, int n, int min) {
-        IDatatype sub = (n == 0) ? node : null;
-        IDatatype obj = (n == 1) ? node : null;
-                
-        int count = 0;
-
-        for (Edge edge : p.getEdges(sub, pred, obj, getNodeList(env.getGraphNode()))) {
-            if (edge == null) {
-                break;
-            }
-            if (node.equals(edge.getNode(n).getDatatypeValue())) {
-                count++;
-                if (count >= min) {
-                    break;
-                }
-            } else {
-                break;
-            }
-        }
-        return count;
-    }
 
 
     public Graph getGraph() {
@@ -875,36 +817,6 @@ public class PluginImpl
         return val.getDatatypeValue();
     }
 
-    
-    
-    
-    IDatatype getNodes(Iterable<Edge> it, int n) {
-        ArrayList<IDatatype> list = new ArrayList<>();
-        for (Edge edge : it) {
-            if (edge != null) {
-                list.add(edge.getNode(n).getDatatypeValue());
-            }
-        }
-        return DatatypeMap.newList(list);
-    }
-    
-    
-
-        
-    List<Node> getNodeList(Node node) {
-        if (node == null) {
-            return null;
-        }
-        return List.of(node);
-    }
-    // graph may be a list
-    List<Node> getNodeList(Environment env, IDatatype graph) {
-        if (graph == null) {
-            return getNodeList(env.getGraphNode());
-        }
-        return DatatypeMap.toNodeList(graph);
-    }
-    
 
     // function xt:union
     @Override

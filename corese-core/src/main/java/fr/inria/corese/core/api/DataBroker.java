@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import fr.inria.corese.core.NodeImpl;
+import fr.inria.corese.core.logic.RDF;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Query;
@@ -66,8 +67,9 @@ public interface DataBroker {
         return from;
     }
 
+    // return true when edge is rdf:type and query is relax
     default boolean isTypeProperty(Query query, Edge edge) {
-        return false;
+        return query.isRelax() && edge.getEdgeLabel().equals(RDF.TYPE);
     }
 
     default Node getNodeCopy(Node node) {

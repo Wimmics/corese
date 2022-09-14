@@ -474,6 +474,10 @@ public class Graph extends GraphObject implements
     public void setDefaultGraphMode(int defaultGraph) {
         this.defaultGraphMode = defaultGraph;
     }
+    
+    public TreeNode treeNode() {
+        return new TreeNode();
+    }
 
     /**
      * With CompareNode: manage 1, 01, 1.0 as different Node (with same index)

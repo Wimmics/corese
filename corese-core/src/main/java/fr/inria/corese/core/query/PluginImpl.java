@@ -33,6 +33,7 @@ import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.EventManager;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.Graph.TreeNode;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.Load;
@@ -43,6 +44,7 @@ import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.load.result.SPARQLResultParser;
 import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.logic.RDFS;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.producer.MetadataManager;
 import fr.inria.corese.core.shacl.Shacl;
@@ -51,7 +53,6 @@ import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphListen;
 import fr.inria.corese.core.util.MappingsGraph;
 import fr.inria.corese.core.util.SPINProcess;
-import fr.inria.corese.core.workflow.ShapeWorkflow;
 import fr.inria.corese.sparql.api.GraphProcessor;
 import java.util.ArrayList;
 import java.util.List;
@@ -84,7 +85,7 @@ public class PluginImpl
     static public Logger logger = LoggerFactory.getLogger(PluginImpl.class);
     static String DEF_PPRINTER = Transformer.PPRINTER;
     private static final String NL = System.getProperty("line.separator");
-
+    private static final IDatatype SUB_CLASS_OF = DatatypeMap.newResource(RDFS.SUBCLASSOF);
     static int nbBufferedValue = 0;
     static final String EXT = ExpType.EXT;
     public static final String METADATA = EXT + "metadata";
@@ -373,9 +374,8 @@ public class PluginImpl
     @Override
     public IDatatype similarity(Environment env, Producer p) {
         Graph g = getGraph(p);
-        if (g == null) {
-            return null;
-        }
+        DataManager man = p.hasDataManager()?dataManager(p):null;
+        
         if (!(env instanceof Memory)) {
             return getValue(0);
         }
@@ -383,8 +383,10 @@ public class PluginImpl
         if (memory.getQueryEdges() == null) {
             return getValue(0);
         }
-        Hashtable<Node, Boolean> visit = new Hashtable<>();
-        Distance distance = g.setClassDistance();
+        //Hashtable<Node, Boolean> visit = new Hashtable<>();
+        TreeNode tree = g.treeNode();
+        Distance distance = man==null ? g.setClassDistance() :
+                man.getCreateMetadataManager().getCreateDistance();
 
         // number of node + edge in the answer
         int count = 0;
@@ -401,9 +403,11 @@ public class PluginImpl
                     for (int i = 0; i < edge.nbNode(); i++) {
                         // count nodes only once
                         Node n = edge.getNode(i);
-                        if (!visit.containsKey(n)) {
+                        //if (!visit.containsKey(n)) {
+                        if (!tree.containsKey(n.getDatatypeValue())) {
                             count += 1;
-                            visit.put(n, true);
+                            //visit.put(n, true);
+                            tree.put(n.getDatatypeValue(), n);
                         }
                     }
 
@@ -422,7 +426,7 @@ public class PluginImpl
                             ttype = edge.getNode(1);
                         }
 
-                        if (!subClassOf(g, ttype, qtype, env)) {
+                        if (!subClassOf(g, man, ttype, qtype, env)) {
                             dd += distance.distance(ttype, qtype);
                         }
                     }
@@ -435,25 +439,19 @@ public class PluginImpl
         }
 
         double sim = distance.similarity(dd, count);
-
         return getValue(sim);
-
     }
 
-    boolean subClassOf(Graph g, Node n1, Node n2, Environment env) {
-        if (match != null) {
-            return match.isSubClassOf(n1, n2, env);
+    boolean subClassOf(Graph g, DataManager man, Node n1, Node n2, Environment env) {
+        if (man == null) {
+            if (match != null) {
+                return match.isSubClassOf(n1, n2, env);
+            }
+            return g.isSubClassOf(n1, n2);
+        } else {
+            return man.getMetadataManager().transitiveRelation(n1, SUB_CLASS_OF, n2);
         }
-        return g.isSubClassOf(n1, n2);
     }
-
-//    IDatatype load(IDatatype dt) throws SafetyException {
-//        return load(dt, null);
-//    }
-//
-//    public IDatatype load(IDatatype dt, IDatatype format) throws SafetyException {
-//        return load(dt, null, format, null, Level.USER_DEFAULT);
-//    }
 
     // function xt:load
     // expectedFormat: 

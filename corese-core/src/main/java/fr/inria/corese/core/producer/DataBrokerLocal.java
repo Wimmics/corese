@@ -77,7 +77,8 @@ public class DataBrokerLocal implements DataBroker {
     // in this case return true
     @Override
     public boolean isTypeProperty(Query query, Edge edge) {
-        return (getGraph().isType(edge) || query.isRelax(edge)) && getGraph().hasEntailment();
+        return (getGraph().isType(edge) || query.isRelax(edge)) 
+            && (getGraph().hasEntailment() || query.isRelax());
     }
     
     

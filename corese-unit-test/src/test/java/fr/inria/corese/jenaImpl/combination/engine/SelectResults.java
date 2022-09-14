@@ -30,7 +30,14 @@ public class SelectResults {
 
     @Override
     public String toString() {
-        return this.result_list.size() + " results\n" + this.result_list.toString();
+        String result = "";
+
+        result += this.result_list.size() + " results\n";
+
+        for (HashMap<String, Node> el : this.result_list) {
+            result += el + "\n";
+        }
+        return result;
     }
 
     @Override

@@ -21,7 +21,7 @@ public class CompareGraphDataset {
     public static boolean compareGraph(Dataset jena_dataset, Graph corese_graph) {
 
         ArrayList<Edge> jena_edges = new ArrayList<>();
-        try (JenaDataManager dm = new JenaDataManager(jena_dataset)) {
+        try (JenaDataManager dm = new JenaDataManager(jena_dataset, null)) {
             // Get edges from Jena
             Method method = dm.getClass().getDeclaredMethod("chooseQuadDuplicatesWrite", Node.class, Node.class,
                     Node.class, List.class);

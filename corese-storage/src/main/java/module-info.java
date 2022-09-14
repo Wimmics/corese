@@ -8,4 +8,6 @@ module fr.inria.corese.corese_storage {
 
     exports fr.inria.corese.storage.jenatdb1.convertDatatype;
     exports fr.inria.corese.storage.jenatdb1;
+
+    opens fr.inria.corese.storage.jenatdb1;
 }

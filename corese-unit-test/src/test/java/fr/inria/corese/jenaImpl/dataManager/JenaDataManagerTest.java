@@ -314,6 +314,36 @@ public class JenaDataManagerTest {
         }
 
         @Test
+        public void getEdgesOneContext() {
+                JenaDataManager data_manager = new JenaDataManager(this.dataset, null);
+
+                // All edges of context 1
+                ArrayList<Node> contexts = new ArrayList<>();
+                contexts.add(this.context1_corese);
+
+                Iterable<Edge> iterable = data_manager.getEdges(null, null, null, contexts);
+                List<Edge> result = new ArrayList<>();
+                iterable.forEach(result::add);
+                data_manager.close();
+
+                assertEquals(1, result.size());
+                assertEquals(result.get(0).getGraph(), this.context1_corese);
+
+                // All edges of context 1 (with a ignore null value)
+                contexts = new ArrayList<>();
+                contexts.add(null);
+                contexts.add(this.context1_corese);
+
+                iterable = data_manager.getEdges(null, null, null, contexts);
+                result = new ArrayList<>();
+                iterable.forEach(result::add);
+                data_manager.close();
+
+                assertEquals(1, result.size());
+                assertEquals(this.context1_corese, result.get(0).getGraph());
+        }
+
+        @Test
         public void subjects() {
                 Iterable<Node> iterable;
                 List<Node> result;

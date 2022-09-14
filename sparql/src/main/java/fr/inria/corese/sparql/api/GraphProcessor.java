@@ -9,6 +9,7 @@ import fr.inria.corese.sparql.triple.parser.Access.Level;
 
 /**
  * interface of fr.inria.corese.core.query.PluginImpl
+ * see fr.inria.corese.sparql.triple.function.proxy.GraphSpecificFunction
  * 
  * @author Olivier Corby - INRIA - 2018
  */
@@ -55,9 +56,6 @@ public interface GraphProcessor {
     IDatatype insert(Environment env, Producer p, IDatatype[] param);
     IDatatype delete(Environment env, Producer p, IDatatype[] param);
     
-    IDatatype degree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index);
-    IDatatype mindegree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index, IDatatype min);
-
     IDatatype entailment(Environment env, Producer p, IDatatype graph) throws EngineException;
     
     IDatatype shape(Expr exp, Environment env, Producer p, IDatatype[] param);

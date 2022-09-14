@@ -413,8 +413,21 @@ public class GraphSpecificFunction extends LDScript {
             case 3: node = param[0]; pred = param[1]; index = param[2];  break;
             default: return null;
         }
-        return proc.degree(env, p, node, pred, index);
+        return degree(env, p, node, pred, index);
     }
+    
+    IDatatype degree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index) {
+        int min = Integer.MAX_VALUE;
+        List<Node> from = getNodeList(env);
+        if (index == null) {
+            // input + output edges
+            int d = degree(p, from, node, pred, 0, min) + degree(p, from, node, pred, 1, min);
+            return DatatypeMap.newInstance(d);
+        }
+        int d = degree(p, from, node, pred, index.intValue(), min);
+        return DatatypeMap.newInstance(d);
+    }
+    
   
     IDatatype mindegree(GraphProcessor proc, Environment env, Producer p, IDatatype[] param) {
         IDatatype node, pred=null, index=null, min=null;
@@ -430,8 +443,49 @@ public class GraphSpecificFunction extends LDScript {
             break;           
             default: return null;
         }
-        return proc.mindegree(env, p, node, pred, index, min);
+        return mindegree(env, p, node, pred, index, min);
     } 
+    
+    IDatatype mindegree(Environment env, Producer p, IDatatype node, IDatatype pred, IDatatype index, IDatatype dtmin) {
+        int min = dtmin.intValue();
+        List<Node> from = getNodeList(env);
+        if (index == null) {
+            // input + output edges
+            int d = degree(p, from, node, pred, 0, min) + degree(p, from, node, pred, 1, min);
+            return DatatypeMap.newInstance(d >= min);
+        }
+        int d = degree(p, from, node, pred, index.intValue(), min);
+        return DatatypeMap.newInstance(d >= min);
+    }
+    
+    // node is nth node of edges with pred as predicate
+    // return number of edges with such nth node or min if number >= min
+    // by default min = Integer.MAX
+    int degree(Producer p, List<Node> from, Node node, Node pred, int n, int min) {
+        Node sub = (n == 0) ? node : null;
+        Node obj = (n == 1) ? node : null;
+                
+        int count = 0;
+
+        for (Edge edge : p.getEdges(sub, pred, obj, from)) {
+            if (edge == null) {
+                break;
+            }
+            if (node.equals(edge.getNode(n).getDatatypeValue())) {
+                count++;
+                if (count >= min) {
+                    break;
+                }
+            } else {
+                break;
+            }
+        }
+        return count;
+    }
+    
+    List<Node> getNodeList(Environment env) {
+        return getNodeList(env.getGraphNode());
+    }
 
     List<Node> getNodeList(Node node) {
         if (node == null) {

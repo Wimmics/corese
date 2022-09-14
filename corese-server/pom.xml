@@ -127,6 +127,11 @@
 			<version>${revision}</version>
 		</dependency>
 		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>corese-rdf4j</artifactId>
+			<version>${revision}</version>
+		</dependency>
+		<dependency>
 			<groupId>org.apache.jena</groupId>
 			<artifactId>jena-tdb</artifactId>
 			<version>4.4.0</version>

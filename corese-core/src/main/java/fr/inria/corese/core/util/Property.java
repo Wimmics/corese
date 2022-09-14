@@ -1,5 +1,28 @@
 package fr.inria.corese.core.util;
 
+import static fr.inria.corese.core.util.Property.Value.DATATYPE_ENTAILMENT;
+import static fr.inria.corese.core.util.Property.Value.IMPORT;
+import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
+import static fr.inria.corese.core.util.Property.Value.PREFIX;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
+import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
+import static fr.inria.corese.core.util.Property.Value.STORAGE_MODE;
+import static fr.inria.corese.core.util.Property.Value.STORAGE_PATH;
+import static fr.inria.corese.core.util.Property.Value.VARIABLE;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Properties;
+import java.util.Set;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.federate.FederateVisitor;
@@ -23,15 +46,6 @@ import fr.inria.corese.core.query.ProviderService;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.Transformer;
-import static fr.inria.corese.core.util.Property.Value.DATATYPE_ENTAILMENT;
-import static fr.inria.corese.core.util.Property.Value.IMPORT;
-import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
-import static fr.inria.corese.core.util.Property.Value.PREFIX;
-import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
-import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
-import static fr.inria.corese.core.util.Property.Value.STORAGE_MODE;
-import static fr.inria.corese.core.util.Property.Value.STORAGE_PATH;
-import static fr.inria.corese.core.util.Property.Value.VARIABLE;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorRule;
 import fr.inria.corese.core.visitor.solver.QuerySolverVisitorTransformer;
 import fr.inria.corese.kgram.core.Eval;
@@ -53,27 +67,16 @@ import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.ParserHandler;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import fr.inria.corese.sparql.triple.parser.visitor.ASTParser;
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileReader;
-import java.io.IOException;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Properties;
-import java.util.Set;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Corese configuration with properties such as: LOAD_IN_DEFAULT_GRAPH
- * Usage:  
+ * Usage:
  * Property.set(LOAD_IN_DEFAULT_GRAPH, true);
  * Property.load(property-file-path);
  * Property.init(graph);
- * corese-gui.jar    -init property-file-path
+ * corese-gui.jar -init property-file-path
  * corese-server.jar -init property-file-path
- * A property file example is in core resources/data/corese/property.txt 
+ * A property file example is in core resources/data/corese/property.txt
  * Define variable:
  * VARIABLE = $home=/user/home/
  * LOAD_DATASET = $home/file.ttl
@@ -98,8 +101,7 @@ public class Property {
     public static final String DATASET = "dataset";
     public static final String DB = "db";
     public static final String DB_ALL = "db_all";
-    
-    
+
     private HashMap<Value, Boolean> booleanProperty;
     private HashMap<Value, String> stringProperty;
     private HashMap<Value, Integer> integerProperty;
@@ -109,16 +111,15 @@ public class Property {
 
     // Java Properties manage property file (at user option)
     private Properties properties;
-    
+
     private String path, parent;
     private boolean debug = false;
 
-
     public enum Value {
-        // VARIABLE =  home=/home/name/dir
+        // VARIABLE = home=/home/name/dir
         VARIABLE,
         IMPORT,
-        
+
         TRACE_MEMORY,
         TRACE_GENERIC,
         // generic property for testing purpose
@@ -144,19 +145,18 @@ public class Property {
         // authorize path in join test
         FEDERATE_JOIN_PATH,
         FEDERATE_SPLIT,
-        
+
         // index query pattern skip predicate for source discovery
         FEDERATE_INDEX_SKIP,
         FEDERATE_INDEX_PATTERN,
         FEDERATE_INDEX_SUCCESS,
         FEDERATE_INDEX_LENGTH,
-        
+
         FEDERATE_BLACKLIST,
         FEDERATE_BLACKLIST_EXCEPT,
         FEDERATE_QUERY_PATTERN,
         FEDERATE_PREDICATE_PATTERN,
 
-        
         // boolan value
         DISPLAY_URI_AS_PREFIX,
         DISPLAY_EDGE_AS_RDF4J,
@@ -165,11 +165,11 @@ public class Property {
         // Graph node implemented as IDatatype instead of NodeImpl
         GRAPH_NODE_AS_DATATYPE,
         BLANK_NODE,
-        // load rdf file into graph kg:default instead of graph file-path 
+        // load rdf file into graph kg:default instead of graph file-path
         LOAD_IN_DEFAULT_GRAPH,
         // constraint rule error in specific named graph
         CONSTRAINT_NAMED_GRAPH,
-        // constraint rule error in external named graph  
+        // constraint rule error in external named graph
         CONSTRAINT_GRAPH,
         // graph ?g { } iterate std and external named graph
         EXTERNAL_NAMED_GRAPH,
@@ -180,9 +180,11 @@ public class Property {
         RDF_STAR,
         // enforce compliance: no literal as subject
         RDF_STAR_VALIDATION,
-        // joker: asserted query triple return asserted and nested triple (default false)
+        // joker: asserted query triple return asserted and nested triple (default
+        // false)
         RDF_STAR_SELECT,
-        // joker: asserted delete triple deletes asserted and nested triple (default false)
+        // joker: asserted delete triple deletes asserted and nested triple (default
+        // false)
         RDF_STAR_DELETE,
         // use TripleNode implementation
         RDF_STAR_TRIPLE,
@@ -195,14 +197,14 @@ public class Property {
         // activate @event ldscript function call for sparql query processing
         EVENT,
         SKOLEMIZE,
-        
+
         VERBOSE,
         SOLVER_DEBUG,
         TRANSFORMER_DEBUG,
-        
+
         LOG_NODE_INDEX,
         LOG_RULE_CLEAN,
-        
+
         SOLVER_SORT_CARDINALITY,
         SOLVER_QUERY_PLAN, // STD | ADVANCED
         // string value
@@ -215,21 +217,21 @@ public class Property {
         // Testing purpose
         INTERPRETER_TEST,
         // 1 ; 01 ; 1.0 have different Node
-        // when true:  nodes can be joined by graph matching
+        // when true: nodes can be joined by graph matching
         // when false: they do not join
         DATATYPE_ENTAILMENT,
         SPARQL_COMPLIANT,
         SPARQL_ORDER_UNBOUND_FIRST,
-        
+
         OWL_CLEAN,
         OWL_CLEAN_QUERY,
         OWL_RL,
-        
+
         RULE_TRANSITIVE_FUNCTION,
         RULE_TRANSITIVE_OPTIMIZE,
-        
+
         FUNCTION_PARAMETER_MAX,
-        
+
         // init graph
         GUI_TITLE,
         GUI_BROWSE,
@@ -244,7 +246,7 @@ public class Property {
         GUI_TEMPLATE_LIST,
         GUI_EXPLAIN_LIST,
         GUI_RULE_LIST,
-        
+
         // application/rdf+xml
         LOAD_FORMAT,
         // integer value
@@ -255,14 +257,14 @@ public class Property {
         LOAD_QUERY,
         LOAD_FUNCTION,
         LOAD_RULE,
-        
+
         RDFS_ENTAILMENT,
-        
+
         LDSCRIPT_VARIABLE,
         LDSCRIPT_DEBUG,
         LDSCRIPT_CHECK_DATATYPE,
         LDSCRIPT_CHECK_RDFTYPE,
-        
+
         SERVICE_BINDING,
         SERVICE_SLICE,
         SERVICE_LIMIT,
@@ -276,12 +278,11 @@ public class Property {
         SERVICE_HEADER,
 
         // service result may be RDF graph (e.g. when format=turtle)
-        // apply service query on the graph 
+        // apply service query on the graph
         SERVICE_GRAPH,
-        
-        
-        STORAGE_PATH, 
-        STORAGE_SERVICE, 
+
+        STORAGE_PATH,
+        STORAGE_SERVICE,
         // default storage: db|dataset
         STORAGE_MODE
     };
@@ -289,7 +290,7 @@ public class Property {
     static {
         start();
     }
-    
+
     static void start() {
         singleton = new Property();
         set(SERVICE_SEND_PARAMETER, true);
@@ -325,19 +326,19 @@ public class Property {
     public static void set(Value value, boolean b) {
         getSingleton().basicSet(value, b);
     }
-    
-    public static void set(Value value, String str)  {
+
+    public static void set(Value value, String str) {
         getSingleton().basicSet(value, str);
     }
-    
-    public static void set(Value value, String... str)  {
+
+    public static void set(Value value, String... str) {
         getSingleton().basicSet(value, str);
     }
-    
-    public static void set(Value value, double d)  {
+
+    public static void set(Value value, double d) {
         getSingleton().basicSet(value, Double.toString(d));
     }
-    
+
     public static void set(Value value, int n) {
         getSingleton().basicSet(value, n);
     }
@@ -345,12 +346,12 @@ public class Property {
     public static Boolean get(Value value) {
         return getSingleton().getBooleanProperty().get(value);
     }
-    
+
     public static boolean booleanValue(Value value) {
         Boolean b = get(value);
-        return b!=null && b;
+        return b != null && b;
     }
-    
+
     public static boolean hasValue(Value value, boolean b) {
         return get(value) != null && get(value) == b;
     }
@@ -362,10 +363,7 @@ public class Property {
     public static String display() {
         return getSingleton().basicDisplay();
     }
-    
-    
-    
-    
+
     /**
      * Implementation for singleton
      */
@@ -374,15 +372,15 @@ public class Property {
         return String.format("Property:\n%s\n%s",
                 getBooleanProperty().toString(), getStringProperty().toString());
     }
-    
+
     void basicLoad(String path) throws FileNotFoundException, IOException {
         setPath(path);
         File file = new File(path);
-        setParent(file .getParent());
+        setParent(file.getParent());
         getImports().put(path, path);
         getProperties().load(new FileReader(path));
-        // start with variable because import may use variable, 
-        // as well as other properties 
+        // start with variable because import may use variable,
+        // as well as other properties
         defineVariable();
         imports();
         init();
@@ -394,14 +392,13 @@ public class Property {
      */
     private void imports() throws IOException {
         if (getProperties().containsKey(IMPORT.toString())) {
-            
+
             for (String name : getPropertiesValue(IMPORT).split(SEP)) {
                 String path = expand(name);
-                
+
                 if (getImports().containsKey(path)) {
                     logger.info("Skip import: " + path);
-                }
-                else {
+                } else {
                     getImports().put(path, path);
                     logger.info("Import: " + path);
                     getProperties().load(new FileReader(path));
@@ -416,7 +413,7 @@ public class Property {
     void init() {
         defineProperty();
     }
-    
+
     void defineProperty() {
         for (String name : getProperties().stringPropertyNames()) {
             String value = getProperties().getProperty(name);
@@ -427,7 +424,7 @@ public class Property {
             }
         }
     }
-    
+
     /**
      * Do it first
      * VARIABLE = $gui=/a/path
@@ -462,40 +459,40 @@ public class Property {
         getBooleanProperty().put(value, b);
 
         switch (value) {
-            
+
             case OWL_CLEAN:
                 RuleEngine.OWL_CLEAN = b;
                 break;
-            
+
             case LOAD_WITH_PARAMETER:
                 Service.LOAD_WITH_PARAMETER = b;
                 break;
-                
+
             case DISPLAY_EDGE_AS_RDF4J:
                 EdgeTop.DISPLAY_EDGE_AS_RDF4J = b;
                 break;
-            
+
             case DISPLAY_URI_AS_PREFIX:
                 Constant.DISPLAY_AS_PREFIX = b;
                 CoreseDatatype.DISPLAY_AS_PREFIX = b;
                 break;
-                
+
             case DISPLAY_AS_TRIPLE:
                 DatatypeMap.DISPLAY_AS_TRIPLE = b;
                 break;
-                
+
             case GRAPH_NODE_AS_DATATYPE:
                 NodeImpl.byIDatatype = b;
                 break;
-                                
+
             case CONSTRAINT_NAMED_GRAPH:
                 Graph.CONSTRAINT_NAMED_GRAPH = b;
                 break;
-                
+
             case CONSTRAINT_GRAPH:
                 Graph.CONSTRAINT_GRAPH = b;
                 break;
-                
+
             case EXTERNAL_NAMED_GRAPH:
                 Graph.EXTERNAL_NAMED_GRAPH = b;
                 break;
@@ -507,7 +504,7 @@ public class Property {
             case SKOLEMIZE:
                 Graph.setDefaultSkolem(b);
                 break;
-                
+
             case GRAPH_INDEX_END:
                 EdgeManagerIndexer.RECORD_END = b;
                 break;
@@ -516,27 +513,27 @@ public class Property {
                 EdgeFactory.EDGE_TRIPLE_NODE = b;
                 EdgeFactory.OPTIMIZE_EDGE = !b;
                 // continue;
-                
+
             case RDF_STAR:
                 Graph.setRDFStar(b);
                 ASTParser.RDF_STAR = b;
                 break;
-                
+
             case RDF_STAR_VALIDATION:
                 // check subject literal is an error
                 ParserHandler.rdf_star_validation = b;
                 MatcherImpl.RDF_STAR_VALIDATION = b;
                 break;
-                
-            case RDF_STAR_SELECT:                
+
+            case RDF_STAR_SELECT:
                 DataFilter.RDF_STAR_SELECT = b;
                 break;
-                
+
             case DATATYPE_ENTAILMENT:
-                // when true: graph match can join 1, 01, 1.0 
+                // when true: graph match can join 1, 01, 1.0
                 DatatypeMap.DATATYPE_ENTAILMENT = b;
                 break;
-                
+
             case SPARQL_COMPLIANT:
                 // default is false
                 // true: literal is different from string
@@ -546,7 +543,7 @@ public class Property {
                 // SPARQL_COMPLIANT => ! DATATYPE_ENTAILMENT
                 set(DATATYPE_ENTAILMENT, !b);
                 break;
-                
+
             case SPARQL_ORDER_UNBOUND_FIRST:
                 Mappings.setOrderUnboundFirst(b);
                 break;
@@ -578,93 +575,92 @@ public class Property {
             case SOLVER_DEBUG:
                 Query.DEBUG_DEFAULT = b;
                 break;
-                
+
             case LDSCRIPT_DEBUG:
                 Binding.DEBUG_DEFAULT = b;
                 Function.nullcheck = b;
                 break;
-                
-           
+
             case LDSCRIPT_CHECK_DATATYPE:
                 Function.typecheck = b;
-                break; 
-                
+                break;
+
             case LDSCRIPT_CHECK_RDFTYPE:
                 Function.rdftypecheck = b;
-                break;    
-                                        
+                break;
+
             case INTERPRETER_TEST:
                 Interpreter.testNewEval = b;
                 break;
-                
+
             case FEDERATE_BGP:
-                FederateVisitor.FEDERATE_BGP=b;
+                FederateVisitor.FEDERATE_BGP = b;
                 break;
-                
+
             case FEDERATE_PARTITION:
-                FederateVisitor.PARTITION=b;
+                FederateVisitor.PARTITION = b;
                 break;
-                
+
             case FEDERATE_COMPLETE:
-                FederateVisitor.COMPLETE_BGP=b;
+                FederateVisitor.COMPLETE_BGP = b;
                 break;
-                
+
             case FEDERATE_FILTER:
-                FederateVisitor.SELECT_FILTER=b;
+                FederateVisitor.SELECT_FILTER = b;
                 break;
-                
+
             case FEDERATE_JOIN:
-                FederateVisitor.SELECT_JOIN=b;
-                FederateVisitor.USE_JOIN=b;
+                FederateVisitor.SELECT_JOIN = b;
+                FederateVisitor.USE_JOIN = b;
                 break;
-                
+
             case FEDERATE_OPTIONAL:
-                FederateVisitor.OPTIONAL=b;
+                FederateVisitor.OPTIONAL = b;
                 break;
-                
+
             case FEDERATE_MINUS:
-                FederateVisitor.MINUS=b;
+                FederateVisitor.MINUS = b;
                 break;
-                
+
             case FEDERATE_UNDEFINED:
-                FederateVisitor.UNDEFINED=b;
+                FederateVisitor.UNDEFINED = b;
                 break;
-                
+
             case FEDERATE_JOIN_PATH:
-                FederateVisitor.SELECT_JOIN_PATH=b;
+                FederateVisitor.SELECT_JOIN_PATH = b;
                 break;
-                    
+
             case TRACE_GENERIC:
-                FederateVisitor.TRACE_FEDERATE=b;
-                RewriteBGPList.TRACE_BGP_LIST=b;
+                FederateVisitor.TRACE_FEDERATE = b;
+                RewriteBGPList.TRACE_BGP_LIST = b;
                 break;
 
             case SOLVER_SORT_CARDINALITY:
                 QueryProcess.setSort(b);
                 break;
-                
+
             case SOLVER_OVERLOAD:
                 TermEval.OVERLOAD = b;
                 break;
-                
+
             case RDFS_ENTAILMENT:
                 Graph.RDFS_ENTAILMENT_DEFAULT = b;
                 break;
-                
+
             case SERVICE_REPORT:
                 ASTParser.SERVICE_REPORT = b;
                 break;
-                
+
             case SERVICE_DISPLAY_MESSAGE:
-                ServiceParser.DISPLAY_MESSAGE=b;
+                ServiceParser.DISPLAY_MESSAGE = b;
                 break;
         }
     }
-    
+
     void basicSet(Value value, String... str) {
         if (isDebug()) {
-          logger.info(value + " = " + str);
-        }  
+            logger.info(value + " = " + str);
+        }
         switch (value) {
             case FEDERATE_BLACKLIST:
                 blacklist(str);
@@ -675,86 +671,85 @@ public class Property {
         }
     }
 
-    void basicSet(Value value, String str)  {
+    void basicSet(Value value, String str) {
         if (isDebug()) {
             logger.info(value + " = " + str);
         }
         getStringProperty().put(value, str);
         switch (value) {
-            
+
             case FEDERATION:
                 defineFederation(str);
                 break;
-                
+
             case FEDERATE_INDEX_PATTERN:
                 SelectorIndex.QUERY_PATTERN = str;
                 break;
-                
-             case FEDERATE_QUERY_PATTERN:
-                 setQueryPattern(str);
-                break; 
-                
-             case FEDERATE_PREDICATE_PATTERN:
-                 setPredicatePattern(str);
-                break;  
-                
-             case FEDERATE_FILTER_ACCEPT:
-                 setFilterAccept(str);
-                 break;
-                 
+
+            case FEDERATE_QUERY_PATTERN:
+                setQueryPattern(str);
+                break;
+
+            case FEDERATE_PREDICATE_PATTERN:
+                setPredicatePattern(str);
+                break;
+
+            case FEDERATE_FILTER_ACCEPT:
+                setFilterAccept(str);
+                break;
+
             case FEDERATE_FILTER_REJECT:
-                 setFilterReject(str);
-                 break;
-                 
+                setFilterReject(str);
+                break;
+
             case FEDERATE_INDEX_SKIP:
                 setIndexSkip(str);
                 break;
-                
+
             case FEDERATE_BLACKLIST:
                 blacklist(str);
                 break;
-                
+
             case FEDERATE_BLACKLIST_EXCEPT:
                 blacklistExcept(str);
-                break; 
-                
+                break;
+
             case FEDERATE_SPLIT:
                 split(str);
                 break;
-                
+
             case FEDERATE_INDEX_SUCCESS:
                 FederateVisitor.NB_SUCCESS = Double.valueOf(str);
-                break;    
-            
+                break;
+
             case LOAD_FORMAT:
                 Load.LOAD_FORMAT = str;
                 break;
-            
+
             case SERVICE_BINDING:
                 CompileService.setBinding(str);
                 break;
-                
+
             case SERVICE_PARAMETER:
                 // set in table
                 break;
-                
+
             case SERVICE_HEADER:
                 getListProperty().put(SERVICE_HEADER, getList(str));
                 break;
-                
-                
+
             case LDSCRIPT_VARIABLE:
                 variable();
                 break;
-                
+
             case BLANK_NODE:
                 Graph.BLANK = str;
                 break;
-                
+
             case SOLVER_QUERY_PLAN:
                 queryPlan(str);
                 break;
-                
+
             case SOLVER_VISITOR:
                 QueryProcess.setVisitorName(expand(str));
                 break;
@@ -778,14 +773,14 @@ public class Property {
             case PREFIX:
                 prefix();
                 break;
-                
-            case LOAD_FUNCTION:           
+
+            case LOAD_FUNCTION:
                 loadFunction(str);
                 break;
 
         }
     }
-    
+
     void setQueryPattern(String str) {
         QueryLoad ql = QueryLoad.create();
         for (Pair pair : getValueList(Value.FEDERATE_QUERY_PATTERN)) {
@@ -796,7 +791,7 @@ public class Property {
             }
         }
     }
-    
+
     void setPredicatePattern(String str) {
         QueryLoad ql = QueryLoad.create();
         for (Pair pair : getValueList(Value.FEDERATE_PREDICATE_PATTERN)) {
@@ -807,25 +802,25 @@ public class Property {
             }
         }
     }
-    
+
     void setFilterAccept(String str) {
         for (String ope : str.split(SEP)) {
             SelectorFilter.defineOperator(ope, true);
         }
     }
-    
+
     void setFilterReject(String str) {
         for (String ope : str.split(SEP)) {
             SelectorFilter.rejectOperator(ope, true);
         }
     }
-    
+
     void setIndexSkip(String str) {
         for (String ope : str.split(SEP)) {
             SelectorIndex.skipPredicate(ope);
         }
     }
-        
+
     void split(String list) {
         ArrayList<String> alist = new ArrayList<>();
         for (String str : list.split(SEP)) {
@@ -834,7 +829,7 @@ public class Property {
         logger.info("Split: " + alist);
         FederateVisitor.DEFAULT_SPLIT = alist;
     }
-    
+
     List<String> getList(String list) {
         ArrayList<String> alist = new ArrayList<>();
         for (String str : list.split(SEP)) {
@@ -842,13 +837,12 @@ public class Property {
         }
         return alist;
     }
-    
- 
-    void blacklist(String list) {        
+
+    void blacklist(String list) {
         FederateVisitor.BLACKLIST = getList(list);
     }
-    
-    void blacklistExcept(String list) {        
+
+    void blacklistExcept(String list) {
         FederateVisitor.BLACKLIST_EXCEPT = getList(list);
     }
 
@@ -859,7 +853,7 @@ public class Property {
         }
         FederateVisitor.BLACKLIST = alist;
     }
-    
+
     void blacklistExcept(String... list) {
         ArrayList<String> alist = new ArrayList<>();
         for (String str : list) {
@@ -867,46 +861,46 @@ public class Property {
         }
         FederateVisitor.BLACKLIST_EXCEPT = alist;
     }
-    
+
     void basicSet(Value value, int n) {
         if (isDebug()) {
             logger.info(value + " = " + n);
         }
         getIntegerProperty().put(value, n);
-        
+
         switch (value) {
-            
-            case SERVICE_SLICE:                
-            case SERVICE_LIMIT:                
+
+            case SERVICE_SLICE:
+            case SERVICE_LIMIT:
             case SERVICE_TIMEOUT:
                 // use integer table
                 break;
-                
+
             case SERVICE_DISPLAY_RESULT:
                 ProviderService.DISPLAY_RESULT_MAX = n;
-                ContextLog.DISPLAY_RESULT_MAX=n;
-                Eval.DISPLAY_RESULT_MAX=n;
+                ContextLog.DISPLAY_RESULT_MAX = n;
+                Eval.DISPLAY_RESULT_MAX = n;
                 break;
-                
+
             case LOAD_LIMIT:
                 Load.setLimitDefault(n);
                 break;
-                
+
             case FUNCTION_PARAMETER_MAX:
                 ASTExtension.FUNCTION_PARAMETER_MAX = n;
                 break;
-                
+
             case FEDERATE_INDEX_LENGTH:
                 FederateVisitor.NB_ENDPOINT = n;
                 break;
         }
     }
-    
+
     // variable definition may use preceding variables
     private void defineVariableMap() {
         for (Pair pair : getValueListBasic(Value.VARIABLE)) {
             String var = varName(pair.getKey());
-            
+
             if (getVariableMap().containsKey(var)) {
                 logger.info("Overload variable: " + var);
             }
@@ -915,11 +909,11 @@ public class Property {
             getVariableMap().put(var, expand(pair.getValue()));
         }
     }
-    
+
     String varName(String key) {
-        return key.startsWith(VAR_CHAR) ? key : VAR_CHAR+key;
+        return key.startsWith(VAR_CHAR) ? key : VAR_CHAR + key;
     }
-    
+
     String expand(String value) {
         if (value.startsWith(VAR_CHAR)) {
             for (String var : getVariableMap().keySet()) {
@@ -927,18 +921,17 @@ public class Property {
                     return value.replace(var, getVariableMap().get(var));
                 }
             }
-        }
-        else if (value.startsWith("./")) {
+        } else if (value.startsWith("./")) {
             // relative path
             return complete(value);
         }
         return value;
     }
-    
+
     String complete(String value) {
         return getParent().concat(value.substring(1));
     }
-    
+
     void queryPlan(String str) {
         switch (str) {
             case STD:
@@ -949,17 +942,17 @@ public class Property {
                 break;
         }
     }
-    
+
     void defineFederation(String path) {
         logger.info("federation: " + path);
         QueryProcess exec = QueryProcess.create(Graph.create());
         try {
             Graph g = exec.defineFederation(path);
         } catch (IOException | EngineException | LoadException ex) {
-                logger.error(ex.toString());
+            logger.error(ex.toString());
         }
     }
-    
+
     void loadFunction(String str) {
         QueryProcess exec = QueryProcess.create();
         for (String name : str.split(SEP)) {
@@ -970,7 +963,7 @@ public class Property {
             }
         }
     }
-    
+
     /**
      * Init graph with properties such as load dataset
      * use case: corese gui
@@ -984,7 +977,7 @@ public class Property {
                 logger.error(e.toString());
             }
         }
-        
+
         // after load dataset
         if (getStringProperty().containsKey(LOAD_RULE)) {
             loadRule(g, getStringProperty().get(LOAD_RULE));
@@ -1005,9 +998,9 @@ public class Property {
             case LOAD_DATASET:
                 loadList(g, value);
                 break;
-        }              
+        }
     }
-    
+
     void loadRule(Graph g, String path) {
         for (String name : path.split(SEP)) {
             RuleEngine re = RuleEngine.create(g);
@@ -1021,7 +1014,6 @@ public class Property {
         }
     }
 
-
     void loadList(Graph g, String path) {
         Load ld = Load.create(g);
         for (String name : path.split(SEP)) {
@@ -1034,7 +1026,7 @@ public class Property {
             }
         }
     }
-    
+
     /**
      * LDScript static variable
      * LDSCRIPT_VARIABLE = var=val;var=val
@@ -1048,12 +1040,11 @@ public class Property {
             Binding.setStaticVariable(var, dt);
         }
     }
-        
+
     public static List<Pair> getValueList(Value val) {
         return getSingleton().getValueListBasic(val);
     }
-    
-    
+
     public List<Pair> getValueListBasic(Value val) {
         String str = Property.stringValue(val);
         ArrayList<Pair> list = new ArrayList<>();
@@ -1062,18 +1053,18 @@ public class Property {
         }
         for (String elem : str.split(SEP)) {
             String[] def = elem.split(EQ);
-            if (def.length>=2) {
+            if (def.length >= 2) {
                 list.add(new Pair(def[0], def[1]));
             }
         }
         return list;
     }
-    
+
     public class Pair {
-        
+
         private String first;
         private String second;
-        
+
         Pair(String f, String r) {
             first = f;
             second = r;
@@ -1090,7 +1081,7 @@ public class Property {
         public String getValue() {
             return second;
         }
-        
+
         public String getPath() {
             return expand(getValue());
         }
@@ -1098,17 +1089,15 @@ public class Property {
         public void setSecond(String second) {
             this.second = second;
         }
-        
+
     }
-    
 
     void prefix() {
         for (Pair pair : getValueListBasic(PREFIX)) {
-            logger.info(String.format("prefix %s: <%s>", pair.getKey().strip(),  pair.getValue().strip()));
+            logger.info(String.format("prefix %s: <%s>", pair.getKey().strip(), pair.getValue().strip()));
             NSManager.defineDefaultPrefix(pair.getKey().strip(), pair.getValue().strip());
         }
     }
-   
 
     void accessLevel(String str) {
         try {
@@ -1150,41 +1139,30 @@ public class Property {
     public void setIntegerProperty(HashMap<Value, Integer> integerProperty) {
         this.integerProperty = integerProperty;
     }
-    
+
     public static Integer intValue(Value val) {
         return getSingleton().getIntegerProperty().get(val);
     }
-    
+
     public static List<String> listValue(Value value) {
         return getSingleton().getListProperty().get(value);
     }
-       
+
     String getPropertiesValue(Value value) {
         if (getProperties().containsKey(value.toString())) {
             return (String) getProperties().get(value.toString());
         }
         return null;
     }
-    
+
     public static String stringValue(Value val) {
         return getSingleton().getStringProperty().get(val);
     }
-    
+
     public static String pathValue(Value val) {
         return getSingleton().expand(stringValue(val));
     }
-    
-    public static String[] pathValueList(Value val) {
-        String[] res = stringValueList(val);
-        int i = 0;
-        
-        for (String path : res) {
-            res[i++] = getSingleton().expand(path);
-        }
-        
-        return res;
-    }
-    
+
     public static String[] stringValueList(Value val) {
         String str = stringValue(val);
         if (val == null || str == null) {
@@ -1240,34 +1218,34 @@ public class Property {
     public void setListProperty(HashMap<Value, List<String>> listProperty) {
         this.listProperty = listProperty;
     }
-    
+
     // current storage mode to create QueryProcess
     public static boolean isDataset() {
         if (stringValue(STORAGE_PATH) == null) {
             // there is no db storage path
             return true;
         }
-        if (stringValue(STORAGE_MODE)==null) {
+        if (stringValue(STORAGE_MODE) == null) {
             // there is db storage path and no mode specified -> db mode, not dataset
             return false;
         }
         // STORAGE_MODE = db|dataset
         return stringValue(STORAGE_MODE).equals(DATASET);
     }
-    
+
     // current storage mode
     public static boolean isStorage() {
-        return ! isDataset();
+        return !isDataset();
     }
-    
+
     // consider all db
     public static boolean isStorageAll() {
-        return isStorage() && 
-               protectEquals(stringValue(STORAGE_MODE), DB_ALL);
+        return isStorage() &&
+                protectEquals(stringValue(STORAGE_MODE), DB_ALL);
     }
-    
-    static boolean  protectEquals(String var, String val) {
-        return var!=null && var.equals(val);
+
+    static boolean protectEquals(String var, String val) {
+        return var != null && var.equals(val);
     }
 
 }

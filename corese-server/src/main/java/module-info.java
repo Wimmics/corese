@@ -3,6 +3,7 @@ module fr.inria.corese.corese_server {
     requires fr.inria.corese.corese_core;
     requires fr.inria.corese.compiler;
     requires fr.inria.corese.shex;
+    requires fr.inria.corese.corese_rdf4j;
 
     requires org.eclipse.jetty.server;
     requires org.eclipse.jetty.servlets;

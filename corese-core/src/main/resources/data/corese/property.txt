@@ -13,7 +13,8 @@ VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./;fed=/user/corby/home
 IMPORT   = ./gui.txt
 
 STORAGE_SERVICE = false
-STORAGE_PATH    = $db/human
+STORAGE_PATH    = jenatdb1=$db/human
+# STORAGE_PATH    = rdf4jmodel=$db/human
 #$db/human
 #/tmp/tmp
 

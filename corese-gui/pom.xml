@@ -37,6 +37,10 @@
 		</dependency>
 		<dependency>
 			<groupId>${project.parent.groupId}</groupId>
+			<artifactId>corese-rdf4j</artifactId>
+		</dependency>
+		<dependency>
+			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>sparql</artifactId>
 			<version>${project.parent.version}</version>
 		</dependency>

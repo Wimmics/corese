@@ -138,10 +138,32 @@ public class TestQueryStorage {
 
         QueryProcess exec = QueryProcess.create(getDataManager());//getGraph());
         //QueryProcess exec = QueryProcess.create(getGraph());
+//        RuleEngine re = RuleEngine.create(getDataManager());
+//        re.setProfile(RuleEngine.RDFS_RL);
+//        re.process();
         Mappings map = exec.query(q);
         // System.out.println(getGraph().display());
         //System.out.println("res:\n"+map);
         assertEquals(7, map.size());
+    }
+    
+    
+     @Test
+    public void degree() throws EngineException {
+        String q
+                = "prefix h: <http://www.inria.fr/2015/humans#>"
+                + "prefix i: <http://www.inria.fr/2015/humans-instances#>"
+                + "prefix g: <file:///user/corby/home/AADemoNew/human/human.rdf>"
+                + "select * (sum(xt:degree(?s)) as ?sum) where {"
+                + "?s h:age ?o"
+                + "}";
+
+        QueryProcess exec = QueryProcess.create(getDataManager());
+        //QueryProcess exec = QueryProcess.create(getGraph());
+        Mappings map = exec.query(q);
+        //System.out.println(map);
+        IDatatype count = map.getValue("?sum");
+        assertEquals(64, count.intValue());
     }
 
     @Test
@@ -204,6 +226,14 @@ public class TestQueryStorage {
         assertEquals(409, sum.intValue());
     }
     
+    /**
+     * Jena data manager  default graph for sparql = union(jena default graph, named graph list)
+     * In addition, default graph behaves in sparql as if it were a kg:default named graph
+     * hence query on named graph list consider jena default graph object as a kg:default name graph
+     * In other words it behaves like corese
+     * In addition,  it can handle a native jena data base which 
+     * contains a default graph object
+     */
      @Test
     public void update3() throws EngineException {
         String insert

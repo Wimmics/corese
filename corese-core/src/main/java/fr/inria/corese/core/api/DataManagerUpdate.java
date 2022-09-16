@@ -176,7 +176,7 @@ public interface DataManagerUpdate {
      * @param context
      */
     default void unDeclareContext(Node context) {
-        this.clear();
+        this.clear(List.of(context), false);
     }
 
     /**

@@ -38,10 +38,11 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     private Dataset jena_dataset;
     private String storage_path;
-    private boolean reentrant = true;
-    // each thread has its own counter for read transaction
-    // there may be several start/end read transaction in each thread
+
+    // each thread has its own counter for read transaction there may be several
+    // start/end read transaction in each thread
     HashMap<Thread, Integer> threadCounter;
+
     private MetadataManager metadataManager;
 
     /****************
@@ -235,6 +236,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     /**********
      * Insert *
      **********/
+
     @Override
     public Iterable<Edge> insert(Node subject, Node predicate, Node object, List<Node> contexts) {
         ArrayList<Edge> added = new ArrayList<>();
@@ -264,6 +266,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     /**********
      * Delete *
      **********/
+
     @Override
     public Iterable<Edge> delete(Node subject, Node predicate, Node object, List<Node> contexts) {
         ArrayList<Edge> edges = new ArrayList<>();
@@ -313,6 +316,12 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     /*********
      * Other *
      *********/
+
+    /**
+     * Getter for the internal Jena Dataset object.
+     * 
+     * @return internal Jena Dataset object
+     */
     public Dataset getDataset() {
         return this.jena_dataset;
     }
@@ -322,9 +331,14 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         this.jena_dataset.close();
     }
 
-    /*********
-     * Utils *
-     *********/
+    @Override
+    public String getStoragePath() {
+        return this.storage_path;
+    }
+
+    /*********************
+     * Choose statements *
+     *********************/
 
     /**
      * Return edge iterator with the specified subject, predicate, object and
@@ -436,55 +450,64 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         return edges;
     }
 
+    /****************
+     * Transactions *
+     ****************/
+
+    @Override
+    public boolean transactionSupport() {
+        return true;
+    }
+
     @Override
     public void startReadTransaction() {
-        if (isReentrant()) {
-            startReentrantReadTransaction();
-        } else {
-            startBasicReadTransaction();
-        }
-    }
-
-    @Override
-    public void endReadTransaction() {
-        if (isReentrant()) {
-            endReentrantReadTransaction();
-        } else {
-            endBasicReadTransaction();
-        }
-    }
-
-    void startBasicReadTransaction() {
-        this.jena_dataset.begin(ReadWrite.READ);
-    }
-
-    void endBasicReadTransaction() {
-        this.jena_dataset.end();
-    }
-
-    public synchronized void startReentrantReadTransaction() {
-        int count = getReadCounter();
+        int count = getReadTransactionCounter();
         if (count == 0) {
-            startBasicReadTransaction();
+            this.jena_dataset.begin(ReadWrite.READ);
             if (hasMetadataManager()) {
                 getMetadataManager().startReadTransaction();
             }
         }
-        setReadCounter(count + 1);
+        setReadTransactionCounter(count + 1);
     }
 
-    public synchronized void endReentrantReadTransaction() {
-        int count = getReadCounter();
+    @Override
+    public void endReadTransaction() {
+        int count = getReadTransactionCounter();
         if (count > 0) {
             count--;
-            setReadCounter(count);
+            setReadTransactionCounter(count);
         }
         if (count == 0) {
-            endBasicReadTransaction();
+            this.jena_dataset.end();
             if (hasMetadataManager()) {
                 getMetadataManager().endReadTransaction();
             }
         }
+    }
+
+    /**
+     * Get the number of open read transactions for the current thread.
+     * 
+     * @return number of open read transactions for the current thread.
+     */
+    private Integer getReadTransactionCounter() {
+        Integer count = threadCounter.get(Thread.currentThread());
+        if (count == null) {
+            threadCounter.put(Thread.currentThread(), 0);
+            count = 0;
+        }
+        return count;
+    }
+
+    /**
+     * Set the number of open read transactions for the current thread.
+     * 
+     * @param count new value for the number of open read transactions for the
+     *              current thread.
+     */
+    private void setReadTransactionCounter(int count) {
+        threadCounter.put(Thread.currentThread(), count);
     }
 
     @Override
@@ -496,11 +519,6 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     }
 
     @Override
-    public void abortTransaction() {
-        this.jena_dataset.abort();
-    }
-
-    @Override
     public void endWriteTransaction() {
         try {
             this.jena_dataset.commit();
@@ -509,6 +527,11 @@ public class JenaDataManager implements DataManager, AutoCloseable {
                 getMetadataManager().endWriteTransaction();
             }
         }
+    }
+
+    @Override
+    public void abortTransaction() {
+        this.jena_dataset.abort();
     }
 
     @Override
@@ -536,30 +559,13 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         return transaction.equals(ReadWrite.WRITE);
     }
 
+    /*******************
+     * MetaDataManager *
+     *******************/
+
     @Override
-    public String getStoragePath() {
-        return this.storage_path;
-    }
-
-    Integer getReadCounter() {
-        Integer count = threadCounter.get(Thread.currentThread());
-        if (count == null) {
-            threadCounter.put(Thread.currentThread(), 0);
-            count = 0;
-        }
-        return count;
-    }
-
-    void setReadCounter(int count) {
-        threadCounter.put(Thread.currentThread(), count);
-    }
-
-    public boolean isReentrant() {
-        return reentrant;
-    }
-
-    public void setReentrant(boolean reentrant) {
-        this.reentrant = reentrant;
+    public boolean hasMetadataManager() {
+        return getMetadataManager() != null;
     }
 
     @Override
@@ -570,9 +576,5 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     @Override
     public void setMetadataManager(MetadataManager metaDataManager) {
         this.metadataManager = metaDataManager;
-    }
-
-    public boolean hasMetadataManager() {
-        return getMetadataManager() != null;
     }
 }

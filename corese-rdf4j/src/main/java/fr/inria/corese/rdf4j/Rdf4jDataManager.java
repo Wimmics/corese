@@ -144,6 +144,7 @@ public class Rdf4jDataManager implements DataManager {
     /**********
      * Insert *
      **********/
+
     @Override
     public Iterable<Edge> insert(Node subject, Node predicate, Node object, List<Node> contexts) {
 
@@ -168,6 +169,7 @@ public class Rdf4jDataManager implements DataManager {
     /**********
      * Delete *
      **********/
+
     @Override
     public Iterable<Edge> delete(Node subject, Node predicate, Node object, List<Node> contexts) {
         Iterable<Statement> statements = this.choose(subject, predicate, object, contexts);
@@ -185,6 +187,7 @@ public class Rdf4jDataManager implements DataManager {
     /*******************
      * Graph operation *
      *******************/
+
     @Override
     public boolean add(Node source, Node target, boolean silent) {
         // convert source and target to RDF4J context
@@ -210,9 +213,9 @@ public class Rdf4jDataManager implements DataManager {
         return is_modified;
     }
 
-    /*********
-     * Utils *
-     *********/
+    /*********************
+     * Choose statements *
+     *********************/
 
     /**
      * Convert a list of node to a equivalent java array.
@@ -262,5 +265,4 @@ public class Rdf4jDataManager implements DataManager {
 
         return statements;
     }
-
 }

@@ -32,8 +32,8 @@ public interface DataManagerRead {
      * Count the number of edges with a specific predicate, {@code null} to match
      * any predicate.
      * 
-     * @param predicate The predicate to count
-     * @return Number of edges with a specific predicate
+     * @param predicate The predicate to count.
+     * @return Number of edges with a specific predicate.
      */
     default int countEdges(Node predicate) {
         return 0;
@@ -41,8 +41,15 @@ public interface DataManagerRead {
 
     /**
      * Returns an {@link Iterable} over all {@link Edge}s in the graph that match
-     * the supplied criteria. If several edges have the same subject, predicate and
-     * object then only one is returned.
+     * the supplied criteria.
+     * 
+     * If several edges have the same subject, predicate and object then only one is
+     * returned.
+     * 
+     * If the list of contexts in parameter is not equal to 1, then the value of
+     * Graph of Edges returned does not matter. It can be for example
+     * {@code http://ns.inria.fr/corese/kgram/default}. Be careful, the value of
+     * Graph cannot be {@code null}.
      * 
      * @param subject   The subject of the edges to match, {@code null} to match
      *                  edges with any subject.
@@ -63,7 +70,7 @@ public interface DataManagerRead {
 
     /**
      * Returns an {@link Iterable} over all subjects of edges that match the
-     * context.
+     * context without duplicates.
      * 
      * @param context Context to match, {@code null} to match with any contexts.
      * @return An {@link Iterable} over all subjects of edges that match the
@@ -75,7 +82,7 @@ public interface DataManagerRead {
 
     /**
      * Returns an {@link Iterable} over all predicates of edges that match the
-     * context.
+     * context without duplicates.
      * 
      * @param context Context to match, {@code null} to match with any contexts.
      * @return An {@link Iterable} over all predicates of edges that match the
@@ -86,7 +93,8 @@ public interface DataManagerRead {
     }
 
     /**
-     * Returns an {@link Iterable} over all objects of edges that match the context.
+     * Returns an {@link Iterable} over all objects of edges that match the context
+     * without duplicates.
      * 
      * @param context Context to match, {@code null} to match with any contexts.
      * @return An {@link Iterable} over all objects of edges that match the context.
@@ -96,7 +104,8 @@ public interface DataManagerRead {
     }
 
     /**
-     * Returns an {@link Iterable} over all contexts contained in this graph.
+     * Returns an {@link Iterable} over all contexts contained in this graph without
+     * duplicates.
      * 
      * @return An {@link Iterable} over all contexts contained in this graph.
      */

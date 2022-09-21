@@ -195,6 +195,9 @@ public class GraphManager {
         return getDataBroker().exist(property, subject, object);
     }
     
+    // find occurrence of (instantiated query) edge in target graph
+    // in order to get its reference node if any
+    // use case: rdf star
     public Edge find(Edge edge) {
         return getDataBroker().find(edge);
     }

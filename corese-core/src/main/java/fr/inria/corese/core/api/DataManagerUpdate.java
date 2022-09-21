@@ -32,7 +32,14 @@ public interface DataManagerUpdate {
     }
 
     /**
-     * Add an edges to the graph.
+     * Add an edges to the graph
+     * 
+     * In case of rdf star triple :
+     * subject (resp object) may be a triple
+     * edge.getSubjectNode().isTriple() == true
+     * Edge triple = edge.getSubjectNode().getEdge()
+     * triple may be asserted or not
+     * triple.isAsserted() == true|false
      * 
      * @param edge Edge to add to the graph.
      * @return The edge inserted, null if no inserted.

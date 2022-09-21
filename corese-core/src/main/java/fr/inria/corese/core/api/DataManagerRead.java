@@ -38,6 +38,17 @@ public interface DataManagerRead {
     default int countEdges(Node predicate) {
         return 0;
     }
+    
+    /**
+     * Retrieve occurrence of query edge in target storage.
+     * Use case: edge is rdf star triple, purpose is to get its reference node
+     * if any
+     * @param edge The query edge to find in target storage
+     * @return The target edge if any
+     */
+    default Edge find(Edge edge) {
+        return edge;
+    }
 
     /**
      * Returns an {@link Iterable} over all {@link Edge}s in the graph that match

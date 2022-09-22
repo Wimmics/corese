@@ -1,10 +1,7 @@
 package fr.inria.corese.core.producer;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.api.DataBrokerConstruct;
 import fr.inria.corese.core.api.DataManager;
-import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.core.query.update.GraphManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import java.util.ArrayList;
@@ -150,7 +147,6 @@ public class DataManagerGraph implements DataManager {
 
     @Override
     public Edge insert(Edge edge) {
-        trace("insert: " + edge);
         return getGraph().insert(
                 edge.getGraphNode(),
                 edge.getSubjectNode(), 
@@ -180,15 +176,6 @@ public class DataManagerGraph implements DataManager {
                 edge.getObjectNode());
     }
 
-    /**
-     * Removes edges with the specified contexts. Contexts parameters can be null to
-     * indicate wildcards.
-     * 
-     * @param contexts List of contexts to clear.
-     * @param silent   If true the operation will still return success.
-     * @return True if the graph has been modified or {@code silent} parameter is
-     *         true, else false.
-     */
     @Override
     public boolean clear(List<Node> contexts, boolean silent) {
         for (Node g : contexts) {

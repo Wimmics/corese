@@ -3,7 +3,7 @@ package fr.inria.corese.core.api;
 import fr.inria.corese.core.producer.MetadataManager;
 
 /**
- * Interface to adapt an external graph implementation to Corese.
+ * Interface to adapt an external storage system to Corese.
  * 
  * {@code DataManagerRead} for {@code select where} SPARQL queries.
  * {@code DataManagerUpdate} for {@code update} and {@code construct} queries.

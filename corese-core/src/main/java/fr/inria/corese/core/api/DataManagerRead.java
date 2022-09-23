@@ -7,7 +7,7 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 
 /**
- * Interface to adapt an external graph implementation to Corese.
+ * Interface to adapt an external storage system to Corese.
  * 
  * {@code DataManagerRead} for {@code select where} SPARQL queries.
  * 
@@ -38,11 +38,12 @@ public interface DataManagerRead {
     default int countEdges(Node predicate) {
         return 0;
     }
-    
+
     /**
      * Retrieve occurrence of query edge in target storage.
      * Use case: edge is rdf star triple, purpose is to get its reference node
      * if any
+     * 
      * @param edge The query edge to find in target storage
      * @return The target edge if any
      */
@@ -60,7 +61,7 @@ public interface DataManagerRead {
      * If the list of contexts in parameter is not equal to 1, then the value of
      * Graph of Edges returned does not matter. It can be for example
      * {@code http://ns.inria.fr/corese/kgram/default}. Be careful, the value of
-     * Graph cannot be {@code null}.
+     * Graph of Edges cannot be {@code null}.
      * 
      * @param subject   The subject of the edges to match, {@code null} to match
      *                  edges with any subject.
@@ -80,18 +81,6 @@ public interface DataManagerRead {
     }
 
     /**
-     * Returns an {@link Iterable} over all subjects of edges that match the
-     * context without duplicates.
-     * 
-     * @param context Context to match, {@code null} to match with any contexts.
-     * @return An {@link Iterable} over all subjects of edges that match the
-     *         context.
-     */
-    default Iterable<Node> subjects(Node context) {
-        return new ArrayList<>(0);
-    }
-
-    /**
      * Returns an {@link Iterable} over all predicates of edges that match the
      * context without duplicates.
      * 
@@ -104,13 +93,13 @@ public interface DataManagerRead {
     }
 
     /**
-     * Returns an {@link Iterable} over all objects of edges that match the context
+     * Returns an {@link Iterable} over all node in graph that match the context
      * without duplicates.
      * 
      * @param context Context to match, {@code null} to match with any contexts.
-     * @return An {@link Iterable} over all objects of edges that match the context.
+     * @return An {@link Iterable} over all node in graph that match the context.
      */
-    default Iterable<Node> objects(Node context) {
+    default Iterable<Node> getNodes(Node context) {
         return new ArrayList<>(0);
     }
 

@@ -88,10 +88,10 @@ public interface DataManagerUpdate {
     default Iterable<Edge> delete(Edge edge) {
         Node graph = edge.getGraph();
         if (graph == null) {
-            return this.delete(edge.getSubjectNode(), edge.getPropertyValue(), edge.getObjectNode(),
+            return this.delete(edge.getSubjectNode(), edge.getPropertyNode(), edge.getObjectNode(),
                     null);
         } else {
-            return this.delete(edge.getSubjectNode(), edge.getPropertyValue(), edge.getObjectNode(),
+            return this.delete(edge.getSubjectNode(), edge.getPropertyNode(), edge.getObjectNode(),
                     List.of(edge.getGraph()));
 
         }

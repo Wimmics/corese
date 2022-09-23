@@ -106,7 +106,10 @@ public interface DataBrokerConstruct extends DataBroker {
 
     default List<Edge> delete(Edge edge) {
         List<Edge> result = new ArrayList<>();
-        getDataManager().delete(edge).forEach(result::add);
+        Iterable<Edge> it = getDataManager().delete(edge);
+        if (it != null) {
+            it.forEach(result::add);
+        }
         return result;
     }
 

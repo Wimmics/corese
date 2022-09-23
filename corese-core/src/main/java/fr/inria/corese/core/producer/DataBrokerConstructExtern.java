@@ -64,8 +64,10 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
     @Override
     public List<Edge> delete(Edge edge, List<Constant> from) {
         List<Edge> deleted = new ArrayList<>();
-        getDataManager().delete(edge.getSubjectNode(), edge.getProperty(), edge.getObjectNode(), nodeList(from))
-                .forEach(deleted::add);
+        Iterable<Edge> it = getDataManager().delete(edge.getSubjectNode(), edge.getProperty(), edge.getObjectNode(), nodeList(from));
+        if (it != null) {
+            it.forEach(deleted::add);
+        }
         return deleted;
     }
 

@@ -3,6 +3,7 @@ package fr.inria.corese.rdf4j;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
 import java.util.Objects;
 import java.util.Set;
@@ -89,21 +90,6 @@ public class Rdf4jDataManager implements DataManager {
      *************/
 
     @Override
-    public Iterable<Node> subjects(Node corese_context) {
-        Set<Resource> subjects;
-
-        // if corese_context is null then match with all contexts in graph
-        if (corese_context == null) {
-            subjects = this.rdf4j_model.subjects();
-        } else {
-            Resource rdf4j_context = ConvertRdf4jCorese.coreseContextToRdf4jContext(corese_context);
-            subjects = this.rdf4j_model.filter(null, null, null, rdf4j_context).subjects();
-        }
-
-        return ConvertRdf4jCorese.rdf4jvaluestoCoresNodes(new ArrayList<>(subjects));
-    }
-
-    @Override
     public Iterable<Node> predicates(Node corese_context) {
         Set<IRI> predicates;
 
@@ -119,18 +105,26 @@ public class Rdf4jDataManager implements DataManager {
     }
 
     @Override
-    public Iterable<Node> objects(Node corese_context) {
-        Set<Value> objects;
+    public Iterable<Node> getNodes(Node corese_context) {
+
+        // if corese_context is null then match with all contexts in graph
+        HashSet<Value> result = new HashSet<>();
+        if (corese_context == null) {
+            result.addAll(this.rdf4j_model.subjects());
+        } else {
+            Resource rdf4j_context = ConvertRdf4jCorese.coreseContextToRdf4jContext(corese_context);
+            result.addAll(this.rdf4j_model.filter(null, null, null, rdf4j_context).subjects());
+        }
 
         // if corese_context is null then match with all contexts in graph
         if (corese_context == null) {
-            objects = this.rdf4j_model.objects();
+            result.addAll(this.rdf4j_model.objects());
         } else {
             Resource rdf4j_context = ConvertRdf4jCorese.coreseContextToRdf4jContext(corese_context);
-            objects = this.rdf4j_model.filter(null, null, null, rdf4j_context).objects();
+            result.addAll(this.rdf4j_model.filter(null, null, null, rdf4j_context).objects());
         }
 
-        return ConvertRdf4jCorese.rdf4jvaluestoCoresNodes(new ArrayList<>(objects));
+        return ConvertRdf4jCorese.rdf4jvaluestoCoresNodes(new ArrayList<>(result));
     }
 
     @Override

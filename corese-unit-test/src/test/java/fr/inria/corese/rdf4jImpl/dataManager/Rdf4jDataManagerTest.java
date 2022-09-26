@@ -205,7 +205,7 @@ public class Rdf4jDataManagerTest {
     }
 
     @Test
-    public void subjects() {
+    public void getNodes() {
         Iterable<Node> iterable;
         List<Node> result;
 
@@ -214,28 +214,45 @@ public class Rdf4jDataManagerTest {
         DataManager data_manager = new Rdf4jDataManager(model_copy);
 
         // All contexts
-        iterable = data_manager.subjects(null);
+        iterable = data_manager.getNodes(null);
         result = new ArrayList<>();
         iterable.forEach(result::add);
 
-        assertEquals(2, result.size());
+        assertEquals(4, result.size());
         assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node)));
         assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.george_brassens_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_literal)));
 
         // Context 1
-        iterable = data_manager.subjects(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1));
-        result = new ArrayList<>();
-        iterable.forEach(result::add);
-        assertEquals(1, result.size());
-        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node)));
-
-        // Default context
-        iterable = data_manager.subjects(this.default_context);
+        iterable = data_manager.getNodes(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1));
         result = new ArrayList<>();
         iterable.forEach(result::add);
         assertEquals(2, result.size());
         assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_literal)));
+
+        // Default context
+        iterable = data_manager.getNodes(this.default_context);
+        result = new ArrayList<>();
+        iterable.forEach(result::add);
+        assertEquals(3, result.size());
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node)));
         assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.george_brassens_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node)));
+
+        // No duplication
+        model_copy.add(this.george_brassens_node, this.isa_property, this.george_brassens_node);
+
+        iterable = data_manager.getNodes(null);
+        result = new ArrayList<>();
+        iterable.forEach(result::add);
+
+        assertEquals(4, result.size());
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_piaf_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.george_brassens_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node)));
+        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_literal)));
     }
 
     @Test
@@ -268,38 +285,6 @@ public class Rdf4jDataManagerTest {
         iterable.forEach(result::add);
         assertEquals(1, result.size());
         assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property)));
-    }
-
-    @Test
-    public void objects() {
-        Iterable<Node> iterable;
-        List<Node> result;
-
-        Model model_copy = new TreeModel(this.model);
-        model_copy.add(this.statement_bonus);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
-
-        // All contexts
-        iterable = data_manager.objects(null);
-        result = new ArrayList<>();
-        iterable.forEach(result::add);
-        assertEquals(2, result.size());
-        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node)));
-        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_literal)));
-
-        // Context 1
-        iterable = data_manager.objects(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1));
-        result = new ArrayList<>();
-        iterable.forEach(result::add);
-        assertEquals(1, result.size());
-        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.edith_literal)));
-
-        // Default context
-        iterable = data_manager.objects(this.default_context);
-        result = new ArrayList<>();
-        iterable.forEach(result::add);
-        assertEquals(1, result.size());
-        assertEquals(true, result.contains(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.singer_node)));
     }
 
     @Test

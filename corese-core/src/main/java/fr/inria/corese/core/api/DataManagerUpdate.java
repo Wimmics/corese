@@ -6,7 +6,7 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 
 /**
- * Interface to adapt an external graph implementation to Corese.
+ * Interface to adapt an external storage system to Corese.
  * 
  * {@code DataManagerUpdate} for {@code update} and {@code construct} queries.
  * 

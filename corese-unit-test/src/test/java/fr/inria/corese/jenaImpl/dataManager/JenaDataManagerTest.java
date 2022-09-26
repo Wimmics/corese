@@ -344,7 +344,7 @@ public class JenaDataManagerTest {
         }
 
         @Test
-        public void subjects() {
+        public void getNodes() {
                 Iterable<Node> iterable;
                 List<Node> result;
 
@@ -352,26 +352,45 @@ public class JenaDataManagerTest {
                 JenaDataManager data_manager = new JenaDataManager(this.dataset, null);
 
                 // All contexts
-                iterable = data_manager.subjects(null);
+                iterable = data_manager.getNodes(null);
+                result = new ArrayList<>();
+                iterable.forEach(result::add);
+                assertEquals(4, result.size());
+                assertEquals(true, result.contains(this.edith_piaf_node_corese));
+                assertEquals(true, result.contains(this.george_brassens_node_corese));
+                assertEquals(true, result.contains(this.singer_node_corese));
+                assertEquals(true, result.contains(this.edith_literal_corese));
+                // Context 1
+                iterable = data_manager.getNodes(this.context1_corese);
                 result = new ArrayList<>();
                 iterable.forEach(result::add);
                 assertEquals(2, result.size());
                 assertEquals(true, result.contains(this.edith_piaf_node_corese));
-                assertEquals(true, result.contains(this.george_brassens_node_corese));
-
-                // Context 1
-                iterable = data_manager.subjects(this.context1_corese);
-                result = new ArrayList<>();
-                iterable.forEach(result::add);
-                assertEquals(1, result.size());
-                assertEquals(true, result.contains(this.edith_piaf_node_corese));
+                assertEquals(true, result.contains(this.edith_literal_corese));
 
                 // Element of kg:default
-                iterable = data_manager.subjects(default_context_corese);
+                iterable = data_manager.getNodes(default_context_corese);
                 result = new ArrayList<>();
                 iterable.forEach(result::add);
-                assertEquals(1, result.size());
+                assertEquals(2, result.size());
                 assertEquals(true, result.contains(this.edith_piaf_node_corese));
+                assertEquals(true, result.contains(this.singer_node_corese));
+
+                // No duplication
+                this.dataset.asDatasetGraph().add(
+                                this.context3_jena,
+                                this.george_brassens_node_jena,
+                                this.isa_property_jena,
+                                this.george_brassens_node_jena);
+
+                iterable = data_manager.getNodes(this.context3_corese);
+                result = new ArrayList<>();
+                iterable.forEach(result::add);
+                assertEquals(4, result.size());
+                assertEquals(true, result.contains(this.edith_piaf_node_corese));
+                assertEquals(true, result.contains(this.edith_literal_corese));
+                assertEquals(true, result.contains(this.george_brassens_node_corese));
+                assertEquals(true, result.contains(this.singer_node_corese));
 
                 data_manager.close();
         }
@@ -405,38 +424,6 @@ public class JenaDataManagerTest {
                 iterable.forEach(result::add);
                 assertEquals(1, result.size());
                 assertEquals(true, result.contains(this.isa_property_corese));
-                data_manager.close();
-        }
-
-        @Test
-        public void objects() {
-                Iterable<Node> iterable;
-                List<Node> result;
-
-                this.dataset.asDatasetGraph().add(this.statement_bonus_jena);
-                JenaDataManager data_manager = new JenaDataManager(this.dataset, null);
-
-                // All contexts
-                iterable = data_manager.objects(null);
-                result = new ArrayList<>();
-                iterable.forEach(result::add);
-                assertEquals(2, result.size());
-                assertEquals(true, result.contains(this.singer_node_corese));
-                assertEquals(true, result.contains(this.edith_literal_corese));
-
-                // Context 1
-                iterable = data_manager.objects(this.context1_corese);
-                result = new ArrayList<>();
-                iterable.forEach(result::add);
-                assertEquals(1, result.size());
-                assertEquals(true, result.contains(this.edith_literal_corese));
-
-                // Default context
-                iterable = data_manager.objects(this.default_context_corese);
-                result = new ArrayList<>();
-                iterable.forEach(result::add);
-                assertEquals(1, result.size());
-                assertEquals(true, result.contains(this.singer_node_corese));
                 data_manager.close();
         }
 

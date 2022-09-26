@@ -15,10 +15,9 @@ import org.apache.jena.graph.Triple;
 import org.apache.jena.graph.compose.Union;
 import org.apache.jena.query.Dataset;
 import org.apache.jena.query.ReadWrite;
-import org.apache.jena.rdf.model.ModelFactory;
-import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.sparql.core.Quad;
+import org.apache.jena.sparql.util.graph.GraphUtils;
 import org.apache.jena.tdb.TDBFactory;
 
 import com.google.common.base.Function;
@@ -132,30 +131,6 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      *************/
 
     @Override
-    public Iterable<Node> subjects(Node corese_context) {
-
-        Function<Resource, Node> convertIteratorQuadToEdge = new Function<Resource, Node>() {
-            @Override
-            public Node apply(Resource resource) {
-                return ConvertJenaCorese.JenaNodeToCoreseNode(resource.asNode());
-            }
-        };
-
-        Iterator<Resource> iter;
-        if (corese_context == null) {
-            // Default graph
-            iter = ModelFactory.createModelForGraph(defaultGraph()).listSubjects();
-        } else {
-            String context_iri = ConvertJenaCorese.coreseContextToJenaContext(corese_context).getURI();
-            iter = this.jena_dataset.getNamedModel(context_iri).listSubjects();
-        }
-
-        return () -> Iterators.transform(
-                iter,
-                convertIteratorQuadToEdge);
-    }
-
-    @Override
     public Iterable<Node> predicates(Node corese_context) {
 
         Function<org.apache.jena.graph.Node, Node> convertIteratorQuadToEdge = new Function<org.apache.jena.graph.Node, Node>() {
@@ -188,27 +163,29 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     }
 
     @Override
-    public Iterable<Node> objects(Node corese_context) {
+    public Iterable<Node> getNodes(Node context) {
 
-        Function<RDFNode, Node> convertIteratorQuadToEdge = new Function<RDFNode, Node>() {
+        Function<org.apache.jena.graph.Node, Node> convertIteratorJenaNodeToCoreseNode = new Function<org.apache.jena.graph.Node, Node>() {
             @Override
-            public Node apply(RDFNode resource) {
-                return ConvertJenaCorese.JenaNodeToCoreseNode(resource.asNode());
+            public Node apply(org.apache.jena.graph.Node resource) {
+                return ConvertJenaCorese.JenaNodeToCoreseNode(resource);
             }
         };
 
-        Iterator<RDFNode> iter;
-        if (corese_context == null) {
-            // Default graph
-            iter = ModelFactory.createModelForGraph(defaultGraph()).listObjects();
+        Graph graph = null;
+        if (context == null) {
+            graph = this.defaultGraph();
         } else {
-            String context_iri = ConvertJenaCorese.coreseContextToJenaContext(corese_context).getURI();
-            iter = this.jena_dataset.getNamedModel(context_iri).listObjects();
+            String context_IRI = ConvertJenaCorese.coreseContextToJenaContext(context).getURI();
+            graph = this.jena_dataset.getNamedModel(context_IRI).getGraph();
         }
+
+        Iterator<org.apache.jena.graph.Node> iter = GraphUtils.allNodes(graph);
 
         return () -> Iterators.transform(
                 iter,
-                convertIteratorQuadToEdge);
+                convertIteratorJenaNodeToCoreseNode);
+
     }
 
     @Override

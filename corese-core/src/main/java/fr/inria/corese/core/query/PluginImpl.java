@@ -740,7 +740,7 @@ public class PluginImpl
         if (first.pointerType() == PointerType.GRAPH) {
             // insert(graph, s, p, o)
             Graph gg = (Graph) first.getPointerObject();
-            e = gg.add(param[1], param[2], param[3]);
+            e = gg.insert(param[1], param[2], param[3]);
         } 
         return (e == null) ? FALSE : TRUE;
     }

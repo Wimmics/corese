@@ -3418,10 +3418,11 @@ public class Graph extends GraphObject implements
     // It will be replaced by graph node
     public Edge insert(Node g, Node s, Node p, Node o) {
         if (g == null) {
-            g = addDefaultGraphNode();
+            return insert(s.getDatatypeValue(), p.getDatatypeValue(), o.getDatatypeValue());
         }
-        Edge e = fac.create(g, s, p, o);
-        return insertEdgeWithTargetNode(e);
+        else {
+            return insert(g.getDatatypeValue(), s.getDatatypeValue(), p.getDatatypeValue(), o.getDatatypeValue());
+        }
     }
 
     /**
@@ -3429,12 +3430,13 @@ public class Graph extends GraphObject implements
      * xt:insert
      */
     public Edge insert(IDatatype subject, IDatatype predicate, IDatatype value) {
-        return insert(null, subject, predicate, value);
+        return add(addDefaultGraphNode().getValue(), subject, predicate, value);
     }
 
     public Edge insert(IDatatype source, IDatatype subject, IDatatype predicate, IDatatype value) {
-        return insert(source==null?addDefaultGraphNode():createNode(source), 
-                createNode(subject), createNode(predicate), createNode(value));        
+        Edge e = fac.create(createNode(source), createNode(subject), createNode(predicate), createNode(value));
+        Edge ee = insertEdgeWithTargetNode(e);
+        return ee;
     }
     
     public List<Edge> delete(Node s, Node p, Node o) {

@@ -42,19 +42,19 @@ public class DataManagerGraph implements DataManager {
     
     @Override
     public void startReadTransaction() {
-        trace("start read transaction");
+        trace("start read transaction " + getPath());
     };
 
 
     @Override
     public void endReadTransaction() {
-        trace("end read transaction");
+        trace("end read transaction "+ getPath());
     };
 
   
     @Override
     public void startWriteTransaction() {
-        trace("start write transaction");
+        trace("start write transaction "+ getPath());
         getGraph().init();
     };
 
@@ -62,7 +62,7 @@ public class DataManagerGraph implements DataManager {
     @Override
     public void endWriteTransaction() {
         getGraph().init();
-        trace("end write transaction");
+        trace("end write transaction "+ getPath());
     };
     
     
@@ -80,6 +80,11 @@ public class DataManagerGraph implements DataManager {
     @Override
     public Iterable<Edge> getEdges(
             Node subject, Node predicate, Node object, List<Node> from) {
+        return iterate(subject, predicate, object, from);
+    }
+    
+    Iterable<Edge> iterate2(
+            Node subject, Node predicate, Node object, List<Node> from) {
         DataProducer dp ;
         //trace(String.format("%s %s %s %s", from, subject, predicate, object));
         if (from!=null&&from.size()==1) {
@@ -88,6 +93,14 @@ public class DataManagerGraph implements DataManager {
             dp = getGraph().getDataStore().getDefault(from);
         }
         return dp.getEdges(subject, predicate, object, from);
+    }
+    
+    Iterable<Edge> iterate(Node s, Node p, Node o, List<Node> from) {
+        DataProducer dp = new DataProducer(getGraph());
+        if (from != null && !from.isEmpty()) {
+            dp.fromSelect(from);
+        }
+        return dp.iterate(s, p, o);
     }
     
     
@@ -145,13 +158,11 @@ public class DataManagerGraph implements DataManager {
     }
 
 
+    // @todo: rdf star
     @Override
     public Edge insert(Edge edge) {
-        return getGraph().insert(
-                edge.getGraphNode(),
-                edge.getSubjectNode(), 
-                edge.getPropertyNode(),
-                edge.getObjectNode());
+        Edge res = getGraph().insertEdgeWithTargetNode(edge);
+        return res;
     }
 
     

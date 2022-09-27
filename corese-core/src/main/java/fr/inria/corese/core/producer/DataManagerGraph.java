@@ -43,27 +43,27 @@ public class DataManagerGraph implements DataManager {
     @Override
     public void startReadTransaction() {
         trace("start read transaction " + getPath());
-    };
+    }
 
 
     @Override
     public void endReadTransaction() {
         trace("end read transaction "+ getPath());
-    };
+    }
 
   
     @Override
     public void startWriteTransaction() {
         trace("start write transaction "+ getPath());
         getGraph().init();
-    };
+    }
 
    
     @Override
     public void endWriteTransaction() {
         getGraph().init();
         trace("end write transaction "+ getPath());
-    };
+    }
     
     
     @Override
@@ -71,12 +71,12 @@ public class DataManagerGraph implements DataManager {
         return null;
     }
 
-    ;    
+       
     
     
 
     // from.size == 1 -> named graph semantics
-    // else           -> public graph semantics
+    // else           -> default graph semantics
     @Override
     public Iterable<Edge> getEdges(
             Node subject, Node predicate, Node object, List<Node> from) {
@@ -181,10 +181,7 @@ public class DataManagerGraph implements DataManager {
     
     @Override
     public Iterable<Edge> delete(Edge edge) {
-        return getGraph().delete(
-                edge.getGraph(), edge.getSubjectNode(),
-                edge.getPropertyNode(),
-                edge.getObjectNode());
+        return getGraph().deleteEdgeWithTargetNode(edge);
     }
 
     @Override

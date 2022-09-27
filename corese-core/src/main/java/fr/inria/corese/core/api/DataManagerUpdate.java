@@ -45,8 +45,8 @@ public interface DataManagerUpdate {
      * @return The edge inserted, null if no inserted.
      */
     default Edge insert(Edge edge) {
-        Iterable<Edge> added = this.insert(edge.getSubjectNode(), edge.getPropertyValue(), edge.getObjectNode(),
-                List.of(edge.getGraph()));
+        Iterable<Edge> added = this.insert(edge.getSubjectNode(), edge.getPropertyNode(), edge.getObjectNode(),
+                List.of(edge.getGraphNode()));
 
         if (added.iterator().hasNext()) {
             return added.iterator().next();
@@ -92,7 +92,7 @@ public interface DataManagerUpdate {
                     null);
         } else {
             return this.delete(edge.getSubjectNode(), edge.getPropertyNode(), edge.getObjectNode(),
-                    List.of(edge.getGraph()));
+                    List.of(edge.getGraphNode()));
 
         }
     }

@@ -1434,6 +1434,13 @@ public class Graph extends GraphObject implements
         Edge res = addEdge(ee);
         return res;
     }
+    
+    public Iterable<Edge> deleteEdgeWithTargetNode(Edge edge) {
+        return delete(
+                edge.getGraphNode(), edge.getSubjectNode(),
+                edge.getPropertyNode(),
+                edge.getObjectNode());
+    }
 
     public void addEdgeNode(Edge ee) {
         addGraphNode(ee.getGraph());

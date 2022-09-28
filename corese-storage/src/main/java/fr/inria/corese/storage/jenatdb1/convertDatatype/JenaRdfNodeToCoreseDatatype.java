@@ -37,7 +37,7 @@ public class JenaRdfNodeToCoreseDatatype {
             return convertBlank(jena_anon);
         } else {
             Literal jena_literal = jena_rdf_node.asLiteral();
-            String label = jena_literal.getValue().toString();
+            String label = jena_literal.getString();
 
             switch (jena_literal.getDatatypeURI()) {
 

@@ -58,7 +58,7 @@ public interface DataManagerRead {
      * If several edges have the same subject, predicate and object then only one is
      * returned.
      * 
-     * If the list of contexts in parameter is not equal to 1, then the value of
+     * If the size of the contexts in parameter is not equal to 1, then the value of
      * Graph of Edges returned does not matter. It can be for example
      * {@code http://ns.inria.fr/corese/kgram/default}. Be careful, the value of
      * Graph of Edges cannot be {@code null}.

@@ -247,6 +247,8 @@ public class Graph extends GraphObject implements
             entailGraph;
     // List of predefined (graph) Node  
     private ArrayList<Node> systemNode;
+    List<Edge> emptyEdgeList;
+
     // Manager of sparql edge iterator with possible default graph specification
     DataStore dataStore;
     // @todo external memory literal value manager
@@ -601,6 +603,7 @@ public class Graph extends GraphObject implements
         dataStore = new DataStore(this);
         eventManager = new EventManager(this);
         eventManager.setVerbose(VERBOSE);
+        emptyEdgeList = new ArrayList<>(0);
     }
 
     /**
@@ -2255,6 +2258,40 @@ public class Graph extends GraphObject implements
         }
         return null;
     }
+    
+    // DataManager api
+    
+    public Iterable<Edge> iterate(Node s, Node p, Node o, List<Node> from) {
+        DataProducer dp = new DataProducer(this);
+        if (from != null && !from.isEmpty()) {
+            dp.fromSelect(from);
+        }
+        return dp.iterate(s, p, o);
+    }
+    
+    public Iterable<Edge> insert(Node s, Node p, Node o, List<Node> contexts) {
+        if (contexts==null||contexts.isEmpty()) {
+            Edge edge = insert(s, p, o);
+        }
+        else {
+            for (Node g : contexts) {
+                Edge edge = insert(g, s, p, o);
+            }
+        }
+        return emptyEdgeList;
+    }
+    
+    public Iterable<Edge> delete(Node s, Node p, Node o, List<Node> contexts) {
+        if (contexts == null || contexts.isEmpty()) {
+            List<Edge> edge = delete(s, p, o);
+        } else {
+            for (Node g : contexts) {
+                List<Edge> edge = delete(g, s, p, o);
+            }
+        }
+        return emptyEdgeList;
+    }
+    
 
     @Override
     public Node value(Node subj, Node pred, int n) {
@@ -2799,6 +2836,9 @@ public class Graph extends GraphObject implements
     // return iterable of NodeGraph(node, graph)
     // MUST perform n.getNode() to get the node
     public Iterable<Node> getNodeGraphIterator(Node gNode) {
+        if (gNode == null) {
+            return getNodeGraphIterator();
+        }
         indexNode();
         return getNodeGraphIndex().getNodes(gNode);
     }

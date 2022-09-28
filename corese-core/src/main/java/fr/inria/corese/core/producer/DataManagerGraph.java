@@ -78,31 +78,9 @@ public class DataManagerGraph implements DataManager {
     @Override
     public Iterable<Edge> getEdges(
             Node subject, Node predicate, Node object, List<Node> from) {
-        return iterate(subject, predicate, object, from);
+        return getGraph().iterate(subject, predicate, object, from);
     }
     
-    Iterable<Edge> iterate2(
-            Node subject, Node predicate, Node object, List<Node> from) {
-        DataProducer dp ;
-        //trace(String.format("%s %s %s %s", from, subject, predicate, object));
-        if (from!=null&&from.size()==1) {
-            dp = getGraph().getDataStore().getNamed(from, null);
-        } else {
-            dp = getGraph().getDataStore().getDefault(from);
-        }
-        return dp.getEdges(subject, predicate, object, from);
-    }
-    
-    Iterable<Edge> iterate(Node s, Node p, Node o, List<Node> from) {
-        DataProducer dp = new DataProducer(getGraph());
-        if (from != null && !from.isEmpty()) {
-            dp.fromSelect(from);
-        }
-        return dp.iterate(s, p, o);
-    }
-    
-    
-
     @Override
     public int graphSize() {
         return getGraph().size();
@@ -152,15 +130,7 @@ public class DataManagerGraph implements DataManager {
 
     @Override
     public Iterable<Edge> insert(Node s, Node p, Node o, List<Node> contexts) {
-        if (contexts==null||contexts.isEmpty()) {
-            Edge edge = getGraph().insert(s, p, o);
-        }
-        else {
-            for (Node g : contexts) {
-                Edge edge = getGraph().insert(g, s, p, o);
-            }
-        }
-        return emptyEdgeList;
+        return getGraph().insert(s, p, o, contexts);
     }
 
 
@@ -174,14 +144,7 @@ public class DataManagerGraph implements DataManager {
     
     @Override
     public Iterable<Edge> delete(Node s, Node p, Node o, List<Node> contexts) {
-        if (contexts == null || contexts.isEmpty()) {
-            List<Edge> edge = getGraph().delete(s, p, o);
-        } else {
-            for (Node g : contexts) {
-                List<Edge> edge = getGraph().delete(g, s, p, o);
-            }
-        }
-        return emptyEdgeList;
+        return getGraph().delete(s, p, o, contexts);
     }
 
     

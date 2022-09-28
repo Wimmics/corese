@@ -36,9 +36,6 @@ public class DataManagerGraph implements DataManager {
         setGraph(g);
     }
     
-    void trace(String mes) {
-        logger.info(mes);
-    }
     
     @Override
     public void startReadTransaction() {

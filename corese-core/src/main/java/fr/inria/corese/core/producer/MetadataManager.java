@@ -2,7 +2,6 @@ package fr.inria.corese.core.producer;
 
 import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.logic.Distance;
-import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import java.util.HashMap;
@@ -135,11 +134,9 @@ public class MetadataManager {
         this.debug = debug;
     }
     
-    void trace(String mes) {
+    public void trace(String mes, Object... list) {
         if (isDebug()) {
-            logger.info(
-                String.format("%s %s", mes,
-                        getDataManager().getStoragePath()));
+            logger.info(String.format(mes, list));
         }
     }
 

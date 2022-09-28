@@ -56,6 +56,12 @@ public interface DataManager extends DataManagerRead, DataManagerUpdate {
      */
     default void setMetadataManager(MetadataManager metaDataManager) {
     };
+    
+    default void trace(String mes, Object... list) {
+        if (hasMetadataManager()) {
+            getMetadataManager().trace(mes, list);
+        }
+    }
 
     /****************
      * Transactions *

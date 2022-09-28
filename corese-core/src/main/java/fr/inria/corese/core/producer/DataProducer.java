@@ -192,7 +192,8 @@ public class DataProducer extends GraphObject
             }
         }        
         if (o != null){
-            no = getGraph().getNode(o);
+            // @todo: getExtNode()
+            no = getGraph().getExtNode(o);
             if (no == null && ! o.isBlank()){
                  return empty();
             }

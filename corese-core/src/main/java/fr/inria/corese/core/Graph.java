@@ -2135,7 +2135,7 @@ public class Graph extends GraphObject implements
     /**
      * Assign an index to Literal Node Assign same index to same number values:
      * same datatype with same value and different label have same index 1, 01,
-     * 1.0 have same index: they join with SPARQL 1, 1 double have different
+     * 1.0 have same index: they join with SPARQL; 1, 1 double have different
      * index, they do not join
      */
     void indexLiteralNode(IDatatype dt, Node node) {

@@ -39,6 +39,7 @@ public class DataManagerGraph implements DataManager {
     
     @Override
     public void startReadTransaction() {
+        getGraph().init();
         trace("start read transaction " + getPath());
     }
 
@@ -137,6 +138,14 @@ public class DataManagerGraph implements DataManager {
     @Override
     public Iterable<Node> contexts() {
         return getGraph().getGraphNodes(emptyNodeList);
+    }
+    
+    @Override
+    public Iterable<Node> getNodes(Node context) {
+        if (context == null) {
+            return getGraph().getNodeGraphIterator();
+        }
+        return getGraph().getNodeGraphIterator(getGraph().getNode(context));
     }
     
     

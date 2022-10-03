@@ -52,13 +52,30 @@
       <artifactId>jena-arq</artifactId>
       <version>4.4.0</version>
     </dependency>
-    
-    
+
+    <dependency>
+      <groupId>fr.inria.boreal.integraal</groupId>
+      <artifactId>integraal-model</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>fr.inria.boreal.integraal</groupId>
+      <artifactId>integraal-storage</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+    <dependency>
+      <groupId>fr.inria.boreal.integraal</groupId>
+      <artifactId>integraal-util</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
 
   </dependencies>
 
   <build>
-    <pluginManagement><!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
+    <pluginManagement>
+      <!-- lock down plugins versions to avoid using Maven defaults (may be moved to parent pom) -->
       <plugins>
         <!-- clean lifecycle, see https://maven.apache.org/ref/current/maven-core/lifecycles.html#clean_Lifecycle -->
         <plugin>

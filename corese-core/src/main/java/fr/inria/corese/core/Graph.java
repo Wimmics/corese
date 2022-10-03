@@ -509,11 +509,11 @@ public class Graph extends GraphObject implements
                     new CompareWithoutDatatypeEntailment());
         }
 
-        void put(Node node) {
+        public void put(Node node) {
             put( node.getDatatypeValue(), node);
         }
 
-        boolean contains(Node node) {
+        public boolean contains(Node node) {
             return containsKey( node.getDatatypeValue());
         }
     }

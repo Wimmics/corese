@@ -63,13 +63,17 @@ public interface DataManagerRead {
      * {@code http://ns.inria.fr/corese/kgram/default}. Be careful, the value of
      * Graph of Edges cannot be {@code null}.
      * 
+     * All {@code null} in context list are ignored. E.g. If the list contains only
+     * null, it is handled as an empty list.
+     * 
      * @param subject   The subject of the edges to match, {@code null} to match
      *                  edges with any subject.
      * @param predicate The predicate of the edges to match, {@code null} to match
      *                  edges with any predicate.
      * @param object    The object of the edges to match, {@code null} to match
      *                  edges with any object.
-     * @param contexts  The contexts of the edges to match, {@code null} to match
+     * @param contexts  The contexts of the edges to match, {@code null} or empty
+     *                  list to match
      *                  edges with any contexts. If one or more contexts are
      *                  specified, edges with a context matching any one of these
      *                  will match.

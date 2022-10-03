@@ -263,7 +263,7 @@ public class TestCoreseDatatypeToJenaRdfNode {
     }
 
     @Test
-    public void convertLiteralLangXhithoutLang() {
+    public void convertLiteralLangWhithoutLang() {
         String value = "Un super test";
 
         // Build Corese literal lang

@@ -60,7 +60,6 @@ public class CoreseDatatypeToJenaRdfNode {
                         if (!string_iri.startsWith("--")) {
                             string_iri = "--" + string_iri;
                         }
-                        System.out.println(string_iri);
                         return convertLiteral(string_iri, XSDDatatype.XSDgMonth.getURI());
 
                     case RDF.xsdday:

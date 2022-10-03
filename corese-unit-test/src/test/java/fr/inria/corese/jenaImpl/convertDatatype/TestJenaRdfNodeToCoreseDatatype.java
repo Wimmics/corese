@@ -140,7 +140,6 @@ public class TestJenaRdfNodeToCoreseDatatype {
 
         // Build Jena integer
         Literal jena_integer = this.model.createTypedLiteral(string_value, XSDDatatype.XSDinteger);
-        System.out.println(jena_integer.getDatatypeURI());
 
         // Convert Jena integer to Corese integer
         IDatatype corese_integer_value = JenaRdfNodeToCoreseDatatype.convert(jena_integer);

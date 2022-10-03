@@ -17,10 +17,10 @@ public class CoreseDatatypeToJenaRdfNode {
     private static Model jena_factory = ModelFactory.createDefaultModel();
 
     /**
-     * Convert Corese datatype to equivalent Jena RDFNode
+     * Convert Corese Datatype to equivalent Jena RDFNode
      * 
-     * @param corese_datatype the Corese datatype to convert
-     * @return Jena RDFNode equivalent
+     * @param corese_datatype the Corese datatype to convert.
+     * @return Jena RDFNode equivalent.
      */
     public static RDFNode convert(IDatatype corese_datatype) {
 

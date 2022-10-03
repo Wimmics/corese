@@ -3,6 +3,9 @@ package fr.inria.corese.storage.inteGraal;
 import fr.boreal.model.logicalElements.api.Atom;
 import fr.boreal.model.logicalElements.api.Predicate;
 import fr.boreal.model.logicalElements.api.Term;
+import fr.boreal.model.logicalElements.factory.api.PredicateFactory;
+import fr.boreal.model.logicalElements.factory.api.TermFactory;
+import fr.boreal.model.logicalElements.factory.impl.SameObjectPredicateFactory;
 import fr.boreal.model.logicalElements.factory.impl.SameObjectTermFactory;
 import fr.boreal.model.logicalElements.impl.AtomImpl;
 import fr.inria.corese.core.edge.EdgeImpl;
@@ -15,9 +18,25 @@ import fr.inria.corese.storage.inteGraal.convertDatatype.InteGraalToCoreseDataty
 
 public class ConvertInteGraalCorese {
 
-    public final static Node corese_default_context = DatatypeMap.createResource(ExpType.DEFAULT_GRAPH);
-    public final static Term integraal_default_context = SameObjectTermFactory.instance()
-            .createOrGetConstant("default");
+    public final Node corese_default_context = DatatypeMap.createResource(ExpType.DEFAULT_GRAPH);
+    public final Term integraal_default_context;
+
+    private CoreseDatatypeToInteGraal converter_ci;
+
+    /**
+     * Construct a converter Corese InteGraal.
+     * 
+     * @param tf the term factory.
+     * @param pf the predicate factory.
+     */
+    public ConvertInteGraalCorese(TermFactory tf, PredicateFactory pf) {
+        this.converter_ci = new CoreseDatatypeToInteGraal(tf, pf);
+        this.integraal_default_context = tf.createOrGetConstant("default");
+    }
+
+    public ConvertInteGraalCorese() {
+        this(SameObjectTermFactory.instance(), SameObjectPredicateFactory.instance());
+    }
 
     /******************************
      * Node : Corese to InteGraal *
@@ -29,11 +48,11 @@ public class ConvertInteGraalCorese {
      * @param corese_node Corese node to convert.
      * @return Equivalent InteGraal Term.
      */
-    public static Term coreseNodeToInteGraalTerm(Node corese_node) {
+    public Term coreseNodeToInteGraalTerm(Node corese_node) {
         if (corese_node == null) {
-            return CoreseDatatypeToInteGraal.convertVariable();
+            return this.converter_ci.convertVariable();
         }
-        return CoreseDatatypeToInteGraal.convert(corese_node.getDatatypeValue());
+        return this.converter_ci.convert(corese_node.getDatatypeValue());
     }
 
     /**
@@ -42,8 +61,8 @@ public class ConvertInteGraalCorese {
      * @param corese_node Corese node to convert, can not be null.
      * @return Equivalent InteGraal Predicate.
      */
-    public static Predicate coreseNodeToInteGraalPredicate(Node corese_node) {
-        return CoreseDatatypeToInteGraal.convertPredicate(corese_node.getDatatypeValue());
+    public Predicate coreseNodeToInteGraalPredicate(Node corese_node) {
+        return this.converter_ci.convertPredicate(corese_node.getDatatypeValue());
     }
 
     /*********************************
@@ -56,12 +75,12 @@ public class ConvertInteGraalCorese {
      * @param corese_context Corese context to convert.
      * @return Equivalent InteGraal Term.
      */
-    public static Term coreseContextToIntegraalTerm(Node corese_context) {
+    public Term coreseContextToIntegraalTerm(Node corese_context) {
 
         if (corese_context != null && corese_context.equals(corese_default_context)) {
             return integraal_default_context;
         } else {
-            return ConvertInteGraalCorese.coreseNodeToInteGraalTerm(corese_context);
+            return this.coreseNodeToInteGraalTerm(corese_context);
         }
     }
 
@@ -75,11 +94,11 @@ public class ConvertInteGraalCorese {
      * @param edge Corese edge to convert.
      * @return Equivalent inteGraal Atom.
      */
-    public static Atom edgeToAtom(Edge edge) {
-        Term subject_graal = ConvertInteGraalCorese.coreseNodeToInteGraalTerm(edge.getNode(0));
-        Predicate predicate_graal = ConvertInteGraalCorese.coreseNodeToInteGraalPredicate(edge.getEdgeNode());
-        Term object_graal = ConvertInteGraalCorese.coreseNodeToInteGraalTerm(edge.getNode(1));
-        Term context_graal = ConvertInteGraalCorese.coreseContextToIntegraalTerm(edge.getGraph());
+    public Atom edgeToAtom(Edge edge) {
+        Term subject_graal = this.coreseNodeToInteGraalTerm(edge.getNode(0));
+        Predicate predicate_graal = this.coreseNodeToInteGraalPredicate(edge.getEdgeNode());
+        Term object_graal = this.coreseNodeToInteGraalTerm(edge.getNode(1));
+        Term context_graal = this.coreseContextToIntegraalTerm(edge.getGraph());
 
         return new AtomImpl(predicate_graal, subject_graal, object_graal, context_graal);
     }
@@ -94,7 +113,7 @@ public class ConvertInteGraalCorese {
      * @param integraal_term InteGraal Term to convert.
      * @return Equivalent Corese Node.
      */
-    public static Node inteGraalTermToCoreseNode(Term integraal_term) {
+    public Node inteGraalTermToCoreseNode(Term integraal_term) {
         return InteGraalToCoreseDatatype.convert(integraal_term);
     }
 
@@ -104,7 +123,7 @@ public class ConvertInteGraalCorese {
      * @param integraal_predicate InteGraal Predicate to convert.
      * @return Equivalent Corese Node.
      */
-    public static Node inteGraalPredicateToCoreseNode(Predicate integraal_predicate) {
+    public Node inteGraalPredicateToCoreseNode(Predicate integraal_predicate) {
         return InteGraalToCoreseDatatype.convert(integraal_predicate);
     }
 
@@ -118,7 +137,7 @@ public class ConvertInteGraalCorese {
      * @param integraal_context InteGraal context to convert.
      * @return Equivalent Corese context.
      */
-    public static Node inteGraalContextToCoreseContext(Term integraal_context) {
+    public Node inteGraalContextToCoreseContext(Term integraal_context) {
         if (integraal_context.equals(integraal_default_context)) {
             return corese_default_context;
         } else {
@@ -136,11 +155,11 @@ public class ConvertInteGraalCorese {
      * @param atom inteGraal Atom to convert.
      * @return Equivalent Corese Edge.
      */
-    public static Edge atomToEdge(Atom atom) {
-        Node subject_corese = ConvertInteGraalCorese.inteGraalTermToCoreseNode(atom.getTerm(0));
-        Node predicate_corese = ConvertInteGraalCorese.inteGraalPredicateToCoreseNode(atom.getPredicate());
-        Node object_corese = ConvertInteGraalCorese.inteGraalTermToCoreseNode(atom.getTerm(1));
-        Node context_corese = ConvertInteGraalCorese.inteGraalContextToCoreseContext(atom.getTerm(2));
+    public Edge atomToEdge(Atom atom) {
+        Node subject_corese = this.inteGraalTermToCoreseNode(atom.getTerm(0));
+        Node predicate_corese = this.inteGraalPredicateToCoreseNode(atom.getPredicate());
+        Node object_corese = this.inteGraalTermToCoreseNode(atom.getTerm(1));
+        Node context_corese = this.inteGraalContextToCoreseContext(atom.getTerm(2));
 
         return EdgeImpl.create(context_corese, subject_corese, predicate_corese, object_corese);
     }

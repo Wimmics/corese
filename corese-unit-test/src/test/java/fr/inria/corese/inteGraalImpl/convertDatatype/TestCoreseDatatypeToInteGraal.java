@@ -10,6 +10,8 @@ import org.junit.Test;
 
 import fr.boreal.model.logicalElements.api.Predicate;
 import fr.boreal.model.logicalElements.api.Term;
+import fr.boreal.model.logicalElements.factory.impl.SameObjectPredicateFactory;
+import fr.boreal.model.logicalElements.factory.impl.SameObjectTermFactory;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.CoreseDate;
 import fr.inria.corese.sparql.datatype.CoreseDateTime;
@@ -25,6 +27,9 @@ import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.storage.inteGraal.convertDatatype.CoreseDatatypeToInteGraal;
 
 public class TestCoreseDatatypeToInteGraal {
+
+    private CoreseDatatypeToInteGraal converter_ci = new CoreseDatatypeToInteGraal(SameObjectTermFactory.instance(),
+            SameObjectPredicateFactory.instance());
 
     private Matcher parseLiteral(String stringLiteral) {
         Pattern pattern = Pattern.compile("(.*)\\^\\^([^@]*)@?(.*)?");
@@ -53,7 +58,7 @@ public class TestCoreseDatatypeToInteGraal {
         IDatatype corese_uri = DatatypeMap.createResource(string_uri);
 
         // Convert Corese URI to Graal IRI
-        Term graal_iri = CoreseDatatypeToInteGraal.convert(corese_uri);
+        Term graal_iri = converter_ci.convert(corese_uri);
 
         // Checks
         assertEquals(true, graal_iri.isConstant());
@@ -68,7 +73,7 @@ public class TestCoreseDatatypeToInteGraal {
         IDatatype corese_blank = DatatypeMap.createBlank(string_id);
 
         // Convert Corese blank node to Graal blank node
-        Term graal_blank = CoreseDatatypeToInteGraal.convert(corese_blank);
+        Term graal_blank = converter_ci.convert(corese_blank);
 
         // Checks
         assertEquals(true, graal_blank.isLiteral());
@@ -84,7 +89,7 @@ public class TestCoreseDatatypeToInteGraal {
         IDatatype corese_double = DatatypeMap.newDouble(value);
 
         // Convert Corese double to Graal double
-        Term graal_double = CoreseDatatypeToInteGraal.convert(corese_double);
+        Term graal_double = converter_ci.convert(corese_double);
         // Checks
         assertEquals(graal_double.isLiteral(), true);
         assertEquals(corese_double.doubleValue(), Double.parseDouble(this.getLiteralValue(graal_double)), 0);
@@ -99,7 +104,7 @@ public class TestCoreseDatatypeToInteGraal {
         IDatatype corese_float = DatatypeMap.newFloat(value);
 
         // Convert Corese float to Graal float
-        Term graal_float = CoreseDatatypeToInteGraal.convert(corese_float);
+        Term graal_float = converter_ci.convert(corese_float);
 
         // Checks
         assertEquals(graal_float.isLiteral(), true);
@@ -115,7 +120,7 @@ public class TestCoreseDatatypeToInteGraal {
         IDatatype corese_decimal = DatatypeMap.newDecimal(double_value);
 
         // Convert Corese decimal to Graal decimal
-        Term graal_decimal = CoreseDatatypeToInteGraal.convert(corese_decimal);
+        Term graal_decimal = converter_ci.convert(corese_decimal);
 
         // Checks
         assertEquals(graal_decimal.isLiteral(), true);
@@ -131,7 +136,7 @@ public class TestCoreseDatatypeToInteGraal {
         IDatatype corese_integer = DatatypeMap.newInteger(value);
 
         // Convert Corese integer to Graal integer
-        Term graal_integer = CoreseDatatypeToInteGraal.convert(corese_integer);
+        Term graal_integer = converter_ci.convert(corese_integer);
 
         // Checks
         assertEquals(graal_integer.isLiteral(), true);
@@ -147,7 +152,7 @@ public class TestCoreseDatatypeToInteGraal {
         IDatatype corese_boolean = DatatypeMap.newInstance(value);
 
         // Convert Corese boolean to Graal boolean
-        Term graal_boolean = CoreseDatatypeToInteGraal.convert(corese_boolean);
+        Term graal_boolean = converter_ci.convert(corese_boolean);
 
         // Checks
         assertEquals(graal_boolean.isLiteral(), true);
@@ -163,7 +168,7 @@ public class TestCoreseDatatypeToInteGraal {
         IDatatype corese_any_uri = DatatypeMap.createLiteral(value, RDF.xsdanyURI);
 
         // Convert Corese any uri to Graal any uri
-        Term graal_any_uri = CoreseDatatypeToInteGraal.convert(corese_any_uri);
+        Term graal_any_uri = converter_ci.convert(corese_any_uri);
 
         // Checks
         assertEquals(graal_any_uri.isLiteral(), true);
@@ -179,7 +184,7 @@ public class TestCoreseDatatypeToInteGraal {
         IDatatype corese_xml_literal = DatatypeMap.createLiteral(value, RDF.XMLLITERAL);
 
         // Convert Corese XML literal to Graal XML literal
-        Term graal_xml_literal = CoreseDatatypeToInteGraal.convert(corese_xml_literal);
+        Term graal_xml_literal = converter_ci.convert(corese_xml_literal);
 
         // Checks
         assertEquals(graal_xml_literal.isLiteral(), true);
@@ -195,7 +200,7 @@ public class TestCoreseDatatypeToInteGraal {
         CoreseDate corese_date = (CoreseDate) DatatypeMap.newDate(value);
 
         // Convert Corese date to Graal date
-        Term graal_date = CoreseDatatypeToInteGraal.convert(corese_date);
+        Term graal_date = converter_ci.convert(corese_date);
 
         // Checks
         assertEquals(graal_date.isLiteral(), true);
@@ -211,7 +216,7 @@ public class TestCoreseDatatypeToInteGraal {
         CoreseDateTime corese_date_time = (CoreseDateTime) DatatypeMap.newDateTime(value);
 
         // Convert Corese date to Graal date
-        Term graal_date_time = CoreseDatatypeToInteGraal.convert(corese_date_time);
+        Term graal_date_time = converter_ci.convert(corese_date_time);
 
         // Checks
         assertEquals(graal_date_time.isLiteral(), true);
@@ -228,7 +233,7 @@ public class TestCoreseDatatypeToInteGraal {
         CoreseDateTime corese_date_time = (CoreseDateTime) DatatypeMap.newDateTime(value);
 
         // Convert Corese date to Graal date
-        Term graal_date_time = CoreseDatatypeToInteGraal.convert(corese_date_time);
+        Term graal_date_time = converter_ci.convert(corese_date_time);
 
         // Checks
         assertEquals(graal_date_time.isLiteral(), true);
@@ -245,7 +250,7 @@ public class TestCoreseDatatypeToInteGraal {
         CoreseLiteral corese_literal = (CoreseLiteral) DatatypeMap.createLiteral(value, RDF.LANGSTRING, lang);
 
         // Convert Corese literal lang to Graal literal lang
-        Term graal_literal = CoreseDatatypeToInteGraal.convert(corese_literal);
+        Term graal_literal = converter_ci.convert(corese_literal);
 
         // Checks
         assertEquals(graal_literal.isLiteral(), true);
@@ -263,7 +268,7 @@ public class TestCoreseDatatypeToInteGraal {
         CoreseLiteral corese_literal = (CoreseLiteral) DatatypeMap.createLiteral(value, RDF.LANGSTRING, lang);
 
         // Convert Corese literal lang to Graal literal lang
-        Term graal_literal = CoreseDatatypeToInteGraal.convert(corese_literal);
+        Term graal_literal = converter_ci.convert(corese_literal);
 
         // Checks
         assertEquals(graal_literal.isLiteral(), true);
@@ -280,7 +285,7 @@ public class TestCoreseDatatypeToInteGraal {
         CoreseLiteral corese_literal = (CoreseLiteral) DatatypeMap.createLiteral(value, RDF.LANGSTRING);
 
         // Convert Corese literal lang to Graal literal lang
-        Term graal_literal = CoreseDatatypeToInteGraal.convert(corese_literal);
+        Term graal_literal = converter_ci.convert(corese_literal);
 
         // Checks
         assertEquals(graal_literal.isLiteral(), true);
@@ -297,7 +302,7 @@ public class TestCoreseDatatypeToInteGraal {
         CoreseString corese_string = (CoreseString) DatatypeMap.newStringBuilder(value);
 
         // Convert Corese string to Graal string
-        Term graal_string = CoreseDatatypeToInteGraal.convert(corese_string);
+        Term graal_string = converter_ci.convert(corese_string);
 
         // Checks
         assertEquals(graal_string.isLiteral(), true);
@@ -313,7 +318,7 @@ public class TestCoreseDatatypeToInteGraal {
         CoreseStringBuilder corese_string_builder = (CoreseStringBuilder) DatatypeMap.newStringBuilder(value);
 
         // Convert Corese string builder to Graal string builder
-        Term graal_string_builder = CoreseDatatypeToInteGraal.convert(corese_string_builder);
+        Term graal_string_builder = converter_ci.convert(corese_string_builder);
 
         // Checks
         assertEquals(graal_string_builder.isLiteral(), true);
@@ -330,7 +335,7 @@ public class TestCoreseDatatypeToInteGraal {
         CoreseYear corese_year = (CoreseYear) DatatypeMap.createLiteral(value, RDF.xsdyear);
 
         // Convert Corese year to Graal year
-        Term graal_year = CoreseDatatypeToInteGraal.convert(corese_year);
+        Term graal_year = converter_ci.convert(corese_year);
 
         // Checks
         assertEquals(graal_year.isLiteral(), true);
@@ -347,7 +352,7 @@ public class TestCoreseDatatypeToInteGraal {
         CoreseMonth corese_month = (CoreseMonth) DatatypeMap.createLiteral(string_value, RDF.xsdmonth);
 
         // Convert Corese month to Graal month
-        Term graal_month = CoreseDatatypeToInteGraal.convert(corese_month);
+        Term graal_month = converter_ci.convert(corese_month);
 
         // Checks
         assertEquals(graal_month.isLiteral(), true);
@@ -364,7 +369,7 @@ public class TestCoreseDatatypeToInteGraal {
         CoreseDay corese_day = (CoreseDay) DatatypeMap.createLiteral(string_value, RDF.xsdday);
 
         // Convert Corese day to Graal day
-        Term graal_day = CoreseDatatypeToInteGraal.convert(corese_day);
+        Term graal_day = converter_ci.convert(corese_day);
 
         // Checks
         assertEquals(graal_day.isLiteral(), true);
@@ -382,7 +387,7 @@ public class TestCoreseDatatypeToInteGraal {
                 RDF.xsdbyte);
 
         // Convert Corese byte to Graal byte
-        Term graal_byte = CoreseDatatypeToInteGraal.convert(corese_byte);
+        Term graal_byte = converter_ci.convert(corese_byte);
 
         // Checks
         assertEquals(graal_byte.isLiteral(), true);
@@ -400,7 +405,7 @@ public class TestCoreseDatatypeToInteGraal {
                 RDF.xsdshort);
 
         // Convert Corese short to Graal short
-        Term graal_short = CoreseDatatypeToInteGraal.convert(corese_short);
+        Term graal_short = converter_ci.convert(corese_short);
 
         // Checks
         assertEquals(graal_short.isLiteral(), true);
@@ -418,7 +423,7 @@ public class TestCoreseDatatypeToInteGraal {
                 RDF.xsdint);
 
         // Convert Corese int to Graal int
-        Term graal_int = CoreseDatatypeToInteGraal.convert(corese_int);
+        Term graal_int = converter_ci.convert(corese_int);
 
         // Checks
         assertEquals(graal_int.isLiteral(), true);
@@ -436,7 +441,7 @@ public class TestCoreseDatatypeToInteGraal {
                 RDF.xsdpositiveInteger);
 
         // Convert Corese positive integer to Graal positive integer
-        Term graal_positive_integer = CoreseDatatypeToInteGraal.convert(corese_positive_integer);
+        Term graal_positive_integer = converter_ci.convert(corese_positive_integer);
 
         // Checks
         assertEquals(graal_positive_integer.isLiteral(), true);
@@ -455,7 +460,7 @@ public class TestCoreseDatatypeToInteGraal {
                 RDF.xsdnegativeInteger);
 
         // Convert Corese negative integer to Graal negative integer
-        Term graal_negative_integer = CoreseDatatypeToInteGraal.convert(corese_negative_integer);
+        Term graal_negative_integer = converter_ci.convert(corese_negative_integer);
 
         // Checks
         assertEquals(graal_negative_integer.isLiteral(), true);
@@ -474,7 +479,7 @@ public class TestCoreseDatatypeToInteGraal {
                 .createLiteral(string_value, RDF.xsdnonNegativeInteger);
 
         // Convert Corese non negative integer to Graal non negative integer
-        Term graal_non_negative_integer = CoreseDatatypeToInteGraal.convert(corese_non_negative_integer);
+        Term graal_non_negative_integer = converter_ci.convert(corese_non_negative_integer);
 
         // Checks
         assertEquals(graal_non_negative_integer.isLiteral(), true);
@@ -493,7 +498,7 @@ public class TestCoreseDatatypeToInteGraal {
                 .createLiteral(string_value, RDF.xsdnonPositiveInteger);
 
         // Convert Corese non positive integer to Graal non positive integer
-        Term graal_non_positive_integer = CoreseDatatypeToInteGraal.convert(corese_non_positive_integer);
+        Term graal_non_positive_integer = converter_ci.convert(corese_non_positive_integer);
 
         // Checks
         assertEquals(graal_non_positive_integer.isLiteral(), true);
@@ -512,7 +517,7 @@ public class TestCoreseDatatypeToInteGraal {
                 RDF.xsdunsignedByte);
 
         // Convert Corese unsigned byte to Graal unsigned byte
-        Term graal_unsigned_byte = CoreseDatatypeToInteGraal.convert(corese_unsigned_byte);
+        Term graal_unsigned_byte = converter_ci.convert(corese_unsigned_byte);
 
         // Checks
         assertEquals(graal_unsigned_byte.isLiteral(), true);
@@ -530,7 +535,7 @@ public class TestCoreseDatatypeToInteGraal {
                 RDF.xsdunsignedInt);
 
         // Convert Corese unsigned int to Graal unsigned int
-        Term graal_unsigned_int = CoreseDatatypeToInteGraal.convert(corese_unsigned_int);
+        Term graal_unsigned_int = converter_ci.convert(corese_unsigned_int);
 
         // Checks
         assertEquals(graal_unsigned_int.isLiteral(), true);
@@ -548,7 +553,7 @@ public class TestCoreseDatatypeToInteGraal {
                 RDF.xsdunsignedLong);
 
         // Convert Corese unsigned long to Graal unsigned long
-        Term graal_unsigned_long = CoreseDatatypeToInteGraal.convert(corese_unsigned_long);
+        Term graal_unsigned_long = converter_ci.convert(corese_unsigned_long);
 
         // Checks
         assertEquals(graal_unsigned_long.isLiteral(), true);
@@ -566,7 +571,7 @@ public class TestCoreseDatatypeToInteGraal {
                 RDF.xsdunsignedShort);
 
         // Convert Corese unsigned short to Graal unsigned short
-        Term graal_unsigned_short = CoreseDatatypeToInteGraal.convert(corese_unsigned_short);
+        Term graal_unsigned_short = converter_ci.convert(corese_unsigned_short);
 
         // Checks
         assertEquals(graal_unsigned_short.isLiteral(), true);
@@ -584,7 +589,7 @@ public class TestCoreseDatatypeToInteGraal {
         IDatatype corese_undef = DatatypeMap.createUndef(string_value, undef_datatype);
 
         // Convert Corese undef to Graal undef
-        Term graal_undef = CoreseDatatypeToInteGraal.convert(corese_undef);
+        Term graal_undef = converter_ci.convert(corese_undef);
 
         // Checks
         assertEquals(graal_undef.isLiteral(), true);
@@ -600,7 +605,7 @@ public class TestCoreseDatatypeToInteGraal {
         IDatatype corese_undef = DatatypeMap.createResource(value);
 
         // Convert Corese undef to Graal undef
-        Predicate graal_undef = CoreseDatatypeToInteGraal.convertPredicate(corese_undef);
+        Predicate graal_undef = converter_ci.convertPredicate(corese_undef);
 
         // Checks
         assertEquals(corese_undef.stringValue(), graal_undef.getLabel());

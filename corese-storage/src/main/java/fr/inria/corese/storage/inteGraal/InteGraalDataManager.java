@@ -26,6 +26,8 @@ import fr.inria.corese.kgram.api.core.Node;
 public class InteGraalDataManager implements DataManager {
 
     private FactBase inteGraalFactBase;
+    private ConvertInteGraalCorese converter;
+    
 
     private final int CONTEXT_POS = 2;
 
@@ -34,11 +36,12 @@ public class InteGraalDataManager implements DataManager {
      ****************/
 
     public InteGraalDataManager() {
-        this.inteGraalFactBase = StorageBuilder.defaultStorage();
+        this(StorageBuilder.defaultStorage());
     }
-
+    
     public InteGraalDataManager(FactBase inteGraalFactBase) {
         this.inteGraalFactBase = inteGraalFactBase;
+        this.converter = new ConvertInteGraalCorese();
     }
 
     /*********
@@ -62,7 +65,7 @@ public class InteGraalDataManager implements DataManager {
 
         int size = 0;
         for (Node predicate : predicates) {
-            Predicate graal_predicate = ConvertInteGraalCorese.coreseNodeToInteGraalPredicate(predicate);
+            Predicate graal_predicate = this.converter.coreseNodeToInteGraalPredicate(predicate);
             Iterator<Atom> it = this.inteGraalFactBase.getAtomsByPredicate(graal_predicate);
             size += Iterators.size(it);
         }
@@ -88,30 +91,30 @@ public class InteGraalDataManager implements DataManager {
 
             if (contexts == null || contexts.isEmpty()) {
                 this.predicates(null).forEach(
-                        p -> predicates_integraal.add(ConvertInteGraalCorese.coreseNodeToInteGraalPredicate(p)));
-                contexts_integraal.add(ConvertInteGraalCorese.coreseContextToIntegraalTerm(null));
+                        p -> predicates_integraal.add(this.converter.coreseNodeToInteGraalPredicate(p)));
+                contexts_integraal.add(this.converter.coreseContextToIntegraalTerm(null));
             } else {
                 for (Node context : contexts) {
                     this.predicates(context).forEach(
-                            p -> predicates_integraal.add(ConvertInteGraalCorese.coreseNodeToInteGraalPredicate(p)));
-                    contexts_integraal.add(ConvertInteGraalCorese.coreseContextToIntegraalTerm(context));
+                            p -> predicates_integraal.add(this.converter.coreseNodeToInteGraalPredicate(p)));
+                    contexts_integraal.add(this.converter.coreseContextToIntegraalTerm(context));
                 }
             }
         } else {
-            predicates_integraal.add(ConvertInteGraalCorese.coreseNodeToInteGraalPredicate(predicate));
+            predicates_integraal.add(this.converter.coreseNodeToInteGraalPredicate(predicate));
 
             if (contexts == null || contexts.isEmpty()) {
-                contexts_integraal.add(ConvertInteGraalCorese.coreseContextToIntegraalTerm(null));
+                contexts_integraal.add(this.converter.coreseContextToIntegraalTerm(null));
             } else {
                 for (Node context : contexts) {
-                    contexts_integraal.add(ConvertInteGraalCorese.coreseContextToIntegraalTerm(context));
+                    contexts_integraal.add(this.converter.coreseContextToIntegraalTerm(context));
                 }
             }
         }
         HashSet<Atom> atoms_integraal = new HashSet<>();
 
-        Term subject_integraal = ConvertInteGraalCorese.coreseNodeToInteGraalTerm(subject);
-        Term object_integraal = ConvertInteGraalCorese.coreseNodeToInteGraalTerm(object);
+        Term subject_integraal = this.converter.coreseNodeToInteGraalTerm(subject);
+        Term object_integraal = this.converter.coreseNodeToInteGraalTerm(object);
 
         for (Predicate predicate_integraal : predicates_integraal) {
             for (Term context_integraal : contexts_integraal) {
@@ -120,7 +123,7 @@ public class InteGraalDataManager implements DataManager {
                 Iterator<Atom> matches = this.inteGraalFactBase.match(matcher);
 
                 if (contexts == null || contexts.size() != 1) {
-                    Term default_context = ConvertInteGraalCorese.integraal_default_context;
+                    Term default_context = this.converter.integraal_default_context;
                     while (matches.hasNext()) {
                         Atom a = matches.next();
                         atoms_integraal.add(new AtomImpl(a.getPredicate(), a.getTerm(0), a.getTerm(1),
@@ -133,7 +136,7 @@ public class InteGraalDataManager implements DataManager {
             }
         }
 
-        return () -> atoms_integraal.stream().map(a -> ConvertInteGraalCorese.atomToEdge(a)).iterator();
+        return () -> atoms_integraal.stream().map(a -> this.converter.atomToEdge(a)).iterator();
     }
 
     /*************
@@ -144,12 +147,12 @@ public class InteGraalDataManager implements DataManager {
     public Iterable<Node> predicates(Node corese_context) {
 
         // Convert Corese Context to InteGraal Term
-        Term integraal_context = ConvertInteGraalCorese.coreseContextToIntegraalTerm(corese_context);
+        Term integraal_context = this.converter.coreseContextToIntegraalTerm(corese_context);
 
         Function<Predicate, Node> convertIteratorInteGraalPredicateToCoreseNode = new Function<Predicate, Node>() {
             @Override
             public Node apply(Predicate predicate) {
-                return ConvertInteGraalCorese.inteGraalPredicateToCoreseNode(predicate);
+                return converter.inteGraalPredicateToCoreseNode(predicate);
             }
         };
 
@@ -203,7 +206,7 @@ public class InteGraalDataManager implements DataManager {
         Function<Term, Node> convertIteratorInteGraalContextToCoreseNode = new Function<Term, Node>() {
             @Override
             public Node apply(Term term) {
-                return ConvertInteGraalCorese.inteGraalContextToCoreseContext(term);
+                return converter.inteGraalContextToCoreseContext(term);
             }
         };
 
@@ -241,7 +244,7 @@ public class InteGraalDataManager implements DataManager {
         }
 
         boolean changed = this.inteGraalFactBase
-                .addAll(added.stream().map(ConvertInteGraalCorese::edgeToAtom).collect(Collectors.toSet()));
+                .addAll(added.stream().map(this.converter::edgeToAtom).collect(Collectors.toSet()));
         return changed ? added : List.of();
     }
 

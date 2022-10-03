@@ -5,25 +5,52 @@ import fr.boreal.model.logicalElements.api.Term;
 import fr.boreal.model.logicalElements.api.Variable;
 import fr.boreal.model.logicalElements.factory.api.PredicateFactory;
 import fr.boreal.model.logicalElements.factory.api.TermFactory;
-import fr.boreal.model.logicalElements.factory.impl.SameObjectPredicateFactory;
-import fr.boreal.model.logicalElements.factory.impl.SameObjectTermFactory;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.RDF;
 
 public class CoreseDatatypeToInteGraal {
 
-    private static TermFactory termFactory = SameObjectTermFactory.instance();
-    private static PredicateFactory predicateFactory = SameObjectPredicateFactory.instance();
+    private TermFactory tf;
+    private PredicateFactory pf;
 
-    public static Predicate convertPredicate(IDatatype corese_dataType) {
-        return predicateFactory.createOrGetPredicate(corese_dataType.stringValue(), 3);
+    /**
+     * Construct a CoreseDatatypeToInteGraal
+     * 
+     * @param tf the term factory.
+     * @param pf the predicate factory.
+     */
+    public CoreseDatatypeToInteGraal(TermFactory tf, PredicateFactory pf) {
+        this.tf = tf;
+        this.pf = pf;
     }
 
-    public static Variable convertVariable() {
-        return termFactory.createOrGetFreshVariable();
+    /**
+     * Convert a Corese Datatype to equivalent InteGraal Predicate.
+     * 
+     * @param corese_dataType the Corese datatype to convert.
+     * @return InteGraal Predicate equivalent.
+     */
+    public Predicate convertPredicate(IDatatype corese_dataType) {
+        return pf.createOrGetPredicate(corese_dataType.stringValue(), 3);
     }
 
-    public static Term convert(IDatatype corese_dataType) {
+    /**
+     * Convert a Corese Datatype to equivalent InteGraal Variable.
+     * 
+     * @param corese_dataType the Corese datatype to convert.
+     * @return InteGraal Variable equivalent.
+     */
+    public Variable convertVariable() {
+        return tf.createOrGetFreshVariable();
+    }
+
+    /**
+     * Convert a Corese Datatype to equivalent InteGraal Term.
+     * 
+     * @param corese_dataType the Corese datatype to convert.
+     * @return InteGraal Term equivalent.
+     */
+    public Term convert(IDatatype corese_dataType) {
 
         String string_iri = corese_dataType.getLabel();
 
@@ -121,30 +148,29 @@ public class CoreseDatatypeToInteGraal {
         }
     }
 
-    private static Term convertIri(IDatatype corese_uri) {
+    private Term convertIri(IDatatype corese_uri) {
         String string_iri = corese_uri.getLabel();
-        return termFactory.createOrGetConstant(string_iri);
+        return tf.createOrGetConstant(string_iri);
     }
 
-    private static Term convertIriBn(IDatatype corese_uri) {
+    private Term convertIriBn(IDatatype corese_uri) {
         String string_iri = corese_uri.getLabel();
-        return termFactory.createOrGetLiteral(string_iri + "^^" + "blankNode");
+        return tf.createOrGetLiteral(string_iri + "^^" + "blankNode");
     }
 
-    private static Term convertLiteral(String label, String datatype) {
-        return termFactory.createOrGetLiteral(label + "^^" + datatype);
+    private Term convertLiteral(String label, String datatype) {
+        return tf.createOrGetLiteral(label + "^^" + datatype);
     }
 
-    private static Term convertLangString(IDatatype corese_lang_string, String datatype) {
+    private Term convertLangString(IDatatype corese_lang_string, String datatype) {
         String value = corese_lang_string.getLabel();
 
         if (corese_lang_string.hasLang()) {
             String lang = corese_lang_string.getLang();
-            return termFactory.createOrGetLiteral(value + "^^" + datatype + "@" + lang);
+            return tf.createOrGetLiteral(value + "^^" + datatype + "@" + lang);
         } else {
             return convertLiteral(value, RDF.xsdstring);
         }
     }
-    
-    
+
 }

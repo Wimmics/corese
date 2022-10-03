@@ -83,15 +83,19 @@ public class InteGraalDataManagerTest {
         private Edge statement_bonus_corese;
         private Edge statement_bonus_loop_corese;
 
+        // Converter
+        private ConvertInteGraalCorese converter;
+
         @Before
         public void init() {
-
+                
                 String ex = "http://example.org/";
                 String rdf = "http://www.w3.org/1999/02/22-rdf-syntax-ns#";
-
+                
                 // Factories
                 TermFactory termFactory = SameObjectTermFactory.instance();
                 PredicateFactory predicateFactory = SameObjectPredicateFactory.instance();
+                this.converter = new ConvertInteGraalCorese(termFactory, predicateFactory);
 
                 // Terms
                 this.edithPiaf_graal = termFactory.createOrGetConstant(ex + "EdithPiaf");
@@ -125,31 +129,30 @@ public class InteGraalDataManagerTest {
                 fb_memory.addAll(List.of(statement_0_graal, statement_1_graal, statement_2_graal, statement_3_graal));
 
                 // Subjects Corese
-                this.edith_piaf_corese = ConvertInteGraalCorese.inteGraalTermToCoreseNode(edithPiaf_graal);
-                this.george_brassens_corese = ConvertInteGraalCorese.inteGraalTermToCoreseNode(george_brassens_graal);
+                this.edith_piaf_corese = this.converter.inteGraalTermToCoreseNode(edithPiaf_graal);
+                this.george_brassens_corese = this.converter.inteGraalTermToCoreseNode(george_brassens_graal);
 
                 // Predicates Corese
-                this.isa_corese = ConvertInteGraalCorese.inteGraalPredicateToCoreseNode(isa_graal);
-                this.first_name_corese = ConvertInteGraalCorese.inteGraalPredicateToCoreseNode(first_name_graal);
+                this.isa_corese = this.converter.inteGraalPredicateToCoreseNode(isa_graal);
+                this.first_name_corese = this.converter.inteGraalPredicateToCoreseNode(first_name_graal);
 
                 // Objects Corese
-                this.singer_corese = ConvertInteGraalCorese.inteGraalTermToCoreseNode(singer_graal);
-                this.edith_literral_corese = ConvertInteGraalCorese.inteGraalTermToCoreseNode(edith_literral_graal);
+                this.singer_corese = this.converter.inteGraalTermToCoreseNode(singer_graal);
+                this.edith_literral_corese = this.converter.inteGraalTermToCoreseNode(edith_literral_graal);
 
                 // Contexts Corese
-                this.default_context_corese = ConvertInteGraalCorese
-                                .inteGraalContextToCoreseContext(default_context_graal);
-                this.context1_corese = ConvertInteGraalCorese.inteGraalContextToCoreseContext(context1_graal);
-                this.context2_corese = ConvertInteGraalCorese.inteGraalContextToCoreseContext(context2_graal);
-                this.context3_corese = ConvertInteGraalCorese.inteGraalContextToCoreseContext(context3_graal);
+                this.default_context_corese = this.converter.inteGraalContextToCoreseContext(default_context_graal);
+                this.context1_corese = this.converter.inteGraalContextToCoreseContext(context1_graal);
+                this.context2_corese = this.converter.inteGraalContextToCoreseContext(context2_graal);
+                this.context3_corese = this.converter.inteGraalContextToCoreseContext(context3_graal);
 
                 // Statements Corese
-                this.statement_0_corese = ConvertInteGraalCorese.atomToEdge(statement_0_graal);
-                this.statement_1_corese = ConvertInteGraalCorese.atomToEdge(statement_1_graal);
-                this.statement_2_corese = ConvertInteGraalCorese.atomToEdge(statement_2_graal);
-                this.statement_3_corese = ConvertInteGraalCorese.atomToEdge(statement_3_graal);
-                this.statement_bonus_corese = ConvertInteGraalCorese.atomToEdge(statement_bonus_graal);
-                this.statement_bonus_loop_corese = ConvertInteGraalCorese.atomToEdge(statement_bonus_loop_graal);
+                this.statement_0_corese = this.converter.atomToEdge(statement_0_graal);
+                this.statement_1_corese = this.converter.atomToEdge(statement_1_graal);
+                this.statement_2_corese = this.converter.atomToEdge(statement_2_graal);
+                this.statement_3_corese = this.converter.atomToEdge(statement_3_graal);
+                this.statement_bonus_corese = this.converter.atomToEdge(statement_bonus_graal);
+                this.statement_bonus_loop_corese = this.converter.atomToEdge(statement_bonus_loop_graal);
         }
 
         private boolean containsCompareTriple(Edge edge, List<Edge> results) {

@@ -750,14 +750,21 @@ public class QueryProcess extends QuerySolver {
      *
      ***************************************************************************
      */
-   
     Mappings basicQuery(Node gNode, Query q, Mapping m, Dataset ds) throws EngineException {
+        String path = q.getAST().getDataset().getStoragePath();
+        if (path!=null && StorageFactory.getDataManager(path)!=null) {
+           return basicQueryStorage(gNode, q, m, ds);
+        }
+        return basicQueryProcess(gNode, q, m, ds);
+    }
+    
+    Mappings basicQueryProcess(Node gNode, Query q, Mapping m, Dataset ds) throws EngineException {
         ASTQuery ast = getAST(q);
         if (ast.isLDScript()) {
             if (Access.reject(Feature.LDSCRIPT, getLevel(m, ds))) {
                 throw new EngineException("LDScript unauthorized");
             }
-        }
+        }        
         m = completeMappings(q, m, ds);
         pragma(q);
         for (QueryVisitor vis : getAST(q).getVisitorList()) {
@@ -808,6 +815,14 @@ public class QueryProcess extends QuerySolver {
 
         finish(q, map);
         return map;
+    }
+  
+    // select * from <store:/my/path> where {}
+    // @todo: copy this QueryProcess
+    Mappings basicQueryStorage(Node gNode, Query q, Mapping m, Dataset ds) throws EngineException {
+        return QueryProcess.create(getGraph(), 
+                StorageFactory.getDataManager(q.getAST().getDataset().getStoragePath()))
+                .basicQueryProcess(gNode, q, m, ds);
     }
 
     AccessRight getAccessRight(Mapping m) {

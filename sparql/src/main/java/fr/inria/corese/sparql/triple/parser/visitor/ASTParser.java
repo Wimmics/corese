@@ -130,6 +130,7 @@ public class ASTParser implements Walker, URLParam {
     
     void init(ASTQuery ast) {
         index(ast);
+        storage(ast);
     }
     
     // select *
@@ -144,7 +145,10 @@ public class ASTParser implements Walker, URLParam {
         }
     }
 
-    
+    // select * from <store:/my/path> where {}
+    void storage(ASTQuery ast) {
+        ast.getDataset().storage();
+    }
 
     /**
      * When @report : declare variable ?_service_report_n

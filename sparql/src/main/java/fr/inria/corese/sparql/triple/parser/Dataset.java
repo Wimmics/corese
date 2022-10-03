@@ -13,6 +13,7 @@ import fr.inria.corese.kgram.api.query.ProcessVisitor;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import static fr.inria.corese.sparql.triple.parser.URLParam.INDEX;
+import static fr.inria.corese.sparql.triple.parser.URLServer.STORE;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 
@@ -39,6 +40,8 @@ public class Dataset extends ASTObject {
     private ProcessVisitor visitor;
     private String base;
     private List<String> uriList;
+    // select * from <store:/my/path> where {}
+    private String storagePath;
 
     // true when used by update (delete in default graph specified by from)
     // W3C test case is true
@@ -458,6 +461,21 @@ public class Dataset extends ASTObject {
         return hasIndex;
     }
     
+    // select * from <store:/my/path>
+    public void storage() {        
+        for (int i = 0; i < getFrom().size();) {
+            Atom at = getFrom().get(i);
+            if (at.getLabel().startsWith(STORE)) {
+                String uri = at.getLabel().substring(STORE.length());
+                setStoragePath(uri);
+                getFrom().remove(i);
+                return;
+            }
+            else {
+                i++;
+            }
+        }
+    }
     
 
     public List<String> getIndex() {
@@ -466,6 +484,14 @@ public class Dataset extends ASTObject {
 
     public void setIndex(List<String> index) {
         this.index = index;
+    }
+
+    public String getStoragePath() {
+        return storagePath;
+    }
+
+    public void setStoragePath(String storagePath) {
+        this.storagePath = storagePath;
     }
 
 }

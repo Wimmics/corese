@@ -66,7 +66,7 @@ public class DataManagerGraph implements DataManager {
     
     @Override
     public String getStoragePath() {
-        return null;
+        return getPath();
     }
 
        

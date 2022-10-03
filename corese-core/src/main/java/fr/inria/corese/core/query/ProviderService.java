@@ -940,7 +940,7 @@ public class ProviderService implements URLParam {
     synchronized Mappings local(ASTQuery ast, URLServer url, Binding b) throws EngineException {
         logger.info("Local service: " + url);
         logger.info(ast.toString());
-        return getDefault().query(ast, b);
+        return index(getDefault().query(ast, b));
     }
     
     // switch to graph dataset (in case where mode=db)
@@ -948,7 +948,7 @@ public class ProviderService implements URLParam {
         logger.info("Dataset service: " + url);
         logger.info(ast.toString());
         QueryProcess exec = QueryProcess.create(getDefault().getGraph());
-        return exec.query(ast, b);
+        return index(exec.query(ast, b));
     }
     
     // pseudo service store:path to query db
@@ -960,7 +960,14 @@ public class ProviderService implements URLParam {
         }
         QueryProcess exec = QueryProcess.create(man);
         logger.info(String.format("storage: %s\n%s", url, ast));
-        return exec.query(ast, b);
+        return index(exec.query(ast, b));
+    }
+    
+    // clean service query node index because it may differ
+    // from outer query node index
+    Mappings index(Mappings map) {
+        map.cleanIndex();
+        return map;
     }
 
     /**

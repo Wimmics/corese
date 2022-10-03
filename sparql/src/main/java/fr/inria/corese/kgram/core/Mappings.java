@@ -281,6 +281,14 @@ public class Mappings extends PointerObject
     public void clear() {
         getMappingList().clear();
     }
+    
+    public void cleanIndex() {
+        for (Node node : getQueryNodeList()) {
+            if (node != null) {
+                node.setIndex(-1);
+            }
+        }
+    }
 
     @Override
     public Query getQuery() {

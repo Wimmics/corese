@@ -65,7 +65,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     public Node getEdgeNode() {
         return null;
     }
-    
+
     @Override
     public Node getProperty() {
         return getEdgeNode();
@@ -78,7 +78,6 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     public void setProperty(Node pred) {
         setEdgeNode(pred);
     }
-
 
     public void setTag(Node node) {
     }
@@ -108,7 +107,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     }
 
     ArrayList<IDatatype> getNodeList() {
-        ArrayList<IDatatype> list = new ArrayList();
+        ArrayList<IDatatype> list = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             list.add(getValue(null, i));
         }
@@ -143,32 +142,32 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     public Edge getEdge() {
         return this;
     }
-    
+
     @Override
     public Node getNode() {
         return DatatypeMap.createObject(this.toString(), this);
-    } 
-    
+    }
+
     @Override
     public boolean contains(Node node) {
         return getNode(0).same(node) || getNode(1).same(node);
     }
-    
+
     @Override
     public int nbGraphNode() {
         return 2;
     }
-    
+
     @Override
     public int nbNode() {
         return 2;
     }
-    
+
     @Override
     public String getEdgeLabel() {
         return getEdgeNode().getLabel();
     }
-     
+
     @Override
     public Node getEdgeVariable() {
         return null;
@@ -189,19 +188,28 @@ public abstract class EdgeTop extends GraphObject implements Edge {
         if (this == o) {
             return true;
         }
-        if (o instanceof Statement) {
-            return equals((Statement)o);
+        if (o instanceof Edge) {
+            return equals((Edge) o);
+        } else if (o instanceof Statement) {
+            return equals((Statement) o);
         }
         return false;
     }
-    
+
+    public boolean equals(Edge t) {
+        return getObjectNode().equals(t.getObjectNode())
+                && getSubjectNode().equals(t.getSubjectNode())
+                && getPropertyNode().equals(t.getPropertyNode())
+                && Objects.equals(this.getGraphNode(), t.getGraphNode());
+    }
+
     public boolean equals(Statement t) {
         return getObject().equals(t.getObject())
                 && getSubject().equals(t.getSubject())
                 && getPredicate().equals(t.getPredicate())
                 && Objects.equals(this.getContext(), t.getContext());
     }
-    
+
     @Override
     public String toString() {
         if (DISPLAY_EDGE_AS_RDF4J) {
@@ -209,11 +217,11 @@ public abstract class EdgeTop extends GraphObject implements Edge {
         }
         return toRDFString();
     }
-    
+
     public String toRDFString() {
-        return String.format("%s %s %s %s", getGraphValue(), getSubjectValue(), getPredicateValue(), getObjectValue());                
+        return String.format("%s %s %s %s", getGraphValue(), getSubjectValue(), getPredicateValue(), getObjectValue());
     }
-    
+
     public String toRDF4JString() {
         StringBuilder sb = new StringBuilder(256);
 

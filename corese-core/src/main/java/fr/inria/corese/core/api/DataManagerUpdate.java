@@ -134,7 +134,7 @@ public interface DataManagerUpdate {
      *         true, else false.
      */
     default boolean add(Node source_context, Node target_context, boolean silent) {
-        return true;
+        return false;
     }
 
     /**

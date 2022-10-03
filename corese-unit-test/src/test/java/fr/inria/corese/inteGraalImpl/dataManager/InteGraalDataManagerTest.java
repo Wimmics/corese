@@ -137,7 +137,8 @@ public class InteGraalDataManagerTest {
                 this.edith_literral_corese = ConvertInteGraalCorese.inteGraalTermToCoreseNode(edith_literral_graal);
 
                 // Contexts Corese
-                this.default_context_corese = ConvertInteGraalCorese.inteGraalContextToCoreseContext(default_context_graal);
+                this.default_context_corese = ConvertInteGraalCorese
+                                .inteGraalContextToCoreseContext(default_context_graal);
                 this.context1_corese = ConvertInteGraalCorese.inteGraalContextToCoreseContext(context1_graal);
                 this.context2_corese = ConvertInteGraalCorese.inteGraalContextToCoreseContext(context2_graal);
                 this.context3_corese = ConvertInteGraalCorese.inteGraalContextToCoreseContext(context3_graal);
@@ -214,7 +215,7 @@ public class InteGraalDataManagerTest {
                 Iterable<Edge> iterable = data_manager.getEdges(null, null, null, contexts);
                 List<Edge> result = new ArrayList<>();
                 iterable.forEach(result::add);
-                                assertEquals(1, result.size());
+                assertEquals(1, result.size());
                 assertEquals(true, containsCompareTriple(this.statement_0_corese, result));
         }
 
@@ -231,7 +232,7 @@ public class InteGraalDataManagerTest {
                 Iterable<Edge> iterable = data_manager.getEdges(null, null, null, contexts);
                 List<Edge> result = new ArrayList<>();
                 iterable.forEach(result::add);
-                
+
                 assertEquals(2, result.size());
                 assertEquals(true, containsCompareTriple(this.statement_0_corese, result));
                 assertEquals(true, containsCompareTriple(this.statement_1_corese, result));
@@ -249,7 +250,7 @@ public class InteGraalDataManagerTest {
                 Iterable<Edge> iterable = data_manager.getEdges(null, null, null, contexts);
                 List<Edge> result = new ArrayList<>();
                 iterable.forEach(result::add);
-                
+
                 assertEquals(1, result.size());
                 assertEquals(true, containsCompareTriple(this.statement_1_corese, result));
         }
@@ -265,7 +266,7 @@ public class InteGraalDataManagerTest {
                 Iterable<Edge> iterable = data_manager.getEdges(null, null, null, contexts);
                 List<Edge> result = new ArrayList<>();
                 iterable.forEach(result::add);
-                
+
                 assertEquals(1, result.size());
                 assertEquals(result.get(0).getGraph(), this.context1_corese);
 
@@ -277,7 +278,7 @@ public class InteGraalDataManagerTest {
                 iterable = data_manager.getEdges(null, null, null, contexts);
                 result = new ArrayList<>();
                 iterable.forEach(result::add);
-                
+
                 assertEquals(1, result.size());
                 assertEquals(this.context1_corese, result.get(0).getGraph());
         }
@@ -317,7 +318,7 @@ public class InteGraalDataManagerTest {
         public void getNodes() {
                 Iterable<Node> iterable;
                 List<Node> result;
-                
+
                 this.fb_memory.addAll(List.of(this.statement_bonus_graal));
                 InteGraalDataManager data_manager = new InteGraalDataManager(this.fb_memory);
 
@@ -330,7 +331,7 @@ public class InteGraalDataManagerTest {
                 assertEquals(true, result.contains(this.george_brassens_corese));
                 assertEquals(true, result.contains(this.singer_corese));
                 assertEquals(true, result.contains(this.edith_literral_corese));
-                
+
                 // Context 1
                 iterable = data_manager.getNodes(this.context1_corese);
                 result = new ArrayList<>();
@@ -363,7 +364,7 @@ public class InteGraalDataManagerTest {
         @Test
         public void contexts() {
                 InteGraalDataManager data_manager = new InteGraalDataManager(this.fb_memory);
-                
+
                 Iterable<Node> iterable = data_manager.contexts();
 
                 List<Node> result = new ArrayList<>();
@@ -374,5 +375,87 @@ public class InteGraalDataManagerTest {
                 assertEquals(true, result.contains(this.context2_corese));
                 assertEquals(true, result.contains(this.context3_corese));
                 assertEquals(true, result.contains(this.default_context_corese));
+        }
+
+        @Test
+        public void insertSPO() {
+                InteGraalDataManager data_manager = new InteGraalDataManager();
+
+                ArrayList<Node> contexts = new ArrayList<>();
+                contexts.add(this.context1_corese);
+                contexts.add(this.context2_corese);
+
+                data_manager.insert(this.edith_piaf_corese, this.first_name_corese,
+                                this.edith_literral_corese, contexts);
+
+                assertEquals(2, data_manager.graphSize());
+                assertEquals(false, data_manager.contains(this.statement_0_corese));
+                assertEquals(true, data_manager.contains(this.statement_1_corese));
+                assertEquals(true, data_manager.contains(this.statement_2_corese));
+                assertEquals(false, data_manager.contains(this.statement_3_corese));
+        }
+
+        @Test
+        public void insertSPODefault() {
+                InteGraalDataManager data_manager = new InteGraalDataManager();
+
+                ArrayList<Node> contexts = new ArrayList<>();
+                contexts.add(this.default_context_corese);
+
+                Iterable<Edge> results = data_manager.insert(
+                                this.edith_piaf_corese,
+                                this.isa_corese,
+                                this.singer_corese,
+                                contexts);
+
+                assertEquals(1, data_manager.graphSize());
+                assertEquals(results.iterator().next().getGraph(), this.default_context_corese);
+                assertEquals(true, data_manager.contains(this.edith_piaf_corese, this.isa_corese, this.singer_corese,
+                                List.of(this.default_context_corese)));
+                assertEquals(false, data_manager.contains(this.edith_piaf_corese, this.isa_corese, this.singer_corese,
+                                List.of(this.context1_corese)));
+                assertEquals(false, data_manager.contains(this.edith_piaf_corese, this.isa_corese, this.singer_corese,
+                                List.of(this.context2_corese)));
+                assertEquals(false, data_manager.contains(this.edith_piaf_corese, this.isa_corese, this.singer_corese,
+                                List.of(this.context3_corese)));
+        }
+
+        @Test(expected = UnsupportedOperationException.class)
+        public void insertSPOError1() {
+                InteGraalDataManager data_manager = new InteGraalDataManager();
+
+                ArrayList<Node> contexts = new ArrayList<>();
+                contexts.add(this.context1_corese);
+                contexts.add(this.context2_corese);
+
+                data_manager.insert(null, this.isa_corese, this.singer_corese, contexts);
+        }
+
+        @Test(expected = UnsupportedOperationException.class)
+        public void insertSPOError2() {
+                InteGraalDataManager data_manager = new InteGraalDataManager();
+                ArrayList<Node> contexts = new ArrayList<>();
+                contexts.add(this.context1_corese);
+                contexts.add(this.context2_corese);
+                contexts.add(null);
+
+                data_manager.insert(this.edith_piaf_corese, this.isa_corese, this.singer_corese,
+                                contexts);
+        }
+
+        @Test
+        public void insertEdgeEdge() {
+                InteGraalDataManager data_manager = new InteGraalDataManager(this.fb_memory);
+
+                // Insert new statement
+                assertEquals(false, data_manager.contains(this.statement_bonus_corese));
+
+                Edge iterable = data_manager.insert(this.statement_bonus_corese);
+                assertEquals(iterable, this.statement_bonus_corese);
+                assertEquals(true, data_manager.contains(this.statement_bonus_corese));
+
+                // Try insert statement already in graph
+                iterable = data_manager.insert(this.statement_bonus_corese);
+                assertEquals(null, iterable);
         }
 }

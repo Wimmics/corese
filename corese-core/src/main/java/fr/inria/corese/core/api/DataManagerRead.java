@@ -116,4 +116,36 @@ public interface DataManagerRead {
     default Iterable<Node> contexts() {
         return new ArrayList<>(0);
     }
+
+    /**
+     * Test if an edge is in graph.
+     * 
+     * @param subject   The subject of the edges to match, {@code null} to match
+     *                  edges with any subject.
+     * @param predicate The predicate of the edges to match, {@code null} to match
+     *                  edges with any predicate.
+     * @param object    The object of the edges to match, {@code null} to match
+     *                  edges with any object.
+     * @param contexts  The contexts of the edges to match, {@code null} or empty
+     *                  list to match
+     *                  edges with any contexts. If one or more contexts are
+     *                  specified, edges with a context matching any one of these
+     *                  will match.
+     * @return An {@link Iterable} over
+     * @return True iff one edge is in the graph.
+     */
+    default boolean contains(Node subject, Node predicate, Node object, List<Node> contexts) {
+        return this.getEdges(subject, predicate, object, contexts).iterator().hasNext();
+    }
+
+    /**
+     * Test if an edge is in graph.
+     * 
+     * @param edge edge to test.
+     * @return True iff edge is in the graph.
+     */
+    default boolean contains(Edge edge) {
+        return this.contains(edge.getSubjectNode(), edge.getPropertyNode(), edge.getObjectNode(),
+                List.of(edge.getGraph()));
+    }
 }

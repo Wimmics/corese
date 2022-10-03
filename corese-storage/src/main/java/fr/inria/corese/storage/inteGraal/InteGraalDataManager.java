@@ -1,5 +1,6 @@
 package fr.inria.corese.storage.inteGraal;
 
+import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.Iterator;
 import java.util.List;
@@ -18,6 +19,7 @@ import fr.boreal.storage.builder.StorageBuilder;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.Graph.TreeNode;
 import fr.inria.corese.core.api.DataManager;
+import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 
@@ -97,6 +99,14 @@ public class InteGraalDataManager implements DataManager {
             }
         } else {
             predicates_integraal.add(ConvertInteGraalCorese.coreseNodeToInteGraalPredicate(predicate));
+
+            if (contexts == null || contexts.isEmpty()) {
+                contexts_integraal.add(ConvertInteGraalCorese.coreseContextToIntegraalTerm(null));
+            } else {
+                for (Node context : contexts) {
+                    contexts_integraal.add(ConvertInteGraalCorese.coreseContextToIntegraalTerm(context));
+                }
+            }
         }
         HashSet<Atom> atoms_integraal = new HashSet<>();
 
@@ -180,7 +190,6 @@ public class InteGraalDataManager implements DataManager {
 
         while (edges.hasNext()) {
             Edge edge = edges.next();
-            System.out.println(edge);
             nodes.put(edge.getSubjectNode());
             nodes.put(edge.getObjectNode());
         }
@@ -210,6 +219,58 @@ public class InteGraalDataManager implements DataManager {
         }
 
         return () -> Iterators.transform(result.iterator(), convertIteratorInteGraalContextToCoreseNode);
+    }
+
+    /**********
+     * Insert *
+     **********/
+
+    @Override
+    public Iterable<Edge> insert(Node subject, Node predicate, Node object, List<Node> contexts) {
+        ArrayList<Edge> added = new ArrayList<>();
+
+        if (subject == null || predicate == null || object == null || contexts == null) {
+            throw new UnsupportedOperationException("Incomplete statement");
+        }
+
+        for (Node context : contexts) {
+            if (context == null) {
+                throw new UnsupportedOperationException("Context can't be null");
+            }
+            added.add(EdgeImpl.create(context, subject, predicate, object));
+        }
+
+        boolean changed = this.inteGraalFactBase
+                .addAll(added.stream().map(ConvertInteGraalCorese::edgeToAtom).collect(Collectors.toSet()));
+        return changed ? added : List.of();
+    }
+
+    /*******************
+     * Graph operation *
+     *******************/
+
+    @Override
+    public boolean add(Node source, Node target, boolean silent) {
+        long nb_graph_before;
+        long nb_graph_after;
+
+        nb_graph_before = this.graphSize();
+
+        // Add Graph
+        Iterable<Edge> edges = this.getEdges(null, null, null, List.of(source));
+
+        for (Edge edge : edges) {
+            this.insert(edge);
+        }
+
+        nb_graph_after = this.graphSize();
+
+        return nb_graph_before != nb_graph_after;
+    }
+
+    @Override
+    public String toString() {
+        return this.inteGraalFactBase.toString();
     }
 
 }

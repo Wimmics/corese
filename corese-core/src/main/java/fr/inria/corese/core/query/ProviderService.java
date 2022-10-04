@@ -27,6 +27,7 @@ import static fr.inria.corese.core.util.Property.Value.SERVICE_PARAMETER;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SLICE;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_TIMEOUT;
 import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -305,12 +306,26 @@ public class ProviderService implements URLParam {
         }
 
         Mappings res = getResult(mapList);
-
+        //trace(res);
         if (serverList.size() > 1) {
             eval.getVisitor().service(eval, DatatypeMap.toList(serverList), getServiceExp(), res);
         }
         g.getEventManager().finish(Event.Service, "result: " + ((res != null) ? res.size() : 0));
         return res;
+    }
+    
+    void trace(Mappings map) {
+        if (map.getSelect() != null) {
+            for (Node node : map.getSelect()) {
+                System.out.println("service select: " + node + " " + node.getIndex());
+            }
+        }
+        for (Mapping m : map) {
+            for (Node node : m.getQueryNodeList()) {
+                    System.out.println("service ql: " + node + " " + node.getIndex());
+            }
+        }
+        System.out.println(map);
     }
 
     /**
@@ -963,11 +978,11 @@ public class ProviderService implements URLParam {
         return index(exec.query(ast, b));
     }
     
-    // clean service query node index because it may differ
-    // from outer query node index
+    // clean service results query node 
+    // keep only select variables to prevent having bnodes
     Mappings index(Mappings map) {
-        map.cleanIndex();
-        return map;
+       map.project();
+       return map;
     }
 
     /**

@@ -48,7 +48,9 @@ public class DatasetManager {
 
     public enum TypeDataBase {
         RDF4J,
-        JENATDVB1,
+        JENATDB1,
+        INTEGRAAL_MEMORY,
+        INTEGRAAL_SQL,
     }
 
     // Create one DataManager in StorageFactory for each db path
@@ -61,7 +63,7 @@ public class DatasetManager {
             TypeDataBase typeDB;
             switch (type) {
                 case "jenatdb1":
-                    typeDB = TypeDataBase.JENATDVB1;
+                    typeDB = TypeDataBase.JENATDB1;
                     break;
                 case "rdf4jmodel":
                     typeDB = TypeDataBase.RDF4J;

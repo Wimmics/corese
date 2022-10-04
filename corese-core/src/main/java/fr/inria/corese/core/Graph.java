@@ -2856,6 +2856,17 @@ public class Graph extends GraphObject implements
      * May infer datatype from property range
      */
     public Node addLiteral(String pred, String label, String datatype, String lang) {
+        IDatatype dt = createLiteral(pred, label, datatype, lang);
+        if (dt == null) {
+            return null;
+        }
+        return addNode(dt);
+    }
+    
+    /**
+     * May infer datatype from property range
+     */
+    public IDatatype createLiteral(String pred, String label, String datatype, String lang) {
         String range = null;
         if (lang == null
                 && getEntailment() != null && getEntailment().isDatatypeInference()) {
@@ -2871,11 +2882,7 @@ public class Graph extends GraphObject implements
             }
         }
 
-        IDatatype dt = DatatypeMap.createLiteral(label, datatype, lang);
-        if (dt == null) {
-            return null;
-        }
-        return addNode(dt);
+        return  DatatypeMap.createLiteral(label, datatype, lang);
     }
 
     public String newBlankID() {

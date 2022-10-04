@@ -920,9 +920,8 @@ public class Load
     void loadJsonld(Reader stream, String path, String base, String name) throws LoadException {
         //logger.info("Load JSON LD: " + path);
 
-        CoreseJsonTripleCallback callback = new CoreseJsonTripleCallback(getGraph(), name);
+        CoreseJsonTripleCallback callback = new CoreseJsonTripleCallback(getGraph(), getDataManager(), name);
         callback.setHelper(renameBlankNode, getLimit());
-        callback.initDataManager(getDataManager());
         JsonldLoader loader = JsonldLoader.create(stream, base);
         try {
             loader.load(callback);

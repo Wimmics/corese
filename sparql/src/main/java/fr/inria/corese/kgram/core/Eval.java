@@ -1466,7 +1466,7 @@ public class Eval implements ExpType, Plugin {
                 // push each Mapping in memory and continue
                 complete(getQuery(), m, false);
                 
-                if (env.push(m, n, false)) {
+                if (env.push(m, n, false, false)) {
                     backtrack = eval(p, graphNode, stack, n + 1);
                     env.pop(m, false);
                     if (backtrack < n) {

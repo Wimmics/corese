@@ -857,19 +857,25 @@ public class Memory extends PointerObject implements Environment {
     }
 
     boolean push(Mapping res, int n, boolean isEdge) {
+        return push(res, n, isEdge, true);
+    }
+    
+    boolean push(Mapping res, int n, boolean isEdge, boolean isBlank) {
         int k = 0;
         for (Node qNode : res.getQueryNodes()) {
             if (qNode != null && qNode.getIndex() >= 0) {
                 // use case: skip select fun() as var
                 // when var has no index
-                Node node = res.getNode(k);
-                if (push(qNode, node, n)) {
-                } 
-                else {
-                    for (int i = 0; i < k; i++) {
-                        pop(res.getQueryNode(i));
+                if (!qNode.isBlank() || isBlank) {
+                    // do not push service bnode
+                    Node node = res.getNode(k);
+                    if (push(qNode, node, n)) {
+                    } else {
+                        for (int i = 0; i < k; i++) {
+                            pop(res.getQueryNode(i));
+                        }
+                        return false;
                     }
-                    return false;
                 }
             }
             k++;

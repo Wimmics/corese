@@ -283,7 +283,7 @@ public class Mappings extends PointerObject
     }
     
     public void cleanIndex() {
-        for (Node node : getQueryNodeList()) {
+        for (Node node : getSelect()) {
             if (node != null) {
                 node.setIndex(-1);
             }

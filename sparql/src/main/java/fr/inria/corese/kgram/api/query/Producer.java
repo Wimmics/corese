@@ -247,4 +247,7 @@ public interface Producer {
     Edge copy(Edge ent);
 
     void close();
+    
+    // generate fresh new blank node ID
+    String blankNode();
 }

@@ -1046,7 +1046,7 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
         return new CoreseBlankNode(blankID());
     }
     
-    static String blankID() {
+    public static String blankID() {
         return BLANK + COUNT++;
     }
     

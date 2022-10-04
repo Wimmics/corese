@@ -261,4 +261,9 @@ public class MetaProducer implements Producer, Iterable<Producer> {
         return producer.getDatatypeValueFactory();
     }
 
+    @Override
+    public String blankNode() {
+        return getProducer().blankNode();
+    }
+
 }

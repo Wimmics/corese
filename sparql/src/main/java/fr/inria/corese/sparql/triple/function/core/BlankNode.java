@@ -49,7 +49,8 @@ public class BlankNode extends TermEval {
         Map<String, IDatatype> map = env.getMap();
         IDatatype bn =  map.get(dt.getLabel());
         if (bn == null) {
-            bn = DatatypeMap.createBlank();
+            //bn = DatatypeMap.createBlank();
+            bn = DatatypeMap.createBlank(p.blankNode());
             map.put(dt.getLabel(), bn);
         }
         return bn;

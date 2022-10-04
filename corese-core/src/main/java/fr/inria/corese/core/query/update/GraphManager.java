@@ -261,7 +261,7 @@ public class GraphManager {
     }
 
     public String newBlankID() {
-        return getGraph().newBlankID();
+        return getDataBroker().blankNode();
     }
 
     public IDatatype createBlank(String str) {
@@ -269,7 +269,7 @@ public class GraphManager {
     }
     
     public IDatatype createBlank() {
-        return getGraph().createBlank(getGraph().newBlankID());
+        return getGraph().createBlank(newBlankID());
     }
     
     public IDatatype createTripleReference() {

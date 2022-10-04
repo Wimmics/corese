@@ -126,7 +126,10 @@ public class DataManagerGraph implements DataManager {
         return getGraph().getNodeGraphIterator(getGraph().getNode(context));
     }
     
-    
+    @Override
+    public String blankNode() {
+        return getGraph().newBlankID();
+    }
 
     @Override
     public Iterable<Edge> insert(Node s, Node p, Node o, List<Node> contexts) {

@@ -922,7 +922,7 @@ public class Load
 
         CoreseJsonTripleCallback callback = new CoreseJsonTripleCallback(getGraph(), name);
         callback.setHelper(renameBlankNode, getLimit());
-
+        callback.initDataManager(getDataManager());
         JsonldLoader loader = JsonldLoader.create(stream, base);
         try {
             loader.load(callback);

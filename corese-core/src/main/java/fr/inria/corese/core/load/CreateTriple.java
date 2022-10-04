@@ -80,6 +80,9 @@ public class CreateTriple {
     }
     
     String newBlankID() {
+        if (hasDataManager()) {
+            return getDataManager().blankNode();
+        }
         return graph.newBlankID();
     }
     

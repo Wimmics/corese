@@ -1084,4 +1084,12 @@ public class ProducerImpl
     public void setGraph(Graph graph) {
         this.graph = graph;
     }
+
+    @Override
+    public String blankNode() {
+        if (hasDataManager()) {
+            return getDataManager().blankNode();
+        }
+        return getGraph().newBlankID();
+    }
 }

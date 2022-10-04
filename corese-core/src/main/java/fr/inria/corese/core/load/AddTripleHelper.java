@@ -3,6 +3,7 @@ package fr.inria.corese.core.load;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.DataManager;
 import java.util.ArrayList;
 import java.util.Hashtable;
 import org.semarglproject.vocab.core.RDF;
@@ -19,6 +20,7 @@ import fr.inria.corese.kgram.api.core.Edge;
 public class AddTripleHelper implements ILoadSerialization {
 
     protected Graph graph;
+    private DataManager dataManager;
     Node source;
     Stack stack;
     NSManager nsm;
@@ -56,7 +58,7 @@ public class AddTripleHelper implements ILoadSerialization {
 
     public AddTripleHelper(Graph graph) {
         this.graph = graph;
-        this.blank = new Hashtable<String, String>();
+        this.blank = new Hashtable<>();
         nsm = NSManager.create();
         this.stack = new Stack();
     }
@@ -146,11 +148,18 @@ public class AddTripleHelper implements ILoadSerialization {
         if (isRenameBlankNode()) {
             id = blank.get(b);
             if (id == null) {
-                id = graph.newBlankID();
+                id = blankNode();
                 blank.put(b, id);
             }
         }
         return id;
+    }
+    
+    String blankNode() {
+        if (hasDataManager()) {
+            return getDataManager().blankNode();
+        }
+        return graph.newBlankID();
     }
 
     /**
@@ -195,5 +204,17 @@ public class AddTripleHelper implements ILoadSerialization {
         hasDefault = g.getDefaultGraphNode() != null;
 
         return hasGraphs || hasDefault;
+    }
+    
+    boolean hasDataManager() {
+        return getDataManager() != null;
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
     }
 }

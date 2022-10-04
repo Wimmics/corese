@@ -52,6 +52,11 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
         getDataManager().endWriteTransaction();
         getDataManager().startWriteTransaction();
     }
+    
+    @Override
+    public String blankNode() {
+        return getDataManager().blankNode();
+    }
 
     /**
      * Delete occurrences of edge in named graphs of from list

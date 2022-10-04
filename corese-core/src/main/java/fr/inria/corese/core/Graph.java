@@ -2890,7 +2890,7 @@ public class Graph extends GraphObject implements
         return TRIPLE_REF + triplerefid++;
     }
 
-    String blankID() {
+    synchronized String blankID() {
         return BLANK + blankid++;
     }
 

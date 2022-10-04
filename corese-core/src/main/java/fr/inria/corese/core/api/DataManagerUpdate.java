@@ -4,6 +4,7 @@ import java.util.List;
 
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 /**
  * Interface to adapt an external storage system to Corese.
@@ -16,6 +17,10 @@ import fr.inria.corese.kgram.api.core.Node;
  * @author Rémi ceres
  */
 public interface DataManagerUpdate {
+    
+    default String blankNode() {
+        return DatatypeMap.blankID();
+    }
 
     /**
      * Adds one or more edges to the graph. This method creates a edge for each

@@ -6,6 +6,7 @@ import com.github.jsonldjava.core.JsonLdTripleCallback ;
 import com.github.jsonldjava.core.RDFDataset;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.AddTripleHelper;
 import fr.inria.corese.core.load.ILoadSerialization;
 import fr.inria.corese.kgram.api.core.Node;
@@ -21,6 +22,7 @@ public class CoreseJsonTripleCallback implements JsonLdTripleCallback {
 
     private AddTripleHelper helper;
     private Graph graph;
+    private DataManager dataManager;
     private Node graphSource, defaultGraphSource;
     private final static String JSONLD_DEFAULT_GRAPH = "@default";
     private final static String JSONLD_BNODE_PREFIX = ":_";
@@ -43,7 +45,7 @@ public class CoreseJsonTripleCallback implements JsonLdTripleCallback {
             if (JSONLD_DEFAULT_GRAPH.equals(graphName)) {
                 graphSource = defaultGraphSource;
             } else if (graphName.startsWith(JSONLD_BNODE_PREFIX)) {
-                graphSource = graph.addBlank(helper.getID(graphName));
+                graphSource = graph.addBlank(getHelper().getID(graphName));
                 graph.addGraphNode(graphSource);
             } else {
                 graphSource = graph.addGraph(graphName);
@@ -67,7 +69,7 @@ public class CoreseJsonTripleCallback implements JsonLdTripleCallback {
                     tripleType = ILoadSerialization.NON_LITERAL;
                 }
 
-                helper.addTriple(subject, predicate, object, lang, type, tripleType, graphSource);
+                getHelper().addTriple(subject, predicate, object, lang, type, tripleType, graphSource);
             }
         }
 
@@ -81,7 +83,30 @@ public class CoreseJsonTripleCallback implements JsonLdTripleCallback {
      * @param limit
      */
     public void setHelper(boolean renameBNode, int limit) {
-        helper.setRenameBlankNode(renameBNode);
-        helper.setLimit(limit);
+        getHelper().setRenameBlankNode(renameBNode);
+        getHelper().setLimit(limit);
+    }
+
+    public DataManager getDataManager() {
+        return dataManager;
+    }
+
+    public void setDataManager(DataManager dataManager) {
+        this.dataManager = dataManager;
+    }
+    
+    public void initDataManager(DataManager dataManager) {
+        setDataManager(dataManager);
+        if (getHelper()!=null) {
+            getHelper().setDataManager(dataManager);
+        }
+    }
+
+    public AddTripleHelper getHelper() {
+        return helper;
+    }
+
+    public void setHelper(AddTripleHelper helper) {
+        this.helper = helper;
     }
 }

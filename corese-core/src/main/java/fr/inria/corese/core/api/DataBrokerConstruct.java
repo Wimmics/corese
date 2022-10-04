@@ -84,6 +84,10 @@ public interface DataBrokerConstruct extends DataBroker {
     default Edge find(Edge edge) {
         return edge;
     }
+    
+    default String blankNode() {
+        return DatatypeMap.blankID();
+    } 
    
 
     /**

@@ -58,6 +58,11 @@ public class InteGraalToCoreseDatatype {
             if (graal_value instanceof String) {
                 String graal_value_string = (String) graal_value;
 
+                // If string is not in good format (...^^...@..)
+                if (!graal_value_string.contains("^^")) {
+                    return DatatypeMap.createLiteral(graal_value.toString(), RDF.xsdstring);
+                }
+
                 String value = getLiteralValue(graal_value_string);
                 String datatype = getLiteralDatatype(graal_value_string);
                 String lang = getLiteralLang(graal_value_string);
@@ -68,7 +73,7 @@ public class InteGraalToCoreseDatatype {
 
                 // If string is not in good format (...^^...@..)
                 if (datatype.equals("")) {
-                    DatatypeMap.createLiteral(graal_value.toString(), RDF.xsdstring);
+                    return DatatypeMap.createLiteral(graal_value.toString(), RDF.xsdstring);
                 }
 
                 if (lang.equals("")) {

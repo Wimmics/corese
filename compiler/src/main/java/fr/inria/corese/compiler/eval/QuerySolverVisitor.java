@@ -308,7 +308,7 @@ public class QuerySolverVisitor extends QuerySolverVisitorBasic {
     
     @Override
     public boolean filter() {      
-        Expr exp = getEval().getEvaluator().getDefineMetadata(getEnvironment(), FILTER, 3);
+        Expr exp = getDefineMetadata(getEnvironment(), FILTER, 3);
         return (exp != null);
     } 
     

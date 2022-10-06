@@ -19,6 +19,7 @@ import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.extension.ListSort;
+import fr.inria.corese.sparql.triple.function.script.LDScript;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.ArrayList;
@@ -240,7 +241,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     }
 
     public boolean define(String name, int arity) {
-        Expr exp = getEval().getEvaluator().getDefineMetadata(getEnvironment(), name, arity);
+        Expr exp = getDefineMetadata(getEnvironment(), name, arity);
         return (exp != null);
     }
 
@@ -292,7 +293,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
             return null;
         }
         trace(ev, metadata, param);
-        Function function = (Function) getEval().getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
+        Function function = getDefineMetadata(getEnvironment(), metadata, param.length);
         if (function != null) {
             // prevent infinite loop in case where there is a query in the function
             setActive(true);
@@ -314,9 +315,22 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
         trace(ev, metadata, param);
         return callbackSimple(ev, metadata, param);
     }
+    
+    Function getDefineMetadata(Environment env, String metadata, int n) {
+        return new LDScript().getDefineMetadata(env, metadata, n);
+    }
+    
+    Function getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] param) {
+        return new LDScript().getDefineMethod(env, name, type, param);
+    }
+    
+    Function getDefine(Environment env, String name, int n) {
+        return new LDScript().getDefine(env, name, n);
+    }
+
 
     IDatatype callbackSimple(Eval ev, String metadata, IDatatype[] param) {
-        Function function = (Function) getEval().getEvaluator().getDefineMetadata(getEnvironment(), metadata, param.length);
+        Function function = getDefineMetadata(getEnvironment(), metadata, param.length);
         if (function != null) {
             return call(function, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
         }
@@ -329,7 +343,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
             return null;
         }
         // function us:compare(?m1, ?m2)
-        Function function = (Function) getEval().getEvaluator().getDefineMetadata(getEnvironment(), metadata, 2);
+        Function function = getDefineMetadata(getEnvironment(), metadata, 2);
         if (function != null) {
             // prevent infinite loop in case where there is a query in the function
             setActive(true);
@@ -349,7 +363,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
         if (isRunning()) {
             return null;
         }
-        Function exp = (Function) getEval().getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
+        Function exp = getDefineMethod(getEnvironment(), name, type, param);
         if (exp != null) {
             setActive(true);
             IDatatype dt = call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
@@ -364,7 +378,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     }
 
     public IDatatype methodBasic(Eval ev, String name, IDatatype type, IDatatype[] param) {
-        Function exp = (Function) getEval().getEvaluator().getDefineMethod(getEnvironment(), name, type, param);
+        Function exp = getDefineMethod(getEnvironment(), name, type, param);
         if (exp != null) {
             IDatatype dt = call(exp, param, ev.getEvaluator(), ev.getEnvironment(), ev.getProducer());
             return dt;
@@ -386,7 +400,7 @@ public class QuerySolverVisitorBasic extends PointerObject implements ProcessVis
     }
 
     IDatatype funcall(String name, IDatatype[] param, Evaluator eval, Environment env, Producer p) {
-        Function fun = (Function) eval.getDefine(env, name, param.length);
+        Function fun = getDefine(env, name, param.length);
         if (fun != null) {
             return call(fun, param, eval, env, p);
         }

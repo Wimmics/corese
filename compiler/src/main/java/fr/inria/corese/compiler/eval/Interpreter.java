@@ -29,11 +29,7 @@ import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.sparql.triple.function.script.Function;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.Expression;
 import fr.inria.corese.sparql.triple.parser.Metadata;
-import fr.inria.corese.sparql.triple.parser.Processor;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -58,7 +54,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     Producer producer;
     Eval kgram;
     ResultListener listener;
-    static ASTExtension extension;
+    private static ASTExtension extension;
     int mode = DEFAULT_MODE;
     boolean hasListener = false;
     boolean isDebug = false;
@@ -66,7 +62,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     IDatatype ERROR_VALUE = null;
 
     static {
-        extension = createExtension();
+        setExtension(createExtension());
     }
 
     public Interpreter() {
@@ -452,116 +448,7 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         getPlugin().finish(producer, env);
     }
 
-    public static boolean isDefined(Expr exp) {
-        return extension.isDefined(exp);
-    }
-
-    @Override
-    public Function getDefine(Expr exp, Environment env) {
-        ASTExtension ext = env.getExtension();
-        if (ext != null) {
-            Function def = ext.get(exp);
-            if (def != null) {
-                return def;
-            }
-        }
-
-        return extension.get(exp);
-    }
-
-    @Override
-    public Function getDefine(String name) {
-        return extension.get(name);
-    }
-
-    @Override
-    public Function getDefineGenerate(Expr exp, Environment env, String name, int n)
-            throws EngineException {
-        Function fun = getDefine(env, name, n);
-        if (fun == null) {
-            fun = getDefine(exp, env, name, n);
-        }
-        return fun;
-    }
-
-    /**
-     * exp = funcall(arg, arg) arg evaluates to name Generate extension function
-     * for predefined function name rq:plus -> function rq:plus(x, y){
-     * rq:plus(x, y) }
-     */
-    Function getDefine(Expr exp, Environment env, String name, int n) throws EngineException {
-        if (Processor.getOper(name) == ExprType.UNDEF) {
-            return null;
-        }
-        Query q = env.getQuery().getGlobalQuery();
-        ASTQuery ast = getAST((Expression) exp, q);
-        Function fun = ast.defExtension(name, name, n);
-        q.defineFunction(fun);
-        ASTExtension ext = Interpreter.getCreateExtension(q);
-        ext.define(fun);
-        return fun;
-    }
-
-    // use exp AST to compile exp
-    // use case: uri() uses ast base
-    ASTQuery getAST(Expression exp, Query q) {
-        ASTQuery ast = exp.getAST();
-        if (ast != null) {
-            return ast.getGlobalAST();
-        } else {
-            return q.getAST();
-        }
-    }
-
-    @Override
-    public Function getDefine(Environment env, String name, int n) {
-        ASTExtension ext = env.getExtension();
-        if (ext != null) {
-            Function ee = ext.get(name, n);
-            if (ee != null) {
-                return ee;
-            }
-        }
-        return extension.get(name, n);
-    }
-
-    @Override
-    public Function getDefineMetadata(Environment env, String metadata, int n) {
-        ASTExtension ext = env.getExtension();
-        if (ext != null) {
-            Function ee = ext.getMetadata(metadata, n);
-            if (ee != null) {
-                return ee;
-            }
-        }
-        return extension.getMetadata(metadata, n);
-    }
-
-    /**
-     * Retrieve a method with name and type
-     */
-    @Override
-    public Function getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] param) {
-        ASTExtension ext = env.getExtension();
-        if (ext != null) {
-            if (env.getQuery().isDebug()) {
-                ext.setDebug(true);
-            }
-            Function ee = ext.getMethod(name, type, param);
-            if (ee != null) {
-                return ee;
-            }
-        }
-        return extension.getMethod(name, type, param);
-    }
-
-    public static void define(Function exp) {
-        extension.define(exp);
-    }
-
-    public static ASTExtension getExtension() {
-        return extension;
-    }
+ 
 
     public ProxyInterpreter getComputerPlugin() {
         //return proxy.getComputerPlugin();
@@ -604,6 +491,10 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     public ProxyInterpreter getPlugin() {
         return plugin;
+    }
+
+    public static void setExtension(ASTExtension aExtension) {
+        extension = aExtension;
     }
 
 }

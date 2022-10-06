@@ -401,7 +401,7 @@ public class Transformer implements ExpType {
         }
         // @public @update event function ...
         if (QuerySolver.isVisitorable()
-         && Interpreter.getExtension().getMetadata(QuerySolverVisitor.UPDATE, QuerySolverVisitor.UPDATE_ARITY) != null) {
+         && ASTExtension.getSingleton().getMetadata(QuerySolverVisitor.UPDATE, QuerySolverVisitor.UPDATE_ARITY) != null) {
             q.setDetail(true);
         } 
     }

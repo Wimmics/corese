@@ -143,7 +143,7 @@ public class FunctionCompiler {
         ArrayList<Expression> list = new ArrayList<>();
 
         for (Expression exp : ast.getUndefined().values()) {
-            boolean ok = Interpreter.isDefined(exp) || q.getExtension().isDefined(exp);
+            boolean ok = getExtension().isDefined(exp) || q.getExtension().isDefined(exp);
             if (ok) {
             } else {
                 if (acceptLinkedFunction(level, exp.getLabel())) {
@@ -178,7 +178,7 @@ public class FunctionCompiler {
     boolean getLinkedFunctionBasic(ASTQuery ast, Expression exp) throws EngineException {
         boolean b = getLinkedFunctionBasic(exp.getLabel(), ast.getLevel());
         if (b) {
-            return Interpreter.isDefined(exp);
+            return getExtension().isDefined(exp);
         }
         return false;
     }
@@ -228,7 +228,7 @@ public class FunctionCompiler {
 
     static void removeLinkedFunction() {
         for (String name : getLoaded().values()) {
-            Interpreter.getExtension().removeNamespace(name);
+            getExtension().removeNamespace(name);
         }
         getLoaded().clear();
     }
@@ -237,7 +237,7 @@ public class FunctionCompiler {
      * Define function into Extension Export into Interpreter
      */
     void define(ASTQuery ast, ASTExtension aext, Query q) {
-        ASTExtension ext = Interpreter.getCreateExtension(q);
+        ASTExtension ext = q.getCreateExtension();
         DatatypeHierarchy dh = new DatatypeHierarchy();
         if (q.isDebug()) {
             dh.setDebug(true);
@@ -284,10 +284,10 @@ public class FunctionCompiler {
 
     void definePublic(Function fun, Query q, boolean isDefine) {
         if (isDefine) {
-            if (Interpreter.getExtension().getHierarchy() == null) {
-                Interpreter.getExtension().setHierarchy(new DatatypeHierarchy());
+            if (getExtension().getHierarchy() == null) {
+                getExtension().setHierarchy(new DatatypeHierarchy());
             }
-            Interpreter.define(fun);
+            getExtension().define(fun);
         }
         fun.setPublic(true);
         if (fun.isSystem()) {
@@ -300,18 +300,19 @@ public class FunctionCompiler {
         getLoaded().clear();;
     }
 
-    /**
-     * @return the loaded
-     */
     public static HashMap<String, String> getLoaded() {
         return loaded;
     }
 
-    /**
-     * @param aLoaded the loaded to set
-     */
     public static void setLoaded(HashMap<String, String> aLoaded) {
         loaded = aLoaded;
     }
+    
+    
+    static ASTExtension getExtension() {
+        //return Interpreter.getExtension();
+        return ASTExtension.getSingleton();
+    }
+
 
 }

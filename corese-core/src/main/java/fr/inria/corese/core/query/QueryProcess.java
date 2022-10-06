@@ -63,6 +63,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.script.Funcall;
 import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
@@ -1468,7 +1469,7 @@ public class QueryProcess extends QuerySolver {
     }
 
     Function getFunction(String name, IDatatype[] param) {
-        return Interpreter.getExtension().get(name, param.length);
+        return ASTExtension.getSingleton().get(name, param.length);
     }
 
     /**
@@ -1477,7 +1478,7 @@ public class QueryProcess extends QuerySolver {
      * @public @type us:Event us:start(?e, ?o)
      */
     Function getFunction(String name, String type, IDatatype[] param) {
-        return  Interpreter.getExtension().getMethod(
+        return  ASTExtension.getSingleton().getMethod(
                 name, DatatypeMap.newResource(type),
                 param);
     }

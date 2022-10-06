@@ -11,7 +11,6 @@ import fr.inria.corese.core.load.AddTripleHelper;
 import fr.inria.corese.core.load.AddTripleHelperDataManager;
 import fr.inria.corese.core.load.ILoadSerialization;
 import fr.inria.corese.kgram.api.core.Node;
-import java.net.DatagramSocket;
 
 /**
  * Implementation of interface from Jsonld-java (json-ld parser) for adding

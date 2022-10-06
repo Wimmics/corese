@@ -1,10 +1,16 @@
 package fr.inria.corese.core.producer;
 
 import fr.inria.corese.core.api.DataManager;
+import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.logic.Distance;
+import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import java.io.IOException;
 import java.util.HashMap;
+import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -26,11 +32,24 @@ public class MetadataManager {
     
     public MetadataManager(DataManager man) {
         setDataManager(man);
-        startDataManager();
     }
     
-    void startDataManager() {
+    // called by StorageFactory
+    public void startDataManager() {
         trace("create data manager");
+    }
+    
+    void start() {
+        try {
+            QueryLoad ql = QueryLoad.create();
+            String q = ql.getResource("/query/indexproperty.rq");
+            QueryProcess exec = QueryProcess.create(getDataManager());
+            Mappings map = exec.query(q);
+            System.out.println("Storage content:\n");
+            System.out.println(map);
+        } catch (IOException | EngineException ex) {
+            logger.error(ex.getMessage());
+        }
     }
     
     public void endDataManager() {

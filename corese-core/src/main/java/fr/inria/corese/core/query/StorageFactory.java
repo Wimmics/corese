@@ -24,6 +24,7 @@ public class StorageFactory {
     public static void defineDataManager(String path, DataManager man) {
         man.getCreateMetadataManager();
         getSingleton().getMap().put(path, man);
+        man.getMetadataManager().startDataManager();
     }
     
     public static DataManager getDataManager(String path) {

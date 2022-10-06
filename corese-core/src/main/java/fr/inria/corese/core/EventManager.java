@@ -10,6 +10,7 @@ import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.util.Property;
 import static fr.inria.corese.core.util.Property.Value.LOG_NODE_INDEX;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
@@ -320,8 +321,8 @@ public class EventManager implements EventHandler {
      * Clean old environment
      */
     public void finish() {
-        if (Interpreter.getExtension() != null) {
-            Interpreter.getExtension().setHierarchy(null);
+        if (ASTExtension.getSingleton() != null) {
+            ASTExtension.getSingleton().setHierarchy(null);
         }
         Transformer.removeLinkedFunction();
     }

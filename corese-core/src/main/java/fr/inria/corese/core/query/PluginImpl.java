@@ -176,7 +176,7 @@ public class PluginImpl
             // store current graph in the Interpreter 
             // hence it does not scale with several graph
             // e.g. in server mode
-            Interpreter.getExtension().setHierarchy(ch);
+            ASTExtension.getSingleton().setHierarchy(ch);
         }
     }
 

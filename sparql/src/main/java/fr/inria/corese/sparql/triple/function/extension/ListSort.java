@@ -43,7 +43,7 @@ public class ListSort extends Funcall {
             Function function;
             try {
                 function = (funName == null) ? null : 
-                        (Function) eval.getDefineGenerate(this, env, funName.stringValue(), 2);
+                        getDefineGenerate(this, env, funName.stringValue(), 2);
             } catch (EngineException ex) {
                 log(ex.getMessage());
                 return null;

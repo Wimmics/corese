@@ -55,7 +55,7 @@ public class Funcall extends LDScript {
     
     Function getFunction(Computer eval, Binding b, Environment env, Producer p, IDatatype dt, int n) throws EngineException {
         String name = dt.stringValue();
-        Function function = (Function) eval.getDefineGenerate(this, env, name, n);
+        Function function = getDefineGenerate(this, env, name, n);
 
         if (function == null) {
             if (dt.pointerType() == PointerType.EXPRESSION) {
@@ -64,7 +64,7 @@ public class Funcall extends LDScript {
             else if (env.getEval() != null) {
                 if (accept(Access.Feature.LINKED_FUNCTION, b)) {
                     getLinkedFunction(name, env);
-                    function = eval.getDefineGenerate(this, env, name, n);
+                    function = getDefineGenerate(this, env, name, n);
                 }
                 if (function == null) {
                     throw new UndefinedExpressionException(UNDEFINED_EXPRESSION_MESS + ": " + toString());

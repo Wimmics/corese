@@ -43,7 +43,7 @@ public class EventCall extends Funcall {
             param = DatatypeMap.toArray(param[0]);
         }
 
-        Function function = eval.getDefineMetadata(env, name.getLabel(), param.length);
+        Function function = getDefineMetadata(env, name.getLabel(), param.length);
         if (function == null) {
             // if @event function is undefined, no problem
             return name;

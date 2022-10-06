@@ -61,12 +61,12 @@ public interface Evaluator {
 	 */
 	Mappings eval(Filter f, Environment e, List<Node> nodes) throws SparqlException;
 	                             
-        Expr getDefine(Environment env, String name, int n);
-        Expr getDefineMetadata(Environment env, String metadata, int n);       
-        Expr getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] values);
-
-        Expr getDefine(String name);
-        
+//        Expr getDefine(Environment env, String name, int n);
+//        Expr getDefineMetadata(Environment env, String metadata, int n);       
+//        Expr getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] values);
+//
+//        Expr getDefine(String name);
+//        
         // cast Java object into IDatatype
         Node cast(Object obj, Environment e, Producer p);
 

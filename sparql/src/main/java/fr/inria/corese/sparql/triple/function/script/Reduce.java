@@ -50,7 +50,7 @@ public class Reduce extends Funcall {
                 
         Function function = null;
         try {
-            function = eval.getDefineGenerate(this, env, name.stringValue(), 2);
+            function = getDefineGenerate(this, env, name.stringValue(), 2);
         } catch (EngineException ex) {
             log(ex.getMessage());
         }
@@ -125,7 +125,7 @@ public class Reduce extends Funcall {
     IDatatype neutral(Computer eval, Binding b, Environment env, Producer p, IDatatype name, IDatatype dt) throws EngineException {
         Function function = null;
         try {
-            function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), 0);
+            function = getDefineGenerate(this, env, name.stringValue(), 0);
         } catch (EngineException ex) {
             log(ex.getMessage());
         }

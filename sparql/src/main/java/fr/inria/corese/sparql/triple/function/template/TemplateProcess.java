@@ -28,7 +28,7 @@ public class TemplateProcess extends Extension  {
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
         switch (oper()){
             case ExprType.STL_PROCESS:
-                if (isDefined || eval.getDefine(this, env) != null){
+                if (isDefined || getDefine(this, env) != null){
                     isDefined = true;
                     // extension function call:  st:process(?x)
                     return super.eval(eval, b, env, p);

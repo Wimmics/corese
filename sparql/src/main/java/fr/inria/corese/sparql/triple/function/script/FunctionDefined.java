@@ -34,7 +34,7 @@ public class FunctionDefined extends LDScript {
             return  null;
         }
             
-        Function function = eval.getDefine(env, name.stringValue(), nb.intValue());
+        Function function = getDefine(env, name.stringValue(), nb.intValue());
       
         if (function == null) {
             return FALSE;

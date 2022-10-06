@@ -68,7 +68,7 @@ public class Extension extends LDScript {
             synchronized (this) {
                 // public functions are shared ...
                 if (function == null) {
-                    function = eval.getDefine(this, env);
+                    function = getDefine(this, env);
                     if (function == null) {
                         logger.error("Undefined function: " + this.getLabel() + " " + this);
                         return null;
@@ -177,7 +177,7 @@ public class Extension extends LDScript {
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p, IDatatype[] param) throws EngineException {
         if (function == null) {
-            function = eval.getDefine(this, env);
+            function = getDefine(this, env);
             if (function == null) {
                 logger.error("Undefined function: " + this);
                 return null;

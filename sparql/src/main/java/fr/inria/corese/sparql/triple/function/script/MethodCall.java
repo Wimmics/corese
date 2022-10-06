@@ -29,7 +29,7 @@ public class MethodCall extends Funcall {
             return null;
         }
         //return eval.method(name.stringValue(), null, param, env, p);
-        Function function = (Function) eval.getDefineMethod(env, name.stringValue(), null, param);
+        Function function = getDefineMethod(env, name.stringValue(), null, param);
         if (function == null) {
             return null;
         }

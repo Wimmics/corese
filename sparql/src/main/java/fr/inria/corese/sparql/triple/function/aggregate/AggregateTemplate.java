@@ -41,7 +41,7 @@ public class AggregateTemplate extends Aggregate {
     }
     
     void init(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
-        Function function = (Function) eval.getDefine(this, env);
+        Function function = getDefine(this, env);
         if (function == null || ! (function.getBody() instanceof Aggregate) ) {
             // eval st:group_concat
             AggregateGroupConcat agg = groupconcat(); 

@@ -42,7 +42,7 @@ public class MapAnyEvery extends Funcall {
 
         Function function = null;
         try {
-            function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), param.length);
+            function = getDefineGenerate(this, env, name.stringValue(), param.length);
         } catch (EngineException ex) {
             log(ex.getMessage());
         }
@@ -122,7 +122,7 @@ public class MapAnyEvery extends Funcall {
 
         Function function = null;
         try {
-            function = (Function) eval.getDefineGenerate(this, env, name.stringValue(), param.length);
+            function = getDefineGenerate(this, env, name.stringValue(), param.length);
         } catch (EngineException ex) {
             log(ex.getMessage());
         }

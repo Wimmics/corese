@@ -2336,6 +2336,13 @@ public class Query extends Exp implements Graphable {
     public ASTExtension getActualExtension(){
         return getGlobalQuery().getExtension();
     }
+    
+    public ASTExtension getCreateExtension() {
+        if (getExtension() == null) {
+            setExtension(new ASTExtension());
+        }
+        return getExtension();
+    }
 
    
     public void setExtension(ASTExtension ext) {

@@ -29,8 +29,7 @@ public class MethodTypeCall extends Funcall {
         if (name == null || type == null || param == null){
             return null;
         }
-        //return eval.method(name.stringValue(), type,  param, env, p);
-        Function function = (Function) eval.getDefineMethod(env, name.stringValue(), type, param);
+        Function function = getDefineMethod(env, name.stringValue(), type, param);
         if (function == null) {
             return null;
         }

@@ -600,6 +600,14 @@ public interface IDatatype
     boolean hasLang();
 
     boolean isTrue() throws CoreseDatatypeException;
+    
+    default boolean isTrueTest() {
+        try {            
+            return isTrue();
+        } catch (CoreseDatatypeException e) {
+            return false;
+        }
+    }
 
     boolean isTrueAble();
 

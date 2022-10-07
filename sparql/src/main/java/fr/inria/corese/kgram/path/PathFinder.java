@@ -593,7 +593,8 @@ public class PathFinder {
         Filter f = query.getGlobalFilter(Query.PATHNODE);
         Node node = null;
         try {
-            node = evaluator.eval(f, memory, producer);
+            //node = evaluator.eval(f, memory, producer);
+            node = f.getExp().evalWE(evaluator, memory.getBind(), memory, producer);
             node.setObject(p);
         } catch (SparqlException ex) { 
         }
@@ -691,7 +692,9 @@ public class PathFinder {
         }
         boolean test = true;
         try {
-            test = evaluator.test(filter, mem);
+           // test = evaluator.test(filter, mem);
+            //test = evaluator.test(filter, mem, producer);
+            test = filter.getExp().test(evaluator, mem.getBind(), mem, producer);
         } catch (SparqlException ex) {
             test = false;
         }
@@ -708,7 +711,8 @@ public class PathFinder {
         mem.push(qNode, node);
         boolean test = true;
         try {
-            test = evaluator.test(filter, mem, producer);
+            //test = evaluator.test(filter, mem, producer);
+            test = filter.getExp().test(evaluator, mem.getBind(), mem, producer);
         } catch (SparqlException ex) {
             test = false;
         }

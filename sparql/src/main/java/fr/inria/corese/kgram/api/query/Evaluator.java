@@ -2,22 +2,22 @@ package fr.inria.corese.kgram.api.query;
 
 import java.util.List;
 
-import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.event.ResultListener;
 import fr.inria.corese.kgram.core.SparqlException;
-import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.api.Computer;
+
 /**
  * Interface for the connector that evaluates filters
  * 
 * @author Olivier Corby, Edelweiss, INRIA 2010
 *
 */
-public interface Evaluator {
+public interface Evaluator extends Computer {
 	
 	static final int KGRAM_MODE 	= 0;
 	static final int SPARQL_MODE  	= 1;
@@ -39,9 +39,9 @@ public interface Evaluator {
 	 * @param e
 	 * @return
 	 */
-	boolean test(Filter f, Environment e) throws SparqlException;
-        
-	boolean test(Filter f, Environment e, Producer p) throws SparqlException ;
+	//boolean test(Filter f, Environment e) throws SparqlException;
+//        
+	//boolean test(Filter f, Environment e, Producer p) throws SparqlException ;
 
 	/**
 	 * Evaluate a filter and return a Node
@@ -51,7 +51,7 @@ public interface Evaluator {
 	 * @param e
 	 * @return
 	 */
-	Node eval(Filter f, Environment e, Producer p) throws SparqlException;
+	//Node eval(Filter f, Environment e, Producer p) throws SparqlException;
         
         /**
 	 * Evaluate an extension function filter and return Mappings
@@ -59,16 +59,11 @@ public interface Evaluator {
 	 * TODO: should be an interface instead of Mappings
 	 * 	
 	 */
-	Mappings eval(Filter f, Environment e, List<Node> nodes) throws SparqlException;
+//	Mappings eval(Filter f, Environment e, List<Node> nodes) throws SparqlException;
 	                             
-//        Expr getDefine(Environment env, String name, int n);
-//        Expr getDefineMetadata(Environment env, String metadata, int n);       
-//        Expr getDefineMethod(Environment env, String name, IDatatype type, IDatatype[] values);
-//
-//        Expr getDefine(String name);
-//        
+
         // cast Java object into IDatatype
-        Node cast(Object obj, Environment e, Producer p);
+        //Node cast(Object obj, Environment e, Producer p);
 
         Binding getBinder();
 				        

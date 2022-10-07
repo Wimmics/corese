@@ -16,11 +16,13 @@ import fr.inria.corese.kgram.event.EventImpl;
 import fr.inria.corese.kgram.event.EventManager;
 import java.util.HashMap;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.PointerType;
 import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Context;
@@ -612,7 +614,7 @@ public class Mappings extends PointerObject
                     m.setEval(eval);
                     m.setQuery(q);
                     try {
-                        Node value = eval.getEvaluator().eval(exp.getFilter(), m, eval.getProducer());
+                        Node value = eval.eval(exp.getFilter(), m, eval.getProducer());
                         if (value != null) {
                             m.setNode(node, value);
                             addSelectVariable(node);
@@ -625,7 +627,7 @@ public class Mappings extends PointerObject
             }
         }
     }
-    
+        
     void addSelectVariable(Node node) {
         if (! getSelect().contains(node)) {
             getSelect().add(node);
@@ -1087,7 +1089,8 @@ public class Mappings extends PointerObject
         Eval ev = memory.getEval();
         
         if (n == HAVING) {
-            res = eval.test(exp.getFilter(), memory);
+            //res = eval.test(exp.getFilter(), memory, p);
+            res = exp.getFilter().getExp().test(eval, memory.getBind(), memory, p);
             if (ev != null) {
                 ev.getVisitor().having(ev, exp.getFilter().getExp(), res);
             }
@@ -1103,7 +1106,7 @@ public class Mappings extends PointerObject
             } else {
                 // exp = aggregate(term)
                 // call fr.inria.corese.sparql.triple.function.aggregate.${AggregateFunction}
-                aggregateValue = eval.eval(exp.getFilter(), memory, p);
+                aggregateValue = eval(exp.getFilter(), eval, memory, p);
                 if (ev != null) {
                     ev.getVisitor().aggregate(ev, exp.getFilter().getExp(),
                         (aggregateValue == null) ? null : aggregateValue.getDatatypeValue());
@@ -1128,6 +1131,11 @@ public class Mappings extends PointerObject
 
         memory.pop(firstMap);
         return res;
+    }
+    
+    Node eval(Filter f, Evaluator eval, Environment env, Producer p) throws SparqlException {
+        //return eval.eval(f, env, p);
+        return f.getExp().evalWE(eval, env.getBind(), env, p);
     }
 
     /**
@@ -1209,7 +1217,7 @@ public class Mappings extends PointerObject
         aggregateGroupMembers(q, g, eval, exp, mem, p, n);
         if (exp.isHaving()) {
             // min(?l, groupBy(?x, ?y), (?l = ?min)) as ?min
-            having(eval, exp, mem, g);
+            having(eval, exp, mem, p, g);
             // remove global group if any 
             // may be recomputed with new Mapping list
             setGroup(null);
@@ -1220,13 +1228,14 @@ public class Mappings extends PointerObject
      * exp : min(?l, groupBy(?x, ?y), (?l = ?min)) as ?min) test the filter,
      * remove Mappping that fail
      */
-    void having(Evaluator eval, Exp exp, Memory mem, Group g) throws SparqlException {
+    void having(Evaluator eval, Exp exp, Memory mem, Producer p, Group g) throws SparqlException {
         Filter f = exp.getHavingFilter();
         clear();
         for (Mappings lm : g.getValues()) {
             for (Mapping map : lm) {
                 mem.push(map, -1);
-                if (eval.test(f, mem)) {
+                //if (eval.test(f, mem, p)) {
+                if (f.getExp().test(eval, mem.getBind(), mem, p)) {
                     add(map);
                 }
                 mem.pop(map);
@@ -1238,17 +1247,17 @@ public class Mappings extends PointerObject
     /**
      * Eliminate all Mapping that do not match filter
      */
-    void filter(Evaluator eval, Filter f, Memory mem) throws SparqlException {
-        ArrayList<Mapping> l = new ArrayList<>();
-        for (Mapping map : this) {
-            mem.push(map, -1);
-            if (eval.test(f, mem)) {
-                l.add(map);
-            }
-            mem.pop(map);
-        }
-        setList(l);
-    }
+//    void filter(Evaluator eval, Filter f, Memory mem) throws SparqlException {
+//        ArrayList<Mapping> l = new ArrayList<>();
+//        for (Mapping map : this) {
+//            mem.push(map, -1);
+//            if (eval.test(f, mem)) {
+//                l.add(map);
+//            }
+//            mem.pop(map);
+//        }
+//        setList(l);
+//    }
 
     /**
      * Template perform additionnal group_concat(?out)
@@ -1273,7 +1282,7 @@ public class Mappings extends PointerObject
         // bind the Mapping in memory to retrieve group by variables
         memory.aggregate(firstMap);
         if (size() == 1) {
-            Node node = eval.eval(exp.getFilter().getExp().getExp(0).getFilter(), memory, p);
+            Node node = eval(exp.getFilter().getExp().getExp(0).getFilter(), eval, memory, p);
             if (node != null && !node.isFuture()) {
                 // if (node == null) go to aggregate below because we want it to be uniform
                 // whether there is one or several results
@@ -1281,7 +1290,7 @@ public class Mappings extends PointerObject
             }
         }
 
-        Node node = eval.eval(exp.getFilter(), memory, p);
+        Node node = eval(exp.getFilter(), eval, memory, p);
         memory.pop(firstMap);
         return node;
     }
@@ -1884,30 +1893,22 @@ public class Mappings extends PointerObject
         return this;
     }
 
-    /**
-     * @return the eval
-     */
+    
     public Eval getEval() {
         return eval;
     }
 
-    /**
-     * @param eval the eval to set
-     */
+    
     public void setEval(Eval eval) {
         this.eval = eval;
     }
 
-    /**
-     * @return the isFake
-     */
+    
     public boolean isFake() {
         return isFake;
     }
 
-    /**
-     * @param isFake the isFake to set
-     */
+    
     public Mappings setFake(boolean isFake) {
         this.isFake = isFake;
         return this;
@@ -1917,9 +1918,7 @@ public class Mappings extends PointerObject
         return size() != 0 && getNodeList() != null && !getNodeList().isEmpty();
     }
 
-    /**
-     * @return the nodeList
-     */
+   
     public List<Node> getNodeList() {
         return nodeList;
     }

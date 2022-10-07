@@ -9,6 +9,7 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
+import static fr.inria.corese.kgram.api.core.ExprType.UNNEST;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Loopable;
 import fr.inria.corese.kgram.api.core.Node;
@@ -30,6 +31,9 @@ import fr.inria.corese.kgram.path.PathFinder;
 import fr.inria.corese.kgram.tool.Message;
 import fr.inria.corese.kgram.tool.ResultsImpl;
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 
 /**
@@ -385,19 +389,20 @@ public class Eval implements ExpType, Plugin {
      * We just counted number of results: nbResult Just build a Mapping
      */
     void countProfile() {
-        Node n = getEvaluator().cast(nbResult, getMemory(), getProducer());
+       // Node n = getEvaluator().cast(nbResult, getMemory(), getProducer());
+        Node n = DatatypeMap.newInstance(nbResult);
         Mapping m = Mapping.create(getQuery().getSelectFun().get(0).getNode(), n);
         getResults().add(m);
     }    
     
-    public Mappings filter(Mappings map, Query q) throws SparqlException {
-        Query qq = map.getQuery();
-        init(qq);
-        qq.compile(q.getHaving().getFilter());
-        qq.index(qq, q.getHaving().getFilter());
-        map.filter(getEvaluator(), q.getHaving().getFilter(), getMemory());
-        return map;
-    }    
+//    public Mappings filter(Mappings map, Query q) throws SparqlException {
+//        Query qq = map.getQuery();
+//        init(qq);
+//        qq.compile(q.getHaving().getFilter());
+//        qq.index(qq, q.getHaving().getFilter());
+//        map.filter(getEvaluator(), q.getHaving().getFilter(), getMemory());
+//        return map;
+//    }    
 
    
 
@@ -412,7 +417,7 @@ public class Eval implements ExpType, Plugin {
         if (exp == null) {
             return;
         }
-        Mappings lMap = evaluator.eval(exp.getFilter(), memory, exp.getNodeList());
+        Mappings lMap = eval(exp.getFilter(), memory, exp.getNodeList());
         if (lMap != null) {
             for (Mapping map : lMap) {
                 map = complete(map, getProducer());
@@ -445,14 +450,6 @@ public class Eval implements ExpType, Plugin {
         return map;
     }
     
-    Node eval(Node graphNode, Filter f, Environment env, Producer p) throws SparqlException {
-        env.setGraphNode(graphNode);
-        Node res = evaluator.eval(f, env, p);
-        env.setGraphNode(null);
-        return res;
-    }    
-
-
     // draft for processing EXTERN expression
     public void add(Plugin p) {
         plugin = p;
@@ -1554,7 +1551,8 @@ public class Eval implements ExpType, Plugin {
         int backtrack = n - 1;
         Memory env = getMemory();
         env.setGraphNode(graphNode);
-        Mappings map = getEvaluator().eval(exp.getFilter(), env, exp.getNodeList());
+        //Mappings map = getEvaluator().eval(exp.getFilter(), env, exp.getNodeList());
+        Mappings map = eval(exp.getFilter(), env, exp.getNodeList());
         env.setGraphNode(null);
         getVisitor().values(this, getGraphNode(graphNode), exp, map);
         
@@ -1614,13 +1612,95 @@ public class Eval implements ExpType, Plugin {
         return backtrack;
     }
     
+//    boolean test2(Node graphNode, Filter f, Environment env, Producer p) throws SparqlException {
+//        env.setGraphNode(graphNode);
+//        boolean b = getEvaluator().test(f, env, p);
+//        env.setGraphNode(null);
+//        return b;
+//    }
+    
+   
     boolean test(Node graphNode, Filter f, Environment env, Producer p) throws SparqlException {
-        env.setGraphNode(graphNode);
-        boolean b = getEvaluator().test(f, env, p);
-        env.setGraphNode(null);
-        return b;
+        try {
+            env.setGraphNode(graphNode);
+            IDatatype dt = eval(f, env, p);
+            return isTrue(dt);
+        } finally {
+            env.setGraphNode(null);
+        }
     }
-          
+    
+    boolean isTrue(IDatatype dt) {
+        if (dt == null) {
+            return false;
+        }
+        return dt.isTrueTest();
+    }
+    
+    Node eval(Node graphNode, Filter f, Environment env, Producer p) throws SparqlException {
+        try {
+            env.setGraphNode(graphNode);
+            return  eval(f.getExp(), env, p);
+        } finally {
+            env.setGraphNode(null);
+        }
+    }
+
+    
+    // evalWE clean the binding stack if an EngineException is thrown
+    IDatatype eval(Filter f, Environment env, Producer p) throws EngineException {
+        return f.getExp().evalWE(getEvaluator(), env.getBind(), env, p);        
+    }
+       
+    IDatatype eval(Expr e, Environment env, Producer p) throws EngineException {
+        return e.evalWE(getEvaluator(), env.getBind(), env, p);        
+    }
+    
+//        if (dt == null) {
+//            // Evaluation error, may be overloaded by visitor event @error function 
+//            DatatypeValue res = env.getVisitor().error(env.getEval(), exp, EMPTY);
+//            if (res != null) {
+//                return (IDatatype) res;
+//            }
+//        }
+
+    // values var { unnext(exp) }
+    // @todo Producer is not current producer but global producer
+    Mappings eval(Filter f, Environment env, List<Node> nodes)
+            throws EngineException {
+        return eval(f, env, getProducer(), nodes);
+    }
+    
+    Mappings eval(Filter f, Environment env, Producer p, List<Node> nodes)
+            throws EngineException {
+
+        int n = 1;
+        Expr exp = f.getExp();
+        switch (exp.oper()) {
+
+            case UNNEST:
+                if (hasListener) {
+                    listener.listen(exp);
+                }
+                if (exp.arity() == 2) {
+                    // unnest(exp, 2)
+                    IDatatype dt = eval(exp.getExp(1), env, p);
+                    if (dt == null) {
+                        return new Mappings();
+                    }
+                    n = dt.intValue();
+                }
+                exp = exp.getExp(0);
+
+            default:
+                IDatatype res = eval(exp, env, p);
+                if (res == null) {
+                    return new Mappings();
+                }
+                // use std producer to map in case local p cannot map 
+                return getProducer().map(nodes, res, n);
+        }
+    }
     
     /**
      * Enumerate candidate edges

@@ -9,7 +9,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
- *
+ * implemented by fr.inria.corese.core.query.PluginTransform
  * @author corby
  */
 public interface ComputerProxy {
@@ -20,6 +20,8 @@ public interface ComputerProxy {
     TransformProcessor getTransformer(Binding b, Environment env, Producer p, Expr exp, IDatatype uri, IDatatype gname) 
             throws EngineException;
     
+    // implemented by fr.inria.corese.core.query.PluginImpl
+    // plugin of Interpreter
     GraphProcessor getGraphProcessor();
 
     TransformVisitor getVisitor(Binding b, Environment env, Producer p);

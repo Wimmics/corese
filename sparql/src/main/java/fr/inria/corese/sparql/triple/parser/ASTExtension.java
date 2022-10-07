@@ -301,6 +301,9 @@ public class ASTExtension implements Extension {
     @Override
     public Function getMethod(String label, IDatatype type, IDatatype[] param) {
         if (getActualHierarchy() != null && param.length > 0) {
+            if (isDebug()) {
+                    System.out.println("ASTExtension: " + label + " " + type);
+            }
             for (String atype : getActualHierarchy().getSuperTypes(param[0],  type)) {
                 ASTExtension ext = getMethodExtension(atype);
                 if (isDebug()) {

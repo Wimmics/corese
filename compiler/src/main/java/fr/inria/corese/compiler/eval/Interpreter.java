@@ -54,16 +54,12 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     Producer producer;
     Eval kgram;
     ResultListener listener;
-    private static ASTExtension extension;
     int mode = DEFAULT_MODE;
     boolean hasListener = false;
     boolean isDebug = false;
     public static int count = 0;
     IDatatype ERROR_VALUE = null;
 
-    static {
-        setExtension(createExtension());
-    }
 
     public Interpreter() {
     }
@@ -124,75 +120,75 @@ public class Interpreter implements Computer, Evaluator, ExprType {
     /**
      * Evaluator for bind (exp as var)
      */
-    @Override
-    public Node eval(Filter f, Environment env, Producer p) throws EngineException {
-        IDatatype value = eval(f.getExp(), env, p);
-        if (value == ERROR_VALUE) {
-            return null;
-        }
-        return producer.getNode(value);
-    }
+    //@Override
+//    public Node eval(Filter f, Environment env, Producer p) throws EngineException {
+//        IDatatype value = eval(f.getExp(), env, p);
+//        if (value == ERROR_VALUE) {
+//            return null;
+//        }
+//        return producer.getNode(value);
+//    }
 
     /**
      * Extension: Functions that return several variables as result such as:
      * values (VAR+) { unnest(exp) }
      */
-    @Override
-    public Mappings eval(Filter f, Environment env, List<Node> nodes)
-            throws EngineException {
-        int n = 1;
-        Expr exp = f.getExp();
-        switch (exp.oper()) {
-
-            case UNNEST:
-                if (hasListener) {
-                    listener.listen(exp);
-                }
-                if (exp.arity() == 2) {
-                    // unnest(exp, 2)
-                    IDatatype dt = eval(exp.getExp(1), env, getProducer());
-                    if (dt == ERROR_VALUE) {
-                        return new Mappings();
-                    }
-                    n = dt.intValue();
-                }
-                exp = exp.getExp(0);
-
-            default:
-                IDatatype res = eval(exp, env, getProducer());
-                if (res == ERROR_VALUE) {
-                    return new Mappings();
-                }
-                return getProducer().map(nodes, res, n);
-        }
-    }
+    //@Override
+//    public Mappings eval(Filter f, Environment env, List<Node> nodes)
+//            throws EngineException {
+//        int n = 1;
+//        Expr exp = f.getExp();
+//        switch (exp.oper()) {
+//
+//            case UNNEST:
+//                if (hasListener) {
+//                    listener.listen(exp);
+//                }
+//                if (exp.arity() == 2) {
+//                    // unnest(exp, 2)
+//                    IDatatype dt = eval(exp.getExp(1), env, getProducer());
+//                    if (dt == ERROR_VALUE) {
+//                        return new Mappings();
+//                    }
+//                    n = dt.intValue();
+//                }
+//                exp = exp.getExp(0);
+//
+//            default:
+//                IDatatype res = eval(exp, env, getProducer());
+//                if (res == ERROR_VALUE) {
+//                    return new Mappings();
+//                }
+//                return getProducer().map(nodes, res, n);
+//        }
+//    }
 
     /**
      * Evaluator of filter exp
      */
-    @Override
-    public boolean test(Filter f, Environment env) throws EngineException {
-        return test(f, env, getProducer());
-    }
+//    @Override
+//    public boolean test(Filter f, Environment env) throws EngineException {
+//        return test(f, env, getProducer());
+//    }
 
-    @Override
-    public boolean test(Filter f, Environment env, Producer p) throws EngineException {
-        IDatatype value = eval(f.getExp(), env, p);
-        if (value == ERROR_VALUE) {
-            return false;
-        }
-        return isTrue(value);
-    }
+    //@Override
+//    public boolean test(Filter f, Environment env, Producer p) throws EngineException {
+//        IDatatype value = eval(f.getExp(), env, p);
+//        if (value == ERROR_VALUE) {
+//            return false;
+//        }
+//        return isTrue(value);
+//    }
 
     // Integer to IDatatype to Node
     // for kgram internal use of java values
     // e.g. count(*) ...
-    @Override
-    public Node cast(Object obj, Environment env, Producer p) {
-        IDatatype val = DatatypeMap.cast(obj);
-        Node node = p.getNode(val);
-        return node;
-    }
+//    @Override
+//    public Node cast(Object obj, Environment env, Producer p) {
+//        IDatatype val = DatatypeMap.cast(obj);
+//        Node node = p.getNode(val);
+//        return node;
+//    }
 
     /**
      * Bridge to expression evaluation for SPARQL filter and LDScript expression
@@ -200,30 +196,30 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * expression implements function: eval(Computer e, Binding b, Environment
      * env, Producer p)
      */
-    public IDatatype eval(Expr exp, Environment env, Producer p) throws EngineException {
-        // evalWE clean the binding stack if an EngineException is thrown
-        IDatatype dt = exp.evalWE(this, env.getBind(), env, p);
-        if (env.getBind().isDebug()) {
-            System.out.println("eval: " + exp + " = " + dt);
-            System.out.println(env);
-        }
-//        if (dt == null) {
-//            // Evaluation error, may be overloaded by visitor event @error function 
-//            DatatypeValue res = env.getVisitor().error(env.getEval(), exp, EMPTY);
-//            if (res != null) {
-//                return (IDatatype) res;
-//            }
+//    public IDatatype eval(Expr exp, Environment env, Producer p) throws EngineException {
+//        // evalWE clean the binding stack if an EngineException is thrown
+//        IDatatype dt = exp.evalWE(this, env.getBind(), env, p);
+//        if (env.getBind().isDebug()) {
+//            System.out.println("eval: " + exp + " = " + dt);
+//            System.out.println(env);
 //        }
-        return dt;
-    }
-
-    boolean isTrue(IDatatype dt) {
-        try {
-            return dt.isTrue();
-        } catch (CoreseDatatypeException e) {
-            return false;
-        }
-    }
+////        if (dt == null) {
+////            // Evaluation error, may be overloaded by visitor event @error function 
+////            DatatypeValue res = env.getVisitor().error(env.getEval(), exp, EMPTY);
+////            if (res != null) {
+////                return (IDatatype) res;
+////            }
+////        }
+//        return dt;
+//    }
+//
+//    boolean isTrue(IDatatype dt) {
+//        try {
+//            return dt.isTrue();
+//        } catch (CoreseDatatypeException e) {
+//            return false;
+//        }
+//    }
 
     @Override
     public IDatatype function(Expr exp, Environment env, Producer p) throws EngineException {
@@ -296,7 +292,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
             }
             if (exp.arity() == 1) {
                 // argument return a graph on which we evaluate the exists
-                IDatatype res = eval(exp.getExp(0), env, p);
+                //IDatatype res = eval(exp.getExp(0), env, p);
+                IDatatype res = exp.getExp(0).evalWE(this, env.getBind(), env, p);
                 if (res == ERROR_VALUE) {
                     return ERROR_VALUE;
                 }
@@ -451,7 +448,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
  
 
     public ProxyInterpreter getComputerPlugin() {
-        //return proxy.getComputerPlugin();
         return getPlugin();
     }
 
@@ -491,10 +487,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 
     public ProxyInterpreter getPlugin() {
         return plugin;
-    }
-
-    public static void setExtension(ASTExtension aExtension) {
-        extension = aExtension;
     }
 
 }

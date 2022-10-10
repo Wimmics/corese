@@ -11,6 +11,7 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.producer.DataManagerJava;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.util.Property;
 import fr.inria.corese.core.util.Property.Pair;
@@ -49,6 +50,7 @@ public class DatasetManager {
     public enum TypeDataBase {
         RDF4J,
         JENATDVB1,
+        JAVA
     }
 
     // Create one DataManager in StorageFactory for each db path
@@ -66,7 +68,11 @@ public class DatasetManager {
                 case "rdf4jmodel":
                     typeDB = TypeDataBase.RDF4J;
                     break;
-
+                    
+                case "java":
+                    typeDB=TypeDataBase.JAVA;
+                    break;
+                    
                 default:
                     throw new InvalidParameterException("Unknown database type: " + type);
             }
@@ -80,8 +86,12 @@ public class DatasetManager {
     }
 
     // define db data manager, whatever mode is
+    // overloaded in corese gui and server
     public void defineDataManager(TypeDataBase typeDB, String path) {
         logger.info("Create data manager for: " + path);
+        if (typeDB == TypeDataBase.JAVA) {
+            StorageFactory.defineDataManager(path, new DataManagerJava(path));
+        }
     }
 
     public QueryProcess createQueryProcess(Graph g) {

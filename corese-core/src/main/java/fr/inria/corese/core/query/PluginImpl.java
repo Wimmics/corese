@@ -776,7 +776,7 @@ public class PluginImpl
     // @todo DataManager
     @Override
     public IDatatype triple(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o) {        
-        return getGraph(p).createTriple(s, p, o);
+        return getGraph(prod).createTriple(s, p, o);
     }
     
     // function xt:value    

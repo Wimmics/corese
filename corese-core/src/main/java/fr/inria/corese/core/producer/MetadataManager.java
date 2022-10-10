@@ -10,7 +10,6 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import java.io.IOException;
 import java.util.HashMap;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

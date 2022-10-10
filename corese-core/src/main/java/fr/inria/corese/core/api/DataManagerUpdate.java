@@ -17,7 +17,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
  * @author Rémi ceres
  */
 public interface DataManagerUpdate {
-    
+
     default String blankNode() {
         return DatatypeMap.blankID();
     }
@@ -139,7 +139,7 @@ public interface DataManagerUpdate {
      *         true, else false.
      */
     default boolean add(Node source_context, Node target_context, boolean silent) {
-        return true;
+        return false;
     }
 
     /**

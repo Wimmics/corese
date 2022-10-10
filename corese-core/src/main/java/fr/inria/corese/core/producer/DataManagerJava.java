@@ -2,7 +2,6 @@ package fr.inria.corese.core.producer;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.api.DataManager;
-import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
@@ -14,7 +13,6 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.logging.Level;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -39,20 +37,15 @@ public class DataManagerJava implements DataManager {
     }
     
     void init() {
-        boolean b = false;
         try {
             setGraph(Graph.create());
             setQueryProcess(QueryProcess.create(Graph.create()));
             getQueryProcess().imports(getStoragePath());
-            b = Access.skip(true);
             setJson(getQueryProcess().funcall(readFunction));
             joker = DatatypeMap.newInstance(GraphSpecificFunction.JOKER);
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
-        }
-        finally {
-            Access.skip(b);
-        }
+        }       
     }
     
     @Override

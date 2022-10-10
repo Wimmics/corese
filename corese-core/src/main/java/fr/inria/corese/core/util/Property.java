@@ -554,6 +554,12 @@ public class Property {
 
             case ACCESS_LEVEL:
                 Access.setActive(b);
+                if (b) {
+                    Access.setDefaultUserLevel(Level.DEFAULT);
+                }
+                else {
+                    Access.setDefaultUserLevel(Level.SUPER_USER);                    
+                }
                 break;
 
             case ACCESS_RIGHT:

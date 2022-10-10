@@ -147,7 +147,7 @@ public class Load
     }
 
     public static Load create() {
-        return new Load();
+        return new Load(new Graph());
     }
 
     public static void setDefaultFormat(int f) {

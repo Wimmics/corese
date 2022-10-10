@@ -62,6 +62,9 @@ public interface DataManager extends DataManagerRead, DataManagerUpdate {
             getMetadataManager().trace(mes, list);
         }
     }
+    
+    // for init purpose, called by corese StorageFactory
+    default void start() {}
 
     /****************
      * Transactions *

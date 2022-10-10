@@ -2,6 +2,7 @@ package fr.inria.corese.gui.core;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.ACCESS_LEVEL;
 import java.io.IOException;
 import java.util.HashMap;
 import org.apache.logging.log4j.LogManager;
@@ -46,6 +47,9 @@ public class Command extends HashMap<String, String> {
         while (i < args.length){
             String str = args[i++];
             switch (str) {
+                case SUPER_USER:
+                    Property.set(ACCESS_LEVEL, false);
+                    break;
                 case METADATA:
                 case "-m":
                     put(METADATA, "true");

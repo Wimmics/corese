@@ -136,9 +136,7 @@ public class GraphEngine {
                 case Command.RDF_STAR:
                     Property.set(RDF_STAR, true);
                     break;                   
-                case Command.SUPER_USER:
-                    Property.set(ACCESS_LEVEL, false);
-                    break;
+                
                 
             }
         }

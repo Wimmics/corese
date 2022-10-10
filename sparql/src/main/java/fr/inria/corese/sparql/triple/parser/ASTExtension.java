@@ -165,8 +165,13 @@ public class ASTExtension implements Extension {
             logger.info(def.toString());
             logger.info(exp.toString());
         }
-        getMap(fun).put(fun.getLabel(), exp);
-        getMap(fun).setMetadata(exp);
+        if (getMap(fun) == null) {
+            logger.error("Undefined function: " + fun);
+        }
+        else {
+            getMap(fun).put(fun.getLabel(), exp);
+            getMap(fun).setMetadata(exp);
+        }
     }
     
     void defineMethodFunction(Function exp) {       

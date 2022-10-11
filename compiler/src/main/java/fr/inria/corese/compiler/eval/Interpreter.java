@@ -33,7 +33,7 @@ import org.slf4j.LoggerFactory;
 
 
 /**
- * Filter Evaluator
+ * Filter exists Evaluator
  *
  * @author Olivier Corby INRIA
  */
@@ -113,157 +113,12 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         listener = rl;
         hasListener = rl != null;
     }
-
-    /**
-     * Evaluator for bind (exp as var)
-     */
-    //@Override
-//    public Node eval(Filter f, Environment env, Producer p) throws EngineException {
-//        IDatatype value = eval(f.getExp(), env, p);
-//        if (value == ERROR_VALUE) {
-//            return null;
-//        }
-//        return producer.getNode(value);
-//    }
-
-    /**
-     * Extension: Functions that return several variables as result such as:
-     * values (VAR+) { unnest(exp) }
-     */
-    //@Override
-//    public Mappings eval(Filter f, Environment env, List<Node> nodes)
-//            throws EngineException {
-//        int n = 1;
-//        Expr exp = f.getExp();
-//        switch (exp.oper()) {
-//
-//            case UNNEST:
-//                if (hasListener) {
-//                    listener.listen(exp);
-//                }
-//                if (exp.arity() == 2) {
-//                    // unnest(exp, 2)
-//                    IDatatype dt = eval(exp.getExp(1), env, getProducer());
-//                    if (dt == ERROR_VALUE) {
-//                        return new Mappings();
-//                    }
-//                    n = dt.intValue();
-//                }
-//                exp = exp.getExp(0);
-//
-//            default:
-//                IDatatype res = eval(exp, env, getProducer());
-//                if (res == ERROR_VALUE) {
-//                    return new Mappings();
-//                }
-//                return getProducer().map(nodes, res, n);
-//        }
-//    }
-
-    /**
-     * Evaluator of filter exp
-     */
-//    @Override
-//    public boolean test(Filter f, Environment env) throws EngineException {
-//        return test(f, env, getProducer());
-//    }
-
-    //@Override
-//    public boolean test(Filter f, Environment env, Producer p) throws EngineException {
-//        IDatatype value = eval(f.getExp(), env, p);
-//        if (value == ERROR_VALUE) {
-//            return false;
-//        }
-//        return isTrue(value);
-//    }
-
-    // Integer to IDatatype to Node
-    // for kgram internal use of java values
-    // e.g. count(*) ...
-//    @Override
-//    public Node cast(Object obj, Environment env, Producer p) {
-//        IDatatype val = DatatypeMap.cast(obj);
-//        Node node = p.getNode(val);
-//        return node;
-//    }
-
-    /**
-     * Bridge to expression evaluation for SPARQL filter and LDScript expression
-     * Expressions are defined in fr.inria.corese.sparql.triple.parser Each
-     * expression implements function: eval(Computer e, Binding b, Environment
-     * env, Producer p)
-     */
-//    public IDatatype eval(Expr exp, Environment env, Producer p) throws EngineException {
-//        // evalWE clean the binding stack if an EngineException is thrown
-//        IDatatype dt = exp.evalWE(this, env.getBind(), env, p);
-//        if (env.getBind().isDebug()) {
-//            System.out.println("eval: " + exp + " = " + dt);
-//            System.out.println(env);
-//        }
-////        if (dt == null) {
-////            // Evaluation error, may be overloaded by visitor event @error function 
-////            DatatypeValue res = env.getVisitor().error(env.getEval(), exp, EMPTY);
-////            if (res != null) {
-////                return (IDatatype) res;
-////            }
-////        }
-//        return dt;
-//    }
-//
-//    boolean isTrue(IDatatype dt) {
-//        try {
-//            return dt.isTrue();
-//        } catch (CoreseDatatypeException e) {
-//            return false;
-//        }
-//    }
-
-//    @Override
-//    public IDatatype function(Expr exp, Environment env, Producer p) throws EngineException {
-//        throw new EngineException("Undefined expression: " + exp.toString());
-//    }
-
-    /**
-     * function.isSystem() == true function contains nested query or exists use
-     * case: exists { exists { } } the inner exists need outer exists BGP to be
-     * bound // hence we need a fresh Memory to start
-     */
-    public Computer getComputer(Environment env, Producer p, Expr function) {
-        Eval eval = getComputerEval(env, p, function);
-        return eval.getEvaluator();
-    }
-
-    /**
-     * context: ldscript function call require new Interpreter with new
-     * Environment see sparql.triple.function.script.Extension use case:
-     * function contains a sparql query such as let(select where) the function
-     * must be executed with a fresh Environment initialized with the function
-     * definition global query hint: the function has been compiled within a
-     * public query q1 which may be different from the query q2 where public
-     * function call occur
-     */
+    
     @Override
-    public Eval getComputerEval(Environment env, Producer p, Expr function) {
-        Query q = getQuery(env, function);
-        Eval currentEval = getEval(env);
-        Eval eval = new Eval(p, this, currentEval.getMatcher());
-        eval.setSPARQLEngine(currentEval.getSPARQLEngine());
-        eval.set(currentEval.getProvider());
-        eval.init(q);
-        eval.setVisitor(currentEval.getVisitor());
-        eval.getMemory().setBind(env.getBind());
-        eval.getMemory().setGraphNode(env.getGraphNode());
-        return eval;
+    public Evaluator getEvaluator() {
+        return this;
     }
 
-    Query getQuery(Environment env, Expr function) {
-        if (function.isPublic() && env.getQuery() != function.getPattern()) {
-            // function is public and contains query or exists
-            // use function definition global query 
-            return (Query) function.getPattern();
-        }
-        return env.getQuery();
-    }
 
     Eval createEval(Eval currentEval, Expr exp, Environment env, Producer p) {
         Exp pat = env.getQuery().getPattern(exp);
@@ -362,29 +217,6 @@ public class Interpreter implements Computer, Evaluator, ExprType {
         } catch (SparqlException e) {
             throw EngineException.cast(e);
         }
-    }
-
-    // draft test
-    // @todo: it does not clean the report in case of failure of the rest of the pattern
-    void report(Query q, Environment env, Mappings map) {
-        if (q.getGlobalAST().hasMetadata(Metadata.REPORT) && !map.isEmpty()) {
-            IDatatype dt = getCreateReport(env);
-            IDatatype list = dt.get("exists");
-            list.getList().add(DatatypeMap.newInstance(map.toString(true)));
-            dt.set("exists", list);
-        }
-    }
-
-    IDatatype getCreateReport(Environment env) {
-        IDatatype dt = env.getReport();
-        if (dt == null) {
-            dt = DatatypeMap.newServiceReport();
-            env.setReport(dt);
-        }
-        if (dt.get("exists") == null) {
-            dt.set("exists", DatatypeMap.newList());
-        }
-        return dt;
     }
 
     /**

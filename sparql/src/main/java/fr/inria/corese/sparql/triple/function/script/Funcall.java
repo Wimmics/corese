@@ -87,7 +87,8 @@ public class Funcall extends LDScript {
         b.set(function, fun.getExpList(), param);
         IDatatype dt = null;
         if (function.isSystem()) {
-            fr.inria.corese.kgram.core.Eval cc = eval.getComputerEval(env, p, function);
+           // fr.inria.corese.kgram.core.Eval cc = eval.getComputerEval(env, p, function);
+            fr.inria.corese.kgram.core.Eval cc = getComputerEval(eval.getEvaluator(), env, p, function);
             dt = function.getBody().eval(cc.getEvaluator(), b, cc.getEnvironment(), p);
         } else {
             dt = function.getBody().eval(eval, b, env, p);

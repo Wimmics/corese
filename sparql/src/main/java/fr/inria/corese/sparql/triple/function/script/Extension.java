@@ -136,7 +136,8 @@ public class Extension extends LDScript {
             }
             IDatatype dt = null;
             if (isSystem) {
-                fr.inria.corese.kgram.core.Eval cc = eval.getComputerEval(env, p, function);
+                //fr.inria.corese.kgram.core.Eval cc = eval.getComputerEval(env, p, function);
+                fr.inria.corese.kgram.core.Eval cc = getComputerEval(eval.getEvaluator(), env, p, function);
                 // PRAGMA: b = cc.getEnvironment().getBind()
                 dt = body.eval(cc.getEvaluator(), b, cc.getEnvironment(), p);
             } else {
@@ -187,7 +188,8 @@ public class Extension extends LDScript {
         IDatatype dt;
         b.set(function, fun.getExpList(), param);
         if (function.isSystem()) {
-            fr.inria.corese.kgram.core.Eval cc = eval.getComputerEval(env, p, function);
+            //fr.inria.corese.kgram.core.Eval cc = eval.getComputerEval(env, p, function);
+            fr.inria.corese.kgram.core.Eval cc = getComputerEval(eval.getEvaluator(), env, p, function);
             // PRAGMA: b = cc.getEnvironment().getBind()
             dt = function.getBody().eval(cc.getEvaluator(), b, cc.getEnvironment(), p);
         } else {

@@ -3,8 +3,8 @@ package fr.inria.corese.sparql.api;
 
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Evaluator;
 import fr.inria.corese.kgram.api.query.Producer;
-import fr.inria.corese.kgram.core.Eval;
 import fr.inria.corese.sparql.exceptions.EngineException;
 
 /**
@@ -13,7 +13,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
  */
 public interface Computer extends ComputerProxy {
     
-    Eval getComputerEval(Environment env, Producer p, Expr function); 
+    Evaluator getEvaluator();
         
     IDatatype exist(Expr exp, Environment env, Producer p) throws EngineException ;
         

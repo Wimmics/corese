@@ -2,7 +2,6 @@ package fr.inria.corese.compiler.eval;
 
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.ExprType;
-import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Evaluator;
@@ -23,7 +22,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.api.TransformProcessor;
 import fr.inria.corese.sparql.api.TransformVisitor;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
@@ -33,7 +31,6 @@ import fr.inria.corese.sparql.triple.parser.Metadata;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.List;
 
 /**
  * Filter Evaluator
@@ -221,10 +218,10 @@ public class Interpreter implements Computer, Evaluator, ExprType {
 //        }
 //    }
 
-    @Override
-    public IDatatype function(Expr exp, Environment env, Producer p) throws EngineException {
-        throw new EngineException("Undefined expression: " + exp.toString());
-    }
+//    @Override
+//    public IDatatype function(Expr exp, Environment env, Producer p) throws EngineException {
+//        throw new EngineException("Undefined expression: " + exp.toString());
+//    }
 
     /**
      * function.isSystem() == true function contains nested query or exists use
@@ -232,8 +229,8 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * bound // hence we need a fresh Memory to start
      */
     public Computer getComputer(Environment env, Producer p, Expr function) {
-        InterpreterEval eval = getComputerEval(env, p, function);
-        return eval.getComputer();
+        Eval eval = getComputerEval(env, p, function);
+        return eval.getEvaluator();
     }
 
     /**
@@ -246,10 +243,10 @@ public class Interpreter implements Computer, Evaluator, ExprType {
      * function call occur
      */
     @Override
-    public InterpreterEval getComputerEval(Environment env, Producer p, Expr function) {
+    public Eval getComputerEval(Environment env, Producer p, Expr function) {
         Query q = getQuery(env, function);
         Eval currentEval = getEval(env);
-        InterpreterEval eval = new InterpreterEval(p, this, currentEval.getMatcher());
+        Eval eval = new Eval(p, this, currentEval.getMatcher());
         eval.setSPARQLEngine(currentEval.getSPARQLEngine());
         eval.set(currentEval.getProvider());
         eval.init(q);

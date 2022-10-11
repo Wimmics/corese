@@ -1,7 +1,8 @@
 package fr.inria.corese.core.producer;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.api.DataManager;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
@@ -9,7 +10,6 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.proxy.GraphSpecificFunction;
-import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -17,26 +17,76 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
+ * DataManager on top of json (or xml) document
  *
+ * a) implemented in java as graph data manager
+ * path = path of insert where query that creates a graph (from json, xml, etc.)
+ * update query creates graph data manager
+ * 
+ * b) implemented in ldscript when path contains ldscript (draft for testing)
+ * path = path of ldscript function definition
+ * 1- read (json) file with us:read() ldscript determine json file
+ * 2- iterate edges with ldscript function us:iterate() 
  */
-public class DataManagerJava implements DataManager {
+public class DataManagerJava extends DataManagerGraph  {
     private static Logger logger = LoggerFactory.getLogger(QueryProcess.class);
     
-    String path;
     String iterateFunction = NSManager.USER+"iterate";
-    String readFunction = NSManager.USER+"read";
+    String readFunction    = NSManager.USER+"read";
+    // json document 
     private IDatatype json;
     IDatatype joker;
-    private MetadataManager metadataManager;
     private QueryProcess queryProcess;
-    private Graph graph;
+    boolean isJson = true;
     
+    // path of insert where query that creates a graph (from json or xml)  
+    // or
     // path of ldscript us:read and us:iterate functions
     public DataManagerJava(String path) {
-        setStoragePath(path);
+        setPath(path);
+        // draft trick to determine ldscript|graph
+        isJson = path.contains("ldscript");
+    }
+    
+    @Override
+    public void start () {
+        logger.info("Start data manager: " + getStoragePath());
+        init();
     }
     
     void init() {
+        if (isJson) {
+            initjson();
+        }
+        else {
+            initgraph();
+        }
+    }
+    
+    
+    // create graph from json using update query located at path 
+    // set this data manager graph 
+    void initgraph() {
+        // graph to be created by update query
+        setGraph(Graph.create());
+        setQueryProcess(QueryProcess.create(getGraph()));
+        QueryLoad ql = QueryLoad.create();
+        try {
+            // path of update query who creates rdf graph (from json) 
+            String q = ql.readWE(getStoragePath());
+            // update query creates rdf graph (from json)
+            // this is graph of current DataManager
+            getQueryProcess().query(q);
+            getGraph().init();
+        } catch (LoadException|EngineException ex) {
+            logger.error(ex.getMessage());
+        }
+    }
+    
+    // load json using ldscript us:read() function
+    // defined at path
+    // iterate edges from json using ldscript us:iterate() function
+    void initjson() {
         try {
             setGraph(Graph.create());
             setQueryProcess(QueryProcess.create(Graph.create()));
@@ -46,21 +96,24 @@ public class DataManagerJava implements DataManager {
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
         }       
-    }
+    }    
     
-    @Override
-    public void start () {
-        logger.info("Start data manager: " + getStoragePath());
-        init();
-    }
+    
     
     @Override
     public Iterable<Edge> getEdges(Node s, Node p, Node o, List<Node> graphList) {
+        if (isJson) {
+            return iterateJson(s, p, o, graphList);
+        }
+        return super.getEdges(s, p, o, graphList);
+    }
+       
+    Iterable<Edge> iterateJson(Node s, Node p, Node o, List<Node> graphList) {
         try {
-            IDatatype dt = 
-            getQueryProcess().funcall(iterateFunction, getJson(), value(s), value(p), value(o));
+            IDatatype dt
+                    = getQueryProcess().funcall(iterateFunction, getJson(), value(s), value(p), value(o));
             if (dt == null) {
-               return new ArrayList<>(0);
+                return new ArrayList<>(0);
             }
             return cast(dt);
         } catch (EngineException ex) {
@@ -76,7 +129,7 @@ public class DataManagerJava implements DataManager {
         return n.getDatatypeValue();
     }
     
-    // list = list(list(s, p, o))
+    // list of triple reference, result of triple(s, p, o)
     Iterable<Edge> cast(IDatatype list) {
         ArrayList<Edge> edgeList = new ArrayList<>();
         for (IDatatype dt : list) {
@@ -97,37 +150,7 @@ public class DataManagerJava implements DataManager {
         return n.getDatatypeValue().equals(joker);
     }
     
-    Iterable<Edge> cast2(IDatatype list) {
-        ArrayList<Edge> edgeList = new ArrayList<>();
-        for (IDatatype dt : list) {
-            Edge e = getGraph().create(dt.get(0), dt.get(1), dt.get(2));
-            edgeList.add(e);
-        }
-        return edgeList;
-    }
-    Iterable<Edge> iterate(Node s, Node p, Node o, List<Node> list) {
-        return new ArrayList<>(0);
-    }
     
-    
-    
-    public void setStoragePath(String path) {
-        this.path = path;
-    }
-    
-    @Override
-    public String getStoragePath() {
-        return path;
-    }
-
-    public MetadataManager getMetadataManager() {
-        return metadataManager;
-    }
-
-    public void setMetadataManager(MetadataManager metadataManager) {
-        this.metadataManager = metadataManager;
-    }
-
     public QueryProcess getQueryProcess() {
         return queryProcess;
     }
@@ -142,14 +165,6 @@ public class DataManagerJava implements DataManager {
 
     public void setJson(IDatatype json) {
         this.json = json;
-    }
-
-    public Graph getGraph() {
-        return graph;
-    }
-
-    public void setGraph(Graph graph) {
-        this.graph = graph;
     }
     
 }

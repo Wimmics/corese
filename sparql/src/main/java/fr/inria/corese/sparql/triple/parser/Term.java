@@ -1915,6 +1915,6 @@ public class Term extends Expression {
 
     @Override
     public IDatatype eval(Computer eval, Binding b, Environment env, Producer p) throws EngineException {
-        return eval.function(this, env, p);
+        throw new EngineException("Undefined expression: " + this.toString());
     }
 }

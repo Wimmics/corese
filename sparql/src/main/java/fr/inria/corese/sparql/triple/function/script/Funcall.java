@@ -9,7 +9,6 @@ import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.SparqlException;
-import fr.inria.corese.sparql.api.ComputerEval;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.UndefinedExpressionException;
@@ -88,8 +87,8 @@ public class Funcall extends LDScript {
         b.set(function, fun.getExpList(), param);
         IDatatype dt = null;
         if (function.isSystem()) {
-            ComputerEval cc = eval.getComputerEval(env, p, function);
-            dt = function.getBody().eval(cc.getComputer(), b, cc.getEnvironment(), p);
+            fr.inria.corese.kgram.core.Eval cc = eval.getComputerEval(env, p, function);
+            dt = function.getBody().eval(cc.getEvaluator(), b, cc.getEnvironment(), p);
         } else {
             dt = function.getBody().eval(eval, b, env, p);
         }

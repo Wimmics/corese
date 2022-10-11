@@ -1,13 +1,7 @@
 package fr.inria.corese.kgram.api.query;
 
-import java.util.List;
-
-import fr.inria.corese.kgram.api.core.Filter;
-import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Eval;
-import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.event.ResultListener;
-import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.api.Computer;
 

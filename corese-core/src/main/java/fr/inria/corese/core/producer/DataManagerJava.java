@@ -33,6 +33,8 @@ import org.slf4j.LoggerFactory;
 public class DataManagerJava extends DataManagerGraph  {
     private static Logger logger = LoggerFactory.getLogger(QueryProcess.class);
     private static final String QUERY = "query";
+    private static final String DEBUG = "debug";
+    private static final String TRUE = "true";
     
     String iterateFunction = NSManager.USER+"iterate";
     String readFunction    = NSManager.USER+"read";
@@ -66,11 +68,15 @@ public class DataManagerJava extends DataManagerGraph  {
     }
     
     void parameter(HashMapList<String> map) {
-        List<String> list = map.get(QUERY);
-        if (list != null && !list.isEmpty()) {
-            setQueryPath(list.get(0));
-            logger.info("Service query = " + getQueryPath());
+        String query = map.getFirst(QUERY);
+        if (query!=null) {
+            setQueryPath(query);
+            logger.info("Service query = " + query);
             initgraph();
+        }
+        
+        if (map.containsKey(DEBUG)) {
+            setDebug(map.booleanValue(DEBUG));
         }
     }
     

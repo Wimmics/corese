@@ -21,6 +21,7 @@ public class DataManagerGraph implements DataManager {
     private Graph graph;
     private MetadataManager metadataManager;
     private String path = STORAGE_PATH;
+    private boolean debug = false;
 
     DataManagerGraph() {
         emptyNodeList = new ArrayList<>(0);    
@@ -78,6 +79,9 @@ public class DataManagerGraph implements DataManager {
     @Override
     public Iterable<Edge> getEdges(
             Node subject, Node predicate, Node object, List<Node> from) {
+        if (isDebug()) {
+            logger.info(String.format("iterate: %s %s %s %s", subject, predicate, object, from));
+        }
         return getGraph().iterate(subject, predicate, object, from);
     }
     
@@ -239,6 +243,14 @@ public class DataManagerGraph implements DataManager {
 
     public void setPath(String path) {
         this.path = path;
+    }
+
+    public boolean isDebug() {
+        return debug;
+    }
+
+    public void setDebug(boolean debug) {
+        this.debug = debug;
     }
 
 }

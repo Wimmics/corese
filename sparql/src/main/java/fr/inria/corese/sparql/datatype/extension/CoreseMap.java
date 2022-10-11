@@ -4,6 +4,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import static fr.inria.corese.sparql.datatype.CoreseBoolean.FALSE;
 import static fr.inria.corese.sparql.datatype.CoreseBoolean.TRUE;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.triple.parser.HashMapList;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -164,5 +165,12 @@ public class CoreseMap extends CoreseExtension {
         }
     }
 
+    public static IDatatype cast(HashMapList<String> map) {
+        CoreseMap dt = new CoreseMap();
+        for (String key : map.keySet()) {
+            dt.set(DatatypeMap.newInstance(key), DatatypeMap.newStringList(map.get(key)));
+        }
+        return dt;
+    }
     
 }

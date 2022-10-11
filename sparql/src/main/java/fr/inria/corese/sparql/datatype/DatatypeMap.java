@@ -21,6 +21,7 @@ import fr.inria.corese.sparql.datatype.extension.CoreseList;
 import fr.inria.corese.sparql.datatype.extension.CoreseJSON;
 import fr.inria.corese.sparql.datatype.extension.CoreseXML;
 import fr.inria.corese.sparql.datatype.extension.CoresePointer;
+import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.io.UnsupportedEncodingException;
 import java.math.BigDecimal;
@@ -942,6 +943,10 @@ public class DatatypeMap implements Cst, RDF, DatatypeValueFactory {
             l.add( node.getDatatypeValue());
         }
         return newList(l);
+    }
+    
+    public static IDatatype cast(HashMapList<String> map) {
+        return CoreseMap.cast(map);
     }
           
     public static IDatatype[] toArray(IDatatype dt) {

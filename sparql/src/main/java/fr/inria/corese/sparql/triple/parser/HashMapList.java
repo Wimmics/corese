@@ -9,6 +9,7 @@ import java.util.List;
  * @author corby
  */
 public class HashMapList<T> extends HashMap<String, List<T>> {
+    private static final String TRUE = "true";
 
     public T getFirst(String key) {
         List<T> list = get(key);
@@ -35,4 +36,13 @@ public class HashMapList<T> extends HashMap<String, List<T>> {
             list.add(val);
         }
     }
+    
+    public boolean booleanValue(String key) {
+        T value = getFirst(key);
+        if (value == null) {
+            return false;
+        }
+        return value.toString().equals(TRUE);
+    }
+    
 }

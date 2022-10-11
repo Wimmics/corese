@@ -13,6 +13,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
 import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.VariableLocal;
@@ -50,6 +51,8 @@ public class Binding implements Binder {
     public static final String SERVICE_REPORT_FORMAT = "?_service_report_%s";
     public static final String SERVICE_REPORT_ZERO = "?_service_report_0";
     public static final String SERVICE_REPORT_ONE = "?_service_report_1";
+    public static final String SERVICE_PARAM = "?service_param";
+    
     ArrayList<Expr> varList;
     ArrayList<IDatatype> valList;
     // level of the stack before function call
@@ -952,6 +955,12 @@ public class Binding implements Binder {
 
     public void setShare(Share share) {
         this.share = share;
+    }
+    
+    // service parameter
+    public void init(HashMapList<String> map) {
+        IDatatype dt = DatatypeMap.cast(map);
+        setGlobalVariable(SERVICE_PARAM, dt);
     }
     
 }

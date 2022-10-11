@@ -973,8 +973,13 @@ public class ProviderService implements URLParam {
             throw new EngineException(
                     String.format("Undefined storage manager: %s %s", url.getServer(), url.getStoragePath()));
         }
+        if (url.hasParameter()) {
+            man.init(url.getMap());
+            //b.init(url.getMap());
+        }
         QueryProcess exec = QueryProcess.create(man);
         logger.info(String.format("storage: %s\n%s", url, ast));
+        ast.inheritFunction(getGlobalAST());
         return index(exec.query(ast, b));
     }
     

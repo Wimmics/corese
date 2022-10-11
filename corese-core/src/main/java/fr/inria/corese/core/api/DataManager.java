@@ -1,6 +1,7 @@
 package fr.inria.corese.core.api;
 
 import fr.inria.corese.core.producer.MetadataManager;
+import fr.inria.corese.sparql.triple.parser.HashMapList;
 
 /**
  * Interface to adapt an external storage system to Corese.
@@ -65,6 +66,9 @@ public interface DataManager extends DataManagerRead, DataManagerUpdate {
     
     // for init purpose, called by corese StorageFactory
     default void start() {}
+    
+    // service store parameter
+    default void init(HashMapList<String> map) {}
 
     /****************
      * Transactions *

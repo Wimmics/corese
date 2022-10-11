@@ -6,10 +6,12 @@ import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.proxy.GraphSpecificFunction;
+import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import java.util.ArrayList;
 import java.util.List;
@@ -30,6 +32,7 @@ import org.slf4j.LoggerFactory;
  */
 public class DataManagerJava extends DataManagerGraph  {
     private static Logger logger = LoggerFactory.getLogger(QueryProcess.class);
+    private static final String QUERY = "query";
     
     String iterateFunction = NSManager.USER+"iterate";
     String readFunction    = NSManager.USER+"read";
@@ -38,12 +41,14 @@ public class DataManagerJava extends DataManagerGraph  {
     IDatatype joker;
     private QueryProcess queryProcess;
     boolean isJson = true;
+    String queryPath;
     
     // path of insert where query that creates a graph (from json or xml)  
     // or
     // path of ldscript us:read and us:iterate functions
     public DataManagerJava(String path) {
         setPath(path);
+        setQueryPath(path);
         // draft trick to determine ldscript|graph
         isJson = path.contains("ldscript");
     }
@@ -52,6 +57,21 @@ public class DataManagerJava extends DataManagerGraph  {
     public void start () {
         logger.info("Start data manager: " + getStoragePath());
         init();
+    }
+    
+    // service store: parameter map 
+    @Override
+    public void init(HashMapList<String> map) {
+        parameter(map);
+    }
+    
+    void parameter(HashMapList<String> map) {
+        List<String> list = map.get(QUERY);
+        if (list != null && !list.isEmpty()) {
+            setQueryPath(list.get(0));
+            logger.info("Service query = " + getQueryPath());
+            initgraph();
+        }
     }
     
     void init() {
@@ -73,10 +93,14 @@ public class DataManagerJava extends DataManagerGraph  {
         QueryLoad ql = QueryLoad.create();
         try {
             // path of update query who creates rdf graph (from json) 
-            String q = ql.readWE(getStoragePath());
+            String q = ql.readWE(getQueryPath());
             // update query creates rdf graph (from json)
             // this is graph of current DataManager
-            getQueryProcess().query(q);
+            Mappings map = getQueryProcess().query(q);
+            if (map.getGraph() != null) {
+                // construct where query
+                setGraph((Graph) map.getGraph());
+            }
             getGraph().init();
         } catch (LoadException|EngineException ex) {
             logger.error(ex.getMessage());
@@ -90,7 +114,7 @@ public class DataManagerJava extends DataManagerGraph  {
         try {
             setGraph(Graph.create());
             setQueryProcess(QueryProcess.create(Graph.create()));
-            getQueryProcess().imports(getStoragePath());
+            getQueryProcess().imports(getQueryPath());
             setJson(getQueryProcess().funcall(readFunction));
             joker = DatatypeMap.newInstance(GraphSpecificFunction.JOKER);
         } catch (EngineException ex) {
@@ -166,5 +190,13 @@ public class DataManagerJava extends DataManagerGraph  {
     public void setJson(IDatatype json) {
         this.json = json;
     }
+    
+    public String getQueryPath() {
+        return queryPath;
+    }   
+    
+    public void setQueryPath(String path) {
+        queryPath = path;
+    }   
     
 }

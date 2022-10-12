@@ -183,7 +183,7 @@ public class Rdf4jDataManager implements DataManager {
      *******************/
 
     @Override
-    public boolean add(Node source, Node target, boolean silent) {
+    public boolean addGraph(Node source, Node target, boolean silent) {
         // convert source and target to RDF4J context
         ValueFactory vf = SimpleValueFactory.getInstance();
         Resource source_context = ConvertRdf4jCorese.coreseContextToRdf4jContext(source);

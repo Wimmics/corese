@@ -38,10 +38,11 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     private Dataset jena_dataset;
     private String storage_path;
 
-    // each thread has its own counter for read transaction there may be several
+    // Each thread has its own counter for read transaction there may be several
     // start/end read transaction in each thread
     HashMap<Thread, Integer> threadCounter;
 
+    // Manage meta-data
     private MetadataManager metadataManager;
 
     /****************
@@ -98,7 +99,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     @Override
     public int countEdges(Node predicate) {
-        // convert Corese node to Jena RdfNode
+        // Convert Corese node to Jena RdfNode
         org.apache.jena.graph.Node jena_predicate = ConvertJenaCorese.coreseNodeToJenaNode(predicate);
         return (int) this.jena_dataset.asDatasetGraph().stream(null, null, jena_predicate, null).count();
     }
@@ -140,22 +141,18 @@ public class JenaDataManager implements DataManager, AutoCloseable {
             }
         };
 
-        Iterator<org.apache.jena.graph.Node> iter;
+        Graph graph = null;
         if (corese_context == null) {
-            // Default graph
-
-            iter = GraphUtil.listPredicates(
-                    defaultGraph(),
-                    org.apache.jena.graph.Node.ANY,
-                    org.apache.jena.graph.Node.ANY);
-
+            graph = this.defaultGraph();
         } else {
             String context_iri = ConvertJenaCorese.coreseContextToJenaContext(corese_context).getURI();
-            iter = GraphUtil.listPredicates(
-                    this.jena_dataset.getNamedModel(context_iri).getGraph(),
-                    org.apache.jena.graph.Node.ANY,
-                    org.apache.jena.graph.Node.ANY);
+            graph = this.jena_dataset.getNamedModel(context_iri).getGraph();
         }
+
+        Iterator<org.apache.jena.graph.Node> iter = GraphUtil.listPredicates(
+                graph,
+                org.apache.jena.graph.Node.ANY,
+                org.apache.jena.graph.Node.ANY);
 
         return () -> Iterators.transform(
                 iter,
@@ -198,15 +195,16 @@ public class JenaDataManager implements DataManager, AutoCloseable {
             }
         };
 
+        // Get list of contexts names
         Iterator<Node> contextsNamedGraphs = Iterators.transform(this.jena_dataset.listModelNames(),
                 convertIteratorResourceToNode);
 
         if (this.jena_dataset.getDefaultModel().isEmpty()) {
             return () -> contextsNamedGraphs;
         } else {
+            // Add default graph in list of context if is not empty
             Node default_context = ConvertJenaCorese.jenaContextToCoreseContext(Quad.defaultGraphIRI);
-            Iterator<Node> contextDefaultGraph = Arrays.asList(default_context).iterator();
-            return () -> Iterators.concat(contextsNamedGraphs, contextDefaultGraph);
+            return () -> Iterators.concat(contextsNamedGraphs, Arrays.asList(default_context).iterator());
         }
     }
 
@@ -271,7 +269,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      *******************/
 
     @Override
-    public boolean add(Node source, Node target, boolean silent) {
+    public boolean addGraph(Node source, Node target, boolean silent) {
         long nb_graph_before;
         long nb_graph_after;
 
@@ -341,9 +339,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         Function<Triple, Edge> convertIteratorQuadToEdge = new Function<Triple, Edge>() {
             @Override
             public Edge apply(Triple triple) {
-                Quad quad = new Quad(
-                        Quad.defaultGraphIRI, triple.getSubject(), triple.getPredicate(), triple.getObject());
-                return ConvertJenaCorese.quadToEdge(quad);
+                return ConvertJenaCorese.tripleToEdge(triple);
             }
         };
 

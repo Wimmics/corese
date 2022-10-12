@@ -593,7 +593,7 @@ public class Rdf4jDataManagerTest {
         // tests
         assertEquals(true, modelCopy.contains(theoretical_old_statement));
         assertEquals(false, modelCopy.contains(theoretical_new_statement));
-        data_manager.add(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1),
+        data_manager.addGraph(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1),
                 ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context2), false);
         assertEquals(true, modelCopy.contains(theoretical_old_statement));
         assertEquals(true, modelCopy.contains(theoretical_new_statement));
@@ -621,7 +621,7 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, modelCopy.contains(theoretical_old_statement));
         assertEquals(false, modelCopy.contains(this.statement_2));
         assertEquals(false, modelCopy.contains(theoretical_new_statement));
-        data_manager.move(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1),
+        data_manager.moveGraph(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1),
                 ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context2), false);
         assertEquals(false, modelCopy.contains(this.statement_1));
         assertEquals(false, modelCopy.contains(theoretical_old_statement));
@@ -651,7 +651,7 @@ public class Rdf4jDataManagerTest {
         assertEquals(true, modelCopy.contains(theoretical_old_statement));
         assertEquals(false, modelCopy.contains(this.statement_2));
         assertEquals(false, modelCopy.contains(theoretical_new_statement));
-        data_manager.copy(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1),
+        data_manager.copyGraph(ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context1),
                 ConvertRdf4jCorese.rdf4jContextToCoreseContext(this.context2), false);
         assertEquals(true, modelCopy.contains(this.statement_1));
         assertEquals(true, modelCopy.contains(theoretical_old_statement));

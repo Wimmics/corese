@@ -223,6 +223,7 @@ public class JenaDataManagerTest {
                 jt1dm.close();
 
                 jt1dm = new JenaDataManager(this.dataset, null);
+                System.out.println(this.dataset.asDatasetGraph());
                 assertEquals(4, jt1dm.graphSize());
                 jt1dm.close();
         }
@@ -725,7 +726,7 @@ public class JenaDataManagerTest {
                 // tests
                 assertEquals(true, this.dataset.asDatasetGraph().contains(theoretical_old_statement));
                 assertEquals(false, this.dataset.asDatasetGraph().contains(theoretical_new_statement));
-                data_manager.add(this.context1_corese, this.context2_corese, false);
+                data_manager.addGraph(this.context1_corese, this.context2_corese, false);
                 assertEquals(true, this.dataset.asDatasetGraph().contains(theoretical_old_statement));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(theoretical_new_statement));
                 data_manager.close();
@@ -751,7 +752,7 @@ public class JenaDataManagerTest {
                 assertEquals(true, this.dataset.asDatasetGraph().contains(theoretical_old_statement));
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_2_jena));
                 assertEquals(false, this.dataset.asDatasetGraph().contains(theoretical_new_statement));
-                data_manager.move(this.context1_corese, this.context2_corese, false);
+                data_manager.moveGraph(this.context1_corese, this.context2_corese, false);
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
                 assertEquals(false, this.dataset.asDatasetGraph().contains(theoretical_old_statement));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_2_jena));
@@ -779,7 +780,7 @@ public class JenaDataManagerTest {
                 assertEquals(true, this.dataset.asDatasetGraph().contains(theoretical_old_statement));
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_2_jena));
                 assertEquals(false, this.dataset.asDatasetGraph().contains(theoretical_new_statement));
-                data_manager.copy(this.context1_corese, this.context2_corese, false);
+                data_manager.copyGraph(this.context1_corese, this.context2_corese, false);
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_1_jena));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(theoretical_old_statement));
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_2_jena));

@@ -544,4 +544,8 @@ public class URLServer implements URLParam {
         return getServer().substring(STORE.length());
     }
     
+    public String getStoragePathWithParameter() {
+        return getURL().substring(STORE.length());
+    }
+    
 }

@@ -138,7 +138,7 @@ public interface DataManagerUpdate {
      * @return True if the graph has been modified or {@code silent} parameter is
      *         true, else false.
      */
-    default boolean add(Node source_context, Node target_context, boolean silent) {
+    default boolean addGraph(Node source_context, Node target_context, boolean silent) {
         return false;
     }
 
@@ -152,9 +152,9 @@ public interface DataManagerUpdate {
      * @return True if the graph has been modified or {@code silent} parameter is
      *         true, else false.
      */
-    default boolean copy(Node source_context, Node target_context, boolean silent) {
+    default boolean copyGraph(Node source_context, Node target_context, boolean silent) {
         this.clear(List.of(target_context), silent);
-        Boolean result = this.add(source_context, target_context, silent);
+        Boolean result = this.addGraph(source_context, target_context, silent);
         return result;
     }
 
@@ -168,8 +168,8 @@ public interface DataManagerUpdate {
      * @return True if the graph has been modified or {@code silent} parameter is
      *         true, else false.
      */
-    default boolean move(Node source_context, Node target_context, boolean silent) {
-        Boolean result = this.copy(source_context, target_context, silent);
+    default boolean moveGraph(Node source_context, Node target_context, boolean silent) {
+        Boolean result = this.copyGraph(source_context, target_context, silent);
         this.clear(List.of(source_context), silent);
         return result;
     }

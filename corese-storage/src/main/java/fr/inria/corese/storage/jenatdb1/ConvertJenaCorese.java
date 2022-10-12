@@ -2,6 +2,7 @@ package fr.inria.corese.storage.jenatdb1;
 
 import java.util.ArrayList;
 
+import org.apache.jena.graph.Triple;
 import org.apache.jena.rdf.model.Model;
 import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.core.Quad;
@@ -137,6 +138,20 @@ public class ConvertJenaCorese {
         Node context_corese = ConvertJenaCorese.jenaContextToCoreseContext(quad.getGraph());
 
         return EdgeImpl.create(context_corese, subject_corese, predicate_corese, object_corese);
+    }
+
+    /**
+     * Convert Jena triple to equivalent Corese edge.
+     * 
+     * @param triple Jena triple to convert.
+     * @return Equivalent Corese edge.
+     */
+    public static Edge tripleToEdge(Triple triple) {
+        Node subject_corese = ConvertJenaCorese.JenaNodeToCoreseNode(triple.getSubject());
+        Node predicate_corese = ConvertJenaCorese.JenaNodeToCoreseNode(triple.getPredicate());
+        Node object_corese = ConvertJenaCorese.JenaNodeToCoreseNode(triple.getObject());
+
+        return EdgeImpl.create(corese_default_context, subject_corese, predicate_corese, object_corese);
     }
 
     /**

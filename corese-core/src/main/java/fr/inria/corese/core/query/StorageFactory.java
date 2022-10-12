@@ -2,6 +2,7 @@
 package fr.inria.corese.core.query;
 
 import fr.inria.corese.core.api.DataManager;
+import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.Collection;
 import java.util.HashMap;
 
@@ -21,9 +22,15 @@ public class StorageFactory {
         setMap(new HashMap<>());
     }
     
+    // path may have parameter path?key=value
+    // data manager recorded with path without parameter
     public static void defineDataManager(String path, DataManager man) {
         man.getCreateMetadataManager();
-        getSingleton().getMap().put(path, man);
+        URLServer url = new URLServer(path);
+        getSingleton().getMap().put(url.getServer(), man);
+        if (url.hasParameter()) {
+            man.init(url.getMap());
+        }
         man.start();
         man.getMetadataManager().startDataManager();
     }

@@ -1058,7 +1058,7 @@ public class Property {
             return list;
         }
         for (String elem : str.split(SEP)) {
-            String[] def = elem.split(EQ);
+            String[] def = elem.split(EQ, 2);
             if (def.length >= 2) {
                 list.add(new Pair(def[0], def[1]));
             }

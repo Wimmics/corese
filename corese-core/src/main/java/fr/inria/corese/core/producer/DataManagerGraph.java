@@ -4,6 +4,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.triple.parser.HashMapList;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -13,8 +14,9 @@ import org.slf4j.LoggerFactory;
  * DataManager for corese Graph for testing purpose
  */
 public class DataManagerGraph implements DataManager {
-    static final String STORAGE_PATH = "http://ns.inria.fr/corese/dataset";
     private static Logger logger = LoggerFactory.getLogger(DataManagerGraph.class);
+    static final String STORAGE_PATH = "http://ns.inria.fr/corese/dataset";
+    private static final String DEBUG = "debug";
     
     List<Node> emptyNodeList;
     List<Edge> emptyEdgeList;
@@ -71,7 +73,17 @@ public class DataManagerGraph implements DataManager {
     }
 
        
+    @Override
+    public void start() {
+    }
     
+    @Override
+    public void init(HashMapList<String> map) {
+        logger.info("Init data manager: " + map);
+        if (map.containsKey(DEBUG)) {
+            setDebug(map.booleanValue(DEBUG));
+        }
+    }
     
 
     // from.size == 1 -> named graph semantics

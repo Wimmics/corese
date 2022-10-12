@@ -13,6 +13,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.proxy.GraphSpecificFunction;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.URLServer;
 import java.util.ArrayList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -33,7 +34,6 @@ import org.slf4j.LoggerFactory;
 public class DataManagerJava extends DataManagerGraph  {
     private static Logger logger = LoggerFactory.getLogger(QueryProcess.class);
     private static final String QUERY = "query";
-    private static final String DEBUG = "debug";
     private static final String TRUE = "true";
     
     String iterateFunction = NSManager.USER+"iterate";
@@ -49,8 +49,10 @@ public class DataManagerJava extends DataManagerGraph  {
     // or
     // path of ldscript us:read and us:iterate functions
     public DataManagerJava(String path) {
-        setPath(path);
-        setQueryPath(path);
+        URLServer url = new URLServer(path);
+        // remove parameter if any
+        setPath(url.getServer());
+        setQueryPath(url.getServer());
         // draft trick to determine ldscript|graph
         isJson = path.contains("ldscript");
     }
@@ -61,9 +63,10 @@ public class DataManagerJava extends DataManagerGraph  {
         init();
     }
     
-    // service store: parameter map 
+    // path parameter map 
     @Override
     public void init(HashMapList<String> map) {
+        super.init(map);
         parameter(map);
     }
     
@@ -73,11 +76,7 @@ public class DataManagerJava extends DataManagerGraph  {
             setQueryPath(query);
             logger.info("Service query = " + query);
             initgraph();
-        }
-        
-        if (map.containsKey(DEBUG)) {
-            setDebug(map.booleanValue(DEBUG));
-        }
+        }             
     }
     
     void init() {

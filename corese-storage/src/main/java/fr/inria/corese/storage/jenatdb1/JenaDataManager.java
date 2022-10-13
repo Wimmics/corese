@@ -264,6 +264,15 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         return edges;
     }
 
+    /**************
+     * Blank node *
+     **************/
+
+    @Override
+    public String blankNode() {
+        return java.util.UUID.randomUUID().toString();
+    }
+
     /*******************
      * Graph operation *
      *******************/

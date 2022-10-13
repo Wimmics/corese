@@ -18,6 +18,11 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
  */
 public interface DataManagerUpdate {
 
+    /**
+     * Generate a unique ID for the blanck node.
+     * 
+     * @return Unique ID.
+     */
     default String blankNode() {
         return DatatypeMap.blankID();
     }

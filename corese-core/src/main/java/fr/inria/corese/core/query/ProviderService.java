@@ -20,6 +20,7 @@ import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.load.ServiceReport;
+import fr.inria.corese.core.producer.DataManagerJava;
 import fr.inria.corese.core.util.Property;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_GRAPH;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
@@ -968,19 +969,29 @@ public class ProviderService implements URLParam {
     
     // pseudo service store:path to query db
     synchronized Mappings storage(ASTQuery ast, URLServer url, Binding b) throws EngineException {
-        DataManager man = StorageFactory.getDataManager(url.getStoragePath());
-        if (man == null) {
-            throw new EngineException(
-                    String.format("Undefined storage manager: %s %s", url.getServer(), url.getStoragePath()));
-        }
-        if (url.hasParameter()) {
-            man.init(url.getMap());
-            //b.init(url.getMap());
-        }
+        DataManager man = dataManager(url);
         QueryProcess exec = QueryProcess.create(man);
         logger.info(String.format("storage: %s\n%s", url, ast));
         ast.inheritFunction(getGlobalAST());
         return index(exec.query(ast, b));
+    }
+    
+    DataManager dataManager(URLServer url) throws EngineException {
+        DataManager man = StorageFactory.getDataManager(url.getStoragePath());
+        if (man == null) {
+            if (url.hasParameter()) {
+                man = new DataManagerJava(url.getStoragePathWithParameter());
+                StorageFactory.defineDataManager(url.getStoragePathWithParameter(), man);
+            } else {
+                throw new EngineException(
+                        String.format("Undefined storage manager: %s %s", url.getServer(), url.getStoragePath()));
+            }
+        }
+        else if (url.hasParameter()) {
+            man.init(url.getMap());
+        }
+        
+        return man;
     }
     
     // clean service results query node 

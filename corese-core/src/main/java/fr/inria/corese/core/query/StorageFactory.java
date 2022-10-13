@@ -25,9 +25,12 @@ public class StorageFactory {
     // path may have parameter path?key=value
     // data manager recorded with path without parameter
     public static void defineDataManager(String path, DataManager man) {
-        man.getCreateMetadataManager();
-        URLServer url = new URLServer(path);
+         defineDataManager(new URLServer(path), man);   
+    }
+    
+    public static void defineDataManager(URLServer url, DataManager man) {
         getSingleton().getMap().put(url.getServer(), man);
+        man.getCreateMetadataManager();
         if (url.hasParameter()) {
             man.init(url.getMap());
         }

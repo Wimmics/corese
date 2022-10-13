@@ -32,8 +32,9 @@ import org.slf4j.LoggerFactory;
  * 2- iterate edges with ldscript function us:iterate() 
  */
 public class DataManagerJava extends DataManagerGraph  {
-    private static Logger logger = LoggerFactory.getLogger(QueryProcess.class);
+    private static Logger logger = LoggerFactory.getLogger(DataManagerJava.class);
     private static final String QUERY = "query";
+    private static final String PATH = "path";
     private static final String TRUE = "true";
     
     String iterateFunction = NSManager.USER+"iterate";
@@ -44,6 +45,7 @@ public class DataManagerJava extends DataManagerGraph  {
     private QueryProcess queryProcess;
     boolean isJson = true;
     String queryPath;
+    private String query;
     
     // path of insert where query that creates a graph (from json or xml)  
     // or
@@ -71,12 +73,26 @@ public class DataManagerJava extends DataManagerGraph  {
     }
     
     void parameter(HashMapList<String> map) {
-        String query = map.getFirst(QUERY);
-        if (query!=null) {
-            setQueryPath(query);
-            logger.info("Service query = " + query);
+        String queryPath = map.getFirst(PATH);
+        if (queryPath != null) {
+            setQueryPath(queryPath);
+            setQuery(null);
+            logger.info("Service query path= " + queryPath);
             initgraph();
-        }             
+        } else {
+            String query = map.getFirst(QUERY);
+            if (query != null) {
+                query = clean(query);
+                setQuery(query);
+                setQueryPath(null);
+                logger.info("Service query = " + query);
+                initgraph();
+            }
+        }
+    }
+    
+    String clean(String str) {
+        return str.replace("%20", " ");
     }
     
     void init() {
@@ -97,8 +113,17 @@ public class DataManagerJava extends DataManagerGraph  {
         setQueryProcess(QueryProcess.create(getGraph()));
         QueryLoad ql = QueryLoad.create();
         try {
-            // path of update query who creates rdf graph (from json) 
-            String q = ql.readWE(getQueryPath());
+            // query who creates rdf graph (from json) 
+            String q ;
+            if (getQueryPath() != null) {
+                q = ql.readWE(getQueryPath());
+            }
+            else if (getQuery() != null) {
+                q = getQuery();
+            }
+            else {
+                return;
+            }
             // update query creates rdf graph (from json)
             // this is graph of current DataManager
             Mappings map = getQueryProcess().query(q);
@@ -203,5 +228,13 @@ public class DataManagerJava extends DataManagerGraph  {
     public void setQueryPath(String path) {
         queryPath = path;
     }   
+
+    public String getQuery() {
+        return query;
+    }
+
+    public void setQuery(String query) {
+        this.query = query;
+    }
     
 }

@@ -36,6 +36,7 @@ import fr.inria.corese.kgram.api.core.Node;
 public class JenaDataManager implements DataManager, AutoCloseable {
 
     private Dataset jena_dataset;
+    private Graph default_graph;
     private String storage_path;
 
     // Each thread has its own counter for read transaction there may be several
@@ -86,6 +87,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     private void init() {
         this.threadCounter = new HashMap<>();
+        this.default_graph = this.defaultGraph();
     }
 
     /*********
@@ -143,7 +145,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
         Graph graph = null;
         if (corese_context == null) {
-            graph = this.defaultGraph();
+            graph = this.default_graph;
         } else {
             String context_iri = ConvertJenaCorese.coreseContextToJenaContext(corese_context).getURI();
             graph = this.jena_dataset.getNamedModel(context_iri).getGraph();
@@ -171,7 +173,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
         Graph graph = null;
         if (context == null) {
-            graph = this.defaultGraph();
+            graph = this.default_graph;
         } else {
             String context_IRI = ConvertJenaCorese.coreseContextToJenaContext(context).getURI();
             graph = this.jena_dataset.getNamedModel(context_IRI).getGraph();
@@ -196,7 +198,8 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         };
 
         // Get list of contexts names
-        Iterator<Node> contextsNamedGraphs = Iterators.transform(this.jena_dataset.listModelNames(),
+        Iterator<Node> contextsNamedGraphs = Iterators.transform(
+                this.jena_dataset.listModelNames(),
                 convertIteratorResourceToNode);
 
         if (this.jena_dataset.getDefaultModel().isEmpty()) {
@@ -361,7 +364,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         Graph unionGraph = Graph.emptyGraph;
         if (contexts == null || contexts.stream().allMatch(Objects::isNull)) {
             // If contexts is null, then defaut graph
-            unionGraph = defaultGraph();
+            unionGraph = default_graph;
         } else {
             // If the contexts are not null, then the union of the requested graphs
             for (Node context : contexts) {

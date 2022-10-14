@@ -12,8 +12,13 @@ VARIABLE =  vis=fr.inria.corese.core.visitor.solver;home=./;fed=/user/corby/home
 
 IMPORT   = ./gui.txt
 
-STORAGE_SERVICE = false
-STORAGE_PATH    = jenatdb1=$db/human
+STORAGE_MODE = dataset
+#STORAGE_MODE = db
+#STORAGE_MODE = db_all
+
+
+STORAGE_PATH    = java=mapdatamanager?path=/user/corby/home/AADemoNew/map/insert.rq&param=/user/corby/home/AADemoNew/map/map.json;java=loaddm?path=/user/corby/home/AADemoNew/db/load.rq;java=mapjson?mode=ldscript&path=/user/corby/home/AADemoNew/map/ldscript.rq;jenatdb1=$db/map;jenatdb1=$db/indexcard;jenatdb1=$db/indexprop;jenatdb1=$db/indexmore
+
 # STORAGE_PATH    = rdf4jmodel=$db/human
 #$db/human
 #/tmp/tmp
@@ -140,7 +145,7 @@ SERVICE_BINDING     = values
 SERVICE_SLICE       = 500
 # limit added to service unless service has a limit
 #SERVICE_LIMIT       = 5000
-SERVICE_TIMEOUT     = 3000
+SERVICE_TIMEOUT     = 5000
 # add parameter to service url
 #SERVICE_PARAMETER   = mode=link;debug;show&transform=st:xml&format=json
 # service may return RDF graph as result
@@ -159,7 +164,7 @@ SERVICE_DISPLAY_MESSAGE = true
 SERVICE_HEADER = X-SPARQL-MaxRows;Server;Content-Type
 
 # define federation for federated query
-FEDERATION = /user/corby/home/AAData/data/corese/federation.ttl
+#FEDERATION = /user/corby/home/AAData/data/corese/federation.ttl
 # generate partition of connected bgp
 FEDERATE_BGP = true
 # do not split complete partition
@@ -186,15 +191,15 @@ FEDERATE_BLACKLIST        = http://ldf.fi/warsa/sparql;http://data.semanticweb.o
 FEDERATE_BLACKLIST_EXCEPT = http://corese.inria.fr/sparql;http://prod-dekalog.inria.fr/sparql;https://dbpedia.org/sparql;https://query.wikidata.org/sparql;http://fr.dbpedia.org/sparql
 
 # max number of endpoint url returned by source discovery 
-FEDERATE_INDEX_LENGTH = 20
+FEDERATE_INDEX_LENGTH = 500
 # success rate to accept endpoint url in source discovery
 FEDERATE_INDEX_SUCCESS = 0.5
 
 # query pattern for source discovery
-FEDERATE_QUERY_PATTERN =     http://d2kab.fr=$fed/indexpattern/indexqueryd2kab.rq;http://prod-dekalog.inria.fr/sparql=$sys/indexpatternendpoint.rq;http://localhost:8080/index=$fed/testindex/indexpatternendpoint.rq
+FEDERATE_QUERY_PATTERN =     http://prod-dekalog.inria.fr/sparql=$sys/indexpatternendpointall.rq;store:/user/corby/home/AADemoNew/storage/indexcard=$fed/indexpattern/localindexpatternendpointall.rq;http://localhost:8080/index=$fed/testindex/indexpatternendpoint.rq;http://d2kab.fr=$fed/indexpattern/indexqueryd2kab.rq
 
 # predicate pattern for source discovery
-FEDERATE_PREDICATE_PATTERN = http://d2kab.fr=$fed/indexpattern/indexpatternd2kab.rq;http://prod-dekalog.inria.fr/sparql=$sys/indexpredicate.rq;http://localhost:8080/index=$fed/testindex/indexpredicate.rq
+FEDERATE_PREDICATE_PATTERN = http://prod-dekalog.inria.fr/sparql=$sys/indexpredicate.rq;store:/user/corby/home/AADemoNew/storage/indexcard=$fed/indexpattern/localindexpredicate.rq;http://localhost:8080/index=$fed/testindex/indexpredicate.rq;http://d2kab.fr=$fed/indexpattern/indexpatternd2kab.rq;
 
 # predicates used to split connected bgp in two subparts
 FEDERATE_SPLIT = owl:sameAs

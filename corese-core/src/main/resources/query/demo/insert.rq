@@ -1,0 +1,37 @@
+#
+# Generate rdf triples from json map format
+#
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix map: <http://ns.inria.fr/map/>
+
+insert {
+?uri rdfs:label ?location ;
+    geo:lat ?lat ;
+    geo:long ?lon ;
+    map:description ?desc ;
+    map:dbpedia ?url
+}
+where {
+
+#bind ("/user/corby/home/AADemoNew/map/map.json" as ?path)
+bind ("%s" as ?path)
+
+bind (xt:json(xt:read(?path)) as ?json)
+
+values ?feature { unnest(xt:path(?json, "/features")) }
+
+bind (xt:path(?feature, "/properties/name") as ?location)
+bind (xt:path(?feature, "/properties/description") as ?desc)
+bind (xt:path(?feature, "/geometry/coordinates") as ?list)
+
+bind (replace(replace(replace(?location, " ", ""), "-", "_"), "'", "") as ?name)
+bind (replace(replace(replace(?location, " ", "_"), "-", "_"), "'", "") as ?urlName)
+
+filter (xt:size(?list) >= 2)
+bind (xt:get(?list, 0) as ?lon)
+bind (xt:get(?list, 1) as ?lat)
+
+bind (uri(concat(map:, ?name, st:number())) as ?uri)
+bind (uri(concat(<http://fr.dbpedia.org/resource/>, ?urlName)) as ?url)
+
+}

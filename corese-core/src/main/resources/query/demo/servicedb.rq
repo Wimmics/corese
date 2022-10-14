@@ -1,0 +1,33 @@
+#
+# Generate a map with corese server 
+# from json map format
+# query = insert.rq
+# map = map.json
+#
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix map: <http://ns.inria.fr/map/>
+
+@browse
+
+select * 
+where {
+
+service <store:mapdatamanager?debug=true> {
+    select * where {
+        ?url rdfs:label ?name 
+        #filter mapany(xt:contains, ?name, xt:list("Chapelle", "Eglise", "Abbaye"))        
+        #filter mapany(xt:contains, ?name, xt:list("Aven", "Embut", "Baume"))        
+        #filter mapany(xt:contains, ?name, xt:list("Dolmen", "Tombe", "Menhir"))        
+        filter mapany(xt:contains, ?name, xt:list("Captage", "Lac", "Cascade", "Barrage"))        
+        ?url geo:long ?lon;
+        geo:lat ?lat ;
+        map:dbpedia ?location
+    }
+}
+
+service <http://corese.inria.fr/sparql?mode=link;map&slice=700> {
+        values (?location ?lon ?lat) {(undef undef undef)}
+}
+
+}
+

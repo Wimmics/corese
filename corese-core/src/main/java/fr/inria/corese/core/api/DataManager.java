@@ -65,7 +65,7 @@ public interface DataManager extends DataManagerRead, DataManagerUpdate {
     }
     
     // for init purpose, called by corese StorageFactory
-    default void start() {}
+    default void start(HashMapList<String> map) {}
     
     // service store parameter
     default void init(HashMapList<String> map) {}

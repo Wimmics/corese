@@ -35,17 +35,21 @@ public class DataManagerJava extends DataManagerGraph  {
     private static Logger logger = LoggerFactory.getLogger(DataManagerJava.class);
     private static final String QUERY = "query";
     private static final String PATH = "path";
-    private static final String TRUE = "true";
+    private static final String PARAM = "param";
+    private static final String MODE = "mode";
+    private static final String JSON = "json";
+    private static final String LDSCRIPT = "ldscript";
     
     String iterateFunction = NSManager.USER+"iterate";
     String readFunction    = NSManager.USER+"read";
     // json document 
-    private IDatatype json;
+    private IDatatype jsonDocument;
     IDatatype joker;
     private QueryProcess queryProcess;
-    boolean isJson = true;
+    private boolean ldscript = false;
     String queryPath;
     private String query;
+    private HashMapList<String> map;
     
     // path of insert where query that creates a graph (from json or xml)  
     // or
@@ -55,30 +59,48 @@ public class DataManagerJava extends DataManagerGraph  {
         // remove parameter if any
         setPath(url.getServer());
         setQueryPath(url.getServer());
-        // draft trick to determine ldscript|graph
-        isJson = path.contains("ldscript");
     }
     
+    // creation time in StorageFactory
     @Override
-    public void start () {
+    public void start (HashMapList<String> map) {
         logger.info("Start data manager: " + getStoragePath());
-        init();
+        if (map == null) {
+            init();
+        }
+        else {
+            boolean isInit = localInit(map);
+            if (! isInit) {
+                init();
+            }
+        }
     }
     
-    // path parameter map 
+    // path parameter map
+    // called by service store clause in ProviderService
     @Override
     public void init(HashMapList<String> map) {
-        super.init(map);
-        parameter(map);
+        localInit(map);
     }
     
-    void parameter(HashMapList<String> map) {
+    boolean localInit(HashMapList<String> map) {
+        super.init(map);
+        return parameter(map);
+    }
+    
+    // return true when init() is performed
+    boolean parameter(HashMapList<String> map) {
+        setMap(map);
         String queryPath = map.getFirst(PATH);
+        if (map.containsKey(MODE) && map.get(MODE).contains(LDSCRIPT)) {
+             setLdscript(true);
+        }
         if (queryPath != null) {
             setQueryPath(queryPath);
             setQuery(null);
             logger.info("Service query path= " + queryPath);
-            initgraph();
+            init();
+            return true;
         } else {
             String query = map.getFirst(QUERY);
             if (query != null) {
@@ -86,9 +108,11 @@ public class DataManagerJava extends DataManagerGraph  {
                 setQuery(query);
                 setQueryPath(null);
                 logger.info("Service query = " + query);
-                initgraph();
+                init();
+                return true;
             }
-        }
+        } 
+        return false;
     }
     
     String clean(String str) {
@@ -96,8 +120,8 @@ public class DataManagerJava extends DataManagerGraph  {
     }
     
     void init() {
-        if (isJson) {
-            initjson();
+        if (isLdscript()) {
+            initldscript();
         }
         else {
             initgraph();
@@ -108,6 +132,7 @@ public class DataManagerJava extends DataManagerGraph  {
     // create graph from json using update query located at path 
     // set this data manager graph 
     void initgraph() {
+        logger.info("Mode graph");
         // graph to be created by update query
         setGraph(Graph.create());
         setQueryProcess(QueryProcess.create(getGraph()));
@@ -116,6 +141,7 @@ public class DataManagerJava extends DataManagerGraph  {
             // query who creates rdf graph (from json) 
             String q ;
             if (getQueryPath() != null) {
+                logger.info("Load " + getQueryPath());
                 q = ql.readWE(getQueryPath());
             }
             else if (getQuery() != null) {
@@ -124,6 +150,11 @@ public class DataManagerJava extends DataManagerGraph  {
             else {
                 return;
             }
+            
+            if (getMap()!=null && getMap().containsKey(PARAM)) {
+                q = String.format(q, getMap().getFirst(PARAM));
+            }
+            logger.info("Process query:\n" + q);
             // update query creates rdf graph (from json)
             // this is graph of current DataManager
             Mappings map = getQueryProcess().query(q);
@@ -140,12 +171,13 @@ public class DataManagerJava extends DataManagerGraph  {
     // load json using ldscript us:read() function
     // defined at path
     // iterate edges from json using ldscript us:iterate() function
-    void initjson() {
+    void initldscript() {
+        logger.info("Mode json");
         try {
             setGraph(Graph.create());
             setQueryProcess(QueryProcess.create(Graph.create()));
             getQueryProcess().imports(getQueryPath());
-            setJson(getQueryProcess().funcall(readFunction));
+            setJsonDocument(getQueryProcess().funcall(readFunction));
             joker = DatatypeMap.newInstance(GraphSpecificFunction.JOKER);
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
@@ -156,7 +188,7 @@ public class DataManagerJava extends DataManagerGraph  {
     
     @Override
     public Iterable<Edge> getEdges(Node s, Node p, Node o, List<Node> graphList) {
-        if (isJson) {
+        if (isLdscript()) {
             return iterateJson(s, p, o, graphList);
         }
         return super.getEdges(s, p, o, graphList);
@@ -165,7 +197,7 @@ public class DataManagerJava extends DataManagerGraph  {
     Iterable<Edge> iterateJson(Node s, Node p, Node o, List<Node> graphList) {
         try {
             IDatatype dt
-                    = getQueryProcess().funcall(iterateFunction, getJson(), value(s), value(p), value(o));
+                    = getQueryProcess().funcall(iterateFunction, getJsonDocument(), value(s), value(p), value(o));
             if (dt == null) {
                 return new ArrayList<>(0);
             }
@@ -213,12 +245,12 @@ public class DataManagerJava extends DataManagerGraph  {
         this.queryProcess = queryProcess;
     }
 
-    public IDatatype getJson() {
-        return json;
+    public IDatatype getJsonDocument() {
+        return jsonDocument;
     }
 
-    public void setJson(IDatatype json) {
-        this.json = json;
+    public void setJsonDocument(IDatatype json) {
+        this.jsonDocument = json;
     }
     
     public String getQueryPath() {
@@ -235,6 +267,22 @@ public class DataManagerJava extends DataManagerGraph  {
 
     public void setQuery(String query) {
         this.query = query;
+    }
+
+    public HashMapList<String> getMap() {
+        return map;
+    }
+
+    public void setMap(HashMapList<String> map) {
+        this.map = map;
+    }
+
+    public boolean isLdscript() {
+        return ldscript;
+    }
+
+    public void setLdscript(boolean ldscript) {
+        this.ldscript = ldscript;
     }
     
 }

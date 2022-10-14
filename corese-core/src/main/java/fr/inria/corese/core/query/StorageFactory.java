@@ -30,11 +30,8 @@ public class StorageFactory {
     
     public static void defineDataManager(URLServer url, DataManager man) {
         getSingleton().getMap().put(url.getServer(), man);
-        man.getCreateMetadataManager();
-        if (url.hasParameter()) {
-            man.init(url.getMap());
-        }
-        man.start();
+        man.getCreateMetadataManager();       
+        man.start(url.getMap());
         man.getMetadataManager().startDataManager();
     }
     

@@ -70,7 +70,7 @@ public class DataManagerGraph implements DataManager {
     }
 
     @Override
-    public void start() {
+    public void start(HashMapList<String> map) {
     }
 
     @Override

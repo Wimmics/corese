@@ -1,7 +1,9 @@
 package fr.inria.corese.core.api;
 
+import java.util.HashSet;
 import java.util.List;
 
+import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -38,7 +40,24 @@ public interface DataManagerUpdate {
      * @return An {@link Iterable} over all inserted edges.
      */
     default Iterable<Edge> insert(Node subject, Node predicate, Node object, List<Node> contexts) {
-        return null;
+        if (subject == null || predicate == null || object == null || contexts == null) {
+            throw new UnsupportedOperationException("Incomplete statement");
+        }
+
+        HashSet<Edge> added = new HashSet<>();
+
+        for (Node context : contexts) {
+
+            if (context == null) {
+                throw new UnsupportedOperationException("Context can't be null");
+            }
+
+            Edge corese_edge = EdgeImpl.create(context, subject, predicate, object);
+            if (this.insert(corese_edge) != null) {
+                added.add(corese_edge);
+            }
+        }
+        return added;
     }
 
     /**
@@ -55,14 +74,7 @@ public interface DataManagerUpdate {
      * @return The edge inserted, null if no inserted.
      */
     default Edge insert(Edge edge) {
-        Iterable<Edge> added = this.insert(edge.getSubjectNode(), edge.getPropertyNode(), edge.getObjectNode(),
-                List.of(edge.getGraphNode()));
-
-        if (added.iterator().hasNext()) {
-            return added.iterator().next();
-        } else {
-            return null;
-        }
+        return null;
     }
 
     /**

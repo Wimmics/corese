@@ -18,7 +18,6 @@ import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.impl.TreeModel;
 
 import fr.inria.corese.core.api.DataManager;
-import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 
@@ -140,24 +139,11 @@ public class Rdf4jDataManager implements DataManager {
      **********/
 
     @Override
-    public Iterable<Edge> insert(Node subject, Node predicate, Node object, List<Node> contexts) {
-
-        if (subject == null || predicate == null || object == null || contexts == null) {
-            throw new UnsupportedOperationException("Incomplete statement");
+    public Edge insert(Edge edge) {
+        if (this.rdf4j_model.add(edge)) {
+            return edge;
         }
-
-        ArrayList<Edge> added = new ArrayList<>();
-        for (Node context : contexts) {
-            if (context == null) {
-                throw new UnsupportedOperationException("Context can't be null");
-            }
-
-            Edge edge = EdgeImpl.create(context, subject, predicate, object);
-            if (this.rdf4j_model.add(edge)) {
-                added.add(edge);
-            }
-        }
-        return added;
+        return null;
     }
 
     /**********

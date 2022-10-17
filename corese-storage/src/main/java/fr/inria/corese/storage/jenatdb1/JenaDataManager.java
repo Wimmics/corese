@@ -25,7 +25,6 @@ import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
 import fr.inria.corese.core.api.DataManager;
-import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.core.producer.MetadataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
@@ -216,29 +215,15 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      **********/
 
     @Override
-    public Iterable<Edge> insert(Node subject, Node predicate, Node object, List<Node> contexts) {
-        ArrayList<Edge> added = new ArrayList<>();
+    public Edge insert(Edge edge) {
+        Quad jena_quad = ConvertJenaCorese.edgeToQuad(edge);
 
-        if (subject == null || predicate == null || object == null || contexts == null) {
-            throw new UnsupportedOperationException("Incomplete statement");
+        if (!this.jena_dataset.asDatasetGraph().contains(jena_quad)) {
+            this.jena_dataset.asDatasetGraph().add(jena_quad);
+            return edge;
         }
 
-        for (Node context : contexts) {
-            if (context == null) {
-                this.jena_dataset.abort();
-                throw new UnsupportedOperationException("Context can't be null");
-            }
-
-            Edge corese_edge = EdgeImpl.create(context, subject, predicate, object);
-            Quad jena_quad = ConvertJenaCorese.edgeToQuad(corese_edge);
-
-            if (!this.jena_dataset.asDatasetGraph().contains(jena_quad)) {
-                this.jena_dataset.asDatasetGraph().add(jena_quad);
-                added.add(corese_edge);
-            }
-        }
-
-        return added;
+        return null;
     }
 
     /**********

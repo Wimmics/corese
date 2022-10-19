@@ -1,18 +1,17 @@
 
 package fr.inria.corese.test.storage;
 
+import java.util.logging.Level;
+import java.util.logging.Logger;
+
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.api.DataManager;
-import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.storage.jenatdb1.JenaDataManager;
-import java.util.logging.Level;
-import java.util.logging.Logger;
+import fr.inria.corese.storage.jenatdb1.JenaDataManagerBuilder;
 
 /**
  *
@@ -97,8 +96,7 @@ public class ThreadWithStorage {
     }
     
     void init()  {
-        dataManager = new JenaDataManager(STORAGE);
-        dataManager.setReentrant(true);
+        dataManager = new JenaDataManagerBuilder().storagePath(STORAGE).build();
 //        Graph g = Graph.create();
 //        Load ld = Load.create(g, dataManager);
 //        ld.parse("/user/corby/home/AADemoNew/human/human.rdf");

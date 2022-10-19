@@ -1,10 +1,30 @@
 package fr.inria.corese.core.query;
 
+import static fr.inria.corese.kgram.sorter.core.Const.ALL;
+import static fr.inria.corese.kgram.sorter.core.Const.NA;
+import static fr.inria.corese.kgram.sorter.core.Const.OBJECT;
+import static fr.inria.corese.kgram.sorter.core.Const.PREDICATE;
+import static fr.inria.corese.kgram.sorter.core.Const.SUBJECT;
+import static fr.inria.corese.kgram.sorter.core.Const.TRIPLE;
+import static fr.inria.corese.sparql.triple.parser.Metadata.RDF_STAR_SELECT;
+
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.inria.corese.core.Event;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.Index;
+import fr.inria.corese.core.api.DataBroker;
+import fr.inria.corese.core.index.EdgeManagerIndexer;
+import fr.inria.corese.core.producer.DataBrokerExtern;
+import fr.inria.corese.core.producer.DataBrokerLocal;
+import fr.inria.corese.core.producer.DataProducer;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
+import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Filter;
 import fr.inria.corese.kgram.api.core.Node;
@@ -17,32 +37,14 @@ import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Memory;
 import fr.inria.corese.kgram.core.Query;
-import static fr.inria.corese.kgram.sorter.core.Const.ALL;
-import static fr.inria.corese.kgram.sorter.core.Const.NA;
-import static fr.inria.corese.kgram.sorter.core.Const.OBJECT;
-import static fr.inria.corese.kgram.sorter.core.Const.PREDICATE;
-import static fr.inria.corese.kgram.sorter.core.Const.SUBJECT;
-import static fr.inria.corese.kgram.sorter.core.Const.TRIPLE;
+import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.kgram.sorter.core.IProducerQP;
 import fr.inria.corese.kgram.sorter.core.QPGNode;
 import fr.inria.corese.kgram.tool.MetaIterator;
-import fr.inria.corese.core.index.EdgeManagerIndexer;
-import fr.inria.corese.core.Event;
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.producer.DataProducer;
-import fr.inria.corese.core.Index;
-import fr.inria.corese.core.api.DataBroker;
-import fr.inria.corese.core.api.DataManager;
-import fr.inria.corese.core.producer.DataBrokerExtern;
-import fr.inria.corese.core.producer.DataBrokerLocal;
-import fr.inria.corese.kgram.api.core.DatatypeValueFactory;
-import fr.inria.corese.kgram.core.SparqlException;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
-import static fr.inria.corese.sparql.triple.parser.Metadata.RDF_STAR_SELECT;
-import java.util.Iterator;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * Producer Implement getEdges() for KGRAM interpreter rely on
@@ -51,16 +53,15 @@ import org.slf4j.LoggerFactory;
  * @author Olivier Corby, Edelweiss INRIA 2010
  *
  */
-public class ProducerImpl 
-        implements Producer, IProducerQP 
-{    
+public class ProducerImpl
+        implements Producer, IProducerQP {
     private static Logger logger = LoggerFactory.getLogger(ProducerImpl.class);
 
     public static final int OWL_RL = 1;
     static final int IGRAPH = Graph.IGRAPH;
     static final int ILIST = Graph.ILIST;
     public static final String TOPREL = Graph.TOPREL;
-    
+
     List<Edge> empty = new ArrayList<>(0);
     List<Node> emptyFrom = new ArrayList<>(0);
     DataProducer ei;
@@ -79,7 +80,7 @@ public class ProducerImpl
     boolean isMatch = false;
     private boolean speedUp = false;
     int mode = DEFAULT;
-    
+
     private ProducerImplNode pn;
 
     public ProducerImpl() {
@@ -157,7 +158,7 @@ public class ProducerImpl
                 return edge.getNode(i);
         }
     }
-    
+
     Node getNode(Node gNode, Environment env) {
         if (gNode == null) {
             return null;
@@ -170,14 +171,13 @@ public class ProducerImpl
      * entailment
      */
     Node getValue(Node qNode, Environment env) {
-        return getValue(qNode, qNode.isVariable()?env.getNode(qNode):null, env);
+        return getValue(qNode, qNode.isVariable() ? env.getNode(qNode) : null, env);
     }
-    
+
     Node getValue(Node qNode, Node node, Environment env) {
         if (qNode.isConstant()) {
             node = getExtNode(qNode);
-        }
-        else if (node != null && isExtern(node)) {
+        } else if (node != null && isExtern(node)) {
             node = getExtNode(node);
         }
         return node;
@@ -186,7 +186,6 @@ public class ProducerImpl
     Node getExtNode(Node node) {
         return getDataBroker().getNode(node);
     }
-    
 
     // eg BIND(node as ?x)
     boolean isExtern(Node node) {
@@ -195,29 +194,32 @@ public class ProducerImpl
     }
 
     // ?s rdf:type aClass with corese RDFS entailment
-    // do not focus on aClass because RDFS entailment 
+    // do not focus on aClass because RDFS entailment
     // does not generate transitive closure
     // hence another class may match aClass
     // in this case return true
     boolean isSkipTypeObjectNode(Query q, Edge edge) {
         return getDataBroker().isTypeProperty(q, edge);
     }
-    
 
     /**
      *
-     * @param namedGraphURI : null or named graph URI 
-     * stemming from graph URI { } or graph VAR {}
-     * when VAR, namedGraphURI is a value of VAR computed by kgram
-     * Note: namedGraphURI may be undefined in target graph
-     * @param from : null/empty or default graph specification with select from
-     * @param edge : query Edge
-     * @param env : Environment with partial variable bindings 
-     * if namedGraphURI == null:
-     * query default graph, possibly with from, eliminate duplicate edges (same
-     * edge with different named graph) 
-     * if namedGraphURI != null: query named graph, "from" is useless here because kgram
-     * iterate from named   
+     * @param namedGraphURI : null or named graph URI
+     *                      stemming from graph URI { } or graph VAR {}
+     *                      when VAR, namedGraphURI is a value of VAR computed by
+     *                      kgram
+     *                      Note: namedGraphURI may be undefined in target graph
+     * @param from          : null/empty or default graph specification with select
+     *                      from
+     * @param edge          : query Edge
+     * @param env           : Environment with partial variable bindings
+     *                      if namedGraphURI == null:
+     *                      query default graph, possibly with from, eliminate
+     *                      duplicate edges (same
+     *                      edge with different named graph)
+     *                      if namedGraphURI != null: query named graph, "from" is
+     *                      useless here because kgram
+     *                      iterate from named
      */
     @Override
     public Iterable<Edge> getEdges(Node namedGraphURI, List<Node> from, Edge edge,
@@ -227,20 +229,20 @@ public class ProducerImpl
             return empty;
         }
 
-        Query q = env.getQuery(); 
+        Query q = env.getQuery();
         if (q.isRule()) {
             Iterable<Edge> it = getRuleEdgeList(q, edge, env, namedGraphURI, from, predicate);
             if (it != null) {
                 return it;
             }
-        }        
-        
-        ASTQuery ast =  q.getAST();
-        //int level = -1;
+        }
+
+        ASTQuery ast = q.getAST();
+        // int level = -1;
         int focusNodeIndex = 0;
 
         Node focusNode = null, objectNode = null;
-      
+
         for (Index ei : getGraph().getIndexList()) {
             // enumerate graph index to get the index i of nodes in edge: 0, 1, GRAPHINDEX
             // by convention the index of last is the index of graph node wich is -1
@@ -249,18 +251,17 @@ public class ProducerImpl
             if (index < edge.nbNode()) {
                 // get ith node
                 Node qNode = getNode(edge, namedGraphURI, index);
-                
+
                 if (qNode != null) {
                     if (index == 1
                             && qNode.isConstant()
-                            && isSkipTypeObjectNode(q, edge)) { 
-                            // ?s rdf:type aClass with corese RDFS entailment
-                            // do not focus on aClass because RDFS entailment 
-                            // does not generate transitive closure
-                            // hence another class may match aClass
-                            // in this case skip binding
-                    } 
-                    else {
+                            && isSkipTypeObjectNode(q, edge)) {
+                        // ?s rdf:type aClass with corese RDFS entailment
+                        // do not focus on aClass because RDFS entailment
+                        // does not generate transitive closure
+                        // hence another class may match aClass
+                        // in this case skip binding
+                    } else {
                         Node val = qNode.isVariable() ? env.getNode(qNode) : null;
                         // candidate query node value:
                         focusNode = getValue(qNode, val, env);
@@ -270,14 +271,14 @@ public class ProducerImpl
                                 // search a value that is not in the graph: fail
                                 // here we take into account subject/object/graph
                                 // if named graph is undefined we fail here
-                                //System.out.println("exit on: " + qNode + " " + focusNode);
+                                // System.out.println("exit on: " + qNode + " " + focusNode);
                                 return empty;
                             }
                         } else {
                             focusNodeIndex = index;
                             if (index == 0 && !isSkipTypeObjectNode(q, edge)) {
                                 // use case where query edge object is also known
-                                objectNode = getValue(edge.getNode(1),  env);
+                                objectNode = getValue(edge.getNode(1), env);
                             }
                             break;
                         }
@@ -289,26 +290,27 @@ public class ProducerImpl
         Iterable<Edge> it;
 
         if (mode == EXTENSION && getQuery() == q) {
-            // Producer for an external named graph 
+            // Producer for an external named graph
             // bind (us:graph() as ?g) graph ?g { }
             // GraphStore external named graph
             it = getGraph().getDataStore().getDefault(emptyFrom).iterate(predicate, focusNode, focusNodeIndex);
         } else {
             // if query edge has no metadata: skip target edge metadata
-            boolean skip = getGraph().isEdgeMetadata() && edge.nbNode()==2;
-            it = getEdges(namedGraphURI, getNode(namedGraphURI, env), from, predicate, focusNode, objectNode, focusNodeIndex, 
+            boolean skip = getGraph().isEdgeMetadata() && edge.nbNode() == 2;
+            it = getEdges(namedGraphURI, getNode(namedGraphURI, env), from, predicate, focusNode, objectNode,
+                    focusNodeIndex,
                     skip, getAccessRight(env), isNested(q, edge));
         }
         // in case of local Matcher
         it = localMatch(it, namedGraphURI, edge, env);
 
         return it;
-    }  
+    }
 
     boolean isNested(Query q, Edge edge) {
         return edge.isNested() || q.getGlobalAST().hasMetadata(RDF_STAR_SELECT);
-    }    
-    
+    }
+
     // special case with optimizations for rule engine
     Iterable<Edge> getRuleEdgeList(Query q, Edge edge, Environment env, Node gNode, List<Node> from, Node predicate) {
         if (q.getEdgeList() != null
@@ -323,33 +325,35 @@ public class ProducerImpl
                 int level = exp.getLevel();
                 // rule engine requires new edges with level >= exp.getLevel()
                 // ILIST is index of specific Edge Index sorted by reverse level
-                Iterable<Edge> it = getGraph().getDataStore().getDefault(from).level(level).iterate(predicate, null, ILIST);
+                Iterable<Edge> it = getGraph().getDataStore().getDefault(from).level(level).iterate(predicate, null,
+                        ILIST);
                 return localMatch(it, gNode, edge, env);
             }
         }
         return null;
     }
-    
+
     AccessRight getAccessRight(Environment env) {
         return env.getBind().getAccessRight();
     }
-    
 
     /**
      * Enumerate candidate edges either from default graph or from named graphs
      * predicate: property name or Graph.TOPREL when predicate is unbound variable
-     * focusNode: subject/object/graph node if any of them is known (constant or bound variable), otherwise null
+     * focusNode: subject/object/graph node if any of them is known (constant or
+     * bound variable), otherwise null
      * objectNode: the object Node, possibly null
-     * int n:  the index of focusNode in the triple: subject=0, object=1, graph=Graph.IGRAPH
+     * int n: the index of focusNode in the triple: subject=0, object=1,
+     * graph=Graph.IGRAPH
      * nested == false: return asserted edges
-     * nested == true:  return nested and asserted edges 
+     * nested == true: return nested and asserted edges
      */
     public Iterable<Edge> getEdges(Node queryGraphNode, Node targetGraphNode, List<Node> from,
-            Node predicate, Node focusNode, Node objectNode, int focusNodeIndex, 
+            Node predicate, Node focusNode, Node objectNode, int focusNodeIndex,
             boolean skip, AccessRight access, boolean nested) {
         if (hasDataManager()) {
             // external graph iterator
-            return getExternalEdges(queryGraphNode, targetGraphNode, from, 
+            return getExternalEdges(queryGraphNode, targetGraphNode, from,
                     predicate, focusNode, objectNode, focusNodeIndex, nested);
         } else {
             // corese graph iterator
@@ -357,7 +361,7 @@ public class ProducerImpl
                     .iterate(predicate, focusNode, objectNode, focusNodeIndex);
         }
     }
-    
+
     /**
      * 
      * @param queryGraphNode
@@ -367,23 +371,23 @@ public class ProducerImpl
      * @param focusNode
      * @param objectNode
      * @param focusNodeIndex
-     * @return 
+     * @return
      */
-    public Iterable<Edge> getExternalEdges(Node queryGraphNode, Node targetGraphNode, 
+    public Iterable<Edge> getExternalEdges(Node queryGraphNode, Node targetGraphNode,
             List<Node> from, Node predicate, Node focusNode, Node objectNode, int focusNodeIndex, boolean nested) {
-        
+
         List<Node> list = getFrom(targetGraphNode, from);
-        Node subject = (focusNodeIndex==0)?focusNode:null;
-        Node object = (focusNodeIndex==1)?focusNode: objectNode;
+        Node subject = (focusNodeIndex == 0) ? focusNode : null;
+        Node object = (focusNodeIndex == 1) ? focusNode : objectNode;
         Node property = predicate;
         if (predicate.getLabel().equals(TOPREL)) {
             // unbound property variable has TOPREL for property name
             property = null;
         }
-        
+
         return getDataBroker().getEdgeList(subject, property, object, list);
     }
-    
+
     // use case: xt:exists(s, p, o) -- see PluginImpl exists()
     // future use case: xt:edge(s, p, o [,g])
     @Override
@@ -393,14 +397,14 @@ public class ProducerImpl
         }
         return getLocalEdges(s, p, o, from);
     }
-    
+
     List<Node> nodeList(Node node) {
         if (node == null) {
             return null;
         }
         return List.of(node);
     }
-    
+
     Edge result(Iterable<Edge> it) {
         if (it == null) {
             return null;
@@ -411,7 +415,7 @@ public class ProducerImpl
         }
         return null;
     }
-    
+
     @Override
     public Edge insert(Node g, Node s, Node p, Node o) {
         if (hasDataManager()) {
@@ -420,7 +424,7 @@ public class ProducerImpl
         }
         return getGraph().insert(g, s, p, o);
     }
-    
+
     @Override
     public Iterable<Edge> delete(Node g, Node s, Node p, Node o) {
         if (hasDataManager()) {
@@ -428,16 +432,16 @@ public class ProducerImpl
         }
         return getGraph().delete(g, s, p, o);
     }
-    
+
     Iterable<Edge> getLocalEdges(Node s, Node p, Node o, List<Node> from) {
         DataProducer dp = new DataProducer(getGraph()).setDuplicate(true);
-        if (from!=null && !from.isEmpty()) {
-            //dp.from(from.get(0));
+        if (from != null && !from.isEmpty()) {
+            // dp.from(from.get(0));
             dp.fromSelect(from);
         }
         return dp.iterate(s, p, o);
     }
-           
+
     List<Node> getFrom(Node graph, List<Node> from) {
         if (graph == null) {
             return from;
@@ -446,35 +450,28 @@ public class ProducerImpl
         list.add(graph);
         return list;
     }
-        
+
     void trace(Iterable<Edge> it) {
         System.out.println("trace iterator:");
         for (Edge e : it) {
             System.out.println(e);
         }
     }
-    
-    /**
-     * @deprecated
-     * User may provide another DataManager factory 
-     */
-    //@Override
-    public DataManager newInstance(Node queryGraphNode, Node targetGraphNode, List<Node> from, boolean skipMetadataNode, AccessRight access) {
-        return getDataProducer(queryGraphNode, targetGraphNode, from, skipMetadataNode, access, false);
-    }
-    
 
     /**
      * 
-     * @param queryGraphNode: named graph or null (query node)
-     * @param targetGraphNode: target named graph  (graph node)
-     * @param from:  from or from named or null
-     * @param skip: skip nodes other than subject/object/graph to determine that triples are different (default false)
-     * use case: rdf star reference node does not count to determine if two triples are different
-     * @param access: access right to skip triples whose access would be forbidden
+     * @param queryGraphNode:  named graph or null (query node)
+     * @param targetGraphNode: target named graph (graph node)
+     * @param from:            from or from named or null
+     * @param skip:            skip nodes other than subject/object/graph to
+     *                         determine that triples are different (default false)
+     *                         use case: rdf star reference node does not count to
+     *                         determine if two triples are different
+     * @param access:          access right to skip triples whose access would be
+     *                         forbidden
      * @return DataProducer
      */
-    DataProducer getDataProducer(Node queryGraphNode, Node targetGraphNode, List<Node> from, 
+    DataProducer getDataProducer(Node queryGraphNode, Node targetGraphNode, List<Node> from,
             boolean skip, AccessRight access, boolean nested) {
         DataProducer dp;
         if (queryGraphNode == null) {
@@ -493,7 +490,7 @@ public class ProducerImpl
     }
 
     @Override
-    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) throws SparqlException{
+    public Mappings getMappings(Node gNode, List<Node> from, Exp exp, Environment env) throws SparqlException {
         if (env instanceof Memory) {
             if (env.getQuery().isDebug()) {
                 System.out.println("BGP:\n" + exp);
@@ -519,7 +516,7 @@ public class ProducerImpl
      * deprecated:
      * Perform local Ontology match.match() Enable to
      * have a local ontology in case of several graphs with local ontologies In
-     * addition, 
+     * addition,
      */
     Iterable<Edge> localMatch(Iterable<Edge> it, Node gNode, Edge edge, Environment env) {
         if (isMatch && !env.getQuery().isRelax()) {
@@ -530,7 +527,7 @@ public class ProducerImpl
             // hence skip MatchIterator
             return it;
         }
-    }  
+    }
 
     /**
      * Return Node that represents the predicate of the Edge
@@ -550,7 +547,6 @@ public class ProducerImpl
         }
         return predicate;
     }
-    
 
     /**
      * Edges for Property Path elementary Regex property | ^property | !(p1 | |
@@ -567,7 +563,7 @@ public class ProducerImpl
         if (start == null) {
             Node qNode = edge.getNode(index);
             if (qNode.isConstant()) {
-                //	start = qNode;
+                // start = qNode;
                 start = getExtNode(qNode);
                 if (start == null) {
                     if (isdb) {
@@ -578,7 +574,7 @@ public class ProducerImpl
                 }
             }
         }
-        
+
         if (start != null && isExtern(start)) {
             if (!isdb) {
                 start = getExtNode(start); // graph.getNode(start);
@@ -590,9 +586,9 @@ public class ProducerImpl
             // start node is now reverse(index) node
             index = (index == 0) ? 1 : 0;
         }
-        
+
         if (src != null && isExtern(src)) {
-              src = getExtNode(src);
+            src = getExtNode(src);
         }
 
         if (exp.isNot()) {
@@ -602,12 +598,12 @@ public class ProducerImpl
         Node predicate = getDataBroker().getProperty(exp.getLongName());
         if (predicate == null) {
             if (isdb) {
-                predicate =  exp.getDatatypeValue();
+                predicate = exp.getDatatypeValue();
             } else {
                 return empty;
             }
         }
-        Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, 
+        Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index,
                 getGraph().isEdgeMetadata(), getAccessRight(env), isNested(env.getQuery(), edge));
 
         return it;
@@ -616,7 +612,6 @@ public class ProducerImpl
     boolean isDB() {
         return getClass() != ProducerImpl.class;
     }
-    
 
     /**
      * regex is a negation ?x ! rdf:type ?y ?x !(rdf:type|rdfs:subClassOf) ?y
@@ -631,7 +626,7 @@ public class ProducerImpl
             if (match(exp, predicate)) {
                 // exclude
             } else {
-                Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index, 
+                Iterable<Edge> it = getEdges(gNode, src, from, predicate, start, null, index,
                         getGraph().isEdgeMetadata(), getAccessRight(env), isNested(env.getQuery(), edge));
 
                 if (it != null) {
@@ -668,14 +663,14 @@ public class ProducerImpl
      * use case 1: eval graph ?g {} ; ?g in unbound ; node = ?g
      * use case 2: select from g1 g2 { s p* o}
      * Note: parameter node is now useless
+     * 
      * @return subset of from defined in target graph
      */
     @Override
     public Iterable<Node> getGraphNodes(Node node, List<Node> from,
-            Environment env) {        
+            Environment env) {
         return getDataBroker().getGraphList(from);
     }
-
 
     /**
      * Cast Java value into IDatatype
@@ -686,7 +681,7 @@ public class ProducerImpl
     }
 
     IDatatype nodeValue(Node n) {
-        return  n.getValue();
+        return n.getValue();
     }
 
     // cast IDatatype or Java value into DatatypeValue
@@ -702,9 +697,9 @@ public class ProducerImpl
     }
 
     /**
-     * Return a Node given a value (IDatatype value) 
-     * Use case: 
-     * select/bind (exp as node) 
+     * Return a Node given a value (IDatatype value)
+     * Use case:
+     * select/bind (exp as node)
      * return the Node in the graph if any or return the IDatatype value as is
      * (to speed up)
      * get named graph Node
@@ -717,11 +712,10 @@ public class ProducerImpl
         }
         return getNode((IDatatype) value);
     }
-        
-        
+
     public Node getNode(IDatatype dt) {
         if (dt.isFuture()) {
-            // future: template intermediate result 
+            // future: template intermediate result
             return dt;
         }
         Node node = getGraph().getNode(dt, false, false);
@@ -737,19 +731,19 @@ public class ProducerImpl
 
     @Override
     public void init(Query q) {
-        //cache.clear();
+        // cache.clear();
     }
 
     @Override
-    public void start(Query q) {        
+    public void start(Query q) {
         getGraph().getEventManager().start(event(q), q.getAST());
     }
-    
+
     @Override
     public void finish(Query q) {
         getGraph().getEventManager().finish(event(q), q.getAST());
-    }  
-    
+    }
+
     Event event(Query q) {
         if (q.getAST().isUpdate()) {
             // fake query exec on global update query for init purpose (Visitor)
@@ -763,8 +757,6 @@ public class ProducerImpl
         return Event.Query;
     }
 
-
-
     @Override
     public void initPath(Edge edge, int index) {
 
@@ -772,14 +764,14 @@ public class ProducerImpl
 
     @Override
     public boolean isBindable(Node node) {
-        IDatatype dt =  node.getValue();
+        IDatatype dt = node.getValue();
         // 1 && 1.0 are not same Node: cannot bind (see kgram Eval)
         return !dt.isNumber();
     }
 
     @Override
     public boolean isGraphNode(Node gNode, List<Node> from, Environment env) {
-        Node node = getValue(gNode, env );
+        Node node = getValue(gNode, env);
         if (node != null && getGraph().containsCoreseNode(node)) {
             if (from.isEmpty()) {
                 return true;
@@ -798,7 +790,7 @@ public class ProducerImpl
     public Mappings map(List<Node> nodes, IDatatype object) {
         return mapper.map(nodes, object);
     }
-    
+
     @Override
     public Mappings map(List<Node> nodes, IDatatype object, int n) {
         return mapper.map(nodes, object, n);
@@ -822,7 +814,8 @@ public class ProducerImpl
                 continue;
             }
 
-            // function exp.bind(f) tests whether current edge binds all variable of filter f			
+            // function exp.bind(f) tests whether current edge binds all variable of filter
+            // f
             for (String var : f.getVariables()) {
                 if (!lVar.contains(var)) {
                     Node node = env.getNode(var);
@@ -852,7 +845,7 @@ public class ProducerImpl
      */
     @Override
     public boolean isProducer(Node node) {
-        IDatatype dt =  node.getValue();
+        IDatatype dt = node.getValue();
         if (dt.getNodeObject() != null) {
             return toRDF.isGraphAble(dt.getNodeObject()) || dt.getNodeObject() instanceof Producer;
         }
@@ -865,7 +858,7 @@ public class ProducerImpl
      */
     @Override
     public Producer getProducer(Node node, Environment env) {
-        IDatatype dt =  node.getValue();
+        IDatatype dt = node.getValue();
         Object obj = dt.getNodeObject();
         Graph g = null;
 
@@ -883,14 +876,14 @@ public class ProducerImpl
         ProducerImpl p = getProducer(g, env.getQuery());
         return p;
     }
-        
-    public static ProducerImpl getProducer(Graph g, Query q) { 
+
+    public static ProducerImpl getProducer(Graph g, Query q) {
         ProducerImpl p = getProducer(g);
         p.setQuery(q);
         return p;
     }
-    
-    public static ProducerImpl getProducer(Graph g) {    
+
+    public static ProducerImpl getProducer(Graph g) {
         ProducerImpl p = ProducerImpl.create(g);
         MatcherImpl m = MatcherImpl.create(g);
         p.setMode(EXTENSION);
@@ -898,28 +891,25 @@ public class ProducerImpl
         p.set(m);
         return p;
     }
-        
-   
+
     public boolean isSpeedUp() {
         return speedUp;
     }
 
-    
     public void setSpeedUp(boolean speedUp) {
         this.speedUp = speedUp;
     }
 
-    
-//    public int getIndex() {
-//        return index;
-//    }
-//
-//    
-//    public void setIndex(int index) {
-//        this.index = index;
-//    }
+    // public int getIndex() {
+    // return index;
+    // }
+    //
+    //
+    // public void setIndex(int index) {
+    // this.index = index;
+    // }
 
-    // @todo: useless 
+    // @todo: useless
     // record named graph node when node is a Producer in order to manage backtrack
     // see Eval edge() & path()
     // useless because now gNode is an URI, not a variable
@@ -950,22 +940,24 @@ public class ProducerImpl
                 }
 
                 // case 2: bound
-//                Iterator<Node> it = this.graph.getProperties().iterator();
-//                while (it.hasNext()) {
-//                    Node predNode = it.next();
-//                    if (qpgn.getExpNode(PREDICATE).getLabel().equalsIgnoreCase(predNode.getLabel())) {
-//                        return this.graph.size(predNode);
-//                    }
-//                }
+                // Iterator<Node> it = this.graph.getProperties().iterator();
+                // while (it.hasNext()) {
+                // Node predNode = it.next();
+                // if
+                // (qpgn.getExpNode(PREDICATE).getLabel().equalsIgnoreCase(predNode.getLabel()))
+                // {
+                // return this.graph.size(predNode);
+                // }
+                // }
                 Node pred = getGraph().getPropertyNode(qpgn.getExpNode(PREDICATE).getLabel());
                 if (pred != null) {
                     return this.getGraph().size(pred);
                 }
 
-                //case 3: not found
+                // case 3: not found
                 return 0;
-            //to do for SUBJECT | OBJECT
-            //for the moment, cannot get these values directly
+            // to do for SUBJECT | OBJECT
+            // for the moment, cannot get these values directly
             case SUBJECT:
             case OBJECT:
             case TRIPLE:
@@ -982,8 +974,8 @@ public class ProducerImpl
                 return this.getGraph().size();
             case PREDICATE:
                 return this.getGraph().getIndex().size();
-            //to do for SUBJECT | OBJECT
-            //for the moment, cannot get these values directIProducerQP      
+            // to do for SUBJECT | OBJECT
+            // for the moment, cannot get these values directIProducerQP
             case SUBJECT:
             case OBJECT:
             default:
@@ -1017,7 +1009,7 @@ public class ProducerImpl
     public void close() {
 
     }
-    
+
     @Override
     public DatatypeValueFactory getDatatypeValueFactory() {
         return DatatypeMap.getDatatypeMap();
@@ -1025,7 +1017,7 @@ public class ProducerImpl
 
     /**
      * DataManager for external graph
-     * With corese graph, dataManager = null, 
+     * With corese graph, dataManager = null,
      * and there is a corese DataBrokerLocal
      */
     public DataManager getDataManager() {
@@ -1035,15 +1027,15 @@ public class ProducerImpl
     public void setDataManager(DataManager dataManager) {
         this.dataManager = dataManager;
     }
-    
+
     /**
-     * Define external DataManager  
+     * Define external DataManager
      */
     public void defineDataManager(DataManager dataManager) {
         setDataManager(dataManager);
         defineDataBroker(dataManager);
     }
-    
+
     /**
      * Broker between ProducerImpl and DataManager
      * Enables us to tune plugin between corese and external graph
@@ -1054,15 +1046,15 @@ public class ProducerImpl
             // DataProducer on a corese graph
             DataProducer dp = (DataProducer) dataManager;
             setDataBroker(new DataBrokerLocal(dp.getGraph()));
-        }
-        else {
-            setDataBroker(new DataBrokerExtern(dataManager){});
+        } else {
+            setDataBroker(new DataBrokerExtern(dataManager) {
+            });
         }
     }
-    
+
     @Override
     public boolean hasDataManager() {
-        return getDataManager()!=null;
+        return getDataManager() != null;
     }
 
     public DataBroker getDataBroker() {

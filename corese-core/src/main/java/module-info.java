@@ -34,4 +34,6 @@ module fr.inria.corese.corese_core {
     exports fr.inria.corese.core.extension;
     exports fr.inria.corese.core.visitor.ldpath;
     exports fr.inria.corese.core.visitor.solver;
+    exports fr.inria.corese.core.storage;
+    exports fr.inria.corese.core.storage.api.dataManager;
 }

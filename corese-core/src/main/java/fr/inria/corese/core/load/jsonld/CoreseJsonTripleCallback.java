@@ -2,14 +2,14 @@ package fr.inria.corese.core.load.jsonld;
 
 import java.util.List;
 
-import com.github.jsonldjava.core.JsonLdTripleCallback ;
+import com.github.jsonldjava.core.JsonLdTripleCallback;
 import com.github.jsonldjava.core.RDFDataset;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.AddTripleHelper;
 import fr.inria.corese.core.load.AddTripleHelperDataManager;
 import fr.inria.corese.core.load.ILoadSerialization;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.api.core.Node;
 
 /**
@@ -35,29 +35,28 @@ public class CoreseJsonTripleCallback implements JsonLdTripleCallback {
         setDataManager(man);
         if (man == null) {
             helper = AddTripleHelper.create(graph);
-        }
-        else {
-            helper = new AddTripleHelperDataManager(graph, man);    
+        } else {
+            helper = new AddTripleHelperDataManager(graph, man);
         }
     }
 
     @Override
     public Object call(RDFDataset dataset) {
-        
-        //get default graph source
+
+        // get default graph source
         defaultGraphSource = helper.getGraphSource(source);
         graphSource = defaultGraphSource;
 
         for (String graphName : dataset.graphNames()) {
 
-            //add graphs
+            // add graphs
             if (JSONLD_DEFAULT_GRAPH.equals(graphName)) {
                 graphSource = defaultGraphSource;
             } else {
                 graphSource = getHelper().graphNode(graphName);
             }
 
-            //add all triples to this graph
+            // add all triples to this graph
             final List<RDFDataset.Quad> quads = dataset.getQuads(graphName);
             for (final RDFDataset.Quad quad : quads) {
 
@@ -92,7 +91,6 @@ public class CoreseJsonTripleCallback implements JsonLdTripleCallback {
         getHelper().setRenameBlankNode(renameBNode);
         getHelper().setLimit(limit);
     }
-
 
     public AddTripleHelper getHelper() {
         return helper;

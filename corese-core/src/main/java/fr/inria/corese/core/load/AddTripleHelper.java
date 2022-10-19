@@ -1,13 +1,14 @@
 package fr.inria.corese.core.load;
 
-import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.api.DataManager;
 import java.util.ArrayList;
 import java.util.Hashtable;
+
 import org.semarglproject.vocab.core.RDF;
+
+import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  * Helper class to aid the parsers (ex.jsonld, rdfa) for adding triples to
@@ -68,7 +69,8 @@ public class AddTripleHelper implements ILoadSerialization {
     }
 
     @Override
-    public void addTriple(String subj, String pred, String obj, String lang, String type, int literalType, Node source) {
+    public void addTriple(String subj, String pred, String obj, String lang, String type, int literalType,
+            Node source) {
         if (source == null) {
             source = addDefaultGraphNode();
         }
@@ -100,7 +102,7 @@ public class AddTripleHelper implements ILoadSerialization {
         return addLiteral(property, value, type, lang);
     }
 
-    //get the node of "object"
+    // get the node of "object"
     private Node getNode(String obj) {
         if (isBlankNode(obj)) {
             return addBlank(getID(obj));
@@ -114,7 +116,7 @@ public class AddTripleHelper implements ILoadSerialization {
         return addProperty(pred);
     }
 
-    //get the node of subject
+    // get the node of subject
     private Node getSubject(String subj) {
         if (isBlankNode(subj)) {
             return addBlank(getID(subj));
@@ -126,7 +128,7 @@ public class AddTripleHelper implements ILoadSerialization {
             return node;
         }
     }
-    
+
     public Node graphNode(String graphName) {
         Node graphSource;
         if (graphName.startsWith(JSONLD_BNODE_PREFIX)) {
@@ -138,12 +140,12 @@ public class AddTripleHelper implements ILoadSerialization {
         return graphSource;
     }
 
-    //Check if a given string is empty (null or length ==0)
+    // Check if a given string is empty (null or length ==0)
     private boolean isEmpty(String s) {
         return s == null || s.isEmpty();
     }
 
-    //Check if a node is blank (starting with "_:")
+    // Check if a node is blank (starting with "_:")
     private boolean isBlankNode(String node) {
         return node.startsWith(RDF.BNODE_PREFIX);
     }
@@ -165,15 +167,15 @@ public class AddTripleHelper implements ILoadSerialization {
         }
         return id;
     }
-    
-    String blankNode() {        
+
+    String blankNode() {
         return getGraph().newBlankID();
     }
 
     /**
      * Get the default graph source according to the status of graph and source
      *
-     * @param graph Graph that will be filled in
+     * @param graph  Graph that will be filled in
      * @param source The particular name to add nodes to
      *
      * @return
@@ -185,39 +187,39 @@ public class AddTripleHelper implements ILoadSerialization {
             return addGraph(source);
         }
     }
-       
+
     Node addGraph(String name) {
         return getGraph().addGraph(name);
     }
-    
+
     Node addDefaultGraphNode() {
         return getGraph().addDefaultGraphNode();
     }
-    
+
     void addGraphNode(Node node) {
         getGraph().addGraphNode(node);
     }
-    
+
     Edge create(Node g, Node s, Node p, Node o) {
         return getGraph().create(g, s, p, o);
     }
-    
+
     Edge addEdge(Edge e) {
         return getGraph().addEdge(e);
     }
-    
+
     Node addProperty(String p) {
         return getGraph().addProperty(p);
     }
-    
+
     Node addLiteral(String predicate, String value, String type, String lang) {
         return getGraph().addLiteral(predicate, value, type, lang);
     }
-    
+
     Node addResource(String name) {
         return getGraph().addResource(name);
     }
-    
+
     Node addBlank(String id) {
         return getGraph().addBlank(id);
     }
@@ -229,5 +231,5 @@ public class AddTripleHelper implements ILoadSerialization {
     public void setGraph(Graph graph) {
         this.graph = graph;
     }
-    
+
 }

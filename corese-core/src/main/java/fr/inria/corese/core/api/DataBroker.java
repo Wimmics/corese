@@ -4,6 +4,7 @@ import java.util.List;
 
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.logic.RDF;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Query;
@@ -17,10 +18,7 @@ import fr.inria.corese.sparql.datatype.DatatypeMap;
  */
 public interface DataBroker {
 
-    default DataManager getDataManager() {
-        return new DataManager() {
-        };
-    }
+    DataManager getDataManager();
 
     default int graphSize() {
         return this.getDataManager().graphSize();

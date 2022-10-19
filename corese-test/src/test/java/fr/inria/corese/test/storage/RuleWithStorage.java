@@ -2,14 +2,15 @@
 package fr.inria.corese.test.storage;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.storage.jenatdb1.JenaDataManager;
+import fr.inria.corese.storage.jenatdb1.JenaDataManagerBuilder;
 
 /**
  *
@@ -46,8 +47,7 @@ public class RuleWithStorage {
     }
     
     DataManager init() throws LoadException {
-        JenaDataManager man = new JenaDataManager(STORAGE);
-        man.setReentrant(true);
+        JenaDataManager man = new JenaDataManagerBuilder().storagePath(STORAGE).build();
         Graph g = Graph.create();
         Load ld = Load.create(g, man);
         //ld.parse("/user/corby/home/AADemoNew/human/human.rdf");

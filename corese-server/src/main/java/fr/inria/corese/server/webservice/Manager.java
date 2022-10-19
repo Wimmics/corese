@@ -1,24 +1,25 @@
 package fr.inria.corese.server.webservice;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.triple.parser.Context;
-import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.core.workflow.Data;
-import fr.inria.corese.core.workflow.SemanticWorkflow;
-import fr.inria.corese.core.workflow.WorkflowParser;
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.GraphStore;
-import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.core.load.Load;
-import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.api.DataManager;
 import java.util.HashMap;
+
 import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
+import fr.inria.corese.core.workflow.Data;
+import fr.inria.corese.core.workflow.SemanticWorkflow;
+import fr.inria.corese.core.workflow.WorkflowParser;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  * TripleStore Manager Load Profile Datasets into TripleStores Manage a map of
@@ -30,17 +31,17 @@ import org.apache.logging.log4j.Logger;
 public class Manager {
     private final static Logger logger = LogManager.getLogger(Manager.class);
     static final String STCONTEXT = Context.STL_CONTEXT;
-    static String SYSTEM  = NSManager.STL + "system";
+    static String SYSTEM = NSManager.STL + "system";
     static String DEFAULT = NSManager.STL + "default";
-    static String USER    = NSManager.STL + "user";
+    static String USER = NSManager.STL + "user";
     private static String CONTENT = NSManager.STL + "content";
     private static String CONTENT_SHARE = NSManager.STL + "shareContent";
     private static String SCHEMA = NSManager.STL + "schema";
     private static String NAME = NSManager.SWL + "name";
     static final String SKOLEM = NSManager.STL + "skolem";
-    static HashMap<String, TripleStore> 
-            // by dataset URI; e.g. st:cdn
-            mapURI, 
+    static HashMap<String, TripleStore>
+    // by dataset URI; e.g. st:cdn
+    mapURI,
             // by shareContent URI
             mapShare;
     // name to URI (e.g. /template/cdn, cdn is the name of the service)
@@ -48,9 +49,9 @@ public class Manager {
     static HashMap<String, String> mapService;
     static NSManager nsm;
     static Manager manager;
-    
+
     boolean initDone = false;
-    private DatasetManager datasetManager;
+    private DatasetManagerServer datasetManager;
 
     static {
         mapShare = new HashMap<>();
@@ -66,14 +67,14 @@ public class Manager {
      * content
      */
     void init() {
-        if (initDone) {}
-        else {
+        if (initDone) {
+        } else {
             initDone = true;
             mapURI = new HashMap<>();
             mapService = new HashMap<>();
             nsm = NSManager.create();
             Profile p = getProfile();
-            
+
             for (Service s : p.getServers()) {
                 if (!s.getName().equals(DEFAULT) && !s.getName().equals(USER)) {
                     // default/user is the sparql endpoint
@@ -90,31 +91,31 @@ public class Manager {
             system();
         }
     }
-    
+
     void system() {
         TripleStore sys = getTripleStore(SYSTEM);
         if (sys != null) {
             Graph g = sys.getGraph();
             g.setAllGraphNode(true);
             for (Service s : getProfile().getServers()) {
-                TripleStore ts =  getTripleStore(s.getName());
+                TripleStore ts = getTripleStore(s.getName());
                 if (ts != null) {
                     g.setNamedGraph(s.getName(), ts.getGraph());
                 }
             }
         }
     }
-    
+
     // URI or name serv
     static TripleStore getEndpoint(String serv) {
-       getManager().init();
-       TripleStore ts = getManager().getTripleStore(getURIOrName(serv));
-       if (ts == null){
-           return Transformer.getTripleStore();
-       }
-       return ts;
-   }
-    
+        getManager().init();
+        TripleStore ts = getManager().getTripleStore(getURIOrName(serv));
+        if (ts == null) {
+            return Transformer.getTripleStore();
+        }
+        return ts;
+    }
+
     static String getURIOrName(String serv) {
         String uri = getURI(serv);
         if (uri == null) {
@@ -153,26 +154,26 @@ public class Manager {
     }
 
     TripleStore createTripleStore(Profile p, Service s) throws LoadException, EngineException {
-        GraphStore g = GraphStore.create(); //GraphStore.create(s.isRDFSEntailment());
-//        if (s.getParam() != null) {
-//            IDatatype dt = s.getParam().get(SKOLEM);
-//            if (dt != null && dt.booleanValue()) {
-//                g.setSkolem(true);
-//            }
-//        }
+        GraphStore g = GraphStore.create(); // GraphStore.create(s.isRDFSEntailment());
+        // if (s.getParam() != null) {
+        // IDatatype dt = s.getParam().get(SKOLEM);
+        // if (dt != null && dt.booleanValue()) {
+        // g.setSkolem(true);
+        // }
+        // }
         TripleStore store = new TripleStore(g, true);
-        
-        if (s.getStoragePath()!=null && getDatasetManager()!=null) {
+
+        if (s.getStoragePath() != null && getDatasetManager() != null) {
             DataManager man = getDatasetManager().getDataManager(s.getStoragePath());
             store.setDataManager(man);
-            logger.info(String.format("Service: %s ; path: %s ; data manager: %s", 
+            logger.info(String.format("Service: %s ; path: %s ; data manager: %s",
                     s.getService(), s.getStoragePath(), store.getDataManager()));
         }
-        
+
         init(store, s);
         return store;
     }
-    
+
     void tune(TripleStore ts, Service s) {
         if (s.getParam() != null) {
             IDatatype dt = s.getParam().get(SKOLEM);
@@ -193,44 +194,42 @@ public class Manager {
         Node serv = g.getNode(service.getName());
         Node cont = g.getNode(CONTENT, serv);
         boolean share = false;
-        if (cont == null){
+        if (cont == null) {
             share = true;
             cont = g.getNode(CONTENT_SHARE, serv);
         }
         if (cont != null) {
-             initService(ts, g, serv, cont, share);
-        } 
-        else {
-             initService(ts, service);
-       }
+            initService(ts, g, serv, cont, share);
+        } else {
+            initService(ts, service);
+        }
     }
-
-   
 
     /**
      * Init service dataset with Workflow of Load
      */
-    void initService(TripleStore ts, Graph profile, Node server, Node swnode, boolean share) throws LoadException, EngineException {
+    void initService(TripleStore ts, Graph profile, Node server, Node swnode, boolean share)
+            throws LoadException, EngineException {
         initContent(ts, profile, server, swnode, share);
         ts.finish(getProfile().isProtected());
     }
-    
-    void initContent(TripleStore ts, Graph profile, Node server, Node swnode, boolean share) throws LoadException, EngineException {
+
+    void initContent(TripleStore ts, Graph profile, Node server, Node swnode, boolean share)
+            throws LoadException, EngineException {
         Graph gg = null;
-        if (share && mapShare.containsKey(swnode.getLabel())){
-            gg = mapShare.get(swnode.getLabel()).getGraph();            
-        }
-        else {
+        if (share && mapShare.containsKey(swnode.getLabel())) {
+            gg = mapShare.get(swnode.getLabel()).getGraph();
+        } else {
             gg = createContent(ts, profile, server, swnode);
-            if (share){
+            if (share) {
                 mapShare.put(swnode.getLabel(), ts);
             }
         }
-        if (gg != null && gg != ts.getGraph()){
+        if (gg != null && gg != ts.getGraph()) {
             ts.setGraph(gg);
         }
     }
-    
+
     Graph createContent(TripleStore ts, Graph profile, Node server, Node swnode) throws LoadException, EngineException {
         WorkflowParser wp = new WorkflowParser(profile);
         SemanticWorkflow sw = wp.parse(swnode);
@@ -253,12 +252,8 @@ public class Manager {
             }
         }
     }
-    
-    
-    
-    
-    
-     /**
+
+    /**
      * Create TripleStore and Load data from profile service definitions
      */
     @Deprecated
@@ -267,11 +262,11 @@ public class Manager {
         Load ld = Load.create(g);
 
         for (Service.Doc d : s.getData()) {
-            //ld.load(d.getUri(), d.getUri(), d.getName());
+            // ld.load(d.getUri(), d.getUri(), d.getName());
             ld.parse(d.getUri(), d.getName());
         }
         for (Service.Doc d : s.getSchema()) {
-            //ld.load(d.getUri(), d.getUri(), d.getName());
+            // ld.load(d.getUri(), d.getUri(), d.getName());
             ld.parse(d.getUri(), d.getName());
         }
 
@@ -281,7 +276,7 @@ public class Manager {
             Load lq = Load.create(gg);
 
             for (Service.Doc d : s.getContext()) {
-                //lq.load(d.getUri(), d.getUri(), d.getName());
+                // lq.load(d.getUri(), d.getUri(), d.getName());
                 lq.parse(d.getUri(), d.getName());
 
             }
@@ -294,15 +289,14 @@ public class Manager {
     /**
      * Complete context graph by: 1) add index to queries 2) load query from
      * st:queryURI and insert st:query
+     * 
      * @deprecated
      */
     void init(Graph g) {
-        String init =
-                "insert { ?q st:index ?n }"
+        String init = "insert { ?q st:index ?n }"
                 + "where  { ?q a st:Query bind (kg:number() as ?n) }";
 
-        String init2 =
-                "insert { ?q st:query ?query }"
+        String init2 = "insert { ?q st:query ?query }"
                 + "where  { ?q a st:Query ; st:queryURI ?uri . bind (kg:read(?uri) as ?query) }";
 
         QueryProcess exec = QueryProcess.create(g);
@@ -314,11 +308,11 @@ public class Manager {
         }
     }
 
-    public DatasetManager getDatasetManager() {
+    public DatasetManagerServer getDatasetManager() {
         return datasetManager;
     }
 
-    public void setDatasetManager(DatasetManager datasetManager) {
+    public void setDatasetManager(DatasetManagerServer datasetManager) {
         this.datasetManager = datasetManager;
     }
 

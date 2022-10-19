@@ -16,11 +16,11 @@ import org.eclipse.rdf4j.repository.sail.SailRepository;
 import org.eclipse.rdf4j.sail.memory.MemoryStore;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.rdf4j.CoreseModel;
-import fr.inria.corese.rdf4j.Rdf4jDataManager;
+import fr.inria.corese.rdf4j.Rdf4jDataManagerBuilder;
 import fr.inria.corese.sparql.exceptions.EngineException;
 
 public class SparqlEngine {
@@ -130,7 +130,7 @@ public class SparqlEngine {
     }
 
     public static SelectResults coreseSelectQuery(String query, Model model) {
-        DataManager dataManage = new Rdf4jDataManager(model);
+        DataManager dataManage = new Rdf4jDataManagerBuilder().model(model).build();
         return SparqlEngine.coreseSelectQuery(query, QueryProcess.create(dataManage));
     }
 
@@ -155,7 +155,7 @@ public class SparqlEngine {
     }
 
     public static Model coreseConstructQuery(String query, Model model) {
-        DataManager dataManage = new Rdf4jDataManager(model);
+        DataManager dataManage = new Rdf4jDataManagerBuilder().model(model).build();
         return SparqlEngine.coreseConstructQuery(query, QueryProcess.create(dataManage));
     }
 
@@ -180,7 +180,7 @@ public class SparqlEngine {
     }
 
     public static Boolean coreseAskQuery(String query, Model model) {
-        DataManager dataManage = new Rdf4jDataManager(model);
+        DataManager dataManage = new Rdf4jDataManagerBuilder().model(model).build();
         return SparqlEngine.coreseAskQuery(query, QueryProcess.create(dataManage));
     }
 
@@ -207,7 +207,7 @@ public class SparqlEngine {
     }
 
     public static Model coreseUpdateQuery(String query, Model model) {
-        DataManager dataManage = new Rdf4jDataManager(model);
+        DataManager dataManage = new Rdf4jDataManagerBuilder().model(model).build();
         SparqlEngine.coreseUpdateQuery(query, QueryProcess.create(dataManage));
         return new CoreseModel(model);
     }

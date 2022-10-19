@@ -1,4 +1,4 @@
-package fr.inria.corese.core.producer;
+package fr.inria.corese.core.storage;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -7,7 +7,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.api.DataManager;
+import fr.inria.corese.core.producer.MetadataManager;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
@@ -15,8 +16,8 @@ import fr.inria.corese.sparql.triple.parser.HashMapList;
 /**
  * DataManager for corese Graph for testing purpose
  */
-public class DataManagerGraph implements DataManager {
-    private static Logger logger = LoggerFactory.getLogger(DataManagerGraph.class);
+public class CoreseGraphDataManager implements DataManager {
+    private static Logger logger = LoggerFactory.getLogger(CoreseGraphDataManager.class);
     static final String STORAGE_PATH = "http://ns.inria.fr/corese/dataset";
     private static final String DEBUG = "debug";
 
@@ -27,18 +28,19 @@ public class DataManagerGraph implements DataManager {
     private String path = STORAGE_PATH;
     private boolean debug = false;
 
-    DataManagerGraph() {
+    protected CoreseGraphDataManager() {
+        setGraph(new Graph());
+        init();
+    }
+
+    protected CoreseGraphDataManager(Graph g) {
+        setGraph(g);
+        init();
+    }
+
+    void init() {
         emptyNodeList = new ArrayList<>(0);
         emptyEdgeList = new ArrayList<>(0);
-    }
-
-    public DataManagerGraph(Graph g) {
-        this();
-        init(g);
-    }
-
-    void init(Graph g) {
-        setGraph(g);
     }
 
     @Override
@@ -64,7 +66,6 @@ public class DataManagerGraph implements DataManager {
         trace("end write transaction " + getPath());
     }
 
-    @Override
     public String getStoragePath() {
         return getPath();
     }

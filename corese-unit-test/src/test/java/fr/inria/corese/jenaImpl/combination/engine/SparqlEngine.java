@@ -3,11 +3,11 @@ package fr.inria.corese.jenaImpl.combination.engine;
 import org.apache.jena.query.Dataset;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.storage.jenatdb1.JenaDataManager;
+import fr.inria.corese.storage.jenatdb1.JenaDataManagerBuilder;
 
 public class SparqlEngine {
 
@@ -20,7 +20,7 @@ public class SparqlEngine {
     }
 
     public static SelectResults selectQuery(String query, Dataset dataset) {
-        DataManager dataManage = new JenaDataManager(dataset, null);
+        DataManager dataManage = new JenaDataManagerBuilder().dataset(dataset).storagePath(null).build();
         return SparqlEngine.coreseSelectQuery(query, QueryProcess.create(dataManage));
     }
 
@@ -45,7 +45,7 @@ public class SparqlEngine {
     }
 
     public static Graph constructQuery(String query, Dataset dataset) {
-        DataManager dataManage = new JenaDataManager(dataset, null);
+        DataManager dataManage = new JenaDataManagerBuilder().dataset(dataset).storagePath(null).build();
         return SparqlEngine.coreseConstructQuery(query, QueryProcess.create(dataManage));
     }
 
@@ -70,7 +70,7 @@ public class SparqlEngine {
     }
 
     public static Boolean askQuery(String query, Dataset dataset) {
-        DataManager dataManage = new JenaDataManager(dataset, null);
+        DataManager dataManage = new JenaDataManagerBuilder().dataset(dataset).storagePath(null).build();
         return SparqlEngine.coreseAskQuery(query, QueryProcess.create(dataManage));
     }
 
@@ -97,7 +97,7 @@ public class SparqlEngine {
     }
 
     public static Dataset updateQuery(String query, Dataset dataset) {
-        DataManager dataManage = new JenaDataManager(dataset, null);
+        DataManager dataManage = new JenaDataManagerBuilder().dataset(dataset).storagePath(null).build();
         SparqlEngine.coreseUpdateQuery(query, QueryProcess.create(dataManage));
         return dataset;
     }

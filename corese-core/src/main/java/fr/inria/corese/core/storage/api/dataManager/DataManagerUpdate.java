@@ -1,4 +1,4 @@
-package fr.inria.corese.core.api;
+package fr.inria.corese.core.storage.api.dataManager;
 
 import java.util.HashSet;
 import java.util.List;

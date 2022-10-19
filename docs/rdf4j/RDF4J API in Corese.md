@@ -4,18 +4,18 @@
 
 This document details the RDF4J APIs implemented in Corese and how to use and connect the Corese framework with RDF4J.
 
-- [Corese-library and RDF4J](#corese-library-and-rdf4j)
-  - [1. Implementation of the RDF4J model API in Corese](#1-implementation-of-the-rdf4j-model-api-in-corese)
-    - [1.1. Build a Corese Model by program](#11-build-a-corese-model-by-program)
-    - [1.2. Manipulate a Corese Model](#12-manipulate-a-corese-model)
-    - [1.3. Get a Corese Model from a Corese Graph](#13-get-a-corese-model-from-a-corese-graph)
-    - [1.4. Get a Corese Graph from a Corese Model](#14-get-a-corese-graph-from-a-corese-model)
-    - [1.5. Get a Corese model from any object that implements the RDF4J model API](#15-get-a-corese-model-from-any-object-that-implements-the-rdf4j-model-api)
-    - [1.6. Use external tools compatible with the RDF4J model API](#16-use-external-tools-compatible-with-the-rdf4j-model-api)
-      - [1.6.1. RIO](#161-rio)
-      - [1.6.2. RDF4J SPARQL Engine with a Corese model](#162-rdf4j-sparql-engine-with-a-corese-model)
-  - [2. Implementation of an RDF4J data manager in Corese](#2-implementation-of-an-rdf4j-data-manager-in-corese)
-    - [2.1. Corese SPARQL Engine with a RDF4J model](#21-corese-sparql-engine-with-a-rdf4j-model)
+1. [Corese-library and RDF4J](#corese-library-and-rdf4j)
+   1. [1. Implementation of the RDF4J model API in Corese](#1-implementation-of-the-rdf4j-model-api-in-corese)
+      1. [1.1. Build a Corese Model by program](#11-build-a-corese-model-by-program)
+      2. [1.2. Manipulate a Corese Model](#12-manipulate-a-corese-model)
+      3. [1.3. Get a Corese Model from a Corese Graph](#13-get-a-corese-model-from-a-corese-graph)
+      4. [1.4. Get a Corese Graph from a Corese Model](#14-get-a-corese-graph-from-a-corese-model)
+      5. [1.5. Get a Corese model from any object that implements the RDF4J model API](#15-get-a-corese-model-from-any-object-that-implements-the-rdf4j-model-api)
+      6. [1.6. Use external tools compatible with the RDF4J model API](#16-use-external-tools-compatible-with-the-rdf4j-model-api)
+         1. [1.6.1. RIO](#161-rio)
+         2. [1.6.2. RDF4J SPARQL Engine with a Corese model](#162-rdf4j-sparql-engine-with-a-corese-model)
+   2. [2. Implementation of an RDF4J data manager in Corese](#2-implementation-of-an-rdf4j-data-manager-in-corese)
+      1. [2.1. Corese SPARQL Engine with a RDF4J model](#21-corese-sparql-engine-with-a-rdf4j-model)
 
 ## 1. Implementation of the RDF4J model API in Corese
 
@@ -256,7 +256,7 @@ Model RDF4J_tree_model = new TreeModel();
 // […]
 
 // Sparql query
-QueryProcess exec = QueryProcess.create(new Rdf4jDataManager(RDF4J_tree_model));
+QueryProcess exec = QueryProcess.create(new Rdf4jDataManagerBuilder.model(RDF4J_tree_model).build());
 Mappings map = exec.query("select * where { ?s ?p ?o }");
 
 // Print result

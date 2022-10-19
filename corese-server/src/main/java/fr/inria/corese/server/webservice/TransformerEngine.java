@@ -1,22 +1,24 @@
 package fr.inria.corese.server.webservice;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.triple.parser.Context;
-import fr.inria.corese.sparql.triple.parser.Dataset;
+import java.util.List;
+
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.core.workflow.Data;
 import fr.inria.corese.core.workflow.ResultProcess;
 import fr.inria.corese.core.workflow.SemanticWorkflow;
 import fr.inria.corese.core.workflow.WorkflowParser;
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.GraphStore;
-import fr.inria.corese.core.api.DataManager;
-import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
-import java.util.List;
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
 
 /**
  *
@@ -26,12 +28,12 @@ import org.apache.logging.log4j.Logger;
  *
  */
 public class TransformerEngine {
-    
+
     private static Logger logger = LogManager.getLogger(Transformer.class);
     private static final String PARAM = "$param";
-    private static final String MODE  = "$mode";
+    private static final String MODE = "$mode";
 
-    // TripleStore RDF Graph  
+    // TripleStore RDF Graph
     private GraphStore graph;
     private DataManager dataManager;
     // Profile RDF graph: profile, server and workflow definitions
@@ -41,17 +43,18 @@ public class TransformerEngine {
     private EventManager eventManager;
     // Web service parameters
     Param param;
-    
+
     private boolean debug = false;
 
     /**
      * 
-     * @param graph    RDF graph to be processed
-     * @param profile  RDF graph specifies workflow to be executed on graph
-     * @param param    service Param and Context
+     * @param graph   RDF graph to be processed
+     * @param profile RDF graph specifies workflow to be executed on graph
+     * @param param   service Param and Context
      * 
-     * Workflow URI/bnode IDatatype dt = param.getContext().get(Context.STL_WORKFLOW) // st:workflow
-     * Workflow node = profile.getNode(dt)
+     *                Workflow URI/bnode IDatatype dt =
+     *                param.getContext().get(Context.STL_WORKFLOW) // st:workflow
+     *                Workflow node = profile.getNode(dt)
      */
     public TransformerEngine(GraphStore graph, GraphStore profile, Param param) {
         this.graph = graph;
@@ -59,13 +62,11 @@ public class TransformerEngine {
         this.param = param;
         init();
     }
-    
-    void init(){
+
+    void init() {
         setContext(create(param));
         complete(getGraph(), profile, context);
     }
-    
-   
 
     /**
      * Create and run a Workflow
@@ -74,10 +75,10 @@ public class TransformerEngine {
     public Data process() throws EngineException, LoadException {
         Dataset ds = createDataset(param.getFrom(), param.getNamed());
         SemanticWorkflow sw = workflow(getContext(), ds, profile);
-        //sw.setDebug(isDebug());
+        // sw.setDebug(isDebug());
         if (isDebug()) {
             logger.info("Run workflow");
-            //graph.setVerbose(true);
+            // graph.setVerbose(true);
         }
         if (getEventManager() != null) {
             getEventManager().call(sw.getContext());
@@ -85,10 +86,9 @@ public class TransformerEngine {
         Data data = sw.process(new Data(getGraph(), getDataManager()));
         return data;
     }
-          
 
     /**
-     * Create a Workflow to process service 
+     * Create a Workflow to process service
      * If there is no explicit workflow
      * specification, i.e no st:workflow [ ] create a Workflow with
      * query/transform.
@@ -97,34 +97,35 @@ public class TransformerEngine {
         SemanticWorkflow wp = new SemanticWorkflow();
         wp.setContext(context);
         wp.setDataset(dataset);
-        //logger.info("Workflow Context:\n" + context);
+        // logger.info("Workflow Context:\n" + context);
         wp.setLog(true);
-        IDatatype swdt    = context.get(Context.STL_WORKFLOW);
+        IDatatype swdt = context.get(Context.STL_WORKFLOW);
         IDatatype querydt = context.get(Context.STL_QUERY);
-        String query      = (querydt == null) ? null : querydt.stringValue();
-        String transform  = context.getTransform();
+        String query = (querydt == null) ? null : querydt.stringValue();
+        String transform = context.getTransform();
         Level level = param.getLevel();
-        boolean isUserQuery  = param.isUserQuery();
-        //System.out.println("TE: key " + param.getKey() + " " + level);
-//        boolean isRestricted = false; //param.isRestricted() && context.hasValue(Context.STL_RESTRICTED, DatatypeMap.TRUE);
-//        Access.Level level = Access.getQueryAccessLevel(isUserQuery, isRestricted);
+        boolean isUserQuery = param.isUserQuery();
+        // System.out.println("TE: key " + param.getKey() + " " + level);
+        // boolean isRestricted = false; //param.isRestricted() &&
+        // context.hasValue(Context.STL_RESTRICTED, DatatypeMap.TRUE);
+        // Access.Level level = Access.getQueryAccessLevel(isUserQuery, isRestricted);
         logger.info("Parse workflow: " + swdt);
         if (swdt != null) {
-            // there is a workflow            
+            // there is a workflow
             logger.info("Parse workflow: " + swdt.getLabel());
             WorkflowParser parser = new WorkflowParser(wp, profile);
             parser.setServerMode(true);
-            //parser.setDebug(true);
+            // parser.setDebug(true);
             parser.setProcessor(new Translator());
             parser.parseWE(profile.getNode(swdt));
             query = getQuery(wp, query);
             if (query != null) {
                 logger.info("Workflow query: " + query);
                 wp.addQuery(query, 0, isUserQuery, level);
-            }  
-        } 
+            }
+        }
         // there is no workflow
-        else if (query != null) {  
+        else if (query != null) {
             if (transform == null) {
                 logger.info("SPARQL endpoint");
                 wp.addQueryMapping(query, isUserQuery, level);
@@ -139,14 +140,14 @@ public class TransformerEngine {
         defaultTransform(wp, transform);
         return wp;
     }
-    
+
     String getQuery(SemanticWorkflow wp, String query) {
         if (query == null) {
             return getQuery(wp);
         }
         return query;
     }
-   
+
     /**
      * Try to retrieve query from context graph using uri
      */
@@ -163,7 +164,6 @@ public class TransformerEngine {
         }
         return null;
     }
-      
 
     /**
      * If transform = null and workflow does not end with transform: use
@@ -182,16 +182,15 @@ public class TransformerEngine {
             wp.getContext().set(Context.STL_DEFAULT, true);
         }
     }
-    
-    
+
     Context create(Param par) {
-        Context ctx= par.createContext();        
-        complete(ctx, par);         
+        Context ctx = par.createContext();
+        complete(ctx, par);
         return ctx;
     }
-    
-    Context complete(Context c, Param par){
-        if (par.isAjax()){
+
+    Context complete(Context c, Param par) {
+        if (par.isAjax()) {
             c.setProtocol(Context.STL_AJAX);
             c.export(Context.STL_PROTOCOL, c.get(Context.STL_PROTOCOL));
         }
@@ -201,10 +200,11 @@ public class TransformerEngine {
     void complete(GraphStore graph, GraphStore profile, Context context) {
         Graph cg = graph.getNamedGraph(Context.STL_CONTEXT);
         if (cg != null) {
-            context.set(Context.STL_CONTEXT,    DatatypeMap.createObject(Context.STL_CONTEXT, cg));
+            context.set(Context.STL_CONTEXT, DatatypeMap.createObject(Context.STL_CONTEXT, cg));
         }
         // st:param [ st:contextlist (st:geo) ]
-        // extended named graph st:geo from initial dataset to be stored in context by st:set(st:geo, gg)
+        // extended named graph st:geo from initial dataset to be stored in context by
+        // st:set(st:geo, gg)
         IDatatype list = context.get(Context.STL_CONTEXT_LIST);
         if (list != null) {
             for (IDatatype name : list.getValues()) {
@@ -214,7 +214,7 @@ public class TransformerEngine {
                 }
             }
         }
-        context.set(Context.STL_DATASET,        DatatypeMap.createObject(Context.STL_DATASET, graph));
+        context.set(Context.STL_DATASET, DatatypeMap.createObject(Context.STL_DATASET, graph));
         context.set(Context.STL_SERVER_PROFILE, DatatypeMap.createObject(Context.STL_SERVER_PROFILE, profile));
     }
 
@@ -233,7 +233,7 @@ public class TransformerEngine {
             return null;
         }
     }
-    
+
     /**
      * @return the context
      */
@@ -247,8 +247,8 @@ public class TransformerEngine {
     public void setContext(Context context) {
         this.context = context;
     }
-    
-     /**
+
+    /**
      * @return the debug
      */
     public boolean isDebug() {
@@ -269,15 +269,14 @@ public class TransformerEngine {
     public void setDataManager(DataManager dataManager) {
         this.dataManager = dataManager;
     }
-    
+
     public EventManager getEventManager() {
         return eventManager;
     }
 
-    
     public void setEventManager(EventManager eventManager) {
         this.eventManager = eventManager;
-    }    
+    }
 
     public GraphStore getGraph() {
         return graph;

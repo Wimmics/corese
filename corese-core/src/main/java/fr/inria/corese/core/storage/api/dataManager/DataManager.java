@@ -1,4 +1,4 @@
-package fr.inria.corese.core.api;
+package fr.inria.corese.core.storage.api.dataManager;
 
 import fr.inria.corese.core.producer.MetadataManager;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
@@ -57,18 +57,20 @@ public interface DataManager extends DataManagerRead, DataManagerUpdate {
      */
     default void setMetadataManager(MetadataManager metaDataManager) {
     };
-    
+
     default void trace(String mes, Object... list) {
         if (hasMetadataManager()) {
             getMetadataManager().trace(mes, list);
         }
     }
-    
+
     // for init purpose, called by corese StorageFactory
-    default void start(HashMapList<String> map) {}
-    
+    default void start(HashMapList<String> map) {
+    }
+
     // service store parameter
-    default void init(HashMapList<String> map) {}
+    default void init(HashMapList<String> map) {
+    }
 
     /****************
      * Transactions *
@@ -154,20 +156,6 @@ public interface DataManager extends DataManagerRead, DataManagerUpdate {
      */
     default boolean isInWriteTransaction() {
         return false;
-    };
-
-    /*********
-     * Other *
-     *********/
-
-    /**
-     * Database storage path getter.
-     * 
-     * @return Database storage path or {@code null} if the DB has no storage path.
-     *         For example, the data is stored in the RAM of the computer.
-     */
-    default String getStoragePath() {
-        return null;
     };
 
 }

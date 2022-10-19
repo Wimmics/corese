@@ -1,74 +1,76 @@
 package fr.inria.corese.core.query;
 
-import fr.inria.corese.core.approximate.ext.AppxSearchPlugin;
+import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
+import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
+
+import java.io.IOException;
+import java.util.ArrayList;
+
+import javax.xml.parsers.ParserConfigurationException;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.storage.api.IStorage;
-import fr.inria.corese.sparql.storage.util.StorageFactory;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.Dataset;
-import fr.inria.corese.sparql.triple.function.script.Function;
-import fr.inria.corese.sparql.triple.parser.Metadata;
-import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.compiler.eval.ProxyInterpreter;
-import fr.inria.corese.compiler.parser.NodeImpl;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.eval.QuerySolverVisitorBasic;
+import fr.inria.corese.compiler.parser.NodeImpl;
+import fr.inria.corese.core.Event;
+import fr.inria.corese.core.EventManager;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.Graph.TreeNode;
+import fr.inria.corese.core.GraphStore;
+import fr.inria.corese.core.approximate.ext.AppxSearchPlugin;
+import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.LoadFormat;
+import fr.inria.corese.core.load.QueryLoad;
+import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.load.result.SPARQLResultParser;
+import fr.inria.corese.core.logic.Distance;
+import fr.inria.corese.core.logic.RDFS;
+import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.producer.MetadataManager;
+import fr.inria.corese.core.rule.RuleEngine;
+import fr.inria.corese.core.shacl.Shacl;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
+import fr.inria.corese.core.transform.TemplateVisitor;
+import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.core.util.GraphListen;
+import fr.inria.corese.core.util.MappingsGraph;
+import fr.inria.corese.core.util.SPINProcess;
+import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Expr;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.query.Environment;
 import fr.inria.corese.kgram.api.query.Matcher;
 import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Memory;
-import fr.inria.corese.core.Event;
-import fr.inria.corese.core.EventManager;
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.Graph.TreeNode;
-import fr.inria.corese.core.GraphStore;
-import fr.inria.corese.core.api.DataManager;
-import fr.inria.corese.core.load.Load;
-import fr.inria.corese.core.logic.Distance;
-import fr.inria.corese.core.rule.RuleEngine;
-import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.load.LoadFormat;
-import fr.inria.corese.core.load.QueryLoad;
-import fr.inria.corese.core.load.result.SPARQLResultParser;
-import fr.inria.corese.core.load.Service;
-import fr.inria.corese.core.logic.RDFS;
-import fr.inria.corese.core.print.ResultFormat;
-import fr.inria.corese.core.producer.MetadataManager;
-import fr.inria.corese.core.shacl.Shacl;
-import fr.inria.corese.core.transform.TemplateVisitor;
-import fr.inria.corese.core.transform.Transformer;
-import fr.inria.corese.core.util.GraphListen;
-import fr.inria.corese.core.util.MappingsGraph;
-import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.api.GraphProcessor;
-import java.util.ArrayList;
-import fr.inria.corese.kgram.api.core.Edge;
-import fr.inria.corese.kgram.api.core.PointerType;
-import static fr.inria.corese.kgram.api.core.PointerType.GRAPH;
-import static fr.inria.corese.kgram.api.core.PointerType.MAPPINGS;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
+import fr.inria.corese.sparql.storage.api.IStorage;
+import fr.inria.corese.sparql.storage.util.StorageFactory;
+import fr.inria.corese.sparql.triple.function.script.Function;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.parser.ASTExtension;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.Metadata;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.URLServer;
-import java.io.IOException;
 import jakarta.ws.rs.core.Response;
-import javax.xml.parsers.ParserConfigurationException;
-import org.xml.sax.SAXException;
 
 /**
- * Plugin for filter evaluator 
+ * Plugin for filter evaluator
  * Compute semantic similarity of classes and
  * solutions Implement graph specific function for LDScript
  *
@@ -163,7 +165,7 @@ public class PluginImpl
      */
     void setMethodHandler(Producer p, Environment env) {
         ASTExtension ext = env.getQuery().getActualExtension();
-        ASTQuery ast =  env.getQuery().getAST();
+        ASTQuery ast = env.getQuery().getAST();
         if (ext != null && ext.isMethod() && ast.hasMetadata(Metadata.METHOD)) {
             ClassHierarchy ch = new ClassHierarchy(getGraph(p));
             if (env.getQuery().getGlobalQuery().isDebug()) {
@@ -171,7 +173,7 @@ public class PluginImpl
             }
             ext.setHierarchy(ch);
             // WARNING: draft test below
-            // store current graph in the Interpreter 
+            // store current graph in the Interpreter
             // hence it does not scale with several graph
             // e.g. in server mode
             ASTExtension.getSingleton().setHierarchy(ch);
@@ -228,8 +230,8 @@ public class PluginImpl
     Graph graph(Mappings map) {
         return MappingsGraph.create(map).getGraph();
     }
-    
-    // function xt:list xt:graph xt:map xt:json 
+
+    // function xt:list xt:graph xt:map xt:json
     @Override
     public IDatatype create(IDatatype dt) {
         switch (dt.getLabel()) {
@@ -240,7 +242,7 @@ public class PluginImpl
             case IDatatype.MAP_DATATYPE:
                 return DatatypeMap.map();
             case IDatatype.JSON_DATATYPE:
-                return DatatypeMap.json();    
+                return DatatypeMap.json();
         }
         return null;
     }
@@ -272,7 +274,7 @@ public class PluginImpl
     public IDatatype approximate(Expr exp, Environment env, Producer p) {
         return getApproximateSearch().eval(exp, env, p);
     }
-    
+
     // function xt:depth
     @Override
     public IDatatype depth(Environment env, Producer p, IDatatype dt) {
@@ -281,7 +283,7 @@ public class PluginImpl
         }
         return depthGraph(p, dt);
     }
-    
+
     public IDatatype depthGraph(Producer p, IDatatype dt) {
         Graph g = getGraph(p);
         Node n = node(g, dt);
@@ -294,17 +296,16 @@ public class PluginImpl
         }
         return getValue(d);
     }
-     
-    IDatatype depthDM(Producer p, IDatatype dt) {  
+
+    IDatatype depthDM(Producer p, IDatatype dt) {
         MetadataManager meta = dataManager(p).getCreateMetadataManager();
-        Distance distance = meta.getCreateDistance();      
+        Distance distance = meta.getCreateDistance();
         Integer d = distance.getDepth(dt);
         if (d == null) {
             return null;
         }
         return getValue(d);
     }
-
 
     // function xt:similarity
     // compute similarity between classes wrt class hierarchy
@@ -315,7 +316,7 @@ public class PluginImpl
         }
         return similarity(p, dt1, dt2);
     }
-    
+
     IDatatype similarity(Producer p, IDatatype dt1, IDatatype dt2) {
         Graph g = getGraph(p);
         Node n1 = g.getNode(dt1);
@@ -328,10 +329,10 @@ public class PluginImpl
         double dd = distance.similarity(n1, n2);
         return getValue(dd);
     }
-    
-    IDatatype similarityDM(Producer p, IDatatype dt1, IDatatype dt2) {   
+
+    IDatatype similarityDM(Producer p, IDatatype dt1, IDatatype dt2) {
         MetadataManager meta = dataManager(p).getCreateMetadataManager();
-        Distance distance = meta.getCreateDistance();      
+        Distance distance = meta.getCreateDistance();
         double dd = distance.similarity(dt1, dt2);
         return getValue(dd);
     }
@@ -346,7 +347,7 @@ public class PluginImpl
 
         Distance distance = g.setClassDistance();
         Node n = distance.ancestor(n1, n2);
-        return  n.getValue();
+        return n.getValue();
     }
 
     // utility
@@ -363,7 +364,7 @@ public class PluginImpl
     }
 
     /**
-     * Similarity of a query solution  when @relax mode 
+     * Similarity of a query solution when @relax mode
      * Sum distance of approximate
      * types Divide by number of nodes and edge
      *
@@ -371,8 +372,8 @@ public class PluginImpl
     @Override
     public IDatatype similarity(Environment env, Producer p) {
         Graph g = getGraph(p);
-        DataManager man = p.hasDataManager()?dataManager(p):null;
-        
+        DataManager man = p.hasDataManager() ? dataManager(p) : null;
+
         if (!(env instanceof Memory)) {
             return getValue(0);
         }
@@ -380,10 +381,9 @@ public class PluginImpl
         if (memory.getQueryEdges() == null) {
             return getValue(0);
         }
-        //Hashtable<Node, Boolean> visit = new Hashtable<>();
+        // Hashtable<Node, Boolean> visit = new Hashtable<>();
         TreeNode tree = g.treeNode();
-        Distance distance = man==null ? g.setClassDistance() :
-                man.getCreateMetadataManager().getCreateDistance();
+        Distance distance = man == null ? g.setClassDistance() : man.getCreateMetadataManager().getCreateDistance();
 
         // number of node + edge in the answer
         int count = 0;
@@ -400,10 +400,10 @@ public class PluginImpl
                     for (int i = 0; i < edge.nbNode(); i++) {
                         // count nodes only once
                         Node n = edge.getNode(i);
-                        //if (!visit.containsKey(n)) {
+                        // if (!visit.containsKey(n)) {
                         if (!tree.containsKey(n.getDatatypeValue())) {
                             count += 1;
-                            //visit.put(n, true);
+                            // visit.put(n, true);
                             tree.put(n.getDatatypeValue(), n);
                         }
                     }
@@ -449,7 +449,7 @@ public class PluginImpl
             return transitiveRelation(man, env, n1, SUB_CLASS_OF, n2);
         }
     }
-    
+
     boolean transitiveRelation(DataManager man, Environment env, Node n1, Node p, Node n2) {
         Cache cache = getCache(env);
         Boolean b = cache.get(n1, n2);
@@ -459,7 +459,7 @@ public class PluginImpl
         }
         return b;
     }
-    
+
     Cache getCache(Environment env) {
         Cache table = (Cache) env.getObject();
         if (table == null) {
@@ -470,8 +470,8 @@ public class PluginImpl
     }
 
     // function xt:load
-    // expectedFormat: 
-    // st:text -> argument is rdf text  
+    // expectedFormat:
+    // st:text -> argument is rdf text
     // otherwise st:turtle st:rdfxml st:json
     // @todo DataManager
     @Override
@@ -483,23 +483,24 @@ public class PluginImpl
         } else {
             g = (Graph) graph.getPointerObject();
         }
-        Load ld = Load.create(g); 
-        // not available yet because we are inside update 
+        Load ld = Load.create(g);
+        // not available yet because we are inside update
         // and startWriteTransaction is set by update
         // and function parse reset startWriteTransaction and raise an error
-//        if (graph == null && p!=null && p.hasDataManager()) {
-//            // when there is data manager:
-//            // use xt:load(uri, xt:graph()) to load in current graph
-//            // use xt:load(uri, xt:create(dt:graph()) to load in new graph
-//            // use xt:load(uri) to load in data manager
-//            ld.setDataManager(dataManager(p));
-//        }
+        // if (graph == null && p!=null && p.hasDataManager()) {
+        // // when there is data manager:
+        // // use xt:load(uri, xt:graph()) to load in current graph
+        // // use xt:load(uri, xt:create(dt:graph()) to load in new graph
+        // // use xt:load(uri) to load in data manager
+        // ld.setDataManager(dataManager(p));
+        // }
         ld.setLevel(level);
-        
+
         return load(ld, dt, g, expectedFormat, requiredFormat);
     }
-    
-    IDatatype load(Load ld, IDatatype dt, Graph g, IDatatype expectedFormat, IDatatype requiredFormat) throws SafetyException {
+
+    IDatatype load(Load ld, IDatatype dt, Graph g, IDatatype expectedFormat, IDatatype requiredFormat)
+            throws SafetyException {
         try {
             if (expectedFormat == null) {
                 // use content negotiation for format
@@ -516,7 +517,8 @@ public class PluginImpl
                 throw ex.getSafetyException();
             }
             logger.error(String.format("Load error: %s \n%s %s", dt.stringValue(),
-                    ((expectedFormat == null) ? "" : expectedFormat), ((requiredFormat == null) ? "" : requiredFormat)));
+                    ((expectedFormat == null) ? "" : expectedFormat),
+                    ((requiredFormat == null) ? "" : requiredFormat)));
             logger.error(ex.getMessage());
         }
         IDatatype res = DatatypeMap.createObject(g);
@@ -539,7 +541,7 @@ public class PluginImpl
         }
         return DatatypeMap.newInstance(str);
     }
-    
+
     // function xt:write
     // write anywhere (need specific access right)
     // see sparql GraphSpecifFunction
@@ -585,7 +587,7 @@ public class PluginImpl
     // @todo DataManager
     @Override
     public IDatatype entailment(Environment env, Producer p, IDatatype dt) throws EngineException {
-        Binding bind =  env.getBind();
+        Binding bind = env.getBind();
         Graph g = getGraph(p);
         String uri = null;
         if (dt != null) {
@@ -655,15 +657,15 @@ public class PluginImpl
             return null;
         }
     }
-    
+
     DataManager dataManager(Producer p) {
         if (p instanceof ProducerImpl) {
-            return ((ProducerImpl)p).getDataManager();
+            return ((ProducerImpl) p).getDataManager();
         }
         return null;
     }
-        
-    // param[0] = shacl graph ; param[1] = shape 
+
+    // param[0] = shacl graph ; param[1] = shape
     IDatatype shapeGraph(Producer p, IDatatype[] param) throws EngineException {
         Graph shaclGraph = getGraph(param[0]);
         if (param.length == 2) {
@@ -671,8 +673,8 @@ public class PluginImpl
         }
         return shacl(p, shaclGraph, null, null);
     }
-    
-      // param[0] = shacl graph ; param[1] = node ; param[2] = shape
+
+    // param[0] = shacl graph ; param[1] = node ; param[2] = shape
     IDatatype shapeNode(Producer p, IDatatype[] param) throws EngineException {
         Graph shaclGraph = getGraph(param[0]);
         switch (param.length) {
@@ -685,36 +687,32 @@ public class PluginImpl
         }
         return null;
     }
-    
+
     IDatatype shacl(Producer p, Graph shaclGraph, IDatatype shape, IDatatype node) throws EngineException {
         Shacl shacl = new Shacl(getGraph(p), shaclGraph);
         shacl.setDataManager(dataManager(p));
         Graph res;
         if (shape == null && node == null) {
             res = shacl.eval();
-        }
-        else if (shape != null) {
+        } else if (shape != null) {
             res = shacl.shaclshape(shape, node);
-        }
-        else {
+        } else {
             res = shacl.shaclnode(node);
         }
-        
+
         return DatatypeMap.createObject(res);
     }
-    
-    
+
     Graph getGraph(IDatatype dt) {
         if (dt.isURI()) {
             return parse(dt.getLabel());
-        }
-        else if (dt.pointerType() == PointerType.GRAPH){
+        } else if (dt.pointerType() == PointerType.GRAPH) {
             return (Graph) dt.getPointerObject();
         }
         logger.warn("Empty graph: " + dt);
         return Graph.create();
     }
-    
+
     Graph parse(String uri) {
         Graph g = Graph.create();
         Load ld = Load.create(g);
@@ -727,7 +725,6 @@ public class PluginImpl
         }
         return Graph.create();
     }
-    
 
     // function xt:insert
     // xt:insert(graph, s, p, o)
@@ -739,12 +736,12 @@ public class PluginImpl
             // insert(graph, s, p, o)
             Graph gg = (Graph) first.getPointerObject();
             e = gg.insert(param[1], param[2], param[3]);
-        } 
+        }
         return (e == null) ? FALSE : TRUE;
     }
 
     // function xt:delete
-    // xt:delete(graph, s, p, o)    
+    // xt:delete(graph, s, p, o)
     @Override
     public IDatatype delete(Environment env, Producer p, IDatatype... param) {
         IDatatype first = param[0];
@@ -753,59 +750,54 @@ public class PluginImpl
         if (first.pointerType() == PointerType.GRAPH) {
             Graph gg = (Graph) first.getPointerObject();
             le = gg.delete(param[1], param[2], param[3]);
-        } 
+        }
 
         return (le == null || !le.iterator().hasNext()) ? FALSE : TRUE;
     }
-
-    
-
 
     public Graph getGraph() {
         return (Graph) getProducer().getGraph();
     }
 
-
     /**
      * rdf star
-     * triple(s, p, o)  
+     * triple(s, p, o)
      * filter bind <<s p o>>
      */
     // @todo DataManager
     @Override
-    public IDatatype triple(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o) {        
+    public IDatatype triple(Environment env, Producer prod, IDatatype s, IDatatype p, IDatatype o) {
         return getGraph(prod).createTriple(s, p, o);
     }
-    
-    // function xt:value    
+
+    // function xt:value
     // xt:value(subject, predicate)
     // xt:value(subject, predicate, index)
     // xt:value(graph, subject, predicate)
-    // xt:value(graph, subject, predicate, index)  
+    // xt:value(graph, subject, predicate, index)
     // index n: index of result node
     @Override
-    public IDatatype value(Environment env, Producer prod, IDatatype graph, IDatatype node, IDatatype predicate, int n) {
+    public IDatatype value(Environment env, Producer prod, IDatatype graph, IDatatype node, IDatatype predicate,
+            int n) {
         if (graph == null) {
             return value(prod, node, predicate, null, n);
-        }
-        else if (graph.getPointerObject() instanceof Graph){
-            return value((Graph)graph.getPointerObject(), node, predicate, n);
-        }
-        else {
+        } else if (graph.getPointerObject() instanceof Graph) {
+            return value((Graph) graph.getPointerObject(), node, predicate, n);
+        } else {
             return null;
         }
     }
-    
+
     // value in dataset or in DataManager
     IDatatype value(Producer prod, IDatatype s, IDatatype p, IDatatype o, int n) {
         for (Edge edge : prod.getEdges(s, p, o, null)) {
-            if (edge !=null) {
+            if (edge != null) {
                 return edge.getNode(n).getDatatypeValue();
             }
         }
         return null;
     }
-    
+
     // value in graph g
     IDatatype value(Graph g, IDatatype node, IDatatype predicate, int n) {
         Node val = g.value(node, predicate, n);
@@ -814,7 +806,6 @@ public class PluginImpl
         }
         return val.getDatatypeValue();
     }
-
 
     // function xt:union
     @Override
@@ -837,10 +828,10 @@ public class PluginImpl
 
         return null;
     }
-    
+
     // function xt:merge
     @Override
-    public IDatatype merge(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {    
+    public IDatatype merge(Expr exp, Environment env, Producer p, IDatatype dt1, IDatatype dt2) {
         if (dt1.pointerType() == GRAPH && dt2.pointerType() == GRAPH) {
             Graph g1 = (Graph) dt1.getPointerObject();
             Graph g2 = (Graph) dt2.getPointerObject();
@@ -989,15 +980,14 @@ public class PluginImpl
     EventManager getEventManager(Producer p) {
         return getGraph(p).getEventManager();
     }
-   
+
     Node node(Graph g, IDatatype dt) {
         Node n = g.getNode(dt, false, false);
         return n;
     }
 
-
     IDatatype db(Environment env, Graph g) {
-        ASTQuery ast =  env.getQuery().getAST();
+        ASTQuery ast = env.getQuery().getAST();
         String name = ast.getMetadataValue(Metadata.DB);
         return db(name, g);
     }
@@ -1037,11 +1027,11 @@ public class PluginImpl
         }
         return name;
     }
-   
+
     // share @report with subquery
     Dataset getDataset(Environment env) {
         Metadata meta = env.getQuery().getAST().getMetadata();
-        if (meta!=null) {
+        if (meta != null) {
             Metadata m = meta.selectSparql();
             if (m != null) {
                 return new Dataset().setMetadata(m);
@@ -1049,10 +1039,10 @@ public class PluginImpl
         }
         return null;
     }
-    
+
     IDatatype kgram(Environment env, Producer p, String query, Mapping m) throws EngineException {
         Graph g = getGraph(p);
-        //QueryProcess exec = QueryProcess.create(g, true);
+        // QueryProcess exec = QueryProcess.create(g, true);
         QueryProcess exec = QueryProcess.copy(p, true);
         // sub query process, if transaction was needed, it is already done
         exec.setProcessTransaction(false);
@@ -1060,9 +1050,9 @@ public class PluginImpl
         try {
             Mappings map;
             if (g.getLock().getReadLockCount() == 0 && !g.getLock().isWriteLocked()) {
-                // use case: LDScript direct call  
+                // use case: LDScript direct call
                 // accept update
-                map = exec.query(query, m, getDataset(env)); 
+                map = exec.query(query, m, getDataset(env));
             } else {
                 // reject update
                 map = exec.sparqlQuery(query, m, getDataset(env));
@@ -1070,7 +1060,7 @@ public class PluginImpl
             // use case: subquery create Log or Context
             // outer query processing inherits it
             env.getBind().subShare(exec.getEnvironmentBinding());
-            
+
             if (map.getQuery().isDebug()) {
                 System.out.println("result:");
                 System.out.println(map);
@@ -1082,11 +1072,9 @@ public class PluginImpl
             } else {
                 return DatatypeMap.createObject(map.getGraph());
             }
-        } 
-        catch (SafetyException e) {
+        } catch (SafetyException e) {
             throw e;
-        }
-        catch (EngineException e) {
+        } catch (EngineException e) {
             logger.error(e.getMessage());
             env.getBind().subShare(exec.getEnvironmentBinding());
             return DatatypeMap.createObject(new Mappings());
@@ -1096,21 +1084,21 @@ public class PluginImpl
     public Mappings parseSPARQLResult(String path, String... format) throws EngineException {
         SPARQLResultParser parser = new SPARQLResultParser();
         try {
-            return  parser.parse(path, format);
+            return parser.parse(path, format);
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             throw new EngineException(ex);
         }
     }
-    
+
     public Mappings parseSPARQLResultString(String str, String... format) throws EngineException {
         SPARQLResultParser parser = new SPARQLResultParser();
-        try {          
-            return  parser.parseString(str, format);
+        try {
+            return parser.parseString(str, format);
         } catch (ParserConfigurationException | SAXException | IOException ex) {
             throw new EngineException(ex);
         }
     }
-    
+
     // function xt:loadMappings
     // parse Query Results Format from file
     // format: xt:json xt:xml
@@ -1131,7 +1119,7 @@ public class PluginImpl
         }
         return DatatypeMap.createObject(map);
     }
-    
+
     // function xt:parseMappings
     // parse Query Results Format from string
     // format: xt:json xt:xml
@@ -1141,9 +1129,8 @@ public class PluginImpl
         try {
             if (dtformat.length == 0) {
                 map = parseSPARQLResultString(str.getLabel());
-            }
-            else {
-               map = parseSPARQLResultString(str.getLabel(), dtformat[0].getLabel());
+            } else {
+                map = parseSPARQLResultString(str.getLabel(), dtformat[0].getLabel());
             }
         } catch (EngineException ex) {
             logger.error(ex.getMessage());
@@ -1166,7 +1153,7 @@ public class PluginImpl
             logger.error(ex.getMessage());
         }
         if (str == null) {
-            return null; //str = "";
+            return null; // str = "";
         }
         return DatatypeMap.newInstance(str);
     }
@@ -1184,7 +1171,7 @@ public class PluginImpl
         }
         return null;
     }
-    
+
     // function xt:httpget
     // accept: header accept format
     @Override
@@ -1221,14 +1208,14 @@ public class PluginImpl
     public TemplateVisitor getVisitor(Binding b, Environment env, Producer p) {
         return pt.getVisitor(b, env, p);
     }
-    
+
     /**
      * STTL create intermediate string result (cf Proxy STL_CONCAT) Save string
      * value to disk using Fuqi StrManager Each STTL Transformation would have
      * its own StrManager Managed in the Context to be shared between
      * subtransformation (cf OWL2)
      */
-    //@Override
+    // @Override
     public IDatatype getBufferedValue(StringBuilder sb, Environment env) {
         if (storageMgr == null) {
             createManager();

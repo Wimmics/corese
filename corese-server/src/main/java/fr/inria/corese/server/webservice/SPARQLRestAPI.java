@@ -1,7 +1,25 @@
 package fr.inria.corese.server.webservice;
 
 import java.util.List;
+import java.util.UUID;
 
+import org.apache.logging.log4j.LogManager;
+import org.apache.logging.log4j.Logger;
+
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.print.JSOND3Format;
+import fr.inria.corese.core.print.JSONFormat;
+import fr.inria.corese.core.print.ResultFormat;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.sparql.api.ResultFormatDef;
+import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.URLParam;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.DefaultValue;
 import jakarta.ws.rs.FormParam;
@@ -9,30 +27,11 @@ import jakarta.ws.rs.GET;
 import jakarta.ws.rs.HEAD;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
-import jakarta.ws.rs.core.Response;
-
-import org.apache.logging.log4j.LogManager;
-import org.apache.logging.log4j.Logger;
-
-import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.print.JSOND3Format;
-import fr.inria.corese.core.print.JSONFormat;
-import fr.inria.corese.core.print.ResultFormat;
-import fr.inria.corese.kgram.core.Eval;
-import fr.inria.corese.sparql.api.ResultFormatDef;
-import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.triple.parser.Dataset;
-import fr.inria.corese.sparql.triple.parser.URLParam;
-import java.util.UUID;
-import jakarta.servlet.http.HttpServletRequest;
-import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 
 /**
  * KGRAM SPARQL endpoint exposed as a rest web service.
@@ -165,7 +164,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         // option -init propertyFile may declare db storage path 
         // with property STORAGE_PATH=path
         // DatasetManager create appropriate DataManager for db storage
-        DatasetManager man = new DatasetManager().init();
+        DatasetManagerServer man = new DatasetManagerServer().init();
         Manager.getManager().setDatasetManager(man);
         // create default sparql endpoint
         store = new TripleStore(ent, owl);

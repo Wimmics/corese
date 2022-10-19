@@ -1,11 +1,27 @@
 package fr.inria.corese.test.engine;
 
-import fr.inria.corese.compiler.eval.QuerySolver;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
+import java.net.MalformedURLException;
+import java.net.URISyntaxException;
+import java.util.ArrayList;
+//import java.util.logging.Logger;
 
 import javax.xml.parsers.ParserConfigurationException;
 
+//import org.apache.logging.log4j.Level;
+//import org.apache.logging.log4j.LogManager;
+
+import org.junit.AfterClass;
+import org.junit.Assert;
+import org.junit.BeforeClass;
+import org.junit.Test;
+import org.slf4j.LoggerFactory;
+import org.xml.sax.SAXException;
+
+import fr.inria.corese.compiler.eval.QuerySolver;
+import fr.inria.corese.compiler.result.XMLResult;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.Load;
@@ -23,26 +39,9 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.transform.Loader;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.GraphStoreInit;
+import fr.inria.corese.core.util.Property;
 import fr.inria.corese.core.util.QueryManager;
 import fr.inria.corese.core.util.SPINProcess;
-import fr.inria.corese.sparql.datatype.RDF;
-import org.junit.BeforeClass;
-import org.junit.Test;
-import org.xml.sax.SAXException;
-
-
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.sparql.storage.api.IStorage;
-import fr.inria.corese.sparql.storage.api.Parameters;
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.Context;
-import fr.inria.corese.sparql.triple.parser.Dataset;
-import fr.inria.corese.sparql.triple.parser.NSManager;
-import fr.inria.corese.compiler.result.XMLResult;
-import fr.inria.corese.core.util.Property;
-import static fr.inria.corese.core.util.Property.Value.*;
 import fr.inria.corese.kgram.api.core.DatatypeValue;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExprType;
@@ -52,28 +51,22 @@ import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.event.StatListener;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.datatype.extension.CoresePointer;
+import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.LDScriptException;
 import fr.inria.corese.sparql.exceptions.UndefinedExpressionException;
+import fr.inria.corese.sparql.storage.api.IStorage;
+import fr.inria.corese.sparql.storage.api.Parameters;
 import fr.inria.corese.sparql.triple.function.term.Binding;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
-
-import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URISyntaxException;
-import java.util.ArrayList;
-//import java.util.logging.Logger;
-
-//import org.apache.logging.log4j.Level;
-//import org.apache.logging.log4j.LogManager;
-
-import org.junit.AfterClass;
-import org.junit.Assert;
-
-
-import static org.junit.Assert.*;
-import org.slf4j.LoggerFactory;
+import fr.inria.corese.sparql.triple.parser.Context;
+import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  *

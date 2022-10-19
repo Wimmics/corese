@@ -1,34 +1,38 @@
 package fr.inria.corese.core.query;
 
-import fr.inria.corese.compiler.federate.FederateVisitor;
-import java.io.IOException;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.api.query.Environment;
-import fr.inria.corese.kgram.api.query.Producer;
-import fr.inria.corese.kgram.core.Exp;
-import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.core.Event;
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.NodeImpl;
-import fr.inria.corese.core.api.DataManager;
-import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.load.Service;
-import fr.inria.corese.core.load.ServiceReport;
-import fr.inria.corese.core.producer.DataManagerJava;
-import fr.inria.corese.core.util.Property;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_GRAPH;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_PARAMETER;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SLICE;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_TIMEOUT;
+
+import java.io.IOException;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.List;
+
+import org.json.JSONObject;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
+import fr.inria.corese.compiler.federate.FederateVisitor;
+import fr.inria.corese.core.Event;
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.NodeImpl;
+import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.load.Service;
+import fr.inria.corese.core.load.ServiceReport;
+import fr.inria.corese.core.storage.DataManagerJava;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
+import fr.inria.corese.core.util.Property;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.api.query.Environment;
+import fr.inria.corese.kgram.api.query.Producer;
 import fr.inria.corese.kgram.core.Eval;
+import fr.inria.corese.kgram.core.Exp;
 import fr.inria.corese.kgram.core.Mapping;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.kgram.core.SparqlException;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -37,6 +41,7 @@ import fr.inria.corese.sparql.exceptions.SafetyException;
 import fr.inria.corese.sparql.triple.cst.LogKey;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Context;
@@ -46,13 +51,9 @@ import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
 import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
 import jakarta.ws.rs.ProcessingException;
 import jakarta.ws.rs.client.ResponseProcessingException;
 import jakarta.ws.rs.core.Cookie;
-import org.json.JSONObject;
 
 /**
  * Service call
@@ -64,10 +65,11 @@ public class ProviderService implements URLParam {
 
     static Logger logger = LoggerFactory.getLogger(ProviderService.class);
     // pseudo service: call current QueryProcess on current dataset (db or graph)
-    public static final String LOCAL_SERVICE   = "http://ns.inria.fr/corese/sparql"; 
-    // pseudo service: call QueryProcess on graph dataset (if it was db, switch to graph dataset)
-    public static final String DATASET_SERVICE = "http://ns.inria.fr/corese/dataset"; 
-    
+    public static final String LOCAL_SERVICE = "http://ns.inria.fr/corese/sparql";
+    // pseudo service: call QueryProcess on graph dataset (if it was db, switch to
+    // graph dataset)
+    public static final String DATASET_SERVICE = "http://ns.inria.fr/corese/dataset";
+
     public static final String LOCAL_SERVICE_NS = LOCAL_SERVICE + "/%s";
     public static final String UNDEFINED_SERVICE = "http://example.org/undefined/sparql";
     private static final String SERVICE_ERROR = "Service error: ";
@@ -96,7 +98,7 @@ public class ProviderService implements URLParam {
     /**
      *
      * @param p
-     * @param q query inside service statement
+     * @param q    query inside service statement
      * @param map
      * @param eval
      */
@@ -133,7 +135,7 @@ public class ProviderService implements URLParam {
         if (getServiceExp().getNumber() > 0 && res != null && res.isEmpty() && isBind()
                 && hasValue(WHY)) {
             // generate a log, skip the result
-            //debugSend(serv, exp);
+            // debugSend(serv, exp);
         }
         return res;
     }
@@ -142,22 +144,24 @@ public class ProviderService implements URLParam {
         setServiceExp(exp);
         // share prefix
         int slice = getSlice(serv, getMappings());
-        // when servive variable is unbound, get service URL (list) from Environment or Mappings
+        // when servive variable is unbound, get service URL (list) from Environment or
+        // Mappings
         List<Node> serviceList = getServerList(exp, getMappings());
         boolean bslice = !(getMappings() == null || slice <= 0 || !isBind());
         // slice by default
         Mappings res = send(serviceList, serv, (isBind()) ? getMappings() : null, bslice, slice);
         restore(getAST());
-//        if (res != null) {
-//            res.limit(getAST().getLimit());
-//        }
+        // if (res != null) {
+        // res.limit(getAST().getLimit());
+        // }
         return res;
     }
 
     /**
      * @draft: try again by relaxing the query 1) without binding to see the
-     * kind of results we could have and try to understand the failure 2) @todo:
-     * remove filter if any
+     *         kind of results we could have and try to understand the failure
+     *         2) @todo:
+     *         remove filter if any
      *
      */
     Mappings debugSend(Node serv, Exp exp) throws EngineException {
@@ -206,7 +210,8 @@ public class ProviderService implements URLParam {
      *
      * @distinct metadata.
      */
-    Mappings send(List<Node> serverList, Node serviceNode, Mappings map, boolean slice, int length) throws EngineException {
+    Mappings send(List<Node> serverList, Node serviceNode, Mappings map, boolean slice, int length)
+            throws EngineException {
         Graph g = getGraph(getEval().getProducer());
         Query q = getQuery();
         g.getEventManager().start(Event.Service, serverList);
@@ -229,7 +234,7 @@ public class ProviderService implements URLParam {
             String name = service.getLabel();
             URLServer url = new URLServer(name, Property.stringValue(SERVICE_PARAMETER));
             if (q.getGlobalQuery().isFederate()) {
-                // federate rewrite service inherit from/from named    
+                // federate rewrite service inherit from/from named
                 url.setDataset(getGlobalAST().getDataset());
             }
             if (!ok) {
@@ -237,7 +242,7 @@ public class ProviderService implements URLParam {
             }
             url.setNode(service);
             url.setNumber(getServiceExp().getNumber());
-            // /sparql?param={?this} 
+            // /sparql?param={?this}
             // get ?this=value in Binding global variable and set param=value
             url.complete(getBinding());
             // complete URL with timeout=1000 from context
@@ -268,9 +273,9 @@ public class ProviderService implements URLParam {
 
             if (slice) {
                 // default behaviour when map != null
-                // service is variable: select appropriate subset of  Mappings with service URL
-                // service is URL: consider all Mappings. 
-                // Hint: Mappings are already result of former select 
+                // service is variable: select appropriate subset of Mappings with service URL
+                // service is URL: consider all Mappings.
+                // Hint: Mappings are already result of former select
                 input = getMappings(q, getServiceExp(), getServiceExp().getServiceNode(), service, map);
                 if (input.size() > 0) {
                     g.getEventManager().process(Event.Service, "input: \n" + input.toString(true, false, 5));
@@ -287,7 +292,7 @@ public class ProviderService implements URLParam {
             length = url.intValue(SLICE, length);
             // sparql?timeout=123
             timeout = url.intValue(TIMEOUT, timeout);
-            // @todo: storage and dataset service url cannot run in // 
+            // @todo: storage and dataset service url cannot run in //
             // because it is same ast and it is not reentrant
             if (parallel) {
                 ProviderThread p = parallelProcess(url, input, sol, slice, length, timeout);
@@ -307,14 +312,14 @@ public class ProviderService implements URLParam {
         }
 
         Mappings res = getResult(mapList);
-        //trace(res);
+        // trace(res);
         if (serverList.size() > 1) {
             eval.getVisitor().service(eval, DatatypeMap.toList(serverList), getServiceExp(), res);
         }
         g.getEventManager().finish(Event.Service, "result: " + ((res != null) ? res.size() : 0));
         return res;
     }
-    
+
     void trace(Mappings map) {
         if (map.getSelect() != null) {
             for (Node node : map.getSelect()) {
@@ -323,7 +328,7 @@ public class ProviderService implements URLParam {
         }
         for (Mapping m : map) {
             for (Node node : m.getQueryNodeList()) {
-                    System.out.println("service ql: " + node + " " + node.getIndex());
+                System.out.println("service ql: " + node + " " + node.getIndex());
             }
         }
         System.out.println(map);
@@ -332,7 +337,8 @@ public class ProviderService implements URLParam {
     /**
      * Execute service in a parallel thread
      */
-    ProviderThread parallelProcess(URLServer service, Mappings map, Mappings sol, boolean slice, int length, int timeout) {
+    ProviderThread parallelProcess(URLServer service, Mappings map, Mappings sol, boolean slice, int length,
+            int timeout) {
         ProviderThread thread = new ProviderThread(this, service, map, sol, slice, length, timeout);
         thread.start();
         return thread;
@@ -379,7 +385,7 @@ public class ProviderService implements URLParam {
                         res = send(service, map, size, size + length, timeout, count);
                     } catch (ProcessingException e) {
                         if (isTimeout(e) && !sol.isEmpty()) {
-                            logger.info(RETURN_PARTIAL_SOLUTION_AFTER_TIMEOUT);                            
+                            logger.info(RETURN_PARTIAL_SOLUTION_AFTER_TIMEOUT);
                         } else {
                             throw e;
                         }
@@ -394,8 +400,7 @@ public class ProviderService implements URLParam {
                         logger.info(String.format(
                                 "Service %s with %s parameters out of %s, results: %s, total results: %s",
                                 service.getURL(), Math.min(size, map.size()),
-                                map.size(), res == null ? 0 : res.size(), sol.size()
-                        ));
+                                map.size(), res == null ? 0 : res.size(), sol.size()));
                     }
                     if (stop(service, sol, d1)) {
                         break;
@@ -412,7 +417,7 @@ public class ProviderService implements URLParam {
                 addResult(service, sol, res);
             }
         } catch (ProcessingException e) {
-            // timeout exception 
+            // timeout exception
             exception(e, service, getQuery().getGlobalQuery(), getQuery().getAST());
         }
 
@@ -439,7 +444,7 @@ public class ProviderService implements URLParam {
 
             // oririnal ast
             ASTQuery aa = getAST();
-            // ast possibly modified with variable bindings from map/env 
+            // ast possibly modified with variable bindings from map/env
             CompileServiceResult ares = new CompileServiceResult();
             ASTQuery ast = getCompiler().compile(serv, q, map, ares, start, limit);
 
@@ -492,23 +497,22 @@ public class ProviderService implements URLParam {
 
         return null;
     }
-    
+
     void exception(Exception e, URLServer serv, Query q, ASTQuery ast) {
         exception(e, serv, q, ast, null);
     }
-        
+
     void exception(Exception e, URLServer serv, Query q, ASTQuery ast, Object obj) {
         logger.error(String.format("%s %s", e.getClass().getName(), serv.getURL()));
         getLog().addException(new EngineException(e, e.getMessage())
                 .setURL(serv).setAST(ast).setObject(obj));
         error(serv, q, getAST(), e);
     }
-                   
-//            logger.error("ProcessingException: " + serv.getURL());
-//            getLog().addException(new EngineException(e, e.getMessage())
-//                    .setURL(serv).setAST(targetAST));
-//            error(serv, q.getGlobalQuery(), getAST(), e);
-            
+
+    // logger.error("ProcessingException: " + serv.getURL());
+    // getLog().addException(new EngineException(e, e.getMessage())
+    // .setURL(serv).setAST(targetAST));
+    // error(serv, q.getGlobalQuery(), getAST(), e);
 
     // @loop @limit 1000 @start 0 @until 9
     // for (i=0; i<until; i++) offset = i*limit
@@ -519,11 +523,11 @@ public class ProviderService implements URLParam {
         if (getGlobalAST().hasMetadata(Metadata.LOOP)
                 || serv.hasParameter(LOOP)
                 || serv.hasParameter(MODE, LOOP)) {
-            int begin   = getValue(serv, Metadata.START, URLParam.START, 0);
-            int end     = getValue(serv, Metadata.UNTIL, URLParam.UNTIL, Integer.MAX_VALUE);
+            int begin = getValue(serv, Metadata.START, URLParam.START, 0);
+            int end = getValue(serv, Metadata.UNTIL, URLParam.UNTIL, Integer.MAX_VALUE);
             int myLimit = getValue(serv, Metadata.LIMIT_STR, URLParam.LIMIT, ast.getLimit());
             logger.info(String.format("send loop: begin %s end %s limit %s", begin, end, myLimit));
-            
+
             Mappings sol = new Mappings();
 
             for (int i = begin;; i++) {
@@ -574,7 +578,7 @@ public class ProviderService implements URLParam {
     boolean isTimeout(ProcessingException e) {
         return e.getMessage() != null
                 && (e.getMessage().contains(TIMEOUT_EXCEPTION)
-                ||  e.getMessage().contains(READ_TIMEOUT_EXCEPTION));
+                        || e.getMessage().contains(READ_TIMEOUT_EXCEPTION));
     }
 
     // when query is select distinct and query body is a service:
@@ -756,7 +760,7 @@ public class ProviderService implements URLParam {
     /**
      *
      * @param serv
-     * @param map: final result Mappings of service serv
+     * @param map:    final result Mappings of service serv
      * @param nbcall: number of service call to evaluate service serv
      * @param time
      */
@@ -776,8 +780,9 @@ public class ProviderService implements URLParam {
 
     void traceResult(URLServer serv, Mappings res) {
         if (res.size() > 0) {
-            logger.info(String.format("** Service %s result: \n%s", serv, res.toString(false, false, getDisplayResultMax())));
-        } 
+            logger.info(String.format("** Service %s result: \n%s", serv,
+                    res.toString(false, false, getDisplayResultMax())));
+        }
         logger.info(String.format("** Service %s result size: %s", serv, res.size()));
     }
 
@@ -941,24 +946,24 @@ public class ProviderService implements URLParam {
         }
         if (serv.getServer().startsWith(DATASET_SERVICE)) {
             // switch to graph dataset (in case of db)
-           return dataset(ast.acopy(), serv, getBinding());
+            return dataset(ast.acopy(), serv, getBinding());
         }
         return send(getQuery(), ast, serv, timeout, count);
     }
-    
-    // @todo: these 3 functions are synchronized because 
+
+    // @todo: these 3 functions are synchronized because
     // ast query process does not support parallel threads
     // in particular exists {} record graph pattern inside filter
-    // graph pattern is shared among threads and 
+    // graph pattern is shared among threads and
     // node indexing of this graph pattern fails in parallel threads
-    
+
     // pseudo service call current QueryProcess
     synchronized Mappings local(ASTQuery ast, URLServer url, Binding b) throws EngineException {
         logger.info("Local service: " + url);
         logger.info(ast.toString());
         return index(getDefault().query(ast, b));
     }
-    
+
     // switch to graph dataset (in case where mode=db)
     synchronized Mappings dataset(ASTQuery ast, URLServer url, Binding b) throws EngineException {
         logger.info("Dataset service: " + url);
@@ -966,7 +971,7 @@ public class ProviderService implements URLParam {
         QueryProcess exec = QueryProcess.create(getDefault().getGraph());
         return index(exec.query(ast, b));
     }
-    
+
     // pseudo service store:path to query db
     synchronized Mappings storage(ASTQuery ast, URLServer url, Binding b) throws EngineException {
         DataManager man = dataManager(url);
@@ -975,7 +980,7 @@ public class ProviderService implements URLParam {
         ast.inheritFunction(getGlobalAST());
         return index(exec.query(ast, b));
     }
-    
+
     DataManager dataManager(URLServer url) throws EngineException {
         DataManager man = StorageFactory.getDataManager(url.getStoragePath());
         if (man == null) {
@@ -986,33 +991,33 @@ public class ProviderService implements URLParam {
                 throw new EngineException(
                         String.format("Undefined storage manager: %s %s", url.getServer(), url.getStoragePath()));
             }
-        }
-        else if (url.hasParameter()) {
+        } else if (url.hasParameter()) {
             man.init(url.getMap());
         }
-        
+
         return man;
     }
-    
-    // clean service results query node 
+
+    // clean service results query node
     // keep only select variables to prevent having bnodes
     Mappings index(Mappings map) {
-       map.project();
-       return map;
+        map.project();
+        return map;
     }
 
     /**
      * service <db:/tmp/human_db> { GP } service overloaded to query a database
      */
     Mappings db(Query q, Node serv) throws EngineException {
-        QueryProcess exec = QueryProcess.dbCreate(Graph.create(), true, QueryProcess.DB_FACTORY, serv.getLabel().substring(DB.length()));
+        QueryProcess exec = QueryProcess.dbCreate(Graph.create(), true, QueryProcess.DB_FACTORY,
+                serv.getLabel().substring(DB.length()));
         return exec.query(q.getAST());
     }
 
     boolean isDB(Node serv) {
         return serv.getLabel().startsWith(DB);
     }
-    
+
     Mappings send(Query q, ASTQuery ast, URLServer serv, int timeout, int count)
             throws IOException {
         return post(q, ast, serv, timeout, count);
@@ -1026,7 +1031,7 @@ public class ProviderService implements URLParam {
             service.setTimeout(timeout);
             service.setCount(count);
             service.setBind(b);
-            //service.setLog(getLog());
+            // service.setLog(getLog());
             service.setDebug(q.isRecDebug());
             Mappings map = service.query(q, ast, null);
             log(serv, service.getReport());
@@ -1035,7 +1040,7 @@ public class ProviderService implements URLParam {
             throw (new IOException(ex.getMessage() + " " + serv.getURL()));
         }
     }
-    
+
     // record whole header
     void log(URLServer url, ServiceReport report) {
         if (report != null && report.getResponse() != null
@@ -1062,7 +1067,7 @@ public class ProviderService implements URLParam {
                 && report.getResponse().getHeaders() != null) {
             List<String> headerList = Property.listValue(SERVICE_HEADER);
             if (headerList != null) {
-                
+
                 for (String header : headerList) {
                     if (header.equals(Property.STAR)) {
                         for (String name : report.getResponse().getHeaders().keySet()) {
@@ -1077,11 +1082,10 @@ public class ProviderService implements URLParam {
                                 getLog().defLabel(url.getLogURLNumber(), name.concat("-cookie"), res.toString());
                             }
                         }
-                    }
-                    else {
+                    } else {
                         String res = report.getResponse().getHeaderString(header);
                         if (res != null) {
-                            //logger.info(String.format("%s %s=%s", url.toString(), header, res));
+                            // logger.info(String.format("%s %s=%s", url.toString(), header, res));
                             getLog().defLabel(url.getLogURLNumber(), header, res);
                         }
                     }

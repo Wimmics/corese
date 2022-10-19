@@ -14,14 +14,15 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.storage.jenatdb1.JenaDataManager;
+import fr.inria.corese.storage.jenatdb1.JenaDataManagerBuilder;
 
 public class CompareGraphDataset {
 
     @SuppressWarnings("unchecked")
-    public static boolean compareGraph(Dataset jena_dataset, Graph corese_graph) {
+    public static boolean compareGraph(Dataset dataset, Graph corese_graph) {
 
         ArrayList<Edge> jena_edges = new ArrayList<>();
-        try (JenaDataManager dm = new JenaDataManager(jena_dataset, null)) {
+        try (JenaDataManager dm = new JenaDataManagerBuilder().dataset(dataset).storagePath(null).build();) {
             // Get edges from Jena
             Method method = dm.getClass().getDeclaredMethod("chooseQuadDuplicatesWrite", Node.class, Node.class,
                     Node.class, List.class);

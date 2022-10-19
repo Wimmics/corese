@@ -18,12 +18,12 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.rdf4j.CoreseModel;
-import fr.inria.corese.rdf4j.Rdf4jDataManager;
+import fr.inria.corese.rdf4j.Rdf4jDataManagerBuilder;
 import fr.inria.corese.sparql.exceptions.EngineException;
 
 public class Rdf4jDataManagerTestSparql {
@@ -63,7 +63,7 @@ public class Rdf4jDataManagerTestSparql {
 
     @Test
     public void selectWhereSpo() throws EngineException, IOException {
-        DataManager dataManager = new Rdf4jDataManager(this.model);
+        DataManager dataManager = new Rdf4jDataManagerBuilder().model(this.model).build();
 
         // Sparql query
         QueryProcess exec = QueryProcess.create(dataManager);
@@ -126,7 +126,7 @@ public class Rdf4jDataManagerTestSparql {
     @Test
     public void insertData() throws EngineException {
         CoreseModel corese_model = new CoreseModel(this.model);
-        DataManager dataManager = new Rdf4jDataManager(corese_model);
+        DataManager dataManager = new Rdf4jDataManagerBuilder().model(corese_model).build();
 
         // Sparql query
         QueryProcess exec = QueryProcess.create(dataManager);

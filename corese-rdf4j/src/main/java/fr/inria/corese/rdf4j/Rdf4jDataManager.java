@@ -17,7 +17,7 @@ import org.eclipse.rdf4j.model.ValueFactory;
 import org.eclipse.rdf4j.model.impl.SimpleValueFactory;
 import org.eclipse.rdf4j.model.impl.TreeModel;
 
-import fr.inria.corese.core.api.DataManager;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 
@@ -35,7 +35,7 @@ public class Rdf4jDataManager implements DataManager {
     /**
      * Constructor of Rdf4jDataManager.
      */
-    public Rdf4jDataManager() {
+    protected Rdf4jDataManager() {
         this.rdf4j_model = new TreeModel();
     }
 
@@ -44,7 +44,7 @@ public class Rdf4jDataManager implements DataManager {
      * 
      * @param rdf4j_model RDF4J model.
      */
-    public Rdf4jDataManager(Model rdf4j_model) {
+    protected Rdf4jDataManager(Model rdf4j_model) {
         this.rdf4j_model = rdf4j_model;
     }
 

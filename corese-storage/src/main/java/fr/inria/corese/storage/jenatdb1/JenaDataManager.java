@@ -24,8 +24,8 @@ import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
 
-import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.producer.MetadataManager;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 
@@ -53,7 +53,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      * Constructor of JenaTdbDataManager. Create to a Jena dataset backed by an
      * in-memory block manager. For testing.
      */
-    public JenaDataManager() {
+    protected JenaDataManager() {
         this.storage_path = null;
         this.jena_dataset = TDBFactory.createDataset();
         init();
@@ -65,7 +65,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      * 
      * @param storage_path Path of the directory where the data is stored.
      */
-    public JenaDataManager(String storage_path) {
+    protected JenaDataManager(String storage_path) {
         this.storage_path = storage_path;
         this.jena_dataset = TDBFactory.createDataset(storage_path);
         init();
@@ -78,7 +78,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      * @param storage_path Path of the directory where the dataset is stored, null
      *                     if it is in memory.
      */
-    public JenaDataManager(Dataset dataset, String storage_path) {
+    protected JenaDataManager(Dataset dataset, String storage_path) {
         this.storage_path = storage_path;
         this.jena_dataset = dataset;
         init();
@@ -303,7 +303,12 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         this.jena_dataset.close();
     }
 
-    @Override
+    /**
+     * Database storage path getter.
+     * 
+     * @return Database storage path or {@code null} if the DB has no storage path.
+     *         For example, the data is stored in the RAM of the computer.
+     */
     public String getStoragePath() {
         return this.storage_path;
     }

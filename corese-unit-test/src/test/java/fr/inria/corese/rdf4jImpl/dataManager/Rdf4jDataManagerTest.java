@@ -18,13 +18,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import fr.inria.corese.core.NodeImpl;
-import fr.inria.corese.core.api.DataManager;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.rdf4j.ConvertRdf4jCorese;
-import fr.inria.corese.rdf4j.CoreseModel;
-import fr.inria.corese.rdf4j.Rdf4jDataManager;
+import fr.inria.corese.rdf4j.Rdf4jDataManagerBuilder;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 
 public class Rdf4jDataManagerTest {
@@ -102,13 +101,13 @@ public class Rdf4jDataManagerTest {
     public void graphSize() {
         DataManager data_manager;
 
-        data_manager = new Rdf4jDataManager(new CoreseModel());
+        data_manager = new Rdf4jDataManagerBuilder().build();
         assertEquals(0, data_manager.graphSize());
 
-        data_manager = new Rdf4jDataManager(this.model);
+        data_manager = new Rdf4jDataManagerBuilder().model(this.model).build();
         assertEquals(4, data_manager.graphSize());
 
-        data_manager = new Rdf4jDataManager(this.model.filter(null, this.isa_property, null));
+        data_manager = new Rdf4jDataManagerBuilder().model(this.model.filter(null, this.isa_property, null)).build();
         assertEquals(1, data_manager.graphSize());
     }
 
@@ -118,22 +117,22 @@ public class Rdf4jDataManagerTest {
         Node fnp_corese_node = ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.first_name_property);
         Node ip_corese_node = ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.isa_property);
 
-        data_manager = new Rdf4jDataManager(new CoreseModel());
+        data_manager = new Rdf4jDataManagerBuilder().build();
         assertEquals(0, data_manager.countEdges(fnp_corese_node));
 
-        data_manager = new Rdf4jDataManager(this.model);
+        data_manager = new Rdf4jDataManagerBuilder().model(this.model).build();
         assertEquals(3, data_manager.countEdges(fnp_corese_node));
 
-        data_manager = new Rdf4jDataManager(this.model);
+        data_manager = new Rdf4jDataManagerBuilder().model(this.model).build();
         assertEquals(1, data_manager.countEdges(ip_corese_node));
 
-        data_manager = new Rdf4jDataManager(this.model);
+        data_manager = new Rdf4jDataManagerBuilder().model(this.model).build();
         assertEquals(4, data_manager.countEdges(null));
     }
 
     @Test
     public void getEdgesAll() {
-        DataManager data_manager = new Rdf4jDataManager(this.model);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(this.model).build();
 
         // All edges
         Iterable<Edge> iterable = data_manager.getEdges(null, null, null, null);
@@ -150,7 +149,7 @@ public class Rdf4jDataManagerTest {
 
     @Test
     public void getEdgesDefault() {
-        DataManager data_manager = new Rdf4jDataManager(this.model);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(this.model).build();
 
         // All edges of default context
         ArrayList<Node> contexts = new ArrayList<>();
@@ -167,7 +166,7 @@ public class Rdf4jDataManagerTest {
 
     @Test
     public void getEdgesIgnoreNull() {
-        DataManager data_manager = new Rdf4jDataManager(this.model);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(this.model).build();
 
         // All edges (with ignore null values)
         ArrayList<Node> contexts = new ArrayList<>();
@@ -188,7 +187,7 @@ public class Rdf4jDataManagerTest {
 
     @Test
     public void getEdgesIgnoreNull2() {
-        DataManager data_manager = new Rdf4jDataManager(this.model);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(this.model).build();
 
         // All edges of context 1 (with a ignore null value)
         ArrayList<Node> contexts = new ArrayList<>();
@@ -211,7 +210,7 @@ public class Rdf4jDataManagerTest {
 
         Model model_copy = new TreeModel(this.model);
         model_copy.add(this.statement_bonus);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         // All contexts
         iterable = data_manager.getNodes(null);
@@ -262,7 +261,7 @@ public class Rdf4jDataManagerTest {
 
         Model model_copy = new TreeModel(this.model);
         model_copy.add(this.statement_bonus);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         // All contexts
         iterable = data_manager.predicates(null);
@@ -291,7 +290,7 @@ public class Rdf4jDataManagerTest {
     public void contexts() {
         DataManager data_manager;
 
-        data_manager = new Rdf4jDataManager(this.model);
+        data_manager = new Rdf4jDataManagerBuilder().model(this.model).build();
         Iterable<Node> iterable = data_manager.contexts();
         List<Node> result = new ArrayList<>();
         iterable.forEach(result::add);
@@ -306,7 +305,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void insertSPO() {
         Model model = new TreeModel();
-        DataManager data_manager = new Rdf4jDataManager(model);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model).build();
 
         ArrayList<Node> contexts = new ArrayList<>();
         contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context1));
@@ -327,7 +326,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void insertSPODefault() {
         Model model = new TreeModel();
-        DataManager data_manager = new Rdf4jDataManager(model);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model).build();
 
         ArrayList<Node> contexts = new ArrayList<>();
         contexts.add(this.default_context);
@@ -348,7 +347,7 @@ public class Rdf4jDataManagerTest {
     @Test(expected = UnsupportedOperationException.class)
     public void insertSPOError1() {
         Model model = new TreeModel();
-        DataManager data_manager = new Rdf4jDataManager(model);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model).build();
 
         ArrayList<Node> contexts = new ArrayList<>();
         contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context1));
@@ -361,7 +360,7 @@ public class Rdf4jDataManagerTest {
     @Test(expected = UnsupportedOperationException.class)
     public void insertSPOError2() {
         Model model = new TreeModel();
-        DataManager data_manager = new Rdf4jDataManager(model);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model).build();
 
         ArrayList<Node> contexts = new ArrayList<>();
         contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context1));
@@ -376,7 +375,7 @@ public class Rdf4jDataManagerTest {
 
     @Test
     public void insertEdgeEdge() {
-        DataManager data_manager = new Rdf4jDataManager(this.model);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(this.model).build();
 
         // Insert new statement
         assertEquals(false, this.model.contains(this.statement_bonus));
@@ -394,7 +393,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void deleteSPO() {
         Model model_copy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         ArrayList<Node> contexts = new ArrayList<>();
         contexts.add(this.default_context);
@@ -415,7 +414,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void deleteContext2() {
         Model model_copy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         ArrayList<Node> contexts = new ArrayList<>();
         contexts.add(ConvertRdf4jCorese.rdf4jValueToCoreseNode(this.context2));
@@ -432,7 +431,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void deleteFirstName() {
         Model model_copy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         assertEquals(true, model_copy.contains(this.statement_1));
         assertEquals(true, model_copy.contains(this.statement_2));
@@ -450,7 +449,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void deleteSPOAll() {
         Model model_copy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         assertEquals(false, model_copy.isEmpty());
 
@@ -462,7 +461,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void deleteEdgeStatement0() {
         Model model_copy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         assertEquals(true, model_copy.contains(this.statement_0));
         assertEquals(true, model_copy.contains(this.statement_1));
@@ -477,7 +476,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void deleteEdgeStatement1() {
         Model model_copy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         assertEquals(true, model_copy.contains(this.statement_0));
         assertEquals(true, model_copy.contains(this.statement_1));
@@ -494,7 +493,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void deleteFromContext() {
         Model model_copy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         assertEquals(true, model_copy.contains(this.statement_0));
         assertEquals(true, model_copy.contains(this.statement_1));
@@ -524,7 +523,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void deleteFromContextNoRemove() {
         Model model_copy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         assertEquals(true, model_copy.contains(this.statement_0));
         assertEquals(true, model_copy.contains(this.statement_1));
@@ -552,7 +551,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void clearContext1() {
         Model model_copy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         assertEquals(true, model_copy.contains(this.statement_0));
         assertEquals(true, model_copy.contains(this.statement_1));
@@ -566,7 +565,7 @@ public class Rdf4jDataManagerTest {
     @Test
     public void clear() {
         Model model_copy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(model_copy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(model_copy).build();
 
         assertEquals(true, model_copy.contains(this.statement_0));
         assertEquals(true, model_copy.contains(this.statement_1));
@@ -579,7 +578,7 @@ public class Rdf4jDataManagerTest {
     public void addContext() {
         ValueFactory vf = SimpleValueFactory.getInstance();
         Model modelCopy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(modelCopy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(modelCopy).build();
 
         // build and add a new statement in context_1
         Statement theoretical_old_statement = vf.createStatement(this.statement_bonus.getSubject(),
@@ -603,7 +602,7 @@ public class Rdf4jDataManagerTest {
     public void moveContext() {
         ValueFactory vf = SimpleValueFactory.getInstance();
         Model modelCopy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(modelCopy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(modelCopy).build();
 
         // build and add a new statement in context_1
         Statement theoretical_old_statement = vf.createStatement(this.statement_bonus.getSubject(),
@@ -633,7 +632,7 @@ public class Rdf4jDataManagerTest {
     public void copyContext() {
         ValueFactory vf = SimpleValueFactory.getInstance();
         Model modelCopy = new TreeModel(this.model);
-        DataManager data_manager = new Rdf4jDataManager(modelCopy);
+        DataManager data_manager = new Rdf4jDataManagerBuilder().model(modelCopy).build();
 
         // build and add a new statement in context_1
         Statement theoretical_old_statement = vf.createStatement(this.statement_bonus.getSubject(),

@@ -19,6 +19,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Properties;
 import java.util.Set;
+import java.util.stream.Collectors;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -556,9 +557,8 @@ public class Property {
                 Access.setActive(b);
                 if (b) {
                     Access.setDefaultUserLevel(Level.DEFAULT);
-                }
-                else {
-                    Access.setDefaultUserLevel(Level.SUPER_USER);                    
+                } else {
+                    Access.setDefaultUserLevel(Level.SUPER_USER);
                 }
                 break;
 
@@ -1096,6 +1096,23 @@ public class Property {
             this.second = second;
         }
 
+    }
+
+    public List<List<String>> getStorageparameters() {
+
+        String storages = Property.stringValue(STORAGE_PATH);
+
+        List<List<String>> storageList = new ArrayList<>();
+        if (storages == null) {
+            return storageList;
+        }
+
+        for (String storageStr : storages.split(SEP)) {
+
+            String[] storageLst = storageStr.split(",", 3);
+            storageList.add(List.of(storageLst).stream().map(str -> this.expand(str)).collect(Collectors.toList()));
+        }
+        return storageList;
     }
 
     void prefix() {

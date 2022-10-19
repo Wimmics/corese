@@ -5,9 +5,9 @@ import java.util.List;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.api.DataBrokerConstruct;
-import fr.inria.corese.core.api.DataManager;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Query;
@@ -32,27 +32,27 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
     public DataBrokerConstructExtern(DataManager mgr) {
         super(mgr);
     }
-    
+
     @Override
     public void startRuleEngine() {
         getDataManager().startWriteTransaction();
     }
-    
+
     @Override
     public void endRuleEngine() {
         getDataManager().endWriteTransaction();
     }
-    
+
     @Override
     public void startRule() {
     }
-    
+
     @Override
     public void endRule() {
         getDataManager().endWriteTransaction();
         getDataManager().startWriteTransaction();
     }
-    
+
     @Override
     public String blankNode() {
         return getDataManager().blankNode();
@@ -69,7 +69,8 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
     @Override
     public List<Edge> delete(Edge edge, List<Constant> from) {
         List<Edge> deleted = new ArrayList<>();
-        Iterable<Edge> it = getDataManager().delete(edge.getSubjectNode(), edge.getProperty(), edge.getObjectNode(), nodeList(from));
+        Iterable<Edge> it = getDataManager().delete(edge.getSubjectNode(), edge.getProperty(), edge.getObjectNode(),
+                nodeList(from));
         if (it != null) {
             it.forEach(deleted::add);
         }

@@ -1,7 +1,7 @@
 #
 #  Additional profile for testing purpose
 #
-@prefix r: <http://fr.dbpedia.org/resource/>
+@prefix r: <http://fr.dbpedia.org/resource/> .
 
 st:dbtest a st:Profile ;
   st:query     "/home/corby/AAServer/data/query/frdbpediains.rq" ;
@@ -153,7 +153,7 @@ st:calendartest a st:Profile ;
   st:query     <file:///home/corby/ADataServer/query/dbpediadate4.rq> ;
   st:transform "/home/corby/AData/sttl/content" .
     
- @prefix r: <http://fr.dbpedia.org/resource/>
+ @prefix r: <http://fr.dbpedia.org/resource/> .
 
 st:dbpediains a st:Profile ;
   st:query     <query/frdbpediains.rq> ;
@@ -219,7 +219,7 @@ st:loop a st:Profile ;
       [ a sw:Query ; sw:body "select * where {?x ?p ?y} limit 100" ]
       [ a sw:Transformation ; sw:uri st:sparql ]
     )
-  ]
+  ] .
 
 st:dbpedialoop a st:Profile ;   
   st:param [ 

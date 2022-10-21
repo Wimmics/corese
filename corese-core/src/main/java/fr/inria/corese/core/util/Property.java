@@ -77,7 +77,7 @@ import fr.inria.corese.sparql.triple.parser.visitor.ASTParser;
  * Property.init(graph);
  * corese-gui.jar -init property-file-path
  * corese-server.jar -init property-file-path
- * A property file example is in core resources/data/corese/property.txt
+ * A property file example is in core resources/data/corese/property.properties
  * Define variable:
  * VARIABLE = $home=/user/home/
  * LOAD_DATASET = $home/file.ttl

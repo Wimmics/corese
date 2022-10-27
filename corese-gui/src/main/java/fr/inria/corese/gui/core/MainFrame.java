@@ -78,8 +78,6 @@ import fr.inria.corese.core.transform.TemplatePrinter;
 import fr.inria.corese.core.transform.Transformer;
 import fr.inria.corese.core.util.Property;
 import fr.inria.corese.core.util.Property.Pair;
-import static fr.inria.corese.core.util.Property.Value.GUI_INDEX_MAX;
-import fr.inria.corese.core.util.Tool;
 import fr.inria.corese.core.workflow.Data;
 import fr.inria.corese.core.workflow.SemanticWorkflow;
 import fr.inria.corese.core.workflow.WorkflowParser;
@@ -512,7 +510,7 @@ public class MainFrame extends JFrame implements ActionListener {
      * 
      * @return
      */
-    public MyJPanelQuery getPreviousQueryPanel() {        
+    public MyJPanelQuery getPreviousQueryPanel() {
         if (conteneurOnglets.getComponents().length >= 3) {
             Component cp = conteneurOnglets.getComponent(conteneurOnglets.getComponents().length - 3);
             if (cp instanceof MyJPanelQuery) {
@@ -870,10 +868,10 @@ public class MainFrame extends JFrame implements ActionListener {
         }
 
         displayMenu.add(defDisplay("Turtle", ResultFormat.TURTLE_FORMAT));
-        displayMenu.add(defDisplay("Trig",   ResultFormat.TRIG_FORMAT));
+        displayMenu.add(defDisplay("Trig", ResultFormat.TRIG_FORMAT));
         displayMenu.add(defDisplay("RDF/XML", ResultFormat.RDF_XML_FORMAT));
         displayMenu.add(defDisplay("JSON LD", ResultFormat.JSON_LD_FORMAT));
-        displayMenu.add(defDisplay("Index",    ResultFormat.UNDEF_FORMAT));
+        displayMenu.add(defDisplay("Index", ResultFormat.UNDEF_FORMAT));
         displayMenu.add(defDisplay("Internal", ResultFormat.UNDEF_FORMAT));
 
         shaclMenu.add(itypecheck);
@@ -1027,7 +1025,7 @@ public class MainFrame extends JFrame implements ActionListener {
         cbowlrl.addItemListener((ItemEvent e) -> {
             setOWLRL(cbowlrl.isSelected(), RuleEngine.OWL_RL);
         });
-        
+
         cbclean.setEnabled(true);
         cbclean.setSelected(false);
         cbclean.addItemListener((ItemEvent e) -> {
@@ -1035,7 +1033,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 cleanOWL();
             }
         });
-        
+
         cbindex.setEnabled(true);
         cbindex.setSelected(false);
         cbindex.addItemListener((ItemEvent e) -> {
@@ -1195,7 +1193,7 @@ public class MainFrame extends JFrame implements ActionListener {
             return ft.toString();
         }
     }
-    
+
     String displayGraph(String name, int format) {
         if (name.equals("Internal")) {
             DatatypeMap.DISPLAY_AS_TRIPLE = false;
@@ -1206,7 +1204,7 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         return str;
     }
-    
+
     Graph getGraph() {
         return getMyCorese().getGraph();
     }
@@ -1235,7 +1233,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private void setOWLRL(boolean selected, int owl) {
         setOWLRL(selected, owl, true);
     }
-        
+
     private void setOWLRL(boolean selected, int owl, boolean inThread) {
         if (selected) {
             Entailment e = new Entailment(myCorese, inThread);
@@ -1253,11 +1251,11 @@ public class MainFrame extends JFrame implements ActionListener {
             e.process();
         }
     }
-    
+
     void cleanOWL() {
         getMyCorese().cleanOWL();
     }
-    
+
     void graphIndex() {
         getMyCorese().graphIndex();
     }
@@ -1395,6 +1393,7 @@ public class MainFrame extends JFrame implements ActionListener {
             reset();
         } // Recharge tous les fichiers déjà chargés
         else if (e.getSource() == refresh) {
+            this.resetOwlCheckBox();
             ongletListener.refresh(this);
         } else if (e.getSource() == apropos || e.getSource() == tuto || e.getSource() == doc) {
             String uri = URI_CORESE;
@@ -1894,12 +1893,17 @@ public class MainFrame extends JFrame implements ActionListener {
         switch (event) {
 
             case LOAD:
-                cbowlrllite.setSelected(false);
-                cbowlrl.setSelected(false);
+                this.resetOwlCheckBox();
                 // @todo: user rule check box
                 break;
 
         }
+    }
+
+    private void resetOwlCheckBox() {
+        cbowlrllite.setSelected(false);
+        cbowlrl.setSelected(false);
+        cbowlrlext.setSelected(false);
     }
 
     public void load(String fichier) {
@@ -2115,9 +2119,9 @@ public class MainFrame extends JFrame implements ActionListener {
     public Logger getLogger() {
         return LOGGER;
     }
-    
+
     public String readQuery(String name) throws LoadException, IOException {
-        return read(QUERY+name);
+        return read(QUERY + name);
     }
 
     String read(String name) throws LoadException, IOException {

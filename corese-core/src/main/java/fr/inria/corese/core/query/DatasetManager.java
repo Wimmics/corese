@@ -95,7 +95,7 @@ public class DatasetManager {
     public void defineDataManager(TypeDataBase typeDB, String id, String param) {
         logger.info("Create data manager " + typeDB + " with id " + id + " with config " + param);
         if (typeDB == TypeDataBase.JAVA) {
-            StorageFactory.defineDataManager(id, new DataManagerJava(param));
+            StorageFactory.defineDataManager(param, new DataManagerJava(param));
         } else if (typeDB == TypeDataBase.CORESE_GRAPH) {
             StorageFactory.defineDataManager(id, new CoreseGraphDataManagerBuilder().build());
         }

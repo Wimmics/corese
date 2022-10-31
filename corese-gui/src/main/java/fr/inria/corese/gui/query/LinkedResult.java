@@ -99,9 +99,15 @@ public class LinkedResult implements URLParam {
     
     void browse(Mappings map) {
         for (String url : map.getLinkList()) {
-            frame.browse(url);
+            frame.browse(cleanPort(url));
         }
     }
+    
+    String cleanPort(String str) {
+        str = str.replaceFirst("corese.inria.fr:[^/]+/", "corese.inria.fr/");
+        return str;
+    }
+    
     
     void linkedResult(JSONObject json) {
         // original query

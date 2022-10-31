@@ -785,7 +785,7 @@ public class RuleEngine implements Engine, Graphable {
 
                 int nbres = 0;
 
-                if (isOptimize()) {
+                if (isOptimize() && rule.isOptimize()) {
                     // start exec ResultWatcher, it checks that each solution
                     // of rule contains at least one new edge
                     getResultWatcher().start(rule);
@@ -817,7 +817,8 @@ public class RuleEngine implements Engine, Graphable {
 
                     getResultWatcher().finish(rule);
                 } else {
-                    nbres = process(rule, mapping, bind, null, loop, -1, nbrule);
+                    //nbres = process(rule, mapping, bind, null, loop, -1, nbrule);
+                    nbres = process(rule, mapping, bind, null, loop, timestamp++, nbrule);
                     nbrule++;
                 }
 

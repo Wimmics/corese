@@ -23,6 +23,7 @@ import org.slf4j.LoggerFactory;
 public class Rule {
     public static final String RULE_TYPE = NSManager.RULE + "rule";
     public static final String CONSTRAINT_TYPE = NSManager.RULE + "constraint";
+    public static final String AXIOM = NSManager.OWL + "propertyChainAxiom";
 
     static String TRANS_QUERY = "";
     static String TRANS_PSEUDO_QUERY = "";
@@ -50,6 +51,7 @@ public class Rule {
     private Node provenance;
     private String type = RULE_TYPE;
     private boolean constraint = false;
+    private boolean optimize = true;
 
     static {
         try {
@@ -72,6 +74,12 @@ public class Rule {
         if (type != null){
             setRuleType(type);
             setConstraint(type.equals(CONSTRAINT_TYPE));
+        }
+        if (n!=null){
+            //@todo : clean with slot mode = basic
+            if (n.equals(AXIOM)){
+                setOptimize(false);
+            }
         }
     }
 
@@ -340,5 +348,13 @@ public class Rule {
      */
     public void setConstraint(boolean constraint) {
         this.constraint = constraint;
+    }
+
+    public boolean isOptimize() {
+        return optimize;
+    }
+
+    public void setOptimize(boolean optimize) {
+        this.optimize = optimize;
     }
 }

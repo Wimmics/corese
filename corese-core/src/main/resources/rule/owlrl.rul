@@ -216,6 +216,7 @@ WHERE {
 
 
 <rule rdf:about='&owl;propertyChainAxiom'>
+<mode>basic</mode>
 <body>   <!--  prp-spo2 -->
 CONSTRUCT {
 	?u ?p ?v .

@@ -611,10 +611,7 @@ public class RuleEngine implements Engine, Graphable {
         return defRule(name, rule, Rule.RULE_TYPE);
     }
 
-    public Query defRule(String name, String rule, String type) throws EngineException {
-        if (type == null) {
-            type = Rule.RULE_TYPE;
-        }
+    public Query defRule(String name, String rule, String type) throws EngineException {      
         if (isTransformation()) {
             if (getQueryEngine() == null) {
                 setQueryEngine(QueryEngine.create(getGraphStore()));
@@ -622,20 +619,31 @@ public class RuleEngine implements Engine, Graphable {
             getQueryEngine().setLevel(getLevel());
             return getQueryEngine().defQuery(rule);
         } else {
-            // compile time access level
-            getCreateDataset().setLevel(getLevel());
-            Query qq = exec.compileRule(rule, getDataset());
-            if (qq != null) {
-                cleanContext(qq);
-                if (name == null) {
-                    name = getRuleID();
-                }
-                Rule r = Rule.create(name, qq, type);
-                defRule(r);
-                return qq;
-            }
+           Rule r = defInferenceRule(name, rule, type);
+           if (r == null){
+               return null;
+           }
+           return r.getQuery();
+        }
+    }
+    
+    public Rule defInferenceRule(String name, String rule, String type) throws EngineException {
+        if (type == null) {
+            type = Rule.RULE_TYPE;
+        }
+        // compile time access level
+        getCreateDataset().setLevel(getLevel());
+        Query qq = exec.compileRule(rule, getDataset());
+        if (qq == null) {
             return null;
         }
+        cleanContext(qq);
+        if (name == null) {
+            name = getRuleID();
+        }
+        Rule r = Rule.create(name, qq, type);
+        defRule(r);
+        return r;
     }
 
     /**

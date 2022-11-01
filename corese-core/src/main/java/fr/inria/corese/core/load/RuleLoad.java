@@ -42,6 +42,9 @@ public class RuleLoad {
     static final String[] NAMESPACE = {NS, STL, NS2, NS1};
     static final String COS = NSManager.COS;
     static final String TYPE = "type";
+    static final String MODE = "mode";
+    static final String BASIC = "basic";
+    static final String DEBUG = "debug";
     static final String BODY = "body";
     static final String RULE = "rule";
     static final String VALUE = "value";
@@ -170,7 +173,27 @@ public class RuleLoad {
             }
             String text = body.getTextContent();
             String type = getType(rule);             
-            engine.defRule(uri, text, type);
+            Rule r = engine.defInferenceRule(uri, text, type);
+            if (r != null) {
+                tune(r, rule);
+            }
+        }
+    }
+    
+    void tune(Rule rule, Element xml) {
+        NodeList list = xml.getElementsByTagNameNS(NS, MODE);
+        for (int i = 0; i < list.getLength(); i++) {
+            Node node = list.item(i);
+            String text = node.getTextContent();
+            if (text!=null) {
+                tune(rule, MODE, text);
+            }
+        }
+    }
+    
+    void tune(Rule rule, String name, String value) {
+        if (value.equals(BASIC)) {
+            rule.setOptimize(false);
         }
     }
     

@@ -95,6 +95,7 @@ public class RuleEngine implements Engine, Graphable {
     QueryProcess exec;
     private QueryEngine qengine;
     private List<Rule> rules;
+    private Rule rule;
     List<Record> records;
     private Object spinGraph;
     private Dataset ds;
@@ -643,6 +644,7 @@ public class RuleEngine implements Engine, Graphable {
         }
         Rule r = Rule.create(name, qq, type);
         defRule(r);
+        setRule(r);
         return r;
     }
 
@@ -1532,6 +1534,14 @@ public class RuleEngine implements Engine, Graphable {
 
     public void setDataManager(DataManager dataManager) {
         this.dataManager = dataManager;
+    }
+
+    public Rule getRule() {
+        return rule;
+    }
+
+    public void setRule(Rule rule) {
+        this.rule = rule;
     }
 
 }

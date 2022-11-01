@@ -111,7 +111,7 @@ public class Loader {
      * Predefined transformations loaded from Corese resource or ns.inria.fr server
      */
     void load(Load ld, QueryEngine qe, String pp) throws LoadException {
-        //System.out.println("Load: " + pp);    
+        //System.out.println("Loader: " + pp);    
         String name = null;
         pp = clean(pp);
         // base for templates
@@ -130,6 +130,7 @@ public class Loader {
         if (!ld.isRule(src)) {
             src = src + LoadFormat.RULE;                  
         }
+        //System.out.println("Loader: " + src);    
         InputStream stream = getClass().getResourceAsStream(src);
         if (stream == null) { 
             try {

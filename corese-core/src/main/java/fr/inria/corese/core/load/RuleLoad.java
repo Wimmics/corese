@@ -173,9 +173,9 @@ public class RuleLoad {
             }
             String text = body.getTextContent();
             String type = getType(rule);             
-            Rule r = engine.defInferenceRule(uri, text, type);
-            if (r != null) {
-                tune(r, rule);
+            engine.defRule(uri, text, type);
+            if (engine.getRule() != null) {
+                tune(engine.getRule(), rule);
             }
         }
     }

@@ -1437,15 +1437,14 @@ public class TestW3C11KGraphNew {
             }
         }
 
-        if (ok && strict && wdt.isLiteral()) {
+         if (ok && strict && wdt.isLiteral()) {
             // check same datatypes
             if (kdt.getDatatype() != null && wdt.getDatatype() != null) {
                 ok = kdt.getDatatype().sameTerm(wdt.getDatatype());
-            } else {
-                ok = kdt.getIDatatype().sameTerm(wdt.getIDatatype());
+            } else if (kdt.getDatatype()!=wdt.getDatatype()){
+                ok = false;
             }
             if (!ok) {
-                //System.out.println("** Datatype differ: " + kdt.toSparql() + " " + wdt.toSparql());
             }
         }
 

@@ -537,8 +537,8 @@ public class TestFederate {
         Mappings map = process(exec, qq);
         IDatatype dg = (IDatatype) map.getValue("?f");
         IDatatype dm = (IDatatype) map.getValue("?b");
-        Graph gg = (Graph) dg.getObject();
-        Mappings mm = (Mappings) dm.getObject();
+        Graph gg = (Graph) dg.getPointerObject();
+        Mappings mm = (Mappings) dm.getPointerObject();
         assertEquals(10, gg.size());
         assertEquals(10, mm.size());
     }

@@ -11,7 +11,7 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.GraphStore;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.core.pipe.Pipe;
+//import fr.inria.corese.core.pipe.Pipe;
 import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
@@ -105,7 +105,7 @@ public class TestRuleEngine {
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(q);
         IDatatype dt = (IDatatype) map.getValue("?g");
-        Graph gg = (Graph) dt.getObject();
+        Graph gg = (Graph) dt.getPointerObject();
         assertEquals(7, gg.size());
     }  
      
@@ -542,24 +542,7 @@ public class TestRuleEngine {
 	}
 	
 	
-	public void test5(){
-
-		Graph g = createGraph();
-		Pipe pipe = Pipe.create(g);
-		pipe.load(data + "pipe/pipe.rdf");
-		pipe.process();
-		
-		QueryProcess exec = QueryProcess.create(g);
-		String query = "select * where {graph ?g {?x ?p ?y}}";
-		try {
-			Mappings map = exec.query(query);
-			//System.out.println(map);
-			assertEquals("Result", 9, map.size());
-		} catch (EngineException e) {
-			assertEquals("Result", 9, e);
-		}
-		
-	}
+	
 		
 	
 	@Test

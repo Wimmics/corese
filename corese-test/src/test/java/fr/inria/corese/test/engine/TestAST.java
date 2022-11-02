@@ -51,106 +51,106 @@ public class TestAST {
             
         }
 
-	@Test
-	public void test1(){
-
-		ASTQuery ast = ASTQuery.create();
-
-		NSManager nsm = NSManager.create();
-		nsm.definePrefix("ns", "http://ns.inria.fr/schema/");
-		ast.setNSM(nsm);
-
-		Expression regex = ast.createOperator("/", ast.createConstant("rdf:type"), 
-				ast.createOperator("0", "1", ast.createConstant("rdfs:subClassOf")));
-		Constant pp = ast.createProperty(regex);
-		Exp tt  = ast.createTriple(Variable.create("?x"), pp, Variable.create("?class"));
-
-
-		Exp exp1 = BasicGraphPattern.create();
-		exp1.add(tt);
-
-		Source gg = Source.create(Variable.create("?g"), exp1);
-
-		Exp body = BasicGraphPattern.create();
-		body.add(gg);
-
-
-		ast.setSelectAll(true);
-		ast.setSelect(Variable.create("?xx"), Term.function("self", Variable.create("?x")));
-
-		// subquery
-
-		ASTQuery sub = ast.subCreate();
-		sub.setSelectAll(true);
-
-		Triple st = Triple.create( Variable.create("?x"), Variable.create("?p"), Variable.create("?z"));
-
-		Expression f = Term.create("=", Variable.create("?x"), Variable.create("?x"));
-		//Triple tf = Triple.create(f);
-
-		Exp sexp1 = BasicGraphPattern.create();
-		sexp1.add(st);
-		sexp1.add(f);
-
-		sub.setBody(sexp1);
-		Query q = Query.create(sub);
-
-		body.add(q);
-
-
-		List<Atom> ll = new ArrayList<Atom>();
-		ll.add(ast.createConstant("1", "xsd:integer"));
-		ll.add(ast.createConstant("2", "xsd:integer"));
-		RDFList l = ast.createRDFList(ll);
-
-		Triple tl = Triple.create( Variable.create("?a"), ast.createConstant("ns:test"), l.head());
-
-		body.add(tl);
-		body.add(l);
-
-		ast.setBody(body);	
-
-		List<Variable> lVar = new ArrayList<Variable>();
-		lVar.add(Variable.create("?a"));
-
-		Values values = Values.create();
-			
-		values.setVariables(lVar);
-
-		List<Constant> lValue = new ArrayList<Constant>();
-		lValue.add(ast.createConstant("a"));
-
-		values.addValues(lValue);
-		
-		ast.setValues(values);
-		
-		//System.out.println(ast);
-
-		Graph g = Graph.create();
-		QueryProcess exec = QueryProcess.create(g);
-
-		try {
-			String init = 
-				"prefix ns: <http://ns.inria.fr/schema/>" +
-				"insert data {<a> rdf:type <Person> ; ns:test (1 2)}";
-			exec.query(init);
-			
-			RDFFormat ff = RDFFormat.create(g);
-			//System.out.println(ff);
-
-			Mappings map = exec.query(ast);
-			//System.out.println(map);
-		
-			assertEquals("Result", 2, map.size());
-
-
-		} catch (EngineException e) {
-			// TODO Auto-generated catch block
-			assertEquals("Result", true, e);
-		}
-	}
-
-	
+//	@Test
+//	public void test1(){
+//
+//		ASTQuery ast = ASTQuery.create();
+//
+//		NSManager nsm = NSManager.create();
+//		nsm.definePrefix("ns", "http://ns.inria.fr/schema/");
+//		ast.setNSM(nsm);
+//
+//		Expression regex = ast.createOperator("/", ast.createConstant("rdf:type"), 
+//				ast.createOperator("0", "1", ast.createConstant("rdfs:subClassOf")));
+//		Constant pp = ast.createProperty(regex);
+//		Exp tt  = ast.createTriple(Variable.create("?x"), pp, Variable.create("?class"));
+//
+//
+//		Exp exp1 = BasicGraphPattern.create();
+//		exp1.add(tt);
+//
+//		Source gg = Source.create(Variable.create("?g"), exp1);
+//
+//		Exp body = BasicGraphPattern.create();
+//		body.add(gg);
+//
+//
+//		ast.setSelectAll(true);
+//		ast.setSelect(Variable.create("?xx"), Term.function("self", Variable.create("?x")));
+//
+//		// subquery
+//
+//		ASTQuery sub = ast.subCreate();
+//		sub.setSelectAll(true);
+//
+//		Triple st = Triple.create( Variable.create("?x"), Variable.create("?p"), Variable.create("?z"));
+//
+//		Expression f = Term.create("=", Variable.create("?x"), Variable.create("?x"));
+//		//Triple tf = Triple.create(f);
+//
+//		Exp sexp1 = BasicGraphPattern.create();
+//		sexp1.add(st);
+//		sexp1.add(f);
+//
+//		sub.setBody(sexp1);
+//		Query q = Query.create(sub);
+//
+//		body.add(q);
+//
+//
+//		List<Atom> ll = new ArrayList<Atom>();
+//		ll.add(ast.createConstant("1", "xsd:integer"));
+//		ll.add(ast.createConstant("2", "xsd:integer"));
+//		RDFList l = ast.createRDFList(ll);
+//
+//		Triple tl = Triple.create( Variable.create("?a"), ast.createConstant("ns:test"), l.head());
+//
+//		body.add(tl);
+//		body.add(l);
+//
+//		ast.setBody(body);	
+//
+//		List<Variable> lVar = new ArrayList<Variable>();
+//		lVar.add(Variable.create("?a"));
+//
+//		Values values = Values.create();
+//			
+//		values.setVariables(lVar);
+//
+//		List<Constant> lValue = new ArrayList<Constant>();
+//		lValue.add(ast.createConstant("a"));
+//
+//		values.addValues(lValue);
+//		
+//		ast.setValues(values);
+//		
+//		//System.out.println(ast);
+//
+//		Graph g = Graph.create();
+//		QueryProcess exec = QueryProcess.create(g);
+//
+//		try {
+//			String init = 
+//				"prefix ns: <http://ns.inria.fr/schema/>" +
+//				"insert data {<a> rdf:type <Person> ; ns:test (1 2)}";
+//			exec.query(init);
+//			
+//			RDFFormat ff = RDFFormat.create(g);
+//			//System.out.println(ff);
+//
+//			Mappings map = exec.query(ast);
+//			//System.out.println(map);
+//		
+//			assertEquals("Result", 2, map.size());
+//
+//
+//		} catch (EngineException e) {
+//			// TODO Auto-generated catch block
+//			assertEquals("Result", true, e);
+//		}
+//	}
+//
+//	
 	
 	
 	
@@ -203,7 +203,7 @@ public class TestAST {
 		IDatatype dt1 = DatatypeMap.newInstance(3);
 		IDatatype dt2 = DatatypeMap.newInstance(2);
 		IDatatype dt = dt1.div(dt2);
-		assertEquals("Result", 1.5, dt.getDoubleValue(), 0);
+		assertEquals("Result", 1.5, dt.doubleValue(), 0);
 	}
 	
 	

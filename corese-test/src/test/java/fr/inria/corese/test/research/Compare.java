@@ -184,12 +184,13 @@ public class Compare {
             // check same datatypes
             if (kdt.getDatatype() != null && wdt.getDatatype() != null) {
                 ok = kdt.getDatatype().sameTerm(wdt.getDatatype());
-            } else {
-                ok = kdt.getIDatatype().sameTerm(wdt.getIDatatype());
+            } else if (kdt.getDatatype()!=wdt.getDatatype()){
+                ok = false;
             }
             if (!ok) {
             }
         }
+
 
         return ok;
 

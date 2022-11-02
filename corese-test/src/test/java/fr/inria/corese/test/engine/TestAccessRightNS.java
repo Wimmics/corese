@@ -7,6 +7,7 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTExtension;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.AccessNamespace;
 import org.junit.Assert;
@@ -21,7 +22,7 @@ public class TestAccessRightNS {
    void clear() {
         FunctionCompiler.clean();
         AccessNamespace.clean();
-        Interpreter.getExtension().removeNamespace("/user/corby/home/AATest/data/junit/function/");
+        ASTExtension.getSingleton().removeNamespace("/user/corby/home/AATest/data/junit/function/");
     }
 
 

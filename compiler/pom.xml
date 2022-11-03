@@ -21,10 +21,11 @@
 			<groupId>${project.parent.groupId}</groupId>
 			<artifactId>sparql</artifactId>
 		</dependency>
-<!--		<dependency>
-			<groupId>${project.parent.groupId}</groupId>
-			<artifactId>kgram</artifactId>
-		</dependency>-->
+		<dependency>
+			<groupId>${project.groupId}</groupId>
+			<artifactId>corese-utils</artifactId>
+			<version>${revision}</version>
+		</dependency>
 
 		<dependency>
 			<groupId>org.hamcrest</groupId>

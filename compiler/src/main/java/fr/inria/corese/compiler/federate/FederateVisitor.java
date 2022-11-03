@@ -1,15 +1,20 @@
 package fr.inria.corese.compiler.federate;
 
-import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.sparql.triple.parser.Atom;
-import fr.inria.corese.sparql.triple.parser.Constant;
-import fr.inria.corese.sparql.triple.parser.Exp;
-import fr.inria.corese.sparql.triple.parser.Expression;
-import fr.inria.corese.sparql.triple.parser.Metadata;
-import fr.inria.corese.sparql.triple.parser.Service;
-import fr.inria.corese.sparql.triple.parser.Source;
-import fr.inria.corese.sparql.triple.parser.Triple;
-import fr.inria.corese.sparql.triple.parser.Variable;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_BGP;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_COMPLETE;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_JOIN;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_MINUS;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_OPTIONAL;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_PARTITION;
+import static fr.inria.corese.sparql.triple.parser.Metadata.FED_UNDEFINED;
+
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.inria.corese.compiler.api.QueryVisitor;
 import fr.inria.corese.compiler.eval.QuerySolver;
 import fr.inria.corese.compiler.federate.util.RewriteError;
@@ -18,26 +23,25 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.RDF;
 import fr.inria.corese.sparql.exceptions.EngineException;
+import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.ASTSelector;
+import fr.inria.corese.sparql.triple.parser.Atom;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
-import static fr.inria.corese.sparql.triple.parser.Metadata.FED_BGP;
-import static fr.inria.corese.sparql.triple.parser.Metadata.FED_COMPLETE;
-import static fr.inria.corese.sparql.triple.parser.Metadata.FED_JOIN;
-import static fr.inria.corese.sparql.triple.parser.Metadata.FED_OPTIONAL;
-import static fr.inria.corese.sparql.triple.parser.Metadata.FED_MINUS;
-import static fr.inria.corese.sparql.triple.parser.Metadata.FED_PARTITION;
-import static fr.inria.corese.sparql.triple.parser.Metadata.FED_UNDEFINED;
+import fr.inria.corese.sparql.triple.parser.Exp;
+import fr.inria.corese.sparql.triple.parser.Expression;
+import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.Processor;
+import fr.inria.corese.sparql.triple.parser.Service;
+import fr.inria.corese.sparql.triple.parser.Source;
 import fr.inria.corese.sparql.triple.parser.Term;
+import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.URLParam;
 import fr.inria.corese.sparql.triple.parser.URLServer;
+import fr.inria.corese.sparql.triple.parser.Variable;
 import fr.inria.corese.sparql.triple.parser.visitor.ASTParser;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import org.slf4j.LoggerFactory;
-import org.slf4j.Logger;
+import fr.inria.corese.utils.settings.SettingsManager;
 
 /**
  * Prototype for federated query
@@ -66,8 +70,6 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static final String PROXY = "_proxy_";
     // Federation definitions: URL -> list URL
     private static HashMap<String, List<Atom>> federation;
-    // draft
-    public static boolean TEST_FEDERATE = true;
     // generate partition of connnected bgp
     public static boolean FEDERATE_BGP = true;
     // if we find a complete partition, do not split it in subparts
@@ -87,7 +89,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static boolean SELECT_FILTER = true;
     // use source selection join to generate connected bgp with join
     public static boolean USE_JOIN = true;
-    public static boolean TRACE_FEDERATE = false;
+    public static boolean TRACE_FEDERATE = SettingsManager.getSettings().TRACE_GENERIC;
     // specific processing for rdf list and bnode variable
     public static boolean PROCESS_LIST = true;
     public static int    NB_ENDPOINT = 20;
@@ -127,7 +129,6 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     private boolean sparql = false;
     private boolean processList = PROCESS_LIST;
     private boolean traceFederate = TRACE_FEDERATE;
-    private boolean testFederate = TEST_FEDERATE;
     // generate partition of connected bgp:
     private boolean federateBGP = FEDERATE_BGP;
     private boolean federateJoin = SELECT_JOIN;
@@ -1320,14 +1321,6 @@ public class FederateVisitor implements QueryVisitor, URLParam {
 
     public void setProcessList(boolean processList) {
         this.processList = processList;
-    }
-
-    public boolean isTestFederate() {
-        return testFederate;
-    }
-
-    public void setTestFederate(boolean testFederate) {
-        this.testFederate = testFederate;
     }
 
     @Override

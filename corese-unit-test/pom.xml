@@ -7,8 +7,9 @@
     <groupId>fr.inria.corese</groupId>
     <version>${revision}</version>
   </parent>
-
+  
   <!-- <groupId>fr.inria.corese</groupId> -->
+  <groupId>fr.inria.corese</groupId>
   <artifactId>corese-unit-test</artifactId>
   <version>${revision}</version>
 
@@ -47,6 +48,11 @@
       <version>${revision}</version>
     </dependency>
     <dependency>
+      <groupId>${project.groupId}</groupId>
+      <artifactId>corese-utils</artifactId>
+      <version>${revision}</version>
+    </dependency>
+    <dependency>
       <groupId>org.eclipse.rdf4j</groupId>
       <artifactId>rdf4j-storage</artifactId>
       <version>4.0.0-M1</version>
@@ -68,7 +74,6 @@
       <artifactId>jena-arq</artifactId>
       <version>4.4.0</version>
     </dependency>
-
   </dependencies>
 
   <build>

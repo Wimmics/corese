@@ -57,6 +57,7 @@ import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.printer.SPIN;
+import fr.inria.corese.utils.settings.SettingsManager;
 
 /**
  * Forward Rule Engine
@@ -510,7 +511,7 @@ public class RuleEngine implements Engine, Graphable {
     }
 
     boolean isTraceMemory() {
-        return Property.booleanValue(Property.Value.TRACE_MEMORY);
+        return SettingsManager.getSettings().TRACE_MEMORY;
     }
 
     public Graph getRDFGraph() {

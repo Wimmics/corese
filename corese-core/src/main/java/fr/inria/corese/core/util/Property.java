@@ -121,10 +121,8 @@ public class Property {
         VARIABLE,
         IMPORT,
 
-        TRACE_MEMORY,
-        TRACE_GENERIC,
-        // generic property for testing purpose
-        TEST_FEDERATE,
+        TRACE_MEMORY, // DONE
+        TRACE_GENERIC, // DONE
         // turtle file path where federation are defined
         FEDERATION,
         // generate partition of connected bgp
@@ -165,7 +163,7 @@ public class Property {
         DISPLAY_AS_TRIPLE,
         // Graph node implemented as IDatatype instead of NodeImpl
         GRAPH_NODE_AS_DATATYPE,
-        BLANK_NODE,
+        BLANK_NODE, // Done
         // load rdf file into graph kg:default instead of graph file-path
         LOAD_IN_DEFAULT_GRAPH,
         // constraint rule error in specific named graph
@@ -637,8 +635,8 @@ public class Property {
                 break;
 
             case TRACE_GENERIC:
-                FederateVisitor.TRACE_FEDERATE = b;
-                RewriteBGPList.TRACE_BGP_LIST = b;
+                // FederateVisitor.TRACE_FEDERATE = b;
+                // RewriteBGPList.TRACE_BGP_LIST = b;
                 break;
 
             case SOLVER_SORT_CARDINALITY:
@@ -749,7 +747,7 @@ public class Property {
                 break;
 
             case BLANK_NODE:
-                Graph.BLANK = str;
+                // Graph.BLANK = str;
                 break;
 
             case SOLVER_QUERY_PLAN:

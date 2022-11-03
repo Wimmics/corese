@@ -96,6 +96,7 @@
     <module>corese-rdf4j</module>
     <module>corese-storage</module>
     <module>corese-cli</module>
+    <module>corese-utils</module>
   </modules>
 
   <scm>

@@ -43,6 +43,11 @@
         </dependency>
         <dependency>
             <groupId>${project.parent.groupId}</groupId>
+            <artifactId>corese-utils</artifactId>
+            <version>${project.parent.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.parent.groupId}</groupId>
             <artifactId>sparql</artifactId>
             <version>${project.parent.version}</version>
         </dependency>
@@ -70,7 +75,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.openrdf.sesame</groupId>
             <artifactId>sesame-rio-api</artifactId>
         </dependency>
@@ -103,7 +108,7 @@
             <artifactId>testng</artifactId>
             <scope>test</scope>
         </dependency>
-<!--        <dependency>
+        <!--        <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>
             <scope>test</scope>

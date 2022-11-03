@@ -1,13 +1,15 @@
 package fr.inria.corese.compiler.federate;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import fr.inria.corese.sparql.triple.parser.Atom;
 import fr.inria.corese.sparql.triple.parser.BasicGraphPattern;
 import fr.inria.corese.sparql.triple.parser.Exp;
 import fr.inria.corese.sparql.triple.parser.Service;
 import fr.inria.corese.sparql.triple.parser.Triple;
 import fr.inria.corese.sparql.triple.parser.Union;
-import java.util.ArrayList;
-import java.util.List;
+import fr.inria.corese.utils.settings.SettingsManager;
 
 /**
  * Rewrite BGP of triple with several URI
@@ -35,7 +37,7 @@ import java.util.List;
  */
 public class RewriteBGPList {
     public static boolean BGP_LIST = true;
-    public static boolean TRACE_BGP_LIST = false;
+    public static boolean TRACE_BGP_LIST = SettingsManager.getSettings().TRACE_GENERIC;
     private static boolean MERGE_EVEN_IF_NOT_CONNECTED = true;
     
     private FederateVisitor visitor;

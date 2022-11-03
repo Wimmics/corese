@@ -89,7 +89,6 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     public static boolean SELECT_FILTER = true;
     // use source selection join to generate connected bgp with join
     public static boolean USE_JOIN = true;
-    public static boolean TRACE_FEDERATE = SettingsManager.getSettings().TRACE_GENERIC;
     // specific processing for rdf list and bnode variable
     public static boolean PROCESS_LIST = true;
     public static int    NB_ENDPOINT = 20;
@@ -128,7 +127,6 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     // generate one service for the whole body  (no recursive rewrite)
     private boolean sparql = false;
     private boolean processList = PROCESS_LIST;
-    private boolean traceFederate = TRACE_FEDERATE;
     // generate partition of connected bgp:
     private boolean federateBGP = FEDERATE_BGP;
     private boolean federateJoin = SELECT_JOIN;
@@ -1334,11 +1332,7 @@ public class FederateVisitor implements QueryVisitor, URLParam {
     }
 
     public boolean isTraceFederate() {
-        return traceFederate;
-    }
-
-    public void setTraceFederate(boolean traceFederate) {
-        this.traceFederate = traceFederate;
+        return SettingsManager.getSettings().TRACE_GENERIC;
     }
 
     public boolean isFederateBGP() {

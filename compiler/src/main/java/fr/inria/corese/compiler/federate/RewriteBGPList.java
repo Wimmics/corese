@@ -37,7 +37,6 @@ import fr.inria.corese.utils.settings.SettingsManager;
  */
 public class RewriteBGPList {
     public static boolean BGP_LIST = true;
-    public static boolean TRACE_BGP_LIST = SettingsManager.getSettings().TRACE_GENERIC;
     private static boolean MERGE_EVEN_IF_NOT_CONNECTED = true;
     
     private FederateVisitor visitor;
@@ -251,9 +250,13 @@ public class RewriteBGPList {
             resList.add(List.copyOf(res));
         }
     }   
+
+    private boolean traceIsActivate() {
+        return SettingsManager.getSettings().TRACE_GENERIC;
+    }
     
     void ctrace(String mes, Object... obj) {
-        if (TRACE_BGP_LIST) {
+        if (traceIsActivate()) {
             trace(mes, obj);
         }
     }
@@ -263,7 +266,7 @@ public class RewriteBGPList {
     }
         
     void trace(List<BasicGraphPattern> sortedList, List<List<BasicGraphPattern>> alist) {
-        if (TRACE_BGP_LIST) {
+        if (traceIsActivate()) {
             for (BasicGraphPattern bgp : sortedList) {
                 trace("bgp: %s", bgp);
                 trace("");

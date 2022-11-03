@@ -102,7 +102,6 @@ public class Graph extends GraphObject implements
     public static final int CLEAR = 3;
     static long blankid = 0;
     static long triplerefid = 0;
-    public static String BLANK = SettingsManager.getSettings().BLANK_NODE;
     public static String TRIPLE_REF = "_:t";
     static final String SKOLEM = ExpType.SKOLEM;
     private static final String NL = System.getProperty("line.separator");
@@ -258,6 +257,10 @@ public class Graph extends GraphObject implements
 
     static {
         setCompareIndex(true);
+    }
+
+    public String getBlankPrefix() {
+        return SettingsManager.getSettings().BLANK_NODE;
     }
 
     public boolean isSkolem() {
@@ -2900,7 +2903,7 @@ public class Graph extends GraphObject implements
     }
 
     synchronized String blankID() {
-        return BLANK + blankid++;
+        return getBlankPrefix() + blankid++;
     }
 
     public String skolem(String id) {

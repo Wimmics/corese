@@ -25,7 +25,8 @@ public class SettingsManager {
     //////////
 
     public static void load() {
-        SettingsManager.config = SettingsManager.loadDefaultConfig().resolve();
+        SettingsManager.config = SettingsManager.loadDefaultConfig();
+        SettingsManager.settings = new Settings(config);
     }
 
     public static void load(String userConfigFilePath) {
@@ -35,6 +36,7 @@ public class SettingsManager {
 
         // Complete the default configuration with the user configuration
         SettingsManager.config = userConfig.withFallback(defaultConfig).resolve();
+        SettingsManager.settings = new Settings(config);
 
         // Check if the user's configuration is valid compared to the default
         // configuration
@@ -56,12 +58,12 @@ public class SettingsManager {
 
     public static Settings getSettings() {
 
-        if (config == null) {
-            SettingsManager.config = loadDefaultConfig();
-        }
-
-        if (settings == null) {
-            SettingsManager.settings = new Settings(config);
+        if (config == null || settings == null ) {
+            try {
+                throw new Exception("You must load a configuration before using it. Call SettingsManager.load() to load the default configuration or SettingsManager(pathUserConfig) to load a custom configuration.");
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
         }
 
         return settings;

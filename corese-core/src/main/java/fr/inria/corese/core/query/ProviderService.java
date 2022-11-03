@@ -22,6 +22,7 @@ import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.Service;
 import fr.inria.corese.core.load.ServiceReport;
+import fr.inria.corese.core.storage.CoreseGraphDataManagerBuilder;
 import fr.inria.corese.core.storage.DataManagerJava;
 import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.core.util.Property;
@@ -985,7 +986,12 @@ public class ProviderService implements URLParam {
         DataManager man = StorageFactory.getDataManager(url.getStoragePath());
         if (man == null) {
             if (url.hasParameter()) {
-                man = new DataManagerJava(url.getStoragePathWithParameter());
+                if (url.hasParameter(MODE, "dataset")) {
+                    man = new CoreseGraphDataManagerBuilder().graph(getGraph()).build();
+                }
+                else {
+                    man = new DataManagerJava(url.getStoragePathWithParameter());
+                }
                 StorageFactory.defineDataManager(url.getStoragePathWithParameter(), man);
             } else {
                 throw new EngineException(
@@ -1137,6 +1143,10 @@ public class ProviderService implements URLParam {
 
     public Eval getEval() {
         return eval;
+    }
+    
+    Graph getGraph() {
+        return (Graph) getEval().getProducer().getGraph();
     }
 
     public void setEval(Eval eval) {

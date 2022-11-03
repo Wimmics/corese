@@ -72,6 +72,9 @@ public class CoreseGraphDataManager implements DataManager {
 
     @Override
     public void start(HashMapList<String> map) {
+        if (map!=null) {
+            init(map);
+        }
     }
 
     @Override

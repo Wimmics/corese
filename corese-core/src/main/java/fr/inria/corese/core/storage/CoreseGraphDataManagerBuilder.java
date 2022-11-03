@@ -36,7 +36,7 @@ public class CoreseGraphDataManagerBuilder implements DataManagerBuilder {
      * @param graph Corese Graph.
      * @return this instance.
      */
-    public CoreseGraphDataManagerBuilder grahp(Graph graph) {
+    public CoreseGraphDataManagerBuilder graph(Graph graph) {
         this.graph = graph;
         this.defGraph = true;
         return this;

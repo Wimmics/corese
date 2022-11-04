@@ -1,6 +1,6 @@
 package fr.inria.corese.core.query;
 
-import java.security.InvalidParameterException;
+import java.util.HashMap;
 import java.util.List;
 
 import org.slf4j.Logger;
@@ -10,9 +10,11 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.storage.CoreseGraphDataManagerBuilder;
-import fr.inria.corese.core.storage.DataManagerJava;
 import fr.inria.corese.core.storage.api.dataManager.DataManager;
-import fr.inria.corese.core.util.Property;
+import fr.inria.corese.utils.settings.SettingsManager;
+import fr.inria.corese.utils.settings.storage.StorageConfig;
+import fr.inria.corese.utils.settings.storage.StorageModeEnum;
+import fr.inria.corese.utils.settings.storage.StorageTypeEnum;
 
 /**
  * Manage dataset and/or db storage according to Property
@@ -30,11 +32,19 @@ public class DatasetManager {
     }
 
     public DatasetManager init() {
-        List<List<String>> storages = Property.getSingleton().getStorageparameters();
 
-        if (storages != null && storages.size() > 0) {
-            defineDataManager(storages);
+        // Storage list
+        List<StorageConfig> storageConfigList = SettingsManager.getSettings().STORAGE_LIST;
 
+        if (storageConfigList != null && storageConfigList.size() > 0) {
+            for (StorageConfig storageConfig : storageConfigList) {
+                defineDataManager(storageConfig);
+                if (getId() == null) {
+                    setId(storageConfig.getId());
+                }
+            }
+
+            // Storage mode
             if (isStorage()) {
                 // default mode is db storage
                 setDataManager(StorageFactory.getDataManager(getId()));
@@ -45,58 +55,18 @@ public class DatasetManager {
         return this;
     }
 
-    public enum TypeDataBase {
-        RDF4J,
-        JENA_TDB1,
-        CORESE_GRAPH,
-        JAVA,
-    }
-
-    // Create one DataManager in StorageFactory for each db path
-    // first db path is default db
-    void defineDataManager(List<List<String>> storages) {
-        int i = 0;
-        for (List<String> storage : storages) {
-            String type = storage.get(0);
-            String id = storage.get(1);
-            String param = null;
-            if (storage.size() == 3) {
-                param = storage.get(2);
-            }
-
-            TypeDataBase typeDB;
-            switch (type) {
-                case "jenatdb1":
-                    typeDB = TypeDataBase.JENA_TDB1;
-                    break;
-                case "rdf4jmodel":
-                    typeDB = TypeDataBase.RDF4J;
-                    break;
-                case "coreseGraph":
-                    typeDB = TypeDataBase.CORESE_GRAPH;
-                    break;
-                case "java":
-                    typeDB = TypeDataBase.JAVA;
-                    break;
-
-                default:
-                    throw new InvalidParameterException("Unknown database type: " + type);
-            }
-
-            defineDataManager(typeDB, id, param);
-            if (i++ == 0) {
-                setId(id);
-            }
-        }
-    }
-
     // define db data manager, whatever mode is
     // overloaded in corese gui and server
-    public void defineDataManager(TypeDataBase typeDB, String id, String param) {
-        logger.info("Create data manager " + typeDB + " with id " + id + " with config " + param);
-        if (typeDB == TypeDataBase.JAVA) {
-            StorageFactory.defineDataManager(param, new DataManagerJava(param));
-        } else if (typeDB == TypeDataBase.CORESE_GRAPH) {
+    public void defineDataManager(StorageConfig storageConfig) {
+        String id = storageConfig.getId();
+        StorageTypeEnum type = storageConfig.getType();
+        HashMap<String, String> parameters = storageConfig.getParameters();
+
+        logger.info("Create data manager " + type + " with id " + id + " with config " + parameters);
+        if (type == StorageTypeEnum.JAVA) {
+            // TODO: terminer la configuration pour la javaDaManager
+            // StorageFactory.defineDataManager(param, new DataManagerJava(param));
+        } else if (type == StorageTypeEnum.CORESE_GRAPH) {
             StorageFactory.defineDataManager(id, new CoreseGraphDataManagerBuilder().build());
         }
     }
@@ -146,15 +116,15 @@ public class DatasetManager {
     }
 
     public boolean isDataset() {
-        return Property.isDataset();
+        return SettingsManager.getSettings().STORAGE_MODE == StorageModeEnum.DATASET;
     }
 
     public boolean isStorage() {
-        return Property.isStorage();
+        return SettingsManager.getSettings().STORAGE_MODE == StorageModeEnum.DB;
     }
 
     public boolean isStorageAll() {
-        return Property.isStorageAll();
+        return SettingsManager.getSettings().STORAGE_MODE == StorageModeEnum.DB_ALL;
     }
 
     public DataManager getDataManager() {
@@ -173,8 +143,8 @@ public class DatasetManager {
         return id;
     }
 
-    public void setId(String path) {
-        this.id = path;
+    public void setId(String id) {
+        this.id = id;
     }
 
 }

@@ -1,50 +1,54 @@
 package fr.inria.corese.gui.core;
 
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.util.Property;
 import static fr.inria.corese.core.util.Property.Value.ACCESS_LEVEL;
-import java.io.IOException;
+
 import java.util.HashMap;
+
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.util.Property;
+import fr.inria.corese.utils.settings.SettingsManager;
+
 /**
  * Command line parser
+ * 
  * @author Olivier Corby, Wimmics INRIA I3S, 2017
  *
  */
 public class Command extends HashMap<String, String> {
     private static Logger logger = LogManager.getLogger(Command.class);
-    
-    public static final String VERBOSE          = "-verbose";
-    public static final String DEBUG            = "-debug";
-    public static final String MAX_LOAD         = "-maxload";
-    public static final String LINKED_FUNCTION  = "-linkedfunction";
-    public static final String SUPER_USER       = "-su";
-    public static final String READ_FILE        = "-read";
-    public static final String METADATA         = "-metadata";
-    public static final String STRING           = "-string";
-    public static final String WORKFLOW         = "-wf";
-    public static final String REENTRANT        = "-re";
-    public static final String RDF_STAR         = "-rdfstar";
-    public static final String ACCESS           = "-access";
-    public static final String PARAM            = "-param";
-    public static final String INIT             = "-init";
-    public static final String LOAD             = "-load";
-    public static final String LOAD_QUERY       = "-query";
+
+    public static final String VERBOSE = "-verbose";
+    public static final String DEBUG = "-debug";
+    public static final String MAX_LOAD = "-maxload";
+    public static final String LINKED_FUNCTION = "-linkedfunction";
+    public static final String SUPER_USER = "-su";
+    public static final String READ_FILE = "-read";
+    public static final String METADATA = "-metadata";
+    public static final String STRING = "-string";
+    public static final String WORKFLOW = "-wf";
+    public static final String REENTRANT = "-re";
+    public static final String RDF_STAR = "-rdfstar";
+    public static final String ACCESS = "-access";
+    public static final String PARAM = "-param";
+    public static final String INIT = "-init";
+    public static final String LOAD = "-load";
+    public static final String LOAD_QUERY = "-query";
     public static final String LOAD_DEFAULT_GRAPH = "-dg";
     public static final String NODE_AS_DATATYPE = "-dt";
-        
+
     String[] args;
     private String query;
-    
-    Command (String[] args) {
+
+    Command(String[] args) {
         this.args = args;
     }
-    
+
     Command init() {
         int i = 0;
-        while (i < args.length){
+        while (i < args.length) {
             String str = args[i++];
             switch (str) {
                 case SUPER_USER:
@@ -57,50 +61,50 @@ public class Command extends HashMap<String, String> {
                 case VERBOSE:
                 case "-v":
                     put(VERBOSE, "true");
-                    break;  
-                    
+                    break;
+
                 case STRING:
                     put(STRING, "true");
                     break;
-                    
+
                 case PARAM:
-                   put(PARAM, args[i++]);
-                   break; 
-                   
+                    put(PARAM, args[i++]);
+                    break;
+
                 case INIT:
-                   init(args[i++]);
-                   break; 
-                   
+                    init(args[i++]);
+                    break;
+
                 case MAX_LOAD:
-                   put(MAX_LOAD, args[i++]);
-                   break; 
-                   
+                    put(MAX_LOAD, args[i++]);
+                    break;
+
                 case WORKFLOW:
-                   put(WORKFLOW, args[i++]);
-                   break; 
-                   
+                    put(WORKFLOW, args[i++]);
+                    break;
+
                 case REENTRANT:
                     put(REENTRANT, "true");
                     break;
-                    
+
                 case LOAD:
                     put(LOAD, args[i++]);
                     break;
-                    
+
                 case LOAD_QUERY:
                     setQuery(args[i++]);
                     break;
-                    
-                 case RDF_STAR:
+
+                case RDF_STAR:
                     put(RDF_STAR, "true");
                     Graph.setEdgeMetadataDefault(true);
-                    break;    
-                                      
+                    break;
+
                 default:
                     put(str, "true");
-                    break;   
+                    break;
             }
-        }        
+        }
         return this;
     }
 
@@ -111,14 +115,15 @@ public class Command extends HashMap<String, String> {
     public void setQuery(String query) {
         this.query = query;
     }
-    
+
     void init(String path) {
-        try {
-            Property.load(path);
-        } catch (IOException ex) {
-            logger.error(ex);
-        }
+        SettingsManager.load(path);
+
+        // try {
+        // Property.load(path);
+        // } catch (IOException ex) {
+        // logger.error(ex);
+        // }
     }
-    
 
 }

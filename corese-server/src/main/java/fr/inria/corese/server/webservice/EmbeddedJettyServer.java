@@ -4,13 +4,13 @@
  */
 package fr.inria.corese.server.webservice;
 
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.query.CompileService;
-import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.core.util.Parameter;
-import fr.inria.corese.core.util.Property;
-import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.Constant;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
+
+import java.io.File;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -43,6 +43,13 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.util.Parameter;
+import fr.inria.corese.core.util.Property;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -51,12 +58,6 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriBuilder;
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import static jakarta.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
 
 /**
  * Embedded HTTP server for Corese, Using Jetty implementation SPARQL endpoint:
@@ -114,7 +115,8 @@ public class EmbeddedJettyServer extends ResourceConfig {
             log4jfile = EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties");
         }
         logger.info("Loading log4j configuration: " + log4jfile);
-        logger.info("To override log4j configuration add JVM option: -Dlog4j.configurationFile=file:/home/.../your_log4j2.xml");
+        logger.info(
+                "To override log4j configuration add JVM option: -Dlog4j.configurationFile=file:/home/.../your_log4j2.xml");
 
         HOME_PAGE = SPARQLRestAPI.isAjax ? "demo_new.html" : "demo.html";
 
@@ -144,7 +146,8 @@ public class EmbeddedJettyServer extends ResourceConfig {
         Option sslOpt = new Option("ssl", "ssl", false, "enable ssl connection ?");
         Option portSslOpt = new Option("pssl", "pssl", true, "port of ssl connection");
         Option keystoreOpt = new Option("jks", "keystore", true, "java key store name (../keystore/xxx)");
-        Option keypasswordOpt = new Option("pwd", "password", true, "java key store password (key, store, trust store)");
+        Option keypasswordOpt = new Option("pwd", "password", true,
+                "java key store password (key, store, trust store)");
 
         options.addOption(portOpt);
         options.addOption(entailOpt);
@@ -282,6 +285,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
                 if (prop != null) {
                     try {
                         Property.load(prop);
+                        // TODO: Change to the new settings
                     } catch (Exception e) {
                         logger.error(e);
                     }
@@ -312,9 +316,10 @@ public class EmbeddedJettyServer extends ResourceConfig {
             ContextHandlerCollection root = new ContextHandlerCollection();
             server.setHandler(root);
 
-            // Configure the ResourceHandler. Setting the resource base indicates where the files should be served out of.
+            // Configure the ResourceHandler. Setting the resource base indicates where the
+            // files should be served out of.
             ResourceHandler resource_handler = new ResourceHandler();
-            resource_handler.setWelcomeFiles(new String[]{HOME_PAGE, "index.html"});
+            resource_handler.setWelcomeFiles(new String[] { HOME_PAGE, "index.html" });
             URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
             logger.info("Webapp dir: " + webappUri);
             resource_handler.setResourceBase(webappUri.getRawPath());
@@ -324,12 +329,14 @@ public class EmbeddedJettyServer extends ResourceConfig {
             logger.info("Corese/KGRAM webapp UI started on http://localhost:" + port);
             logger.info("----------------------------------------------");
 
-            // @TODO Check regularly whether it is still required by jetty or it is already set.
+            // @TODO Check regularly whether it is still required by jetty or it is already
+            // set.
             MimeTypes mimeTypes = new MimeTypes();
             mimeTypes.addMimeMapping("mjs", "application/javascript");
             staticContextHandler.setMimeTypes(mimeTypes);
 
-//            Server server = JettyHttpContainerFactory.createServer(baseUri, config, false);
+            // Server server = JettyHttpContainerFactory.createServer(baseUri, config,
+            // false);
             // === SSL Connector begin ====
             if (enableSsl) {
                 SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
@@ -343,7 +350,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
                 sslContextFactory.setKeyStorePath(keystorePath);
                 sslContextFactory.setKeyStorePassword(password);
                 sslContextFactory.setKeyManagerPassword(password);
-//     
+                //
                 HttpConfiguration httpsConfiguration = new HttpConfiguration();
                 ServerConnector https = new ServerConnector(server,
                         new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
@@ -356,7 +363,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
             // === SSL Connector end ====
 
             ResourceConfig config = new ResourceConfig(
-                    SPARQLRestAPI.class, 
+                    SPARQLRestAPI.class,
                     SPARQLService.class,
                     GraphProtocol.class,
                     ServiceCompute.class,
@@ -368,8 +375,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
                     Tutorial.class, ServiceOnline.class, ServiceOnline2.class,
                     Transformer.class,
                     Processor.class,
-                    Agent.class
-            );
+                    Agent.class);
             ServletContainer servletContainer = new ServletContainer(config);
             ServletHolder servletHolder = new ServletHolder(servletContainer);
             ServletContextHandler servletContextHandler = new ServletContextHandler(root, "/*");
@@ -391,13 +397,12 @@ public class EmbeddedJettyServer extends ResourceConfig {
                 formData.add("localhost", "true");
             }
             logger.info("before localhost uri: " + uri);
-            
+
             if (true) {
-            target.path("sparql").path("reset")
-                    .request(APPLICATION_FORM_URLENCODED_TYPE)
-                    .post(Entity.form(formData));
-            }
-            else {
+                target.path("sparql").path("reset")
+                        .request(APPLICATION_FORM_URLENCODED_TYPE)
+                        .post(Entity.form(formData));
+            } else {
                 new SPARQLRestAPI().initRDF();
             }
             logger.info("after localhost uri");
@@ -427,10 +432,12 @@ public class EmbeddedJettyServer extends ResourceConfig {
         Access.protect();
     }
 
-    public static URI extractResourceDir(String dirname, boolean overwrite) throws FileSystemException, URISyntaxException {
+    public static URI extractResourceDir(String dirname, boolean overwrite)
+            throws FileSystemException, URISyntaxException {
         URL dir_url = EmbeddedJettyServer.class.getClassLoader().getResource(dirname);
         FileObject dir_jar = VFS.getManager().resolveFile(dir_url.toString());
-        String tempDir = FileUtils.getTempDirectory() + File.separator + System.getProperty("user.name").replace(" ", "");
+        String tempDir = FileUtils.getTempDirectory() + File.separator
+                + System.getProperty("user.name").replace(" ", "");
         FileObject tmpF = VFS.getManager().resolveFile(tempDir);
         FileObject localDir = tmpF.resolveFile(dirname);
         if (!localDir.exists()) {

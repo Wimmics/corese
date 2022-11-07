@@ -4,12 +4,16 @@
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
 prefix map: <http://ns.inria.fr/map/>
 
+#load </user/corby/home/AADemoNew/map/schema.ttl> ;
+
 insert {
 ?uri rdfs:label ?location ;
     geo:lat ?lat ;
     geo:long ?lon ;
     map:description ?desc ;
-    map:dbpedia ?url
+    map:dbpedia ?url ;
+    map:wikipedia ?wiki ;
+    ?pred ?value
 }
 where {
 
@@ -33,5 +37,43 @@ bind (xt:get(?list, 1) as ?lat)
 
 bind (uri(concat(map:, ?name, st:number())) as ?uri)
 bind (uri(concat(<http://fr.dbpedia.org/resource/>, ?urlName)) as ?url)
+bind (uri(concat(<http://fr.wikipedia.org/wiki/>, ?urlName)) as ?wiki)
 
+bind   (us:complete(?location, us:clean(?desc)) as ?map)
+values (?key ?val) {unnest(?map)}
+bind   (us:predicate(?key) as ?pred)
+bind   (us:value(?pred, ?val) as ?value)
+}
+
+
+function us:predicate(name) {
+    if (name = "type", uri(concat(rdf:, name)),
+        uri(concat(map:, name)))
+}
+
+function us:value(pred, val) {
+    if (pred = rdf:type, uri(concat(map:, val)), 
+        val)
+}
+
+
+# lieu=Place;com=City
+function us:complete(loc, descr) {
+    let (json = xt:json()) {
+       xt:set(json, "name", loc);
+       if (strlen(descr) = 0){return(json)};
+       
+        for (elem in xt:split(descr, ";")) {
+            let ((key val) = xt:split(elem, "=")) {
+                xt:set(json, key, val)
+            }
+        } ;
+        return(json)
+    }
+}
+
+
+# ((lieu=Place;com=City))
+function us:clean(descr) {
+    strbefore(strafter(descr, "(("), "))")
 }

@@ -15,19 +15,24 @@ where {
 service <store:mapdatamanager?debug=true> {
     select * where {
         ?url rdfs:label ?name 
+        
         #filter mapany(xt:contains, ?name, xt:list("Chapelle", "Eglise", "Abbaye"))        
         #filter mapany(xt:contains, ?name, xt:list("Aven", "Embut", "Baume"))        
         #filter mapany(xt:contains, ?name, xt:list("Dolmen", "Tombe", "Menhir"))        
-        filter mapany(xt:contains, ?name, xt:list("Captage", "Lac", "Cascade", "Barrage"))        
+        #filter mapany(xt:contains, ?name, xt:list("Captage", "Lac", "Cascade", "Barrage")) 
+        
         ?url geo:long ?lon;
         geo:lat ?lat ;
-        map:dbpedia ?location
+        map:wikipedia ?location .
+        ?url map:dep ?dep .
+        ?url rdf:type/rdfs:subClassOf* map:Artefact .
+        ?url ?p ?v .
     }
 }
 
-service <http://corese.inria.fr/sparql?mode=link;map&slice=700> {
-        values (?location ?lon ?lat) {(undef undef undef)}
-}
+#service <http://corese.inria.fr/sparql?mode=link;map&slice=700> {
+#        values (?location ?lon ?lat) {(undef undef undef)}
+#}
 
 }
 

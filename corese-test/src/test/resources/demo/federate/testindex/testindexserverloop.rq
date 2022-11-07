@@ -1,0 +1,26 @@
+prefix dqv:     <http://www.w3.org/ns/dqv#>
+prefix kgi:     <http://ns.inria.fr/kg/index#>
+prefix void:    <http://rdfs.org/ns/void#>
+prefix dcterms: <http://purl.org/dc/terms/>
+
+select  ?serv 
+where {
+
+service <http://prod-dekalog.inria.fr/sparql?loop=true&start=0&until=10&limit=10> {
+    select distinct ?serv  where {
+        graph ?g {
+            ?metadata dcterms:modified ?modif .
+            ?metadata kgi:curated ?s .
+            ?s void:sparqlEndpoint  ?serv
+        }
+    }
+    order by ?serv
+}
+
+
+}
+order by ?serv
+
+
+
+# 176 results

@@ -1,0 +1,25 @@
+#
+# Query with specific test for graph index
+#
+prefix fcu: <http://ontology.inrae.fr/frenchcropusage/>
+
+@trace 
+@federateSuccess 0.6
+
+SELECT DISTINCT ?crop ?lbl ?scale ?stade 
+FROM <index:http://prod-dekalog.inria.fr/sparql>
+WHERE {   
+ 
+# test for graph index:
+service <index:http://prod-dekalog.inria.fr/sparql> {
+   filter regex(str(?serv), ".fr/") 
+}
+    ?dummy skos:prefLabel "arboriculture"@fr .
+    ?dummy skos:narrower+ ?crop .
+    ?crop  skos:prefLabel ?lbl .
+    ?topc  fcu:relatedCrop    ?crop .
+    ?scale skos:hasTopConcept ?topc .
+    ?topc  skos:narrower     ?stade .
+    FILTER (REGEX(STR(?scale), "bbch")) 
+} 
+ORDER BY ?stade

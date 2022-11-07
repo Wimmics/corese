@@ -1,0 +1,13 @@
+#
+# There is no result
+#
+@trace 
+@federation 
+@limit 100
+
+SELECT *
+WHERE {
+    ?s a owl:Class, skos:Concept
+} 
+
+

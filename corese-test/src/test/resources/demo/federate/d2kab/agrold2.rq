@@ -1,0 +1,20 @@
+BASE <http://www.southgreen.fr/agrold/>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+PREFIX obo:<http://purl.obolibrary.org/obo/>
+PREFIX uniprot:<http://purl.uniprot.org/uniprot/>
+PREFIX vocab:<vocabulary/>
+
+@trace
+#@federate <http://agrold.southgreen.fr/sparql>
+@federation <http://fed.corese.inria.fr/d2kab/sparql>
+
+SELECT distinct ?predicate ?object ?object_label ?graph
+WHERE {
+ GRAPH ?graph {
+  uniprot:P0C127 ?predicate ?object.
+ }
+ OPTIONAL {
+    ?object rdfs:label ?object_label.
+  }
+}

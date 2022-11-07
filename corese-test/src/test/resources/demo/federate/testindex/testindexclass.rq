@@ -1,0 +1,24 @@
+prefix dqv:     <http://www.w3.org/ns/dqv#>
+prefix kgi:     <http://ns.inria.fr/kg/index#>
+prefix void:    <http://rdfs.org/ns/void#>
+prefix dcterms: <http://purl.org/dc/terms/>
+
+@timeout 10000
+
+select distinct *
+where {
+
+service <http://prod-dekalog.inria.fr/sparql> {
+    select ?serv (count(distinct ?class) as ?count) where {
+        graph ?g {
+            ?metadata dcterms:modified ?modif .
+            ?metadata kgi:curated ?s .
+            ?s void:sparqlEndpoint  ?serv
+            ?s void:classPartition/void:class ?class
+        }
+    }
+    group by ?serv
+}
+
+}
+order by desc(?count) ?serv

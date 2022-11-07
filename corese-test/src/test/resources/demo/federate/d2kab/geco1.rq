@@ -1,0 +1,12 @@
+prefix gc: <http://www.geco.ecophytopic.fr/geco/TypeConcept/>
+
+#@federate <http://geco.ecophytopic.fr:8890/sparql>
+@federation <http://fed.corese.inria.fr/d2kab/sparql>
+@trace
+select ?c ?l  where 
+{
+ ?c a gc:Exemple_De_Mise_En_Oeuvre .
+ ?c skos:prefLabel ?l .
+} 
+limit 10
+

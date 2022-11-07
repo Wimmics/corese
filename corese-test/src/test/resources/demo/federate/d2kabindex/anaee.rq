@@ -1,0 +1,32 @@
+prefix dcat: <http://www.w3.org/ns/dcat#>
+prefix dcterm: <http://purl.org/dc/terms/>
+prefix vcard: <http://www.w3.org/2006/vcard/ns#>
+prefix foaf: <http://xmlns.com/foaf/0.1/>
+prefix anaee: <http://www.anaee-france.fr/ontology/anaee-france_ontology#>
+@trace
+#@federate <http://147.100.179.235:8082/blazegraph/namespace/AnaEE_sites/sparql>
+#@federateSuccess 0.5
+
+select ?PlatformName ?homepage ?contactName ?description
+    (group_concat(?ResourceElmtLabel;separator=",") AS ?Elmts) 
+from <index:http://prod-dekalog.inria.fr/sparql>
+where {
+    ?catalog rdf:type dcat:Catalog .
+    ?catalog dcterm:hasPart ?resource .
+    ?resource dcterm:creator ?organisation .
+    
+    optional {?resource foaf:homepage  ?homepage .}
+    
+    ?resource dcat:contactPoint ?contact .
+    ?contact vcard:hasName ?contactName .
+    ?resource rdfs:comment ?description .
+    ?resource rdfs:label ?PlatformName .
+    
+    optional {
+        ?resource dcterm:hasPart ?ResourceElmt .
+        ?ResourceElmt rdf:type anaee:ExperimentalBlock .
+        ?ResourceElmt rdfs:label ?ResourceElmtLabel .
+        filter(lang(?ResourceElmtLabel)='en')
+    }
+}
+GROUP BY ?PlatformName ?contactName ?description ?homepage

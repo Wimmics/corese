@@ -1,0 +1,9 @@
+prefix h: <http://www.inria.fr/2015/humans#>
+
+@federate <http://corese.inria.fr/sparql> <http://fr.dbpedia.org/sparql>
+@trace
+select * where {
+    ?x rdfs:label ?n 
+    ?x ?p ?v 
+    ?s h:name ?n
+}

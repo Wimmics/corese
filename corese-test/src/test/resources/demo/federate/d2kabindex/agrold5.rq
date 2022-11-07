@@ -1,0 +1,25 @@
+BASE <http://www.southgreen.fr/agrold/>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+PREFIX obo:<http://purl.obolibrary.org/obo/>
+PREFIX uniprot:<http://purl.uniprot.org/uniprot/>
+PREFIX vocab:<vocabulary/>
+PREFIX graph1:<protein.annotations>
+PREFIX graph2:<qtl.annotations>
+PREFIX qtl: <http://www.identifiers.org/gramene.qtl/AQAT004> # DTHD 
+
+@trace
+@include <http://agrold.southgreen.fr/sparql> 
+
+SELECT distinct ?id ?name 
+FROM <index:http://prod-dekalog.inria.fr/sparql>
+WHERE {
+ GRAPH graph1: {
+  ?id vocab:has_trait ?to.
+  ?id rdfs:label ?name.
+ }
+ GRAPH graph2: {
+  qtl: vocab:has_trait ?to.
+ }
+}
+ORDER BY ?name

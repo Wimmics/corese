@@ -1,0 +1,15 @@
+#
+# skip undefined exp of minus
+#
+prefix fcu: <http://ontology.inrae.fr/frenchcropusage/>
+
+@trace 
+@federation <http://fed.corese.inria.fr/d2kab/sparql>
+@federateUndefined true
+SELECT * 
+WHERE {    
+    ?dummy skos:prefLabel "arboriculture"@fr .
+    minus {?s fcu:undefined ?o}
+   
+} 
+

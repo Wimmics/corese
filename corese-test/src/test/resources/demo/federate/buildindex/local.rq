@@ -1,0 +1,7 @@
+@limit 1
+
+select *
+from <index:store:/user/corby/home/AADemoNew/storage/indexcard>
+where {
+    ?s rdfs:label ?l
+}

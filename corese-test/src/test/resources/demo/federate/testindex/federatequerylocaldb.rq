@@ -1,0 +1,8 @@
+prefix db: <store:/user/corby/home/AADemoNew/storage/>
+@limit 10
+select * 
+from <index:store:/user/corby/home/AADemoNew/storage/indexcard>
+where {
+  ?x <http://dbkwik.webdatacommons.org/bep/property/wikiPageUsesTemplate> ?y
+}
+ 

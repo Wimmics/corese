@@ -1,0 +1,16 @@
+#
+# Federate query with index on corese server federate endpoint
+#
+@trace 
+
+select *
+where {
+service <http://corese.inria.fr/federate/sparql?sv:timeout=2000> {
+    select * where {
+        ?s ?p [owl:intersectionOf ([?pa ?va] [?pb ?vb] [?pc ?vc]) ]
+    } 
+    limit 100
+} 
+}
+
+

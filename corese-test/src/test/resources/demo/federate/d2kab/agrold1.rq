@@ -1,0 +1,25 @@
+BASE <http://www.southgreen.fr/agrold/>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+PREFIX uniprot:<http://purl.uniprot.org/uniprot/>
+PREFIX taxon:<http://purl.obolibrary.org/obo/NCBITaxon_>
+PREFIX fn:<https://www.w3.org/TR/xpath-functions-31/#>
+ 
+@trace
+#@federate <http://agrold.southgreen.fr/sparql>
+@federation <http://fed.corese.inria.fr/d2kab/sparql>
+
+SELECT distinct (str(?label) as ?speciesName) ?species
+WHERE {
+ values (?q){(<http://purl.obolibrary.org/obo/RO_0002162>)}
+ ?protein ?q ?species .
+ FILTER(REGEX(?species,"^http://identifiers.org/taxonomy/"))
+ BIND(REPLACE(str(?species),"http://identifiers.org/taxonomy/", "" ) as ?id)
+ BIND(CONCAT(str(taxon:),?id) AS ?uri)
+ BIND(IRI($uri) as ?real)
+ optional {
+   ?real rdfs:label ?label.
+ } 
+}
+#ORDER BY ASC(?speciesName)
+limit 10

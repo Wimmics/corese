@@ -1,0 +1,9 @@
+@trace @federateSuccess 0.5 @federateLength 30
+select * 
+from <index:http://prod-dekalog.inria.fr/sparql>
+where {  
+    ?s skos:prefLabel ?lab 
+    filter contains(?lab, "agriculture") .
+    ?s skos:altLabel ?l 
+    filter langMatches(lang(?l), "en")
+}

@@ -1,0 +1,20 @@
+BASE <http://www.southgreen.fr/agrold/>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+PREFIX obo:<http://purl.obolibrary.org/obo/>
+PREFIX uniprot:<http://purl.uniprot.org/uniprot/>
+PREFIX vocab:<vocabulary/>
+PREFIX graph:<gramene.cyc>
+PREFIX pathway:<biocyc.pathway/PWY-5338>
+
+@federation <http://fed.corese.inria.fr/d2kab/sparql>
+
+SELECT DISTINCT ?gene ?name ?taxon_name
+WHERE {
+ GRAPH graph: {
+  ?gene vocab:is_agent_in pathway:. 
+  ?gene rdfs:label ?name.
+  ?gene vocab:taxon ?taxon_name.
+ }
+}
+LIMIT 100

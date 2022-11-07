@@ -1,0 +1,16 @@
+prefix fcu: <http://ontology.inrae.fr/frenchcropusage/>
+
+@trace 
+@federation <http://fed.corese.inria.fr/d2kab/sparql>
+
+SELECT DISTINCT ?crop ?lbl ?scale ?stade 
+WHERE {    
+    ?dummy skos:prefLabel "arboriculture"@fr .
+    ?dummy skos:narrower+ ?crop .
+    ?crop  skos:prefLabel ?lbl .
+    ?topc  fcu:relatedCrop    ?crop .
+    ?scale skos:hasTopConcept ?topc .
+    ?topc  skos:narrower     ?stade .
+    FILTER (REGEX(STR(?scale), "bbch")) 
+} 
+ORDER BY ?stade

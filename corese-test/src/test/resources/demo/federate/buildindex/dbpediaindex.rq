@@ -1,0 +1,17 @@
+#
+# Obtain all results with order by in subquery and limit offset in outer query
+#
+@timeout 60000
+
+select * where {
+    service <http://fr.dbpedia.org/sparql?mode=loop&limit=10000> {
+        select * where {
+            select ?p (count(*) as ?c) where {
+                ?s ?p ?o
+            }
+            group by ?p
+            order by ?p
+        }  # limit 10000 offset n*10000
+    } 
+}
+order by desc(?c) ?p

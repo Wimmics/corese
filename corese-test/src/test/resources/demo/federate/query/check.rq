@@ -1,0 +1,11 @@
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+@federation 
+@index <http://prod-dekalog.inria.fr/sparql>
+@limit 1 @timeout 2000
+@log </tmp/tmplog.ttl>
+@trace
+select *
+where {
+   ?location geo:lat ?alat ; geo:long ?alon 
+}

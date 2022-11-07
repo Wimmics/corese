@@ -1,0 +1,21 @@
+#
+# 142 endpoints property index over 371 endpoints (40%); graph index : 101 property index
+# 
+prefix dqv:     <http://www.w3.org/ns/dqv#>
+prefix kgi:     <http://ns.inria.fr/kg/index#>
+prefix void:    <http://rdfs.org/ns/void#>
+prefix dcterms: <http://purl.org/dc/terms/>
+prefix db: <store:/user/corby/home/AADemoNew/storage/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+
+select distinct ?serv  {
+  service db:indexcard {
+    values ?p {
+       # rdfs:label skos:altLabel skos:prefLabel
+        geo:lat geo:long
+    }
+       ?pp void:property ?p .
+       ?serv void:propertyPartition ?pp 
+  }
+}

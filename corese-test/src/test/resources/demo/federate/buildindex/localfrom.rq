@@ -1,0 +1,6 @@
+select *
+from <store:/user/corby/home/AADemoNew/storage/indexcard>
+ where {
+  ?x ?p ?y
+}
+limit 10

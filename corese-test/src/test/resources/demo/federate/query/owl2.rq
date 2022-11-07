@@ -1,0 +1,18 @@
+BASE <http://www.southgreen.fr/agrold/>
+PREFIX rdf:<http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX rdfs:<http://www.w3.org/2000/01/rdf-schema#>
+PREFIX obo:<http://purl.obolibrary.org/obo/>
+PREFIX taxon:<http://purl.obolibrary.org/obo/NCBITaxon_>
+PREFIX uniprot:<http://purl.uniprot.org/uniprot/>
+PREFIX vocab:<vocabulary/>
+PREFIX graph:<protein.annotations>
+
+@trace 
+@timeout 2000
+@federation @variable
+SELECT *
+WHERE {
+    ?s ?p [owl:unionOf (?a ?b ?c ?d ?e ?f ?g)] 
+} 
+
+

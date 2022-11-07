@@ -1,0 +1,15 @@
+prefix vine: <http://ontology.inrae.fr/ppdo/resource/grapevine/>
+prefix ppdo: <http://ontology.inrae.fr/ppdo/ontology/>
+
+@trace
+@exclude <http://agrovoc.uniroma2.it/sparql>
+
+SELECT DISTINCT ?stage
+FROM <index:http://prod-dekalog.inria.fr/sparql>
+WHERE { 
+    ?stage a ppdo:SecondaryGrowthStage.
+    ?stage skos:inScheme ?scale.
+    ?scale skos:prefLabel ?label
+    FILTER REGEX(STR(?label), "baggiolini", "i")
+} 
+ORDER BY ?stage

@@ -1,0 +1,38 @@
+#
+# Time: 185.245 ; nb result: 517542
+# 142 endpoints property index over 371 endpoints (40%); graph index : 101 property index
+# 
+prefix dqv:     <http://www.w3.org/ns/dqv#>
+prefix kgi:     <http://ns.inria.fr/kg/index#>
+prefix void:    <http://rdfs.org/ns/void#>
+prefix dcterms: <http://purl.org/dc/terms/>
+
+@timeout 60000
+
+insert {
+  ?serv void:propertyPartition [void:property ?p]  
+}
+where {
+
+service <http://prod-dekalog.inria.fr/sparql> {
+    select distinct ?serv  where {
+        graph ?g {
+            ?metadata dcterms:modified ?modif .
+            ?metadata kgi:curated ?s .
+            ?s void:sparqlEndpoint  ?serv
+            #filter not exists {?s void:propertyPartition/void:property ?predicate}
+            #filter regex (str(?serv), ".fr/")
+        }
+    }
+    order by ?serv
+}
+
+service ?serv {
+    select distinct ?p where {
+        {?p a rdf:Property} 
+        union {?p a owl:ObjectProperty} 
+        union {?p a owl:DataProperty}
+    }
+}
+
+}

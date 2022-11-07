@@ -1,0 +1,15 @@
+#
+# owl:sameAs is considered as a link between two endpoints
+#
+PREFIX wdt: <http://www.wikidata.org/prop/direct/>
+
+@federate <https://dbpedia.org/sparql> <https://query.wikidata.org/sparql>
+@trace 
+SELECT * 
+WHERE {
+ ?country a <http://dbpedia.org/class/yago/WikicatMemberStatesOfTheEuropeanUnion> .
+ ?country <http://www.w3.org/2002/07/owl#sameAs> ?countrySameAs .
+ ?countrySameAs wdt:P2131 ?gdp .
+ ?countrySameAs rdfs:label ?labelSA
+ filter langMatches(lang(?labelSA), 'en')
+}

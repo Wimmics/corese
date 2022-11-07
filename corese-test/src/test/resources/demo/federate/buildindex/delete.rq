@@ -1,0 +1,30 @@
+#
+# ** Time: 186.0 ; nb result: 305819
+# 136 endpoints property index over 371 endpoints (36%); graph index : 101 endpoints property index
+# 158 endpoints return query results 
+#
+prefix dqv:     <http://www.w3.org/ns/dqv#>
+prefix kgi:     <http://ns.inria.fr/kg/index#>
+prefix void:    <http://rdfs.org/ns/void#>
+prefix dcterms: <http://purl.org/dc/terms/>
+
+# db = store:/user/corby/home/AADemoNew/storage/indexcard
+
+delete {
+    ?serv void:propertyPartition ?pp .
+    ?pp void:property ?p ; void:card ?c  
+}
+where {
+
+values ?serv {
+    <http://dbkwik.webdatacommons.org/sparql>	# 140 000 properties
+    <http://de.dbpedia.org/sparql>	
+    <http://fr.dbpedia.org/sparql>	
+    <http://serendipity.utpl.edu.ec/lod/sparql>	
+    <https://es.dbpedia.org/sparql>	
+}
+
+?serv void:propertyPartition ?pp .
+?pp void:property ?p ; void:card ?c  
+
+}

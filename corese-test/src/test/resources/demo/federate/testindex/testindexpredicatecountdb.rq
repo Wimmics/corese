@@ -1,0 +1,17 @@
+#
+# 142 endpoints property index over 371 endpoints (40%); graph index : 101 property index
+# 
+prefix dqv:     <http://www.w3.org/ns/dqv#>
+prefix kgi:     <http://ns.inria.fr/kg/index#>
+prefix void:    <http://rdfs.org/ns/void#>
+prefix dcterms: <http://purl.org/dc/terms/>
+prefix db: <store:/user/corby/home/AADemoNew/storage/>
+@timeout 60000
+
+select ?serv (count(distinct*) as ?c) {
+  service db:indexcard {
+       ?serv void:propertyPartition ?pp . ?pp void:property ?p  
+  }
+}
+group by ?serv
+order by desc(?c)

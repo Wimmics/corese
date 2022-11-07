@@ -1,0 +1,18 @@
+prefix vs:  <http://www.w3.org/2006/vcard/ns#>
+prefix dbo: <http://dbpedia.org/ontology/>
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+@trace
+@limit 10
+@federate 
+<https://data.archives-ouvertes.fr/sparql>
+<http://fr.dbpedia.org/sparql>
+
+select * where {
+    ?y vs:country-name ?country  
+    ?country a dbo:Country
+    ?country rdfs:label ?name 
+    filter regex(?name, 'F')
+    filter langMatches(lang(?name), "fr")
+    optional { ?country geo:lat ?lat ; geo:long ?lon }
+}

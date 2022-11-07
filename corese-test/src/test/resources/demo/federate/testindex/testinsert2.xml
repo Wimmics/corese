@@ -1,0 +1,673 @@
+<?xml version="1.0" ?>
+<sparql xmlns='http://www.w3.org/2005/sparql-results#'>
+<head>
+<variable name='serv'/>
+<variable name='c'/>
+</head>
+<results>
+<result>
+<binding name='serv'><uri>https://query.wikidata.org/bigdata/namespace/wdq/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>758279</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://query.wikidata.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>654494</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://linkeddata1.calcul.u-psud.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>473061</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://factforge.net/repositories/ff-news</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>321478</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://es.dbpedia.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>259995</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://serendipity.utpl.edu.ec/lod/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>239812</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://de.dbpedia.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>160087</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://wasabi.inria.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>126746</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://dbkwik.webdatacommons.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>125861</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://fr.dbpedia.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>113453</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://covidontheweb.inria.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>107762</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://ja.dbpedia.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>99998</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://el.dbpedia.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>93045</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://slod.fiz-karlsruhe.de/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>77763</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://semantic.eea.europa.eu/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>68585</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://linkeddata.uriburner.com/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>67576</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://eu.dbpedia.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>57420</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://slod.fiz-karlsruhe.de/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>51817</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://dbpedia.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>51700</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://sparql.hegroup.org/sparql/</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>50210</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://semantic.eea.europa.eu/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>47910</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://lov.linkeddata.es/dataset/lov/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>34837</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://db.artsdata.ca/repositories/artsdata</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>26711</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://sparql.glycoinfo.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>26449</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://www.foodie-cloud.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>25677</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://sparql.europeana.eu</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>23770</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://sparql.europeana.eu/</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>23770</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://rdf.disgenet.org/sparql/</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>20393</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://cr.eionet.europa.eu/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>20366</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://opendata.aragon.es/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>18890</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://lod.abes.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>18858</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://navi.first.lifesciencedb.jp/fanavi/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>17185</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://data.idref.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>15513</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://opendatacommunities.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>15204</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://dba-rdf.biosciencedbc.jp/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>14864</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://opendata.aragon.es/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>14621</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://opendatacommunities.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>13181</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://publications.europa.eu/webapi/rdf/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>13165</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://taxref.mnhn.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>12332</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://sparql.odw.tw/</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>11847</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://dati.beniculturali.it/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>11725</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://api.finto.fi/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>11250</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://sparql.wikipathways.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>10992</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://bio2rdf.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>10588</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://api.cooperationdatabank.org/datasets/coda/databank/services/databank/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>10575</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://caligraph.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>9758</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://kaiko.getalp.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>9553</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://dbtune.org/musicbrainz/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>9029</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://prod-dekalog.inria.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>8979</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://patho.phenomebrowser.net/sparql/</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>8575</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://datos.bne.es/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>8024</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://geco.ecophytopic.fr:8890/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>7042</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://ld.cultural.jp/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>6809</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://data.escr.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>6755</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://data.gov.cz/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>6490</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://jpsearch.go.jp/rdf/sparql/</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>6154</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://sparql.proconsortium.org/virtuoso/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>5806</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://dati.isprambiente.it/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>5754</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://data.cervantesvirtual.com/openrdf-sesame/repositories/data</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>5708</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://vulcan.cs.uga.edu/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>5694</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://data.cervantesvirtual.com/bvmc-lod/repositories/data</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>5612</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://data.cssz.cz/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>5416</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://lsd.dbcls.jp/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>5285</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://sparql.glygen.org:8880/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>5249</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://dati.camera.it/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>5083</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://webenemasuno.linkeddata.es/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>5008</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://rpp-opendata.egon.gov.cz/odrpp/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>4871</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://data.persee.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>4860</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://ideal-rdf.dbcls.jp/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>4532</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://genome.microbedb.jp/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>4425</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://data.cervantesvirtual.com/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>4134</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://montana.eagle-i.net/sparqler/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3990</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://msm.eagle-i.net/sparqler/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3869</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://datos.gob.es/virtuoso/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3813</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://agrold.southgreen.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3807</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://lingualibre.org/bigdata/namespace/wdq/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3780</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://eagle-i.itmat.upenn.edu/sparqler/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3690</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://jsu.eagle-i.net/sparqler/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3654</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://id.nlm.nih.gov/mesh/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3585</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://id.nlm.nih.gov/mesh/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3522</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://xn--slovnk-7va.gov.cz/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3488</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://statistics.data.gov.uk/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3195</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://io.datascience-paris-saclay.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3190</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://alma.uni.lu/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3140</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://vocabulary.curriculum.edu.au/PoolParty/sparql/scot</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3096</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://utsa.eagle-i.net/sparqler/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3095</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://linkedwiki.com/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3082</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://ldf.fi/kirjasampo/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3071</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://uccaribe.eagle-i.net/sparqler/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3055</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://data.allie.dbcls.jp/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3037</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://isidore.science/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>3016</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://hawaii.eagle-i.net/sparqler/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2625</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://www.govdata.de/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2613</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://vocab.getty.edu/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2560</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://sparql.archives-ouvertes.fr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2525</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://linkedgeodata.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2455</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://www.orpha.net/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2448</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://linkeddata.finki.ukim.mk/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2435</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://vocabs.ands.org.au/repository/api/sparql/csiro_international-chronostratigraphic-chart_2018</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2432</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://sparql.nibb.ac.jp/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2364</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://bgee.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2310</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://sparql.rhea-db.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2297</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://data.archaeologydataservice.ac.uk/sparql/repositories/archives</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>2228</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://agrovoc.uniroma2.it/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1975</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://zbw.eu/beta/sparql/stw/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1940</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://api.parliament.uk/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1860</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://data.archiveshub.ac.uk/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1806</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://sparql.crssnky.xyz/spql/imas/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1805</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://data.mimo-db.eu/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1799</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://ontology.inrae.fr/ppdo/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1739</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://zbw.eu/beta/sparql/stw/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1473</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://sparql.nextprot.org/</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1471</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://opendata.mfcr.cz/lod/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1463</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://ldf.fi/mufi/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1462</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://alaska.eagle-i.net/sparqler/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1443</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://ontology.inrae.fr/frenchcropusage/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1412</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://ontology.inrae.fr/frenchcropusage/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1412</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://zbw.eu/beta/sparql/econ_corp/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1406</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://ontology.inrae.fr/bsv_test/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1310</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://ontology.inrae.fr/bsv/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1287</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://api.data.muziekweb.nl/datasets/muziekweborganization/Muziekweb/services/Muziekweb/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1260</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://lod.openaire.eu/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1165</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://zbw.eu/beta/sparql/pm20/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1140</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://edan.si.edu/saam/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1133</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://ldf.fi/folklore/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1117</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://zbw.eu/beta/sparql/gnd/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1024</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://hamap.expasy.org/sparql/</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1020</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://ma-graph.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>1009</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://data.nationallibrary.fi/bib/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>920</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://ct-linkdata.aegean.gr/gcam/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>782</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://ontology.inrae.fr/weather/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>770</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://data.epo.org/linked-data/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>738</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://vocabs.ands.org.au/repository/api/sparql/ga_geologic-unit-type_v0-1</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>722</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://colil.dbcls.jp/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>696</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://colil.dbcls.jp/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>696</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://vocab.nerc.ac.uk/sparql/</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>690</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://data.nationallibrary.fi/bib/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>690</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://sparql.orthodb.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>664</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://dbtune.org/jamendo/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>650</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://dbtune.org/bbc/peel/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>625</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://opencitations.net/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>600</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://dbtune.org/magnatune/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>599</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://data.ordnancesurvey.co.uk/datasets/boundary-line/apis/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>532</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://vocabs.ands.org.au/repository/api/sparql/anzsrc-for</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>490</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://lod.kipo.kr/data/classification/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>384</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://hkcan.julac.org/lod/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>320</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://sophox.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>304</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://lod.kipo.kr/data/patent/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>295</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://zbw.eu/beta/sparql/gnd/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>256</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://lod.kipo.kr/data/admin_processes/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>235</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://lod.kipo.kr/data/thesaurus/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>205</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://sparql.orthodb.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>200</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://147.100.179.235:8082/blazegraph/namespace/AnaEE_sites/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>180</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://lod.nl.go.kr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>180</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://www.lotico.com:3030/lotico/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>176</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://data.ordnancesurvey.co.uk/datasets/50k-gazetteer/apis/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>135</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://zbw.eu/beta/sparql/stwv/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>133</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://data.ordnancesurvey.co.uk/datasets/os-linked-data/apis/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>132</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://data.ordnancesurvey.co.uk/datasets/os-linked-data/apis/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>99</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://zbw.eu/beta/sparql/econ_pers/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>95</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://sparql.uniprot.org/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>89</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://lod.nl.go.kr/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>72</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://landregistry.data.gov.uk/landregistry/query</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>60</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://dydra.com/markw/polyadenylation-sites-in-magnaporthe-oryza/sparql</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>24</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>http://www.genome.jp/sparql/linkdb</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>16</literal></binding>
+</result>
+<result>
+<binding name='serv'><uri>https://www.genome.jp/sparql/linkdb</uri></binding>
+<binding name='c'><literal datatype='http://www.w3.org/2001/XMLSchema#integer'>4</literal></binding>
+</result>
+</results>
+</sparql>

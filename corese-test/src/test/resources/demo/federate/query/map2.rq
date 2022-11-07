@@ -1,0 +1,25 @@
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+
+@federation 
+@index <http://prod-dekalog.inria.fr/sparql>
+@limit 500 @timeout 2000
+@log </tmp/tmplog.ttl>
+@trace
+select distinct ?location ?label ?lon ?lat 
+where {
+
+{select  ?location (sample(?l) as ?label)
+    (sample(xsd:decimal(?alon)) as ?lon) (sample(xsd:decimal(?alat)) as ?lat) 
+   
+where {
+   ?location geo:lat ?alat ; geo:long ?alon ; rdfs:label|dc:title ?l
+   filter (str(?alat) != "" && str(?alon) != "")
+   filter (!(?alat=0 && ?alon=0))
+   filter (?alat <= 45)
+} group by ?location
+}
+
+service <http://corese.inria.fr/sparql?mode=link;map> {
+    values (?location ?lon ?lat) {(undef undef undef)}
+}
+}

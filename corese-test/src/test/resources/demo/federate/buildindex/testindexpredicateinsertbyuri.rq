@@ -1,0 +1,33 @@
+#
+# ** Time: 186.0 ; nb result: 305819
+# 136 endpoints property index over 371 endpoints (36%); graph index : 101 endpoints property index
+# 158 endpoints return query results 
+#
+prefix dqv:     <http://www.w3.org/ns/dqv#>
+prefix kgi:     <http://ns.inria.fr/kg/index#>
+prefix void:    <http://rdfs.org/ns/void#>
+prefix dcterms: <http://purl.org/dc/terms/>
+
+@timeout 60000
+
+#insert {?serv void:propertyPartition [void:property ?p ; void:card ?c]  }
+select *
+where {
+
+values ?serv {
+    <http://geosparql.lotico.com/sparql>
+}
+
+bind (uri(concat(?serv, "?mode=loop&limit=10000")) as ?myserv)
+
+service ?myserv {
+    select * where {
+        select ?p (count(*) as ?c) where {
+                ?s ?p ?o
+        }
+        group by ?p
+        order by ?p
+    }  # limit 10000 offset n*10000
+}
+
+}

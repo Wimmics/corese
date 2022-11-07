@@ -1,0 +1,10 @@
+prefix h: <http://www.inria.fr/2015/humans#>
+
+@federate <http://corese.inria.fr/sparql> <http://fr.dbpedia.org/sparql>
+@trace 
+select * where {
+    ?x rdfs:label ?n 
+    ?x owl:sameAs ?t
+    ?s h:name ?n 
+    ?s (h:hasFriend|h:hasChild|h:hasMother) ?f 
+}

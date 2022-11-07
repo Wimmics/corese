@@ -1,0 +1,6 @@
+@trace @federateSuccess 0.5 @federateLength 30
+select * 
+from <index:http://prod-dekalog.inria.fr/sparql>
+where {  
+    ?s skos:prefLabel "arboriculture"@fr ; skos:altLabel ?l ; a skos:Concept
+}

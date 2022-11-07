@@ -1,0 +1,43 @@
+#
+# Time: 1188.808 ; nb result: 795103
+# 170 endpoints property partition 
+#
+prefix dqv:     <http://www.w3.org/ns/dqv#>
+prefix kgi:     <http://ns.inria.fr/kg/index#>
+prefix void:    <http://rdfs.org/ns/void#>
+prefix dcterms: <http://purl.org/dc/terms/>
+
+@timeout 60000
+
+insert {
+  ?serv void:propertyPartition [void:property ?p ; void:card ?c]  
+}
+where {
+
+service <http://prod-dekalog.inria.fr/sparql> {
+    select distinct ?serv  where {
+        graph ?g {
+            ?metadata dcterms:modified ?modif .
+            ?metadata kgi:curated ?s .
+            ?s void:sparqlEndpoint  ?serv
+            #filter not exists {?s void:propertyPartition/void:property ?predicate}
+            #filter regex (str(?serv), ".fr/")
+            filter (?serv != <http://linkedata.uriburner.com/sparql/>)
+        }
+    }
+    order by ?serv
+}
+
+bind (uri(concat(?serv, "?mode=loop&limit=10000")) as ?myserv)
+
+service ?myserv {
+    select * where {
+        select ?p (count(*) as ?c) where {
+                ?s ?p ?o
+        }
+        group by ?p
+        order by ?p
+    }  # limit 10000 offset n*10000
+}
+
+}

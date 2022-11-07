@@ -1,0 +1,26 @@
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+PREFIX dqv: <http://www.w3.org/ns/dqv#>
+PREFIX kgi: <http://ns.inria.fr/kg/index#>
+PREFIX void: <http://rdfs.org/ns/void#>
+SELECT DISTINCT ?endpointUrl (COUNT( DISTINCT ?g) AS ?fail) ?total 
+where {
+service <http://prod-dekalog.inria.fr/sparql> {
+  GRAPH ?g {
+    ?metadata kgi:curated ?data ;
+        dqv:hasQualityMeasurement ?endpointReachabilityMeasurement .
+    ?endpointReachabilityMeasurement dqv:isMeasurementOf <https://raw.githubusercontent.com/Wimmics/dekalog/master/rules/check/reachability.ttl> ;
+        dqv:value "false"^^xsd:boolean .
+    ?data void:sparqlEndpoint ?endpointUrl .
+  }
+  {
+    SELECT DISTINCT ?endpointUrl (COUNT(DISTINCT ?g) AS ?total) {
+      GRAPH ?g {
+        ?metadata kgi:curated ?data .
+        ?data void:sparqlEndpoint ?endpointUrl .
+      }
+    } group by ?endpointUrl
+  }
+  }
+}
+group by ?endpointUrl
+order by desc(?fail)

@@ -7,6 +7,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.query.QueryProcess;
@@ -39,6 +40,7 @@ public class DataManagerJava extends CoreseGraphDataManager {
     private static final String PATH = "path";
     private static final String PARAM = "param";
     private static final String MODE = "mode";
+    private static final String LOAD = "load";
     private static final String LDSCRIPT = "ldscript";
 
     String iterateFunction = NSManager.USER + "iterate";
@@ -51,6 +53,7 @@ public class DataManagerJava extends CoreseGraphDataManager {
     String queryPath;
     private String query;
     private HashMapList<String> map;
+    private List<String> load;
 
     // path of insert where query that creates a graph (from json or xml)
     // or
@@ -95,6 +98,9 @@ public class DataManagerJava extends CoreseGraphDataManager {
         if (map.containsKey(MODE) && map.get(MODE).contains(LDSCRIPT)) {
             setLdscript(true);
         }
+        if (map.containsKey(LOAD)) {
+            setLoad(map.get(LOAD));
+        }
         if (queryPath != null) {
             setQueryPath(queryPath);
             setQuery(null);
@@ -136,7 +142,14 @@ public class DataManagerJava extends CoreseGraphDataManager {
         setGraph(Graph.create());
         setQueryProcess(QueryProcess.create(getGraph()));
         QueryLoad ql = QueryLoad.create();
+        Load ld = Load.create(getGraph());
         try {
+            if (getLoad()!=null) {
+                for (String name : getLoad()) {
+                    logger.info("Load " + name);
+                    ld.parse(name);
+                }
+            }
             // query who creates rdf graph (from json)
             String q;
             if (getQueryPath() != null) {
@@ -276,6 +289,14 @@ public class DataManagerJava extends CoreseGraphDataManager {
 
     public void setLdscript(boolean ldscript) {
         this.ldscript = ldscript;
+    }
+
+    public List<String> getLoad() {
+        return load;
+    }
+
+    public void setLoad(List<String> load) {
+        this.load = load;
     }
 
 }

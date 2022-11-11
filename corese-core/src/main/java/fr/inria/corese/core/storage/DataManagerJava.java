@@ -140,9 +140,11 @@ public class DataManagerJava extends CoreseGraphDataManager {
         logger.info("Mode graph");
         // graph to be created by update query
         setGraph(Graph.create());
-        setQueryProcess(QueryProcess.create(getGraph()));
+        //setQueryProcess(QueryProcess.create(getGraph()));
+        setQueryProcess(QueryProcess.create(this));
         QueryLoad ql = QueryLoad.create();
         Load ld = Load.create(getGraph());
+        ld.setDataManager(this);
         try {
             if (getLoad()!=null) {
                 for (String name : getLoad()) {

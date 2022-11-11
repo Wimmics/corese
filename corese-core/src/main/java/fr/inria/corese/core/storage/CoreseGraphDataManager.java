@@ -90,10 +90,15 @@ public class CoreseGraphDataManager implements DataManager {
     @Override
     public Iterable<Edge> getEdges(
             Node subject, Node predicate, Node object, List<Node> from) {
-        if (isDebug()) {
-            logger.info(String.format("iterate: %s %s %s %s", subject, predicate, object, from));
-        }
+        trace("iterate: %s %s %s %s", subject, predicate, object, from);
         return getGraph().iterate(subject, predicate, object, from);
+    }
+    
+    @Override
+    public void trace(String mes, Object... obj) {
+        if (isDebug()) {
+            logger.info(String.format(mes, obj));
+        }
     }
 
     @Override
@@ -151,6 +156,7 @@ public class CoreseGraphDataManager implements DataManager {
     // @todo: rdf star
     @Override
     public Edge insert(Edge edge) {
+        trace("insert: %s", edge);
         Edge res = getGraph().insertEdgeWithTargetNode(edge);
         return res;
     }

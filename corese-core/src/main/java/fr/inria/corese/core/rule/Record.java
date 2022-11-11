@@ -18,11 +18,11 @@ public class Record  {
     
     HashMap<Node, Integer> map;
 
-    Record(Rule r, int timestamp, int loop, int s) {
+    Record(Rule r, int timestamp, int loop) {
         rule = r;
         this.timestamp = timestamp;
         this.loop = loop;
-        size = s;
+        //size = s;
         map = new HashMap();
     }
     
@@ -30,8 +30,8 @@ public class Record  {
         String str = "[a kg:Index"
                 + " ; kg:rule " + rule.getIndex() 
                 + " ; kg:loop " + loop   
-                + " ; kg:time " + timestamp 
-                + " ; kg:size " + size + " ; \n";
+                + " ; kg:time " + timestamp ;
+               // + " ; kg:size " + size + " ; \n";
         for (Node p : map.keySet()){
             Integer n = map.get(p);
             str += "kg:item [ rdf:predicate " + p + " ; rdf:value " + n + " ] ;\n";

@@ -368,8 +368,10 @@ public class RuleEngine implements Engine, Graphable {
     public void setSpeedUp(boolean b) {
         setOptimize(b);
         setConstructResult(b);
-        setOptTransitive(b);
-        setFunTransitive(b);
+        if (getDataManager()==null) {
+            setOptTransitive(b);
+            setFunTransitive(b);
+        }
         getQueryProcess().setListPath(b);
     }
 
@@ -828,7 +830,7 @@ public class RuleEngine implements Engine, Graphable {
                     getResultWatcher().finish(rule);
                 } else {
                     //nbres = process(rule, mapping, bind, null, loop, -1, nbrule);
-                    nbres = process(rule, mapping, bind, null, loop, timestamp++, nbrule);
+                    nbres = process(rule, mapping, bind, null, loop, isOptimize()?timestamp++:-1, nbrule);
                     nbrule++;
                 }
 
@@ -836,29 +838,31 @@ public class RuleEngine implements Engine, Graphable {
                     stable.record(rule, nbres);
                 }
             }
+            
+            int graphSize = getGraphManager().size(); 
 
             if (isTraceMemory()) {
                 System.out.println("Loop: " + loop);
                 System.out.println("Memory used: " + Tool.getMemoryUsageMegabytes());
-                System.out.println("Grah size: " + getGraphManager().size());
+                System.out.println("Grah size: " + graphSize);
             }
 
             if (trace) {
                 System.out.println("NBrule: " + nbrule);
-                System.out.println("Graph: " + getGraphManager().size());
+                System.out.println("Graph: " + graphSize);
             }
 
             if (isDebug()) {
                 System.out.println("Skip: " + skip);
                 System.out.println("Run: " + nbrule);
-                System.out.println("Graph: " + getGraphManager().size());
+                System.out.println("Graph: " + graphSize);
                 tskip += skip;
                 trun += nbrule;
             }
 
-            if (getGraphManager().size() > size) {
+            if (graphSize > size) {
                 // There are new edges: entailment again
-                size = getGraphManager().size();
+                size = graphSize;
                 loop++;
             } else {
                 go = false;
@@ -1346,7 +1350,7 @@ public class RuleEngine implements Engine, Graphable {
      * Record predicates cardinality in graph
      */
     Record record(Rule r, int timestamp, int loop) {
-        Record itable = new Record(r, timestamp, loop, getGraphManager().size());
+        Record itable = new Record(r, timestamp, loop);
 
         for (Node pred : r.getPredicates()) {
             int size = getGraphManager().size(pred);

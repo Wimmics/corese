@@ -1,14 +1,14 @@
 package fr.inria.corese.core.print;
 
-import fr.inria.corese.kgram.api.core.Edge;
 import java.util.ArrayList;
+import java.util.List;
 
+import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
-import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.kgram.core.Query;
-import java.util.List;
 
 /**
  * SPARQL JSON Result Format for KGRAM Mappings
@@ -158,39 +158,37 @@ public class JSONFormat extends XMLFormat {
         print(String.format("\"%s\": ", getName(var)));
         display(dt);
     }
-    
+
     @Override
     void display(IDatatype dt) {
-        if (dt.isTriple() && dt.getEdge()!=null) {
+        if (dt.isTriple() && dt.getEdge() != null) {
             triple(dt);
-        }
-        else if (dt.isList()) {
+        } else if (dt.isList()) {
             list(dt);
-        }
-        else {
+        } else {
             term(dt);
         }
     }
-    
+
     void triple(IDatatype dt) {
         Edge e = dt.getEdge();
         println("{ \"type\": \"triple\",");
         println("\"value\": {");
-        
+
         print("\"subject\": ");
         display(e.getSubjectValue());
         println(",");
-        
+
         print("\"predicate\": ");
         display(e.getPredicateValue());
         println(",");
-        
+
         print("\"object\": ");
         display(e.getObjectValue());
         println();
         print("}}");
     }
-    
+
     void list(IDatatype list) {
         println("{ \"type\": \"list\",");
         println("\"value\": [");
@@ -202,10 +200,10 @@ public class JSONFormat extends XMLFormat {
             display(dt);
         }
         print("]}");
-    }   
-    
-    void term(IDatatype dt) {    
-        print("{ \"type\": ");        
+    }
+
+    void term(IDatatype dt) {
+        print("{ \"type\": ");
         String str = dt.getLabel();
 
         if (dt.isLiteral()) {
@@ -222,8 +220,7 @@ public class JSONFormat extends XMLFormat {
                 printf("\"typed-literal\", \"datatype\": \"%s\"",
                         dt.getDatatype().getLabel());
             }
-        }         
-        else if (dt.isBlank()) {
+        } else if (dt.isBlank()) {
             print("\"bnode\"");
             if (str.startsWith(BLANK)) {
                 str = str.substring(BLANK.length());
@@ -293,5 +290,52 @@ public class JSONFormat extends XMLFormat {
             }
         }
         return retval.toString();
+    }
+
+    @Override
+    void error() {
+        boolean b1 = ast != null && ast.getErrors() != null;
+        boolean b2 = query != null && query.getErrors() != null;
+        boolean b3 = query != null && query.getInfo() != null;
+
+        String errorString = "";
+
+        if (b1 || b2 || b3) {
+
+            if (ast.getText() != null) {
+                errorString += protect(ast.getText());
+            }
+
+            if (b1) {
+                for (String mes : ast.getErrors()) {
+                    errorString += protect(mes);
+                }
+            }
+            if (b2) {
+                for (String mes : query.getErrors()) {
+                    errorString += protect(mes);
+                }
+            }
+            if (b3) {
+                for (String mes : query.getInfo()) {
+                    errorString += protect(mes);
+                }
+            }
+
+            println("\"error\" : \"" + escape(errorString) + "\",");
+        }
+    }
+
+    private String escape(String raw) {
+        String escaped = raw;
+        escaped = escaped.replace("\\", "\\\\");
+        escaped = escaped.replace("\"", "\\\"");
+        escaped = escaped.replace("\b", "\\b");
+        escaped = escaped.replace("\f", "\\f");
+        escaped = escaped.replace("\n", "\\n");
+        escaped = escaped.replace("\r", "\\r");
+        escaped = escaped.replace("\t", "\\t");
+        // TODO: escape other non-printing characters using uXXXX notation
+        return escaped;
     }
 }

@@ -165,5 +165,11 @@ public interface DataManager extends DataManagerRead, DataManagerUpdate {
     default boolean isInWriteTransaction() {
         return false;
     };
+    
+    default void startRuleEngine() {
+    }
+    
+    default void endRuleEngine() {
+    }
 
 }

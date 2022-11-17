@@ -35,12 +35,14 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
 
     @Override
     public void startRuleEngine() {
+        getDataManager().startRuleEngine();
         getDataManager().startWriteTransaction();
     }
 
     @Override
     public void endRuleEngine() {
         getDataManager().endWriteTransaction();
+        getDataManager().endRuleEngine();
     }
 
     @Override

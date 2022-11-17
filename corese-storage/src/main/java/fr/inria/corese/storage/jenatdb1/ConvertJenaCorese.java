@@ -9,9 +9,11 @@ import org.apache.jena.sparql.core.Quad;
 
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.edge.EdgeImpl;
+import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.storage.jenatdb1.convertDatatype.CoreseDatatypeToJenaRdfNode;
 import fr.inria.corese.storage.jenatdb1.convertDatatype.JenaRdfNodeToCoreseDatatype;
@@ -116,7 +118,8 @@ public class ConvertJenaCorese {
         org.apache.jena.graph.Node subject_jena = ConvertJenaCorese.coreseNodeToJenaNode(edge.getNode(0));
         org.apache.jena.graph.Node predicate_jena = ConvertJenaCorese.coreseNodeToJenaNode(edge.getEdgeNode());
         org.apache.jena.graph.Node object_jena = ConvertJenaCorese.coreseNodeToJenaNode(edge.getNode(1));
-        org.apache.jena.graph.Node context_jena = ConvertJenaCorese.coreseContextToJenaContext(edge.getGraph());
+        //org.apache.jena.graph.Node context_jena = ConvertJenaCorese.coreseContextToJenaContext(edge.getGraph());
+        org.apache.jena.graph.Node context_jena = context(edge);
 
         return new Quad(context_jena, subject_jena, predicate_jena, object_jena);
     }
@@ -137,7 +140,9 @@ public class ConvertJenaCorese {
         Node object_corese = ConvertJenaCorese.JenaNodeToCoreseNode(quad.getObject());
         Node context_corese = ConvertJenaCorese.jenaContextToCoreseContext(quad.getGraph());
 
-        return EdgeImpl.create(context_corese, subject_corese, predicate_corese, object_corese);
+        Edge edge = EdgeImpl.create(context_corese, subject_corese, predicate_corese, object_corese);
+        tune(edge);
+        return edge;
     }
 
     /**
@@ -150,7 +155,6 @@ public class ConvertJenaCorese {
         Node subject_corese = ConvertJenaCorese.JenaNodeToCoreseNode(triple.getSubject());
         Node predicate_corese = ConvertJenaCorese.JenaNodeToCoreseNode(triple.getPredicate());
         Node object_corese = ConvertJenaCorese.JenaNodeToCoreseNode(triple.getObject());
-
         return EdgeImpl.create(corese_default_context, subject_corese, predicate_corese, object_corese);
     }
 
@@ -167,6 +171,26 @@ public class ConvertJenaCorese {
             corese_edge_list.add(ConvertJenaCorese.quadToEdge(jena_quad));
         }
         return corese_edge_list;
+    }
+    
+    private static final String RULE_NAME = Entailment.RULE+"_";
+    
+    // insert edge with index i with graph kg:rule_i
+    static org.apache.jena.graph.Node context(Edge edge) {
+        if (edge.getEdgeIndex()<0) {
+            return ConvertJenaCorese.coreseContextToJenaContext(edge.getGraph());
+        }
+        String name = RULE_NAME+edge.getEdgeIndex();
+        IDatatype dt = DatatypeMap.newResource(name);
+        return ConvertJenaCorese.coreseContextToJenaContext(dt);
+    }
+       
+    // iterate edge kg:rule_i set edge index(i)
+    static void tune(Edge edge) {
+        if (edge.getGraph().getLabel().startsWith(RULE_NAME)) {
+            int i = Integer.valueOf(edge.getGraph().getLabel().substring(RULE_NAME.length()));
+            edge.setEdgeIndex(i);
+        }
     }
 
 }

@@ -37,6 +37,8 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     private Dataset jena_dataset;
     private Graph default_graph;
     private String storage_path;
+    // when true, iterate edge as quad to get named graph kg:rule_i to get edge index i 
+    private boolean ruleDataManager = false;
 
     // Each thread has its own counter for read transaction there may be several
     // start/end read transaction in each thread
@@ -95,8 +97,24 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
     @Override
     public int graphSize() {
-        return (int) this.jena_dataset.asDatasetGraph().stream().count();
+        int size = 0;
+
+        // Count the number of triples in the default Jena model
+        size += this.jena_dataset.getDefaultModel().size();
+
+        // Count the number of triplets in the named Jena models
+        Iterator<String> modelNameList = this.jena_dataset.listNames();
+        while (modelNameList.hasNext()) {
+            String modelName = modelNameList.next();
+            size += this.jena_dataset.getNamedModel(modelName).size();
+        }
+
+        return size;
     }
+    
+//    public int graphSize() {
+//        return (int) this.jena_dataset.asDatasetGraph().stream().count();
+//    }
 
     @Override
     public int countEdges(Node predicate) {
@@ -118,7 +136,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
 
             // if context == 1, no need for union. (in order not to lose information of
             // context)
-            if (clear_contexts.size() == 1) {
+            if (clear_contexts.size() == 1 || isRuleDataManager()) {
                 return () -> this.chooseQuadDuplicatesWrite(subject, predicate, object, clear_contexts);
             } else {
                 return () -> this.chooseTripleWithoutDuplicatesReadOnly(subject, predicate, object, clear_contexts);
@@ -551,5 +569,13 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     @Override
     public void setMetadataManager(MetadataManager metaDataManager) {
         this.metadataManager = metaDataManager;
+    }
+
+    public boolean isRuleDataManager() {
+        return ruleDataManager;
+    }
+
+    public void setRuleDataManager(boolean optimize) {
+        this.ruleDataManager = optimize;
     }
 }

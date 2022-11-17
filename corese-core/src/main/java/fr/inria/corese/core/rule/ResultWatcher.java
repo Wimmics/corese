@@ -58,7 +58,9 @@ public class ResultWatcher implements ResultListener, GraphListener {
     ArrayList<Edge> insertEdgeList;
     private boolean trace;
     private boolean performSelectNewEdge;
-
+    boolean localSelectNewEdge = false;
+    private boolean optimizeRuleDataManager = false;
+    
     ResultWatcher(Graph g) {
         graph = g;
         insertEdgeList = new ArrayList<>();
@@ -90,6 +92,7 @@ public class ResultWatcher implements ResultListener, GraphListener {
         selectNewEdge = false;
         start = true;
         performSelectNewEdge = false;
+        localSelectNewEdge = false;
         init(r);
     }
     
@@ -254,18 +257,30 @@ public class ResultWatcher implements ResultListener, GraphListener {
                 break;
         }
 
-        if (n == 0 && exp.type() == Exp.AND) {
+        if (n == 0 && exp.type() == Exp.AND) { // && ! isOptimizeRuleDataManager()) {
 
             if (getRule().isGTransitive() && getRule().getQuery().getEdgeList() != null) {
                 // rule exp = where { ?p a owl:TransitiveProperty . ?x ?p ?y . ?y ?p ?z }
                 // there is a list of new candidates for ?x ?p ?y
                 // sparql skip first query edge: skip exp.get(0)
                 exp = Exp.create(Exp.AND, exp.get(1), exp.get(2));
-            } else if (performSelectNewEdge && getGraph().hasRuleEdgeList()) {
-                // return an expression with 
-                // focus on new edges in a specific graph Index sorted by edge timestamp
+            } 
+            else if (performSelectNewEdge) {
                 performSelectNewEdge = false;
-                exp = union(exp);
+                if (isOptimizeRuleDataManager()) {
+//                    exp = union(exp);
+//                    RuleEngine.logger.info("Watcher local select new edge: "+exp);
+//                    // local listen take care of it
+//                    localSelectNewEdge = true;
+                }
+                else 
+                    if (getGraph().hasRuleEdgeList()) {
+                    // return an expression with 
+                    // focus on new edges (in a specific graph Index sorted by edge timestamp)
+                    exp = union(exp);
+                    // ProducerImpl take care of it
+                    localSelectNewEdge = false;
+                }
             }
         }
 
@@ -276,12 +291,15 @@ public class ResultWatcher implements ResultListener, GraphListener {
      * sparql check whether targetEdge is new
      */
     @Override
-    public boolean listen(Edge queryEdge, Edge targetEdge) {
+    public boolean listen(Exp exp, Edge queryEdge, Edge targetEdge) {
         if (selectNewEdge
                 && queryEdge.getEdgeIndex() == queryNewEdgeIndex
                 && targetEdge.getEdgeIndex() < timestamp) {
             return false;
         }
+//        else if (localSelectNewEdge && exp.getLevel()!=-1) {
+//            return targetEdge.getEdgeIndex() >= exp.getLevel();
+//        }
         return true;
     }
     
@@ -462,6 +480,14 @@ public class ResultWatcher implements ResultListener, GraphListener {
 
     public Construct getConstruct() {
         return construct;
+    }
+
+    public boolean isOptimizeRuleDataManager() {
+        return optimizeRuleDataManager;
+    }
+
+    public void setOptimizeRuleDataManager(boolean optimizeRuleDataManager) {
+        this.optimizeRuleDataManager = optimizeRuleDataManager;
     }
 
 }

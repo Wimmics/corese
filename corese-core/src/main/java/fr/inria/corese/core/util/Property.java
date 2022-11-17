@@ -230,6 +230,7 @@ public class Property {
 
         RULE_TRANSITIVE_FUNCTION,
         RULE_TRANSITIVE_OPTIMIZE,
+        RULE_DATAMANAGER_OPTIMIZE,
 
         FUNCTION_PARAMETER_MAX,
 
@@ -463,6 +464,10 @@ public class Property {
 
             case OWL_CLEAN:
                 RuleEngine.OWL_CLEAN = b;
+                break;
+                
+            case RULE_DATAMANAGER_OPTIMIZE:
+                RuleEngine.RULE_DATAMANAGER_OPTIMIZE = b;
                 break;
 
             case LOAD_WITH_PARAMETER:

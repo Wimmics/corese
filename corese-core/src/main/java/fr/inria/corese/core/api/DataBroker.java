@@ -1,5 +1,6 @@
 package fr.inria.corese.core.api;
 
+import fr.inria.corese.core.Graph;
 import java.util.List;
 
 import fr.inria.corese.core.NodeImpl;
@@ -25,6 +26,9 @@ public interface DataBroker {
     }
 
     default int graphSize(Node pred) {
+        if (Graph.isTopRelation(pred)) {
+            return graphSize();
+        }
         return this.getDataManager().countEdges(pred);
     }
 

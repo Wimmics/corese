@@ -25,7 +25,7 @@ public class MetadataManager {
 
     private DataManager dataManager;
     private Distance distance;
-    private boolean debug = true;
+    private boolean debug = false;
 
     public MetadataManager() {
     }

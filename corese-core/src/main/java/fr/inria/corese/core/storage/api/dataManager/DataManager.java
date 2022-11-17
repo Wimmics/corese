@@ -71,6 +71,14 @@ public interface DataManager extends DataManagerRead, DataManagerUpdate {
     // service store parameter
     default void init(HashMapList<String> map) {
     }
+    
+    // manage rule edge index i as named graph kg:rule_i
+    default void setRuleDataManager(boolean b) {    
+    }
+    
+    default boolean isRuleDataManager() {
+        return false;
+    }
 
     /****************
      * Transactions *

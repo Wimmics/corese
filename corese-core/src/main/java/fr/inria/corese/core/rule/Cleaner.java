@@ -73,16 +73,28 @@ public class Cleaner {
         // because query() have read lock
         // it works because init() is also synchronized
         exec.setSynchronized(true);
+        if (getDataManager()!=null){
+            exec.setProcessTransaction(false);
+        }
         for (String q : lq) {
+            //RuleEngine.logger.info("clean: " + q);
             String qq = (resource) ? ql.getResource(data + q) : ql.readWE(q);
-            Mappings map = exec.query(qq, createMapping(getVisitor()));
-            if (Property.booleanValue(LOG_RULE_CLEAN) && map.size() > 0) {
+            // RuleEngine.logger.info("clean: " + qq);
+             try {
+           Mappings map = exec.query(qq, createMapping(getVisitor()));
+             
+             if (Property.booleanValue(LOG_RULE_CLEAN) && map.size() > 0) {
                 RuleEngine.logger.info(
                         String.format("Clean: %s solutions\n%s", map.size(), qq));
             }
             if (isDebug()) {
                 RuleEngine.logger.info(q + " nb res: " + map.size());
             }
+            }
+             catch(Exception e){
+                 RuleEngine.logger.equals(e);
+                 throw e;
+             }
         }
         Date d2 = new Date();
         System.out.println("Clean: " + ((d2.getTime() - d1.getTime()) / 1000.0));

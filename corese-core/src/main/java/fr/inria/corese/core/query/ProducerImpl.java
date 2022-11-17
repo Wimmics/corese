@@ -230,7 +230,7 @@ public class ProducerImpl
         }
 
         Query q = env.getQuery();
-        if (q.isRule()) {
+        if (q.isRule()) { // && ! hasDataManager()) {
             Iterable<Edge> it = getRuleEdgeList(q, edge, env, namedGraphURI, from, predicate);
             if (it != null) {
                 return it;
@@ -317,7 +317,11 @@ public class ProducerImpl
                 && edge.getEdgeIndex() == q.getEdgeIndex()) {
             // transitive rule (see RuleEngine)
             // there is a list of candidate edges
+            //logger.info("use query edge list: "+ q.getEdgeList().size() + " " +edge);
             return q.getEdgeList();
+        } else if (hasDataManager()) {
+            // skip
+            //logger.info("datamanager skip: " + edge);
         } else {
             Exp exp = env.getExp();
             if (exp != null && exp.getEdge() == edge && exp.getLevel() != -1) {

@@ -153,6 +153,13 @@ public class EdgeFactory {
                 def++;
                 return defaultCreate(source, subject, predicate, value);
             default:
+                // use case: rule with storage data manager
+                // source = kg:rule but index = -1 (data manager node, not in corese graph)
+                // Construct insert rule edge via storage data manager
+                // edge require explicit graph and index
+                if (source.getIndex()==-1 && source.getLabel().startsWith(Entailment.RULE)){
+                   return new EdgeRuleGraph(source, predicate, subject, value);
+                }
                 std++;
                 return createQuad(source, subject, predicate, value);
         }

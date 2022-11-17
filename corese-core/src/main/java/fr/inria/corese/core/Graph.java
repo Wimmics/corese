@@ -2538,11 +2538,11 @@ public class Graph extends GraphObject implements
         return  n.getValue();
     }
 
-    boolean isTopRelation(Node predicate) {
+    public static boolean isTopRelation(Node predicate) {
         return isTopRelation(predicate.getLabel());
     }
 
-    boolean isTopRelation(String predicate) {
+    static boolean isTopRelation(String predicate) {
         return predicate.equals(TOPREL);
     }
 

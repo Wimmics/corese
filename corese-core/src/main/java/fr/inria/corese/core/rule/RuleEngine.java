@@ -117,7 +117,7 @@ public class RuleEngine implements Engine, Graphable {
     private boolean optimizable = true;
     private boolean debug = false;
     boolean trace = false;
-    private boolean simpleTrace = true;
+    private boolean simpleTrace = false;
     private boolean test = false;
     // int loop = 0;
     Profile profile = STDRL;

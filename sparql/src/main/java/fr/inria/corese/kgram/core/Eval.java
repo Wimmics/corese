@@ -1871,6 +1871,7 @@ public class Eval implements ExpType, Plugin {
         Edge qEdge = exp.getEdge();
         Node graph = null;
         Memory env = getMemory();
+        // used by RuleEngine ResultWatcher ProducerImpl
         env.setExp(exp);
         Query qq = getQuery();
         // for default graph triple pattern, consider select from if any
@@ -1928,14 +1929,14 @@ public class Eval implements ExpType, Plugin {
 
             Edge edge = it.next();
             if (edge != null) {
-                nbEdge++;
-                if (hasListener && !listener.listen(qEdge, edge)) {
+               nbEdge++;
+                if (hasListener && !listener.listen(exp, qEdge, edge)) {
                     continue;
                 }
 
                 graph = edge.getGraph();
                 boolean bmatch = match(qEdge, edge, graphNode, graph, env);
-                trace ("I: %s Q: %s E: %s match: %s", qEdge.getEdgeIndex(), qEdge, edge, bmatch);
+                //trace ("I: %s Q: %s E: %s match: %s", qEdge.getEdgeIndex(), qEdge, edge, bmatch);
 
                 if (matchNBNode) {
                     bmatch &= (qEdge.nbNode() == edge.nbNode());

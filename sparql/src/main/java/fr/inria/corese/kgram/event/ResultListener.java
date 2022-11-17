@@ -34,7 +34,7 @@ public interface ResultListener {
 	
 	boolean leave(Edge ent, Regex exp, int size);
         
-        boolean listen(Edge edge, Edge ent);
+        boolean listen(Exp exp, Edge query, Edge target);
         
         Exp listen(Exp exp, int n);
 	

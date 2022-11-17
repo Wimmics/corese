@@ -23,11 +23,14 @@ import org.apache.jena.tdb.TDBFactory;
 import com.google.common.base.Function;
 import com.google.common.collect.Iterators;
 import com.google.common.collect.Lists;
+import fr.inria.corese.core.logic.Entailment;
 
 import fr.inria.corese.core.producer.MetadataManager;
 import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
+import static fr.inria.corese.storage.jenatdb1.ConvertJenaCorese.RULE_NAME;
 
 /**
  * Implements the Corese Datamanger interface for Jena-TDB.
@@ -570,11 +573,46 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     public void setMetadataManager(MetadataManager metaDataManager) {
         this.metadataManager = metaDataManager;
     }
+ 
+    @Override
+    public void startRuleEngine() {
+    }
 
+    @Override
+    public void endRuleEngine() {
+        if (isRuleDataManager()) {
+            cleanNamedGraph();
+        }
+    }
+    
+    // move graph kg:rule_i into kg:rule
+    void cleanNamedGraph() {
+        startWriteTransaction();
+        Node target = DatatypeMap.newResource(Entailment.RULE);
+        for (Node node : contextList()) {
+            if (node.getLabel().startsWith(RULE_NAME)) {
+                addGraph(node, target, true);
+                unDeclareContext(node);
+            }
+        }
+        endWriteTransaction();
+    }
+    
+    List<Node> contextList() {
+        ArrayList<Node> nodeList = new ArrayList<>();
+        for (Node node : contexts()) {
+            nodeList.add(node);
+        }
+        return nodeList;
+    }
+
+    
+    @Override
     public boolean isRuleDataManager() {
         return ruleDataManager;
     }
 
+    @Override
     public void setRuleDataManager(boolean optimize) {
         this.ruleDataManager = optimize;
     }

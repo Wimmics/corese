@@ -173,7 +173,7 @@ public class ConvertJenaCorese {
         return corese_edge_list;
     }
     
-    private static final String RULE_NAME = Entailment.RULE+"_";
+    static final String RULE_NAME = Entailment.RULE+"_";
     
     // insert edge with index i with graph kg:rule_i
     static org.apache.jena.graph.Node context(Edge edge) {

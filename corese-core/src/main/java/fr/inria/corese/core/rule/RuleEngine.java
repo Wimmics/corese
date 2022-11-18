@@ -26,6 +26,7 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.QueryLoad;
 import fr.inria.corese.core.logic.Closure;
+import fr.inria.corese.core.logic.ClosureDataManager;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.query.Construct;
 import fr.inria.corese.core.query.QueryEngine;
@@ -39,6 +40,7 @@ import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.query.Graphable;
 import fr.inria.corese.kgram.api.query.ProcessVisitor;
+import fr.inria.corese.kgram.core.Distinct;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
@@ -117,7 +119,7 @@ public class RuleEngine implements Engine, Graphable {
     private boolean optimizable = true;
     private boolean debug = false;
     boolean trace = false;
-    private boolean simpleTrace = false;
+    private boolean simpleTrace = true;
     private boolean test = false;
     // int loop = 0;
     Profile profile = STDRL;
@@ -373,6 +375,7 @@ public class RuleEngine implements Engine, Graphable {
         setOptimize(b);
         setConstructResult(b);
         setOptTransitive(b);
+        //setFunTransitive(b);
         if (getDataManager()==null) {
             //setOptTransitive(b);
             setFunTransitive(b);
@@ -816,7 +819,7 @@ public class RuleEngine implements Engine, Graphable {
                 if (isDebug()) {
                     rule.getQuery().setDebug(true);
                 }
-                if (isSimpleTrace()) logger.info("rule: " +rule.getName());
+                if (isSimpleTrace()) logger.info("rule: " +rule.getName() + " " + loop + " " +  timestamp);
                 int nbres = 0;
 
                 if (isOptimize() && rule.isOptimize()) {
@@ -1060,7 +1063,7 @@ public class RuleEngine implements Engine, Graphable {
 
     Closure getClosure(Rule r) {
         if (r.getClosure() == null) {
-            Closure c = new Closure(getGraphStore(), getResultWatcher().getDistinct());
+            Closure c = createClosure(getGraphStore(), getResultWatcher().getDistinct());
             c.setTrace(trace);
             r.setClosure(c);
             c.setQuery(r.getQuery());
@@ -1069,6 +1072,13 @@ public class RuleEngine implements Engine, Graphable {
             r.setClosure(true);
         }
         return r.getClosure();
+    }
+    
+    Closure createClosure(Graph g, Distinct d) {
+        if (hasDataManager()) {
+            return new ClosureDataManager(g, getDataManager(), d);
+        }
+        return new Closure(g, d);
     }
 
     // process rule

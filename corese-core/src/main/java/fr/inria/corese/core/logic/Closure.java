@@ -4,8 +4,10 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Distinct;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import java.util.ArrayList;
 import fr.inria.corese.kgram.api.core.Edge;
+import java.util.List;
 
 /**
  * Transitive Closure of one property, e.g. rdfs:subClassOf
@@ -14,12 +16,13 @@ import fr.inria.corese.kgram.api.core.Edge;
  *
  */
 public class Closure {
-static int count = 0;
+
+    static int count = 0;
 
     Graph graph;
-    Distinct dist;
+    Distinct distinct;
     Query query;
-    Node pred1, pred2, src;
+    Node predicate1, predicate2, graphName;
     boolean[][] connect;
     boolean isDistinct = true;
     private boolean isConnect = false;
@@ -28,45 +31,43 @@ static int count = 0;
 
     public Closure(Graph g, Distinct d) {
         graph = g;
-        dist = d;
+        distinct = d;
         init();
     }
 
     void init() {
     }
-    
-   
+
     /**
-     * if isConnect() generate a connection matrix for  this predicate
-     * Transitive edge will not be created in kg:rule 
-     * for nodes that are already connected 
+     * if isConnect() generate a connection matrix for this predicate Transitive
+     * edge will not be created in kg:rule for nodes that are already connected
      */
-    
-        public void init(Node p) {
-            init(p, p);
-        }
-        
+    public void init(Node p) {
+        init(p, p);
+    }
+
     public void init(Node p1, Node p2) {
         // named graph where entailments are stored
-        src = graph.addRuleGraphNode();
+        graphName = ruleGraphNode();
         // predicate of transitive property
-        pred1 = graph.getPropertyNode(p1); 
-        pred2 = graph.getPropertyNode(p2); 
+        predicate1 = propertyNode(p1);
+        predicate2 = propertyNode(p2);
+
         if (isConnect()) {
-            int i = graph.getNodeIndex();            
+            int i = graph.getNodeIndex();
             try {
                 connect = new boolean[i][];
-                for (Edge ent : graph.getEdges(pred1)) {
+                for (Edge ent : graph.getEdges(predicate1)) {
                     connect(ent.getNode(0), ent.getNode(1));
                 }
             } catch (OutOfMemoryError E) {
                 setConnect(false);
-                System.out.println("Skip Cache Out Of Memory:  " + pred1);
+                System.out.println("Skip Cache Out Of Memory:  " + predicate1);
             }
         }
     }
-    
-    public void setQuery(Query q){
+
+    public void setQuery(Query q) {
         query = q;
     }
 
@@ -88,7 +89,7 @@ static int count = 0;
                 return connect[i1][n2.getIndex()];
             }
         }
-        return graph.exist(p, n1, n2);
+        return exist(p, n1, n2);
     }
 
     public void connect(Node n1, Node n2) {
@@ -101,8 +102,8 @@ static int count = 0;
                     } catch (OutOfMemoryError E) {
                         if (isMessage) {
                             isMessage = false;
-                            System.out.println("Skip Cache Out Of Memory:  " + pred1);
-                        }        
+                            System.out.println("Skip Cache Out Of Memory:  " + predicate1);
+                        }
                         return;
                     }
                 }
@@ -121,40 +122,40 @@ static int count = 0;
      * current loop index. TODO: Producer vs Graph
      */
     public void closure(int loop, int loopIndex, int prevIndex) {
-        if (pred1 == null || pred2 == null){
+        if (predicate1 == null || predicate2 == null) {
             return;
         }
-        boolean same = pred1 == pred2;
+        //boolean same = pred1 == pred2;
+        boolean same = predicate1.equals(predicate2);
         boolean go = true, isFirst = loop == 0;
         int n = 0;
 
-        ArrayList<Edge> lnew = new ArrayList<>(),
-                ltmp = new ArrayList<>();
-        if (isTrace){
-            System.out.println("Cl: 0 "  + graph.size(pred1));
+        ArrayList<Edge> edgeListNew = new ArrayList<>(),
+                edgeListTemp = new ArrayList<>();
+        if (isTrace) {
+            System.out.println("Cl: 0 " + graph.size(predicate1));
         }
         while (go) {
 
-            Iterable<Edge> it1 = lnew;
+            Iterable<Edge> it1 = edgeListNew;
             if (n == 0) {
-                it1 = graph.getEdges(pred1);
-            }
-            else if (isTrace){
-                System.out.println("Cl: "  +n + " " + + lnew.size());               
+                it1 = getEdges(predicate1);
+            } else if (isTrace) {
+                System.out.println("Cl: " + n + " " + +edgeListNew.size());
             }
             n++;
 
             for (Edge e1 : it1) {
                 // after step 0, consider only edges created at previous step
                 Node node = e1.getNode(1);
-                Node n1   = e1.getNode(0);
+                Node n1 = e1.getNode(0);
 
-                if (same && n1 == node) {
+                if (same && n1.equals(node)) {
                     continue;
                 }
                 boolean ok1 = isFirst || e1.getEdgeIndex() >= prevIndex;
 
-               Iterable<Edge> it2 = graph.getEdges(pred2, node, 0);
+                Iterable<Edge> it2 = getEdges(predicate2, node, 0);
 
                 if (it2 != null) {
 
@@ -169,43 +170,43 @@ static int count = 0;
                             }
 
                             Node n2 = e2.getNode(1);
-                            if (e2.getNode(0) == n2) {
+                            if (e2.getNode(0).equals(n2)) {
                                 continue;
                             }
 
-                            if (!isConnected(pred1, n1, n2) && isDistinct(n1, n2)) {
-                                Edge ent = create(pred1, n1, n2);
+                            if (!isConnected(predicate1, n1, n2) && isDistinct(n1, n2)) {
+                                Edge ent = create(predicate1, n1, n2);
                                 ent.setEdgeIndex(loopIndex);
-                                ltmp.add(ent);
+                                edgeListTemp.add(ent);
                                 connect(n1, n2);
                             }
                         }
                     }
                 }
             }
-            Node p = pred1;
-            if (p.getLabel().equals(Graph.TOPREL)){
+            Node p = predicate1;
+            if (Graph.isTopRelation(p)) {
                 p = null;
             }
-            if (isTrace){
-                System.out.println("Cl: new " + ltmp.size());
+            if (isTrace) {
+                System.out.println("Cl: new " + edgeListTemp.size());
             }
-           graph.addOpt(p, ltmp);
-           lnew = ltmp;
-           ltmp = new ArrayList<Edge>();
-           go = ! lnew.isEmpty();
+            insert(p, edgeListTemp);
+            edgeListNew = edgeListTemp;
+            edgeListTemp = new ArrayList<>();
+            go = !edgeListNew.isEmpty();
         }
     }
 
     boolean isDistinct(Node n1, Node n2) {
         if (isDistinct) {
-            return dist.isDistinct(n1, n2);
+            return distinct.isDistinct(n1, n2);
         }
         return true;
     }
 
     Edge create(Node p, Node n1, Node n2) {
-        Edge ent = graph.create(src, n1, p, n2);
+        Edge ent = graph.create(graphName, n1, p, n2);
         ent.setProvenance(query.getProvenance());
         return ent;
     }
@@ -237,4 +238,29 @@ static int count = 0;
     public void setTrace(boolean isTrace) {
         this.isTrace = isTrace;
     }
+
+    Node ruleGraphNode() {
+        return graph.addRuleGraphNode();
+    }
+
+    Node propertyNode(Node p) {
+        return graph.getPropertyNode(p);
+    }
+
+    Iterable<Edge> getEdges(Node p) {
+        return graph.getEdges(p);
+    }
+
+    Iterable<Edge> getEdges(Node p, Node n, int i) {
+        return graph.getEdges(p, n, i);
+    }
+
+    void insert(Node p, List<Edge> edgeList) {
+        graph.addOpt(p, edgeList);
+    }
+
+    boolean exist(Node p, Node n1, Node n2) {
+        return graph.exist(p, n1, n2);
+    }
+
 }

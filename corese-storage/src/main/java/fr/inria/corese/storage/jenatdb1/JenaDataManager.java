@@ -144,7 +144,11 @@ public class JenaDataManager implements DataManager, AutoCloseable {
             } else {
                 return () -> this.chooseTripleWithoutDuplicatesReadOnly(subject, predicate, object, clear_contexts);
             }
-        } else {
+        } 
+        else if (isRuleDataManager()) {
+            return () -> this.chooseQuadDuplicatesWrite(subject, predicate, object, contexts);
+        }
+        else {
             return () -> this.chooseTripleWithoutDuplicatesReadOnly(subject, predicate, object, contexts);
         }
     }

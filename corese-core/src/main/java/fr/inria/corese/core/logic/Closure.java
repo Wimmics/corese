@@ -4,7 +4,8 @@ import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Distinct;
 import fr.inria.corese.kgram.core.Query;
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.storage.api.dataManager.DataManager;
+import fr.inria.corese.core.util.Property;
+import static fr.inria.corese.core.util.Property.Value.RULE_DATAMANAGER_FILTER_INDEX;
 import java.util.ArrayList;
 import fr.inria.corese.kgram.api.core.Edge;
 import java.util.List;
@@ -28,6 +29,8 @@ public class Closure {
     private boolean isConnect = false;
     boolean isMessage = true;
     private boolean isTrace = false;
+    // send index to data manager edge iterator 
+    private boolean filterEdgeIndex = true;
 
     public Closure(Graph g, Distinct d) {
         graph = g;
@@ -52,7 +55,9 @@ public class Closure {
         // predicate of transitive property
         predicate1 = propertyNode(p1);
         predicate2 = propertyNode(p2);
-
+        if (Property.hasValue(RULE_DATAMANAGER_FILTER_INDEX, false)){
+            setFilterEdgeIndex(false);
+        }
         if (isConnect()) {
             int i = graph.getNodeIndex();
             try {
@@ -129,11 +134,12 @@ public class Closure {
         boolean same = predicate1.equals(predicate2);
         boolean go = true, isFirst = loop == 0;
         int n = 0;
-
+       
         ArrayList<Edge> edgeListNew = new ArrayList<>(),
                 edgeListTemp = new ArrayList<>();
+        
         if (isTrace) {
-            System.out.println("Cl: 0 " + graph.size(predicate1));
+            System.out.println("Closure: 0 " + graph.size(predicate1));
         }
         while (go) {
 
@@ -141,7 +147,7 @@ public class Closure {
             if (n == 0) {
                 it1 = getEdges(predicate1);
             } else if (isTrace) {
-                System.out.println("Cl: " + n + " " + +edgeListNew.size());
+                System.out.println("Closure: " + n + " " + +edgeListNew.size());
             }
             n++;
 
@@ -155,7 +161,9 @@ public class Closure {
                 }
                 boolean ok1 = isFirst || e1.getEdgeIndex() >= prevIndex;
 
-                Iterable<Edge> it2 = getEdges(predicate2, node, 0);
+                Iterable<Edge> it2 = 
+                        ok1 ? getEdges(predicate2, node, 0) :
+                        getEdges(predicate2, node, 0, prevIndex);
 
                 if (it2 != null) {
 
@@ -189,7 +197,7 @@ public class Closure {
                 p = null;
             }
             if (isTrace) {
-                System.out.println("Cl: new " + edgeListTemp.size());
+                System.out.println("Closure: new " + edgeListTemp.size());
             }
             insert(p, edgeListTemp);
             edgeListNew = edgeListTemp;
@@ -254,13 +262,25 @@ public class Closure {
     Iterable<Edge> getEdges(Node p, Node n, int i) {
         return graph.getEdges(p, n, i);
     }
-
+    
+    Iterable<Edge> getEdges(Node p, Node n, int i, int index) {
+        return graph.getEdges(p, n, i);
+    }
+ 
     void insert(Node p, List<Edge> edgeList) {
         graph.addOpt(p, edgeList);
     }
 
     boolean exist(Node p, Node n1, Node n2) {
         return graph.exist(p, n1, n2);
+    }
+
+    public boolean isFilterEdgeIndex() {
+        return filterEdgeIndex;
+    }
+
+    public void setFilterEdgeIndex(boolean filterEdgeIndex) {
+        this.filterEdgeIndex = filterEdgeIndex;
     }
 
 }

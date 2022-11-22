@@ -3,6 +3,7 @@ package fr.inria.corese.core.logic;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.ExprType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Distinct;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
@@ -44,6 +45,15 @@ public class ClosureDataManager extends Closure {
     @Override
     Iterable<Edge> getEdges(Node p, Node n, int i) {
         return getDataManager().getEdges(n, p, null, null);
+    }
+      
+    // edge index >= index
+    @Override
+    Iterable<Edge> getEdges(Node p, Node n, int i, int index) {
+        if (isFilterEdgeIndex()) {
+            return getDataManager().getEdges(n, p, null, null, ExprType.GE, index);
+        }
+        return getEdges(p, n, i);
     }
 
     @Override

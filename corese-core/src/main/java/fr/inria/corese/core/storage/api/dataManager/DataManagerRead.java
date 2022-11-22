@@ -82,6 +82,20 @@ public interface DataManagerRead {
     default Iterable<Edge> getEdges(Node subject, Node predicate, Node object, List<Node> contexts) {
         return new ArrayList<>(0);
     }
+    
+    // with condition edge.index >= index
+    // use case: rule engine transitive closure ClosureDataManager
+    default Iterable<Edge> getEdges(Node subject, Node predicate, Node object, List<Node> contexts, int oper, int index) {
+        return getEdges(subject, predicate, object, contexts);
+    }
+    
+    // triple exist in any graph
+    default boolean exist(Node subject, Node predicate, Node object) {
+        for (Edge edge : getEdges(subject, predicate, object, null)) {
+            return true;
+        }
+        return false;
+    }
 
     /**
      * Returns an {@link Iterable} over all predicates of edges that match the

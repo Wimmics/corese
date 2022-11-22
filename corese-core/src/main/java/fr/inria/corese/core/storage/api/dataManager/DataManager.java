@@ -72,11 +72,17 @@ public interface DataManager extends DataManagerRead, DataManagerUpdate {
     default void init(HashMapList<String> map) {
     }
     
-    // manage rule edge index i as named graph kg:rule_i
+    // manage edge index i as named graph kg:rule_i
     default void setRuleDataManager(boolean b) {    
     }
     
     default boolean isRuleDataManager() {
+        return false;
+    }
+    
+    // manage integer context in edge iterator as a filter on edge index 
+    // where edge.index >= context.intValue
+    default boolean isEdgeIndexContext() {
         return false;
     }
 

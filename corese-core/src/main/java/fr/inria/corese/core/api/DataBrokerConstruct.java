@@ -53,7 +53,7 @@ public interface DataBrokerConstruct extends DataBroker {
     }
 
     default boolean exist(Node property, Node subject, Node object) {
-        return false;
+        return getDataManager().exist(subject, property, object);
     }
 
     /**

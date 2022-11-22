@@ -55,13 +55,13 @@ public class DataBrokerConstructExtern extends DataBrokerExtern implements DataB
         getDataManager().startWriteTransaction();
     }
     
-    @Override
-    public boolean exist(Node property, Node subject, Node object) {
-        for (Edge edge : getEdgeList(subject, property, object, null)){
-            return true;
-        }
-        return false;
-    }
+//    @Override
+//    public boolean exist(Node property, Node subject, Node object) {
+//        for (Edge edge : getEdgeList(subject, property, object, null)){
+//            return true;
+//        }
+//        return false;
+//    }
 
     @Override
     public String blankNode() {

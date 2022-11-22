@@ -32,6 +32,7 @@ import fr.inria.corese.core.query.Construct;
 import fr.inria.corese.core.query.QueryEngine;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.query.update.GraphManager;
+import static fr.inria.corese.core.rule.RuleEngine.Profile.OWLRL_TEST;
 import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.core.util.Property;
 import fr.inria.corese.core.util.Tool;
@@ -86,7 +87,8 @@ public class RuleEngine implements Engine, Graphable {
     public static final int OWL_RL = 1;
     public static final int OWL_RL_LITE = 2;
     public static final int OWL_RL_EXT = 3;
-    public static final int RDFS_RL = 4;
+    public static final int OWL_RL_TEST = 4;
+    public static final int RDFS_RL = 5;
     public static boolean OWL_CLEAN = true;
     public static boolean RULE_DATAMANAGER_OPTIMIZE = false; 
 
@@ -147,6 +149,7 @@ public class RuleEngine implements Engine, Graphable {
 
         STDRL,
         OWLRL("/rule/owlrl.rul"),
+        OWLRL_TEST("/rule/owlrltest.rul"),
         OWLRL_LITE("/rule/owlrllite.rul"),
         OWLRL_EXT("/rule/owlrlext.rul"),
         RDFS("/rule/rdfs.rul");
@@ -239,6 +242,7 @@ public class RuleEngine implements Engine, Graphable {
             case OWLRL:
             case OWLRL_LITE:
             case OWLRL_EXT:
+            case OWLRL_TEST:
                 if (Property.stringValue(Property.Value.OWL_RL) != null) {
                     // user defined OWL RL
                     logger.info("Load user OWL RL: " + Property.stringValue(Property.Value.OWL_RL));
@@ -269,6 +273,9 @@ public class RuleEngine implements Engine, Graphable {
                 case OWL_RL_EXT:
                     setProfile(OWLRL_EXT);
                     break;
+                 case OWL_RL_TEST:
+                    setProfile(OWLRL_TEST);
+                    break;    
                 case RDFS_RL:
                     setProfile(RDFS);
                     break;
@@ -281,6 +288,7 @@ public class RuleEngine implements Engine, Graphable {
     void processProfile() {
         switch (profile) {
             case OWLRL:
+            case OWLRL_TEST:
             case OWLRL_LITE:
             case OWLRL_EXT:
                 optimizeOWLRL();
@@ -512,6 +520,9 @@ public class RuleEngine implements Engine, Graphable {
         }
         if (Property.get(Property.Value.RULE_TRANSITIVE_OPTIMIZE) != null) {
             setOptTransitive(Property.booleanValue(Property.Value.RULE_TRANSITIVE_OPTIMIZE));
+        }
+        if (Property.hasValue(Property.Value.RULE_TRACE, true)) {
+            setSimpleTrace(true);
         }
         if (hasDataManager() && isOptimizeRuleDataManager()) {
             getDataManager().setRuleDataManager(true);
@@ -814,7 +825,7 @@ public class RuleEngine implements Engine, Graphable {
                 getResultWatcher().start(loop);
                 getResultWatcher().setTrace(trace);
             }
-
+            logger.info("rules: "+getRules().size());
             for (Rule rule : getRules()) {
                 if (isDebug()) {
                     rule.getQuery().setDebug(true);
@@ -1014,9 +1025,13 @@ public class RuleEngine implements Engine, Graphable {
         if (isOptimize() && isOptTransitive() && rule.isTransitive() && isFunTransitive()) {
             // transitive rule without triple pattern ?p a owl:TransitiveProperty
             // Java code compute transitive closure
+            Date dd = new Date();
             Closure clos = getClosure(rule);
             int index = (rule.getRecord() == null) ? -1 : rule.getRecord().getTimestamp();
             clos.closure(loop, timestamp, index);
+            if (isSimpleTrace()) {
+                logger.info("Closure time: " + Tool.time(dd));
+            }
         } else {
             process(rule, m, bind, cons);
             if (isOptimize() && isOptTransitive() && rule.isAnyTransitive()
@@ -1064,7 +1079,7 @@ public class RuleEngine implements Engine, Graphable {
     Closure getClosure(Rule r) {
         if (r.getClosure() == null) {
             Closure c = createClosure(getGraphStore(), getResultWatcher().getDistinct());
-            c.setTrace(trace);
+            c.setTrace(isSimpleTrace());
             r.setClosure(c);
             c.setQuery(r.getQuery());
             c.setConnect(isConnect());
@@ -1394,6 +1409,29 @@ public class RuleEngine implements Engine, Graphable {
     /**
      * Record predicates cardinality in graph
      */
+     Record record2(Rule r, int timestamp, int loop) {
+        Record itable = new Record(r, timestamp, loop);
+        Date d1 = new Date();
+        int n = 0;
+        boolean fail = false;
+        
+        for (Node pred : r.getPredicates()) {
+            if (fail) {
+                itable.put(pred, 0);
+            }
+            else {
+                int size = getGraphManager().size(pred);
+                itable.put(pred, size);
+                if (n == 0 && size == 0) {
+                    fail = true;
+                }
+            }
+            n++;
+        }
+        if (isSimpleTrace()) logger.info("time record: "+Tool.time(d1));
+        return itable;
+    }
+     
     Record record(Rule r, int timestamp, int loop) {
         Record itable = new Record(r, timestamp, loop);
         Date d1 = new Date();

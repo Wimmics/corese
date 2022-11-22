@@ -230,7 +230,13 @@ public class Property {
 
         RULE_TRANSITIVE_FUNCTION,
         RULE_TRANSITIVE_OPTIMIZE,
+        // rule engine use edge index with data manager
         RULE_DATAMANAGER_OPTIMIZE,
+        // replace kg:rule_i by kg:rule
+        RULE_DATAMANAGER_CLEAN,
+        // for testing edge iterator filter edge index  
+        RULE_DATAMANAGER_FILTER_INDEX,
+        RULE_TRACE,
 
         FUNCTION_PARAMETER_MAX,
 

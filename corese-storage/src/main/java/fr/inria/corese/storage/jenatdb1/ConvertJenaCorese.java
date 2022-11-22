@@ -8,7 +8,7 @@ import org.apache.jena.rdf.model.ModelFactory;
 import org.apache.jena.sparql.core.Quad;
 
 import fr.inria.corese.core.NodeImpl;
-import fr.inria.corese.core.edge.EdgeImpl;
+import fr.inria.corese.core.edge.EdgeGeneric;
 import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
@@ -135,15 +135,32 @@ public class ConvertJenaCorese {
      * @return Equivalent Corese edge.
      */
     public static Edge quadToEdge(Quad quad) {
+        Edge edge = basicQuadToEdge(quad);
+        tune(edge);
+        return edge;
+    }
+        
+     static Edge basicQuadToEdge(Quad quad) {
         Node subject_corese = ConvertJenaCorese.JenaNodeToCoreseNode(quad.getSubject());
         Node predicate_corese = ConvertJenaCorese.JenaNodeToCoreseNode(quad.getPredicate());
         Node object_corese = ConvertJenaCorese.JenaNodeToCoreseNode(quad.getObject());
         Node context_corese = ConvertJenaCorese.jenaContextToCoreseContext(quad.getGraph());
 
-        Edge edge = EdgeImpl.create(context_corese, subject_corese, predicate_corese, object_corese);
-        tune(edge);
-        return edge;
+        return EdgeGeneric.create(context_corese, subject_corese, predicate_corese, object_corese);
     }
+      
+    // iterate edge with edge.index >= index
+    public static Edge quadToEdge(Quad quad, int oper, int timestamp) {
+        int time = timestamp(quad.getGraph());
+        if (time >= timestamp) {
+            Edge edge = basicQuadToEdge(quad);
+            edge.setEdgeIndex(time);
+            return edge;
+        }
+        return null;
+    }
+    
+    
 
     /**
      * Convert Jena triple to equivalent Corese edge.
@@ -155,7 +172,7 @@ public class ConvertJenaCorese {
         Node subject_corese = ConvertJenaCorese.JenaNodeToCoreseNode(triple.getSubject());
         Node predicate_corese = ConvertJenaCorese.JenaNodeToCoreseNode(triple.getPredicate());
         Node object_corese = ConvertJenaCorese.JenaNodeToCoreseNode(triple.getObject());
-        return EdgeImpl.create(corese_default_context, subject_corese, predicate_corese, object_corese);
+        return EdgeGeneric.create(corese_default_context, subject_corese, predicate_corese, object_corese);
     }
 
     /**
@@ -191,6 +208,14 @@ public class ConvertJenaCorese {
             int i = Integer.valueOf(edge.getGraph().getLabel().substring(RULE_NAME.length()));
             edge.setEdgeIndex(i);
         }
+    }
+    
+    static int timestamp(org.apache.jena.graph.Node node) {
+        if (node.getURI().startsWith(RULE_NAME)) {
+            int i = Integer.valueOf(node.getURI().substring(RULE_NAME.length()));
+            return i;
+        }
+        return -1;
     }
 
 }

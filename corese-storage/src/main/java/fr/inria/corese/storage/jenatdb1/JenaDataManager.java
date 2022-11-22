@@ -27,13 +27,15 @@ import fr.inria.corese.core.logic.Entailment;
 
 import fr.inria.corese.core.producer.MetadataManager;
 import fr.inria.corese.core.storage.api.dataManager.DataManager;
+import fr.inria.corese.core.util.Property;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import static fr.inria.corese.storage.jenatdb1.ConvertJenaCorese.RULE_NAME;
 
 /**
- * Implements the Corese Datamanger interface for Jena-TDB.
+ * Implements Corese DataManager interface for Jena-TDB.
  */
 public class JenaDataManager implements DataManager, AutoCloseable {
 
@@ -42,7 +44,6 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     private String storage_path;
     // when true, iterate edge as quad to get named graph kg:rule_i to get edge index i 
     private boolean ruleDataManager = false;
-
     // Each thread has its own counter for read transaction there may be several
     // start/end read transaction in each thread
     HashMap<Thread, Integer> threadCounter;
@@ -129,6 +130,15 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     /************
      * GetEdges *
      ************/
+    
+    // @todo: test exist in storage without creating Edge
+    @Override
+    public boolean exist(Node subject, Node predicate, Node object) {
+        for (Edge edge : getEdges(subject, predicate, object, null)) {
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public Iterable<Edge> getEdges(Node subject, Node predicate, Node object, List<Node> contexts) {
@@ -151,6 +161,12 @@ public class JenaDataManager implements DataManager, AutoCloseable {
         else {
             return () -> this.chooseTripleWithoutDuplicatesReadOnly(subject, predicate, object, contexts);
         }
+    }
+    
+    // iterate edge with edge.index >= index
+    @Override
+    public Iterable<Edge> getEdges(Node subject, Node predicate, Node object, List<Node> contexts, int oper, int index) {
+        return () -> this.chooseQuadDuplicatesWrite1(subject, predicate, object, null, oper, index, true);
     }
 
     /*************
@@ -414,6 +430,79 @@ public class JenaDataManager implements DataManager, AutoCloseable {
                 this.jena_dataset.asDatasetGraph().getDefaultGraph(),
                 this.jena_dataset.asDatasetGraph().getUnionGraph());
     }
+    
+    // when context is integer it represents a timestamp
+    // we want edge.timestamp >= timestamp
+    int timestamp(List<Node> nodeList){
+       if (nodeList==null||nodeList.isEmpty()){
+           return -1;
+       }
+       IDatatype dt = nodeList.get(0).getDatatypeValue();
+       if (dt.isNumber()) {
+           return dt.intValue();
+       }
+       return -1;
+    }
+    
+
+    
+    // index represents a timestamp
+    // we want edge.timestamp >= timestamp 
+    // to be used when isRuleDataManager()
+    // use case: rule engine with closure for transitive rule
+    private Iterator<Edge> chooseQuadDuplicatesWrite1(Node subject, Node predicate, Node object, List<Node> contexts, 
+            int oper, int index, boolean bindex) {
+        
+        Function<Quad, Edge> convertIteratorQuadToEdge = new Function<Quad, Edge>() {
+            @Override
+            public Edge apply(Quad quad) {
+                return ConvertJenaCorese.quadToEdge(quad);
+            }
+        };
+        
+        // edge with timestamp >= timestamp
+        Function<Quad, Edge> convertIteratorQuadToEdgeTimestamp = new Function<Quad, Edge>() {
+            @Override
+            public Edge apply(Quad quad) {
+                return ConvertJenaCorese.quadToEdge(quad, oper, index);
+            }
+        };
+
+        org.apache.jena.graph.Node jena_subject = ConvertJenaCorese.coreseNodeToJenaNode(subject);
+        org.apache.jena.graph.Node jena_predicate = ConvertJenaCorese.coreseNodeToJenaNode(predicate);
+        org.apache.jena.graph.Node jena_object = ConvertJenaCorese.coreseNodeToJenaNode(object);
+
+        Iterator<Edge> edges = Collections.emptyIterator();
+        
+        if (contexts == null || contexts.stream().allMatch(Objects::isNull)) {
+            if (bindex) {
+                Iterator<Quad> iterator = this.jena_dataset.asDatasetGraph().find(
+                        null, jena_subject, jena_predicate, jena_object);
+
+                edges = Iterators.concat(edges, Iterators.transform(iterator, convertIteratorQuadToEdgeTimestamp));
+            }
+            else {
+                Iterator<Quad> iterator = this.jena_dataset.asDatasetGraph().find(
+                        null, jena_subject, jena_predicate, jena_object);
+
+                edges = Iterators.transform(iterator, convertIteratorQuadToEdge);
+            }
+        } else {
+            for (Node context : contexts) {
+                if (context != null) {
+
+                    org.apache.jena.graph.Node jena_context = ConvertJenaCorese.coreseContextToJenaContext(context);
+
+                    Iterator<Quad> iterator = this.jena_dataset.asDatasetGraph().find(
+                            jena_context, jena_subject, jena_predicate, jena_object);
+
+                    edges = Iterators.concat(edges, Iterators.transform(iterator, convertIteratorQuadToEdge));
+                }
+            }
+        }
+
+        return edges;
+    }
 
     private Iterator<Edge> chooseQuadDuplicatesWrite(Node subject, Node predicate, Node object, List<Node> contexts) {
 
@@ -585,7 +674,11 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     @Override
     public void endRuleEngine() {
         if (isRuleDataManager()) {
-            cleanNamedGraph();
+            if (Property.hasValue(Property.Value.RULE_DATAMANAGER_CLEAN, false)) {
+                // skip
+            } else {
+                cleanNamedGraph();
+            }
         }
     }
     
@@ -611,6 +704,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     }
 
     
+    // manage edge index i as named graph kg:rule_i
     @Override
     public boolean isRuleDataManager() {
         return ruleDataManager;
@@ -620,4 +714,5 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     public void setRuleDataManager(boolean optimize) {
         this.ruleDataManager = optimize;
     }
+    
 }

@@ -11,7 +11,6 @@ import org.slf4j.LoggerFactory;
 import fr.inria.corese.sparql.triple.cst.RDFS;
 import fr.inria.corese.sparql.triple.parser.*;
 import fr.inria.corese.compiler.api.QueryVisitor;
-import fr.inria.corese.compiler.eval.Interpreter;
 import fr.inria.corese.sparql.triple.parser.Dataset;
 import fr.inria.corese.sparql.triple.parser.visitor.ASTWalker;
 import fr.inria.corese.sparql.compiler.java.JavaCompiler;

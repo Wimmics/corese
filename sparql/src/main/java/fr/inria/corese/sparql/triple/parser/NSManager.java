@@ -224,6 +224,8 @@ public class NSManager extends ASTObject {
             nsm.definePrefix(p, getNamespace(p));
         }
         nsm.setRecord(isRecord());
+        // for defining prefix of pretty printed qname 
+        nsm.setRecordedPrefix(getRecordedPrefix());
         return nsm;
     }
 
@@ -977,6 +979,14 @@ public class NSManager extends ASTObject {
     
     public static void defineDefaultPrefix(String p, String ns) {
         def.put(ns, p);
+    }
+    
+    public HashMap<String, String> getRecordedPrefix(){
+        return trecord;
+    }
+    
+    public void setRecordedPrefix(HashMap<String, String> map){
+        trecord = map;
     }
 
 }

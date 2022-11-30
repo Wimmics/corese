@@ -134,10 +134,11 @@ public class JenaDataManager implements DataManager, AutoCloseable {
     // @todo: test exist in storage without creating Edge
     @Override
     public boolean exist(Node subject, Node predicate, Node object) {
-        for (Edge edge : getEdges(subject, predicate, object, null)) {
-            return true;
-        }
-        return false;
+        return find(subject, predicate, object);
+//        for (Edge edge : getEdges(subject, predicate, object, null)) {
+//            return true;
+//        }
+//        return false;
     }
 
     @Override
@@ -358,6 +359,13 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      * Choose statements *
      *********************/
 
+      private boolean find(Node subject, Node predicate, Node object) {
+        org.apache.jena.graph.Node jena_subject = ConvertJenaCorese.coreseNodeToJenaNode(subject);
+        org.apache.jena.graph.Node jena_predicate = ConvertJenaCorese.coreseNodeToJenaNode(predicate);
+        org.apache.jena.graph.Node jena_object = ConvertJenaCorese.coreseNodeToJenaNode(object);
+
+        return default_graph.contains(jena_subject, jena_predicate, jena_object);
+    }
     /**
      * Return edge iterator with the specified subject, predicate, object and
      * (optionally) context exist in this model. The subject, predicate, object and
@@ -405,7 +413,6 @@ public class JenaDataManager implements DataManager, AutoCloseable {
                 }
             }
         }
-
         Iterator<Triple> iterator = unionGraph.find(jena_subject, jena_predicate, jena_object);
         Iterator<Edge> edges = Iterators.transform(iterator, convertIteratorQuadToEdge);
 

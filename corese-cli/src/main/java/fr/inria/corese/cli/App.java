@@ -1,6 +1,7 @@
 package fr.inria.corese.cli;
 
 import fr.inria.corese.cli.programs.Convert;
+import fr.inria.corese.cli.programs.LDScript;
 import fr.inria.corese.cli.programs.Profile;
 import fr.inria.corese.cli.programs.Sparql;
 import picocli.CommandLine;
@@ -10,7 +11,7 @@ import picocli.CommandLine.Command;
  * Hello world!
  */
 @Command(name = "Corese-CLI", version = "4.3.0", mixinStandardHelpOptions = true, subcommands = {
-        Convert.class, Sparql.class, Profile.class,
+        Convert.class, Sparql.class, Profile.class, LDScript.class,
 })
 public final class App implements Runnable {
 
@@ -23,6 +24,5 @@ public final class App implements Runnable {
     public void run() {
         // Print usage
         CommandLine.usage(new App(), System.out);
-        ;
     }
 }

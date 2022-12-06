@@ -24,7 +24,7 @@ service <store:mapdatamanager?debug=true> {
         ?url geo:long ?lon;
         geo:lat ?lat ;
         map:wikipedia ?location .
-        ?url map:dep ?dep .
+        ?url map:dept ?dep .
         ?url rdf:type/rdfs:subClassOf* map:Artefact .
         ?url ?p ?v .
     }

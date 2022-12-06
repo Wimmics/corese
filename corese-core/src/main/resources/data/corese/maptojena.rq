@@ -1,0 +1,9 @@
+# with storage = mapjena
+insert {
+    ?s ?p ?o
+}
+where {
+    service <store:mapdatamanager> {
+        ?s ?p ?o
+    }
+}

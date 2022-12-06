@@ -175,7 +175,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JCheckBox checkBoxRule;
     private JCheckBox checkBoxVerbose;
     private JCheckBox checkBoxLoad;
-    private JCheckBox cbrdfs, cbowlrl, cbclean, cbrdfsrl, cbowlrllite, cbowlrlext, cbtrace, cbnamed, cbindex;
+    private JCheckBox cbrdfs, cbowlrl, cbclean, cbrdfsrl, cbowlrltest, cbowlrllite, cbowlrlext, cbtrace, cbnamed, cbindex;
     private JCheckBox cbshexClosed, cbshexExtend, cbshexCard, cbshexshex;
     private JMenuItem validate;
     // style correspondant au graphe
@@ -746,6 +746,7 @@ public class MainFrame extends JFrame implements ActionListener {
         cbowlrlext = new JCheckBox("OWL RL Extended");
         cbowlrllite = new JCheckBox("OWL RL Lite");
         cbowlrl = new JCheckBox("OWL RL");
+        cbowlrltest = new JCheckBox("OWL RL Test");
         cbrdfsrl = new JCheckBox("RDFS RL");
         cbindex = new JCheckBox("Graph Index");
         cbclean = new JCheckBox("OWL Clean");
@@ -916,6 +917,7 @@ public class MainFrame extends JFrame implements ActionListener {
         engineMenu.add(cbrdfs);
         engineMenu.add(cbowlrl);
         engineMenu.add(cbowlrlext);
+        engineMenu.add(cbowlrltest);
         engineMenu.add(cbrdfsrl);
         engineMenu.add(cbclean);
         engineMenu.add(cbindex);
@@ -1024,6 +1026,12 @@ public class MainFrame extends JFrame implements ActionListener {
         cbowlrl.setSelected(false);
         cbowlrl.addItemListener((ItemEvent e) -> {
             setOWLRL(cbowlrl.isSelected(), RuleEngine.OWL_RL);
+        });
+        
+        cbowlrltest.setEnabled(true);
+        cbowlrltest.setSelected(false);
+        cbowlrltest.addItemListener((ItemEvent e) -> {
+            setOWLRL(cbowlrltest.isSelected(), RuleEngine.OWL_RL_TEST);
         });
 
         cbclean.setEnabled(true);
@@ -1904,6 +1912,7 @@ public class MainFrame extends JFrame implements ActionListener {
         cbowlrllite.setSelected(false);
         cbowlrl.setSelected(false);
         cbowlrlext.setSelected(false);
+        cbowlrltest.setSelected(false);
     }
 
     public void load(String fichier) {

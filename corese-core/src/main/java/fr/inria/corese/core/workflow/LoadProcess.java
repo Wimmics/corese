@@ -6,7 +6,6 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.load.QueryLoad;
-import fr.inria.corese.core.query.DatasetManager;
 import fr.inria.corese.core.util.SPINProcess;
 import fr.inria.corese.sparql.exceptions.SafetyException;
 import org.slf4j.LoggerFactory;

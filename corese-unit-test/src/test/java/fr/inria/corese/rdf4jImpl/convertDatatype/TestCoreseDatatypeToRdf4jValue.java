@@ -12,6 +12,7 @@ import org.eclipse.rdf4j.model.Value;
 import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.junit.Test;
 
+import fr.inria.corese.rdf4j.convert.datatypes.CoreseDatatypeToRdf4jValue;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.CoreseDate;
 import fr.inria.corese.sparql.datatype.CoreseDateTime;
@@ -24,7 +25,6 @@ import fr.inria.corese.sparql.datatype.CoreseStringBuilder;
 import fr.inria.corese.sparql.datatype.CoreseYear;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.RDF;
-import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
 
 public class TestCoreseDatatypeToRdf4jValue {
 
@@ -242,7 +242,6 @@ public class TestCoreseDatatypeToRdf4jValue {
         assertEquals(XSD.DATETIME, rdf4j_date_time.getDatatype());
         assertEquals(XSD.DATETIME.stringValue(), corese_date_time.getDatatype().stringValue());
     }
-
 
     @Test
     public void convertLiteralLang() {
@@ -627,61 +626,6 @@ public class TestCoreseDatatypeToRdf4jValue {
         assertEquals(value, rdf4j_undef.shortValue());
         assertEquals(undef_datatype, rdf4j_undef.getDatatype().stringValue());
         assertEquals(undef_datatype, corese_undef.getDatatype().stringValue());
-    }
-
-    @Test
-    public void directConvertDouble() {
-        double value = 1.234d;
-
-        // Build Corese double
-        IDatatype corese_double = DatatypeMap.newDouble(value);
-
-        // Convert Corese double to RDF4J double
-        Value rdf4j_double_value = corese_double.getRdf4jValue();
-
-        // Checks
-        assertEquals(rdf4j_double_value.isLiteral(), true);
-        Literal rdf4j_double = (Literal) rdf4j_double_value;
-        assertEquals(value, rdf4j_double.doubleValue(), 0);
-        assertEquals(XSD.DOUBLE.stringValue(), rdf4j_double.getDatatype().stringValue());
-        assertEquals(XSD.DOUBLE.stringValue(), corese_double.getDatatype().stringValue());
-    }
-
-    @Test
-    public void direcrtConvertString() {
-        String value = "Un super test";
-
-        // Build Corese string
-        CoreseString corese_string = (CoreseString) DatatypeMap.newStringBuilder(value);
-
-        // Convert Corese string to RDF4J string
-        Value rdf4j_string_value = corese_string.getRdf4jValue();
-
-        // Checks
-        assertEquals(rdf4j_string_value.isLiteral(), true);
-        Literal rdf4j_string = (Literal) rdf4j_string_value;
-        assertEquals(value, rdf4j_string.getLabel());
-        assertEquals(XSD.STRING, rdf4j_string.getDatatype());
-        assertEquals(XSD.STRING.stringValue(), corese_string.getDatatype().stringValue());
-        assertEquals(Optional.empty(), rdf4j_string.getLanguage());
-    }
-
-    @Test
-    public void directConvertDate() {
-        String value = "2021-06-16";
-
-        // Build Corese date
-        CoreseDate corese_date = (CoreseDate) DatatypeMap.newDate(value);
-
-        // Convert Corese date to RDF4J date
-        Value rdf4j_date_value = corese_date.getRdf4jValue();
-
-        // Checks
-        assertEquals(rdf4j_date_value.isLiteral(), true);
-        Literal rdf4j_date = (Literal) rdf4j_date_value;
-        assertEquals(value, rdf4j_date.getLabel());
-        assertEquals(XSD.DATE, rdf4j_date.getDatatype());
-        assertEquals(XSD.DATE.stringValue(), corese_date.getDatatype().stringValue());
     }
 
     @Test(expected = ClassCastException.class)

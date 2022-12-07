@@ -26,7 +26,7 @@ import org.eclipse.rdf4j.sail.memory.MemoryStore;
 import org.eclipse.rdf4j.sail.nativerdf.NativeStore;
 import org.junit.Test;
 
-import fr.inria.corese.rdf4j.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseGraphModel;
 
 public class Rdf4jExperimentations {
 
@@ -34,7 +34,7 @@ public class Rdf4jExperimentations {
     public void testRio() throws IOException {
         InputStream input_stream = Rdf4jExperimentations.class.getResourceAsStream("peopleWork.ttl");
 
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
 
         RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
         rdfParser.setRDFHandler(new StatementCollector(model));
@@ -71,7 +71,7 @@ public class Rdf4jExperimentations {
         InputStream input_stream = Rdf4jExperimentations.class.getResourceAsStream("peopleWork.ttl");
 
         // Load file content in CoreseModel
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
         RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
         rdfParser.setRDFHandler(new StatementCollector(model));
         rdfParser.parse(input_stream);
@@ -121,7 +121,7 @@ public class Rdf4jExperimentations {
         InputStream input_stream = Rdf4jExperimentations.class.getResourceAsStream("peopleWork.ttl");
 
         // Load file content in CoreseModel
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
         RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
         rdfParser.setRDFHandler(new StatementCollector(model));
         rdfParser.parse(input_stream);
@@ -186,7 +186,7 @@ public class Rdf4jExperimentations {
     public void testGetStatements() throws RDFParseException, UnsupportedRDFormatException, IOException {
         InputStream input_stream = Rdf4jExperimentations.class.getResourceAsStream("peopleWork.ttl");
 
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
         RDFParser rdfParser = Rio.createParser(RDFFormat.TURTLE);
         rdfParser.setRDFHandler(new StatementCollector(model));
         rdfParser.parse(input_stream);

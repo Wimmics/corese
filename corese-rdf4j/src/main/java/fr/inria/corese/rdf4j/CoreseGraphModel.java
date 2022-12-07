@@ -19,15 +19,14 @@ import org.eclipse.rdf4j.model.impl.FilteredModel;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.rdf4j.convert.ConvertRdf4jCorese;
+import fr.inria.corese.rdf4j.convert.datatypes.Rdf4jValueToCoreseDatatype;
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
 /**
  * A RDF4J model construct on a Corese Graph
- * 
- * @author Rémi Ceres
  */
-public class CoreseModel extends AbstractModel {
+public class CoreseGraphModel extends AbstractModel {
 
     private Graph corese_graph;
     private final Set<Namespace> namespaces;
@@ -36,32 +35,32 @@ public class CoreseModel extends AbstractModel {
      * Constructors *
      ****************/
 
-    public CoreseModel() {
+    public CoreseGraphModel() {
         this.corese_graph = Graph.create();
         this.namespaces = new TreeSet<>();
     }
 
-    public CoreseModel(Model rdf4j_model) {
+    public CoreseGraphModel(Model rdf4j_model) {
         this(rdf4j_model.getNamespaces());
         addAll(rdf4j_model);
     }
 
-    public CoreseModel(Graph corese_graph) {
+    public CoreseGraphModel(Graph corese_graph) {
         this();
         this.corese_graph = corese_graph;
     }
 
-    public CoreseModel(Collection<? extends Statement> c) {
+    public CoreseGraphModel(Collection<? extends Statement> c) {
         this();
         addAll(c);
     }
 
-    public CoreseModel(Set<Namespace> namespaces, Collection<? extends Statement> c) {
+    public CoreseGraphModel(Set<Namespace> namespaces, Collection<? extends Statement> c) {
         this(c);
         this.namespaces.addAll(namespaces);
     }
 
-    public CoreseModel(Set<Namespace> namespaces) {
+    public CoreseGraphModel(Set<Namespace> namespaces) {
         this();
         this.namespaces.addAll(namespaces);
     }
@@ -187,13 +186,13 @@ public class CoreseModel extends AbstractModel {
         return new FilteredModel(this, subj, pred, obj, contexts) {
             @Override
             public Iterator<Statement> iterator() {
-                return CoreseModel.this.getFilterIterator(subj, pred, obj, contexts);
+                return CoreseGraphModel.this.getFilterIterator(subj, pred, obj, contexts);
             }
 
             @Override
             protected void removeFilteredTermIteration(Iterator<Statement> iter, Resource subj, IRI pred, Value obj,
                     Resource... contexts) {
-                CoreseModel.this.removeTermIteration(iter, subj, pred, obj, contexts);
+                CoreseGraphModel.this.removeTermIteration(iter, subj, pred, obj, contexts);
             }
         };
     }
@@ -341,7 +340,7 @@ public class CoreseModel extends AbstractModel {
                 if (last == null) {
                     throw new IllegalStateException();
                 }
-                CoreseModel.this.remove(last);
+                CoreseGraphModel.this.remove(last);
                 iter.remove();
             }
         }

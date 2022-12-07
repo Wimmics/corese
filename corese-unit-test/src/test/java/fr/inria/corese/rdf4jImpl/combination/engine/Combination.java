@@ -4,7 +4,7 @@ import org.eclipse.rdf4j.model.Model;
 import org.eclipse.rdf4j.model.impl.TreeModel;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.rdf4j.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseGraphModel;
 
 public class Combination {
 
@@ -12,7 +12,7 @@ public class Combination {
 
         // build models and graphs
         TreeModel tree_model = Load.treeModel(load_files);
-        CoreseModel corese_model = Load.coreseModel(load_files);
+        CoreseGraphModel corese_model = Load.coreseModel(load_files);
         Graph graph = Load.coreseGraph(load_files);
 
         // get results of all combinations
@@ -74,7 +74,7 @@ public class Combination {
 
         // build models and graphs
         TreeModel tree_model = Load.treeModel(load_files);
-        CoreseModel corese_model = Load.coreseModel(load_files);
+        CoreseGraphModel corese_model = Load.coreseModel(load_files);
         Graph graph = Load.coreseGraph(load_files);
 
         // get results of all combinations

@@ -1,35 +1,33 @@
 package fr.inria.corese.sparql.datatype;
 
-import java.util.Hashtable;
+import static fr.inria.corese.sparql.datatype.CoreseBoolean.FALSE;
+import static fr.inria.corese.sparql.datatype.CoreseBoolean.TRUE;
+import static fr.inria.corese.sparql.datatype.Cst.jTypeGenericInteger;
+import static fr.inria.corese.sparql.datatype.Cst.jTypeInteger;
+import static fr.inria.corese.sparql.datatype.RDF.RDF_HTML;
 
-import org.eclipse.rdf4j.model.Value;
+import java.math.BigDecimal;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Hashtable;
+import java.util.Iterator;
+import java.util.List;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.api.IDatatypeList;
-import static fr.inria.corese.sparql.datatype.Cst.jTypeInteger;
-import static fr.inria.corese.sparql.datatype.Cst.jTypeGenericInteger;
-import static fr.inria.corese.sparql.datatype.RDF.RDF_HTML;
-import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
-import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
-import fr.inria.corese.sparql.storage.api.IStorage;
-import fr.inria.corese.sparql.triple.cst.RDFS;
-import fr.inria.corese.sparql.triple.parser.Constant;
-import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.PointerType;
 import fr.inria.corese.kgram.api.core.Pointerable;
 import fr.inria.corese.kgram.api.core.TripleStore;
 import fr.inria.corese.kgram.path.Path;
-import static fr.inria.corese.sparql.datatype.CoreseBoolean.FALSE;
-import static fr.inria.corese.sparql.datatype.CoreseBoolean.TRUE;
-
-import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.Iterator;
-import java.util.List;
+import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.api.IDatatypeList;
+import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
+import fr.inria.corese.sparql.storage.api.IStorage;
+import fr.inria.corese.sparql.triple.cst.RDFS;
+import fr.inria.corese.sparql.triple.parser.Constant;
+import fr.inria.corese.sparql.triple.parser.NSManager;
 
 /**
  * <p>Title: Corese</p>
@@ -1439,10 +1437,5 @@ public class CoreseDatatype
     public IDatatype setPublicDatatypeValue(IDatatype aGlobalDatatypeValue) {
         publicDatatypeValue = aGlobalDatatypeValue;
         return publicDatatypeValue;
-    }
-
-    @Override
-    public Value getRdf4jValue() {
-        return CoreseDatatypeToRdf4jValue.convert(this);
     }
 }

@@ -8,7 +8,7 @@ import org.eclipse.rdf4j.model.impl.TreeModel;
 import org.junit.Test;
 
 import fr.inria.corese.core.Graph;
-import fr.inria.corese.rdf4j.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseGraphModel;
 
 public class CombinationTests {
 
@@ -21,16 +21,16 @@ public class CombinationTests {
                 "http://example.org/Context1", "http://example.org/Context2", "http://example.org/Context3");
 
         Graph graph = Load.coreseGraph(loadable_file_1, loadable_file_2);
-        logger.debug("Graph (Corese): " + new CoreseModel(graph));
+        logger.debug("Graph (Corese): " + new CoreseGraphModel(graph));
 
         TreeModel treeModel = Load.treeModel(loadable_file_1, loadable_file_2);
         logger.debug("TreeModel (RDF4J): " + treeModel);
 
-        CoreseModel coreseModel = Load.coreseModel(loadable_file_1, loadable_file_2);
+        CoreseGraphModel coreseModel = Load.coreseModel(loadable_file_1, loadable_file_2);
         logger.debug("CoreseModel (Corese): " + coreseModel);
 
-        assertEquals(new CoreseModel(graph), treeModel);
-        assertEquals(new CoreseModel(graph), coreseModel);
+        assertEquals(new CoreseGraphModel(graph), treeModel);
+        assertEquals(new CoreseGraphModel(graph), coreseModel);
         assertEquals(treeModel, coreseModel);
     }
 

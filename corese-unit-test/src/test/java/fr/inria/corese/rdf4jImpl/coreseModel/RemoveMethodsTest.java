@@ -14,7 +14,7 @@ import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.junit.Test;
 
-import fr.inria.corese.rdf4j.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseGraphModel;
 
 public class RemoveMethodsTest {
 
@@ -27,7 +27,7 @@ public class RemoveMethodsTest {
     private IRI context2;
     private IRI context3;
 
-    private CoreseModel buildCoreseModel() {
+    private CoreseGraphModel buildCoreseModel() {
         String ex = "http://example.org/";
 
         // first statement
@@ -47,7 +47,7 @@ public class RemoveMethodsTest {
         /////////////////
         // Build graph //
         /////////////////
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
         model.add(edithPiafNode, isaProperty, singerNode);
         model.add(edithPiafNode, firstNameProperty, edithLiteral, context1);
         model.add(edithPiafNode, firstNameProperty, edithLiteral, context2);
@@ -59,7 +59,7 @@ public class RemoveMethodsTest {
 
     @Test
     public void removeSPO() {
-        CoreseModel model = this.buildCoreseModel();
+        CoreseGraphModel model = this.buildCoreseModel();
 
         assertEquals(true, model.contains(null, null, null));
         assertEquals(true, model.remove(null, null, null));
@@ -100,7 +100,7 @@ public class RemoveMethodsTest {
 
     @Test
     public void removeStatement() {
-        CoreseModel model = this.buildCoreseModel();
+        CoreseGraphModel model = this.buildCoreseModel();
 
         ValueFactory vf = SimpleValueFactory.getInstance();
         Statement statement = vf.createStatement(edithPiafNode, firstNameProperty, edithLiteral, context2);
@@ -113,7 +113,7 @@ public class RemoveMethodsTest {
 
     @Test
     public void removeAllStatement() {
-        CoreseModel model = this.buildCoreseModel();
+        CoreseGraphModel model = this.buildCoreseModel();
 
         ValueFactory vf = SimpleValueFactory.getInstance();
 

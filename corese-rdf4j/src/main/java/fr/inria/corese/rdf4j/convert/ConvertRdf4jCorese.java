@@ -1,4 +1,4 @@
-package fr.inria.corese.rdf4j;
+package fr.inria.corese.rdf4j.convert;
 
 import java.util.ArrayList;
 
@@ -13,9 +13,9 @@ import fr.inria.corese.core.edge.EdgeImpl;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.rdf4j.convert.datatypes.CoreseDatatypeToRdf4jValue;
+import fr.inria.corese.rdf4j.convert.datatypes.Rdf4jValueToCoreseDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
-import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
 public class ConvertRdf4jCorese {
 

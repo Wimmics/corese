@@ -4,8 +4,6 @@ package fr.inria.corese.kgram.api.core;
 import java.math.BigDecimal;
 import java.util.List;
 
-import org.eclipse.rdf4j.model.Value;
-
 /**
  *
  * Olivier Corby - Wimmics, Inria, I3S, 2015
@@ -49,6 +47,4 @@ public interface DatatypeValue {
     boolean isExtension();
     
     Object getNodeObject();
-
-    Value getRdf4jValue();
 }

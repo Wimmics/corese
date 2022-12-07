@@ -1,18 +1,12 @@
 package fr.inria.corese.sparql.datatype;
 
 import java.math.BigDecimal;
-import java.util.GregorianCalendar;
 
-import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeConstants;
-import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
-
-import org.eclipse.rdf4j.model.Literal;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
-import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
 
 /**
  * An implementation of the xsd:date datatype used by Corese
@@ -87,11 +81,6 @@ public class CoreseDate extends CoreseDatatype {
     @Override
     public String getLowerCaseLabel() {
         return this.getLabel();
-    }
-
-    @Override
-    public Literal getRdf4jValue() {
-        return CoreseDatatypeToRdf4jValue.convertLiteral(this);
     }
 
     public IDatatype getYear() {

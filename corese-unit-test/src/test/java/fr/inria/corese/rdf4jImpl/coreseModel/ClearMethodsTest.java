@@ -13,12 +13,12 @@ import org.junit.Test;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.rdf4j.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseGraphModel;
 import fr.inria.corese.sparql.exceptions.EngineException;
 
 public class ClearMethodsTest {
 
-    public static CoreseModel buildModel() {
+    public static CoreseGraphModel buildModel() {
         //////////////////////
         // Build statements //
         //////////////////////
@@ -37,7 +37,7 @@ public class ClearMethodsTest {
         /////////////////
         // Build graph //
         /////////////////
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
         model.add(edithPiafNode, isaProperty, singerNode);
         model.add(edithPiafNode, firstNameProperty, edithLiteral, context1);
 
@@ -46,7 +46,7 @@ public class ClearMethodsTest {
 
     @Test
     public void clearAllTest() throws EngineException {
-        CoreseModel model = ClearMethodsTest.buildModel();
+        CoreseGraphModel model = ClearMethodsTest.buildModel();
         Graph corese_graph = model.getCoreseGraph();
         QueryProcess exec = QueryProcess.create(corese_graph);
 
@@ -63,7 +63,7 @@ public class ClearMethodsTest {
 
     @Test
     public void clearGraph() throws EngineException {
-        CoreseModel model = ClearMethodsTest.buildModel();
+        CoreseGraphModel model = ClearMethodsTest.buildModel();
         Graph corese_graph = model.getCoreseGraph();
         QueryProcess exec = QueryProcess.create(corese_graph);
 

@@ -17,7 +17,7 @@ import org.junit.Test;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.rdf4j.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseGraphModel;
 import fr.inria.corese.sparql.exceptions.EngineException;
 
 public class AddMethodsTest {
@@ -43,7 +43,7 @@ public class AddMethodsTest {
         /////////////////
         // Build graph //
         /////////////////
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
         model.add(edithPiafNode, isaProperty, singerNode);
         model.add(edithPiafNode, firstNameProperty, edithLiteral, context1);
 
@@ -87,7 +87,7 @@ public class AddMethodsTest {
         /////////////////
         // Build graph //
         /////////////////
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
         model.add(statement);
 
         ////////////////
@@ -131,7 +131,7 @@ public class AddMethodsTest {
         /////////////////
         // Build graph //
         /////////////////
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
         List<Statement> statements = Arrays.asList(statement1, statement2);
         model.addAll(statements);
 

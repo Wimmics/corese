@@ -14,7 +14,7 @@ import org.eclipse.rdf4j.model.util.Values;
 import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.junit.Test;
 
-import fr.inria.corese.rdf4j.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseGraphModel;
 
 public class ContainsMethodsTest {
 
@@ -41,7 +41,7 @@ public class ContainsMethodsTest {
         /////////////////
         // Build graph //
         /////////////////
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
         model.add(edithPiafNode, isaProperty, singerNode);
         model.add(edithPiafNode, firstNameProperty, edithLiteral, context1);
         model.add(edithPiafNode, firstNameProperty, edithLiteral, context2);
@@ -93,7 +93,7 @@ public class ContainsMethodsTest {
         /////////////////////////
         // Build another graph //
         /////////////////////////
-        model = new CoreseModel();
+        model = new CoreseGraphModel();
         model.add(edithPiafNode, firstNameProperty, edithLiteral, context1);
         model.add(edithPiafNode, firstNameProperty, edithLiteral, context2);
 
@@ -137,7 +137,7 @@ public class ContainsMethodsTest {
         /////////////////
         // Build graph //
         /////////////////
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
         model.add(f_statement);
         model.add(s_statement);
         model.add(t_statement);
@@ -181,7 +181,7 @@ public class ContainsMethodsTest {
         /////////////////
         // Build graph //
         /////////////////
-        CoreseModel model = new CoreseModel();
+        CoreseGraphModel model = new CoreseGraphModel();
         ArrayList<Statement> statements = new ArrayList<Statement>();
         statements.add(f_statement);
         statements.add(s_statement);

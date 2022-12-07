@@ -20,11 +20,13 @@ import org.eclipse.rdf4j.model.impl.TreeModel;
 import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.rdf4j.convert.ConvertRdf4jCorese;
+import fr.inria.corese.sparql.api.IDatatype;
 
 /**
  * Implements the Corese Datamanger interface for RDF4J
  */
-public class Rdf4jDataManager implements DataManager {
+public class Rdf4ModeljDataManager implements DataManager {
 
     private Model rdf4j_model;
 
@@ -35,7 +37,7 @@ public class Rdf4jDataManager implements DataManager {
     /**
      * Constructor of Rdf4jDataManager.
      */
-    protected Rdf4jDataManager() {
+    protected Rdf4ModeljDataManager() {
         this.rdf4j_model = new TreeModel();
     }
 
@@ -44,7 +46,7 @@ public class Rdf4jDataManager implements DataManager {
      * 
      * @param rdf4j_model RDF4J model.
      */
-    protected Rdf4jDataManager(Model rdf4j_model) {
+    protected Rdf4ModeljDataManager(Model rdf4j_model) {
         this.rdf4j_model = rdf4j_model;
     }
 
@@ -69,6 +71,18 @@ public class Rdf4jDataManager implements DataManager {
      * GetEdges *
      ************/
 
+    // Todo: we need to have a real hash function in DataTypes.
+    /**
+     * Create a hash for the given IDatatype by concatenating its string value and
+     * datatype URI.
+     * 
+     * @param node the IDatatype to create a hash for
+     * @return the hash for the given IDatatype
+     */
+    private String idatatypeToHash(IDatatype node) {
+        return node.stringValue() + node.getDatatypeURI();
+    }
+
     @Override
     public Iterable<Edge> getEdges(Node subject, Node predicate, Node object, List<Node> contexts) {
         Iterable<Statement> statements = this.choose(subject, predicate, object, contexts);
@@ -76,9 +90,14 @@ public class Rdf4jDataManager implements DataManager {
         // convert Statements to Edges
         // remove duplicate edges (same edge with different context)
         HashMap<Integer, Edge> result = new HashMap<>();
-        for (Edge statement : ConvertRdf4jCorese.statementsToEdges(statements)) {
-            int hash = Objects.hash(statement.getSubject(), statement.getPredicate(), statement.getObject());
-            result.put(hash, statement);
+        for (Edge edge : ConvertRdf4jCorese.statementsToEdges(statements)) {
+
+            int hash = Objects.hash(
+                    this.idatatypeToHash(edge.getSubjectValue()),
+                    this.idatatypeToHash(edge.getPredicateValue()),
+                    this.idatatypeToHash(edge.getObjectValue()));
+
+            result.put(hash, edge);
         }
 
         return result.values();
@@ -140,7 +159,7 @@ public class Rdf4jDataManager implements DataManager {
 
     @Override
     public Edge insert(Edge edge) {
-        if (this.rdf4j_model.add(edge)) {
+        if (this.rdf4j_model.add(ConvertRdf4jCorese.EdgeToStatement(edge))) {
             return edge;
         }
         return null;

@@ -3,8 +3,6 @@ package fr.inria.corese.compiler.parser;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import org.eclipse.rdf4j.model.Statement;
-
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.api.core.PointerType;
@@ -300,7 +298,7 @@ public class EdgeImpl extends PointerObject implements Edge {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getSubject(), this.getPredicate(), this.getObject(), this.getContext());
+        return Objects.hash(this.getSubjectValue(), this.getPredicateValue(), this.getObjectValue(), this.getGraphValue());
     }
 
     @Override
@@ -308,29 +306,16 @@ public class EdgeImpl extends PointerObject implements Edge {
         if (o == this) {
             return true;
         }
-        if (!(o instanceof Statement)) {
+        if (!(o instanceof EdgeImpl)) {
             return false;
         }
 
-        Statement other = (Statement) o;
+        EdgeImpl other = (EdgeImpl) o;
 
-        if (!this.getSubject().equals(other.getSubject())) {
-            return false;
-        }
-
-        if (!this.getPredicate().equals(other.getPredicate())) {
-            return false;
-        }
-
-        if (!this.getObject().equals(other.getObject())) {
-            return false;
-        }
-
-        if (!Objects.equals(this.getContext(), other.getContext())) {
-            return false;
-        }
-
-        return true;
+        return Objects.equals(this.getSubjectValue(), other.getSubjectValue())
+                && Objects.equals(this.getPredicateValue(), other.getPredicateValue())
+                && Objects.equals(this.getObjectValue(), other.getObjectValue())
+                && Objects.equals(this.getGraphValue(), other.getGraphValue());
     }
 
     @Override

@@ -1,10 +1,7 @@
 package fr.inria.corese.sparql.datatype;
 
-import org.eclipse.rdf4j.model.BNode;
-
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
-import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
 
 /**
  * Title: Corese
@@ -128,11 +125,5 @@ public class CoreseBlankNode extends CoreseResource {
         final CoreseBlankNode other = (CoreseBlankNode) obj;
         return getLabel().equals(other.getLabel());
     }
-
-    @Override
-    public BNode getRdf4jValue() {
-        return CoreseDatatypeToRdf4jValue.convertBNode(this);
-    }
-
    
 }

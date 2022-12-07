@@ -1,4 +1,4 @@
-package fr.inria.corese.sparql.rdf4j;
+package fr.inria.corese.rdf4j.convert.datatypes;
 
 import java.util.Optional;
 

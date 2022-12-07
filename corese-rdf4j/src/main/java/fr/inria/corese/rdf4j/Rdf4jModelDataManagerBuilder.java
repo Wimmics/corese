@@ -7,7 +7,7 @@ import fr.inria.corese.core.storage.api.dataManager.DataManagerBuilder;
 /**
  * Builder for Rdf4jDataManager.
  */
-public class Rdf4jDataManagerBuilder implements DataManagerBuilder {
+public class Rdf4jModelDataManagerBuilder implements DataManagerBuilder {
 
     //////////////////////////
     // Mandatory parameters //
@@ -27,7 +27,7 @@ public class Rdf4jDataManagerBuilder implements DataManagerBuilder {
     /**
      * Create a Rdf4jDataManagerBuilder.
      */
-    public Rdf4jDataManagerBuilder() {
+    public Rdf4jModelDataManagerBuilder() {
     }
 
     ////////////
@@ -40,7 +40,7 @@ public class Rdf4jDataManagerBuilder implements DataManagerBuilder {
      * @param model Rdf4j Model
      * @return this instance.
      */
-    public Rdf4jDataManagerBuilder model(Model model) {
+    public Rdf4jModelDataManagerBuilder model(Model model) {
         this.model = model;
         this.defModel = true;
         return this;
@@ -51,12 +51,12 @@ public class Rdf4jDataManagerBuilder implements DataManagerBuilder {
     ///////////
 
     @Override
-    public Rdf4jDataManager build() {
+    public Rdf4ModeljDataManager build() {
         if (defModel) {
-            return new Rdf4jDataManager(this.model);
+            return new Rdf4ModeljDataManager(this.model);
         }
 
-        return new Rdf4jDataManager();
+        return new Rdf4ModeljDataManager();
     }
 
 }

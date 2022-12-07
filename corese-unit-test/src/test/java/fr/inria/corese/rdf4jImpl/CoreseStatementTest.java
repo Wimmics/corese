@@ -1,10 +1,6 @@
 package fr.inria.corese.rdf4jImpl;
 
-import static org.junit.Assert.assertEquals;
-
-import org.eclipse.rdf4j.model.Value;
 import org.junit.BeforeClass;
-import org.junit.Test;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.logic.RDF;
@@ -63,44 +59,4 @@ public class CoreseStatementTest {
         edge_edit_lname = graph.addEdge(context_2, edith_piaf, predicate_lastName, object_piaf);
     }
 
-    @Test
-    public void getSubject() {
-        Value subject_rdf4j = edith_piaf.getDatatypeValue().getRdf4jValue();
-
-        assertEquals(subject_rdf4j, edge_edit_singer.getSubject());
-        assertEquals(subject_rdf4j, edge_edit_fname.getSubject());
-        assertEquals(subject_rdf4j, edge_edit_lname.getSubject());
-    }
-
-    @Test
-    public void getPredicate() {
-        Value rdfType_rdf4j = predicate_rdfType.getDatatypeValue().getRdf4jValue();
-        Value firstName_rdf4j = predicate_firstName.getDatatypeValue().getRdf4jValue();
-        Value lastName_rdf4j = predicate_lastName.getDatatypeValue().getRdf4jValue();
-
-        assertEquals(rdfType_rdf4j, edge_edit_singer.getPredicate());
-        assertEquals(firstName_rdf4j, edge_edit_fname.getPredicate());
-        assertEquals(lastName_rdf4j, edge_edit_lname.getPredicate());
-    }
-
-    @Test
-    public void getObject() {
-        Value singer_rdf4j = object_singer.getDatatypeValue().getRdf4jValue();
-        Value edith_rdf4j = object_edith.getDatatypeValue().getRdf4jValue();
-        Value piaf_rdf4j = object_piaf.getDatatypeValue().getRdf4jValue();
-
-        assertEquals(singer_rdf4j, edge_edit_singer.getObject());
-        assertEquals(edith_rdf4j, edge_edit_fname.getObject());
-        assertEquals(piaf_rdf4j, edge_edit_lname.getObject());
-    }
-
-    @Test
-    public void getContext() {
-        Value context1_rdf4j = context_1.getDatatypeValue().getRdf4jValue();
-        Value context2_rdf4j = context_2.getDatatypeValue().getRdf4jValue();
-
-        assertEquals(null, edge_edit_singer.getContext());
-        assertEquals(context1_rdf4j, edge_edit_fname.getContext());
-        assertEquals(context2_rdf4j, edge_edit_lname.getContext());
-    }
 }

@@ -1,0 +1,9 @@
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<http://example.org/graph1> {
+  <http://example.org/subject> <http://example.org/predicate> "1"^^xsd:int .
+}
+
+<http://example.org/graph2> {
+  <http://example.org/subject> <http://example.org/predicate> "01"^^xsd:int .
+}

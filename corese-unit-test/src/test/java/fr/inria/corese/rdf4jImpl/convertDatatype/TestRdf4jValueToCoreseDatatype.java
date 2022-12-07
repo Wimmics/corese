@@ -12,6 +12,7 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.eclipse.rdf4j.model.vocabulary.XSD;
 import org.junit.Test;
 
+import fr.inria.corese.rdf4j.convert.datatypes.Rdf4jValueToCoreseDatatype;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.CoreseBlankNode;
 import fr.inria.corese.sparql.datatype.CoreseBoolean;
@@ -29,7 +30,6 @@ import fr.inria.corese.sparql.datatype.CoreseURILiteral;
 import fr.inria.corese.sparql.datatype.CoreseUndefLiteral;
 import fr.inria.corese.sparql.datatype.CoreseXMLLiteral;
 import fr.inria.corese.sparql.datatype.CoreseYear;
-import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
 public class TestRdf4jValueToCoreseDatatype {
 

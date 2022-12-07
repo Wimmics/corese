@@ -1,12 +1,8 @@
 package fr.inria.corese.sparql.datatype;
 
+import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
-import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
-
-import org.eclipse.rdf4j.model.IRI;
-
-import fr.inria.corese.kgram.api.core.ExpType;
 
 
 /**
@@ -94,11 +90,6 @@ public class CoreseURI extends CoreseResource {
 	  case URI: return getLabel().equals(iod.getLabel());
 	  }
 	  return false;
-  }
-
-  @Override
-  public IRI getRdf4jValue() {
-    return CoreseDatatypeToRdf4jValue.convertIri(this);
   }
 
 }

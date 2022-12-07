@@ -1,4 +1,4 @@
-package fr.inria.corese.sparql.rdf4j;
+package fr.inria.corese.rdf4j.convert.datatypes;
 
 import org.eclipse.rdf4j.model.BNode;
 import org.eclipse.rdf4j.model.IRI;
@@ -176,8 +176,7 @@ public class CoreseDatatypeToRdf4jValue {
         if (corese_lang_string.hasLang()) {
             String lang = corese_lang_string.getLang();
             return rdf4j_factory.createLiteral(value, lang);
-        }
-        else {
+        } else {
             return rdf4j_factory.createLiteral(value);
         }
     }

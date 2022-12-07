@@ -46,7 +46,7 @@ public class DatasetManager {
     }
 
     public enum TypeDataBase {
-        RDF4J,
+        RDF4J_MODEL,
         JENA_TDB1,
         CORESE_GRAPH,
         JAVA,
@@ -66,13 +66,13 @@ public class DatasetManager {
 
             TypeDataBase typeDB;
             switch (type) {
-                case "jenatdb1":
+                case "jena_tdb1":
                     typeDB = TypeDataBase.JENA_TDB1;
                     break;
-                case "rdf4jmodel":
-                    typeDB = TypeDataBase.RDF4J;
+                case "rdf4j_model":
+                    typeDB = TypeDataBase.RDF4J_MODEL;
                     break;
-                case "coreseGraph":
+                case "corese_graph":
                     typeDB = TypeDataBase.CORESE_GRAPH;
                     break;
                 case "java":

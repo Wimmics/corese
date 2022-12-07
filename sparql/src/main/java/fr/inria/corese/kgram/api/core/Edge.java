@@ -2,10 +2,6 @@ package fr.inria.corese.kgram.api.core;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
-import org.eclipse.rdf4j.model.IRI;
-import org.eclipse.rdf4j.model.Resource;
-import org.eclipse.rdf4j.model.Statement;
-import org.eclipse.rdf4j.model.Value;
 
 /**
  * Interface for Producer iterator that encapsulate Edge or Node with its Graph
@@ -14,7 +10,7 @@ import org.eclipse.rdf4j.model.Value;
  * @author Olivier Corby, Edelweiss, INRIA 2010
  *
  */
-public interface Edge extends Pointerable, Statement {
+public interface Edge extends Pointerable {
 
     // rdf star reference node index: index of t = 2 in tuple(s p o t)
     int REF_INDEX = 2;
@@ -173,34 +169,6 @@ public interface Edge extends Pointerable, Statement {
 
     default IDatatype getObjectValue() {
         return getNode(1).getDatatypeValue();
-    }
-
-    ///////////
-    // RDF4J //
-    ///////////
-    @Override
-    public default Resource getSubject() {
-        return (Resource) getSubjectValue().getRdf4jValue();
-    }
-
-    @Override
-    public default IRI getPredicate() {
-        return (IRI) getPropertyValue().getRdf4jValue();
-    }
-
-    @Override
-    public default Value getObject() {
-        return getObjectValue().getRdf4jValue();
-    }
-
-    @Override
-    public default Resource getContext() {
-        Node context = this.getGraph();
-
-        if (context == null || context.getLabel().equals(ExpType.DEFAULT_GRAPH)) {
-            return null;
-        }
-        return (Resource) context.getDatatypeValue().getRdf4jValue();
     }
 
     // for rdf star only

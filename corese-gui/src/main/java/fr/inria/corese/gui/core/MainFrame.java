@@ -2116,7 +2116,6 @@ public class MainFrame extends JFrame implements ActionListener {
 
     void init() throws EngineException {
         QueryProcess exec = QueryProcess.create(Graph.create());
-        System.out.println("Import: SHACL");
         exec.imports(QueryProcess.SHACL);
     }
 

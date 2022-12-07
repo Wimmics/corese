@@ -22,8 +22,8 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
-import fr.inria.corese.rdf4j.CoreseModel;
-import fr.inria.corese.rdf4j.Rdf4jDataManagerBuilder;
+import fr.inria.corese.rdf4j.CoreseGraphModel;
+import fr.inria.corese.rdf4j.Rdf4jModelDataManagerBuilder;
 import fr.inria.corese.sparql.exceptions.EngineException;
 
 public class Rdf4jDataManagerTestSparql {
@@ -63,7 +63,7 @@ public class Rdf4jDataManagerTestSparql {
 
     @Test
     public void selectWhereSpo() throws EngineException, IOException {
-        DataManager dataManager = new Rdf4jDataManagerBuilder().model(this.model).build();
+        DataManager dataManager = new Rdf4jModelDataManagerBuilder().model(this.model).build();
 
         // Sparql query
         QueryProcess exec = QueryProcess.create(dataManager);
@@ -78,7 +78,7 @@ public class Rdf4jDataManagerTestSparql {
     @Test
     public void selectWhereSpoTemoin() throws EngineException, IOException {
         // Sparql query
-        QueryProcess exec = QueryProcess.create(new CoreseModel(this.model).getCoreseGraph());
+        QueryProcess exec = QueryProcess.create(new CoreseGraphModel(this.model).getCoreseGraph());
         Mappings map = exec.query("prefix ex: <http://example.org/> select * where { ?s ?p ?o }");
 
         // Print result
@@ -125,8 +125,8 @@ public class Rdf4jDataManagerTestSparql {
 
     @Test
     public void insertData() throws EngineException {
-        CoreseModel corese_model = new CoreseModel(this.model);
-        DataManager dataManager = new Rdf4jDataManagerBuilder().model(corese_model).build();
+        CoreseGraphModel corese_model = new CoreseGraphModel(this.model);
+        DataManager dataManager = new Rdf4jModelDataManagerBuilder().model(corese_model).build();
 
         // Sparql query
         QueryProcess exec = QueryProcess.create(dataManager);
@@ -140,7 +140,7 @@ public class Rdf4jDataManagerTestSparql {
     @Test
     public void insertDataTemoin() throws EngineException {
         // Sparql query
-        CoreseModel corese_model = new CoreseModel(this.model);
+        CoreseGraphModel corese_model = new CoreseGraphModel(this.model);
         QueryProcess exec = QueryProcess.create(corese_model.getCoreseGraph());
         exec.query("PREFIX dc: <http://purl.org/dc/elements/1.1/>" + "INSERT DATA" + "{ "
                 + "<http://example/book1> dc:title \"A new book\" ;" + "dc:creator \"A.N.Other\" ." + "}");

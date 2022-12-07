@@ -11,8 +11,8 @@ import org.eclipse.rdf4j.query.TupleQueryResult;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.kgram.core.Mapping;
 import fr.inria.corese.kgram.core.Mappings;
+import fr.inria.corese.rdf4j.convert.datatypes.Rdf4jValueToCoreseDatatype;
 import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
 public class SelectResults {
 

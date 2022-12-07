@@ -5,11 +5,8 @@ module fr.inria.corese.sparql {
 	requires java.sql;
 	requires org.json;
 	requires org.apache.commons.text;
-	requires transitive rdf4j.model.api;
-	requires transitive rdf4j.model;
-	requires transitive rdf4j.model.vocabulary;
         
-        exports fr.inria.corese.kgram.core;
+	exports fr.inria.corese.kgram.core;
 	exports fr.inria.corese.kgram.api.core;
 	exports fr.inria.corese.kgram.api.query;
 	exports fr.inria.corese.kgram.filter;
@@ -40,5 +37,4 @@ module fr.inria.corese.sparql {
 	exports fr.inria.corese.sparql.triple.api;
 	exports fr.inria.corese.sparql.triple.function.core;
 	exports fr.inria.corese.sparql.storage.fs;
-	exports fr.inria.corese.sparql.rdf4j;
 }

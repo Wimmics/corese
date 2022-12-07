@@ -15,7 +15,7 @@ import org.eclipse.rdf4j.rio.UnsupportedRDFormatException;
 
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.LoadException;
-import fr.inria.corese.rdf4j.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseGraphModel;
 
 public class Load {
 
@@ -75,8 +75,8 @@ public class Load {
         return (TreeModel) rdf4jModel(new TreeModel(), load_files);
     }
 
-    public static CoreseModel coreseModel(LoadableFile... load_files) {
-        return (CoreseModel) rdf4jModel(new CoreseModel(), load_files);
+    public static CoreseGraphModel coreseModel(LoadableFile... load_files) {
+        return (CoreseGraphModel) rdf4jModel(new CoreseGraphModel(), load_files);
     }
 
 }

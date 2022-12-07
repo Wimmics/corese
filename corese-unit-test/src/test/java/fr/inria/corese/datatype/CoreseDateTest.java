@@ -7,14 +7,14 @@ import javax.xml.datatype.DatatypeConfigurationException;
 import org.eclipse.rdf4j.model.Literal;
 import org.junit.Test;
 
+import fr.inria.corese.rdf4j.convert.datatypes.CoreseDatatypeToRdf4jValue;
+import fr.inria.corese.rdf4j.convert.datatypes.Rdf4jValueToCoreseDatatype;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.CoreseDate;
 import fr.inria.corese.sparql.datatype.CoreseDateTime;
 import fr.inria.corese.sparql.datatype.CoreseDecimal;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.datatype.XSD;
-import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
-import fr.inria.corese.sparql.rdf4j.Rdf4jValueToCoreseDatatype;
 
 public class CoreseDateTest {
 

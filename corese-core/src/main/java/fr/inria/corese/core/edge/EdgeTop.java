@@ -5,8 +5,6 @@ import static fr.inria.corese.kgram.api.core.PointerType.TRIPLE;
 import java.util.ArrayList;
 import java.util.Objects;
 
-import org.eclipse.rdf4j.model.Statement;
-
 import fr.inria.corese.core.GraphObject;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
@@ -23,8 +21,6 @@ import fr.inria.corese.sparql.triple.parser.AccessRight;
  */
 public abstract class EdgeTop extends GraphObject implements Edge {
     private byte level = AccessRight.DEFAULT;
-    private static final long serialVersionUID = 2087591563645988076L;
-    public static boolean DISPLAY_EDGE_AS_RDF4J = false;
     public static final String NL = System.getProperty("line.separator");
     private boolean nested = false;
     // created by values, bind or triple()
@@ -107,7 +103,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
     }
 
     ArrayList<IDatatype> getNodeList() {
-        ArrayList<IDatatype> list = new ArrayList();
+        ArrayList<IDatatype> list = new ArrayList<>();
         for (int i = 0; i < 4; i++) {
             list.add(getValue(null, i));
         }
@@ -180,7 +176,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getSubject(), this.getPredicate(), this.getObject(), this.getContext());
+        return Objects.hash(this.getObjectNode(), this.getSubjectNode(), this.getPropertyNode(), this.getGraphNode());
     }
 
     @Override
@@ -188,51 +184,23 @@ public abstract class EdgeTop extends GraphObject implements Edge {
         if (this == o) {
             return true;
         }
-        if (o instanceof Edge) {
-            return equals((Edge) o);
-        } else if (o instanceof Statement) {
-            return equals((Statement) o);
+        if (!(o instanceof Edge)) {
+            return false;
         }
-        return false;
-    }
-
-    public boolean equals(Edge t) {
-        return getObjectNode().equals(t.getObjectNode())
-                && getSubjectNode().equals(t.getSubjectNode())
-                && getPropertyNode().equals(t.getPropertyNode())
-                && Objects.equals(this.getGraphNode(), t.getGraphNode());
-    }
-
-    public boolean equals(Statement t) {
-        return getObject().equals(t.getObject())
-                && getSubject().equals(t.getSubject())
-                && getPredicate().equals(t.getPredicate())
-                && Objects.equals(this.getContext(), t.getContext());
+        Edge t = (Edge) o;
+        return Objects.equals(getObjectNode(), t.getObjectNode())
+                && Objects.equals(getSubjectNode(), t.getSubjectNode())
+                && Objects.equals(getPropertyNode(), t.getPropertyNode())
+                && Objects.equals(getGraphNode(), t.getGraphNode());
     }
 
     @Override
     public String toString() {
-        if (DISPLAY_EDGE_AS_RDF4J) {
-            return toRDF4JString();
-        }
         return toRDFString();
     }
 
     public String toRDFString() {
         return String.format("%s %s %s %s", getGraphValue(), getSubjectValue(), getPredicateValue(), getObjectValue());
-    }
-
-    public String toRDF4JString() {
-        StringBuilder sb = new StringBuilder(256);
-
-        sb.append("(" + getSubject() + ", " + getPredicate() + ", " + getObject()
-                + (getContext() == null ? "" : ", " + getContext()) + ")");
-
-        if (getContext() != null) {
-            sb.append(" [").append(getContext()).append("]");
-        }
-
-        return sb.toString();
     }
 
     @Override

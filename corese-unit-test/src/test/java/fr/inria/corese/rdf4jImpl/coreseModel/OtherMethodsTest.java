@@ -18,11 +18,11 @@ import org.eclipse.rdf4j.model.vocabulary.RDF;
 import org.junit.Before;
 import org.junit.Test;
 
-import fr.inria.corese.rdf4j.CoreseModel;
+import fr.inria.corese.rdf4j.CoreseGraphModel;
 
 public class OtherMethodsTest {
 
-    private CoreseModel model;
+    private CoreseGraphModel model;
     private Statement statement_0;
     private Statement statement_1;
     private Statement statement_2;
@@ -65,7 +65,7 @@ public class OtherMethodsTest {
         /////////////////
         // Build graph //
         /////////////////
-        this.model = new CoreseModel();
+        this.model = new CoreseGraphModel();
         this.model.add(edithPiafNode, isaProperty, singerNode);
         this.model.add(edithPiafNode, firstNameProperty, edithLiteral, context1);
         this.model.add(edithPiafNode, firstNameProperty, edithLiteral, context2);
@@ -75,7 +75,7 @@ public class OtherMethodsTest {
 
     @Test
     public void isEmpty() {
-        assertEquals(true, new CoreseModel().isEmpty());
+        assertEquals(true, new CoreseGraphModel().isEmpty());
         assertEquals(false, this.model.isEmpty());
     }
 

@@ -160,7 +160,6 @@ public class Property {
 
         // boolan value
         DISPLAY_URI_AS_PREFIX,
-        DISPLAY_EDGE_AS_RDF4J,
         // rdf star reference node displayed as nested triple
         DISPLAY_AS_TRIPLE,
         // Graph node implemented as IDatatype instead of NodeImpl
@@ -478,10 +477,6 @@ public class Property {
 
             case LOAD_WITH_PARAMETER:
                 Service.LOAD_WITH_PARAMETER = b;
-                break;
-
-            case DISPLAY_EDGE_AS_RDF4J:
-                EdgeTop.DISPLAY_EDGE_AS_RDF4J = b;
                 break;
 
             case DISPLAY_URI_AS_PREFIX:

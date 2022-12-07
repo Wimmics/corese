@@ -2,11 +2,6 @@ package fr.inria.corese.sparql.datatype;
 
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.CoreseDatatypeException;
-import fr.inria.corese.sparql.rdf4j.CoreseDatatypeToRdf4jValue;
-
-import org.eclipse.rdf4j.model.Literal;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * <p>
@@ -97,11 +92,6 @@ public class CoreseURILiteral extends CoreseStringableImpl {
                 return getLabel().compareTo(dt.getLabel()) >= 0;
         }
         throw failure();
-    }
-
-    @Override
-    public Literal getRdf4jValue() {
-        return CoreseDatatypeToRdf4jValue.convertLiteral(this);
     }
 
 }

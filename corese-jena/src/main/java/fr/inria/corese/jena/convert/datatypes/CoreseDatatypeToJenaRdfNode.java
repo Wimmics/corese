@@ -1,4 +1,4 @@
-package fr.inria.corese.storage.jenatdb1.convertDatatype;
+package fr.inria.corese.jena.convert.datatypes;
 
 import org.apache.jena.datatypes.xsd.XSDDatatype;
 import org.apache.jena.datatypes.xsd.impl.XMLLiteralType;

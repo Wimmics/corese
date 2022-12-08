@@ -8,10 +8,10 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.jena.JenaTdb1DataManager;
+import fr.inria.corese.jena.JenaTdb1DataManagerBuilder;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.storage.jenatdb1.JenaDataManager;
-import fr.inria.corese.storage.jenatdb1.JenaDataManagerBuilder;
 
 /**
  *
@@ -22,7 +22,7 @@ public class ThreadWithStorage {
     static final String UPDATE = "load </user/corby/home/AADemoNew/human/human.rdf>";
     static final String QUERY = "select * where {?s ?p ?o} limit 10";
     
-    JenaDataManager dataManager;
+    JenaTdb1DataManager dataManager;
     
     public static void main(String[] args) throws LoadException, EngineException {
         new ThreadWithStorage().test();
@@ -96,7 +96,7 @@ public class ThreadWithStorage {
     }
     
     void init()  {
-        dataManager = new JenaDataManagerBuilder().storagePath(STORAGE).build();
+        dataManager = new JenaTdb1DataManagerBuilder().storagePath(STORAGE).build();
 //        Graph g = Graph.create();
 //        Load ld = Load.create(g, dataManager);
 //        ld.parse("/user/corby/home/AADemoNew/human/human.rdf");

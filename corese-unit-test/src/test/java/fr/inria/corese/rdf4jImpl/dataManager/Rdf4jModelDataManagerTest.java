@@ -26,7 +26,7 @@ import fr.inria.corese.rdf4j.Rdf4jModelDataManagerBuilder;
 import fr.inria.corese.rdf4j.convert.ConvertRdf4jCorese;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 
-public class Rdf4jDataManagerTest {
+public class Rdf4jModelDataManagerTest {
 
     private Model model;
 

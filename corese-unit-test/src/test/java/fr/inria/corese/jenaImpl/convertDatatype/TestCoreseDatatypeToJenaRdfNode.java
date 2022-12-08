@@ -12,6 +12,7 @@ import org.apache.jena.rdf.model.RDFNode;
 import org.apache.jena.rdf.model.Resource;
 import org.junit.Test;
 
+import fr.inria.corese.jena.convert.datatypes.CoreseDatatypeToJenaRdfNode;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.CoreseDate;
 import fr.inria.corese.sparql.datatype.CoreseDateTime;
@@ -23,7 +24,6 @@ import fr.inria.corese.sparql.datatype.CoreseString;
 import fr.inria.corese.sparql.datatype.CoreseStringBuilder;
 import fr.inria.corese.sparql.datatype.CoreseYear;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.storage.jenatdb1.convertDatatype.CoreseDatatypeToJenaRdfNode;
 
 public class TestCoreseDatatypeToJenaRdfNode {
 

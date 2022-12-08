@@ -11,10 +11,10 @@ import org.apache.jena.query.Dataset;
 import com.google.common.collect.Lists;
 
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.jena.JenaTdb1DataManager;
+import fr.inria.corese.jena.JenaTdb1DataManagerBuilder;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.storage.jenatdb1.JenaDataManager;
-import fr.inria.corese.storage.jenatdb1.JenaDataManagerBuilder;
 
 public class CompareGraphDataset {
 
@@ -22,7 +22,7 @@ public class CompareGraphDataset {
     public static boolean compareGraph(Dataset dataset, Graph corese_graph) {
 
         ArrayList<Edge> jena_edges = new ArrayList<>();
-        try (JenaDataManager dm = new JenaDataManagerBuilder().dataset(dataset).storagePath(null).build();) {
+        try (JenaTdb1DataManager dm = new JenaTdb1DataManagerBuilder().dataset(dataset).storagePath(null).build();) {
             // Get edges from Jena
             Method method = dm.getClass().getDeclaredMethod("chooseQuadDuplicatesWrite", Node.class, Node.class,
                     Node.class, List.class);

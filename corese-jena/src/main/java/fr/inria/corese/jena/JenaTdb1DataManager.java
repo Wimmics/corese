@@ -1,4 +1,6 @@
-package fr.inria.corese.storage.jenatdb1;
+package fr.inria.corese.jena;
+
+import static fr.inria.corese.jena.convert.ConvertJenaCorese.RULE_NAME;
 
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -28,16 +30,16 @@ import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.producer.MetadataManager;
 import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.core.util.Property;
+import fr.inria.corese.jena.convert.ConvertJenaCorese;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import static fr.inria.corese.storage.jenatdb1.ConvertJenaCorese.RULE_NAME;
 
 /**
  * Implements Corese DataManager interface for Jena-TDB.
  */
-public class JenaDataManager implements DataManager, AutoCloseable {
+public class JenaTdb1DataManager implements DataManager, AutoCloseable {
 
     private Dataset jena_dataset;
     private Graph default_graph;
@@ -59,7 +61,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      * Constructor of JenaTdbDataManager. Create to a Jena dataset backed by an
      * in-memory block manager. For testing.
      */
-    protected JenaDataManager() {
+    protected JenaTdb1DataManager() {
         this.storage_path = null;
         this.jena_dataset = TDBFactory.createDataset();
         init();
@@ -71,7 +73,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      * 
      * @param storage_path Path of the directory where the data is stored.
      */
-    protected JenaDataManager(String storage_path) {
+    protected JenaTdb1DataManager(String storage_path) {
         this.storage_path = storage_path;
         this.jena_dataset = TDBFactory.createDataset(storage_path);
         init();
@@ -84,7 +86,7 @@ public class JenaDataManager implements DataManager, AutoCloseable {
      * @param storage_path Path of the directory where the dataset is stored, null
      *                     if it is in memory.
      */
-    protected JenaDataManager(Dataset dataset, String storage_path) {
+    protected JenaTdb1DataManager(Dataset dataset, String storage_path) {
         this.storage_path = storage_path;
         this.jena_dataset = dataset;
         init();

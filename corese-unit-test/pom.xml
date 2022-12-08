@@ -43,7 +43,7 @@
     </dependency>
     <dependency>
       <groupId>${project.groupId}</groupId>
-      <artifactId>corese-storage</artifactId>
+      <artifactId>corese-jena</artifactId>
       <version>${revision}</version>
     </dependency>
     <dependency>

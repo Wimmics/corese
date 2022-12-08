@@ -176,7 +176,7 @@ public abstract class EdgeTop extends GraphObject implements Edge {
 
     @Override
     public int hashCode() {
-        return Objects.hash(this.getObjectNode(), this.getSubjectNode(), this.getPropertyNode(), this.getGraphNode());
+        return Objects.hash(this.getSubjectNode(), this.getPropertyNode(), this.getObjectNode(), this.getGraphNode());
     }
 
     @Override
@@ -188,9 +188,9 @@ public abstract class EdgeTop extends GraphObject implements Edge {
             return false;
         }
         Edge t = (Edge) o;
-        return Objects.equals(getObjectNode(), t.getObjectNode())
-                && Objects.equals(getSubjectNode(), t.getSubjectNode())
+        return Objects.equals(getSubjectNode(), t.getSubjectNode())
                 && Objects.equals(getPropertyNode(), t.getPropertyNode())
+                && Objects.equals(getObjectNode(), t.getObjectNode())
                 && Objects.equals(getGraphNode(), t.getGraphNode());
     }
 

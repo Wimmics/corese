@@ -137,13 +137,13 @@ public class NodeImpl implements Node {
         return getValue().sameTerm(getValue(n));
     }
     
-    boolean sameVariable(Node n){      
+    boolean sameVariable(Node n) {
         return isVariable() && n.isVariable() && getLabel().equals(n.getLabel());
     }
 
     @Override
     public boolean match(Node n) {
-       if (isVariable() || n.isVariable()) {
+        if (isVariable() || n.isVariable()) {
             return sameVariable(n);
         }
         return getValue().match(getValue(n));
@@ -151,28 +151,17 @@ public class NodeImpl implements Node {
 
     @Override
     public boolean equals(Object o) {
-        if (this == o) {
-            return true;
+        if (o instanceof Node) {
+            return equals((Node) o); // was same
         }
-        if (!(o instanceof NodeImpl)) {
-            return false;
-        }
-        NodeImpl n = (NodeImpl) o;
-        if (isVariable() || n.isVariable()) {
-            return Objects.equals(getLabel(), n.getLabel());
-        }
-        return Objects.equals(getValue(), n.getValue());
+        return false;
     }
-    
-    @Override
-    public int hashCode() {
-        int result = 17;
-        if (isVariable()) {
-            result = 31 * result + getLabel().hashCode();
-        } else {
-            result = 31 * result + getValue().hashCode();
+
+    public boolean equals(Node n) {
+        if (isVariable() || n.isVariable()) {
+            return sameVariable(n);
         }
-        return result;
+        return getValue().equals(getValue(n));
     }
 
     @Override

@@ -12,10 +12,10 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.core.rule.RuleEngine;
 import fr.inria.corese.core.storage.api.dataManager.DataManager;
 import fr.inria.corese.core.transform.Transformer;
+import fr.inria.corese.jena.JenaTdb1DataManagerBuilder;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
-import fr.inria.corese.storage.jenatdb1.JenaDataManagerBuilder;
 
 /**
  * Test data manager
@@ -43,7 +43,7 @@ public class TestQueryStorage {
     }
 
     static void init() throws LoadException {
-        DataManager man = new JenaDataManagerBuilder().storagePath(STORAGE).build();
+        DataManager man = new JenaTdb1DataManagerBuilder().storagePath(STORAGE).build();
         man.getCreateMetadataManager();
         Graph g = Graph.create();
         

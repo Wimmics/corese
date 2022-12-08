@@ -1,4 +1,4 @@
-package fr.inria.corese.storage.jenatdb1;
+package fr.inria.corese.jena.convert;
 
 import java.util.ArrayList;
 
@@ -10,13 +10,13 @@ import org.apache.jena.sparql.core.Quad;
 import fr.inria.corese.core.NodeImpl;
 import fr.inria.corese.core.edge.EdgeGeneric;
 import fr.inria.corese.core.logic.Entailment;
+import fr.inria.corese.jena.convert.datatypes.CoreseDatatypeToJenaRdfNode;
+import fr.inria.corese.jena.convert.datatypes.JenaRdfNodeToCoreseDatatype;
 import fr.inria.corese.kgram.api.core.Edge;
 import fr.inria.corese.kgram.api.core.ExpType;
 import fr.inria.corese.kgram.api.core.Node;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
-import fr.inria.corese.storage.jenatdb1.convertDatatype.CoreseDatatypeToJenaRdfNode;
-import fr.inria.corese.storage.jenatdb1.convertDatatype.JenaRdfNodeToCoreseDatatype;
 
 public class ConvertJenaCorese {
 
@@ -190,7 +190,7 @@ public class ConvertJenaCorese {
         return corese_edge_list;
     }
     
-    static final String RULE_NAME = Entailment.RULE+"_";
+    public static final String RULE_NAME = Entailment.RULE+"_";
     
     // insert edge with index i with graph kg:rule_i
     static org.apache.jena.graph.Node context(Edge edge) {

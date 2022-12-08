@@ -5,7 +5,7 @@ import org.eclipse.rdf4j.model.Model;
 import fr.inria.corese.core.storage.api.dataManager.DataManagerBuilder;
 
 /**
- * Builder for Rdf4jDataManager.
+ * Builder for Rdf4jModelDataManagerBuilder.
  */
 public class Rdf4jModelDataManagerBuilder implements DataManagerBuilder {
 
@@ -25,7 +25,7 @@ public class Rdf4jModelDataManagerBuilder implements DataManagerBuilder {
     //////////////////
 
     /**
-     * Create a Rdf4jDataManagerBuilder.
+     * Create a Rdf4jModelDataManagerBuilder.
      */
     public Rdf4jModelDataManagerBuilder() {
     }

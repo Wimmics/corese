@@ -1,13 +1,13 @@
-package fr.inria.corese.storage.jenatdb1;
+package fr.inria.corese.jena;
 
 import org.apache.jena.query.Dataset;
 
 import fr.inria.corese.core.storage.api.dataManager.DataManagerBuilder;
 
 /**
- * Builder for JenaDataManager.
+ * Builder for JenaTdb1DataManagerBuilder.
  */
-public class JenaDataManagerBuilder implements DataManagerBuilder {
+public class JenaTdb1DataManagerBuilder implements DataManagerBuilder {
 
     //////////////////////////
     // Mandatory parameters //
@@ -28,9 +28,9 @@ public class JenaDataManagerBuilder implements DataManagerBuilder {
     //////////////////
 
     /**
-     * Create a JenaDataManagerBuilder.
+     * Create a JenaTdb1DataManagerBuilder.
      */
-    public JenaDataManagerBuilder() {
+    public JenaTdb1DataManagerBuilder() {
     }
 
     ////////////
@@ -43,7 +43,7 @@ public class JenaDataManagerBuilder implements DataManagerBuilder {
      * @param storagePath Path of the directory where the data is stored.
      * @return this instance.
      */
-    public JenaDataManagerBuilder storagePath(String storagePath) {
+    public JenaTdb1DataManagerBuilder storagePath(String storagePath) {
         this.storagePath = storagePath;
         this.defStoragePath = true;
         return this;
@@ -55,7 +55,7 @@ public class JenaDataManagerBuilder implements DataManagerBuilder {
      * @param dataset Jena dataset.
      * @return this instance.
      */
-    public JenaDataManagerBuilder dataset(Dataset dataset) {
+    public JenaTdb1DataManagerBuilder dataset(Dataset dataset) {
         this.dataset = dataset;
         this.defDataset = true;
         return this;
@@ -66,21 +66,21 @@ public class JenaDataManagerBuilder implements DataManagerBuilder {
     ///////////
 
     @Override
-    public JenaDataManager build() {
+    public JenaTdb1DataManager build() {
         if (defStoragePath && defDataset) {
-            return new JenaDataManager(this.dataset, this.storagePath);
+            return new JenaTdb1DataManager(this.dataset, this.storagePath);
         }
 
         if (this.defStoragePath) {
-            return new JenaDataManager(this.storagePath);
+            return new JenaTdb1DataManager(this.storagePath);
         }
 
         if (this.defDataset) {
             throw new IllegalArgumentException(
-                    "You must give the destination path associated to the Dataset (null if in memory) if you build a JenaDataManager with a Dataset");
+                    "You must give the destination path associated to the Dataset (null if in memory) if you build a JenaTdb1DataManager with a Dataset");
         }
 
-        return new JenaDataManager();
+        return new JenaTdb1DataManager();
     }
 
 }

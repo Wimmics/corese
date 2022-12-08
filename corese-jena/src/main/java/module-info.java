@@ -6,8 +6,9 @@ module fr.inria.corese.corese_storage {
     requires transitive org.apache.jena.base;
     requires com.google.common;
 
-    exports fr.inria.corese.storage.jenatdb1.convertDatatype;
-    exports fr.inria.corese.storage.jenatdb1;
+    exports fr.inria.corese.jena.convert.datatypes;
+    exports fr.inria.corese.jena;
+    exports fr.inria.corese.jena.convert;
 
-    opens fr.inria.corese.storage.jenatdb1;
+    opens fr.inria.corese.jena;
 }

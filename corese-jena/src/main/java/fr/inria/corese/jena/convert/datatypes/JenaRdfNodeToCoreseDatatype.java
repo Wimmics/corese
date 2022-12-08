@@ -1,4 +1,4 @@
-package fr.inria.corese.storage.jenatdb1.convertDatatype;
+package fr.inria.corese.jena.convert.datatypes;
 
 import java.util.Optional;
 

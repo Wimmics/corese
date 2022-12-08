@@ -26,7 +26,7 @@ import fr.inria.corese.rdf4j.CoreseGraphModel;
 import fr.inria.corese.rdf4j.Rdf4jModelDataManagerBuilder;
 import fr.inria.corese.sparql.exceptions.EngineException;
 
-public class Rdf4jDataManagerTestSparql {
+public class Rdf4jModelDataManagerTestSparql {
 
     private Model model;
 

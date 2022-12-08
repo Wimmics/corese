@@ -91,7 +91,7 @@
     <module>shex</module>
     <module>corese-unit-test</module>
     <module>corese-rdf4j</module>
-    <module>corese-storage</module>
+    <module>corese-jena</module>
     <module>corese-cli</module>
   </modules>
 

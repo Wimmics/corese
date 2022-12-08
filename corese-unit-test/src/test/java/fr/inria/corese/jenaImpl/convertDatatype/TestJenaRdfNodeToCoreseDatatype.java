@@ -16,6 +16,7 @@ import org.apache.jena.rdf.model.Resource;
 import org.apache.jena.rdf.model.ResourceFactory;
 import org.junit.Test;
 
+import fr.inria.corese.jena.convert.datatypes.JenaRdfNodeToCoreseDatatype;
 import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.CoreseBlankNode;
 import fr.inria.corese.sparql.datatype.CoreseBoolean;
@@ -33,7 +34,6 @@ import fr.inria.corese.sparql.datatype.CoreseURILiteral;
 import fr.inria.corese.sparql.datatype.CoreseUndefLiteral;
 import fr.inria.corese.sparql.datatype.CoreseXMLLiteral;
 import fr.inria.corese.sparql.datatype.CoreseYear;
-import fr.inria.corese.storage.jenatdb1.convertDatatype.JenaRdfNodeToCoreseDatatype;
 
 public class TestJenaRdfNodeToCoreseDatatype {
 

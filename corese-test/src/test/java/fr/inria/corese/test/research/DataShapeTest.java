@@ -350,7 +350,7 @@ public class DataShapeTest {
     
 //    Graph execdm(String shape, String data) throws EngineException, LoadException {
 //        try {
-//            DataManager man = new JenaDataManager(PATH + "/test" + num++);
+//            DataManager man = new JenaTdb1DataManager(PATH + "/test" + num++);
 //            Graph mygraph = Graph.create();
 //            //man = new DataManagerGraph(mygraph);
 //            Graph g = load(data, man);

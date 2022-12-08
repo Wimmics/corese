@@ -8,10 +8,10 @@
   </parent>
 
   <groupId>fr.inria.corese</groupId>
-  <artifactId>corese-storage</artifactId>
+  <artifactId>corese-jena</artifactId>
   <version>4.3.0</version>
 
-  <name>corese-storage</name>
+  <name>corese-jena</name>
   <!-- FIXME change it to the project's website -->
   <url>http://www.example.com</url>
 

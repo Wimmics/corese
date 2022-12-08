@@ -241,7 +241,7 @@ try (RepositoryConnection conn = db.getConnection()) {
 ## 2. Implementation of an RDF4J data manager in Corese
 
 `Datamanger` API is an interface to connect an external graph implementation to the Corese SPARQL engine.
-`Rdf4jDataManager` is an implementation of this interface for RDF4J models.
+`Rdf4jModelDataManager` is an implementation of this interface for RDF4J models.
 Thus it is possible to use the Corese SPARQL engine with any triple storage structure that implements the RDF4J API.
 
 ### 2.1. Corese SPARQL Engine with a RDF4J model
@@ -256,7 +256,7 @@ Model RDF4J_tree_model = new TreeModel();
 // […]
 
 // Sparql query
-QueryProcess exec = QueryProcess.create(new Rdf4jDataManagerBuilder.model(RDF4J_tree_model).build());
+QueryProcess exec = QueryProcess.create(new Rdf4jModelDataManagerBuilder.model(RDF4J_tree_model).build());
 Mappings map = exec.query("select * where { ?s ?p ?o }");
 
 // Print result

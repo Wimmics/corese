@@ -98,11 +98,6 @@
             <groupId>com.github.jsonld-java</groupId>
             <artifactId>jsonld-java</artifactId>
         </dependency>
-        <dependency>
-            <groupId>org.testng</groupId>
-            <artifactId>testng</artifactId>
-            <scope>test</scope>
-        </dependency>
 <!--        <dependency>
             <groupId>org.apache.jena</groupId>
             <artifactId>jena-arq</artifactId>

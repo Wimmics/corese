@@ -5,11 +5,10 @@
  */
 package fr.inria.corese.fr.inria.corese.kgraph.core;
 
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.Graph;
 import java.text.NumberFormat;
-import org.testng.annotations.Test;
+
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.kgram.api.core.Node;
 
 /**
  *

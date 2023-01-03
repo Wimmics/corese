@@ -71,6 +71,8 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.context.ContextLog;
+import java.io.File;
+import java.io.FileWriter;
 
 /**
  * Onglet Query avec tout ce qu'il contient.
@@ -98,7 +100,7 @@ public final class MyJPanelQuery extends JPanel {
     private JButton buttonRun, buttonShacl, buttonPush,
             buttonHeader,
             buttonLog,
-            buttonCopy,
+            buttonCopy, buttonBrowse,
             buttonSort, buttonCompare,
             buttonShex,
             buttonKill, buttonStop, buttonValidate, buttonToSPIN, buttonToSPARQL,
@@ -190,6 +192,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonHeader = new JButton();
         buttonLog = new JButton();
         buttonCopy = new JButton();
+        buttonBrowse = new JButton();
         buttonSort = new JButton();
         buttonCompare = new JButton();
         buttonStop = new JButton();
@@ -325,6 +328,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonLog.setText("Log");
         // copy current result into last result panel
         buttonCopy.setText("Copy");
+        buttonBrowse.setText("Browse");
         buttonSort.setText("Modifier");
         buttonCompare.setText("Compare");
         buttonRun.setText("Query");
@@ -405,6 +409,7 @@ public final class MyJPanelQuery extends JPanel {
         hSeq2.addComponent(buttonLog);
         hSeq2.addComponent(buttonPush);
         hSeq2.addComponent(buttonCopy);
+        hSeq2.addComponent(buttonBrowse);
         hSeq2.addComponent(buttonCompare);
         hSeq2.addComponent(buttonStop);
         // hSeq2.addComponent(buttonKill);
@@ -445,6 +450,7 @@ public final class MyJPanelQuery extends JPanel {
         vParallel2.addComponent(buttonLog);
         vParallel2.addComponent(buttonPush);
         vParallel2.addComponent(buttonCopy);
+        vParallel2.addComponent(buttonBrowse);
         vParallel2.addComponent(buttonCompare);
         vParallel2.addComponent(buttonStop);
         // vParallel2.addComponent(buttonKill);
@@ -505,6 +511,7 @@ public final class MyJPanelQuery extends JPanel {
         buttonHeader.addActionListener(l_RunListener);
         buttonLog.addActionListener(l_RunListener);
         buttonCopy.addActionListener(l_RunListener);
+        buttonBrowse.addActionListener(l_RunListener);
         buttonSort.addActionListener(l_RunListener);
         buttonCompare.addActionListener(l_RunListener);
         buttonStop.addActionListener(l_RunListener);
@@ -974,7 +981,9 @@ public final class MyJPanelQuery extends JPanel {
             @Override
             public void actionPerformed(ActionEvent ev) {
                 String txt = getTextArea().getText();
-                getTextArea().setText("");
+                if (ev.getSource() != buttonBrowse) {
+                    getTextArea().setText("");
+                }
                 scrollPaneTreeResult.setViewportView(new JPanel());
                 scrollPaneTreeResult.setRowHeaderView(new JPanel());
 
@@ -1009,7 +1018,16 @@ public final class MyJPanelQuery extends JPanel {
                         // copy current result into last result panel
                         // (as if load result), for xt:mappings()
                         coreseFrame.getLastQueryPanel().basicDisplay(getMappings());
-                    } else if (ev.getSource() == buttonSort) {
+                    } 
+                    else if (ev.getSource() == buttonBrowse) {
+                        try {
+                            browse(getMappings(), txt);
+                        }
+                        catch (IOException ex) {
+                            logger.error(ex.getMessage());
+                        }
+                    } 
+                    else if (ev.getSource() == buttonSort) {
                         modifier(query);
                     } else if (ev.getSource() == buttonCompare) {
                         compare();
@@ -1060,6 +1078,25 @@ public final class MyJPanelQuery extends JPanel {
                 textPaneValidation.setText(l_message + "Done.");
             }
         };
+    }
+    
+    
+    void browse(Mappings map, String text) throws IOException {
+        if (map.getQuery().isTemplate()) {
+            browse(text);
+        }
+        LinkedResult lr = new LinkedResult(mainFrame);
+        lr.browse(map);
+    }
+    
+    void browse(String text) throws IOException {
+        String FILE = "file://";
+        File file = File.createTempFile("result", ".html");
+        FileWriter writer = new FileWriter(file);
+        writer.write(text);
+        writer.flush();
+        writer.close();
+        mainFrame.browse(FILE.concat(file.getPath()));
     }
 
     // translate log into rdf graph and query this graph

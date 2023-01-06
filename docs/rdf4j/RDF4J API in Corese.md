@@ -15,7 +15,6 @@ This document details the RDF4J APIs implemented in Corese and how to use and co
          1. [1.6.1. RIO](#161-rio)
          2. [1.6.2. RDF4J SPARQL Engine with a Corese model](#162-rdf4j-sparql-engine-with-a-corese-model)
    2. [2. Implementation of an RDF4J data manager in Corese](#2-implementation-of-an-rdf4j-data-manager-in-corese)
-      1. [2.1. Corese SPARQL Engine with a RDF4J model](#21-corese-sparql-engine-with-a-rdf4j-model)
 
 ## 1. Implementation of the RDF4J model API in Corese
 
@@ -240,27 +239,6 @@ try (RepositoryConnection conn = db.getConnection()) {
 
 ## 2. Implementation of an RDF4J data manager in Corese
 
-`Datamanger` API is an interface to connect an external graph implementation to the Corese SPARQL engine.
-`Rdf4jModelDataManager` is an implementation of this interface for RDF4J models.
-Thus it is possible to use the Corese SPARQL engine with any triple storage structure that implements the RDF4J API.
+The `DataManager` API is an interface that allows the Corese engine to connect to and interact with external storage systems. By implementing the Datamanager interface, it is possible to use the Corese engine with any storage structure.
 
-### 2.1. Corese SPARQL Engine with a RDF4J model
-
-This example shows how to use the SPARQL Corese engine with an RDF4J model.
-
-```java
-// Create an RDF4J model
-Model RDF4J_tree_model = new TreeModel();
-
-// Operations on the RDF4J tree model (e.g: add statement, etc)
-// […]
-
-// Sparql query
-QueryProcess exec = QueryProcess.create(new Rdf4jModelDataManagerBuilder.model(RDF4J_tree_model).build());
-Mappings map = exec.query("select * where { ?s ?p ?o }");
-
-// Print result
-for (Mapping m : map) {
-    System.out.println(m);
-}
-```
+The Rdf4jModelDataManager is an implementation of this interface for RDF4J models, enabling the use of the Corese SPARQL engine with any triple storage structure that implements the RDF4J API. For more information on using the Datamanager API and implementing storage systems in Corese, refer to the documentation [on Storage and Persistence in Corese](https://github.com/Wimmics/corese/blob/master/docs/storage/Persistence%20in%20Corese.md).

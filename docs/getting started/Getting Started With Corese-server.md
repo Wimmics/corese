@@ -2,14 +2,14 @@
 
 This tutorial shows how to use the basic features of the Corese-server framework.
 
-- [Getting Started With Corese-server](#getting-started-with-corese-server)
-  - [1. Load data](#1-load-data)
-    - [1.1. Command line](#11-command-line)
-    - [1.2. Profile file](#12-profile-file)
-  - [2. Create multiple endpoints](#2-create-multiple-endpoints)
-    - [2.1. Multiple endpoints with different data](#21-multiple-endpoints-with-different-data)
-  - [3. Restrict access to external endpoints](#3-restrict-access-to-external-endpoints)
-  - [4. To go deeper](#4-to-go-deeper)
+1. [Getting Started With Corese-server](#getting-started-with-corese-server)
+   1. [1. Load data](#1-load-data)
+      1. [1.1. Command line](#11-command-line)
+      2. [1.2. Profile file](#12-profile-file)
+   2. [2. Create multiple endpoints](#2-create-multiple-endpoints)
+      1. [2.1. Multiple endpoints with different data](#21-multiple-endpoints-with-different-data)
+   3. [3. Restrict access to external endpoints](#3-restrict-access-to-external-endpoints)
+   4. [4. To go deeper](#4-to-go-deeper)
 
 ## 1. Load data
 
@@ -61,10 +61,10 @@ The keyword `st:user` designates the default endpoint available in <http://local
 In this example, we add on the default endpoint the workflow named `<#loadBeatles>` which loads the file "beatles.tll".
 There can be several load in a workflow body.
 
-To load Corese-server with a profile, use the options `-lp -pp "profileFile"`.
+To load Corese-server with a profile, use the options `-pp "profileFile"`.
 
 ```shell
-java -jar corese-server.jar -lp -pp "myprofile.ttl"
+java -jar corese-server.jar -pp "myprofile.ttl"
 ```
 
 ## 2. Create multiple endpoints

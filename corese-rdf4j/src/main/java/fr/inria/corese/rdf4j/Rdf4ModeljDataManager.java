@@ -36,6 +36,8 @@ public class Rdf4ModeljDataManager implements DataManager {
 
     /**
      * Constructor of Rdf4ModeljDataManager.
+     * Please use the Rdf4jModelDataManagerBuilder to create a
+     * Rdf4ModeljDataManager.
      */
     protected Rdf4ModeljDataManager() {
         this.rdf4j_model = new TreeModel();
@@ -43,6 +45,8 @@ public class Rdf4ModeljDataManager implements DataManager {
 
     /**
      * Constructor of Rdf4ModeljDataManager from a RDF4J Model.
+     * Please use the Rdf4jModelDataManagerBuilder to create a
+     * Rdf4ModeljDataManager.
      * 
      * @param rdf4j_model RDF4J model.
      */

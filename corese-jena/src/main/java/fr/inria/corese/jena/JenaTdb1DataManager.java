@@ -60,16 +60,18 @@ public class JenaTdb1DataManager implements DataManager, AutoCloseable {
     /**
      * Constructor of JenaTdbDataManager. Create to a Jena dataset backed by an
      * in-memory block manager. For testing.
+     * Please use the JenaTdb1DataManagerBuilder to create a JenaTdb1DataManager.
      */
     protected JenaTdb1DataManager() {
         this.storage_path = null;
         this.jena_dataset = TDBFactory.createDataset();
         init();
     }
-
+    
     /**
      * Constructor of JenaTdbDataManager. Create or connect to a Jena dataset backed
      * in file system.
+     * Please use the JenaTdb1DataManagerBuilder to create a JenaTdb1DataManager.
      * 
      * @param storage_path Path of the directory where the data is stored.
      */
@@ -81,6 +83,7 @@ public class JenaTdb1DataManager implements DataManager, AutoCloseable {
 
     /**
      * Constructor of JenajDataManager from a Jena dataset.
+     * Please use the JenaTdb1DataManagerBuilder to create a JenaTdb1DataManager.
      * 
      * @param dataset      Jena dataset.
      * @param storage_path Path of the directory where the dataset is stored, null

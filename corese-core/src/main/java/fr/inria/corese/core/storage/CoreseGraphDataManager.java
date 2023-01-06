@@ -28,11 +28,22 @@ public class CoreseGraphDataManager implements DataManager {
     private String path = STORAGE_PATH;
     private boolean debug = false;
 
+    /**
+     * Please use the CoreseGraphDataManagerBuilder to create a
+     * CoreseGraphDataManager.
+     * 
+     */
     protected CoreseGraphDataManager() {
         setGraph(new Graph());
         init();
     }
 
+    /**
+     * Please use the CoreseGraphDataManagerBuilder to create a
+     * CoreseGraphDataManager.
+     * 
+     * @param g
+     */
     protected CoreseGraphDataManager(Graph g) {
         setGraph(g);
         init();
@@ -72,7 +83,7 @@ public class CoreseGraphDataManager implements DataManager {
 
     @Override
     public void start(HashMapList<String> map) {
-        if (map!=null) {
+        if (map != null) {
             init(map);
         }
     }
@@ -93,7 +104,7 @@ public class CoreseGraphDataManager implements DataManager {
         trace("iterate: %s %s %s %s", subject, predicate, object, from);
         return getGraph().iterate(subject, predicate, object, from);
     }
-    
+
     @Override
     public void trace(String mes, Object... obj) {
         if (isDebug()) {

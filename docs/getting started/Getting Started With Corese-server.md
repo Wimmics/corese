@@ -25,7 +25,7 @@ java -jar corese-server.jar -l "[…]/beatles.ttl"
 ```
 
 > It's also possible to load data from several files or URL.
->
+> 
 > E.g: `java -jar corese-server.jav -l "./file_1.ttl" -l "file_2.ttl" -l "http://file_3.ttl"`.
 
 ### 1.2. Profile file
@@ -61,10 +61,10 @@ The keyword `st:user` designates the default endpoint available in <http://local
 In this example, we add on the default endpoint the workflow named `<#loadBeatles>` which loads the file "beatles.tll".
 There can be several load in a workflow body.
 
-To load Corese-server with a profile, use the options `-pp "profileFile"`.
+To load Corese-server with a profile, use the options `-lp -pp "profileFile"`.
 
 ```shell
-java -jar corese-server.jar -pp "myprofile.ttl"
+java -jar corese-server.jar -lp -pp "myprofile.ttl"
 ```
 
 ## 2. Create multiple endpoints

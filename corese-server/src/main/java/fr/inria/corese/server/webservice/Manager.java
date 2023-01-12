@@ -163,11 +163,11 @@ public class Manager {
         // }
         TripleStore store = new TripleStore(g, true);
 
-        if (s.getStoragePath() != null && getDatasetManager() != null) {
-            DataManager man = getDatasetManager().getDataManager(s.getStoragePath());
+        if (s.getStorage() != null && getDatasetManager() != null) {
+            DataManager man = getDatasetManager().getDataManager(s.getStorage());
             store.setDataManager(man);
-            logger.info(String.format("Service: %s ; path: %s ; data manager: %s",
-                    s.getService(), s.getStoragePath(), store.getDataManager()));
+            logger.info(String.format("Service: %s ; storage: %s ; data manager: %s",
+                    s.getService(), s.getStorage(), store.getDataManager()));
         }
 
         init(store, s);

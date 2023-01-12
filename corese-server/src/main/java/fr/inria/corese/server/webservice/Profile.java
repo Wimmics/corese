@@ -553,7 +553,7 @@ public class Profile {
                 + "optional { ?s ?p ?d . ?d st:uri ?u  optional { ?d st:name ?n }}"
                 + "optional { ?s st:service ?sv } "
                 + "optional { ?s st:param ?c } "
-                + "optional { ?s st:path ?path }"
+                + "optional { ?s st:storage ?storage }"
                 + "}";
         QueryProcess exec = QueryProcess.create(g);
         Mappings map = exec.query(str);
@@ -564,7 +564,7 @@ public class Profile {
             Node uri = m.getNode("?u");
             Node n = m.getNode("?n");
             Node c = m.getNode("?c");
-            Node path = m.getNode("?path");
+            Node storage = m.getNode("?storage");
             
            Service server = findServer(sn.getLabel());
            String service = (sv == null) ? null : sv.getLabel();
@@ -576,8 +576,8 @@ public class Profile {
            if (c != null && server.getParam() == null){
                server.setParam(new ContextBuilder(g).process(c));
            }
-           if (path!=null) {
-               server.setStoragePath(path.getLabel());
+           if (storage!=null) {
+               server.setStorage(storage.getLabel());
            }
         }
 

@@ -204,7 +204,7 @@ For example, the `JenaTdb1DataManagerBuilder` can be used to build a `JenaTdb1Da
 
 ```java
 JenaTdb1DataManagerBuilder builder = new JenaTdb1DataManagerBuilder();
-builder.setStoragePath(<"storage/path">);
+builder.setStoragePath("storage/path");
 JenaTdb1DataManager dataManager = builder.build();
 ```
 

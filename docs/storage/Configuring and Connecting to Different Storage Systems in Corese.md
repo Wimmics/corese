@@ -74,7 +74,7 @@ Here is a summary of the RDF4J Model's characteristics:
 
 ## 4. Configuring Storage Systems in Corese-GUI and Corese-Server
 
-To configure storage systems in the Corese GUI or Server, it is necessary to create a properties file. This file should include the `STORAGE_PATH` configuration property, which specifies the storage systems to use.
+To configure storage systems in the Corese GUI or Server, it is necessary to create a properties file. This file should include the `STORAGE` configuration property, which specifies the storage systems to use.
 
 To run Corese-GUI or Corese-Server with a property file, the `-init` option must be used. For instance, the following bash command runs Corese-GUI using the `gui.properties` file:
 
@@ -82,16 +82,16 @@ To run Corese-GUI or Corese-Server with a property file, the `-init` option must
 java -jar corese.jar -init "config.properties"
 ```
 
-This will load the storage systems specified in the `STORAGE_PATH` property in the `config.properties` file.
+This will load the storage systems specified in the `STORAGE` property in the `config.properties` file.
 
 > If no configuration file is specified, Corese will use the default configuration, which is to use a single Corese graph storage system in memory. This behavior is the same as in versions prior to 4.4.
 
 ### 4.1. Configuring One Storage System
 
-To configure a single storage system, you need to specify the type and ID of the system in the `STORAGE_PATH` property. You can also include optional parameters for the system.
+To configure a single storage system, you need to specify the type and ID of the system in the `STORAGE` property. You can also include optional parameters for the system.
 
 ```properties
-STORAGE_PATH = TYPE_BD1,ID_DB1,PARAM_BD1
+STORAGE = TYPE_BD1,ID_DB1,PARAM_BD1
 ```
 
 The fields are as follows:
@@ -108,10 +108,10 @@ The fields are as follows:
 | rdf4j_model  | Empty                                                                        |
 | corese_graph | Empty                                                                        |
 
-For example, to configure a Jena TDB1 storage system with ID `musicDB` and the `/…/music` directory as the storage location, the following `STORAGE_PATH` property should be specified:
+For example, to configure a Jena TDB1 storage system with ID `musicDB` and the `/…/music` directory as the storage location, the following `STORAGE` property should be specified:
 
 ```properties
-STORAGE_PATH = jena_tdb1,musicDB,/…/music
+STORAGE = jena_tdb1,musicDB,/…/music
 ```
 
 ### 4.2. Configuring Multiple Storage Systems
@@ -119,7 +119,7 @@ STORAGE_PATH = jena_tdb1,musicDB,/…/music
 To configure multiple storage systems in Corese, simply separate the configurations for each storage system with a semicolon (`;`). This is similar to configuring a single storage system, as described in the previous section.
 
 ```properties
-STORAGE_PATH = TYPE_BD1,ID_DB1,PARAM_BD1;TYPE_BD2,ID_DB2,PARAM_BD2;…
+STORAGE = TYPE_BD1,ID_DB1,PARAM_BD1;TYPE_BD2,ID_DB2,PARAM_BD2;…
 ```
 
 In the case where multiple storage systems are configured, the first storage system listed is the default storage system. It is accessible directly in SPARQL queries, while the other storage systems must be accessed using the `SERVICE` keyword.
@@ -127,7 +127,7 @@ In the case where multiple storage systems are configured, the first storage sys
 For example, given the following configuration:
 
 ```properties
-STORAGE_PATH = corese_graph,friend;jena_tdb1,mélomane;jena_tdb1,music
+STORAGE = corese_graph,friend;jena_tdb1,mélomane;jena_tdb1,music
 ```
 
 The following SPARQL query retrieves information about a person's friends and the music they like:
@@ -167,7 +167,7 @@ Corese Server allows you to assign storage to a specific SPARQL endpoint by defi
 To create two storage systems, `db1` and `db2`, using the Jena TDB1 storage system and located at `/…/album` and `/…/music`, respectively, you can use the following in the properties file:
 
 ```properties
-STORAGE_PATH = jena_tdb1,db1,/…/album;jena_tdb1,db2,/…/music
+STORAGE = jena_tdb1,db1,/…/album;jena_tdb1,db2,/…/music
 ```
 
 To assign the `db1` and `db2` storage systems to the `album` (`<http://localhost:8080/album/sparql>`) and `music` (`<http://localhost:8080/music/sparql>`) endpoints, respectively, you can use the following in the profile file:
@@ -178,12 +178,12 @@ prefix st: <http://ns.inria.fr/sparql-template/>
 # Album endpoint, available at http://localhost:8080/album/sparql
 <#_1> a st:Server;
     st:service "album"; # Assigns the name "album" to this endpoint
-    st:path "db1". # Assigns the "db1" storage system to this endpoint
+    st:storage "db1". # Assigns the "db1" storage system to this endpoint
 
 # Music endpoint, available at http://localhost:8080/music/sparql
 <#_2> a st:Server;
     st:service "music"; # Assigns the name "music" to this endpoint
-    st:path "db2". # Assigns the "db2" storage system to this endpoint
+    st:storage "db2". # Assigns the "db2" storage system to this endpoint
 ```
 
 With this configuration, the endpoint `<http://localhost:8080/album/sparql>` will use `db1` data, and `<http://localhost:8080/music/sparql>` will use `db2` data.
@@ -204,7 +204,7 @@ For example, the `JenaTdb1DataManagerBuilder` can be used to build a `JenaTdb1Da
 
 ```java
 JenaTdb1DataManagerBuilder builder = new JenaTdb1DataManagerBuilder();
-builder.setStoragePath(<storage path>);
+builder.setStoragePath(<"storage/path">);
 JenaTdb1DataManager dataManager = builder.build();
 ```
 

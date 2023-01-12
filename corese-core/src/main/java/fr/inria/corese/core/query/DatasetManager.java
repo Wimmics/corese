@@ -17,8 +17,8 @@ import fr.inria.corese.core.util.Property;
 /**
  * Manage dataset and/or db storage according to Property
  * Create one DataManager in StorageFactory for each db path
- * STORAGE_PATH = type1,id1,[param1];type2,id2,[param2]
- * STORAGE = dataset|db|db_all
+ * STORAGE = type1,id1,[param1];type2,id2,[param2]
+ * STORAGE_MODE = dataset|db|db_all
  */
 public class DatasetManager {
     private static Logger logger = LoggerFactory.getLogger(DatasetManager.class);

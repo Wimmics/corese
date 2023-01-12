@@ -7,7 +7,7 @@ import static fr.inria.corese.core.util.Property.Value.PREFIX;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
 import static fr.inria.corese.core.util.Property.Value.STORAGE_MODE;
-import static fr.inria.corese.core.util.Property.Value.STORAGE_PATH;
+import static fr.inria.corese.core.util.Property.Value.STORAGE;
 import static fr.inria.corese.core.util.Property.Value.VARIABLE;
 
 import java.io.File;
@@ -288,7 +288,7 @@ public class Property {
         // apply service query on the graph
         SERVICE_GRAPH,
 
-        STORAGE_PATH,
+        STORAGE,
         STORAGE_SERVICE,
         // default storage: db|dataset
         STORAGE_MODE
@@ -1106,7 +1106,7 @@ public class Property {
 
     public List<List<String>> getStorageparameters() {
 
-        String storages = Property.stringValue(STORAGE_PATH);
+        String storages = Property.stringValue(STORAGE);
 
         List<List<String>> storageList = new ArrayList<>();
         if (storages == null) {
@@ -1250,7 +1250,7 @@ public class Property {
 
     // current storage mode to create QueryProcess
     public static boolean isDataset() {
-        if (stringValue(STORAGE_PATH) == null) {
+        if (stringValue(STORAGE) == null) {
             // there is no db storage path
             return true;
         }

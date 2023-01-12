@@ -162,7 +162,7 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         localProfile = profile;
         System.out.println("entailment: " + ent);
         // option -init propertyFile may declare db storage path 
-        // with property STORAGE_PATH=path
+        // with property STORAGE=path
         // DatasetManager create appropriate DataManager for db storage
         DatasetManagerServer man = new DatasetManagerServer().init();
         Manager.getManager().setDatasetManager(man);

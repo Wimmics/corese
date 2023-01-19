@@ -1,10 +1,11 @@
-template st:profile {
-   
-}
+template st:profile {}
 where {}
  
   function st:proto() {
     coalesce(st:get(st:protocol), st:std)
   }
   
-
+# result of former template query, set by TransformationProcess in server Workflow
+function us:templateResult() {
+    return(?templateResult)
+}

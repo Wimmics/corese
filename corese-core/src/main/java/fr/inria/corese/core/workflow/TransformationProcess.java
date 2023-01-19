@@ -16,7 +16,9 @@ import fr.inria.corese.sparql.triple.parser.URLParam;
 public class TransformationProcess extends  WorkflowProcess {
 
     private boolean isDefault = false;
+    private boolean template = false;
     private Transformer transfomer;
+    static final String TEMPLATE_RESULT = "?templateResult";
     
     public TransformationProcess(String p){
         setPath(p);
@@ -51,10 +53,15 @@ public class TransformationProcess extends  WorkflowProcess {
      
     @Override
     public Data run(Data data) throws EngineException {      
-        if (isDefault && data.getMappings() != null && data.getMappings().getQuery().isTemplate()){
-            // former SPARQLProcess is a template {} where {}
-            // this Transformer is default transformer : return former template result
-            return data;
+        if (data.getMappings() != null && data.getMappings().getQuery().isTemplate()) {
+            if (isDefault) {
+                // former SPARQLProcess is a template {} where {}
+                // this Transformer is default transformer : return former template result
+                return data;
+            }
+            else if (data.getMappings().getTemplateResult()!=null) {
+                setTemplate(true);
+            }
         }
         Transformer t = Transformer.create(data.getGraph(), getPath());
         t.setDebug(isDebug());
@@ -67,6 +74,13 @@ public class TransformationProcess extends  WorkflowProcess {
         setTransfomer(t);
         init(t, data, getContext());
         Data res = new Data(data.getGraph());
+        if (isTemplate()) {
+            // set result of previous template query into ldscript global variable ?templateResult
+            // use case: in Workflow, transformation st:web return ?templateResult as result 
+            // when this variable is bound
+            data.getBinding().setGlobalVariable(TEMPLATE_RESULT, 
+                    data.getMappings().getTemplateResult().getDatatypeValue());
+        }
         IDatatype dt = t.process(data.getBinding());
         if (dt != null){
             res.setTemplateResult(dt.getLabel());
@@ -119,5 +133,13 @@ public class TransformationProcess extends  WorkflowProcess {
     public String getTransformation(){
         return getPath();
     } 
+
+    public boolean isTemplate() {
+        return template;
+    }
+
+    public void setTemplate(boolean template) {
+        this.template = template;
+    }
    
 }

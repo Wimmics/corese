@@ -53,7 +53,10 @@ template st:start {
   
   st:call-template(st:display, ?uri)
   
-  st:call-template(st:result)
+  #st:call-template(st:result)
+  # when query is template, TransformerProcess set ?templateResult global variable
+  coalesce(us:templateResult(), st:call-template(st:result))
+
 
   st:call-template(st:tail)
 
@@ -63,6 +66,8 @@ where {
   bind (coalesce(st:get(st:uri), st:intro) as ?uri)
 
 }
+
+
 ]]>
 </body>
 </rule>
@@ -191,7 +196,9 @@ where {}
     coalesce(st:get(st:protocol), st:std)
   }
   
-
+function us:templateResult() {
+    return(?templateResult)
+}
 ]]>
 </body>
 </rule>
@@ -405,6 +412,18 @@ where {
         bind (st:get(?gname) as ?gg)
         filter bound(?gg)
         
+         { ?select st:relation ?p 
+           graph ?gg { 
+            select distinct ?p ?value 
+            where { 
+                {?x ?p ?value}
+                union
+                {?value ?p ?x}
+                filter (! isBlank(?value)) 
+            }  
+            order by ?value }
+        }
+        union 
         { ?select st:predicate ?p 
            graph ?gg { 
             select distinct ?p ?value 

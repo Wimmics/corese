@@ -18,6 +18,9 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.proxy.GraphSpecificFunction;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Access.Feature;
+import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.HashMapList;
 import fr.inria.corese.sparql.triple.parser.NSManager;
 import fr.inria.corese.sparql.triple.parser.URLServer;
@@ -145,6 +148,10 @@ public class DataManagerJava extends CoreseGraphDataManager {
         QueryLoad ql = QueryLoad.create();
         Load ld = Load.create(getGraph());
         ld.setDataManager(this);
+        // temporary authorize xt:read file to read e.g. json document 
+        Level read     = Access.setValue(Feature.READ, Level.DEFAULT);
+        Level readFile = Access.setValue(Feature.READ_FILE, Level.DEFAULT);
+
         try {
             if (getLoad()!=null) {
                 for (String name : getLoad()) {
@@ -177,6 +184,10 @@ public class DataManagerJava extends CoreseGraphDataManager {
             getGraph().init();
         } catch (LoadException | EngineException ex) {
             logger.error(ex.getMessage());
+        }
+        finally {
+            Access.set(Feature.READ, read);
+            Access.set(Feature.READ_FILE, readFile);
         }
     }
 

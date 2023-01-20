@@ -211,6 +211,12 @@ public class Access {
         driver().put(feature, accessRight);
     }
     
+    public static Level setValue(Feature feature, Level accessRight) {
+        Level level = get(feature);
+        driver().put(feature, accessRight);
+        return level;
+    }
+   
     public static Level get(Feature feature) {
         return driver().get(feature);
     }

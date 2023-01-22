@@ -9,6 +9,7 @@ import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.function.term.Binding;
 import fr.inria.corese.sparql.triple.function.term.TermEval;
+import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Processor;
 
@@ -39,10 +40,22 @@ public class TemplateFormat extends TemplateFunction {
        
         IDatatype format = param[0];
         String path = format.getLabel();
+        
+//        if (format.isURI()) {
+//            check(Feature.LINKED_TRANSFORMATION, b, path, LINKED_FORMAT_MESS);
+//            if (isFile(path)) {
+//                check(Feature.READ_FILE, b, path, LINKED_FORMAT_MESS);
+//            }
+//        }
+        
         if (format.isURI()) {
-            check(Feature.LINKED_TRANSFORMATION, b, path, LINKED_FORMAT_MESS);
             if (isFile(path)) {
-                check(Feature.READ_FILE, b, path, LINKED_FORMAT_MESS);
+                // do not accept file path when accept list is empty
+                Access.check(Feature.LINKED_TRANSFORMATION, b.getAccessLevel(), path, LINKED_FORMAT_MESS, false);
+            }
+            else {
+                // may accept url path when accept list is empty
+                check(Feature.LINKED_TRANSFORMATION, b, path, LINKED_FORMAT_MESS);
             }
         }
         

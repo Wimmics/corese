@@ -8,6 +8,8 @@ import static fr.inria.corese.sparql.triple.parser.Access.Mode.SERVER;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  * Access model for features
@@ -16,6 +18,7 @@ import java.util.List;
  *
  */
 public class Access {
+    public static Logger logger = LoggerFactory.getLogger(Access.class);
     
     static final String NL = System.getProperty("line.separator");
     // throw exception for undefined expression, see FunctionCompiler
@@ -251,7 +254,15 @@ public class Access {
      * st:access st:namespace uri1, uri2 .
     */
     public static boolean accept(Feature feature, Level actionLevel, String uri) {
+//        logger.info(feature + " " + actionLevel + " " + accept(feature, actionLevel));
+//        logger.info(uri + " " + acceptNamespace(feature, actionLevel, uri));
        return accept(feature, actionLevel) && acceptNamespace(feature, actionLevel, uri);
+    }
+    
+    public static boolean accept(Feature feature, Level actionLevel, String uri, boolean acceptWhenEmpty) {
+//        logger.info(feature + " " + actionLevel + " " + accept(feature, actionLevel));
+//        logger.info(uri + " " + acceptNamespace(feature, actionLevel, uri));
+       return accept(feature, actionLevel) && acceptNamespace(feature, actionLevel, uri, acceptWhenEmpty);
     }
     
     public static boolean reject(Feature feature, Level actionLevel, String uri) {
@@ -264,21 +275,30 @@ public class Access {
         }
     }
     
+    public static void check(Feature feature, Level actionLevel, String uri, String mes, boolean acceptWhenEmpty) throws SafetyException {
+        if (!Access.accept(feature, actionLevel, uri, acceptWhenEmpty)) {
+            throw new SafetyException(mes);
+        }
+    }
+    
     public static void check(Feature feature, Level actionLevel, String mes) throws SafetyException {
         if (Access.reject(feature, actionLevel)) {
             throw new SafetyException(mes);
         }
     }
-    
+        
     public static boolean acceptNamespace(Feature feature, Level actionLevel, String uri) {
+        // action level >= DEFAULT -> if accept is empty, every namespace is authorized
+        return acceptNamespace(feature, actionLevel, uri, actionLevel.provide(DEFAULT));
+    }
+    
+    // if acceptWhenEmpty==true,  accept uri when accept list is empty
+    // if acceptWhenEmpty==false, do not accept uri when accept list is empty
+    public static boolean acceptNamespace(Feature feature, Level actionLevel, String uri, boolean acceptWhenEmpty) {
         if (SKIP || actionLevel.provide(SUPER_USER)) {
-            return ! AccessNamespace.forbidden(uri);
-        } else if (actionLevel.provide(DEFAULT)) {
-            // action level >= DEFAULT -> if accept is empty, every namespace is authorized
-            return accept(uri, true);
+            return !AccessNamespace.forbidden(uri);
         } else {
-            // action level < DEFAULT -> access to explicitely authorized namespace only
-            return accept(uri, false);
+            return accept(uri, acceptWhenEmpty);
         }
     }
     

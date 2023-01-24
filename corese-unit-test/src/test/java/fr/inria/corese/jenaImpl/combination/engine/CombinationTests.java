@@ -1,5 +1,6 @@
 package fr.inria.corese.jenaImpl.combination.engine;
 
+
 import static org.junit.Assert.assertEquals;
 
 import org.apache.jena.query.Dataset;

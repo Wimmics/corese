@@ -160,7 +160,7 @@ public class SparqlEngine {
     }
 
     private static Model coreseConstructQuery(String query, QueryProcess exec) {
-        Mappings map = null;
+        Mappings map = new Mappings();
         try {
             map = exec.query(query);
         } catch (EngineException e) {
@@ -185,7 +185,7 @@ public class SparqlEngine {
     }
 
     private static Boolean coreseAskQuery(String query, QueryProcess exec) {
-        Mappings map = null;
+        Mappings map = new Mappings();
         try {
             map = exec.query(query);
         } catch (EngineException e) {

@@ -662,6 +662,7 @@ public class JenaTdb1DataManagerTest {
                 assertEquals(false, result.contains(this.statement_0_corese));
                 assertEquals(true, result.contains(this.statement_1_corese));
                 assertEquals(true, result.contains(this.statement_2_corese));
+                assertEquals(false, result.contains(this.statement_3_corese));
 
                 assertEquals(true, this.dataset.asDatasetGraph().contains(this.statement_0_jena));
                 assertEquals(false, this.dataset.asDatasetGraph().contains(this.statement_1_jena));

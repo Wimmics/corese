@@ -50,14 +50,13 @@ public class SparqlEngine {
     }
 
     private static Graph coreseConstructQuery(String query, QueryProcess exec) {
-        Mappings map = null;
+        Mappings map = new Mappings();
         try {
             map = exec.query(query);
         } catch (EngineException e) {
             System.err.println("Error: Unable to run query" + query);
             e.printStackTrace();
         }
-
         return (Graph) map.getGraph();
     }
 
@@ -75,7 +74,7 @@ public class SparqlEngine {
     }
 
     private static Boolean coreseAskQuery(String query, QueryProcess exec) {
-        Mappings map = null;
+        Mappings map = new Mappings();
         try {
             map = exec.query(query);
         } catch (EngineException e) {

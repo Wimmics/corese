@@ -21,7 +21,12 @@ format {
             
   group { 
     format { 
-        us:format (coalesce(st:get(?uri) = if (isURI(?value), ?value, str(?value)), false))                        
+        us:format (coalesce(
+           # st:get(?uri) = if (isURI(?value), ?value, str(?value)),
+            if (isURI(?value),
+                st:get(?uri) = ?value || st:get(?uri) = str(?value),
+                st:get(?uri) = str(?value)),
+            false))                        
         ?value ?value
     } 
 }

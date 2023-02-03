@@ -7,11 +7,11 @@ ENV CORESE="/usr/local/corese"
 RUN mkdir -p $CORESE
 WORKDIR $CORESE
 
-RUN wget http://files.inria.fr/corese/distrib/corese-server-4.3.0.jar
+RUN wget http://files.inria.fr/corese/distrib/corese-server-4.4.0.jar
 
 COPY log4j2.xml $CORESE/log4j2.xml
 COPY corese-default-profile.ttl $CORESE/corese-default-profile.ttl
-COPY corese-default-properties.ini $CORESE/corese-default-properties.ini
+COPY corese-default-properties.properties $CORESE/corese-default-properties.properties
 
 ENV CORESESH=$CORESE/corese-server.sh
 COPY corese-server.sh $CORESESH

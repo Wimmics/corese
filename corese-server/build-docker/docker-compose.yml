@@ -9,4 +9,3 @@ services:
       - "./log:/usr/local/corese/log"
       - "./data:/usr/local/corese/data"
       - "./config:/usr/local/corese/config"
-

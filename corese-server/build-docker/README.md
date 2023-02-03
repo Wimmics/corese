@@ -17,6 +17,7 @@ Corese also implements the LDScript and STTL SPARQL extensions.
 
 The Docker image tag includes the Corese version installed in the image. The following version is currently available:
 
+- corese:4.4.0
 - corese:4.3.0
 - corese:4.2.4
 
@@ -76,7 +77,6 @@ Then run: `docker-compose up -d`
 
 ## Loading data at start-up
 
-Corese runs a non-persisted in-memory triple-store.
 To load data into Corese at start-up, place your data files in mounted folder `data`.
 
 Supported extensions are: `.ttl`, `.jsonld`, `.rdf` (for RDF/XML), `.csv`, `.tsv`, `.html` (for rdfa).
@@ -87,14 +87,13 @@ Alternatively you may edit a previously created `corese-profile.ttl` file and ch
 
 ## Configuration
 
-When it starts, the container will look for two files and create them if it they do not exist:
+When it starts, the container will look for two files and create them if they do not exist:
 
-- `config/corese-properties.ini` allows to tune various paremters;
-- `config/corese-profile.ttl` defines a standard server and instructs Corese to load files found in `data`.
+- `config/corese-properties.properties`: This file allows you to tune various parameters in Corese, such as configuring the [storage system](https://github.com/Wimmics/corese/blob/master/docs/storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.md). [Learn more](https://github.com/Wimmics/corese/blob/master/corese-server/build-docker/corese/corese-default-properties.ini).
+- `config/corese-profile.ttl`: This file defines a standard server and instructs Corese to load files found in `data`. It can be used to create multiple endpoints, restrict access to external endpoints, and more. [Learn more](https://github.com/Wimmics/corese/blob/master/docs/getting%20started/Getting%20Started%20With%20Corese-server.md).
 
-You may edit those files and restart the container for changes to be taken into account.
+Note: To apply changes, you must edit the files and restart the container.
 
-See the [configuration documentation](https://project.inria.fr/corese/documentation-index/) for further details.
 
 ### Changing the JVM heap size
 
@@ -135,6 +134,6 @@ curl \
 - [Corese website](https://project.inria.fr/corese)
 - [Source code](https://github.com/Wimmics/corese)
 - [Corese server demo](http://corese.inria.fr/)
-- [Changelog](https://notes.inria.fr/s/TjriAbX14#)
+- [Changelog](https://github.com/Wimmics/corese/blob/master/CHANGELOG.md)
 - **Mailing list:** corese-users at inria.fr
 - **Subscribe to mailing list:** corese-users-request at inria.fr **subject:** subscribe

@@ -1,9 +1,9 @@
 #!/bin/bash
 
 CORESE=/usr/local/corese
-JAR=$CORESE/corese-server-4.3.0.jar
+JAR=$CORESE/corese-server-4.4.0.jar
 PROFILE=$CORESE/config/corese-profile.ttl
-PROPERTIES=$CORESE/config/corese-properties.ini
+PROPERTIES=$CORESE/config/corese-properties.properties
 
 LOG4J=file://$CORESE/log4j2.xml
 DATA=$CORESE/data
@@ -58,7 +58,7 @@ if [ -f "$PROPERTIES" ]; then
     echo "Using user-defined properties file." >> $LOG
 else
     echo "Creating new properties file." >> $LOG
-    cp $CORESE/corese-default-properties.ini $PROPERTIES
+    cp $CORESE/corese-default-properties.properties $PROPERTIES
 fi
 
 

@@ -95,6 +95,6 @@ We welcome everyone to contribute to [issue reports](https://github.com/Wimmics/
 - [Corese website](https://project.inria.fr/corese)
 - [Source code](https://github.com/Wimmics/corese)
 - [Corese server demo](http://corese.inria.fr/)
-- [Changelog](https://notes.inria.fr/s/TjriAbX14#)
+- [Changelog](https://github.com/Wimmics/corese/blob/master/CHANGELOG.md)
 - **Mailing list:** corese-users at inria.fr
 - **Subscribe to the mailing list:** corese-users-request at inria.fr **subject:** subscribe

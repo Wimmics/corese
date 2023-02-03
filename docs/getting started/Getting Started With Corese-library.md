@@ -77,7 +77,7 @@ Node edithPiafIRI = graph.addResource(ex + "EdithPiaf");
 Node singerIRI = graph.addResource(ex + "Singer");
 
 // Create and add properties to Graph
-Node rdfTypeProperty = graph.addProperty(RDF.TYPE.stringValue());
+Node rdfTypeProperty = graph.addProperty(RDF.TYPE);
 Node firstNameProperty = graph.addProperty(ex + "firstName");
 Node lastNameProperty = graph.addProperty(ex + "lastName");
 

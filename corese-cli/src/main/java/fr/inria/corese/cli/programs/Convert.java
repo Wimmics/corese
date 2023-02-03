@@ -9,7 +9,7 @@ import fr.inria.corese.core.Graph;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "convert", version = "4.3.0", description = "Convert an RDF file between different serialization formats.", mixinStandardHelpOptions = true)
+@Command(name = "convert", version = "4.4.0", description = "Convert an RDF file between different serialization formats.", mixinStandardHelpOptions = true)
 public class Convert implements Runnable {
 
     @Parameters(paramLabel = "INPUT_FORMAT", description = "Input file format."

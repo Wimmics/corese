@@ -12,7 +12,7 @@ import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "sparql", version = "4.3.0", description = "Run a SPARQL query.", mixinStandardHelpOptions = true)
+@Command(name = "sparql", version = "4.4.0", description = "Run a SPARQL query.", mixinStandardHelpOptions = true)
 public class Sparql implements Runnable {
 
     @Parameters(paramLabel = "INPUT_FORMAT", description = "Input file format."

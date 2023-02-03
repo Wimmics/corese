@@ -13,7 +13,7 @@ import picocli.CommandLine.Parameters;
 /**
  * Profile
  */
-@Command(name = "owlProfile", version = "4.3.0", description = "Check OWL profiles.", mixinStandardHelpOptions = true)
+@Command(name = "owlProfile", version = "4.4.0", description = "Check OWL profiles.", mixinStandardHelpOptions = true)
 public class Profile implements Runnable {
 
     @Parameters(paramLabel = "INPUT_FORMAT", description = "Input file format."

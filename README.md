@@ -33,13 +33,13 @@ There are three versions of Corese:
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-core</artifactId>
-    <version>4.3.0</version>
+    <version>4.4.0</version>
 </dependency>
 
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-rdf4j</artifactId>
-    <version>4.3.0</version>
+    <version>4.4.0</version>
 </dependency>
 ```
 
@@ -58,7 +58,7 @@ docker run --name my-corese \
 - Download [Corese-server jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-# Replace ${VERSION} with the desired version number (e.g: 4.3.0)
+# Replace ${VERSION} with the desired version number (e.g: 4.4.0)
 wget "files.inria.fr/corese/distrib/corese-server-${VERSION}.jar"
 java -jar "corese-server-${VERSION}.jar"
 ```
@@ -70,7 +70,7 @@ Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/Soy
 - Download [Corese-gui jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-# Replace ${VERSION} with the desired version number (e.g: 4.3.0)
+# Replace ${VERSION} with the desired version number (e.g: 4.4.0)
 wget "files.inria.fr/corese/distrib/corese-gui-${VERSION}.jar"
 java -jar "corese-gui-${VERSION}.jar"
 ```

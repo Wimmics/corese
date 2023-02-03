@@ -10,7 +10,7 @@ import picocli.CommandLine.Command;
 /**
  * Hello world!
  */
-@Command(name = "Corese-CLI", version = "4.3.0", mixinStandardHelpOptions = true, subcommands = {
+@Command(name = "Corese-CLI", version = "4.4.0", mixinStandardHelpOptions = true, subcommands = {
         Convert.class, Sparql.class, Profile.class, LDScript.class,
 })
 public final class App implements Runnable {

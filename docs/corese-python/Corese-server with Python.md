@@ -5,7 +5,7 @@ This document shows how to configure and query a Corese server from python.
 ## 1. Configure a Corese-Server
 
 1. Download last version of [Corese-Server](https://project.inria.fr/corese/jar/).
-2. Start the Corese-Server with command: `java -jar corese-server.jav -l "./file_1.ttl"`
+2. Start the Corese-Server with command: `java -jar corese-server.jar -l "./file_1.ttl"`
 
 > It's also possible to load data from several files or URL.
 >

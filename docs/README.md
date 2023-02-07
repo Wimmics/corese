@@ -13,6 +13,11 @@ The purpose of this page is to gather the documentation of Corese.
 - [Getting Started With Corese-server](getting%20started/Getting%20Started%20With%20Corese-server.md)
 - [Corese-server with Python](corese-python/Corese-server%20with%20Python.md)
 
+## Corese-Python
+
+- [use Corese-library with Python](https://github.com/Wimmics/corese/blob/master/docs/corese-python/Corese-library%20with%20Python.md)
+- [use Corese-server with Python](https://github.com/Wimmics/corese/blob/master/docs/corese-python/Corese-server%20with%20Python.md)
+
 ## Storage Systems
 
 - [Configuring and Connecting to Different Storage Systems in Corese](storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.md)

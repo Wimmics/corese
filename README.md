@@ -17,11 +17,14 @@ Corese is a software platform implementing and extending the standards of the Se
 Corese implement W3C standards [RDF](https://www.w3.org/RDF/), [RDFS](https://www.w3.org/2001/sw/wiki/RDFS), [SPARQL1.1 Query & Update](https://www.w3.org/2001/sw/wiki/SPARQL), [OWL RL](https://www.w3.org/2005/rules/wiki/OWLRL), [SHACL](https://www.w3.org/TR/shacl/) …
 It also implements extensions like [STTL SPARQL](https://files.inria.fr/corese/doc/sttl.html), [SPARQL Rule](https://files.inria.fr/corese/doc/rule.html) and [LDScript](https://files.inria.fr/corese/doc/ldscript.html).
 
-There are three versions of Corese:
+There are several interfaces for Corese:"
 
 - **Corese-library:** Java library to process RDF data and use Corese features via an API.
 - **Corese-server:** Tool to easily create, configure and manage SPARQL endpoints.
 - **Corese-gui:** Graphical interface that allows an easy and visual use of Corese features.
+- **Corese-Python (beta):** Python wrapper for accessing and manipulating RDF data with Corese features using py4j.
+- **Corese-CLI (beta):** Command Line Interface for Corese that allows users to interact with Corese features from the terminal.
+
 
 ## Download and install
 
@@ -82,7 +85,7 @@ Download source code and compile.
 ```shell
 git clone "https://github.com/Wimmics/corese.git"
 cd corese
-mvn -Dmaven.test.skip=true package
+mvn package
 ```
 
 ## Contributions and discussions
@@ -93,6 +96,7 @@ We welcome everyone to contribute to [issue reports](https://github.com/Wimmics/
 ## General informations
 
 - [Corese website](https://project.inria.fr/corese)
+- [Documentation](https://project.inria.fr/corese/documentation/)
 - [Source code](https://github.com/Wimmics/corese)
 - [Corese server demo](http://corese.inria.fr/)
 - [Changelog](https://github.com/Wimmics/corese/blob/master/CHANGELOG.md)

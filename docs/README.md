@@ -5,18 +5,16 @@ The purpose of this page is to gather the documentation of Corese.
 ## Corese-library
 
 - [Getting Started With Corese-library](getting%20started/Getting%20Started%20With%20Corese-library.md)
-- [Corese-library and RDF4J](rdf4j/RDF4J%20API%20in%20Corese.md)
-- [Corese-library with Python](corese-python/Corese-library%20with%20Python.md)
+- [Use Corese-library and RDF4J](rdf4j/RDF4J%20API%20in%20Corese.md)
 
 ## Corese-server
 
 - [Getting Started With Corese-server](getting%20started/Getting%20Started%20With%20Corese-server.md)
-- [Corese-server with Python](corese-python/Corese-server%20with%20Python.md)
 
 ## Corese-Python
 
-- [use Corese-library with Python](https://github.com/Wimmics/corese/blob/master/docs/corese-python/Corese-library%20with%20Python.md)
-- [use Corese-server with Python](https://github.com/Wimmics/corese/blob/master/docs/corese-python/Corese-server%20with%20Python.md)
+- [Use Corese-library with Python](corese-python/Corese-library%20with%20Python.md)
+- [Use Corese-server with Python](corese-python/Corese-server%20with%20Python.md)
 
 ## Storage Systems
 

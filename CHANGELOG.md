@@ -43,6 +43,7 @@
 - Bumped jsoup from 1.14.2 to 1.15.3 in /corese-server. See [pull request #101](https://github.com/Wimmics/corese/pull/101).
 - Bumped junit from 4.11 to 4.13.1 in /corese-storage. See [pull request #98](https://github.com/Wimmics/corese/pull/98).
 - Bumped xercesImpl from 2.12.0 to 2.12.2. See [pull request #92](https://github.com/Wimmics/corese/pull/92).
+- Bumped gremlin-core from 3.2.3 to 3.6.2.
 
 ## 4.3.0 – 2021/01/18 – RDF4J Update
 

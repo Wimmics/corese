@@ -1,18 +1,15 @@
-<!-- markdownlint-disable MD024 -->
 # Corese Changelog
 
-## 4.4.0 – 2021/02/24 – Sotrage update
+## 4.4.0 – 2021/02/24 – Storage update
 
 ### Added
 
 - Storage Systems in Corese:
-  - Implementation of Jena TDB1.
-  - Implementation of Corese Graph.
-  - Implementation of RDF4J Model.
-  - A Builder for the storage system.
+  - Integration of Jena TDB1.
+  - Integration of Corese Graph.
+  - Integration of RDF4J Model.
   - [More information can be found here](https://github.com/Wimmics/corese/blob/master/docs/storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.md).
 - Beta support for [RDF*](https://w3c.github.io/rdf-star/cg-spec/2021-07-01.html) and [SPARQL*](https://w3c.github.io/rdf-star/cg-spec/2021-07-01.html).
-- Improved display with pretty print for `dt:list` datatype.
 - Corese Command-Line Interface (Beta):
   - `convert`: Convert RDF files between different serialization formats.
   - `sparql`: Execute SPARQL queries on files.

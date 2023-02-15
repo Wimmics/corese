@@ -1,0 +1,580 @@
+<?xml version='1.0' encoding='UTF-8'?>
+<!--
+SPARQL Template Transformation
+Olivier Corby - Wimmics - Inria UNS CNRS I3S
+Fri Jun 21 13:43:42 CEST 2019
+-->
+<rdf:RDF  xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'
+  xmlns='http://ns.inria.fr/sparql-template/'>
+<rule>
+<body>
+<![CDATA[
+#
+# Generate a form with a SPARQL query ?q to submit
+# Argument  ?n is the name of query (st:minus)
+# ?q actual query, ?t query template, ?s query solution
+#
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:selecttable(?n, ?q, ?t, ?s, ?qt) {
+   
+   format { 
+        ft:table.html
+        group { st:call-template(st:selectparam2, ?n, ?select) }
+   }
+   
+      
+}
+where {
+    bind (st:get(st:context) as ?g)
+    graph ?g {  
+        ?qt st:name ?n 
+        optional { ?qt st:select ?select }
+    }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# SPARQL Tutorial
+# st:get(st:uri) is the name of a query to execute (st:minus)
+# It is used 1) to select a query and 2) to display the result of the query
+# RDF graph is either RDF dataset or Query Result
+# Query definitions are stored in st:context named graph 
+#
+template st:start {
+
+  st:call-template(st:head)
+    
+  st:call-template(st:selectform, ?uri)
+  
+  st:call-template(st:display, ?uri)
+  
+  #st:call-template(st:result)
+  # when query is template, TransformerProcess set ?templateResult global variable
+  coalesce(us:templateResult(), st:call-template(st:result))
+
+
+  st:call-template(st:tail)
+
+}
+where {
+
+  bind (coalesce(st:get(st:uri), st:intro) as ?uri)
+
+}
+
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:content {
+  
+  st:call-template(st:content2, "Data:",   st:data)
+  st:call-template(st:content2, "Schema:", st:schema)
+  st:call-template(st:content2, "Query:",  st:context)
+}
+where {
+    
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Display result of query
+# RDF graph is a result graph
+#
+
+prefix spq: <http://ns.inria.fr/sparql-template/sparql#>
+template st:result {
+
+   st:apply-templates-with(?sttl)
+    
+}
+where {
+  bind (st:get(st:query) as ?query)
+  bind (coalesce(st:get(st:sttl), spq:result)  as ?sttl)
+  filter bound(?query)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:prev(?t) {
+
+format {
+  ft:prev.html
+  st:plink(?n)
+  }
+  
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?q1 st:name ?t ; st:index ?i
+    bind (?i - 1 as ?j)
+    ?q2 st:index ?j ;
+	st:name ?n 
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:tail {
+format {
+  ft:tail.html
+  
+  st:call-template(st:content)
+}
+}
+where {
+    bind (st:get(st:context) as ?g)
+    graph ?g {
+       ?ds a st:Dataset
+    }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:next(?t) {
+
+format {
+  ft:next.html
+  st:plink(?n)
+ }
+    
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?q1 st:name ?t ; st:index ?i
+    bind (?i + 1 as ?j)
+    ?q2 st:index ?j ;
+	st:name ?n 
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:profile {
+   
+}
+where {}
+ 
+  function st:proto() {
+    coalesce(st:get(st:protocol), st:std)
+  }
+  
+function us:templateResult() {
+    return(?templateResult)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Select a query name to display and execute
+# query name bound to uri param
+# Generate query names list from context graph
+#
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:selectform(?t) {
+
+format {
+
+  ft:selectform.html
+  
+  st:get(st:service) 
+  st:get(st:profile)   
+  st:call-template(st:prev, ?t)  
+  st:call-template(st:list, ?t)  
+  st:call-template(st:next, ?t)
+}
+}
+where {
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate a form with a SPARQL query ?q to submit
+# Argument  ?n is the name of query (st:minus)
+# ?q actual query, ?t query template, ?s query solution
+#
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:form(?n, ?q, ?t, ?s, ?qt) {
+   
+   format {   
+    ft:form.html
+   
+    st:get(st:service) 
+    st:get(st:profile)
+    str(?t) 
+    str(?s) 
+    ?n 
+    if (?s = st:null, "", st:format(ft:nav.html))
+    st:call-template(st:selecttable, ?n, ?q, ?t, ?s, ?qt)
+    st:call-template(st:selectsilent,?n, ?q, ?t, ?s, ?qt)
+    if (bound(?b), st:format(ft:andor.html), "")
+    str(?q)
+    }
+   
+}
+where {
+    bind (st:get(st:context) as ?g)
+    graph ?g {  
+        ?qt st:name ?n 
+        optional { ?qt st:button st:andor, ?b}
+    }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate a form with a SPARQL query ?q to submit
+# Argument  ?n is the name of query (st:minus)
+# ?q actual query, ?t query template, ?s query solution
+#
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:selectsilent(?n, ?q, ?t, ?s, ?qt) {
+   
+   format { 
+        ft:silent.html ?name ?value
+   }
+   
+      
+}
+where {
+    bind (st:get(st:context) as ?g)
+    graph ?g {  
+        ?qt st:name ?n .
+        ?qt st:select ?input .
+        ?input st:type st:silent ; st:name ?name ; st:value ?value
+    }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate query names list from context graph
+#
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:list(?t) {
+
+format {
+  if (?q = ?t, ft:optionselected.html, ft:option.html) 
+  
+  ?q
+  str(?i)
+  str(?title)
+}
+   
+}
+where {
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+  values ?qt {st:Query sw:Query}
+    [] a ?qt ;
+      st:index ?i ;
+      st:name ?q ;
+      rdfs:label ?title
+  }
+}
+order by ?i
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+template st:content2(?t, ?p) {
+
+  str(?t) "<br/>"  
+  
+  group distinct { 
+    "<a href='" str(?d) "'>" str(?d) "</a>" 
+    ; separator="<br/>"
+  } 
+  
+  "<br/>"
+ 
+}
+where {
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+    ?ds a st:Dataset
+    ?ds ?p [ st:uri ?d ]
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate param selector, ?n = query name  
+# Use a context graph for select values
+# context graph has a sw:name st:graphName in content workflow (see tutohal service in profile.ttl)
+# specify context graph with st:param [ st:export true ; st:contextlist(st:graphName) ]
+#
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:selectparam2(?n, ?select) {
+
+format {
+  if (?insert, ft:selectparam2insert.html , ft:selectparam2.html) 
+  
+  coalesce(?title, "")
+  ?name
+  
+  if (bound (?default), 
+    st:format(
+        us:format (st:get(?uri, ?default)),             
+        ?default, coalesce(?label, "Any")),
+    "")
+            
+  group { 
+    format { 
+        us:format (coalesce(
+        #st:get(?uri) = if (isURI(?value), ?value, str(?value)), 
+        
+        if (isURI(?value),
+                st:get(?uri) = ?value || st:get(?uri) = str(?value),
+                st:get(?uri) = str(?value)),
+        
+        false))                        
+        ?value ?value
+    } 
+}
+}
+   
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  # TODO: mandatory to bind ?select parameter
+  graph ?g { ?select st:name ?name ; st:uri ?uri 
+    optional { ?select st:action ?action }
+    bind (coalesce(?action = st:insert, false) as ?insert)
+  }
+  
+  {
+    graph ?g {
+        ?select st:value/rdf:rest*/rdf:first ?value }
+  }
+  union 
+  {
+    graph ?g { 
+        ?select st:graph ?gname 
+        optional { ?select st:title   ?title } 
+        optional { ?select st:default ?default optional { ?select st:defaultLabel ?label }}
+        
+        # get graph object ?gg in context corresponding to graph name ?gname
+        bind (st:get(?gname) as ?gg)
+        filter bound(?gg)
+        
+         { ?select st:relation ?p 
+           graph ?gg { 
+            select distinct ?p ?value 
+            where { 
+                {?x ?p ?value}
+                union
+                {?value ?p ?x}
+                filter (! isBlank(?value)) 
+            }  
+            order by ?value }
+        }
+        union 
+        { ?select st:predicate ?p 
+           graph ?gg { 
+            select distinct ?p ?value 
+            where { ?x ?p ?value  filter (! isBlank(?value)) }  
+            order by ?value }
+        }
+        union 
+        { ?select st:predicate [ ?p ?object ] 
+          graph ?gg { 
+            select distinct ?p ?object ?value 
+            where { ?value ?p ?object } 
+            order by ?value }
+        }
+    }            
+   }
+   union
+   {
+    graph ?g { 
+        ?select st:graph ?gname ; st:function ?fun 
+        optional { ?select st:title   ?title } 
+        optional { ?select st:default ?default optional { ?select st:defaultLabel ?label }}
+        
+        # get graph object ?gg in context corresponding to graph name ?gname
+        bind (st:get(?gname) as ?gg)
+        filter bound(?gg)
+        
+        values ?value { unnest (xt:focus(?gg, funcall(?fun))) }
+        
+    }
+  }
+}
+
+function us:format(?b) {
+    if (?b, 
+        '<option value="%s" selected="true">%s</option>', 
+        '<option value="%s">%s</option>')
+}
+
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:head {
+   
+  format {
+    ft:head.html  str(?title)
+  }
+  
+}
+where {
+  bind (coalesce(st:get(st:title), "Tutorial") as ?title)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# ?n is the st:name of a query
+# get definition of query in context graph
+# display query and eventually result of query
+# st:get(st:query) is user query
+# ?q is tutorial query
+#
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:display(?n) {
+
+format {
+   ft:display.html
+
+   str(?l)
+   str(?c)   
+   if (bound(?r), st:format(ft:documentation.html, str(?r)), "")
+   
+   st:call-template(st:form, 
+     ?n,
+     coalesce(st:get(st:query), str(?q)), 
+     str(?q), 
+     coalesce(?s, st:null),
+     ?qt
+     ) 
+ }
+      
+}
+where {
+  # named graph that contains definition of queries
+  bind (st:get(st:context) as ?g)
+  graph ?g {
+    ?qt st:name    ?n ;
+      rdfs:label   ?l ;
+      rdfs:comment ?c ;
+      st:query     ?q
+      optional { ?qt st:reference ?r }
+      optional { ?qt st:solution  ?s }
+      optional { ?qt sw:body  ?s }
+      filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
+  }
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+#
+# Generate param selector, ?n = query name  
+#
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+template st:selectparam(?n, ?select) {
+
+format {
+  ft:selectparam.html 
+  ?name
+  group { 
+    format { 
+        if (st:get(?uri, ?value), 
+            '<option value="%s" selected="true">%s</option>', 
+            '<option value="%s">%s</option>')
+            
+        ?value ?value
+    } 
+}
+}
+   
+}
+where {
+  bind (st:get(st:context) as ?g)
+  
+  graph ?g {
+    ?select st:name ?name ; st:uri ?uri ;
+       st:value/rdf:rest*/rdf:first ?value      
+  }
+}
+]]>
+</body>
+</rule>
+
+</rdf:RDF>

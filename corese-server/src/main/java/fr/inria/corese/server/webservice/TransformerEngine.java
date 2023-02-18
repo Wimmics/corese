@@ -19,6 +19,7 @@ import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.Dataset;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 
 /**
  *
@@ -194,7 +195,16 @@ public class TransformerEngine {
             c.setProtocol(Context.STL_AJAX);
             c.export(Context.STL_PROTOCOL, c.get(Context.STL_PROTOCOL));
         }
+        completeParam(c, par);
         return c;
+    }
+    
+    // process param=sv:key~val;sv:key~val
+    void completeParam(Context c, Param par) {
+        String param = par.getParam();
+        if (param!=null && param.contains(URLParam.SEPARATOR) && param.contains(URLParam.SERVER)) {
+            c.mode(c, URLParam.PARAM, param);
+        }
     }
 
     void complete(GraphStore graph, GraphStore profile, Context context) {

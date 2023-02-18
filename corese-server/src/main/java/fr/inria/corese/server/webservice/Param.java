@@ -2,10 +2,12 @@
 package fr.inria.corese.server.webservice;
 
 import fr.inria.corese.sparql.api.IDatatype;
+import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.Context;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.parser.URLParam;
 import java.util.List;
 import jakarta.servlet.http.HttpServletRequest;
 
@@ -51,6 +53,7 @@ public class Param {
     private String transform;
     private String uri;
     private String mode;
+    private List<String> modeList;
     private String param;
     private String arg;
     private String format;
@@ -114,6 +117,9 @@ public class Param {
         }
         if (getMode() != null) {
             ctx.setMode(ns(getMode()));
+        }
+        if (getModeList()!=null) {
+            ctx.set(URLParam.MODE, DatatypeMap.newResourceList(getModeList()));
         }
         if (getParam()!= null) {
             ctx.setParam(getParam());
@@ -439,6 +445,14 @@ public class Param {
      */
     public void setKey(String key) {
         this.key = key;
+    }
+
+    public List<String> getModeList() {
+        return modeList;
+    }
+
+    public void setModeList(List<String> modeList) {
+        this.modeList = modeList;
     }
 
 }

@@ -17,6 +17,7 @@ public interface URLParam {
     static final String FORMAT = "format";
     static final String DECODE = "decode";
     static final String PARAM = "param";
+    static final String ARG = "arg";
     static final String URI = "uri";
     static final String URL = "url";
     static final String DEFAULT_GRAPH = "default-graph-uri";

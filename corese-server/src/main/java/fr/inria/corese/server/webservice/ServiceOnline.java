@@ -202,8 +202,8 @@ public class ServiceOnline {
             @FormDataParam("profile")   String profile, // query + transform
             @FormDataParam("uri")       String resource, // query + transform
             @FormDataParam("mode")      List<String> modeList,
-            @FormDataParam("param")     String param,
-            @FormDataParam("arg")       String arg,
+            @FormDataParam("param")     List<String> paramList,
+            @FormDataParam("arg")       List<String> argList,
             @FormDataParam("format")    String format,
             @FormDataParam("access")    String access,
             @FormDataParam("query")     String query, // SPARQL query
@@ -214,12 +214,14 @@ public class ServiceOnline {
             @FormDataParam("named-graph-uri")   List<FormDataBodyPart> namedGraphUris) {
 
     	//if (logger.isDebugEnabled())
-    		logger.info("POST media: multipart/form-data. serv: " + serv + ", profile: " + profile + ", uri: " + resource + ", mode: " + modeList 
-    				+ ", param: " + param + ", arg: " + arg + ", query: " + query + ", name: " + name + ", value: " + value 
-    				+ ", transform: " + transform + ", defaultGraphUris: " + defaultGraphUris + ", namedGraphUris: " + namedGraphUris);
+    	logger.info(
+        "POST multipart/form-data serv: %s profile: %s uri: %s mode: %s param: %s arg: %s query: %s name: %s value: %s"
+                + "transform: %s from: %s named: %s", serv, profile, resource, modeList, 
+                paramList, argList, query, name, value, transform, defaultGraphUris, namedGraphUris);
+        
         return process(request, serv, profile, resource, 
-                null, modeList,
-                param, arg, format, access, query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));
+                null, modeList, null, paramList, null, argList,
+                format, access, query, name, value, transform, toStringList(defaultGraphUris), toStringList(namedGraphUris));
     }
     
     
@@ -293,7 +295,9 @@ public class ServiceOnline {
             List<String> defaultGraphUris,
             List<String> namedGraphUris) 
     {
-        return process(request, serv, profile, resource, mode, null, param, arg, format, access, query, name, value, transform, defaultGraphUris, namedGraphUris);
+        return process(request, serv, profile, resource, 
+                mode, null, param, null, arg, null,
+                format, access, query, name, value, transform, defaultGraphUris, namedGraphUris);
     }
     
     Response process(
@@ -304,7 +308,9 @@ public class ServiceOnline {
             String mode,
             List<String> modeList,
             String param, 
+            List<String> paramList,
             String arg,
+            List<String> argList,
             String format, 
             String access, 
             String query, // SPARQL query
@@ -317,6 +323,12 @@ public class ServiceOnline {
         if (mode == null && modeList!=null && ! modeList.isEmpty()) {
             mode = modeList.get(0);
         }
+        if (param == null && paramList!=null && ! paramList.isEmpty()) {
+            param = paramList.get(0);
+        } 
+        if (arg == null && argList!=null && ! argList.isEmpty()) {
+            arg = argList.get(0);
+        }        
     	// Dataset URI of the service
         String uri = getManager().getURI(serv);        
         Param par = new Param(SERVICE + serv, getProfile(uri, profile, transform), transform, resource, name, query);
@@ -325,7 +337,9 @@ public class ServiceOnline {
         par.setMode(mode);
         par.setModeList(modeList);
         par.setParam(param);
+        par.setParamList(paramList);
         par.setArg(arg);
+        par.setArgList(argList);
         // when URL parameter, write: format=application%2Fsparql-results%2Bjson
         par.setFormat(format);
         par.setKey(access);

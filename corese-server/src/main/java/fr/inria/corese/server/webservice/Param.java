@@ -54,6 +54,8 @@ public class Param {
     private String uri;
     private String mode;
     private List<String> modeList;
+    private List<String> paramList;
+    private List<String> argList;
     private String param;
     private String arg;
     private String format;
@@ -120,6 +122,12 @@ public class Param {
         }
         if (getModeList()!=null) {
             ctx.set(URLParam.MODE, DatatypeMap.newResourceList(getModeList()));
+        }
+        if (getParamList()!=null) {
+            ctx.set(URLParam.PARAM, DatatypeMap.newStringList(getParamList()));
+        }
+        if (getArgList()!=null) {
+            ctx.set(URLParam.ARG, DatatypeMap.newStringList(getArgList()));
         }
         if (getParam()!= null) {
             ctx.setParam(getParam());
@@ -453,6 +461,22 @@ public class Param {
 
     public void setModeList(List<String> modeList) {
         this.modeList = modeList;
+    }
+
+    public List<String> getParamList() {
+        return paramList;
+    }
+
+    public void setParamList(List<String> paramList) {
+        this.paramList = paramList;
+    }
+
+    public List<String> getArgList() {
+        return argList;
+    }
+
+    public void setArgList(List<String> argList) {
+        this.argList = argList;
     }
 
 }

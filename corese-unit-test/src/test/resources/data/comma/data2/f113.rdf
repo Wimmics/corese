@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2485.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jerome.declerck">
+         <c:FamilyName>Declerck</c:FamilyName>
+         <c:FirstName>Jerome</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/gerard.subsol">
+         <c:FamilyName>Subsol</c:FamilyName>
+         <c:FirstName>Gerard</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean-philippe.thirion">
+         <c:FamilyName>Thirion</c:FamilyName>
+         <c:FirstName>Jean-Philippe</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:Title>Automatic Retrieval of Anatomical Structures in 3D Medical Images</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

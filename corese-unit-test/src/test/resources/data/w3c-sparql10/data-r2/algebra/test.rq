@@ -1,0 +1,8 @@
+PREFIX :    <http://example/>
+
+SELECT *
+{ 
+    ?a :p ?c
+    #OPTIONAL { ?a :r ?d }. 
+    #?a ?p 1 { ?p a ?y } UNION { ?a ?z ?p } 
+}

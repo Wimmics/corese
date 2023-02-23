@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-4244.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/a..ferreira">
+         <c:FamilyName>Ferreira</c:FamilyName>
+         <c:FirstName>A.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/s..pérennes">
+         <c:FamilyName>Pérennes</c:FamilyName>
+         <c:FirstName>S.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/a.w.richa">
+         <c:FamilyName>Richa</c:FamilyName>
+         <c:FirstName>A.W</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/h..rivano">
+         <c:FamilyName>Rivano</c:FamilyName>
+         <c:FirstName>H.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/n..stier">
+         <c:FamilyName>Stier</c:FamilyName>
+         <c:FirstName>N.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/mascotte.en.html">
+         <c:Designation>Mascotte</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>8-2001</c:CreationDate>
+   <c:Title>On the design of multifiber WDM networks </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3308.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/pierre.kornprobst">
+         <c:FamilyName>Kornprobst</c:FamilyName>
+         <c:FirstName>Pierre</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/rachid.deriche">
+         <c:FamilyName>Deriche</c:FamilyName>
+         <c:FirstName>Rachid</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/gilles.aubert">
+         <c:FamilyName>Aubert</c:FamilyName>
+         <c:FirstName>Gilles</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/robotvis.en.html">
+         <c:Designation>Robotvis</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-1997</c:CreationDate>
+   <c:Title>Image Sequence Restoration: A PDE based coupled method for image  restoration and motion segmentation  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

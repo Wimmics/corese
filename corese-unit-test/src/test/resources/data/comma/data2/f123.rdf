@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2080.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean-daniel.boissonnat">
+         <c:FamilyName>Boissonnat</c:FamilyName>
+         <c:FirstName>Jean-Daniel</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/andre.cerezo">
+         <c:FamilyName>Cerezo</c:FamilyName>
+         <c:FirstName>Andre</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/olivier.devillers">
+         <c:FamilyName>Devillers</c:FamilyName>
+         <c:FirstName>Olivier</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jacqueline.duquesne">
+         <c:FamilyName>Duquesne</c:FamilyName>
+         <c:FirstName>Jacqueline</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/mariette.yvinec">
+         <c:FamilyName>Yvinec</c:FamilyName>
+         <c:FirstName>Mariette</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/prisme.en.html">
+         <c:Designation>Prisme</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-1993</c:CreationDate>
+   <c:Title>An Algorithm for constructing the convex hull of a set of spheres i n dimension d</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3027.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/charles.françois">
+         <c:FamilyName>François</c:FamilyName>
+         <c:FirstName>Charles</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/-.claude">
+         <c:FamilyName>Claude</c:FamilyName>
+         <c:FirstName>-</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/icare.en.html">
+         <c:Designation>Icare</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-1996</c:CreationDate>
+   <c:Title>Energy Efficient Control of Running Legged Robots. A Case Study : The Planar One-Legged Hopper </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

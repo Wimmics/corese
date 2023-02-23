@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3907.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/christèle.faure">
+         <c:FamilyName>Faure</c:FamilyName>
+         <c:FirstName>Christèle</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/edgar.soulié">
+         <c:FamilyName>Soulié</c:FamilyName>
+         <c:FirstName>Edgar</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/théo.berclaz">
+         <c:FamilyName>Berclaz</c:FamilyName>
+         <c:FirstName>Théo</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/tropics.fr.html">
+         <c:Designation>Tropics</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>3-2000</c:CreationDate>
+   <c:Title>Résonance paramagnétique électronique, optimisation et   différentiation automatique </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-1946.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/bruno.koobus">
+         <c:FamilyName>Koobus</c:FamilyName>
+         <c:FirstName>Bruno</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/marie-helene.lallemand">
+         <c:FamilyName>Lallemand</c:FamilyName>
+         <c:FirstName>Marie-Helene</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/alain.dervieux">
+         <c:FamilyName>Dervieux</c:FamilyName>
+         <c:FirstName>Alain</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sinus.en.html">
+         <c:Designation>Sinus</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>6-1993</c:CreationDate>
+   <c:Title>Unstructured volume-agglomeration MG : solution of the Poisson equa tion</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

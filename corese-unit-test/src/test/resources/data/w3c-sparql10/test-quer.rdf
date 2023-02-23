@@ -1,0 +1,69 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:mf="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryConstruct">
+    <rdfs:label>Defined Graph Query</rdfs:label>
+    <rdfs:comment>Class of queries that are seeking a constructed graph</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryForm"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/test-query#">
+    <dc:identifier rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"/>
+    <dc:format>RDF</dc:format>
+    <dc:date>2004-07</dc:date>
+    <dc:description>Query test case vocabulary</dc:description>
+    <dc:title>Query test case vocabulary</dc:title>
+    <dc:publisher>W3C RDF Data Access Working Group</dc:publisher>
+    <dc:subject></dc:subject>
+    <dc:creator>Andy Seaborne</dc:creator>
+    <rdfs:comment>Vocabulary for query test cases</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/test-query#graphData">
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryTest"/>
+    <rdfs:comment>Optional: named-graph only data for the query test (ie. not loaded into the background graph)</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryTest">
+    <rdfs:comment>The class of query tests</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/test-query#data">
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Resource"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryTest"/>
+    <rdfs:comment>Optional: data for the query test</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QuerySelect">
+    <rdfs:label>Variable Binding Query</rdfs:label>
+    <rdfs:comment>Class of queries that are seeking variable bindings</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryForm"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryDescribe">
+    <rdfs:label>Open Graph Query</rdfs:label>
+    <rdfs:comment>Class of queries that are seeking a descriptive graph</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryForm"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/test-query#queryForm">
+    <rdfs:isDefinedBy rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"/>
+    <rdfs:range rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryForm"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryForm">
+    <rdfs:comment>Super class of all query forms</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/test-query#query">
+    <rdfs:domain rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryTest"/>
+    <rdfs:comment>The query to ask</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk">
+    <rdfs:label>Boolean Query</rdfs:label>
+    <rdfs:comment>Class of queries that are seeking a yes/no question</rdfs:comment>
+    <rdfs:subClassOf rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryForm"/>
+  </rdf:Description>
+</rdf:RDF>

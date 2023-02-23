@@ -1,0 +1,37 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:食="http://www.w3.org/2001/sw/DataAccess/tests/data/i18n/kanji.ttl#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:variable>name</rs:variable>
+    <rs:value>Bob</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:solution rdf:nodeID="A2"/>
+    <rs:solution rdf:nodeID="A3"/>
+    <rs:resultVariable>name</rs:resultVariable>
+    <rs:resultVariable>food</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:binding rdf:nodeID="A4"/>
+    <rs:binding rdf:nodeID="A0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rs:variable>food</rs:variable>
+    <rs:value rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data/i18n/kanji.ttl#納豆"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rs:variable>name</rs:variable>
+    <rs:value>Alice</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:binding rdf:nodeID="A5"/>
+    <rs:binding rdf:nodeID="A6"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:variable>food</rs:variable>
+    <rs:value rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data/i18n/kanji.ttl#海老"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,17 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <foaf:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fred</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <foaf:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Eve</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <foaf:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Alice</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <foaf:name rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bob</foaf:name>
+  </rdf:Description>
+</rdf:RDF>

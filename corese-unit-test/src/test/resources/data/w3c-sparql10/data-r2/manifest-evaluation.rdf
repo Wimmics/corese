@@ -1,0 +1,107 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:qt="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"
+    xmlns:mf="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rdf:rest rdf:nodeID="A1"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rdf:rest rdf:nodeID="A3"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/sort/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/reduced/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rdf:rest rdf:nodeID="A6"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/bound/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rdf:rest rdf:nodeID="A8"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/optional/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rdf:rest rdf:nodeID="A10"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-ops/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <rdf:rest rdf:nodeID="A12"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/open-world/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <rdf:rest rdf:nodeID="A14"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/dataset/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <rdf:rest rdf:nodeID="A16"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/basic/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A17">
+    <rdf:rest rdf:nodeID="A18"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/cast/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A19">
+    <rdf:rest rdf:nodeID="A2"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/distinct/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A20">
+    <rdf:rest rdf:nodeID="A21"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/regex/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rdf:rest rdf:nodeID="A22"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/optional-filter/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A21">
+    <rdf:rest rdf:nodeID="A0"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/i18n/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rdf:rest rdf:nodeID="A4"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/solution-seq/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/manifest-evaluation.ttl">
+    <mf:include rdf:nodeID="A15"/>
+    <rdfs:label>SPARQL Query Evaluation tests</rdfs:label>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#Manifest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A23">
+    <rdf:rest rdf:nodeID="A7"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/bnode-coreference/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <rdf:rest rdf:nodeID="A17"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <rdf:rest rdf:nodeID="A20"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-equals/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <rdf:rest rdf:nodeID="A23"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/algebra/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <rdf:rest rdf:nodeID="A11"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/triple-match/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rdf:rest rdf:nodeID="A9"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A18">
+    <rdf:rest rdf:nodeID="A5"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A22">
+    <rdf:rest rdf:nodeID="A13"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/graph/manifest.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rdf:rest rdf:nodeID="A19"/>
+    <rdf:first rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/ask/manifest.ttl"/>
+  </rdf:Description>
+</rdf:RDF>

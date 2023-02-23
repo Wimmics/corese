@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3222.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/eitan.altman">
+         <c:FamilyName>Altman</c:FamilyName>
+         <c:FirstName>Eitan</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/karim.traore">
+         <c:FamilyName>Traore</c:FamilyName>
+         <c:FirstName>Karim</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/mistral.en.html">
+         <c:Designation>Mistral</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>7-1997</c:CreationDate>
+   <c:Title>On the Integration of Best-Effort and Guaranteed Performance Services </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

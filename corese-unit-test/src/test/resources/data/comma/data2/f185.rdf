@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2306.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/francis.avnaim">
+         <c:FamilyName>Avnaim</c:FamilyName>
+         <c:FirstName>Francis</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean-daniel.boissonnat">
+         <c:FamilyName>Boissonnat</c:FamilyName>
+         <c:FirstName>Jean-Daniel</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/olivier.devillers">
+         <c:FamilyName>Devillers</c:FamilyName>
+         <c:FirstName>Olivier</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/franco.preparata">
+         <c:FamilyName>Preparata</c:FamilyName>
+         <c:FirstName>Franco</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:Title>Evaluating signs of determinants using single-precision arithmetic</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

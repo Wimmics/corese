@@ -1,0 +1,82 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns="http://example.org/ns#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rs:index>
+    <rs:binding rdf:nodeID="A1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:variable>v</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</rs:index>
+    <rs:binding rdf:nodeID="A4"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:variable>v</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</rs:index>
+    <rs:binding rdf:nodeID="A2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rs:solution rdf:nodeID="A7"/>
+    <rs:solution rdf:nodeID="A0"/>
+    <rs:solution rdf:nodeID="A8"/>
+    <rs:solution rdf:nodeID="A9"/>
+    <rs:resultVariable>v</rs:resultVariable>
+    <rs:solution rdf:nodeID="A10"/>
+    <rs:solution rdf:nodeID="A11"/>
+    <rs:solution rdf:nodeID="A3"/>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+    <rs:solution rdf:nodeID="A5"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</rs:index>
+    <rs:binding rdf:nodeID="A12"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:variable>v</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rs:index>
+    <rs:binding rdf:nodeID="A13"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <rs:variable>v</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <rs:variable>v</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</rs:index>
+    <rs:binding rdf:nodeID="A15"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <rs:variable>v</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</rs:index>
+    <rs:binding rdf:nodeID="A16"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <rs:variable>v</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <rs:variable>v</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.5</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</rs:index>
+    <rs:binding rdf:nodeID="A14"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,36 @@
+<rdf:RDF
+    xmlns="http://example.org/#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:binding rdf:nodeID="A1"/>
+    <rs:binding rdf:nodeID="A2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:variable>v</rs:variable>
+    <rs:value xml:lang="en">abc</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:binding rdf:nodeID="A3"/>
+    <rs:binding rdf:nodeID="A5"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rs:solution rdf:nodeID="A0"/>
+    <rs:solution rdf:nodeID="A4"/>
+    <rs:resultVariable>v</rs:resultVariable>
+    <rs:resultVariable>p</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:variable>v</rs:variable>
+    <rs:value xml:lang="en-gb">abc</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:variable>p</rs:variable>
+    <rs:value rdf:resource="http://example.org/#p4"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rs:variable>p</rs:variable>
+    <rs:value rdf:resource="http://example.org/#p3"/>
+  </rdf:Description>
+</rdf:RDF>

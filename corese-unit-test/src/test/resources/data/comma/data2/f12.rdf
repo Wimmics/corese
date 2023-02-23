@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:TechnicalReport rdf:about="http://www.inria.fr/rapports/sophia/RT-187.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/pascal.desnogues">
+         <c:FamilyName>Desnogues</c:FamilyName>
+         <c:FirstName>Pascal</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/hery.rakotoarisoa">
+         <c:FamilyName>Rakotoarisoa</c:FamilyName>
+         <c:FirstName>Hery</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/mistral.en.html">
+         <c:Designation>Mistral</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>1-1996</c:CreationDate>
+   <c:Title>``ARC'': Simulateur d'architecture de réseaux de communications   </c:Title>
+</c:TechnicalReport> 
+</rdf:RDF>

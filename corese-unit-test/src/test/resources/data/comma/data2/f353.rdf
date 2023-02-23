@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-1698.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/philippe.devloo">
+         <c:FamilyName>Devloo</c:FamilyName>
+         <c:FirstName>Philippe</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/loula.fezoui">
+         <c:FamilyName>Fezoui</c:FamilyName>
+         <c:FirstName>Loula</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/stephane.lacire">
+         <c:FamilyName>Lacire</c:FamilyName>
+         <c:FirstName>Stephane</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sinus.en.html">
+         <c:Designation>Sinus</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>5-1992</c:CreationDate>
+   <c:Title>Une Interface C++ pour programmer sur la connection machine</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

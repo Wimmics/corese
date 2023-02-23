@@ -1,0 +1,412 @@
+<rdf:RDF
+    xmlns="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:qt="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"
+    xmlns:dawgt="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#"
+    xmlns:mf="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rdf:rest rdf:nodeID="A1"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-lang-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/sameTerm-eq.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-str-1">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-str-1.ttl"/>
+    <mf:action rdf:nodeID="A3"/>
+    <mf:name>str-1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-isliteral-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rdf:rest rdf:nodeID="A6"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-langMatches-basic"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rdf:rest rdf:nodeID="A8"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-str-3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-langMatches.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-langMatches-3.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#sameTerm-eq">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-sameTerm-eq.ttl"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0118/04-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:action rdf:nodeID="A2"/>
+    <rdfs:comment>sameTerm(?v1, ?v2) &amp;&amp; ?v1 = ?v2</rdfs:comment>
+    <mf:name>sameTerm-eq</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-isBlank-1">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-blank-1.ttl"/>
+    <mf:action rdf:nodeID="A10"/>
+    <mf:name>isBlank-1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-langMatches-2">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-langMatches-2.ttl"/>
+    <mf:action rdf:nodeID="A11"/>
+    <rdfs:comment>langMatches(lang(?v), 'en') matches 'abc'@en, 'abc'@en-gb</rdfs:comment>
+    <mf:name>LangMatches-2</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <rdf:rest rdf:nodeID="A5"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-langMatches-4"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-iri-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-blank-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <rdf:rest rdf:nodeID="A15"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-isIRI-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-lang-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-lang-1">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-lang-1.srx"/>
+    <mf:action rdf:nodeID="A16"/>
+    <rdfs:comment>updated from original test case: eliminated ordering from test</rdfs:comment>
+    <mf:name>lang-1 : Literals with a lang tag of some kind</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#sameTerm-simple">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-sameTerm.ttl"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0118/04-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:action rdf:nodeID="A17"/>
+    <rdfs:comment>sameTerm(?v1, ?v2)</rdfs:comment>
+    <mf:name>sameTerm-simple</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-str-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A18">
+    <rdf:rest rdf:nodeID="A0"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-datatype-3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rdf:rest rdf:nodeID="A19"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#lang-case-insensitive-eq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A20">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/sameTerm-not-eq.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A21">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-langMatches.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-langMatches-4.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rdf:rest rdf:nodeID="A22"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-str-4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-langMatches-basic">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-langMatches-de.ttl"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0087/14-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:action rdf:nodeID="A23"/>
+    <rdfs:comment>the basic range 'de-de' does not match 'de-Latn-de'</rdfs:comment>
+    <mf:name>LangMatches-basic</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-str-4">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-str-4.ttl"/>
+    <mf:action rdf:nodeID="A24"/>
+    <mf:name>str-4</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A25">
+    <rdf:rest rdf:nodeID="A12"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-langMatches-3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-langMatches-3">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-langMatches-3.ttl"/>
+    <mf:action rdf:nodeID="A9"/>
+    <rdfs:comment>langMatches(lang(?v), '*') matches 'abc'@en, 'abc'@en-gb, 'abc'@fr</rdfs:comment>
+    <mf:name>LangMatches-3</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A22">
+    <rdf:rest rdf:nodeID="A26"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-isBlank-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-datatype-3">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-datatype-3.srx"/>
+    <mf:action rdf:nodeID="A27"/>
+    <rdfs:comment>updated from original test case: eliminated ordering from test</rdfs:comment>
+    <mf:name>datatype-3 : Literals with a datatype of xsd:string</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/manifest.ttl">
+    <mf:entries rdf:nodeID="A28"/>
+    <rdfs:comment>DAWG Expression tests: Built-ins</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#Manifest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A29">
+    <rdf:rest rdf:nodeID="A14"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-isURI-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A24">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-str-4.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A30">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-uri-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-lang-2">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-lang-2.srx"/>
+    <mf:action rdf:nodeID="A31"/>
+    <rdfs:comment>updated from original test case: eliminated ordering from test</rdfs:comment>
+    <mf:name>lang-2 : Literals with a lang tag of ''</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A27">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-datatype-3.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A19">
+    <rdf:rest rdf:nodeID="A32"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#lang-case-insensitive-ne"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A33">
+    <rdf:rest rdf:nodeID="A34"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#sameTerm-eq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A35">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-langMatches.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-langMatches-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A36">
+    <rdf:rest rdf:nodeID="A29"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-lang-3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A23">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-langMatches-de.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-langMatches-de-de.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-langMatches-4">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-langMatches-4.ttl"/>
+    <mf:action rdf:nodeID="A21"/>
+    <rdfs:comment>! langMatches(lang(?v), '*') matches 'abc'</rdfs:comment>
+    <mf:name>LangMatches-4</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-str-3">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-str-3.ttl"/>
+    <mf:action rdf:nodeID="A37"/>
+    <mf:name>str-3</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#lang-case-insensitive-eq">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/lang-case-insensitive-eq.srx"/>
+    <mf:action rdf:nodeID="A38"/>
+    <rdfs:comment>'xyz'@en = 'xyz'@EN</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/06/19-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>lang-case-insensitive-eq</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#sameTerm-not-eq">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-sameTerm-not-eq.ttl"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0118/04-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:action rdf:nodeID="A20"/>
+    <rdfs:comment>!sameTerm(?v1, ?v2) &amp;&amp; ?v1 = ?v2</rdfs:comment>
+    <mf:name>sameTerm-not-eq</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A28">
+    <rdf:rest rdf:nodeID="A39"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-str-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-datatype-2">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-datatype-2.srx"/>
+    <mf:action rdf:nodeID="A40"/>
+    <rdfs:comment>updated from original test case: eliminated ordering from test</rdfs:comment>
+    <mf:name>datatype-2 : Literals with a datatype</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-lang-3">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-lang-3.srx"/>
+    <mf:action rdf:nodeID="A41"/>
+    <rdfs:comment>updated from original test case: eliminated ordering from test</rdfs:comment>
+    <mf:name>lang-3 : Graph matching with lang tag being a different case</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A40">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-datatype-2.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A42">
+    <rdf:rest rdf:nodeID="A25"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-langMatches-2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-isIRI-1">
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0087/14-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-iri-1.ttl"/>
+    <mf:action rdf:nodeID="A13"/>
+    <mf:name>isIRI-1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A43">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/lang-case-sensitivity.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/lang-case-sensitivity-ne.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A26">
+    <rdf:rest rdf:nodeID="A44"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-isLiteral-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A37">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-str-3.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A41">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-lang-3.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A44">
+    <rdf:rest rdf:nodeID="A45"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-datatype-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A32">
+    <rdf:rest rdf:nodeID="A33"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#sameTerm-simple"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A34">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#sameTerm-not-eq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rdf:rest rdf:nodeID="A36"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-lang-2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#lang-case-insensitive-ne">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/lang-case-insensitive-ne.srx"/>
+    <mf:action rdf:nodeID="A43"/>
+    <rdfs:comment>'xyz'@en != 'xyz'@EN</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/06/19-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>lang-case-insensitive-ne</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-langMatches.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-langMatches-2.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-str-2">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-str-2.ttl"/>
+    <mf:action rdf:nodeID="A46"/>
+    <mf:name>str-2</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A38">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/lang-case-sensitivity.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/lang-case-sensitivity-eq.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A39">
+    <rdf:rest rdf:nodeID="A7"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-str-2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A47">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-datatype-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-langMatches-1">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-langMatches-1.ttl"/>
+    <mf:action rdf:nodeID="A35"/>
+    <rdfs:comment>langMatches(lang(?v), 'en-GB') matches 'abc'@en-gb</rdfs:comment>
+    <mf:name>LangMatches-1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <rdf:rest rdf:nodeID="A42"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-langMatches-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-datatype-1">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-datatype-1.ttl"/>
+    <mf:action rdf:nodeID="A47"/>
+    <mf:name>datatype-1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A17">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/sameTerm.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-isLiteral-1">
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0087/14-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-isliteral-1.ttl"/>
+    <mf:action rdf:nodeID="A4"/>
+    <mf:name>isLiteral</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A46">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-str-2.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A45">
+    <rdf:rest rdf:nodeID="A18"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-datatype-2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A31">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/data-builtin-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/q-lang-2.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/expr-builtin/manifest#dawg-isURI-1">
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/0006"/>
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/expr-builtin/result-uri-1.ttl"/>
+    <mf:action rdf:nodeID="A30"/>
+    <mf:name>isURI-1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+</rdf:RDF>

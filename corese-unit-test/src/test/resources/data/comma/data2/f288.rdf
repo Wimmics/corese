@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-4030.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/thierry.viéville">
+         <c:FamilyName>Viéville</c:FamilyName>
+         <c:FirstName>Thierry</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jacques.droulez">
+         <c:FamilyName>Droulez</c:FamilyName>
+         <c:FirstName>Jacques</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/chin-hwee.peh">
+         <c:FamilyName>Peh</c:FamilyName>
+         <c:FirstName>Chin-Hwee</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/alexandre.négri">
+         <c:FamilyName>Négri</c:FamilyName>
+         <c:FirstName>Alexandre</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/robotvis.en.html">
+         <c:Designation>Robotvis</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>10-2000</c:CreationDate>
+   <c:Title>How do we perceive the eye intrinsic parameters ? </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

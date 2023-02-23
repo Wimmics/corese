@@ -1,0 +1,131 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:qt="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"
+    xmlns:dawgt="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#"
+    xmlns="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#"
+    xmlns:mf="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/data-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/query-bev-5.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rdf:rest rdf:nodeID="A2"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rdf:rest rdf:nodeID="A1"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-4">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/result-bev-4.ttl"/>
+    <mf:action rdf:nodeID="A4"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/att-0082/2007-06-12-dawg-minutes.html"/>
+    <rdfs:comment>The || operator takes the EBV of its operands</rdfs:comment>
+    <mf:name>Test 'boolean effective value' - ||</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rdf:rest rdf:nodeID="A5"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rdf:rest rdf:nodeID="A6"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-4"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-5">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/result-bev-5.ttl"/>
+    <mf:action rdf:nodeID="A0"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/att-0082/2007-06-12-dawg-minutes.html"/>
+    <rdfs:comment>The EBV of an unbound value  or a literal with an unknown datatype is a type error, which eliminates the solution in question</rdfs:comment>
+    <mf:name>Test 'boolean effective value' - optional</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/data-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/query-boolean-literal.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/data-2.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/query-bev-6.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-6"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-boolean-literal">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/result-boolean-literal.ttl"/>
+    <mf:action rdf:nodeID="A7"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0087/14-dawg-minutes.html"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <mf:name>Test literal 'true'</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/data-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/query-bev-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-6">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/result-bev-6.ttl"/>
+    <mf:action rdf:nodeID="A8"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/att-0082/2007-06-12-dawg-minutes.html"/>
+    <rdfs:comment>Negating a type error is still a type error</rdfs:comment>
+    <mf:name>Test 'boolean effective value' - unknown types</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-3">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/result-bev-3.ttl"/>
+    <mf:action rdf:nodeID="A11"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/att-0082/2007-06-12-dawg-minutes.html"/>
+    <rdfs:comment>The &amp;&amp; operator takes the EBV of its operands</rdfs:comment>
+    <mf:name>Test 'boolean effective value' - &amp;&amp;</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-2">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/result-bev-2.ttl"/>
+    <mf:action rdf:nodeID="A12"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/att-0082/2007-06-12-dawg-minutes.html"/>
+    <rdfs:comment>Zero-valued numerics, the empty string, and the false boolean have an EBV of false</rdfs:comment>
+    <mf:name>Test 'boolean effective value' - false</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rdf:rest rdf:nodeID="A9"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-5"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/data-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/query-bev-4.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <rdf:rest rdf:nodeID="A3"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-boolean-literal"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/data-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/query-bev-3.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/data-1.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/query-bev-2.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/manifest.ttl">
+    <mf:entries rdf:nodeID="A13"/>
+    <rdfs:comment>Test of boolean expressions</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#Manifest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/boolean-effective-value/manifest#dawg-bev-1">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/boolean-effective-value/result-bev-1.ttl"/>
+    <mf:action rdf:nodeID="A10"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007AprJun/att-0082/2007-06-12-dawg-minutes.html"/>
+    <rdfs:comment>Non-zero numerics, non-empty strings, and the true boolean have an EBV of true</rdfs:comment>
+    <mf:name>Test 'boolean effective value' - true</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2925.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean-claude.bermond">
+         <c:FamilyName>Bermond</c:FamilyName>
+         <c:FirstName>Jean-Claude</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/eric.darrot">
+         <c:FamilyName>Darrot</c:FamilyName>
+         <c:FirstName>Eric</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/olivier.delmas">
+         <c:FamilyName>Delmas</c:FamilyName>
+         <c:FirstName>Olivier</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/stéphane.perennes">
+         <c:FamilyName>Perennes</c:FamilyName>
+         <c:FirstName>Stéphane</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sloop.en.html">
+         <c:Designation>Sloop</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>7-1996</c:CreationDate>
+   <c:Title>Hamilton circuits in the directed Butterfly network </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

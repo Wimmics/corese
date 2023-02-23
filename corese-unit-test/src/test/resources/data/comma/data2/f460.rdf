@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3796.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/alexandre.guimond">
+         <c:FamilyName>Guimond</c:FamilyName>
+         <c:FirstName>Alexandre</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/alexis.roche">
+         <c:FamilyName>Roche</c:FamilyName>
+         <c:FirstName>Alexis</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/nicholas.ayache">
+         <c:FamilyName>Ayache</c:FamilyName>
+         <c:FirstName>Nicholas</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean.meunier">
+         <c:FamilyName>Meunier</c:FamilyName>
+         <c:FirstName>Jean</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/epidaure.en.html">
+         <c:Designation>Epidaure</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-1999</c:CreationDate>
+   <c:Title>Multimodal Brain Warping Using the Demons Algorithm and   Adaptative Intensity Corrections </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

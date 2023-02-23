@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-1558.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/olivier.devillers">
+         <c:FamilyName>Devillers</c:FamilyName>
+         <c:FirstName>Olivier</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/monique.teillaud">
+         <c:FamilyName>Teillaud</c:FamilyName>
+         <c:FirstName>Monique</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/mariette.yvinec">
+         <c:FamilyName>Yvinec</c:FamilyName>
+         <c:FirstName>Mariette</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/prisme.en.html">
+         <c:Designation>Prisme</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-1991</c:CreationDate>
+   <c:Title>Dynamic location in an arrangement of line segments in the plane </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

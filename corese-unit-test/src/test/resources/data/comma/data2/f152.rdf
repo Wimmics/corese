@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-4050.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/thierry.viéville">
+         <c:FamilyName>Viéville</c:FamilyName>
+         <c:FirstName>Thierry</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/diane.lingrand">
+         <c:FamilyName>Lingrand</c:FamilyName>
+         <c:FirstName>Diane</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/and.francois">
+         <c:FamilyName>Francois</c:FamilyName>
+         <c:FirstName>and</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/robotvis.en.html">
+         <c:Designation>Robotvis</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-2000</c:CreationDate>
+   <c:Title>Implementing a variant of the Kanatani's estimation method. </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

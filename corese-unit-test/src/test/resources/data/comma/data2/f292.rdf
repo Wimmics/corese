@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2000.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/monique.thonnat">
+         <c:FamilyName>Thonnat</c:FamilyName>
+         <c:FirstName>Monique</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/veronique.clement">
+         <c:FamilyName>Clement</c:FamilyName>
+         <c:FirstName>Veronique</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/van.den">
+         <c:FamilyName>den</c:FamilyName>
+         <c:FirstName>Van</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/pastis.en.html">
+         <c:Designation>Pastis</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>6-1993</c:CreationDate>
+   <c:Title>Supervision of perception tasks for autonomous systems : the OCAPI approach</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

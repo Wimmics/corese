@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3622.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/nathalie.marco-blaszka">
+         <c:FamilyName>Marco-Blaszka</c:FamilyName>
+         <c:FirstName>Nathalie</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean-antoine.désidéri">
+         <c:FamilyName>Désidéri</c:FamilyName>
+         <c:FirstName>Jean-Antoine</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sinus.en.html">
+         <c:Designation>Sinus</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>2-1999</c:CreationDate>
+   <c:Title>Numerical solution of optimization test-cases by Genetic Algorithms </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

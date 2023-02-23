@@ -1,0 +1,48 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:binding rdf:nodeID="A1"/>
+    <rs:binding rdf:nodeID="A2"/>
+    <rs:binding rdf:nodeID="A3"/>
+    <rs:binding rdf:nodeID="A4"/>
+    <rs:binding rdf:nodeID="A5"/>
+    <rs:binding rdf:nodeID="A6"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rs:variable>o</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:variable>q</rs:variable>
+    <rs:value rdf:resource="http://example/q"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:variable>v</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rs:solution rdf:nodeID="A0"/>
+    <rs:resultVariable>q</rs:resultVariable>
+    <rs:resultVariable>o</rs:resultVariable>
+    <rs:resultVariable>s</rs:resultVariable>
+    <rs:resultVariable>g</rs:resultVariable>
+    <rs:resultVariable>v</rs:resultVariable>
+    <rs:resultVariable>p</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:variable>p</rs:variable>
+    <rs:value rdf:resource="http://example/p"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:resource="http://example/x"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rs:variable>g</rs:variable>
+    <rs:value rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/graph/data-g2.ttl"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,22 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns="http://example.org/ns#" > 
+  <rdf:Description rdf:about="http://example.org/ns#x">
+    <num rdf:datatype="http://www.w3.org/2001/XMLSchema#decimal">1.5</num>
+    <num rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</num>
+    <str>AAA</str>
+    <str>1</str>
+    <str></str>
+    <num rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</num>
+    <num rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</num>
+    <str>aaa</str>
+    <str>002</str>
+    <num rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</num>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/ns#y">
+    <num rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</num>
+    <num rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</num>
+    <num rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</num>
+  </rdf:Description>
+</rdf:RDF>

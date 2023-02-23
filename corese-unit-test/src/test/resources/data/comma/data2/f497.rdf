@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3700.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/bruno.beauquier">
+         <c:FamilyName>Beauquier</c:FamilyName>
+         <c:FirstName>Bruno</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/stéphane.pérennes">
+         <c:FamilyName>Pérennes</c:FamilyName>
+         <c:FirstName>Stéphane</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/and.david">
+         <c:FamilyName>David</c:FamilyName>
+         <c:FirstName>and</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sloop.en.html">
+         <c:Designation>Sloop</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>6-1999</c:CreationDate>
+   <c:Title>All-to-All Routing and Coloring in Weighted Trees of Rings </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

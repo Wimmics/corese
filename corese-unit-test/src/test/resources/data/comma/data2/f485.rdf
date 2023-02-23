@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3729.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/emmanuel.léty">
+         <c:FamilyName>Léty</c:FamilyName>
+         <c:FirstName>Emmanuel</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/thierry.turletti">
+         <c:FamilyName>Turletti</c:FamilyName>
+         <c:FirstName>Thierry</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/françois.baccelli">
+         <c:FamilyName>Baccelli</c:FamilyName>
+         <c:FirstName>François</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.frhttp://www.dmi.ens.fr/">
+         <c:Designation>Ens-dmi</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/rodeo.en.html">
+         <c:Designation>Rodeo</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>7-1999</c:CreationDate>
+   <c:Title>Cell-based Multicast Grouping in Large-Scale Virtual Environments  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

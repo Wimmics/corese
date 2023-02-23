@@ -1,0 +1,35 @@
+<rdf:RDF
+    xmlns="http://example.org/things#"
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="http://example.org/things#xi1">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/things#xp1">
+    <p>zzz</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/things#xi3">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">01</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/things#xi2">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/things#xd2">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/things#xd3">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/things#xd1">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#double">1.0e0</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/things#xu">
+    <p rdf:resource="http://example.org/things#z"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/things#xp2">
+    <p>1</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/things#xt1">
+    <p rdf:datatype="http://example.org/things#myType">zzz</p>
+  </rdf:Description>
+</rdf:RDF>

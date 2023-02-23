@@ -1,0 +1,103 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:qt="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"
+    xmlns="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/construct/manifest#"
+    xmlns:dawgt="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#"
+    xmlns:mf="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/data-ident.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/query-ident.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rdf:rest rdf:nodeID="A2"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/construct/manifest#construct-2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/construct/manifest#construct-3">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/result-reif.ttl"/>
+    <mf:action rdf:nodeID="A3"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0047/31-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <rdfs:comment>Reification of the default graph</rdfs:comment>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryConstruct"/>
+    <mf:name>dawg-construct-reification-1</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/data-reif.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/query-reif-2.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rdf:rest rdf:nodeID="A1"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/construct/manifest#construct-1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/data-ident.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/query-subgraph.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/data-reif.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/query-reif-1.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/construct/manifest#construct-2">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/result-subgraph.ttl"/>
+    <mf:action rdf:nodeID="A6"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0047/31-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <rdfs:comment>Result subgraph of original graph</rdfs:comment>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryConstruct"/>
+    <mf:name>dawg-construct-subgraph</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/construct/manifest#construct-5">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/result-construct-optional.ttl"/>
+    <mf:action rdf:nodeID="A7"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0047/31-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <rdfs:comment>Reification of the default graph</rdfs:comment>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryConstruct"/>
+    <mf:name>dawg-construct-optional</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/construct/manifest#construct-4">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/result-reif.ttl"/>
+    <mf:action rdf:nodeID="A4"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0047/31-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <rdfs:comment>Reification of the default graph</rdfs:comment>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryConstruct"/>
+    <mf:name>dawg-construct-reification-2</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/data-opt.ttl"/>
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/query-construct-optional.rq"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/construct/manifest#construct-1">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/construct/result-ident.ttl"/>
+    <mf:action rdf:nodeID="A0"/>
+    <dawgt:approvedBy rdf:resource="http://lists.w3.org/Archives/Public/public-rdf-dawg/2007JulSep/att-0047/31-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <rdfs:comment>Graph equivalent result graph</rdfs:comment>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryConstruct"/>
+    <mf:name>dawg-construct-identity</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <mf:entries rdf:nodeID="A5"/>
+    <rdfs:comment>Some DAWG test cases on the CONSTRUCT result form</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#Manifest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rdf:rest rdf:nodeID="A9"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/construct/manifest#construct-3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rdf:rest rdf:nodeID="A10"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/construct/manifest#construct-4"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/construct/manifest#construct-5"/>
+  </rdf:Description>
+</rdf:RDF>

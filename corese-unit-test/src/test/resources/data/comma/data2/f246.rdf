@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:Report rdf:about="http://www.inria.fr/rapports/sophia/CERMICS-93-22.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/f..lebastard">
+         <c:FamilyName>Lebastard</c:FamilyName>
+         <c:FirstName>F.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreationDate>12-1993</c:CreationDate>
+   <c:Title>CHOOE: Un gestionnaire d'environnement distribué</c:Title>
+</c:Report> 
+</rdf:RDF>

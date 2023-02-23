@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-4042.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/maud.mériaux">
+         <c:FamilyName>Mériaux</c:FamilyName>
+         <c:FirstName>Maud</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/serge.piperno">
+         <c:FamilyName>Piperno</c:FamilyName>
+         <c:FirstName>Serge</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/caiman.en.html">
+         <c:Designation>Caiman</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-2000</c:CreationDate>
+   <c:Title>Méthodes de volumes finis en maillages variables pour des équations hyperboliques en une dimension</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

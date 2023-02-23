@@ -262,7 +262,7 @@ public class TestQuery1 {
         Load load = Load.create(g);
         load.parse(TestQuery1.class.getResource("/primer.owl").getPath());
 
-        QueryProcess exec = QueryProcess.create(g);
+        QueryProcess.create(g);
         Transformer t = Transformer.create(g, Transformer.OWLRL);
         t.process();
         Transformer t2 = Transformer.create(g, Transformer.TURTLE_HTML);

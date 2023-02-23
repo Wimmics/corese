@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-4077.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/i..abalakin">
+         <c:FamilyName>Abalakin</c:FamilyName>
+         <c:FirstName>I.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/m..braza">
+         <c:FamilyName>Braza</c:FamilyName>
+         <c:FirstName>M.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/s..camarri">
+         <c:FamilyName>Camarri</c:FamilyName>
+         <c:FirstName>S.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/a..dervieux">
+         <c:FamilyName>Dervieux</c:FamilyName>
+         <c:FirstName>A.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/b..koobus">
+         <c:FamilyName>Koobus</c:FamilyName>
+         <c:FirstName>B.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/t..kozubskaya">
+         <c:FamilyName>Kozubskaya</c:FamilyName>
+         <c:FirstName>T.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/p..rodes">
+         <c:FamilyName>Rodes</c:FamilyName>
+         <c:FirstName>P.</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sinus.en.html">
+         <c:Designation>Sinus</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-2000</c:CreationDate>
+   <c:Title>Unstable and unsteady aerodynamics : compared information from  different numerical models </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

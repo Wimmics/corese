@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:TechnicalReport rdf:about="http://www.inria.fr/rapports/sophia/RT-136.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jose.grimm">
+         <c:FamilyName>Grimm</c:FamilyName>
+         <c:FirstName>Jose</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/safir.en.html">
+         <c:Designation>Safir</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>12-1991</c:CreationDate>
+   <c:Title>L'Arithmetique generique de Sisyphe</c:Title>
+</c:TechnicalReport> 
+</rdf:RDF>

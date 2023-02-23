@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2823.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/bruno.koobus">
+         <c:FamilyName>Koobus</c:FamilyName>
+         <c:FirstName>Bruno</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/charbel.farhat">
+         <c:FamilyName>Farhat</c:FamilyName>
+         <c:FirstName>Charbel</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sinus.en.html">
+         <c:Designation>Sinus</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>3-1996</c:CreationDate>
+   <c:Title>Time-Accurate Schemes for Computing Two- and Three-Dimensional Viscous Fluxes on Unstructured Dynamic Meshes</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2673.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/charlie.rothwell">
+         <c:FamilyName>Rothwell</c:FamilyName>
+         <c:FirstName>Charlie</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/robotvis.en.html">
+         <c:Designation>Robotvis</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>10-1995</c:CreationDate>
+   <c:Title>The Importance of Reasoning about Occlusions during Hypothesis Verification in Object Recognition</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

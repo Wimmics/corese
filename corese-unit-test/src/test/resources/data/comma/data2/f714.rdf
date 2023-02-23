@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3089.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/svante.janson">
+         <c:FamilyName>Janson</c:FamilyName>
+         <c:FirstName>Svante</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/wojciech.szpankowski">
+         <c:FamilyName>Szpankowski</c:FamilyName>
+         <c:FirstName>Wojciech</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/mistral.en.html">
+         <c:Designation>Mistral</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>1-1997</c:CreationDate>
+   <c:Title>Analysis of an Asymmetric Leader Election Algorithm </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

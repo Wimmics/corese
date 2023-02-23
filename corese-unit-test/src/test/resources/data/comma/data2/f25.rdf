@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2713.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/philippe.mussi">
+         <c:FamilyName>Mussi</c:FamilyName>
+         <c:FirstName>Philippe</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/gunther.siegel">
+         <c:FamilyName>Siegel</c:FamilyName>
+         <c:FirstName>Gunther</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/sloop.en.html">
+         <c:Designation>Sloop</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>11-1995</c:CreationDate>
+   <c:Title>Sequential Simulation in Prosit: Programming Model and Implementation</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

@@ -1,0 +1,25 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example.org/" > 
+  <rdf:Description rdf:about="http://example.org/dT">
+    <p>2002-10-10T17:00:00Z</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/decimal">
+    <p>+33.3300</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/iri">
+    <p rdf:resource="http://example.org/z"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/fltdbl">
+    <p>-10.2E3</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/bool">
+    <p>true</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/str">
+    <p>string</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/int">
+    <p>13</p>
+  </rdf:Description>
+</rdf:RDF>

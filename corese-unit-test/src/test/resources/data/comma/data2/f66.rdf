@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-2612.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/rance.cleaveland">
+         <c:FamilyName>Cleaveland</c:FamilyName>
+         <c:FirstName>Rance</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/eric.madelaine">
+         <c:FamilyName>Madelaine</c:FamilyName>
+         <c:FirstName>Eric</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/steve.sims">
+         <c:FamilyName>Sims</c:FamilyName>
+         <c:FirstName>Steve</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/meije.en.html">
+         <c:Designation>Meije</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>7-1995</c:CreationDate>
+   <c:Title>A Front-End Generator for Verification Tools</c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

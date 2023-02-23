@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3142.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/eitan.altman">
+         <c:FamilyName>Altman</c:FamilyName>
+         <c:FirstName>Eitan</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/jean.bolot">
+         <c:FamilyName>Bolot</c:FamilyName>
+         <c:FirstName>Jean</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/philippe.nain">
+         <c:FamilyName>Nain</c:FamilyName>
+         <c:FirstName>Philippe</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/driss.elouadghiri">
+         <c:FamilyName>Elouadghiri</c:FamilyName>
+         <c:FirstName>Driss</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/mohammed.erramdani">
+         <c:FamilyName>Erramdani</c:FamilyName>
+         <c:FirstName>Mohammed</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/patrick.brown">
+         <c:FamilyName>Brown</c:FamilyName>
+         <c:FirstName>Patrick</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/denis.collange">
+         <c:FamilyName>Collange</c:FamilyName>
+         <c:FirstName>Denis</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/mistral.en.html">
+         <c:Designation>Mistral</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>3-1997</c:CreationDate>
+   <c:Title>Performance Modeling of TCP/IP in a Wide-Area Network  </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

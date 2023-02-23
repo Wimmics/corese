@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:TechnicalReport rdf:about="http://www.inria.fr/rapports/sophia/RT-148.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/patrick.capolsini">
+         <c:FamilyName>Capolsini</c:FamilyName>
+         <c:FirstName>Patrick</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/stephane.dalmas">
+         <c:FamilyName>Dalmas</c:FamilyName>
+         <c:FirstName>Stephane</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/yves.papegay">
+         <c:FamilyName>Papegay</c:FamilyName>
+         <c:FirstName>Yves</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/safir.en.html">
+         <c:Designation>Safir</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>1-1993</c:CreationDate>
+   <c:Title>"Quaterman" : une bibliotheque Maple de calculs et de manipulations  sur l'algebre des quaternions</c:Title>
+</c:TechnicalReport> 
+</rdf:RDF>

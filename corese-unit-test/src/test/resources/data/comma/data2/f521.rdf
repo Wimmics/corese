@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3634.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/isabelle.attali">
+         <c:FamilyName>Attali</c:FamilyName>
+         <c:FirstName>Isabelle</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/denis.caromel">
+         <c:FamilyName>Caromel</c:FamilyName>
+         <c:FirstName>Denis</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/romain.guider">
+         <c:FamilyName>Guider</c:FamilyName>
+         <c:FirstName>Romain</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/oasis.en.html">
+         <c:Designation>Oasis</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>3-1999</c:CreationDate>
+   <c:Title>Static Analysis of Java for distributed and parallel programming   </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

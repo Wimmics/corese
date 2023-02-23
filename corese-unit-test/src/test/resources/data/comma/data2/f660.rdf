@@ -1,0 +1,18 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3275.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/laurent.théry">
+         <c:FamilyName>Théry</c:FamilyName>
+         <c:FirstName>Laurent</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/croap.en.html">
+         <c:Designation>Croap</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>10-1997</c:CreationDate>
+   <c:Title>Proving and Computing: a certified version of the Buchberger's algorithm </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

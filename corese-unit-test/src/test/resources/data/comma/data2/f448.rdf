@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<rdf:RDF xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#" xmlns:c="http://www.inria.fr/acacia/comma#" xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#">
+<c:ResearchReport rdf:about="http://www.inria.fr/rapports/sophia/RR-3839.html">
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/arie.hordijk">
+         <c:FamilyName>Hordijk</c:FamilyName>
+         <c:FirstName>Arie</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/zhen.liu">
+         <c:FamilyName>Liu</c:FamilyName>
+         <c:FirstName>Zhen</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:Person rdf:about="http://www.inria.fr/don.towsley">
+         <c:FamilyName>Towsley</c:FamilyName>
+         <c:FirstName>Don</c:FirstName>
+      </c:Person> 
+   </c:CreatedBy>
+   <c:CreatedBy>
+      <c:ProjectGroup rdf:about="http://www.inria.fr/recherche/equipes/mistral.en.html">
+         <c:Designation>Mistral</c:Designation>
+      </c:ProjectGroup> 
+   </c:CreatedBy>
+   <c:CreationDate>12-1999</c:CreationDate>
+   <c:Title>Smoothing Effect of the Superposition  of Homogeneous Sources in Tandem Networks </c:Title>
+</c:ResearchReport> 
+</rdf:RDF>

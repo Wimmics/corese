@@ -1,0 +1,319 @@
+prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
+#prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
+prefix map: <http://ns.inria.fr/map/>
+prefix db:  <http://dbpedia.org/ontology/> .
+
+@public {
+
+function us:number(list) {
+    letdyn (num = 0) {
+        maplist (function(elem) { 
+            xt:cons(xt:first(elem), xt:cons(set (num = num + 1), xt:rest(elem))) }, 
+            list)
+    }
+}
+
+function us:format(elem) {
+    let ((?img ?num ?label ?com ?doc ?lat ?lon) = elem) {
+        st:format(ft:cell.html, ?img, ?num, ?label, ?com, ?doc, ?lat, ?lon)
+    }
+}
+
+function us:docTitle(doc) {
+    if (strlen(doc) > 40, 
+        concat(substr(doc, 1, 40), "..."), 
+        doc)
+}
+
+function us:selectDepartmentSchema() {
+    let (select (aggregate(?label) as ?list) 
+        where { ?x a db:Department ; rdfs:label ?label } 
+        order by ?label ) {
+        xt:sort(?list)
+    }
+}
+
+function us:selectCommune() {
+    let (select (aggregate(distinct ?label) as ?list) 
+        where {
+            service <store:mapdatamanager> {
+                ?url map:commune ?label 
+            }}) {
+        xt:sort(?list)
+    }
+}
+
+function us:selectDepartment() {
+    let (select (aggregate(distinct ?label) as ?list) 
+        where {
+            service <store:mapdatamanager> {
+                ?url map:departement ?dep .
+                ?dept db:inseeCode ?dep ; 
+                    rdfs:label ?label 
+            }}) {
+        xt:sort(?list)
+    }
+}
+
+function us:selectLocalisation() {
+    let (select (aggregate(distinct ?loc) as ?list) 
+        where {
+            service <store:mapdatamanager> {
+                ?url map:localisation/rdfs:subClassOf* ?loc .
+            }}) {
+        xt:sort(?list)
+    }
+}
+
+function us:selectTypeNature() {
+    us:selectType(map:Nature)
+}
+
+function us:selectTypeArtefact() {
+    us:selectType(map:Artefact)
+}
+
+function us:selectType(aclass) {
+    let (select ?aclass (aggregate(distinct ?url) as ?list) 
+        where {
+            service <store:mapdatamanager> {
+                ?url rdfs:subClassOf* ?aclass .
+                ?x rdf:type/rdfs:subClassOf*  ?url
+            }}) {
+        xt:sort(xt:add(?list, map:Undefined))
+    }
+}
+
+function us:selectRegion() {
+    let (select (aggregate(?label) as ?list) 
+        where { ?x a db:Region ; rdfs:label ?label } 
+        order by ?label ) {
+        xt:sort(?list)
+    }
+}
+
+
+function us:instanceofAny(?typeList) {
+    let (select ?typeList (aggregate(distinct ?url) as ?list)
+         where { 
+                values ?typeList {undef}
+                values ?type { unnest(?typeList) }
+                ?url rdf:type/rdfs:subClassOf* ?type  
+            }) {
+        return(?list)
+    }
+}
+
+
+function us:instanceofEvery(?typeList) {
+    let (select ?typeList (aggregate(distinct ?url) as ?list)
+         where {
+            service <store:mapdatamanager> {
+                values ?typeList {undef}
+                bind (xt:get(?typeList, 0) as ?fstType)
+                ?url rdf:type/rdfs:subClassOf* ?fstType
+                
+                filter not exists {
+                    values ?typeList {undef}
+                    values ?type { unnest(?typeList) }
+                    filter not exists {?url rdf:type/rdfs:subClassOf* ?type}  
+                }
+            }}) {
+        return(?list)
+    }
+}
+
+# member of the list or list contains only empty string ""
+function us:match(elem, alist) {
+    if (mapany (function(x) {strlen(x)>0}, alist)) {
+        xt:member(elem, alist)
+    }
+    else {
+        return(true)
+    }
+}
+
+function us:sublist(alist, start, end) {
+    let (res = xt:list()) {
+        for (index in xt:iota(start, end)) {
+            xt:add(res, xt:get(alist, index))
+        } ;
+        return (res)
+    }
+}
+
+# A union B and C -> (A or B) and C
+# A or B and C    -> A or (B and C)
+# split or -> ((A) (B C))
+# split and : A union B and C -> ((A B) (C))
+# distrib  -> AC or BC
+
+function us:process(alist) {
+    let (tmp = us:split(alist, <OR>),
+         res1 = maplist(function(part) { us:split(part, <AND>, <AND_NOT>) }, tmp),
+         # res2 = list ((A or B) and (C)) -- with no explicit or|and
+         res2 = maplist(function(part) { maplist(us:cleanUnion, part) }, res1),
+         res3 = maplist(us:distrib, res2)) 
+         {
+         return (reduce(xt:append, res3))
+        }
+}
+
+function us:split(alist, oper) {
+    let (tmp = xt:list(), res = xt:list()) {
+        for (elem in alist) {
+            if (elem = oper) {
+                if (xt:size(tmp)>0) {
+                    xt:add(res, tmp);
+                } ;
+                set(tmp = xt:list())
+            }
+            else if (elem in (map:Undefined)) {
+                # skip
+            }
+            else {
+                xt:add(tmp, elem)
+            }
+        } ;
+        if (xt:size(tmp)>0) {
+            xt:add(res, tmp); 
+        };
+        return (res)
+    }
+}
+
+function us:split(alist, oper, operNot) {
+    let (tmp = xt:list(), res = xt:list(), anot=false) {
+        for (elem in alist) {
+            if (elem in (oper, operNot)) {
+                if (xt:size(tmp)>0) {
+                    xt:add(res, tmp);
+                } ;
+                set(tmp = xt:list());
+                if (elem=operNot) {
+                    set(anot=true)
+                }
+            }
+            else if (elem in (map:Undefined)) {
+                # skip
+                set(anot=false)
+            }
+            else {
+                if (anot) {
+                    xt:add(tmp, xt:list(elem));
+                    set(anot=false)
+                }
+                else {
+                    xt:add(tmp, elem)
+                }
+            }
+        } ;
+        if (xt:size(tmp)>0) {
+            xt:add(res, tmp); 
+        };
+        return (res)
+    }
+}
+
+function us:cleanUnion(alist) {
+    us:clean(alist, <UNION>)
+}
+
+function us:clean(alist, elem) {
+    if (xt:member(elem, alist), us:clean(xt:remove(alist, elem), elem), alist)
+}
+
+# ((A B) (C)) -> ((A C) (B C))
+function us:distrib(alist) {
+    if (xt:size(alist) = 0) {
+        return (alist)
+    }
+    else if (xt:size(alist) = 1) {
+        return (maplist (xt:list, xt:first(alist)))
+    }
+    else {
+        letdyn ((fst | rst) = alist) {
+            let (res =
+            maplist (function(elem) { 
+                letdyn (myelem = elem, distrib = us:distrib(rst)) {
+                    maplist (function(sub) { xt:cons(myelem, sub) }, distrib)
+                }
+            }, fst)) {
+            
+            return (reduce(xt:append, res));
+            }
+        }
+    }
+}
+
+
+
+
+# alist = (t1 t2 UNION t3)
+# return ((t1 t2)(t3))
+function us:split(alist) {
+    let (tmp = xt:list(), res = xt:list()) {
+        for (elem in alist) {
+            if (elem = <OR>) {
+                if (xt:size(tmp)>0) {
+                    xt:add(res, tmp);
+                } ;
+                set(tmp = xt:list())
+            }
+            else if (elem in (<AND>, map:Undefined)) {
+                # skip
+            }
+            else {
+                xt:add(tmp, elem)
+            }
+        } ;
+        if (xt:size(tmp)>0) {
+            xt:add(res, tmp); 
+        };
+        return (res)
+    }
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+}

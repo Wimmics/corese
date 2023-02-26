@@ -38,11 +38,13 @@ import jakarta.servlet.http.HttpServletRequest;
 public class ServiceOnline {
 
     static private final Logger logger = LogManager.getLogger(ServiceOnline.class);
+    static final int ERROR = 500;
+    private static final String headerAccept = "Access-Control-Allow-Origin";
 
     static final String SERVICE = "/service/"; 
     
     static {
-        Manager.getManager().init();
+        //Manager.getManager().init();
     }
     
     QuerySolverVisitorServer visitor;
@@ -320,6 +322,11 @@ public class ServiceOnline {
             List<String> defaultGraphUris,
             List<String> namedGraphUris) 
     {
+        
+        if (! Manager.getManager().isInitDone()) {
+            return Response.status(ERROR).header(headerAccept, "*").entity("Server not initialized").build();
+        }
+        
         if (mode == null && modeList!=null && ! modeList.isEmpty()) {
             mode = modeList.get(0);
         }

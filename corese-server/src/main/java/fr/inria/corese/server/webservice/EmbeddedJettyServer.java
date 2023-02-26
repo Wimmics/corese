@@ -391,14 +391,18 @@ public class EmbeddedJettyServer extends ResourceConfig {
                 formData.add("localhost", "true");
             }
             logger.info("before localhost uri: " + uri);
-            
+
             if (true) {
             target.path("sparql").path("reset")
                     .request(APPLICATION_FORM_URLENCODED_TYPE)
                     .post(Entity.form(formData));
             }
             else {
-                new SPARQLRestAPI().initRDF();
+                new SPARQLRestAPI().initRDF(
+                        Boolean.toString(owlrl),
+                        Boolean.toString(entailments),
+                        Boolean.toString(loadProfileData),
+                        localProfile,"false");
             }
             logger.info("after localhost uri");
 
@@ -415,6 +419,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
                 }
             }
 
+            Manager.getManager().init();
             server.join();
 
         } catch (ParseException exp) {

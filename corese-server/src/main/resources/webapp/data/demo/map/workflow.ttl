@@ -1,0 +1,550 @@
+#
+# Query definitions for a Workflow with st:web transformation
+# To be used with /tutorial/tutohal
+# This graph is stored in named graph st:context
+# It is available in query and transformation with bind (st:get(st:context) as ?g)
+#
+# Olivier Corby - Wimmics Inria UCA I3S - 2023
+#
+
+@prefix dbo: <http://dbpedia.org/ontology/>
+@prefix map: <http://ns.inria.fr/map/>
+
+[] owl:imports <workflow-select.ttl>
+
+
+
+#
+# List of Query
+#
+us:map a sw:Workflow ;
+sw:display true;
+sw:debug true;
+sw:collect true;
+sw:body ( 
+    st:intro
+    st:indexNature
+    st:indexArtefact
+    st:localisationType
+    st:indexCommune
+    st:query
+    st:count
+)
+.
+
+
+
+st:intro a sw:Query ;
+    st:name st:intro ;
+    rdfs:label "Introduction" ;
+
+    rdfs:comment """This is of SPARQL endpoint for a <a href='http://umap.openstreetmap.fr/fr/map/provence-alpes_455480'>semantic map</a> project.
+    Choose a query in the selector. 'Previous' and 'Next' enable user to navigate in queries. When a query is selected, a query pattern is shown in the text area. 'Submit' submits the SPARQL query to the server. UNION operator is like OR but UNION has precedence over AND: A UNION B AND C ::= (A OR B) AND C."""@en ;
+
+    rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next' permettent de naviguer dans les requêtes successives.
+    'Submit' soumet la requête SPARQL au serveur. """@fr ;
+
+    st:query ""
+.
+
+
+
+
+
+
+
+#
+# This query takes as input mode parameter a list of classes with boolean conenctors
+# (t1 UNION t2 AND t3) 
+# rewritten as ((t1 or t2) and t3)
+# rewritten as ((t1 t3) (t2 t3)) a union of conjunction of classes
+#
+st:genQuery st:value
+"""prefix map: <http://ns.inria.fr/map/> .
+prefix dbo: <http://dbpedia.org/ontology/> .
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
+#prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
+
+template {
+format { ft:format.html
+    group { format { ft:titlerow.html  st:number() ?com ?name str(?dep) ?row } }
+}}
+where {
+select ?com ?name ?dep
+(aggregate (xt:list(?fimg, ?label, ?com, ?fdoc, ?lat, ?lon)) as ?alist)
+(maplist (us:format, us:number(?alist)) as ?flist)
+(apply (rq:concat, ?flist) as ?row)
+where {
+    service <store:mapdatamanager> {
+        select distinct * where {
+        
+           {select distinct ?url where { 
+                # return a union of conjunction of classes ((t1 t3) (t2 t3)) = ((t1 and t3) union (t2 and t3))
+                bind (us:process(st:get("mode")) as ?modeList)
+                
+                # and (t1 t3)
+                values ?typeList { unnest(?modeList) }
+                
+                bind (xt:first(?typeList) as ?fstType)
+                
+                ?url rdf:type/rdfs:subClassOf* ?fstType
+                
+                filter not exists {
+                    values ?type { unnest(xt:rest(?typeList)) }
+                    filter if (isURI(?type), 
+                        not exists {?url rdf:type/rdfs:subClassOf* ?type}, 
+                        # (type) means not(type)
+                        exists { bind (xt:first(?type) as ?atype) ?url rdf:type/rdfs:subClassOf* ?atype})  
+                }
+            }}        
+            
+            ?url  rdfs:label ?label ; map:commune ?com .                                 
+            ?url geo:long ?lon ; geo:lat ?lat .
+                
+            bind (st:get("param") as ?deptList)
+                
+            ?url map:departement ?dep .
+            ?dept dbo:inseeCode ?dep ; 
+                rdfs:label ?name .
+                    
+            filter us:match(?name, ?deptList)
+                       
+            ?dept dbo:hasRegion ?region .
+            ?region rdfs:label ?regionName
+            filter (regex(?regionName, "$arg"))
+            
+            optional { ?url map:image ?img }
+            optional { ?url map:document ?doc}
+            
+            bind (coalesce(st:format(ft:document.html, ?doc, us:docTitle(?doc)), "") as ?fdoc)
+            bind (st:format(ft:img.html, coalesce(?img, "undef")) as ?fimg)
+        }
+        order by (if (bound(?img), 0, 1)) ?label
+    }
+}
+group by ?dep ?com
+order by ?name ?com
+}
+""" 
+.
+
+
+
+st:indexNature a sw:Query ;
+st:name st:indexNature ;
+rdfs:label "Map Index Nature" ;
+rdfs:comment """Select resource by type, department, region. UNION operator is like OR but UNION has precedence over AND: A UNION B AND C ::= (A OR B) AND C."""@en ;
+
+st:query st:genQuery ;
+
+st:select [ st:title "Type" ; st:default map:Cavité ; st:defaultLabel "Cavité" ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTypeNature ; st:index 0 ] ;
+
+# OPER
+
+st:select [ st:title "Type" ; st:type st:oper ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "AND_NOT" "OR" "UNION") ; st:index 1 ] ;
+
+
+st:select [ st:title "" ; st:default map:Résurgence ; st:defaultLabel "Résurgence" ; st:type st:arg ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTypeNature ; st:index 2 ] ;
+
+# OPER
+
+st:select [ st:title "Type" ; st:default "OR" ; st:defaultLabel "OR" ; st:type st:oper ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "OR" "UNION") ; st:index 3 ] ;
+
+
+st:select [ st:title "" ; st:default map:Undefined ; st:defaultLabel "Any" ; st:type st:arg ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClassOf  ; st:index 4 ] ;
+
+
+
+
+st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:indexx 0
+] ;
+
+st:selectt [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 1
+] ;
+
+st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ;
+st:name "arg" ; st:uri st:arg ; st:graph st:dataset ; st:function us:selectRegion ]
+.
+ 
+
+
+
+
+ 
+
+ 
+ 
+ 
+
+st:indexArtefact a sw:Query ;
+st:name st:indexArtefact ;
+rdfs:label "Map Index Artefact" ;
+rdfs:comment """Select resource by type, department, region."""@en ;
+
+st:query st:genQuery ;
+
+st:select [ st:title "Type" ; st:default map:Ouvrage ; st:defaultLabel "Ouvrage" ; 
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTypeArtefact ; st:index 0 ] ;
+
+# OPER
+
+st:select [ st:title "Type" ; st:default "UNION" ; st:defaultLabel "UNION" ; st:type st:oper ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "OR" "UNION") ; st:index 1 ] ;
+
+
+st:select [ st:title "" ; st:default map:Bâtiment ; st:defaultLabel "Bâtiment" ; st:type st:arg ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTypeArtefact ; st:index 2 ] ;
+
+# OPER
+
+st:select [ st:title "Type" ; st:type st:oper ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "AND_NOT" "OR" "UNION") ; st:index 3 ] ;
+
+
+st:select [ st:title "" ; st:default map:Antiquité ; st:defaultLabel "Antiquité" ; st:type st:arg ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClassOf  ; st:index 4 ] ;
+
+
+
+
+st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 0
+] ;
+
+st:selectt [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 1
+] ;
+
+st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ;
+st:name "arg" ; st:uri st:arg ; st:graph st:dataset ; st:function us:selectRegion ]
+
+.
+
+
+
+
+
+
+
+st:localisationType a sw:Query ;
+st:name st:localisationType ;
+rdfs:label "Map Index Localisation" ;
+rdfs:comment """Select resource by type, department, location."""@en ;
+
+st:query 
+"""prefix map: <http://ns.inria.fr/map/> .
+prefix dbo: <http://dbpedia.org/ontology/> .
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
+#prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
+
+template {
+format { ft:format.html
+    group { format { ft:titlerow.html  st:number() ?com ?name str(?dep) ?row } }
+}}
+where {
+select ?com ?name ?dep
+(aggregate (xt:list(?fimg, ?label, ?com, ?fdoc, ?lat, ?lon)) as ?alist)
+(maplist (us:format, us:number(?alist)) as ?flist)
+(apply (rq:concat, ?flist) as ?row)
+where {
+    service <store:mapdatamanager> {
+        select distinct * where {
+                    
+          {select distinct ?url where { 
+                # split into ((t1 and t2) union (t3))
+                bind (us:process(st:get("mode")) as ?modeList)
+                
+                values ?typeList { unnest(?modeList) }
+                
+                bind (xt:first(?typeList) as ?fstType)
+                
+                ?url rdf:type/rdfs:subClassOf* ?fstType
+                
+                filter not exists {
+                    values ?type { unnest(xt:rest(?typeList)) }
+                    filter not exists {?url rdf:type/rdfs:subClassOf* ?type}  
+                }
+            }}    
+            
+            ?url rdfs:label ?label ; map:commune ?com . 
+                                
+            optional { ?url map:image ?img }
+                
+            ?url geo:long ?lon ; geo:lat ?lat .
+                
+            ?url map:departement ?dep .
+            ?dept dbo:inseeCode ?dep ; 
+                rdfs:label ?name .
+            filter (regex(?name, "$param"))
+                
+            {select distinct ?url where {
+                ?url map:localisation/rdfs:subClassOf* ?loc .
+                filter (regex(?loc, "$arg"))
+            }}
+            
+            optional { ?url map:document ?doc }
+            
+            bind (coalesce(st:format(ft:document.html, ?doc, us:docTitle(?doc)), "") as ?fdoc)
+            bind (st:format(ft:img.html, coalesce(?img, "undef")) as ?fimg)
+        }
+        order by (if (bound(?img), 0, 1)) ?label
+    }
+}
+group by ?dep ?com
+order by ?name ?com
+}
+""" ;
+
+# st:index because these 3 select bind same parameter mode and mode is a value list
+
+st:select [ st:title "Type" ; st:default map:Cavité ; st:defaultLabel "Cavité" ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTypeNature ; st:index 0 ] ;
+
+# OPER
+
+st:select [ st:title "Type" ; st:type st:oper ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "OR" "UNION") ; st:index 1 ] ;
+
+
+st:select [ st:title "" ; st:default map:Résurgence ; st:defaultLabel "Résurgence" ; st:type st:arg ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTypeNature ; st:index 2 ] ;
+
+# OPER
+
+st:select [ st:title "Type" ; st:type st:oper ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "OR" "UNION") ; st:index 3 ] ;
+
+
+st:select [ st:title "" ; st:default map:Undefined ; st:defaultLabel "Any" ; st:type st:arg ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClassOf ; st:index 4 ] ;
+
+
+st:select [ st:title "Localisation" ;     st:default map:BassinSiagne ; st:defaultLabel "Bassin de la Siagne" ;
+    st:name "arg" ; st:uri st:arg ; st:graph st:dataset ; st:function us:selectLocalisation] ;
+
+st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment 
+] 
+.
+
+
+
+
+
+
+
+
+ 
+
+st:indexCommune a sw:Query ;
+st:name st:indexCommune ;
+rdfs:label "Map Index Commune" ;
+rdfs:comment """Select resource by type, commune, department."""@en ;
+
+st:query 
+"""prefix map: <http://ns.inria.fr/map/> .
+prefix dbo: <http://dbpedia.org/ontology/> .
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
+#prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
+
+template {
+format { ft:format.html
+    group { format { ft:titlerow.html  st:number() ?com ?name str(?dep) ?row } }
+}}
+where {
+select ?com ?name ?dep
+(aggregate (xt:list(?fimg, ?label, ?com, ?fdoc, ?lat, ?lon)) as ?alist)
+(maplist (us:format, us:number(?alist)) as ?flist)
+(apply (rq:concat, ?flist) as ?row)
+where {
+    service <store:mapdatamanager> {
+        select distinct * where {
+            ?url rdf:type/rdfs:subClassOf*  $mode ; 
+                rdfs:label ?label ; map:commune ?com . 
+                
+            filter regex(?com, "$arg")
+                
+            optional { ?url map:image ?img }
+                
+            ?url geo:long ?lon ; geo:lat ?lat .
+                
+            ?url map:departement ?dep .
+            ?dept dbo:inseeCode ?dep ; 
+                rdfs:label ?name .
+            filter regex(?name, "$param")
+                
+            ?dept dbo:hasRegion ?region .
+            ?region rdfs:label ?regionName
+            #filter regex(?regionName, "$arg")
+            
+            optional { ?url map:document ?doc }
+            
+            bind (coalesce(st:format(ft:document.html, ?doc, us:docTitle(?doc)), "") as ?fdoc)
+            bind (st:format(ft:img.html, coalesce(?img, "undef")) as ?fimg)
+        }
+        order by (if (bound(?img), 0, 1)) ?label
+    }
+}
+group by ?dep ?com
+order by ?name ?com
+}
+""" ;
+
+st:select st:selectType ;
+st:select st:selectCommune ;
+st:select st:selectDepartement 
+#st:select st:selectRegion
+
+.
+
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+st:query a sw:Query ;
+st:name st:query ;
+rdfs:label "Map Query" ;
+rdfs:comment """Select resource by type."""@en ;
+rdfs:comment """Simple"""@fr ;
+
+st:query 
+"""#
+# Generate a map with corese server 
+# from json map format
+# query = insert.rq
+# map = map.json
+#
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix map: <http://ns.inria.fr/map/>
+prefix dbo: <http://dbpedia.org/ontology/> .
+
+select ?url ?mapURL ?name ?t ?dept ?region ?com ?pays ?lon ?lat 
+where {
+service <store:mapdatamanager> {
+    select * where {
+        ?url rdfs:label ?name 
+        ?url geo:long ?lon;
+            geo:lat ?lat ;
+            map:wikipedia ?location .
+        
+        ?url map:departement ?dep ; map:commune ?com .
+        
+        optional {
+            ?department dbo:inseeCode ?dep ; rdfs:label ?dept 
+            #filter regex(?dept, "$param")
+
+            optional {
+                ?department dbo:hasRegion ?reg .
+                ?reg rdfs:label ?region
+                #filter regex(?region, "$arg")
+        }}
+        
+        ?url map:pays ?pays .
+                
+        ?url rdf:type/rdfs:subClassOf* $mode .
+        ?url rdf:type ?t .
+        bind (uri(st:format("http://umap.openstreetmap.fr/fr/map/provence-alpes_455480#%s/%s/%s", 15, ?lat, ?lon)) as ?mapURL)
+        
+        #filter mapany(xt:contains, ?name, xt:list("Chapelle", "Eglise", "Abbaye"))        
+        #filter contains(?com, "Saint")
+        #filter not exists {?t rdfs:subClassOf* map:Objet} .
+}
+}
+}
+""" ;
+
+st:select st:selectType ;
+#st:select st:selectDepartement ;
+#st:select st:selectRegion
+
+.
+
+
+
+
+
+
+st:count a sw:Query ;
+st:name st:count ;
+rdfs:label "Map Query Count" ;
+rdfs:comment """Count resource by type."""@en ;
+
+st:query 
+"""prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix map: <http://ns.inria.fr/map/>
+@prefix db: <http://dbpedia.org/ontology/>
+
+select ?t (count(distinct ?url) as ?c)
+where {
+service <store:mapdatamanager> {
+    select * where {
+        ?url rdfs:label ?name         
+        ?url geo:long ?lon;
+        geo:lat ?lat ;
+        map:wikipedia ?location .
+        ?url map:departement ?dep ; map:commune ?com .
+        ?dept db:inseeCode ?dep ; rdfs:label ?label .
+        ?url rdf:type/rdfs:subClassOf* $mode, ?t 
+        
+        filter regex(?com, "$arg")
+        filter regex(?label, "$param")
+    }
+}
+}
+group by ?t
+order by desc(?c)
+
+""" ;
+st:select st:selectTypeObject ;
+st:select st:selectDepartement ;
+st:select st:selectCommune
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

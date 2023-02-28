@@ -1,5 +1,5 @@
-prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
-#prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
+#prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
+prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
 prefix map: <http://ns.inria.fr/map/>
 prefix db:  <http://dbpedia.org/ontology/> .
 
@@ -14,8 +14,8 @@ function us:number(list) {
 }
 
 function us:format(elem) {
-    let ((?img ?num ?label ?com ?doc ?lat ?lon) = elem) {
-        st:format(ft:cell.html, ?img, ?num, ?label, ?com, ?doc, ?lat, ?lon)
+    let ((?img ?num ?label ?com ?doc ?umap ?lat ?lon) = elem) {
+        st:format(ft:cell.html, ?img, ?num, ?label, ?com, ?doc, ?umap, ?lat, ?lon)
     }
 }
 
@@ -142,6 +142,7 @@ function us:sublist(alist, start, end) {
     }
 }
 
+# rewrite boolean type list into conjunctive normal form
 # A union B and C -> (A or B) and C
 # A or B and C    -> A or (B and C)
 # split or -> ((A) (B C))
@@ -149,64 +150,79 @@ function us:sublist(alist, start, end) {
 # distrib  -> AC or BC
 
 function us:process(alist) {
-    let (tmp = us:split(alist, <OR>),
-         res1 = maplist(function(part) { us:split(part, <AND>, <AND_NOT>) }, tmp),
-         # res2 = list ((A or B) and (C)) -- with no explicit or|and
+    xt:print("input:", alist);
+    # rewrite <AND_NOT> as <AND> <NOT> ; remove map:Undefined
+    let (tmp = us:preprocess(alist),
+         res0 = us:mysplit(tmp, <OR>),
+         res1 = maplist(function(part) { us:mysplit(part, <AND>) }, res0),
+         # res2 = list ((A union B) and (C)) -- with no explicit and
          res2 = maplist(function(part) { maplist(us:cleanUnion, part) }, res1),
-         res3 = maplist(us:distrib, res2)) 
+         # res3 = list ((A C) (B C))
+         res3 = maplist(us:distrib, res2),
+         res4 = reduce(xt:append, res3),
+         res5 = us:postprocess(res4))
          {
-         return (reduce(xt:append, res3))
-        }
+         xt:print("rewrite:", res5);
+         return (res5)
+    }
 }
 
-function us:split(alist, oper) {
-    let (tmp = xt:list(), res = xt:list()) {
+# OPER_NOT -> OPER NOT
+function us:preprocess(alist) {
+    letdyn (res = xt:list(), amap = xt:map()) {
+        xt:set(amap, <AND_NOT>, <AND>);
+        xt:set(amap, <OR_NOT>, <OR>);
+        xt:set(amap, <UNION_NOT>, <UNION>);
+        
+        map (function(elem) { 
+           if  (elem = map:Undefined) {
+            # skip
+           } 
+           else if (xt:has(amap, elem)) {
+              xt:add(res, xt:get(amap, elem));
+              xt:add(res, <NOT>);
+           } 
+           else {
+            xt:add(res, elem)
+           }}, alist) ;
+        return (res)
+    }
+}
+
+# ((<NOT> A) B) -> (map:Object (<NOT> A) B)
+function us:postprocess(alist) {
+    map (function(exp) { if (xt:size(exp) >= 1 && ! isURI(xt:first(exp))) { xt:add(exp, 0, map:Objet) } } , alist);
+    return (alist)
+}
+
+
+# parse and split oper
+# rewrite NOT X as (NOT X)
+function us:mysplit(alist, oper) {
+    let (tmp = xt:list(), res = xt:list(), anot = false) {
         for (elem in alist) {
             if (elem = oper) {
+                set (anot = false);
                 if (xt:size(tmp)>0) {
                     xt:add(res, tmp);
                 } ;
                 set(tmp = xt:list())
             }
-            else if (elem in (map:Undefined)) {
-                # skip
+            else if (elem = <NOT>) {
+                set(anot = true);
+            }
+            else if (elem in (<AND>, <OR>, <UNION>)) {
+                    xt:add(tmp, elem);
+                    set (anot = false);
+            }
+            else if (anot) {
+                    xt:add(tmp, xt:list(<NOT>, elem));
+                    set (anot = false);
             }
             else {
-                xt:add(tmp, elem)
+                    xt:add (tmp, elem)
             }
-        } ;
-        if (xt:size(tmp)>0) {
-            xt:add(res, tmp); 
-        };
-        return (res)
-    }
-}
-
-function us:split(alist, oper, operNot) {
-    let (tmp = xt:list(), res = xt:list(), anot=false) {
-        for (elem in alist) {
-            if (elem in (oper, operNot)) {
-                if (xt:size(tmp)>0) {
-                    xt:add(res, tmp);
-                } ;
-                set(tmp = xt:list());
-                if (elem=operNot) {
-                    set(anot=true)
-                }
-            }
-            else if (elem in (map:Undefined)) {
-                # skip
-                set(anot=false)
-            }
-            else {
-                if (anot) {
-                    xt:add(tmp, xt:list(elem));
-                    set(anot=false)
-                }
-                else {
-                    xt:add(tmp, elem)
-                }
-            }
+            
         } ;
         if (xt:size(tmp)>0) {
             xt:add(res, tmp); 
@@ -247,71 +263,37 @@ function us:distrib(alist) {
 }
 
 
+# alist = ((name select title format index repeat))
+# when repeat > 1, repeat ith and i+1th select n times
+# see myweb.rul template st:selecttable
 
-
-# alist = (t1 t2 UNION t3)
-# return ((t1 t2)(t3))
-function us:split(alist) {
-    let (tmp = xt:list(), res = xt:list()) {
-        for (elem in alist) {
-            if (elem = <OR>) {
-                if (xt:size(tmp)>0) {
-                    xt:add(res, tmp);
+function us:expand (alist) {
+    letdyn (res = xt:list(), skip = false, num = 0, mylist = alist) {
+        map (function(elem) {
+            let ((name aselect title aformat index repeat) = elem) {
+                if (skip) {
+                    set(skip = false)
+                }
+                else if (repeat <= 1) {
+                    xt:add(res, elem);
+                }
+                else {
+                    set (skip = true);
+                    let ((name2 aselect2 title2 format2 index2) = xt:get(mylist, num+1)) {
+                        for (i in xt:iota(0, repeat - 1)) {
+                            xt:add(res, xt:list(name, aselect, title, aformat, index  + 2*i));
+                            xt:add(res, xt:list(name2, aselect2, title2, format2, index2 + 2*i))
+                        }
+                    }
                 } ;
-                set(tmp = xt:list())
+                set (num = num + 1)
             }
-            else if (elem in (<AND>, map:Undefined)) {
-                # skip
-            }
-            else {
-                xt:add(tmp, elem)
-            }
-        } ;
-        if (xt:size(tmp)>0) {
-            xt:add(res, tmp); 
-        };
+        },
+        alist);
+        
         return (res)
-    }
+    } 
 }
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 
 
 

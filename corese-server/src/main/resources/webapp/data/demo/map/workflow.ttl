@@ -25,6 +25,7 @@ sw:body (
     st:intro
     st:indexNature
     st:indexArtefact
+    st:indexArtefact2
     st:localisationType
     st:indexCommune
     st:query
@@ -63,8 +64,8 @@ st:genQuery st:value
 """prefix map: <http://ns.inria.fr/map/> .
 prefix dbo: <http://dbpedia.org/ontology/> .
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
-#prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
+#prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
+prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
 
 template {
 format { ft:format.html
@@ -72,11 +73,13 @@ format { ft:format.html
 }}
 where {
 select ?com ?name ?dep
-(aggregate (xt:list(?fimg, ?label, ?com, ?fdoc, ?lat, ?lon)) as ?alist)
+(aggregate (xt:list(?fimg, ?label, ?com, ?fdoc, ?umap, ?lat, ?lon)) as ?alist)
 (maplist (us:format, us:number(?alist)) as ?flist)
 (apply (rq:concat, ?flist) as ?row)
 where {
-    service <store:mapdatamanager> {
+    bind (st:get(st:umap) as ?umap)
+    values ?server {<store:mapdatamanager>}
+    service ?server {
         select distinct * where {
         
            {select distinct ?url where { 
@@ -94,8 +97,8 @@ where {
                     values ?type { unnest(xt:rest(?typeList)) }
                     filter if (isURI(?type), 
                         not exists {?url rdf:type/rdfs:subClassOf* ?type}, 
-                        # (type) means not(type)
-                        exists { bind (xt:first(?type) as ?atype) ?url rdf:type/rdfs:subClassOf* ?atype})  
+                        # (<NOT> type) 
+                        exists { bind (xt:first(xt:rest(?type)) as ?atype) ?url rdf:type/rdfs:subClassOf* ?atype})  
                 }
             }}        
             
@@ -144,7 +147,7 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTyp
 # OPER
 
 st:select [ st:title "Type" ; st:type st:oper ;
-st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "AND_NOT" "OR" "UNION") ; st:index 1 ] ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value st:operlist ; st:index 1 ] ;
 
 
 st:select [ st:title "" ; st:default map:Résurgence ; st:defaultLabel "Résurgence" ; st:type st:arg ;
@@ -152,8 +155,8 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTyp
 
 # OPER
 
-st:select [ st:title "Type" ; st:default "OR" ; st:defaultLabel "OR" ; st:type st:oper ;
-st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "OR" "UNION") ; st:index 3 ] ;
+st:select [ st:title "Type" ;  st:type st:oper ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value st:operlist ; st:index 3 ] ;
 
 
 st:select [ st:title "" ; st:default map:Undefined ; st:defaultLabel "Any" ; st:type st:arg ;
@@ -163,12 +166,9 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClas
 
 
 st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:indexx 0
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment 
 ] ;
 
-st:selectt [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 1
-] ;
 
 st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ;
 st:name "arg" ; st:uri st:arg ; st:graph st:dataset ; st:function us:selectRegion ]
@@ -176,9 +176,9 @@ st:name "arg" ; st:uri st:arg ; st:graph st:dataset ; st:function us:selectRegio
  
 
 
-
-
+st:operlist st:enum ("AND" "OR" "UNION" "AND_NOT" "OR_NOT" "UNION_NOT") .
  
+st:operlist2 st:enum ("AND" "OR" "UNION" "AND_NOT" "UNION_NOT") .
 
  
  
@@ -197,7 +197,7 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTyp
 # OPER
 
 st:select [ st:title "Type" ; st:default "UNION" ; st:defaultLabel "UNION" ; st:type st:oper ;
-st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "OR" "UNION") ; st:index 1 ] ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value st:operlist ; st:index 1 ] ;
 
 
 st:select [ st:title "" ; st:default map:Bâtiment ; st:defaultLabel "Bâtiment" ; st:type st:arg ;
@@ -206,12 +206,20 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTyp
 # OPER
 
 st:select [ st:title "Type" ; st:type st:oper ;
-st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "AND_NOT" "OR" "UNION") ; st:index 3 ] ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value st:operlist ; st:index 3 ] ;
 
 
 st:select [ st:title "" ; st:default map:Antiquité ; st:defaultLabel "Antiquité" ; st:type st:arg ;
 st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClassOf  ; st:index 4 ] ;
 
+# OPER
+
+st:select [ st:title "Type" ; st:type st:oper ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value st:operlist ; st:index 5 ] ;
+
+
+st:select [ st:title "" ; st:default map:Undefined ; st:defaultLabel "Any" ; st:type st:arg ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClassOf  ; st:index 6 ] ;
 
 
 
@@ -234,6 +242,52 @@ st:name "arg" ; st:uri st:arg ; st:graph st:dataset ; st:function us:selectRegio
 
 
 
+st:indexArtefact2 a sw:Query ;
+st:name st:indexArtefact2 ;
+rdfs:label "Map Index Artefact Multi" ;
+rdfs:comment """Select resource by type, department, region."""@en ;
+
+st:query st:genQuery ;
+
+st:select [ st:title "Type" ; st:default map:Ouvrage ; st:defaultLabel "Ouvrage" ; 
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTypeArtefact ; st:index 0 ] ;
+
+# OPER
+
+st:select [ st:title "Type" ;  st:type st:oper ; st:repeat 4 ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value st:operlist ; st:index 1 ] ;
+
+
+st:select [ st:title "" ; st:default map:Undefined ; st:defaultLabel "Any" ; st:type st:arg ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClassOf ; st:index 2 ] ;
+
+
+
+st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 0
+] ;
+
+st:selectt [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 1
+] ;
+
+st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ;
+st:name "arg" ; st:uri st:arg ; st:graph st:dataset ; st:function us:selectRegion ]
+
+.
+
+
+
+
+
+
+
+
+
+
+
+
+
 st:localisationType a sw:Query ;
 st:name st:localisationType ;
 rdfs:label "Map Index Localisation" ;
@@ -243,8 +297,8 @@ st:query
 """prefix map: <http://ns.inria.fr/map/> .
 prefix dbo: <http://dbpedia.org/ontology/> .
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
-#prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
+#prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
+prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
 
 template {
 format { ft:format.html
@@ -252,13 +306,14 @@ format { ft:format.html
 }}
 where {
 select ?com ?name ?dep
-(aggregate (xt:list(?fimg, ?label, ?com, ?fdoc, ?lat, ?lon)) as ?alist)
+(aggregate (xt:list(?fimg, ?label, ?com, ?fdoc, ?umap, ?lat, ?lon)) as ?alist)
 (maplist (us:format, us:number(?alist)) as ?flist)
 (apply (rq:concat, ?flist) as ?row)
 where {
     service <store:mapdatamanager> {
         select distinct * where {
-                    
+          bind (st:get(st:umap) as ?umap)
+          
           {select distinct ?url where { 
                 # split into ((t1 and t2) union (t3))
                 bind (us:process(st:get("mode")) as ?modeList)
@@ -271,9 +326,12 @@ where {
                 
                 filter not exists {
                     values ?type { unnest(xt:rest(?typeList)) }
-                    filter not exists {?url rdf:type/rdfs:subClassOf* ?type}  
+                    filter if (isURI(?type), 
+                        not exists {?url rdf:type/rdfs:subClassOf* ?type}, 
+                        # (<NOT> type) 
+                        exists { bind (xt:first(xt:rest(?type)) as ?atype) ?url rdf:type/rdfs:subClassOf* ?atype})                 
                 }
-            }}    
+            } }    
             
             ?url rdfs:label ?label ; map:commune ?com . 
                                 
@@ -312,7 +370,7 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTyp
 # OPER
 
 st:select [ st:title "Type" ; st:type st:oper ;
-st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "OR" "UNION") ; st:index 1 ] ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value st:operlist ; st:index 1 ] ;
 
 
 st:select [ st:title "" ; st:default map:Résurgence ; st:defaultLabel "Résurgence" ; st:type st:arg ;
@@ -321,7 +379,7 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTyp
 # OPER
 
 st:select [ st:title "Type" ; st:type st:oper ;
-st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value ("AND" "OR" "UNION") ; st:index 3 ] ;
+st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value st:operlist ; st:index 3 ] ;
 
 
 st:select [ st:title "" ; st:default map:Undefined ; st:defaultLabel "Any" ; st:type st:arg ;
@@ -354,8 +412,8 @@ st:query
 """prefix map: <http://ns.inria.fr/map/> .
 prefix dbo: <http://dbpedia.org/ontology/> .
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
-#prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
+#prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
+prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
 
 template {
 format { ft:format.html

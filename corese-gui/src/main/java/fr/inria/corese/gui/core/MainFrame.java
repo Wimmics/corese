@@ -164,7 +164,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private JMenuItem success;
     private JMenuItem quit;
     private JMenuItem iselect, iselecttuple, igraph,
-            iconstruct, iconstructgraph, iask, idescribe,
+            iconstruct, iconstructgraph, idescribe_query, idescribe_uri, iask,
             iserviceLocal, iserviceCorese, imapcorese, iserviceDBpedia, ifederate,
             iinsert, iinsertdata, idelete, ideleteinsert,
             iturtle, in3, irdfxml, ijson, itrig, ispin, iowl,
@@ -201,6 +201,7 @@ public class MainFrame extends JFrame implements ActionListener {
     private static final String DEFAULT_CONSTRUCT_QUERY = "construct.rq";
     private static final String DEFAULT_ASK_QUERY = "ask.rq";
     private static final String DEFAULT_DESCRIBE_QUERY = "describe.rq";
+    private static final String DEFAULT_DESCRIBE_URI = "describe_uri.rq";
     private static final String DEFAULT_SERVICE_CORESE_QUERY = "servicecorese.rq";
     private static final String DEFAULT_SERVICE_DBPEDIA_QUERY = "servicedbpedia.rq";
     private static final String DEFAULT_INSERT_QUERY = "insert.rq";
@@ -669,7 +670,8 @@ public class MainFrame extends JFrame implements ActionListener {
         iconstruct = defItem("Construct", DEFAULT_CONSTRUCT_QUERY);
         iconstructgraph = defItem("Construct graph", "constructgraph.rq");
         iask = defItem("Ask", DEFAULT_ASK_QUERY);
-        idescribe = defItem("Describe", DEFAULT_DESCRIBE_QUERY);
+        idescribe_query = defItem("Describe", DEFAULT_DESCRIBE_QUERY);
+        idescribe_uri = defItem("Describe URI", DEFAULT_DESCRIBE_URI);
         iserviceLocal = defItem("Service Local", "servicelocal.rq");
         iserviceCorese = defItem("Service Corese", DEFAULT_SERVICE_CORESE_QUERY);
         imapcorese = defItem("Map", "mapcorese.rq");
@@ -830,6 +832,8 @@ public class MainFrame extends JFrame implements ActionListener {
         queryMenu.add(iselect);
         queryMenu.add(iconstruct);
         queryMenu.add(iconstructgraph);
+        queryMenu.add(idescribe_query);
+        queryMenu.add(idescribe_uri);
         queryMenu.add(iask);
         queryMenu.add(igraph);
         queryMenu.add(iserviceLocal);

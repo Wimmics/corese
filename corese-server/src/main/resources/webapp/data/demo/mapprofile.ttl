@@ -1,0 +1,86 @@
+@prefix spq:    <http://ns.inria.fr/sparql-template/sparql#>
+@prefix navlab: <http://ns.inria.fr/sparql-template/navlab#>
+@prefix map:    <http://ns.inria.fr/map/>
+
+
+st:access st:namespace 
+<store:mapdatamanager>, 
+# map.json + format
+</user/corby/home/AADemoNew/map/>,
+</user/corby/home/AAServer/data/format/>,
+</user/corby/home/AAData/template/>,
+</opt/corese/demo/map/>,
+# function.rq
+<file:///user/corby/home/AAServer/data/demo/map/>, 
+<file:///opt/corese/demo/map/>
+.
+
+
+st:amap a st:Server ;
+st:service "amap" ;
+st:shareContent st:mapContent ;
+st:workflow st:mapwf ;
+st:param [
+    st:lang 'en' ;
+    # transformation for the result of the query in the st:web transformation
+    st:sttl spq:result ;
+    # list of transformations for the st:combine transformation
+    #st:transformations (spq:result) ;
+    st:lodprofile (
+        (<http://ns.inria.fr/map/>   st:sparql) 
+        ("*" st:lod)
+    ) ;
+    st:mapzoom 3 ;
+    st:mapsize "mapmedium" ;
+    st:hyperlink true ; 
+    st:title "Semantic Map";
+    st:prefix (("map" map:)) ;
+    st:export true ;
+    # do not focus sttl result on st:uri because it is the URI of the query not of a target resource
+    st:focus false ;
+    st:umap <http://umap.openstreetmap.fr/fr/map/provence-alpes_455480#15> ;
+    st:umap2 <http://umap.openstreetmap.fr/fr/map/secteur-rhone-alpes-centre_770067#15>
+] 
+.
+
+
+
+
+st:mapwf a sw:Workflow ; 
+sw:body (
+    [ a sw:Query ; sw:result sw:graph ] # place holder where to put the query to be executed from the tutorial
+    #[ a sw:Transformation ; sw:uri st:myweb ]
+    [ a sw:Transformation ; sw:uri </user/corby/home/AAData/template/myweb.rul> ]
+)
+.
+
+
+
+
+
+st:mapContent a sw:Workflow ; 
+sw:body ( 
+    [ a sw:Load ; sw:path <map/function.rq> ]
+    [ a sw:Parallel ; sw:body ( 
+      # main is empty
+
+      [ a sw:Workflow ; sw:body ( 
+        [ a sw:Load ; sw:path <map/schema.ttl> ]         
+       ) ]
+      
+      # context dataset with predefined queries in a specific graph
+      [ a sw:Workflow ; sw:name st:context ; sw:body ( 
+        [ a sw:Load  ; sw:path <map/workflow.ttl>  ; sw:name st:context ]
+        st:indexQuery ) ]
+                	  
+      ) ]  
+      
+    # set st:context graph as named graph of main
+    [a sw:Dataset]
+).
+
+
+
+
+
+

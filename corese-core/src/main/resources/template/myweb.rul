@@ -22,26 +22,35 @@ template st:selecttable(?n, ?q, ?t, ?s, ?qt) {
         ft:table.html
         group { 
             format { ?format 
-                coalesce(?title, "")  st:call-template(st:selectparam2, ?n, ?select) } 
+                coalesce(?title, "")  st:call-template(st:selectparam2, ?n, ?select, ?index) } 
         }
    }
 }
 where {
-    bind (st:get(st:context) as ?g)
-    graph ?g {  
-       ?qt st:name ?n 
-       optional { 
-           ?qt st:select ?select
-           optional { ?select st:title ?title }
-           optional { ?select st:type ?type }
-           
-           bind (coalesce(
-            if (?type = st:oper, ft:selectparameterrowoper.html,
-            if (?type = st:arg,  ft:selectparameterrowarg.html,
-            ft:selectparameterrow.html)), 
-            ft:selectparameterrowsimple.html) as ?format)
+    {select ?n (aggregate(xt:list(?n, ?select, ?title, ?format, coalesce(?index, -1), coalesce(?repeat, 0))) as ?list)
+    where {
+        bind (st:get(st:context) as ?g)
+        graph ?g {  
+        ?qt st:name ?n 
+        optional { 
+            ?qt st:select ?select
+            optional { ?select st:title ?title }
+            optional { ?select st:type ?type }
+            optional { ?select st:index ?index }
+            optional { ?select st:repeat ?repeat }
+            
+            bind (coalesce(
+                if (?type = st:oper, ft:selectparameterrowoper.html,
+                    if (?type = st:arg,  ft:selectparameterrowarg.html,
+                    ft:selectparameterrow.html)), 
+                ft:selectparameterrowsimple.html) 
+                as ?format)
+            }
         }
-    }
+    }}
+    bind (xt:print("list:", ?list) as ?tmp)
+    # repeat (oper arg) n times when select oper has st:repeat n
+    values (?n ?select ?title ?format ?index ?repeat) { unnest(us:expand(?list)) }
 }
 ]]>
 </body>
@@ -381,7 +390,7 @@ where {
 <![CDATA[
 #
 # Generate param selector, ?n = query name 
-# ?select is the URI of the selector (not the bnode if any)
+# ?select is the URI/bnode of the selector 
 # Use a context graph for select values
 # context graph has a sw:name st:graphName in content workflow (see tutohal service in profile.ttl)
 # specify context graph with st:param [ st:export true ; st:contextlist(st:graphName) ]
@@ -390,7 +399,7 @@ where {
 #
 #prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
 prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
-template st:selectparam2(?n, ?select) {
+template st:selectparam2(?n, ?select, ?index) {
 
 format {
   if (?insert, ft:selectparameterinsert.html , ft:selectparameter.html) 
@@ -434,14 +443,14 @@ where {
     optional { ?select st:type ?oper filter (?oper = st:oper) }
     optional { ?select st:default ?default optional { ?select st:defaultLabel ?label }}
     optional { ?select st:action ?action }
-    optional { ?select st:index ?num }
-    bind (coalesce(?num, -1) as ?index)
+    #optional { ?select st:index ?num }
+    #bind (coalesce(?num, -1) as ?index)
     bind (coalesce(?action = st:insert, false) as ?insert)
   }
   
   {
     graph ?g {
-        ?select st:value/rdf:rest*/rdf:first ?value 
+        ?select st:value/st:enum?/rdf:rest*/rdf:first ?value 
     }
   }
   union 
@@ -567,43 +576,6 @@ where {
       optional { ?qt st:solution  ?s }
       optional { ?qt sw:body  ?s }
       filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
-  }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate param selector, ?n = query name  
-#
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
-template st:selectparam(?n, ?select) {
-
-format {
-  ft:selectparam.html 
-  ?name
-  group { 
-    format { 
-        if (st:get(?uri, ?value), 
-            '<option value="%s" selected="true">%s</option>', 
-            '<option value="%s">%s</option>')
-            
-        ?value ?value
-    } 
-}
-}
-   
-}
-where {
-  bind (st:get(st:context) as ?g)
-  
-  graph ?g {
-    ?select st:name ?name ; st:uri ?uri ;
-       st:value/rdf:rest*/rdf:first ?value      
   }
 }
 ]]>

@@ -1,7 +1,8 @@
 <!-- markdownlint-configure-file { "MD004": { "style": "consistent" } } -->
+
 <!-- markdownlint-disable MD033 -->
 
-#
+# 
 
 <p align="center">
     <a href="https://project.inria.fr/corese/">
@@ -24,7 +25,6 @@ There are several interfaces for Corese:"
 - **Corese-gui:** Graphical interface that allows an easy and visual use of Corese features.
 - **Corese-Python (beta):** Python wrapper for accessing and manipulating RDF data with Corese features using py4j.
 - **Corese-CLI (beta):** Command Line Interface for Corese that allows users to interact with Corese features from the terminal.
-
 
 ## Download and install
 
@@ -102,6 +102,20 @@ Download source code and compile.
 git clone "https://github.com/Wimmics/corese.git"
 cd corese
 mvn clean package
+```
+
+## How to cite Corese
+
+```bibtex
+@misc{corese,
+    author = {Corby, Olivier and Ceres, Rémi and Demairy, Erwan and Song, Fuqi and Bottollier, Virginie and Savoie, Olivier},
+    title = {{Corese: Semantic Web Factory}},
+    howpublished = {\url{https://project.inria.fr/corese/}},
+    version = {4.4.0},
+    institution = {Inria},
+    abstract = {{Software platform implementing and extending the standards of the Semantic Web.}},
+    url = {https://github.com/Wimmics/corese}
+}
 ```
 
 ## Contributions and discussions

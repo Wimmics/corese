@@ -61,9 +61,8 @@ docker run --name my-corese \
 - Download [Corese-server jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-# Replace ${VERSION} with the desired version number (e.g: 4.4.0)
-wget "files.inria.fr/corese/distrib/corese-server-${VERSION}.jar"
-java -jar "corese-server-${VERSION}.jar"
+wget "files.inria.fr/corese/distrib/corese-server-4.4.0.jar"
+java -jar "corese-server-4.4.0.jar"
 ```
 
 Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/SoyFglO_1#)
@@ -73,9 +72,26 @@ Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/Soy
 - Download [Corese-gui jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-# Replace ${VERSION} with the desired version number (e.g: 4.4.0)
-wget "files.inria.fr/corese/distrib/corese-gui-${VERSION}.jar"
-java -jar "corese-gui-${VERSION}.jar"
+wget "files.inria.fr/corese/distrib/corese-gui-4.4.0.jar"
+java -jar "corese-gui-4.4.0.jar"
+```
+
+### Corese-Python (beta)
+
+- Download [Corese-python jar file](https://project.inria.fr/corese/download/).
+
+```sh
+wget "files.inria.fr/corese/distrib/corese-python-4.4.0.jar"
+java -jar "corese-python-4.4.0.jar"
+```
+
+### Corese-CLI (beta)
+
+- Download [Corese-cli jar file](https://project.inria.fr/corese/download/).
+
+```sh
+wget "files.inria.fr/corese/distrib/corese-cli-4.4.0.jar"
+java -jar "corese-cli-4.4.0.jar"
 ```
 
 ## Compilation from source
@@ -85,7 +101,7 @@ Download source code and compile.
 ```shell
 git clone "https://github.com/Wimmics/corese.git"
 cd corese
-mvn package
+mvn clean package
 ```
 
 ## Contributions and discussions

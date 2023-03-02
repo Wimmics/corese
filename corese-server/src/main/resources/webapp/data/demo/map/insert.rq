@@ -1,0 +1,129 @@
+#
+# Generate rdf triples from json map format
+#
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+prefix map: <http://ns.inria.fr/map/>
+prefix dbr: <http://fr.dbpedia.org/resource/>
+
+#load </user/corby/home/AADemoNew/map/schema.ttl> ;
+
+insert {
+?uri rdfs:label ?location ;
+    map:description ?desc ;
+    map:dbpedia ?dbpedia ;
+    map:wikipedia ?wiki ;
+    ?predicate ?value
+}
+where {
+
+#bind ("/user/corby/home/AADemoNew/map/map.json" as ?path)
+
+# parameter param=/path/doc.json
+bind ("%s" as ?path)
+
+# parse json document
+bind (xt:json(xt:read(?path)) as ?json)
+
+values ?feature { unnest(xt:path(?json, "/features")) }
+
+bind (xt:path(?feature, "/properties/name") as ?location)
+bind (xt:path(?feature, "/properties/description") as ?desc)
+
+bind (replace(replace(replace(replace(?location, " ", ""),  "-", "_"), "'", ""), "’", "") as ?name)
+bind (replace(replace(replace(replace(?location, " ", "_"), "-", "_"), "'", ""), "’", "") as ?urlName)
+
+bind (uri(concat(map:, ?name, st:number())) as ?uri)
+bind (uri(concat(dbr:, ?urlName)) as ?dbpedia)
+bind (uri(concat(<http://fr.wikipedia.org/wiki/>, ?urlName)) as ?wiki)
+
+bind   (us:property(?location, ?feature) as ?map)
+
+bind   (us:completeimg(?map, ?desc) as ?tmp)
+
+values (?key ?val) {unnest(?map)}
+
+bind   (us:predicate(?key) as ?predicate)
+
+values ?value { unnest(us:values(?predicate, ?val)) }
+}
+
+
+
+
+
+function us:predicate(name) {
+    uri(name)
+}
+
+# valuelist = "a,b,c"
+# return list(a b c)
+function us:values(pred, valuelist) {
+    if (pred = map:image) {
+        xt:list(valuelist) ;
+    }
+    else {
+        maplist(us:value, pred, xt:split(valuelist, ","))
+    }
+}
+
+# cast value for specific property
+function us:value(pred, val) {
+    if (pred in (rdf:type),     uri(concat(map:, val)), 
+    if (pred in (map:partieDe), uri(concat(dbr:, val)), 
+    if (pred = map:departement, xsd:integer(val),
+    if (pred = map:altitude,    xsd:integer(val),
+        val))))
+}
+
+# extract property values from json map format, record property values in json map
+function us:property(loc, feature) {
+    let (json = xt:json(),
+         doc       = us:get(feature, "/properties/document", "undef"),
+         part      = us:get(feature, "/properties/partieDe", "undef"),
+         alt       = us:get(feature, "/properties/altitude", "undef"),
+         (lon lat) = us:get(feature, "/geometry/coordinates", xt:list(0, 0))
+         ) {
+       if (doc  != "undef", xt:set(json, map:document, doc), true);
+       if (part != "undef", xt:set(json, map:partieDe, part), true);
+       if (alt  != "undef", xt:set(json, map:altitude, alt), true);
+
+       xt:set(json, map:departement, us:get(feature, "/properties/departement", 0));
+       xt:set(json, map:commune,     us:get(feature, "/properties/commune", "undef"));
+       xt:set(json, map:pays,        us:get(feature, "/properties/pays", "France"));
+       xt:set(json, rdf:type,        us:get(feature, "/properties/type", "undef"));
+       
+       xt:set(json, map:name, loc);
+       xt:set(json, geo:long, lon);
+       xt:set(json, geo:lat, lat);
+       
+       return (json)
+    }
+} 
+
+function us:get(json, path, value) {
+    coalesce(xt:path(json, path), value)
+}
+
+# record img url (if any) in json map
+function us:completeimg(json, descr) {
+    let (img = us:cleanimg(descr)) {
+        if (strlen(img) > 0) {
+            xt:set(json, map:image, img)
+        }
+    }
+}
+
+# descr = {{img url}}
+# return url
+function us:cleanimg(descr) {
+    let (astr = strafter(descr, "{{"),
+         val = if (contains(astr, "{{"), strbefore(astr, "{{"), astr)) {
+            strbefore(val, "}}")
+    }
+}
+
+function us:clean(name) {
+    let (list = @((" " "")("-" "_")( "'" "")("’" ""))) {
+        
+    } 
+}

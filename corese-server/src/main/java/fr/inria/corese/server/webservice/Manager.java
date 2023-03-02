@@ -50,7 +50,7 @@ public class Manager {
     static NSManager nsm;
     static Manager manager;
 
-    boolean initDone = false;
+    private boolean initDone = false;
     private DatasetManagerServer datasetManager;
 
     static {
@@ -67,9 +67,9 @@ public class Manager {
      * content
      */
     void init() {
-        if (initDone) {
+        if (isInitDone()) {
         } else {
-            initDone = true;
+            setInitDone(true);
             mapURI = new HashMap<>();
             mapService = new HashMap<>();
             nsm = NSManager.create();
@@ -314,6 +314,14 @@ public class Manager {
 
     public void setDatasetManager(DatasetManagerServer datasetManager) {
         this.datasetManager = datasetManager;
+    }
+
+    public boolean isInitDone() {
+        return initDone;
+    }
+
+    public void setInitDone(boolean initDone) {
+        this.initDone = initDone;
     }
 
 }

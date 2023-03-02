@@ -14,26 +14,43 @@ Fri Jun 21 13:43:42 CEST 2019
 # Argument  ?n is the name of query (st:minus)
 # ?q actual query, ?t query template, ?s query solution
 #
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:selecttable(?n, ?q, ?t, ?s, ?qt) {
    
    format { 
         ft:table.html
-        group { st:call-template(st:selectparam2, ?n, ?select, ?index) }
+        group { 
+            format { ?format 
+                coalesce(?title, "")  st:call-template(st:selectparam2, ?n, ?select, ?index) } 
+        }
    }
 }
 where {
-    bind (st:get(st:context) as ?g)
-    graph ?g {  
-       ?qt st:name ?n 
-       optional { 
-           ?qt st:select ?node
-           # select may have an index when select parameter is a value list (parameter mode is string list)
-           optional { ?node st:uri ?uri ; st:index ?num }
-           bind (coalesce(?num, -1) as ?index)
-           bind (coalesce(?uri, ?node) as ?select)
+    {select ?n (aggregate(xt:list(?n, ?select, ?title, ?format, coalesce(?index, -1), coalesce(?repeat, 0))) as ?list)
+    where {
+        bind (st:get(st:context) as ?g)
+        graph ?g {  
+        ?qt st:name ?n 
+        optional { 
+            ?qt st:select ?select
+            optional { ?select st:title ?title }
+            optional { ?select st:type ?type }
+            optional { ?select st:index ?index }
+            optional { ?select st:repeat ?repeat }
+            
+            bind (coalesce(
+                if (?type = st:oper, ft:selectparameterrowoper.html,
+                    if (?type = st:arg,  ft:selectparameterrowarg.html,
+                    ft:selectparameterrow.html)), 
+                ft:selectparameterrowsimple.html) 
+                as ?format)
+            }
         }
-    }
+    }}
+    bind (xt:print("list:", ?list) as ?tmp)
+    # repeat (oper arg) n times when select oper has st:repeat n
+    values (?n ?select ?title ?format ?index ?repeat) { unnest(us:expand(?list)) }
 }
 ]]>
 </body>
@@ -118,7 +135,8 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:prev(?t) {
 
 format {
@@ -131,9 +149,9 @@ where {
   bind (st:get(st:context) as ?g)
   
   graph ?g {
-    ?q1 st:name ?t ; st:index ?i
+    ?q1 st:name ?t ; st:index ?i ; st:query ?text
     bind (?i - 1 as ?j)
-    ?q2 st:index ?j ;
+    ?q2 st:index ?j ; st:query ?text2 ;
 	st:name ?n 
   }
 }
@@ -144,7 +162,8 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:tail {
 format {
   ft:tail.html
@@ -165,7 +184,8 @@ where {
 <rule>
 <body>
 <![CDATA[
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:next(?t) {
 
 format {
@@ -178,9 +198,9 @@ where {
   bind (st:get(st:context) as ?g)
   
   graph ?g {
-    ?q1 st:name ?t ; st:index ?i
+    ?q1 st:name ?t ; st:index ?i ; st:query ?text
     bind (?i + 1 as ?j)
-    ?q2 st:index ?j ;
+    ?q2 st:index ?j ; st:query ?text2 ;
 	st:name ?n 
   }
 }
@@ -215,7 +235,8 @@ function us:templateResult() {
 # query name bound to uri param
 # Generate query names list from context graph
 #
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:selectform(?t) {
 
 format {
@@ -243,7 +264,8 @@ where {
 # Argument  ?n is the name of query (st:minus)
 # ?q actual query, ?t query template, ?s query solution
 #
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:form(?n, ?q, ?t, ?s, ?qt) {
    
    format {   
@@ -281,7 +303,8 @@ where {
 # Argument  ?n is the name of query (st:minus)
 # ?q actual query, ?t query template, ?s query solution
 #
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:selectsilent(?n, ?q, ?t, ?s, ?qt) {
    
    format { 
@@ -308,7 +331,8 @@ where {
 #
 # Generate query names list from context graph
 #
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:list(?t) {
 
 format {
@@ -365,20 +389,23 @@ where {
 <body>
 <![CDATA[
 #
-# Generate param selector, ?n = query name  
+# Generate param selector, ?n = query name 
+# ?select is the URI/bnode of the selector 
 # Use a context graph for select values
 # context graph has a sw:name st:graphName in content workflow (see tutohal service in profile.ttl)
 # specify context graph with st:param [ st:export true ; st:contextlist(st:graphName) ]
 # index is the index of the selector if any
 # use case: mode with value list managed as st:get("mode") in context
 #
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:selectparam2(?n, ?select, ?index) {
 
 format {
-  if (?insert, ft:selectparam2insert.html , ft:selectparam2.html) 
+  if (?insert, ft:selectparameterinsert.html , ft:selectparameter.html) 
   
-  coalesce(?title, "")
+  if (bound(?oper), "myselectoper", "myselectarg")
+  
   ?name
   
   if (bound (?default), 
@@ -393,7 +420,7 @@ format {
         #st:get(?uri) = if (isURI(?value), ?value, str(?value)), 
         
         if (?index >= 0 && xt:size(st:get(?name)) > 0, 
-            ?value = xt:get(st:get(?name), ?index),
+            str(?value) = str(xt:get(st:get(?name), ?index)),
             if (isURI(?value),
                 st:get(?uri) = ?value || st:get(?uri) = str(?value),
                 st:get(?uri) = str(?value))),
@@ -410,23 +437,26 @@ where {
   
   # TODO: mandatory to bind ?select parameter
   # ?name = "mode" ; ?uri = st:mode ; st:get(st:mode) = current value of parameter mode
-  graph ?g { ?select st:name ?name ; st:uri ?uri 
+  
+  graph ?g { 
+    ?select st:name ?name ; st:uri ?uri 
+    optional { ?select st:type ?oper filter (?oper = st:oper) }
+    optional { ?select st:default ?default optional { ?select st:defaultLabel ?label }}
     optional { ?select st:action ?action }
+    #optional { ?select st:index ?num }
+    #bind (coalesce(?num, -1) as ?index)
     bind (coalesce(?action = st:insert, false) as ?insert)
   }
   
   {
     graph ?g {
-        ?select st:value/rdf:rest*/rdf:first ?value 
-        optional { ?select st:title   ?title } 
+        ?select st:value/st:enum?/rdf:rest*/rdf:first ?value 
     }
   }
   union 
   {
     graph ?g { 
         ?select st:graph ?gname 
-        optional { ?select st:title   ?title } 
-        optional { ?select st:default ?default optional { ?select st:defaultLabel ?label }}
         
         # get graph object ?gg in context corresponding to graph name ?gname
         bind (st:get(?gname) as ?gg)
@@ -463,8 +493,6 @@ where {
    {
     graph ?g { 
         ?select st:graph ?gname ; st:function ?fun 
-        optional { ?select st:title   ?title } 
-        optional { ?select st:default ?default optional { ?select st:defaultLabel ?label }}
         
         # get graph object ?gg in context corresponding to graph name ?gname
         bind (st:get(?gname) as ?gg)
@@ -489,7 +517,8 @@ function us:format(?b) {
 <rule>
 <body>
 <![CDATA[
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:head {
    
   format {
@@ -514,7 +543,8 @@ where {
 # st:get(st:query) is user query
 # ?q is tutorial query
 #
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:display(?n) {
 
 format {
@@ -541,47 +571,11 @@ where {
     ?qt st:name    ?n ;
       rdfs:label   ?l ;
       rdfs:comment ?c ;
-      st:query     ?q
+      st:query/st:value?  ?q   filter isLiteral(?q)
       optional { ?qt st:reference ?r }
       optional { ?qt st:solution  ?s }
       optional { ?qt sw:body  ?s }
       filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
-  }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate param selector, ?n = query name  
-#
-prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-template st:selectparam(?n, ?select) {
-
-format {
-  ft:selectparam.html 
-  ?name
-  group { 
-    format { 
-        if (st:get(?uri, ?value), 
-            '<option value="%s" selected="true">%s</option>', 
-            '<option value="%s">%s</option>')
-            
-        ?value ?value
-    } 
-}
-}
-   
-}
-where {
-  bind (st:get(st:context) as ?g)
-  
-  graph ?g {
-    ?select st:name ?name ; st:uri ?uri ;
-       st:value/rdf:rest*/rdf:first ?value      
   }
 }
 ]]>

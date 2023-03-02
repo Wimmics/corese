@@ -2,7 +2,7 @@
 
 <!-- markdownlint-disable MD033 -->
 
-# 
+#
 
 <p align="center">
     <a href="https://project.inria.fr/corese/">

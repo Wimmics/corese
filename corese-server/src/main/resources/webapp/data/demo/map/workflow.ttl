@@ -83,6 +83,7 @@ where {
         select distinct * where {
         
            {select distinct ?url where { 
+                # mode parameter is a list (t1 UNION t2 AND t3)
                 # return a union of conjunction of classes ((t1 t3) (t2 t3)) = ((t1 and t3) union (t2 and t3))
                 bind (us:process(st:get("mode")) as ?modeList)
                 
@@ -106,6 +107,7 @@ where {
             ?url geo:long ?lon ; geo:lat ?lat .
                 
             bind (st:get("param") as ?deptList)
+            #bind (us:extract(st:get("param")) as ?tmp)
                 
             ?url map:departement ?dep .
             ?dept dbo:inseeCode ?dep ; 
@@ -131,6 +133,91 @@ order by ?name ?com
 }
 """ 
 .
+
+
+
+#
+# This query takes as input mode parameter a list of classes with boolean conenctors
+# (t1 UNION t2 AND t3) 
+# rewritten as ((t1 or t2) and t3)
+# rewritten as ((t1 t3) (t2 t3)) a union of conjunction of classes
+#
+st:genQuery2 st:value
+"""prefix map: <http://ns.inria.fr/map/> .
+prefix dbo: <http://dbpedia.org/ontology/> .
+prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
+#prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
+prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
+
+template {
+format { ft:format.html
+    group { format { ft:titlerow.html  st:number() ?com ?name str(?dep) ?row } }
+}}
+where {
+select ?com ?name ?dep
+(aggregate (xt:list(?fimg, ?label, ?com, ?fdoc, ?umap, ?lat, ?lon)) as ?alist)
+(maplist (us:format, us:number(?alist)) as ?flist)
+(apply (rq:concat, ?flist) as ?row)
+where {
+    bind (st:get(st:umap) as ?umap)
+    values ?server {<store:mapdatamanager>}
+    service ?server {
+        select distinct * where {
+        
+           {select distinct ?url where { 
+                # mode parameter is a list (t1 UNION t2 AND t3)
+                # return a union of conjunction of classes ((t1 t3) (t2 t3)) = ((t1 and t3) union (t2 and t3))
+                bind (us:process(st:get("mode")) as ?modeList)
+                
+                # and (t1 t3)
+                values ?typeList { unnest(?modeList) }
+                
+                bind (xt:first(?typeList) as ?fstType)
+                
+                ?url rdf:type/rdfs:subClassOf* ?fstType
+                
+                filter not exists {
+                    values ?type { unnest(xt:rest(?typeList)) }
+                    filter if (isURI(?type), 
+                        not exists {?url rdf:type/rdfs:subClassOf* ?type}, 
+                        # (<NOT> type) 
+                        exists { bind (xt:first(xt:rest(?type)) as ?atype) ?url rdf:type/rdfs:subClassOf* ?atype})  
+                }
+            }}        
+            
+            ?url  rdfs:label ?label ; map:commune ?com .                                 
+            ?url geo:long ?lon ; geo:lat ?lat .
+                
+            # param = (departement value region value)
+            # st:set("departement", list(value)); st:set("region", list(value))
+            bind (us:extract(st:get("param")) as ?tmp)
+            bind (st:get("departement") as ?deptList)
+            bind (st:get("region") as ?regionList)
+                
+            ?url map:departement ?dep .
+            ?dept dbo:inseeCode ?dep ; 
+                rdfs:label ?name .                    
+            filter us:match(?name, ?deptList)
+                       
+            ?dept dbo:hasRegion ?region .
+            ?region rdfs:label ?regionName
+            filter us:match(?regionName, ?regionList)
+            
+            optional { ?url map:image ?img }
+            optional { ?url map:document ?doc}
+            
+            bind (coalesce(st:format(ft:document.html, ?doc, us:docTitle(?doc)), "") as ?fdoc)
+            bind (st:format(ft:img.html, coalesce(?img, "undef")) as ?fimg)
+        }
+        order by (if (bound(?img), 0, 1)) ?label
+    }
+}
+group by ?dep ?com
+order by ?name ?com
+}
+""" 
+.
+
 
 
 
@@ -189,7 +276,7 @@ st:name st:indexArtefact ;
 rdfs:label "Map Index Artefact" ;
 rdfs:comment """Select resource by type, department, region."""@en ;
 
-st:query st:genQuery ;
+st:query st:genQuery2 ;
 
 st:select [ st:title "Type" ; st:default map:Ouvrage ; st:defaultLabel "Ouvrage" ; 
 st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTypeArtefact ; st:index 0 ] ;
@@ -217,23 +304,25 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClas
 st:select [ st:title "Type" ; st:type st:oper ;
 st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:value st:operlist ; st:index 5 ] ;
 
-
 st:select [ st:title "" ; st:default map:Undefined ; st:defaultLabel "Any" ; st:type st:arg ;
 st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClassOf  ; st:index 6 ] ;
 
 
 
-st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 0
-] ;
 
-st:selectt [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
+# param name = departement
+st:select [st:type st:silent ; st:name "param" ; st:value "departement"] ;
+
+st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
 st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 1
 ] ;
 
-st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ;
-st:name "arg" ; st:uri st:arg ; st:graph st:dataset ; st:function us:selectRegion ]
+# param name = region
+st:select [st:type st:silent ; st:name "param" ; st:value "region"] ;
 
+st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectRegion ; st:index 3
+]
 .
 
 
@@ -264,12 +353,9 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClas
 
 
 st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 0
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment #; st:index 0
 ] ;
 
-st:selectt [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 1
-] ;
 
 st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ;
 st:name "arg" ; st:uri st:arg ; st:graph st:dataset ; st:function us:selectRegion ]
@@ -421,12 +507,13 @@ format { ft:format.html
 }}
 where {
 select ?com ?name ?dep
-(aggregate (xt:list(?fimg, ?label, ?com, ?fdoc, ?lat, ?lon)) as ?alist)
+(aggregate (xt:list(?fimg, ?label, ?com, ?fdoc, ?umap, ?lat, ?lon)) as ?alist)
 (maplist (us:format, us:number(?alist)) as ?flist)
 (apply (rq:concat, ?flist) as ?row)
 where {
     service <store:mapdatamanager> {
         select distinct * where {
+            bind (st:get(st:umap) as ?umap)
             ?url rdf:type/rdfs:subClassOf*  $mode ; 
                 rdfs:label ?label ; map:commune ?com . 
                 

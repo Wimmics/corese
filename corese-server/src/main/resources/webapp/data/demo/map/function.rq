@@ -150,6 +150,12 @@ function us:sublist(alist, start, end) {
 # distrib  -> AC or BC
 
 function us:process(alist) {
+    us:process(alist, map:Objet)
+}
+
+# root is used in case of not A
+# rewritten as: root and not A
+function us:process(alist, root) {
     xt:print("input:", alist);
     # rewrite <AND_NOT> as <AND> <NOT> ; remove map:Undefined
     let (tmp = us:preprocess(alist),
@@ -160,7 +166,7 @@ function us:process(alist) {
          # res3 = list ((A C) (B C))
          res3 = maplist(us:distrib, res2),
          res4 = reduce(xt:append, res3),
-         res5 = us:postprocess(res4))
+         res5 = us:postprocess(res4, root))
          {
          xt:print("rewrite:", res5);
          return (res5)
@@ -190,8 +196,8 @@ function us:preprocess(alist) {
 }
 
 # ((<NOT> A) B) -> (map:Object (<NOT> A) B)
-function us:postprocess(alist) {
-    map (function(exp) { if (xt:size(exp) >= 1 && ! isURI(xt:first(exp))) { xt:add(exp, 0, map:Objet) } } , alist);
+function us:postprocess(alist, root) {
+    map (function(exp) { if (xt:size(exp) >= 1 && ! isURI(xt:first(exp))) { xt:add(exp, 0, root) } } , alist);
     return (alist)
 }
 
@@ -270,7 +276,7 @@ function us:distrib(alist) {
 function us:expand (alist) {
     letdyn (res = xt:list(), skip = false, num = 0, mylist = alist) {
         map (function(elem) {
-            let ((name aselect title aformat index repeat) = elem) {
+            let ((name aselect title aformat index repeat myname myvalue) = elem) {
                 if (skip) {
                     set(skip = false)
                 }
@@ -279,10 +285,10 @@ function us:expand (alist) {
                 }
                 else {
                     set (skip = true);
-                    let ((name2 aselect2 title2 format2 index2) = xt:get(mylist, num+1)) {
+                    let ((name2 aselect2 title2 format2 index2 repeat2 myname2 myvalue2) = xt:get(mylist, num+1)) {
                         for (i in xt:iota(0, repeat - 1)) {
-                            xt:add(res, xt:list(name, aselect, title, aformat, index  + 2*i));
-                            xt:add(res, xt:list(name2, aselect2, title2, format2, index2 + 2*i))
+                            xt:add(res, xt:list(name, aselect, title,    aformat, index  + 2*i, repeat, myname, myvalue));
+                            xt:add(res, xt:list(name2, aselect2, title2, format2, index2 + 2*i, repeat2, myname2, myvalue2))
                         }
                     }
                 } ;
@@ -295,7 +301,35 @@ function us:expand (alist) {
     } 
 }
 
+# alist = (key val key val)
+# extract key=val ; set context(key, list(val))
 
+function us:extract(alist) {
+     let (keyList = @("departement" "region" "commune")) {
+        us:extract(alist, keyList)
+     }   
+}
+
+function us:extract(alist, keyList) {
+    let (res = xt:list(), key = "") {
+        for (value in alist) {
+            if (xt:member(value, keyList)) {
+                if (xt:size(res) > 0) {
+                    st:set(key, res);
+                } ;
+                set (key = value) ;
+                set (res = xt:list())
+            }
+            else {
+                xt:add(res, value)
+            }
+        } ;
+        if (xt:size(res) > 0) {
+            st:set(key, res);
+        }
+    } ;
+    xt:print("context:", xt:context())
+}
 
 
 }

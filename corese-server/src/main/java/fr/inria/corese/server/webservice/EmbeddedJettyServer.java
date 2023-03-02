@@ -316,8 +316,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
             ResourceHandler resource_handler = new ResourceHandler();
             resource_handler.setWelcomeFiles(new String[]{HOME_PAGE, "index.html"});
             URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
-            logger.info("Webapp dir: " + webappUri);
-            resource_handler.setResourceBase(webappUri.getRawPath());
+            resource_handler.setResourceBase(new File(webappUri.getRawPath()).getAbsolutePath());
 
             ContextHandler staticContextHandler = new ContextHandler(root, "/");
             staticContextHandler.setHandler(resource_handler);

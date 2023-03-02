@@ -16,18 +16,21 @@ Fri Jun 21 13:43:42 CEST 2019
 #
 #prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
 prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
+
 template st:selecttable(?n, ?q, ?t, ?s, ?qt) {
-   
    format { 
         ft:table.html
         group { 
-            format { ?format 
-                coalesce(?title, "")  st:call-template(st:selectparam2, ?n, ?select, ?index) } 
-        }
-   }
+            if (strlen(?myname)>0, 
+                st:format(ft:silent.html, ?myname, ?myvalue),
+                st:format(?format, ?title, st:call-template(st:selectparam, ?n, ?select, ?index))) 
+        }      
+    }
 }
 where {
-    {select ?n (aggregate(xt:list(?n, ?select, ?title, ?format, coalesce(?index, -1), coalesce(?repeat, 0))) as ?list)
+    {select ?n 
+    (aggregate(xt:list(?n, ?select, ?mytitle, ?format, ?myindex, ?myrepeat, ?myname, ?myvalue)) 
+     as ?list)
     where {
         bind (st:get(st:context) as ?g)
         graph ?g {  
@@ -35,22 +38,29 @@ where {
         optional { 
             ?qt st:select ?select
             optional { ?select st:title ?title }
-            optional { ?select st:type ?type }
+            optional { ?select st:type ?type  filter (?type != st:silent) }
             optional { ?select st:index ?index }
             optional { ?select st:repeat ?repeat }
+            optional { ?select st:type st:silent ; st:name ?name ; st:value ?value }
             
             bind (coalesce(
                 if (?type = st:oper, ft:selectparameterrowoper.html,
-                    if (?type = st:arg,  ft:selectparameterrowarg.html,
+                if (?type = st:arg,  ft:selectparameterrowarg.html,
                     ft:selectparameterrow.html)), 
                 ft:selectparameterrowsimple.html) 
-                as ?format)
+            as ?format)
+            bind (xt:print("format:", ?format) as ?tmp)
+            bind (coalesce(?title, "") as ?mytitle)
+            bind (coalesce(?index, -1) as ?myindex)
+            bind (coalesce(?repeat, 0) as ?myrepeat)
+            bind (coalesce(?name, "")  as ?myname)
+            bind (coalesce(?value, "") as ?myvalue)
             }
         }
     }}
-    bind (xt:print("list:", ?list) as ?tmp)
+
     # repeat (oper arg) n times when select oper has st:repeat n
-    values (?n ?select ?title ?format ?index ?repeat) { unnest(us:expand(?list)) }
+    values (?n ?select ?title ?format ?index ?repeat ?myname ?myvalue) { unnest(us:expand(?list)) }
 }
 ]]>
 </body>
@@ -278,7 +288,8 @@ template st:form(?n, ?q, ?t, ?s, ?qt) {
     ?n 
     if (?s = st:null, "", st:format(ft:nav.html))
     st:call-template(st:selecttable, ?n, ?q, ?t, ?s, ?qt)
-    st:call-template(st:selectsilent,?n, ?q, ?t, ?s, ?qt)
+   # st:call-template(st:selectsilent,?n, ?q, ?t, ?s, ?qt)
+   ""
     if (bound(?b), st:format(ft:andor.html), "")
     str(?q)
     }
@@ -397,9 +408,10 @@ where {
 # index is the index of the selector if any
 # use case: mode with value list managed as st:get("mode") in context
 #
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
-template st:selectparam2(?n, ?select, ?index) {
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
+
+template st:selectparam(?n, ?select, ?index) {
 
 format {
   if (?insert, ft:selectparameterinsert.html , ft:selectparameter.html) 
@@ -410,32 +422,32 @@ format {
   
   if (bound (?default), 
     st:format(
+        # TODO: st:get(?uri) = current parameter value -- check parameter string list
         us:format (st:get(?uri, ?default)),             
         ?default, coalesce(?label, "Any")),
     "")
-            
+      
+  # st:get(?name) name=mode   when parameter string list
+  # st:get(?uri)  uri=st:mode when parameter string (or first value of list)  
   group { 
     format { 
         us:format (coalesce(
-        #st:get(?uri) = if (isURI(?value), ?value, str(?value)), 
-        
+            # option is selected or not
         if (?index >= 0 && xt:size(st:get(?name)) > 0, 
             str(?value) = str(xt:get(st:get(?name), ?index)),
             if (isURI(?value),
                 st:get(?uri) = ?value || st:get(?uri) = str(?value),
                 st:get(?uri) = str(?value))),
-                        
         false))                        
         ?value ?value
     } 
-}
+    }
 }
    
 }
 where {
   bind (st:get(st:context) as ?g)
   
-  # TODO: mandatory to bind ?select parameter
   # ?name = "mode" ; ?uri = st:mode ; st:get(st:mode) = current value of parameter mode
   
   graph ?g { 
@@ -443,8 +455,6 @@ where {
     optional { ?select st:type ?oper filter (?oper = st:oper) }
     optional { ?select st:default ?default optional { ?select st:defaultLabel ?label }}
     optional { ?select st:action ?action }
-    #optional { ?select st:index ?num }
-    #bind (coalesce(?num, -1) as ?index)
     bind (coalesce(?action = st:insert, false) as ?insert)
   }
   
@@ -505,9 +515,7 @@ where {
 }
 
 function us:format(?b) {
-    if (?b, 
-        '<option value="%s" selected="true">%s</option>', 
-        '<option value="%s">%s</option>')
+    if (?b, ft:valueselected.html, ft:value.html)
 }
 
 ]]>

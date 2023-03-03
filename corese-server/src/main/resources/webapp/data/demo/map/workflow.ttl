@@ -1,6 +1,5 @@
 #
-# Query definitions for a Workflow with st:web transformation
-# To be used with /tutorial/tutohal
+# Query definitions for a Workflow with st:myweb transformation and function.rq ldscript 
 # This graph is stored in named graph st:context
 # It is available in query and transformation with bind (st:get(st:context) as ?g)
 #
@@ -39,7 +38,7 @@ st:intro a sw:Query ;
     st:name st:intro ;
     rdfs:label "Introduction" ;
 
-    rdfs:comment """This is of SPARQL endpoint for a <a href='http://umap.openstreetmap.fr/fr/map/provence-alpes_455480'>semantic map</a> project.
+    rdfs:comment """This is a SPARQL endpoint for a <a href='http://umap.openstreetmap.fr/fr/map/provence-alpes_455480'>semantic map</a> project.
     Choose a query in the selector. 'Previous' and 'Next' enable user to navigate in queries. When a query is selected, a query pattern is shown in the text area. 'Submit' submits the SPARQL query to the server. UNION operator is like OR but UNION has precedence over AND: A UNION B AND C ::= (A OR B) AND C."""@en ;
 
     rdfs:comment """Choisissez une requête dans le sélecteur. 'Previous' et 'Next' permettent de naviguer dans les requêtes successives.
@@ -185,14 +184,20 @@ where {
                 }
             }}        
             
-            ?url  rdfs:label ?label ; map:commune ?com .                                 
             ?url geo:long ?lon ; geo:lat ?lat .
                 
             # param = (departement value region value)
             # st:set("departement", list(value)); st:set("region", list(value))
             bind (us:extract(st:get("param")) as ?tmp)
+            
             bind (st:get("departement") as ?deptList)
             bind (st:get("region") as ?regionList)
+            bind (st:get("commune") as ?comList)
+            bind (st:get("label") as ?labelList)
+            
+            ?url rdfs:label ?label ; map:commune ?com . 
+            filter us:match(?label, ?labelList)
+            filter us:match(?com, ?comList)
                 
             ?url map:departement ?dep .
             ?dept dbo:inseeCode ?dep ; 
@@ -310,21 +315,30 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClas
 
 
 
+# param name = commune
+st:select [st:type st:silent ; st:name "param" ; st:value "commune"] ;
+
+st:select [ st:title "Commune" ;     st:default "" ; st:defaultLabel "Any" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectCommune ; st:index 1] ;
+
 # param name = departement
 st:select [st:type st:silent ; st:name "param" ; st:value "departement"] ;
 
 st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 1
-] ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 3] ;
 
 # param name = region
 st:select [st:type st:silent ; st:name "param" ; st:value "region"] ;
 
 st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectRegion ; st:index 3
-]
-.
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectRegion ; st:index 5] ;
 
+# param name = label
+st:select [st:type st:silent ; st:name "param" ; st:value "label"] ;
+
+st:select [st:title "Label" ;  st:default "" ; st:defaultLabel "Any" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectLabelArtefact ; st:index 7]
+.
 
 
 

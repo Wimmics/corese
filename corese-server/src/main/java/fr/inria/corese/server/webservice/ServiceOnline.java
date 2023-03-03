@@ -217,9 +217,11 @@ public class ServiceOnline {
 
     	//if (logger.isDebugEnabled())
     	logger.info(
-        "POST multipart/form-data serv: %s profile: %s uri: %s mode: %s param: %s arg: %s query: %s name: %s value: %s"
-                + "transform: %s from: %s named: %s", serv, profile, resource, modeList, 
-                paramList, argList, query, name, value, transform, defaultGraphUris, namedGraphUris);
+        String.format("POST multipart/form-data serv: %s profile: %s uri: %s mode: %s param: %s arg: %s query: %s name: %s value: %s"
+                + " transform: %s from: %s named: %s", 
+                serv, profile, resource, modeList, 
+                paramList, argList, query, name, value, transform, 
+                defaultGraphUris, namedGraphUris));
         
         return process(request, serv, profile, resource, 
                 null, modeList, null, paramList, null, argList,

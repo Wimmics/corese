@@ -14,8 +14,8 @@ Fri Jun 21 13:43:42 CEST 2019
 # Argument  ?n is the name of query (st:minus)
 # ?q actual query, ?t query template, ?s query solution
 #
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
 
 template st:selecttable(?n, ?q, ?t, ?s, ?qt) {
    format { 
@@ -49,7 +49,7 @@ where {
                     ft:selectparameterrow.html)), 
                 ft:selectparameterrowsimple.html) 
             as ?format)
-            bind (xt:print("format:", ?format) as ?tmp)
+            
             bind (coalesce(?title, "") as ?mytitle)
             bind (coalesce(?index, -1) as ?myindex)
             bind (coalesce(?repeat, 0) as ?myrepeat)
@@ -274,13 +274,11 @@ where {
 # Argument  ?n is the name of query (st:minus)
 # ?q actual query, ?t query template, ?s query solution
 #
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
+
 template st:form(?n, ?q, ?t, ?s, ?qt) {
-   
-   format {   
-    ft:form.html
-   
+   format { ft:form.html
     st:get(st:service) 
     st:get(st:profile)
     str(?t) 
@@ -288,48 +286,15 @@ template st:form(?n, ?q, ?t, ?s, ?qt) {
     ?n 
     if (?s = st:null, "", st:format(ft:nav.html))
     st:call-template(st:selecttable, ?n, ?q, ?t, ?s, ?qt)
-   # st:call-template(st:selectsilent,?n, ?q, ?t, ?s, ?qt)
-   ""
     if (bound(?b), st:format(ft:andor.html), "")
     str(?q)
     }
-   
 }
 where {
     bind (st:get(st:context) as ?g)
     graph ?g {  
         ?qt st:name ?n 
         optional { ?qt st:button st:andor, ?b}
-    }
-}
-]]>
-</body>
-</rule>
-
-<rule>
-<body>
-<![CDATA[
-#
-# Generate a form with a SPARQL query ?q to submit
-# Argument  ?n is the name of query (st:minus)
-# ?q actual query, ?t query template, ?s query solution
-#
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft:  <http://ns.inria.fr/sparql-template/format/mytutorial/>
-template st:selectsilent(?n, ?q, ?t, ?s, ?qt) {
-   
-   format { 
-        ft:silent.html ?name ?value
-   }
-   
-      
-}
-where {
-    bind (st:get(st:context) as ?g)
-    graph ?g {  
-        ?qt st:name ?n .
-        ?qt st:select ?input .
-        ?input st:type st:silent ; st:name ?name ; st:value ?value
     }
 }
 ]]>

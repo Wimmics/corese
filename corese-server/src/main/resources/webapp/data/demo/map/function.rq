@@ -65,6 +65,28 @@ function us:selectLocalisation() {
     }
 }
 
+function us:selectLabel() {
+    us:selectLabel(map:Objet)
+}
+
+function us:selectLabelArtefact() {
+    us:selectLabel(map:Artefact)
+}
+
+function us:selectLabelNature() {
+    us:selectLabel(map:Nature)
+}
+
+function us:selectLabel(aclass) {
+    let (select aclass (aggregate(distinct ?label) as ?list) 
+        where {
+            service <store:mapdatamanager> {
+                ?url rdf:type/rdfs:subClassOf* aclass ; rdfs:label ?label .
+            }}) {
+        xt:sort(?list)
+    }
+}
+
 function us:selectTypeNature() {
     us:selectType(map:Nature)
 }
@@ -305,7 +327,7 @@ function us:expand (alist) {
 # extract key=val ; set context(key, list(val))
 
 function us:extract(alist) {
-     let (keyList = @("departement" "region" "commune")) {
+     let (keyList = @("departement" "region" "commune" "label")) {
         us:extract(alist, keyList)
      }   
 }
@@ -327,8 +349,7 @@ function us:extract(alist, keyList) {
         if (xt:size(res) > 0) {
             st:set(key, res);
         }
-    } ;
-    xt:print("context:", xt:context())
+    } 
 }
 
 

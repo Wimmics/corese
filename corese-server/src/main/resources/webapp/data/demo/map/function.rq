@@ -291,37 +291,6 @@ function us:distrib(alist) {
 }
 
 
-# alist = ((name select title format index repeat))
-# when repeat > 1, repeat ith and i+1th select n times
-# see myweb.rul template st:selecttable
-
-function us:expand (alist) {
-    letdyn (res = xt:list(), skip = false, num = 0, mylist = alist) {
-        map (function(elem) {
-            let ((name aselect title aformat index repeat myname myvalue) = elem) {
-                if (skip) {
-                    set(skip = false)
-                }
-                else if (repeat <= 1) {
-                    xt:add(res, elem);
-                }
-                else {
-                    set (skip = true);
-                    let ((name2 aselect2 title2 format2 index2 repeat2 myname2 myvalue2) = xt:get(mylist, num+1)) {
-                        for (i in xt:iota(0, repeat - 1)) {
-                            xt:add(res, xt:list(name, aselect, title,    aformat, index  + 2*i, repeat, myname, myvalue));
-                            xt:add(res, xt:list(name2, aselect2, title2, format2, index2 + 2*i, repeat2, myname2, myvalue2))
-                        }
-                    }
-                } ;
-                set (num = num + 1)
-            }
-        },
-        alist);
-        
-        return (res)
-    } 
-}
 
 # alist = (key val key val)
 # extract key=val ; set context(key, list(val))
@@ -331,6 +300,9 @@ function us:extract(alist) {
         us:extract(alist, keyList)
      }   
 }
+
+# alist = (key val key val)
+# extract key=val ; set context(key, list(val))
 
 function us:extract(alist, keyList) {
     let (res = xt:list(), key = "") {
@@ -351,6 +323,5 @@ function us:extract(alist, keyList) {
         }
     } 
 }
-
 
 }

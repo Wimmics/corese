@@ -418,7 +418,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
                 }
             }
 
-            Manager.getManager().init();
+            // Manager.getManager().init();
             server.join();
 
         } catch (ParseException exp) {

@@ -219,8 +219,10 @@ function us:preprocess(alist) {
 
 # ((<NOT> A) B) -> (map:Object (<NOT> A) B)
 function us:postprocess(alist, root) {
-    map (function(exp) { if (xt:size(exp) >= 1 && ! isURI(xt:first(exp))) { xt:add(exp, 0, root) } } , alist);
-    return (alist)
+    letdyn (aroot = root) {
+        map (function(exp) { if (xt:size(exp) >= 1 && ! isURI(xt:first(exp))) { xt:add(exp, 0, aroot) } } , alist);
+        return (alist)
+    }
 }
 
 

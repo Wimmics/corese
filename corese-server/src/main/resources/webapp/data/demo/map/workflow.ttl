@@ -137,9 +137,8 @@ order by ?name ?com
 
 #
 # This query takes as input mode parameter a list of classes with boolean conenctors
-# (t1 UNION t2 AND t3) 
-# rewritten as ((t1 or t2) and t3)
-# rewritten as ((t1 t3) (t2 t3)) a union of conjunction of classes
+# Parameter param is a key value list (commune value departement value region value label value)
+# key value are extracted and managed in Context with st:set/st:get
 #
 st:genQuery2 st:value
 """prefix map: <http://ns.inria.fr/map/> .
@@ -191,9 +190,9 @@ where {
             bind (us:extract(st:get("param")) as ?tmp)
             
             bind (st:get("departement") as ?deptList)
-            bind (st:get("region") as ?regionList)
-            bind (st:get("commune") as ?comList)
-            bind (st:get("label") as ?labelList)
+            bind (st:get("region")      as ?regionList)
+            bind (st:get("commune")     as ?comList)
+            bind (st:get("label")       as ?labelList)
             
             ?url rdfs:label ?label ; map:commune ?com . 
             filter us:match(?label, ?labelList)
@@ -231,7 +230,7 @@ st:name st:indexNature ;
 rdfs:label "Map Index Nature" ;
 rdfs:comment """Select resource by type, department, region. UNION operator is like OR but UNION has precedence over AND: A UNION B AND C ::= (A OR B) AND C."""@en ;
 
-st:query st:genQuery ;
+st:query st:genQuery2 ;
 
 st:select [ st:title "Type" ; st:default map:Cavité ; st:defaultLabel "Cavité" ;
 st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:function us:selectTypeNature ; st:index 0 ] ;
@@ -257,13 +256,29 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClas
 
 
 
-st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment 
-] ;
+# param list = (commune value departement value region value label value)
+#st:select [st:type st:silent ; st:name "param" ; st:value "commune"] ;
+
+# st:key generates one input silent with name=param value=key ; index -> 2*index + 1
+st:select [ st:title "Commune" ;     st:default "" ; st:defaultLabel "Any" ; st:key "commune" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectCommune ; st:index 0] ;
+
+st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ; st:key "departement" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 1] ;
+
+st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ; st:key "region" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectRegion ; st:index 2] ;
+
+st:select [st:title "Label" ;  st:default "" ; st:defaultLabel "Any" ; st:key "label" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectLabelNature ; st:index 3]
 
 
-st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ;
-st:name "arg" ; st:uri st:arg ; st:graph st:dataset ; st:function us:selectRegion ]
+
+#st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
+#st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ] ;
+
+#st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ;
+#st:name "arg" ; st:uri st:arg ; st:graph st:dataset ; st:function us:selectRegion ]
 .
  
 
@@ -315,29 +330,21 @@ st:name "mode" ; st:uri st:mode ; st:graph st:dataset ; st:relation rdfs:subClas
 
 
 
-# param name = commune
-st:select [st:type st:silent ; st:name "param" ; st:value "commune"] ;
+# param list = (commune value departement value region value label value)
+#st:select [st:type st:silent ; st:name "param" ; st:value "commune"] ;
 
-st:select [ st:title "Commune" ;     st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectCommune ; st:index 1] ;
+# st:key generates one input silent with name=param value=key ; index -> 2*index + 1
+st:select [ st:title "Commune" ;     st:default "" ; st:defaultLabel "Any" ; st:key "commune" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectCommune ; st:index 0] ;
 
-# param name = departement
-st:select [st:type st:silent ; st:name "param" ; st:value "departement"] ;
+st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ; st:key "departement" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 1] ;
 
-st:select [st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectDepartment ; st:index 3] ;
+st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ; st:key "region" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectRegion ; st:index 2] ;
 
-# param name = region
-st:select [st:type st:silent ; st:name "param" ; st:value "region"] ;
-
-st:select [st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectRegion ; st:index 5] ;
-
-# param name = label
-st:select [st:type st:silent ; st:name "param" ; st:value "label"] ;
-
-st:select [st:title "Label" ;  st:default "" ; st:defaultLabel "Any" ;
-st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectLabelArtefact ; st:index 7]
+st:select [st:title "Label" ;  st:default "" ; st:defaultLabel "Any" ; st:key "label" ;
+st:name "param" ; st:uri st:param ; st:graph st:dataset ; st:function us:selectLabelArtefact ; st:index 3]
 .
 
 

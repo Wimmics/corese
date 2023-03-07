@@ -1,12 +1,9 @@
+<!-- select a query in a query list -->
 <h3 class='center'>Select a query</h3>
 
 <form class='center' method='get' id ='select' action='%s'>
 <input type='hidden' name='profile' value='%s' />
 %s   
-<!--
-if (! st:get(st:protocol, st:ajax)) 
-<select class='form-control select' id='uri' name='uri' onChange='submit();'>
--->
 <select class='select' id='uri' name='uri' onChange='trans(this.form); return false;'>
 %s
 </select>   

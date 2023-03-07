@@ -27,6 +27,7 @@
 
 ### Fixed
 
+- Fixed an encoding error when loading a file whose path contains a space in Corese-GUI
 - Fixed encoding error with Windows when exporting graphs from Corese-GUI.
 - Fixed SPARQL engine bug where it was impossible to load a named graph that contains a non-empty RDF list.
 - Fixed issue with "rdf:" not found when sending a federated query to Fuseki. See [issue #114](https://github.com/Wimmics/corese/issues/114).

@@ -710,8 +710,8 @@ public class NSManager extends ASTObject {
             str = new URL(path).toString();
         } catch (MalformedURLException ex) {
             try {
-                str = new File(path).toURL().toString();
-            } catch (MalformedURLException ex1) {
+                str = new File(path).toURI().toASCIIString();
+            } catch (Exception ex1) {
                 return path;
             }
         }

@@ -62,7 +62,7 @@ docker run --name my-corese \
 
 ```sh
 wget "files.inria.fr/corese/distrib/corese-server-4.4.0.jar"
-java -jar "corese-server-4.4.0.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-server-4.4.0.jar"
 ```
 
 Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/SoyFglO_1#)
@@ -73,7 +73,7 @@ Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/Soy
 
 ```sh
 wget "files.inria.fr/corese/distrib/corese-gui-4.4.0.jar"
-java -jar "corese-gui-4.4.0.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-gui-4.4.0.jar"
 ```
 
 ### Corese-Python (beta)
@@ -82,7 +82,7 @@ java -jar "corese-gui-4.4.0.jar"
 
 ```sh
 wget "files.inria.fr/corese/distrib/corese-python-4.4.0.jar"
-java -jar "corese-python-4.4.0.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-python-4.4.0.jar"
 ```
 
 ### Corese-Command (beta)
@@ -91,7 +91,7 @@ java -jar "corese-python-4.4.0.jar"
 
 ```sh
 wget "files.inria.fr/corese/distrib/corese-command-4.4.0.jar"
-java -jar "corese-command-4.4.0.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-command-4.4.0.jar"
 ```
 
 ## Compilation from source
@@ -101,7 +101,7 @@ Download source code and compile.
 ```shell
 git clone "https://github.com/Wimmics/corese.git"
 cd corese
-mvn clean package
+mvn clean -Dmaven.test.skip=true package
 ```
 
 ## How to cite Corese

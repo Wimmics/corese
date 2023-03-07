@@ -1,5 +1,5 @@
-#prefix ft:  <http://ns.inria.fr/sparql-template/format/map/>
-prefix ft:  <file:///user/corby/home/AAServer/data/format/map/>
+prefix ft: <http://ns.inria.fr/sparql-template/format/map/>
+#prefix ft: <file:///user/corby/home/AAServer/data/format/map/>
 prefix map: <http://ns.inria.fr/map/>
 prefix db:  <http://dbpedia.org/ontology/> .
 
@@ -170,6 +170,8 @@ function us:sublist(alist, start, end) {
 # split or -> ((A) (B C))
 # split and : A union B and C -> ((A B) (C))
 # distrib  -> AC or BC
+# used by workflow.ttl query for mode parameter for filtering rdf:type
+# alist = st:get("mode") 
 
 function us:process(alist) {
     us:process(alist, map:Objet)
@@ -305,6 +307,10 @@ function us:extract(alist) {
 
 # alist = (key val key val)
 # extract key=val ; set context(key, list(val))
+# used by workflow.ttl query for param parameter considered as key value list
+# each key value is managed in Context and passed to query using Context
+# each key value is available in query using st:get(key) = list(value) 
+# in this way we can have as much key value as we want
 
 function us:extract(alist, keyList) {
     let (res = xt:list(), key = "") {

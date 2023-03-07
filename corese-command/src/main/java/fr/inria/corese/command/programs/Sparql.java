@@ -1,9 +1,9 @@
-package fr.inria.corese.cli.programs;
+package fr.inria.corese.command.programs;
 
 import java.nio.file.Path;
 
-import fr.inria.corese.cli.utils.GraphUtils;
-import fr.inria.corese.cli.utils.format.InputFormat;
+import fr.inria.corese.command.utils.GraphUtils;
+import fr.inria.corese.command.utils.format.InputFormat;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mapping;

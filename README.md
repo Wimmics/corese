@@ -24,7 +24,7 @@ There are several interfaces for Corese:"
 - **Corese-server:** Tool to easily create, configure and manage SPARQL endpoints.
 - **Corese-gui:** Graphical interface that allows an easy and visual use of Corese features.
 - **Corese-Python (beta):** Python wrapper for accessing and manipulating RDF data with Corese features using py4j.
-- **Corese-CLI (beta):** Command Line Interface for Corese that allows users to interact with Corese features from the terminal.
+- **Corese-Command (beta):** Command Line Interface for Corese that allows users to interact with Corese features from the terminal.
 
 ## Download and install
 
@@ -85,13 +85,13 @@ wget "files.inria.fr/corese/distrib/corese-python-4.4.0.jar"
 java -jar "corese-python-4.4.0.jar"
 ```
 
-### Corese-CLI (beta)
+### Corese-Command (beta)
 
-- Download [Corese-cli jar file](https://project.inria.fr/corese/download/).
+- Download [Corese-command jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-cli-4.4.0.jar"
-java -jar "corese-cli-4.4.0.jar"
+wget "files.inria.fr/corese/distrib/corese-command-4.4.0.jar"
+java -jar "corese-command-4.4.0.jar"
 ```
 
 ## Compilation from source

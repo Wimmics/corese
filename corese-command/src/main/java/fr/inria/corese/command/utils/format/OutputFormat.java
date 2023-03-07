@@ -1,4 +1,4 @@
-package fr.inria.corese.cli.utils.format;
+package fr.inria.corese.command.utils.format;
 
 /**
  * Enumeration of exportable RDF serialization formats.

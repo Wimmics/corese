@@ -1,16 +1,16 @@
-package fr.inria.corese.cli;
+package fr.inria.corese.command;
 
-import fr.inria.corese.cli.programs.Convert;
-import fr.inria.corese.cli.programs.LDScript;
-import fr.inria.corese.cli.programs.Profile;
-import fr.inria.corese.cli.programs.Sparql;
+import fr.inria.corese.command.programs.Convert;
+import fr.inria.corese.command.programs.LDScript;
+import fr.inria.corese.command.programs.Profile;
+import fr.inria.corese.command.programs.Sparql;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 /**
  * Hello world!
  */
-@Command(name = "Corese-CLI", version = "4.4.0", mixinStandardHelpOptions = true, subcommands = {
+@Command(name = "Corese-command", version = "4.4.0", mixinStandardHelpOptions = true, subcommands = {
         Convert.class, Sparql.class, Profile.class, LDScript.class,
 })
 public final class App implements Runnable {

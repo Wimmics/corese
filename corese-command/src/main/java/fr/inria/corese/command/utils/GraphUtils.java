@@ -1,9 +1,9 @@
-package fr.inria.corese.cli.utils;
+package fr.inria.corese.command.utils;
 
 import java.nio.file.Path;
 
-import fr.inria.corese.cli.utils.format.InputFormat;
-import fr.inria.corese.cli.utils.format.OutputFormat;
+import fr.inria.corese.command.utils.format.InputFormat;
+import fr.inria.corese.command.utils.format.OutputFormat;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.transform.Transformer;

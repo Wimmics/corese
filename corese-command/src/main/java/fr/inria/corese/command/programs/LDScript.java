@@ -1,4 +1,4 @@
-package fr.inria.corese.cli.programs;
+package fr.inria.corese.command.programs;
 
 import java.io.IOException;
 import java.nio.charset.StandardCharsets;

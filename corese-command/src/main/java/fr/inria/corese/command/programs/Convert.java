@@ -1,10 +1,10 @@
-package fr.inria.corese.cli.programs;
+package fr.inria.corese.command.programs;
 
 import java.nio.file.Path;
 
-import fr.inria.corese.cli.utils.GraphUtils;
-import fr.inria.corese.cli.utils.format.InputFormat;
-import fr.inria.corese.cli.utils.format.OutputFormat;
+import fr.inria.corese.command.utils.GraphUtils;
+import fr.inria.corese.command.utils.format.InputFormat;
+import fr.inria.corese.command.utils.format.OutputFormat;
 import fr.inria.corese.core.Graph;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;

@@ -1,9 +1,9 @@
-package fr.inria.corese.cli.utils;
+package fr.inria.corese.command.utils;
 
 import java.security.InvalidParameterException;
 
-import fr.inria.corese.cli.utils.format.InputFormat;
-import fr.inria.corese.cli.utils.format.OutputFormat;
+import fr.inria.corese.command.utils.format.InputFormat;
+import fr.inria.corese.command.utils.format.OutputFormat;
 import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.transform.Transformer;
 

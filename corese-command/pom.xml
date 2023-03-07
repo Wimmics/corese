@@ -9,8 +9,8 @@
   </parent>
   
   <groupId>fr.inria.corese</groupId>
-  <artifactId>corese-cli</artifactId>
-  <name>corese-cli</name>
+  <artifactId>corese-command</artifactId>
+  <name>corese-command</name>
 
   <dependencies>
 
@@ -60,7 +60,7 @@
               <shadedClassifierName>jar-with-dependencies</shadedClassifierName>
               <transformers>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-                  <mainClass>fr.inria.corese.cli.App</mainClass>
+                  <mainClass>fr.inria.corese.command.App</mainClass>
                 </transformer>
                 <transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
               </transformers>

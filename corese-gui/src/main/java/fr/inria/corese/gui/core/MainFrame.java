@@ -1468,6 +1468,7 @@ public class MainFrame extends JFrame implements ActionListener {
                     }
                 }
             }
+            appendMsg("Load done\n");
         }
     }
 
@@ -1737,6 +1738,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 } else {
                     load(lPath);
                 }
+                appendMsg("Load done\n");
             }
         }
     }
@@ -1748,6 +1750,7 @@ public class MainFrame extends JFrame implements ActionListener {
         }
         appendMsg("Loading " + path + "\n");
         load(path);
+        appendMsg("Load done\n");
     }
 
     void execWF(String path) {
@@ -1984,6 +1987,7 @@ public class MainFrame extends JFrame implements ActionListener {
                 }
             }
         }
+        appendMsg("Load done\n");
         return str;
     }
 

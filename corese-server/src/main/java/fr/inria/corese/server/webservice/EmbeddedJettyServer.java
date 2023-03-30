@@ -114,7 +114,8 @@ public class EmbeddedJettyServer extends ResourceConfig {
             log4jfile = EmbeddedJettyServer.class.getClassLoader().getResource("log4j.properties");
         }
         logger.info("Loading log4j configuration: " + log4jfile);
-        logger.info("To override log4j configuration add JVM option: -Dlog4j.configurationFile=file:/home/.../your_log4j2.xml");
+        logger.info(
+                "To override log4j configuration add JVM option: -Dlog4j.configurationFile=file:/home/.../your_log4j2.xml");
 
         HOME_PAGE = SPARQLRestAPI.isAjax ? "demo_new.html" : "demo.html";
 
@@ -144,7 +145,8 @@ public class EmbeddedJettyServer extends ResourceConfig {
         Option sslOpt = new Option("ssl", "ssl", false, "enable ssl connection ?");
         Option portSslOpt = new Option("pssl", "pssl", true, "port of ssl connection");
         Option keystoreOpt = new Option("jks", "keystore", true, "java key store name (../keystore/xxx)");
-        Option keypasswordOpt = new Option("pwd", "password", true, "java key store password (key, store, trust store)");
+        Option keypasswordOpt = new Option("pwd", "password", true,
+                "java key store password (key, store, trust store)");
 
         options.addOption(portOpt);
         options.addOption(entailOpt);
@@ -312,9 +314,10 @@ public class EmbeddedJettyServer extends ResourceConfig {
             ContextHandlerCollection root = new ContextHandlerCollection();
             server.setHandler(root);
 
-            // Configure the ResourceHandler. Setting the resource base indicates where the files should be served out of.
+            // Configure the ResourceHandler. Setting the resource base indicates where the
+            // files should be served out of.
             ResourceHandler resource_handler = new ResourceHandler();
-            resource_handler.setWelcomeFiles(new String[]{HOME_PAGE, "index.html"});
+            resource_handler.setWelcomeFiles(new String[] { HOME_PAGE, "index.html" });
             URI webappUri = EmbeddedJettyServer.extractResourceDir("webapp", true);
             resource_handler.setResourceBase(new File(webappUri.getRawPath()).getAbsolutePath());
 
@@ -323,12 +326,14 @@ public class EmbeddedJettyServer extends ResourceConfig {
             logger.info("Corese/KGRAM webapp UI started on http://localhost:" + port);
             logger.info("----------------------------------------------");
 
-            // @TODO Check regularly whether it is still required by jetty or it is already set.
+            // @TODO Check regularly whether it is still required by jetty or it is already
+            // set.
             MimeTypes mimeTypes = new MimeTypes();
             mimeTypes.addMimeMapping("mjs", "application/javascript");
             staticContextHandler.setMimeTypes(mimeTypes);
 
-//            Server server = JettyHttpContainerFactory.createServer(baseUri, config, false);
+            // Server server = JettyHttpContainerFactory.createServer(baseUri, config,
+            // false);
             // === SSL Connector begin ====
             if (enableSsl) {
                 SslContextFactory.Server sslContextFactory = new SslContextFactory.Server();
@@ -342,7 +347,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
                 sslContextFactory.setKeyStorePath(keystorePath);
                 sslContextFactory.setKeyStorePassword(password);
                 sslContextFactory.setKeyManagerPassword(password);
-//     
+                //
                 HttpConfiguration httpsConfiguration = new HttpConfiguration();
                 ServerConnector https = new ServerConnector(server,
                         new SslConnectionFactory(sslContextFactory, HttpVersion.HTTP_1_1.asString()),
@@ -355,7 +360,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
             // === SSL Connector end ====
 
             ResourceConfig config = new ResourceConfig(
-                    SPARQLRestAPI.class, 
+                    SPARQLRestAPI.class,
                     SPARQLService.class,
                     GraphProtocol.class,
                     ServiceCompute.class,
@@ -367,8 +372,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
                     Tutorial.class, ServiceOnline.class, ServiceOnline2.class,
                     Transformer.class,
                     Processor.class,
-                    Agent.class
-            );
+                    Agent.class);
             ServletContainer servletContainer = new ServletContainer(config);
             ServletHolder servletHolder = new ServletHolder(servletContainer);
             ServletContextHandler servletContextHandler = new ServletContextHandler(root, "/*");
@@ -392,16 +396,15 @@ public class EmbeddedJettyServer extends ResourceConfig {
             logger.info("before localhost uri: " + uri);
 
             if (true) {
-            target.path("sparql").path("reset")
-                    .request(APPLICATION_FORM_URLENCODED_TYPE)
-                    .post(Entity.form(formData));
-            }
-            else {
+                target.path("sparql").path("reset")
+                        .request(APPLICATION_FORM_URLENCODED_TYPE)
+                        .post(Entity.form(formData));
+            } else {
                 new SPARQLRestAPI().initRDF(
                         Boolean.toString(owlrl),
                         Boolean.toString(entailments),
                         Boolean.toString(loadProfileData),
-                        localProfile,"false");
+                        localProfile, "false");
             }
             logger.info("after localhost uri");
 
@@ -431,26 +434,61 @@ public class EmbeddedJettyServer extends ResourceConfig {
         Access.protect();
     }
 
-    public static URI extractResourceDir(String dirname, boolean overwrite) throws FileSystemException, URISyntaxException {
-        URL dir_url = EmbeddedJettyServer.class.getClassLoader().getResource(dirname);
-        FileObject dir_jar = VFS.getManager().resolveFile(dir_url.toString());
-        String tempDir = FileUtils.getTempDirectory() + File.separator + System.getProperty("user.name").replace(" ", "");
-        FileObject tmpF = VFS.getManager().resolveFile(tempDir);
-        FileObject localDir = tmpF.resolveFile(dirname);
-        if (!localDir.exists()) {
-            logger.info("Extracting directory " + dirname + " to " + tmpF.getName());
-            localDir.createFolder();
-            localDir.copyFrom(dir_jar, new AllFileSelector());
-        } else {
-            if (overwrite) {
-                logger.info("Overwritting directory " + dirname + " in " + tmpF.getName());
-                localDir.delete(new FileDepthSelector(0, 5));
-                localDir.createFolder();
-                localDir.copyFrom(dir_jar, new AllFileSelector());
+    /**
+     * Extracts a directory from the JAR file to a local temporary directory, and
+     * returns the URI of the extracted directory.
+     *
+     * @param directoryName   the name of the directory to extract
+     * @param shouldOverwrite a flag indicating whether the directory should be
+     *                        overwritten if it already exists in the local
+     *                        temporary directory
+     * @return the URI of the extracted directory
+     */
+    public static URI extractResourceDir(String directoryName, boolean shouldOverwrite) {
+
+        try {
+            // Get URL of directory
+            URL directoryUrl = EmbeddedJettyServer.class.getClassLoader().getResource(directoryName);
+
+            // Get FileObject of directory from VFS
+            FileObject directoryInJar = VFS.getManager().resolveFile(directoryUrl.toString());
+
+            // Determine destination directory based on OS
+            String destinationDir;
+            String osName = System.getProperty("os.name").toLowerCase();
+            if (osName.contains("mac")) {
+                destinationDir = System.getProperty("user.home") + File.separator + ".corese";
+            } else {
+                destinationDir = FileUtils.getTempDirectory() + File.separator
+                        + System.getProperty("user.name").replace(" ", "");
             }
+
+            // Get FileObject of destination directory from VFS
+            FileObject destinationDirectory = VFS.getManager().resolveFile(destinationDir);
+
+            // If the directory does not exist, extract it from the JAR
+            if (!destinationDirectory.exists()) {
+                logger.info("Extracting directory " + directoryName + " to " + destinationDirectory.getName());
+                destinationDirectory.createFolder();
+                destinationDirectory.copyFrom(directoryInJar, new AllFileSelector());
+            } else {
+                // If the directory exists and should be overwritten, delete and extract it
+                // again
+                if (shouldOverwrite) {
+                    logger.info("Overwriting directory " + directoryName + " in " + destinationDirectory.getName());
+                    destinationDirectory.delete(new FileDepthSelector(0, 5));
+                    destinationDirectory.createFolder();
+                    destinationDirectory.copyFrom(directoryInJar, new AllFileSelector());
+                }
+            }
+
+            // Return URI of extracted directory
+            URI extractedDirectoryUri = destinationDirectory.getURL().toURI();
+            return extractedDirectoryUri;
+        } catch (Exception e) {
+            logger.error("Error extracting directory: " + e.getMessage());
+            return null;
         }
-        resourceURI = localDir.getURL().toURI();
-        return resourceURI;
     }
 
     /**

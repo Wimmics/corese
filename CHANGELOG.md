@@ -1,6 +1,6 @@
 # Corese Changelog
 
-## 4.4.0 – 2021/02/24 – Storage update
+## 4.4.0 – 2021/03/30 – Storage update
 
 ### Added
 
@@ -9,7 +9,7 @@
   - Integration of Corese Graph.
   - Integration of RDF4J Model.
   - [More information can be found here](https://github.com/Wimmics/corese/blob/master/docs/storage/Configuring%20and%20Connecting%20to%20Different%20Storage%20Systems%20in%20Corese.md).
-- Beta support for RDF* and SPARQL* ([Community Group Report 17 December 2021](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)).
+- Beta support for RDF\* and SPARQL\* ([Community Group Report 17 December 2021](https://w3c.github.io/rdf-star/cg-spec/2021-12-17.html)).
 - Corese Command-Line Interface (Beta):
   - `convert`: Convert RDF files between different serialization formats.
   - `sparql`: Execute SPARQL queries on files.
@@ -42,6 +42,7 @@
 - Bumped junit from 4.11 to 4.13.1 in /corese-storage. See [pull request #98](https://github.com/Wimmics/corese/pull/98).
 - Bumped xercesImpl from 2.12.0 to 2.12.2. See [pull request #92](https://github.com/Wimmics/corese/pull/92).
 - Bumped gremlin-core from 3.2.3 to 3.6.2.
+- Bumped Jetty server to 11.0.14.
 
 ## 4.3.0 – 2021/01/18 – RDF4J Update
 

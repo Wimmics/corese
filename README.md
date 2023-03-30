@@ -30,7 +30,7 @@ There are several interfaces for Corese:"
 
 ### Corese-library
 
-- Download from [maven-central](https://search.maven.org/search?q=g:fr.inria.corese)
+- Download from [maven-central](https://central.sonatype.com/namespace/fr.inria.corese)
 
 ```xml
 <dependency>

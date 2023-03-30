@@ -81,8 +81,8 @@ java -jar "-Dfile.encoding=UTF8" "corese-gui-4.4.0.jar"
 - Download [Corese-python jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-python-4.4.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-python-4.4.0.jar"
+wget "files.inria.fr/corese/distrib/corese-library-python-4.4.0.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.4.0.jar"
 ```
 
 ### Corese-Command (beta)

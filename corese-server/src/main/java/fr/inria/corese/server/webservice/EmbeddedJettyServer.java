@@ -4,13 +4,12 @@
  */
 package fr.inria.corese.server.webservice;
 
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.query.CompileService;
-import fr.inria.corese.core.query.QueryProcess;
-import fr.inria.corese.core.util.Parameter;
-import fr.inria.corese.core.util.Property;
-import fr.inria.corese.sparql.triple.parser.Access;
-import fr.inria.corese.sparql.triple.parser.Constant;
+import static jakarta.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
+
+import java.io.File;
+import java.net.URI;
+import java.net.URL;
+
 import org.apache.commons.cli.BasicParser;
 import org.apache.commons.cli.CommandLine;
 import org.apache.commons.cli.CommandLineParser;
@@ -22,7 +21,6 @@ import org.apache.commons.io.FileUtils;
 import org.apache.commons.vfs.AllFileSelector;
 import org.apache.commons.vfs.FileDepthSelector;
 import org.apache.commons.vfs.FileObject;
-import org.apache.commons.vfs.FileSystemException;
 import org.apache.commons.vfs.VFS;
 import org.apache.logging.log4j.LogManager;
 import org.apache.logging.log4j.Logger;
@@ -43,6 +41,13 @@ import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.glassfish.jersey.servlet.ServletContainer;
 
+import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.query.CompileService;
+import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.util.Parameter;
+import fr.inria.corese.core.util.Property;
+import fr.inria.corese.sparql.triple.parser.Access;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -51,12 +56,6 @@ import jakarta.ws.rs.client.WebTarget;
 import jakarta.ws.rs.core.MultivaluedHashMap;
 import jakarta.ws.rs.core.MultivaluedMap;
 import jakarta.ws.rs.core.UriBuilder;
-import java.io.File;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
-
-import static jakarta.ws.rs.core.MediaType.APPLICATION_FORM_URLENCODED_TYPE;
 
 /**
  * Embedded HTTP server for Corese, Using Jetty implementation SPARQL endpoint:
@@ -421,7 +420,7 @@ public class EmbeddedJettyServer extends ResourceConfig {
                 }
             }
 
-            // Manager.getManager().init();
+            Manager.getManager().init();
             server.join();
 
         } catch (ParseException exp) {
@@ -484,6 +483,9 @@ public class EmbeddedJettyServer extends ResourceConfig {
 
             // Return URI of extracted directory
             URI extractedDirectoryUri = destinationDirectory.getURL().toURI();
+            
+            resourceURI = extractedDirectoryUri;
+
             return extractedDirectoryUri;
         } catch (Exception e) {
             logger.error("Error extracting directory: " + e.getMessage());

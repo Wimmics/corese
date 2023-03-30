@@ -1,0 +1,55 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:variable>person</rs:variable>
+    <rs:value rdf:resource="tag:alice@example:foafUri"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:variable>nick</rs:variable>
+    <rs:value>WhoMe?</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:binding rdf:nodeID="A3"/>
+    <rs:binding rdf:nodeID="A4"/>
+    <rs:binding rdf:nodeID="A1"/>
+    <rs:binding rdf:nodeID="A0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rs:variable>page</rs:variable>
+    <rs:value rdf:resource="http://example.com/people/johnDoe"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rs:solution rdf:nodeID="A7"/>
+    <rs:solution rdf:nodeID="A2"/>
+    <rs:resultVariable>firstN</rs:resultVariable>
+    <rs:resultVariable>name</rs:resultVariable>
+    <rs:resultVariable>img</rs:resultVariable>
+    <rs:resultVariable>page</rs:resultVariable>
+    <rs:resultVariable>nick</rs:resultVariable>
+    <rs:resultVariable>person</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:variable>name</rs:variable>
+    <rs:value>Alice</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:variable>img</rs:variable>
+    <rs:value rdf:resource="http://example.com/alice.png"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rs:binding rdf:nodeID="A5"/>
+    <rs:binding rdf:nodeID="A8"/>
+    <rs:binding rdf:nodeID="A9"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rs:variable>nick</rs:variable>
+    <rs:value>jDoe</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rs:variable>person</rs:variable>
+    <rs:value rdf:resource="tag:john@example:foafUri"/>
+  </rdf:Description>
+</rdf:RDF>

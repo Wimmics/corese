@@ -1,0 +1,18 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="http://example/x">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</p>
+    <p rdf:resource="http://example/c"/>
+    <p rdf:resource="http://example/b"/>
+    <p rdf:resource="http://example/a"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/b">
+    <q rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</q>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/a">
+    <r rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</r>
+    <q rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</q>
+  </rdf:Description>
+</rdf:RDF>

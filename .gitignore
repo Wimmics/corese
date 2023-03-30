@@ -89,3 +89,9 @@ nb-configuration.xml
 ##############################
 log/
 log.txt
+corese-server/SSL_SERVER_PID
+
+##############################
+## test
+##############################
+earl-report-test.ttl

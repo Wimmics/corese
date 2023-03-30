@@ -12,6 +12,7 @@ module fr.inria.corese.corese_test {
     requires transitive org.apache.jena.ext.com.google;
     requires transitive org.apache.jena.iri;
     requires com.google.common;
+    requires org.slf4j;
 
     opens fr.inria.corese.engine;
 }

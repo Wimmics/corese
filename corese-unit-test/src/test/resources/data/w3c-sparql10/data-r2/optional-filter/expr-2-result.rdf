@@ -1,0 +1,25 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#"
+    xmlns:x="http://example.org/ns#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:solution rdf:nodeID="A1"/>
+    <rs:resultVariable>price</rs:resultVariable>
+    <rs:resultVariable>title</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:variable>price</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">10</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:variable>title</rs:variable>
+    <rs:value>TITLE 1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:binding rdf:nodeID="A2"/>
+    <rs:binding rdf:nodeID="A3"/>
+  </rdf:Description>
+</rdf:RDF>

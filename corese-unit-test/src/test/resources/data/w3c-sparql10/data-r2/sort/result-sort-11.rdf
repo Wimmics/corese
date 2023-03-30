@@ -1,0 +1,80 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:solution rdf:nodeID="A1"/>
+    <rs:solution rdf:nodeID="A2"/>
+    <rs:resultVariable>name</rs:resultVariable>
+    <rs:solution rdf:nodeID="A3"/>
+    <rs:solution rdf:nodeID="A4"/>
+    <rs:solution rdf:nodeID="A5"/>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+    <rs:solution rdf:nodeID="A6"/>
+    <rs:solution rdf:nodeID="A7"/>
+    <rs:solution rdf:nodeID="A8"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rs:index>
+    <rs:binding rdf:nodeID="A9"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rs:variable>name</rs:variable>
+    <rs:value>Alice</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <rs:variable>name</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Bob</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">6</rs:index>
+    <rs:binding rdf:nodeID="A10"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">5</rs:index>
+    <rs:binding rdf:nodeID="A11"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <rs:variable>name</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Alice</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">4</rs:index>
+    <rs:binding rdf:nodeID="A12"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <rs:variable>name</rs:variable>
+    <rs:value>Fred</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <rs:variable>name</rs:variable>
+    <rs:value>Eve</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rs:index>
+    <rs:binding rdf:nodeID="A14"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</rs:index>
+    <rs:binding rdf:nodeID="A13"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <rs:variable>name</rs:variable>
+    <rs:value>Bob</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <rs:variable>name</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Eve</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">7</rs:index>
+    <rs:binding rdf:nodeID="A15"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">8</rs:index>
+    <rs:binding rdf:nodeID="A16"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <rs:variable>name</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#string">Fred</rs:value>
+  </rdf:Description>
+</rdf:RDF>

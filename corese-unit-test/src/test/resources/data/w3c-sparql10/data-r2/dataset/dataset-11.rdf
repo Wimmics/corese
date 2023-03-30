@@ -1,0 +1,187 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:variable>g</rs:variable>
+    <rs:value rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/dataset/data-g1.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:binding rdf:nodeID="A2"/>
+    <rs:binding rdf:nodeID="A3"/>
+    <rs:binding rdf:nodeID="A4"/>
+    <rs:binding rdf:nodeID="A5"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:resource="http://example/x"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <rs:binding rdf:nodeID="A8"/>
+    <rs:binding rdf:nodeID="A9"/>
+    <rs:binding rdf:nodeID="A10"/>
+    <rs:binding rdf:nodeID="A11"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <rs:variable>o</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <rs:variable>o</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <rs:binding rdf:nodeID="A12"/>
+    <rs:binding rdf:nodeID="A14"/>
+    <rs:binding rdf:nodeID="A15"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:resource="http://example/x"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A17">
+    <rs:variable>o</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A18">
+    <rs:variable>g</rs:variable>
+    <rs:value rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/dataset/data-g4.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:nodeID="A19"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A20">
+    <rs:variable>o</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:variable>o</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A21">
+    <rs:variable>o</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A22">
+    <rs:binding rdf:nodeID="A23"/>
+    <rs:binding rdf:nodeID="A24"/>
+    <rs:binding rdf:nodeID="A17"/>
+    <rs:binding rdf:nodeID="A25"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A26">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:nodeID="A27"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A28">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:resource="http://example/a"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A29">
+    <rs:binding rdf:nodeID="A6"/>
+    <rs:binding rdf:nodeID="A30"/>
+    <rs:binding rdf:nodeID="A20"/>
+    <rs:binding rdf:nodeID="A31"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A32">
+    <rs:variable>p</rs:variable>
+    <rs:value rdf:resource="http://example/p"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A33">
+    <rs:binding rdf:nodeID="A34"/>
+    <rs:binding rdf:nodeID="A32"/>
+    <rs:binding rdf:nodeID="A28"/>
+    <rs:binding rdf:nodeID="A0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A35">
+    <rs:solution rdf:nodeID="A36"/>
+    <rs:resultVariable>o</rs:resultVariable>
+    <rs:resultVariable>p</rs:resultVariable>
+    <rs:solution rdf:nodeID="A1"/>
+    <rs:resultVariable>s</rs:resultVariable>
+    <rs:resultVariable>g</rs:resultVariable>
+    <rs:solution rdf:nodeID="A7"/>
+    <rs:solution rdf:nodeID="A29"/>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+    <rs:solution rdf:nodeID="A13"/>
+    <rs:solution rdf:nodeID="A37"/>
+    <rs:solution rdf:nodeID="A33"/>
+    <rs:solution rdf:nodeID="A22"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A38">
+    <rs:variable>p</rs:variable>
+    <rs:value rdf:resource="http://example/q"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <rs:variable>g</rs:variable>
+    <rs:value rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/dataset/data-g3.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:variable>p</rs:variable>
+    <rs:value rdf:resource="http://example/p"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <rs:variable>p</rs:variable>
+    <rs:value rdf:resource="http://example/p"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:nodeID="A39"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A31">
+    <rs:variable>p</rs:variable>
+    <rs:value rdf:resource="http://example/p"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:resource="http://example/a"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A24">
+    <rs:variable>p</rs:variable>
+    <rs:value rdf:resource="http://example/q"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A30">
+    <rs:variable>g</rs:variable>
+    <rs:value rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/dataset/data-g1.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A37">
+    <rs:binding rdf:nodeID="A21"/>
+    <rs:binding rdf:nodeID="A40"/>
+    <rs:binding rdf:nodeID="A16"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A23">
+    <rs:variable>g</rs:variable>
+    <rs:value rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/dataset/data-g2.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:variable>g</rs:variable>
+    <rs:value rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/dataset/data-g3.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A40">
+    <rs:variable>p</rs:variable>
+    <rs:value rdf:resource="http://example/p"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A25">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:resource="http://example/x"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A41">
+    <rs:variable>o</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A36">
+    <rs:binding rdf:nodeID="A38"/>
+    <rs:binding rdf:nodeID="A26"/>
+    <rs:binding rdf:nodeID="A41"/>
+    <rs:binding rdf:nodeID="A18"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A34">
+    <rs:variable>o</rs:variable>
+    <rs:value rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">9</rs:value>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rs:variable>p</rs:variable>
+    <rs:value rdf:resource="http://example/p"/>
+  </rdf:Description>
+</rdf:RDF>

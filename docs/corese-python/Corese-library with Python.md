@@ -4,8 +4,8 @@
 
 1. Install java and python
 2. Install python dependencies `pip install --user py4j`
-3. Download [corese-library-python-4.3.0.jar](http://files.inria.fr/corese/distrib/corese-library-python-4.3.0.jar)
-4. Place in the same directory `corese-library-python-4.3.0.jar` and your code `myCode.py`
+3. Download [corese-library-python-4.4.0.jar](http://files.inria.fr/corese/distrib/corese-library-python-4.4.0.jar)
+4. Place in the same directory `corese-library-python-4.4.0.jar` and your code `myCode.py`
 5. Run with `python myCode.py`
 
 ## 2. Template
@@ -22,7 +22,7 @@ from py4j.java_gateway import JavaGateway
 
 # Start java gateway
 java_process = subprocess.Popen(
-    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.3.0.jar'])
+    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.4.0.jar'])
 sleep(1)
 gateway = JavaGateway()
 
@@ -39,7 +39,6 @@ atexit.register(exit_handler)
 #######################
 # Type your code here #
 #######################
-
 ```
 
 ## 3. A functional example
@@ -47,7 +46,6 @@ atexit.register(exit_handler)
 Here is an example of a python script that shows how to :
 
 - Build a graph by program (Corese API);
-- Build a graph by program (RDF4 API);
 - Execute a SPARQL query;
 - Load a graph from a file;
 - Export a graph to a file.
@@ -61,7 +59,7 @@ from py4j.java_gateway import JavaGateway
 
 # Start java gateway
 java_process = subprocess.Popen(
-    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.3.0.jar'])
+    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.4.0.jar'])
 sleep(1)
 gateway = JavaGateway()
 
@@ -80,10 +78,7 @@ Graph = gateway.jvm.fr.inria.corese.core.Graph
 Load = gateway.jvm.fr.inria.corese.core.load.Load
 Transformer = gateway.jvm.fr.inria.corese.core.transform.Transformer
 QueryProcess = gateway.jvm.fr.inria.corese.core.query.QueryProcess
-CoreseModel = gateway.jvm.fr.inria.corese.rdf4j.CoreseModel
-SimpleValueFactory = gateway.jvm.org.eclipse.rdf4j.model.impl.SimpleValueFactory
-RDF = gateway.jvm.org.eclipse.rdf4j.model.vocabulary.RDF
-
+RDF = gateway.jvm.fr.inria.corese.core.logic.RDF
 
 ###############
 # Build Graph #
@@ -101,37 +96,12 @@ def BuildGraphCoreseApi():
 
     # Create and add statement: Edith Piaf is an Singer
     edith_Piaf_IRI = corese_graph.addResource(ex + "EdithPiaf")
-    rdf_Type_Property = corese_graph.addProperty(RDF.TYPE.toString())
+    rdf_Type_Property = corese_graph.addProperty(RDF.TYPE)
     singer_IRI = corese_graph.addResource(ex + "Singer")
 
     corese_graph.addEdge(edith_Piaf_IRI, rdf_Type_Property, singer_IRI)
 
     return corese_graph
-
-
-def BuildGraphRdf4jApi():
-    """Build a graph with a single statement (Edith Piaf is a singer) with the RDF4J API
-    :returns: graph with a single statement (Edith Piaf is a singer)
-    """
-    corese_model = CoreseModel()
-
-    # NameSpace
-    ex = "http://example.org/"
-
-    # Build factory
-    factory = SimpleValueFactory.getInstance()
-
-    # Create and add statement: Edith Piaf is an Singer
-    edith_piaf_IRI = factory.createIRI(ex, "EdithPiaf")
-    rdf_Type_Property = RDF.TYPE
-    singer_IRI = factory.createIRI(ex, "Singer")
-
-    triple = factory.createStatement(
-        edith_piaf_IRI, rdf_Type_Property, singer_IRI)
-    corese_model.add(triple)
-
-    return corese_model
-
 
 ##########
 # Sparql #
@@ -206,18 +176,6 @@ print(graph.display())
 
 
 ###
-# Build a graph with the RDF4J API
-###
-printTitle("Build a graph with the RDF4J API")
-
-graph = BuildGraphRdf4jApi()
-print("Graph build ! (" + str(graph.size()) + " triplets)")
-
-print("\nPrint Graph:")
-print(graph.toString())
-
-
-###
 # SPARQL Query
 ###
 printTitle("SPARQL Query")
@@ -229,7 +187,7 @@ print("Graph load ! (" + str(graph.size()) + " triplets)")
 # List of U2 albums
 query = """
         prefix : <http://stardog.com/tutorial/>
-        
+
         SELECT ?member 
         WHERE {
             ?The_Beatles :member ?member
@@ -259,7 +217,6 @@ Results :
 
 ```plaintext
 Gateway Server Started
-WARNING: sun.reflect.Reflection.getCallerClass is not supported. This will impact performance.
 
 
 
@@ -272,16 +229,6 @@ Print Graph:
 predicate rdf:type [1]
 00 kg:default <http://example.org/EdithPiaf> rdf:type <http://example.org/Singer>
 
-
-
-
-======================================
-== Build a graph with the RDF4J API ==
-======================================
-Graph build ! (1 triplets)
-
-Print Graph:
-[(http://example.org/EdithPiaf, http://www.w3.org/1999/02/22-rdf-syntax-ns#type, http://example.org/Singer) [null]]
 
 
 
@@ -308,5 +255,4 @@ Graph Export in file (export.rdf)
 
 
 Gateway Server Stop!
-
 ```

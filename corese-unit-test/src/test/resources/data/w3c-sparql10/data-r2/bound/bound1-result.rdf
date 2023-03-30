@@ -1,0 +1,35 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:variable>a</rs:variable>
+    <rs:value rdf:resource="http://example.org/ns#c2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:variable>a</rs:variable>
+    <rs:value rdf:resource="http://example.org/ns#a2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:binding rdf:nodeID="A3"/>
+    <rs:binding rdf:nodeID="A1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:variable>c</rs:variable>
+    <rs:value rdf:resource="http://example.org/ns#f"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rs:binding rdf:nodeID="A4"/>
+    <rs:binding rdf:nodeID="A0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:variable>c</rs:variable>
+    <rs:value rdf:resource="http://example.org/ns#c2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rs:solution rdf:nodeID="A2"/>
+    <rs:solution rdf:nodeID="A5"/>
+    <rs:resultVariable>c</rs:resultVariable>
+    <rs:resultVariable>a</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+</rdf:RDF>

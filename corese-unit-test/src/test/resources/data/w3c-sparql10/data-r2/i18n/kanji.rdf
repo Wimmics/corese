@@ -1,0 +1,19 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:foaf="http://xmlns.com/foaf/0.1/"
+    xmlns:owl="http://www.w3.org/2002/07/owl#"
+    xmlns:食="http://www.w3.org/2001/sw/DataAccess/tests/data/i18n/kanji.ttl#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/i18n/kanji.ttl">
+    <owl:versionInfo>$Id: kanji.ttl,v 1.5 2005/11/06 08:27:50 eric Exp $</owl:versionInfo>
+    <rdfs:comment>test kanji IRIs (composed from QNames)</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <食:食べる rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data/i18n/kanji.ttl#納豆"/>
+    <foaf:name>Alice</foaf:name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <食:食べる rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data/i18n/kanji.ttl#海老"/>
+    <foaf:name>Bob</foaf:name>
+  </rdf:Description>
+</rdf:RDF>

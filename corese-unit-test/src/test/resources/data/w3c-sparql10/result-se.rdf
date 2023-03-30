@@ -1,0 +1,69 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2000/10/XMLSchema#"
+    xmlns:dc="http://purl.org/dc/elements/1.1/"
+    xmlns="http://www.w3.org/2001/sw/DataAccess/tests/result-set#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/result-set#resultVariable">
+    <rdfs:comment>Multivalued</rdfs:comment>
+    <rdfs:comment>Name of a variable used in the result set</rdfs:comment>
+    <rdfs:range rdf:resource="http://www.w3.org/2000/10/XMLSchema#string"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/result-set#boolean">
+    <rdfs:range rdf:resource="http://www.w3.org/2000/10/XMLSchema#boolean"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet">
+    <rdfs:comment>Class of things that represent the result set</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/result-set#">
+    <dc:identifier rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#"/>
+    <dc:format>RDF</dc:format>
+    <dc:date>2004-07-26</dc:date>
+    <dc:description>Vocabulary for recording query result set</dc:description>
+    <dc:title>Vocabulary for recording query result set</dc:title>
+    <dc:publisher>W3C RDF Data Access Working Group</dc:publisher>
+    <dc:subject></dc:subject>
+    <dc:creator>Andy Seaborne</dc:creator>
+    <rdfs:comment>Vocabulary for recording query result set</rdfs:comment>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/result-set#size">
+    <rdfs:range rdf:resource="http://www.w3.org/2000/10/XMLSchema#integer"/>
+    <rdfs:comment>Number of rows in the result table</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/result-set#variable">
+    <rdfs:range rdf:resource="http://www.w3.org/2000/01/rdf-schema#Literal"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultBinding"/>
+    <rdfs:comment>Variable name</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultBinding">
+    <rdfs:comment>Class of things that represent a single (variable, value) pairing</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/result-set#value">
+    <rdfs:domain rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultBinding"/>
+    <rdfs:comment>Variable name</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/result-set#solution">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSolution"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/result-set#binding">
+    <rdfs:range rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultBinding"/>
+    <rdfs:domain rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSolution"/>
+    <rdfs:comment>Multi-occurrence property associating a result solution (row) resource to a single (variable, value) binding </rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#Property"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSolution">
+    <rdfs:comment>Class of things that represent a row in the result table - one solution to the query</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2000/01/rdf-schema#Class"/>
+  </rdf:Description>
+</rdf:RDF>

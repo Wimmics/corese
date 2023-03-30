@@ -9,7 +9,7 @@
 
   <groupId>fr.inria.corese</groupId>
   <artifactId>corese-jena</artifactId>
-  <version>4.3.0</version>
+  <version>${revision}</version>
 
   <name>corese-jena</name>
   <!-- FIXME change it to the project's website -->

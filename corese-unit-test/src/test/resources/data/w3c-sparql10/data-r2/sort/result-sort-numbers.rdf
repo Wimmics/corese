@@ -1,0 +1,36 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example.org/"
+    xmlns:rs="http://www.w3.org/2001/sw/DataAccess/tests/result-set#" > 
+  <rdf:Description rdf:nodeID="A0">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:resource="http://example.org/s3"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:resource="http://example.org/s2"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rs:solution rdf:nodeID="A3"/>
+    <rs:solution rdf:nodeID="A4"/>
+    <rs:solution rdf:nodeID="A5"/>
+    <rs:resultVariable>s</rs:resultVariable>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">3</rs:index>
+    <rs:binding rdf:nodeID="A0"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <rs:variable>s</rs:variable>
+    <rs:value rdf:resource="http://example.org/s1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">2</rs:index>
+    <rs:binding rdf:nodeID="A1"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <rs:index rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</rs:index>
+    <rs:binding rdf:nodeID="A6"/>
+  </rdf:Description>
+</rdf:RDF>

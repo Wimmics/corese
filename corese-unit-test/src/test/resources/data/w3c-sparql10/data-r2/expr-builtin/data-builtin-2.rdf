@@ -1,0 +1,26 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="http://example/x5">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1234</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x4">
+    <p rdf:datatype="http://example/unknownType">lex</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x2">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#string">string</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x1">
+    <p>string</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x3">
+    <p xml:lang="en">string</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x6">
+    <p rdf:resource="http://example/iri"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x7">
+    <p rdf:nodeID="A0"/>
+  </rdf:Description>
+</rdf:RDF>

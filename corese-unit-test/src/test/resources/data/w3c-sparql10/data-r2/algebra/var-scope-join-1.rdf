@@ -1,0 +1,22 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example/" > 
+  <rdf:Description rdf:nodeID="A0">
+    <email rdf:resource="mailto:john@acd.edu"/>
+    <name>john</name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <webPage rdf:resource="http://www.george.edu/"/>
+    <name>george</name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <phone>888-4537</phone>
+    <webPage rdf:resource="http://www.starr.edu/"/>
+    <email rdf:resource="mailto:ringo@acd.edu"/>
+    <name>ringo</name>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <phone>777-3426</phone>
+    <name>paul</name>
+  </rdf:Description>
+</rdf:RDF>

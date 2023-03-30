@@ -1,0 +1,40 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns="http://example/"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#" > 
+  <rdf:Description rdf:about="http://example/x5">
+    <p rdf:nodeID="A0"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x4">
+    <p rdf:nodeID="A1"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x2">
+    <p rdf:nodeID="A2"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x1">
+    <p rdf:nodeID="A3"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example/x3">
+    <p rdf:nodeID="A4"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <v2 rdf:datatype="http://example/unknown">x</v2>
+    <v1 rdf:datatype="http://example/unknown">x</v1>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <v2 rdf:datatype="http://www.w3.org/2001/XMLSchema#date">2006-08-22</v2>
+    <v1 rdf:datatype="http://www.w3.org/2001/XMLSchema#dateTime">2006-08-23T09:00:00+01:00</v1>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <v2>v2</v2>
+    <v1>v1</v1>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <v2>v2</v2>
+    <v1 rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</v1>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <v2 rdf:resource="test:abc"/>
+    <v1 rdf:resource="test:abc"/>
+  </rdf:Description>
+</rdf:RDF>

@@ -1,0 +1,29 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:xsd="http://www.w3.org/2001/XMLSchema#"
+    xmlns="http://example.org/ns#" > 
+  <rdf:Description rdf:about="http://example.org/ns#y2">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.0</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/ns#x3">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#double">0.01</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/ns#y1">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">0</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/ns#y3">
+    <p></p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/ns#y4">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">false</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/ns#x2">
+    <p>foo</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/ns#x4">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#boolean">true</p>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://example.org/ns#x1">
+    <p rdf:datatype="http://www.w3.org/2001/XMLSchema#integer">1</p>
+  </rdf:Description>
+</rdf:RDF>

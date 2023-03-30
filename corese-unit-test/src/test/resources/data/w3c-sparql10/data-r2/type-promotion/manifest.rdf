@@ -1,0 +1,553 @@
+<rdf:RDF
+    xmlns:rdf="http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+    xmlns:qt="http://www.w3.org/2001/sw/DataAccess/tests/test-query#"
+    xmlns:dawgt="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#"
+    xmlns:mf="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#"
+    xmlns="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#"
+    xmlns:rdfs="http://www.w3.org/2000/01/rdf-schema#" > 
+  <rdf:Description rdf:about="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/manifest.ttl">
+    <mf:entries rdf:nodeID="A0"/>
+    <rdfs:comment>Type Promotion Tests</rdfs:comment>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#Manifest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A1">
+    <rdf:rest rdf:nodeID="A2"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-05"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-08">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A3"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-nonPositiveInteger-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-22">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A4"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-short-decimal</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-26">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/false.ttl"/>
+    <mf:action rdf:nodeID="A5"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-short-int-fail</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A6">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-short-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-18">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A7"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-unsignedByte-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A8">
+    <rdf:rest rdf:nodeID="A9"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-14"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A3">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-nonPositiveInteger-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-12">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A6"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-short-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A10">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-short-byte-fail.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A11">
+    <rdf:rest rdf:nodeID="A12"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-22"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A13">
+    <rdf:rest rdf:nodeID="A14"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-09"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-27">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/false.ttl"/>
+    <mf:action rdf:nodeID="A10"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-short-byte-fail</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A15">
+    <rdf:rest rdf:nodeID="A8"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-13"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A16">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-unsignedInt-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A17">
+    <rdf:rest rdf:nodeID="A18"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-02"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A19">
+    <rdf:rest rdf:nodeID="A20"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-26"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A21">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-short-double.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-02">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A22"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-double-float</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-17">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A23"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-unsignedShort-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A24">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-short-long-fail.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A25">
+    <rdf:rest rdf:nodeID="A26"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-18"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A27">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-double-decimal.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-09">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A28"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-negativeInteger-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A2">
+    <rdf:rest rdf:nodeID="A29"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-06"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A30">
+    <rdf:rest rdf:resource="http://www.w3.org/1999/02/22-rdf-syntax-ns#nil"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-30"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A31">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-float-decimal.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-21">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A32"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-short-float</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A33">
+    <rdf:rest rdf:nodeID="A19"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-25"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-15">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A34"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-unsignedLong-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-19">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A35"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-positiveInteger-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A36">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-int-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-11">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A36"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-int-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-25">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/false.ttl"/>
+    <mf:action rdf:nodeID="A24"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-short-long-fail</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A28">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-negativeInteger-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A37">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-double-float-fail.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A38">
+    <rdf:rest rdf:nodeID="A25"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-17"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A39">
+    <rdf:rest rdf:nodeID="A30"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-29"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A40">
+    <rdf:rest rdf:nodeID="A15"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-12"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A41">
+    <rdf:rest rdf:nodeID="A11"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-21"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-16">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A16"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-unsignedInt-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-01">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A42"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-double-double</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A0">
+    <rdf:rest rdf:nodeID="A17"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-01"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A43">
+    <rdf:rest rdf:nodeID="A13"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-08"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A35">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-positiveInteger-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A44">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-float-float.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A45">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-byte-short-fail.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A34">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-unsignedLong-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-14">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A46"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-nonNegativeInteger-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A47">
+    <rdf:rest rdf:nodeID="A33"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-24"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-06">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A48"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-decimal-decimal</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-05">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A31"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-float-decimal</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A42">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-double-double.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A48">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-decimal-decimal.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A29">
+    <rdf:rest rdf:nodeID="A43"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-07"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-24">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/false.ttl"/>
+    <mf:action rdf:nodeID="A45"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-byte-short-fail</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A12">
+    <rdf:rest rdf:nodeID="A47"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-23"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-10">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A49"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-long-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A50">
+    <rdf:rest rdf:nodeID="A40"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-11"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-29">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/false.ttl"/>
+    <mf:action rdf:nodeID="A51"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-double-decimal-fail</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A52">
+    <rdf:rest rdf:nodeID="A41"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-20"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A51">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-double-decimal-fail.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A46">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-nonNegativeInteger-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A49">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-long-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A53">
+    <rdf:rest rdf:nodeID="A39"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-28"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A54">
+    <rdf:rest rdf:nodeID="A38"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-16"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-20">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A21"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-short-double</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A55">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-short-short-fail.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-04">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A44"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-float-float</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A7">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-unsignedByte-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A56">
+    <rdf:rest rdf:nodeID="A1"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-04"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-13">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A57"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-byte-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A22">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-double-float.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-07">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A58"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-integer-short</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-23">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/false.ttl"/>
+    <mf:action rdf:nodeID="A55"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-short-short-fail</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-30">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/false.ttl"/>
+    <mf:action rdf:nodeID="A59"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-float-decimal-fail</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A58">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-integer-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A32">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-short-float.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A5">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-short-int-fail.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A59">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-float-decimal-fail.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A57">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-byte-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-28">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/false.ttl"/>
+    <mf:action rdf:nodeID="A37"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-double-float-fail</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A14">
+    <rdf:rest rdf:nodeID="A50"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-10"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A26">
+    <rdf:rest rdf:nodeID="A52"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-19"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A20">
+    <rdf:rest rdf:nodeID="A53"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-27"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A9">
+    <rdf:rest rdf:nodeID="A54"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-15"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A4">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-short-decimal.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A23">
+    <qt:query rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP-unsignedShort-short.rq"/>
+    <qt:data rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/tP.ttl"/>
+  </rdf:Description>
+  <rdf:Description rdf:nodeID="A18">
+    <rdf:rest rdf:nodeID="A56"/>
+    <rdf:first rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-03"/>
+  </rdf:Description>
+  <rdf:Description rdf:about="http://www.w3.org/2001/sw/DataAccess/tests/data-r2/type-promotion/manifest#type-promotion-03">
+    <mf:result rdf:resource="file:///home/corby/workspace/coreseV2/src/test/resources/data/test-suite-archive/data-r2/type-promotion/true.ttl"/>
+    <mf:action rdf:nodeID="A27"/>
+    <rdfs:comment>Positive test: product of type promotion within the xsd:decimal type tree.</rdfs:comment>
+    <dawgt:approvedBy rdf:resource="http://www.w3.org/2007/07/17-dawg-minutes"/>
+    <dawgt:approval rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-dawg#Approved"/>
+    <qt:queryForm rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-query#QueryAsk"/>
+    <mf:name>tP-double-decimal</mf:name>
+    <rdf:type rdf:resource="http://www.w3.org/2001/sw/DataAccess/tests/test-manifest#QueryEvaluationTest"/>
+  </rdf:Description>
+</rdf:RDF>

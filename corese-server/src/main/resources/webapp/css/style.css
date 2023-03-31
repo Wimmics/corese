@@ -15,7 +15,13 @@
 	overflow: auto;
 }
 
-.myselect { width: 400px }
+.oper td {
+    width: 100px; text-align: left
+}
+
+.myselect     { width: 400px; }
+.myselectoper { width: 120px; }
+.myselectarg  { width: 300px; }
 
 
 /*
@@ -191,7 +197,19 @@ pre  a {
 
 .right {text-align:right;}
 
+.center form {
+  display:flex;
+  justify-content: center;
+}
+
+
+.center table { 
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .center {text-align:center;}
+
 
 .top {vertical-align:top}
 

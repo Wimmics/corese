@@ -78,8 +78,11 @@ public class SrvWrapper {
 			rs = new Tutorial()
                                 .get(request, getService(path), profile, resource, mode, param, arg, format, query, name, value, transform, defaultGraphUris, namedGraphUris);		
                 } else if (path.startsWith("service")) {
-			rs = new ServiceOnline()
-                                .get(request, getService(path), profile, resource, mode, param, arg, format, access, query, name, value, transform, defaultGraphUris, namedGraphUris);
+                    logger.info("service get");
+		rs = new ServiceOnline() // processList vs get
+                .processList(request, getService(path), profile, resource, 
+                        mode, param, arg, format, access, query, name, 
+                        value, transform, defaultGraphUris, namedGraphUris);
 		}
                 else if (path.startsWith("process")) {
 			rs = new Processor().typecheck(resource, "std", transform, query, getService(path));

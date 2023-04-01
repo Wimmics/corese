@@ -154,6 +154,32 @@ public class TransformerEngine {
      */
     String getQuery(SemanticWorkflow wp) {
         if (context.hasValue(Context.STL_URI)
+                && (context.hasValue(Context.STL_MODE) || 
+                context.hasValue(Context.STL_PARAM))) {
+            // URI of query in context graph (use case: tutorial)
+            // with query parameter mode/param (this means we want to execute the query)
+            IDatatype qdt = wp.getContextParamValue(context.get(Context.STL_URI), Context.STL_QUERY);
+            logger.info("st:uri " + qdt);
+            if (qdt == null) {
+                return null;
+            }
+            // try st:value in workflow graph
+            IDatatype qdtval = wp.getContextParamValue(qdt, Context.STL_VALUE);
+            //logger.info("st:value " + qdtval);
+            if (qdtval == null) {
+                context.set(Context.STL_QUERY, qdt);
+                return qdt.stringValue();
+            }
+            else {
+                context.set(Context.STL_QUERY, qdtval);
+                return qdtval.stringValue();
+            }
+        }
+        return null;
+    }
+
+    String getQuery2(SemanticWorkflow wp) {
+        if (context.hasValue(Context.STL_URI)
                 && (context.hasValue(Context.STL_MODE) || context.hasValue(Context.STL_PARAM))) {
             // URI of query in context graph (use case: tutorial)
             // with query parameter mode/param (this means we want to execute the query)

@@ -977,7 +977,7 @@ public class ProviderService implements URLParam {
     synchronized Mappings storage(ASTQuery ast, URLServer url, Binding b) throws EngineException {
         DataManager man = dataManager(url);
         QueryProcess exec = QueryProcess.create(man);
-        logger.info(String.format("storage: %s\n%s", url, ast));
+        //logger.info(String.format("storage: %s\n%s", url, ast));
         ast.inheritFunction(getGlobalAST());
         return index(exec.query(ast, b));
     }

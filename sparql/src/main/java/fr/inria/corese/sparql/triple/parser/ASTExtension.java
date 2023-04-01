@@ -160,11 +160,11 @@ public class ASTExtension implements Extension {
     void defineFunction(Function exp) { 
         Term fun = exp.getSignature(); 
         Function def = get(fun.getLabel(), fun.arity());
-        if  (def != null && exp != def) {
-            logger.info("Redefine function: " +fun.getLabel());
-            logger.info(def.toString());
-            logger.info(exp.toString());
-        }
+//        if  (def != null && exp != def) {
+//            logger.info("Redefine function: " +fun.getLabel());
+//            logger.info(def.toString());
+//            logger.info(exp.toString());
+//        }
         if (getMap(fun) == null) {
             logger.error("Undefined function: " + fun);
         }

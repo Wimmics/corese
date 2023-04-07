@@ -9,14 +9,14 @@
   <br/> 
   <!-- parameter html select list -->
   %s  
-  <!-- AND/OR button place holder -->
+  <!-- mode less button place holder -->
   %s
-  <input type='submit' value='submit'  onClick='trans(this.form); return false;' /> 
+  <!-- submit button place holder -->
+  %s
+  <textarea cols='%s' rows='%s' id='query' name='query'>%s</textarea>
   <br/>
-  <textarea cols='60' rows='10' id='query' name='query'>%s</textarea>
-  <br/>
-<label>Pad:</label> <input type="text" name="pad" id="pad" value="" size="50" />
-  <br/>
+<!--<label>Pad:</label> <input type="text" name="pad" id="pad" value="" size="50" />
+  <br/>-->
 <!--    <label>Key:</label> <input type="text" name="access" value="" size="50"/>
   <br/>-->
 </form>
@@ -25,5 +25,17 @@
 function show(name){
     document.getElementById('query').value = document.getElementById(name).value;
 }  
+function more(name) {
+    document.getElementById(name).style="";
+    if (document.getElementById("show")!=null) {
+        document.getElementById("show").value="more";
+    }
+}
+function less(name) {
+    document.getElementById(name).style="display:none";
+    if (document.getElementById("show")!=null) {
+        document.getElementById("show").value="less";
+    }
+}
 </script>
 

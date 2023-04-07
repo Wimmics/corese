@@ -14,8 +14,9 @@ Fri Jun 21 13:43:42 CEST 2019
 # ?q actual query, ?t query template, ?s query solution
 # generate a sequence of html select according to query st:select specifications
 #
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
 
 template st:selecttable(?n, ?q, ?t, ?s, ?qt) {
    format { 
@@ -24,62 +25,72 @@ template st:selecttable(?n, ?q, ?t, ?s, ?qt) {
             # silent input for key
             if (strlen(?mykey)>0, st:format(ft:silent.html, ?myname, ?mykey), "")
 
-            if (strlen(?myname)>0 && strlen(?mykey)=0, 
+            if (strlen(?myvalue)>0, 
                 # std silent input
                 st:format(ft:silent.html, ?myname, ?myvalue),
                 # html select
-                st:format(?format, ?title, 
+                st:format(?format, 
+                    if (bound(?aid), st:format(if (st:get(st:show, true), ft:id.html, ft:idhidden.html), us:idCounter()), ""), 
+                    ?title, 
                     st:call-template(st:selectparam, ?n, ?select, 
                         # 2 index + 1 because st:select with st:key generates 1 silent input + 1 html select
-                        # and the key (in silent input) is also in the parameter value list
-                        # hence we need to consider the index of the key
+                        # and the key (of silent input) is also in the parameter value list (key value key value)
+                        # hence we need to consider (and skip) the index of the key in the value list
+                        # key   -> silent input
+                        # value -> html select
                         if (strlen(?mykey)>0, 2 * ?index + 1, ?index))))
         }      
     }
 }
 where {
-    {select ?n 
-    # list of html select specifications
-    (aggregate(xt:list(?n, ?select, ?mytitle, ?format, ?myindex, ?myrepeat, ?myname, ?myvalue, ?mykey)) 
-     as ?list)
-    where {
-        bind (st:get(st:context) as ?g)
-        graph ?g {  
-        ?qt st:name ?n 
-        optional { 
-            ?qt st:select ?select
-            optional { ?select st:title ?title }
-            # st:type st:oper | st:arg
-            optional { ?select st:type ?type  filter (?type != st:silent) }
-            # index of html select value in parameter value list
-            optional { ?select st:index ?index }
-            # repeat oper+arg sequence n times
-            optional { ?select st:repeat ?repeat }
-            # generate silent input with name=name value=value
-            optional { ?select st:type st:silent ; st:name ?name ; st:value ?value }
-            # generate silent input with name=name value=key in addition to html select
-            # use case: param = (key value key value) and value is in (next) html select
-            optional { ?select st:name ?name ; st:key ?key }
-           
-            bind (coalesce(
-                if (?type = st:oper, ft:selectparameterrowoper.html,
-                if (?type = st:arg,  ft:selectparameterrowarg.html,
-                    ft:selectparameterrow.html)), ft:selectparameterrowsimple.html) 
-            as ?format)
+    bind (st:get(st:context) as ?g)
+    graph ?g { 
+    
+        {select ?n 
+        # list of html select specifications
+        (aggregate(xt:list(?n, ?elem, ?select, ?mytitle, ?format, ?myrepeat, ?myname, ?myvalue, ?mykey)) 
+        as ?list)
+        where {
+            ?qt st:name ?n 
+            optional { 
+                ?qt st:select ?elem . 
+                ?elem st:select? ?select . 
+                ?select st:name ?myname
+                optional { ?select st:title ?title }
+                # st:type st:oper | st:arg
+                optional { ?select st:type ?type  filter (?type != st:silent) }
+                # index of html select value in parameter value list
+                # repeat oper+arg sequence n times
+                optional { ?select st:repeat ?repeat }
+                # generate silent input with name=name value=value ; value MUST be != ""
+                optional { ?select st:type st:silent ; st:name ?name ; st:value ?value }
+                # generate silent input with name=name value=key in addition to html select
+                # use case: param = (key value key value) and value is in (next) html select
+                optional { ?select st:name ?name ; st:key ?key }
             
-            bind (coalesce(?title, "") as ?mytitle)
-            bind (coalesce(?index, -1) as ?myindex)
-            bind (coalesce(?repeat, 0) as ?myrepeat)
-            bind (coalesce(?name, "")  as ?myname)
-            bind (coalesce(?value, "") as ?myvalue)
-            bind (coalesce(?key, "")   as ?mykey)
+                bind (coalesce(
+                    if (?type = st:oper, ft:selectparameterrowoper.html,
+                    if (?type = st:arg,  ft:selectparameterrowarg.html,
+                        ft:selectparameterrow.html)), 
+                    ft:selectparameterrowsimple.html) 
+                as ?format)
+                        
+                bind (coalesce(?title, "") as ?mytitle)
+                bind (coalesce(?repeat, 0) as ?myrepeat)
+                bind (coalesce(?value, "") as ?myvalue)
+                bind (coalesce(?key, "")   as ?mykey)
+                }
             }
         }
-    }}
 
-    # us:expand repeat (oper arg) n times when select oper has st:repeat n
-    # values iterate html select specifications, possibly with additional oper+arg
-    values (?n ?select ?title ?format ?index ?repeat ?myname ?myvalue ?mykey) { unnest(us:expand(?list)) }
+        # us:expand repeat (oper arg) n times when select oper has st:repeat n
+        # values iterate html select specifications, possibly with additional oper+arg
+        values (?n ?elem ?select ?title ?format  ?repeat ?myname ?myvalue ?mykey ?index) { unnest(us:expand(?list)) }
+        
+        # generate an id in html element with display:none
+        # button show/hide toggle display 
+        optional { ?elem st:hide ?aid }
+    }
 }
 ]]>
 </body>
@@ -171,8 +182,9 @@ where {
 <rule>
 <body>
 <![CDATA[
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+##prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:prev(?t) {
 
 format {
@@ -198,8 +210,9 @@ where {
 <rule>
 <body>
 <![CDATA[
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:tail {
 format {
   ft:tail.html
@@ -220,8 +233,9 @@ where {
 <rule>
 <body>
 <![CDATA[
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:next(?t) {
 
 format {
@@ -251,6 +265,10 @@ template st:profile {
    
 }
 where {}
+
+function us:idCounter() {
+    coalesce (set (idCounter = idCounter + 1), set(idCounter = 1))
+}
  
   function st:proto() {
     coalesce(st:get(st:protocol), st:std)
@@ -265,25 +283,34 @@ function us:templateResult() {
 # modify alist with generated additional html select
 
 function us:expand (alist) {
-    letdyn (res = xt:list(), skip = false, num = 0, mylist = alist) {
+    letdyn (res = xt:list(), skip = false, num = 0, mylist = alist, prev = "", ind = 0) {
         map (function(elem) {
-            let ((name aselect title aformat index repeat myname myvalue mykey) = elem) {
+            let ((name aelem aselect title aformat repeat myname myvalue mykey) = elem) {
+                if (myname != prev) {
+                    set (ind = 0);
+                    set (prev = myname)
+                } ;
                 if (skip) {
                     # skip arg html select specification that has been processed by repeat below
                     set(skip = false)
                 }
                 else if (repeat <= 1) {
+                    xt:add(elem, ind);
+                    #xt:print("elem:", elem);
                     xt:add(res, elem);
+                    set (ind = ind + 1)
                 }
                 else {
                     # skip next arg html select because it is processed here
                     set (skip = true);
-                    let ((name2 aselect2 title2 format2 index2 repeat2 myname2 myvalue2 mykey2) = xt:get(mylist, num+1)) {
+                    let ((name2 elem2 aselect2 title2 format2 repeat2 myname2 myvalue2 mykey2) = xt:get(mylist, num+1)) {
                         for (i in xt:iota(0, repeat - 1)) {
                             # generate additional oper html select
-                            xt:add(res, xt:list(name, aselect, title,    aformat, index  + 2*i, repeat, myname, myvalue, mykey));
+                            xt:add(res, xt:list(name, aelem, aselect, title, aformat, repeat, myname, myvalue, mykey, ind));
+                            set (ind = ind + 1);
                             # generate additional arg html select
-                            xt:add(res, xt:list(name2, aselect2, title2, format2, index2 + 2*i, repeat2, myname2, myvalue2, mykey2))
+                            xt:add(res, xt:list(name2, elem2, aselect2, title2, format2, repeat2, myname2, myvalue2, mykey2, ind));
+                            set (ind = ind + 1)
                         }
                     }
                 } ;
@@ -311,6 +338,16 @@ function us:equal(name, paramURI, index, value) {
                 st:get(paramURI) = str(value))),
         false)
 }
+
+# alist = (($name$ pattern))
+# replace $name$ by pattern in text
+function us:replace(text, alist) {
+    letdyn (atext = text) {
+        map (function ((name, pattern)) { 
+            set (atext = xt:replace(atext, name, pattern)) }, alist) ;
+        return (atext)
+    }
+}
 ]]>
 </body>
 </rule>
@@ -323,8 +360,9 @@ function us:equal(name, paramURI, index, value) {
 # query name bound to uri param
 # Generate query names list from context graph
 #
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:selectform(?t) {
 
 format {
@@ -352,8 +390,9 @@ where {
 # Argument  ?n is the name of query (st:minus)
 # ?q actual query, ?t query template, ?s query solution
 #
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 
 template st:form(?n, ?q, ?t, ?s, ?qt) {
    format { ft:form.html
@@ -364,15 +403,20 @@ template st:form(?n, ?q, ?t, ?s, ?qt) {
     ?n 
     if (?s = st:null, "", st:format(ft:nav.html))
     st:call-template(st:selecttable, ?n, ?q, ?t, ?s, ?qt)
-    if (bound(?b), st:format(ft:andor.html), "")
+    # show/hide html elements declared with st:hide
+    if (?submit && ?id, st:call-template(st:moreless, ?qt), "")
+    if (?submit, st:format(ft:submit.html), "")
+    coalesce(st:get(st:col), 60) coalesce(st:get(st:row), 10)
     str(?q)
     }
 }
 where {
+    bind (coalesce(st:get(st:submit), true) as ?submit)
     bind (st:get(st:context) as ?g)
+    
     graph ?g {  
-        ?qt st:name ?n 
-        optional { ?qt st:button st:andor, ?b}
+        ?qt st:name ?n
+        bind (exists { ?qt st:select [st:hide ?id] } as ?id)
     }
 }
 ]]>
@@ -383,10 +427,49 @@ where {
 <body>
 <![CDATA[
 #
+# Generate more less button for st:select with st:hide 
+# These button show/hide html tag with id
+#
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+
+template st:moreless(?qt) {
+     format { ft:moreless.html ?amore ?aless }
+}
+where {
+    {select ?qt (count(?id) as ?nb) (xt:iota(1, ?nb) as ?alist)
+    where {
+        bind (st:get(st:context) as ?g)
+        
+        graph ?g {  
+            ?qt st:select [st:hide ?id ]
+        }
+    }}
+    bind (reduce(rq:concat, maplist(us:more, ?alist)) as ?amore)
+    bind (reduce(rq:concat, maplist(us:less, ?alist)) as ?aless)
+}
+
+function us:more(id) {
+    st:format('more("i%s");', id)
+}
+function us:less(id) {
+    st:format('less("i%s");', id)
+}
+]]>
+</body>
+</rule>
+
+
+<rule>
+<body>
+<![CDATA[
+#
 # Generate query names list from context graph
 #
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:list(?t) {
 
 format {
@@ -406,6 +489,7 @@ where {
       st:index ?i ;
       st:name ?q ;
       rdfs:label ?title
+      filter coalesce(xt:member(?q, st:get(st:queries)), true)
   }
 }
 order by ?i
@@ -451,8 +535,9 @@ where {
 # index is the index of the selector if any
 # use case: mode with value list managed as st:get("mode") in context
 #
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 
 template st:selectparam(?n, ?select, ?index) {
 
@@ -461,12 +546,13 @@ format {
   
   if (bound(?oper), "myselectoper", "myselectarg")
   
+  coalesce(?id, ?name)
   ?name
   
   # possibly add a default option value as first option
   if (bound (?default), 
     st:format(
-        us:option (us:equal(?name, ?uri, ?index, ?default)), # st:get(?uri, ?default),             
+        us:option (us:equal(?name, ?uri, ?index, ?default)),           
         ?default, coalesce(?label, "Any")),
     "")
       
@@ -474,7 +560,7 @@ format {
     # generate one select option
     format { 
         us:option (us:equal(?name, ?uri, ?index, ?value))
-        ?value ?value
+        ?value ?displayValue
     } 
   }
 }
@@ -486,16 +572,23 @@ where {
   # ?name = "mode" ; ?uri = st:mode ; st:get(st:mode) = current value of parameter mode
   
   graph ?g { 
-    ?select st:name ?name ; st:uri ?uri 
+    ?select st:name ?name 
+    optional { ?select st:id ?id }
+    optional { ?select st:strip ?astrip }
+    optional { ?select st:uri ?myuri } 
     optional { ?select st:type ?oper filter (?oper = st:oper) }
     optional { ?select st:default ?default optional { ?select st:defaultLabel ?label }}
     optional { ?select st:action ?action }
+    bind (coalesce(?astrip, false) as ?strip)
     bind (coalesce(?action = st:insert, false) as ?insert)
+    bind (coalesce(?myuri, uri(concat(st:, ?name))) as ?uri)
   }
   
   {
     graph ?g {
-        ?select st:value/st:enum?/rdf:rest*/rdf:first ?value 
+        {?select st:value/st:enum?/rdf:rest*/rdf:first ?value filter (! isBlank(?value))}
+        union 
+        {?select st:value/st:enum?/rdf:rest*/rdf:first (?value ?vname)}
     }
   }
   union 
@@ -546,13 +639,33 @@ where {
         values ?value { unnest (xt:focus(?gg, funcall(?fun))) }
         
     }
+   }
+    union
+   {
+    graph ?g { 
+        ?select st:function ?fun 
+        filter not exists {?select st:graph ?gname}
+        values (?value ?vname) { unnest (maplist(us:prepare, funcall(?fun))) }
+    }    
   }
+  
+  bind (if (?strip, 
+            coalesce (us:mystrip(?vname), ?vname, us:mystrip(?value), ?value), 
+            coalesce(?vname, ?value)) as ?displayValue)
+  
 }
 
 function us:option(?b) {
     if (?b, ft:valueselected.html, ft:value.html)
 }
 
+function us:prepare(value) {
+    if (isExtension(value), value, xt:list(value, value))
+}
+
+function us:mystrip(value) {
+    if (isURI(value), strafter(value, xt:namespace(value)), value)
+}
 ]]>
 </body>
 </rule>
@@ -560,8 +673,9 @@ function us:option(?b) {
 <rule>
 <body>
 <![CDATA[
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:head {
    
   format {
@@ -586,8 +700,9 @@ where {
 # st:get(st:query) is user query
 # ?q is tutorial query
 #
-#prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
-prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 template st:display(?n) {
 
 format {
@@ -599,8 +714,8 @@ format {
    
    st:call-template(st:form, 
      ?n,
-     coalesce(st:get(st:query), str(?q)), 
-     str(?q), 
+     coalesce(st:get(st:query), str(?myq)), 
+     str(?myq), 
      coalesce(?s, st:null),
      ?qt
      ) 
@@ -608,18 +723,30 @@ format {
       
 }
 where {
-  # named graph that contains definition of queries
-  bind (st:get(st:context) as ?g)
-  graph ?g {
-    ?qt st:name    ?n ;
-      rdfs:label   ?l ;
-      rdfs:comment ?c ;
-      st:query/st:value?  ?q   filter isLiteral(?q)
-      optional { ?qt st:reference ?r }
-      optional { ?qt st:solution  ?s }
-      optional { ?qt sw:body  ?s }
-      filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
-  }
+  
+  {select * (aggregate(xt:list(?pname, ?pattern)) as ?alist)
+   where {
+   # named graph that contains definition of queries
+    bind (st:get(st:context) as ?g)
+    graph ?g {
+        ?qt st:name    ?n ;
+        rdfs:label   ?l ;
+        rdfs:comment ?c ;
+        st:query/st:value?  ?q   filter isLiteral(?q)
+        optional { 
+            ?qt st:query/st:value? ?q 
+            [ st:name ?pname ; st:pattern ?pattern ] 
+            filter contains(?q, ?pname)
+        }
+        optional { ?qt st:reference ?r }
+        optional { ?qt st:solution  ?s }
+        optional { ?qt sw:body  ?s }
+        filter(lang(?c) = (coalesce(st:get(st:lang), "fr")))
+    }
+  }}
+  
+  #bind (if (bound(?pattern), xt:replace(?q, ?pname, ?pattern), ?q) as ?myq)
+  bind (us:replace(?q, ?alist) as ?myq)
 }
 ]]>
 </body>

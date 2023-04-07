@@ -9,7 +9,7 @@ st:access st:namespace
 </user/corby/home/AADemoNew/map/>,
 </user/corby/home/AAServer/data/format/>,
 </user/corby/home/AAData/template/>,
-</opt/corese/demo/map/>,
+</opt/corese/demo/>,
 # function.rq
 <file:///user/corby/home/AAServer/data/demo/map/>, 
 <file:///opt/corese/demo/map/>
@@ -21,6 +21,135 @@ st:service "amap" ;
 st:shareContent st:mapContent ;
 st:workflow st:mapwf ;
 st:param [
+    st:import st:amapParam ;
+    st:queriez ( 
+    st:indexNature
+    st:indexArtefact
+    st:indexAll
+    st:indexPositionLabel
+    st:indexPositionCom
+    )
+] .
+
+# direct access to search engine
+# http://localhost:8080/srv/service/amapquery?mode=http://ns.inria.fr/map/Lac
+#
+st:amapq a st:Server ;
+st:service "amapquery" ;
+st:shareContent st:mapContent ;
+st:workflow st:mapwf ;
+st:param [
+    st:import st:amapParam ;
+    st:uri st:indexQuery ;
+    st:submit false ;
+    st:queries (st:intro st:indexQuery)
+] .
+
+st:paca a st:Server ;
+st:service "paca" ;
+st:shareContent st:mapContent ;
+st:workflow st:mapwf ;
+st:param [
+    st:import st:amapParam ;
+    st:title "Provence Alpes Côte d'Azur";
+    #st:departement (06 04 83 13 84) ;
+    st:region ("Provence-Alpes-Côte d'Azur" ) ;
+    #st:exclude (map:BorneFrontière map:Mégalithe)
+    #st:include (map:Nature)
+
+] .
+
+st:paca06 a st:Server ;
+st:service "paca06" ;
+st:shareContent st:mapContent ;
+st:workflow st:mapwf ;
+st:param [
+    st:import st:amapParam ;
+    st:title "Alpes-Maritimes";
+    st:departement (06) ;
+    #st:region ("Provence-Alpes-Côte d'Azur" ) ;
+    #st:exclude (map:BorneFrontière map:Mégalithe)
+    #st:include (map:Nature)
+
+] .
+
+st:borne a st:Server ;
+st:service "borne" ;
+st:shareContent st:mapContent ;
+st:workflow st:mapwf ;
+st:param [
+    st:import st:amapParam ;
+    st:title "Borne Frontière";
+    st:region ("Alpes" ) ;
+    st:exclude (map:BorneMilliaire);
+    st:include (map:Borne) ;
+    st:queries (st:intro st:indexAll st:indexPositionLabel st:indexPositionCom)
+
+] .
+
+st:mega a st:Server ;
+st:service "mega" ;
+st:shareContent st:mapContent ;
+st:workflow st:mapwf ;
+st:param [
+    st:import st:amapParam ;
+    st:title "Mégalithe";
+    st:include (map:Mégalithe);
+    st:queries (st:intro st:indexAll st:indexPositionLabel st:indexPositionCom)
+
+] .
+
+st:nature a st:Server ;
+st:service "nature" ;
+st:shareContent st:mapContent ;
+st:workflow st:mapwf ;
+st:param [
+    st:import st:amapParam ;
+    st:title "Nature";
+    st:include (map:Nature);
+    st:queries (st:intro st:indexAll st:indexPositionLabel st:indexPositionCom)
+] .
+
+st:eau a st:Server ;
+st:service "eau" ;
+st:shareContent st:mapContent ;
+st:workflow st:mapwf ;
+st:param [
+    st:import st:amapParam ;
+    st:title "Eau";
+    st:include (map:Eau);
+    st:queries (st:intro st:indexAll st:indexPositionLabel st:indexPositionCom)
+] .
+
+st:culture a st:Server ;
+st:service "culture" ;
+st:shareContent st:mapContent ;
+st:workflow st:mapwf ;
+st:param [
+    st:import st:amapParam ;
+    st:title "Culture";
+    st:include (map:Culture);
+    st:queries (st:intro st:indexAll st:indexPositionLabel st:indexPositionCom)
+
+] .
+
+st:antique a st:Server ;
+st:service "antique" ;
+st:shareContent st:mapContent ;
+st:workflow st:mapwf ;
+st:param [
+    st:import st:amapParam ;
+    st:title "Antiquité";
+    st:include (map:Antiquité);
+    st:queries (st:intro st:indexAll st:indexPositionLabel st:indexPositionCom)
+
+] .
+
+
+
+st:amapParam
+st:param [
+    st:row 1;
     st:lang 'en' ;
     # transformation for the result of the query in the st:web transformation
     st:sttl spq:result ;
@@ -38,22 +167,26 @@ st:param [
     st:export true ;
     # do not focus sttl result on st:uri because it is the URI of the query not of a target resource
     st:focus false ;
-    st:umap <http://umap.openstreetmap.fr/fr/map/provence-alpes_455480#15> ;
-    st:umap2 <http://umap.openstreetmap.fr/fr/map/secteur-rhone-alpes-centre_770067#15>
-] 
+    st:umap  <http://umap.openstreetmap.fr/fr/map/provence-alpes_455480#15> ;
+    st:umap1 <http://umap.openstreetmap.fr/fr/map/provence-alpes_455480#13> ;
+    st:umap2 <http://umap.openstreetmap.fr/fr/map/provence-alpes_455480#11> ;
+    st:height 120;
+      
+    st:umapelse <http://umap.openstreetmap.fr/fr/map/secteur-rhone-alpes-centre_770067#15>
+    ] 
 .
-
-
 
 
 st:mapwf a sw:Workflow ; 
 sw:body (
-    [ a sw:Query ; sw:result sw:graph ] # place holder where to put the query to be executed from the tutorial
+    #[ a sw:Query ; sw:result sw:graph ] # place holder where to put the query to be executed from the tutorial
+    [ a sw:Query ; sw:result sw:graph ; st:processquery us:preprocessQuery] # place holder where to put the query to be executed from the tutorial
+    
     #[ a sw:Transformation ; sw:uri st:myweb ]
+    #[ a sw:Transformation ; sw:uri </opt/corese/demo/map/myweb.rul> ]
     [ a sw:Transformation ; sw:uri </user/corby/home/AAData/template/myweb.rul> ]
 )
 .
-
 
 
 

@@ -1,9 +1,18 @@
-prefix ft: <http://ns.inria.fr/sparql-template/format/map/>
-#prefix ft: <file:///user/corby/home/AAServer/data/format/map/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/map/>
+#prefix ft: <file:///opt/corese/demo/format/map/>
+prefix ft: <file:///user/corby/home/AAServer/data/format/map/>
 prefix map: <http://ns.inria.fr/map/>
 prefix db:  <http://dbpedia.org/ontology/> .
 
 @public {
+
+function us:mytest(qq) {
+#    xt:print("my query:", qq) ;
+# workflow graph
+#    xt:print(st:get(st:context));
+    xt:print("my context mode:", st:get("mode")) ;
+    return (qq)
+}
 
 function us:number(list) {
     letdyn (num = 0) {
@@ -14,9 +23,19 @@ function us:number(list) {
 }
 
 function us:format(elem) {
-    let ((?img ?num ?label ?com ?doc ?umap ?lat ?lon) = elem) {
-        st:format(ft:cell.html, ?img, ?num, ?label, ?com, ?doc, ?umap, ?lat, ?lon)
-    }
+    apply(st:format, xt:cons(ft:cell.html, elem))
+}
+
+function us:formatDistance(elem) {
+    apply(st:format, xt:cons(ft:celldistance.html, elem))
+}
+
+function us:formatData(elem) {
+    apply(st:format, xt:cons(ft:celldata.html, elem))
+}
+
+function us:formatDataBlock(elem) {
+    apply(st:format, xt:cons(ft:celldatablock.html, elem))
 }
 
 function us:docTitle(doc) {
@@ -33,23 +52,101 @@ function us:selectDepartmentSchema() {
     }
 }
 
+# name = st:departement
+# service definition profile with st:param [ st:departement (val val) ]
+# focus term in param value list
+#
+function us:focus(term, name) {
+    coalesce(xt:member(term, st:get(name)), true)
+}
+
+function us:exclude(term, name) {
+    coalesce(xt:member(term, st:get(name)), false)
+}
+
 function us:selectCommune() {
-    let (select (aggregate(distinct ?label) as ?list) 
+    let (select (aggregate(distinct (xt:list(?label, ?vname))) as ?list) 
         where {
             service <store:mapdatamanager> {
-                ?url map:commune ?label 
+                ?url map:commune ?com .
+                ?com rdfs:label ?label 
+
+                optional { ?com map:departement ?dep .
+                    ?dept db:inseeCode ?dep ;
+                        db:hasRegion ?reg .
+                        ?reg rdfs:label ?region
+                }
+                filter us:focus(coalesce(?dep, 0), st:departement)
+                filter us:focus(coalesce(?region, "undef"), st:region)
+                bind (concat(?label, " (", coalesce(?dep, 00), ")") as ?vname)
+            }}) {
+        xt:sort(?list)
+    }
+}
+
+function us:selectCommuneURL() {
+    let (select (aggregate(distinct (xt:list(?com, ?vname))) as ?list) 
+        where {
+            service <store:mapdatamanager> {
+                ?url map:commune ?com .
+                ?com rdfs:label ?label 
+
+                optional { ?com map:departement ?dep .
+                    ?dept db:inseeCode ?dep ;
+                        db:hasRegion ?reg .
+                        ?reg rdfs:label ?region
+                }
+                filter us:focus(coalesce(?dep, 0), st:departement)
+                filter us:focus(coalesce(?region, "undef"), st:region)
+                bind (concat(?label, " (", coalesce(?dep, 00), ")") as ?vname)
             }}) {
         xt:sort(?list)
     }
 }
 
 function us:selectDepartment() {
-    let (select (aggregate(distinct ?label) as ?list) 
+    let (select (aggregate(distinct xt:list(?label, ?vname)) as ?list) 
         where {
             service <store:mapdatamanager> {
-                ?url map:departement ?dep .
+                ?url map:commune/map:departement ?dep .
+                filter us:focus(?dep, st:departement)
                 ?dept db:inseeCode ?dep ; 
-                    rdfs:label ?label 
+                    rdfs:label ?label ;
+                    db:hasRegion ?reg .
+                    ?reg rdfs:label ?region
+                filter us:focus(coalesce(?region, "undef"), st:region)
+                bind (concat(?label, " (", coalesce(?dep, 00), ")") as ?vname)
+            }}) {
+        xt:sort(?list)
+    }
+}
+
+function us:selectRegion() {
+    let (select (aggregate(distinct ?label) as ?list) 
+        where { 
+            service <store:mapdatamanager> {
+                ?x a db:Region ; rdfs:label ?label
+                optional {
+                    ?dept db:hasRegion ?x
+                    ?dept db:inseeCode ?dep
+                }
+                filter us:focus(coalesce(?dep, 0), st:departement)
+                filter us:focus(coalesce(?label, "undef"), st:region)
+
+            }
+        }
+        order by ?label ) {
+        xt:sort(?list)
+    }
+}
+
+
+function us:selectPays() {
+    if (coalesce(st:get(st:departement), st:get(st:region), false), return(xt:list("France")), true);
+    let (select (aggregate(distinct ?pays) as ?list) 
+        where {
+            service <store:mapdatamanager> {
+                ?url map:pays ?pays 
             }}) {
         xt:sort(?list)
     }
@@ -65,6 +162,104 @@ function us:selectLocalisation() {
     }
 }
 
+function us:snd(alist) {
+    return (xt:get(alist, 1))
+}
+
+function us:any(x, y) {
+    return (true)
+}
+
+# value is rdf term
+# alist = (rq:oper arg)
+# compute  rq:oper(value, arg)
+# use case:
+# filter coalesce(us:eval(?lat, st:get("lat")), true)
+
+function us:eval(value, alist) {
+    if (xt:size(alist) = 2) {
+        let ((oper arg) = (alist)) {
+            funcall(oper, value, xsd:decimal(arg))
+        }
+    }
+    else if (xt:size(alist) = 4) {
+        let ((oper1 arg1 oper2 arg2) = (alist)) {
+            us:eval(value, oper1, xsd:decimal(arg1), oper2, xsd:decimal(arg2)) 
+        }
+    }
+    else {
+        return (true)
+    }
+}
+
+function us:eval2(value, oper1, arg1, oper2, arg2) {
+    funcall(oper1, value, arg1) && funcall(oper2, value, arg2) 
+}
+
+#
+# eval filter with 2 oper
+# infer wether AND/OR from pair of (oper, arg)
+#
+function us:eval(value, oper1, arg1, oper2, arg2) {
+    if (us:testOper(oper1, oper2) && arg1 > arg2) {
+        # value < max && value > min
+        funcall(oper1, value, arg1) && funcall(oper2, value, arg2)    
+    }
+    else if (us:testOper(oper2, oper1) && arg2 > arg1) {
+        # value < max && value > min
+        funcall(oper1, value, arg1) && funcall(oper2, value, arg2)
+    }
+    else if (oper1 = str(us:any)) {
+        funcall(oper2, value, arg2)
+    }
+    else if (oper2 = str(us:any)) {
+        funcall(oper1, value, arg1)
+    }
+    else {
+        # value > max || value < min
+        funcall(oper1, value, arg1) || funcall(oper2, value, arg2)
+    }
+}
+
+function us:testOper(oper1, oper2) {
+    oper1 = str(rq:le) && oper2 = str(rq:ge)
+}
+
+# distance 0.01 = 1km 
+function us:eq(x, y) {
+    us:eq(x, y, 0.01)
+}
+
+# distance 0.1 = 11km 
+function us:close(x, y) {
+    us:eq(x, y, 0.1)
+}
+
+# distance 0.5 = 55km
+function us:near(x, y) {
+    us:eq(x, y, 0.5)
+}
+
+# distance 1 = 111km
+function us:around(x, y) {
+    us:eq(x, y, 1)
+}
+
+function us:eq(x, y, eps) {
+    let (amin = if (x > y, y, x),
+         amax = if (x > y, x, y)) {
+        return (amax - amin < eps)
+    }
+}
+
+function us:selectLatitude() {
+    xt:cons(0, xt:iota(41, 53))
+}
+
+function us:selectLongitude() {
+     xt:cons(0, xt:iota(-3, 12))
+}
+
 function us:selectLabel() {
     us:selectLabel(map:Objet)
 }
@@ -78,13 +273,27 @@ function us:selectLabelNature() {
 }
 
 function us:selectLabel(aclass) {
-    let (select aclass (aggregate(distinct ?label) as ?list) 
+    let (select aclass (aggregate(distinct xt:list(?label, ?vname)) as ?list) 
         where {
             service <store:mapdatamanager> {
                 ?url rdf:type/rdfs:subClassOf* aclass ; rdfs:label ?label .
+                filter us:focusInstance(?url)
+                optional { 
+                    ?url map:commune/map:departement ?dep .
+                    ?dept db:inseeCode ?dep ;
+                        db:hasRegion ?reg .
+                        ?reg rdfs:label ?region
+                }
+                filter us:focus(coalesce(?dep, 0), st:departement)
+                filter us:focus(coalesce(?region, "undef"), st:region)
+                bind (if (bound(?dep), concat(?label, " (", ?dep, ")"), ?label) as ?vname)
             }}) {
         xt:sort(?list)
     }
+}
+
+function us:selectType() {
+    us:selectType(map:Objet)
 }
 
 function us:selectTypeNature() {
@@ -100,17 +309,51 @@ function us:selectType(aclass) {
         where {
             service <store:mapdatamanager> {
                 ?url rdfs:subClassOf* ?aclass .
-                ?x rdf:type/rdfs:subClassOf*  ?url
+                ?x rdf:type/rdfs:subClassOf* ?url
+                filter us:focusClass(?url)
             }}) {
         xt:sort(xt:add(?list, map:Undefined))
     }
 }
 
-function us:selectRegion() {
-    let (select (aggregate(?label) as ?list) 
-        where { ?x a db:Region ; rdfs:label ?label } 
-        order by ?label ) {
-        xt:sort(?list)
+
+# check st:include st:exclude from profile.ttl param context
+function us:focusClass(url) {
+    if (coalesce(st:get(st:include), false), 
+        exists {
+            values ?atype { unnest(st:get(st:include)) }
+            ?url rdfs:subClassOf* ?atype 
+        }, true)
+        &&
+        not exists {
+            values ?atype { unnest(coalesce(st:get(st:exclude), xt:list())) }
+            ?url rdfs:subClassOf* ?atype
+        }
+}
+
+# check st:include st:exclude from profile.ttl param context
+function us:focusInstance(url) {
+    if (coalesce(st:get(st:exclude), false), 
+        not exists {
+            values ?atype { unnest(st:get(st:exclude)) }
+            ?url rdf:type/rdfs:subClassOf* ?atype
+        }, true)
+    &&
+    if (coalesce(st:get(st:include), false), 
+        exists {
+            values ?atype { unnest(st:get(st:include)) }
+            ?url rdf:type/rdfs:subClassOf* ?atype
+        }, true)
+}
+
+function us:selectType2(aclass) {
+    let (select ?aclass (aggregate(distinct ?url) as ?list) 
+        where {
+            service <store:mapdatamanager> {
+                ?url rdfs:subClassOf* ?aclass .
+                ?x rdf:type/rdfs:subClassOf*  ?url
+            }}) {
+        xt:sort(xt:add(?list, map:Undefined))
     }
 }
 
@@ -145,6 +388,22 @@ function us:instanceofEvery(?typeList) {
     }
 }
 
+function us:distance(x1, y1, x2, y2) {
+    power(power(x1 - x2, 2) + power(y1 - y2, 2), 0.5)
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
 # member of the list or list contains only empty string ""
 function us:match(elem, alist) {
     if (mapany (function(x) {strlen(x)>0}, alist)) {
@@ -153,6 +412,10 @@ function us:match(elem, alist) {
     else {
         return(true)
     }
+}
+
+function us:empty(alist) {
+    return (! mapany (function(x) {strlen(x)>0}, alist))
 }
 
 function us:sublist(alist, start, end) {
@@ -300,9 +563,18 @@ function us:distrib(alist) {
 # extract key=val ; set context(key, list(val))
 
 function us:extract(alist) {
-     let (keyList = @("departement" "region" "commune" "label")) {
-        us:extract(alist, keyList)
+     let (keyList = @("departement" "region" "pays" "commune" "communeURL" "label" "image" "altitude" "lat" "lon" "distance" "show")) {
+        us:extract(alist, keyList) ;
+        us:protect(keyList) ;
+        # used by myweb.rul to show/hide features with id from st:hide (see workflow)
+        if (xt:size(st:get("show")) > 0) {
+            st:set(st:show, xt:first(st:get("show")) = "more")
+        }
      }   
+}
+
+function us:protect(keyList) {
+    map (function(key) { coalesce(st:get(key), st:set(key, xt:list())) }, keyList)
 }
 
 # alist = (key val key val)
@@ -319,8 +591,13 @@ function us:extract(alist, keyList) {
                 if (xt:size(res) > 0) {
                     st:set(key, res);
                 } ;
-                set (key = value) ;
-                set (res = xt:list())
+                if (key = value) {
+                    # same key as previous: do nothing
+                }
+                else {
+                    set (key = value) ;
+                    set (res = xt:list())
+                }
             }
             else {
                 xt:add(res, value)
@@ -330,6 +607,34 @@ function us:extract(alist, keyList) {
             st:set(key, res);
         }
     } 
+}
+
+
+
+# query preprocess in mapprofile.ttl
+
+function us:preprocessQuery(qq) {
+    return (us:replace(qq, us:getPattern()))
+}
+
+# alist = (($name$ pattern))
+# replace $name$ by pattern in text
+function us:replace(text, alist) {
+    letdyn (atext = text) {
+        map (function ((name, pattern)) { 
+            set (atext = xt:replace(atext, name, pattern)) }, alist) ;
+        return (atext)
+    }
+}
+
+function us:getPattern() {
+    let (select * (aggregate(xt:list(?pname, ?pattern)) as ?alist) 
+         where {
+            bind (st:get(st:context) as ?g)
+            graph ?g { [ st:name ?pname ; st:pattern ?pattern ] }
+        }) {
+    return (alist)
+    }
 }
 
 }

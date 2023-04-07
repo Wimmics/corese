@@ -1,9 +1,11 @@
 #
-# Generate rdf triples from json map format
+# Generate rdf dataset from json map format
 #
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#>
-prefix map: <http://ns.inria.fr/map/>
 prefix dbr: <http://fr.dbpedia.org/resource/>
+prefix map: <http://ns.inria.fr/map/>
+prefix res: <http://ns.inria.fr/map/resource/>
+prefix tmp: <http://ns.inria.fr/tmp/>
 
 #load </user/corby/home/AADemoNew/map/schema.ttl> ;
 
@@ -11,8 +13,12 @@ insert {
 ?uri rdfs:label ?location ;
     map:description ?desc ;
     map:dbpedia ?dbpedia ;
-    map:wikipedia ?wiki ;
-    ?predicate ?value
+#    map:wikipedia ?wiki ;
+    ?predicate ?value .
+    
+?communeURL rdfs:label ?commune ; 
+    map:departement ?departement ;
+    map:pays ?pays .
 }
 where {
 
@@ -36,13 +42,25 @@ bind (uri(concat(map:, ?name, st:number())) as ?uri)
 bind (uri(concat(dbr:, ?urlName)) as ?dbpedia)
 bind (uri(concat(<http://fr.wikipedia.org/wiki/>, ?urlName)) as ?wiki)
 
-bind   (us:property(?location, ?feature) as ?map)
+# extract property value from json site description
+# return xt:map
+bind   (us:complete(us:property(?location, ?feature)) as ?map)
 
 bind   (us:completeimg(?map, ?desc) as ?tmp)
+
+# predicate with tmp: means that predicate is not set on site URL 
+# but on another resource such as commune
+bind (xt:get(?map, tmp:communeName) as ?commune)
+bind (xt:get(?map, tmp:pays) as ?pays)
+bind (xsd:integer(xt:get(?map, tmp:departement)) as ?departement)
+
+bind (xt:get(?map, map:commune) as ?communeURL)
 
 values (?key ?val) {unnest(?map)}
 
 bind   (us:predicate(?key) as ?predicate)
+# predicate with tmp: are not for site URL but e.g. for commune or else
+filter (! strstarts(?predicate, tmp:))
 
 values ?value { unnest(us:values(?predicate, ?val)) }
 }
@@ -57,44 +75,79 @@ function us:predicate(name) {
 
 # valuelist = "a,b,c"
 # return list(a b c)
-function us:values(pred, valuelist) {
+function us:values(pred, valueList) {
     if (pred = map:image) {
-        xt:list(valuelist) ;
+        xt:list(valueList) ;
+    }
+    else if (isLiteral(valueList) && datatype(valueList) = xsd:string) {
+        maplist(us:value, pred, xt:split(valueList, ","))
     }
     else {
-        maplist(us:value, pred, xt:split(valuelist, ","))
+        xt:list(valueList)
     }
 }
 
 # cast value for specific property
 function us:value(pred, val) {
-    if (pred in (rdf:type),     uri(concat(map:, val)), 
+    if (pred in (rdf:type, map:localisation),     uri(concat(map:, val)), 
     if (pred in (map:partieDe), uri(concat(dbr:, val)), 
-    if (pred = map:departement, xsd:integer(val),
     if (pred = map:altitude,    xsd:integer(val),
+    if (pred in (geo:long, geo:lat),  xsd:decimal(val),
         val))))
 }
 
-# extract property values from json map format, record property values in json map
+    
+function us:commune(name) {
+    if (name = "Saint-Vallier", "Saint-Vallier-de-Thiey",
+    if (name = "Saint-Cézaire", "Saint-Cézaire-sur-Siagne",
+    if (name = "Auribeau", "Auribeau-sur-Siagne",
+    if (name = "Digne", "Digne-les-Bains",
+    name))))
+}
+
+function us:complete(amap) {
+    if (xt:has(amap, map:commune)) {
+        let (name = us:commune(xt:get(amap, map:commune))) {
+            xt:set(amap, tmp:communeName, name) ;
+            xt:set(amap, map:commune, 
+                us:resourceURL(concat(name, xt:get(amap, tmp:departement)))) 
+        }
+    } ;
+    return (amap)
+}
+
+function us:resourceURL(name) {
+    uri(concat(res:, us:cleanForURL(name)))
+}
+
+function us:cleanForURL(name) {
+    xt:replace(name, " ", "_")
+}
+
+# extract property values from json map format, record property values in  map
+# return xt:map
 function us:property(loc, feature) {
-    let (json = xt:json(),
+    let (json = xt:map(),
          doc       = us:get(feature, "/properties/document", "undef"),
          part      = us:get(feature, "/properties/partieDe", "undef"),
          alt       = us:get(feature, "/properties/altitude", "undef"),
+         loc       = us:get(feature, "/properties/localisation", "undef"),
          (lon lat) = us:get(feature, "/geometry/coordinates", xt:list(0, 0))
          ) {
+         
        if (doc  != "undef", xt:set(json, map:document, doc), true);
        if (part != "undef", xt:set(json, map:partieDe, part), true);
        if (alt  != "undef", xt:set(json, map:altitude, alt), true);
-
-       xt:set(json, map:departement, us:get(feature, "/properties/departement", 0));
-       xt:set(json, map:commune,     us:get(feature, "/properties/commune", "undef"));
-       xt:set(json, map:pays,        us:get(feature, "/properties/pays", "France"));
-       xt:set(json, rdf:type,        us:get(feature, "/properties/type", "undef"));
+       if (loc  != "undef", xt:set(json, map:localisation, loc), true);
        
-       xt:set(json, map:name, loc);
+       # map:pays set on commune, not on site URL, hence use tmp:pays instead of map:pays
+       xt:set(json, tmp:departement, us:get(feature, "/properties/departement", 0));
+       xt:set(json, tmp:pays,        us:get(feature, "/properties/pays", "France"));
+       
+       xt:set(json, rdf:type,        us:get(feature, "/properties/type", "undef"));       
+       xt:set(json, map:commune,     us:get(feature, "/properties/commune", "undef"));
        xt:set(json, geo:long, lon);
-       xt:set(json, geo:lat, lat);
+       xt:set(json, geo:lat,  lat);
        
        return (json)
     }
@@ -104,7 +157,7 @@ function us:get(json, path, value) {
     coalesce(xt:path(json, path), value)
 }
 
-# record img url (if any) in json map
+# record img url (if any) in map
 function us:completeimg(json, descr) {
     let (img = us:cleanimg(descr)) {
         if (strlen(img) > 0) {

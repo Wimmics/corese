@@ -3,6 +3,7 @@ package fr.inria.corese.command.programs;
 import java.nio.file.Path;
 import java.security.InvalidParameterException;
 
+import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.GraphUtils;
 import fr.inria.corese.command.utils.format.InputFormat;
 import fr.inria.corese.core.Graph;
@@ -13,7 +14,7 @@ import picocli.CommandLine.Parameters;
 /**
  * Profile
  */
-@Command(name = "owlProfile", version = "4.4.0", description = "Check OWL profiles.", mixinStandardHelpOptions = true)
+@Command(name = "owlProfile", version = App.version, description = "Check OWL profiles.", mixinStandardHelpOptions = true)
 public class Profile implements Runnable {
 
     @Parameters(paramLabel = "INPUT_FORMAT", description = "Input file format."

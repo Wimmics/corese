@@ -5,12 +5,13 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Path;
 
+import fr.inria.corese.command.App;
 import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.sparql.api.IDatatype;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Parameters;
 
-@Command(name = "ldscript", version = "4.4.0", description = "Run an LDSCRIPT file.", mixinStandardHelpOptions = true)
+@Command(name = "ldscript", version = App.version, description = "Run an LDSCRIPT file.", mixinStandardHelpOptions = true)
 public class LDScript implements Runnable {
 
     @Parameters(paramLabel = "INPUT", description = "LDScript file to run.")

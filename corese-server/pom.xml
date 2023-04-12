@@ -1,7 +1,8 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+	xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
 	<modelVersion>4.0.0</modelVersion>
 
 	<parent>
@@ -172,7 +173,8 @@
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-failsafe-plugin</artifactId>
 				<configuration>
-					<argLine>${jacocoArgLine}</argLine>
+					<argLine>
+						${jacocoArgLine}</argLine>
 				</configuration>
 				<executions>
 					<execution>
@@ -192,10 +194,11 @@
 						<phase>pre-integration-test</phase>
 						<configuration>
 							<target>
-								<exec executable="./src/test/resources/launch_ssl_server.sh" spawn="false">
-									<arg value="${argLine}"/>
-									<arg value="${project.build.directory}"/>
-									<arg value="./src/main/resources/human_2007_09_11.rdf"/>
+								<exec executable="./src/test/resources/launch_ssl_server.sh"
+									spawn="false">
+									<arg value="${argLine}" />
+									<arg value="${project.build.directory}" />
+									<arg value="./src/main/resources/human_2007_09_11.rdf" />
 								</exec>
 							</target>
 						</configuration>
@@ -208,7 +211,8 @@
 						<phase>post-integration-test</phase>
 						<configuration>
 							<target>
-								<exec executable="./src/test/resources/stop_ssl_server.sh" spawn="false">
+								<exec executable="./src/test/resources/stop_ssl_server.sh"
+									spawn="false">
 								</exec>
 							</target>
 						</configuration>
@@ -230,7 +234,8 @@
 						<phase>package</phase>
 						<configuration>
 							<descriptors>
-								<descriptor>src/main/assembly/kgram-webservice.xml</descriptor>
+								<descriptor>
+									src/main/assembly/kgram-webservice.xml</descriptor>
 							</descriptors>
 						</configuration>
 						<goals>
@@ -243,33 +248,39 @@
 			<plugin>
 				<groupId>org.apache.maven.plugins</groupId>
 				<artifactId>maven-shade-plugin</artifactId>
+				<configuration>
+					<createDependencyReducedPom>false</createDependencyReducedPom>
+					<filters>
+						<filter>
+							<artifact>*:*</artifact>
+							<excludes>
+								<exclude>META-INF/*.SF</exclude>
+								<exclude>META-INF/*.DSA</exclude>
+								<exclude>META-INF/*.RSA</exclude>
+								<exclude>**/module-info.*</exclude>
+							</excludes>
+						</filter>
+					</filters>
+					<transformers>
+						<transformer
+							implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer" />
+						<transformer
+							implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
+							<manifestEntries>
+								<Main-Class>
+									fr.inria.corese.server.webservice.EmbeddedJettyServer</Main-Class>
+								<Multi-Release>
+									true</Multi-Release>
+							</manifestEntries>
+						</transformer>
+					</transformers>
+				</configuration>
 				<executions>
 					<execution>
 						<phase>package</phase>
 						<goals>
 							<goal>shade</goal>
 						</goals>
-						<configuration>
-							<shadedArtifactAttached>true</shadedArtifactAttached>
-							<shadedClassifierName>jar-with-dependencies</shadedClassifierName>
-							<transformers>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ManifestResourceTransformer">
-									<mainClass>fr.inria.corese.server.webservice.EmbeddedJettyServer</mainClass>
-								</transformer>
-								<transformer implementation="org.apache.maven.plugins.shade.resource.ServicesResourceTransformer"/>
-							</transformers>
-							<filters>
-								<filter>
-									<artifact>*:*</artifact>
-									<excludes>
-										<exclude>**/module-info.*</exclude>
-										<exclude>META-INF/*.SF</exclude>
-										<exclude>META-INF/*.DSA</exclude>
-										<exclude>META-INF/*.RSA</exclude>
-									</excludes>
-								</filter>
-							</filters>
-						</configuration>
 					</execution>
 				</executions>
 			</plugin>

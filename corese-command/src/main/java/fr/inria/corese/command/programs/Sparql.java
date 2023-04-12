@@ -21,7 +21,7 @@ public class Sparql implements Runnable {
     private InputFormat inputFormat;
 
     @Parameters(paramLabel = "INPUT", description = "Input file path.")
-    private Path intputPath;
+    private String intputPath;
 
     @Parameters(paramLabel = "QUERY", description = "Request to execute.")
     private String querySrting;

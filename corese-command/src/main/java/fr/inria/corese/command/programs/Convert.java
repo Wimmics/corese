@@ -18,7 +18,7 @@ public class Convert implements Runnable {
     private InputFormat inputFormat;
 
     @Parameters(paramLabel = "INPUT", description = "File to convert.")
-    private Path intputPath;
+    private String intputPath;
 
     @Parameters(paramLabel = "OUTPUT_FORMAT", description = "Desired serialization format."
             + "%nCandidates: ${COMPLETION-CANDIDATES}")

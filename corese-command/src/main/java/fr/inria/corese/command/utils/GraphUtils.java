@@ -16,16 +16,16 @@ public class GraphUtils {
     /**
      * Parse a file and load RDF data into a Corese Graph.
      *
-     * @param inputFile   Path of the input RDF file.
+     * @param inputFile   Path or URL of the input RDF file.
      * @param inputFormat Input file serialization format.
      * @return Corese Graph with RDF data loaded.
      */
-    public static Graph load(Path inputFile, InputFormat inputFormat) {
+    public static Graph load(String inputFile, InputFormat inputFormat) {
         Graph outputGraph = new Graph();
 
         Load ld = Load.create(outputGraph);
         try {
-            ld.parse(inputFile.toString(), FromatManager.getCoreseinputFormat(inputFormat));
+            ld.parse(inputFile, FromatManager.getCoreseinputFormat(inputFormat));
         } catch (Exception e) {
             e.printStackTrace();
         }

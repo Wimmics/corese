@@ -22,7 +22,7 @@ public class Profile implements Runnable {
     private InputFormat inputFormat;
 
     @Parameters(paramLabel = "INPUT", description = "Input file path.")
-    private Path intputPath;
+    private String intputPath;
 
     @Parameters(paramLabel = "OWL_PROFILE", description = "OWL profile to check."
             + " Candidates: ${COMPLETION-CANDIDATES}")

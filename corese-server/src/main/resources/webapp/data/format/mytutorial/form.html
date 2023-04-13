@@ -11,9 +11,13 @@
   %s  
   <!-- mode less button place holder -->
   %s
+  <input type='button' value='show query'  onClick='myshow("query");set("text", true);' /> 
+  <input type='button' value='hide query'  onClick='hide("query");  set("text", false);' /> 
+  <input type='reset'  value='reset'  />
   <!-- submit button place holder -->
   %s
-  <textarea cols='%s' rows='%s' id='query' name='query'>%s</textarea>
+  <!-- first percent is for style="display:none" -->
+  <textarea  %s cols='%s' rows='%s' id='query' name='query'>%s</textarea>
   <br/>
 <!--<label>Pad:</label> <input type="text" name="pad" id="pad" value="" size="50" />
   <br/>-->
@@ -22,19 +26,29 @@
 </form>
 
 <script type="text/javascript">  
-function show(name){
-    document.getElementById('query').value = document.getElementById(name).value;
-}  
+
+// "show" is the id of a specific html select that record user choice for show/hide
+// it is accessible by server with param = (show more) or param = (show less)
+// see workflow st:id "show"
 function more(name) {
-    document.getElementById(name).style="";
-    if (document.getElementById("show")!=null) {
-        document.getElementById("show").value="more";
-    }
+    myshow(name);
+    set("show", "more");
 }
 function less(name) {
-    document.getElementById(name).style="display:none";
-    if (document.getElementById("show")!=null) {
-        document.getElementById("show").value="less";
+    hide(name);
+    set("show", "less");
+}
+
+function myshow(id) {
+    document.getElementById(id).style="";
+}
+function hide(id) {
+    document.getElementById(id).style="display:none";
+}
+
+function set(name, value) {
+    if (document.getElementById(name)!=null) {
+        document.getElementById(name).value=value;
     }
 }
 </script>

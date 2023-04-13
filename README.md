@@ -36,13 +36,13 @@ There are several interfaces for Corese:"
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-core</artifactId>
-    <version>4.4.0</version>
+    <version>4.4.1</version>
 </dependency>
 
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-rdf4j</artifactId>
-    <version>4.4.0</version>
+    <version>4.4.1</version>
 </dependency>
 ```
 
@@ -61,8 +61,8 @@ docker run --name my-corese \
 - Download [Corese-server jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-server-4.4.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-server-4.4.0.jar"
+wget "files.inria.fr/corese/distrib/corese-server-4.4.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-server-4.4.1.jar"
 ```
 
 Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/SoyFglO_1#)
@@ -72,8 +72,8 @@ Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/Soy
 - Download [Corese-gui jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-gui-4.4.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-gui-4.4.0.jar"
+wget "files.inria.fr/corese/distrib/corese-gui-4.4.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-gui-4.4.1.jar"
 ```
 
 ### Corese-Python (beta)
@@ -81,8 +81,8 @@ java -jar "-Dfile.encoding=UTF8" "corese-gui-4.4.0.jar"
 - Download [Corese-python jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-library-python-4.4.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.4.0.jar"
+wget "files.inria.fr/corese/distrib/corese-library-python-4.4.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.4.1.jar"
 ```
 
 ### Corese-Command (beta)
@@ -90,8 +90,8 @@ java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.4.0.jar"
 - Download [Corese-command jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-command-4.4.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-command-4.4.0.jar"
+wget "files.inria.fr/corese/distrib/corese-command-4.4.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-command-4.4.1.jar"
 ```
 
 ## Compilation from source
@@ -111,7 +111,7 @@ mvn clean -Dmaven.test.skip=true package
     author = {Corby, Olivier and Ceres, Rémi and Demairy, Erwan and Song, Fuqi and Bottollier, Virginie and Savoie, Olivier},
     title = {{Corese: Semantic Web Factory}},
     howpublished = {\url{https://project.inria.fr/corese/}},
-    version = {4.4.0},
+    version = {4.4.1},
     institution = {Inria},
     abstract = {{Software platform implementing and extending the standards of the Semantic Web.}},
     url = {https://github.com/Wimmics/corese}

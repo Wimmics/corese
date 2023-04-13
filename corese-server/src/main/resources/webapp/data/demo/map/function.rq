@@ -2,6 +2,7 @@
 #prefix ft: <file:///opt/corese/demo/format/map/>
 prefix ft: <file:///user/corby/home/AAServer/data/format/map/>
 prefix map: <http://ns.inria.fr/map/>
+prefix key: <key:>
 prefix db:  <http://dbpedia.org/ontology/> .
 
 @public {
@@ -162,12 +163,25 @@ function us:selectLocalisation() {
     }
 }
 
+
+function us:height() {
+    coalesce(
+        xt:first(st:get(key:height)), 
+        st:get(st:height),
+        200)
+}
+
+
 function us:snd(alist) {
     return (xt:get(alist, 1))
 }
 
 function us:any(x, y) {
     return (true)
+}
+
+function us:notContains(x, y) {
+    return (! (contains(x, y)))
 }
 
 # value is rdf term
@@ -185,6 +199,17 @@ function us:eval(value, alist) {
     else if (xt:size(alist) = 4) {
         let ((oper1 arg1 oper2 arg2) = (alist)) {
             us:eval(value, oper1, xsd:decimal(arg1), oper2, xsd:decimal(arg2)) 
+        }
+    }
+    else {
+        return (true)
+    }
+}
+
+function us:compute(value, alist) {
+    if (xt:size(alist) = 2) {
+        let ((oper arg) = (alist)) {
+            funcall(oper, value, arg)
         }
     }
     else {
@@ -414,6 +439,13 @@ function us:match(elem, alist) {
     }
 }
 
+function us:contains(elem, alist) {
+    if (xt:size(alist) = 0, return(true), true);
+    letdyn (aelem = xt:lowercase(elem)) {
+        mapany (function(x) { contains(aelem, xt:lowercase(x)) }, alist)
+    }
+}
+
 function us:empty(alist) {
     return (! mapany (function(x) {strlen(x)>0}, alist))
 }
@@ -562,14 +594,27 @@ function us:distrib(alist) {
 # alist = (key val key val)
 # extract key=val ; set context(key, list(val))
 
-function us:extract(alist) {
-     let (keyList = @("departement" "region" "pays" "commune" "communeURL" "label" "image" "altitude" "lat" "lon" "distance" "show")) {
-        us:extract(alist, keyList) ;
+function us:extract(name) {
+    let (res = us:myextract(coalesce(st:get(name), xt:list()))) {
+        st:set(name, res);
+        if (st:get(st:debug, true) || xt:size(st:get(key:trace)) > 0, xt:print(xt:context()), true)
+    }
+}
+
+function us:isKey(name) {
+    strstarts(name, key:)
+}
+
+function us:myextract(alist) {
+     let (keyList = @(key:departement key:dname key:region key:rname key:pays key:pname key:commune key:cname key:label key:name 
+          key:image key:altitude key:lat key:lon key:distance key:height key:trace key:show key:text),
+        res = us:extractList(alist)) {
+        
         us:protect(keyList) ;
         # used by myweb.rul to show/hide features with id from st:hide (see workflow)
-        if (xt:size(st:get("show")) > 0) {
-            st:set(st:show, xt:first(st:get("show")) = "more")
-        }
+        coalesce(st:set(st:show, xt:first(st:get(key:show)) = "more"), true) ;
+        coalesce(st:set(st:text, xt:first(st:get(key:text)) = "true"), true) ;
+        return (res)
      }   
 }
 
@@ -584,12 +629,19 @@ function us:protect(keyList) {
 # each key value is available in query using st:get(key) = list(value) 
 # in this way we can have as much key value as we want
 
-function us:extract(alist, keyList) {
-    let (res = xt:list(), key = "") {
+function us:extractList(alist) {
+    let (res = xt:list(), mylist = xt:list(), key = "", ind = 0) {
         for (value in alist) {
-            if (xt:member(value, keyList)) {
+            if (us:isKey(value)) {
+                if (ind > 0 && us:isKey(xt:get(alist, ind - 1))) {
+                    # two successive keys, add missing value
+                    # use case: radiobutton and checkbox may not send a value
+                    # myweb.rul require param value list to be complete key value list 
+                    # to check value of html select by index (by position in the list)
+                    xt:add(mylist, "")
+                } ;
                 if (xt:size(res) > 0) {
-                    st:set(key, res);
+                    st:set(uri(key), res);
                 } ;
                 if (key = value) {
                     # same key as previous: do nothing
@@ -601,12 +653,15 @@ function us:extract(alist, keyList) {
             }
             else {
                 xt:add(res, value)
-            }
+            };
+            xt:add(mylist, value);
+            set (ind = ind + 1)
         } ;
         if (xt:size(res) > 0) {
-            st:set(key, res);
-        }
-    } 
+            st:set(uri(key), res)
+        } ;
+        return(mylist)
+    }
 }
 
 

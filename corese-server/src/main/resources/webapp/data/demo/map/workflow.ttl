@@ -8,7 +8,7 @@
 
 @prefix dbo: <http://dbpedia.org/ontology/>
 @prefix map: <http://ns.inria.fr/map/>
-
+@prefix key: <key:>
 [] owl:imports <workflow-select.ttl>
 
 
@@ -97,6 +97,7 @@ st:intro a sw:Query ;
 st:prefixPattern st:name "$prefix$" ;
 st:pattern
 """prefix map: <http://ns.inria.fr/map/> .
+prefix key: <key:>
 prefix dbo: <http://dbpedia.org/ontology/> .
 prefix geo: <http://www.w3.org/2003/01/geo/wgs84_pos#> .
 prefix wiki: <http://fr.wikipedia.org/wiki/> .
@@ -135,19 +136,22 @@ st:pattern """ {select distinct ?url where {
 st:regionPattern st:name "$region$" ;
 st:pattern """?url map:commune/map:pays ?pays 
             filter us:match(?pays, ?paysList)
+            filter us:compute(?pays, st:get(key:pname))
             
             {?url rdfs:label ?label ; 
                 map:commune/map:departement ?dep .
             ?dept dbo:inseeCode ?dep ; 
                 rdfs:label ?deptName . 
             # param value list from html select user interface
-            filter us:match(?deptName, st:get("departement"))
+            filter us:match(?deptName, st:get(key:departement))
+            filter us:compute(?deptName, st:get(key:dname))
             # param value list from mapprofile service context
             filter us:focus(?dep, st:departement)
                        
             ?dept dbo:hasRegion ?region .
             ?region rdfs:label ?regionName
-            filter us:match(?regionName, st:get("region"))
+            filter us:match(?regionName, st:get(key:region))
+            filter us:compute(?regionName, st:get(key:rname))
             filter us:focus(?regionName, st:region) 
             }
             union 
@@ -155,33 +159,40 @@ st:pattern """?url map:commune/map:pays ?pays
                 map:commune [
                     map:departement 0 ; 
                     map:pays ?pays ]
-                filter us:empty(st:get("departement"))
-                filter us:empty(st:get("region"))
+                filter us:empty(st:get(key:departement))
+                filter us:empty(st:get(key:region))
                 filter us:focus(0, st:departement)
                 filter us:focus("undef", st:region)
                 bind (00 as ?dep)
                 bind (?pays as ?deptName)
                 bind (?pays as ?dept)
                 bind (?pays as ?region)
-                bind (?pays as ?regionName)}"""
+                bind (?pays as ?regionName)
+                filter us:compute(?deptName, st:get(key:dname))
+                filter us:compute(?regionName, st:get(key:rname))
+                }"""
 .
     
+st:contextPattern st:name "$defcontext$" ;
+st:pattern """# param = (departement value region value key value)
+            bind (us:extract("param") as ?tmp)"""
+.
     
 st:paramPattern st:name "$defparam$" ;
 st:pattern """# param = (departement value region value key value)
-            bind (us:extract(coalesce(st:get("param"), xt:list())) as ?tmp)
-            bind (st:get("departement") as ?deptList)
-            bind (st:get("region")      as ?regionList)
-            bind (st:get("pays")        as ?paysList)
-            bind (maplist(rq:uri, st:get("commune"))       as ?comURLList)
-            bind (maplist(xsd:integer, st:get("altitude")) as ?altList)
-            bind (st:get("label")       as ?labelList)"""
+            bind (st:get(key:departement) as ?deptList)
+            bind (st:get(key:region)      as ?regionList)
+            bind (st:get(key:pays)        as ?paysList)
+            bind (maplist(rq:uri, st:get(key:commune))       as ?comURLList)
+            bind (maplist(xsd:integer, st:get(key:altitude)) as ?altList)
+            bind (st:get(key:label)       as ?labelList)
+            bind (st:get(key:name) as ?nameList)"""
 .
 
 st:coordPattern st:name "$coord$" ;
 st:pattern """# (rq:oper value) -- after defparam and lon lat
-            filter coalesce(us:eval(?lat, st:get("lat")), true)
-            filter coalesce(us:eval(?lon, st:get("lon")), true)"""
+            filter coalesce(us:eval(?lat, st:get(key:lat)), true)
+            filter coalesce(us:eval(?lon, st:get(key:lon)), true)"""
 .            
 
 
@@ -191,11 +202,11 @@ st:pattern """?url map:commune ?acom . ?acom rdfs:label ?clabel
             optional { ?url map:document ?doc} 
             optional { ?acom map:geoname ?geo }
             optional { ?acom map:wikipedia ?wikipedia }
-            filter if (coalesce(st:get("image") = xt:list("Avec"), false), bound(?img), true)
+            filter if (coalesce(st:get(key:image) != xt:list("Sans"), false), bound(?img), true)
             bind (st:format(ft:document.html, ?doc, us:docTitle(?doc)) as ?adoc)
             bind (coalesce(?adoc, "") as ?fdoc)
             bind (coalesce(?wikipedia, concat(wiki:, ?clabel)) as ?wiki)
-            bind (st:format(ft:img.html, coalesce(?img, "undef"), coalesce(st:get(st:height), 200)) as ?fimg)
+            bind (st:format(ft:img.html, coalesce(?img, "undef"), us:height()) as ?fimg)
             bind (st:format(ft:document.html, ?geo,  us:docTitle(?geo))  as ?ogeo)
             bind (st:format(ft:document.html, ?wiki, us:docTitle(?wiki)) as ?owiki)
             bind (coalesce(concat(?ogeo, ?owiki), ?owiki) as ?fgeo)
@@ -205,57 +216,85 @@ st:pattern """?url map:commune ?acom . ?acom rdfs:label ?clabel
 #
 # html select definition
 # st:get("param") = (key_1 value_1 key_2 value_2)
-# st:get("key_i")  = (value_i)
+# st:get(key:key_i)  = (value_i)
 # st:name param is the name of the key for using st:get(param) and retreiving the value of
 # the parameter value list in the context in  the query
 # st:key key is the name of the key for using st:get(key) after us:extract(st:get(param)) 
 # and retreiving the value of the key value list in the context in  the query
 #
-st:defCommune  st:title "Commune" ;     st:default "" ; st:defaultLabel "Any" ; st:key "commune" ;
+st:defCommune  st:title "Commune" ;     st:default "" ; st:defaultLabel "Any" ; st:key key:commune ;
 st:name "param" ;  st:function us:selectCommune .
 
-st:defCommuneURL  st:title "Commune" ;     st:default "" ; st:defaultLabel "Any" ; st:key "commune" ;
+st:defCommuneURL  st:title "Commune" ;     st:default "" ; st:defaultLabel "Any" ; st:key key:commune ;
 st:name "param" ;  st:function us:selectCommuneURL .
 
-st:defCommuneBasic  st:title "Commune" ;  st:key "commune" ;
+st:defCommuneBasic  st:title "Commune" ;  st:key key:commune ;
 st:name "param" ;  st:function us:selectCommune .
 
-st:defCommuneURLBasic  st:title "Commune" ;  st:key "commune" ;
+st:defCommuneURLBasic  st:title "Commune" ;  st:key key:commune ;
 st:name "param" ;  st:function us:selectCommuneURL .
 
-st:defDepartement st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ; st:key "departement" ;
+st:defDepartement st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ; st:key key:departement ;
 st:name "param" ;  st:function us:selectDepartment .
 
-st:defRegion st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ; st:key "region" ;
+st:defRegion st:title "Region" ;  st:default "" ; st:defaultLabel "Any" ; st:key key:region ;
 st:name "param" ;  st:function us:selectRegion .
 
-st:defPays st:title "Pays" ;  st:default "" ; st:defaultLabel "Any" ; st:key "pays" ;
+st:defPays st:title "Pays" ;  st:default "" ; st:defaultLabel "Any" ; st:key key:pays ;
 st:name "param" ;  st:function us:selectPays .
 
 
-st:defLabelNature st:title "Label" ;  st:default "" ; st:defaultLabel "Any" ; st:key "label" ;
+st:defLabelNature st:title "Label" ;  st:default "" ; st:defaultLabel "Any" ; st:key key:label ;
 st:name "param" ;  st:function us:selectLabelNature .
 
-st:defLabelArtefact st:title "Label" ;  st:default "" ; st:defaultLabel "Any" ; st:key "label" ;
+st:defLabelArtefact st:title "Label" ;  st:default "" ; st:defaultLabel "Any" ; st:key key:label ;
 st:name "param" ;  st:function us:selectLabelArtefact .
 
-st:defLabel st:title "Label" ;  st:default "" ; st:defaultLabel "Any" ; st:key "label" ;
+st:defLabel st:title "Label" ;  st:default "" ; st:defaultLabel "Any" ; st:key key:label ;
 st:name "param" ;  st:function us:selectLabel .
 
-st:defLabelBasic st:title "Label" ;  st:key "label" ; st:name "param" ;  st:function us:selectLabel .
+st:defLabelBasic st:title "Label" ;  st:key key:label ; st:name "param" ;  st:function us:selectLabel .
 
 
-st:defClassArg st:title "" ; st:default map:Undefined ; st:defaultLabel "Any" ; st:type st:arg ;
+st:defClassArg  st:default map:Undefined ; st:defaultLabel "Any" ; st:kind st:arg ;
 st:name "mode" ; st:function us:selectType ; st:strip true .
 
 
-st:defOperType st:title "Type" ; st:type st:oper ; st:name "mode" ; st:value st:operlist .
+st:defOperType st:title "Type" ; st:kind st:oper ; st:name "mode" ; st:value st:operlist .
 
-st:defOperTypeRepeat2 st:title "Type" ; st:type st:oper ; st:repeat 2 ; st:name "mode" ; st:value st:operlist .
+st:defOperTypeRepeat2 st:title "Type" ; st:kind st:oper ; st:repeat 2 ; st:name "mode" ; st:value st:operlist .
+
+
+st:defCommuneTextOper st:kind st:oper ; st:title "Commune" ; st:name "param" ; st:key key:cname ; st:value st:textoper ; st:strip true .
+st:defCommuneTextArg  st:kind st:arg; st:type st:text ;      st:name "param" ; st:key key:cname .
+
+st:defDepartementTextOper st:kind st:oper ; st:title "Departement" ; st:name "param" ; st:key key:dname ;  st:value st:textoper; st:strip true .
+st:defDepartementTextArg  st:kind st:arg; st:type st:text ;          st:name "param" ; st:key key:dname .
+
+st:defRegionTextOper st:kind st:oper ; st:title "Region" ; st:name "param" ; st:key key:rname ; st:value st:textoper ; st:strip true .
+st:defRegionTextArg  st:kind st:arg; st:type st:text ;     st:name "param" ; st:key key:rname .
+
+st:defPaysTextOper st:kind st:oper ; st:title "Pays" ; st:name "param" ; st:key key:pname ; st:value st:textoper ; st:strip true .
+st:defPaysTextArg  st:kind st:arg; st:type st:text ;   st:name "param" ; st:key key:pname .
+
+st:defLabelTextOper st:kind st:oper ; st:title "Label" ; st:name "param" ; st:key key:name ;  st:value st:textoper ; st:strip true .
+st:defLabelTextArg st:kind st:arg; st:type st:text ;     st:name "param" ; st:key key:name .
+
+
+st:textoper st:enum (rq:contains us:notContains rq:regex rq:strstarts) .
+
+
 
 # special parameter with key "show" and id "show" to record the value of show/hide button
+# show/hide button set the value of this html select (with id = "show") with value "more" or "less"
+# see format form.html
 # used by myweb.rul to show/hide html elements with id from st:hide
-st:defShow st:title "Show" ; st:id "show" ; st:name "param" ; st:key "show" ; st:value ("less" "more") .
+st:defShow st:title "Show" ; st:id "show" ; st:name "param" ; st:key key:show ; st:value ("less" "more") .
+
+# by default query is hidden
+st:defShowQuery st:title "Show Query" ; st:id "text" ; st:name "param" ; st:key key:text ; st:value ("false" "true") .
+# by default query is shown
+st:defShowQuery2 st:title "Show Query" ; st:id "text" ; st:name "param" ; st:key key:text ; st:value ("true" "false") .
 
 
 st:operlist st:enum ("AND" "OR" "UNION" "AND_NOT" "OR_NOT" "UNION_NOT") .
@@ -264,7 +303,7 @@ st:operlist2 st:enum ("AND" "OR" "UNION" "AND_NOT" "UNION_NOT") .
 
 # 
 # accept (or not) site without image
-st:defImage st:title "Image" ; st:name "param" ; st:key "image" ; 
+st:defImage st:title "Image" ; st:name "param" ; st:key key:image ; st:type st:radio ;
 st:value ("Avec" "Sans") .
 
 
@@ -275,25 +314,25 @@ st:zoom st:enum ((0.1 10) (0.25 25) (0.5 50) (0.75 75)
 (1 100) (1.5 150) (2  200) (3 350) (4 450) (6 650) (9 1000) (0.01 1) (0.05 5))
 .
 
-# after us:extract: st:get("lat") = (rq:eq value)
+# after us:extract: st:get(key:lat) = (rq:eq value)
 #
-st:operlat st:title "Latitude" ; st:name "param" ; st:type st:oper ;
-st:key "lat" ; st:value st:opercoord ; st:strip true .
+st:operlat st:title "Latitude" ; st:name "param" ; st:kind st:oper ;
+st:key key:lat ; st:value st:opercoord ; st:strip true .
 
-st:operlon st:title "Longitude" ; st:name "param" ; st:type st:oper ;
-st:key "lon" ; st:value st:opercoord ; st:strip true .
+st:operlon st:title "Longitude" ; st:name "param" ; st:kind st:oper ;
+st:key key:lon ; st:value st:opercoord ; st:strip true .
 
-st:arglat st:title "" ; st:name "param" ; st:type st:arg ; st:key "lat" ; st:function us:selectLatitude .
+st:arglat  st:name "param" ; st:kind st:arg ; st:key key:lat ; st:function us:selectLatitude .
 
-st:arglon st:title "" ; st:name "param" ; st:type st:arg ; st:key "lon" ; st:function us:selectLongitude .
+st:arglon  st:name "param" ; st:kind st:arg ; st:key key:lon ; st:function us:selectLongitude .
 
 st:opercoord st:enum (us:any rq:le us:close us:near us:around rq:ge) .
 st:opereval  st:enum (rq:le us:eq us:close rq:ge) .
 
-st:operdist st:title "Distance (km)" ; st:name "param" ; st:type st:oper ;
-st:key "distance" ; st:value st:opereval ; st:strip true .
+st:operdist st:title "Distance (km)" ; st:name "param" ; st:kind st:oper ;
+st:key key:distance ; st:value st:opereval ; st:strip true .
 
-st:argdist st:title "" ; st:name "param" ; st:type st:arg ; st:key "distance" ; st:value st:zoom .
+st:argdist  st:name "param" ; st:kind st:arg ; st:key key:distance ; st:value st:zoom .
 
 #
 # This query takes as input mode parameter a list of classes with boolean conenctors
@@ -317,6 +356,7 @@ select ?comLabel ?deptName ?dep ?com ?fgeo
 (maplist (us:formatData, us:number(?alist)) as ?flist)
 (reduce (rq:concat, ?flist) as ?row)
 where {
+    $defcontext$
     bind (st:get(st:umap) as ?umap)
     service <store:mapdatamanager> {
         select distinct * where {
@@ -328,10 +368,13 @@ where {
             
             $coord$
             
-            ?url rdfs:label ?label ; map:commune ?com . 
+            ?url rdfs:label ?label 
+            filter coalesce(us:compute(?label, ?nameList), true)
+            ?url map:commune ?com . 
             ?com rdfs:label ?comLabel
             filter us:match(?label, ?labelList)
             filter us:match(?com, ?comURLList)
+            filter us:compute(?comLabel, st:get(key:cname))
             $region$            
             optional { ?url map:altitude ?oalt }
             bind (coalesce (?oalt, 0) as ?alt)
@@ -365,6 +408,7 @@ select ?com ?comLabel ?deptName ?dep ?fgeo
 where {
     #bind (if ($arg <=0.1, st:get(st:umap1), st:get(st:umap2)) as ?umap)
     bind (st:get(st:umap1) as ?umap)
+    $defcontext$
     
     service <store:mapdatamanager> {
         select * (min(?distance) as ?dist)
@@ -379,15 +423,15 @@ where {
             
             # find place with label 
             ?place rdfs:label ?aname 
-            filter us:match(?aname, st:get("label"))
+            filter us:match(?aname, st:get(key:label))
             ?place geo:long ?alon ; geo:lat ?alat
             
             # find other sites close to place with label
             ?url geo:long ?lon ; geo:lat ?lat .
             bind (us:distance(?alat, ?alon, ?lat, ?lon) as ?distance)
            # filter (?distance <= $arg)
-           # st:get("distance") = (oper value) -> eval(oper(distance, value))
-            filter coalesce(us:eval(?distance, st:get("distance")), true)
+           # st:get(key:distance) = (oper value) -> eval(oper(distance, value))
+            filter coalesce(us:eval(?distance, st:get(key:distance)), true)
             
             $region$                                   
             $icon$
@@ -422,6 +466,7 @@ where {
     #bind (if ($arg <= 0.1, st:get(st:umap1), st:get(st:umap2)) as ?umap)
     
     bind (st:get(st:umap1) as ?umap)
+    $defcontext$
     
     service <store:mapdatamanager> {
         select distinct * where {        
@@ -460,7 +505,7 @@ where {
             ?url geo:long ?lon ; geo:lat ?lat .
             bind (us:distance(?alat, ?alon, ?lat, ?lon) as ?distance)
             #filter (?distance <= $arg)
-            filter coalesce(us:eval(?distance, st:get("distance")), true)
+            filter coalesce(us:eval(?distance, st:get(key:distance)), true)
             
             $coord$
 
@@ -498,6 +543,7 @@ select ?com ?comLabel ?deptName ?dep ?fgeo
 (maplist (us:format, us:number(?alist)) as ?flist)
 (reduce (rq:concat, ?flist) as ?row)
 where {
+    $defcontext$
     service <store:mapdatamanager> {
         select distinct * where {
           bind (st:get(st:umap) as ?umap)          
@@ -555,6 +601,7 @@ st:sparqlQuery st:value
 select *
 where {
     bind (st:get(st:umap) as ?umap)
+    $defcontext$
     service <store:mapdatamanager> {
         select  * (aggregate(?type) as ?typeList)
         where {
@@ -599,7 +646,7 @@ st:name "mode" ;   st:function us:selectTypeNature ; st:strip true ] ;
 
 st:select [ st:select st:defOperType ] ;
 
-st:select [ st:title "" ; st:default map:Résurgence ; st:defaultLabel "Résurgence" ; st:type st:arg ;
+st:select [  st:default map:Résurgence ; st:defaultLabel "Résurgence" ; st:kind st:arg ;
 st:name "mode" ;   st:function us:selectTypeNature ; st:strip true ] ;
 
 # st:hide generate an id used to show/hide html elements with button show/hide
@@ -611,12 +658,17 @@ st:select [st:select st:defDepartement ] ;
 st:select [st:select st:defRegion] ;
 st:select [st:select st:defPays ; st:hide true] ;
 st:select [st:select st:defLabelNature ] ;
+st:select [st:select st:defAltitude ; st:hide true];
 st:select [st:select st:defImage ; st:hide true] ;
-st:select [st:select st:defAltitude ; st:hide true]
+
+# special parameter key "show" to record the value of show/hide button 
+# this select is hidden in html form user interface
+st:select [ st:hidden true; st:select st:defShow ];
+st:select [ st:hidden true; st:select st:defShowQuery ]
 .
  
 
-st:defAltitude st:title "Altitude" ; st:name "param" ; st:key "altitude" ;
+st:defAltitude st:title "Altitude" ; st:name "param" ; st:key key:altitude ;
 st:value (0 1000 2000 3000 4000 5000) 
 .
  
@@ -634,15 +686,15 @@ st:name "mode" ;   st:function us:selectTypeArtefact ; st:strip true] ;
 
 # OPER
 
-st:select [ st:title "Type" ; st:default "UNION" ; st:defaultLabel "UNION" ; st:type st:oper ;
+st:select [ st:title "Type" ; st:default "UNION" ; st:defaultLabel "UNION" ; st:kind st:oper ;
 st:name "mode" ;   st:value st:operlist ] ;
 
-st:select [ st:title "" ; st:default map:Bâtiment ; st:defaultLabel "Bâtiment" ; st:type st:arg ;
+st:select [  st:default map:Bâtiment ; st:defaultLabel "Bâtiment" ; st:kind st:arg ;
 st:name "mode" ;   st:function us:selectTypeArtefact ; st:strip true ] ;
 
 st:select [ st:select st:defOperType ] ;
 
-st:select [ st:title "" ; st:default map:Antiquité ; st:defaultLabel "Antiquité" ; st:type st:arg ;
+st:select [  st:default map:Antiquité ; st:defaultLabel "Antiquité" ; st:kind st:arg ;
 st:name "mode" ;  st:function us:selectType ; st:strip true  ] ;
 
 st:select [st:select st:defCommuneURL ] ;
@@ -650,7 +702,12 @@ st:select [st:select st:defDepartement ] ;
 st:select [st:select st:defRegion ] ;
 st:select [st:select st:defPays ; st:hide true] ;
 st:select [st:select st:defLabelArtefact ] ;
-st:select [st:select st:defImage ; st:hide true] 
+st:select [st:select st:defImage ; st:hide true] ;
+
+# special parameter key "show" to record the value of show/hide button 
+# this select is hidden in html form user interface
+st:select [ st:hidden true; st:select st:defShow ];
+st:select [ st:hidden true; st:select st:defShowQuery ]
 .
 
 
@@ -673,17 +730,36 @@ st:select [st:select st:defDepartement ] ;
 st:select [st:select st:defRegion ] ;
 st:select [st:select st:defPays; st:hide true] ;
 st:select [st:select st:defLabel ] ;
-st:select [st:select st:defImage; st:hide true] ;
+
+st:select [ st:select st:defCommuneTextOper] ,      [ st:select st:defCommuneTextArg ] ;
+st:select [ st:select st:defDepartementTextOper] ,  [ st:select st:defDepartementTextArg ] ;
+st:select [ st:select st:defRegionTextOper] ,       [ st:select st:defRegionTextArg ] ;
+st:select [ st:select st:defPaysTextOper] ,         [ st:select st:defPaysTextArg ] ;
+st:select [ st:select st:defLabelTextOper] ,        [ st:select st:defLabelTextArg ] ;
 
 st:select [ st:select st:operlat ; st:hide true], [ st:select st:arglat ] ;
-st:select [ st:select st:operlat ; st:hide true ], [ st:select st:arglat ] ;
-
+st:select [ st:select st:operlat ; st:hide true], [ st:select st:arglat ] ;
 st:select [ st:select st:operlon ; st:hide true], [ st:select st:arglon ] ;
-st:select [ st:select st:operlon ; st:hide true ], [ st:select st:arglon ] ;
+st:select [ st:select st:operlon ; st:hide true], [ st:select st:arglon ] ;
+
+
+st:select [ st:hide true ; st:select [st:type st:radio ; st:title "Image Size"; st:name "param"; st:key key:height ; 
+st:value ("120" "200" "300" "400" "500")]];
+
+st:select [st:select st:defImage; st:hide true] ;
+
+st:select [ st:hide true ; st:select [st:type st:box ; st:title "Trace"; st:name "param"; st:key key:trace ; 
+st:value "true" ]];
+
+
 
 # special parameter key "show" to record the value of show/hide button 
-st:select [ st:hide true; st:select st:defShow ]
+# this select is hidden in html form user interface
+st:select [ st:hidden true; st:select st:defShow ];
+st:select [ st:hidden true; st:select st:defShowQuery ]
 .
+
+
 
 
 
@@ -721,7 +797,12 @@ st:select [st:select st:defPays; st:hide true] ;
 st:select [st:select st:defLabelBasic ] ;
 st:select [st:select st:defImage; st:hide true] ;
 
-st:select [ st:select st:operdist ], [ st:select st:argdist ] 
+st:select [ st:select st:operdist ], [ st:select st:argdist ] ;
+
+# special parameter key "show" to record the value of show/hide button 
+# this select is hidden in html form user interface
+st:select [ st:hidden true; st:select st:defShow ];
+st:select [ st:hidden true; st:select st:defShowQuery ]
 .
 
 
@@ -747,7 +828,12 @@ st:select [st:select st:defImage; st:hide true] ;
 st:select [ st:select st:operlat ; st:hide true], [ st:select st:arglat ] ;
 st:select [ st:select st:operlon ; st:hide true], [ st:select st:arglon ] ;
 
-st:select [ st:select st:operdist ], [ st:select st:argdist ] 
+st:select [ st:select st:operdist ], [ st:select st:argdist ] ;
+
+# special parameter key "show" to record the value of show/hide button 
+# this select is hidden in html form user interface
+st:select [ st:hidden true; st:select st:defShow ];
+st:select [ st:hidden true; st:select st:defShowQuery ]
 .
 
 
@@ -768,7 +854,7 @@ st:name "mode" ;   st:function us:selectTypeNature ; st:strip true ] ;
 
 st:select [ st:select st:defOperType ] ;
 
-st:select [ st:title "" ; st:default map:Résurgence ; st:defaultLabel "Résurgence" ; st:type st:arg ; st:name "mode" ;  st:function us:selectTypeNature ; st:strip true ] ;
+st:select [  st:default map:Résurgence ; st:defaultLabel "Résurgence" ; st:kind st:arg ; st:name "mode" ;  st:function us:selectTypeNature ; st:strip true ] ;
 
 st:select [ st:select st:defOperType ; st:hide true] , [ st:select st:defClassArg ] ;
 
@@ -777,9 +863,9 @@ st:select [ st:title "Localisation" ; st:default map:BassinSiagne ; st:defaultLa
 st:name "arg" ;  st:function us:selectLocalisation ; st:strip true] ;
 
 st:select [ st:hide true ; st:select 
-[st:title "Localisation" ; st:type st:oper ; st:name "arg" ; st:value st:operlist ] ] ;
+[st:title "Localisation" ; st:kind st:oper ; st:name "arg" ; st:value st:operlist ] ] ;
 
-st:select [ st:title "" ; st:type st:arg ; st:default map:Undefined ; st:defaultLabel "Any" ;
+st:select [  st:kind st:arg ; st:default map:Undefined ; st:defaultLabel "Any" ;
 st:name "arg" ;  st:function us:selectLocalisation ; st:strip true] ;
 
 st:select [st:select st:defCommuneURL ] ;
@@ -914,6 +1000,7 @@ st:query
 """$prefix$
 select $arg (count(distinct ?url) as ?c)
 where {
+    $defcontext$
 service <store:mapdatamanager> {
     select * where {
         $type$

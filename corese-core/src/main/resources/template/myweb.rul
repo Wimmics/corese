@@ -25,20 +25,29 @@ template st:selecttable(?n, ?q, ?t, ?s, ?qt) {
             # silent input for key
             if (strlen(?mykey)>0, st:format(ft:silent.html, ?myname, ?mykey), "")
 
-            if (strlen(?myvalue)>0, 
+            if (?type = st:silent,   #strlen(?myvalue)>0, 
                 # std silent input
                 st:format(ft:silent.html, ?myname, ?myvalue),
-                # html select
-                st:format(?format, 
-                    if (bound(?aid), st:format(if (st:get(st:show, true), ft:id.html, ft:idhidden.html), us:idCounter()), ""), 
-                    ?title, 
+                
+            if (?type = st:text, 
+               st:format(?format, ?id, ?title, 
+                    st:format(ft:text.html, ?myname, us:getValue(?myname, us:index(?mykey, ?index)))),
+                        
+            if (?type = st:box,
+                st:format(?format, ?id, ?title, 
+                    if (?myvalue = us:getValue(?myname, us:index(?mykey, ?index)),
+                        st:format(ft:boxchecked.html, ?myname, ?myvalue), 
+                        st:format(ft:box.html, ?myname, ?myvalue))),                        
+                    
+            # else html select
+                st:format(?format, ?id, ?title, 
                     st:call-template(st:selectparam, ?n, ?select, 
                         # 2 index + 1 because st:select with st:key generates 1 silent input + 1 html select
                         # and the key (of silent input) is also in the parameter value list (key value key value)
                         # hence we need to consider (and skip) the index of the key in the value list
                         # key   -> silent input
                         # value -> html select
-                        if (strlen(?mykey)>0, 2 * ?index + 1, ?index))))
+                        us:index(?mykey, ?index))))))
         }      
     }
 }
@@ -48,7 +57,7 @@ where {
     
         {select ?n 
         # list of html select specifications
-        (aggregate(xt:list(?n, ?elem, ?select, ?mytitle, ?format, ?myrepeat, ?myname, ?myvalue, ?mykey)) 
+        (aggregate(xt:list(?n, ?elem, ?select, ?mytitle, ?type, ?myrepeat, ?myname, ?myvalue, ?mykey)) 
         as ?list)
         where {
             ?qt st:name ?n 
@@ -57,39 +66,52 @@ where {
                 ?elem st:select? ?select . 
                 ?select st:name ?myname
                 optional { ?select st:title ?title }
-                # st:type st:oper | st:arg
-                optional { ?select st:type ?type  filter (?type != st:silent) }
+                # st:type st:oper | st:arg | st:silent | st:text
+                optional { ?select st:type ?atype }
                 # index of html select value in parameter value list
                 # repeat oper+arg sequence n times
                 optional { ?select st:repeat ?repeat }
-                # generate silent input with name=name value=value ; value MUST be != ""
-                optional { ?select st:type st:silent ; st:name ?name ; st:value ?value }
+                # generate silent input with name=name value=value 
+                optional { ?select st:type st:silent  ; st:value ?value }
+                optional { ?select st:type st:box  ; st:value ?value }
                 # generate silent input with name=name value=key in addition to html select
                 # use case: param = (key value key value) and value is in (next) html select
-                optional { ?select st:name ?name ; st:key ?key }
-            
-                bind (coalesce(
-                    if (?type = st:oper, ft:selectparameterrowoper.html,
-                    if (?type = st:arg,  ft:selectparameterrowarg.html,
-                        ft:selectparameterrow.html)), 
-                    ft:selectparameterrowsimple.html) 
-                as ?format)
+                optional { ?select st:key ?key }
                         
                 bind (coalesce(?title, "") as ?mytitle)
                 bind (coalesce(?repeat, 0) as ?myrepeat)
                 bind (coalesce(?value, "") as ?myvalue)
                 bind (coalesce(?key, "")   as ?mykey)
+                bind (coalesce(?atype, st:select) as ?type)
                 }
             }
         }
 
         # us:expand repeat (oper arg) n times when select oper has st:repeat n
         # values iterate html select specifications, possibly with additional oper+arg
-        values (?n ?elem ?select ?title ?format  ?repeat ?myname ?myvalue ?mykey ?index) { unnest(us:expand(?list)) }
+        values (?n ?elem ?select ?title ?type  ?repeat ?myname ?myvalue ?mykey ?index) { unnest(us:expand(?list)) }
         
         # generate an id in html element with display:none
         # button show/hide toggle display 
-        optional { ?elem st:hide ?aid }
+        optional { ?elem st:hide   ?hide }
+        optional { ?elem st:hidden ?hidden }
+        optional { ?select st:kind ?akind }
+        bind (coalesce(?akind, st:std) as ?kind)
+        
+        bind (coalesce(
+                    if (?kind = st:oper, ft:selectparameterrowoper.html,
+                    if (?kind = st:arg,  ft:selectparameterrowarg.html,
+                    if (?type in (st:select, st:text, st:radio, st:box), ft:selectparameterrowsimple.html,
+                        ft:selectparameterrow.html))), 
+                    ft:selectparameterrowsimple.html) 
+                as ?format)
+                
+        bind (   # st:get(st:show) is managed by function us:extract in function.rq
+            if (bound(?hide), 
+                st:format(if (st:get(st:show, true), ft:id.html, ft:idhidden.html), us:idCounter()), 
+            if (bound(?hidden), st:format(ft:hidden.html),
+            "")) 
+            as ?id)
     }
 }
 ]]>
@@ -285,7 +307,7 @@ function us:templateResult() {
 function us:expand (alist) {
     letdyn (res = xt:list(), skip = false, num = 0, mylist = alist, prev = "", ind = 0) {
         map (function(elem) {
-            let ((name aelem aselect title aformat repeat myname myvalue mykey) = elem) {
+            let ((name aelem aselect title atype repeat myname myvalue mykey) = elem) {
                 if (myname != prev) {
                     set (ind = 0);
                     set (prev = myname)
@@ -303,13 +325,13 @@ function us:expand (alist) {
                 else {
                     # skip next arg html select because it is processed here
                     set (skip = true);
-                    let ((name2 elem2 aselect2 title2 format2 repeat2 myname2 myvalue2 mykey2) = xt:get(mylist, num+1)) {
+                    let ((name2 elem2 aselect2 title2 type2 repeat2 myname2 myvalue2 mykey2) = xt:get(mylist, num+1)) {
                         for (i in xt:iota(0, repeat - 1)) {
                             # generate additional oper html select
-                            xt:add(res, xt:list(name, aelem, aselect, title, aformat, repeat, myname, myvalue, mykey, ind));
+                            xt:add(res, xt:list(name, aelem, aselect, title, atype, repeat, myname, myvalue, mykey, ind));
                             set (ind = ind + 1);
                             # generate additional arg html select
-                            xt:add(res, xt:list(name2, elem2, aselect2, title2, format2, repeat2, myname2, myvalue2, mykey2, ind));
+                            xt:add(res, xt:list(name2, elem2, aselect2, title2, type2, repeat2, myname2, myvalue2, mykey2, ind));
                             set (ind = ind + 1)
                         }
                     }
@@ -337,6 +359,19 @@ function us:equal(name, paramURI, index, value) {
                 st:get(paramURI) = value || st:get(paramURI) = str(value),
                 st:get(paramURI) = str(value))),
         false)
+}
+
+function us:getValue(name, index) {
+   coalesce( if (index >= 0 && xt:size(st:get(name)) > index, xt:get(st:get(name), index), ""), "")
+}
+
+# 2 index + 1 because st:select with st:key generates 1 silent input + 1 html select
+# and the key (of silent input) is also in the parameter value list (key value key value)
+# hence we need to consider (and skip) the index of the key in the value list
+# key   -> silent input
+# value -> html select
+function us:index(?key, ?index) {
+    if (strlen(?key)>0, 2 * ?index + 1, ?index)
 }
 
 # alist = (($name$ pattern))
@@ -406,12 +441,14 @@ template st:form(?n, ?q, ?t, ?s, ?qt) {
     # show/hide html elements declared with st:hide
     if (?submit && ?id, st:call-template(st:moreless, ?qt), "")
     if (?submit, st:format(ft:submit.html), "")
-    coalesce(st:get(st:col), 60) coalesce(st:get(st:row), 10)
+    if (?text, "", st:format(ft:hidden.html))
+    coalesce(st:get(st:col), 60) coalesce(st:get(st:row), 20)
     str(?q)
     }
 }
 where {
     bind (coalesce(st:get(st:submit), true) as ?submit)
+    bind (coalesce(st:get(st:text), st:get(st:textDefault), true) as ?text)
     bind (st:get(st:context) as ?g)
     
     graph ?g {  
@@ -540,118 +577,111 @@ prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
 #prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 
 template st:selectparam(?n, ?select, ?index) {
-
-format {
-  if (?insert, ft:selectparameterinsert.html , ft:selectparameter.html) 
-  
-  if (bound(?oper), "myselectoper", "myselectarg")
-  
-  coalesce(?id, ?name)
-  ?name
-  
-  # possibly add a default option value as first option
-  if (bound (?default), 
-    st:format(
-        us:option (us:equal(?name, ?uri, ?index, ?default)),           
-        ?default, coalesce(?label, "Any")),
-    "")
-      
-  group { 
-    # generate one select option
-    format { 
-        us:option (us:equal(?name, ?uri, ?index, ?value))
-        ?value ?displayValue
-    } 
-  }
-}
-   
+    if (?type = st:radio,
+        st:call-template(st:radioformat,  coalesce(?id, ?name), ?name, ?insert, bound(?oper), ?mylist), 
+        st:call-template(st:selectformat, coalesce(?id, ?name), ?name, ?insert, bound(?oper), ?mylist)) 
 }
 where {
-  bind (st:get(st:context) as ?g)
-  
-  # ?name = "mode" ; ?uri = st:mode ; st:get(st:mode) = current value of parameter mode
-  
-  graph ?g { 
-    ?select st:name ?name 
-    optional { ?select st:id ?id }
-    optional { ?select st:strip ?astrip }
-    optional { ?select st:uri ?myuri } 
-    optional { ?select st:type ?oper filter (?oper = st:oper) }
-    optional { ?select st:default ?default optional { ?select st:defaultLabel ?label }}
-    optional { ?select st:action ?action }
-    bind (coalesce(?astrip, false) as ?strip)
-    bind (coalesce(?action = st:insert, false) as ?insert)
-    bind (coalesce(?myuri, uri(concat(st:, ?name))) as ?uri)
-  }
-  
-  {
-    graph ?g {
-        {?select st:value/st:enum?/rdf:rest*/rdf:first ?value filter (! isBlank(?value))}
-        union 
-        {?select st:value/st:enum?/rdf:rest*/rdf:first (?value ?vname)}
-    }
-  }
-  union 
-  {
-    graph ?g { 
-        ?select st:graph ?gname 
+
+  {select ?id ?name ?n ?select ?type ?oper ?index ?default ?label ?selectedDefault ?insert
+    (aggregate(xt:list(?value, ?displayValue, ?selected)) as ?alist)
+   where {
+        bind (st:get(st:context) as ?g)
         
-        # get graph object ?gg in context corresponding to graph name ?gname
-        bind (st:get(?gname) as ?gg)
-        filter bound(?gg)
+        # ?name = "mode" ; ?uri = st:mode ; st:get(st:mode) = current value of parameter mode
         
-         { ?select st:relation ?p 
-           graph ?gg { 
-            select distinct ?p ?value 
-            where { 
-                {?x ?p ?value}
-                union
-                {?value ?p ?x}
-                filter (! isBlank(?value)) 
-            }  
-            order by ?value }
+        graph ?g { 
+            ?select st:name ?name 
+            optional { ?select st:type ?atype }
+            optional { ?select st:id ?id }
+            optional { ?select st:strip ?astrip }
+            optional { ?select st:uri ?myuri } 
+            optional { ?select st:kind st:oper, ?oper }
+            optional { ?select st:default ?default optional { ?select st:defaultLabel ?label } }
+            optional { ?select st:action ?action }
+            
+            bind (coalesce(?atype, st:select) as ?type)
+            bind (coalesce(?astrip, false) as ?strip)
+            bind (coalesce(?action = st:insert, false) as ?insert)
+            bind (coalesce(?myuri, uri(concat(st:, ?name))) as ?uri)
+            bind (coalesce(us:equal(?name, ?uri, ?index, ?default), false) as ?selectedDefault)
+        }
+        
+        {
+            graph ?g {
+                {?select st:value/st:enum?/rdf:rest*/rdf:first ?value filter (! isBlank(?value))}
+                union 
+                {?select st:value/st:enum?/rdf:rest*/rdf:first (?value ?vname)}
+            }
         }
         union 
-        { ?select st:predicate ?p 
-           graph ?gg { 
-            select distinct ?p ?value 
-            where { ?x ?p ?value  filter (! isBlank(?value)) }  
-            order by ?value }
+        {
+            graph ?g { 
+                ?select st:graph ?gname 
+                
+                # get graph object ?gg in context corresponding to graph name ?gname
+                bind (st:get(?gname) as ?gg)
+                filter bound(?gg)
+                
+                { ?select st:relation ?p 
+                graph ?gg { 
+                    select distinct ?p ?value 
+                    where { 
+                        {?x ?p ?value}
+                        union
+                        {?value ?p ?x}
+                        filter (! isBlank(?value)) 
+                    }  
+                    order by ?value }
+                }
+                union 
+                { ?select st:predicate ?p 
+                graph ?gg { 
+                    select distinct ?p ?value 
+                    where { ?x ?p ?value  filter (! isBlank(?value)) }  
+                    order by ?value }
+                }
+                union 
+                { ?select st:predicate [ ?p ?object ] 
+                graph ?gg { 
+                    select distinct ?p ?object ?value 
+                    where { ?value ?p ?object } 
+                    order by ?value }
+                }
+            }            
         }
-        union 
-        { ?select st:predicate [ ?p ?object ] 
-          graph ?gg { 
-            select distinct ?p ?object ?value 
-            where { ?value ?p ?object } 
-            order by ?value }
+        union
+        {
+            graph ?g { 
+                ?select st:graph ?gname ; st:function ?fun 
+                
+                # get graph object ?gg in context corresponding to graph name ?gname
+                bind (st:get(?gname) as ?gg)
+                filter bound(?gg)
+                
+                values ?value { unnest (xt:focus(?gg, funcall(?fun))) }
+                
+            }
         }
-    }            
-   }
-   union
-   {
-    graph ?g { 
-        ?select st:graph ?gname ; st:function ?fun 
+            union
+        {
+            graph ?g { 
+                ?select st:function ?fun 
+                filter not exists {?select st:graph ?gname}
+                values (?value ?vname) { unnest (maplist(us:prepare, funcall(?fun))) }
+            }    
+        }
         
-        # get graph object ?gg in context corresponding to graph name ?gname
-        bind (st:get(?gname) as ?gg)
-        filter bound(?gg)
-        
-        values ?value { unnest (xt:focus(?gg, funcall(?fun))) }
-        
-    }
-   }
-    union
-   {
-    graph ?g { 
-        ?select st:function ?fun 
-        filter not exists {?select st:graph ?gname}
-        values (?value ?vname) { unnest (maplist(us:prepare, funcall(?fun))) }
-    }    
-  }
+        bind (if (?strip, 
+                    coalesce (us:mystrip(?vname), ?vname, us:mystrip(?value), ?value), 
+                    coalesce(?vname, ?value)) 
+            as ?displayValue)
+                    
+        bind (us:equal(?name, ?uri, ?index, ?value) as ?selected)
+  }}
   
-  bind (if (?strip, 
-            coalesce (us:mystrip(?vname), ?vname, us:mystrip(?value), ?value), 
-            coalesce(?vname, ?value)) as ?displayValue)
+  bind (if (bound(?default), xt:cons(xt:list(?default, coalesce(?label, "Any"), ?selectedDefault), ?alist), ?alist)
+  as ?mylist)
   
 }
 
@@ -669,6 +699,68 @@ function us:mystrip(value) {
 ]]>
 </body>
 </rule>
+
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+
+template st:selectformat(?id, ?name, ?insert, ?oper, ?alist) {
+
+    format {
+        if (?insert, ft:selectparameterinsert.html , ft:selectparameter.html) 
+        if (?oper, "myselectoper", "myselectarg")
+        ?id ?name
+        ""
+            
+        group { 
+            # generate one option
+            format { us:option(?selected) ?value ?display } 
+        }
+    }
+
+}
+where {
+    values (?id ?name ?insert ?oper ?alist) {(undef undef undef undef undef)}
+    values (?value ?display ?selected) { unnest(?alist) }
+}
+
+function us:option(?b) {
+    if (?b, ft:valueselected.html, ft:value.html)
+}
+]]>
+</body>
+</rule>
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+#prefix ft: </opt/corese/demo/format/mytutorial/>
+#prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
+
+template st:radioformat(?id, ?name, ?insert, ?oper, ?alist) {
+        group { 
+            # generate one option
+            format { us:option(?selected) ?display ?id ?name ?value  } 
+        }
+}
+where {
+    values (?id ?name ?insert ?oper ?alist) { (undef undef undef undef undef) }
+    values (?value ?display ?selected) { unnest(?alist) }
+}
+
+function us:option(?b) {
+    if (?b, ft:radioselected.html, ft:radio.html)
+}
+]]>
+</body>
+</rule>
+
+
 
 <rule>
 <body>

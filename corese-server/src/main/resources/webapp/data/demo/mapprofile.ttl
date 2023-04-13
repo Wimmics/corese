@@ -149,7 +149,8 @@ st:param [
 
 st:amapParam
 st:param [
-    st:row 1;
+    #st:debug true;
+    st:textDefault false;
     st:lang 'en' ;
     # transformation for the result of the query in the st:web transformation
     st:sttl spq:result ;

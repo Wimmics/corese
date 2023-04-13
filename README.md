@@ -39,6 +39,14 @@ There are several interfaces for Corese:"
     <version>4.4.1</version>
 </dependency>
 
+<!-- jena storage -->
+<dependency>
+    <groupId>fr.inria.corese</groupId>
+    <artifactId>corese-jena</artifactId>
+    <version>4.4.1</version>
+</dependency>
+
+<!-- rdf4j storage -->
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-rdf4j</artifactId>

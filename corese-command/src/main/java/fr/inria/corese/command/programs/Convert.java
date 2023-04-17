@@ -18,7 +18,7 @@ public class Convert implements Runnable {
     private InputFormat inputFormat;
 
     @Parameters(paramLabel = "INPUT", description = "File to convert.")
-    private String intputPath;
+    private String inputPath;
 
     @Parameters(paramLabel = "OUTPUT_FORMAT", description = "Desired serialization format."
             + "%nCandidates: ${COMPLETION-CANDIDATES}")
@@ -35,7 +35,7 @@ public class Convert implements Runnable {
     @Override
     public void run() {
         this.check();
-        this.graph = GraphUtils.load(this.intputPath, this.inputFormat);
+        this.graph = GraphUtils.load(this.inputPath, this.inputFormat);
         GraphUtils.export(this.graph, this.outputPath, this.outputFormat);
     }
 
@@ -47,7 +47,7 @@ public class Convert implements Runnable {
     private void check() throws IllegalArgumentException {
 
         // Check that the input path is not equal to the output path.
-        if (this.intputPath.equals(this.outputPath)) {
+        if (this.inputPath.equals(this.outputPath)) {
             throw new IllegalArgumentException("The input path cannot be the same as the output path.");
         }
 

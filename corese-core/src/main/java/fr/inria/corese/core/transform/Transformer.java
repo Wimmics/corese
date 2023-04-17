@@ -413,6 +413,11 @@ public class Transformer implements TransformProcessor {
         fw.close();
     }
 
+    public void write(OutputStream out) throws IOException {
+        String str = toString();
+        out.write(str.getBytes("UTF-8"));
+    }
+
     public void definePrefix(String p, String ns) {
         nsm.definePrefix(p, ns);
     }

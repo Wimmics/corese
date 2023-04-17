@@ -1,5 +1,6 @@
 package fr.inria.corese.command.utils;
 
+import java.io.InputStream;
 import java.nio.file.Path;
 
 import fr.inria.corese.command.utils.format.InputFormat;
@@ -31,6 +32,35 @@ public class GraphUtils {
         }
 
         return outputGraph;
+    }
+
+    /**
+     * Parse a file and load RDF data into a Corese Graph.
+     *
+     * @param input       Input stream of the input RDF file.
+     * @param inputFormat Input file serialization format.
+     * @return Corese Graph with RDF data loaded.
+     */
+    public static Graph load(InputStream input, InputFormat inputFormat) {
+        Graph outputGraph = new Graph();
+
+        Load ld = Load.create(outputGraph);
+        try {
+            ld.parse(input, FromatManager.getCoreseinputFormat(inputFormat));
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+
+        return outputGraph;
+    }
+
+    public static void print(Graph graph, OutputFormat outputFormat) {
+        Transformer transformer = Transformer.create(graph, FromatManager.getCoreseOutputFormat(outputFormat));
+        try {
+            transformer.write(System.out);
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
     /**

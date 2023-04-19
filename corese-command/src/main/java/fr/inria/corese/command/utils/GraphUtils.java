@@ -1,6 +1,9 @@
 package fr.inria.corese.command.utils;
 
+import java.io.FileInputStream;
+import java.io.IOException;
 import java.io.InputStream;
+import java.net.URL;
 import java.nio.file.Path;
 
 import fr.inria.corese.command.utils.format.InputFormat;
@@ -22,16 +25,14 @@ public class GraphUtils {
      * @return Corese Graph with RDF data loaded.
      */
     public static Graph load(String inputFile, InputFormat inputFormat) {
-        Graph outputGraph = new Graph();
-
-        Load ld = Load.create(outputGraph);
-        try {
-            ld.parse(inputFile, FromatManager.getCoreseinputFormat(inputFormat));
-        } catch (Exception e) {
-            e.printStackTrace();
+        try (InputStream inputStream = inputFile.startsWith("http") ? new URL(inputFile).openStream()
+                : new FileInputStream(inputFile)) {
+            return load(inputStream, inputFormat);
+        } catch (IOException e) {
+            System.err.println("Error while loading the input file: " + e.getMessage());
+            System.exit(1);
         }
-
-        return outputGraph;
+        return null;
     }
 
     /**
@@ -46,7 +47,11 @@ public class GraphUtils {
 
         Load ld = Load.create(outputGraph);
         try {
-            ld.parse(input, FromatManager.getCoreseinputFormat(inputFormat));
+            if (inputFormat == InputFormat.AUTO) {
+                ld.parse(input);
+            } else {
+                ld.parse(input, FromatManager.getCoreseinputFormat(inputFormat));
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }

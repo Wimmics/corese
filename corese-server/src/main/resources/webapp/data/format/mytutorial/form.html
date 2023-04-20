@@ -51,5 +51,27 @@ function set(name, value) {
         document.getElementById(name).value=value;
     }
 }
+
+function swap(name, value) {
+    swap(name, value, "")
+}
+
+function swap(name, value, def) {
+    elem = document.getElementById(name);
+    if (elem != null) {
+        if (elem.value == def) {
+            elem.value = value;
+        }
+        else {
+            elem.value = def;
+        }
+    }
+}
+
+function clean(... lname) {
+   for (let name of lname) set(name, "");
+}
+// javascript function definition 
+%s
 </script>
 

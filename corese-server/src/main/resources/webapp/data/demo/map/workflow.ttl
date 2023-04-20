@@ -35,7 +35,80 @@ sw:body (
 )
 .
 
+#
+# JavaScript function definitions inserted in html form
+#
+[] st:javascript 
+"""
+function test(){
+    alert("Hello World");
+}
 
+function test(mes){
+    alert(mes);
+}
+
+function setimgsize(value) {
+    table = document.getElementById("album");
+    for (let elem of table.getElementsByTagName("img")) {
+        elem.height = value;
+    }
+}
+
+function settext() {
+    set('cname', 'Saint'); 
+    set('dname', 'Alpes'); 
+    set('rname', 'Alpes'); 
+    set('pname', 'France'); 
+    set('lname', 'Saint');
+}
+
+function resettext() {
+    const names = ["cname", "dname", "rname", "pname", "lname"];
+    for (let elem of names) {
+        set(elem, ''); 
+    }
+}
+
+function resettextoper() {
+    const names = ["ocname", "odname", "orname", "opname", "olname"];
+    for (let elem of names) {
+        set(elem, 'http://ns.inria.fr/sparql-function/contains'); 
+    }
+}
+
+
+
+function setselect() {
+    set('idtyp', 'http://ns.inria.fr/map/Résurgence');
+    set('idcom', 'http://ns.inria.fr/map/resource/Vence06');
+    set('iddep', 'Alpes-Maritimes');
+    set('idreg', 'Provence-Alpes-Côte d\\'Azur');
+}
+
+function resetselect() {
+    set('idtyp', 'http://ns.inria.fr/map/Objet');
+    for (let elem of ['idtyp2', 'idtyp3']) {
+        set(elem, 'http://ns.inria.fr/map/Undefined');
+    }
+    for (let elem of ['idcom', 'iddep', 'idreg', 'idpay']) {
+        set(elem, "");
+    }
+}
+
+function info() {
+    table = document.getElementById("album");
+    for (let elem of table.getElementsByTagName("span")) {
+        if (elem.style.display == "") {
+            elem.style.display = "none";
+        }
+        else {
+            elem.style.display = "";
+        }
+    }
+}
+"""
+.
 
 st:intro a sw:Query ;
     st:name st:intro ;
@@ -225,13 +298,13 @@ st:pattern """?url map:commune ?acom . ?acom rdfs:label ?clabel
 st:defCommune  st:title "Commune" ;     st:default "" ; st:defaultLabel "Any" ; st:key key:commune ;
 st:name "param" ;  st:function us:selectCommune .
 
-st:defCommuneURL  st:title "Commune" ;     st:default "" ; st:defaultLabel "Any" ; st:key key:commune ;
+st:defCommuneURL  st:title "Commune" ;     st:default "" ; st:defaultLabel "Any" ; st:key key:commune ; 
 st:name "param" ;  st:function us:selectCommuneURL .
 
 st:defCommuneBasic  st:title "Commune" ;  st:key key:commune ;
 st:name "param" ;  st:function us:selectCommune .
 
-st:defCommuneURLBasic  st:title "Commune" ;  st:key key:commune ;
+st:defCommuneURLBasic  st:title "Commune" ;  st:key key:commune ; 
 st:name "param" ;  st:function us:selectCommuneURL .
 
 st:defDepartement st:title "Departement" ; st:default "" ; st:defaultLabel "Any" ; st:key key:departement ;
@@ -265,20 +338,20 @@ st:defOperType st:title "Type" ; st:kind st:oper ; st:name "mode" ; st:value st:
 st:defOperTypeRepeat2 st:title "Type" ; st:kind st:oper ; st:repeat 2 ; st:name "mode" ; st:value st:operlist .
 
 
-st:defCommuneTextOper st:kind st:oper ; st:title "Commune" ; st:name "param" ; st:key key:cname ; st:value st:textoper ; st:strip true .
-st:defCommuneTextArg  st:kind st:arg; st:type st:text ;      st:name "param" ; st:key key:cname .
+st:defCommuneTextOper st:kind st:oper ; st:title "Commune" ; st:name "param" ; st:key key:cname ; st:value st:textoper ; st:strip true 
+st:defCommuneTextArg   st:kind st:arg; st:type st:text ;      st:name "param" ; st:key key:cname .
 
 st:defDepartementTextOper st:kind st:oper ; st:title "Departement" ; st:name "param" ; st:key key:dname ;  st:value st:textoper; st:strip true .
-st:defDepartementTextArg  st:kind st:arg; st:type st:text ;          st:name "param" ; st:key key:dname .
+st:defDepartementTextArg   st:kind st:arg; st:type st:text ;          st:name "param" ; st:key key:dname .
 
 st:defRegionTextOper st:kind st:oper ; st:title "Region" ; st:name "param" ; st:key key:rname ; st:value st:textoper ; st:strip true .
 st:defRegionTextArg  st:kind st:arg; st:type st:text ;     st:name "param" ; st:key key:rname .
 
 st:defPaysTextOper st:kind st:oper ; st:title "Pays" ; st:name "param" ; st:key key:pname ; st:value st:textoper ; st:strip true .
-st:defPaysTextArg  st:kind st:arg; st:type st:text ;   st:name "param" ; st:key key:pname .
+st:defPaysTextArg   st:kind st:arg; st:type st:text ;   st:name "param" ; st:key key:pname .
 
 st:defLabelTextOper st:kind st:oper ; st:title "Label" ; st:name "param" ; st:key key:name ;  st:value st:textoper ; st:strip true .
-st:defLabelTextArg st:kind st:arg; st:type st:text ;     st:name "param" ; st:key key:name .
+st:defLabelTextArg  st:kind st:arg; st:type st:text ;     st:name "param" ; st:key key:name .
 
 
 st:textoper st:enum (rq:contains us:notContains rq:regex rq:strstarts) .
@@ -289,12 +362,12 @@ st:textoper st:enum (rq:contains us:notContains rq:regex rq:strstarts) .
 # show/hide button set the value of this html select (with id = "show") with value "more" or "less"
 # see format form.html
 # used by myweb.rul to show/hide html elements with id from st:hide
-st:defShow st:title "Show" ; st:id "show" ; st:name "param" ; st:key key:show ; st:value ("less" "more") .
+st:defShow st:title "Show"  ; st:name "param" ; st:key key:show ; st:value ("less" "more") .
 
 # by default query is hidden
-st:defShowQuery st:title "Show Query" ; st:id "text" ; st:name "param" ; st:key key:text ; st:value ("false" "true") .
+st:defShowQuery st:title "Show Query"  ; st:name "param" ; st:key key:text ; st:value ("false" "true") .
 # by default query is shown
-st:defShowQuery2 st:title "Show Query" ; st:id "text" ; st:name "param" ; st:key key:text ; st:value ("true" "false") .
+st:defShowQuery2 st:title "Show Query"  ; st:name "param" ; st:key key:text ; st:value ("true" "false") .
 
 
 st:operlist st:enum ("AND" "OR" "UNION" "AND_NOT" "OR_NOT" "UNION_NOT") .
@@ -347,9 +420,10 @@ st:genQueryURL st:value
 """$prefix$
 
 template {
-format { ft:format.html
-    group { format { ft:titlerow.html  st:number() ?comLabel ?deptName str(?dep)  ?fgeo  ?row } }
-}}
+    format { ft:format.html
+        group { format { ft:titlerow.html  st:number() ?comLabel ?deptName str(?dep)  ?fgeo  ?row } }
+    }
+}
 where {
 select ?comLabel ?deptName ?dep ?com ?fgeo
 (aggregate (distinct xt:list(?fimg, ?label, ?comLabel, ?fdoc, ?umap, ?lat, ?lon, ?data)) as ?alist)
@@ -486,17 +560,20 @@ where {
                         {?place foaf:name ?fname}
                         union 
                         {?place rdfs:label ?fname}
+                        
                         ?place (dbo:wikiPageRedirects|dbo:wikiPageDisambiguates)? ?loc .
-                        ?loc a dbo:Settlement ; 
-                            geo:long ?alon ; geo:lat ?alat .
-                            
+                        ?loc a dbo:Settlement 
+                        
+                        graph <http://fr.dbpedia.org/graph/dbpedia_wikidata_geo-coordinates> {
+                            ?loc geo:long ?alon ; geo:lat ?alat 
+                        }
                         optional {
                             ?loc dbo:department/dbo:inseeCode ?acode
                             filter (strlen(?acode) > 0)
                         }
                     }
                 }
-            } group by ?loc}
+            } }
             
             ?closeCom map:departement ?depCode
             filter (str(?depCode) = ?acode || ?depCode=0 && ! bound(?acode))
@@ -663,8 +740,8 @@ st:select [st:select st:defImage ; st:hide true] ;
 
 # special parameter key "show" to record the value of show/hide button 
 # this select is hidden in html form user interface
-st:select [ st:hidden true; st:select st:defShow ];
-st:select [ st:hidden true; st:select st:defShowQuery ]
+st:select [ st:hidden true; st:select st:defShow ; st:id "show"];
+st:select [ st:hidden true; st:select st:defShowQuery ; st:id "text"]
 .
  
 
@@ -706,10 +783,15 @@ st:select [st:select st:defImage ; st:hide true] ;
 
 # special parameter key "show" to record the value of show/hide button 
 # this select is hidden in html form user interface
-st:select [ st:hidden true; st:select st:defShow ];
-st:select [ st:hidden true; st:select st:defShowQuery ]
+st:select [ st:hidden true; st:select st:defShow ; st:id "show"];
+st:select [ st:hidden true; st:select st:defShowQuery ; st:id "text"]
 .
 
+
+st:defType st:title "Type" ; st:default map:Objet ; st:defaultLabel "Objet" ; 
+st:name "mode" ;  st:function us:selectType ; st:strip true  
+#; st:onChange """document.getElementById('cname').value = this.value;"""
+.
 
 
 st:indexAll a sw:Query ;
@@ -719,23 +801,23 @@ rdfs:comment """Select resource by type, department, region."""@en ;
 
 st:query st:genQueryURL ;
 
-st:select [ st:title "Type" ; st:default map:Objet ; st:defaultLabel "Objet" ; 
-st:name "mode" ;  st:function us:selectType ; st:strip true ] ;
+st:select [ st:select st:defType  ; st:id "idtyp"] ;
 
-st:select [ st:select st:defOperType ; st:hide true], [ st:select st:defClassArg ] ;
-st:select [ st:select st:defOperType ; st:hide true], [ st:select st:defClassArg ] ;
+st:select [ st:select st:defOperType ; st:hide true], [ st:select st:defClassArg ; st:id "idtyp2"] ;
+st:select [ st:select st:defOperType ; st:hide true], [ st:select st:defClassArg ; st:id "idtyp3"] ;
 
-st:select [st:select st:defCommuneURL ] ;
-st:select [st:select st:defDepartement ] ;
-st:select [st:select st:defRegion ] ;
-st:select [st:select st:defPays; st:hide true] ;
-st:select [st:select st:defLabel ] ;
+st:select [st:select st:defCommuneURL  ; st:id "idcom";] ;
+st:select [st:select st:defDepartement ; st:id "iddep"] ;
+st:select [st:select st:defRegion ; st:id "idreg"] ;
+st:select [st:select st:defPays; st:hide true ; st:id "idpay"] ;
+st:select [st:select st:defLabel ; st:id "idlab"] ;
 
-st:select [ st:select st:defCommuneTextOper] ,      [ st:select st:defCommuneTextArg ] ;
-st:select [ st:select st:defDepartementTextOper] ,  [ st:select st:defDepartementTextArg ] ;
-st:select [ st:select st:defRegionTextOper] ,       [ st:select st:defRegionTextArg ] ;
-st:select [ st:select st:defPaysTextOper] ,         [ st:select st:defPaysTextArg ] ;
-st:select [ st:select st:defLabelTextOper] ,        [ st:select st:defLabelTextArg ] ;
+
+st:select [ st:select st:defCommuneTextOper; st:id "ocname"] ,      [ st:select st:defCommuneTextArg ; st:id "cname" ] ;
+st:select [ st:select st:defDepartementTextOper; st:id "odname"] ,  [ st:select st:defDepartementTextArg ; st:id "dname" ] ;
+st:select [ st:select st:defRegionTextOper; st:id "orname"] ,       [ st:select st:defRegionTextArg ; st:id "rname" ] ;
+st:select [ st:select st:defPaysTextOper; st:id "opname"] ,         [ st:select st:defPaysTextArg ; st:id "pname"] ;
+st:select [ st:select st:defLabelTextOper; si:id "olname"] ,        [ st:select st:defLabelTextArg ; st:id "lname" ] ;
 
 st:select [ st:select st:operlat ; st:hide true], [ st:select st:arglat ] ;
 st:select [ st:select st:operlat ; st:hide true], [ st:select st:arglat ] ;
@@ -744,6 +826,7 @@ st:select [ st:select st:operlon ; st:hide true], [ st:select st:arglon ] ;
 
 
 st:select [ st:hide true ; st:select [st:type st:radio ; st:title "Image Size"; st:name "param"; st:key key:height ; 
+st:onChange """setimgsize(this.value)""";
 st:value ("120" "200" "300" "400" "500")]];
 
 st:select [st:select st:defImage; st:hide true] ;
@@ -751,12 +834,21 @@ st:select [st:select st:defImage; st:hide true] ;
 st:select [ st:hide true ; st:select [st:type st:box ; st:title "Trace"; st:name "param"; st:key key:trace ; 
 st:value "true" ]];
 
-
-
-# special parameter key "show" to record the value of show/hide button 
+# special parameter key:show to record the value of show/hide button 
 # this select is hidden in html form user interface
-st:select [ st:hidden true; st:select st:defShow ];
-st:select [ st:hidden true; st:select st:defShowQuery ]
+st:select [ st:hidden true; st:select st:defShow ; st:id "show" ];
+st:select [ st:hidden true; st:select st:defShowQuery ; st:id "text" ] ;
+
+
+
+st:button [ st:name "Info" ; st:onClick """info()""" ; st:hide true];
+
+st:button [ st:name "Set Text" ;   st:hide true; st:onClick "settext()"  ] ;
+st:button [ st:name "Reset Text" ; st:hide true; st:onClick "resettext();resettextoper()"  ] ;
+
+st:button [ st:name "Set Select" ;   st:hide true; st:onClick "setselect()"  ] ;
+st:button [ st:name "Reset Select" ; st:hide true; st:onClick "resetselect()"  ] ;
+
 .
 
 
@@ -801,8 +893,8 @@ st:select [ st:select st:operdist ], [ st:select st:argdist ] ;
 
 # special parameter key "show" to record the value of show/hide button 
 # this select is hidden in html form user interface
-st:select [ st:hidden true; st:select st:defShow ];
-st:select [ st:hidden true; st:select st:defShowQuery ]
+st:select [ st:hidden true; st:select st:defShow ; st:id "show"];
+st:select [ st:hidden true; st:select st:defShowQuery ; st:id "text"]
 .
 
 
@@ -832,8 +924,8 @@ st:select [ st:select st:operdist ], [ st:select st:argdist ] ;
 
 # special parameter key "show" to record the value of show/hide button 
 # this select is hidden in html form user interface
-st:select [ st:hidden true; st:select st:defShow ];
-st:select [ st:hidden true; st:select st:defShowQuery ]
+st:select [ st:hidden true; st:select st:defShow ; st:id "show"];
+st:select [ st:hidden true; st:select st:defShowQuery ; st:id "text"]
 .
 
 

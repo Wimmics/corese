@@ -30,18 +30,19 @@ template st:selecttable(?n, ?q, ?t, ?s, ?qt) {
                 st:format(ft:silent.html, ?myname, ?myvalue),
                 
             if (?type = st:text, 
-               st:format(?format, ?id, ?title, 
-                    st:format(ft:text.html, ?myname, us:getValue(?myname, us:index(?mykey, ?index)))),
+               st:format(?format, ?idhide, ?title, 
+                    st:format(ft:text.html, coalesce(?id, ?myname), ?myname, us:getValue(?myname, us:index(?mykey, ?index)))),
                         
             if (?type = st:box,
-                st:format(?format, ?id, ?title, 
+                st:format(?format, ?idhide, ?title, 
+                    st:format(ft:divleft.html,
                     if (?myvalue = us:getValue(?myname, us:index(?mykey, ?index)),
                         st:format(ft:boxchecked.html, ?myname, ?myvalue), 
-                        st:format(ft:box.html, ?myname, ?myvalue))),                        
+                        st:format(ft:box.html, ?myname, ?myvalue)))),                        
                     
             # else html select
-                st:format(?format, ?id, ?title, 
-                    st:call-template(st:selectparam, ?n, ?select, 
+                st:format(?format, ?idhide, ?title, 
+                    st:call-template(st:selectparam, ?n, ?elem, ?select, 
                         # 2 index + 1 because st:select with st:key generates 1 silent input + 1 html select
                         # and the key (of silent input) is also in the parameter value list (key value key value)
                         # hence we need to consider (and skip) the index of the key in the value list
@@ -95,6 +96,7 @@ where {
         # button show/hide toggle display 
         optional { ?elem st:hide   ?hide }
         optional { ?elem st:hidden ?hidden }
+        optional { ?elem st:id   ?id }
         optional { ?select st:kind ?akind }
         bind (coalesce(?akind, st:std) as ?kind)
         
@@ -106,17 +108,52 @@ where {
                     ft:selectparameterrowsimple.html) 
                 as ?format)
                 
-        bind (   # st:get(st:show) is managed by function us:extract in function.rq
+        bind (# st:get(st:show) is managed by function us:extract in function.rq
             if (bound(?hide), 
-                st:format(if (st:get(st:show, true), ft:id.html, ft:idhidden.html), us:idCounter()), 
+                # generate an id on table tr element that contain this element, 
+                # the id is used to set/unset style="display:none" with a button
+                st:format(if (!?hide || st:get(st:show, true), ft:id.html, ft:idhidden.html), us:idCounter()), 
             if (bound(?hidden), st:format(ft:hidden.html),
             "")) 
-            as ?id)
+            as ?idhide)
     }
 }
 ]]>
 </body>
 </rule>
+
+
+<rule>
+<body>
+<![CDATA[
+prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
+
+template st:button(?qt) {
+    format { ft:button.html ?idhide ?name ?value }
+}    
+where {
+    bind (st:get(st:context) as ?g)
+    graph ?g { 
+        ?qt st:button ?elem .
+        ?elem st:name ?name ; st:onClick ?value
+        
+        optional { ?elem st:hide   ?hide }
+        optional { ?elem st:hidden ?hidden }
+        
+        bind ( # st:get(st:show) is managed by function us:extract in function.rq
+            if (bound(?hide), 
+                # generate an id on table tr element that contain this element, 
+                # the id is used to set/unset style="display:none" with a button
+                st:format(if (!?hide || st:get(st:show, true), ft:id.html, ft:idhidden.html), us:idCounter()), 
+            if (bound(?hidden), st:format(ft:hidden.html),
+            "")) 
+        as ?idhide)
+    }
+}
+]]>
+</body>
+</rule>
+
 
 <rule>
 <body>
@@ -154,6 +191,7 @@ template st:start {
 where {
 
   bind (coalesce(st:get(st:uri), st:intro) as ?uri)
+  bind (if (st:get(st:display, st:result), xt:print(us:templateResult()), true) as ?tmp)
 
 }
 
@@ -437,13 +475,16 @@ template st:form(?n, ?q, ?t, ?s, ?qt) {
     str(?s) 
     ?n 
     if (?s = st:null, "", st:format(ft:nav.html))
-    st:call-template(st:selecttable, ?n, ?q, ?t, ?s, ?qt)
+    ?ui
     # show/hide html elements declared with st:hide
-    if (?submit && ?id, st:call-template(st:moreless, ?qt), "")
+    concat(?button, 
+        if (?button = "", "", "<br/>"), 
+        if (?submit && ?id, st:call-template(st:moreless, ?qt), ""))
     if (?submit, st:format(ft:submit.html), "")
     if (?text, "", st:format(ft:hidden.html))
     coalesce(st:get(st:col), 60) coalesce(st:get(st:row), 20)
     str(?q)
+    ?fun
     }
 }
 where {
@@ -454,7 +495,14 @@ where {
     graph ?g {  
         ?qt st:name ?n
         bind (exists { ?qt st:select [st:hide ?id] } as ?id)
+        optional { [] st:javascript ?afun }
     }
+    
+    bind (coalesce (?afun, "") as ?fun)
+    bind (st:call-template(st:selecttable, ?n, ?q, ?t, ?s, ?qt) as ?ui)
+    bind (st:call-template(st:button, ?qt) as ?button)
+    
+    bind (if (st:get(st:display, st:ui), xt:print(?ui, ?fun), true) as ?apr)
 }
 ]]>
 </body>
@@ -480,7 +528,7 @@ where {
         bind (st:get(st:context) as ?g)
         
         graph ?g {  
-            ?qt st:select [st:hide ?id ]
+            ?qt (st:select|st:button)/st:hide ?id 
         }
     }}
     bind (reduce(rq:concat, maplist(us:more, ?alist)) as ?amore)
@@ -576,14 +624,13 @@ prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
 #prefix ft: </opt/corese/demo/format/mytutorial/>
 #prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 
-template st:selectparam(?n, ?select, ?index) {
+template st:selectparam(?n, ?elem, ?select, ?index) {
     if (?type = st:radio,
-        st:call-template(st:radioformat,  coalesce(?id, ?name), ?name, ?insert, bound(?oper), ?mylist), 
-        st:call-template(st:selectformat, coalesce(?id, ?name), ?name, ?insert, bound(?oper), ?mylist)) 
+        st:call-template(st:radioformat,  ?select, coalesce(?id, ?name), ?name, ?insert, bound(?oper), ?mylist), 
+        st:call-template(st:selectformat, ?select, coalesce(?id, ?name), ?name, ?insert, bound(?oper), ?mylist)) 
 }
 where {
-
-  {select ?id ?name ?n ?select ?type ?oper ?index ?default ?label ?selectedDefault ?insert
+  {select ?id ?name ?n ?elem ?select ?type ?oper ?index ?default ?label ?selectedDefault ?insert
     (aggregate(xt:list(?value, ?displayValue, ?selected)) as ?alist)
    where {
         bind (st:get(st:context) as ?g)
@@ -592,8 +639,8 @@ where {
         
         graph ?g { 
             ?select st:name ?name 
+            optional { ?elem st:id ?id ; st:select? ?select}
             optional { ?select st:type ?atype }
-            optional { ?select st:id ?id }
             optional { ?select st:strip ?astrip }
             optional { ?select st:uri ?myuri } 
             optional { ?select st:kind st:oper, ?oper }
@@ -708,13 +755,14 @@ prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
 #prefix ft: </opt/corese/demo/format/mytutorial/>
 #prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 
-template st:selectformat(?id, ?name, ?insert, ?oper, ?alist) {
+template st:selectformat(?select, ?id, ?name, ?insert, ?oper, ?alist) {
 
     format {
-        if (?insert, ft:selectparameterinsert.html , ft:selectparameter.html) 
+        #if (?insert, ft:selectparameterinsert.html, ft:selectparameter.html)
+        ft:selectparameter.html
         if (?oper, "myselectoper", "myselectarg")
         ?id ?name
-        ""
+        coalesce(?js, "")
             
         group { 
             # generate one option
@@ -724,6 +772,11 @@ template st:selectformat(?id, ?name, ?insert, ?oper, ?alist) {
 
 }
 where {
+    bind (st:get(st:context) as ?g)
+    graph ?g { 
+        values ?select { undef }
+        optional { ?select st:onChange ?js }
+    }
     values (?id ?name ?insert ?oper ?alist) {(undef undef undef undef undef)}
     values (?value ?display ?selected) { unnest(?alist) }
 }
@@ -742,13 +795,21 @@ prefix ft: </user/corby/home/AAServer/data/format/mytutorial/>
 #prefix ft: </opt/corese/demo/format/mytutorial/>
 #prefix ft: <http://ns.inria.fr/sparql-template/format/mytutorial/>
 
-template st:radioformat(?id, ?name, ?insert, ?oper, ?alist) {
+template st:radioformat(?select, ?id, ?name, ?insert, ?oper, ?alist) {
+format {
+    ft:divleft.html
         group { 
             # generate one option
-            format { us:option(?selected) ?display ?id ?name ?value  } 
+            format { us:option(?selected) ?display ?id ?name ?value coalesce(?js, "") } 
         }
 }
+}
 where {
+    bind (st:get(st:context) as ?g)
+    graph ?g { 
+        values ?select { undef }
+        optional { ?select st:onChange ?js }
+    }
     values (?id ?name ?insert ?oper ?alist) { (undef undef undef undef undef) }
     values (?value ?display ?selected) { unnest(?alist) }
 }

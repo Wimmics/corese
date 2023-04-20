@@ -1,8 +1,8 @@
 <!-- markdownlint-configure-file { "MD004": { "style": "consistent" } } -->
 
 <!-- markdownlint-disable MD033 -->
-
-#
+<!-- markdownlint-disable MD012 -->
+<!-- markdownlint-disable MD041 -->
 
 <p align="center">
     <a href="https://project.inria.fr/corese/">
@@ -18,7 +18,7 @@ Corese is a software platform implementing and extending the standards of the Se
 Corese implement W3C standards [RDF](https://www.w3.org/RDF/), [RDFS](https://www.w3.org/2001/sw/wiki/RDFS), [SPARQL1.1 Query & Update](https://www.w3.org/2001/sw/wiki/SPARQL), [OWL RL](https://www.w3.org/2005/rules/wiki/OWLRL), [SHACL](https://www.w3.org/TR/shacl/) …
 It also implements extensions like [STTL SPARQL](https://files.inria.fr/corese/doc/sttl.html), [SPARQL Rule](https://files.inria.fr/corese/doc/rule.html) and [LDScript](https://files.inria.fr/corese/doc/ldscript.html).
 
-There are several interfaces for Corese:"
+There are several interfaces for Corese:
 
 - **Corese-library:** Java library to process RDF data and use Corese features via an API.
 - **Corese-server:** Tool to easily create, configure and manage SPARQL endpoints.
@@ -36,13 +36,21 @@ There are several interfaces for Corese:"
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-core</artifactId>
-    <version>4.4.0</version>
+    <version>4.4.1</version>
 </dependency>
 
+<!-- jena storage -->
+<dependency>
+    <groupId>fr.inria.corese</groupId>
+    <artifactId>corese-jena</artifactId>
+    <version>4.4.1</version>
+</dependency>
+
+<!-- rdf4j storage -->
 <dependency>
     <groupId>fr.inria.corese</groupId>
     <artifactId>corese-rdf4j</artifactId>
-    <version>4.4.0</version>
+    <version>4.4.1</version>
 </dependency>
 ```
 
@@ -61,8 +69,8 @@ docker run --name my-corese \
 - Download [Corese-server jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-server-4.4.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-server-4.4.0.jar"
+wget "files.inria.fr/corese/distrib/corese-server-4.4.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-server-4.4.1.jar"
 ```
 
 Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/SoyFglO_1#)
@@ -72,8 +80,8 @@ Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/Soy
 - Download [Corese-gui jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-gui-4.4.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-gui-4.4.0.jar"
+wget "files.inria.fr/corese/distrib/corese-gui-4.4.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-gui-4.4.1.jar"
 ```
 
 ### Corese-Python (beta)
@@ -81,8 +89,8 @@ java -jar "-Dfile.encoding=UTF8" "corese-gui-4.4.0.jar"
 - Download [Corese-python jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-library-python-4.4.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.4.0.jar"
+wget "files.inria.fr/corese/distrib/corese-library-python-4.4.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.4.1.jar"
 ```
 
 ### Corese-Command (beta)
@@ -90,8 +98,8 @@ java -jar "-Dfile.encoding=UTF8" "corese-library-python-4.4.0.jar"
 - Download [Corese-command jar file](https://project.inria.fr/corese/download/).
 
 ```sh
-wget "files.inria.fr/corese/distrib/corese-command-4.4.0.jar"
-java -jar "-Dfile.encoding=UTF8" "corese-command-4.4.0.jar"
+wget "files.inria.fr/corese/distrib/corese-command-4.4.1.jar"
+java -jar "-Dfile.encoding=UTF8" "corese-command-4.4.1.jar"
 ```
 
 ## Compilation from source
@@ -111,7 +119,7 @@ mvn clean -Dmaven.test.skip=true package
     author = {Corby, Olivier and Ceres, Rémi and Demairy, Erwan and Song, Fuqi and Bottollier, Virginie and Savoie, Olivier},
     title = {{Corese: Semantic Web Factory}},
     howpublished = {\url{https://project.inria.fr/corese/}},
-    version = {4.4.0},
+    version = {4.4.1},
     institution = {Inria},
     abstract = {{Software platform implementing and extending the standards of the Semantic Web.}},
     url = {https://github.com/Wimmics/corese}

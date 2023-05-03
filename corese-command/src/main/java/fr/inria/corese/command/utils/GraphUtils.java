@@ -1,8 +1,12 @@
 package fr.inria.corese.command.utils;
 
 import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
+import java.net.URI;
+import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 
@@ -10,6 +14,7 @@ import fr.inria.corese.command.utils.format.InputFormat;
 import fr.inria.corese.command.utils.format.OutputFormat;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.transform.Transformer;
 
 public class GraphUtils {
@@ -20,52 +25,79 @@ public class GraphUtils {
     /**
      * Parse a file and load RDF data into a Corese Graph.
      *
-     * @param inputFile   Path or URL of the input RDF file.
+     * @param pathOrUrl   Path or URL of the input RDF file.
      * @param inputFormat Input file serialization format.
      * @return Corese Graph with RDF data loaded.
+     * @throws IOException if an error occurs while loading the input file.
      */
-    public static Graph load(String inputFile, InputFormat inputFormat) {
-        try (InputStream inputStream = inputFile.startsWith("http") ? new URL(inputFile).openStream()
-                : new FileInputStream(inputFile)) {
+    public static Graph load(String pathOrUrl, InputFormat inputFormat) throws IOException {
+        InputStream inputStream = null;
+        try {
+            if (pathOrUrl.startsWith("http")) {
+                URL url = new URL(pathOrUrl);
+                URI uri = url.toURI();
+                if (!"http".equalsIgnoreCase(uri.getScheme()) && !"https".equalsIgnoreCase(uri.getScheme())) {
+                    throw new IllegalArgumentException("Invalid URL scheme: " + uri.getScheme());
+                }
+                inputStream = url.openStream();
+            } else {
+
+                if (inputFormat == null) {
+                    inputFormat = InputFormat.fromLoaderValue(LoadFormat.getFormat(pathOrUrl));
+                }
+
+                inputStream = new FileInputStream(pathOrUrl);
+            }
             return load(inputStream, inputFormat);
-        } catch (IOException e) {
-            System.err.println("Error while loading the input file: " + e.getMessage());
-            System.exit(1);
+        } catch (IOException | URISyntaxException e) {
+            throw new IOException("Error while loading the input file: " + e.getMessage(), e);
+        } finally {
+            if (inputStream != null) {
+                inputStream.close();
+            }
         }
-        return null;
     }
 
     /**
      * Parse a file and load RDF data into a Corese Graph.
      *
-     * @param input       Input stream of the input RDF file.
+     * @param inputStream Input stream of the input RDF file.
      * @param inputFormat Input file serialization format.
      * @return Corese Graph with RDF data loaded.
+     * @throws IOException              if an I/O error occurs
+     * @throws IllegalArgumentException if the input format cannot be determined
+     *                                  automatically when using standard input.
      */
-    public static Graph load(InputStream input, InputFormat inputFormat) {
-        Graph outputGraph = new Graph();
+    public static Graph load(InputStream inputStream, InputFormat inputFormat)
+            throws IOException, IllegalArgumentException {
+        final Graph graph = new Graph();
 
-        Load ld = Load.create(outputGraph);
-        try {
-            if (inputFormat == InputFormat.AUTO) {
-                ld.parse(input);
-            } else {
-                ld.parse(input, FromatManager.getCoreseinputFormat(inputFormat));
+        Load load = Load.create(graph);
+        if (inputFormat == null) {
+            throw new IllegalArgumentException(
+                    "The input format cannot be automatically determined if you use standard input or na URL. "
+                            + "Please specify the input format with the option -f.");
+        } else {
+            try {
+                load.parse(inputStream, InputFormat.toLoaderValue(inputFormat));
+            } catch (Exception e) {
+                throw new IllegalArgumentException("Failed to parse RDF file.", e);
+
             }
-        } catch (Exception e) {
-            e.printStackTrace();
         }
 
-        return outputGraph;
+        return graph;
     }
 
-    public static void print(Graph graph, OutputFormat outputFormat) {
-        Transformer transformer = Transformer.create(graph, FromatManager.getCoreseOutputFormat(outputFormat));
-        try {
-            transformer.write(System.out);
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+    /**
+     * Export RDF data from a Corese Graph into a serialized file format.
+     * 
+     * @param graph        Graph with data to export.
+     * @param outputFormat output file serialization format.
+     * @throws IOException if an I/O error occurs.
+     */
+    public static void print(Graph graph, OutputFormat outputFormat) throws IOException {
+        export(graph, System.out, outputFormat);
     }
 
     /**
@@ -76,14 +108,28 @@ public class GraphUtils {
      * @param outputFormat output file serialization format.
      */
     public static void export(Graph inputGraph, Path outputFile, OutputFormat outputFormat) {
-
-        Transformer transformer = Transformer.create(inputGraph, FromatManager.getCoreseOutputFormat(outputFormat));
         try {
-            transformer.write(outputFile.toString());
-        } catch (Exception e) {
+            export(inputGraph, new FileOutputStream(outputFile.toFile()), outputFormat);
+        } catch (IOException e) {
             e.printStackTrace();
         }
-
     }
 
+    /**
+     * Export the RDF data in the given graph to the specified output stream using
+     * the given output format.
+     *
+     * @param graph        The graph to export.
+     * @param outputStream The output stream to write the RDF data to.
+     * @param outputFormat The output format to use.
+     * @throws IOException if an I/O error occurs.
+     */
+    private static void export(Graph graph, OutputStream outputStream, OutputFormat outputFormat) throws IOException {
+        try (outputStream) {
+            Transformer transformer = Transformer.create(graph, OutputFormat.convertToTransformer(outputFormat));
+            transformer.write(outputStream);
+        } catch (IOException e) {
+            throw new IOException("Failed to write RDF data to output stream.", e);
+        }
+    }
 }

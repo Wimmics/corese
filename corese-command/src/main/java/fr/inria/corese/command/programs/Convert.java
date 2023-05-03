@@ -1,5 +1,7 @@
 package fr.inria.corese.command.programs;
 
+import java.io.IOException;
+import java.io.InputStream;
 import java.nio.file.Path;
 
 import fr.inria.corese.command.App;
@@ -18,8 +20,8 @@ public class Convert implements Runnable {
     private String inputPath;
 
     @Option(names = { "-f",
-            "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}. Default: TURTLE.")
-    private InputFormat inputFormat = InputFormat.TURTLE;
+            "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}.")
+    private InputFormat inputFormat = null;
 
     @Option(names = { "-o", "--output-filepath" }, description = "Path where the resulting file should be saved.")
     private Path outputPath;
@@ -34,37 +36,54 @@ public class Convert implements Runnable {
 
     @Override
     public void run() {
-        this.check();
-
-        // Load the input file.
-        if (this.inputPath == null) {
-            // if inputPath is null, load from stdin
-            this.graph = GraphUtils.load(System.in, this.inputFormat);
-        } else {
-            this.graph = GraphUtils.load(this.inputPath, this.inputFormat);
-        }
-
-        // Export the graph.
-        if (this.outputPath == null) {
-            // if outputPath is null, print to stdout
-            GraphUtils.print(this.graph, this.outputFormat);
-        } else {
-            GraphUtils.export(this.graph, this.outputPath, this.outputFormat);
+        try {
+            checkInputValues();
+            loadInputFile();
+            exportGraph();
+        } catch (IllegalArgumentException | IOException e) {
+            System.err.println("Error: " + e.getMessage());
         }
     }
 
     /**
-     * Checks if the input values are correct.
+     * Check if the input values are correct.
      * 
-     * @throws IllegalArgumentException
+     * @throws IllegalArgumentException if input path is same as output path.
      */
-    private void check() throws IllegalArgumentException {
-
-        // Check that the input path is not equal to the output path.
-        if (this.inputPath != null && this.outputPath != null && this.inputPath.equals(this.outputPath.toString())) {
-            throw new IllegalArgumentException("The input path cannot be the same as the output path.");
+    private void checkInputValues() throws IllegalArgumentException {
+        if (inputPath != null && outputPath != null && inputPath.equals(outputPath.toString())) {
+            throw new IllegalArgumentException("Input path cannot be the same as output path.");
         }
-
     }
 
+    /**
+     * Load the input file.
+     * 
+     * @throws IllegalArgumentException if the input file path is null.
+     * @throws IOException              if an I/O error occurs while loading the
+     *                                  input file.
+     */
+    private void loadInputFile() throws IllegalArgumentException, IOException {
+        if (inputPath == null) {
+            // if inputPath is null, load from stdin
+            InputStream inputStream = System.in;
+            this.graph = GraphUtils.load(inputStream, inputFormat);
+        } else {
+            this.graph = GraphUtils.load(inputPath, inputFormat);
+        }
+    }
+
+    /**
+     * Export the graph.
+     * 
+     * @throws IOException if an I/O error occurs while exporting the graph.
+     */
+    private void exportGraph() throws IOException {
+        if (outputPath == null) {
+            // if outputPath is null, print to stdout
+            GraphUtils.print(graph, outputFormat);
+        } else {
+            GraphUtils.export(graph, outputPath, outputFormat);
+        }
+    }
 }

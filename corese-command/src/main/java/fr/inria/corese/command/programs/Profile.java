@@ -1,6 +1,6 @@
 package fr.inria.corese.command.programs;
 
-import java.nio.file.Path;
+import java.io.IOException;
 import java.security.InvalidParameterException;
 
 import fr.inria.corese.command.App;
@@ -45,7 +45,11 @@ public class Profile implements Runnable {
 
     @Override
     public void run() {
-        this.graph = GraphUtils.load(this.intputPath, this.inputFormat);
+        try {
+            this.graph = GraphUtils.load(this.intputPath, this.inputFormat);
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
         chechProfile();
     }
 

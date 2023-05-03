@@ -138,7 +138,7 @@ public class Sparql implements Runnable {
                         "Error: " + this.resultFormat + "is not a valid output format for insert requests.");
             }
 
-            GraphUtils.print(graph, outputFormat);
+            GraphUtils.exportToString(graph, outputFormat, spec);
         } else {
             ResultFormat resultFormater = ResultFormat.create(map);
             resultFormater.setSelectFormat(this.resultFormat.getValue());

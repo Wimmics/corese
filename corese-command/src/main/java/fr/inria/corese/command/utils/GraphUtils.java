@@ -20,12 +20,8 @@ import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.transform.Transformer;
 import picocli.CommandLine.Model.CommandSpec;
-import picocli.CommandLine.Spec;
 
 public class GraphUtils {
-
-    @Spec
-    private static CommandSpec spec;
 
     private GraphUtils() {
     }
@@ -104,11 +100,10 @@ public class GraphUtils {
      * @param outputFormat output file serialization format.
      * @throws IOException if an I/O error occurs.
      */
-    public static void print(Graph graph, EnumOutputFormat outputFormat) throws IOException {
+    public static void exportToString(Graph graph, EnumOutputFormat outputFormat, CommandSpec spec)
+            throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
         export(graph, outputStream, outputFormat);
-
-        // Convert the ByteArrayOutputStream content to a string and print it
         String outputContent = outputStream.toString(StandardCharsets.UTF_8);
         spec.commandLine().getOut().println(outputContent);
     }

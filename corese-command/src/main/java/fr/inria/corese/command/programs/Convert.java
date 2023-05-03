@@ -19,7 +19,7 @@ import picocli.CommandLine.Spec;
 public class Convert implements Runnable {
 
     @Spec
-    private CommandSpec spec;
+    CommandSpec spec;
 
     @Option(names = { "-i", "--input-filepath" }, description = "Path or URL of the file that needs to be converted.")
     private String inputPath;
@@ -87,9 +87,10 @@ public class Convert implements Runnable {
     private void exportGraph() throws IOException {
         if (outputPath == null) {
             // if outputPath is null, print to stdout
-            GraphUtils.print(graph, outputFormat);
+            GraphUtils.exportToString(graph, outputFormat, spec);
         } else {
             GraphUtils.export(graph, outputPath, outputFormat);
         }
     }
+
 }

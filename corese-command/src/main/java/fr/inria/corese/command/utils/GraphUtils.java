@@ -1,6 +1,7 @@
 package fr.inria.corese.command.utils;
 
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -106,13 +107,12 @@ public class GraphUtils {
      * @param inputGraph   Graph with data to export.
      * @param outputFile   Path of the output RDF file.
      * @param outputFormat output file serialization format.
+     * @throws IOException           if an I/O error occurs.
+     * @throws FileNotFoundException if the file exists but is a directory rather
      */
-    public static void export(Graph inputGraph, Path outputFile, EnumOutputFormat outputFormat) {
-        try {
-            export(inputGraph, new FileOutputStream(outputFile.toFile()), outputFormat);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+    public static void export(Graph inputGraph, Path outputFile, EnumOutputFormat outputFormat)
+            throws FileNotFoundException, IOException {
+        export(inputGraph, new FileOutputStream(outputFile.toFile()), outputFormat);
     }
 
     /**
@@ -124,7 +124,8 @@ public class GraphUtils {
      * @param outputFormat The output format to use.
      * @throws IOException if an I/O error occurs.
      */
-    private static void export(Graph graph, OutputStream outputStream, EnumOutputFormat outputFormat) throws IOException {
+    private static void export(Graph graph, OutputStream outputStream, EnumOutputFormat outputFormat)
+            throws IOException {
         try (outputStream) {
             Transformer transformer = Transformer.create(graph, EnumOutputFormat.convertToTransformer(outputFormat));
             transformer.write(outputStream);

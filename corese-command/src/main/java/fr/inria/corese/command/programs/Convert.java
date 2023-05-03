@@ -42,6 +42,7 @@ public class Convert implements Runnable {
             exportGraph();
         } catch (IllegalArgumentException | IOException e) {
             System.err.println("Error: " + e.getMessage());
+            System.exit(1);
         }
     }
 

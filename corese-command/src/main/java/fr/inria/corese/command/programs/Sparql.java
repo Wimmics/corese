@@ -6,9 +6,9 @@ import java.nio.file.Path;
 
 import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.GraphUtils;
-import fr.inria.corese.command.utils.format.EnumResultFormat;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.command.utils.format.EnumOutputFormat;
+import fr.inria.corese.command.utils.format.EnumResultFormat;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.QueryProcess;
@@ -53,6 +53,7 @@ public class Sparql implements Runnable {
             execute();
         } catch (Exception e) {
             System.err.println("Error: " + e.getMessage());
+            System.exit(1);
         }
     }
 

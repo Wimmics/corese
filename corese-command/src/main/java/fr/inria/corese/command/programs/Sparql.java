@@ -15,11 +15,16 @@ import fr.inria.corese.core.query.QueryProcess;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 @Command(name = "sparql", version = App.version, description = "Run a SPARQL query.", mixinStandardHelpOptions = true)
 public class Sparql implements Runnable {
+
+    @Spec
+    private CommandSpec spec;
 
     @Option(names = { "-f",
             "--input-format" }, description = "Input file format. Possible values: ${COMPLETION-CANDIDATES}.")
@@ -52,7 +57,7 @@ public class Sparql implements Runnable {
             loadQuery();
             execute();
         } catch (Exception e) {
-            System.err.println("Error: " + e.getMessage());
+            spec.commandLine().getErr().println("Error: " + e.getMessage());
             System.exit(1);
         }
     }
@@ -126,7 +131,6 @@ public class Sparql implements Runnable {
      */
     private void printResults(ASTQuery ast, Mappings map) throws IOException {
         if (ast.isInsert() || ast.isInsertData() || ast.isUpdateInsert() || ast.isUpdateInsertData()) {
-            System.out.println("insert");
             EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
 
             if (outputFormat == null) {
@@ -140,8 +144,7 @@ public class Sparql implements Runnable {
             resultFormater.setSelectFormat(this.resultFormat.getValue());
             resultFormater.setConstructFormat(this.resultFormat.getValue());
             String result = resultFormater.toString();
-            System.out.println(result);
-
+            spec.commandLine().getOut().println(result);
         }
     }
 
@@ -155,7 +158,6 @@ public class Sparql implements Runnable {
     private void writeResults(ASTQuery ast, Mappings map) throws Exception {
 
         if (ast.isInsert() || ast.isInsertData() || ast.isUpdateInsert() || ast.isUpdateInsertData()) {
-            System.out.println("insert");
             EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
 
             if (outputFormat == null) {

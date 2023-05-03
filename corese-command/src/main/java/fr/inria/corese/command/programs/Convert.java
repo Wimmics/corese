@@ -10,11 +10,16 @@ import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.core.Graph;
 import picocli.CommandLine.Command;
+import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
 import picocli.CommandLine.Parameters;
+import picocli.CommandLine.Spec;
 
 @Command(name = "convert", version = App.version, description = "Convert an RDF file from one serialization format to another.", mixinStandardHelpOptions = true)
 public class Convert implements Runnable {
+
+    @Spec
+    private CommandSpec spec;
 
     @Option(names = { "-i", "--input-filepath" }, description = "Path or URL of the file that needs to be converted.")
     private String inputPath;
@@ -41,7 +46,7 @@ public class Convert implements Runnable {
             loadInputFile();
             exportGraph();
         } catch (IllegalArgumentException | IOException e) {
-            System.err.println("Error: " + e.getMessage());
+            spec.commandLine().getErr().println("Error: " + e.getMessage());
             System.exit(1);
         }
     }

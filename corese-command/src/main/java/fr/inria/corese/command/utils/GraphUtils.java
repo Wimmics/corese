@@ -1,5 +1,6 @@
 package fr.inria.corese.command.utils;
 
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -9,6 +10,7 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.nio.file.Path;
 
 import fr.inria.corese.command.utils.format.EnumInputFormat;
@@ -17,8 +19,13 @@ import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadFormat;
 import fr.inria.corese.core.transform.Transformer;
+import picocli.CommandLine.Model.CommandSpec;
+import picocli.CommandLine.Spec;
 
 public class GraphUtils {
+
+    @Spec
+    private static CommandSpec spec;
 
     private GraphUtils() {
     }
@@ -98,7 +105,12 @@ public class GraphUtils {
      * @throws IOException if an I/O error occurs.
      */
     public static void print(Graph graph, EnumOutputFormat outputFormat) throws IOException {
-        export(graph, System.out, outputFormat);
+        ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+        export(graph, outputStream, outputFormat);
+
+        // Convert the ByteArrayOutputStream content to a string and print it
+        String outputContent = outputStream.toString(StandardCharsets.UTF_8);
+        spec.commandLine().getOut().println(outputContent);
     }
 
     /**

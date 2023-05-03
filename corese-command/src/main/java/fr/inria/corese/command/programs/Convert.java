@@ -6,8 +6,8 @@ import java.nio.file.Path;
 
 import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.GraphUtils;
-import fr.inria.corese.command.utils.format.InputFormat;
-import fr.inria.corese.command.utils.format.OutputFormat;
+import fr.inria.corese.command.utils.format.EnumInputFormat;
+import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.core.Graph;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Option;
@@ -21,13 +21,13 @@ public class Convert implements Runnable {
 
     @Option(names = { "-f",
             "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}.")
-    private InputFormat inputFormat = null;
+    private EnumInputFormat inputFormat = null;
 
     @Option(names = { "-o", "--output-filepath" }, description = "Path where the resulting file should be saved.")
     private Path outputPath;
 
     @Parameters(paramLabel = "output-format", description = "Serialization format to which the input file should be converted. Possible values: ${COMPLETION-CANDIDATES}.")
-    private OutputFormat outputFormat;
+    private EnumOutputFormat outputFormat;
 
     private Graph graph;
 

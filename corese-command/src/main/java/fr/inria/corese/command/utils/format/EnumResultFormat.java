@@ -3,7 +3,7 @@ package fr.inria.corese.command.utils.format;
 /**
  * Enumeration of exportable RDF serialization formats.
  */
-public enum ResultFormat {
+public enum EnumResultFormat {
     RDFXML(1),
     TURTLE(2),
     TRIG(3),
@@ -22,7 +22,7 @@ public enum ResultFormat {
      * 
      * @param value The value of the enum.
      */
-    ResultFormat(int value) {
+    EnumResultFormat(int value) {
         this.value = value;
     }
 
@@ -41,8 +41,8 @@ public enum ResultFormat {
      * @param value The value of the enum.
      * @return The enum.
      */
-    public static ResultFormat fromValue(int value) {
-        for (ResultFormat format : ResultFormat.values()) {
+    public static EnumResultFormat fromValue(int value) {
+        for (EnumResultFormat format : EnumResultFormat.values()) {
             if (format.getValue() == value) {
                 return format;
             }
@@ -55,16 +55,16 @@ public enum ResultFormat {
      * 
      * @return The corresponding OutputFormat.
      */
-    public OutputFormat convertToOutputFormat() {
+    public EnumOutputFormat convertToOutputFormat() {
         switch (this) {
             case RDFXML:
-                return OutputFormat.RDFXML;
+                return EnumOutputFormat.RDFXML;
             case TURTLE:
-                return OutputFormat.TURTLE;
+                return EnumOutputFormat.TURTLE;
             case TRIG:
-                return OutputFormat.TRIG;
+                return EnumOutputFormat.TRIG;
             case JSONLD:
-                return OutputFormat.JSONLD;
+                return EnumOutputFormat.JSONLD;
             default:
                 return null;
         }

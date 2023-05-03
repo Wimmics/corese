@@ -7,7 +7,7 @@ import fr.inria.corese.core.api.Loader;
 /**
  * Enumeration of parsable RDF serialization formats.
  */
-public enum InputFormat {
+public enum EnumInputFormat {
     RDFXML(1),
     TURTLE(2),
     TRIG(3),
@@ -24,7 +24,7 @@ public enum InputFormat {
      * 
      * @param value The value of the enum.
      */
-    InputFormat(int value) {
+    EnumInputFormat(int value) {
         this.value = value;
     }
 
@@ -43,8 +43,8 @@ public enum InputFormat {
      * @param value The value of the enum.
      * @return The enum.
      */
-    public static InputFormat fromValue(int value) {
-        for (InputFormat format : InputFormat.values()) {
+    public static EnumInputFormat fromValue(int value) {
+        for (EnumInputFormat format : EnumInputFormat.values()) {
             if (format.getValue() == value) {
                 return format;
             }
@@ -58,28 +58,28 @@ public enum InputFormat {
      * @param loaderFormat The Loader format.
      * @return The corresponding InputFormat.
      */
-    public static InputFormat fromLoaderValue(int loaderFormat) {
+    public static EnumInputFormat fromLoaderValue(int loaderFormat) {
         switch (loaderFormat) {
             case Loader.RDFXML_FORMAT:
-                return InputFormat.RDFXML;
+                return EnumInputFormat.RDFXML;
 
             case Loader.TURTLE_FORMAT:
-                return InputFormat.TURTLE;
+                return EnumInputFormat.TURTLE;
 
             case Loader.NT_FORMAT:
-                return InputFormat.NTRIPLES;
+                return EnumInputFormat.NTRIPLES;
 
             case Loader.JSONLD_FORMAT:
-                return InputFormat.JSONLD;
+                return EnumInputFormat.JSONLD;
 
             case Loader.TRIG_FORMAT:
-                return InputFormat.TRIG;
+                return EnumInputFormat.TRIG;
 
             case Loader.NQUADS_FORMAT:
-                return InputFormat.NQUADS;
+                return EnumInputFormat.NQUADS;
 
             case Loader.RDFA_FORMAT:
-                return InputFormat.RDFA;
+                return EnumInputFormat.RDFA;
 
             default:
                 throw new InvalidParameterException("Loader format " + loaderFormat + " is unknown.");
@@ -94,7 +94,7 @@ public enum InputFormat {
      * @param format The Loader format.
      * @return The corresponding Loader format.
      */
-    public static int toLoaderValue(InputFormat format) {
+    public static int toLoaderValue(EnumInputFormat format) {
         switch (format) {
             case RDFXML:
                 return Loader.RDFXML_FORMAT;

@@ -6,9 +6,9 @@ import java.nio.file.Path;
 
 import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.GraphUtils;
-import fr.inria.corese.command.utils.format.ResultFormat;
-import fr.inria.corese.command.utils.format.InputFormat;
-import fr.inria.corese.command.utils.format.OutputFormat;
+import fr.inria.corese.command.utils.format.EnumResultFormat;
+import fr.inria.corese.command.utils.format.EnumInputFormat;
+import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.QueryProcess;
@@ -23,7 +23,7 @@ public class Sparql implements Runnable {
 
     @Option(names = { "-f",
             "--input-format" }, description = "Input file format. Possible values: ${COMPLETION-CANDIDATES}.")
-    private InputFormat inputFormat;
+    private EnumInputFormat inputFormat;
 
     @Option(names = { "-i",
             "--input-filepath" }, description = "Input file path. If not provided, the standard input will be used.")
@@ -31,7 +31,7 @@ public class Sparql implements Runnable {
 
     @Option(names = { "-r",
             "--result-format" }, description = "Result fileformat. Possible values: ${COMPLETION-CANDIDATES}. ")
-    private ResultFormat resultFormat;
+    private EnumResultFormat resultFormat;
 
     @Option(names = { "-o",
             "--output-filepath" }, description = "Output file path. If not provided, the result will be written to standard output.")
@@ -126,7 +126,7 @@ public class Sparql implements Runnable {
     private void printResults(ASTQuery ast, Mappings map) throws IOException {
         if (ast.isInsert() || ast.isInsertData() || ast.isUpdateInsert() || ast.isUpdateInsertData()) {
             System.out.println("insert");
-            OutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
+            EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
 
             if (outputFormat == null) {
                 throw new IllegalArgumentException(
@@ -155,7 +155,7 @@ public class Sparql implements Runnable {
 
         if (ast.isInsert() || ast.isInsertData() || ast.isUpdateInsert() || ast.isUpdateInsertData()) {
             System.out.println("insert");
-            OutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
+            EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
 
             if (outputFormat == null) {
                 throw new IllegalArgumentException(

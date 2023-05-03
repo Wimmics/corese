@@ -7,7 +7,7 @@ import fr.inria.corese.core.transform.Transformer;
 /**
  * Enumeration of exportable RDF serialization formats.
  */
-public enum OutputFormat {
+public enum EnumOutputFormat {
     RDFXML(1),
     TURTLE(2),
     TRIG(3),
@@ -20,7 +20,7 @@ public enum OutputFormat {
      * 
      * @param value The value of the enum.
      */
-    OutputFormat(int value) {
+    EnumOutputFormat(int value) {
         this.value = value;
     }
 
@@ -39,8 +39,8 @@ public enum OutputFormat {
      * @param value The value of the enum.
      * @return The enum.
      */
-    public static OutputFormat fromValue(int value) {
-        for (OutputFormat format : OutputFormat.values()) {
+    public static EnumOutputFormat fromValue(int value) {
+        for (EnumOutputFormat format : EnumOutputFormat.values()) {
             if (format.getValue() == value) {
                 return format;
             }
@@ -55,7 +55,7 @@ public enum OutputFormat {
      * @param outputFormat Value to convert.
      * @return Converted value.
      */
-    public static String convertToTransformer(OutputFormat outputFormat) {
+    public static String convertToTransformer(EnumOutputFormat outputFormat) {
         switch (outputFormat) {
             case RDFXML:
                 return Transformer.RDFXML;

@@ -5,7 +5,7 @@ import java.security.InvalidParameterException;
 
 import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.GraphUtils;
-import fr.inria.corese.command.utils.format.InputFormat;
+import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.logic.OWLProfile;
 import picocli.CommandLine.Command;
@@ -19,7 +19,7 @@ public class Profile implements Runnable {
 
     @Parameters(paramLabel = "INPUT_FORMAT", description = "Input file format."
             + " Candidates: ${COMPLETION-CANDIDATES}")
-    private InputFormat inputFormat;
+    private EnumInputFormat inputFormat;
 
     @Parameters(paramLabel = "INPUT", description = "Input file path.")
     private String intputPath;

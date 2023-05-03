@@ -10,8 +10,8 @@ import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.file.Path;
 
-import fr.inria.corese.command.utils.format.InputFormat;
-import fr.inria.corese.command.utils.format.OutputFormat;
+import fr.inria.corese.command.utils.format.EnumInputFormat;
+import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadFormat;
@@ -30,7 +30,7 @@ public class GraphUtils {
      * @return Corese Graph with RDF data loaded.
      * @throws IOException if an error occurs while loading the input file.
      */
-    public static Graph load(String pathOrUrl, InputFormat inputFormat) throws IOException {
+    public static Graph load(String pathOrUrl, EnumInputFormat inputFormat) throws IOException {
         InputStream inputStream = null;
         try {
             if (pathOrUrl.startsWith("http")) {
@@ -43,7 +43,7 @@ public class GraphUtils {
             } else {
 
                 if (inputFormat == null) {
-                    inputFormat = InputFormat.fromLoaderValue(LoadFormat.getFormat(pathOrUrl));
+                    inputFormat = EnumInputFormat.fromLoaderValue(LoadFormat.getFormat(pathOrUrl));
                 }
 
                 inputStream = new FileInputStream(pathOrUrl);
@@ -68,7 +68,7 @@ public class GraphUtils {
      * @throws IllegalArgumentException if the input format cannot be determined
      *                                  automatically when using standard input.
      */
-    public static Graph load(InputStream inputStream, InputFormat inputFormat)
+    public static Graph load(InputStream inputStream, EnumInputFormat inputFormat)
             throws IOException, IllegalArgumentException {
         final Graph graph = new Graph();
 
@@ -79,7 +79,7 @@ public class GraphUtils {
                             + "Please specify the input format with the option -f.");
         } else {
             try {
-                load.parse(inputStream, InputFormat.toLoaderValue(inputFormat));
+                load.parse(inputStream, EnumInputFormat.toLoaderValue(inputFormat));
             } catch (Exception e) {
                 throw new IllegalArgumentException("Failed to parse RDF file.", e);
 
@@ -96,7 +96,7 @@ public class GraphUtils {
      * @param outputFormat output file serialization format.
      * @throws IOException if an I/O error occurs.
      */
-    public static void print(Graph graph, OutputFormat outputFormat) throws IOException {
+    public static void print(Graph graph, EnumOutputFormat outputFormat) throws IOException {
         export(graph, System.out, outputFormat);
     }
 
@@ -107,7 +107,7 @@ public class GraphUtils {
      * @param outputFile   Path of the output RDF file.
      * @param outputFormat output file serialization format.
      */
-    public static void export(Graph inputGraph, Path outputFile, OutputFormat outputFormat) {
+    public static void export(Graph inputGraph, Path outputFile, EnumOutputFormat outputFormat) {
         try {
             export(inputGraph, new FileOutputStream(outputFile.toFile()), outputFormat);
         } catch (IOException e) {
@@ -124,9 +124,9 @@ public class GraphUtils {
      * @param outputFormat The output format to use.
      * @throws IOException if an I/O error occurs.
      */
-    private static void export(Graph graph, OutputStream outputStream, OutputFormat outputFormat) throws IOException {
+    private static void export(Graph graph, OutputStream outputStream, EnumOutputFormat outputFormat) throws IOException {
         try (outputStream) {
-            Transformer transformer = Transformer.create(graph, OutputFormat.convertToTransformer(outputFormat));
+            Transformer transformer = Transformer.create(graph, EnumOutputFormat.convertToTransformer(outputFormat));
             transformer.write(outputStream);
         } catch (IOException e) {
             throw new IOException("Failed to write RDF data to output stream.", e);

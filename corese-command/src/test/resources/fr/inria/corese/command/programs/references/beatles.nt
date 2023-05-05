@@ -1,0 +1,29 @@
+<http://stardog.com/tutorial/The_Beatles> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://stardog.com/tutorial/Band> .
+<http://stardog.com/tutorial/The_Beatles> <http://stardog.com/tutorial/name> "The Beatles" .
+<http://stardog.com/tutorial/The_Beatles> <http://stardog.com/tutorial/member> <http://stardog.com/tutorial/George_Harrison> .
+<http://stardog.com/tutorial/The_Beatles> <http://stardog.com/tutorial/member> <http://stardog.com/tutorial/John_Lennon> .
+<http://stardog.com/tutorial/The_Beatles> <http://stardog.com/tutorial/member> <http://stardog.com/tutorial/Paul_McCartney> .
+<http://stardog.com/tutorial/The_Beatles> <http://stardog.com/tutorial/member> <http://stardog.com/tutorial/Ringo_Starr> .
+<http://stardog.com/tutorial/John_Lennon> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://stardog.com/tutorial/SoloArtist> .
+<http://stardog.com/tutorial/Paul_McCartney> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://stardog.com/tutorial/SoloArtist> .
+<http://stardog.com/tutorial/Ringo_Starr> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://stardog.com/tutorial/SoloArtist> .
+<http://stardog.com/tutorial/George_Harrison> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://stardog.com/tutorial/SoloArtist> .
+<http://stardog.com/tutorial/Imagine> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://stardog.com/tutorial/Album> .
+<http://stardog.com/tutorial/Imagine> <http://stardog.com/tutorial/name> "Imagine" .
+<http://stardog.com/tutorial/Imagine> <http://stardog.com/tutorial/date> "1971-10-11"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://stardog.com/tutorial/Imagine> <http://stardog.com/tutorial/artist> <http://stardog.com/tutorial/John_Lennon> .
+<http://stardog.com/tutorial/Please_Please_Me> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://stardog.com/tutorial/Album> .
+<http://stardog.com/tutorial/Please_Please_Me> <http://stardog.com/tutorial/name> "Please Please Me" .
+<http://stardog.com/tutorial/Please_Please_Me> <http://stardog.com/tutorial/date> "1963-03-22"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://stardog.com/tutorial/Please_Please_Me> <http://stardog.com/tutorial/artist> <http://stardog.com/tutorial/The_Beatles> .
+<http://stardog.com/tutorial/Please_Please_Me> <http://stardog.com/tutorial/track> <http://stardog.com/tutorial/Love_Me_Do> .
+<http://stardog.com/tutorial/Love_Me_Do> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://stardog.com/tutorial/Song> .
+<http://stardog.com/tutorial/Love_Me_Do> <http://stardog.com/tutorial/name> "Love Me Do" .
+<http://stardog.com/tutorial/Love_Me_Do> <http://stardog.com/tutorial/length> 125 .
+<http://stardog.com/tutorial/Love_Me_Do> <http://stardog.com/tutorial/writer> <http://stardog.com/tutorial/John_Lennon> .
+<http://stardog.com/tutorial/Love_Me_Do> <http://stardog.com/tutorial/writer> <http://stardog.com/tutorial/Paul_McCartney> .
+<http://stardog.com/tutorial/McCartney> <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> <http://stardog.com/tutorial/Album> .
+<http://stardog.com/tutorial/McCartney> <http://stardog.com/tutorial/name> "McCartney" .
+<http://stardog.com/tutorial/McCartney> <http://stardog.com/tutorial/date> "1970-04-17"^^<http://www.w3.org/2001/XMLSchema#date> .
+<http://stardog.com/tutorial/McCartney> <http://stardog.com/tutorial/artist> <http://stardog.com/tutorial/Paul_McCartney> .
+

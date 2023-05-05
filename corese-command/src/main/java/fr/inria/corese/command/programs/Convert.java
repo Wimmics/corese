@@ -46,8 +46,8 @@ public class Convert implements Runnable {
             loadInputFile();
             exportGraph();
         } catch (IllegalArgumentException | IOException e) {
-            spec.commandLine().getErr().println("Error: " + e.getMessage());
-            System.exit(1);
+            spec.commandLine().getErr().println(e.getMessage());
+            throw new ExitCodeException(1, e.getMessage());
         }
     }
 

@@ -1,8 +1,12 @@
 package fr.inria.corese.command.programs;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.fail;
 
+import java.io.ByteArrayInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.PrintWriter;
 import java.io.StringWriter;
 import java.nio.file.Files;
@@ -14,9 +18,6 @@ import org.junit.Test;
 
 import fr.inria.corese.command.utils.GraphUtils;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
-import fr.inria.corese.command.utils.format.EnumOutputFormat;
-import fr.inria.corese.core.Graph;
-import fr.inria.corese.core.transform.Transformer;
 import picocli.CommandLine;
 
 public class ConvertTest {
@@ -100,7 +101,6 @@ public class ConvertTest {
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
         assertEquals(expectedOutput, actualOutput);
-        System.out.println("done");
     }
 
     @Test
@@ -112,9 +112,6 @@ public class ConvertTest {
 
         String expectedOutput = readFileAsString(pathRefBeatlesTTL);
         String actualOutput = readFileAsString(pathOutBeatlesTTL);
-
-        System.out.println(pathRefBeatlesTTL);
-        System.out.println(pathOutBeatlesTTL);
 
         assertEquals(0, exitCode);
         assertEquals(out.toString(), "");
@@ -593,6 +590,52 @@ public class ConvertTest {
         assertEquals(out.toString(), "");
         assertEquals(err.toString(), "");
         assertEquals(expectedOutput, actualOutput);
+    }
+
+    @Test
+    public void testConvertWithSameInputAndOutputPath() {
+        String inputPath = Paths.get(referencesPath, "beatles.ttl").toString();
+        int exitCode = cmd.execute("-i", inputPath, "TURTLE", "-o", inputPath);
+        assertEquals(1, exitCode);
+        assertEquals(out.toString(), "");
+        assertTrue(err.toString().trim().startsWith("Input path cannot be the same as output path."));
+    }
+
+    @Test
+    public void testConvertWithInvalidInputPath() {
+        String inputPath = "invalid_path.ttl";
+        String outputPath = Paths.get(resultPath, "ttlbeatles.ttl").toString();
+
+        int exitCode = cmd.execute("-i", inputPath, "TURTLE", "-o", outputPath);
+        assertEquals(1, exitCode);
+        assertEquals(out.toString(), "");
+        assertTrue(err.toString().trim()
+                .startsWith("Error while loading the input file: invalid_path.ttl (No such file or directory)"));
+    }
+
+    @Test
+    public void testConvertWithInvalidOutputPath() {
+        String inputPath = Paths.get(referencesPath, "beatles.ttl").toString();
+        String outputPath = "/invalid/path/for/output.ttl";
+
+        int exitCode = cmd.execute("-i", inputPath, "TURTLE", "-o", outputPath);
+        assertEquals(1, exitCode);
+        assertEquals(out.toString(), "");
+        assertTrue(err.toString().trim().startsWith(
+                "/invalid/path/for/output.ttl (No such file or directory)"));
+    }
+
+    @Test
+    public void testGraphUtilsLoadWithInvalidFormat() {
+        InputStream input = new ByteArrayInputStream("<rdf></rdf>".getBytes());
+        try {
+            GraphUtils.load(input, EnumInputFormat.JSONLD);
+            fail("Expected an IllegalArgumentException to be thrown");
+        } catch (IllegalArgumentException e) {
+            assertEquals("Failed to parse RDF file.", e.getMessage());
+        } catch (IOException e) {
+            fail("Unexpected IOException: " + e.getMessage());
+        }
     }
 
 }

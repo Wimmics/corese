@@ -61,6 +61,7 @@ public enum EnumInputFormat {
     public static EnumInputFormat fromLoaderValue(int loaderFormat) {
         switch (loaderFormat) {
             case Loader.RDFXML_FORMAT:
+            case Loader.XML_FORMAT:
                 return EnumInputFormat.RDFXML;
 
             case Loader.TURTLE_FORMAT:
@@ -70,6 +71,7 @@ public enum EnumInputFormat {
                 return EnumInputFormat.NTRIPLES;
 
             case Loader.JSONLD_FORMAT:
+            case Loader.JSON_FORMAT:
                 return EnumInputFormat.JSONLD;
 
             case Loader.TRIG_FORMAT:

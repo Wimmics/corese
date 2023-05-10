@@ -1,0 +1,7 @@
+PREFIX : <http://stardog.com/tutorial/>
+
+INSERT DATA
+{
+  :Please_Please_Me :genre "Rock and Roll" .
+}
+

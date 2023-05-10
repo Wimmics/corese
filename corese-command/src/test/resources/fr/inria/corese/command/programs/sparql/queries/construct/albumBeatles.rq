@@ -1,0 +1,17 @@
+PREFIX : <http://stardog.com/tutorial/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+CONSTRUCT {
+  ?album rdf:type :Album .
+  ?album :name ?name .
+  ?album :date ?date .
+  ?album :artist :The_Beatles .
+}
+WHERE {
+  ?album rdf:type :Album .
+  ?album :artist :The_Beatles .
+  ?album :name ?name .
+  ?album :date ?date .
+}
+

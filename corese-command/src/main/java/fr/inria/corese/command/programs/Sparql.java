@@ -57,8 +57,8 @@ public class Sparql implements Runnable {
             loadQuery();
             execute();
         } catch (Exception e) {
-            spec.commandLine().getErr().println("Error: " + e.getMessage());
-            System.exit(1);
+            spec.commandLine().getErr().println(e.getMessage());
+            throw new ExitCodeException(1, e.getMessage());
         }
     }
 
@@ -127,17 +127,18 @@ public class Sparql implements Runnable {
      * 
      * @param ast The query AST.
      * @param map The query results.
-     * @throws IOException
+     * @throws IOException If the results cannot be printed.
      */
     private void printResults(ASTQuery ast, Mappings map) throws IOException {
-        if (ast.isInsert() || ast.isInsertData() || ast.isUpdateInsert() || ast.isUpdateInsertData()) {
-            EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
+        EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
 
-            if (outputFormat == null) {
-                throw new IllegalArgumentException(
-                        "Error: " + this.resultFormat + "is not a valid output format for insert requests.");
-            }
+        if (outputFormat == null && (ast.isUpdate() || ast.isConstruct())) {
+            throw new IllegalArgumentException(
+                    "Error: " + this.resultFormat
+                            + " is not a valid output format for insert, delete or construct requests.");
+        }
 
+        if (ast.isUpdate()) {
             GraphUtils.exportToString(graph, outputFormat, spec);
         } else {
             ResultFormat resultFormater = ResultFormat.create(map);
@@ -153,29 +154,29 @@ public class Sparql implements Runnable {
      * 
      * @param ast The query AST.
      * @param map The query results.
-     * @throws Exception If the results cannot be written to the output file.
+     * @throws IOException If the results cannot be written to the output file.
      */
-    private void writeResults(ASTQuery ast, Mappings map) throws Exception {
+    private void writeResults(ASTQuery ast, Mappings map) throws IOException {
+        EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
 
-        if (ast.isInsert() || ast.isInsertData() || ast.isUpdateInsert() || ast.isUpdateInsertData()) {
-            EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
+        if (outputFormat == null && (ast.isUpdate() || ast.isConstruct())) {
+            throw new IllegalArgumentException(
+                    "Error: " + this.resultFormat
+                            + " is not a valid output format for insert, delete or construct requests.");
+        }
 
-            if (outputFormat == null) {
-                throw new IllegalArgumentException(
-                        "Error: " + this.resultFormat + "is not a valid output format for insert requests.");
-            }
-
-            GraphUtils.export(graph, this.outputPath, outputFormat);
-        } else {
-            ResultFormat resultFormater = ResultFormat.create(map);
-            resultFormater.setSelectFormat(this.resultFormat.getValue());
-            resultFormater.setConstructFormat(this.resultFormat.getValue());
-            try {
+        try {
+            if (ast.isUpdate()) {
+                GraphUtils.export(graph, this.outputPath, outputFormat);
+            } else {
+                ResultFormat resultFormater = ResultFormat.create(map);
+                resultFormater.setSelectFormat(this.resultFormat.getValue());
+                resultFormater.setConstructFormat(this.resultFormat.getValue());
                 resultFormater.write(this.outputPath.toString());
-            } catch (Exception e) {
-                throw new Exception("Error when writing the results to the output file : " + e.getMessage(), e);
             }
-
+        } catch (IOException e) {
+            throw new IOException("Error when writing the results to the output file : " + e.getMessage(), e);
         }
     }
+
 }

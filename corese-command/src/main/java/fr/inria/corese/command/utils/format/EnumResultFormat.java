@@ -9,11 +9,10 @@ public enum EnumResultFormat {
     TRIG(3),
     JSONLD(4),
     RESULT_XML(11),
-    RESULT_RDF(12),
+    RESULT_TURTLE(12),
     RESULT_JSON(13),
     RESULT_CSV(14),
-    RESULT_TSV(15),
-    RESULT_HTML(20);
+    RESULT_TSV(15);
 
     private final int value;
 

@@ -1,0 +1,189 @@
+{
+	"@context": {
+		"": "http://stardog.com/tutorial/",
+		"xsd": "http://www.w3.org/2001/XMLSchema#",
+		"ns1": "http://www.w3.org/2001/sw/DataAccess/tests/result-set#",
+		"rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	},
+	"@graph": [
+		{
+			"@id": "_:br1",
+			"ns1:index": {
+				"@value": "0",
+				"@type": "xsd:integer"
+			},
+			"ns1:binding": [
+				{
+					"@id": "_:br2"
+				},
+				{
+					"@id": "_:br3"
+				},
+				{
+					"@id": "_:br4"
+				}
+			]
+		},
+		{
+			"@id": "_:br11",
+			"ns1:value": {
+				"@value": "1971-10-11",
+				"@type": "xsd:date"
+			},
+			"ns1:variable": {
+				"@value": "albumDate",
+				"@type": "xsd:string"
+			}
+		},
+		{
+			"@id": "_:br2",
+			"ns1:value": {
+				"@value": "Please Please Me",
+				"@type": "xsd:string"
+			},
+			"ns1:variable": {
+				"@value": "albumName",
+				"@type": "xsd:string"
+			}
+		},
+		{
+			"@id": "_:br10",
+			"ns1:value": {
+				"@value": "Imagine",
+				"@type": "xsd:string"
+			},
+			"ns1:variable": {
+				"@value": "albumName",
+				"@type": "xsd:string"
+			}
+		},
+		{
+			"@id": "_:br0",
+			"ns1:resultVariable": [
+				{
+					"@value": "albumName",
+					"@type": "xsd:string"
+				},
+				{
+					"@value": "albumDate",
+					"@type": "xsd:string"
+				},
+				{
+					"@value": "artist",
+					"@type": "xsd:string"
+				}
+			],
+			"ns1:solution": [
+				{
+					"@id": "_:br1"
+				},
+				{
+					"@id": "_:br5"
+				},
+				{
+					"@id": "_:br9"
+				}
+			],
+			"@type": "ns1:ResultSet"
+		},
+		{
+			"@id": "_:br12",
+			"ns1:value": {
+				"@id": ":John_Lennon"
+			},
+			"ns1:variable": {
+				"@value": "artist",
+				"@type": "xsd:string"
+			}
+		},
+		{
+			"@id": "_:br9",
+			"ns1:index": {
+				"@value": "2",
+				"@type": "xsd:integer"
+			},
+			"ns1:binding": [
+				{
+					"@id": "_:br10"
+				},
+				{
+					"@id": "_:br11"
+				},
+				{
+					"@id": "_:br12"
+				}
+			]
+		},
+		{
+			"@id": "_:br7",
+			"ns1:value": {
+				"@value": "1970-04-17",
+				"@type": "xsd:date"
+			},
+			"ns1:variable": {
+				"@value": "albumDate",
+				"@type": "xsd:string"
+			}
+		},
+		{
+			"@id": "_:br8",
+			"ns1:value": {
+				"@id": ":Paul_McCartney"
+			},
+			"ns1:variable": {
+				"@value": "artist",
+				"@type": "xsd:string"
+			}
+		},
+		{
+			"@id": "_:br5",
+			"ns1:index": {
+				"@value": "1",
+				"@type": "xsd:integer"
+			},
+			"ns1:binding": [
+				{
+					"@id": "_:br6"
+				},
+				{
+					"@id": "_:br7"
+				},
+				{
+					"@id": "_:br8"
+				}
+			]
+		},
+		{
+			"@id": "_:br6",
+			"ns1:value": {
+				"@value": "McCartney",
+				"@type": "xsd:string"
+			},
+			"ns1:variable": {
+				"@value": "albumName",
+				"@type": "xsd:string"
+			}
+		},
+		{
+			"@id": "_:br3",
+			"ns1:value": {
+				"@value": "1963-03-22",
+				"@type": "xsd:date"
+			},
+			"ns1:variable": {
+				"@value": "albumDate",
+				"@type": "xsd:string"
+			}
+		},
+		{
+			"@id": "_:br4",
+			"ns1:value": {
+				"@id": ":The_Beatles"
+			},
+			"ns1:variable": {
+				"@value": "artist",
+				"@type": "xsd:string"
+			}
+		}
+	]
+}

@@ -1,0 +1,4 @@
+?albumName	?albumDate	?artist
+"Please Please Me"	"1963-03-22"^^<http://www.w3.org/2001/XMLSchema#date>	<http://stardog.com/tutorial/The_Beatles>
+"McCartney"	"1970-04-17"^^<http://www.w3.org/2001/XMLSchema#date>	<http://stardog.com/tutorial/Paul_McCartney>
+"Imagine"	"1971-10-11"^^<http://www.w3.org/2001/XMLSchema#date>	<http://stardog.com/tutorial/John_Lennon>

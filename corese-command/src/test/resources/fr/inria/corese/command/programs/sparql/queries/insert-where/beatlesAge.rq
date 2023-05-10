@@ -1,0 +1,13 @@
+PREFIX : <http://stardog.com/tutorial/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+INSERT {
+  ?member :age 30 .
+}
+WHERE {
+  :The_Beatles :member ?member .
+  FILTER NOT EXISTS {
+    ?member :age ?age .
+  }
+}
+

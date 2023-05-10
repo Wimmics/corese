@@ -1,0 +1,7 @@
+PREFIX : <http://stardog.com/tutorial/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+ASK {
+  :The_Beatles rdf:type :Band .
+}
+

@@ -1,0 +1,12 @@
+<?xml version="1.0" ?>
+<rdf:RDF
+xmlns='http://stardog.com/tutorial/'
+xmlns:ns1='http://www.w3.org/2001/sw/DataAccess/tests/result-set#'
+xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+
+<rdf:Description rdf:nodeID='_:br0'>
+ <rdf:type rdf:resource='http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet'/>
+ <ns1:boolean rdf:datatype='http://www.w3.org/2001/XMLSchema#boolean'>false</ns1:boolean>
+</rdf:Description>
+
+</rdf:RDF>

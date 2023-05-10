@@ -1,0 +1,25 @@
+<?xml version="1.0" ?>
+<sparql xmlns='http://www.w3.org/2005/sparql-results#'>
+<head>
+<variable name='albumName'/>
+<variable name='albumDate'/>
+<variable name='artist'/>
+</head>
+<results>
+<result>
+<binding name='albumName'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Please Please Me</literal></binding>
+<binding name='albumDate'><literal datatype='http://www.w3.org/2001/XMLSchema#date'>1963-03-22</literal></binding>
+<binding name='artist'><uri>http://stardog.com/tutorial/The_Beatles</uri></binding>
+</result>
+<result>
+<binding name='albumName'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>McCartney</literal></binding>
+<binding name='albumDate'><literal datatype='http://www.w3.org/2001/XMLSchema#date'>1970-04-17</literal></binding>
+<binding name='artist'><uri>http://stardog.com/tutorial/Paul_McCartney</uri></binding>
+</result>
+<result>
+<binding name='albumName'><literal datatype='http://www.w3.org/2001/XMLSchema#string'>Imagine</literal></binding>
+<binding name='albumDate'><literal datatype='http://www.w3.org/2001/XMLSchema#date'>1971-10-11</literal></binding>
+<binding name='artist'><uri>http://stardog.com/tutorial/John_Lennon</uri></binding>
+</result>
+</results>
+</sparql>

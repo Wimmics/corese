@@ -1,0 +1,11 @@
+PREFIX : <http://stardog.com/tutorial/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+PREFIX xsd: <http://www.w3.org/2001/XMLSchema#>
+
+DELETE DATA {
+  :McCartney rdf:type :Album ;
+             :name "McCartney" ;
+             :date "1970-04-17"^^xsd:date ;
+             :artist :Paul_McCartney .
+}
+

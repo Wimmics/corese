@@ -1,0 +1,12 @@
+PREFIX : <http://stardog.com/tutorial/>
+PREFIX rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#>
+
+# Get albums informations
+SELECT ?albumName ?albumDate ?artist
+WHERE {
+  ?album rdf:type :Album .
+  ?album :name ?albumName .
+  ?album :date ?albumDate .
+  ?album :artist ?artist .
+}
+

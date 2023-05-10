@@ -1,0 +1,18 @@
+{
+	"@context": {
+		"": "http://stardog.com/tutorial/",
+		"xsd": "http://www.w3.org/2001/XMLSchema#",
+		"ns1": "http://www.w3.org/2001/sw/DataAccess/tests/result-set#",
+		"rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	},
+	"@graph": [
+		{
+			"@id": "_:br0",
+			"ns1:boolean": {
+				"@value": "false",
+				"@type": "xsd:boolean"
+			},
+			"@type": "http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet"
+		}
+	]
+}

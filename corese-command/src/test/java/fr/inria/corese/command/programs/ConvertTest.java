@@ -28,9 +28,10 @@ public class ConvertTest {
     private StringWriter out = new StringWriter();
     private StringWriter err = new StringWriter();
 
-    private String referencesPath = ConvertTest.class.getResource("/fr/inria/corese/command/programs/references/")
+    private String referencesPath = ConvertTest.class
+            .getResource("/fr/inria/corese/command/programs/convert/references/")
             .getPath();
-    private String resultPath = ConvertTest.class.getResource("/fr/inria/corese/command/programs/results/")
+    private String resultPath = ConvertTest.class.getResource("/fr/inria/corese/command/programs/convert/results/")
             .getPath();
 
     @Before

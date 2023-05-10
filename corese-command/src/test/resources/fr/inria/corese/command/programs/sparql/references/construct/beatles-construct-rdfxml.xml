@@ -1,0 +1,13 @@
+<?xml version="1.0" ?>
+<rdf:RDF
+xmlns='http://stardog.com/tutorial/'
+xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+
+<rdf:Description rdf:about='http://stardog.com/tutorial/Please_Please_Me'>
+ <artist rdf:resource='http://stardog.com/tutorial/The_Beatles'/>
+ <date rdf:datatype='http://www.w3.org/2001/XMLSchema#date'>1963-03-22</date>
+ <name rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>Please Please Me</name>
+ <rdf:type rdf:resource='http://stardog.com/tutorial/Album'/>
+</rdf:Description>
+
+</rdf:RDF>

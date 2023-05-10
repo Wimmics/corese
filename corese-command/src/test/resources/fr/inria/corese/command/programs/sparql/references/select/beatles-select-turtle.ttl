@@ -1,0 +1,56 @@
+@prefix : <http://stardog.com/tutorial/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+@prefix ns1: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+
+_:br3 ns1:value "1963-03-22"^^xsd:date ;
+ns1:variable "albumDate" .
+
+_:br2 ns1:value "Please Please Me" ;
+ns1:variable "albumName" .
+
+_:br12 ns1:value :John_Lennon ;
+ns1:variable "artist" .
+
+_:br1 ns1:binding _:br2 ;
+ns1:binding _:br3 ;
+ns1:binding _:br4 ;
+ns1:index 0 .
+
+_:br11 ns1:value "1971-10-11"^^xsd:date ;
+ns1:variable "albumDate" .
+
+_:br0 rdf:type ns1:ResultSet ;
+ns1:resultVariable "albumName" ;
+ns1:resultVariable "albumDate" ;
+ns1:resultVariable "artist" ;
+ns1:solution _:br1 ;
+ns1:solution _:br5 ;
+ns1:solution _:br9 .
+
+_:br10 ns1:value "Imagine" ;
+ns1:variable "albumName" .
+
+_:br9 ns1:binding _:br10 ;
+ns1:binding _:br11 ;
+ns1:binding _:br12 ;
+ns1:index 2 .
+
+_:br8 ns1:value :Paul_McCartney ;
+ns1:variable "artist" .
+
+_:br7 ns1:value "1970-04-17"^^xsd:date ;
+ns1:variable "albumDate" .
+
+_:br6 ns1:value "McCartney" ;
+ns1:variable "albumName" .
+
+_:br5 ns1:binding _:br6 ;
+ns1:binding _:br7 ;
+ns1:binding _:br8 ;
+ns1:index 1 .
+
+_:br4 ns1:value :The_Beatles ;
+ns1:variable "artist" .
+

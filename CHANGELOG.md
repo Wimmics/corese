@@ -1,6 +1,6 @@
 # Corese Changelog
 
-## 4.4.0 – 2021/03/30 – Storage update
+## 4.4.0 – 2023/03/30 – Storage update
 
 ### Added
 

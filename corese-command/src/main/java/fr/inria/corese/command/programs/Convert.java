@@ -26,7 +26,7 @@ public class Convert implements Runnable {
 
     @Option(names = { "-f",
             "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}.")
-    private EnumInputFormat inputFormat = null;
+    private EnumInputFormat inputFormat = EnumInputFormat.TURTLE;
 
     @Option(names = { "-o", "--output-filepath" }, description = "Path where the resulting file should be saved.")
     private Path outputPath;
@@ -72,8 +72,7 @@ public class Convert implements Runnable {
     private void loadInputFile() throws IllegalArgumentException, IOException {
         if (inputPath == null) {
             // if inputPath is null, load from stdin
-            InputStream inputStream = System.in;
-            this.graph = GraphUtils.load(inputStream, inputFormat);
+            this.graph = GraphUtils.load(System.in, inputFormat);
         } else {
             this.graph = GraphUtils.load(inputPath, inputFormat);
         }

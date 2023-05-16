@@ -28,15 +28,15 @@ public class Sparql implements Runnable {
 
     @Option(names = { "-f",
             "--input-format" }, description = "Input file format. Possible values: ${COMPLETION-CANDIDATES}.")
-    private EnumInputFormat inputFormat;
+    private EnumInputFormat inputFormat = EnumInputFormat.TURTLE;
 
     @Option(names = { "-i",
-            "--input-filepath" }, description = "Input file path. If not provided, the standard input will be used.")
+            "--input-filepath" }, description = "Path or URL of the input file. If not provided, the standard input will be used.")
     private String inputPath;
 
     @Option(names = { "-r",
             "--result-format" }, description = "Result fileformat. Possible values: ${COMPLETION-CANDIDATES}. ")
-    private EnumResultFormat resultFormat;
+    private EnumResultFormat resultFormat = null;
 
     @Option(names = { "-o",
             "--output-filepath" }, description = "Output file path. If not provided, the result will be written to standard output.")
@@ -130,6 +130,12 @@ public class Sparql implements Runnable {
      * @throws IOException If the results cannot be printed.
      */
     private void printResults(ASTQuery ast, Mappings map) throws IOException {
+        boolean resultFormatIsSet = this.resultFormat != null;
+
+        if (!resultFormatIsSet) {
+            this.resultFormat = EnumResultFormat.TURTLE;
+        }
+
         EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
 
         if (outputFormat == null && (ast.isUpdate() || ast.isConstruct())) {
@@ -139,8 +145,13 @@ public class Sparql implements Runnable {
         }
 
         if (ast.isUpdate()) {
+
             GraphUtils.exportToString(graph, outputFormat, spec);
         } else {
+            if (!resultFormatIsSet) {
+                this.resultFormat = EnumResultFormat.RESULT_TSV;
+            }
+
             ResultFormat resultFormater = ResultFormat.create(map);
             resultFormater.setSelectFormat(this.resultFormat.getValue());
             resultFormater.setConstructFormat(this.resultFormat.getValue());
@@ -157,6 +168,12 @@ public class Sparql implements Runnable {
      * @throws IOException If the results cannot be written to the output file.
      */
     private void writeResults(ASTQuery ast, Mappings map) throws IOException {
+        boolean resultFormatIsSet = this.resultFormat != null;
+
+        if (!resultFormatIsSet) {
+            this.resultFormat = EnumResultFormat.TURTLE;
+        }
+
         EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
 
         if (outputFormat == null && (ast.isUpdate() || ast.isConstruct())) {
@@ -167,8 +184,12 @@ public class Sparql implements Runnable {
 
         try {
             if (ast.isUpdate()) {
+
                 GraphUtils.export(graph, this.outputPath, outputFormat);
             } else {
+                if (!resultFormatIsSet) {
+                    this.resultFormat = EnumResultFormat.RESULT_TSV;
+                }
                 ResultFormat resultFormater = ResultFormat.create(map);
                 resultFormater.setSelectFormat(this.resultFormat.getValue());
                 resultFormater.setConstructFormat(this.resultFormat.getValue());

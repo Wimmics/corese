@@ -1,27 +1,27 @@
 package fr.inria.corese.core.query.update;
 
-import fr.inria.corese.sparql.api.IDatatype;
-import fr.inria.corese.sparql.triple.parser.Constant;
-import fr.inria.corese.sparql.triple.update.Basic;
-import fr.inria.corese.sparql.triple.update.Update;
-import fr.inria.corese.kgram.api.core.Node;
-import fr.inria.corese.kgram.core.Query;
-import fr.inria.corese.core.api.Engine;
-import fr.inria.corese.core.api.Loader;
+import java.util.List;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+
 import fr.inria.corese.core.Event;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.Workflow;
 import fr.inria.corese.core.api.DataBrokerConstruct;
-import fr.inria.corese.core.logic.Entailment;
-import fr.inria.corese.core.load.LoadException;
-import java.util.List;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+import fr.inria.corese.core.api.Engine;
+import fr.inria.corese.core.api.Loader;
 import fr.inria.corese.core.load.Load;
+import fr.inria.corese.core.load.LoadException;
 import fr.inria.corese.core.load.LoadFormat;
+import fr.inria.corese.core.logic.Entailment;
 import fr.inria.corese.core.producer.DataBrokerConstructLocal;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.util.Property;
 import fr.inria.corese.kgram.api.core.Edge;
+import fr.inria.corese.kgram.api.core.Node;
+import fr.inria.corese.kgram.core.Query;
+import fr.inria.corese.sparql.api.IDatatype;
 import fr.inria.corese.sparql.datatype.DatatypeMap;
 import fr.inria.corese.sparql.exceptions.EngineException;
 import fr.inria.corese.sparql.exceptions.SafetyException;
@@ -30,8 +30,11 @@ import fr.inria.corese.sparql.triple.parser.Access;
 import fr.inria.corese.sparql.triple.parser.Access.Feature;
 import fr.inria.corese.sparql.triple.parser.Access.Level;
 import fr.inria.corese.sparql.triple.parser.AccessRight;
+import fr.inria.corese.sparql.triple.parser.Constant;
 import fr.inria.corese.sparql.triple.parser.Metadata;
 import fr.inria.corese.sparql.triple.parser.NSManager;
+import fr.inria.corese.sparql.triple.update.Basic;
+import fr.inria.corese.sparql.triple.update.Update;
 
 /**
  *
@@ -49,7 +52,7 @@ public class GraphManager {
     private Graph graph;
     Load load;
     private QueryProcess queryProcess;
-    // broker to corese graph or external graph 
+    // broker to corese graph or external graph
     private DataBrokerConstruct dataBroker;
 
     public GraphManager(Graph g) {
@@ -60,37 +63,36 @@ public class GraphManager {
         // may be overloaded by QueryProcess create
         setDataBroker(new DataBrokerConstructLocal(this));
     }
-    
+
     public Graph getGraph() {
         return graph;
     }
-    
+
     public static Load getLoader() {
         return new Load();
     }
-    
-    public boolean isRDFStar(){
+
+    public boolean isRDFStar() {
         return getGraph().isRDFStar();
     }
 
-    
     /***********************************************************
      * Construct Graph Manager
-     *     
+     * 
      **********************************************************/
-    
+
     public void startRuleEngine() {
         getDataBroker().startRuleEngine();
     }
-    
+
     public void endRuleEngine() {
         getDataBroker().endRuleEngine();
     }
-    
+
     public void startRule() {
         getDataBroker().startRule();
     }
-    
+
     public void endRule() {
         getDataBroker().endRule();
     }
@@ -98,12 +100,12 @@ public class GraphManager {
     /**
      * Before construct/insert/delete starts
      */
-    public void start(Event e){
-        getGraph().getEventManager().start(e);        
+    public void start(Event e) {
+        getGraph().getEventManager().start(e);
     }
-    
+
     /**
-     * After construct/insert/delete completes 
+     * After construct/insert/delete completes
      * Tell the graph to recompile its Index
      */
     public void finish(Event e) {
@@ -116,10 +118,10 @@ public class GraphManager {
     public void trace() {
         System.out.println(getGraph().display());
     }
-    
+
     /**
      * Corese extension:
-     * Additional system named graph 
+     * Additional system named graph
      * Optional
      */
     public GraphManager getNamedGraph(String label) {
@@ -129,20 +131,20 @@ public class GraphManager {
         }
         return null;
     }
-    
-    public Node getDefaultGraphNode(){
+
+    public Node getDefaultGraphNode() {
         return getGraph().addDefaultGraphNode();
     }
-    
+
     // When insert in new graph name, update insert dataset named += name
-    public boolean isDefaultGraphNode(String name){
+    public boolean isDefaultGraphNode(String name) {
         return getGraph().isDefaultGraphNode(name);
     }
-    
+
     public Node getRuleGraphName(boolean constraint) {
         return getGraph().getRuleGraphName(constraint);
     }
-    
+
     /**
      * Constraint rule may have specific construct graph where to record
      * constraint error
@@ -156,19 +158,19 @@ public class GraphManager {
         }
         return this;
     }
-      
+
     public int size() {
         return getDataBroker().graphSize();
     }
-    
+
     public int size(Node pred) {
         return getDataBroker().graphSize(pred);
     }
-    
+
     public String reference(Node n) {
         return getGraph().reference(n);
     }
-    
+
     public Edge beforeInsert(Edge edge) {
         return getGraph().beforeInsert(edge);
     }
@@ -181,7 +183,7 @@ public class GraphManager {
     public Edge insert(Edge edge) {
         return getDataBroker().insert(edge);
     }
-    
+
     // corese optimization, not for extern
     public void insert(Node predicate, List<Edge> list) {
         getDataBroker().insert(predicate, list);
@@ -194,7 +196,7 @@ public class GraphManager {
     public boolean exist(Node property, Node subject, Node object) {
         return getDataBroker().exist(property, subject, object);
     }
-    
+
     // find occurrence of (instantiated query) edge in target graph
     // in order to get its reference node if any
     // use case: rdf star
@@ -208,11 +210,11 @@ public class GraphManager {
     public void add(Node node) {
         getDataBroker().add(node);
     }
-    
+
     public void add(Node node, int n) {
         getDataBroker().add(node, n);
     }
-    
+
     /**
      * Return existing Node (any type of Node) If not exist, create a Node, do
      * not add it into the graph gNode is the name of a named graph gNode is not
@@ -222,15 +224,15 @@ public class GraphManager {
     public Node getNode(Node gNode, IDatatype dt) {
         return getDataBroker().getNode(gNode, dt);
     }
-  
+
     public void addPropertyNode(Node property) {
         getDataBroker().addPropertyNode(property);
     }
 
-    public void addGraphNode(Node node) { 
+    public void addGraphNode(Node node) {
         getDataBroker().addGraphNode(node);
-    }    
-    
+    }
+
     /**
      * Create temporary Edge for construct / update
      */
@@ -240,10 +242,10 @@ public class GraphManager {
      * Do not insert it yet, it will be done explicitely by insert().
      */
     public Edge create(Node source, Node subject, Node property, Node object) {
-        //return graph.create(source, subject, property, object);
+        // return graph.create(source, subject, property, object);
         return getGraph().createForInsert(source, subject, property, object);
     }
-    
+
     public Edge create(Node source, Node property, List<Node> list) {
         return getGraph().create(source, property, list);
     }
@@ -255,7 +257,7 @@ public class GraphManager {
     public Edge createDelete(Node source, Node subject, Node property, Node object) {
         return getGraph().createDelete(source, subject, property, object);
     }
-    
+
     public Edge createDelete(Node source, Node property, List<Node> list) {
         return getGraph().createDelete(source, property, list);
     }
@@ -267,26 +269,25 @@ public class GraphManager {
     public IDatatype createBlank(String str) {
         return getGraph().createBlank(str);
     }
-    
+
     public IDatatype createBlank() {
         return getGraph().createBlank(newBlankID());
     }
-    
+
     public IDatatype createTripleReference() {
         return getGraph().createTripleReference();
     }
-    
+
     public Node createTripleReference(Node s, Node p, Node o) {
         return getGraph().addTripleReference(s, p, o);
     }
-    
-    
+
     /*****************************************************************************
      * 
-     *   SPARQL Update Manager
+     * SPARQL Update Manager
      * 
      ****************************************************************************/
-    
+
     /**
      * Delete occurrences of edge in named graphs of from list
      * keep other occurrences
@@ -299,7 +300,7 @@ public class GraphManager {
 
     /**
      * If Edge have a named graph: delete this occurrence
-     * Otherwise: delete all occurrences of edge 
+     * Otherwise: delete all occurrences of edge
      */
     public List<Edge> delete(Edge ent) {
         return getDataBroker().delete(ent);
@@ -340,20 +341,21 @@ public class GraphManager {
     void addGraph(String uri) {
         getDataBroker().addGraph(uri);
     }
-    
+
     boolean load(Query q, Basic ope, Level level, AccessRight access) throws EngineException {
         return getDataBroker().load(q, ope, level, access);
     }
 
-    
-    
-   public boolean myLoad(Query q, Basic ope, Level level, AccessRight access) throws EngineException {
+    public boolean myLoad(Query q, Basic ope, Level level, AccessRight access) throws EngineException {
         Load load = Load.create(getGraph());
+        if (Property.loadInKGDefault()) {
+            load.setDefaultGraph(true);
+        }
         load.setLevel(level);
         if (AccessRight.isActive()) {
             load.setAccessRight(access);
         }
-        //getQueryProcess().init(q);
+        // getQueryProcess().init(q);
         load.setQueryProcess(getQueryProcess());
         String uri = ope.getURI();
         IDatatype dt = DatatypeMap.newResource(uri);
@@ -376,25 +378,23 @@ public class GraphManager {
             if (NSManager.isFile(uri)) {
                 Access.check(Feature.LOAD_FILE, level, uri, TermEval.LOAD_MESS);
             }
-            
+
             try {
                 load(load, src, uri, format);
-            }
-            catch (LoadException e) {
+            } catch (LoadException e) {
                 if (e.isSafetyException()) {
                     throw e.getSafetyException();
                 }
                 logger.error("Load error: " + ope.getURI() + "\n" + e);
                 q.addError("Load error: ", ope.getURI() + "\n" + e);
                 return ope.isSilent();
-            }
-            finally {
+            } finally {
                 getGraph().logFinish(q);
                 getGraph().getEventManager().finish(Event.LoadUpdate);
             }
         }
-            
-        if (load.isRule(uri) && load.getRuleEngine() != null) { 
+
+        if (load.isRule(uri) && load.getRuleEngine() != null) {
             // load rule base into workflow
             // TODO ? load <rulebase.rul> into kg:workflow
             // pros: if there are several rule base load, they will be process() together
@@ -407,13 +407,12 @@ public class GraphManager {
 
         return true;
     }
-   
-   // format from query metadata @format st:rdfxml
+
+    // format from query metadata @format st:rdfxml
     void load(Load load, String src, String uri, int format) throws LoadException {
         if (format == Loader.UNDEF_FORMAT) {
             load(load, src, uri);
-        }
-        else {
+        } else {
             load.parse(uri, src, uri, format);
         }
     }
@@ -430,7 +429,7 @@ public class GraphManager {
             }
         }
     }
-    
+
     // @format st:rdfxml st:json st:turtle
     int getFormat(Query q) {
         String ft = q.getAST().getMetadataValue(Metadata.FORMAT);
@@ -440,11 +439,10 @@ public class GraphManager {
         return LoadFormat.getDTFormat(ft);
     }
 
-    
     /**
      * Corese extension wrt SPARQL Update: optional
      */
-     void system(Basic ope) {
+    void system(Basic ope) {
         String uri = ope.getGraph();
 
         if (!isSystem(uri)) {
@@ -465,24 +463,23 @@ public class GraphManager {
             case Update.CLEAR:
 
                 if (isEntailment(uri)) {
-                    //graph.setEntailment(false);
+                    // graph.setEntailment(false);
                     getGraph().getEventManager().finish(Event.ActivateRDFSEntailment);
                 } else if (isRule(uri)) {
-                   // wf.setActivate(Engine.RULE_ENGINE, false);
+                    // wf.setActivate(Engine.RULE_ENGINE, false);
                     getGraph().getEventManager().finish(Event.ActivateRuleEngine);
                 }
                 break;
 
-
             case Update.CREATE:
 
                 if (isEntailment(uri)) {
-                    //graph.setEntailment(true);
-                    //graph.setEntail(true);
+                    // graph.setEntailment(true);
+                    // graph.setEntail(true);
                     getGraph().getEventManager().start(Event.ActivateRDFSEntailment);
                 } else if (isRule(uri)) {
-//                    wf.setActivate(Engine.RULE_ENGINE, true);
-//                    graph.setEntail(true);
+                    // wf.setActivate(Engine.RULE_ENGINE, true);
+                    // graph.setEntail(true);
                     getGraph().getEventManager().start(Event.ActivateRuleEngine);
                 }
                 break;

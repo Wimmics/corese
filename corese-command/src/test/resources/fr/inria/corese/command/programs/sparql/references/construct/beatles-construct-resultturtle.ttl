@@ -5,17 +5,17 @@ rs:resultVariable 'album' ;
 rs:resultVariable 'name' ; 
 rs:resultVariable 'date' ; 
 rs:solution [
-rs:index 0 ;
-rs:binding [
-rs:variable 'album' ; 
-rs:value <http://stardog.com/tutorial/Please_Please_Me>
-] ; 
-rs:binding [
-rs:variable 'name' ; 
-rs:value "Please Please Me"
-] ; 
-rs:binding [
-rs:variable 'date' ; 
-rs:value "1963-03-22"^^xsd:date
-] ; 
+    rs:index 0 ;
+    rs:binding [
+        rs:variable 'album' ; 
+        rs:value <http://stardog.com/tutorial/Please_Please_Me>
+    ] ; 
+    rs:binding [
+        rs:variable 'name' ; 
+        rs:value "Please Please Me"
+    ] ; 
+    rs:binding [
+        rs:variable 'date' ; 
+        rs:value "1963-03-22"^^xsd:date
+    ] ; 
 ].

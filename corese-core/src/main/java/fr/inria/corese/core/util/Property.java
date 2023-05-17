@@ -6,8 +6,8 @@ import static fr.inria.corese.core.util.Property.Value.LOAD_RULE;
 import static fr.inria.corese.core.util.Property.Value.PREFIX;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_HEADER;
 import static fr.inria.corese.core.util.Property.Value.SERVICE_SEND_PARAMETER;
-import static fr.inria.corese.core.util.Property.Value.STORAGE_MODE;
 import static fr.inria.corese.core.util.Property.Value.STORAGE;
+import static fr.inria.corese.core.util.Property.Value.STORAGE_MODE;
 import static fr.inria.corese.core.util.Property.Value.VARIABLE;
 
 import java.io.File;
@@ -33,7 +33,6 @@ import fr.inria.corese.compiler.federate.SelectorIndex;
 import fr.inria.corese.core.EdgeFactory;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.NodeImpl;
-import fr.inria.corese.core.edge.EdgeTop;
 import fr.inria.corese.core.index.EdgeManagerIndexer;
 import fr.inria.corese.core.load.Load;
 import fr.inria.corese.core.load.LoadException;
@@ -223,6 +222,7 @@ public class Property {
         SPARQL_COMPLIANT,
         SPARQL_ORDER_UNBOUND_FIRST,
 
+        DISABLE_OWL_AUTO_IMPORT,
         OWL_CLEAN,
         OWL_CLEAN_QUERY,
         OWL_RL,
@@ -233,7 +233,7 @@ public class Property {
         RULE_DATAMANAGER_OPTIMIZE,
         // replace kg:rule_i by kg:rule
         RULE_DATAMANAGER_CLEAN,
-        // for testing edge iterator filter edge index  
+        // for testing edge iterator filter edge index
         RULE_DATAMANAGER_FILTER_INDEX,
         RULE_TRACE,
 
@@ -470,7 +470,7 @@ public class Property {
             case OWL_CLEAN:
                 RuleEngine.OWL_CLEAN = b;
                 break;
-                
+
             case RULE_DATAMANAGER_OPTIMIZE:
                 RuleEngine.RULE_DATAMANAGER_OPTIMIZE = b;
                 break;

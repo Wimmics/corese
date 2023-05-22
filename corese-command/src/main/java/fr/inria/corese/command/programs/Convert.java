@@ -1,7 +1,6 @@
 package fr.inria.corese.command.programs;
 
 import java.io.IOException;
-import java.io.InputStream;
 import java.nio.file.Path;
 
 import fr.inria.corese.command.App;
@@ -26,7 +25,7 @@ public class Convert implements Runnable {
 
     @Option(names = { "-f",
             "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}.")
-    private EnumInputFormat inputFormat = EnumInputFormat.TURTLE;
+    private EnumInputFormat inputFormat = null;
 
     @Option(names = { "-o", "--output-filepath" }, description = "Path where the resulting file should be saved.")
     private Path outputPath;

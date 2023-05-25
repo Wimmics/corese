@@ -1361,7 +1361,7 @@ public class SparqlTest {
                                 pathQueryBeatlesConstruct);
 
                 assertEquals(1, exitCode);
-                assertTrue(err.toString().contains("Error reading input file"));
+                assertTrue(err.toString().contains("Error while loading"));
         }
 
         @Test
@@ -1373,7 +1373,7 @@ public class SparqlTest {
                                 "output.ttl", nonExistentQueryFile);
 
                 assertEquals(1, exitCode);
-                assertTrue(err.toString().contains("Error when reading the query file"));
+                assertTrue(err.toString().contains("Error while loading"));
         }
 
         @Test

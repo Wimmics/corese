@@ -611,7 +611,7 @@ public class ConvertTest {
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
         assertTrue(err.toString().trim()
-                .startsWith("Error while loading the input file: invalid_path.ttl (No such file or directory)"));
+                .startsWith("Error while loading : invalid_path.ttl (No such file or directory)"));
     }
 
     @Test

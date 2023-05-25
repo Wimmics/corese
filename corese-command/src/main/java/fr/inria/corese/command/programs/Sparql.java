@@ -1,8 +1,9 @@
 package fr.inria.corese.command.programs;
 
 import java.io.IOException;
-import java.nio.file.Files;
+import java.io.InputStream;
 import java.nio.file.Path;
+import java.util.Scanner;
 
 import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.GraphUtils;
@@ -43,7 +44,8 @@ public class Sparql implements Runnable {
     private Path outputPath;
 
     @Parameters(paramLabel = "QUERY_OR_FILE", description = "SPARQL query string or path/URL to a .rq file.")
-    private String queryOrFile;
+    private String queryUrlOrFile;
+    private String query;
 
     private Graph graph;
 
@@ -68,15 +70,19 @@ public class Sparql implements Runnable {
      * @throws IOException If the file cannot be read.
      */
     private void loadInputFile() throws IOException {
-        try {
-            if (inputPath == null) {
-                // If inputPath is not provided, load from stdin
-                this.graph = GraphUtils.load(System.in, inputFormat);
-            } else {
-                this.graph = GraphUtils.load(inputPath, inputFormat);
-            }
-        } catch (IOException e) {
-            throw new IOException("Error reading input file : " + e.getMessage(), e);
+        if (inputPath == null) {
+            // If inputPath is not provided, load from stdin
+            this.graph = GraphUtils.load(System.in, inputFormat);
+        } else {
+            this.graph = GraphUtils.load(inputPath, inputFormat);
+        }
+    }
+
+    private static String convertToString(InputStream inputStream) {
+        try (Scanner scanner = new Scanner(inputStream).useDelimiter("\\A")) {
+            String result = scanner.hasNext() ? scanner.next() : "";
+            scanner.close();
+            return result;
         }
     }
 
@@ -86,13 +92,11 @@ public class Sparql implements Runnable {
      * @throws IOException If the query file cannot be read.
      */
     private void loadQuery() throws IOException {
-        try {
-            if (queryOrFile.endsWith(".rq")) {
-                // If it's a .rq file, read the query from the file
-                queryOrFile = new String(Files.readAllBytes(Path.of(queryOrFile)));
-            }
-        } catch (IOException e) {
-            throw new IOException("Error when reading the query file : " + e.getMessage(), e);
+        if (queryUrlOrFile.endsWith(".rq")) {
+            InputStream inputStream = GraphUtils.pathOrUrlToInputStream(queryUrlOrFile);
+            query = convertToString(inputStream);
+        } else {
+            query = queryUrlOrFile;
         }
     }
 
@@ -108,7 +112,7 @@ public class Sparql implements Runnable {
 
         // Execute query
         try {
-            ast = exec.ast(queryOrFile);
+            ast = exec.ast(query);
             map = exec.query(ast);
         } catch (Exception e) {
             throw new Exception("Error when executing SPARQL query : " + e.getMessage(), e);

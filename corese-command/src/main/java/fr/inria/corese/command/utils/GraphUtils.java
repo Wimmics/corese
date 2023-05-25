@@ -27,14 +27,12 @@ public class GraphUtils {
     }
 
     /**
-     * Parse a file and load RDF data into a Corese Graph.
-     *
-     * @param pathOrUrl   Path or URL of the input RDF file.
-     * @param inputFormat Input file serialization format.
-     * @return Corese Graph with RDF data loaded.
-     * @throws IOException if an error occurs while loading the input file.
+     * Transform a path or URL to an input stream.
+     * 
+     * @param pathOrUrl Path or URL of the input file.
+     * @return Input stream of the input file.
      */
-    public static Graph load(String pathOrUrl, EnumInputFormat inputFormat) throws IOException {
+    public static InputStream pathOrUrlToInputStream(String pathOrUrl) {
         InputStream inputStream = null;
         try {
             if (pathOrUrl.startsWith("http")) {
@@ -45,21 +43,33 @@ public class GraphUtils {
                 }
                 inputStream = url.openStream();
             } else {
-
-                if (inputFormat == null) {
-                    inputFormat = EnumInputFormat.fromLoaderValue(LoadFormat.getFormat(pathOrUrl));
-                }
-
                 inputStream = new FileInputStream(pathOrUrl);
             }
-            return load(inputStream, inputFormat);
         } catch (IOException | URISyntaxException e) {
-            throw new IOException("Error while loading the input file: " + e.getMessage(), e);
-        } finally {
-            if (inputStream != null) {
-                inputStream.close();
-            }
+            throw new IllegalArgumentException("Error while loading : " + e.getMessage(), e);
         }
+        return inputStream;
+    }
+
+    /**
+     * Parse a file and load RDF data into a Corese Graph.
+     *
+     * @param pathOrUrl   Path or URL of the input RDF file.
+     * @param inputFormat Input file serialization format.
+     * @return Corese Graph with RDF data loaded.
+     * @throws IOException if an error occurs while loading the input file.
+     */
+    public static Graph load(String pathOrUrl, EnumInputFormat inputFormat) throws IOException {
+        InputStream inputStream = GraphUtils.pathOrUrlToInputStream(pathOrUrl);
+
+        if (inputFormat == null) {
+            inputFormat = EnumInputFormat.fromLoaderValue(LoadFormat.getFormat(pathOrUrl));
+        }
+
+        Graph graph = load(inputStream, inputFormat);
+
+        inputStream.close();
+        return graph;
     }
 
     /**

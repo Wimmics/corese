@@ -20,15 +20,15 @@ public class Convert implements Runnable {
     @Spec
     CommandSpec spec;
 
-    @Option(names = { "-i", "--input-filepath" }, description = "Path or URL of the file that needs to be converted.")
-    private String inputPath;
+    @Option(names = { "-i", "--input-data" }, description = "Path or URL of the file that needs to be converted.")
+    private String input;
 
     @Option(names = { "-f",
             "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}.")
     private EnumInputFormat inputFormat = null;
 
-    @Option(names = { "-o", "--output-filepath" }, description = "Path where the resulting file should be saved.")
-    private Path outputPath;
+    @Option(names = { "-o", "--output-data" }, description = "Path where the resulting file should be saved.")
+    private Path output;
 
     @Parameters(paramLabel = "output-format", description = "Serialization format to which the input file should be converted. Possible values: ${COMPLETION-CANDIDATES}.")
     private EnumOutputFormat outputFormat;
@@ -56,24 +56,22 @@ public class Convert implements Runnable {
      * @throws IllegalArgumentException if input path is same as output path.
      */
     private void checkInputValues() throws IllegalArgumentException {
-        if (inputPath != null && outputPath != null && inputPath.equals(outputPath.toString())) {
+        if (input != null && output != null && input.equals(output.toString())) {
             throw new IllegalArgumentException("Input path cannot be the same as output path.");
         }
     }
 
     /**
      * Load the input file.
-     * 
-     * @throws IllegalArgumentException if the input file path is null.
-     * @throws IOException              if an I/O error occurs while loading the
-     *                                  input file.
+     * @throws IllegalArgumentException if the input format is not supported.
+     * @throws IOException if an I/O error occurs while loading the input file.
      */
     private void loadInputFile() throws IllegalArgumentException, IOException {
-        if (inputPath == null) {
-            // if inputPath is null, load from stdin
+        if (input == null) {
+            // if input is null, load from stdin
             this.graph = GraphUtils.load(System.in, inputFormat);
         } else {
-            this.graph = GraphUtils.load(inputPath, inputFormat);
+            this.graph = GraphUtils.load(input, inputFormat);
         }
     }
 
@@ -83,11 +81,11 @@ public class Convert implements Runnable {
      * @throws IOException if an I/O error occurs while exporting the graph.
      */
     private void exportGraph() throws IOException {
-        if (outputPath == null) {
-            // if outputPath is null, print to stdout
+        if (output == null) {
+            // if output is null, print to stdout
             GraphUtils.exportToString(graph, outputFormat, spec);
         } else {
-            GraphUtils.export(graph, outputPath, outputFormat);
+            GraphUtils.export(graph, output, outputFormat);
         }
     }
 

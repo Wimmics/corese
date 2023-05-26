@@ -28,22 +28,22 @@ public class Sparql implements Runnable {
     private CommandSpec spec;
 
     @Option(names = { "-f",
-            "--input-format" }, description = "Input file format. Possible values: ${COMPLETION-CANDIDATES}.")
-    private EnumInputFormat inputFormat = EnumInputFormat.TURTLE;
+            "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}.")
+    private EnumInputFormat inputFormat = null;
 
     @Option(names = { "-i",
-            "--input-filepath" }, description = "Path or URL of the input file. If not provided, the standard input will be used.")
-    private String inputPath;
+            "--input-data" }, description = "Path or URL of the input file. If not provided, the standard input will be used.")
+    private String input;
 
     @Option(names = { "-r",
-            "--result-format" }, description = "Result fileformat. Possible values: ${COMPLETION-CANDIDATES}. ")
+            "--output-format" }, description = "Result fileformat. Possible values: ${COMPLETION-CANDIDATES}. ")
     private EnumResultFormat resultFormat = null;
 
     @Option(names = { "-o",
-            "--output-filepath" }, description = "Output file path. If not provided, the result will be written to standard output.")
-    private Path outputPath;
+            "--output-data" }, description = "Output file path. If not provided, the result will be written to standard output.")
+    private Path output;
 
-    @Parameters(paramLabel = "QUERY_OR_FILE", description = "SPARQL query string or path/URL to a .rq file.")
+    @Parameters(paramLabel = "query_or_file", description = "SPARQL query string or path/URL to a .rq file.")
     private String queryUrlOrFile;
     private String query;
 
@@ -70,11 +70,11 @@ public class Sparql implements Runnable {
      * @throws IOException If the file cannot be read.
      */
     private void loadInputFile() throws IOException {
-        if (inputPath == null) {
+        if (input == null) {
             // If inputPath is not provided, load from stdin
             this.graph = GraphUtils.load(System.in, inputFormat);
         } else {
-            this.graph = GraphUtils.load(inputPath, inputFormat);
+            this.graph = GraphUtils.load(input, inputFormat);
         }
     }
 
@@ -119,7 +119,7 @@ public class Sparql implements Runnable {
         }
 
         // Print or write results
-        if (outputPath == null) {
+        if (output == null) {
             printResults(ast, map);
         } else {
             writeResults(ast, map);
@@ -189,7 +189,7 @@ public class Sparql implements Runnable {
         try {
             if (ast.isUpdate()) {
 
-                GraphUtils.export(graph, this.outputPath, outputFormat);
+                GraphUtils.export(graph, this.output, outputFormat);
             } else {
                 if (!resultFormatIsSet) {
                     this.resultFormat = EnumResultFormat.RESULT_TSV;
@@ -197,7 +197,7 @@ public class Sparql implements Runnable {
                 ResultFormat resultFormater = ResultFormat.create(map);
                 resultFormater.setSelectFormat(this.resultFormat.getValue());
                 resultFormater.setConstructFormat(this.resultFormat.getValue());
-                resultFormater.write(this.outputPath.toString());
+                resultFormater.write(this.output.toString());
             }
         } catch (IOException e) {
             throw new IOException("Error when writing the results to the output file : " + e.getMessage(), e);

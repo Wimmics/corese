@@ -24,6 +24,8 @@ import picocli.CommandLine.Spec;
 @Command(name = "sparql", version = App.version, description = "Run a SPARQL query.", mixinStandardHelpOptions = true)
 public class Sparql implements Runnable {
 
+    private final String DEFAULT_OUTPUT_FILE_NAME = "output";
+
     @Spec
     private CommandSpec spec;
 
@@ -40,7 +42,7 @@ public class Sparql implements Runnable {
     private EnumResultFormat resultFormat = null;
 
     @Option(names = { "-o",
-            "--output-data" }, description = "Output file path. If not provided, the result will be written to standard output.")
+            "--output-data" }, description = "Output file path. If not provided, the result will be written to standard output.", arity = "0..1", fallbackValue = DEFAULT_OUTPUT_FILE_NAME)
     private Path output;
 
     @Parameters(paramLabel = "query_or_file", description = "SPARQL query string or path/URL to a .rq file.")
@@ -49,12 +51,17 @@ public class Sparql implements Runnable {
 
     private Graph graph;
 
+    private boolean isDefautlFormat = false;
+    private EnumResultFormat defaultRdfBidings = EnumResultFormat.TURTLE;
+    private EnumResultFormat defaultResult = EnumResultFormat.RESULT_TSV;
+
     public Sparql() {
     }
 
     @Override
     public void run() {
         try {
+            this.isDefautlFormat = resultFormat == null;
             loadInputFile();
             loadQuery();
             execute();
@@ -119,88 +126,82 @@ public class Sparql implements Runnable {
         }
 
         // Print or write results
-        if (output == null) {
-            printResults(ast, map);
-        } else {
-            writeResults(ast, map);
+        this.exportResult(ast, map);
+    }
+
+    private boolean isResultFormat() {
+        switch (resultFormat) {
+            case RESULT_XML:
+            case RESULT_TURTLE:
+            case RESULT_JSON:
+            case RESULT_CSV:
+            case RESULT_TSV:
+                return true;
+            default:
+                return false;
         }
     }
 
     /**
-     * Print the results to standard output.
+     * Export the results to the output file or to the standard output.
      * 
-     * @param ast The query AST.
-     * @param map The query results.
-     * @throws IOException If the results cannot be printed.
+     * @param ast – AST of the query
+     * @param map – Mappings of the query
+     * @throws IOException If the output file cannot be written.
      */
-    private void printResults(ASTQuery ast, Mappings map) throws IOException {
-        boolean resultFormatIsSet = this.resultFormat != null;
+    private void exportResult(ASTQuery ast, Mappings map) throws IOException {
 
-        if (!resultFormatIsSet) {
-            this.resultFormat = EnumResultFormat.TURTLE;
-        }
+        EnumOutputFormat outputFormat;
+        EnumResultFormat resultFormat;
+        Path outputFileName;
 
-        EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
+        boolean isUpdate = ast.isInsert() || ast.isDelete() || ast.isUpdate();
+        boolean isConstruct = ast.isConstruct();
 
-        if (outputFormat == null && (ast.isUpdate() || ast.isConstruct())) {
+        // Check if the output format is valid for the query type
+        if (this.isResultFormat() && (isUpdate || isConstruct)) {
             throw new IllegalArgumentException(
                     "Error: " + this.resultFormat
                             + " is not a valid output format for insert, delete or construct requests.");
         }
 
-        if (ast.isUpdate()) {
-
-            GraphUtils.exportToString(graph, outputFormat, spec);
+        // Set output file name
+        if (this.output.toString().equals(DEFAULT_OUTPUT_FILE_NAME)) {
+            outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.resultFormat.getExtention());
         } else {
-            if (!resultFormatIsSet) {
-                this.resultFormat = EnumResultFormat.RESULT_TSV;
-            }
-
-            ResultFormat resultFormater = ResultFormat.create(map);
-            resultFormater.setSelectFormat(this.resultFormat.getValue());
-            resultFormater.setConstructFormat(this.resultFormat.getValue());
-            String result = resultFormater.toString();
-            spec.commandLine().getOut().println(result);
-        }
-    }
-
-    /**
-     * Write the results to a file.
-     * 
-     * @param ast The query AST.
-     * @param map The query results.
-     * @throws IOException If the results cannot be written to the output file.
-     */
-    private void writeResults(ASTQuery ast, Mappings map) throws IOException {
-        boolean resultFormatIsSet = this.resultFormat != null;
-
-        if (!resultFormatIsSet) {
-            this.resultFormat = EnumResultFormat.TURTLE;
+            outputFileName = this.output;
         }
 
-        EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
-
-        if (outputFormat == null && (ast.isUpdate() || ast.isConstruct())) {
-            throw new IllegalArgumentException(
-                    "Error: " + this.resultFormat
-                            + " is not a valid output format for insert, delete or construct requests.");
-        }
-
-        try {
-            if (ast.isUpdate()) {
-
-                GraphUtils.export(graph, this.output, outputFormat);
+        // Set default output and result formats if not set
+        if (this.isDefautlFormat) {
+            if (isUpdate) {
+                resultFormat = this.defaultRdfBidings;
             } else {
-                if (!resultFormatIsSet) {
-                    this.resultFormat = EnumResultFormat.RESULT_TSV;
-                }
-                ResultFormat resultFormater = ResultFormat.create(map);
-                resultFormater.setSelectFormat(this.resultFormat.getValue());
-                resultFormater.setConstructFormat(this.resultFormat.getValue());
-                resultFormater.write(this.output.toString());
+                resultFormat = this.defaultResult;
             }
-        } catch (IOException e) {
-            throw new IOException("Error when writing the results to the output file : " + e.getMessage(), e);
+        } else {
+            resultFormat = this.resultFormat;
+        }
+        outputFormat = resultFormat.convertToOutputFormat();
+
+        // Export results
+        if (isUpdate) {
+            if (output == null) {
+                GraphUtils.exportToStdout(graph, outputFormat, spec);
+            } else {
+                GraphUtils.exportToFile(graph, outputFormat, outputFileName);
+            }
+        } else {
+            ResultFormat resultFormater = ResultFormat.create(map);
+            resultFormater.setSelectFormat(resultFormat.getValue());
+            resultFormater.setConstructFormat(this.resultFormat.getValue());
+
+            if (output == null) {
+                String result = resultFormater.toString();
+                spec.commandLine().getOut().println(result);
+            } else {
+                resultFormater.write(outputFileName.toString());
+            }
         }
     }
 

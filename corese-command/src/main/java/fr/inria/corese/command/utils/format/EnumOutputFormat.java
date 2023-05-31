@@ -34,6 +34,30 @@ public enum EnumOutputFormat {
     }
 
     /**
+     * Get the extension of the format.
+     * 
+     * @return The extension.
+     */
+    public String getExtention() {
+        switch (this) {
+            case RDFXML:
+                return "xml";
+
+            case TURTLE:
+                return "ttl";
+
+            case TRIG:
+                return "trig";
+
+            case JSONLD:
+                return "jsonld";
+
+            default:
+                throw new InvalidParameterException("Output format " + this + " is unknow.");
+        }
+    }
+
+    /**
      * Get the enum from its value.
      * 
      * @param value The value of the enum.

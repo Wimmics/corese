@@ -1,5 +1,7 @@
 package fr.inria.corese.command.utils.format;
 
+import java.security.InvalidParameterException;
+
 /**
  * Enumeration of exportable RDF serialization formats.
  */
@@ -32,6 +34,45 @@ public enum EnumResultFormat {
      */
     public int getValue() {
         return value;
+    }
+
+    /**
+     * Get the extension of the format.
+     * 
+     * @return The extension.
+     */
+    public String getExtention() {
+        switch (this) {
+            case RDFXML:
+                return "xml";
+
+            case TURTLE:
+                return "ttl";
+
+            case TRIG:
+                return "trig";
+
+            case JSONLD:
+                return "jsonld";
+
+            case RESULT_XML:
+                return "xml";
+
+            case RESULT_TURTLE:
+                return "ttl";
+
+            case RESULT_JSON:
+                return "json";
+
+            case RESULT_CSV:
+                return "csv";
+
+            case RESULT_TSV:
+                return "tsv";
+
+            default:
+                throw new InvalidParameterException("Output format " + this + " is unknow.");
+        }
     }
 
     /**

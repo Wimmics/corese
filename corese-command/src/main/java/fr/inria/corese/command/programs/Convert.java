@@ -17,6 +17,8 @@ import picocli.CommandLine.Spec;
 @Command(name = "convert", version = App.version, description = "Convert an RDF file from one serialization format to another.", mixinStandardHelpOptions = true)
 public class Convert implements Runnable {
 
+    private final String DEFAULT_OUTPUT_FILE_NAME = "output";
+
     @Spec
     CommandSpec spec;
 
@@ -27,7 +29,8 @@ public class Convert implements Runnable {
             "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}.")
     private EnumInputFormat inputFormat = null;
 
-    @Option(names = { "-o", "--output-data" }, description = "Path where the resulting file should be saved.")
+    @Option(names = { "-o",
+            "--output-data" }, description = "Output file path. If not provided, the result will be written to standard output.", arity = "0..1", fallbackValue = DEFAULT_OUTPUT_FILE_NAME)
     private Path output;
 
     @Parameters(paramLabel = "output-format", description = "Serialization format to which the input file should be converted. Possible values: ${COMPLETION-CANDIDATES}.")
@@ -63,8 +66,10 @@ public class Convert implements Runnable {
 
     /**
      * Load the input file.
+     * 
      * @throws IllegalArgumentException if the input format is not supported.
-     * @throws IOException if an I/O error occurs while loading the input file.
+     * @throws IOException              if an I/O error occurs while loading the
+     *                                  input file.
      */
     private void loadInputFile() throws IllegalArgumentException, IOException {
         if (input == null) {
@@ -81,12 +86,23 @@ public class Convert implements Runnable {
      * @throws IOException if an I/O error occurs while exporting the graph.
      */
     private void exportGraph() throws IOException {
+
+        Path outputFileName;
+
+        // Set output file name
+        if (this.output.toString().equals(DEFAULT_OUTPUT_FILE_NAME)) {
+            outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.outputFormat.getExtention());
+        } else {
+            outputFileName = this.output;
+        }
+
+        // Export the graph
         if (output == null) {
             // if output is null, print to stdout
-            GraphUtils.exportToString(graph, outputFormat, spec);
+            GraphUtils.exportToStdout(graph, outputFormat, spec);
         } else {
-            GraphUtils.export(graph, output, outputFormat);
+            GraphUtils.exportToFile(graph, outputFormat, outputFileName);
         }
-    }
+    }*
 
 }

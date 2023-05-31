@@ -51,7 +51,8 @@ public class Sparql implements Runnable {
 
     private Graph graph;
 
-    private boolean isDefautlFormat = false;
+    private boolean resultFromatIsDefine = false;
+    private boolean outputFromatIsDefine = false;
     private EnumResultFormat defaultRdfBidings = EnumResultFormat.TURTLE;
     private EnumResultFormat defaultResult = EnumResultFormat.RESULT_TSV;
 
@@ -61,7 +62,8 @@ public class Sparql implements Runnable {
     @Override
     public void run() {
         try {
-            this.isDefautlFormat = resultFormat == null;
+            this.resultFromatIsDefine = resultFormat == null;
+            this.outputFromatIsDefine = output == null;
             loadInputFile();
             loadQuery();
             execute();
@@ -166,14 +168,14 @@ public class Sparql implements Runnable {
         }
 
         // Set output file name
-        if (this.output.toString().equals(DEFAULT_OUTPUT_FILE_NAME)) {
+        if (this.outputFromatIsDefine && this.output.toString().equals(DEFAULT_OUTPUT_FILE_NAME)) {
             outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.resultFormat.getExtention());
         } else {
             outputFileName = this.output;
         }
 
         // Set default output and result formats if not set
-        if (this.isDefautlFormat) {
+        if (this.resultFromatIsDefine) {
             if (isUpdate) {
                 resultFormat = this.defaultRdfBidings;
             } else {

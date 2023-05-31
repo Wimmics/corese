@@ -51,7 +51,8 @@ public class Sparql implements Runnable {
 
     private Graph graph;
 
-    private boolean isDefautlFormat = false;
+    private boolean resultFromatIsDefine = false;
+    private boolean outputFromatIsDefine = false;
     private EnumResultFormat defaultRdfBidings = EnumResultFormat.TURTLE;
     private EnumResultFormat defaultResult = EnumResultFormat.RESULT_TSV;
 
@@ -61,7 +62,8 @@ public class Sparql implements Runnable {
     @Override
     public void run() {
         try {
-            this.isDefautlFormat = resultFormat == null;
+            this.resultFromatIsDefine = resultFormat != null;
+            this.outputFromatIsDefine = this.output != null && !this.output.toString().equals(DEFAULT_OUTPUT_FILE_NAME);
             loadInputFile();
             loadQuery();
             execute();
@@ -166,14 +168,14 @@ public class Sparql implements Runnable {
         }
 
         // Set output file name
-        if (this.output.toString().equals(DEFAULT_OUTPUT_FILE_NAME)) {
-            outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.resultFormat.getExtention());
-        } else {
+        if (this.outputFromatIsDefine) {
             outputFileName = this.output;
+        } else {
+            outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.resultFormat.getExtention());
         }
 
         // Set default output and result formats if not set
-        if (this.isDefautlFormat) {
+        if (!this.resultFromatIsDefine) {
             if (isUpdate) {
                 resultFormat = this.defaultRdfBidings;
             } else {
@@ -186,21 +188,21 @@ public class Sparql implements Runnable {
 
         // Export results
         if (isUpdate) {
-            if (output == null) {
-                GraphUtils.exportToStdout(graph, outputFormat, spec);
-            } else {
+            if (this.outputFromatIsDefine) {
                 GraphUtils.exportToFile(graph, outputFormat, outputFileName);
+            } else {
+                GraphUtils.exportToStdout(graph, outputFormat, spec);
             }
         } else {
             ResultFormat resultFormater = ResultFormat.create(map);
             resultFormater.setSelectFormat(resultFormat.getValue());
             resultFormater.setConstructFormat(this.resultFormat.getValue());
 
-            if (output == null) {
+            if (this.outputFromatIsDefine) {
+                resultFormater.write(outputFileName.toString());
+            } else {
                 String result = resultFormater.toString();
                 spec.commandLine().getOut().println(result);
-            } else {
-                resultFormater.write(outputFileName.toString());
             }
         }
     }

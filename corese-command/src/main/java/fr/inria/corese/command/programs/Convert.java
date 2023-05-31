@@ -103,6 +103,6 @@ public class Convert implements Runnable {
         } else {
             GraphUtils.exportToFile(graph, outputFormat, outputFileName);
         }
-    }*
+    }
 
 }

@@ -106,14 +106,14 @@ public class GraphUtils {
     /**
      * Export RDF data from a Corese Graph into a serialized file format.
      * 
-     * @param graph        Graph with data to export.
+     * @param inputGraph   Graph with data to export.
      * @param outputFormat output file serialization format.
      * @throws IOException if an I/O error occurs.
      */
-    public static void exportToString(Graph graph, EnumOutputFormat outputFormat, CommandSpec spec)
+    public static void exportToStdout(Graph inputGraph, EnumOutputFormat outputFormat, CommandSpec spec)
             throws IOException {
         ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
-        export(graph, outputStream, outputFormat);
+        export(inputGraph, outputStream, outputFormat);
         String outputContent = outputStream.toString(StandardCharsets.UTF_8);
         spec.commandLine().getOut().println(outputContent);
     }
@@ -127,7 +127,7 @@ public class GraphUtils {
      * @throws IOException           if an I/O error occurs.
      * @throws FileNotFoundException if the file exists but is a directory rather
      */
-    public static void export(Graph inputGraph, Path outputFile, EnumOutputFormat outputFormat)
+    public static void exportToFile(Graph inputGraph, EnumOutputFormat outputFormat, Path outputFile)
             throws FileNotFoundException, IOException {
         export(inputGraph, new FileOutputStream(outputFile.toFile()), outputFormat);
     }

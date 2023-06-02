@@ -45,7 +45,7 @@ public class Sparql implements Runnable {
             "--output-data" }, description = "Output file path. If not provided, the result will be written to standard output.", arity = "0..1", fallbackValue = DEFAULT_OUTPUT_FILE_NAME)
     private Path output;
 
-    @Parameters(paramLabel = "query_or_file", description = "SPARQL query string or path/URL to a .rq file.")
+    @Parameters(paramLabel = "query", description = "SPARQL query string or path/URL to a .rq file.")
     private String queryUrlOrFile;
     private String query;
 
@@ -54,7 +54,7 @@ public class Sparql implements Runnable {
     private boolean resultFromatIsDefine = false;
     private boolean outputFromatIsDefine = false;
     private EnumResultFormat defaultRdfBidings = EnumResultFormat.TURTLE;
-    private EnumResultFormat defaultResult = EnumResultFormat.RESULT_TSV;
+    private EnumResultFormat defaultResult = EnumResultFormat.TSV;
 
     public Sparql() {
     }
@@ -131,13 +131,14 @@ public class Sparql implements Runnable {
         this.exportResult(ast, map);
     }
 
-    private boolean isResultFormat() {
-        switch (resultFormat) {
-            case RESULT_XML:
-            case RESULT_TURTLE:
-            case RESULT_JSON:
-            case RESULT_CSV:
-            case RESULT_TSV:
+    /**
+     * Check if the output format is not compatible with the SELECT query type.
+     * @return True if the output format is not compatible with the SELECT query type.
+     */
+    private boolean isNotCompatibleWithSelect() {
+        switch (this.resultFormat) {
+            case CSV:
+            case TSV:
                 return true;
             default:
                 return false;
@@ -152,16 +153,22 @@ public class Sparql implements Runnable {
      * @throws IOException If the output file cannot be written.
      */
     private void exportResult(ASTQuery ast, Mappings map) throws IOException {
-
-        EnumOutputFormat outputFormat;
-        EnumResultFormat resultFormat;
         Path outputFileName;
 
         boolean isUpdate = ast.isInsert() || ast.isDelete() || ast.isUpdate();
         boolean isConstruct = ast.isConstruct();
 
+        // Set default output and result formats if not set
+        if (!this.resultFromatIsDefine) {
+            if (isUpdate) {
+                this.resultFormat = this.defaultRdfBidings;
+            } else {
+                this.resultFormat = this.defaultResult;
+            }
+        }
+
         // Check if the output format is valid for the query type
-        if (this.isResultFormat() && (isUpdate || isConstruct)) {
+        if (this.isNotCompatibleWithSelect() && (isUpdate || isConstruct)) {
             throw new IllegalArgumentException(
                     "Error: " + this.resultFormat
                             + " is not a valid output format for insert, delete or construct requests.");
@@ -174,20 +181,9 @@ public class Sparql implements Runnable {
             outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.resultFormat.getExtention());
         }
 
-        // Set default output and result formats if not set
-        if (!this.resultFromatIsDefine) {
-            if (isUpdate) {
-                resultFormat = this.defaultRdfBidings;
-            } else {
-                resultFormat = this.defaultResult;
-            }
-        } else {
-            resultFormat = this.resultFormat;
-        }
-        outputFormat = resultFormat.convertToOutputFormat();
-
         // Export results
         if (isUpdate) {
+            EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
             if (this.outputFromatIsDefine) {
                 GraphUtils.exportToFile(graph, outputFormat, outputFileName);
             } else {
@@ -195,8 +191,8 @@ public class Sparql implements Runnable {
             }
         } else {
             ResultFormat resultFormater = ResultFormat.create(map);
-            resultFormater.setSelectFormat(resultFormat.getValue());
-            resultFormater.setConstructFormat(this.resultFormat.getValue());
+            resultFormater.setSelectFormat(this.resultFormat.getValue(true));
+            resultFormater.setConstructFormat(this.resultFormat.getValue(false));
 
             if (this.outputFromatIsDefine) {
                 resultFormater.write(outputFileName.toString());

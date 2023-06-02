@@ -10,11 +10,8 @@ public enum EnumResultFormat {
     TURTLE(2),
     TRIG(3),
     JSONLD(4),
-    RESULT_XML(11),
-    RESULT_TURTLE(12),
-    RESULT_JSON(13),
-    RESULT_CSV(14),
-    RESULT_TSV(15);
+    CSV(14),
+    TSV(15);
 
     private final int value;
 
@@ -30,10 +27,26 @@ public enum EnumResultFormat {
     /**
      * Get the value of the enum.
      * 
+     * @param isSelect True if the query is a SELECT query.
      * @return The value of the enum.
      */
-    public int getValue() {
-        return value;
+    public int getValue(boolean isSelect) {
+        switch (this.value) {
+            case 1:
+                return isSelect ? 11 : 1;
+            case 2:
+                return isSelect ? 12 : 2;
+            case 3:
+                return isSelect ? 12 : 3;
+            case 4:
+                return isSelect ? 13 : 4;
+            case 14:
+                return 14;
+            case 15:
+                return 15;
+            default:
+                throw new InvalidParameterException("Output format " + this + " is unknow.");
+        }
     }
 
     /**
@@ -45,31 +58,16 @@ public enum EnumResultFormat {
         switch (this) {
             case RDFXML:
                 return "xml";
-
             case TURTLE:
                 return "ttl";
-
             case TRIG:
                 return "trig";
-
             case JSONLD:
                 return "jsonld";
-
-            case RESULT_XML:
-                return "xml";
-
-            case RESULT_TURTLE:
-                return "ttl";
-
-            case RESULT_JSON:
-                return "json";
-
-            case RESULT_CSV:
+            case CSV:
                 return "csv";
-
-            case RESULT_TSV:
+            case TSV:
                 return "tsv";
-
             default:
                 throw new InvalidParameterException("Output format " + this + " is unknow.");
         }
@@ -82,12 +80,28 @@ public enum EnumResultFormat {
      * @return The enum.
      */
     public static EnumResultFormat fromValue(int value) {
-        for (EnumResultFormat format : EnumResultFormat.values()) {
-            if (format.getValue() == value) {
-                return format;
-            }
+        switch (value) {
+            case 1:
+                return RDFXML;
+            case 2:
+                return TURTLE;
+            case 3:
+                return TRIG;
+            case 4:
+                return JSONLD;
+            case 11:
+                return RDFXML;
+            case 12:
+                return TURTLE;
+            case 13:
+                return JSONLD;
+            case 14:
+                return CSV;
+            case 15:
+                return TSV;
+            default:
+                throw new InvalidParameterException("Output format " + value + " is unknow.");
         }
-        return null;
     }
 
     /**

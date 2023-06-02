@@ -1,8 +1,4 @@
-@prefix : <http://stardog.com/tutorial/> .
-@prefix ns1: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#> .
-@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#> .
 
-
-_:br0 rdf:type <http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet> ;
-ns1:boolean false .
-
+[] a rs:ResultSet ; 
+rs:boolean false .

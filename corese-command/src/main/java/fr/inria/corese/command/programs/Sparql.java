@@ -53,6 +53,7 @@ public class Sparql implements Runnable {
 
     private boolean resultFromatIsDefine = false;
     private boolean outputFromatIsDefine = false;
+    private boolean isDefaultOutputName = false;
     private EnumResultFormat defaultRdfBidings = EnumResultFormat.TURTLE;
     private EnumResultFormat defaultResult = EnumResultFormat.BIDING_TSV;
 
@@ -63,7 +64,8 @@ public class Sparql implements Runnable {
     public void run() {
         try {
             this.resultFromatIsDefine = resultFormat != null;
-            this.outputFromatIsDefine = this.output != null && !this.output.toString().equals(DEFAULT_OUTPUT_FILE_NAME);
+            this.outputFromatIsDefine = this.output != null;
+            this.isDefaultOutputName = this.output == null || this.output.toString().equals(DEFAULT_OUTPUT_FILE_NAME);
             loadInputFile();
             loadQuery();
             execute();
@@ -181,7 +183,7 @@ public class Sparql implements Runnable {
         }
 
         // Set output file name
-        if (this.outputFromatIsDefine) {
+        if (this.outputFromatIsDefine && !this.isDefaultOutputName) {
             outputFileName = this.output;
         } else {
             outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.resultFormat.getExtention());

@@ -38,12 +38,17 @@ public class Convert implements Runnable {
 
     private Graph graph;
 
+    private boolean outputFromatIsDefine = false;
+    private boolean isDefaultOutputName = false;
+
     public Convert() {
     }
 
     @Override
     public void run() {
         try {
+            this.outputFromatIsDefine = this.output != null;
+            this.isDefaultOutputName = this.output != null && this.output.toString().equals(DEFAULT_OUTPUT_FILE_NAME);
             checkInputValues();
             loadInputFile();
             exportGraph();
@@ -90,10 +95,10 @@ public class Convert implements Runnable {
         Path outputFileName;
 
         // Set output file name
-        if (this.output.toString().equals(DEFAULT_OUTPUT_FILE_NAME)) {
-            outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.outputFormat.getExtention());
-        } else {
+        if (this.outputFromatIsDefine && !this.isDefaultOutputName) {
             outputFileName = this.output;
+        } else {
+            outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.outputFormat.getExtention());
         }
 
         // Export the graph

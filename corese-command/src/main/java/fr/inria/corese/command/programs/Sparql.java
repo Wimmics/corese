@@ -54,7 +54,7 @@ public class Sparql implements Runnable {
     private boolean resultFromatIsDefine = false;
     private boolean outputFromatIsDefine = false;
     private EnumResultFormat defaultRdfBidings = EnumResultFormat.TURTLE;
-    private EnumResultFormat defaultResult = EnumResultFormat.TSV;
+    private EnumResultFormat defaultResult = EnumResultFormat.BIDING_TSV;
 
     public Sparql() {
     }
@@ -133,12 +133,18 @@ public class Sparql implements Runnable {
 
     /**
      * Check if the output format is not compatible with the SELECT query type.
-     * @return True if the output format is not compatible with the SELECT query type.
+     * 
+     * @return True if the output format is not compatible with the SELECT query
+     *         type.
      */
     private boolean isNotCompatibleWithSelect() {
         switch (this.resultFormat) {
-            case CSV:
-            case TSV:
+            case BIDING_XML:
+            case BIDING_TURTLE:
+            case BIDING_TRIG:
+            case BIDING_JSON:
+            case BIDING_CSV:
+            case BIDING_TSV:
                 return true;
             default:
                 return false;
@@ -191,8 +197,8 @@ public class Sparql implements Runnable {
             }
         } else {
             ResultFormat resultFormater = ResultFormat.create(map);
-            resultFormater.setSelectFormat(this.resultFormat.getValue(true));
-            resultFormater.setConstructFormat(this.resultFormat.getValue(false));
+            resultFormater.setSelectFormat(this.resultFormat.getResultFormatValue());
+            resultFormater.setConstructFormat(this.resultFormat.getResultFormatValue());
 
             if (this.outputFromatIsDefine) {
                 resultFormater.write(outputFileName.toString());

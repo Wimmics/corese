@@ -69,22 +69,22 @@ public class SparqlTest {
         }
 
         @Test
-        public void testSelectXml() throws IOException {
+        public void testSelectRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesSelectXml = Paths
-                                .get(referencesPath, "select", "beatles-select-xml.xml")
+                String pathRefBeatlesSelectRdfxml = Paths
+                                .get(referencesPath, "select", "beatles-select-rdfxml.rdf")
                                 .toString();
-                String pathResBeatlesSelectXml = Paths.get(resultsPath, "select", "beatles-select-xml.xml")
+                String pathResBeatlesSelectRdfxml = Paths.get(resultsPath, "select", "beatles-select-rdfxml.rdf")
                                 .toString();
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "RDFXML", "-o",
-                                pathResBeatlesSelectXml, pathQueryBeatlesAlbum);
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "RDFXML", "-o", pathResBeatlesSelectRdfxml,
+                                pathQueryBeatlesAlbum);
 
                 assertEquals(0, exitCode);
                 assertEquals(out.toString(), "");
                 assertEquals(err.toString(), "");
-                assertTrue(compareFiles(pathRefBeatlesSelectXml, pathResBeatlesSelectXml));
+                assertTrue(compareFiles(pathRefBeatlesSelectRdfxml, pathResBeatlesSelectRdfxml));
         }
 
         @Test
@@ -93,8 +93,7 @@ public class SparqlTest {
                 String pathRefBeatlesSelectTurtle = Paths
                                 .get(referencesPath, "select", "beatles-select-turtle.ttl")
                                 .toString();
-                String pathResBeatlesSelectTurtle = Paths
-                                .get(resultsPath, "select", "beatles-select-turtle.ttl")
+                String pathResBeatlesSelectTurtle = Paths.get(resultsPath, "select", "beatles-select-turtle.ttl")
                                 .toString();
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
@@ -110,14 +109,90 @@ public class SparqlTest {
         @Test
         public void testSelectTrig() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesSelectTrig = Paths
-                                .get(referencesPath, "select", "beatles-select-trig.trig")
+                String pathRefBeatlesSelectTrig = Paths.get(referencesPath, "select", "beatles-select-trig.trig")
                                 .toString();
                 String pathResBeatlesSelectTrig = Paths.get(resultsPath, "select", "beatles-select-trig.trig")
                                 .toString();
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TRIG", "-o",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TRIG", "-o", pathResBeatlesSelectTrig,
+                                pathQueryBeatlesAlbum);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesSelectTrig, pathResBeatlesSelectTrig));
+        }
+
+        @Test
+        public void testSelectJsonld() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesSelectJsonld = Paths
+                                .get(referencesPath, "select", "beatles-select-jsonld.jsonld")
+                                .toString();
+                String pathResBeatlesSelectJsonld = Paths.get(resultsPath, "select", "beatles-select-jsonld.jsonld")
+                                .toString();
+                String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "JSONLD", "-o",
+                                pathResBeatlesSelectJsonld, pathQueryBeatlesAlbum);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesSelectJsonld, pathResBeatlesSelectJsonld));
+        }
+
+        @Test
+        public void testSelectBidingXml() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesSelectXml = Paths
+                                .get(referencesPath, "select", "beatles-select-bidingxml.xml")
+                                .toString();
+                String pathResBeatlesSelectXml = Paths.get(resultsPath, "select", "beatles-select-xml.xml")
+                                .toString();
+                String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_XML", "-o",
+                                pathResBeatlesSelectXml, pathQueryBeatlesAlbum);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesSelectXml, pathResBeatlesSelectXml));
+        }
+
+        @Test
+        public void testSelectBidingTurtle() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesSelectTurtle = Paths
+                                .get(referencesPath, "select", "beatles-select-bidingturtle.ttl")
+                                .toString();
+                String pathResBeatlesSelectTurtle = Paths
+                                .get(resultsPath, "select", "beatles-select-turtle.ttl")
+                                .toString();
+                String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TURTLE", "-o",
+                                pathResBeatlesSelectTurtle, pathQueryBeatlesAlbum);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesSelectTurtle, pathResBeatlesSelectTurtle));
+        }
+
+        @Test
+        public void testSelectBidingTrig() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesSelectTrig = Paths
+                                .get(referencesPath, "select", "beatles-select-bidingtrig.trig")
+                                .toString();
+                String pathResBeatlesSelectTrig = Paths.get(resultsPath, "select", "beatles-select-trig.trig")
+                                .toString();
+                String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TRIG", "-o",
                                 pathResBeatlesSelectTrig, pathQueryBeatlesAlbum);
 
                 assertEquals(0, exitCode);
@@ -127,17 +202,17 @@ public class SparqlTest {
         }
 
         @Test
-        public void testSelectJson() throws IOException {
+        public void testSelectBidingJson() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesSelectJson = Paths
-                                .get(referencesPath, "select", "beatles-select-json.json")
+                                .get(referencesPath, "select", "beatles-select-bidingjson.json")
                                 .toString();
                 String pathResBeatlesSelectJson = Paths
                                 .get(resultsPath, "select", "beatles-select-json.json")
                                 .toString();
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "JSONLD", "-o",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_JSON", "-o",
                                 pathResBeatlesSelectJson, pathQueryBeatlesAlbum);
 
                 assertEquals(0, exitCode);
@@ -147,16 +222,16 @@ public class SparqlTest {
         }
 
         @Test
-        public void testSelectCsv() throws IOException {
+        public void testSelectBidingCsv() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesSelectCsv = Paths
-                                .get(referencesPath, "select", "beatles-select-csv.csv")
+                                .get(referencesPath, "select", "beatles-select-bidingcsv.csv")
                                 .toString();
                 String pathResBeatlesSelectCsv = Paths.get(resultsPath, "select", "beatles-select-csv.csv")
                                 .toString();
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "CSV", "-o",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_CSV", "-o",
                                 pathResBeatlesSelectCsv, pathQueryBeatlesAlbum);
 
                 assertEquals(0, exitCode);
@@ -166,16 +241,16 @@ public class SparqlTest {
         }
 
         @Test
-        public void testSelectTSV() throws IOException {
+        public void testSelectBidingTSV() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesSelectTsv = Paths
-                                .get(referencesPath, "select", "beatles-select-tsv.tsv")
+                                .get(referencesPath, "select", "beatles-select-bidingtsv.tsv")
                                 .toString();
                 String pathResBeatlesSelectTsv = Paths.get(resultsPath, "select", "beatles-select-tsv.tsv")
                                 .toString();
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TSV", "-o",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TSV", "-o",
                                 pathResBeatlesSelectTsv, pathQueryBeatlesAlbum);
 
                 assertEquals(0, exitCode);
@@ -185,11 +260,11 @@ public class SparqlTest {
         }
 
         @Test
-        public void testAskTrueXml() throws IOException {
+        public void testAskTrueRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskXml = Paths.get(referencesPath, "ask", "beatles-ask-xml-true.xml")
+                String pathRefBeatlesAskRdfxml = Paths.get(referencesPath, "ask", "beatles-ask-rdfxml-true.rdf")
                                 .toString();
-                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-xml-true.xml")
+                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-rdfxml-true.rdf")
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
@@ -199,15 +274,15 @@ public class SparqlTest {
                 assertEquals(0, exitCode);
                 assertEquals(out.toString(), "");
                 assertEquals(err.toString(), "");
-                assertTrue(compareFiles(pathRefBeatlesAskXml, pathResBeatlesAskTrue));
+                assertTrue(compareFiles(pathRefBeatlesAskRdfxml, pathResBeatlesAskTrue));
         }
 
         @Test
-        public void testAskFalseXml() throws IOException {
+        public void testAskFalseRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskXml = Paths.get(referencesPath, "ask", "beatles-ask-xml-false.xml")
+                String pathRefBeatlesAskRdfxml = Paths.get(referencesPath, "ask", "beatles-ask-rdfxml-false.rdf")
                                 .toString();
-                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-xml-false.xml")
+                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-rdfxml-false.rdf")
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
@@ -217,14 +292,13 @@ public class SparqlTest {
                 assertEquals(0, exitCode);
                 assertEquals(out.toString(), "");
                 assertEquals(err.toString(), "");
-                assertTrue(compareFiles(pathRefBeatlesAskXml, pathResBeatlesAskFalse));
+                assertTrue(compareFiles(pathRefBeatlesAskRdfxml, pathResBeatlesAskFalse));
         }
 
         @Test
         public void testAskTrueTurtle() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskTurtle = Paths
-                                .get(referencesPath, "ask", "beatles-ask-turtle-true.ttl")
+                String pathRefBeatlesAskTurtle = Paths.get(referencesPath, "ask", "beatles-ask-turtle-true.ttl")
                                 .toString();
                 String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-turtle-true.ttl")
                                 .toString();
@@ -242,8 +316,7 @@ public class SparqlTest {
         @Test
         public void testAskFalseTurtle() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskTurtle = Paths
-                                .get(referencesPath, "ask", "beatles-ask-turtle-false.ttl")
+                String pathRefBeatlesAskTurtle = Paths.get(referencesPath, "ask", "beatles-ask-turtle-false.ttl")
                                 .toString();
                 String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-turtle-false.ttl")
                                 .toString();
@@ -259,49 +332,43 @@ public class SparqlTest {
         }
 
         @Test
-        public void testAskTrueTrig() throws IOException {
+        public void testAskTrigTrue() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskTurtle = Paths
-                                .get(referencesPath, "ask", "beatles-ask-trig-true.ttl")
-                                .toString();
-                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-trig-true.ttl")
-                                .toString();
+                String pathRefBeatlesTrig = Paths.get(referencesPath, "ask", "beatles-ask-trig-true.trig").toString();
+                String pathResBeatlesTrig = Paths.get(resultsPath, "ask", "beatles-ask-trig-true.trig").toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TRIG", "-o", pathResBeatlesAskTrue,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TRIG", "-o", pathResBeatlesTrig,
                                 pathQueryBeatlesAskTrue);
 
                 assertEquals(0, exitCode);
                 assertEquals(out.toString(), "");
                 assertEquals(err.toString(), "");
-                assertTrue(compareFiles(pathRefBeatlesAskTurtle, pathResBeatlesAskTrue));
+                assertTrue(compareFiles(pathRefBeatlesTrig, pathResBeatlesTrig));
         }
 
         @Test
-        public void testAskFalseTrig() throws IOException {
+        public void testAskTrigFalse() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskTurtle = Paths
-                                .get(referencesPath, "ask", "beatles-ask-trig-false.ttl")
-                                .toString();
-                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-trig-false.ttl")
-                                .toString();
+                String pathRefBeatlesTrig = Paths.get(referencesPath, "ask", "beatles-ask-trig-false.trig").toString();
+                String pathResBeatlesTrig = Paths.get(resultsPath, "ask", "beatles-ask-trig-false.trig").toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TRIG", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TRIG", "-o", pathResBeatlesTrig,
                                 pathQueryBeatlesAskFalse);
 
                 assertEquals(0, exitCode);
                 assertEquals(out.toString(), "");
                 assertEquals(err.toString(), "");
-                assertTrue(compareFiles(pathRefBeatlesAskTurtle, pathResBeatlesAskFalse));
+                assertTrue(compareFiles(pathRefBeatlesTrig, pathResBeatlesTrig));
         }
 
         @Test
-        public void testAskTrueJson() throws IOException {
+        public void testAskTrueJsonld() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskJSON = Paths.get(referencesPath, "ask", "beatles-ask-json-true.json")
+                String pathRefBeatlesAskJsonld = Paths.get(referencesPath, "ask", "beatles-ask-jsonld-true.jsonld")
                                 .toString();
-                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-json-true.json")
+                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-jsonld-true.jsonld")
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
@@ -311,15 +378,15 @@ public class SparqlTest {
                 assertEquals(0, exitCode);
                 assertEquals(out.toString(), "");
                 assertEquals(err.toString(), "");
-                assertTrue(compareFiles(pathRefBeatlesAskJSON, pathResBeatlesAskTrue));
+                assertTrue(compareFiles(pathRefBeatlesAskJsonld, pathResBeatlesAskTrue));
         }
 
         @Test
-        public void testAskFalseJson() throws IOException {
+        public void testAskFalseJsonld() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskJSON = Paths.get(referencesPath, "ask", "beatles-ask-json-false.json")
+                String pathRefBeatlesAskJsonld = Paths.get(referencesPath, "ask", "beatles-ask-jsonld-false.jsonld")
                                 .toString();
-                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-json-false.json")
+                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-jsonld-false.jsonld")
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
@@ -329,19 +396,167 @@ public class SparqlTest {
                 assertEquals(0, exitCode);
                 assertEquals(out.toString(), "");
                 assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesAskJsonld, pathResBeatlesAskFalse));
+        }
+
+        @Test
+        public void testAskTrueBidingXml() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesAskXml = Paths.get(referencesPath, "ask", "beatles-ask-bidingxml-true.xml")
+                                .toString();
+                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-bidingxml-true.xml")
+                                .toString();
+                String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_XML", "-o", pathResBeatlesAskTrue,
+                                pathQueryBeatlesAskTrue);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesAskXml, pathResBeatlesAskTrue));
+        }
+
+        @Test
+        public void testAskFalseBidingXml() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesAskXml = Paths.get(referencesPath, "ask", "beatles-ask-bidingxml-false.xml")
+                                .toString();
+                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-bidingxml-false.xml")
+                                .toString();
+                String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_XML", "-o", pathResBeatlesAskFalse,
+                                pathQueryBeatlesAskFalse);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesAskXml, pathResBeatlesAskFalse));
+        }
+
+        @Test
+        public void testAskTrueBidingTurtle() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesAskTurtle = Paths
+                                .get(referencesPath, "ask", "beatles-ask-bidingturtle-true.ttl")
+                                .toString();
+                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-bidingturtle-true.ttl")
+                                .toString();
+                String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TURTLE", "-o", pathResBeatlesAskTrue,
+                                pathQueryBeatlesAskTrue);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesAskTurtle, pathResBeatlesAskTrue));
+        }
+
+        @Test
+        public void testAskFalseBidingTurtle() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesAskTurtle = Paths
+                                .get(referencesPath, "ask", "beatles-ask-bidingturtle-false.ttl")
+                                .toString();
+                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-bidingturtle-false.ttl")
+                                .toString();
+                String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TURTLE", "-o", pathResBeatlesAskFalse,
+                                pathQueryBeatlesAskFalse);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesAskTurtle, pathResBeatlesAskFalse));
+        }
+
+        @Test
+        public void testAskTrueBidingTrig() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesAskTurtle = Paths
+                                .get(referencesPath, "ask", "beatles-ask-bidingtrig-true.ttl")
+                                .toString();
+                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-bidingtrig-true.ttl")
+                                .toString();
+                String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TRIG", "-o", pathResBeatlesAskTrue,
+                                pathQueryBeatlesAskTrue);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesAskTurtle, pathResBeatlesAskTrue));
+        }
+
+        @Test
+        public void testAskFalseBidingTrig() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesAskTurtle = Paths
+                                .get(referencesPath, "ask", "beatles-ask-bidingtrig-false.ttl")
+                                .toString();
+                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-bidingtrig-false.ttl")
+                                .toString();
+                String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TRIG", "-o", pathResBeatlesAskFalse,
+                                pathQueryBeatlesAskFalse);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesAskTurtle, pathResBeatlesAskFalse));
+        }
+
+        @Test
+        public void testAskTrueBidingJson() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesAskJSON = Paths.get(referencesPath, "ask", "beatles-ask-bidingjson-true.json")
+                                .toString();
+                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-bidingjson-true.json")
+                                .toString();
+                String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_JSON", "-o", pathResBeatlesAskTrue,
+                                pathQueryBeatlesAskTrue);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
+                assertTrue(compareFiles(pathRefBeatlesAskJSON, pathResBeatlesAskTrue));
+        }
+
+        @Test
+        public void testAskFalseBidingJson() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesAskJSON = Paths.get(referencesPath, "ask", "beatles-ask-bidingjson-false.json")
+                                .toString();
+                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-bidingjson-false.json")
+                                .toString();
+                String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_JSON", "-o", pathResBeatlesAskFalse,
+                                pathQueryBeatlesAskFalse);
+
+                assertEquals(0, exitCode);
+                assertEquals(out.toString(), "");
+                assertEquals(err.toString(), "");
                 assertTrue(compareFiles(pathRefBeatlesAskJSON, pathResBeatlesAskFalse));
         }
 
         @Test
-        public void testAskTrueCsv() throws IOException {
+        public void testAskTrueBidingCsv() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskCSV = Paths.get(referencesPath, "ask", "beatles-ask-csv-true.csv")
+                String pathRefBeatlesAskCSV = Paths.get(referencesPath, "ask", "beatles-ask-bidingcsv-true.csv")
                                 .toString();
-                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-csv-true.csv")
+                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-bidingcsv-true.csv")
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "CSV", "-o", pathResBeatlesAskTrue,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_CSV", "-o", pathResBeatlesAskTrue,
                                 pathQueryBeatlesAskTrue);
 
                 assertEquals(0, exitCode);
@@ -351,15 +566,15 @@ public class SparqlTest {
         }
 
         @Test
-        public void testAskFalseCsv() throws IOException {
+        public void testAskFalseBidingCsv() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskCSV = Paths.get(referencesPath, "ask", "beatles-ask-csv-false.csv")
+                String pathRefBeatlesAskCSV = Paths.get(referencesPath, "ask", "beatles-ask-bidingcsv-false.csv")
                                 .toString();
-                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-csv-false.csv")
+                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-bidingcsv-false.csv")
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "CSV", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_CSV", "-o", pathResBeatlesAskFalse,
                                 pathQueryBeatlesAskFalse);
 
                 assertEquals(0, exitCode);
@@ -369,15 +584,15 @@ public class SparqlTest {
         }
 
         @Test
-        public void testAskTrueTsv() throws IOException {
+        public void testAskTrueBidingTsv() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskTSV = Paths.get(referencesPath, "ask", "beatles-ask-tsv-true.tsv")
+                String pathRefBeatlesAskTSV = Paths.get(referencesPath, "ask", "beatles-ask-bidingtsv-true.tsv")
                                 .toString();
-                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-tsv-true.tsv")
+                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-bidingtsv-true.tsv")
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TSV", "-o", pathResBeatlesAskTrue,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TSV", "-o", pathResBeatlesAskTrue,
                                 pathQueryBeatlesAskTrue);
 
                 assertEquals(0, exitCode);
@@ -387,15 +602,15 @@ public class SparqlTest {
         }
 
         @Test
-        public void testAskFalseTsv() throws IOException {
+        public void testAskFalseBidingTsv() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskTSV = Paths.get(referencesPath, "ask", "beatles-ask-tsv-false.tsv")
+                String pathRefBeatlesAskTSV = Paths.get(referencesPath, "ask", "beatles-ask-bidingtsv-false.tsv")
                                 .toString();
-                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-tsv-false.tsv")
+                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-bidingtsv-false.tsv")
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TSV", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TSV", "-o", pathResBeatlesAskFalse,
                                 pathQueryBeatlesAskFalse);
 
                 assertEquals(0, exitCode);
@@ -405,11 +620,12 @@ public class SparqlTest {
         }
 
         @Test
-        public void testInsertXml() throws IOException {
+        public void testInsertRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesInsert = Paths.get(referencesPath, "insert", "beatles-insert-rdfxml.xml")
                                 .toString();
-                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-rdfxml.xml").toString();
+                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-rdfxml.xml")
+                                .toString();
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "RDFXML", "-o", pathResBeatlesInsert,
@@ -426,7 +642,8 @@ public class SparqlTest {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesInsert = Paths.get(referencesPath, "insert", "beatles-insert-turtle.ttl")
                                 .toString();
-                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-turtle.ttl").toString();
+                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-turtle.ttl")
+                                .toString();
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TURTLE", "-o", pathResBeatlesInsert,
@@ -443,7 +660,8 @@ public class SparqlTest {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesInsert = Paths.get(referencesPath, "insert", "beatles-insert-trig.trig")
                                 .toString();
-                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-trig.trig").toString();
+                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-trig.trig")
+                                .toString();
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TRIG", "-o", pathResBeatlesInsert,
@@ -456,7 +674,7 @@ public class SparqlTest {
         }
 
         @Test
-        public void testInsertJson() throws IOException {
+        public void testInsertJsonld() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesInsert = Paths.get(referencesPath, "insert", "beatles-insert-jsonld.jsonld")
                                 .toString();
@@ -474,15 +692,16 @@ public class SparqlTest {
         }
 
         @Test
-        public void testInsertCsvInvalid() throws IOException {
+        public void testInsertBidingXmlInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-bidingrdfxml.xml")
+                                .toString();
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "CSV", "-o",
-                                "references/insert/beatles-insert-csv.csv",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_XML", "-o", pathResBeatlesInsert,
                                 pathQueryBeatlesInsert);
 
-                String expectedOutput = "Error: CSV is not a valid output format for insert, delete or construct requests.";
+                String expectedOutput = "Error: BIDING_XML is not a valid output format for insert, delete or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
@@ -491,15 +710,17 @@ public class SparqlTest {
         }
 
         @Test
-        public void testInsertTsvInvalid() throws IOException {
+        public void testInsertBidingTurtleInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-bidingturtle.ttl")
+                                .toString();
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TSV", "-o",
-                                "references/insert/beatles-insert-tsv.tsv",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TURTLE", "-o",
+                                pathResBeatlesInsert,
                                 pathQueryBeatlesInsert);
 
-                String expectedOutput = "Error: TSV is not a valid output format for insert, delete or construct requests.";
+                String expectedOutput = "Error: BIDING_TURTLE is not a valid output format for insert, delete or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
@@ -508,12 +729,87 @@ public class SparqlTest {
         }
 
         @Test
-        public void testInsertWhereXml() throws IOException {
+        public void testInsertBidingTrigInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-bidingtrig.trig")
+                                .toString();
+                String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TRIG", "-o", pathResBeatlesInsert,
+                                pathQueryBeatlesInsert);
+
+                String expectedOutput = "Error: BIDING_TRIG is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testInsertBidingJsonInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-bidingjsonld.jsonld")
+                                .toString();
+                String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_JSON", "-o",
+                                pathResBeatlesInsert,
+                                pathQueryBeatlesInsert);
+
+                String expectedOutput = "Error: BIDING_JSON is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testInsertBidingCsvInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-bidingrdfxml.xml")
+                                .toString();
+                String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_CSV", "-o",
+                                pathResBeatlesInsert,
+                                pathQueryBeatlesInsert);
+
+                String expectedOutput = "Error: BIDING_CSV is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testInsertBidingTsvInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-bidingrdfxml.xml")
+                                .toString();
+                String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TSV", "-o",
+                                pathResBeatlesInsert,
+                                pathQueryBeatlesInsert);
+
+                String expectedOutput = "Error: BIDING_TSV is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testInsertWhereRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesInsertwhere = Paths
-                                .get(referencesPath, "insert-where", "beatles-insertwhere-rdfxml.xml").toString();
+                                .get(referencesPath, "insert-where", "beatles-insertwhere-bidingrdfxml.xml").toString();
                 String pathResBeatlesInsertwhere = Paths
-                                .get(resultsPath, "insert-where", "beatles-insertwhere-rdfxml.xml").toString();
+                                .get(resultsPath, "insert-where", "beatles-insertwhere-bidingrdfxml.xml").toString();
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "RDFXML", "-o", pathResBeatlesInsertwhere,
@@ -529,9 +825,9 @@ public class SparqlTest {
         public void testInsertWhereTurtle() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesInsertwhere = Paths
-                                .get(referencesPath, "insert-where", "beatles-insertwhere-turtle.ttl").toString();
+                                .get(referencesPath, "insert-where", "beatles-insertwhere-bidingturtle.ttl").toString();
                 String pathResBeatlesInsertwhere = Paths
-                                .get(resultsPath, "insert-where", "beatles-insertwhere-turtle.ttl").toString();
+                                .get(resultsPath, "insert-where", "beatles-insertwhere-bidingturtle.ttl").toString();
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TURTLE", "-o", pathResBeatlesInsertwhere,
@@ -547,9 +843,9 @@ public class SparqlTest {
         public void testInsertWhereTrig() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesInsertwhere = Paths
-                                .get(referencesPath, "insert-where", "beatles-insertwhere-trig.trig").toString();
+                                .get(referencesPath, "insert-where", "beatles-insertwhere-bidingtrig.trig").toString();
                 String pathResBeatlesInsertwhere = Paths
-                                .get(resultsPath, "insert-where", "beatles-insertwhere-trig.trig").toString();
+                                .get(resultsPath, "insert-where", "beatles-insertwhere-bidingtrig.trig").toString();
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TRIG", "-o", pathResBeatlesInsertwhere,
@@ -565,9 +861,10 @@ public class SparqlTest {
         public void testInsertWhereJsonLd() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesInsertwhere = Paths
-                                .get(referencesPath, "insert-where", "beatles-insertwhere-jsonld.jsonld").toString();
+                                .get(referencesPath, "insert-where", "beatles-insertwhere-bidingjsonld.jsonld")
+                                .toString();
                 String pathResBeatlesInsertwhere = Paths
-                                .get(resultsPath, "insert-where", "beatles-insertwhere-jsonld.jsonld").toString();
+                                .get(resultsPath, "insert-where", "beatles-insertwhere-bidingjsonld.jsonld").toString();
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "JSONLD", "-o", pathResBeatlesInsertwhere,
@@ -580,15 +877,17 @@ public class SparqlTest {
         }
 
         @Test
-        public void testInsertWhereCsvInvalid() throws IOException {
+        public void testInsertWhereBidingxmlInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathResBeatlesInsertwhere = Paths
+                                .get(resultsPath, "insert-where", "beatles-insertwhere-bidingrdfxml.xml").toString();
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "CSV", "-o",
-                                "references/insert-where/beatles-insertwhere-csv.csv",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_XML", "-o",
+                                pathResBeatlesInsertwhere,
                                 pathQueryBeatlesInsertwhere);
 
-                String expectedOutput = "Error: CSV is not a valid output format for insert, delete or construct requests.";
+                String expectedOutput = "Error: BIDING_XML is not a valid output format for insert, delete or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
@@ -597,15 +896,17 @@ public class SparqlTest {
         }
 
         @Test
-        public void testInsertWhereTsvInvalid() throws IOException {
+        public void testInsertWhereBidingturtleInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathResBeatlesInsertwhere = Paths
+                                .get(resultsPath, "insert-where", "beatles-insertwhere-bidingrdfxml.xml").toString();
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TSV", "-o",
-                                "references/insert-where/beatles-insertwhere-tsv.tsv",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TURTLE", "-o",
+                                pathResBeatlesInsertwhere,
                                 pathQueryBeatlesInsertwhere);
 
-                String expectedOutput = "Error: TSV is not a valid output format for insert, delete or construct requests.";
+                String expectedOutput = "Error: BIDING_TURTLE is not a valid output format for insert, delete or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
@@ -614,7 +915,79 @@ public class SparqlTest {
         }
 
         @Test
-        public void testDeleteXml() throws IOException {
+        public void testInsertWhereBidingTrigInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathResBeatlesInsertwhere = Paths
+                                .get(resultsPath, "insert-where", "beatles-insertwhere-bidingrdfxml.xml").toString();
+                String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TRIG", "-o",
+                                pathResBeatlesInsertwhere,
+                                pathQueryBeatlesInsertwhere);
+
+                String expectedOutput = "Error: BIDING_TRIG is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testInsertWhereBidingjsonInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathResBeatlesInsertwhere = Paths
+                                .get(resultsPath, "insert-where", "beatles-insertwhere-bidingrdfxml.xml").toString();
+                String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_JSON", "-o",
+                                pathResBeatlesInsertwhere,
+                                pathQueryBeatlesInsertwhere);
+
+                String expectedOutput = "Error: BIDING_JSON is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testInsertWhereBidingCsvInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_CSV", "-o",
+                                "references/insert-where/beatles-insertwhere-bidingcsv.csv",
+                                pathQueryBeatlesInsertwhere);
+
+                String expectedOutput = "Error: BIDING_CSV is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testInsertWhereBidingTsvInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TSV", "-o",
+                                "references/insert-where/beatles-insertwhere-bidingtsv.tsv",
+                                pathQueryBeatlesInsertwhere);
+
+                String expectedOutput = "Error: BIDING_TSV is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testDeleteRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesDelete = Paths.get(referencesPath, "delete", "beatles-delete-rdfxml.xml")
                                 .toString();
@@ -665,7 +1038,7 @@ public class SparqlTest {
         }
 
         @Test
-        public void testDeleteJson() throws IOException {
+        public void testDeleteJsonld() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesDelete = Paths.get(referencesPath, "delete", "beatles-delete-jsonld.jsonld")
                                 .toString();
@@ -683,15 +1056,83 @@ public class SparqlTest {
         }
 
         @Test
-        public void testDeleteCsvInvalid() throws IOException {
+        public void testDeleteBidingXmlInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "CSV", "-o",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_XML", "-o",
+                                "references/delete/beatles-delete-xml.xml",
+                                pathQueryBeatlesDelete);
+
+                String expectedOutput = "Error: BIDING_XML is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testDeleteBidingTurtleInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TURTLE", "-o",
+                                "references/delete/beatles-delete-turtle.ttl",
+                                pathQueryBeatlesDelete);
+
+                String expectedOutput = "Error: BIDING_TURTLE is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testDeleteBidingTrigInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TRIG", "-o",
+                                "references/delete/beatles-delete-trig.trig",
+                                pathQueryBeatlesDelete);
+
+                String expectedOutput = "Error: BIDING_TRIG is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testDeleteBidingJsonInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_JSON", "-o",
+                                "references/delete/beatles-delete-jsonld.jsonld",
+                                pathQueryBeatlesDelete);
+
+                String expectedOutput = "Error: BIDING_JSON is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testDeleteBidingCsvInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_CSV", "-o",
                                 "references/delete/beatles-delete-csv.csv",
                                 pathQueryBeatlesDelete);
 
-                String expectedOutput = "Error: CSV is not a valid output format for insert, delete or construct requests.";
+                String expectedOutput = "Error: BIDING_CSV is not a valid output format for insert, delete or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
@@ -700,15 +1141,15 @@ public class SparqlTest {
         }
 
         @Test
-        public void testDeleteTsvInvalid() throws IOException {
+        public void testDeleteBidingTsvInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TSV", "-o",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TSV", "-o",
                                 "references/delete/beatles-delete-tsv.tsv",
                                 pathQueryBeatlesDelete);
 
-                String expectedOutput = "Error: TSV is not a valid output format for insert, delete or construct requests.";
+                String expectedOutput = "Error: BIDING_TSV is not a valid output format for insert, delete or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
@@ -717,7 +1158,7 @@ public class SparqlTest {
         }
 
         @Test
-        public void testDeleteWhereXml() throws IOException {
+        public void testDeleteWhereRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesDelete = Paths
                                 .get(referencesPath, "delete-where", "beatles-delete-where-rdfxml.xml")
@@ -774,7 +1215,7 @@ public class SparqlTest {
         }
 
         @Test
-        public void testDeleteWhereJson() throws IOException {
+        public void testDeleteWhereJsonld() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesDelete = Paths
                                 .get(referencesPath, "delete-where", "beatles-delete-where-jsonld.jsonld")
@@ -794,15 +1235,83 @@ public class SparqlTest {
         }
 
         @Test
-        public void testDeleteWhereCsvInvalid() throws IOException {
+        public void testDeleteWhereBidingXmlInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "CSV", "-o",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_XML", "-o",
+                                "references/delete-where/beatles-delete-where-xml.xml",
+                                pathQueryBeatlesDelete);
+
+                String expectedOutput = "Error: BIDING_XML is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testDeleteWhereBidingTurtleInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TURTLE", "-o",
+                                "references/delete-where/beatles-delete-where-turtle.ttl",
+                                pathQueryBeatlesDelete);
+
+                String expectedOutput = "Error: BIDING_TURTLE is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testDeleteWhereBidingTrigInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TRIG", "-o",
+                                "references/delete-where/beatles-delete-where-trig.trig",
+                                pathQueryBeatlesDelete);
+
+                String expectedOutput = "Error: BIDING_TRIG is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testDeleteWhereBidingJsonInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_JSON", "-o",
+                                "references/delete-where/beatles-delete-where-json.json",
+                                pathQueryBeatlesDelete);
+
+                String expectedOutput = "Error: BIDING_JSON is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testDeleteWhereBidingCsvInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_CSV", "-o",
                                 "references/delete-where/beatles-delete-where-csv.csv",
                                 pathQueryBeatlesDelete);
 
-                String expectedOutput = "Error: CSV is not a valid output format for insert, delete or construct requests.";
+                String expectedOutput = "Error: BIDING_CSV is not a valid output format for insert, delete or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
@@ -811,15 +1320,15 @@ public class SparqlTest {
         }
 
         @Test
-        public void testDeleteWhereTsvInvalid() throws IOException {
+        public void testDeleteWhereBidingTsvInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TSV", "-o",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TSV", "-o",
                                 "references/delete-where/beatles-delete-where-tsv.tsv",
                                 pathQueryBeatlesDelete);
 
-                String expectedOutput = "Error: TSV is not a valid output format for insert, delete or construct requests.";
+                String expectedOutput = "Error: BIDING_TSV is not a valid output format for insert, delete or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
@@ -828,7 +1337,7 @@ public class SparqlTest {
         }
 
         @Test
-        public void testConstructXml() throws IOException {
+        public void testConstructRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesConstruct = Paths.get(referencesPath, "construct", "beatles-construct-rdfxml.xml")
                                 .toString();
@@ -882,7 +1391,7 @@ public class SparqlTest {
         }
 
         @Test
-        public void testConstructJson() throws IOException {
+        public void testConstructJsonld() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesConstruct = Paths
                                 .get(referencesPath, "construct", "beatles-construct-jsonld.jsonld")
@@ -901,14 +1410,14 @@ public class SparqlTest {
         }
 
         @Test
-        public void testConstructCsvInvalid() throws IOException {
+        public void testBidingConstructXmlInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "CSV", "-o",
-                                "references/construct/beatles-construct-csv.csv", pathQueryBeatlesConstruct);
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_XML", "-o",
+                                "references/construct/beatles-construct-xml.xml", pathQueryBeatlesConstruct);
 
-                String expectedOutput = "Error: CSV is not a valid output format for insert, delete or construct requests.";
+                String expectedOutput = "Error: BIDING_XML is not a valid output format for insert, delete or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
@@ -917,14 +1426,78 @@ public class SparqlTest {
         }
 
         @Test
-        public void testConstructTsvInvalid() throws IOException {
+        public void testBidingConstructTurtleInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "TSV", "-o",
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TURTLE", "-o",
+                                "references/construct/beatles-construct-turtle.ttl", pathQueryBeatlesConstruct);
+
+                String expectedOutput = "Error: BIDING_TURTLE is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testBidingConstructTrigInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TRIG", "-o",
+                                "references/construct/beatles-construct-trig.trig", pathQueryBeatlesConstruct);
+
+                String expectedOutput = "Error: BIDING_TRIG is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testBidingConstructJsonInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_JSON", "-o",
+                                "references/construct/beatles-construct-jsonld.jsonld", pathQueryBeatlesConstruct);
+
+                String expectedOutput = "Error: BIDING_JSON is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testBidingConstructCsvInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_CSV", "-o",
+                                "references/construct/beatles-construct-csv.csv", pathQueryBeatlesConstruct);
+
+                String expectedOutput = "Error: BIDING_CSV is not a valid output format for insert, delete or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testBidingConstructTsvInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "BIDING_TSV", "-o",
                                 "references/construct/beatles-construct-tsv.tsv", pathQueryBeatlesConstruct);
 
-                String expectedOutput = "Error: TSV is not a valid output format for insert, delete or construct requests.";
+                String expectedOutput = "Error: BIDING_TSV is not a valid output format for insert, delete or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);

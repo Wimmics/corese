@@ -1,0 +1,51 @@
+@prefix rs: <http://www.w3.org/2001/sw/DataAccess/tests/result-set#> .
+
+[] a rs:ResultSet ; 
+rs:resultVariable 'albumName' ; 
+rs:resultVariable 'albumDate' ; 
+rs:resultVariable 'artist' ; 
+rs:solution [
+rs:index 0 ;
+rs:binding [
+rs:variable 'albumName' ; 
+rs:value "Please Please Me"
+] ; 
+rs:binding [
+rs:variable 'albumDate' ; 
+rs:value "1963-03-22"^^xsd:date
+] ; 
+rs:binding [
+rs:variable 'artist' ; 
+rs:value <http://stardog.com/tutorial/The_Beatles>
+] ; 
+] ;
+rs:solution [
+rs:index 1 ;
+rs:binding [
+rs:variable 'albumName' ; 
+rs:value "McCartney"
+] ; 
+rs:binding [
+rs:variable 'albumDate' ; 
+rs:value "1970-04-17"^^xsd:date
+] ; 
+rs:binding [
+rs:variable 'artist' ; 
+rs:value <http://stardog.com/tutorial/Paul_McCartney>
+] ; 
+] ;
+rs:solution [
+rs:index 2 ;
+rs:binding [
+rs:variable 'albumName' ; 
+rs:value "Imagine"
+] ; 
+rs:binding [
+rs:variable 'albumDate' ; 
+rs:value "1971-10-11"^^xsd:date
+] ; 
+rs:binding [
+rs:variable 'artist' ; 
+rs:value <http://stardog.com/tutorial/John_Lennon>
+] ; 
+].

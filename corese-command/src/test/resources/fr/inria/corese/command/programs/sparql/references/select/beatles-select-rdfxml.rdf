@@ -1,0 +1,83 @@
+<?xml version="1.0" ?>
+<rdf:RDF
+xmlns='http://stardog.com/tutorial/'
+xmlns:ns1='http://www.w3.org/2001/sw/DataAccess/tests/result-set#'
+xmlns:rdf='http://www.w3.org/1999/02/22-rdf-syntax-ns#'>
+
+<rdf:Description rdf:nodeID='_:br3'>
+ <ns1:value rdf:datatype='http://www.w3.org/2001/XMLSchema#date'>1963-03-22</ns1:value>
+ <ns1:variable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>albumDate</ns1:variable>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br2'>
+ <ns1:value rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>Please Please Me</ns1:value>
+ <ns1:variable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>albumName</ns1:variable>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br12'>
+ <ns1:value rdf:resource='http://stardog.com/tutorial/John_Lennon'/>
+ <ns1:variable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>artist</ns1:variable>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br1'>
+ <ns1:binding rdf:nodeID='_:br2'/>
+ <ns1:binding rdf:nodeID='_:br3'/>
+ <ns1:binding rdf:nodeID='_:br4'/>
+ <ns1:index rdf:datatype='http://www.w3.org/2001/XMLSchema#integer'>0</ns1:index>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br11'>
+ <ns1:value rdf:datatype='http://www.w3.org/2001/XMLSchema#date'>1971-10-11</ns1:value>
+ <ns1:variable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>albumDate</ns1:variable>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br0'>
+ <rdf:type rdf:resource='http://www.w3.org/2001/sw/DataAccess/tests/result-set#ResultSet'/>
+ <ns1:resultVariable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>albumName</ns1:resultVariable>
+ <ns1:resultVariable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>albumDate</ns1:resultVariable>
+ <ns1:resultVariable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>artist</ns1:resultVariable>
+ <ns1:solution rdf:nodeID='_:br1'/>
+ <ns1:solution rdf:nodeID='_:br5'/>
+ <ns1:solution rdf:nodeID='_:br9'/>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br10'>
+ <ns1:value rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>Imagine</ns1:value>
+ <ns1:variable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>albumName</ns1:variable>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br9'>
+ <ns1:binding rdf:nodeID='_:br10'/>
+ <ns1:binding rdf:nodeID='_:br11'/>
+ <ns1:binding rdf:nodeID='_:br12'/>
+ <ns1:index rdf:datatype='http://www.w3.org/2001/XMLSchema#integer'>2</ns1:index>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br8'>
+ <ns1:value rdf:resource='http://stardog.com/tutorial/Paul_McCartney'/>
+ <ns1:variable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>artist</ns1:variable>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br7'>
+ <ns1:value rdf:datatype='http://www.w3.org/2001/XMLSchema#date'>1970-04-17</ns1:value>
+ <ns1:variable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>albumDate</ns1:variable>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br6'>
+ <ns1:value rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>McCartney</ns1:value>
+ <ns1:variable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>albumName</ns1:variable>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br5'>
+ <ns1:binding rdf:nodeID='_:br6'/>
+ <ns1:binding rdf:nodeID='_:br7'/>
+ <ns1:binding rdf:nodeID='_:br8'/>
+ <ns1:index rdf:datatype='http://www.w3.org/2001/XMLSchema#integer'>1</ns1:index>
+</rdf:Description>
+
+<rdf:Description rdf:nodeID='_:br4'>
+ <ns1:value rdf:resource='http://stardog.com/tutorial/The_Beatles'/>
+ <ns1:variable rdf:datatype='http://www.w3.org/2001/XMLSchema#string'>artist</ns1:variable>
+</rdf:Description>
+
+</rdf:RDF>

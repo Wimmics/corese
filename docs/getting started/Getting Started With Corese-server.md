@@ -26,7 +26,7 @@ java -jar corese-server.jar -l "[…]/beatles.ttl"
 
 > It's also possible to load data from several files or URL.
 > 
-> E.g: `java -jar corese-server.jav -l "./file_1.ttl" -l "file_2.ttl" -l "http://file_3.ttl"`.
+> E.g: `java -jar corese-server.jar -l "./file_1.ttl" -l "file_2.ttl" -l "http://file_3.ttl"`.
 
 ### 1.2. Profile file
 

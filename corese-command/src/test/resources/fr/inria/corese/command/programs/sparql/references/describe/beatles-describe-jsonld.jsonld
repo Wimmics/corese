@@ -1,0 +1,37 @@
+{
+	"@context": {
+		"": "http://stardog.com/tutorial/",
+		"xsd": "http://www.w3.org/2001/XMLSchema#",
+		"rdf": "http://www.w3.org/1999/02/22-rdf-syntax-ns#"
+	},
+	"@graph": [
+		{
+			"@id": ":Please_Please_Me",
+			":artist": {
+				"@id": ":The_Beatles"
+			}
+		},
+		{
+			"@id": ":The_Beatles",
+			":name": {
+				"@value": "The Beatles",
+				"@type": "xsd:string"
+			},
+			":member": [
+				{
+					"@id": ":John_Lennon"
+				},
+				{
+					"@id": ":Paul_McCartney"
+				},
+				{
+					"@id": ":Ringo_Starr"
+				},
+				{
+					"@id": ":George_Harrison"
+				}
+			],
+			"@type": ":Band"
+		}
+	]
+}

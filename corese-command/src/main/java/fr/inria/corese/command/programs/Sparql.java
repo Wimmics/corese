@@ -168,7 +168,7 @@ public class Sparql implements Runnable {
 
         // Set default output and result formats if not set
         if (!this.resultFromatIsDefine) {
-            if (isUpdate) {
+            if (isUpdate || isConstruct) {
                 this.resultFormat = this.defaultRdfBidings;
             } else {
                 this.resultFormat = this.defaultResult;
@@ -179,7 +179,7 @@ public class Sparql implements Runnable {
         if (this.isNotCompatibleWithSelect() && (isUpdate || isConstruct)) {
             throw new IllegalArgumentException(
                     "Error: " + this.resultFormat
-                            + " is not a valid output format for insert, delete or construct requests.");
+                            + " is not a valid output format for insert, delete, describe or construct requests.");
         }
 
         // Set output file name

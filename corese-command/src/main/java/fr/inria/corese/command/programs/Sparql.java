@@ -142,8 +142,6 @@ public class Sparql implements Runnable {
     private boolean isNotCompatibleWithSelect() {
         switch (this.resultFormat) {
             case BIDING_XML:
-            case BIDING_TURTLE:
-            case BIDING_TRIG:
             case BIDING_JSON:
             case BIDING_CSV:
             case BIDING_TSV:
@@ -199,8 +197,8 @@ public class Sparql implements Runnable {
             }
         } else {
             ResultFormat resultFormater = ResultFormat.create(map);
-            resultFormater.setSelectFormat(this.resultFormat.getResultFormatValue());
-            resultFormater.setConstructFormat(this.resultFormat.getResultFormatValue());
+            resultFormater.setSelectFormat(this.resultFormat.getValue());
+            resultFormater.setConstructFormat(this.resultFormat.getValue());
 
             if (this.outputFromatIsDefine) {
                 resultFormater.write(outputFileName.toString());

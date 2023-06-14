@@ -95,7 +95,8 @@ public class GraphUtils {
             try {
                 load.parse(inputStream, EnumInputFormat.toLoaderValue(inputFormat));
             } catch (Exception e) {
-                throw new IllegalArgumentException("Failed to parse RDF file.", e);
+                throw new IllegalArgumentException("Failed to parse RDF file. Check if file is well-formed and that "
+                        + "the input format is correct. " + e.getMessage(), e);
 
             }
         }

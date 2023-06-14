@@ -633,7 +633,7 @@ public class ConvertTest {
             GraphUtils.load(input, EnumInputFormat.JSONLD);
             fail("Expected an IllegalArgumentException to be thrown");
         } catch (IllegalArgumentException e) {
-            assertEquals("Failed to parse RDF file.", e.getMessage());
+            assertTrue(e.getMessage().startsWith("Failed to parse RDF file."));
         } catch (IOException e) {
             fail("Unexpected IOException: " + e.getMessage());
         }

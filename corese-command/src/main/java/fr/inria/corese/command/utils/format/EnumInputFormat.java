@@ -8,24 +8,35 @@ import fr.inria.corese.core.api.Loader;
  * Enumeration of parsable RDF serialization formats.
  */
 public enum EnumInputFormat {
-    RDFXML(1),
-    TURTLE(2),
-    TRIG(3),
-    JSONLD(4),
-    N3(5),
-    NTRIPLES(6),
-    NQUADS(7),
-    RDFA(8);
+    RDFXML(1, "rdfxml"),
+    TURTLE(2, "turtle"),
+    TRIG(3, "trig"),
+    JSONLD(4, "jsonld"),
+    N3(5, "n3"),
+    NTRIPLES(6, "ntriples"),
+    NQUADS(7, "nquads"),
+    RDFA(8, "rdfa"),
+    APPLICATION_RDF_XML(1, "application/rdf+xml"),
+    TEXT_TURTLE(2, "text/turtle"),
+    APPLICATION_TRIG(3, "application/trig"),
+    APPLICATION_LD_JSON(4, "application/ld+json"),
+    TEXT_N3(5, "text/n3"),
+    APPLICATION_N_TRIPLES(6, "application/n-triples"),
+    APPLICATION_N_QUADS(7, "application/n-quads"),
+    APPLICATION_XHTML_XML(8, "application/xhtml+xml");
 
     private final int value;
+    private final String name;
 
     /**
      * Constructor.
      * 
      * @param value The value of the enum.
+     * @param name  The name of the enum.
      */
-    EnumInputFormat(int value) {
+    EnumInputFormat(int value, String name) {
         this.value = value;
+        this.name = name;
     }
 
     /**
@@ -34,7 +45,16 @@ public enum EnumInputFormat {
      * @return The value of the enum.
      */
     public int getValue() {
-        return value;
+        return this.value;
+    }
+
+    /**
+     * Get the name of the enum.
+     * 
+     * @return The name of the enum.
+     */
+    public String getName() {
+        return this.name;
     }
 
     /**
@@ -46,6 +66,21 @@ public enum EnumInputFormat {
     public static EnumInputFormat fromValue(int value) {
         for (EnumInputFormat format : EnumInputFormat.values()) {
             if (format.getValue() == value) {
+                return format;
+            }
+        }
+        return null;
+    }
+
+    /**
+     * Get the enum from its name.
+     * 
+     * @param name The name of the enum.
+     * @return The enum.
+     */
+    public static EnumInputFormat fromName(String name) {
+        for (EnumInputFormat format : EnumInputFormat.values()) {
+            if (format.getName().equals(name)) {
                 return format;
             }
         }
@@ -99,28 +134,40 @@ public enum EnumInputFormat {
     public static int toLoaderValue(EnumInputFormat format) {
         switch (format) {
             case RDFXML:
+            case APPLICATION_RDF_XML:
                 return Loader.RDFXML_FORMAT;
 
             case TURTLE:
+            case TEXT_TURTLE:
                 return Loader.TURTLE_FORMAT;
 
             case NTRIPLES:
+            case APPLICATION_N_TRIPLES:
                 return Loader.NT_FORMAT;
 
             case JSONLD:
+            case APPLICATION_LD_JSON:
                 return Loader.JSONLD_FORMAT;
 
             case TRIG:
+            case APPLICATION_TRIG:
                 return Loader.TRIG_FORMAT;
 
             case NQUADS:
+            case APPLICATION_N_QUADS:
                 return Loader.NQUADS_FORMAT;
 
             case RDFA:
+            case APPLICATION_XHTML_XML:
                 return Loader.RDFA_FORMAT;
 
             default:
                 throw new InvalidParameterException("Input format " + format + " is unknown.");
         }
+    }
+
+    @Override
+    public String toString() {
+        return name;
     }
 }

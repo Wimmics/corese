@@ -6,54 +6,53 @@ import java.security.InvalidParameterException;
  * Enumeration of exportable RDF serialization formats.
  */
 public enum EnumResultFormat {
-    RDFXML,
-    TURTLE,
-    TRIG,
-    JSONLD,
-    BIDING_XML,
-    BIDING_TURTLE,
-    BIDING_TRIG,
-    BIDING_JSON,
-    BIDING_CSV,
-    BIDING_TSV;
+    RDFXML(1, "rdfxml"),
+    TURTLE(2, "turtle"),
+    TRIG(3, "trig"),
+    JSONLD(4, "jsonld"),
+    BIDING_XML(11, "xml"),
+    BIDING_JSON(13, "json"),
+    BIDING_CSV(14, "csv"),
+    BIDING_TSV(15, "tsv"),
+    APPLICATION_RDF_XML(1, "application/rdf+xml"),
+    TEXT_TURTLE(2, "text/turtle"),
+    APPLICATION_TRIG(3, "application/trig"),
+    APPLICATION_LD_JSON(4, "application/ld+json"),
+    APPLICATION_XML(11, "application/xml"),
+    APPLICATION_JSON(13, "application/json"),
+    TEXT_CSV(14, "text/csv"),
+    TEXT_TSV(15, "text/tab-separated-values");
+
+    private final int value;
+    private final String name;
 
     /**
      * Constructor.
      * 
      * @param value The value of the enum.
+     * @param name  The name of the enum.
      */
-    EnumResultFormat() {
+    EnumResultFormat(int value, String name) {
+        this.value = value;
+        this.name = name;
     }
 
     /**
-     * Get the corresponding ResultFormat.
+     * Get the value of the enum.
      * 
-     * @return The corresponding ResultFormat.
+     * @return The value of the enum.
      */
-    public int getResultFormatValue() {
-        switch (this) {
-            case RDFXML:
-                return 1;
-            case TURTLE:
-                return 2;
-            case TRIG:
-                return 3;
-            case JSONLD:
-                return 4;
-            case BIDING_XML:
-                return 11;
-            case BIDING_TURTLE:
-            case BIDING_TRIG:
-                return 12;
-            case BIDING_JSON:
-                return 13;
-            case BIDING_CSV:
-                return 14;
-            case BIDING_TSV:
-                return 15;
-            default:
-                throw new InvalidParameterException("Output format " + this + " is unknow.");
-        }
+    public int getValue() {
+        return this.value;
+    }
+
+    /**
+     * Get the name of the enum.
+     * 
+     * @return The name of the enum.
+     */
+    public String getName() {
+        return this.name;
     }
 
     /**
@@ -65,22 +64,28 @@ public enum EnumResultFormat {
     public String getExtention() {
         switch (this) {
             case RDFXML:
+            case APPLICATION_RDF_XML:
                 return "rdf";
             case TURTLE:
+            case TEXT_TURTLE:
                 return "ttl";
             case TRIG:
+            case APPLICATION_TRIG:
                 return "trig";
             case JSONLD:
+            case APPLICATION_LD_JSON:
                 return "jsonld";
             case BIDING_XML:
+            case APPLICATION_XML:
                 return "xml";
-            case BIDING_TURTLE:
-                return "ttl";
             case BIDING_JSON:
+            case APPLICATION_JSON:
                 return "json";
             case BIDING_CSV:
+            case TEXT_CSV:
                 return "csv";
             case BIDING_TSV:
+            case TEXT_TSV:
                 return "tsv";
             default:
                 throw new InvalidParameterException("Output format " + this + " is unknow.");
@@ -96,15 +101,24 @@ public enum EnumResultFormat {
     public EnumOutputFormat convertToOutputFormat() {
         switch (this) {
             case RDFXML:
+            case APPLICATION_RDF_XML:
                 return EnumOutputFormat.RDFXML;
             case TURTLE:
+            case TEXT_TURTLE:
                 return EnumOutputFormat.TURTLE;
             case TRIG:
+            case APPLICATION_TRIG:
                 return EnumOutputFormat.TRIG;
             case JSONLD:
+            case APPLICATION_LD_JSON:
                 return EnumOutputFormat.JSONLD;
             default:
                 throw new InvalidParameterException("Output format " + this + " cannot be converted to OutputFormat.");
         }
+    }
+
+    @Override
+    public String toString() {
+        return this.name;
     }
 }

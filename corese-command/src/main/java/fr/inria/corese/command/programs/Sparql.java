@@ -29,7 +29,7 @@ public class Sparql implements Runnable {
     @Spec
     private CommandSpec spec;
 
-    @Option(names = { "-f",
+    @Option(names = { "-f", "-if",
             "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}.")
     private EnumInputFormat inputFormat = null;
 
@@ -37,7 +37,7 @@ public class Sparql implements Runnable {
             "--input-data" }, description = "Path or URL of the input file. If not provided, the standard input will be used.")
     private String input;
 
-    @Option(names = { "-r",
+    @Option(names = { "-r", "-of",
             "--output-format" }, description = "Result fileformat. Possible values: ${COMPLETION-CANDIDATES}. ")
     private EnumResultFormat resultFormat = null;
 

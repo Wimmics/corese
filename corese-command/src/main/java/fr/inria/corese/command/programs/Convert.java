@@ -25,7 +25,7 @@ public class Convert implements Runnable {
     @Option(names = { "-i", "--input-data" }, description = "Path or URL of the file that needs to be converted.")
     private String input;
 
-    @Option(names = { "-f",
+    @Option(names = { "-f", "-if",
             "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}.")
     private EnumInputFormat inputFormat = null;
 

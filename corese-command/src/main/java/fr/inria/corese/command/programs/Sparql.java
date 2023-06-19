@@ -55,7 +55,7 @@ public class Sparql implements Runnable {
     private boolean outputFromatIsDefine = false;
     private boolean isDefaultOutputName = false;
     private EnumResultFormat defaultRdfBidings = EnumResultFormat.TURTLE;
-    private EnumResultFormat defaultResult = EnumResultFormat.BIDING_TSV;
+    private EnumResultFormat defaultResult = EnumResultFormat.BIDING_MD;
 
     public Sparql() {
     }
@@ -145,6 +145,7 @@ public class Sparql implements Runnable {
             case BIDING_JSON:
             case BIDING_CSV:
             case BIDING_TSV:
+            case BIDING_MD:
                 return true;
             default:
                 return false;

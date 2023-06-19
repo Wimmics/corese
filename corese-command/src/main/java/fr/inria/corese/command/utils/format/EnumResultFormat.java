@@ -2,6 +2,8 @@ package fr.inria.corese.command.utils.format;
 
 import java.security.InvalidParameterException;
 
+import fr.inria.corese.core.print.ResultFormat;
+
 /**
  * Enumeration of exportable RDF serialization formats.
  */
@@ -14,14 +16,16 @@ public enum EnumResultFormat {
     BIDING_JSON(13, "json"),
     BIDING_CSV(14, "csv"),
     BIDING_TSV(15, "tsv"),
-    APPLICATION_RDF_XML(1, "application/rdf+xml"),
-    TEXT_TURTLE(2, "text/turtle"),
-    APPLICATION_TRIG(3, "application/trig"),
-    APPLICATION_LD_JSON(4, "application/ld+json"),
-    APPLICATION_XML(11, "application/xml"),
-    APPLICATION_JSON(13, "application/json"),
-    TEXT_CSV(14, "text/csv"),
-    TEXT_TSV(15, "text/tab-separated-values");
+    BIDING_MD(16, "markdown"),
+    APPLICATION_RDF_XML(1, ResultFormat.RDF_XML),
+    TEXT_TURTLE(2, ResultFormat.TURTLE_TEXT),
+    APPLICATION_TRIG(3, ResultFormat.TRIG),
+    APPLICATION_LD_JSON(4, ResultFormat.JSON_LD),
+    APPLICATION_SPARQL_RESULTS_XML(11, ResultFormat.SPARQL_RESULTS_XML),
+    APPLICATION_SPARQL_RESULTS_JSON(13, ResultFormat.SPARQL_RESULTS_JSON),
+    TEXT_CSV(14, ResultFormat.SPARQL_RESULTS_CSV),
+    TEXT_TSV(15, ResultFormat.SPARQL_RESULTS_TSV),
+    TEXT_MARKDOWN(16, ResultFormat.SPARQL_RESULTS_MD);
 
     private final int value;
     private final String name;
@@ -76,17 +80,20 @@ public enum EnumResultFormat {
             case APPLICATION_LD_JSON:
                 return "jsonld";
             case BIDING_XML:
-            case APPLICATION_XML:
-                return "xml";
+            case APPLICATION_SPARQL_RESULTS_XML:
+                return "srx";
             case BIDING_JSON:
-            case APPLICATION_JSON:
-                return "json";
+            case APPLICATION_SPARQL_RESULTS_JSON:
+                return "srj";
             case BIDING_CSV:
             case TEXT_CSV:
                 return "csv";
             case BIDING_TSV:
             case TEXT_TSV:
                 return "tsv";
+            case BIDING_MD:
+            case TEXT_MARKDOWN:
+                return "md";
             default:
                 throw new InvalidParameterException("Output format " + this + " is unknow.");
         }

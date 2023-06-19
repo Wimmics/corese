@@ -9,21 +9,25 @@ import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.kgram.core.Query;
 
 public class CSVFormat extends QueryResultFormat {
-    // The end-of-line in CSV is CRLF i.e. Unicode codepoints 13 (0x0D) and 10 (0x0A).
+    // The end-of-line in CSV is CRLF i.e. Unicode codepoints 13 (0x0D) and 10
+    // (0x0A).
 
     static final String EOL = "\n";
     static final String SEP = ", ";
     static final String QUOTE = "\"";
 
-    static final String[] SPECIAL = {",", QUOTE, "\n"};
+    static final String[] SPECIAL = { ",", QUOTE, "\n" };
 
     Mappings lm;
     Query query;
     List<String> select;
 
+    private boolean isAsk;
+
     CSVFormat(Mappings m) {
         lm = m;
         setQuery(m.getQuery());
+        this.isAsk = m.getAST().isAsk();
     }
 
     public static CSVFormat create(Mappings m) {
@@ -49,8 +53,26 @@ public class CSVFormat extends QueryResultFormat {
     }
 
     public String toString() {
+        if (isAsk) {
+            return toStringAsk();
+        } else {
+            return toStringSelect();
+        }
+    }
+
+    private String toStringSelect() {
         StringBuilder str = new StringBuilder(variables() + eol());
         str.append(values());
+        return str.toString();
+    }
+
+    private String toStringAsk() {
+        StringBuilder str = new StringBuilder();
+        if (this.lm.size() > 0) {
+            str.append("true");
+        } else {
+            str.append("false");
+        }
         return str.toString();
     }
 

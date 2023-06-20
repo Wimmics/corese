@@ -223,6 +223,26 @@ public class SparqlTest {
         }
 
         @Test
+        public void testSelectMarkdown() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesSelectMarkdown = Paths
+                                .get(referencesPath, "select", "beatles-select-bidingmarkdown.md")
+                                .toString();
+                String pathResBeatlesSelectMarkdown = Paths
+                                .get(resultsPath, "select", "beatles-select-bidingmarkdown.md")
+                                .toString();
+                String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
+                                pathResBeatlesSelectMarkdown, pathQueryBeatlesAlbum);
+
+                assertEquals(0, exitCode);
+                assertEquals("", out.toString());
+                assertEquals("", err.toString());
+                assertTrue(compareFiles(pathRefBeatlesSelectMarkdown, pathResBeatlesSelectMarkdown));
+        }
+
+        @Test
         public void testAskTrueRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesAskRdfxml = Paths.get(referencesPath, "ask", "beatles-ask-rdfxml-true.rdf")
@@ -507,6 +527,42 @@ public class SparqlTest {
         }
 
         @Test
+        public void testAskTrueBidingMarkdown() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesAskMarkdown = Paths
+                                .get(referencesPath, "ask", "beatles-ask-bidingmarkdown-true.md").toString();
+                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-bidingmarkdown-true.md")
+                                .toString();
+                String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o", pathResBeatlesAskTrue,
+                                pathQueryBeatlesAskTrue);
+
+                assertEquals(0, exitCode);
+                assertEquals("", out.toString());
+                assertEquals("", err.toString());
+                assertTrue(compareFiles(pathRefBeatlesAskMarkdown, pathResBeatlesAskTrue));
+        }
+
+        @Test
+        public void testAskFalseBidingMarkdown() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefBeatlesAskMarkdown = Paths
+                                .get(referencesPath, "ask", "beatles-ask-bidingmarkdown-false.md").toString();
+                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-bidingmarkdown-false.md")
+                                .toString();
+                String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o", pathResBeatlesAskFalse,
+                                pathQueryBeatlesAskFalse);
+
+                assertEquals(0, exitCode);
+                assertEquals("", out.toString());
+                assertEquals("", err.toString());
+                assertTrue(compareFiles(pathRefBeatlesAskMarkdown, pathResBeatlesAskFalse));
+        }
+
+        @Test
         public void testInsertRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesInsert = Paths.get(referencesPath, "insert", "beatles-insert-rdfxml.xml")
@@ -646,6 +702,25 @@ public class SparqlTest {
                                 pathQueryBeatlesInsert);
 
                 String expectedOutput = "Error: tsv is not a valid output format for insert, delete, describe or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testInsertBidingMarkdownInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathResBeatlesInsert = Paths.get(resultsPath, "insert", "beatles-insert-bidingrdfxml.xml")
+                                .toString();
+                String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
+                                pathResBeatlesInsert,
+                                pathQueryBeatlesInsert);
+
+                String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
@@ -799,6 +874,23 @@ public class SparqlTest {
         }
 
         @Test
+        public void testInsertWhereBidingMarkdownInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
+                                "references/insert-where/beatles-insertwhere-bidingmarkdown.md",
+                                pathQueryBeatlesInsertwhere);
+
+                String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
         public void testDeleteRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesDelete = Paths.get(referencesPath, "delete", "beatles-delete-rdfxml.xml")
@@ -928,6 +1020,23 @@ public class SparqlTest {
                                 pathQueryBeatlesDelete);
 
                 String expectedOutput = "Error: tsv is not a valid output format for insert, delete, describe or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testDeleteBidingMarkdownInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
+                                "references/delete/beatles-delete-markdown.md",
+                                pathQueryBeatlesDelete);
+
+                String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
@@ -1081,6 +1190,23 @@ public class SparqlTest {
         }
 
         @Test
+        public void testDeleteWhereBidingMarkdownInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
+                                "references/delete-where/beatles-delete-where-markdown.md",
+                                pathQueryBeatlesDelete);
+
+                String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
         public void testConstructRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesConstruct = Paths.get(referencesPath, "construct", "beatles-construct-rdfxml.xml")
@@ -1218,6 +1344,22 @@ public class SparqlTest {
         }
 
         @Test
+        public void testBidingConstructMarkdownInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
+                                "references/construct/beatles-construct-markdown.md", pathQueryBeatlesConstruct);
+
+                String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
         public void testDescribeRdfxml() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathRefBeatlesDescribe = Paths.get(referencesPath, "describe", "beatles-describe-rdfxml.xml")
@@ -1290,7 +1432,7 @@ public class SparqlTest {
         }
 
         @Test
-        public void testBidingsDescribeXmlInvalid() throws IOException {
+        public void testBidingDescribeXmlInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
@@ -1306,7 +1448,7 @@ public class SparqlTest {
         }
 
         @Test
-        public void testBidingsDescribeJsonInvalid() throws IOException {
+        public void testBidingDescribeJsonInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
@@ -1322,7 +1464,7 @@ public class SparqlTest {
         }
 
         @Test
-        public void testBidingsDescribeCsvInvalid() throws IOException {
+        public void testBidingDescribeCsvInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
@@ -1338,7 +1480,7 @@ public class SparqlTest {
         }
 
         @Test
-        public void testBidingsDescribeTsvInvalid() throws IOException {
+        public void testBidingDescribeTsvInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
@@ -1346,6 +1488,22 @@ public class SparqlTest {
                                 "references/describe/beatles-describe-tsv.tsv", pathQueryBeatlesDescribe);
 
                 String expectedOutput = "Error: tsv is not a valid output format for insert, delete, describe or construct requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testBidingDescribeMarkdownInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
+                                "references/describe/beatles-describe-markdown.md", pathQueryBeatlesDescribe);
+
+                String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);

@@ -1,0 +1,5 @@
+| ?albumName                                                    | ?albumDate                                            | ?artist                                      |
+| ------------------------------------------------------------- | ----------------------------------------------------- | -------------------------------------------- |
+| "Please Please Me"^^<http://www.w3.org/2001/XMLSchema#string> | "1963-03-22"^^<http://www.w3.org/2001/XMLSchema#date> | <http://stardog.com/tutorial/The_Beatles>    |
+| "McCartney"^^<http://www.w3.org/2001/XMLSchema#string>        | "1970-04-17"^^<http://www.w3.org/2001/XMLSchema#date> | <http://stardog.com/tutorial/Paul_McCartney> |
+| "Imagine"^^<http://www.w3.org/2001/XMLSchema#string>          | "1971-10-11"^^<http://www.w3.org/2001/XMLSchema#date> | <http://stardog.com/tutorial/John_Lennon>    |

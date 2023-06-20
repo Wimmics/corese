@@ -134,21 +134,21 @@ public class Sparql implements Runnable {
     }
 
     /**
-     * Check if the output format is not compatible with the SELECT query type.
+     * Check if the result format is a RDF format.
      * 
-     * @return True if the output format is not compatible with the SELECT query
-     *         type.
+     * @return True if the result format is a RDF format, false otherwise.
      */
-    private boolean isNotCompatibleWithSelect() {
+    private boolean isRDFFormat() {
         switch (this.resultFormat) {
             case BIDING_XML:
             case BIDING_JSON:
             case BIDING_CSV:
             case BIDING_TSV:
             case BIDING_MD:
-                return true;
-            default:
+            case BIDING_MARKDOWN:
                 return false;
+            default:
+                return true;
         }
     }
 
@@ -164,6 +164,8 @@ public class Sparql implements Runnable {
 
         boolean isUpdate = ast.isInsert() || ast.isDelete() || ast.isUpdate();
         boolean isConstruct = ast.isConstruct();
+        boolean isAsk = ast.isAsk();
+        boolean isSelect = ast.isSelect();
 
         // Set default output and result formats if not set
         if (!this.resultFromatIsDefine) {
@@ -175,10 +177,16 @@ public class Sparql implements Runnable {
         }
 
         // Check if the output format is valid for the query type
-        if (this.isNotCompatibleWithSelect() && (isUpdate || isConstruct)) {
+        if ((isUpdate || isConstruct) && !this.isRDFFormat()) {
             throw new IllegalArgumentException(
                     "Error: " + this.resultFormat
-                            + " is not a valid output format for insert, delete, describe or construct requests.");
+                            + " is not a valid output format for insert, delete, describe or construct requests.\n Use one of the following RDF formats: \"rdfxml\", \"turtle\", \"jsonld\", \"trig\", \"jsonld\".");
+        }
+
+        if ((isAsk || isSelect) && this.isRDFFormat()) {
+            throw new IllegalArgumentException(
+                    "Error: " + this.resultFormat
+                            + " is not a valid output format for select or ask requests.\n Use one of the following result formats: \"xml\", \"json\", \"csv\", \"tsv\", \"md\".");
         }
 
         // Set output file name

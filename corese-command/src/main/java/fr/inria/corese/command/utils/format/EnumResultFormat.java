@@ -16,7 +16,8 @@ public enum EnumResultFormat {
     BIDING_JSON(13, "json"),
     BIDING_CSV(14, "csv"),
     BIDING_TSV(15, "tsv"),
-    BIDING_MD(16, "markdown"),
+    BIDING_MARKDOWN(16, "markdown"),
+    BIDING_MD(16, "md"),
     APPLICATION_RDF_XML(1, ResultFormat.RDF_XML),
     TEXT_TURTLE(2, ResultFormat.TURTLE_TEXT),
     APPLICATION_TRIG(3, ResultFormat.TRIG),
@@ -92,6 +93,7 @@ public enum EnumResultFormat {
             case TEXT_TSV:
                 return "tsv";
             case BIDING_MD:
+            case BIDING_MARKDOWN:
             case TEXT_MARKDOWN:
                 return "md";
             default:

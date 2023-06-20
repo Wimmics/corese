@@ -69,30 +69,26 @@ public class SparqlTest {
         }
 
         @Test
-        public void testSelectRdfxml() throws IOException {
+        public void testSelectRdfxmlInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesSelectRdfxml = Paths
-                                .get(referencesPath, "select", "beatles-select-rdfxml.rdf")
-                                .toString();
                 String pathResBeatlesSelectRdfxml = Paths.get(resultsPath, "select", "beatles-select-rdfxml.rdf")
                                 .toString();
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesSelectRdfxml,
-                                pathQueryBeatlesAlbum);
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o",
+                                pathResBeatlesSelectRdfxml, pathQueryBeatlesAlbum);
 
-                assertEquals(0, exitCode);
+                String expectedOutput = "Error: rdfxml is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesSelectRdfxml, pathResBeatlesSelectRdfxml));
+                assertTrue(actualOutput.startsWith(expectedOutput));
         }
 
         @Test
-        public void testSelectTurtle() throws IOException {
+        public void testSelectTurtleInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesSelectTurtle = Paths
-                                .get(referencesPath, "select", "beatles-select-turtle.ttl")
-                                .toString();
                 String pathResBeatlesSelectTurtle = Paths.get(resultsPath, "select", "beatles-select-turtle.ttl")
                                 .toString();
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
@@ -100,36 +96,35 @@ public class SparqlTest {
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o",
                                 pathResBeatlesSelectTurtle, pathQueryBeatlesAlbum);
 
-                assertEquals(0, exitCode);
+                String expectedOutput = "Error: turtle is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesSelectTurtle, pathResBeatlesSelectTurtle));
+                assertTrue(actualOutput.startsWith(expectedOutput));
         }
 
         @Test
-        public void testSelectTrig() throws IOException {
+        public void testSelectTriginvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesSelectTrig = Paths.get(referencesPath, "select", "beatles-select-trig.trig")
-                                .toString();
                 String pathResBeatlesSelectTrig = Paths.get(resultsPath, "select", "beatles-select-trig.trig")
                                 .toString();
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesSelectTrig,
-                                pathQueryBeatlesAlbum);
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o",
+                                pathResBeatlesSelectTrig, pathQueryBeatlesAlbum);
 
-                assertEquals(0, exitCode);
+                String expectedOutput = "Error: trig is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesSelectTrig, pathResBeatlesSelectTrig));
+                assertTrue(actualOutput.startsWith(expectedOutput));
         }
 
         @Test
-        public void testSelectJsonld() throws IOException {
+        public void testSelectJsonldInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesSelectJsonld = Paths
-                                .get(referencesPath, "select", "beatles-select-jsonld.jsonld")
-                                .toString();
                 String pathResBeatlesSelectJsonld = Paths.get(resultsPath, "select", "beatles-select-jsonld.jsonld")
                                 .toString();
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
@@ -137,10 +132,12 @@ public class SparqlTest {
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o",
                                 pathResBeatlesSelectJsonld, pathQueryBeatlesAlbum);
 
-                assertEquals(0, exitCode);
+                String expectedOutput = "Error: jsonld is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesSelectJsonld, pathResBeatlesSelectJsonld));
+                assertTrue(actualOutput.startsWith(expectedOutput));
         }
 
         @Test
@@ -243,28 +240,8 @@ public class SparqlTest {
         }
 
         @Test
-        public void testAskTrueRdfxml() throws IOException {
+        public void testAskTrueRdfxmlInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskRdfxml = Paths.get(referencesPath, "ask", "beatles-ask-rdfxml-true.rdf")
-                                .toString();
-                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-rdfxml-true.rdf")
-                                .toString();
-                String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
-
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesAskTrue,
-                                pathQueryBeatlesAskTrue);
-
-                assertEquals(0, exitCode);
-                assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesAskRdfxml, pathResBeatlesAskTrue));
-        }
-
-        @Test
-        public void testAskFalseRdfxml() throws IOException {
-                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskRdfxml = Paths.get(referencesPath, "ask", "beatles-ask-rdfxml-false.rdf")
-                                .toString();
                 String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-rdfxml-false.rdf")
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
@@ -272,17 +249,36 @@ public class SparqlTest {
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesAskFalse,
                                 pathQueryBeatlesAskFalse);
 
-                assertEquals(0, exitCode);
+                String expectedOutput = "Error: rdfxml is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesAskRdfxml, pathResBeatlesAskFalse));
+                assertTrue(actualOutput.startsWith(expectedOutput));
+
         }
 
         @Test
-        public void testAskTrueTurtle() throws IOException {
+        public void testAskFalseRdfxmlInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskTurtle = Paths.get(referencesPath, "ask", "beatles-ask-turtle-true.ttl")
+                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-rdfxml-false.rdf")
                                 .toString();
+                String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
+
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesAskFalse,
+                                pathQueryBeatlesAskFalse);
+
+                String expectedOutput = "Error: rdfxml is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
+                assertEquals("", out.toString());
+                assertTrue(actualOutput.startsWith(expectedOutput));
+        }
+
+        @Test
+        public void testAskTrueTurtleInvalid() throws IOException {
+                String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
                 String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-turtle-true.ttl")
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
@@ -290,17 +286,17 @@ public class SparqlTest {
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesAskTrue,
                                 pathQueryBeatlesAskTrue);
 
-                assertEquals(0, exitCode);
+                String expectedOutput = "Error: turtle is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesAskTurtle, pathResBeatlesAskTrue));
+                assertTrue(actualOutput.startsWith(expectedOutput));
         }
 
         @Test
-        public void testAskFalseTurtle() throws IOException {
+        public void testAskFalseTurtleInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskTurtle = Paths.get(referencesPath, "ask", "beatles-ask-turtle-false.ttl")
-                                .toString();
                 String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-turtle-false.ttl")
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
@@ -308,49 +304,52 @@ public class SparqlTest {
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesAskFalse,
                                 pathQueryBeatlesAskFalse);
 
-                assertEquals(0, exitCode);
+                String expectedOutput = "Error: turtle is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesAskTurtle, pathResBeatlesAskFalse));
+                assertTrue(actualOutput.startsWith(expectedOutput));
         }
 
         @Test
-        public void testAskTrigTrue() throws IOException {
+        public void testAskTrigTrueInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesTrig = Paths.get(referencesPath, "ask", "beatles-ask-trig-true.trig").toString();
-                String pathResBeatlesTrig = Paths.get(resultsPath, "ask", "beatles-ask-trig-true.trig").toString();
+                String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-trig-true.trig").toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesTrig,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesAskTrue,
                                 pathQueryBeatlesAskTrue);
 
-                assertEquals(0, exitCode);
+                String expectedOutput = "Error: trig is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesTrig, pathResBeatlesTrig));
+                assertTrue(actualOutput.startsWith(expectedOutput));
         }
 
         @Test
-        public void testAskTrigFalse() throws IOException {
+        public void testAskTrigFalseInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesTrig = Paths.get(referencesPath, "ask", "beatles-ask-trig-false.trig").toString();
-                String pathResBeatlesTrig = Paths.get(resultsPath, "ask", "beatles-ask-trig-false.trig").toString();
+                String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-trig-false.trig")
+                                .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesTrig,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesAskFalse,
                                 pathQueryBeatlesAskFalse);
 
-                assertEquals(0, exitCode);
+                String expectedOutput = "Error: trig is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesTrig, pathResBeatlesTrig));
+                assertTrue(actualOutput.startsWith(expectedOutput));
         }
 
         @Test
-        public void testAskTrueJsonld() throws IOException {
+        public void testAskTrueJsonldInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskJsonld = Paths.get(referencesPath, "ask", "beatles-ask-jsonld-true.jsonld")
-                                .toString();
                 String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-jsonld-true.jsonld")
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
@@ -358,17 +357,17 @@ public class SparqlTest {
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesAskTrue,
                                 pathQueryBeatlesAskTrue);
 
-                assertEquals(0, exitCode);
+                String expectedOutput = "Error: jsonld is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesAskJsonld, pathResBeatlesAskTrue));
+                assertTrue(actualOutput.startsWith(expectedOutput));
         }
 
         @Test
-        public void testAskFalseJsonld() throws IOException {
+        public void testAskFalseJsonldInvalid() throws IOException {
                 String pathInpBeatlesTTL = Paths.get(inputPath, "beatles.ttl").toString();
-                String pathRefBeatlesAskJsonld = Paths.get(referencesPath, "ask", "beatles-ask-jsonld-false.jsonld")
-                                .toString();
                 String pathResBeatlesAskFalse = Paths.get(resultsPath, "ask", "beatles-ask-jsonld-false.jsonld")
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
@@ -376,10 +375,12 @@ public class SparqlTest {
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesAskFalse,
                                 pathQueryBeatlesAskFalse);
 
-                assertEquals(0, exitCode);
+                String expectedOutput = "Error: jsonld is not a valid output format for select or ask requests.";
+                String actualOutput = err.toString().trim();
+
+                assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertEquals("", err.toString());
-                assertTrue(compareFiles(pathRefBeatlesAskJsonld, pathResBeatlesAskFalse));
+                assertTrue(actualOutput.startsWith(expectedOutput));
         }
 
         @Test

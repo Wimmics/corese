@@ -60,7 +60,7 @@ public class ConvertTest {
         String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
         String pathOutBeatlesXML = Paths.get(resultPath, "ttlbeatles.xml").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "RDFXML", "-o", pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         String expectedOutput = readFileAsString(pathRefBeatlesXML);
         String actualOutput = readFileAsString(pathOutBeatlesXML);
@@ -77,7 +77,7 @@ public class ConvertTest {
         String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
         String pathOutBeatlesJSON = Paths.get(resultPath, "ttlbeatles.json").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "JSONLD", "-o", pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         String expectedOutput = readFileAsString(pathRefBeatlesJSON);
         String actualOutput = readFileAsString(pathOutBeatlesJSON);
@@ -94,7 +94,7 @@ public class ConvertTest {
         String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
         String pathOutBeatlesTRIG = Paths.get(resultPath, "ttlbeatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "TRIG", "-o", pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
         String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
         String actualOutput = readFileAsString(pathOutBeatlesTRIG);
 
@@ -109,7 +109,7 @@ public class ConvertTest {
         String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
         String pathOutBeatlesTTL = Paths.get(resultPath, "ttlbeatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "TURTLE", "-o", pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathRefBeatlesTTL, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTTL);
         String actualOutput = readFileAsString(pathOutBeatlesTTL);
@@ -125,7 +125,7 @@ public class ConvertTest {
         String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
         String pathOutBeatlesXML = Paths.get(resultPath, "beatles.xml").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "RDFXML", "-o", pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         String expectedOutput = readFileAsString(pathRefBeatlesXML);
         String actualOutput = readFileAsString(pathOutBeatlesXML);
@@ -142,7 +142,7 @@ public class ConvertTest {
         String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
         String pathOutBeatlesJSON = Paths.get(resultPath, "beatles.json").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "JSONLD", "-o", pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         String expectedOutput = readFileAsString(pathRefBeatlesJSON);
         String actualOutput = readFileAsString(pathOutBeatlesJSON);
@@ -159,7 +159,7 @@ public class ConvertTest {
         String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
         String pathOutBeatlesTRIG = Paths.get(resultPath, "beatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "TRIG", "-o", pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
         String actualOutput = readFileAsString(pathOutBeatlesTRIG);
@@ -176,7 +176,7 @@ public class ConvertTest {
         String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
         String pathOutBeatlesTTL = Paths.get(resultPath, "beatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "TURTLE", "-o", pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathRefBeatlesXML, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTTL);
         String actualOutput = readFileAsString(pathOutBeatlesTTL);
@@ -193,7 +193,7 @@ public class ConvertTest {
         String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
         String pathOutBeatlesXML = Paths.get(resultPath, "trigbeatles.xml").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "RDFXML", "-o", pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         String expectedOutput = readFileAsString(pathRefBeatlesXML);
         String actualOutput = readFileAsString(pathOutBeatlesXML);
@@ -210,7 +210,7 @@ public class ConvertTest {
         String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
         String pathOutBeatlesJSON = Paths.get(resultPath, "trigbeatles.json").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "JSONLD", "-o", pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         String expectedOutput = readFileAsString(pathRefBeatlesJSON);
         String actualOutput = readFileAsString(pathOutBeatlesJSON);
@@ -226,7 +226,7 @@ public class ConvertTest {
         String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
         String pathOutBeatlesTRIG = Paths.get(resultPath, "trigbeatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "TRIG", "-o", pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
         String actualOutput = readFileAsString(pathOutBeatlesTRIG);
@@ -243,7 +243,7 @@ public class ConvertTest {
         String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
         String pathOutBeatlesTTL = Paths.get(resultPath, "trigbeatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "TURTLE", "-o", pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathRefBeatlesTRIG, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTTL);
         String actualOutput = readFileAsString(pathOutBeatlesTTL);
@@ -259,7 +259,7 @@ public class ConvertTest {
         String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
         String pathOutBeatlesJSON = Paths.get(resultPath, "jsonbeatles.json").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "JSONLD", "-o", pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         String expectedOutput = readFileAsString(pathRefBeatlesJSON);
         String actualOutput = readFileAsString(pathOutBeatlesJSON);
@@ -276,7 +276,7 @@ public class ConvertTest {
         String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
         String pathOutBeatlesTTL = Paths.get(resultPath, "jsonbeatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "TURTLE", "-o", pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTTL);
         String actualOutput = readFileAsString(pathOutBeatlesTTL);
@@ -293,7 +293,7 @@ public class ConvertTest {
         String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
         String pathOutBeatlesXML = Paths.get(resultPath, "jsonbeatles.xml").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "RDFXML", "-o", pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         String expectedOutput = readFileAsString(pathRefBeatlesXML);
         String actualOutput = readFileAsString(pathOutBeatlesXML);
@@ -310,7 +310,7 @@ public class ConvertTest {
         String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
         String pathOutBeatlesTRIG = Paths.get(resultPath, "jsonbeatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "TRIG", "-o", pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathRefBeatlesJSON, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
         String actualOutput = readFileAsString(pathOutBeatlesTRIG);
@@ -327,7 +327,7 @@ public class ConvertTest {
         String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
         String pathOutBeatlesXML = Paths.get(resultPath, "n3beatles.xml").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "RDFXML", "-o", pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         String expectedOutput = readFileAsString(pathRefBeatlesXML);
         String actualOutput = readFileAsString(pathOutBeatlesXML);
@@ -344,7 +344,7 @@ public class ConvertTest {
         String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
         String pathOutBeatlesJSON = Paths.get(resultPath, "n3beatles.json").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "JSONLD", "-o", pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         String expectedOutput = readFileAsString(pathRefBeatlesJSON);
         String actualOutput = readFileAsString(pathOutBeatlesJSON);
@@ -361,7 +361,7 @@ public class ConvertTest {
         String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
         String pathOutBeatlesTRIG = Paths.get(resultPath, "n3beatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "TRIG", "-o", pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
         String actualOutput = readFileAsString(pathOutBeatlesTRIG);
@@ -378,7 +378,7 @@ public class ConvertTest {
         String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
         String pathOutBeatlesTTL = Paths.get(resultPath, "n3beatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "TURTLE", "-o", pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathRefBeatlesN3, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTTL);
         String actualOutput = readFileAsString(pathOutBeatlesTTL);
@@ -395,7 +395,7 @@ public class ConvertTest {
         String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
         String pathOutBeatlesXML = Paths.get(resultPath, "ntbeatles.xml").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "RDFXML", "-o", pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         String expectedOutput = readFileAsString(pathRefBeatlesXML);
         String actualOutput = readFileAsString(pathOutBeatlesXML);
@@ -412,7 +412,7 @@ public class ConvertTest {
         String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
         String pathOutBeatlesJSON = Paths.get(resultPath, "ntbeatles.json").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "JSONLD", "-o", pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         String expectedOutput = readFileAsString(pathRefBeatlesJSON);
         String actualOutput = readFileAsString(pathOutBeatlesJSON);
@@ -429,7 +429,7 @@ public class ConvertTest {
         String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
         String pathOutBeatlesTRIG = Paths.get(resultPath, "ntbeatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "TRIG", "-o", pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
         String actualOutput = readFileAsString(pathOutBeatlesTRIG);
@@ -446,7 +446,7 @@ public class ConvertTest {
         String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
         String pathOutBeatlesTTL = Paths.get(resultPath, "ntbeatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "TURTLE", "-o", pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathRefBeatlesNT, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTTL);
         String actualOutput = readFileAsString(pathOutBeatlesTTL);
@@ -463,7 +463,7 @@ public class ConvertTest {
         String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
         String pathOutBeatlesXML = Paths.get(resultPath, "nqbeatles.xml").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "RDFXML", "-o", pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         String expectedOutput = readFileAsString(pathRefBeatlesXML);
         String actualOutput = readFileAsString(pathOutBeatlesXML);
@@ -480,7 +480,7 @@ public class ConvertTest {
         String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
         String pathOutBeatlesJSON = Paths.get(resultPath, "nqbeatles.json").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "JSONLD", "-o", pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         String expectedOutput = readFileAsString(pathRefBeatlesJSON);
         String actualOutput = readFileAsString(pathOutBeatlesJSON);
@@ -497,7 +497,7 @@ public class ConvertTest {
         String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles2.trig").toString();
         String pathOutBeatlesTRIG = Paths.get(resultPath, "nqbeatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "TRIG", "-o", pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
         String actualOutput = readFileAsString(pathOutBeatlesTRIG);
@@ -514,7 +514,7 @@ public class ConvertTest {
         String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
         String pathOutBeatlesTTL = Paths.get(resultPath, "nqbeatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "TURTLE", "-o", pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathRefBeatlesNQ, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTTL);
         String actualOutput = readFileAsString(pathOutBeatlesTTL);
@@ -531,7 +531,7 @@ public class ConvertTest {
         String pathRefBeatlesXML = Paths.get(referencesPath, "beatles.xml").toString();
         String pathOutBeatlesXML = Paths.get(resultPath, "rdfabeatles.xml").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "RDFXML", "-o", pathOutBeatlesXML);
+        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "-of", "RDFXML", "-o", pathOutBeatlesXML);
 
         String expectedOutput = readFileAsString(pathRefBeatlesXML);
         String actualOutput = readFileAsString(pathOutBeatlesXML);
@@ -548,7 +548,7 @@ public class ConvertTest {
         String pathRefBeatlesJSON = Paths.get(referencesPath, "beatles.json").toString();
         String pathOutBeatlesJSON = Paths.get(resultPath, "rdfabeatles.json").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "JSONLD", "-o", pathOutBeatlesJSON);
+        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "-of", "JSONLD", "-o", pathOutBeatlesJSON);
 
         String expectedOutput = readFileAsString(pathRefBeatlesJSON);
         String actualOutput = readFileAsString(pathOutBeatlesJSON);
@@ -565,7 +565,7 @@ public class ConvertTest {
         String pathRefBeatlesTRIG = Paths.get(referencesPath, "beatles.trig").toString();
         String pathOutBeatlesTRIG = Paths.get(resultPath, "rdfabeatles.trig").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "TRIG", "-o", pathOutBeatlesTRIG);
+        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "-of", "TRIG", "-o", pathOutBeatlesTRIG);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTRIG);
         String actualOutput = readFileAsString(pathOutBeatlesTRIG);
@@ -582,7 +582,7 @@ public class ConvertTest {
         String pathRefBeatlesTTL = Paths.get(referencesPath, "beatles.ttl").toString();
         String pathOutBeatlesTTL = Paths.get(resultPath, "rdfabeatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "TURTLE", "-o", pathOutBeatlesTTL);
+        int exitCode = cmd.execute("-i", pathRefBeatlesRdfa, "-of", "TURTLE", "-o", pathOutBeatlesTTL);
 
         String expectedOutput = readFileAsString(pathRefBeatlesTTL);
         String actualOutput = readFileAsString(pathOutBeatlesTTL);
@@ -596,7 +596,7 @@ public class ConvertTest {
     @Test
     public void testConvertWithSameInputAndOutputPath() {
         String inputPath = Paths.get(referencesPath, "beatles.ttl").toString();
-        int exitCode = cmd.execute("-i", inputPath, "TURTLE", "-o", inputPath);
+        int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", inputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
         assertTrue(err.toString().trim().startsWith("Input path cannot be the same as output path."));
@@ -607,7 +607,7 @@ public class ConvertTest {
         String inputPath = "invalid_path.ttl";
         String outputPath = Paths.get(resultPath, "ttlbeatles.ttl").toString();
 
-        int exitCode = cmd.execute("-i", inputPath, "TURTLE", "-o", outputPath);
+        int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", outputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
         assertTrue(err.toString().trim()
@@ -619,7 +619,7 @@ public class ConvertTest {
         String inputPath = Paths.get(referencesPath, "beatles.ttl").toString();
         String outputPath = "/invalid/path/for/output.ttl";
 
-        int exitCode = cmd.execute("-i", inputPath, "TURTLE", "-o", outputPath);
+        int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", outputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
         assertTrue(err.toString().trim().startsWith(

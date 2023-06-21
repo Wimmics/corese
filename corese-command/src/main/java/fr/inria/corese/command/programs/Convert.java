@@ -13,7 +13,6 @@ import fr.inria.corese.core.Graph;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
-import picocli.CommandLine.Parameters;
 import picocli.CommandLine.Spec;
 
 @Command(name = "convert", version = App.version, description = "Convert an RDF file from one serialization format to another.", mixinStandardHelpOptions = true)
@@ -37,7 +36,8 @@ public class Convert implements Runnable {
             "--output-data" }, description = "Output file path. If not provided, the result will be written to standard output.", arity = "0..1", fallbackValue = DEFAULT_OUTPUT_FILE_NAME)
     private Path output;
 
-    @Parameters(paramLabel = "output-format", description = "Serialization format to which the input file should be converted. Possible values: ${COMPLETION-CANDIDATES}.")
+    @Option(names = { "-r", "-of",
+            "--output-format" }, required = true, description = "Serialization format to which the input file should be converted. Possible values: ${COMPLETION-CANDIDATES}.")
     private EnumOutputFormat outputFormat;
 
     private Graph graph;

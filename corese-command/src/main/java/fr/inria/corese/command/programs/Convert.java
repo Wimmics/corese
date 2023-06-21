@@ -2,6 +2,8 @@ package fr.inria.corese.command.programs;
 
 import java.io.IOException;
 import java.nio.file.Path;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import fr.inria.corese.command.App;
 import fr.inria.corese.command.utils.GraphUtils;
@@ -17,7 +19,9 @@ import picocli.CommandLine.Spec;
 @Command(name = "convert", version = App.version, description = "Convert an RDF file from one serialization format to another.", mixinStandardHelpOptions = true)
 public class Convert implements Runnable {
 
-    private final String DEFAULT_OUTPUT_FILE_NAME = "output";
+    private static final Logger LOGGER = Logger.getLogger(Convert.class.getName());
+    private static final String DEFAULT_OUTPUT_FILE_NAME = "output";
+    private static final int EXIT_CODE_ERROR = 1;
 
     @Spec
     CommandSpec spec;
@@ -38,7 +42,7 @@ public class Convert implements Runnable {
 
     private Graph graph;
 
-    private boolean outputFromatIsDefine = false;
+    private boolean outputFormatIsDefined = false;
     private boolean isDefaultOutputName = false;
 
     public Convert() {
@@ -47,14 +51,15 @@ public class Convert implements Runnable {
     @Override
     public void run() {
         try {
-            this.outputFromatIsDefine = this.output != null;
-            this.isDefaultOutputName = this.output != null && this.output.toString().equals(DEFAULT_OUTPUT_FILE_NAME);
+            this.outputFormatIsDefined = this.output != null;
+            this.isDefaultOutputName = this.output != null && DEFAULT_OUTPUT_FILE_NAME.equals(this.output.toString());
             checkInputValues();
             loadInputFile();
             exportGraph();
         } catch (IllegalArgumentException | IOException e) {
+            LOGGER.log(Level.SEVERE, "Error occurred during conversion", e);
             spec.commandLine().getErr().println(e.getMessage());
-            throw new ExitCodeException(1, e.getMessage());
+            throw new ExitCodeException(EXIT_CODE_ERROR, e.getMessage());
         }
     }
 
@@ -95,7 +100,7 @@ public class Convert implements Runnable {
         Path outputFileName;
 
         // Set output file name
-        if (this.outputFromatIsDefine && !this.isDefaultOutputName) {
+        if (this.outputFormatIsDefined && !this.isDefaultOutputName) {
             outputFileName = this.output;
         } else {
             outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.outputFormat.getExtention());

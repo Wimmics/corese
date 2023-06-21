@@ -59,17 +59,29 @@ public class GraphUtils {
      * @return Corese Graph with RDF data loaded.
      * @throws IOException if an error occurs while loading the input file.
      */
-    public static Graph load(String pathOrUrl, EnumInputFormat inputFormat) throws IOException {
+    public static Graph load(String pathOrUrl, EnumInputFormat inputFormat, Graph graph) throws IOException {
         InputStream inputStream = GraphUtils.pathOrUrlToInputStream(pathOrUrl);
 
         if (inputFormat == null) {
             inputFormat = EnumInputFormat.fromLoaderValue(LoadFormat.getFormat(pathOrUrl));
         }
 
-        Graph graph = load(inputStream, inputFormat);
+        GraphUtils.load(inputStream, inputFormat, graph);
 
         inputStream.close();
         return graph;
+    }
+
+    /**
+     * Parse a file and load RDF data into a Corese Graph.
+     * 
+     * @param pathOrUrl   Path or URL of the input RDF file.
+     * @param inputFormat Input file serialization format.
+     * @return Corese Graph with RDF data loaded.
+     * @throws IOException if an error occurs while loading the input file.
+     */
+    public static Graph load(String pathOrUrl, EnumInputFormat inputFormat) throws IOException {
+        return load(pathOrUrl, inputFormat, Graph.create());
     }
 
     /**
@@ -82,9 +94,8 @@ public class GraphUtils {
      * @throws IllegalArgumentException if the input format cannot be determined
      *                                  automatically when using standard input.
      */
-    public static Graph load(InputStream inputStream, EnumInputFormat inputFormat)
+    public static Graph load(InputStream inputStream, EnumInputFormat inputFormat, Graph graph)
             throws IOException, IllegalArgumentException {
-        final Graph graph = new Graph();
 
         Load load = Load.create(graph);
         if (inputFormat == null) {
@@ -102,6 +113,20 @@ public class GraphUtils {
         }
 
         return graph;
+    }
+
+    /**
+     * Parse a file and load RDF data into a Corese Graph.
+     * 
+     * @param inputStream Input stream of the input RDF file.
+     * @param inputFormat Input file serialization format.
+     * @return Corese Graph with RDF data loaded.
+     * @throws IOException              if an I/O error occurs
+     * @throws IllegalArgumentException if the input format cannot be determined
+     *                                  automatically when using standard input.
+     */
+    public static Graph load(InputStream inputStream, EnumInputFormat inputFormat) throws IOException {
+        return load(inputStream, inputFormat, Graph.create());
     }
 
     /**

@@ -1,0 +1,3931 @@
+@prefix ex: <http://example.com/city/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+
+ex:Guidel
+    rdf:type ex:city ;
+    ex:area 52.29 ;
+    ex:name "Guidel" .
+ex:Saint_Front
+    rdf:type ex:city ;
+    ex:area 52.33 ;
+    ex:name "Saint-Front" .
+ex:Rion_des_Landes
+    rdf:type ex:city ;
+    ex:area 118.25 ;
+    ex:name "Rion-des-Landes" .
+ex:Carentoir
+    rdf:type ex:city ;
+    ex:area 59.02 ;
+    ex:name "Carentoir" .
+ex:Lurcy_Lévis
+    rdf:type ex:city ;
+    ex:area 71.42 ;
+    ex:name "Lurcy-Lévis" .
+ex:Ychoux
+    rdf:type ex:city ;
+    ex:area 111.28 ;
+    ex:name "Ychoux" .
+ex:Rocroi
+    rdf:type ex:city ;
+    ex:area 50.41 ;
+    ex:name "Rocroi" .
+ex:Lège_Cap_Ferret
+    rdf:type ex:city ;
+    ex:area 93.62 ;
+    ex:name "Lège-Cap-Ferret" .
+ex:Inguiniel
+    rdf:type ex:city ;
+    ex:area 51.4 ;
+    ex:name "Inguiniel" .
+ex:Grand_Champ
+    rdf:type ex:city ;
+    ex:area 67.34 ;
+    ex:name "Grand-Champ" .
+ex:Champoléon
+    rdf:type ex:city ;
+    ex:area 98.54 ;
+    ex:name "Champoléon" .
+ex:Marcenat
+    rdf:type ex:city ;
+    ex:area 51.47 ;
+    ex:name "Marcenat" .
+ex:Gèdre
+    rdf:type ex:city ;
+    ex:area 144.57 ;
+    ex:name "Gèdre" .
+ex:Comps_sur_Artuby
+    rdf:type ex:city ;
+    ex:area 63.49 ;
+    ex:name "Comps-sur-Artuby" .
+ex:Le_Gâvre
+    rdf:type ex:city ;
+    ex:area 53.58 ;
+    ex:name "Le Gâvre" .
+ex:Biscarrosse
+    rdf:type ex:city ;
+    ex:area 160.48 ;
+    ex:name "Biscarrosse" .
+ex:Elven
+    rdf:type ex:city ;
+    ex:area 64.05 ;
+    ex:name "Elven" .
+ex:Beuil
+    rdf:type ex:city ;
+    ex:area 75.65 ;
+    ex:name "Beuil" .
+ex:Mana
+    rdf:type ex:city ;
+    ex:area 6332.6 ;
+    ex:name "Mana" .
+ex:Lafrançaise
+    rdf:type ex:city ;
+    ex:area 50.82 ;
+    ex:name "Lafrançaise" .
+ex:Languidic
+    rdf:type ex:city ;
+    ex:ex:area 109.08 ;
+    ex:name "Languidic" .
+ex:Sare
+    rdf:type ex:city ;
+    ex:area 51.34 ;
+    ex:name "Sare" .
+ex:Ménéac
+    rdf:type ex:city ;
+    ex:area 68.22 ;
+    ex:name "Ménéac" .
+ex:Campénéac
+    rdf:type ex:city ;
+    ex:area 60.57 ;
+    ex:name "Campénéac" .
+ex:Gourin
+    rdf:type ex:city ;
+    ex:area 74.72 ;
+    ex:name "Gourin" .
+ex:Gujan_Mestras
+    rdf:type ex:city ;
+    ex:area 53.99 ;
+    ex:name "Gujan-Mestras" .
+ex:Guer
+    rdf:type ex:city ;
+    ex:area 52.11 ;
+    ex:name "Guer" .
+ex:Bonifacio
+    rdf:type ex:city ;
+    ex:area 138.36 ;
+    ex:name "Bonifacio" .
+ex:Sari_Solenzara
+    rdf:type ex:city ;
+    ex:area 73.85 ;
+    ex:name "Sari-Solenzara" .
+ex:Léon
+    rdf:type ex:city ;
+    ex:area 64.45 ;
+    ex:name "Léon" .
+ex:Le_Lauzet_Ubaye
+    rdf:type ex:city ;
+    ex:area 66.26 ;
+    ex:name "Le Lauzet-Ubaye" .
+ex:Saint_Léger_Magnazeix
+    rdf:type ex:city ;
+    ex:area 55.71 ;
+    ex:name "Saint-Léger-Magnazeix" .
+ex:Thiel_sur_Acolin
+    rdf:type ex:city ;
+    ex:area 57.71 ;
+    ex:name "Thiel-sur-Acolin" .
+ex:Cambon_et_Salvergues
+    rdf:type ex:city ;
+    ex:area 50.39 ;
+    ex:name "Cambon-et-Salvergues" .
+ex:Millau
+    rdf:type ex:city ;
+    ex:area 168.23 ;
+    ex:name "Millau" .
+ex:Saucats
+    rdf:type ex:city ;
+    ex:area 89.15 ;
+    ex:name "Saucats" .
+ex:Bocognano
+    rdf:type ex:city ;
+    ex:area 71.12 ;
+    ex:name "Bocognano" .
+ex:Saint_François
+    rdf:type ex:city ;
+    ex:area 59.82 ;
+    ex:name "Saint-François" .
+ex:Vendays_Montalivet
+    rdf:type ex:city ;
+    ex:area 101.46 ;
+    ex:name "Vendays-Montalivet" .
+ex:Soustons
+    rdf:type ex:city ;
+    ex:area 100.38 ;
+    ex:name "Soustons" .
+ex:Larrau
+    rdf:type ex:city ;
+    ex:area 126.8 ;
+    ex:name "Larrau" .
+ex:Levie
+    rdf:type ex:city ;
+    ex:area 85.85 ;
+    ex:name "Levie" .
+ex:Cléguérec
+    rdf:type ex:city ;
+    ex:area 62.99 ;
+    ex:name "Cléguérec" .
+ex:Gérardmer
+    rdf:type ex:city ;
+    ex:area 54.78 ;
+    ex:name "Gérardmer" .
+ex:Colmars
+    rdf:type ex:city ;
+    ex:area 81.82 ;
+    ex:name "Colmars" .
+ex:Guégon
+    rdf:type ex:city ;
+    ex:area 53.52 ;
+    ex:name "Guégon" .
+ex:Bussy_en_Othe
+    rdf:type ex:city ;
+    ex:area 56.5 ;
+    ex:name "Bussy-en-Othe" .
+ex:Saint_Laurent_Médoc
+    rdf:type ex:city ;
+    ex:area 136.55 ;
+    ex:name "Saint-Laurent-Médoc" .
+ex:Yzeures_sur_Creuse
+    rdf:type ex:city ;
+    ex:area 55.42 ;
+    ex:name "Yzeures-sur-Creuse" .
+ex:Biganos
+    rdf:type ex:city ;
+    ex:area 77.28 ;
+    ex:name "Biganos" .
+ex:Neuvic
+    rdf:type ex:city ;
+    ex:area 72.88 ;
+    ex:name "Neuvic" .
+ex:Langonnet
+    rdf:type ex:city ;
+    ex:area 85.4 ;
+    ex:name "Langonnet" .
+ex:Guiscriff
+    rdf:type ex:city ;
+    ex:area 85.46 ;
+    ex:name "Guiscriff" .
+ex:Mauron
+    rdf:type ex:city ;
+    ex:area 67.23 ;
+    ex:name "Mauron" .
+ex:Castellane
+    rdf:type ex:city ;
+    ex:area 117.79 ;
+    ex:name "Castellane" .
+ex:Montréal
+    rdf:type ex:city ;
+    ex:area 63.05 ;
+    ex:name "Montréal" .
+ex:Villiers_le_Duc
+    rdf:type ex:city ;
+    ex:area 84.34 ;
+    ex:name "Villiers-le-Duc" .
+ex:La_Londe_les_Maures
+    rdf:type ex:city ;
+    ex:area 79.29 ;
+    ex:name "La Londe-les-Maures" .
+ex:Vielle_Saint_Girons
+    rdf:type ex:city ;
+    ex:area 72.03 ;
+    ex:name "Vielle-Saint-Girons" .
+ex:Les_Forges
+    rdf:type ex:city ;
+    ex:area 52.53 ;
+    ex:name "Les Forges" .
+ex:Valensole
+    rdf:type ex:city ;
+    ex:area 127.77 ;
+    ex:name "Valensole" .
+ex:Sospel
+    rdf:type ex:city ;
+    ex:area 62.39 ;
+    ex:name "Sospel" .
+ex:Magnac_Laval
+    rdf:type ex:city ;
+    ex:area 72.22 ;
+    ex:name "Magnac-Laval" .
+ex:Chamonix_Mont_Blanc
+    rdf:type ex:city ;
+    ex:area 116.53 ;
+    ex:name "Chamonix-Mont-Blanc" .
+ex:Entrevaux
+    rdf:type ex:city ;
+    ex:area 60.37 ;
+    ex:name "Entrevaux" .
+ex:Ristolas
+    rdf:type ex:city ;
+    ex:area 82.18 ;
+    ex:name "Ristolas" .
+ex:La_Grave
+    rdf:type ex:city ;
+    ex:ex:area 126.91 ;
+    ex:name "La Grave" .
+ex:Saint_Fargeau
+    rdf:type ex:city ;
+    ex:area 67.2 ;
+    ex:name "Saint-Fargeau" .
+ex:Le_François
+    rdf:type ex:city ;
+    ex:area 53.93 ;
+    ex:name "Le François" .
+ex:Chamberet
+    rdf:type ex:city ;
+    ex:area 69.85 ;
+    ex:name "Chamberet" .
+ex:Chaillac
+    rdf:type ex:city ;
+    ex:area 59.79 ;
+    ex:name "Chaillac" .
+ex:Val_d_Isère
+    rdf:type ex:city ;
+    ex:area 94.39 ;
+    ex:name "Val-d'Isère" .
+ex:Saint_Joseph
+    rdf:type ex:city ;
+    ex:area 178.5 ;
+    ex:name "Saint-Joseph" .
+ex:Istres
+    rdf:type ex:city ;
+    ex:area 113.73 ;
+    ex:name "Istres" .
+ex:Fleury
+    rdf:type ex:city ;
+    ex:area 51.27 ;
+    ex:name "Fleury" .
+ex:Champignelles
+    rdf:type ex:city ;
+    ex:area 53.29 ;
+    ex:name "Champignelles" .
+ex:Pluvigner
+    rdf:type ex:city ;
+    ex:area 82.83 ;
+    ex:name "Pluvigner" .
+ex:Moréac
+    rdf:type ex:city ;
+    ex:area 60.3 ;
+    ex:name "Moréac" .
+ex:Plogonnec
+    rdf:type ex:city ;
+    ex:area 54.14 ;
+    ex:name "Plogonnec" .
+ex:Pernes_les_Fontaines
+    rdf:type ex:city ;
+    ex:area 51.12 ;
+    ex:name "Pernes-les-Fontaines" .
+ex:Châtellerault
+    rdf:type ex:city ;
+    ex:area 51.93 ;
+    ex:name "Châtellerault" .
+ex:Saint_Étienne_de_Baïgorry
+    rdf:type ex:city ;
+    ex:area 69.44 ;
+    ex:name "Saint-Étienne-de-Baïgorry" .
+ex:Ploërmel
+    rdf:type ex:city ;
+    ex:area 57.82 ;
+    ex:name "Ploërmel" .
+ex:Arrou
+    rdf:type ex:city ;
+    ex:area 64.98 ;
+    ex:name "Arrou" .
+ex:Brignoles
+    rdf:type ex:city ;
+    ex:area 70.53 ;
+    ex:name "Brignoles" .
+ex:Lus_la_Croix_Haute
+    rdf:type ex:city ;
+    ex:area 87.2 ;
+    ex:name "Lus-la-Croix-Haute" .
+ex:Noyal_Pontivy
+    rdf:type ex:city ;
+    ex:area 53.45 ;
+    ex:name "Noyal-Pontivy" .
+ex:Plumelec
+    rdf:type ex:city ;
+    ex:area 58.36 ;
+    ex:name "Plumelec" .
+ex:Muret
+    rdf:type ex:city ;
+    ex:area 57.84 ;
+    ex:name "Muret" .
+ex:Saint_Julien_en_Beauchêne
+    rdf:type ex:city ;
+    ex:area 59.43 ;
+    ex:name "Saint-Julien-en-Beauchêne" .
+ex:Isola
+    rdf:type ex:city ;
+    ex:area 97.98 ;
+    ex:name "Isola" .
+ex:Nivillac
+    rdf:type ex:city ;
+    ex:area 55.48 ;
+    ex:name "Nivillac" .
+ex:Sornac
+    rdf:type ex:city ;
+    ex:area 59.48 ;
+    ex:name "Sornac" .
+ex:Saffré
+    rdf:type ex:city ;
+    ex:area 57.46 ;
+    ex:name "Saffré" .
+ex:Les_Mées
+    rdf:type ex:city ;
+    ex:area 65.4 ;
+    ex:name "Les Mées" .
+ex:Pluméliau
+    rdf:type ex:city ;
+    ex:area 67.72 ;
+    ex:name "Pluméliau" .
+ex:Saint_Agnant_de_Versillat
+    rdf:type ex:city ;
+    ex:area 50.46 ;
+    ex:name "Saint-Agnant-de-Versillat" .
+ex:Cheval_Blanc
+    rdf:type ex:city ;
+    ex:area 58.56 ;
+    ex:name "Cheval-Blanc" .
+ex:Joué_sur_Erdre
+    rdf:type ex:city ;
+    ex:area 54.53 ;
+    ex:name "Joué-sur-Erdre" .
+ex:Ploërdut
+    rdf:type ex:city ;
+    ex:area 75.83 ;
+    ex:name "Ploërdut" .
+ex:La_Chapelle_en_Valgaudémar
+    rdf:type ex:city ;
+    ex:area 108.02 ;
+    ex:name "La Chapelle-en-Valgaudémar" .
+ex:Sarzeau
+    rdf:type ex:city ;
+    ex:area 60.23 ;
+    ex:name "Sarzeau" .
+ex:Oloron_Sainte_Marie
+    rdf:type ex:city ;
+    ex:area 68.31 ;
+    ex:name "Oloron-Sainte-Marie" .
+ex:Questembert
+    rdf:type ex:city ;
+    ex:area 66.38 ;
+    ex:name "Questembert" .
+ex:Salles
+    rdf:type ex:city ;
+    ex:area 137.98 ;
+    ex:name "Salles" .
+ex:Vierzon
+    rdf:type ex:city ;
+    ex:area 74.5 ;
+    ex:name "Vierzon" .
+ex:Villeneuve_sur_Lot
+    rdf:type ex:city ;
+    ex:area 81.32 ;
+    ex:name "Villeneuve-sur-Lot" .
+ex:Hanvec
+    rdf:type ex:city ;
+    ex:area 59.11 ;
+    ex:name "Hanvec" .
+ex:Saint_Paul
+    rdf:type ex:city ;
+    ex:area 241.28 ;
+    ex:name "Saint-Paul" .
+ex:Breil_sur_Roya
+    rdf:type ex:city ;
+    ex:area 81.31 ;
+    ex:name "Breil-sur-Roya" .
+ex:Accous
+    rdf:type ex:city ;
+    ex:area 60.68 ;
+    ex:name "Accous" .
+ex:Bagnères_de_Bigorre
+    rdf:type ex:city ;
+    ex:area 125.86 ;
+    ex:name "Bagnères-de-Bigorre" .
+ex:Bourbonne_les_Bains
+    rdf:type ex:city ;
+    ex:area 64.93 ;
+    ex:name "Bourbonne-les-Bains" .
+ex:Bannalec
+    rdf:type ex:city ;
+    ex:area 77.51 ;
+    ex:name "Bannalec" .
+ex:Aydat
+    rdf:type ex:city ;
+    ex:area 50.22 ;
+    ex:name "Aydat" .
+ex:Marans
+    rdf:type ex:city ;
+    ex:area 82.49 ;
+    ex:name "Marans" .
+ex:Plouay
+    rdf:type ex:city ;
+    ex:area 67.33 ;
+    ex:name "Plouay" .
+ex:Scaër
+    rdf:type ex:city ;
+    ex:area 117.58 ;
+    ex:name "Scaër" .
+ex:Roquebrune_sur_Argens
+    rdf:type ex:city ;
+    ex:area 106.1 ;
+    ex:name "Roquebrune-sur-Argens" .
+ex:Gien
+    rdf:type ex:city ;
+    ex:area 67.86 ;
+    ex:name "Gien" .
+ex:Colmar
+    rdf:type ex:city ;
+    ex:area 66.57 ;
+    ex:name "Colmar" .
+ex:Tarnac
+    rdf:type ex:city ;
+    ex:area 67.46 ;
+    ex:name "Tarnac" .
+ex:Chanac
+    rdf:type ex:city ;
+    ex:area 71.14 ;
+    ex:name "Chanac" .
+ex:Audenge
+    rdf:type ex:city ;
+    ex:area 82.09 ;
+    ex:name "Audenge" .
+ex:Saint_Junien
+    rdf:type ex:city ;
+    ex:area 56.82 ;
+    ex:name "Saint-Junien" .
+ex:Valleraugue
+    rdf:type ex:city ;
+    ex:area 78.35 ;
+    ex:name "Valleraugue" .
+ex:Chambord
+    rdf:type ex:city ;
+    ex:area 54.38 ;
+    ex:name "Chambord" .
+ex:Bazouges_la_Pérouse
+    rdf:type ex:city ;
+    ex:area 58.18 ;
+    ex:name "Bazouges-la-Pérouse" .
+ex:Lambesc
+    rdf:type ex:city ;
+    ex:area 65.34 ;
+    ex:name "Lambesc" .
+ex:Surzur
+    rdf:type ex:city ;
+    ex:area 57.29 ;
+    ex:name "Surzur" .
+ex:Xertigny
+    rdf:type ex:city ;
+    ex:area 50.25 ;
+    ex:name "Xertigny" .
+ex:Levroux
+    rdf:type ex:city ;
+    ex:area 56.43 ;
+    ex:name "Levroux" .
+ex:Sérent
+    rdf:type ex:city ;
+    ex:ex:area 59.67 ;
+    ex:name "Sérent" .
+ex:Colombey_les_Deux_Églises
+    rdf:type ex:city ;
+    ex:area 73.63 ;
+    ex:name "Colombey-les-Deux-Églises" .
+ex:La_Canourgue
+    rdf:type ex:city ;
+    ex:area 104.29 ;
+    ex:name "La Canourgue" .
+ex:Combourg
+    rdf:type ex:city ;
+    ex:area 63.55 ;
+    ex:name "Combourg" .
+ex:Lectoure
+    rdf:type ex:city ;
+    ex:area 84.93 ;
+    ex:name "Lectoure" .
+ex:Carcans
+    rdf:type ex:city ;
+    ex:area 175.4 ;
+    ex:name "Carcans" .
+ex:Nançay
+    rdf:type ex:city ;
+    ex:area 106.33 ;
+    ex:name "Nançay" .
+ex:Cestas
+    rdf:type ex:city ;
+    ex:area 99.57 ;
+    ex:name "Cestas" .
+ex:Jumilhac_le_Grand
+    rdf:type ex:city ;
+    ex:area 66.67 ;
+    ex:name "Jumilhac-le-Grand" .
+ex:Sanguinet
+    rdf:type ex:city ;
+    ex:area 81.43 ;
+    ex:name "Sanguinet" .
+ex:Condom
+    rdf:type ex:city ;
+    ex:area 97.37 ;
+    ex:name "Condom" .
+ex:Bressuire
+    rdf:type ex:city ;
+    ex:area 180.59 ;
+    ex:name "Bressuire" .
+ex:Die
+    rdf:type ex:city ;
+    ex:area 57.28 ;
+    ex:name "Die" .
+ex:Sault
+    rdf:type ex:city ;
+    ex:area 111.15 ;
+    ex:name "Sault" .
+ex:Machecoul
+    rdf:type ex:city ;
+    ex:area 66.62 ;
+    ex:name "Machecoul" .
+ex:Abondance
+    rdf:type ex:city ;
+    ex:area 58.84 ;
+    ex:name "Abondance" .
+ex:Gras
+    rdf:type ex:city ;
+    ex:area 56.68 ;
+    ex:name "Gras" .
+ex:Chorges
+    rdf:type ex:city ;
+    ex:area 53.34 ;
+    ex:name "Chorges" .
+ex:Siran
+    rdf:type ex:city ;
+    ex:area 50.88 ;
+    ex:name "Siran" .
+ex:Le_Blanc
+    rdf:type ex:city ;
+    ex:area 57.61 ;
+    ex:name "Le Blanc" .
+ex:Castelsarrasin
+    rdf:type ex:city ;
+    ex:area 76.77 ;
+    ex:name "Castelsarrasin" .
+ex:Aléria
+    rdf:type ex:city ;
+    ex:area 58.33 ;
+    ex:name "Aléria" .
+ex:Bourges
+    rdf:type ex:city ;
+    ex:area 68.74 ;
+    ex:name "Bourges" .
+ex:Saint_Étienne_de_Lugdarès
+    rdf:type ex:city ;
+    ex:area 50.34 ;
+    ex:name "Saint-Étienne-de-Lugdarès" .
+ex:Paimpont
+    rdf:type ex:city ;
+    ex:area 110.28 ;
+    ex:name "Paimpont" .
+ex:Blain
+    rdf:type ex:city ;
+    ex:area 101.72 ;
+    ex:name "Blain" .
+ex:Épinal
+    rdf:type ex:city ;
+    ex:area 59.24 ;
+    ex:name "Épinal" .
+ex:Aston
+    rdf:type ex:city ;
+    ex:area 153.8 ;
+    ex:name "Aston" .
+ex:Béziers
+    rdf:type ex:city ;
+    ex:area 95.48 ;
+    ex:name "Béziers" .
+ex:Cosne_Cours_sur_Loire
+    rdf:type ex:city ;
+    ex:area 53.3 ;
+    ex:name "Cosne-Cours-sur-Loire" .
+ex:Salies_de_Béarn
+    rdf:type ex:city ;
+    ex:area 52.08 ;
+    ex:name "Salies-de-Béarn" .
+ex:Tignes
+    rdf:type ex:city ;
+    ex:area 81.63 ;
+    ex:name "Tignes" .
+ex:Bessines_sur_Gartempe
+    rdf:type ex:city ;
+    ex:area 55.41 ;
+    ex:name "Bessines-sur-Gartempe" .
+ex:Mézières_en_Brenne
+    rdf:type ex:city ;
+    ex:area 57.57 ;
+    ex:name "Mézières-en-Brenne" .
+ex:Ampus
+    rdf:type ex:city ;
+    ex:area 82.77 ;
+    ex:name "Ampus" .
+ex:Saint_Benoît
+    rdf:type ex:city ;
+    ex:area 229.61 ;
+    ex:name "Saint-Benoît" .
+ex:Sizun
+    rdf:type ex:city ;
+    ex:area 58.14 ;
+    ex:name "Sizun" .
+ex:Roybon
+    rdf:type ex:city ;
+    ex:area 67.31 ;
+    ex:name "Roybon" .
+ex:Herm
+    rdf:type ex:city ;
+    ex:area 52.08 ;
+    ex:name "Herm" .
+ex:Mazamet
+    rdf:type ex:city ;
+    ex:area 72.08 ;
+    ex:name "Mazamet" .
+ex:Montauban
+    rdf:type ex:city ;
+    ex:area 135.17 ;
+    ex:name "Montauban" .
+ex:Lormes
+    rdf:type ex:city ;
+    ex:area 51.71 ;
+    ex:name "Lormes" .
+ex:Le_Grau_du_Roi
+    rdf:type ex:city ;
+    ex:area 54.73 ;
+    ex:name "Le Grau-du-Roi" .
+ex:Besse_et_Saint_Anastaise
+    rdf:type ex:city ;
+    ex:area 72.38 ;
+    ex:name "Besse-et-Saint-Anastaise" .
+ex:Les_Contamines_Montjoie
+    rdf:type ex:city ;
+    ex:area 81.35 ;
+    ex:name "Les Contamines-Montjoie" .
+ex:Mimizan
+    rdf:type ex:city ;
+    ex:area 114.83 ;
+    ex:name "Mimizan" .
+ex:Cuers
+    rdf:type ex:city ;
+    ex:area 50.53 ;
+    ex:name "Cuers" .
+ex:Dourbies
+    rdf:type ex:city ;
+    ex:area 60.88 ;
+    ex:name "Dourbies" .
+ex:Nérac
+    rdf:type ex:city ;
+    ex:area 62.68 ;
+    ex:name "Nérac" .
+ex:Asson
+    rdf:type ex:city ;
+    ex:area 83.02 ;
+    ex:name "Asson" .
+ex:Ambert
+    rdf:type ex:city ;
+    ex:area 60.48 ;
+    ex:name "Ambert" .
+ex:Saintes_Maries_de_la_Mer
+    rdf:type ex:city ;
+    ex:area 374.61 ;
+    ex:name "Saintes-Maries-de-la-Mer" .
+ex:Onesse_Laharie
+    rdf:type ex:city ;
+    ex:area 132.13 ;
+    ex:name "Onesse-Laharie" .
+ex:Beaucaire
+    rdf:type ex:city ;
+    ex:area 86.52 ;
+    ex:name "Beaucaire" .
+ex:Gap
+    rdf:type ex:city ;
+    ex:area 110.43 ;
+    ex:name "Gap" .
+ex:Magescq
+    rdf:type ex:city ;
+    ex:area 77.12 ;
+    ex:name "Magescq" .
+ex:Le_Teich
+    rdf:type ex:city ;
+    ex:area 87.08 ;
+    ex:name "Le Teich" .
+ex:Poullaouen
+    rdf:type ex:city ;
+    ex:area 71.36 ;
+    ex:name "Poullaouen" .
+ex:Rouffignac_Saint_Cernin_de_Reilhac
+    rdf:type ex:city ;
+    ex:area 59.9 ;
+    ex:name "Rouffignac-Saint-Cernin-de-Reilhac" .
+ex:Vicq_sur_Breuilh
+    rdf:type ex:city ;
+    ex:area 50.89 ;
+    ex:name "Vicq-sur-Breuilh" .
+ex:Najac
+    rdf:type ex:city ;
+    ex:area 53.88 ;
+    ex:name "Najac" .
+ex:Saint_Claude
+    rdf:type ex:city ;
+    ex:area 70.19 ;
+    ex:name "Saint-Claude" .
+ex:Blond
+    rdf:type ex:city ;
+    ex:ex:area 64.69 ;
+    ex:name "Blond" .
+ex:Montmorillon
+    rdf:type ex:city ;
+    ex:area 57 ;
+    ex:name "Montmorillon" .
+ex:Pleyben
+    rdf:type ex:city ;
+    ex:area 76.04 ;
+    ex:name "Pleyben" .
+ex:Corte
+    rdf:type ex:city ;
+    ex:area 149.27 ;
+    ex:name "Corte" .
+ex:Fréjus
+    rdf:type ex:city ;
+    ex:area 102.27 ;
+    ex:name "Fréjus" .
+ex:Valréas
+    rdf:type ex:city ;
+    ex:area 57.97 ;
+    ex:name "Valréas" .
+ex:Gaël
+    rdf:type ex:city ;
+    ex:area 52.1 ;
+    ex:name "Gaël" .
+ex:Merdrignac
+    rdf:type ex:city ;
+    ex:area 57.12 ;
+    ex:name "Merdrignac" .
+ex:Listrac_Médoc
+    rdf:type ex:city ;
+    ex:area 61.9 ;
+    ex:name "Listrac-Médoc" .
+ex:Rieutort_de_Randon
+    rdf:type ex:city ;
+    ex:area 62.34 ;
+    ex:name "Rieutort-de-Randon" .
+ex:Querrien
+    rdf:type ex:city ;
+    ex:area 54.01 ;
+    ex:name "Querrien" .
+ex:Rosporden
+    rdf:type ex:city ;
+    ex:area 57.37 ;
+    ex:name "Rosporden" .
+ex:Jausiers
+    rdf:type ex:city ;
+    ex:area 107.73 ;
+    ex:name "Jausiers" .
+ex:Tuchan
+    rdf:type ex:city ;
+    ex:area 59.52 ;
+    ex:name "Tuchan" .
+ex:Bollène
+    rdf:type ex:city ;
+    ex:area 54.03 ;
+    ex:name "Bollène" .
+ex:Crozon
+    rdf:type ex:city ;
+    ex:area 80.37 ;
+    ex:name "Crozon" .
+ex:La_Couvertoirade
+    rdf:type ex:city ;
+    ex:area 61.91 ;
+    ex:name "La Couvertoirade" .
+ex:Gaillac
+    rdf:type ex:city ;
+    ex:area 50.93 ;
+    ex:name "Gaillac" .
+ex:Sartène
+    rdf:type ex:city ;
+    ex:area 200.4 ;
+    ex:name "Sartène" .
+ex:Lautrec
+    rdf:type ex:city ;
+    ex:area 54.64 ;
+    ex:name "Lautrec" .
+ex:Captieux
+    rdf:type ex:city ;
+    ex:area 119.33 ;
+    ex:name "Captieux" .
+ex:Loudéac
+    rdf:type ex:city ;
+    ex:area 80.24 ;
+    ex:name "Loudéac" .
+ex:Sainte_Menehould
+    rdf:type ex:city ;
+    ex:area 57.11 ;
+    ex:name "Sainte-Menehould" .
+ex:Abriès
+    rdf:type ex:city ;
+    ex:area 77.13 ;
+    ex:name "Abriès" .
+ex:Saint_Rémy_de_Provence
+    rdf:type ex:city ;
+    ex:area 89.09 ;
+    ex:name "Saint-Rémy-de-Provence" .
+ex:Mios
+    rdf:type ex:city ;
+    ex:area 137.41 ;
+    ex:name "Mios" .
+ex:Spézet
+    rdf:type ex:city ;
+    ex:area 60.67 ;
+    ex:name "Spézet" .
+ex:Py
+    rdf:type ex:city ;
+    ex:area 50.86 ;
+    ex:name "Py" .
+ex:Yssingeaux
+    rdf:type ex:city ;
+    ex:area 80.57 ;
+    ex:name "Yssingeaux" .
+ex:Plougonven
+    rdf:type ex:city ;
+    ex:ex:area 69.32 ;
+    ex:name "Plougonven" .
+ex:Saint_Élie    
+    rdf:type ex:city ;
+    ex:area	56.80 ;
+    ex:name "Saint-Élie" .
+ex:Laruns
+    rdf:type ex:city ;
+    ex:area 248.96 ;
+    ex:name "Laruns" .
+ex:Louvie_Juzon
+    rdf:type ex:city ;
+    ex:area 55.65 ;
+    ex:name "Louvie-Juzon" .
+ex:Lanton
+    rdf:type ex:city ;
+    ex:area 136.19 ;
+    ex:name "Lanton" .
+ex:Riols
+    rdf:type ex:city ;
+    ex:area 56.02 ;
+    ex:name "Riols" .
+ex:Montréal
+    rdf:type ex:city ;
+    ex:area 55.03 ;
+    ex:name "Montréal" .
+ex:Cauterets
+    rdf:type ex:city ;
+    ex:area 156.84 ;
+    ex:name "Cauterets" .
+ex:Lescun
+    rdf:type ex:city ;
+    ex:area 60.66 ;
+    ex:name "Lescun" .
+ex:Lacanau
+    rdf:type ex:city ;
+    ex:area 214.02 ;
+    ex:name "Lacanau" .
+ex:Le_Buisson_de_Cadouin
+    rdf:type ex:city ;
+    ex:area 50.37 ;
+    ex:name "Le Buisson-de-Cadouin" .
+ex:Vidauban
+    rdf:type ex:city ;
+    ex:area 73.93 ;
+    ex:name "Vidauban" .
+ex:Labrit
+    rdf:type ex:city ;
+    ex:area 72.18 ;
+    ex:name "Labrit" .
+ex:Souesmes
+    rdf:type ex:city ;
+    ex:area 99.5 ;
+    ex:name "Souesmes" .
+ex:Royère_de_Vassivière
+    rdf:type ex:city ;
+    ex:area 74.14 ;
+    ex:name "Royère-de-Vassivière" .
+ex:Melgven
+    rdf:type ex:city ;
+    ex:area 51.17 ;
+    ex:name "Melgven" .
+ex:Tonnerre
+    rdf:type ex:city ;
+    ex:area 58.27 ;
+    ex:name "Tonnerre" .
+ex:Saissac
+    rdf:type ex:city ;
+    ex:area 57.03 ;
+    ex:name "Saissac" .
+ex:La_Ferté_Saint_Aubin
+    rdf:type ex:city ;
+    ex:area 86.12 ;
+    ex:name "La Ferté-Saint-Aubin" .
+ex:Plounéour_Ménez
+    rdf:type ex:city ;
+    ex:area 51.74 ;
+    ex:name "Plounéour-Ménez" .
+ex:Guenrouet
+    rdf:type ex:city ;
+    ex:area 69.9 ;
+    ex:name "Guenrouet" .
+ex:Plouigneau
+    rdf:type ex:city ;
+    ex:area 63.48 ;
+    ex:name "Plouigneau" .
+ex:Avensan
+    rdf:type ex:city ;
+    ex:area 52.24 ;
+    ex:name "Avensan" .
+ex:Plabennec
+    rdf:type ex:city ;
+    ex:area 50.43 ;
+    ex:name "Plabennec" .
+ex:Meyrueis
+    rdf:type ex:city ;
+    ex:area 104.68 ;
+    ex:name "Meyrueis" .
+ex:Compains
+    rdf:type ex:city ;
+    ex:area 50.16 ;
+    ex:name "Compains" .
+ex:Rognes
+    rdf:type ex:city ;
+    ex:area 58.32 ;
+    ex:name "Rognes" .
+ex:Saint_Antonin_Noble_Val
+    rdf:type ex:city ;
+    ex:area 105.46 ;
+    ex:name "Saint-Antonin-Noble-Val" .
+ex:Longchaumois
+    rdf:type ex:city ;
+    ex:area 57.6 ;
+    ex:name "Longchaumois" .
+ex:Scrignac
+    rdf:type ex:city ;
+    ex:area 70.94 ;
+    ex:name "Scrignac" .
+ex:Guérande
+    rdf:type ex:city ;
+    ex:area 81.44 ;
+    ex:name "Guérande" .
+ex:Elliant
+    rdf:type ex:city ;
+    ex:area 70.3 ;
+    ex:name "Elliant" .
+ex:Jouques
+    rdf:type ex:city ;
+    ex:area 80.35 ;
+    ex:name "Jouques" .
+ex:Nant
+    rdf:type ex:city ;
+    ex:area 109.4 ;
+    ex:name "Nant" .
+ex:Saint_Saud_Lacoussière
+    rdf:type ex:city ;
+    ex:area 58.04 ;
+    ex:name "Saint-Saud-Lacoussière" .
+ex:La_Garnache
+    rdf:type ex:city ;
+    ex:area 59.49 ;
+    ex:name "La Garnache" .
+ex:Saint_Martin_Vésubie
+    rdf:type ex:city ;
+    ex:area 97.13 ;
+    ex:name "Saint-Martin-Vésubie" .
+ex:Beaumont_de_Pertuis
+    rdf:type ex:city ;
+    ex:area 56.07 ;
+    ex:name "Beaumont-de-Pertuis" .
+ex:Iffendic
+    rdf:type ex:city ;
+    ex:area 73.66 ;
+    ex:name "Iffendic" .
+ex:Salon_de_Provence
+    rdf:type ex:city ;
+    ex:area 70.3 ;
+    ex:name "Salon-de-Provence" .
+ex:Plonévez_du_Faou
+    rdf:type ex:city ;
+    ex:area 80.73 ;
+    ex:name "Plonévez-du-Faou" .
+ex:Nouans_les_Fontaines
+    rdf:type ex:city ;
+    ex:area 63.31 ;
+    ex:name "Nouans-les-Fontaines" .
+ex:Bédoin
+    rdf:type ex:city ;
+    ex:area 91.03 ;
+    ex:name "Bédoin" .
+ex:Saint_Georges_de_Lévéjac
+    rdf:type ex:city ;
+    ex:area 56.26 ;
+    ex:name "Saint-Georges-de-Lévéjac" .
+ex:Murat_sur_Vèbre
+    rdf:type ex:city ;
+    ex:area 93.87 ;
+    ex:name "Murat-sur-Vèbre" .
+ex:Lavaur
+    rdf:type ex:city ;
+    ex:area 62.83 ;
+    ex:name "Lavaur" .
+ex:Ispagnac
+    rdf:type ex:city ;
+    ex:area 53.71 ;
+    ex:name "Ispagnac" .
+ex:La_Teste_de_Buch
+    rdf:type ex:city ;
+    ex:area 180.2 ;
+    ex:name "La Teste-de-Buch" .
+ex:Sos
+    rdf:type ex:city ;
+    ex:area 52.89 ;
+    ex:name "Sos" .
+ex:Ghisonaccia
+    rdf:type ex:city ;
+    ex:area 68.25 ;
+    ex:name "Ghisonaccia" .
+ex:Plessala
+    rdf:type ex:city ;
+    ex:area 51.45 ;
+    ex:name "Plessala" .
+ex:Cérilly
+    rdf:type ex:city ;
+    ex:area 70.55 ;
+    ex:name "Cérilly" .
+ex:Auch
+    rdf:type ex:city ;
+    ex:area 72.48 ;
+    ex:name "Auch" .
+ex:Niort
+    rdf:type ex:city ;
+    ex:area 68.2 ;
+    ex:name "Niort" .
+ex:Fontainebleau
+    rdf:type ex:city ;
+    ex:area 172.05 ;
+    ex:name "Fontainebleau" .
+ex:Les_Essarts
+    rdf:type ex:city ;
+    ex:area 56.24 ;
+    ex:name "Les Essarts" .
+ex:Dingé
+    rdf:type ex:city ;
+    ex:area 52.89 ;
+    ex:name "Dingé" .
+ex:Les_Arcs
+    rdf:type ex:city ;
+    ex:area 54.26 ;
+    ex:name "Les Arcs" .
+ex:Ambazac
+    rdf:type ex:city ;
+    ex:area 57.83 ;
+    ex:name "Ambazac" .
+ex:Le_Poiré_sur_Vie
+    rdf:type ex:city ;
+    ex:area 71.9 ;
+    ex:name "Le Poiré-sur-Vie" .
+ex:Argelès_sur_Mer
+    rdf:type ex:city ;
+    ex:area 58.67 ;
+    ex:name "Argelès-sur-Mer" .
+ex:Guillestre
+    rdf:type ex:city ;
+    ex:area 51.29 ;
+    ex:name "Guillestre" .
+ex:Landiras
+    rdf:type ex:city ;
+    ex:area 59.75 ;
+    ex:name "Landiras" .
+ex:Orlu
+    rdf:type ex:city ;
+    ex:area 70.79 ;
+    ex:name "Orlu" .
+ex:Saint_Pierre_de_Chartreuse
+    rdf:type ex:city ;
+    ex:area 80.12 ;
+    ex:name "Saint-Pierre-de-Chartreuse" .
+ex:Rochechouart
+    rdf:type ex:city ;
+    ex:area 53.88 ;
+    ex:name "Rochechouart" .
+ex:Bain_de_Bretagne
+    rdf:type ex:city ;
+    ex:area 64.77 ;
+    ex:name "Bain-de-Bretagne" .
+ex:Vigneulles_lès_Hattonchâtel
+    rdf:type ex:city ;
+    ex:area 62.59 ;
+    ex:name "Vigneulles-lès-Hattonchâtel" .
+ex:Compiègne
+    rdf:type ex:city ;
+    ex:area 53.1 ;
+    ex:name "Compiègne" .
+ex:L_Argentière_la_Bessée
+    rdf:type ex:city ;
+    ex:area 64.55 ;
+    ex:name "L'Argentière-la-Bessée" .
+ex:Hourtin
+    rdf:type ex:city ;
+    ex:area 190.5 ;
+    ex:name "Hourtin" .
+ex:Trégunc
+    rdf:type ex:city ;
+    ex:area 50.61 ;
+    ex:name "Trégunc" .
+ex:Senez
+    rdf:type ex:city ;
+    ex:area 70.27 ;
+    ex:name "Senez" .
+ex:Saint_Étienne_Vallée_Française
+    rdf:type ex:city ;
+    ex:area 50.99 ;
+    ex:name "Saint-Étienne-Vallée-Française" .
+ex:Digne_les_Bains
+    rdf:type ex:city ;
+    ex:area 117.07 ;
+    ex:name "Digne-les-Bains" .
+ex:Cornus
+    rdf:type ex:city ;
+    ex:area 92.74 ;
+    ex:name "Cornus" .
+ex:Saint_Martin_de_Fresnay
+    rdf:type ex:city ;
+    ex:area 53.88 ;
+    ex:name "Saint-Martin-de-Fresnay" .
+ex:Moissac
+    rdf:type ex:city ;
+    ex:area 85.95 ;
+    ex:name "Moissac" .
+ex:Monflanquin
+    rdf:type ex:city ;
+    ex:area 62.21 ;
+    ex:name "Monflanquin" .
+ex:Naujac_sur_Mer
+    rdf:type ex:city ;
+    ex:area 98.55 ;
+    ex:name "Naujac-sur-Mer" .
+ex:Orange
+    rdf:type ex:city ;
+    ex:area 74.2 ;
+    ex:name "Orange" .
+ex:Vic_Fezensac
+    rdf:type ex:city ;
+    ex:area 53.94 ;
+    ex:name "Vic-Fezensac" .
+ex:Nueil_sur_Layon
+    rdf:type ex:city ;
+    ex:area 61.23 ;
+    ex:name "Nueil-sur-Layon" .
+ex:Bergerac
+    rdf:type ex:city ;
+    ex:area 56.1 ;
+    ex:name "Bergerac" .
+ex:Saint_Raphaël
+    rdf:type ex:city ;
+    ex:area 89.59 ;
+    ex:name "Saint-Raphaël" .
+ex:Gouzon
+    rdf:type ex:city ;
+    ex:area 50.03 ;
+    ex:name "Gouzon" .
+ex:Aubagne
+    rdf:type ex:city ;
+    ex:area 54.9 ;
+    ex:name "Aubagne" .
+ex:Lugos
+    rdf:type ex:city ;
+    ex:area 62.14 ;
+    ex:name "Lugos" .
+ex:Lathus_Saint_Rémy
+    rdf:type ex:city ;
+    ex:area 98.28 ;
+    ex:name "Lathus-Saint-Rémy" .
+ex:Grand_Fougeray
+    rdf:type ex:city ;
+    ex:area 55.42 ;
+    ex:name "Grand-Fougeray" .
+ex:Langeais
+    rdf:type ex:city ;
+    ex:area 60.38 ;
+    ex:name "Langeais" .
+ex:Grand_Bourg
+    rdf:type ex:city ;
+    ex:area 55.54 ;
+    ex:name "Grand-Bourg" .
+ex:Saint_Julien_en_Born
+    rdf:type ex:city ;
+    ex:area 72.93 ;
+    ex:name "Saint-Julien-en-Born" .
+ex:Lagorce
+    rdf:type ex:city ;
+    ex:area 69.49 ;
+    ex:name "Lagorce" .
+ex:Manosque
+    rdf:type ex:city ;
+    ex:area 56.73 ;
+    ex:name "Manosque" .
+ex:Trets
+    rdf:type ex:city ;
+    ex:area 70.31 ;
+    ex:name "Trets" .
+ex:Barran
+    rdf:type ex:city ;
+    ex:area 52.82 ;
+    ex:name "Barran" .
+ex:Châteauroux_les_Alpes
+    rdf:type ex:city ;
+    ex:area 92.84 ;
+    ex:name "Châteauroux-les-Alpes" .
+ex:Saint_Yrieix_la_Perche
+    rdf:type ex:city ;
+    ex:area 100.98 ;
+    ex:name "Saint-Yrieix-la-Perche" .
+ex:Marcolès
+    rdf:type ex:city ;
+    ex:area 52.89 ;
+    ex:name "Marcolès" .
+ex:Modane
+    rdf:type ex:city ;
+    ex:area 71.04 ;
+    ex:name "Modane" .
+ex:Le_Barp
+    rdf:type ex:city ;
+    ex:area 107.32 ;
+    ex:name "Le Barp" .
+ex:Linxe
+    rdf:type ex:city ;
+    ex:area 80.93 ;
+    ex:name "Linxe" .
+ex:Berrien
+    rdf:type ex:city ;
+    ex:area 56.42 ;
+    ex:name "Berrien" .
+ex:Aumelas
+    rdf:type ex:city ;
+    ex:area 58.26 ;
+    ex:name "Aumelas" .
+ex:Cholet
+    rdf:type ex:city ;
+    ex:area 87.47 ;
+    ex:name "Cholet" .
+ex:Saint_Chamond
+    rdf:type ex:city ;
+    ex:area 54.88 ;
+    ex:name "Saint-Chamond" .
+ex:Castres
+    rdf:type ex:city ;
+    ex:area 98.17 ;
+    ex:name "Castres" .
+ex:Précigné
+    rdf:type ex:city ;
+    ex:area 57.85 ;
+    ex:name "Précigné" .
+ex:Les_Allues
+    rdf:type ex:city ;
+    ex:area 85.99 ;
+    ex:name "Les Allues" .
+ex:Adriers
+    rdf:type ex:city ;
+    ex:area 68.09 ;
+    ex:name "Adriers" .
+ex:Vendœuvres
+    rdf:type ex:city ;
+    ex:area 96.45 ;
+    ex:name "Vendœuvres" .
+ex:La_Roche_sur_Yon
+    rdf:type ex:city ;
+    ex:area 87.52 ;
+    ex:name "La Roche-sur-Yon" .
+ex:Arengosse
+    rdf:type ex:city ;
+    ex:area 62.48 ;
+    ex:name "Arengosse" .
+ex:Souain_Perthes_lès_Hurlus
+    rdf:type ex:city ;
+    ex:area 53.12 ;
+    ex:name "Souain-Perthes-lès-Hurlus" .
+ex:Lanuéjols
+    rdf:type ex:city ;
+    ex:area 62.43 ;
+    ex:name "Lanuéjols" .
+ex:Mosset
+    rdf:type ex:city ;
+    ex:area 71.93 ;
+    ex:name "Mosset" .
+ex:Héric
+    rdf:type ex:city ;
+    ex:area 73.93 ;
+    ex:name "Héric" .
+ex:Auberive
+    rdf:type ex:city ;
+    ex:area 70.64 ;
+    ex:name "Auberive" .
+ex:Saint_Gervais_les_Bains
+    rdf:type ex:city ;
+    ex:area 63.63 ;
+    ex:name "Saint-Gervais-les-Bains" .
+ex:Eyguières
+    rdf:type ex:city ;
+    ex:area 68.75 ;
+    ex:name "Eyguières" .
+ex:Poligny
+    rdf:type ex:city ;
+    ex:area 50.22 ;
+    ex:name "Poligny" .
+ex:Sainte_Anne
+    rdf:type ex:city ;
+    ex:area 80.29 ;
+    ex:name "Sainte-Anne" .
+ex:Prévenchères
+    rdf:type ex:city ;
+    ex:area 62.75 ;
+    ex:name "Prévenchères" .
+ex:Saint_Jean_de_Sauves
+    rdf:type ex:city ;
+    ex:area 56.58 ;
+    ex:name "Saint-Jean-de-Sauves" .
+ex:Missillac
+    rdf:type ex:city ;
+    ex:area 59.55 ;
+    ex:name "Missillac" .
+ex:Valmeinier
+    rdf:type ex:city ;
+    ex:area 54.26 ;
+    ex:name "Valmeinier" .
+ex:Mérens_les_Vals
+    rdf:type ex:city ;
+    ex:area 80.12 ;
+    ex:name "Mérens-les-Vals" .
+ex:Saint_Philippe
+    rdf:type ex:city ;
+    ex:area 153.94 ;
+    ex:name "Saint-Philippe" .
+ex:Rosis
+    rdf:type ex:city ;
+    ex:area 52.91 ;
+    ex:name "Rosis" .
+ex:Le_Vigeant
+    rdf:type ex:city ;
+    ex:area 64.36 ;
+    ex:name "Le Vigeant" .
+ex:Autun
+    rdf:type ex:city ;
+    ex:area 61.52 ;
+    ex:name "Autun" .
+ex:Tarascon
+    rdf:type ex:city ;
+    ex:area 73.97 ;
+    ex:name "Tarascon" .
+ex:Cervon
+    rdf:type ex:city ;
+    ex:area 54.06 ;
+    ex:name "Cervon" .
+ex:Agde
+    rdf:type ex:city ;
+    ex:area 50.81 ;
+    ex:name "Agde" .
+ex:Le_Val_d_Ajol
+    rdf:type ex:city ;
+    ex:area 73.33 ;
+    ex:name "Le Val-d'Ajol" .
+ex:Hyères
+    rdf:type ex:city ;
+    ex:area 132.38 ;
+    ex:name "Hyères" .
+ex:Martigues
+    rdf:type ex:city ;
+    ex:area 71.44 ;
+    ex:name "Martigues" .
+ex:Piney
+    rdf:type ex:city ;
+    ex:area 70.98 ;
+    ex:name "Piney" .
+ex:Tende
+    rdf:type ex:city ;
+    ex:area 177.47 ;
+    ex:name "Tende" .
+ex:Bagnères_de_Luchon
+    rdf:type ex:city ;
+    ex:area 52.8 ;
+    ex:name "Bagnères-de-Luchon" .
+ex:Porto_Vecchio
+    rdf:type ex:city ;
+    ex:area 168.65 ;
+    ex:name "Porto-Vecchio" .
+ex:Sousceyrac
+    rdf:type ex:city ;
+    ex:area 57.64 ;
+    ex:name "Sousceyrac" .
+ex:Moisdon_la_Rivière
+    rdf:type ex:city ;
+    ex:area 50.43 ;
+    ex:name "Moisdon-la-Rivière" .
+ex:Castelnau_Pégayrols
+    rdf:type ex:city ;
+    ex:area 53.01 ;
+    ex:name "Castelnau-Pégayrols" .
+ex:Villedieu_sur_Indre
+    rdf:type ex:city ;
+    ex:area 57.77 ;
+    ex:name "Villedieu-sur-Indre" .
+ex:Le_Grand_Bornand
+    rdf:type ex:city ;
+    ex:area 61.42 ;
+    ex:name "Le Grand-Bornand" .
+ex:Argent_sur_Sauldre
+    rdf:type ex:city ;
+    ex:area 67.35 ;
+    ex:name "Argent-sur-Sauldre" .
+ex:La_Brigue
+    rdf:type ex:city ;
+    ex:area 91.77 ;
+    ex:name "La Brigue" .
+ex:Pleaux
+    rdf:type ex:city ;
+    ex:area 92.39 ;
+    ex:name "Pleaux" .
+ex:Isigny_sur_Mer
+    rdf:type ex:city ;
+    ex:area 61.44 ;
+    ex:name "Isigny-sur-Mer" .
+ex:Saint_Martin_de_Belleville
+    rdf:type ex:city ;
+    ex:area 161.79 ;
+    ex:name "Saint-Martin-de-Belleville" .
+ex:Hauteville_Lompnes
+    rdf:type ex:city ;
+    ex:area 50.34 ;
+    ex:name "Hauteville-Lompnes" .
+ex:Aubigny_sur_Nère
+    rdf:type ex:city ;
+    ex:area 61.53 ;
+    ex:name "Aubigny-sur-Nère" .
+ex:Ceillac
+    rdf:type ex:city ;
+    ex:area 96.05 ;
+    ex:name "Ceillac" .
+ex:Passy
+    rdf:type ex:city ;
+    ex:ex:area 80.03 ;
+    ex:name "Passy" .
+ex:Montsinéry_Tonnegrande
+    rdf:type ex:city ;
+    ex:area 60.0 ;
+    ex:name "Montsinéry-Tonnegrande" .
+ex:Meymac
+    rdf:type ex:city ;
+    ex:area 87.15 ;
+    ex:name "Meymac" .
+ex:Saint_Gilles
+    rdf:type ex:city ;
+    ex:area 153.73 ;
+    ex:name "Saint-Gilles" .
+ex:Anse_Bertrand
+    rdf:type ex:city ;
+    ex:area 62.5 ;
+    ex:name "Anse-Bertrand" .
+ex:La_Forêt_sur_Sèvre
+    rdf:type ex:city ;
+    ex:area 55.94 ;
+    ex:name "La Forêt-sur-Sèvre" .
+ex:Airvault
+    rdf:type ex:city ;
+    ex:area 63.88 ;
+    ex:name "Airvault" .
+ex:Corscia
+    rdf:type ex:city ;
+    ex:area 58.99 ;
+    ex:name "Corscia" .
+ex:Saint_Médard_en_Jalles
+    rdf:type ex:city ;
+    ex:area 85.28 ;
+    ex:name "Saint-Médard-en-Jalles" .
+ex:Lamballe
+    rdf:type ex:city ;
+    ex:area 76.29 ;
+    ex:name "Lamballe" .
+ex:Fraisse_sur_Agout
+    rdf:type ex:city ;
+    ex:area 58.46 ;
+    ex:name "Fraisse-sur-Agout" .
+ex:Blancafort
+    rdf:type ex:city ;
+    ex:area 64.35 ;
+    ex:name "Blancafort" .
+ex:Le_Pont_de_Montvert
+    rdf:type ex:city ;
+    ex:area 90.25 ;
+    ex:name "Le Pont-de-Montvert" .
+ex:Arzenc_de_Randon
+    rdf:type ex:city ;
+    ex:area 69.2 ;
+    ex:name "Arzenc-de-Randon" .
+ex:Saint_Étienne_du_Valdonnez
+    rdf:type ex:city ;
+    ex:area 56.09 ;
+    ex:name "Saint-Étienne-du-Valdonnez" .
+ex:Aime
+    rdf:type ex:city ;
+    ex:area 50.74 ;
+    ex:name "Aime" .
+ex:Aire_sur_l_Adour
+    rdf:type ex:city ;
+    ex:area 57.78 ;
+    ex:name "Aire-sur-l'Adour" .
+ex:Bourg_Saint_Maurice
+    rdf:type ex:city ;
+    ex:area 179.07 ;
+    ex:name "Bourg-Saint-Maurice" .
+ex:Velles
+    rdf:type ex:city ;
+    ex:area 63.09 ;
+    ex:name "Velles" .
+ex:Sainte_Enimie
+    rdf:type ex:city ;
+    ex:area 87.34 ;
+    ex:name "Sainte-Enimie" .
+ex:Saint_Genès_Champanelle
+    rdf:type ex:city ;
+    ex:area 51.58 ;
+    ex:name "Saint-Genès-Champanelle" .
+ex:Sainte_Marie
+    rdf:type ex:city ;
+    ex:area 87.21 ;
+    ex:name "Sainte-Marie" .
+ex:Aigues_Mortes
+    rdf:type ex:city ;
+    ex:ex:area 57.78 ;
+    ex:name "Aigues-Mortes" .
+ex:Mauléon
+    rdf:type ex:city ;
+    ex:area 120.64 ;
+    ex:name "Mauléon" .
+ex:Peyrelevade
+    rdf:type ex:city ;
+    ex:area 66.43 ;
+    ex:name "Peyrelevade" .
+ex:Réaup_Lisse
+    rdf:type ex:city ;
+    ex:area 70.89 ;
+    ex:name "Réaup-Lisse" .
+ex:Entraunes
+    rdf:type ex:city ;
+    ex:area 81.45 ;
+    ex:name "Entraunes" .
+ex:Ciron
+    rdf:type ex:city ;
+    ex:area 57.94 ;
+    ex:name "Ciron" .
+ex:Pertuis
+    rdf:type ex:city ;
+    ex:area 66.23 ;
+    ex:name "Pertuis" .
+ex:Saligny_sur_Roudon
+    rdf:type ex:city ;
+    ex:area 57.77 ;
+    ex:name "Saligny-sur-Roudon" .
+ex:Donzy
+    rdf:type ex:city ;
+    ex:area 63.18 ;
+    ex:name "Donzy" .
+ex:La_Plaine_des_Palmistes
+    rdf:type ex:city ;
+    ex:area 83.19 ;
+    ex:name "La Plaine-des-Palmistes" .
+ex:Gréolières
+    rdf:type ex:city ;
+    ex:area 52.67 ;
+    ex:name "Gréolières" .
+ex:Altier
+    rdf:type ex:city ;
+    ex:area 54.45 ;
+    ex:name "Altier" .
+ex:Château_Chervix
+    rdf:type ex:city ;
+    ex:area 51.05 ;
+    ex:name "Château-Chervix" .
+ex:Draguignan
+    rdf:type ex:city ;
+    ex:area 53.75 ;
+    ex:name "Draguignan" .
+ex:Bourbon_l_Archambault
+    rdf:type ex:city ;
+    ex:area 54.84 ;
+    ex:name "Bourbon-l'Archambault" .
+ex:Moustiers_Sainte_Marie
+    rdf:type ex:city ;
+    ex:area 87.97 ;
+    ex:name "Moustiers-Sainte-Marie" .
+ex:Bonnieux
+    rdf:type ex:city ;
+    ex:area 51.12 ;
+    ex:name "Bonnieux" .
+ex:Belin_Béliet
+    rdf:type ex:city ;
+    ex:area 156.03 ;
+    ex:name "Belin-Béliet" .
+ex:Saint_Pée_sur_Nivelle
+    rdf:type ex:city ;
+    ex:area 65.08 ;
+    ex:name "Saint-Pée-sur-Nivelle" .
+ex:Figari
+    rdf:type ex:city ;
+    ex:area 100.22 ;
+    ex:name "Figari" .
+ex:Chaumont
+    rdf:type ex:city ;
+    ex:area 55.26 ;
+    ex:name "Chaumont" .
+ex:Allons
+    rdf:type ex:city ;
+    ex:area 76.33 ;
+    ex:name "Allons" .
+ex:Usson_du_Poitou
+    rdf:type ex:city ;
+    ex:area 72.64 ;
+    ex:name "Usson-du-Poitou" .
+ex:Les_Herbiers
+    rdf:type ex:city ;
+    ex:area 88.78 ;
+    ex:name "Les Herbiers" .
+ex:Termignon
+    rdf:type ex:city ;
+    ex:area 149.03 ;
+    ex:name "Termignon" .
+ex:Saint_Léonard_de_Noblat
+    rdf:type ex:city ;
+    ex:area 55.59 ;
+    ex:name "Saint-Léonard-de-Noblat" .
+ex:Ménétréol_sur_Sauldre
+    rdf:type ex:city ;
+    ex:area 50.08 ;
+    ex:name "Ménétréol-sur-Sauldre" .
+ex:Lançon_Provence
+    rdf:type ex:city ;
+    ex:area 68.92 ;
+    ex:name "Lançon-Provence" .
+ex:Couleuvre
+    rdf:type ex:city ;
+    ex:area 53.83 ;
+    ex:name "Couleuvre" .
+ex:Vernou_en_Sologne
+    rdf:type ex:city ;
+    ex:area 51.31 ;
+    ex:name "Vernou-en-Sologne" .
+ex:Hasparren
+    rdf:type ex:city ;
+    ex:area 77.01 ;
+    ex:name "Hasparren" .
+ex:Porta
+    rdf:type ex:city ;
+    ex:area 65.19 ;
+    ex:name "Porta" .
+ex:Buzançais
+    rdf:type ex:city ;
+    ex:area 58.64 ;
+    ex:name "Buzançais" .
+ex:Pralognan_la_Vanoise
+    rdf:type ex:city ;
+    ex:area 88.57 ;
+    ex:name "Pralognan-la-Vanoise" .
+ex:Lecumberry
+    rdf:type ex:city ;
+    ex:area 58.09 ;
+    ex:name "Lecumberry" .
+ex:Urrugne
+    rdf:type ex:city ;
+    ex:area 50.57 ;
+    ex:name "Urrugne" .
+ex:Saumur
+    rdf:type ex:city ;
+    ex:area 66.25 ;
+    ex:name "Saumur" .
+ex:Briec
+    rdf:type ex:city ;
+    ex:area 67.87 ;
+    ex:name "Briec" .
+ex:Beaulon
+    rdf:type ex:city ;
+    ex:area 63.98 ;
+    ex:name "Beaulon" .
+ex:Chasseradès
+    rdf:type ex:city ;
+    ex:area 61.93 ;
+    ex:name "Chasseradès" .
+ex:Saint_Alban_sur_Limagnole
+    rdf:type ex:city ;
+    ex:area 51.23 ;
+    ex:name "Saint-Alban-sur-Limagnole" .
+ex:Nasbinals
+    rdf:type ex:city ;
+    ex:area 63.34 ;
+    ex:name "Nasbinals" .
+ex:San_Gavino_di_Tenda
+    rdf:type ex:city ;
+    ex:area 50.44 ;
+    ex:name "San-Gavino-di-Tenda" .
+ex:Chichilianne
+    rdf:type ex:city ;
+    ex:area 62.48 ;
+    ex:name "Chichilianne" .
+ex:Trensacq
+    rdf:type ex:city ;
+    ex:area 79.25 ;
+    ex:name "Trensacq" .
+ex:Lavau
+    rdf:type ex:city ;
+    ex:area 55.06 ;
+    ex:name "Lavau" .
+ex:Vico
+    rdf:type ex:city ;
+    ex:area 52.13 ;
+    ex:name "Vico" .
+ex:Puylaurens
+    rdf:type ex:city ;
+    ex:ex:area 81.82 ;
+    ex:name "Puylaurens" .
+ex:Treigny
+    rdf:type ex:city ;
+    ex:area 52.7 ;
+    ex:name "Treigny" .
+ex:Châteauvillain
+    rdf:type ex:city ;
+    ex:area 106.37 ;
+    ex:name "Châteauvillain" .
+ex:Gramat
+    rdf:type ex:city ;
+    ex:area 57.07 ;
+    ex:name "Gramat" .
+ex:Aizenay
+    rdf:type ex:city ;
+    ex:area 81.06 ;
+    ex:name "Aizenay" .
+ex:Estaing
+    rdf:type ex:city ;
+    ex:area 71.53 ;
+    ex:name "Estaing" .
+ex:Moltifao
+    rdf:type ex:city ;
+    ex:area 55.19 ;
+    ex:name "Moltifao" .
+ex:La_Roche_Chalais
+    rdf:type ex:city ;
+    ex:area 89.4 ;
+    ex:name "La Roche-Chalais" .
+ex:Trigance
+    rdf:type ex:city ;
+    ex:area 60.6 ;
+    ex:name "Trigance" .
+ex:Saint_Mamet_la_Salvetat
+    rdf:type ex:city ;
+    ex:area 51.49 ;
+    ex:name "Saint-Mamet-la-Salvetat" .
+ex:Fos_sur_Mer
+    rdf:type ex:city ;
+    ex:area 92.31 ;
+    ex:name "Fos-sur-Mer" .
+ex:Quenza
+    rdf:type ex:city ;
+    ex:area 95.67 ;
+    ex:name "Quenza" .
+ex:Le_Cannet_des_Maures
+    rdf:type ex:city ;
+    ex:area 73.64 ;
+    ex:name "Le Cannet-des-Maures" .
+ex:Manso
+    rdf:type ex:city ;
+    ex:area 121.02 ;
+    ex:name "Manso" .
+ex:Treschenu_Creyers
+    rdf:type ex:city ;
+    ex:area 82.04 ;
+    ex:name "Treschenu-Creyers" .
+ex:Sillars
+    rdf:type ex:city ;
+    ex:area 60.79 ;
+    ex:name "Sillars" .
+ex:Commensacq
+    rdf:type ex:city ;
+    ex:area 71.24 ;
+    ex:name "Commensacq" .
+ex:Ygrande
+    rdf:type ex:city ;
+    ex:area 52.71 ;
+    ex:name "Ygrande" .
+ex:Tautavel
+    rdf:type ex:city ;
+    ex:area 53.47 ;
+    ex:name "Tautavel" .
+ex:Gondrecourt_le_Château
+    rdf:type ex:city ;
+    ex:area 51.33 ;
+    ex:name "Gondrecourt-le-Château" .
+ex:Venaco
+    rdf:type ex:city ;
+    ex:area 53.72 ;
+    ex:name "Venaco" .
+ex:Champs_sur_Tarentaine_Marchal
+    rdf:type ex:city ;
+    ex:area 60.32 ;
+    ex:name "Champs-sur-Tarentaine-Marchal" .
+ex:La_Possession
+    rdf:type ex:city ;
+    ex:area 118.35 ;
+    ex:name "La Possession" .
+ex:Égliseneuve_d_Entraigues
+    rdf:type ex:city ;
+    ex:area 56.43 ;
+    ex:name "Égliseneuve-d'Entraigues" .
+ex:Piana
+    rdf:type ex:city ;
+    ex:area 62.63 ;
+    ex:name "Piana" .
+ex:Peisey_Nancroix
+    rdf:type ex:city ;
+    ex:area 70.64 ;
+    ex:name "Peisey-Nancroix" .
+ex:Saint_Pierre
+    rdf:type ex:city ;
+    ex:area 95.99 ;
+    ex:name "Saint-Pierre" .
+ex:Lisle_sur_Tarn
+    rdf:type ex:city ;
+    ex:area 86.56 ;
+    ex:name "Lisle-sur-Tarn" .
+ex:Aups
+    rdf:type ex:city ;
+    ex:area 64.15 ;
+    ex:name "Aups" .
+ex:Chauvigny
+    rdf:type ex:city ;
+    ex:area 95.82 ;
+    ex:name "Chauvigny" .
+ex:Salbris
+    rdf:type ex:city ;
+    ex:area 106.61 ;
+    ex:name "Salbris" .
+ex:Collobrières
+    rdf:type ex:city ;
+    ex:area 112.68 ;
+    ex:name "Collobrières" .
+ex:Le_Lorrain
+    rdf:type ex:city ;
+    ex:area 50.33 ;
+    ex:name "Le Lorrain" .
+ex:Riaillé
+    rdf:type ex:city ;
+    ex:area 50.02 ;
+    ex:name "Riaillé" .
+ex:Neuvéglise
+    rdf:type ex:city ;
+    ex:area 54.7 ;
+    ex:name "Neuvéglise" .
+ex:Riotord
+    rdf:type ex:city ;
+    ex:area 51.88 ;
+    ex:name "Riotord" .
+ex:Salles_la_Source
+    rdf:type ex:city ;
+    ex:area 78.03 ;
+    ex:name "Salles-la-Source" .
+ex:Sainte_Foy_Tarentaise
+    rdf:type ex:city ;
+    ex:area 100.15 ;
+    ex:name "Sainte-Foy-Tarentaise" .
+ex:Sotta
+    rdf:type ex:city ;
+    ex:area 66.5 ;
+    ex:name "Sotta" .
+ex:Saint_Urcize
+    rdf:type ex:city ;
+    ex:area 54.3 ;
+    ex:name "Saint-Urcize" .
+ex:Pontlevoy
+    rdf:type ex:city ;
+    ex:area 51.12 ;
+    ex:name "Pontlevoy" .
+ex:Olmi_Cappella
+    rdf:type ex:city ;
+    ex:area 51.1 ;
+    ex:name "Olmi-Cappella" .
+ex:Allauch
+    rdf:type ex:city ;
+    ex:area 50.3 ;
+    ex:name "Allauch" .
+ex:Hornoy_le_Bourg
+    rdf:type ex:city ;
+    ex:area 51.23 ;
+    ex:name "Hornoy-le-Bourg" .
+ex:Bozouls
+    rdf:type ex:city ;
+    ex:area 69.69 ;
+    ex:name "Bozouls" .
+ex:Vigneux_de_Bretagne
+    rdf:type ex:city ;
+    ex:area 54.68 ;
+    ex:name "Vigneux-de-Bretagne" .
+ex:Linguizzetta
+    rdf:type ex:city ;
+    ex:area 64.79 ;
+    ex:name "Linguizzetta" .
+ex:Sainte_Maxime
+    rdf:type ex:city ;
+    ex:area 81.61 ;
+    ex:name "Sainte-Maxime" .
+ex:Sainte_Engrâce
+    rdf:type ex:city ;
+    ex:area 72.69 ;
+    ex:name "Sainte-Engrâce" .
+ex:Santo_Pietro_di_Tenda
+    rdf:type ex:city ;
+    ex:area 125.66 ;
+    ex:name "Santo-Pietro-di-Tenda" .
+ex:Marseillan
+    rdf:type ex:city ;
+    ex:area 51.71 ;
+    ex:name "Marseillan" .
+ex:Névache
+    rdf:type ex:city ;
+    ex:area 191.93 ;
+    ex:name "Névache" .
+ex:Aiguines
+    rdf:type ex:city ;
+    ex:area 114.33 ;
+    ex:name "Aiguines" .
+ex:Saverdun
+    rdf:type ex:city ;
+    ex:area 61.47 ;
+    ex:name "Saverdun" .
+ex:Senonches
+    rdf:type ex:city ;
+    ex:area 62.48 ;
+    ex:name "Senonches" .
+ex:Ugine
+    rdf:type ex:city ;
+    ex:area 57.36 ;
+    ex:name "Ugine" .
+ex:Sisteron
+    rdf:type ex:city ;
+    ex:area 50.25 ;
+    ex:name "Sisteron" .
+ex:Grandrieu
+    rdf:type ex:city ;
+    ex:area 65.37 ;
+    ex:name "Grandrieu" .
+ex:Port_Saint_Louis_du_Rhône
+    rdf:type ex:city ;
+    ex:area 73.38 ;
+    ex:name "Port-Saint-Louis-du-Rhône" .
+ex:Presly
+    rdf:type ex:city ;
+    ex:area 74.63 ;
+    ex:name "Presly" .
+ex:Bonneval_sur_Arc
+    rdf:type ex:city ;
+    ex:area 82.72 ;
+    ex:name "Bonneval-sur-Arc" .
+ex:Éclaron_Braucourt_Sainte_Livière
+    rdf:type ex:city ;
+    ex:area 54.24 ;
+    ex:name "Éclaron-Braucourt-Sainte-Livière" .
+ex:Vauvert
+    rdf:type ex:city ;
+    ex:area 109.86 ;
+    ex:name "Vauvert" .
+ex:Eauze
+    rdf:type ex:city ;
+    ex:area 69.86 ;
+    ex:name "Eauze" .
+ex:Calenzana
+    rdf:type ex:city ;
+    ex:area 182.77 ;
+    ex:name "Calenzana" .
+ex:Saumos
+    rdf:type ex:city ;
+    ex:area 57.65 ;
+    ex:name "Saumos" .
+ex:Loché_sur_Indrois
+    rdf:type ex:city ;
+    ex:area 74.13 ;
+    ex:name "Loché-sur-Indrois" .
+ex:Gréoux_les_Bains
+    rdf:type ex:city ;
+    ex:area 69.46 ;
+    ex:name "Gréoux-les-Bains" .
+ex:Saint_Savin
+    rdf:type ex:city ;
+    ex:area 147.77 ;
+    ex:name "Saint-Savin" .
+ex:Frossay
+    rdf:type ex:city ;
+    ex:area 57.22 ;
+    ex:name "Frossay" .
+ex:Benet
+    rdf:type ex:city ;
+    ex:area 50.01 ;
+    ex:name "Benet" .
+ex:Osani
+    rdf:type ex:city ;
+    ex:area 51.53 ;
+    ex:name "Osani" .
+ex:L_Isle_Jourdain
+    rdf:type ex:city ;
+    ex:ex:area 70.48 ;
+    ex:name "L'Isle-Jourdain" .
+ex:Villard_de_Lans
+    rdf:type ex:city ;
+    ex:area 67.2 ;
+    ex:name "Villard-de-Lans" .
+ex:Le_Temple
+    rdf:type ex:city ;
+    ex:area 71.83 ;
+    ex:name "Le Temple" .
+ex:Avessac
+    rdf:type ex:city ;
+    ex:area 76.49 ;
+    ex:name "Avessac" .
+ex:Bras_Panon
+    rdf:type ex:city ;
+    ex:area 88.55 ;
+    ex:name "Bras-Panon" .
+ex:Sainte_Hélène
+    rdf:type ex:city ;
+    ex:area 127.87 ;
+    ex:name "Sainte-Hélène" .
+ex:La_Garde_Freinet
+    rdf:type ex:city ;
+    ex:area 76.64 ;
+    ex:name "La Garde-Freinet" .
+ex:Bossay_sur_Claise
+    rdf:type ex:city ;
+    ex:area 65.56 ;
+    ex:name "Bossay-sur-Claise" .
+ex:Saint_Christophe_en_Oisans
+    rdf:type ex:city ;
+    ex:area 123.5 ;
+    ex:name "Saint-Christophe-en-Oisans" .
+ex:Lorgues
+    rdf:type ex:city ;
+    ex:area 64.37 ;
+    ex:name "Lorgues" .
+ex:Bessans
+    rdf:type ex:city ;
+    ex:area 128.08 ;
+    ex:name "Bessans" .
+ex:Saint_Colomban_des_Villards
+    rdf:type ex:city ;
+    ex:area 81.12 ;
+    ex:name "Saint-Colomban-des-Villards" .
+ex:Samoëns
+    rdf:type ex:city ;
+    ex:area 97.29 ;
+    ex:name "Samoëns" .
+ex:Chaudes_Aigues
+    rdf:type ex:city ;
+    ex:area 53.16 ;
+    ex:name "Chaudes-Aigues" .
+ex:Saint_Bon_Tarentaise
+    rdf:type ex:city ;
+    ex:area 58.94 ;
+    ex:name "Saint-Bon-Tarentaise" .
+ex:Bormes_les_Mimosas
+    rdf:type ex:city ;
+    ex:area 97.32 ;
+    ex:name "Bormes-les-Mimosas" .
+ex:Le_Porge
+    rdf:type ex:city ;
+    ex:area 149.03 ;
+    ex:name "Le Porge" .
+ex:Saint_Anthème
+    rdf:type ex:city ;
+    ex:area 68.89 ;
+    ex:name "Saint-Anthème" .
+ex:Angoustrine_Villeneuve_des_Escaldes
+    rdf:type ex:city ;
+    ex:area 87.87 ;
+    ex:name "Angoustrine-Villeneuve-des-Escaldes" .
+ex:Saint_Jean_de_Belleville
+    rdf:type ex:city ;
+    ex:area 59.6 ;
+    ex:name "Saint-Jean-de-Belleville" .
+ex:Thorame_Basse
+    rdf:type ex:city ;
+    ex:area 97.72 ;
+    ex:name "Thorame-Basse" .
+ex:Herbignac
+    rdf:type ex:city ;
+    ex:area 71.43 ;
+    ex:name "Herbignac" .
+ex:Vebron
+    rdf:type ex:city ;
+    ex:area 69.66 ;
+    ex:name "Vebron" .
+ex:Bouvante
+    rdf:type ex:city ;
+    ex:area 83.88 ;
+    ex:name "Bouvante" .
+ex:Vihiers
+    rdf:type ex:city ;
+    ex:area 59.7 ;
+    ex:name "Vihiers" .
+ex:Erbray
+    rdf:type ex:city ;
+    ex:area 58.18 ;
+    ex:name "Erbray" .
+ex:Saugnacq_et_Muret
+    rdf:type ex:city ;
+    ex:area 109.37 ;
+    ex:name "Saugnacq-et-Muret" .
+ex:Belvédère
+    rdf:type ex:city ;
+    ex:area 75.41 ;
+    ex:name "Belvédère" .
+ex:Perceneige
+    rdf:type ex:city ;
+    ex:area 60.99 ;
+    ex:name "Perceneige" .
+ex:Anost
+    rdf:type ex:city ;
+    ex:area 51.91 ;
+    ex:name "Anost" .
+ex:Petit_Canal
+    rdf:type ex:city ;
+    ex:area 70.5 ;
+    ex:name "Petit-Canal" .
+ex:Pornic
+    rdf:type ex:city ;
+    ex:area 94.18 ;
+    ex:name "Pornic" .
+ex:Lanslebourg_Mont_Cenis
+    rdf:type ex:city ;
+    ex:ex:area 93.61 ;
+    ex:name "Lanslebourg-Mont-Cenis" .
+ex:Sixt_Fer_à_Cheval
+    rdf:type ex:city ;
+    ex:area 119.07 ;
+    ex:name "Sixt-Fer-à-Cheval" .
+ex:Houeillès
+    rdf:type ex:city ;
+    ex:area 67.63 ;
+    ex:name "Houeillès" .
+ex:Vivario
+    rdf:type ex:city ;
+    ex:area 79.28 ;
+    ex:name "Vivario" .
+ex:Saugues
+    rdf:type ex:city ;
+    ex:area 78.8 ;
+    ex:name "Saugues" .
+ex:Saint_Agnan_en_Vercors
+    rdf:type ex:city ;
+    ex:area 84.21 ;
+    ex:name "Saint-Agnan-en-Vercors" .
+ex:Retjons
+    rdf:type ex:city ;
+    ex:area 77.84 ;
+    ex:name "Retjons" .
+ex:Paulinet
+    rdf:type ex:city ;
+    ex:area 73.75 ;
+    ex:name "Paulinet" .
+ex:Orelle
+    rdf:type ex:city ;
+    ex:area 69.25 ;
+    ex:name "Orelle" .
+ex:Saint_Étienne_en_Dévoluy
+    rdf:type ex:city ;
+    ex:area 67.87 ;
+    ex:name "Saint-Étienne-en-Dévoluy" .
+ex:Nozay
+    rdf:type ex:city ;
+    ex:area 57.7 ;
+    ex:name "Nozay" .
+ex:Genillé
+    rdf:type ex:city ;
+    ex:area 63.12 ;
+    ex:name "Genillé" .
+ex:Verrières
+    rdf:type ex:city ;
+    ex:area 53.01 ;
+    ex:name "Verrières" .
+ex:Sévérac_le_Château
+    rdf:type ex:city ;
+    ex:area 108.42 ;
+    ex:name "Sévérac-le-Château" .
+ex:Saint_Chély_d_Aubrac
+    rdf:type ex:city ;
+    ex:area 78.65 ;
+    ex:name "Saint-Chély-d'Aubrac" .
+ex:Conca
+    rdf:type ex:city ;
+    ex:area 77.96 ;
+    ex:name "Conca" .
+ex:Saint_Épain
+    rdf:type ex:city ;
+    ex:area 62.65 ;
+    ex:name "Saint-Épain" .
+ex:Azat_le_Ris
+    rdf:type ex:city ;
+    ex:area 56.22 ;
+    ex:name "Azat-le-Ris" .
+ex:Fay_de_Bretagne
+    rdf:type ex:city ;
+    ex:area 64.81 ;
+    ex:name "Fay-de-Bretagne" .
+ex:Rosnay
+    rdf:type ex:city ;
+    ex:area 59.03 ;
+    ex:name "Rosnay" .
+ex:Sancoins
+    rdf:type ex:city ;
+    ex:area 53.52 ;
+    ex:name "Sancoins" .
+ex:Saint_Ours
+    rdf:type ex:city ;
+    ex:area 55.64 ;
+    ex:name "Saint-Ours" .
+ex:Bastelica
+    rdf:type ex:city ;
+    ex:area 127.69 ;
+    ex:name "Bastelica" .
+ex:Isigny_le_Buat
+    rdf:type ex:city ;
+    ex:area 73.31 ;
+    ex:name "Isigny-le-Buat" .
+ex:Bourgneuf_en_Retz
+    rdf:type ex:city ;
+    ex:area 53.19 ;
+    ex:name "Bourgneuf-en-Retz" .
+ex:Seillans
+    rdf:type ex:city ;
+    ex:area 88.66 ;
+    ex:name "Seillans" .
+ex:Awala_Yalimapo
+    rdf:type ex:city ;
+    ex:area 187.4 ;
+    ex:name "Awala-Yalimapo" .
+ex:Nueil_les_Aubiers
+    rdf:type ex:city ;
+    ex:area 98.83 ;
+    ex:name "Nueil-les-Aubiers" .
+ex:Champlitte
+    rdf:type ex:city ;
+    ex:area 128.9 ;
+    ex:name "Champlitte" .
+ex:Peyrat_le_Château
+    rdf:type ex:city ;
+    ex:area 52.96 ;
+    ex:name "Peyrat-le-Château" .
+ex:Longué_Jumelles
+    rdf:type ex:city ;
+    ex:area 96.2 ;
+    ex:name "Longué-Jumelles" .
+ex:Rians
+    rdf:type ex:city ;
+    ex:area 96.87 ;
+    ex:name "Rians" .
+ex:Tence
+    rdf:type ex:city ;
+    ex:area 52.12 ;
+    ex:name "Tence" .
+ex:Saint_Maurice_sur_Aveyron
+    rdf:type ex:city ;
+    ex:area 53.76 ;
+    ex:name "Saint-Maurice-sur-Aveyron" .
+ex:Bourbon_Lancy
+    rdf:type ex:city ;
+    ex:area 55.73 ;
+    ex:name "Bourbon-Lancy" .
+ex:Saint_Félix_Lauragais
+    rdf:type ex:city ;
+    ex:area 51.88 ;
+    ex:name "Saint-Félix-Lauragais" .
+ex:Durtal
+    rdf:type ex:city ;
+    ex:area 60.58 ;
+    ex:name "Durtal" .
+ex:Saint_Martin_de_Crau
+    rdf:type ex:city ;
+    ex:area 214.87 ;
+    ex:name "Saint-Martin-de-Crau" .
+ex:Fère_Champenoise
+    rdf:type ex:city ;
+    ex:area 65.89 ;
+    ex:name "Fère-Champenoise" .
+ex:Le_Muy
+    rdf:type ex:city ;
+    ex:area 66.58 ;
+    ex:name "Le Muy" .
+ex:La_Bresse
+    rdf:type ex:city ;
+    ex:area 57.94 ;
+    ex:name "La Bresse" .
+ex:Campan
+    rdf:type ex:city ;
+    ex:area 95.36 ;
+    ex:name "Campan" .
+ex:Signes
+    rdf:type ex:city ;
+    ex:area 133.1 ;
+    ex:name "Signes" .
+ex:Salses_le_Château
+    rdf:type ex:city ;
+    ex:area 71.28 ;
+    ex:name "Salses-le-Château" .
+ex:Vatteville_la_Rue
+    rdf:type ex:city ;
+    ex:area 51.14 ;
+    ex:name "Vatteville-la-Rue" .
+ex:Castelnau_de_Montmiral
+    rdf:type ex:city ;
+    ex:area 88.81 ;
+    ex:name "Castelnau-de-Montmiral" .
+ex:Matoury
+    rdf:type ex:city ;
+    ex:area 137.19 ;
+    ex:name "Matoury" .
+ex:Tanneron
+    rdf:type ex:city ;
+    ex:area 52.78 ;
+    ex:name "Tanneron" .
+ex:Saint_Jean_de_Monts
+    rdf:type ex:city ;
+    ex:area 61.72 ;
+    ex:name "Saint-Jean-de-Monts" .
+ex:Prats_de_Mollo_la_Preste
+    rdf:type ex:city ;
+    ex:area 145.09 ;
+    ex:name "Prats-de-Mollo-la-Preste" .
+ex:Pontchâteau
+    rdf:type ex:city ;
+    ex:area 55.79 ;
+    ex:name "Pontchâteau" .
+ex:Talmont_Saint_Hilaire
+    rdf:type ex:city ;
+    ex:area 89.53 ;
+    ex:name "Talmont-Saint-Hilaire" .
+ex:Tourves
+    rdf:type ex:city ;
+    ex:area 65.62 ;
+    ex:name "Tourves" .
+ex:Saint_Affrique
+    rdf:type ex:city ;
+    ex:area 110.96 ;
+    ex:name "Saint-Affrique" .
+ex:Saint_Julien
+    rdf:type ex:city ;
+    ex:area 75.88 ;
+    ex:name "Saint-Julien" .
+ex:Vauvenargues
+    rdf:type ex:city ;
+    ex:area 54.31 ;
+    ex:name "Vauvenargues" .
+ex:Vendeuvre_sur_Barse
+    rdf:type ex:city ;
+    ex:area 51.94 ;
+    ex:name "Vendeuvre-sur-Barse" .
+ex:Nort_sur_Erdre
+    rdf:type ex:city ;
+    ex:area 66.56 ;
+    ex:name "Nort-sur-Erdre" .
+ex:Saint_Laurent_Nouan
+    rdf:type ex:city ;
+    ex:ex:area 60.98 ;
+    ex:name "Saint-Laurent-Nouan" .
+ex:Pourrières
+    rdf:type ex:city ;
+    ex:area 56.32 ;
+    ex:name "Pourrières" .
+ex:Issy_l_Évêque
+    rdf:type ex:city ;
+    ex:area 71.13 ;
+    ex:name "Issy-l'Évêque" .
+ex:Dun_sur_Auron
+    rdf:type ex:city ;
+    ex:area 50.09 ;
+    ex:name "Dun-sur-Auron" .
+ex:Monein
+    rdf:type ex:city ;
+    ex:area 80.84 ;
+    ex:name "Monein" .
+ex:Saint_Vallier_de_Thiey
+    rdf:type ex:city ;
+    ex:area 50.68 ;
+    ex:name "Saint-Vallier-de-Thiey" .
+ex:Le_Moule
+    rdf:type ex:city ;
+    ex:area 82.84 ;
+    ex:name "Le Moule" .
+ex:Valloire
+    rdf:type ex:city ;
+    ex:area 137.48 ;
+    ex:name "Valloire" .
+ex:Borce
+    rdf:type ex:city ;
+    ex:area 58.05 ;
+    ex:name "Borce" .
+ex:Pierrefeu_du_Var
+    rdf:type ex:city ;
+    ex:area 58.36 ;
+    ex:name "Pierrefeu-du-Var" .
+ex:Thônes
+    rdf:type ex:city ;
+    ex:area 52.33 ;
+    ex:name "Thônes" .
+ex:Saint_Maurice_Navacelles
+    rdf:type ex:city ;
+    ex:area 68.6 ;
+    ex:name "Saint-Maurice-Navacelles" .
+ex:La_Roche_en_Brenil
+    rdf:type ex:city ;
+    ex:area 50.85 ;
+    ex:name "La Roche-en-Brenil" .
+ex:Arfeuilles
+    rdf:type ex:city ;
+    ex:area 59.56 ;
+    ex:name "Arfeuilles" .
+ex:Saint_Plaisir
+    rdf:type ex:city ;
+    ex:area 52.54 ;
+    ex:name "Saint-Plaisir" .
+ex:Le_Petit_Bornand_les_Glières
+    rdf:type ex:city ;
+    ex:area 53.42 ;
+    ex:name "Le Petit-Bornand-les-Glières" .
+ex:Glomel
+    rdf:type ex:city ;
+    ex:area 79.93 ;
+    ex:name "Glomel" .
+ex:Saint_Symphorien
+    rdf:type ex:city ;
+    ex:area 106.29 ;
+    ex:name "Saint-Symphorien" .
+ex:Thorens_Glières
+    rdf:type ex:city ;
+    ex:area 63.05 ;
+    ex:name "Thorens-Glières" .
+ex:Allos
+    rdf:type ex:city ;
+    ex:area 116.65 ;
+    ex:name "Allos" .
+ex:Bourbriac
+    rdf:type ex:city ;
+    ex:area 71.86 ;
+    ex:name "Bourbriac" .
+ex:Andon
+    rdf:type ex:city ;
+    ex:area 54.3 ;
+    ex:name "Andon" .
+ex:Barles
+    rdf:type ex:city ;
+    ex:area 59.05 ;
+    ex:name "Barles" .
+ex:Bayons
+    rdf:type ex:city ;
+    ex:area 125.75 ;
+    ex:name "Bayons" .
+ex:Seyne
+    rdf:type ex:city ;
+    ex:area 84.27 ;
+    ex:name "Seyne" .
+ex:Riec_sur_Bélon
+    rdf:type ex:city ;
+    ex:area 54.64 ;
+    ex:name "Riec-sur-Bélon" .
+ex:Petit_Bourg
+    rdf:type ex:city ;
+    ex:area 129.88 ;
+    ex:name "Petit-Bourg" .
+ex:Saint_Paul_sur_Ubaye
+    rdf:type ex:city ;
+    ex:area 205.55 ;
+    ex:name "Saint-Paul-sur-Ubaye" .
+ex:Sallanches
+    rdf:type ex:city ;
+    ex:area 65.87 ;
+    ex:name "Sallanches" .
+ex:Blieux
+    rdf:type ex:city ;
+    ex:ex:area 56.8 ;
+    ex:name "Blieux" .
+ex:Hostens
+    rdf:type ex:city ;
+    ex:area 57.64 ;
+    ex:name "Hostens" .
+ex:Guémené_Penfao
+    rdf:type ex:city ;
+    ex:area 105.51 ;
+    ex:name "Guémené-Penfao" .
+ex:Saint_Maximin_la_Sainte_Baume
+    rdf:type ex:city ;
+    ex:area 64.13 ;
+    ex:name "Saint-Maximin-la-Sainte-Baume" .
+ex:Désaignes
+    rdf:type ex:city ;
+    ex:area 50.72 ;
+    ex:name "Désaignes" .
+ex:La_Condamine_Châtelard
+    rdf:type ex:city ;
+    ex:area 56.08 ;
+    ex:name "La Condamine-Châtelard" .
+ex:Luz_Saint_Sauveur
+    rdf:type ex:city ;
+    ex:area 50.38 ;
+    ex:name "Luz-Saint-Sauveur" .
+ex:Castellet_lès_Sausses
+    rdf:type ex:city ;
+    ex:area 53.91 ;
+    ex:name "Castellet-lès-Sausses" .
+ex:Mas_Saint_Chély
+    rdf:type ex:city ;
+    ex:area 56.81 ;
+    ex:name "Mas-Saint-Chély" .
+ex:Sissonne
+    rdf:type ex:city ;
+    ex:area 53.53 ;
+    ex:name "Sissonne" .
+ex:Lucéram
+    rdf:type ex:city ;
+    ex:area 65.52 ;
+    ex:name "Lucéram" .
+ex:Saint_Laurent_d_Aigouze
+    rdf:type ex:city ;
+    ex:area 89.81 ;
+    ex:name "Saint-Laurent-d'Aigouze" .
+ex:Cossaye
+    rdf:type ex:city ;
+    ex:area 51.17 ;
+    ex:name "Cossaye" .
+ex:Arette
+    rdf:type ex:city ;
+    ex:area 92.23 ;
+    ex:name "Arette" .
+ex:Clumanc
+    rdf:type ex:city ;
+    ex:area 53.68 ;
+    ex:name "Clumanc" .
+ex:Le_Lamentin
+    rdf:type ex:city ;
+    ex:area 62.32 ;
+    ex:name "Le Lamentin" .
+ex:Bussière_Galant
+    rdf:type ex:city ;
+    ex:area 53.86 ;
+    ex:name "Bussière-Galant" .
+ex:Lacaune
+    rdf:type ex:city ;
+    ex:area 91.36 ;
+    ex:name "Lacaune" .
+ex:Saint_Dalmas_le_Selvage
+    rdf:type ex:city ;
+    ex:area 81.03 ;
+    ex:name "Saint-Dalmas-le-Selvage" .
+ex:Brassy
+    rdf:type ex:city ;
+    ex:area 54.15 ;
+    ex:name "Brassy" .
+ex:Morne_à_l_Eau
+    rdf:type ex:city ;
+    ex:area 64.5 ;
+    ex:name "Morne-à-l'Eau" .
+ex:Courtenay
+    rdf:type ex:city ;
+    ex:area 50.13 ;
+    ex:name "Courtenay" .
+ex:Arc_en_Barrois
+    rdf:type ex:city ;
+    ex:area 50.44 ;
+    ex:name "Arc-en-Barrois" .
+ex:Abbaretz
+    rdf:type ex:city ;
+    ex:area 61.76 ;
+    ex:name "Abbaretz" .
+ex:Castelnau_Montratier
+    rdf:type ex:city ;
+    ex:ex:area 72.54 ;
+    ex:name "Castelnau-Montratier" .
+ex:Gavarnie
+    rdf:type ex:city ;
+    ex:area 82.54 ;
+    ex:name "Gavarnie" .
+ex:Rom
+    rdf:type ex:city ;
+    ex:area 52.38 ;
+    ex:name "Rom" .
+ex:Guillaumes
+    rdf:type ex:city ;
+    ex:area 87.02 ;
+    ex:name "Guillaumes" .
+ex:Montech
+    rdf:type ex:city ;
+    ex:area 50.14 ;
+    ex:name "Montech" .
+ex:Vallet
+    rdf:type ex:city ;
+    ex:area 58.96 ;
+    ex:name "Vallet" .
+ex:Cronat
+    rdf:type ex:city ;
+    ex:area 60.62 ;
+    ex:name "Cronat" .
+ex:Noyers_sur_Jabron
+    rdf:type ex:city ;
+    ex:area 56.58 ;
+    ex:name "Noyers-sur-Jabron" .
+ex:Fougerolles
+    rdf:type ex:city ;
+    ex:area 51.12 ;
+    ex:name "Fougerolles" .
+ex:Saint_Magne
+    rdf:type ex:city ;
+    ex:area 82.66 ;
+    ex:name "Saint-Magne" .
+ex:Sainte_Rose
+    rdf:type ex:city ;
+    ex:area 118.6 ;
+    ex:name "Sainte-Rose" .
+ex:Laguiole
+    rdf:type ex:city ;
+    ex:area 63.06 ;
+    ex:name "Laguiole" .
+ex:Macouria
+    rdf:type ex:city ;
+    ex:area 377.5 ;
+    ex:name "Macouria" .
+ex:Lucmau
+    rdf:type ex:city ;
+    ex:area 66.73 ;
+    ex:name "Lucmau" .
+ex:Cilaos
+    rdf:type ex:city ;
+    ex:area 84.4 ;
+    ex:name "Cilaos" .
+ex:Pointe_Noire
+    rdf:type ex:city ;
+    ex:area 59.7 ;
+    ex:name "Pointe-Noire" .
+ex:Simiane_la_Rotonde
+    rdf:type ex:city ;
+    ex:ex:area 67.86 ;
+    ex:name "Simiane-la-Rotonde" .
+ex:Saint_Étienne_de_Tinée
+    rdf:type ex:city ;
+    ex:area 173.81 ;
+    ex:name "Saint-Étienne-de-Tinée" .
+ex:Saint_Jean_d_Illac
+    rdf:type ex:city ;
+    ex:area 120.58 ;
+    ex:name "Saint-Jean-d'Illac" .
+ex:Legé
+    rdf:type ex:city ;
+    ex:area 63.32 ;
+    ex:name "Legé" .
+ex:Saint_Louis
+    rdf:type ex:city ;
+    ex:area 56.28 ;
+    ex:name "Saint-Louis" .
+ex:Glandage
+    rdf:type ex:city ;
+    ex:area 52.11 ;
+    ex:name "Glandage" .
+ex:Castets
+    rdf:type ex:city ;
+    ex:ex:area 90.18 ;
+    ex:name "Castets" .
+ex:Crévoux
+    rdf:type ex:city ;
+    ex:area 56.26 ;
+    ex:name "Crévoux" .
+ex:Hures_la_Parade
+    rdf:type ex:city ;
+    ex:area 88.59 ;
+    ex:name "Hures-la-Parade" .
+ex:Plénée_Jugon
+    rdf:type ex:city ;
+    ex:area 61.36 ;
+    ex:name "Plénée-Jugon" .
+ex:Saorge
+    rdf:type ex:city ;
+    ex:area 86.78 ;
+    ex:name "Saorge" .
+ex:Vieux_Habitants
+    rdf:type ex:city ;
+    ex:area 58.7 ;
+    ex:name "Vieux-Habitants" .
+ex:Liffré
+    rdf:type ex:city ;
+    ex:area 66.86 ;
+    ex:name "Liffré" .
+ex:Roura
+    rdf:type ex:city ;
+    ex:ex:area 3902.5 ;
+    ex:name "Roura" .
+ex:Zonza
+    rdf:type ex:city ;
+    ex:area 134.46 ;
+    ex:name "Zonza" .
+ex:Goyave
+    rdf:type ex:city ;
+    ex:area 59.91 ;
+    ex:name "Goyave" .
+ex:Sion_les_Mines
+    rdf:type ex:city ;
+    ex:area 54.71 ;
+    ex:name "Sion-les-Mines" .
+ex:Préchac
+    rdf:type ex:city ;
+    ex:area 63.87 ;
+    ex:name "Préchac" .
+ex:Ardentes
+    rdf:type ex:city ;
+    ex:area 62.09 ;
+    ex:name "Ardentes" .
+ex:Parentis_en_Born
+    rdf:type ex:city ;
+    ex:area 111.55 ;
+    ex:name "Parentis-en-Born" .
+ex:Capesterre_Belle_Eau
+    rdf:type ex:city ;
+    ex:area 103.3 ;
+    ex:name "Capesterre-Belle-Eau" .
+ex:Maure_de_Bretagne
+    rdf:type ex:city ;
+    ex:area 66.76 ;
+    ex:name "Maure-de-Bretagne" .
+ex:Crots
+    rdf:type ex:city ;
+    ex:area 53.84 ;
+    ex:name "Crots" .
+ex:Arvieux
+    rdf:type ex:city ;
+    ex:area 72.62 ;
+    ex:name "Arvieux" .
+ex:Plédéliac
+    rdf:type ex:city ;
+    ex:ex:area 51.75 ;
+    ex:name "Plédéliac" .
+ex:Uvernet_Fours
+    rdf:type ex:city ;
+    ex:area 135.44 ;
+    ex:name "Uvernet-Fours" .
+ex:Corcoué_sur_Logne
+    rdf:type ex:city ;
+    ex:area 50.39 ;
+    ex:name "Corcoué-sur-Logne" .
+ex:Entre_Deux
+    rdf:type ex:city ;
+    ex:area 66.83 ;
+    ex:name "Entre-Deux" .
+ex:Ancelle
+    rdf:type ex:city ;
+    ex:area 50.66 ;
+    ex:name "Ancelle" .
+ex:Saint_Père_en_Retz
+    rdf:type ex:city ;
+    ex:area 62.72 ;
+    ex:name "Saint-Père-en-Retz" .
+ex:Saint_Saturnin_lès_Apt
+    rdf:type ex:city ;
+    ex:area 75.79 ;
+    ex:name "Saint-Saturnin-lès-Apt" .
+ex:Salazie
+    rdf:type ex:city ;
+    ex:area 103.82 ;
+    ex:name "Salazie" .
+ex:Lamentin
+    rdf:type ex:city ;
+    ex:area 65.6 ;
+    ex:name "Lamentin" .
+ex:Méolans_Revel
+    rdf:type ex:city ;
+    ex:area 127.74 ;
+    ex:name "Méolans-Revel" .
+ex:Louargat
+    rdf:type ex:city ;
+    ex:area 57.23 ;
+    ex:name "Louargat" .
+ex:Château_Ville_Vieille
+    rdf:type ex:city ;
+    ex:area 66.9 ;
+    ex:name "Château-Ville-Vieille" .
+ex:Avène
+    rdf:type ex:city ;
+    ex:area 62.65 ;
+    ex:name "Avène" .
+ex:Sainte_Rose
+    rdf:type ex:city ;
+    ex:area 177.6 ;
+    ex:name "Sainte-Rose" .
+ex:Lubersac
+    rdf:type ex:city ;
+    ex:area 57.46 ;
+    ex:name "Lubersac" .
+ex:Rougé
+    rdf:type ex:city ;
+    ex:area 56.32 ;
+    ex:name "Rougé" .
+ex:Valjouffrey
+    rdf:type ex:city ;
+    ex:area 72.56 ;
+    ex:name "Valjouffrey" .
+ex:Coussac_Bonneval
+    rdf:type ex:city ;
+    ex:area 66.73 ;
+    ex:name "Coussac-Bonneval" .
+ex:Orcières
+    rdf:type ex:city ;
+    ex:area 98.27 ;
+    ex:name "Orcières" .
+ex:Saint_Étienne_de_Montluc
+    rdf:type ex:city ;
+    ex:area 57.57 ;
+    ex:name "Saint-Étienne-de-Montluc" .
+ex:Thorame_Haute
+    rdf:type ex:city ;
+    ex:area 108.35 ;
+    ex:name "Thorame-Haute" .
+ex:Guipry
+    rdf:type ex:city ;
+    ex:area 50.35 ;
+    ex:name "Guipry" .
+ex:Le_Monêtier_les_Bains
+    rdf:type ex:city ;
+    ex:area 97.87 ;
+    ex:name "Le Monêtier-les-Bains" .
+ex:La_Palud_sur_Verdon
+    rdf:type ex:city ;
+    ex:area 81.26 ;
+    ex:name "La Palud-sur-Verdon" .
+ex:Châteauponsac
+    rdf:type ex:city ;
+    ex:area 68.79 ;
+    ex:name "Châteauponsac" .
+ex:Cazaubon
+    rdf:type ex:city ;
+    ex:area 55.64 ;
+    ex:name "Cazaubon" .
+ex:Mézos
+    rdf:type ex:city ;
+    ex:area 89.05 ;
+    ex:name "Mézos" .
+ex:Valdeblore
+    rdf:type ex:city ;
+    ex:area 94.16 ;
+    ex:name "Valdeblore" .
+ex:Pontenx_les_Forges
+    rdf:type ex:city ;
+    ex:area 80.62 ;
+    ex:name "Pontenx-les-Forges" .
+ex:Prads_Haute_Bléone
+    rdf:type ex:city ;
+    ex:area 165.64 ;
+    ex:name "Prads-Haute-Bléone" .
+ex:Maillas
+    rdf:type ex:city ;
+    ex:area 63.84 ;
+    ex:name "Maillas" .
+ex:Sabres
+    rdf:type ex:city ;
+    ex:area 160.13 ;
+    ex:name "Sabres" .
+ex:Colombiès
+    rdf:type ex:city ;
+    ex:area 55.23 ;
+    ex:name "Colombiès" .
+ex:Utelle
+    rdf:type ex:city ;
+    ex:area 67.97 ;
+    ex:name "Utelle" .
+ex:Asco
+    rdf:type ex:city ;
+    ex:area 122.81 ;
+    ex:name "Asco" .
+ex:Azay_le_Ferron
+    rdf:type ex:city ;
+    ex:area 60.95 ;
+    ex:name "Azay-le-Ferron" .
+ex:Pissos
+    rdf:type ex:city ;
+    ex:area 140.75 ;
+    ex:name "Pissos" .
+ex:Le_Sen
+    rdf:type ex:city ;
+    ex:area 51.1 ;
+    ex:name "Le Sen" .
+ex:Cervières
+    rdf:type ex:city ;
+    ex:area 109.68 ;
+    ex:name "Cervières" .
+ex:Bouin
+    rdf:type ex:city ;
+    ex:area 51.31 ;
+    ex:name "Bouin" .
+ex:Larche
+    rdf:type ex:city ;
+    ex:area 68.86 ;
+    ex:name "Larche" .
+ex:Assais_les_Jumeaux
+    rdf:type ex:city ;
+    ex:area 52.26 ;
+    ex:name "Assais-les-Jumeaux" .
+ex:Courtisols
+    rdf:type ex:city ;
+    ex:area 65.62 ;
+    ex:name "Courtisols" .
+ex:Saint_Gor
+    rdf:type ex:city ;
+    ex:area 53.72 ;
+    ex:name "Saint-Gor" .
+ex:Chantonnay
+    rdf:type ex:city ;
+    ex:area 82.91 ;
+    ex:name "Chantonnay" .
+ex:Guignen
+    rdf:type ex:city ;
+    ex:area 53.05 ;
+    ex:name "Guignen" .
+ex:Molines_en_Queyras
+    rdf:type ex:city ;
+    ex:area 53.62 ;
+    ex:name "Molines-en-Queyras" .
+ex:Vallouise
+    rdf:type ex:city ;
+    ex:area 68.58 ;
+    ex:name "Vallouise" .
+ex:Aurelle_Verlac
+    rdf:type ex:city ;
+    ex:area 54.68 ;
+    ex:name "Aurelle-Verlac" .
+ex:Gentioux_Pigerolles
+    rdf:type ex:city ;
+    ex:area 79.29 ;
+    ex:name "Gentioux-Pigerolles" .
+ex:La_Salvetat_sur_Agout
+    rdf:type ex:city ;
+    ex:area 87.55 ;
+    ex:name "La Salvetat-sur-Agout" .
+ex:Rannée
+    rdf:type ex:city ;
+    ex:area 51.95 ;
+    ex:name "Rannée" .
+ex:Martigné_Ferchaud
+    rdf:type ex:city ;
+    ex:area 74.1 ;
+    ex:name "Martigné-Ferchaud" .
+ex:Freissinières
+    rdf:type ex:city ;
+    ex:area 88.21 ;
+    ex:name "Freissinières" .
+ex:Coti_Chiavari
+    rdf:type ex:city ;
+    ex:area 63.33 ;
+    ex:name "Coti-Chiavari" .
+ex:Bournezeau
+    rdf:type ex:city ;
+    ex:area 60.49 ;
+    ex:name "Bournezeau" .
+ex:Nedde
+    rdf:type ex:city ;
+    ex:area 52.73 ;
+    ex:name "Nedde" .
+ex:Aulus_les_Bains
+    rdf:type ex:city ;
+    ex:area 52.24 ;
+    ex:name "Aulus-les-Bains" .
+ex:Marignana
+    rdf:type ex:city ;
+    ex:area 55.09 ;
+    ex:name "Marignana" .
+ex:Fontpédrouse
+    rdf:type ex:city ;
+    ex:area 64.35 ;
+    ex:name "Fontpédrouse" .
+ex:Anzat_le_Luguet
+    rdf:type ex:city ;
+    ex:area 66.56 ;
+    ex:name "Anzat-le-Luguet" .
+ex:Lucenay_lès_Aix
+    rdf:type ex:city ;
+    ex:area 55.05 ;
+    ex:name "Lucenay-lès-Aix" .
+ex:Saint_Martin_de_Queyrières
+    rdf:type ex:city ;
+    ex:area 55.52 ;
+    ex:name "Saint-Martin-de-Queyrières" .
+ex:Arrens_Marsous
+    rdf:type ex:city ;
+    ex:area 100.55 ;
+    ex:name "Arrens-Marsous" .
+ex:Saint_Justin
+    rdf:type ex:city ;
+    ex:area 65.62 ;
+    ex:name "Saint-Justin" .
+ex:La_Motte_en_Champsaur
+    rdf:type ex:city ;
+    ex:area 52.8 ;
+    ex:name "La Motte-en-Champsaur" .
+ex:Réallon
+    rdf:type ex:city ;
+    ex:area 71.4 ;
+    ex:name "Réallon" .
+ex:Eymoutiers
+    rdf:type ex:city ;
+    ex:area 70.22 ;
+    ex:name "Eymoutiers" .
+ex:Villar_d_Arêne
+    rdf:type ex:city ;
+    ex:area 77.51 ;
+    ex:name "Villar-d'Arêne" .
+ex:Mons
+    rdf:type ex:city ;
+    ex:area 76.63 ;
+    ex:name "Mons" .
+ex:Argelliers
+    rdf:type ex:city ;
+    ex:area 50.29 ;
+    ex:name "Argelliers" .
+ex:Hauteluce
+    rdf:type ex:city ;
+    ex:area 62.39 ;
+    ex:name "Hauteluce" .
+ex:Aragnouet
+    rdf:type ex:city ;
+    ex:area 108.29 ;
+    ex:name "Aragnouet" .
+ex:Saint_Août
+    rdf:type ex:city ;
+    ex:area 54.11 ;
+    ex:name "Saint-Août" .
+ex:Évisa
+    rdf:type ex:city ;
+    ex:area 67.28 ;
+    ex:name "Évisa" .
+ex:Albertacce
+    rdf:type ex:city ;
+    ex:area 97.12 ;
+    ex:name "Albertacce" .
+ex:Vars
+    rdf:type ex:city ;
+    ex:area 92.2 ;
+    ex:name "Vars" .
+ex:Luxey
+    rdf:type ex:city ;
+    ex:area 160.07 ;
+    ex:name "Luxey" .
+ex:Losse
+    rdf:type ex:city ;
+    ex:area 102.69 ;
+    ex:name "Losse" .
+ex:Boulc
+    rdf:type ex:city ;
+    ex:area 57.35 ;
+    ex:name "Boulc" .
+ex:Auzat
+    rdf:type ex:city ;
+    ex:area 162.74 ;
+    ex:name "Auzat" .
+ex:Ceton
+    rdf:type ex:city ;
+    ex:area 59.39 ;
+    ex:name "Ceton" .
+ex:La_Tremblade
+    rdf:type ex:city ;
+    ex:area 69.13 ;
+    ex:name "La Tremblade" .
+ex:Ghisoni
+    rdf:type ex:city ;
+    ex:area 124.6 ;
+    ex:name "Ghisoni" .
+ex:Laluque
+    rdf:type ex:city ;
+    ex:area 52.81 ;
+    ex:name "Laluque" .
+ex:L_Oudon
+    rdf:type ex:city ;
+    ex:area 54.84 ;
+    ex:name "L'Oudon" .
+ex:Prissac
+    rdf:type ex:city ;
+    ex:area 62.83 ;
+    ex:name "Prissac" .
+ex:Saint_Philbert_de_Grand_Lieu
+    rdf:type ex:city ;
+    ex:area 58.81 ;
+    ex:name "Saint-Philbert-de-Grand-Lieu" .
+ex:Chaumont_sur_Tharonne
+    rdf:type ex:city ;
+    ex:area 78.33 ;
+    ex:name "Chaumont-sur-Tharonne" .
+ex:Galéria
+    rdf:type ex:city ;
+    ex:area 135.16 ;
+    ex:name "Galéria" .
+ex:Clermont_en_Argonne
+    rdf:type ex:city ;
+    ex:area 66.94 ;
+    ex:name "Clermont-en-Argonne" .
+ex:Luçay_le_Mâle
+    rdf:type ex:city ;
+    ex:area 68.08 ;
+    ex:name "Luçay-le-Mâle" .
+ex:Charnizay
+    rdf:type ex:city ;
+    ex:area 51.71 ;
+    ex:name "Charnizay" .
+ex:Salles_Curan
+    rdf:type ex:city ;
+    ex:ex:area 93.9 ;
+    ex:name "Salles-Curan" .
+ex:Locquignol
+    rdf:type ex:city ;
+    ex:area 97.55 ;
+    ex:name "Locquignol" .
+ex:Migné
+    rdf:type ex:city ;
+    ex:area 56.32 ;
+    ex:name "Migné" .
+ex:Montesquieu_Volvestre
+    rdf:type ex:city ;
+    ex:area 59.82 ;
+    ex:name "Montesquieu-Volvestre" .
+ex:La_Salvetat_Peyralès
+    rdf:type ex:city ;
+    ex:area 54.24 ;
+    ex:name "La Salvetat-Peyralès" .
+ex:Vieillevigne
+    rdf:type ex:city ;
+    ex:area 51.76 ;
+    ex:name "Vieillevigne" .
+ex:Pelvoux
+    rdf:type ex:city ;
+    ex:area 76.23 ;
+    ex:name "Pelvoux" .
+ex:Les_Orres
+    rdf:type ex:city ;
+    ex:area 74.79 ;
+    ex:name "Les Orres" .
+ex:Solférino
+    rdf:type ex:city ;
+    ex:area 97.83 ;
+    ex:name "Solférino" .
+ex:Réquista
+    rdf:type ex:city ;
+    ex:area 59.32 ;
+    ex:name "Réquista" .
+ex:La_Ferrière
+    rdf:type ex:city ;
+    ex:area 54.33 ;
+    ex:name "La Ferrière" .
+ex:Saint_Maur
+    rdf:type ex:city ;
+    ex:area 70.31 ;
+    ex:name "Saint-Maur" .
+ex:Lignac
+    rdf:type ex:city ;
+    ex:area 67.03 ;
+    ex:name "Lignac" .
+ex:Entrains_sur_Nohain
+    rdf:type ex:city ;
+    ex:area 58.73 ;
+    ex:name "Entrains-sur-Nohain" .
+ex:Rieupeyroux
+    rdf:type ex:city ;
+    ex:area 54.81 ;
+    ex:name "Rieupeyroux" .
+ex:Brinon_sur_Sauldre
+    rdf:type ex:city ;
+    ex:area 116.3 ;
+    ex:name "Brinon-sur-Sauldre" .
+ex:Saint_Jean_d_Arves
+    rdf:type ex:city ;
+    ex:area 75.6 ;
+    ex:name "Saint-Jean-d'Arves" .
+ex:Beaufort
+    rdf:type ex:city ;
+    ex:area 149.53 ;
+    ex:name "Beaufort" .
+ex:Montferrier
+    rdf:type ex:city ;
+    ex:area 51.79 ;
+    ex:name "Montferrier" .
+ex:Flavin
+    rdf:type ex:city ;
+    ex:area 50.77 ;
+    ex:name "Flavin" .
+ex:Saint_Bonnet_le_Courreau
+    rdf:type ex:city ;
+    ex:area 50.18 ;
+    ex:name "Saint-Bonnet-le-Courreau" .
+ex:Le_Louroux_Béconnais
+    rdf:type ex:city ;
+    ex:area 65.57 ;
+    ex:name "Le Louroux-Béconnais" .
+ex:Tremblay_les_Villages
+    rdf:type ex:city ;
+    ex:area 63.31 ;
+    ex:name "Tremblay-les-Villages" .
+ex:Le_Grand_Bourg
+    rdf:type ex:city ;
+    ex:area 78.91 ;
+    ex:name "Le Grand-Bourg" .
+ex:Signy_l_Abbaye
+    rdf:type ex:city ;
+    ex:area 62.03 ;
+    ex:name "Signy-l'Abbaye" .
+ex:Theillay
+    rdf:type ex:city ;
+    ex:area 96.38 ;
+    ex:name "Theillay" .
+ex:Couflens
+    rdf:type ex:city ;
+    ex:area 56.26 ;
+    ex:name "Couflens" .
+ex:Clémont
+    rdf:type ex:city ;
+    ex:area 50.11 ;
+    ex:name "Clémont" .
+ex:Zicavo
+    rdf:type ex:city ;
+    ex:area 93.02 ;
+    ex:name "Zicavo" .
+ex:Nouan_le_Fuzelier
+    rdf:type ex:city ;
+    ex:area 85.49 ;
+    ex:name "Nouan-le-Fuzelier" .
+ex:Saint_Branchs
+    rdf:type ex:city ;
+    ex:area 51.16 ;
+    ex:name "Saint-Branchs" .
+ex:Saint_Viâtre
+    rdf:type ex:city ;
+    ex:area 89.79 ;
+    ex:name "Saint-Viâtre" .
+ex:Cintegabelle
+    rdf:type ex:city ;
+    ex:area 52.92 ;
+    ex:name "Cintegabelle" .
+ex:Villeneuve
+    rdf:type ex:city ;
+    ex:area 65.3 ;
+    ex:name "Villeneuve" .
+ex:Les_Bordes_sur_Lez
+    rdf:type ex:city ;
+    ex:area 50.46 ;
+    ex:name "Les Bordes-sur-Lez" .
+ex:La_Ferté_Imbault
+    rdf:type ex:city ;
+    ex:area 50.02 ;
+    ex:name "La Ferté-Imbault" .
+ex:Plessé
+    rdf:type ex:city ;
+    ex:area 104.38 ;
+    ex:name "Plessé" .
+ex:Neuvy_sur_Barangeon
+    rdf:type ex:city ;
+    ex:area 67.34 ;
+    ex:name "Neuvy-sur-Barangeon" .
+ex:Vézins_de_Lévézou
+    rdf:type ex:city ;
+    ex:area 78.96 ;
+    ex:name "Vézins-de-Lévézou" .
+ex:La_Ferté_Saint_Cyr
+    rdf:type ex:city ;
+    ex:area 57.93 ;
+    ex:name "La Ferté-Saint-Cyr" .
+ex:Cruzy_le_Châtel
+    rdf:type ex:city ;
+    ex:area 59.52 ;
+    ex:name "Cruzy-le-Châtel" .
+ex:Freigné
+    rdf:type ex:city ;
+    ex:area 65.26 ;
+    ex:name "Freigné" .
+ex:Chilleurs_aux_Bois
+    rdf:type ex:city ;
+    ex:area 52.22 ;
+    ex:name "Chilleurs-aux-Bois" .
+ex:Gourgé
+    rdf:type ex:city ;
+    ex:area 50.43 ;
+    ex:name "Gourgé" .
+ex:La_Guerche_sur_l_Aubois
+    rdf:type ex:city ;
+    ex:area 52.7 ;
+    ex:name "La Guerche-sur-l'Aubois" .
+ex:Soudan
+    rdf:type ex:city ;
+    ex:area 53.82 ;
+    ex:name "Soudan" .
+ex:Solaro
+    rdf:type ex:city ;
+    ex:area 93.36 ;
+    ex:name "Solaro" .
+ex:Vouzeron
+    rdf:type ex:city ;
+    ex:area 52.63 ;
+    ex:name "Vouzeron" .
+ex:Les_Hauts_de_Chée
+    rdf:type ex:city ;
+    ex:area 50.17 ;
+    ex:name "Les Hauts-de-Chée" .
+ex:Marcilly_en_Gault
+    rdf:type ex:city ;
+    ex:area 50.31 ;
+    ex:name "Marcilly-en-Gault" .
+ex:Juvigné
+    rdf:type ex:city ;
+    ex:area 62.16 ;
+    ex:name "Juvigné" .
+ex:Orbigny
+    rdf:type ex:city ;
+    ex:area 65.88 ;
+    ex:name "Orbigny" .
+ex:Selles_Saint_Denis
+    rdf:type ex:city ;
+    ex:area 50.98 ;
+    ex:name "Selles-Saint-Denis" .
+ex:Vouzon
+    rdf:type ex:city ;
+    ex:area 78.25 ;
+    ex:name "Vouzon" .
+ex:Mayet
+    rdf:type ex:city ;
+    ex:area 53.96 ;
+    ex:name "Mayet" .
+ex:Saint_Rome_de_Tarn
+    rdf:type ex:city ;
+    ex:area 52.06 ;
+    ex:name "Saint-Rome-de-Tarn" .
+ex:Tallone
+    rdf:type ex:city ;
+    ex:area 68.17 ;
+    ex:name "Tallone" .
+ex:Pierrefitte_sur_Sauldre
+    rdf:type ex:city ;
+    ex:area 74.96 ;
+    ex:name "Pierrefitte-sur-Sauldre" .
+ex:Bramans
+    rdf:type ex:city ;
+    ex:area 92.26 ;
+    ex:name "Bramans" .
+ex:Champagny_en_Vanoise
+    rdf:type ex:city ;
+    ex:area 84.96 ;
+    ex:name "Champagny-en-Vanoise" .
+ex:Brigueil_le_Chantre
+    rdf:type ex:city ;
+    ex:area 53.79 ;
+    ex:name "Brigueil-le-Chantre" .
+ex:Autry_le_Châtel
+    rdf:type ex:city ;
+    ex:area 50.56 ;
+    ex:name "Autry-le-Châtel" .
+ex:Sainte_Montaine
+    rdf:type ex:city ;
+    ex:area 53.79 ;
+    ex:name "Sainte-Montaine" .
+ex:La_Roche_des_Arnauds
+    rdf:type ex:city ;
+    ex:area 53.75 ;
+    ex:name "La Roche-des-Arnauds" .
+ex:Méry_ès_Bois
+    rdf:type ex:city ;
+    ex:area 91.59 ;
+    ex:name "Méry-ès-Bois" .
+ex:Mur_de_Sologne
+    rdf:type ex:city ;
+    ex:area 50.5 ;
+    ex:name "Mur-de-Sologne" .
+ex:Fondamente
+    rdf:type ex:city ;
+    ex:area 50.58 ;
+    ex:name "Fondamente" .
+ex:Unverre
+    rdf:type ex:city ;
+    ex:ex:area 62.33 ;
+    ex:name "Unverre" .
+ex:Saint_Lary_Soulan
+    rdf:type ex:city ;
+    ex:area 90.97 ;
+    ex:name "Saint-Lary-Soulan" .
+ex:Oizon
+    rdf:type ex:city ;
+    ex:area 62.03 ;
+    ex:name "Oizon" .
+ex:Ségur
+    rdf:type ex:city ;
+    ex:area 67.05 ;
+    ex:name "Ségur" .
+ex:Lonlay_l_Abbaye
+    rdf:type ex:city ;
+    ex:area 53.41 ;
+    ex:name "Lonlay-l'Abbaye" .
+ex:Ustou
+    rdf:type ex:city ;
+    ex:area 98.34 ;
+    ex:name "Ustou" .
+ex:Sentein
+    rdf:type ex:city ;
+    ex:area 59.18 ;
+    ex:name "Sentein" .
+ex:Saint_Hilaire_en_Lignières
+    rdf:type ex:city ;
+    ex:area 53.78 ;
+    ex:name "Saint-Hilaire-en-Lignières" .
+ex:Nogent
+    rdf:type ex:city ;
+    ex:area 54.63 ;
+    ex:name "Nogent" .
+ex:Lassay_les_Châteaux
+    rdf:type ex:city ;
+    ex:area 57.63 ;
+    ex:name "Lassay-les-Châteaux" .
+ex:Availles_Limouzine
+    rdf:type ex:city ;
+    ex:area 57.9 ;
+    ex:name "Availles-Limouzine" .
+ex:Opoul_Périllos
+    rdf:type ex:city ;
+    ex:area 50.53 ;
+    ex:name "Opoul-Périllos" .
+ex:Vasles
+    rdf:type ex:city ;
+    ex:area 89.16 ;
+    ex:name "Vasles" .
+ex:Ferrère
+    rdf:type ex:city ;
+    ex:area 57.56 ;
+    ex:name "Ferrère" .
+ex:Vaujany
+    rdf:type ex:city ;
+    ex:area 64.54 ;
+    ex:name "Vaujany" .
+ex:Sommepy_Tahure
+    rdf:type ex:city ;
+    ex:area 68.24 ;
+    ex:name "Sommepy-Tahure" .
+ex:La_Léchère
+    rdf:type ex:city ;
+    ex:area 102.86 ;
+    ex:name "La Léchère" .
+ex:Ligny_le_Ribault
+    rdf:type ex:city ;
+    ex:area 59.21 ;
+    ex:name "Ligny-le-Ribault" .
+ex:Mézilles
+    rdf:type ex:city ;
+    ex:area 52.42 ;
+    ex:name "Mézilles" .
+ex:Savigny_sur_Braye
+    rdf:type ex:city ;
+    ex:area 67.18 ;
+    ex:name "Savigny-sur-Braye" .
+ex:Saint_Joachim
+    rdf:type ex:city ;
+    ex:area 86.22 ;
+    ex:name "Saint-Joachim" .
+ex:Seix
+    rdf:type ex:city ;
+    ex:area 86.78 ;
+    ex:name "Seix" .
+ex:Parigné_l_Évêque
+    rdf:type ex:city ;
+    ex:area 63.4 ;
+    ex:name "Parigné-l'Évêque" .
+ex:Millançay
+    rdf:type ex:city ;
+    ex:area 57.94 ;
+    ex:name "Millançay" .
+ex:Triaize
+    rdf:type ex:city ;
+    ex:area 58.8 ;
+    ex:name "Triaize" .
+ex:Ardon
+    rdf:type ex:city ;
+    ex:area 53.65 ;
+    ex:name "Ardon" .
+ex:Ivoy_le_Pré
+    rdf:type ex:city ;
+    ex:area 98.74 ;
+    ex:name "Ivoy-le-Pré" .
+ex:Saint_Philbert_de_Bouaine
+    rdf:type ex:city ;
+    ex:area 50.16 ;
+    ex:name "Saint-Philbert-de-Bouaine" .
+ex:Lalbenque
+    rdf:type ex:city ;
+    ex:area 52.24 ;
+    ex:name "Lalbenque" .
+ex:Vienne_le_Château
+    rdf:type ex:city ;
+    ex:area 51.36 ;
+    ex:name "Vienne-le-Château" .
+ex:Gresse_en_Vercors
+    rdf:type ex:city ;
+    ex:area 81.13 ;
+    ex:name "Gresse-en-Vercors" .
+ex:Rodelle
+    rdf:type ex:city ;
+    ex:area 53.43 ;
+    ex:name "Rodelle" .
+ex:Saint_Michel_en_l_Herm
+    rdf:type ex:city ;
+    ex:area 54.8 ;
+    ex:name "Saint-Michel-en-l'Herm" .
+ex:Montereau
+    rdf:type ex:city ;
+    ex:area 50.12 ;
+    ex:name "Montereau" .
+ex:Liglet
+    rdf:type ex:city ;
+    ex:area 52.53 ;
+    ex:name "Liglet" .
+ex:Mazaugues
+    rdf:type ex:city ;
+    ex:area 53.79 ;
+    ex:name "Mazaugues" .
+ex:La_Verdière
+    rdf:type ex:city ;
+    ex:area 68.16 ;
+    ex:name "La Verdière" .
+ex:Les_Lucs_sur_Boulogne
+    rdf:type ex:city ;
+    ex:area 53.15 ;
+    ex:name "Les Lucs-sur-Boulogne" .
+ex:Saint_Maurice_des_Lions
+    rdf:type ex:city ;
+    ex:area 50.08 ;
+    ex:name "Saint-Maurice-des-Lions" .
+ex:Montredon_Labessonnié
+    rdf:type ex:city ;
+    ex:area 110.88 ;
+    ex:name "Montredon-Labessonnié" .
+ex:Ennordres
+    rdf:type ex:city ;
+    ex:area 63.79 ;
+    ex:name "Ennordres" .
+ex:Jallais
+    rdf:type ex:city ;
+    ex:area 52.81 ;
+    ex:name "Jallais" .
+ex:Montpeyroux
+    rdf:type ex:city ;
+    ex:area 61.71 ;
+    ex:name "Montpeyroux" .
+ex:Caylus
+    rdf:type ex:city ;
+    ex:area 97.45 ;
+    ex:name "Caylus" .
+ex:Ménestreau_en_Villette
+    rdf:type ex:city ;
+    ex:area 53.62 ;
+    ex:name "Ménestreau-en-Villette" .
+ex:Cazes_Mondenard
+    rdf:type ex:city ;
+    ex:area 58.23 ;
+    ex:name "Cazes-Mondenard" .
+ex:Saulgé
+    rdf:type ex:city ;
+    ex:area 62.31 ;
+    ex:name "Saulgé" .
+ex:Archigny
+    rdf:type ex:city ;
+    ex:area 66.68 ;
+    ex:name "Archigny" .
+ex:Penne
+    rdf:type ex:city ;
+    ex:area 64.04 ;
+    ex:name "Penne" .
+ex:Saint_Louis
+    rdf:type ex:city ;
+    ex:area 98.9 ;
+    ex:name "Saint-Louis" .
+ex:Valanjou
+    rdf:type ex:city ;
+    ex:area 55.86 ;
+    ex:name "Valanjou" .
+ex:Marcilly_en_Villette
+    rdf:type ex:city ;
+    ex:area 62.66 ;
+    ex:name "Marcilly-en-Villette" .
+ex:Graulhet
+    rdf:type ex:city ;
+    ex:area 56.75 ;
+    ex:name "Graulhet" .
+ex:Saint_Sauvant
+    rdf:type ex:city ;
+    ex:area 59.58 ;
+    ex:name "Saint-Sauvant" .
+ex:Montaigu_de_Quercy
+    rdf:type ex:city ;
+    ex:area 76.44 ;
+    ex:name "Montaigu-de-Quercy" .
+ex:Cerdon
+    rdf:type ex:city ;
+    ex:area 67.07 ;
+    ex:name "Cerdon" .
+ex:Geloux
+    rdf:type ex:city ;
+    ex:area 51.7 ;
+    ex:name "Geloux" .
+ex:Coullons
+    rdf:type ex:city ;
+    ex:area 78.97 ;
+    ex:name "Coullons" .
+ex:Jouy_le_Potier
+    rdf:type ex:city ;
+    ex:area 50.4 ;
+    ex:name "Jouy-le-Potier" .
+ex:Queaux
+    rdf:type ex:city ;
+    ex:area 52.64 ;
+    ex:name "Queaux" .
+ex:Persac
+    rdf:type ex:city ;
+    ex:area 59.41 ;
+    ex:name "Persac" .
+ex:Nanteuil_en_Vallée
+    rdf:type ex:city ;
+    ex:area 68.85 ;
+    ex:name "Nanteuil-en-Vallée" .
+ex:Ouzouer_sur_Trézée
+    rdf:type ex:city ;
+    ex:area 61.63 ;
+    ex:name "Ouzouer-sur-Trézée" .
+ex:Val_de_Meuse
+    rdf:type ex:city ;
+    ex:area 77.48 ;
+    ex:name "Val-de-Meuse" .
+ex:Castelnau_de_Brassac
+    rdf:type ex:city ;
+    ex:area 72.88 ;
+    ex:name "Castelnau-de-Brassac" .
+ex:Rabastens
+    rdf:type ex:city ;
+    ex:area 66.29 ;
+    ex:name "Rabastens" .
+ex:Lüe
+    rdf:type ex:city ;
+    ex:area 96.72 ;
+    ex:name "Lüe" .
+ex:Saint_Leu
+    rdf:type ex:city ;
+    ex:area 118.37 ;
+    ex:name "Saint-Leu" .
+ex:Gros_Morne
+    rdf:type ex:city ;
+    ex:area 54.25 ;
+    ex:name "Gros-Morne" .
+ex:Bourriot_Bergonce
+    rdf:type ex:city ;
+    ex:area 82.65 ;
+    ex:name "Bourriot-Bergonce" .
+ex:Labruguière
+    rdf:type ex:city ;
+    ex:area 60.73 ;
+    ex:name "Labruguière" .
+ex:Saint_André
+    rdf:type ex:city ;
+    ex:area 53.07 ;
+    ex:name "Saint-André" .
+ex:Valdivienne
+    rdf:type ex:city ;
+    ex:area 61.24 ;
+    ex:name "Valdivienne" .
+ex:Mauges_sur_Loire
+    rdf:type ex:city ;
+    ex:area 191.87 ;
+    ex:name "Mauges-sur-Loire" .
+ex:Rouillé
+    rdf:type ex:city ;
+    ex:area 52.01 ;
+    ex:name "Rouillé" .
+ex:Saint_Paul_lès_Dax
+    rdf:type ex:city ;
+    ex:area 58.45 ;
+    ex:name "Saint-Paul-lès-Dax" .
+ex:Anglès
+    rdf:type ex:city ;
+    ex:area 85.62 ;
+    ex:name "Anglès" .
+ex:Clefs_Val_d_Anjou
+    rdf:type ex:city ;
+    ex:area 53.57 ;
+    ex:name "Clefs-Val d'Anjou" .
+ex:Le_Mené
+    rdf:type ex:city ;
+    ex:area 163.23 ;
+    ex:name "Le Mené" .
+ex:Les_Villages_Vovéens
+    rdf:type ex:city ;
+    ex:area 62.85 ;
+    ex:name "Les Villages Vovéens" .
+ex:Sainte_Suzanne
+    rdf:type ex:city ;
+    ex:area 57.84 ;
+    ex:name "Sainte-Suzanne" .
+ex:Bellevigne_en_Layon
+    rdf:type ex:city ;
+    ex:area 94.37 ;
+    ex:name "Bellevigne-en-Layon" .
+ex:Moustey
+    rdf:type ex:city ;
+    ex:area 67.31 ;
+    ex:name "Moustey" .
+ex:Saint_Pierre_de_Maillé
+    rdf:type ex:city ;
+    ex:area 74.89 ;
+    ex:name "Saint-Pierre-de-Maillé" .
+ex:Les_Bois_d_Anjou
+    rdf:type ex:city ;
+    ex:area 60.22 ;
+    ex:name "Les Bois d'Anjou" .
+ex:Sèvremoine
+    rdf:type ex:city ;
+    ex:area 213.07 ;
+    ex:name "Sèvremoine" .
+ex:Machecoul_Saint_Même
+    rdf:type ex:city ;
+    ex:area 84.89 ;
+    ex:name "Machecoul-Saint-Même" .
+ex:Journet
+    rdf:type ex:city ;
+    ex:area 58.51 ;
+    ex:name "Journet" .
+ex:Cherbourg_en_Cotentin
+    rdf:type ex:city ;
+    ex:area 68.54 ;
+    ex:name "Cherbourg-en-Cotentin" .
+ex:Guipry_Messac
+    rdf:type ex:city ;
+    ex:area 91.99 ;
+    ex:name "Guipry-Messac" .
+ex:Longuenée_en_Anjou
+    rdf:type ex:city ;
+    ex:area 53.5 ;
+    ex:name "Longuenée-en-Anjou" .
+ex:Essarts_en_Bocage
+    rdf:type ex:city ;
+    ex:area 99.62 ;
+    ex:name "Essarts en Bocage" .
+ex:Sore
+    rdf:type ex:city ;
+    ex:area 147.72 ;
+    ex:name "Sore" .
+ex:Baugé_en_Anjou
+    rdf:type ex:city ;
+    ex:area 70.47 ;
+    ex:name "Baugé-en-Anjou" .
+ex:Val_Buëch_Méouge
+    rdf:type ex:city ;
+    ex:area 68.48 ;
+    ex:name "Val Buëch-Méouge" .
+ex:Argences_en_Aubrac
+    rdf:type ex:city ;
+    ex:area 151.78 ;
+    ex:name "Argences en Aubrac" .
+ex:Cœur_de_Causse
+    rdf:type ex:city ;
+    ex:area 70.76 ;
+    ex:name "Cœur de Causse" .
+ex:Entrelacs
+    rdf:type ex:city ;
+    ex:area 51.9 ;
+    ex:name "Entrelacs" .
+ex:Brocas
+    rdf:type ex:city ;
+    ex:area 53.46 ;
+    ex:name "Brocas" .
+ex:Dévoluy
+    rdf:type ex:city ;
+    ex:area 186.37 ;
+    ex:name "Dévoluy" .
+ex:Montrevault_sur_Èvre
+    rdf:type ex:city ;
+    ex:area 198.85 ;
+    ex:name "Montrevault-sur-Èvre" .
+ex:Villeneuve_en_Retz
+    rdf:type ex:city ;
+    ex:area 73.68 ;
+    ex:name "Villeneuve-en-Retz" .
+ex:Sainte_Eulalie_en_Born
+    rdf:type ex:city ;
+    ex:area 70.83 ;
+    ex:name "Sainte-Eulalie-en-Born" .
+ex:Morcenx
+    rdf:type ex:city ;
+    ex:area 62.08 ;
+    ex:name "Morcenx" .
+ex:Beaupréau_en_Mauges
+    rdf:type ex:city ;
+    ex:area 230.45 ;
+    ex:name "Beaupréau-en-Mauges" .
+ex:Chemillé_en_Anjou
+    rdf:type ex:city ;
+    ex:area 323.98 ;
+    ex:name "Chemillé-en-Anjou" .
+ex:Callen
+    rdf:type ex:city ;
+    ex:area 87.86 ;
+    ex:name "Callen" .
+ex:Valdallière
+    rdf:type ex:city ;
+    ex:area 157.94 ;
+    ex:name "Valdallière" .
+ex:Gennes_Val_de_Loire
+    rdf:type ex:city ;
+    ex:area 103.99 ;
+    ex:name "Gennes-Val de Loire" .
+ex:Haut_Valromey
+    rdf:type ex:city ;
+    ex:area 107.85 ;
+    ex:name "Haut Valromey" .
+ex:Montcuq_en_Quercy_Blanc
+    rdf:type ex:city ;
+    ex:ex:area 78.23 ;
+    ex:name "Montcuq-en-Quercy-Blanc" .
+ex:Chemillé_Melay
+    rdf:type ex:city ;
+    ex:area 71.9 ;
+    ex:name "Chemillé-Melay" .
+ex:Angoustrine
+    rdf:type ex:city ;
+    ex:area 84.34 ;
+    ex:name "Angoustrine" .
+ex:Lys_Haut_Layon
+    rdf:type ex:city ;
+    ex:area 178.84 ;
+    ex:name "Lys-Haut-Layon" .
+ex:Le_Bas_Ségala
+    rdf:type ex:city ;
+    ex:area 82.33 ;
+    ex:name "Le Bas Ségala" .
+ex:Chaumes_en_Retz
+    rdf:type ex:city ;
+    ex:area 76.55 ;
+    ex:name "Chaumes-en-Retz" .
+ex:Rémalard_en_Perche
+    rdf:type ex:city ;
+    ex:area 50.68 ;
+    ex:name "Rémalard en Perche" .
+ex:Conques_en_Rouergue
+    rdf:type ex:city ;
+    ex:area 106.23 ;
+    ex:name "Conques-en-Rouergue" .
+ex:Val_d_Issoire
+    rdf:type ex:city ;
+    ex:area 71.6 ;
+    ex:name "Val d'Issoire" .
+ex:Argentonnay
+    rdf:type ex:city ;
+    ex:area 117.04 ;
+    ex:name "Argentonnay" .

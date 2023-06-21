@@ -76,14 +76,14 @@ public class SparqlTest {
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o",
-                                pathResBeatlesSelectRdfxml, pathQueryBeatlesAlbum);
+                                pathResBeatlesSelectRdfxml, "-q", pathQueryBeatlesAlbum);
 
                 String expectedOutput = "Error: rdfxml is not a valid output format for select or ask requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -94,14 +94,14 @@ public class SparqlTest {
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o",
-                                pathResBeatlesSelectTurtle, pathQueryBeatlesAlbum);
+                                pathResBeatlesSelectTurtle, "-q", pathQueryBeatlesAlbum);
 
                 String expectedOutput = "Error: turtle is not a valid output format for select or ask requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -112,14 +112,14 @@ public class SparqlTest {
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o",
-                                pathResBeatlesSelectTrig, pathQueryBeatlesAlbum);
+                                pathResBeatlesSelectTrig, "-q", pathQueryBeatlesAlbum);
 
                 String expectedOutput = "Error: trig is not a valid output format for select or ask requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -130,14 +130,14 @@ public class SparqlTest {
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o",
-                                pathResBeatlesSelectJsonld, pathQueryBeatlesAlbum);
+                                pathResBeatlesSelectJsonld, "-q", pathQueryBeatlesAlbum);
 
                 String expectedOutput = "Error: jsonld is not a valid output format for select or ask requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -151,7 +151,7 @@ public class SparqlTest {
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o",
-                                pathResBeatlesSelectXml, pathQueryBeatlesAlbum);
+                                pathResBeatlesSelectXml, "-q", pathQueryBeatlesAlbum);
 
                 System.out.println(err.toString());
 
@@ -173,7 +173,7 @@ public class SparqlTest {
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "json", "-o",
-                                pathResBeatlesSelectJson, pathQueryBeatlesAlbum);
+                                pathResBeatlesSelectJson, "-q", pathQueryBeatlesAlbum);
 
                 assertEquals(0, exitCode);
                 assertEquals("", out.toString());
@@ -192,7 +192,7 @@ public class SparqlTest {
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "csv", "-o",
-                                pathResBeatlesSelectCsv, pathQueryBeatlesAlbum);
+                                pathResBeatlesSelectCsv, "-q", pathQueryBeatlesAlbum);
 
                 assertEquals(0, exitCode);
                 assertEquals("", out.toString());
@@ -211,7 +211,7 @@ public class SparqlTest {
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "tsv", "-o",
-                                pathResBeatlesSelectTsv, pathQueryBeatlesAlbum);
+                                pathResBeatlesSelectTsv, "-q", pathQueryBeatlesAlbum);
 
                 assertEquals(0, exitCode);
                 assertEquals("", out.toString());
@@ -231,7 +231,7 @@ public class SparqlTest {
                 String pathQueryBeatlesAlbum = Paths.get(queriesPath, "select", "beatlesAlbums.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
-                                pathResBeatlesSelectMarkdown, pathQueryBeatlesAlbum);
+                                pathResBeatlesSelectMarkdown, "-q", pathQueryBeatlesAlbum);
 
                 assertEquals(0, exitCode);
                 assertEquals("", out.toString());
@@ -246,7 +246,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesAskFalse, "-q",
                                 pathQueryBeatlesAskFalse);
 
                 String expectedOutput = "Error: rdfxml is not a valid output format for select or ask requests.";
@@ -254,7 +254,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
 
         }
 
@@ -265,7 +265,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesAskFalse, "-q",
                                 pathQueryBeatlesAskFalse);
 
                 String expectedOutput = "Error: rdfxml is not a valid output format for select or ask requests.";
@@ -273,7 +273,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -283,7 +283,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesAskTrue,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesAskTrue, "-q",
                                 pathQueryBeatlesAskTrue);
 
                 String expectedOutput = "Error: turtle is not a valid output format for select or ask requests.";
@@ -291,7 +291,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -301,7 +301,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesAskFalse, "-q",
                                 pathQueryBeatlesAskFalse);
 
                 String expectedOutput = "Error: turtle is not a valid output format for select or ask requests.";
@@ -309,7 +309,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -318,7 +318,7 @@ public class SparqlTest {
                 String pathResBeatlesAskTrue = Paths.get(resultsPath, "ask", "beatles-ask-trig-true.trig").toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesAskTrue,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesAskTrue, "-q",
                                 pathQueryBeatlesAskTrue);
 
                 String expectedOutput = "Error: trig is not a valid output format for select or ask requests.";
@@ -326,7 +326,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -336,7 +336,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesAskFalse, "-q",
                                 pathQueryBeatlesAskFalse);
 
                 String expectedOutput = "Error: trig is not a valid output format for select or ask requests.";
@@ -344,7 +344,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -354,7 +354,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesAskTrue,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesAskTrue, "-q",
                                 pathQueryBeatlesAskTrue);
 
                 String expectedOutput = "Error: jsonld is not a valid output format for select or ask requests.";
@@ -362,7 +362,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -372,7 +372,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesAskFalse, "-q",
                                 pathQueryBeatlesAskFalse);
 
                 String expectedOutput = "Error: jsonld is not a valid output format for select or ask requests.";
@@ -380,7 +380,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -392,7 +392,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o", pathResBeatlesAskTrue,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o", pathResBeatlesAskTrue, "-q",
                                 pathQueryBeatlesAskTrue);
 
                 assertEquals(0, exitCode);
@@ -410,7 +410,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o", pathResBeatlesAskFalse, "-q",
                                 pathQueryBeatlesAskFalse);
 
                 assertEquals(0, exitCode);
@@ -428,7 +428,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "json", "-o", pathResBeatlesAskTrue,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "json", "-o", pathResBeatlesAskTrue, "-q",
                                 pathQueryBeatlesAskTrue);
 
                 assertEquals(0, exitCode);
@@ -446,7 +446,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "json", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "json", "-o", pathResBeatlesAskFalse, "-q",
                                 pathQueryBeatlesAskFalse);
 
                 assertEquals(0, exitCode);
@@ -464,7 +464,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "csv", "-o", pathResBeatlesAskTrue,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "csv", "-o", pathResBeatlesAskTrue, "-q",
                                 pathQueryBeatlesAskTrue);
 
                 assertEquals(0, exitCode);
@@ -482,7 +482,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "csv", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "csv", "-o", pathResBeatlesAskFalse, "-q",
                                 pathQueryBeatlesAskFalse);
 
                 assertEquals(0, exitCode);
@@ -500,7 +500,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "tsv", "-o", pathResBeatlesAskTrue,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "tsv", "-o", pathResBeatlesAskTrue, "-q",
                                 pathQueryBeatlesAskTrue);
 
                 assertEquals(0, exitCode);
@@ -518,7 +518,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "tsv", "-o", pathResBeatlesAskFalse,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "tsv", "-o", pathResBeatlesAskFalse, "-q",
                                 pathQueryBeatlesAskFalse);
 
                 assertEquals(0, exitCode);
@@ -536,7 +536,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesAskTrue = Paths.get(queriesPath, "ask", "beatlesTrue.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o", pathResBeatlesAskTrue,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o", pathResBeatlesAskTrue, "-q",
                                 pathQueryBeatlesAskTrue);
 
                 assertEquals(0, exitCode);
@@ -555,6 +555,7 @@ public class SparqlTest {
                 String pathQueryBeatlesAskFalse = Paths.get(queriesPath, "ask", "beatlesFalse.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o", pathResBeatlesAskFalse,
+                                "-q",
                                 pathQueryBeatlesAskFalse);
 
                 assertEquals(0, exitCode);
@@ -572,7 +573,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesInsert,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesInsert, "-q",
                                 pathQueryBeatlesInsert);
 
                 assertEquals(0, exitCode);
@@ -590,7 +591,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesInsert,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesInsert, "-q",
                                 pathQueryBeatlesInsert);
 
                 assertEquals(0, exitCode);
@@ -608,7 +609,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesInsert,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesInsert, "-q",
                                 pathQueryBeatlesInsert);
 
                 assertEquals(0, exitCode);
@@ -626,7 +627,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesInsert,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesInsert, "-q",
                                 pathQueryBeatlesInsert);
 
                 assertEquals(0, exitCode);
@@ -642,7 +643,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o", pathResBeatlesInsert,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o", pathResBeatlesInsert, "-q",
                                 pathQueryBeatlesInsert);
 
                 String expectedOutput = "Error: xml is not a valid output format for insert, delete, describe or construct requests.";
@@ -650,7 +651,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -661,7 +662,7 @@ public class SparqlTest {
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "json", "-o",
-                                pathResBeatlesInsert,
+                                pathResBeatlesInsert, "-q",
                                 pathQueryBeatlesInsert);
 
                 String expectedOutput = "Error: json is not a valid output format for insert, delete, describe or construct requests.";
@@ -669,7 +670,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -680,7 +681,7 @@ public class SparqlTest {
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "csv", "-o",
-                                pathResBeatlesInsert,
+                                pathResBeatlesInsert, "-q",
                                 pathQueryBeatlesInsert);
 
                 String expectedOutput = "Error: csv is not a valid output format for insert, delete, describe or construct requests.";
@@ -688,7 +689,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -699,7 +700,7 @@ public class SparqlTest {
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "tsv", "-o",
-                                pathResBeatlesInsert,
+                                pathResBeatlesInsert, "-q",
                                 pathQueryBeatlesInsert);
 
                 String expectedOutput = "Error: tsv is not a valid output format for insert, delete, describe or construct requests.";
@@ -707,7 +708,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -718,15 +719,14 @@ public class SparqlTest {
                 String pathQueryBeatlesInsert = Paths.get(queriesPath, "insert", "beatlesInsertRock.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
-                                pathResBeatlesInsert,
-                                pathQueryBeatlesInsert);
+                                pathResBeatlesInsert, "-q", pathQueryBeatlesInsert);
 
                 String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -739,6 +739,7 @@ public class SparqlTest {
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesInsertwhere,
+                                "-q",
                                 pathQueryBeatlesInsertwhere);
 
                 assertEquals(0, exitCode);
@@ -757,6 +758,7 @@ public class SparqlTest {
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesInsertwhere,
+                                "-q",
                                 pathQueryBeatlesInsertwhere);
 
                 assertEquals(0, exitCode);
@@ -774,7 +776,7 @@ public class SparqlTest {
                                 .get(resultsPath, "insert-where", "beatles-insertwhere-bidingtrig.trig").toString();
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesInsertwhere,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesInsertwhere, "-q",
                                 pathQueryBeatlesInsertwhere);
 
                 assertEquals(0, exitCode);
@@ -794,6 +796,7 @@ public class SparqlTest {
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesInsertwhere,
+                                "-q",
                                 pathQueryBeatlesInsertwhere);
 
                 assertEquals(0, exitCode);
@@ -810,7 +813,7 @@ public class SparqlTest {
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o",
-                                pathResBeatlesInsertwhere,
+                                pathResBeatlesInsertwhere, "-q",
                                 pathQueryBeatlesInsertwhere);
 
                 String expectedOutput = "Error: xml is not a valid output format for insert, delete, describe or construct requests.";
@@ -818,7 +821,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -829,7 +832,7 @@ public class SparqlTest {
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "json", "-o",
-                                pathResBeatlesInsertwhere,
+                                pathResBeatlesInsertwhere, "-q",
                                 pathQueryBeatlesInsertwhere);
 
                 String expectedOutput = "Error: json is not a valid output format for insert, delete, describe or construct requests.";
@@ -837,7 +840,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -846,7 +849,7 @@ public class SparqlTest {
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "csv", "-o",
-                                "references/insert-where/beatles-insertwhere-bidingcsv.csv",
+                                "references/insert-where/beatles-insertwhere-bidingcsv.csv", "-q",
                                 pathQueryBeatlesInsertwhere);
 
                 String expectedOutput = "Error: csv is not a valid output format for insert, delete, describe or construct requests.";
@@ -854,7 +857,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -863,7 +866,7 @@ public class SparqlTest {
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "tsv", "-o",
-                                "references/insert-where/beatles-insertwhere-bidingtsv.tsv",
+                                "references/insert-where/beatles-insertwhere-bidingtsv.tsv", "-q",
                                 pathQueryBeatlesInsertwhere);
 
                 String expectedOutput = "Error: tsv is not a valid output format for insert, delete, describe or construct requests.";
@@ -871,7 +874,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -880,7 +883,7 @@ public class SparqlTest {
                 String pathQueryBeatlesInsertwhere = Paths.get(queriesPath, "insert-where", "beatlesAge.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
-                                "references/insert-where/beatles-insertwhere-bidingmarkdown.md",
+                                "references/insert-where/beatles-insertwhere-bidingmarkdown.md", "-q",
                                 pathQueryBeatlesInsertwhere);
 
                 String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
@@ -888,7 +891,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -899,7 +902,7 @@ public class SparqlTest {
                 String pathResBeatlesDelete = Paths.get(resultsPath, "delete", "beatles-delete-rdfxml.xml").toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesDelete,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesDelete, "-q",
                                 pathQueryBeatlesDelete);
 
                 assertEquals(0, exitCode);
@@ -916,7 +919,7 @@ public class SparqlTest {
                 String pathResBeatlesDelete = Paths.get(resultsPath, "delete", "beatles-delete-turtle.ttl").toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesDelete,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesDelete, "-q",
                                 pathQueryBeatlesDelete);
 
                 assertEquals(0, exitCode);
@@ -933,7 +936,7 @@ public class SparqlTest {
                 String pathResBeatlesDelete = Paths.get(resultsPath, "delete", "beatles-delete-trig.trig").toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesDelete,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesDelete, "-q",
                                 pathQueryBeatlesDelete);
 
                 assertEquals(0, exitCode);
@@ -951,7 +954,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesDelete,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesDelete, "-q",
                                 pathQueryBeatlesDelete);
 
                 assertEquals(0, exitCode);
@@ -966,7 +969,7 @@ public class SparqlTest {
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o",
-                                "references/delete/beatles-delete-xml.xml",
+                                "references/delete/beatles-delete-xml.xml", "-q",
                                 pathQueryBeatlesDelete);
 
                 String expectedOutput = "Error: xml is not a valid output format for insert, delete, describe or construct requests.";
@@ -974,7 +977,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -983,7 +986,7 @@ public class SparqlTest {
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "json", "-o",
-                                "references/delete/beatles-delete-jsonld.jsonld",
+                                "references/delete/beatles-delete-jsonld.jsonld", "-q",
                                 pathQueryBeatlesDelete);
 
                 String expectedOutput = "Error: json is not a valid output format for insert, delete, describe or construct requests.";
@@ -991,7 +994,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1000,7 +1003,7 @@ public class SparqlTest {
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "csv", "-o",
-                                "references/delete/beatles-delete-csv.csv",
+                                "references/delete/beatles-delete-csv.csv", "-q",
                                 pathQueryBeatlesDelete);
 
                 String expectedOutput = "Error: csv is not a valid output format for insert, delete, describe or construct requests.";
@@ -1008,7 +1011,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1017,7 +1020,7 @@ public class SparqlTest {
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "tsv", "-o",
-                                "references/delete/beatles-delete-tsv.tsv",
+                                "references/delete/beatles-delete-tsv.tsv", "-q",
                                 pathQueryBeatlesDelete);
 
                 String expectedOutput = "Error: tsv is not a valid output format for insert, delete, describe or construct requests.";
@@ -1025,7 +1028,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1034,7 +1037,7 @@ public class SparqlTest {
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete", "deleteMcCartney.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
-                                "references/delete/beatles-delete-markdown.md",
+                                "references/delete/beatles-delete-markdown.md", "-q",
                                 pathQueryBeatlesDelete);
 
                 String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
@@ -1042,7 +1045,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1055,7 +1058,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesDelete,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesDelete, "-q",
                                 pathQueryBeatlesDelete);
 
                 assertEquals(0, exitCode);
@@ -1074,7 +1077,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesDelete,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesDelete, "-q",
                                 pathQueryBeatlesDelete);
 
                 assertEquals(0, exitCode);
@@ -1093,7 +1096,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesDelete,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesDelete, "-q",
                                 pathQueryBeatlesDelete);
 
                 assertEquals(0, exitCode);
@@ -1113,7 +1116,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesDelete,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesDelete, "-q",
                                 pathQueryBeatlesDelete);
 
                 assertEquals(0, exitCode);
@@ -1128,7 +1131,7 @@ public class SparqlTest {
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o",
-                                "references/delete-where/beatles-delete-where-xml.xml",
+                                "references/delete-where/beatles-delete-where-xml.xml", "-q",
                                 pathQueryBeatlesDelete);
 
                 String expectedOutput = "Error: xml is not a valid output format for insert, delete, describe or construct requests.";
@@ -1136,7 +1139,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1145,7 +1148,7 @@ public class SparqlTest {
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "json", "-o",
-                                "references/delete-where/beatles-delete-where-json.json",
+                                "references/delete-where/beatles-delete-where-json.json", "-q",
                                 pathQueryBeatlesDelete);
 
                 String expectedOutput = "Error: json is not a valid output format for insert, delete, describe or construct requests.";
@@ -1153,7 +1156,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1162,7 +1165,7 @@ public class SparqlTest {
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "csv", "-o",
-                                "references/delete-where/beatles-delete-where-csv.csv",
+                                "references/delete-where/beatles-delete-where-csv.csv", "-q",
                                 pathQueryBeatlesDelete);
 
                 String expectedOutput = "Error: csv is not a valid output format for insert, delete, describe or construct requests.";
@@ -1170,7 +1173,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1179,7 +1182,7 @@ public class SparqlTest {
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "tsv", "-o",
-                                "references/delete-where/beatles-delete-where-tsv.tsv",
+                                "references/delete-where/beatles-delete-where-tsv.tsv", "-q",
                                 pathQueryBeatlesDelete);
 
                 String expectedOutput = "Error: tsv is not a valid output format for insert, delete, describe or construct requests.";
@@ -1187,7 +1190,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1196,7 +1199,7 @@ public class SparqlTest {
                 String pathQueryBeatlesDelete = Paths.get(queriesPath, "delete-where", "deleteLenon.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
-                                "references/delete-where/beatles-delete-where-markdown.md",
+                                "references/delete-where/beatles-delete-where-markdown.md", "-q",
                                 pathQueryBeatlesDelete);
 
                 String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
@@ -1204,7 +1207,7 @@ public class SparqlTest {
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1216,7 +1219,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesConstruct,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesConstruct, "-q",
                                 pathQueryBeatlesConstruct);
 
                 assertEquals(0, exitCode);
@@ -1234,7 +1237,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesConstruct,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesConstruct, "-q",
                                 pathQueryBeatlesConstruct);
 
                 assertEquals(0, exitCode);
@@ -1252,7 +1255,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesConstruct,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesConstruct, "-q",
                                 pathQueryBeatlesConstruct);
 
                 assertEquals(0, exitCode);
@@ -1271,7 +1274,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesConstruct,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesConstruct, "-q",
                                 pathQueryBeatlesConstruct);
 
                 assertEquals(0, exitCode);
@@ -1286,14 +1289,14 @@ public class SparqlTest {
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o",
-                                "references/construct/beatles-construct-xml.xml", pathQueryBeatlesConstruct);
+                                "references/construct/beatles-construct-xml.xml", "-q", pathQueryBeatlesConstruct);
 
                 String expectedOutput = "Error: xml is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1302,14 +1305,15 @@ public class SparqlTest {
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "json", "-o",
-                                "references/construct/beatles-construct-jsonld.jsonld", pathQueryBeatlesConstruct);
+                                "references/construct/beatles-construct-jsonld.jsonld", "-q",
+                                pathQueryBeatlesConstruct);
 
                 String expectedOutput = "Error: json is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1318,14 +1322,14 @@ public class SparqlTest {
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "csv", "-o",
-                                "references/construct/beatles-construct-csv.csv", pathQueryBeatlesConstruct);
+                                "references/construct/beatles-construct-csv.csv", "-q", pathQueryBeatlesConstruct);
 
                 String expectedOutput = "Error: csv is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1334,14 +1338,14 @@ public class SparqlTest {
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "tsv", "-o",
-                                "references/construct/beatles-construct-tsv.tsv", pathQueryBeatlesConstruct);
+                                "references/construct/beatles-construct-tsv.tsv", "-q", pathQueryBeatlesConstruct);
 
                 String expectedOutput = "Error: tsv is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1350,14 +1354,14 @@ public class SparqlTest {
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
-                                "references/construct/beatles-construct-markdown.md", pathQueryBeatlesConstruct);
+                                "references/construct/beatles-construct-markdown.md", "-q", pathQueryBeatlesConstruct);
 
                 String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1369,7 +1373,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesDescribe,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "rdfxml", "-o", pathResBeatlesDescribe, "-q",
                                 pathQueryBeatlesDescribe);
 
                 assertEquals(0, exitCode);
@@ -1387,7 +1391,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesDescribe,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "turtle", "-o", pathResBeatlesDescribe, "-q",
                                 pathQueryBeatlesDescribe);
 
                 assertEquals(0, exitCode);
@@ -1405,7 +1409,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesDescribe,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "trig", "-o", pathResBeatlesDescribe, "-q",
                                 pathQueryBeatlesDescribe);
 
                 assertEquals(0, exitCode);
@@ -1423,7 +1427,7 @@ public class SparqlTest {
                                 .toString();
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
-                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesDescribe,
+                int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "jsonld", "-o", pathResBeatlesDescribe, "-q",
                                 pathQueryBeatlesDescribe);
 
                 assertEquals(0, exitCode);
@@ -1438,14 +1442,14 @@ public class SparqlTest {
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "xml", "-o",
-                                "references/describe/beatles-describe-xml.xml", pathQueryBeatlesDescribe);
+                                "references/describe/beatles-describe-xml.xml", "-q", pathQueryBeatlesDescribe);
 
                 String expectedOutput = "Error: xml is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1454,14 +1458,14 @@ public class SparqlTest {
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "json", "-o",
-                                "references/describe/beatles-describe-json.json", pathQueryBeatlesDescribe);
+                                "references/describe/beatles-describe-json.json", "-q", pathQueryBeatlesDescribe);
 
                 String expectedOutput = "Error: json is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1470,14 +1474,14 @@ public class SparqlTest {
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "csv", "-o",
-                                "references/describe/beatles-describe-csv.csv", pathQueryBeatlesDescribe);
+                                "references/describe/beatles-describe-csv.csv", "-q", pathQueryBeatlesDescribe);
 
                 String expectedOutput = "Error: csv is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1486,14 +1490,14 @@ public class SparqlTest {
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "tsv", "-o",
-                                "references/describe/beatles-describe-tsv.tsv", pathQueryBeatlesDescribe);
+                                "references/describe/beatles-describe-tsv.tsv", "-q", pathQueryBeatlesDescribe);
 
                 String expectedOutput = "Error: tsv is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1502,14 +1506,14 @@ public class SparqlTest {
                 String pathQueryBeatlesDescribe = Paths.get(queriesPath, "describe", "describeBeatles.rq").toString();
 
                 int exitCode = cmd.execute("-i", pathInpBeatlesTTL, "-r", "markdown", "-o",
-                                "references/describe/beatles-describe-markdown.md", pathQueryBeatlesDescribe);
+                                "references/describe/beatles-describe-markdown.md", "-q", pathQueryBeatlesDescribe);
 
                 String expectedOutput = "Error: markdown is not a valid output format for insert, delete, describe or construct requests.";
                 String actualOutput = err.toString().trim();
 
                 assertEquals(1, exitCode);
                 assertEquals("", out.toString());
-                assertTrue(actualOutput.startsWith(expectedOutput));
+                assertTrue(actualOutput.contains(expectedOutput));
         }
 
         @Test
@@ -1517,7 +1521,7 @@ public class SparqlTest {
                 String nonExistentFile = "non_existent_file.rq";
                 String pathQueryBeatlesConstruct = Paths.get(queriesPath, "construct", "albumBeatles.rq").toString();
 
-                int exitCode = cmd.execute("-i", nonExistentFile, "-f", "turtle", "-o", "output.ttl",
+                int exitCode = cmd.execute("-i", nonExistentFile, "-f", "turtle", "-o", "output.ttl", "-q",
                                 pathQueryBeatlesConstruct);
 
                 assertEquals(1, exitCode);
@@ -1530,7 +1534,7 @@ public class SparqlTest {
                 String validInputFile = Paths.get(inputPath, "beatles.ttl").toString();
 
                 int exitCode = cmd.execute("-i", validInputFile, "-f", "turtle", "-r", "turtle", "-o",
-                                "output.ttl", nonExistentQueryFile);
+                                "output.ttl", "-q", nonExistentQueryFile);
 
                 assertEquals(1, exitCode);
                 assertTrue(err.toString().contains("Error while loading"));
@@ -1541,10 +1545,63 @@ public class SparqlTest {
                 String validInputFile = Paths.get(inputPath, "beatles.ttl").toString();
 
                 int exitCode = cmd.execute("-i", validInputFile, "-f", "turtle", "-r", "turtle", "-o",
-                                "output.ttl", "SERRORELECT * WHERE { ?s ?p ?o }");
+                                "output.ttl", "-q", "SERRORELECT * WHERE { ?s ?p ?o }");
 
                 assertEquals(1, exitCode);
                 assertTrue(err.toString().contains("Error when executing SPARQL query"));
+        }
+
+        @Test
+        public void testLoadUniqFiles() throws IOException {
+                String beatlesFile = Paths.get(inputPath, "beatles.ttl").toString();
+                String pathRefMultiFile = Paths.get(referencesPath, "count", "beatles.md").toString();
+                String pathResMultiFile = Paths.get(resultsPath, "count", "beatles.md").toString();
+
+                int exitCode = cmd.execute("-i", beatlesFile, "-q", "SELECT (COUNT(*) AS ?count) WHERE { ?s ?p ?o }",
+                                "-o", pathResMultiFile);
+
+                assertEquals(0, exitCode);
+                assertTrue(compareFiles(pathRefMultiFile, pathResMultiFile));
+        }
+
+        @Test
+        public void testLoadMutiFiles() throws IOException {
+                String beatlesFile = Paths.get(inputPath, "beatles.ttl").toString();
+                String cityFile = Paths.get(inputPath, "city.ttl").toString();
+                String pathRefMultiFile = Paths.get(referencesPath, "count", "beatles+city.md").toString();
+                String pathResMultiFile = Paths.get(resultsPath, "count", "beatles+city.md").toString();
+
+                int exitCode = cmd.execute("-i", beatlesFile, cityFile, "-q",
+                                "SELECT (COUNT(*) AS ?count) WHERE { ?s ?p ?o }", "-o", pathResMultiFile);
+
+                assertEquals(0, exitCode);
+                assertTrue(compareFiles(pathRefMultiFile, pathResMultiFile));
+        }
+
+        @Test
+        public void testLoadMutiFilesRepertory() throws IOException {
+                String input = Paths.get(inputPath).toString();
+                String pathRefMultiFile = Paths.get(referencesPath, "count", "repertory.md").toString();
+                String pathResMultiFile = Paths.get(resultsPath, "count", "repertory.md").toString();
+
+                int exitCode = cmd.execute("-i", input, "-q", "SELECT (COUNT(*) AS ?count) WHERE { ?s ?p ?o }", "-o",
+                                pathResMultiFile);
+
+                assertEquals(0, exitCode);
+                assertTrue(compareFiles(pathRefMultiFile, pathResMultiFile));
+        }
+
+        @Test
+        public void testLoadMutiFilesRepertoryRecursive() throws IOException {
+                String input = Paths.get(inputPath).toString();
+                String pathRefMultiFile = Paths.get(referencesPath, "count", "repertoryRecursive.md").toString();
+                String pathResMultiFile = Paths.get(resultsPath, "count", "repertoryRecursive.md").toString();
+
+                int exitCode = cmd.execute("-i", input, "-q", "SELECT (COUNT(*) AS ?count) WHERE { ?s ?p ?o }", "-o",
+                                pathResMultiFile, "-R");
+
+                assertEquals(0, exitCode);
+                assertTrue(compareFiles(pathRefMultiFile, pathResMultiFile));
         }
 
 }

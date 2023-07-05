@@ -57,9 +57,8 @@ public class Convert implements Runnable {
             loadInputFile();
             exportGraph();
         } catch (IllegalArgumentException | IOException e) {
-            LOGGER.log(Level.SEVERE, "Error occurred during conversion", e);
-            spec.commandLine().getErr().println(e.getMessage());
-            throw new ExitCodeException(EXIT_CODE_ERROR, e.getMessage());
+            System.err.println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
+            System.exit(EXIT_CODE_ERROR);
         }
     }
 

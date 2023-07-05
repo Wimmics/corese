@@ -1,41 +1,54 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<!-- To override this configuration, add the following option to the JVM:
-     -Dlog4j.configurationFile=file:/path/log4j2.xml -->
+<!-- This configuration file handles the logging settings for the application -->
 
 <Configuration status="info">
 
   <Appenders>
 
-    <Console name="STDOUT">
-      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %C{2}.%M:%L %x - %m%n"/>
+    <!-- Appender for STDOUT (standard output). -->
+    <!-- This means the logs will be sent to the console. -->
+    <!-- The log format is defined in the patternLayout. -->
+    <Console name="STDOUT" target="SYSTEM_OUT">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %C{2}.%M:%L %x - %m%n" />
     </Console>
 
-    <RollingFile name="FILE" fileName="log/corese-server.log" filePattern="log/corese-server.log.%d{yyyy-MM-dd-HH:mm:ss}-%i.gz">
-      <PatternLayout>
-        <Pattern>%d{yyyy-MM-dd HH:mm:ss} %-5p %C{2}.%M:%L %x - %m%n</Pattern>
-      </PatternLayout>
+    <!-- Appender for a file. -->
+    <!-- Logs will be written to the file specified in fileName. -->
+    <!-- Old log files will be renamed according to the filePattern. -->
+    <!-- The maximum size of a log file before a new file is created is defined in size. -->
+    <RollingFile name="FILE" fileName="logs/corese-server.log"
+      filePattern="logs/corese-server-%d{yyyy-MM-dd-HH}.log.gz">
+      <PatternLayout pattern="%d{yyyy-MM-dd HH:mm:ss} %-5p %C{2}.%M:%L %x - %m%n" />
       <Policies>
-        <SizeBasedTriggeringPolicy size="20 MB"/>
+        <SizeBasedTriggeringPolicy size="20 MB" />
       </Policies>
+      <!-- Here, we are limiting the number of log files to keep to 20. -->
+      <DefaultRolloverStrategy max="20" />
     </RollingFile>
-
   </Appenders>
 
   <Loggers>
+    <!-- Default configuration for logs. -->
+    <!-- Here, we have set the default log level to 'info' and added two appenders to this logger. -->
     <Root level="info">
-      <AppenderRef ref="STDOUT"/>
-      <AppenderRef ref="FILE"/>
+      <AppenderRef ref="STDOUT" />
+      <AppenderRef ref="FILE" />
     </Root>
 
-    <Logger name="fr.inria.edelweiss.kgramserver.webservice" level="debug"/>
-<!--
+    <!-- Specific log configuration for certain packages. -->
+    <!-- Here, we have set the log level to 'debug' for 'fr.inria.edelweiss.kgramserver.webservice'. -->
+    <Logger name="fr.inria.edelweiss.kgramserver.webservice" level="debug" />
+
+    <!-- Other log configurations can be added as below. -->
+    <!-- These lines are currently commented out. -->
+    <!--
     <Logger name="com.hp.hpl.jena" level="warn"/>
     <Logger name="org.openjena" level="warn"/>
     <Logger name="org.eclipse.jetty" level="warn"/>
     <Logger name="org.apache.http" level="warn"/>
     <Logger name="fr" level="info"/>
--->
+    -->
   </Loggers>
 
 </Configuration>

@@ -6,7 +6,7 @@ PROFILE=$CORESE/config/corese-profile.ttl
 PROPERTIES=$CORESE/config/corese-properties.properties
 OPTIONS=${OPTIONS:-}
 
-LOG4J=file://$CORESE/log4j2.xml
+LOG4J=$CORESE/config/log4j2.xml
 DATA=$CORESE/data
 LOG=$CORESE/log/corese-server.log
 
@@ -26,6 +26,14 @@ function genLoadData() {
 }
 
 echo "======================================================================" >>$LOG
+
+# Check existing log4j properties file or create a new one
+if [ -f "$LOG4J" ]; then
+    echo "Using user-defined log4j properties file." >>$LOG
+else
+    echo "Creating new log4j properties file." >>$LOG
+    cp $CORESE/log4j2.xml $LOG4J
+fi
 
 # Check if JVM heap space if given in the env
 if [ -z "$JVM_XMX" ]; then
@@ -63,7 +71,7 @@ cd $CORESE
 java \
     $XMX \
     -Dfile.encoding="UTF-8" \
-    -Dlog4j.configurationFile=$LOG4J \
+    -Dlog4j.configurationFile=file:$LOG4J \
     -jar $JAR \
     -p 8080 \
     -lp \

@@ -66,7 +66,7 @@ public class Sparql implements Runnable {
     private Graph graph;
 
     private boolean resultFormatIsDefined = false;
-    private boolean outputFormatIsDefined = false;
+    private boolean outputPathIsDefined = false;
     private boolean isDefaultOutputName = false;
 
     private EnumResultFormat defaultRdfBidings = EnumResultFormat.TURTLE;
@@ -79,7 +79,7 @@ public class Sparql implements Runnable {
     public void run() {
         try {
             resultFormatIsDefined = resultFormat != null;
-            outputFormatIsDefined = output != null;
+            outputPathIsDefined = output != null;
             isDefaultOutputName = output == null || DEFAULT_OUTPUT_FILE_NAME.equals(output.toString());
             loadInputFile();
             loadQuery();
@@ -243,7 +243,7 @@ public class Sparql implements Runnable {
         }
 
         // Set output file name
-        if (this.outputFormatIsDefined && !this.isDefaultOutputName) {
+        if (this.outputPathIsDefined && !this.isDefaultOutputName) {
             outputFileName = this.output;
         } else {
             outputFileName = Path.of(DEFAULT_OUTPUT_FILE_NAME + "." + this.resultFormat.getExtention());
@@ -252,17 +252,26 @@ public class Sparql implements Runnable {
         // Export results
         if (isUpdate) {
             EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
-            if (this.outputFormatIsDefined) {
+            if (this.outputPathIsDefined) {
                 GraphUtils.exportToFile(graph, outputFormat, outputFileName);
             } else {
-                GraphUtils.exportToStdout(graph, outputFormat, spec);
+                // if no output format is defined
+                // if print results to stdout
+                // then print true if the update was successful or false otherwise
+                if (!resultFormatIsDefined) {
+                    spec.commandLine().getOut().println(!map.isEmpty());
+                    spec.commandLine().getOut()
+                            .println("Precise result format with --resultFormat option to print the result.");
+                } else {
+                    GraphUtils.exportToStdout(graph, outputFormat, spec);
+                }
             }
         } else {
             ResultFormat resultFormater = ResultFormat.create(map);
             resultFormater.setSelectFormat(this.resultFormat.getValue());
             resultFormater.setConstructFormat(this.resultFormat.getValue());
 
-            if (this.outputFormatIsDefined) {
+            if (this.outputPathIsDefined) {
                 resultFormater.write(outputFileName.toString());
             } else {
                 String result = resultFormater.toString();

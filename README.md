@@ -4,6 +4,12 @@
 <!-- markdownlint-disable MD012 -->
 <!-- markdownlint-disable MD041 -->
 
+<!-- change-me : update DOI -->
+[![Project Status: Active – The project has reached a stable, usable state and is being actively developed.](https://www.repostatus.org/badges/latest/active.svg)](https://www.repostatus.org/#active) [![DOI](https://sandbox.zenodo.org/badge/286216417.svg)](https://sandbox.zenodo.org/change-me) [![SWH](https://archive.softwareheritage.org/badge/swh:1:dir:1bd99c33b0566571c5e1fd4f9e3cd91085736b74/)](https://archive.softwareheritage.org/swh:1:dir:1bd99c33b0566571c5e1fd4f9e3cd91085736b74;origin=https://github.com/Wimmics/corese;visit=swh:1:snp:20a97a90d691f39ed1f84e98b2379f8b9ea33bb7;anchor=swh:1:rev:509eecee95fd0fef7aea5b88b516478084af1eef) [![License: CECILL-C](https://img.shields.io/badge/License-CECILL--C-blue.svg)](https://cecill.info/licences/Licence_CeCILL-C_V1-en.html) [![Discussions](https://img.shields.io/badge/Discussions-GitHub-blue)](https://github.com/Wimmics/corese/discussions)
+
+
+
+
 <p align="center">
     <a href="https://project.inria.fr/corese/">
         <img src="https://user-images.githubusercontent.com/5692787/151987397-316a61f0-8098-4d37-a4e8-69180e33261a.svg" width="300" height="149" alt="Corese-logo">

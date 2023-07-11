@@ -1,0 +1,72 @@
+{
+    "@context": "https://doi.org/10.5063/schema/codemeta-2.0",
+    "@type": "SoftwareSourceCode",
+    "license": "https://spdx.org/licenses/CECILL-C.html",
+    "codeRepository": "https://github.com/Wimmics/corese",
+    "dateCreated": "1999-07-01",
+    "datePublished": "2000-07-01",
+    "dateModified": "2023-03-30",
+    "downloadUrl": "https://project.inria.fr/corese/download/",
+    "issueTracker": "https://github.com/Wimmics/corese/issues",
+    "name": "Corese",
+    "version": "4.4.0",
+    "identifier": "swh:1:dir:1bd99c33b0566571c5e1fd4f9e3cd91085736b74", // change-me to zenodo doi
+    "description": "Corese is a software platform that implements and expands upon the standards of the Semantic Web. It provides a wide range of functionalities, including the ability to create, manipulate, parse, serialize, query, reason, and validate RDF data. With Corese, users can effectively work with Semantic Web technologies and leverage the full potential of RDF data.",
+    "applicationCategory": " Semantic Web",
+    "developmentStatus": "active",
+    "funder": {
+        "@type": "Organization",
+        "name": "INRIA"
+    },
+    "keywords": [
+        "semantic-web",
+        "sqparql-endpoints",
+        "linked-data",
+        "web-of-data",
+        "sparql-client",
+        "rdf",
+        "rdfs",
+        "shacl"
+    ],
+    "programmingLanguage": ["Java"],
+    "runtimePlatform": ["JVM"],
+    "operatingSystem": ["Linux", "Windows", "MacOs"],
+    "softwareRequirements": ["https://github.com/Wimmics/corese/blob/master/pom.xml"],
+    "relatedLink": ["https://project.inria.fr/corese/", "https://github.com/Wimmics/corese/discussions"],
+    "author": [
+        {
+            "@type": "Person",
+            "@id": "https://orcid.org/0000-0001-6610-0969",
+            "givenName": "Olivier",
+            "familyName": "Corby",
+            "email": "olivier.corby@inria.fr",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Institut national de recherche en informatique et en automatique (INRIA)"
+            }
+        }
+    ],
+    "contributor": [
+        {
+            "@type": "Person",
+            "@id": "https://orcid.org/0009-0003-8946-4601",
+            "givenName": "Rémi",
+            "familyName": "Cérès",
+            "email": "remi.ceres@inria.fr",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Institut national de recherche en informatique et en automatique (INRIA)"
+            }
+        },
+        {
+            "@type": "Person",
+            "givenName": "Erwan",
+            "familyName": "Demairy",
+            "email": "erwan.demairy@inria.fr",
+            "affiliation": {
+                "@type": "Organization",
+                "name": "Institut national de recherche en informatique et en automatique (INRIA)"
+            }
+        }
+    ]
+}

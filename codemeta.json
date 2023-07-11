@@ -9,7 +9,7 @@
     "downloadUrl": "https://project.inria.fr/corese/download/",
     "issueTracker": "https://github.com/Wimmics/corese/issues",
     "name": "Corese",
-    "version": "4.4.0",
+    "version": "4.4.1",
     "identifier": "swh:1:dir:1bd99c33b0566571c5e1fd4f9e3cd91085736b74", // change-me to zenodo doi
     "description": "Corese is a software platform that implements and expands upon the standards of the Semantic Web. It provides a wide range of functionalities, including the ability to create, manipulate, parse, serialize, query, reason, and validate RDF data. With Corese, users can effectively work with Semantic Web technologies and leverage the full potential of RDF data.",
     "applicationCategory": " Semantic Web",

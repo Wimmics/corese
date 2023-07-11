@@ -1,6 +1,43 @@
 # Corese Changelog
 
-## 4.4.0 – 2021/03/30 – Storage update
+## 4.4.1 – 2023/07/13
+
+### Added
+
+- URL support as an input file for 'convert' and 'sparql' sub-commands in Corese-command.
+- Standard input support as an input file for 'sparql' and 'convert' sub-commands in Corese-command.
+- Standard output support as an output file for 'sparql' and 'convert' sub-commands in Corese-command.
+- Multiple files support as input for 'sparql' sub-command in Corese-command.
+- Directory and recursive directory support as an input file for 'sparql' sub-command in Corese-command.
+- Support for all types of queries (SELECT, CONSTRUCT, ASK, DESCRIBE, INSERT, DELETE, INSERT WHERE, DELETE WHERE) for 'sparql' sub-command in Corese-command.
+- User choice for result format for 'sparql' sub-command in Corese-command.
+- Markdown output format for 'sparql' sub-command in Corese-command.
+- Mime type support as a format name in Corese-command.
+- Configuration to disable owl:imports auto import.
+- Option to pass custom options to Corese-server with the Docker image.
+- Option to customize the log level of Corese-server with the Docker image.
+
+### Changes
+
+- Refactored 'convert' and 'sparql' sub-commands in Corese-command.
+- Renamed format name for more consistency in Corese-command.
+
+### Removed
+
+- 'owlProfile' and 'ldscript' sub-commands from Corese-command (To be reintroduced in a future release after refactoring).
+
+### Fixed
+
+- Warning: `sun.reflect.Reflection.getCallerClass is not supported. This will impact performance.`
+- Error code usage in Corese-command.
+
+### Security
+
+- Updated json from 20180813 to 20230227 in /sparql (see [Pull Request #123](https://github.com/Wimmics/corese/pull/123)).
+- Updated json from 20180813 to 20230227 in /corese-test (see [Pull Request #124](https://github.com/Wimmics/corese/pull/124)).
+- Updated guava from 31.1-jre to 32.0.0-jre in /corese-jena (see [Pull Request #128](https://github.com/Wimmics/corese/pull/128)).
+
+## 4.4.0 – 2023/03/30 – Storage update
 
 ### Added
 

@@ -1,14 +1,13 @@
 package fr.inria.corese.command;
 
 import fr.inria.corese.command.programs.Convert;
-import fr.inria.corese.command.programs.LDScript;
-import fr.inria.corese.command.programs.Profile;
 import fr.inria.corese.command.programs.Sparql;
 import picocli.CommandLine;
 import picocli.CommandLine.Command;
 
 @Command(name = "Corese-command", version = App.version, mixinStandardHelpOptions = true, subcommands = {
-        Convert.class, Sparql.class, Profile.class, LDScript.class,
+        Convert.class, Sparql.class,
+        // Profile.class, LDScript.class,
 })
 
 public final class App implements Runnable {

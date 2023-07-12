@@ -72,7 +72,7 @@ docker run --name my-corese \
     -d wimmics/corese
 ```
 
-- Download [Corese-server jar file](https://project.inria.fr/corese/download/).
+- Alternatively, download [Corese-server jar file](https://project.inria.fr/corese/download/).
 
 ```sh
 wget "files.inria.fr/corese/distrib/corese-server-4.4.1.jar"
@@ -108,6 +108,20 @@ wget "files.inria.fr/corese/distrib/corese-command-4.4.1.jar"
 java -jar "-Dfile.encoding=UTF8" "corese-command-4.4.1.jar"
 ```
 
+- Alternatively, use the installation script for Linux and MacOS systems.
+
+```sh
+curl -sSL https://files.inria.fr/corese/distrib/script/install-corese-command.sh | bash
+```
+
+To uninstall:
+
+```sh
+curl -sSL https://files.inria.fr/corese/distrib/script/uninstall-corese-command.sh | bash
+```
+
+> If you're using zsh, replace `bash` with `zsh`.
+
 ## Compilation from source
 
 Download source code and compile.
@@ -120,18 +134,7 @@ mvn clean install
 
 ## How to cite Corese
 
-<!-- Change-https://github.com/Wimmics/coreseme: use the GitHub citation system instead -->
-```bibtex
-@misc{corese,
-    author = {Corby, Olivier and Ceres, Rémi and Demairy, Erwan and Song, Fuqi and Bottollier, Virginie and Savoie, Olivier},
-    title = {{Corese: Semantic Web Factory}},
-    howpublished = {\url{https://project.inria.fr/corese/}},
-    version = {4.4.1},
-    institution = {Inria},
-    abstract = {{Software platform implementing and extending the standards of the Semantic Web.}},
-    url = {https://github.com/Wimmics/corese}
-}
-```
+Use the "Cite this repository" option on the right side of this page.
 
 ## Contributions and discussions
 

@@ -115,11 +115,12 @@ Download source code and compile.
 ```shell
 git clone "https://github.com/Wimmics/corese.git"
 cd corese
-mvn clean -Dmaven.test.skip=true package
+mvn clean install
 ```
 
 ## How to cite Corese
 
+<!-- Change-https://github.com/Wimmics/coreseme: use the GitHub citation system instead -->
 ```bibtex
 @misc{corese,
     author = {Corby, Olivier and Ceres, Rémi and Demairy, Erwan and Song, Fuqi and Bottollier, Virginie and Savoie, Olivier},

@@ -33,7 +33,7 @@ identifiers:
 repository-code: 'https://github.com/Wimmics/corese'
 url: 'https://project.inria.fr/corese'
 abstract: >-
-    Corese is a software platform that implements and expands upon the standards of the Semantic Web. It provides a wide range of functionalities, including the ability to create, manipulate, parse, serialize, query, reason, and validate RDF data. With Corese, users can effectively work with Semantic Web technologies and leverage the full potential of RDF data.
+    Corese is a software platform that implements and extends the standards of the Semantic Web established by the W3C, such as RDF, RDFS, SPARQL1.1 Query & Update, OWL RL, SHACL, and others. This platform offers a wide range of functionalities for creating, manipulating, analyzing, serializing, querying, reasoning, and validating RDF data. Furthermore, Corese provides advanced extensions like STTL SPARQL, SPARQL Rule, and LDScript, which expand the functionalities and data processing capabilities.
 keywords:
     - semantic-web
     - sqparql-endpoints

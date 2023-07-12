@@ -313,7 +313,6 @@ public class SPARQLRestAPI implements ResultFormatDef, URLParam {
         
         logger.info("getTriplesXMLForGet" );
         String ft = request.getHeader("Accept");
-        System.out.println("accept: " + ft);
         if (ft.contains(SPARQL_RESULTS_XML) || ft.contains(XML)) {
             // Explicit @Produces, skip format parameter 
             format = SPARQL_RESULTS_XML;

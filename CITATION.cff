@@ -12,19 +12,19 @@ authors:
       family-names: Cérès
       email: remi.ceres@inria.fr
       affiliation: >-
-          Institut national de recherche en informatique et en
-          automatique (INRIA)
+          Inira
       orcid: 'https://orcid.org/0009-0003-8946-4601'
     - given-names: Olivier
       family-names: Corby
       email: olivier.corby@inria.fr
       affiliation: >-
-          Institut national de recherche en informatique et en
-          automatique (INRIA)
+          Inria
       orcid: 'https://orcid.org/0000-0001-6610-0969'
     - family-names: Demairy
       given-names: Erwan
       email: erwan.demairy@inria.fr
+      affiliation: >-
+          Inria
 identifiers:
     - type: swh
       value: 'swh:1:dir:1bd99c33b0566571c5e1fd4f9e3cd91085736b74'

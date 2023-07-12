@@ -14,10 +14,28 @@
     "description": "Corese is a software platform that implements and expands upon the standards of the Semantic Web. It provides a wide range of functionalities, including the ability to create, manipulate, parse, serialize, query, reason, and validate RDF data. With Corese, users can effectively work with Semantic Web technologies and leverage the full potential of RDF data.",
     "applicationCategory": " Semantic Web",
     "developmentStatus": "active",
-    "funder": {
-        "@type": "Organization",
-        "name": "INRIA"
-    },
+    "referencePublication": [
+        "https://hal.science/hal-01531219",
+        "https://hal.science/hal-01822512",
+        "https://hal.science/inria-00070387"
+    ],
+    "funder": [
+        {
+            "@type": "Organization",
+            "name": "Inria",
+            "@id": "https://ror.org/02kvxyf05"
+        },
+        {
+            "@type": "Organization",
+            "name": "University Côte d'Azur",
+            "@id": "https://ror.org/0496p8026"
+        },
+        {
+            "@type": "Organization",
+            "name": "CNRS",
+            "@id": "https://ror.org/04zzdbj59"
+        }
+    ],
     "keywords": [
         "semantic-web",
         "sqparql-endpoints",

@@ -129,7 +129,7 @@ Download source code and compile.
 ```shell
 git clone "https://github.com/Wimmics/corese.git"
 cd corese
-mvn clean install
+mvn clean install -DskipTests
 ```
 
 ## How to cite Corese

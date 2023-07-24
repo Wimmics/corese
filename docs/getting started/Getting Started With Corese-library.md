@@ -10,32 +10,37 @@ The fourth part shows how to transforme a graph with the extension language [SPA
 The fifth part details how to apply a set of rules on a graph using the [SPARQL Rule](https://files.inria.fr/corese/doc/rule.html) extension language.
 Finally, the sixth part describes how to define and use functions with the [LDScript](https://files.inria.fr/corese/doc/ldscript.html) extension language.
 
-- [Getting Started With Corese-library](#getting-started-with-corese-library)
-  - [1. Graph](#1-graph)
-    - [1.1. Build a Graph by program](#11-build-a-graph-by-program)
-    - [1.2. Load Graph from file](#12-load-graph-from-file)
-    - [1.3. Export Graph to file](#13-export-graph-to-file)
-  - [2. SPARQL Protocol and RDF Query Language](#2-sparql-protocol-and-rdf-query-language)
-    - [2.1. SPARQL Select query](#21-sparql-select-query)
-    - [2.2. SPARQL Ask query](#22-sparql-ask-query)
-    - [2.3. SPARQL Construct query](#23-sparql-construct-query)
-    - [2.4. SPARQL Update query](#24-sparql-update-query)
-  - [3. Shapes Constraint Language (SHACL)](#3-shapes-constraint-language-shacl)
-  - [4. SPARQL Template Transformation Language (STTL)](#4-sparql-template-transformation-language-sttl)
-    - [4.1. Transform a graph in a visual HTML format](#41-transform-a-graph-in-a-visual-html-format)
-  - [5. SPARQL Rule](#5-sparql-rule)
-    - [5.1. Load rules from a file](#51-load-rules-from-a-file)
-    - [5.2. OWL Rules](#52-owl-rules)
-  - [6. LDScript](#6-ldscript)
-    - [6.1. Fibonacci function call from Java](#61-fibonacci-function-call-from-java)
-    - [6.2. LDScript in SPARQL](#62-ldscript-in-sparql)
-    - [6.3. Advanced example](#63-advanced-example)
+1. [Getting Started With Corese-library](#getting-started-with-corese-library)
+   1. [1. Installation](#1-installation)
+   2. [2. Graph](#2-graph)
+      1. [2.1. Build a Graph by program](#21-build-a-graph-by-program)
+      2. [2.2. Load Graph from file](#22-load-graph-from-file)
+      3. [2.3. Export Graph to file](#23-export-graph-to-file)
+   3. [3. SPARQL Protocol and RDF Query Language](#3-sparql-protocol-and-rdf-query-language)
+      1. [3.1. SPARQL Select query](#31-sparql-select-query)
+      2. [3.2. SPARQL Ask query](#32-sparql-ask-query)
+      3. [3.3. SPARQL Construct query](#33-sparql-construct-query)
+      4. [3.4. SPARQL Update query](#34-sparql-update-query)
+   4. [4. Shapes Constraint Language (SHACL)](#4-shapes-constraint-language-shacl)
+   5. [5. SPARQL Template Transformation Language (STTL)](#5-sparql-template-transformation-language-sttl)
+      1. [5.1. Transform a graph in a visual HTML format](#51-transform-a-graph-in-a-visual-html-format)
+   6. [6. SPARQL Rule](#6-sparql-rule)
+      1. [6.1. Load rules from a file](#61-load-rules-from-a-file)
+      2. [6.2. OWL Rules](#62-owl-rules)
+   7. [7. LDScript](#7-ldscript)
+      1. [7.1. Fibonacci function call from Java](#71-fibonacci-function-call-from-java)
+      2. [7.2. LDScript in SPARQL](#72-ldscript-in-sparql)
+      3. [7.3. Advanced example](#73-advanced-example)
 
-## 1. Graph
+## 1. Installation
+
+Installations instructions are available on the [Corese-Command GitHub repository](https://github.com/Wimmics/corese).
+
+## 2. Graph
 
 This section describes how to create a graph manually, load a graph from file and serialize a graph to file.
 
-### 1.1. Build a Graph by program
+### 2.1. Build a Graph by program
 
 > It is also possible to use the [RDF4J Model API](https://notes.inria.fr/s/OB038LBLV#11-build-a-corese-model-manually) to create and manipulate a graph.
 
@@ -93,7 +98,7 @@ graph.addEdge(edithPiafIRI, firstNameProperty, edithDatatype);
 graph.addEdge(edithPiafIRI, lastNameProperty, piafDatatype);
 ```
 
-### 1.2. Load Graph from file
+### 2.2. Load Graph from file
 
 This example shows how to load a graph from a file.
 Corese Loader can load formats :
@@ -114,7 +119,7 @@ Load ld = Load.create(graph);
 ld.parse("input graph file path");
 ```
 
-### 1.3. Export Graph to file
+### 2.3. Export Graph to file
 
 This example shows how to serialize a graph in file, here in TURTLE format.
 
@@ -132,11 +137,11 @@ Corese Transformer can serialize graphs in different formats :
 - RDF/XML `Transformer.RDFXML`
 - TURTLE `Transformer.TURTLE`
 
-## 2. SPARQL Protocol and RDF Query Language
+## 3. SPARQL Protocol and RDF Query Language
 
 This section describes how to query a graph with [SPARQL](https://www.w3.org/TR/sparql11-query/) in Corese.
 
-### 2.1. SPARQL Select query
+### 3.1. SPARQL Select query
 
 This example shows how to execute a SPARQL SELECT query, print and export results.
 
@@ -204,7 +209,7 @@ ResultFormat result_xml = ResultFormat.create(map);
 result_xml.write("output file path");
 ```
 
-### 2.2. SPARQL Ask query
+### 3.2. SPARQL Ask query
 
 This example shows how to execute a SPARQL ASK query and print results.
 
@@ -224,7 +229,7 @@ Print results:
 system.out.println(!map.isEmpty());
 ```
 
-### 2.3. SPARQL Construct query
+### 3.3. SPARQL Construct query
 
 ```java
 // We assume that the 'graph' variable has been define previously
@@ -261,7 +266,7 @@ ResultFormat result_xml = ResultFormat.create(map);
 result_xml.write("output file path");
 ```
 
-### 2.4. SPARQL Update query
+### 3.4. SPARQL Update query
 
 ```java
 // We assume that the 'graph' variable has been define previously
@@ -282,7 +287,7 @@ exec.query("""
 );
 ```
 
-## 3. Shapes Constraint Language (SHACL)
+## 4. Shapes Constraint Language (SHACL)
 
 This section show how to validate a graph with the [Shapes Constraint Language (SHACL) in _Corese_](https://www.w3.org/TR/shacl/).
 The example below shows us how to load a shapes graph (SHACL file), check the validity of the data graph and finally print results.
@@ -370,11 +375,11 @@ ex:PersonShape
     sh:conforms true] .
 ```
 
-## 4. SPARQL Template Transformation Language (STTL)
+## 5. SPARQL Template Transformation Language (STTL)
 
 This sections shows how to transforme a graph with a subset of the extension language [SPARQL Template Transformation Language (STTL)](https://files.inria.fr/corese/doc/sttl.html).
 
-### 4.1. Transform a graph in a visual HTML format
+### 5.1. Transform a graph in a visual HTML format
 
 This example detail how load a data graph from a file, transforme it in a visual HTML format and export the result in a file.
 
@@ -451,11 +456,11 @@ order by ?s ?p ?o
 | <http://example.org/EdithPiaf> | <http://example.org/lastName>                     | Piaf                        |
 | <http://example.org/EdithPiaf> | <http://www.w3.org/1999/02/22-rdf-syntax-ns#type> | <http://example.org/Singer> |
 
-## 5. SPARQL Rule
+## 6. SPARQL Rule
 
 This section details how to apply a set of rules on a graph using the [SPARQL Rule extension language](https://files.inria.fr/corese/doc/rule.html).
 
-### 5.1. Load rules from a file
+### 6.1. Load rules from a file
 
 The example below shows the application of two rules (symmetry and transitivity) on a simple graph.
 
@@ -565,7 +570,7 @@ graph LR;
     linkStyle 4,2 stroke:#a3ddcb,stroke-width:3px;
 ```
 
-### 5.2. OWL Rules
+### 6.2. OWL Rules
 
 The example below shows the application of OWL RL rules.
 
@@ -578,11 +583,11 @@ engine.setProfile(RuleEngine.OWL_RL);
 engine.process();
 ```
 
-## 6. LDScript
+## 7. LDScript
 
 This section describes how to define and use functions with the [LDScript extension language](https://files.inria.fr/corese/doc/ldscript.html).
 
-### 6.1. Fibonacci function call from Java
+### 7.1. Fibonacci function call from Java
 
 This example shows how to define and compute the twelfth number of the Fibonnacci sequence.
 
@@ -624,7 +629,7 @@ prefix fun: <http://ns.inria.fr/>
 }
 ```
 
-### 6.2. LDScript in SPARQL
+### 7.2. LDScript in SPARQL
 
 This example shows how to call an LDScript function from a SPARQL query.
 
@@ -658,7 +663,7 @@ QueryProcess exec = QueryProcess.create(graph);
 Mappings map = exec.query(check_query);
 ```
 
-### 6.3. Advanced example
+### 7.3. Advanced example
 
 The java program below computes the percentage of people subscribed to social networks of city compared to its number of inhabitants.
 Data is collected from Wikidata.

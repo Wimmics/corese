@@ -60,7 +60,10 @@ There are several interfaces for Corese:
 </dependency>
 ```
 
-Documentation: [Getting Started With Corese-library](https://notes.inria.fr/s/hiiedLfVe#)
+Documentation:
+
+- [Getting Started With Corese-library](/docs/getting%20started/Getting%20Started%20With%20Corese-library.md)
+- [Corese-library with Python](/docs/corese-python/Corese-library%20with%20Python.md)
 
 ### Corese-server
 
@@ -79,7 +82,10 @@ wget "files.inria.fr/corese/distrib/corese-server-4.4.1.jar"
 java -jar "-Dfile.encoding=UTF8" "corese-server-4.4.1.jar"
 ```
 
-Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/SoyFglO_1#)
+Documentation:
+
+- [Getting Started With Corese-server](/docs/getting%20started/Getting%20Started%20With%20Corese-server.md)
+- [Corese-server with Python](/docs/corese-python/Corese-server%20with%20Python.md)
 
 ### Corese-GUI
 
@@ -89,6 +95,10 @@ Documentation: [Getting Started With Corese-server](https://notes.inria.fr/s/Soy
 wget "files.inria.fr/corese/distrib/corese-gui-4.4.1.jar"
 java -jar "-Dfile.encoding=UTF8" "corese-gui-4.4.1.jar"
 ```
+
+Documentation:
+
+- [Getting Started With Corese-command](/docs/getting%20started/Getting%20Started%20With%20Corese-command.md)
 
 ### Corese-Python (beta)
 

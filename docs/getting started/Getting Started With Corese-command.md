@@ -284,5 +284,7 @@ The `convert` command supports the following formats for input and output:
 For any command, you can use the `-h` or `--help` flag to get a description and the syntax. This is also available for the general `corese-command` and each specific sub-command.
 
 ```shell
-corese-command -h corese-command sparql -h corese-command convert -h
+corese-command -h
+corese-command sparql -h
+corese-command convert -h
 ```

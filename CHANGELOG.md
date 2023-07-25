@@ -1,6 +1,6 @@
 # Corese Changelog
 
-## 4.4.1 – 2023/07/25
+## 4.4.1 – 2023/07/25 – Corese-command update
 
 ### Added
 

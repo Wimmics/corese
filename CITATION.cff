@@ -27,9 +27,9 @@ authors:
           Inria
 identifiers:
     - type: swh
-      value: 'swh:1:dir:1bd99c33b0566571c5e1fd4f9e3cd91085736b74'
+      value: swh:1:dir:2319e6ec1867816ffb87fa5e8bef3b6a41e4e6ce
     - type: doi
-      value: CHANGE-ME
+      value: 10.5281/zenodo.8181618
 repository-code: 'https://github.com/Wimmics/corese'
 url: 'https://project.inria.fr/corese'
 abstract: >-

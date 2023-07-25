@@ -20,7 +20,7 @@ Corese-Command is designed to simplify and streamline tasks related to querying 
       1. [4.1. Basic Usage](#41-basic-usage)
       2. [4.2. Different Types of Input](#42-different-types-of-input)
       3. [4.3. Different Types of Output](#43-different-types-of-output)
-      4. [4.4. Supported Formats](#44-supported-formats)
+      4. [4.4. Resume of Available Formats](#44-resume-of-available-formats)
    5. [5. Get Help](#5-get-help)
 
 ## 2. Installation
@@ -106,9 +106,25 @@ The result format can be specified with the `-r` flag. The following formats are
 - Turtle: `turtle` or `text/turtle`
 - TriG: `trig` or `application/trig`
 - JSON-LD: `jsonld` or `application/ld+json`
-- N-Triples: `ntriples` or `application/n-triples`
-- N-Quads: `nquads` or `application/n-quads`
-- Markdown: `markdown` or `text/markdown`
+- XML: `xml` or `application/sparql-results+xml`
+- Json: `json` or `application/sparql-results+json`
+- CSV: `csv` or `text/csv`
+- TSV: `tsv` or `text/tab-separated-values`
+- Markdown: `markdown` or `md` or `text/markdown`
+
+Here is a table of available formats according to the type of request:
+
+| Format   | select | ask | insert | insert-where | delete | delete-where | describe | construct |
+| -------- | ------ | --- | ------ | ------------ | ------ | ------------ | -------- | --------- |
+| rdfxml   | ❌     | ❌  | ✅     | ✅           | ✅     | ✅           | ✅       | ✅        |
+| turtle   | ❌     | ❌  | ✅     | ✅           | ✅     | ✅           | ✅       | ✅        |
+| trig     | ❌     | ❌  | ✅     | ✅           | ✅     | ✅           | ✅       | ✅        |
+| jsonld   | ❌     | ❌  | ✅     | ✅           | ✅     | ✅           | ✅       | ✅        |
+| xml      | ✅     | ✅  | ❌     | ❌           | ❌     | ❌           | ❌       | ❌        |
+| json     | ✅     | ✅  | ❌     | ❌           | ❌     | ❌           | ❌       | ❌        |
+| csv      | ✅     | ✅  | ❌     | ❌           | ❌     | ❌           | ❌       | ❌        |
+| tsv      | ✅     | ✅  | ❌     | ❌           | ❌     | ❌           | ❌       | ❌        |
+| markdown | ✅     | ✅  | ❌     | ❌           | ❌     | ❌           | ❌       | ❌        |
 
 ### 3.3. Different Types of Input
 
@@ -228,13 +244,13 @@ corese-command convert -i myData.ttl -r jsonld
 - **URL Input:** URLs can be specified with the `-i` flag:
 
 ```shell
-corese-command convert -i `http://example.org/myData.ttl` -r jsonld
+corese-command convert -i 'http://example.org/myData.ttl' -r jsonld
 ```
 
 - **Standard Input:** If no input file is specified with `-i`, the program uses the standard input:
 
 ```shell
-cat myData.ttl | corese-command convert -r jsonld
+cat myData.ttl | corese-command convert -r turtle
 ```
 
 > The input file format is automatically detected for file and URL inputs. If the input is provided on the standard input or you want to force the input format, you can use the `-f` flag. Possible values are:
@@ -264,20 +280,27 @@ corese-command convert -i myData.ttl -r jsonld -o myData.jsonld
 corese-command convert -i myData.ttl -r jsonld | jq […]
 ```
 
-### 4.4. Supported Formats
+> The output file format can be specified with the `-r` flag. Possible values are:
+>
+> - `rdfxml`, `application/rdf+xml`
+> - `turtle`, `text/turtle`
+> - `trig`, `application/trig`
+> - `jsonld`, `application/ld+json`
+
+### 4.4. Resume of Available Formats
 
 The `convert` command supports the following formats for input and output:
 
 | Format   | Input Support | Output Support |
 | -------- | ------------- | -------------- |
-| RDFXML   | ✅             | ✅              |
-| Turtle   | ✅             | ✅              |
-| JSONLD   | ✅             | ✅              |
-| TriG     | ✅             | ✅              |
-| N3       | ✅             | ❌              |
-| NTRIPLES | ✅             | ❌              |
-| NQUADS   | ✅             | ❌              |
-| RDFA     | ✅             | ❌              |
+| RDFXML   | ✅             | ✅            |
+| Turtle   | ✅             | ✅            |
+| JSONLD   | ✅             | ✅            |
+| TriG     | ✅             | ✅            |
+| N3       | ✅             | ❌            |
+| NTRIPLES | ✅             | ❌            |
+| NQUADS   | ✅             | ❌            |
+| RDFA     | ✅             | ❌            |
 
 ## 5. Get Help
 

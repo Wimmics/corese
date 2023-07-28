@@ -287,7 +287,7 @@ corese-command convert -i myData.ttl -r jsonld | jq […]
 > - `trig`, `application/trig`
 > - `jsonld`, `application/ld+json`
 
-### 4.4. Resume of Available Formats
+### 4.4. Summary of Available Formats
 
 The `convert` command supports the following formats for input and output:
 

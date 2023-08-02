@@ -260,8 +260,8 @@ public class Sparql implements Runnable {
                 // then print true if the update was successful or false otherwise
                 if (!resultFormatIsDefined) {
                     spec.commandLine().getOut().println(!map.isEmpty());
-                    spec.commandLine().getOut()
-                            .println("Precise result format with --resultFormat option to print the result.");
+                    spec.commandLine().getErr()
+                            .println("Precise result format with --resultFormat option to get the result in standard output.");
                 } else {
                     GraphUtils.exportToStdout(graph, outputFormat, spec);
                 }

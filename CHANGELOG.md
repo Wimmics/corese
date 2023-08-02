@@ -1,4 +1,20 @@
+<!-- markdownlint-disable MD024 -->
+
 # Corese Changelog
+
+## 4.4.2 – <!-- TODO: add date and title  -->
+
+### Added
+
+### Changes
+
+- Move hint messages in Corese-Command to the standard error stream.
+
+### Removed
+
+### Fixed
+
+### Security
 
 ## 4.4.1 – 2023/07/25 – Corese-command update
 

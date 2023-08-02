@@ -2,7 +2,6 @@ package fr.inria.corese.command.programs;
 
 import java.io.IOException;
 import java.nio.file.Path;
-import java.util.logging.Level;
 import java.util.logging.Logger;
 
 import fr.inria.corese.command.App;
@@ -39,6 +38,10 @@ public class Convert implements Runnable {
     @Option(names = { "-r", "-of",
             "--output-format" }, required = true, description = "Serialization format to which the input file should be converted. Possible values: ${COMPLETION-CANDIDATES}.")
     private EnumOutputFormat outputFormat;
+
+    @Option(names = { "-v",
+            "--verbose" }, description = "Prints more information about the execution of the command.")
+    private boolean verbose = false;
 
     private Graph graph;
 
@@ -84,8 +87,14 @@ public class Convert implements Runnable {
         if (input == null) {
             // if input is null, load from stdin
             this.graph = GraphUtils.load(System.in, inputFormat);
+            if (verbose) {
+                spec.commandLine().getOut().println("Loaded file: stdin");
+            }
         } else {
             this.graph = GraphUtils.load(input, inputFormat);
+            if (verbose) {
+                spec.commandLine().getOut().println("Loaded file: " + input);
+            }
         }
     }
 
@@ -95,6 +104,10 @@ public class Convert implements Runnable {
      * @throws IOException if an I/O error occurs while exporting the graph.
      */
     private void exportGraph() throws IOException {
+
+        if (verbose) {
+            spec.commandLine().getOut().println("Converting file to " + outputFormat + " format...");
+        }
 
         Path outputFileName;
 
@@ -109,8 +122,14 @@ public class Convert implements Runnable {
         if (output == null) {
             // if output is null, print to stdout
             GraphUtils.exportToStdout(graph, outputFormat, spec);
+            if (verbose) {
+                spec.commandLine().getOut().println("Results exported to standard output.");
+            }
         } else {
             GraphUtils.exportToFile(graph, outputFormat, outputFileName);
+            if (verbose) {
+                spec.commandLine().getOut().println("Results exported to file: " + outputFileName);
+            }
         }
     }
 

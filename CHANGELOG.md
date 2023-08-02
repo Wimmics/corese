@@ -6,6 +6,8 @@
 
 ### Added
 
+- Add verbose option to Corese-command.
+
 ### Changes
 
 - Move hint messages in Corese-Command to the standard error stream.

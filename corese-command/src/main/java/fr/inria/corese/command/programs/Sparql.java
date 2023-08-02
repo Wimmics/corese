@@ -61,6 +61,10 @@ public class Sparql implements Runnable {
             "--recursive" }, description = "Load all files in the input directory recursively.", required = false, defaultValue = "false")
     private boolean recursive;
 
+    @Option(names = { "-v",
+            "--verbose" }, description = "Prints more information about the execution of the command..", required = false, defaultValue = "false")
+    private boolean verbose;
+
     private String query;
 
     private Graph graph;
@@ -99,6 +103,9 @@ public class Sparql implements Runnable {
         if (inputs == null) {
             // If inputPath is not provided, load from stdin
             this.graph = GraphUtils.load(System.in, inputFormat);
+            if (this.verbose) {
+                spec.commandLine().getOut().println("Loaded file: stdin");
+            }
         } else {
             this.graph = Graph.create();
             for (String input : inputs) {
@@ -112,11 +119,17 @@ public class Sparql implements Runnable {
                         for (File childFile : files) {
                             if (childFile.isFile()) {
                                 GraphUtils.load(childFile.getPath(), inputFormat, graph);
+                                if (this.verbose) {
+                                    spec.commandLine().getOut().println("Loaded file: " + childFile.getPath());
+                                }
                             }
                         }
                     }
                 } else {
                     GraphUtils.load(input, inputFormat, graph);
+                    if (this.verbose) {
+                        spec.commandLine().getOut().println("Loaded file: " + input);
+                    }
                 }
             }
         }
@@ -135,6 +148,9 @@ public class Sparql implements Runnable {
                     .forEach(filePath -> {
                         try {
                             GraphUtils.load(filePath.toString(), inputFormat, graph);
+                            if (this.verbose) {
+                                spec.commandLine().getOut().println("Loaded file: " + filePath);
+                            }
                         } catch (IOException e) {
                             LOGGER.log(Level.SEVERE, "Error loading file: " + filePath, e);
                         }
@@ -165,8 +181,15 @@ public class Sparql implements Runnable {
         if (queryUrlOrFile.endsWith(".rq")) {
             InputStream inputStream = GraphUtils.pathOrUrlToInputStream(queryUrlOrFile);
             query = convertToString(inputStream);
+            if (verbose) {
+                spec.commandLine().getOut().println("Loaded query from file: " + queryUrlOrFile);
+            }
         } else {
             query = queryUrlOrFile;
+        }
+
+        if (verbose) {
+            spec.commandLine().getOut().println("Executing query: " + query);
         }
     }
 
@@ -254,6 +277,9 @@ public class Sparql implements Runnable {
             EnumOutputFormat outputFormat = this.resultFormat.convertToOutputFormat();
             if (this.outputPathIsDefined) {
                 GraphUtils.exportToFile(graph, outputFormat, outputFileName);
+                if (this.verbose) {
+                    spec.commandLine().getOut().println("Results exported to file: " + outputFileName);
+                }
             } else {
                 // if no output format is defined
                 // if print results to stdout
@@ -261,9 +287,13 @@ public class Sparql implements Runnable {
                 if (!resultFormatIsDefined) {
                     spec.commandLine().getOut().println(!map.isEmpty());
                     spec.commandLine().getErr()
-                            .println("Precise result format with --resultFormat option to get the result in standard output.");
+                            .println(
+                                    "Precise result format with --resultFormat option to get the result in standard output.");
                 } else {
                     GraphUtils.exportToStdout(graph, outputFormat, spec);
+                    if (this.verbose) {
+                        spec.commandLine().getOut().println("Results exported to standard output.");
+                    }
                 }
             }
         } else {
@@ -273,7 +303,13 @@ public class Sparql implements Runnable {
 
             if (this.outputPathIsDefined) {
                 resultFormater.write(outputFileName.toString());
+                if (this.verbose) {
+                    spec.commandLine().getOut().println("Results exported to file: " + outputFileName);
+                }
             } else {
+                if (this.verbose) {
+                    spec.commandLine().getOut().println("Results exported to standard output.");
+                }
                 String result = resultFormater.toString();
                 spec.commandLine().getOut().println(result);
             }

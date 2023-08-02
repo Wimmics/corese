@@ -4,8 +4,8 @@
 
 1. Install java and python
 2. Install python dependencies `pip install --user py4j`
-3. Download [corese-library-python-4.4.1.jar](http://files.inria.fr/corese/distrib/corese-library-python-4.4.1.jar)
-4. Place in the same directory `corese-library-python-4.4.1.jar` and your code `myCode.py`
+3. Download [corese-library-python-4.4.2.jar](http://files.inria.fr/corese/distrib/corese-library-python-4.4.2.jar)
+4. Place in the same directory `corese-library-python-4.4.2.jar` and your code `myCode.py`
 5. Run with `python myCode.py`
 
 ## 2. Template
@@ -22,7 +22,7 @@ from py4j.java_gateway import JavaGateway
 
 # Start java gateway
 java_process = subprocess.Popen(
-    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.4.1.jar'])
+    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.4.2.jar'])
 sleep(1)
 gateway = JavaGateway()
 
@@ -59,7 +59,7 @@ from py4j.java_gateway import JavaGateway
 
 # Start java gateway
 java_process = subprocess.Popen(
-    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.4.1.jar'])
+    ['java', '-jar', '-Dfile.encoding=UTF-8', 'corese-library-python-4.4.2.jar'])
 sleep(1)
 gateway = JavaGateway()
 

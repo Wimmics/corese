@@ -9,7 +9,7 @@
     "downloadUrl": "https://project.inria.fr/corese/download/",
     "issueTracker": "https://github.com/Wimmics/corese/issues",
     "name": "Corese",
-    "version": "4.4.1",
+    "version": "4.4.2",
     "identifier": "10.5281/zenodo.8181618",
     "description": "Corese is a software platform that implements and extends the standards of the Semantic Web established by the W3C, such as RDF, RDFS, SPARQL1.1 Query & Update, OWL RL, SHACL, and others. This platform offers a wide range of functionalities for creating, manipulating, analyzing, serializing, querying, reasoning, and validating RDF data. Furthermore, Corese provides advanced extensions like STTL SPARQL, SPARQL Rule, and LDScript, which expand the functionalities and data processing capabilities.",
     "applicationCategory": " Semantic Web",

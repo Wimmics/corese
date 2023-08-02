@@ -12,7 +12,7 @@ import picocli.CommandLine.Command;
 
 public final class App implements Runnable {
 
-    public final static String version = "4.4.1";
+    public final static String version = "4.4.2";
 
     public static void main(String[] args) {
         int exitCode = new CommandLine(new App()).execute(args);

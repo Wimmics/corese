@@ -222,7 +222,7 @@ public class Property {
         SPARQL_COMPLIANT,
         SPARQL_ORDER_UNBOUND_FIRST,
 
-        ENABLE_OWL_AUTO_IMPORT,
+        DISABLE_OWL_AUTO_IMPORT,
         OWL_CLEAN,
         OWL_CLEAN_QUERY,
         OWL_RL,

@@ -12,7 +12,6 @@
 ### Changes
 
 - Moved hint messages in Corese-Command to the standard error stream.
-- Disabled the import of the `owl:imports` statement by default. It can be enabled with the `ENABLE_OWL_AUTO_IMPORT` property.
 
 ### Removed
 

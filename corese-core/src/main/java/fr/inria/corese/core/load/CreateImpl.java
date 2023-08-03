@@ -152,7 +152,7 @@ public class CreateImpl extends CreateTriple implements Creator {
 
     void parseImport(Atom property, Atom object) {
         if (property.getLongName() != null && property.getLongName().equals(Load.IMPORTS)
-                && !Property.booleanValue(Value.DISABLE_OWL_AUTO_IMPORT)) {
+                && Property.booleanValue(Value.ENABLE_OWL_AUTO_IMPORT)) {
             try {
                 load.parseImport(object.getLongName());
             } catch (LoadException ex) {

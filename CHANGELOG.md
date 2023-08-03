@@ -6,11 +6,13 @@
 
 ### Added
 
-- Add verbose option to Corese-command.
+- Added the "verbose" option to Corese-command.
+- Added support for property files to Corese-command.
 
 ### Changes
 
-- Move hint messages in Corese-Command to the standard error stream.
+- Moved hint messages in Corese-Command to the standard error stream.
+- Disabled the import of the `owl:imports` statement by default. It can be enabled with the `ENABLE_OWL_AUTO_IMPORT` property.
 
 ### Removed
 

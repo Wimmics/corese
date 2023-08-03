@@ -17,6 +17,7 @@ import fr.inria.corese.command.utils.format.EnumResultFormat;
 import fr.inria.corese.core.Graph;
 import fr.inria.corese.core.print.ResultFormat;
 import fr.inria.corese.core.query.QueryProcess;
+import fr.inria.corese.core.util.Property;
 import fr.inria.corese.kgram.core.Mappings;
 import fr.inria.corese.sparql.triple.parser.ASTQuery;
 import picocli.CommandLine.Command;
@@ -65,6 +66,11 @@ public class Sparql implements Runnable {
             "--verbose" }, description = "Prints more information about the execution of the command..", required = false, defaultValue = "false")
     private boolean verbose;
 
+    @Option(names = { "-c",
+            "--config",
+            "--init" }, description = "Path to a configuration file. If not provided, the default configuration file will be used.", required = false)
+    private String configFilePath;
+
     private String query;
 
     private Graph graph;
@@ -81,7 +87,18 @@ public class Sparql implements Runnable {
 
     @Override
     public void run() {
+
         try {
+            // Load configuration file
+            if (configFilePath != null) {
+                Property.load(configFilePath);
+                if (this.verbose) {
+                    spec.commandLine().getOut().println("Loaded configuration file: " + configFilePath);
+                }
+            } else if (this.verbose) {
+                spec.commandLine().getOut().println("No configuration file provided. Using default configuration.");
+            }
+
             resultFormatIsDefined = resultFormat != null;
             outputPathIsDefined = output != null;
             isDefaultOutputName = output == null || DEFAULT_OUTPUT_FILE_NAME.equals(output.toString());

@@ -9,6 +9,7 @@ import fr.inria.corese.command.utils.GraphUtils;
 import fr.inria.corese.command.utils.format.EnumInputFormat;
 import fr.inria.corese.command.utils.format.EnumOutputFormat;
 import fr.inria.corese.core.Graph;
+import fr.inria.corese.core.util.Property;
 import picocli.CommandLine.Command;
 import picocli.CommandLine.Model.CommandSpec;
 import picocli.CommandLine.Option;
@@ -43,6 +44,10 @@ public class Convert implements Runnable {
             "--verbose" }, description = "Prints more information about the execution of the command.")
     private boolean verbose = false;
 
+    @Option(names = { "-c", "--config",
+            "--init" }, description = "Path to a configuration file. If not provided, the default configuration file will be used.", required = false)
+    private String configFilePath;
+
     private Graph graph;
 
     private boolean outputFormatIsDefined = false;
@@ -54,6 +59,17 @@ public class Convert implements Runnable {
     @Override
     public void run() {
         try {
+
+            // Load configuration file
+            if (configFilePath != null) {
+                Property.load(configFilePath);
+                if (this.verbose) {
+                    spec.commandLine().getOut().println("Loaded configuration file: " + configFilePath);
+                }
+            } else if (this.verbose) {
+                spec.commandLine().getOut().println("No configuration file provided. Using default configuration.");
+            }
+
             this.outputFormatIsDefined = this.output != null;
             this.isDefaultOutputName = this.output != null && DEFAULT_OUTPUT_FILE_NAME.equals(this.output.toString());
             checkInputValues();

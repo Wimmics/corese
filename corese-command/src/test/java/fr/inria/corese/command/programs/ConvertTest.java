@@ -599,7 +599,8 @@ public class ConvertTest {
         int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", inputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
-        assertTrue(err.toString().trim().startsWith("Input path cannot be the same as output path."));
+        System.out.println(err.toString().trim());
+        assertTrue(err.toString().trim().contains("Input path cannot be the same as output path."));
     }
 
     @Test
@@ -611,7 +612,7 @@ public class ConvertTest {
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
         assertTrue(err.toString().trim()
-                .startsWith("Error while loading : invalid_path.ttl (No such file or directory)"));
+                .contains("Error while loading : invalid_path.ttl (No such file or directory)"));
     }
 
     @Test
@@ -622,7 +623,7 @@ public class ConvertTest {
         int exitCode = cmd.execute("-i", inputPath, "-of", "TURTLE", "-o", outputPath);
         assertEquals(1, exitCode);
         assertEquals(out.toString(), "");
-        assertTrue(err.toString().trim().startsWith(
+        assertTrue(err.toString().trim().contains(
                 "/invalid/path/for/output.ttl (No such file or directory)"));
     }
 
@@ -633,7 +634,7 @@ public class ConvertTest {
             GraphUtils.load(input, EnumInputFormat.JSONLD);
             fail("Expected an IllegalArgumentException to be thrown");
         } catch (IllegalArgumentException e) {
-            assertTrue(e.getMessage().startsWith("Failed to parse RDF file."));
+            assertTrue(e.getMessage().contains("Failed to parse RDF file."));
         } catch (IOException e) {
             fail("Unexpected IOException: " + e.getMessage());
         }

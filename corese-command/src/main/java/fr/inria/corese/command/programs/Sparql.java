@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Scanner;
+import java.util.concurrent.Callable;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -26,20 +27,21 @@ import picocli.CommandLine.Option;
 import picocli.CommandLine.Spec;
 
 @Command(name = "sparql", version = App.version, description = "Run a SPARQL query.", mixinStandardHelpOptions = true)
-public class Sparql implements Runnable {
+public class Sparql implements Callable<Integer> {
 
     private static final Logger LOGGER = Logger.getLogger(Sparql.class.getName());
 
     private static final String ERROR_OUTPUT_FORMAT_CONSTRUCT_REQUEST = "Error: %s is not a valid output format for insert, delete, describe or construct requests. Use one of the following RDF formats: \"rdfxml\", \"turtle\", \"jsonld\", \"trig\", \"jsonld\".";
     private static final String ERROR_OUTPUT_FORMAT_SELECT_REQUEST = "Error: %s is not a valid output format for select or ask requests. Use one of the following result formats: \"xml\", \"json\", \"csv\", \"tsv\", \"md\".";
-    private static final int EXIT_CODE_ERROR = 1;
+    private static final int ERROR_EXIT_CODE_SUCCESS = 0;
+    private static final int ERROR_EXIT_CODE_ERROR = 1;
     private final String DEFAULT_OUTPUT_FILE_NAME = "output";
 
     @Spec
     private CommandSpec spec;
 
     @Option(names = { "-f", "-if",
-            "--input-format" }, description = "Input serialization format. Possible values: ${COMPLETION-CANDIDATES}.")
+            "--input-format" }, description = "RDF serialization format of the input file. Possible values: ${COMPLETION-CANDIDATES}.")
     private EnumInputFormat inputFormat = null;
 
     @Option(names = { "-i",
@@ -86,7 +88,7 @@ public class Sparql implements Runnable {
     }
 
     @Override
-    public void run() {
+    public Integer call() {
 
         try {
             // Load configuration file
@@ -105,9 +107,10 @@ public class Sparql implements Runnable {
             loadInputFile();
             loadQuery();
             execute();
+            return ERROR_EXIT_CODE_SUCCESS;
         } catch (Exception e) {
-            System.err.println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
-            System.exit(EXIT_CODE_ERROR);
+            spec.commandLine().getErr().println("\u001B[31mError: " + e.getMessage() + "\u001B[0m");
+            return ERROR_EXIT_CODE_ERROR;
         }
     }
 
